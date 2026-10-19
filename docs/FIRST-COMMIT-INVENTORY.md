@@ -25,6 +25,6 @@ User preference is to split actual separable work without inventing historical c
 
 OpenVireo is the visible name andOpen Virtual Educational Observatory the description. Internal component paths,package/session identifiers and historical OpenCLEA format names remain for compatibility; no directory/service rename orscientific calculation change is implied.
 
-Claude review is **not complete**. One retry after general human authorization was denied before execution because automatic review required explicit consent to the broad project/research payload andAnthropic destination. No stream/model output exists; no workaround orfurther retry occurred. This is separate from local Git preparation. Exact denial andlocal validation evidence remain in the task evidence directory.
+The current native Claude review/model audit and resolution status are maintained in [A06 validation](TELESCOPE-MOTION-VALIDATION.md#read-only-review-and-current-resolution-state). Historical approval denials remain in the task evidence; review consent is separate from public Git publication consent.
 
 No push,PR,remote commit,resource upload ordeployment is performed. The final inventory/local commit SHAs andremaining rights/privacy/review decisions must be reviewed before anypublication approval.

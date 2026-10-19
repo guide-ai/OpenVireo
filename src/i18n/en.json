@@ -252,7 +252,7 @@
   "session.restore": "Restore session",
   "session.source": "Download imported spectrum",
   "session.importLabel": "Restore analysis session",
-  "session.boundary": "OpenCLEA session format · up to 1,000 measurements. The current spectrum is checked against its SHA-256 when restored. Historical log entries keep their file hashes; their source files are not bundled. This does not certify an observation’s origin.",
+  "session.boundary": "Historical OpenCLEA session format identifiers are retained for saved-file compatibility. Up to 1,000 measurements. The current spectrum is checked against its SHA-256 when restored. Historical log entries keep their file hashes; their source files are not bundled. This does not certify an observation’s origin.",
   "session.saved": "Session downloaded. Keep this file to restore your analysis later.",
   "session.restored": "Session restored. The current spectrum and measurement arithmetic were checked.",
   "session.restoreError": "Could not restore this session: invalid format, content, numerical state or size. The current analysis was kept.",

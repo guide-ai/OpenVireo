@@ -2,7 +2,7 @@ import {CatalogDiagnostic} from '../core/diagnostics';
 import {t,type MessageKey,type PlainMessageKey,type MessageArgs,type Translate} from './index';
 class PresentationError extends Error {
  readonly values:Readonly<Record<string,string|number>>;
- constructor(readonly key:MessageKey,values:Readonly<Record<string,string|number>>){super('OpenCLEA presentation operation');this.name='PresentationError';this.values=Object.freeze({...values});}
+ constructor(readonly key:MessageKey,values:Readonly<Record<string,string|number>>){super('OpenVireo presentation operation');this.name='PresentationError';this.values=Object.freeze({...values});}
 }
 export function errorFor<K extends MessageKey>(key:K,...args:MessageArgs<K>){return new PresentationError(key,args[0]??{});}
 const fileKeys={source:'error.fileSource',download:'error.fileDownload',size:'error.fileSize',digest:'error.fileDigest'}as const;
