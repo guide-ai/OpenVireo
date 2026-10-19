@@ -1,0 +1,51 @@
+# A08/I10/P02: operative clock, tracking and spectral access
+
+The connection audit found a real gap: the observatory clock moved its visible field, but spectral activation always repointed a fixed bench without consuming its tracking state. That could make the clock/drive controls look more connected to acquisition than they were. This increment closes the supported spectral route before admitting motors or horizon options.
+
+**Clarification after the acquisition-scope audit:** stopping/deactivating on tracking changes is a browser scope protection, not established native photon behavior during drift. The native spectrometer disables DriveBtn and its photon timer consumes prepared means. [HORIZON-READOUT.md](HORIZON-READOUT.md) records the independent geometry and the remaining repaint/slit/refresh dependencies.
+
+## Operational behavior and test steps
+
+At http://127.0.0.1:5173/:
+
+1. Open the dome, choose the supported catalog star or one of the three supported Hubble galaxies, point, and switch to telescope view. **Observatory clock & spectral tracking** reports the current read gate. With tracking off, the observatory acquisition entry is disabled.
+2. Start the clock with tracking off: the actual preview pointing and visible sky drift. Turn tracking on: that current RA/Dec is held; this does not recenter a drifted object. Repoint explicitly. The acquisition entry becomes available only at the existing exact verified target/profile.
+3. Open the acquisition page and choose **Activate current tracked pointing**. It does not move the telescope or silently replace a coordinate draft. **Start star/galaxy/sky exposure** starts the same observing clock at normal speed. The shared readout is visible on these pages and continues while counts integrate. Existing independent source/sky/bin/RNG contracts are unchanged.
+4. The original **Activate supported … field** button remains an explicit fixed-field preparation shortcut. Its help now says that it opens the dome, repoints, selects telescope view and engages tracking, pauses the clock, and retains existing segment counts. It differs clearly from current-pointing activation. The current-pointing button becomes the primary action when the current gate is ready.
+5. While integrating, choose **Turn tracking off** in the shared control. Acquisition is released synchronously before tracking changes; committed photons and RNG remain. Further clock ticks can drift the actual pointing, but cannot integrate an unverified offset spectrum. Turning tracking back on holds that offset; the current-field action stays blocked until the field is explicitly repointed/prepared. The calibrated raster is hidden while the field is not admitted, and retained count/analysis data remain available.
+6. **Pause observatory clock** releases spectral integration first. Pausing only the exposure leaves observing UT running, as a distinct clock. Unsafe clock gaps/date/domain limits stop new photon integration before the next unsafe interval. Save/restore stops both. Analysis/classification/source-preparation routes and the separate photometer bench stop the shared clock; supported spectral pages retain it.
+7. Save an investigation while observing, reload and restore. Full17 preserves current control/clock/pointing and all represented tools atomically, with the clock and exposure released. Current-pointing activation or explicit fixed-field preparation is required again. Wrong proof, missing state, cached permission or cross-bound UT/pointing rejects before replacement. A cancelled late restore cannot override later tracking changes.
+
+For deterministic test inputs, seed1 with one committed100ms interval retains the existing star source totals **217 /1338 /21246** at0.4/0.9/Mayall and galaxy36773 totals **13 /170 /4672**. Manual clicking commits actual elapsed intervals, so these inputs are test vectors rather than expected manual-run totals or original observations.
+
+## What is operational and what remains bounded
+
+Tracking, pointing, dome/narrow-field/domain checks now control actual spectral activation, start and callback integration. The current field and count engine consume the same control state. Tracking-off and shared Pause stop the actual acquisition; these are no longer auxiliary-only controls. The shared UT clock runs at1:1 browser time during supported tracked stationary spectral work.
+
+The spectra remain fixed, already verified catalog/sky configurations. Changing UT does not synthesize precession, extinction, horizon visibility or a new spectrum/calibration. UT is a bounded scenario and current-workspace clock, not a recovered observing timestamp in native SSP/raw spectral history. Photon integration retains its own committed elapsed/RNG journal. Untracked offset acquisition is explicitly unavailable. Native moving/motor timing, horizon/instructor overrides and global VCL event ordering remain open; no new physical fallback was introduced.
+
+The Pleiades photometer remains a separate bounded field/filter/integration bench and says so in its UI. Entering it pauses the shared clock. Its calibrated counts, notebook, manual values and session state remain intact. This increment does not claim to connect its own pointing model to the observatory drive.
+
+## Native evidence and browser adapters
+
+[Instrument-access provenance](../data/observatory/instrument-access-provenance.json) pins VIREO1.504 binary SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`, original licenses, eight raw ranges, the decoded published field table and a bounded readiness table. Raw recovery is outside web source at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/`.
+
+- **IC-C01:** original published-field table`0x53690a..0x537104` identifies ClockTimer+`0x3cc`, DriveBtn+`0x400`, ViewSlider+`0x410`, RdngBtn+`0x424`. Concrete identities are decoded from original records rather than decompiler field-name guesses.
+- **IC-C02:** `0x53a168..0x53a20c` disables motion/view/read controls; `0x53a210..0x53a30e` restores tracking-controlled affordances and enables RdngBtn only in the narrow field. `0x53a310..0x53a3e6` applies finder/telescope read-button state. `0x538768..0x5387e6` changes tracking. Existing dome-open and exact fixed-domain admission are retained browser/scientific guards. Finite moving states are not admitted.
+- **IC-C03:** `0x53cce4..0x53ce57` performs instrument access and calls the control-disabling helper before opening the selected instrument. The Hubble branch`0x58a8ca..0x58a8d7` explicitly removes allocation restrictions. No availability lottery, time credit or new restriction is fabricated.
+- **IC-C04:** `0x538204..0x5382c3` independently enables ClockTimer. Spectrometer FormShow`0x50d8b8..0x50dac3` changes control availability, including disabling the native DriveBtn. The browser shared toggle is a deliberate adaptation: it releases integration before changing tracking instead of changing a moving aperture during an exposure. Separate callbacks and the recovered clock rate support bounded continuation; native event-delivery order remains unverified.
+- **IC-C05:** existing pinned activation/source/calibration and scalar kernels remain unchanged. Source and sky are still added to the native-style buffer. No clock-dependent source intensity or offset transmission is guessed.
+
+The pure access predicate is tested against eight tracking/finder/moving combinations. Tracking/finder follow the native control-flow interpretation; moving=true is an inadmissible browser guard, not a recovered native motor transition. All live supported acquisition inputs remain stationary. Each existing bounded guard is also tested. A composition test follows drift→tracking still off-target→explicit repoint and compares all600 acquired bins/draws/final seed with independent numerical vectors for all three stellar profiles. The earlier21 sidereal and48 drift/projection vectors remain in regression. Static evidence and mathematical/browser tests are not native x87/GDI/runtime equivalence witnesses.
+
+## P02 compatibility
+
+Full17 uses observing policy `OpenCLEA-stopped-observing-workspace-v7`, adding strict `operationalAccess` policy/proof beside the stopped full16 clock/point binding. No cached ready flag or running phase is imported. Older pure writers retain their original versions/bytes; full1–16 remain supported and restore stopped. New app backups use17 once a drive or fixed spectral field is explicitly used; blank fixed-clock-only work can retain15. Raw spectral v1/v2/v3, normalized SSP, archive IDs and measurement formats are unchanged. Existing twelve-archive and event/file bounds remain.
+
+## Verification
+
+TypeScript/Vite and **544 unit tests in70 files** pass. Four new complete browser flows cover the actual visible-field/read gate/current activation, synchronous tracking-off/Pause release, all three telescopes' stellar/galaxy counts and manual records, wrong17 proof, old16 migration, cancellation, clock-gap rejection, mobile layout and the explicitly separate photometer bench. Desktop/mobile evidence and final full-regression logs are retained at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-integration/verification.json`.
+
+Visual inspection also corrected a stale exposing notice after shared release. Development regression exposed missing shared-clock error propagation, old synthetic legacy fixtures retaining new fields, and tests that allowed wall time/scrolling or paused lazy-navigation scheduling to affect their controlled intervals. The exposure error path and fixtures/timing were corrected while retaining exact count/seed/manual-value assertions. Original code/source data were not executed or modified; no Windows/emulator, new installation, Claude, public/remote write, deployment or purchase was used. A08/A05/I10/I02/P02 remain partial against their full original package criteria.
+
+Follow-up: [Read-only stellar drift inspection](STAR-DRIFT-INSPECTION.md) supplies a distinct bounded cache-hit reconstruction while the acquisition gate is unavailable. The old calibrated acquisition raster remains hidden outside its field; this separate inspector cannot generate photons or update cached means.

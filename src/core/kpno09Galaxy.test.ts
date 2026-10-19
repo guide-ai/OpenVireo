@@ -1,0 +1,19 @@
+import {describe,it,expect} from 'vitest';
+import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import proof from '../../data/hubble/kpno09-galaxy-provenance.json';
+import v1 from '../../data/hubble/kpno09-galaxy-36747-vectors.json';
+import v2 from '../../data/hubble/kpno09-galaxy-36773-vectors.json';
+import v3 from '../../data/hubble/kpno09-galaxy-54876-vectors.json';
+import {KPNO09_GALAXY_PROOF_SHA256,galaxyTelescopeIndex} from './galaxyTelescope';
+import {createGalaxyExposure,verifiedGalaxyConfiguration,activateGalaxy,startGalaxy,tickGalaxy,deactivateGalaxy,galaxyCountsCsv} from './galaxyExposure';
+import {parseGalaxySession,serializeGalaxySession} from '../io/galaxySession';
+const all=[['36747',v1],['36773',v2],['54876',v3]]as const;
+describe('KPNO0.9m three independent original galaxy fields and acquisitions',()=>{
+ it('pins the complete optical/calibration packet and all three independent raster/count fixtures',()=>{expect(createHash('sha256').update(readFileSync(new URL('../../data/hubble/kpno09-galaxy-provenance.json',import.meta.url))).digest('hex')).toBe(KPNO09_GALAXY_PROOF_SHA256);for(const r of proof.records)expect(createHash('sha256').update(readFileSync(new URL(`../../data/hubble/kpno09-galaxy-${r.id}-vectors.json`,import.meta.url))).digest('hex')).toBe(r.vectorsSHA256);});
+ for(const[id,fixture]of all){
+  it(`repaints ${id}, verifies the slit fraction and original instrumental magnitude calibration, without changing0.4m`,()=>{const c=verifiedGalaxyConfiguration(id,1);expect(createHash('sha256').update(c.viewport.rgb).digest('hex')).toBe(fixture.raster.cropSHA256);expect(c.pixelLevel).toBe(fixture.raster.slitLevel);expect(c.fraction).toBe(fixture.raster.fraction);expect(c.zeroPoint).toBe(6);expect(c.field.domain.telescopeRecord).toBe(1);expect(Math.max(...c.sourceMeans)*50000).toBeLessThan(12);expect(verifiedGalaxyConfiguration(id).zeroPoint).toBe(4);for(const q of fixture.sourceChecks){expect(Math.abs(c.sourceValues[q.bin]-Number(q.valueDecimal))).toBeLessThan(1e-11);expect(Math.abs(c.sourceMeans[q.bin]-Number(q.meanDecimal))).toBeLessThan(1e-15);}});
+  for(const v of fixture.vectors)it(`${id} matches all600 Decimal100 bins and LCG for ${v.seed}/${v.deltas}`,()=>{let s=startGalaxy(activateGalaxy(createGalaxyExposure(v.seed,id,1)));for(const dt of v.deltas)s=tickGalaxy(s,dt);expect(s.exposure.counts).toEqual(v.counts);expect(s.exposure.sourceTotal).toBe(v.sourceTotal);expect(s.exposure.skyTotal).toBe(v.skyTotal);expect(s.exposure.draws).toBe(v.draws);expect(s.exposure.seed).toBe(v.finalSeed);expect(galaxyTelescopeIndex(s)).toBe(1);});
+ }
+ it('keeps journals strict by target, original profile and source; cached counts, wrong proof or version/domain smuggling reject',()=>{const s=deactivateGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(1,'36773',1))),100)),text=serializeGalaxySession(s),v=JSON.parse(text);expect(v.version).toBe(2);expect(serializeGalaxySession(parseGalaxySession(v))).toBe(text);for(const change of [(v:any)=>v.domain.telescopeRecord=0,(v:any)=>v.configurationSHA256='bad',(v:any)=>v.opticalProfileSHA256='bad',(v:any)=>v.version=1,(v:any)=>v.telescopeIndex=2,(v:any)=>v.counts=[999],(v:any)=>v.events[1].deltaMs=1001]){const bad=structuredClone(v);change(bad);expect(()=>parseGalaxySession(bad)).toThrow();}expect(galaxyCountsCsv(s)).toContain('telescope_record,telescope_zero_point,optical_profile_sha256,configuration_sha256');const old=deactivateGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(1))),100));expect(JSON.parse(serializeGalaxySession(old)).version).toBe(1);expect(serializeGalaxySession(parseGalaxySession(JSON.parse(serializeGalaxySession(old))))).toBe(serializeGalaxySession(old));expect(galaxyCountsCsv(old)).not.toContain('telescope_record');});
+});

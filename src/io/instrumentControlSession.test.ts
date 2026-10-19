@@ -1,0 +1,14 @@
+import {createClockDrive} from '../core/clockDrive';
+import {it,expect} from 'vitest';
+import {serializeAnalysisSession,readAnalysisSession,type AnalysisSession} from './analysisSession';
+import {INITIAL_CONTROL} from '../core/spectrum';
+import {INITIAL_SITE_CLOCK} from '../core/siteClock';
+import {EMPTY_HUBBLE} from '../core/hubbleAnalysis';
+import {defaultPhotometryDraft,defaultVelocityDraft} from '../core/editingWorkspace';
+import {emptyExposureWorkspace,LIVE_GALAXY_IDS,type ObservingWorkspace} from '../core/observingWorkspace';
+const empty=emptyExposureWorkspace(),bank=()=>Object.fromEntries(LIVE_GALAXY_IDS.map(id=>[id,empty]))as ObservingWorkspace['galaxies'];
+const w:ObservingWorkspace={context:{domeOpen:false,mode:'finder',selectedId:'NGC3031',pointing:{ra:9.92588,dec:69.06529},raText:'9.92588',decText:'69.06529',hasPointed:false,galaxyTargetId:'36773'},sky:empty,star:empty,star09:empty,star4m:empty,galaxies:bank(),galaxies09:bank(),galaxies4m:bank()};
+const base:AnalysisSession={observation:null,control:INITIAL_CONTROL,stepInput:'',reference:'galaxy',wide:false,object:'',rows:[],hubble:EMPTY_HUBBLE,observing:w,editing:{preparationSeedText:'1',photometry:defaultPhotometryDraft(),velocity:defaultVelocityDraft([])},optical:{selectedIndex:2,draftIndex:0}};
+const read=(s:string)=>readAnalysisSession(new File([s],'clock.json'));
+it('full17 requires operational proof and existing stopped clock/point binding; old16 bytes remain supported',async()=>{const drive=createClockDrive(INITIAL_SITE_CLOCK.utc,w.context.pointing),s={...base,observing:{...w,siteClock:INITIAL_SITE_CLOCK,clockDrive:drive,operationalAccess:true as const}},text=await serializeAnalysisSession(s),v=JSON.parse(text),r=await read(text);expect(v.version).toBe(17);expect(r.observing?.operationalAccess).toBe(true);expect(await serializeAnalysisSession(r)).toBe(text);const old=await serializeAnalysisSession({...s,observing:{...s.observing,operationalAccess:undefined}});expect(JSON.parse(old).version).toBe(16);expect(await serializeAnalysisSession(await read(old))).toBe(old);});
+it('rejects wrong operational proof, legacy smuggling, missing clock and cached access state atomically',async()=>{const drive=createClockDrive(INITIAL_SITE_CLOCK.utc,w.context.pointing),s={...base,observing:{...w,siteClock:INITIAL_SITE_CLOCK,clockDrive:drive,operationalAccess:true as const}},v=JSON.parse(await serializeAnalysisSession(s));for(const change of [(v:any)=>v.version=16,(v:any)=>v.observing.operationalAccess.proofSHA256='bad',(v:any)=>v.observing.operationalAccess.ready=true,(v:any)=>delete v.observing.clockDrive,(v:any)=>delete v.observing.operationalAccess]){const bad=structuredClone(v);change(bad);await expect(read(JSON.stringify(bad))).rejects.toThrow();}await expect(serializeAnalysisSession({...s,observing:{...s.observing,clockDrive:undefined}})).rejects.toThrow();});

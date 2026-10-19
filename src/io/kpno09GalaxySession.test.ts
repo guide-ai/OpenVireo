@@ -1,0 +1,28 @@
+import {describe,it,expect} from 'vitest';
+import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy,deactivateGalaxy} from '../core/galaxyExposure';
+import {createGalaxyObservation} from './galaxyObservation';
+import {serializeAnalysisSession,readAnalysisSession,type AnalysisSession} from './analysisSession';
+import {createMeasurement,INITIAL_CONTROL} from '../core/spectrum';
+import {analyzeHubble,measurementHubbleRow,EMPTY_HUBBLE} from '../core/hubbleAnalysis';
+import {defaultPhotometryDraft,defaultVelocityDraft} from '../core/editingWorkspace';
+import {emptyExposureWorkspace,LIVE_GALAXY_IDS,OBSERVING_GALAXY_POLICY,type ObservingWorkspace} from '../core/observingWorkspace';
+const empty=emptyExposureWorkspace(),banks=()=>Object.fromEntries(LIVE_GALAXY_IDS.map(id=>[id,empty]))as ObservingWorkspace['galaxies'];
+const observing:ObservingWorkspace={context:{domeOpen:false,mode:'telescope',selectedId:'36773-acquisition',pointing:{ra:11.789361111111111,dec:55.68888888888889},raText:'11.789',decText:'55.688',hasPointed:true,galaxyTargetId:'36773'},sky:empty,star:empty,star09:empty,galaxies:banks()};
+const base:AnalysisSession={observation:null,control:INITIAL_CONTROL,stepInput:'',reference:'galaxy',wide:false,object:'',rows:[],hubble:EMPTY_HUBBLE,observing,editing:{preparationSeedText:'1',photometry:defaultPhotometryDraft(),velocity:defaultVelocityDraft([])},optical:{selectedIndex:1,draftIndex:2}};
+const state=(id:string,index:0|1)=>deactivateGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(1,id,index))),100));
+const read=(s:string)=>readAnalysisSession(new File([s],'galaxies.json'));
+describe('P02 independent0.9m galaxy banks and strict investigation13',()=>{
+ it('roundtrips all three profile1 segments, exact archive references, original profile0 data and operator-entered Single z',async()=>{
+  const archive=await Promise.all(LIVE_GALAXY_IDS.map(id=>createGalaxyObservation(state(id,1)))),original=await createGalaxyObservation(state('36773',0)),a=archive[1],row=createMeasurement(1,'My manual0.9m alignment',a.name,a.sha256,{...INITIAL_CONTROL,step:.001,position:12},'GLXYLNS.LST',{kind:a.kind,acquisitionId:a.acquisitionId,targetId:a.targetId});const w={...observing,galaxies:{...banks(),'36773':{state:original.state,seedText:'old'}},galaxies09:Object.fromEntries(archive.map(a=>[a.targetId,{state:a.state,seedText:'pending '+a.targetId}]))as ObservingWorkspace['galaxies']};const text=await serializeAnalysisSession({...base,editing:{...base.editing!,velocity:defaultVelocityDraft([row])},rows:[row],observation:a,acquisitions:[original,...archive],observing:w}),v=JSON.parse(text),r=await read(text);expect(v.version).toBe(13);expect(v.observing.policy).toBe(OBSERVING_GALAXY_POLICY);for(const a of archive)expect(v.observing.galaxies09[a.targetId].source).toEqual({kind:'archive',acquisitionId:a.acquisitionId});expect(r.rows).toEqual([row]);expect(r.observing?.galaxies['36773'].state?.exposure).toEqual(original.state.exposure);expect(r.optical).toEqual(base.optical);expect(await serializeAnalysisSession(r)).toBe(text);
+ });
+ it('rejects cross-profile/same-target and wrong-target archive references, missing banks and old-version scope smuggling',async()=>{
+  const a=await createGalaxyObservation(state('36773',1)),b=await createGalaxyObservation(state('36773',0)),v=JSON.parse(await serializeAnalysisSession({...base,acquisitions:[a,b],observing:{...observing,galaxies09:{...banks(),'36773':{state:a.state,seedText:'1'}}}}));for(const change of [(v:any)=>v.observing.galaxies09['36773'].source.acquisitionId=b.acquisitionId,(v:any)=>v.observing.galaxies['36773'].source=v.observing.galaxies09['36773'].source,(v:any)=>v.observing.galaxies09['36747'].source=v.observing.galaxies09['36773'].source,(v:any)=>v.version=12,(v:any)=>delete v.observing.star09]){const bad=structuredClone(v);change(bad);await expect(read(JSON.stringify(bad))).rejects.toThrow();}await expect(serializeAnalysisSession({...base,acquisitions:[a]})).rejects.toThrow();await expect(serializeAnalysisSession({...base,observing:{...observing,galaxies09:{...banks(),'36773':{state:b.state,seedText:'1'}}}})).rejects.toThrow();
+ });
+ it('keeps old full12 bytes/absent scope distinct from explicit empty13 and accounts for the new journals in the shared replay budget',async()=>{
+  const old=await serializeAnalysisSession(base),legacy=await read(old);expect(JSON.parse(old).version).toBe(12);expect(legacy.observing?.galaxies09).toBeUndefined();expect(await serializeAnalysisSession(legacy)).toBe(old);const v=JSON.parse(await serializeAnalysisSession({...base,observing:{...observing,galaxies09:banks()}}));expect((await read(JSON.stringify(v))).observing?.galaxies09).toEqual(banks());v.observing.galaxies09['36773']={seedText:'1',source:{kind:'journal',journal:{events:Array(24001).fill({kind:'tick',deltaMs:0})}}};await expect(read(JSON.stringify(v))).rejects.toThrow();
+ });
+ it('rejects counting one physical galaxy observed through two telescopes as independent Hubble targets',async()=>{
+  const a=await createGalaxyObservation(state('36773',1)),b=await createGalaxyObservation(state('36773',0)),rows=[a,b].map((a,i)=>createMeasurement(i+1,'Different telescope '+i,a.name,a.sha256,{...INITIAL_CONTROL,step:.001,position:12},'GLXYLNS.LST',{kind:a.kind,acquisitionId:a.acquisitionId,targetId:a.targetId}));const result=analyzeHubble({recipeId:'vireo',rows:rows.map(m=>{const r=measurementHubbleRow(m.id,m.id);return {...r,input:{...r.input,apparentVText:'15.8',magnitudeSource:'Explicit operator source',targetId:'36773'}};})},rows);expect(result.value).toBeUndefined();expect(result.rows.every(r=>r.issues.join(' ').includes('not independent Hubble targets'))).toBe(true);
+ });
+
+});

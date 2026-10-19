@@ -1,0 +1,38 @@
+{
+  "format": "OpenCLEA Pleiades photometer session",
+  "version": 1,
+  "policy": "OpenCLEA-Pleiades-V-observing-v1",
+  "numericalPolicy": "Number_Math_native_x87_equivalence_unvalidated",
+  "fieldSnapshotSHA256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624",
+  "seedAtStart": 42,
+  "events": [
+    {
+      "type": "activate"
+    },
+    {
+      "type": "start"
+    },
+    {
+      "type": "complete"
+    },
+    {
+      "type": "point",
+      "kind": "object"
+    },
+    {
+      "type": "start"
+    },
+    {
+      "type": "complete"
+    },
+    {
+      "type": "record",
+      "readingId": 2,
+      "value": 9.647,
+      "note": "My reading"
+    },
+    {
+      "type": "deactivate"
+    }
+  ]
+}

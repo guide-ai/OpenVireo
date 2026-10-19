@@ -1,0 +1,29 @@
+# Photometer aperture validation
+
+Final verification: 19 October 2026. This closes the bounded three-size observing increment, not the full I01/N03/E04 packages or the implementation plan. [Feature, evidence and exact test steps](PHOTOMETER-APERTURE.md).
+
+TypeScript/build and **960 Vitest contracts across 98 files passed** after the independently resolved review findings. **All 166 complete Playwright flows passed** against the existing persistent preview at `http://127.0.0.1:5173/`. Its service retained PID 668923 without a restart. **Nine production browser flows passed** on temporary loopback port 5176; that server was then stopped. Desktop and 360px mobile controls and the corrected modal error were inspected directly. No horizontal page overflow was observed.
+
+The new flows cover sky measured at size 5 and object acquired at size 15, actual sky-reference provenance, blank manual entry, same-aperture B/V confirmation and mixed-aperture rejection, Apply/Cancel/Escape/default, disabled running changes, stopped partial work without RNG/budget rewind, a visible journal-limit error with viable Cancel/Save, wrong-proof import rejection, reimport, legacy restoration and full investigation restoration. A separate I/O contract exercises the new raw owner 8 inside every outer version 8–21, including strict nested-proof rejection and preserved source-validated reference-point selection. Old raw 1–7 fixtures and all existing observing/manual workflows remain supported.
+
+## Independent numerical and source evidence
+
+The static PE/form/literal checks and independent Decimal90 analytic geometry/flux calculation contrast 288 field/filter/size configurations. Independent modulo PRNG and Python math.lgamma supply 864 synthetic draw pairs. Maximum relative source-mean difference is 5.4449e-9. All checked lookup arguments remain at least 3.01282 from the withheld native +5 endpoint. The expected maximum over 5000 callbacks is 2.023254e9 counts, below int32; actual per-callback overflow guards remain active. These checks are independent references for the chosen Number policy, not an executing-original oracle.
+
+Every real object query in this domain contains only its central source, and all sky queries are empty. Separate synthetic query/order/duplicate/blend tests do not establish real contaminated-field acquisition fidelity. No aperture-loss correction is supplied. Same-aperture colors retain their reading provenance; manual diagram interpretation must still account for the aperture of each measured star.
+
+All **148 prior data files** and **31 cited original sources** retain their hashes. The existing acquisition, source-fraction, reduction and native-curve kernels remain unchanged; the UBV configuration wrapper is intentionally extended for aperture geometry and sky area while its size-10 path remains checked by earlier vectors and legacy owners. Dependency files and all 64 primary acceptance statuses remain unchanged: 1 complete, 37 partial, 24 contract-gated, 1 not started and 1 rights-gated. No dependency installation, Windows/original execution, emulation, remote commit/push, publication or original-resource upload occurred.
+
+Static recovery, generator, original/form/literal/hash checks, baseline and independent results remain outside web source at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-aperture-recovery/`. Original downloads are preserved. The new vectors are explicitly synthetic, not original observations.
+
+## Direct review and independently validated resolutions
+
+The single direct native `/code-review` completed on the actual project with a frozen 525-file snapshot and full permitted project/research access. Effective model was `claude-opus-5-5`; CLI effort was configured high and the native high preset was observed. Provider effort telemetry is unavailable. The audit records 55 Read/Glob/Grep calls, exit 0, no forbidden path requests, permission denials, source changes during review or original-byte fingerprints in output. This is a review target snapshot, not a claim that every one of those files was individually read.
+
+The native Phase 0 Git diff could not run because this directory has no Git history; the command continued with direct file review. The installed native `/security-review` was inspected and requires a Git branch diff, so it was inapplicable. Its complete-project read-only security/data-flow fallback was explicitly requested in the completed review. No repository, PR or publication was fabricated.
+
+The raw ten-item report remains unmodified and separate from `resolutions.json`. Mixed-aperture color acceptance and the hidden Apply error were reproduced on the unchanged pre-fix preview, then fixed with core/reader/UI/browser regressions. Current supported-limits text and historical-document context were corrected. Timed completion now binds its producing work aperture; current-radius neighbor readout and explicit color/diagram provenance were strengthened. Evidence limits and Number/JSON normalization were clarified, and all outer owners gained direct I/O coverage. An invalid state passed around the trusted internal controller remains an API precondition issue; strict external replay already admits only the three checked sizes. Intentional legacy compatibility branches were retained. There is no second external sign-off on the post-report fixes.
+
+Logs, raw review/audit/dispositions, reviewed manifest, before-fix source/screenshots, guarded patch, final visual evidence and delivered manifest are retained at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-photometer-aperture-review/`.
+
+No blocker remains for this increment. Broader native aperture/telescope/pointing domains, real blends, x87/VCL/runtime fidelity, uncertainty and public redistribution rights remain open. No next increment was started.

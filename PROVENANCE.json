@@ -1,0 +1,183 @@
+{
+  "original_publisher": "Project CLEA, Gettysburg College; NSF support credited",
+  "official_url": "https://public.gettysburg.edu/~marschal/clea/CLEAhome.html",
+  "target_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "research_root": "/home/dobleuber/Documents/Codex/2026-10-17/task-2",
+  "assets": [
+    {
+      "project_path": "data/original/GLXYLNS.LST",
+      "original_relative_path": "GLXYLNS.LST",
+      "bytes": 85,
+      "sha256": "65ef49eb3c4251c7ef3d0e1827d08056b9f4c657639f81bf0d0be01fe77682f3",
+      "role": "rest-line list",
+      "transformation": "none; original bytes copied",
+      "source_archive": "CLEA_Vireo.zip",
+      "source_archive_sha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+      "license_status": "CLEA educational/noncommercial terms; broad derivative web redistribution not established; local research only"
+    },
+    {
+      "project_path": "data/original/BALMER.LST",
+      "original_relative_path": "BALMER.LST",
+      "bytes": 138,
+      "sha256": "f5697588b69dede4810a9489457f721036bfb135d743f8643980b41cd65cc4d3",
+      "role": "rest-line list",
+      "transformation": "none; original bytes copied",
+      "source_archive": "CLEA_Vireo.zip",
+      "source_archive_sha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+      "license_status": "CLEA educational/noncommercial terms; broad derivative web redistribution not established; local research only"
+    },
+    {
+      "project_path": "data/original/GLXYTMPL.SP",
+      "original_relative_path": "Spectra/Galaxies/GLXYTMPL.SP",
+      "bytes": 56967,
+      "sha256": "05602de89d005ddd5ea1bdd97f50b6519e1a17e222dc855930208792ac679cc5",
+      "role": "unshifted reference template",
+      "transformation": "none; original bytes copied",
+      "source_archive": "CLEA_Vireo.zip",
+      "source_archive_sha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+      "license_status": "CLEA educational/noncommercial terms; broad derivative web redistribution not established; local research only"
+    },
+    {
+      "project_path": "data/original/AGN_QSO.LST",
+      "original_relative_path": "AGN_QSO.LST",
+      "bytes": 425,
+      "sha256": "0270a0410f5821bf0bb1e8d61ec549026a981530e82a813dcf5ffe8c62798e39",
+      "role": "rest-line list",
+      "transformation": "none; original bytes copied",
+      "source_archive": "CLEA_Vireo.zip",
+      "source_archive_sha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+      "license_status": "CLEA educational/noncommercial terms; no general public web redistribution established"
+    }
+  ],
+  "contracts": [
+    {
+      "implementation": "src/core/spectrum.ts shiftedWavelength",
+      "artifact_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "procedure_address": "0x58499c",
+      "assembly_ranges": [
+        {
+          "start": "0x58499c",
+          "end": "0x5849ee"
+        }
+      ],
+      "evidence_id": "ev_5d3c0ea3c0d4a522e90204861e518ae776bf0f16e3236e046024f93b16f248d8",
+      "source_response": "analysis/rea-ghidra-seeded-results/apply-z-dossier.json",
+      "scope": "Number adaptation of line-marker shift only"
+    },
+    {
+      "implementation": "src/core/spectrum.ts currentZ",
+      "artifact_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "procedure_address": "0x584424",
+      "assembly_ranges": [
+        {
+          "start": "0x584424",
+          "end": "0x5844a6"
+        }
+      ],
+      "evidence_id": "ev_6091c330f2c12c12c2034a58461a950f1d99d73775a89bdfb0d644b5842b28a4",
+      "source_response": "analysis/rea-ghidra-seeded-results/zscroll-seeded-dossier.json",
+      "scope": "IMUL low32 and base/step arithmetic; not acquisition calibration"
+    },
+    {
+      "implementation": "src/core/spectrum.ts rebase",
+      "artifact_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "procedure_address": "0x5844a8",
+      "assembly_ranges": [
+        {
+          "start": "0x5844a8",
+          "end": "0x5844e7"
+        }
+      ],
+      "evidence_id": "ev_23c32076103761cf7c321208407835b48cd797ebe277fd2dcf0b411d93d5cd88",
+      "source_response": "analysis/rea-ghidra-seeded-results/reset-z-seeded-dossier.json",
+      "scope": "State accumulation then scrollbar reset; VCL reentry not ported"
+    },
+    {
+      "implementation": "src/core/spectrum.ts changeFactor",
+      "artifact_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "procedure_address": "0x5844e8",
+      "assembly_ranges": [
+        {
+          "start": "0x5844e8",
+          "end": "0x584518"
+        }
+      ],
+      "evidence_id": "ev_63f6a89bc76d61d517dca6680e80d26fece1c021a4fc91c8746d493481f3659e",
+      "source_response": "analysis/rea-ghidra-seeded-results/cf-toggle-seeded-dossier.json",
+      "scope": "Rebase before 1/10 factor change; repeated active-button click is a new UI no-op"
+    },
+    {
+      "implementation": "src/core/spectrum.ts createMeasurement",
+      "artifact_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "procedure_address": "0x58383c",
+      "assembly_ranges": [
+        {
+          "start": "0x58383c",
+          "end": "0x583b0a"
+        }
+      ],
+      "evidence_id": "ev_3736325e866f4d3b1207006ec66276c2d190e7340e7b11f60186efb3bddc94ea",
+      "source_response": "analysis/rea-ghidra-seeded-results/record-z-seeded-dossier.json",
+      "scope": "Only float32 store point; original modes and complete record are not ported"
+    },
+    {
+      "implementation": "src/core/spectrum.ts parseLines",
+      "artifact_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "procedure_address": "0x584740",
+      "assembly_ranges": [
+        {
+          "start": "0x584740",
+          "end": "0x584933"
+        }
+      ],
+      "evidence_id": "ev_cb0a54798085e76e475368ff00ef11c381e064903992bbc33107380b8e180ac8",
+      "source_response": "analysis/rea-ghidra-seeded-results/line-template-construction-dossier.json",
+      "scope": "Strict browser adapter backed by original text and observed numeric/label record reads, not complete tokenizer equivalence"
+    }
+  ],
+  "numerical_policy": "Number binary64 then Math.fround; approximate, not validated against x87 original",
+  "new_adapters": [
+    "React/SVG UI",
+    "bounded CSV/SP text import",
+    "SHA-256 attribution of imported file",
+    "CSV export with formula neutralization",
+    "confirmation dialog, in-memory session log",
+    "local slider range -100..100; view controls",
+    "z step explicitly supplied by analyst, unset by default; no inferred acquisition calibration",
+    "full visible-sample SVG plotting without uniform subsampling; adaptive decimal display and explicit float32 underflow notice"
+  ],
+  "stellar_classification": {
+    "manifest": "data/classification/provenance.json",
+    "catalog": "data/classification/catalog.json",
+    "dataset_fingerprint": "ed75373f7f8e02129ab115470e56c2e5159db500f0fa3ee5babfc1d9e74c00ce",
+    "scope": "All25 practices, all8 original atlases (13 main-sequence +25 luminosity memberships), one acquired star; manual MK responses/no grading",
+    "rights": "Local research only; no general derived web redistribution permission established"
+  },
+  "featureWidth": {
+    "contract": "data/feature-width/provenance.json",
+    "fixtures": "data/feature-width/analytic-fixtures.json",
+    "scope": "Original unknown practice spectra only, 3900\u20134500 \u00c5 and manual finite positive continuum; Number adaptation of pinned native callback/refinement",
+    "limits": "No original execution/x87 equivalence. Native outside-domain Random and singular FPU branches rejected; nonconvergence not recordable; no automatic interpretation."
+  },
+  "classificationImports": {
+    "policy": "OpenCLEA-visual-import-v1",
+    "contract": "data/classification/import-provenance.json",
+    "grid": "data/classification/printed-grid.json",
+    "scope": "Explicit imported unknown role, exact-byte SHA256 identity, preserved parsed 0\u20131 flux and 3900\u20134500 \u00c5 coverage; subtraction only on identical complete printed grids",
+    "limits": "New web workflow/session semantics, not original classification equivalence. No inferred identity/class, resampling, automatic alignment or imported equivalent width."
+  },
+  "photometryReduction": {
+    "manifest": "data/photometry/reduction-provenance.json",
+    "fixtures": "data/photometry/reduction-vectors.json",
+    "scope": "Supplied post-integration aperture/sky/count/base-count-normalizer/prepared-zero-point reduction and B\u2212V only; N03 partial. Named timer/base-count and filter/telescope bank bindings recovered; I01 acquisition still gated.",
+    "limits": "No photometer acquisition, automatic calibration, inferred callback count, native x87/runtime witness or new noise model. No v7 changes; local research rights only.",
+    "contextManifest": "data/photometry/context-provenance.json"
+  },
+  "photometerSource": {
+    "manifest": "data/photometry/source-provenance.json",
+    "vectors": "data/photometry/source-vectors.json",
+    "scope": "Recovered flat separation, point-branch tabulated normal aperture fraction and supplied known-color ordered UBV neighbor fold; no acquired observations or source selection",
+    "limits": "Number/indexed-grid adaptation; unsafe+5 endpoint and missing-color domain withheld. No R/I/image branch, complete scene/color association, native result persistence or original runtime/x87 oracle. Base-count/time quantities remain separate; v7 unchanged.",
+    "rights": "Original CLEA license retained; local research only; no general redistribution permission established"
+  }
+}

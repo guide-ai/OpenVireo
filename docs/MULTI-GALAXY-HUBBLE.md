@@ -1,0 +1,79 @@
+# Several acquired galaxies and a manual Hubble diagram
+
+**Follow-up,19 October2026:** [Mayall4m star and three-galaxy acquisition/full14](MAYALL-ACQUISITION.md) now extend the verified profiles, retaining earlier data/formats and the0.9m star300ms bound. The earlier evidence below retains its dated scope.
+
+**Follow-up,19 October2026:** [Three KPNO0.9m galaxy acquisitions and investigation13](KPNO09-GALAXIES.md) now add independent galaxy profile/target journals and verified manual Hubble continuity. The earlier bounded evidence below retains its dated scope.
+
+Local entry: http://127.0.0.1:5173/#galaxy-exposure. Observatory: http://127.0.0.1:5173/#observatory. The final verification receipt records the exact tested link and build.
+
+The supported set now contains three original designated Hubble galaxies. UM-I1 adds an elliptical target in the same grouping as UM-I2; CorBor2 adds a different field/grouping. All use original GLXYTMPL.SP through the native fallback branch, with the same explicitly adapted nearest-center raster and fixed 4000–5000 Å interval. They are simulated source-plus-sky acquisitions; source generation does not supply the student's measured z.
+
+| Acquisition galaxy | Raw catalog record | Exact supported pointing (RA h / Dec °) | Final field | Regions / compact band | Slit level / fraction | Original V reference |
+| --- | --- | --- | --- | --- | --- | --- |
+| 36747 · UM-I – 1 | 12109 | 11.781083333333333 / 55.705555555555556 | 109 stars, 7 galaxies | 3835 / N5230 | 44 / 0.0484 | 15.6 · Hubble Data.xls, Sheet1!C2 |
+| 36773 · UM-I – 2 | 12119 | 11.789361111111111 / 55.68888888888889 | 114 stars, 6 galaxies | 3835 / N5230 | 50 / 0.0625 | 15.8 · Hubble Data.xls, Sheet1!C3 |
+| 54876 · CorBor – 2 | 18484 | 15.3735 / 27.72222222222222 | 141 stars, 6 galaxies | 2028,2031 / N2230 | 49 / 0.060025 | 16.0 · Hubble Data.xls, Sheet1!C9 |
+
+The original workbook SHA256 is 09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed. Only its V-reference cells are shown in the acquisition help; its example redshifts and velocities never initialize acquired measurements. Reference V values agree with the rounded original catalog magnitudes. These are documented reference values, not photometry measured from the spectrum or detector crop.
+
+## Feature 1: acquire and revisit each target
+
+1. Open the exposure link. In **Acquisition galaxy**, choose **36747 · UM-I – 1**. Click **Activate supported galaxy field**, then **Start galaxy exposure**. Expect the target's exact pointing, its own raw source/sky counters and detector crop. **Original magnitude reference for Hubble** shows 15.6 and Sheet1!C2.
+2. While exposing, choose **54876 · CorBor – 2**. The old exposure pauses and deactivates; the new one has a separate segment. Click **Activate supported galaxy field**, then **Start galaxy exposure**. Its field contains 141 stars and six galaxies; its magnitude reference is 16.0, Sheet1!C9.
+3. Choose **36747 · UM-I – 1** again. Expect its earlier elapsed time, counts, seed and draw count retained, with **Start galaxy exposure** disabled until explicit activation. Switching targets does not relabel or continue the previous clock. The same behavior applies to **36773 · UM-I – 2**.
+4. Alternatively, use **Target** in the observatory. Under **Supported acquisition**, choose the desired `… · supported galaxy`, then **Open dome ↗**, **Point telescope ↗**, **Switch to telescope view ↗** and **Acquire supported galaxy**. The exposure selector opens on that target. These supported entries use exact catalog centers; the original hot-list entries retain their rounded coordinates.
+
+Each segment uses its displayed browser seed. Equal seeds reuse the same uniform random stream and do not imply statistically independent noise. Choose another seed and **New seeded exposure** when studying a different realization; this clears that target's current live segment. Separate journals are a declared web lifecycle adaptation, not recovery of CLEA's process-wide global RNG continuity across object changes. Sky/star segments retain their earlier behavior.
+
+## Feature 2: measure three acquired curves manually
+
+1. Accumulate a useful exposure for each target, preferably 2–3 minutes for line inspection, then click **Analyze acquired galaxy**. Positive short exposures are allowed but can be too noisy for accurate alignment.
+2. Expect **Measure the acquired galaxy.**, **Galaxy acquisition provenance** naming the correct catalog ID, an unshifted rest template, z **+0.000000**, an unconfigured step and a disabled slider. Configure **z step per tick**, click **Apply step**, align the reference lines yourself, then **Record measurement ↗ → Save measurement**.
+3. Use **Galaxy exposure**, select the next target and repeat. Each distinct snapshot starts with unconfigured measurement controls. Reopening the identical archived snapshot preserves its existing controls. Changing the editable object label does not change the target bound to the acquired curve.
+
+The automated continuity test deliberately selects step 0.001 and positions 49,51,68 for UM-I2, UM-I1 and CorBor2. Those are test inputs chosen by the operator, not an automatic answer, a grading reference or a claim that a 1s spectrum measures those shifts accurately. Scientific count tests independently check five trajectories per target; manual callback timing need not match a test's totals.
+
+## Feature 3: build the diagram from saved acquisitions
+
+1. Open **Hubble diagram & distances**, click **Add saved measurements**, and choose **VIREO targets + student manual · M = −21.4 · fit through zero** in **Distance and summary recipe**.
+2. For each row, enter its apparent V and source explicitly using the table above or another documented input. In **VIREO target identification · row …**, identify the corresponding acquired ID. The selector disables other IDs for an acquired curve. Renaming a measurement cannot certify a different target. Reference magnitudes are not entered automatically.
+3. With at least two distinct complete acquired targets, expect velocity-distance points and the orange origin-fit line. Three complete rows give three points. The velocity uses each saved manual Single z; the distance uses the chosen absolute-magnitude assumption and the entered V. The fit is the existing unweighted mathematical implementation of the student manual.
+4. Repeating a measurement of the same acquired galaxy does not create another independent target. Adding that row to Hubble produces **Repeated acquisitions of the same galaxy are not independent Hubble targets…**, and the summary/diagram is withheld. Use **Remove row …** to retain one Hubble row per acquired target. The measurement log remains intact. Stellar rows remain excluded.
+
+UM-I1 and UM-I2 belong to the same grouping, so three galaxies do not represent three independent cosmological environments. Intrinsic luminosity differences, peculiar velocities, manual alignment error, noise and the shared fallback template limit interpretation. No fit value is a new determination of H0 or a native-runtime equivalence claim. Original worksheet examples remain a separately labelled, read-only source route; they are not mixed into this acquired dataset.
+
+## Feature 4: save, restore and export the complete investigation
+
+1. **Save session**, reload, then **Restore session**. Expect all acquired snapshots, their target IDs, student controls, linked measurements, Hubble recipe/input drafts and recalculated points/fit to return together. The normalized derivative is regenerated from replayed raw counts, not trusted from imported counters.
+2. Click **Inspect acquisition for measurement 2** (or the relevant row), then **Restore this acquisition in the telescope**. Expect **Acquisition galaxy** to select the packet's target, with its exact 600 integer bins, totals, time and RNG, stopped/deactivated. Explicitly activate/start to resume. Other retained live segments are not overwritten.
+3. **Save galaxy session JSON** saves the selected segment alone. To import it through its file control, select that same **Acquisition galaxy** first. A different-target journal is rejected atomically, preserving the current segment paused. The analysis-session restore can restore an archive containing all three targets.
+4. **Export CSV ↓** writes measurement schema4 when target tags are present, adding `acquired_target_id`. **Export Hubble CSV** uses schema2 and retains acquisition kind/ID/target alongside source inputs and derived values. The velocity CSV uses schema2 for provenance-bearing logs. Legacy-only measurement CSV schema2 and legacy stellar provenance schema3 remain supported; old analysis sessions and the original 36773 journal are replay-compatible. CSV is not a replay backup.
+
+Archive bounds remain eight snapshots, 24000 total archived events, 1000 measurements and 16MiB per analysis session. Per-target journals retain the 12000-event and 2MiB limits. These bounds are enforced before archive replacement; invalid imports preserve the existing analysis.
+
+## New recovery evidence and remaining exclusions
+
+Research is retained under `analysis/multi-galaxy-recovery/`. `target-inventory.json` records each field, template, hashes, slit and exclusions; `original-source-manifest.json` covers 13 unchanged original sources, including the workbook and new N2230 band. Each new field has a generator, full original admission/seek witnesses, merge trace, source-range records and independent Python/Decimal100 vectors. `data/hubble/galaxy-36747-{provenance,vectors}.json`, `galaxy-54876-{provenance,vectors}.json` and the pinned field JSONs are their bundled counterparts. The original 36773 field/source hashes and canonical journal are retained.
+
+CorBor's neighboring 54868 has raw axes 0/0 and morphology 0. Recovered0x53b94c supplies ratio 0.6;0x5943d4 substitutes major 0.5′, giving raster radii 5,3;0x599324/0x55ea94 use minor 0.5×0.6 as Extended/Number, without a new Single narrowing. Other zero-axis morphology/RA-fraction branches remain unsupported. The selected54876 itself has supplied 0.4′×0.4′ axes.
+
+Raw 54890/54891 records share identical Double coordinates. Comparator0x5969e0 and insertion0x492728 place a newly inserted equal key before the old equal key: native field order is 54891 then 54890. Both are retained and painted. Neither is claimed as an acquired target in this increment; the original hot-list identity/pointing ambiguity remains explicit. No duplicate source record was silently discarded.
+
+Not enabled: UM-I3's photographic field; Coma's broader QSO/zero-axis composition; Boötes's variable/QSO fields; Pegasus variable-star phase/context; unregistered Corona Borealis targets. CorBor1 shares the recovered field but is intentionally outside this small enabled set. The incomplete paths are not filled with invented images, spectra, amplitudes or measured results.
+
+All targets retain the explicit nearest-center image scaling, Number/Math nearest-even, browser seed/timing policy and 4000–5000 Å domain. Native GDI device/palette/kernel behavior, x87 equality and original runtime trajectories remain unverified. No original execution, emulator, installation, Claude, Windows, public upload or push was used. External reviews remain pending under the existing restriction.
+
+
+## Feature 5: acquired SSP download and reimport
+
+The analyser now offers **Download acquired SSP** alongside **Download analysis
+spectrum** and **Save session**. The SSP has the recovered `*SpHdr* ` header,
+bound target ID, telescope pointing and catalog magnitude, then the same 600
+normalized source-plus-sky bins. Edited labels and manual z do not enter it.
+Reimport via **Change file ↑**: the header is shown as **Imported SSP metadata**,
+with zero/unconfigured measurement controls and no acquired-origin assertion.
+Hubble inputs are never initialized from that header. Save/restore preserves
+its exact bytes and hash. Keep the pre-export JSON to restore raw acquisition
+counts/time/RNG; SSP alone cannot do so. Errors and picker cancellation preserve
+the previous analysis. Full profile, evidence and exact test steps are in
+[SPECTRUM-SAVE-CONTRACT.md](SPECTRUM-SAVE-CONTRACT.md#try-the-feature).

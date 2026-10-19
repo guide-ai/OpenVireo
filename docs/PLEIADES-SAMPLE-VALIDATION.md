@@ -1,0 +1,26 @@
+# Sixteen-target Pleiades validation — 2026-10-19
+
+[Feature/evidence and exact manual steps](PLEIADES-SAMPLE.md). Preview: **http://127.0.0.1:5173/#photometer**. The existing`clea-web-preview.service` remained active at PID668923 and was not restarted. No application service/backend/Worker/IndexedDB was added.
+
+| Final integrated check | Result |
+|---|---|
+| `npm run build` (TypeScript + Vite) |Passed |
+| `npm test` |824 tests /85 files passed |
+| `OPENCLEA_TEST_PORT=5175 npx playwright test --workers=4` |132 passed |
+| New/corrected sample flows on existing5173 preview |4 passed |
+| Desktop1440px/mobile320px visual inspection |Complete32-entry notebook and new-source acquisition inspected;no overflow |
+| Existing scientific data |103 files retain their baseline SHA-256 |
+| Source/UBV/Poisson/reduction primitives |Four prior source files retain baseline SHA-256 |
+| Original acceptance statuses/counts |All64 unchanged |
+
+Logs and audit live in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pleiades-sample-review/`: `final-actual-build.log`, `final-actual-unit.log`, `final-actual-browser.log`, `final-persistent-browser.log`, `audit.json`, `byte-exclusion-audit.json` and `findings-resolution.json`. The previous initial integration logs remain in the sibling`pleiades-sample-integration/`. Vite retains the existing large-chunk advisory;the expanded lazy photometer chunk is about119kB gzip before the small review corrections. No scientific fidelity or performance guarantee follows from a successful build.
+
+The complete B/V sample uses two actual measured filter skies and32 target readings in one fixed observing context,32 explicit manual entries and16 separately chosen colors. The browser verifies every object count against the independently generated shared-sample sequence. One target deliberately uses9.875/10.125 transcriptions to prove its manual color0.25 is not populated from catalog/acquired answers. Raw5 and unchanged full8–18 scopes restore inactive and require fresh sky. Other flows preserve partial committed counts,manual spectrum/Hubble data and Mayall288 photons through full18;invalid proofs,late/cancelled reads,empty pickers and forged legacy-owner headers preserve current work. Legacy4 continuation upgrades only after selecting a newly admitted target.
+
+Independent unit references cover all16 targets/three seeds in48 timed UBV runs,13 added-target one-callback UBV sequences,nonpositive-net cases,the34-reading shared sample and bright-U100s×5 at1743516885 photons. Whole-band/exact-rational/adjacent-key and mixed-catalog absence checks bind26 new fields;the prior six fields/data remain. `source-validation.json` in the integration directory verifies26 original/license/script/listing/native-byte bindings. Matching those checks and Python/Decimal references is evidence of the port contract,not an original execution oracle.
+
+One completed direct-source Claude review identified a reproducible canonical-owner deviation and an internal provenance mislabel. The native entrypoint selected high effort,but Git/diff Phase0 was unavailable because this project has no`.git` and only Read/Glob/Grep were exposed. It completed current-source review with Opus5.5 confirmed by init/56 assistant model messages/result usage;configured/native high preset is distinct from unavailable provider effort telemetry.17 original-byte fixture files were excluded by Read rules;no direct requests or matching original-byte fingerprints appeared in the raw stream. No original executable/external generator was read by Claude. All10 items are independently dispositioned;post-report fixes passed the final checks above without claiming a second Claude sign-off. The historical separate`/security-review` denial was not retried.
+
+Retained failures: `new-browser.log` records the initial test JSON-import attribute error; `new-browser-second.log` records an expectation with a trailing zero that the established formatter trims; `stage-browser-full.log` records an old UI assertion expecting only3 options,corrected to require those exact3 legacy options. Scientific counts/colors/byte checks were kept. `before-canonical.log` reproduces accepted/inconsistently re-saved legacy markers before correction. A prior positive control built a relabelled empty history;it now uses genuine captured canonical files. The rich compatibility fixtures cover notes,records,colors,target switches andtimed partials;their capture SHA matches the preserved pre-expansion writer source and423-file baseline. They are OpenCLEA fixtures,not native CLEA writer output.
+
+Still open:8 original positions(4 mixed-variable fields/4 unvalidated associations),other telescopes/apertures/seeing/RI,arbitrary navigation,generated clusters,HR/extinction/reddening/distance/native result formats,classroom acceptance andnative Extended/VCL/global event/RNG equivalence. Integer nominal100ms admitted callbacks remain a browser adaptation,no wall-time catch-up. I01/N03/E04 remain partial;package totals stay1 complete/35 partial/26 contract-gated/1 not-started/1 rights-gated. Original files/licenses/hashes are preserved. No original execution,microemulation,installation,public upload,remote commit,push or deployment occurred.

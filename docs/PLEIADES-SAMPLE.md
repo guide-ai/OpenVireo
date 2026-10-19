@@ -1,0 +1,45 @@
+# Original Pleiades16-target observing sample
+
+The photometer at **http://127.0.0.1:5173/#photometer** now admits16 of the24 original PLEIADES.HTL positions. All24 are listed in original order; eight are disabled with their actual remaining contract: four mixed variable-source fields and four unvalidated exact pointing associations. This expands the existing observation workflow by13 complete original fields. It adds no new astronomy model, arbitrary target, catalog answer, HR fit, reddening or distance.
+
+## Try a newly admitted star
+
+1. Save current work before a new seed42 session. Release the photometer, open **Raw counts & reproducibility**, enter42 and choose **New seeded session**. Activate and choose **01803-01554 · original hotlist entry7**. This keeps its native identity `N2230.DAT@148460`.
+2. Choose1s and3 integrations, V and **Sky position**. Start:48 sky photons. Choose target and Start:514 photons, V13.521838345. **Add notebook entry** opens blank; explicitly transcribe your chosen rounded value, e.g.13.522. Cancel/Escape records nothing.
+3. Choose B and measure B sky, then target at the same1s×3:27 sky and152 target photons, B14.950528104. Explicitly transcribe e.g.14.951. Choose B4 and V2 and **Calculate B−V**: manual1.429; acquired1.428689759 remains separately calculated. Neither result is copied from catalog color.
+4. Choose another enabled original entry. Past notebook rows retain their object; pending B/V choices for a new object start blank. Disabled entries cannot acquire. Return to entry7 to recover its explicitly saved color. The new sample includes faint01804-02091 and bright01800-02202, not only the previous three stars.
+5. **Save photometer session** now uses owner5 when any newly admitted target occurs in its history. Reload/restore: seeds, readings, periods, partial counts, notebook and per-target colors replay, inactive with fresh sky required. Returning to a legacy target never drops the new proof. Histories confined to the previous three targets retain exact v1–v4 headers/bytes.
+
+Counts above are seeded OpenCLEA simulations, not original observations. Their differences from catalog values are not grades or learner answers.
+
+## Complete the measured sample
+
+For a full B/V run, obtain V sky and B sky once before selecting the16 enabled stars. In the same unchanged active telescope0 context, each target then needs one V and one B series, explicit transcriptions and explicit B/V selection. This produces34 readings(2 sky+32 object),32 confirmed notebook entries and16 distinct manual colors inside the existing256-event/128KiB/100000-callback budgets. The UI keeps the actual measured sky's origin/reading ID; it does not relabel reused sky as a new measurement. All32 admitted object/sky apertures share the same fixed profile and independently proven empty-sky condition. Release, hiding, navigation, save, restore or incompatible telescope changes still invalidate every live sky bank. Fresh-sky requirements after these boundaries remain unchanged.
+
+**Stop** during a series and save a whole investigation: only committed callbacks/seed remain, with no completed reading. A full18 file retains Mayall sky photons, manual spectrum/Hubble work and owner5 together. Cancel a raw read, change a later seed draft, then let the read finish: it cannot replace current work. Wrong proofs, old-marker target injection, cached counts and unsupported fields reject atomically.
+
+## Source/identity and completeness evidence
+
+[Field packet](../data/photometry/pleiades-expanded-fields.json), [provenance](../data/photometry/expanded-provenance.json) and [independent references](../data/photometry/pleiades-expanded-vectors.json) bind the original VIREO1.504 exe SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`, original PLEIADES.HTL, full compact/variable/QSO/galaxy/image sources, regions, both original license files and all reused contracts. Original files, scripts and listings remain outside source in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/pleiades-sample-recovery` and the preceding research directories. The old field/proof/vector files are unchanged.
+
+The existing86-byte HTL reader0x590424 and Extended pointing copy0x591e99–0x591ed3 are reused. Each added target has unique matching original compact27-byte identity, exact projected coordinate equality, per-record SHA-256 and preserved differing HTL/native prefixes. No suffix-only coordinate approximation repairs the four excluded associations. Four other positions have actual variable rows in their fields; an unported mixed catalog/variable synthesis is not bypassed.
+
+Each of26 new fields replays native region/band order, binary-search probes and forward reads; native admitted order matches the complete1,065,481-row N2230 census, independent exact-rational comparisons against stored Double bounds and adjacent-key controls. Whole variable31147/QSO2269/galaxy24069/image183 position checks are empty. Every object aperture is central-only, every fixed sky aperture empty with the selected source still inside the native350-pixel nearest-object sentinel. Unselected admitted neighbors remain visible and ordered. Existing aperture10.5pixels,1′ base field×3/936, telescope0/seeing3/2arcsec, zero9, original Single UBV colors and source-before-sky additive Poisson draws are unchanged.
+
+## Independent numerical and format contracts
+
+The external generator imports no production TypeScript and executes no CLEA binary. It uses the prior independent Decimal90 recovered finite-quadrature aperture fraction, original Single colors, Decimal90 linear source/sky means, exact integer LCG/Python-lgamma draws and Decimal70 reductions/SNR.48 sequential timed UBV runs cover all16 targets at three seeds;13 additional one-callback UBV runs cover the added targets, including explicit nonpositive-net results. The shared full-sample reference checks all34 actual sky/object readings in one context. Bright-U100s×5 produces1743516885 photons, below the native2147483647 guard, with independent component/period/draw/seed checks. Mean maximum is348701.323041519 photons per callback, below the unchanged1e6 numerical-adapter bound. Matching these references is not an original execution oracle.
+
+Owner5 requires the new field SHA alongside every old field/UBV/three-target/integration proof, and must actually contain a newly admitted target. Old owner1–4 markers explicitly reject new targets even if their other headers are otherwise valid. Owner5 permits both retained single-callback and explicit timed histories; its canonical format stores seed/events only, never trusted cached results. Pre-expansion canonical v1–v4 fixtures were captured from the prior unchanged OpenCLEA writer before this implementation and remain byte-identical. The versioned nested-owner protocol from full8 onward admits5 without changing outer full1–18 scope/version rules. All existing byte/event/callback/terminal capacity checks and large-note protection remain.
+
+The configuration memo is fixed at96:16 targets×2 pointings×3 filters. This is a bounded static sample, not a dynamic field cache. Number/Math and integer nominal100ms executed callbacks remain declared adaptations, without x87/VCL/global RNG/reentry equivalence. No Worker, IndexedDB, backend or new service is introduced.
+
+This completes the declared16-target B/V observing/notebook/replay criterion, not full I01/N03/E04 or classroom acceptance. All64 original package statuses and counts remain. Rights remain local research only; no public redistribution, original execution, microemulation, installation, push or deployment is authorized.
+
+## Reviewed boundaries
+
+The direct-source Claude review and independent resolution are recorded in [REVIEW-RESULT.md](REVIEW-RESULT.md). A reproduced hand-edited legacy-header case could load a nominalv3/v2 history whose events belonged to a lower owner and silently change the header on save. Reader/writer/admission now share one minimal history-version function and ordered header/proof schema. Such noncanonical marker/event combinations reject before RNG; genuine canonical v1–v4 files,including independently captured rich notes/records/colors/target switches/timed partial histories,remain byte-identical. Raw whitespace/key-order normalization is not claimed to preserve arbitrary hand-edited file bytes.
+
+Fields now carry their actual owning packet into selection-scene provenance,including the13 expanded targets. Structural validation requires exactly one object and one sky fixture,and exactly one replayed band matching its declared band order. This validates the supported layout,not arbitrary caller-supplied completeness. Source and per-filter sky mean checks use relative tolerances in addition to exact seeded components. The four scientific primitives and all previous scientific data remain unchanged. Untimed legacy preparation remains bounded and retains the validated original draw path; no unmeasured cache/geometry optimization changes the model.
+
+[Integrated checks and preserved failures](PLEIADES-SAMPLE-VALIDATION.md).

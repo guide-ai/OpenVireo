@@ -1,0 +1,49 @@
+# Dependencies, build output and local verification artifacts
+node_modules/
+dist/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.local/
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Credentials, private tooling state and user exports
+.env
+.env.*
+.aws/
+.ssh/
+.codex/
+.claude/
+.agents/
+*.pem
+*.key
+*.p12
+*.pfx
+/exports/
+/sessions/
+
+# Original scientific resources: kept locally, not proposed for public Git.
+# This also fences JSON containing original bytes/derived catalog/model data.
+# See docs/FIRST-COMMIT-INVENTORY.md and docs/LOCAL-RESOURCES.json.
+/data/
+/public/original/
+
+# Original installers, executables, captures and downloaded archives
+*.exe
+*.EXE
+*.dll
+*.DLL
+*.msi
+*.MSI
+*.cab
+*.CAB
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.asm

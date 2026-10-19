@@ -1,0 +1,56 @@
+# Timed Pleiades photometer series
+
+**Later sample follow-up:** [Sixteen-target observing sample](PLEIADES-SAMPLE.md) uses these same timing/Stop contracts and adds13 complete fields plus owner5. Prior raw v1–v4 files and the original three fields are unchanged.
+
+The operational photometer at **http://127.0.0.1:5173/#photometer** supports the recovered **0.1, 1, 10 and 100 seconds**, each repeated **1–5 times**, for the three already complete Pleiades UBV fields on telescope0. Progress shows committed callbacks, completed periods, nominal integrated time and photons. Only a fully finished series creates a reading eligible for a blank manual notebook entry. Stop retains committed counts/random state; starting again resets the series counters and continues that seed. It never fills the learner's measurement from the catalog.
+
+## Reproduce the feature
+
+1. Open Pleiades photometry. For exact numbers, release any existing session, expand **Raw counts & reproducibility**, enter42 in **Initial seed for a new session · uint32**, and choose **New seeded session**. Activate; retain default01803-00478 and V.
+2. With the retained0.1s×1 setting acquire **Sky position**. Choose **Seconds per integration:1 s** and **Number of integrations:3**, switch **Photometer pointing** to target, and Start. Progress advances10/30 callbacks and1/3 periods after ten callbacks; the completed object total is16281 photons, V9.665602911. An unfinished series cannot enter the notebook. Open **Add notebook entry**, observe the blank input, and explicitly transcribe e.g.9.666.
+3. Choose B, sky,1s×2 and integrate. Choose1s×3, target and integrate:10226 photons, B10.169972963. Explicitly transcribe10.170, select saved B4 and V2 and **Calculate B−V**: manual0.504. The acquired difference remains separate; no catalog color fills either value.
+4. **Save photometer session**, reload and restore that JSON: raw owner v4 replays counts, periods, seeds, notebook and explicit B/V association. It restores inactive and requires fresh filter sky after activation. Old v1–v3 files keep their existing bytes/behavior until an explicit timing setting introduces v4 events.
+5. Start10s×2 sky and Stop after positive progress. No completed reading is made. Start again: progress resets but the seed continues. Saving **Save investigation** during that series synchronously stops/releases it before asynchronous digests, retaining committed partial counts alongside spectrum/Hubble/classification/drafts. Reload/restore: partial work remains stopped and no callback is added.
+6. Check errors: hide the page, navigate, or cause a callback gap>300ms: pending callbacks add no photons. Invalid proof, extra cached counts, oversized work or stale asynchronous restores preserve confirmed work. Cancel an entry/read/file picker; no manual row is created or late file substituted. The controls and progress work at320px and with keyboard selection.
+
+These numbers describe explicitly seeded OpenCLEA simulations, not original CLEA observations. Wall-clock completion can take longer than nominal integrated time.
+
+## Native evidence and the browser boundary
+
+[Provenance](../data/photometry/integration-provenance.json) binds original exe SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`, both original license files, six assembly/byte ranges, the Extended80 time table and seven prior scientific packets. Original bytes/listings and the independent reference generator remain outside source in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery`. This was static analysis only.
+
+- Duration handler0x501e20 reads Extended table0x5b3a40; repeat handler0x501e60 uses slider+1. Native control locking is0x501abc–0x501b84. Changing settings clears the web current reading as an explicit UI protection; the native handlers only assign fields.
+- Start0x500945→0x500bcc resets counters and period/completed indices, without reseeding. Callback0x5014ea draws source then sky, **adds source+sky** and1000 base photons per executed callback. The100ms timer is distinct from base count1000.
+- Boundary comparison0x5015cb pauses the timer and increments the period index.0x5015f6–0x501658 folds integer counts;0x50165e stores period counts;0x50167f waits for the chosen repeat count. The cap literal at0x50198c is Extended2147483647.
+-0x501911 resets period counts/elapsed, retaining aggregate/base counts and RNG before restarting the timer. Final0x501687–0x5016ba rates divide aggregate and base sums by chosen duration×repeats. Sky subtraction occurs in reduction using that actual sky reading's own duration/repeats. Display SNR is native sqrt(total photons), not an invented error estimate.
+- Stop0x500b58 disables the timer/unlocks without reducing or recording.
+
+Native repeated Extended addition/threshold and VCL queue callback counts lack an execution witness. OpenCLEA uses **integer nominal100ms targets**, one draw pair per admitted executed browser callback, no catch-up, and Stop before the next draw when the gap exceeds300ms or time reverses. This is an explicit browser adaptation. Number/Math Poisson, lgamma and quadrature are not proven equivalent to x87/global original RNG/modal reentry. Partial replay is a web journal contract, not original file compatibility.
+
+## Independent numerical checks and the long-series discrepancy
+
+[Independent references](../data/photometry/integration-vectors.json) cover13 sky/object pairs: all three targets×UBV at1s×3, mixed sky/object durations,0.1s×5,10s×2 and bright-U100s×5 (5000 callbacks). They bind checkpoints, source/sky sums, seeds, draw counts, periods, base sums and Decimal70 reductions. A separate sequential V/B/U series verifies mixed-duration sky and explicit manual color. The generator imports no production TypeScript and executes no original binary.
+
+The first long-series test failed: the previous **analytic Gaussian** aperture comparison predicted521710383 photons; production gave521710384 with identical draws/seed. The recovered native0x55f4b4–0x55f69c routine uses finite trapezoid/Richardson quadrature (relative1e−7, bounded iterations), so analytic knots are not its exact numerical output. An independent Decimal90 implementation of that finite method converges after9 iterations for all four needed central knots; its interpolated fraction is0.821208716367153659…, versus analytic0.821208715768938675…. This small mean difference explains the one-count Poisson boundary in the long trajectory. The corrected native-method reference predicts521710384; production quadrature/source/Poisson were unchanged. The failure and both calculations are retained outside source in `new-core.log` and `analytic-discrepancy.json`. Matching these references is evidence of this bounded contract, not native execution equivalence.
+
+## State, formats and limits
+
+Pure TypeScript owns callback accumulation/transitions; React schedules and renders. At most18 fixed immutable target/pointing/filter configurations are memoized. No dynamic arbitrary field, new noise/calibration or photon catch-up is introduced. Legacy default0.1s×1 and replay v1–v3 remain unchanged. A new explicit `timing` event activates series semantics; compact `advance` records carry the exact executed callback count. Legacy `complete` cannot bypass a timed series.
+
+New owner **photometer v4** requires the integration proof plus existing field/UBV/target proofs, and stores only seed/events. Strict replay rejects cached results, invalid settings, old-header smuggling and running/armed saves. Capacity remains128KiB/256 events with reserved terminal Stop/release slots. Each reading admits at most5000 callbacks; a separate **100000-callback session preflight** bounds replay cost even with compact events. Adjacent advances compact without changing total draw order. Failed events are atomic.
+
+Whole-investigation **versions1–18 retain their existing scope and nested-owner protocol**: owner4 lives inside the already versioned photometry slot from full8 onward; no outer version bump adds unrelated tools or silently drops data. Old software rejects unsupported nested owner4. Current software retains every old writer version when no new photometer events are used. No root RNG, scientific spectrum/galaxy/Hubble/SSP or existing photometry calibration contract is changed.
+
+This completes the selected operational series slice, not full I01/N03/E04 acceptance. The other21 targets, other telescopes, aperture/seeing/navigation/generated clusters, R/I, unavailable transformations/native result reports, HR outcomes and classroom acceptance remain open. All64 package statuses/counts are retained. Original rights/licenses remain local; no redistribution, original execution, emulator, installation, push or deployment is authorized.
+
+## Review corrections
+
+The authorized native `/code-review` used Opus5.5/high on the project directly. Its unchanged raw report and metadata live outside source; [review disposition](REVIEW-RESULT.md) separates confirmed defects from hypotheses and scientific limits.
+
+A reproduced tab-hide closure error could reset pending seed/B/V edits to their first-render values. The controller now reads current drafts from a ref, skips unchanged state and preserves draft object identity when only counts/release change. This also avoids submitting an unchanged shared-editing object on every100ms callback; no claim of a measured device-performance guarantee is made.
+
+A reproduced large-note history could exceed128KiB and block both standalone and investigation saving. The pure canonical journal formatter is now shared by admission and IO, retaining the exact old writer expression/key order/version selection. Live non-callback events check actual JSON-escaped UTF-8 size before acceptance. Start reserves the maximum callback-event footprint plus terminal Stop/release; subsequent advances use that reservation without re-encoding the whole journal every100ms. Oversized notes stay editable and can be shortened or cancelled; prior rows remain saveable. Replay validates the bounded final owner directly, preserving supported historical files without imposing live future-operation reservations on their intermediate states. Nested owners also undergo the128KiB preflight before RNG.
+
+Clock admission now lives in a pure TypeScript function tested for safe boundaries, backwards/unavailable time and hidden-page precedence. Both legacy and timed completion share the same reading/reduction constructor; timing validation uses the proof-bound choices/limits. The existing numerical primitives and data are unchanged. Exact-precision rejection still commits no draw; restarting with the identical seed/configuration repeats that unsupported branch. Save work and explicitly choose a different observing path or new seeded session; no fabricated skip/noise sample is introduced. Changing duration is still an explicit setting change that clears an unrecorded current reading, as described next to the controls; keyboard changes are journaled under the same bounded policy. Start and advance retain defensive sky/context/budget validation.
+
+[Integrated verification and preserved failures](PHOTOMETER-INTEGRATION-VALIDATION.md).

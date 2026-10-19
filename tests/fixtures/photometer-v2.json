@@ -1,0 +1,74 @@
+{
+  "format": "OpenCLEA Pleiades photometer session",
+  "version": 2,
+  "policy": "OpenCLEA-Pleiades-UBV-observing-v2",
+  "numericalPolicy": "Number_Math_native_x87_equivalence_unvalidated",
+  "fieldSnapshotSHA256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624",
+  "ubvContractSHA256": "27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf",
+  "seedAtStart": 42,
+  "events": [
+    {
+      "type": "activate"
+    },
+    {
+      "type": "start"
+    },
+    {
+      "type": "complete"
+    },
+    {
+      "type": "point",
+      "kind": "object"
+    },
+    {
+      "type": "start"
+    },
+    {
+      "type": "complete"
+    },
+    {
+      "type": "record",
+      "readingId": 2,
+      "value": 9.647,
+      "note": "My reading"
+    },
+    {
+      "type": "filter",
+      "filter": "B"
+    },
+    {
+      "type": "point",
+      "kind": "sky"
+    },
+    {
+      "type": "start"
+    },
+    {
+      "type": "complete"
+    },
+    {
+      "type": "point",
+      "kind": "object"
+    },
+    {
+      "type": "start"
+    },
+    {
+      "type": "complete"
+    },
+    {
+      "type": "record",
+      "readingId": 4,
+      "value": 10.207,
+      "note": "B manual"
+    },
+    {
+      "type": "color",
+      "bReadingId": 4,
+      "vReadingId": 2
+    },
+    {
+      "type": "deactivate"
+    }
+  ]
+}

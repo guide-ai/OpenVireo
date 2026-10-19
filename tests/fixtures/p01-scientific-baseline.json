@@ -1,0 +1,19 @@
+{
+  "kind": "Pre-P01 software byte regression; synthetic operator inputs and already supplied original workbook examples, not runtime equivalence",
+  "sha256": {
+    "measurement": "d7b8f474e8519547251dd7126d6bda8cabe41f200823e3bccaa721f0416b358e",
+    "workbook": "0dbb71322cb31c1369265f3075cd640d285764de60f9b786a594ce6e43eb0338",
+    "vireo": "0e5b1562218496e07e46a2ddf0cc84e6bfdf5b7225fc80e3c40d4b4159cc28ea",
+    "manual": "118f610fb3df52861a4060a7296db75b50ad97c6564a4613a3aaea93ab76398c",
+    "incomplete": "79f9b7174d158363890a8e5641b1639cd5db35b3d31edd86e23ef026bd4c7028",
+    "session": "02db1d2f105098b1b853c6a41171bb33cf823f7068a85ec8edd7247a9b9144fb"
+  },
+  "nodeSHA256": {
+    "measurement": "d7b8f474e8519547251dd7126d6bda8cabe41f200823e3bccaa721f0416b358e",
+    "workbook": "c9c8de29f404080bbcdec971a80641f5a2449d2d647ad26dea459c3fc1ee92a2",
+    "vireo": "0e5b1562218496e07e46a2ddf0cc84e6bfdf5b7225fc80e3c40d4b4159cc28ea",
+    "manual": "118f610fb3df52861a4060a7296db75b50ad97c6564a4613a3aaea93ab76398c",
+    "incomplete": "79f9b7174d158363890a8e5641b1639cd5db35b3d31edd86e23ef026bd4c7028",
+    "session": "02db1d2f105098b1b853c6a41171bb33cf823f7068a85ec8edd7247a9b9144fb"
+  }
+}

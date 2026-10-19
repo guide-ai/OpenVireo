@@ -1,0 +1,212 @@
+[
+  {
+    "file": "src/ClassificationLab.tsx",
+    "kind": "text",
+    "value": "N0000.DAT@14428 ·",
+    "count": 1,
+    "reason": "Product/edition name or original catalog identifier, preserved as source identity."
+  },
+  {
+    "file": "src/ClassificationLab.tsx",
+    "kind": "text",
+    "value": "ms",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/ClassificationLab.tsx",
+    "kind": "text",
+    "value": "SHA-256",
+    "count": 4,
+    "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
+  },
+  {
+    "file": "src/GalaxyExposure.tsx",
+    "kind": "text",
+    "value": "SHA-256",
+    "count": 1,
+    "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
+  },
+  {
+    "file": "src/GalaxyExposure.tsx",
+    "kind": "text",
+    "value": "ms",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/HubbleAnalysis.tsx",
+    "kind": "text",
+    "value": "Mpc,",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/HubbleAnalysis.tsx",
+    "kind": "text",
+    "value": "km/s",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/HubbleAnalysis.tsx",
+    "kind": "text",
+    "value": "D = 10^((V − M + 5) / 5) / 1,000,000 Mpc",
+    "count": 1,
+    "reason": "Literal recovered mathematical relation, physical constant or scientific variable; does not pass through translation."
+  },
+  {
+    "file": "src/HubbleAnalysis.tsx",
+    "kind": "text",
+    "value": "SHA-256",
+    "count": 2,
+    "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
+  },
+  {
+    "file": "src/HubbleAnalysis.tsx",
+    "kind": "text",
+    "value": "km/s/Mpc",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/HubbleLabGuide.tsx",
+    "kind": "text",
+    "value": "SHA-256",
+    "count": 1,
+    "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
+  },
+  {
+    "file": "src/OpenCLEA.tsx",
+    "kind": "text",
+    "value": "N",
+    "count": 1,
+    "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
+  },
+  {
+    "file": "src/OpenCLEA.tsx",
+    "kind": "text",
+    "value": "E",
+    "count": 1,
+    "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
+  },
+  {
+    "file": "src/OpenCLEA.tsx",
+    "kind": "text",
+    "value": "VIREO ·",
+    "count": 1,
+    "reason": "Product/edition name or original catalog identifier, preserved as source identity."
+  },
+  {
+    "file": "src/OpenCLEA.tsx",
+    "kind": "text",
+    "value": "RA",
+    "count": 1,
+    "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
+  },
+  {
+    "file": "src/OpenCLEA.tsx",
+    "kind": "text",
+    "value": "h · Dec",
+    "count": 1,
+    "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
+  },
+  {
+    "file": "src/Photometer.tsx",
+    "kind": "text",
+    "value": "N",
+    "count": 1,
+    "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
+  },
+  {
+    "file": "src/Photometer.tsx",
+    "kind": "text",
+    "value": "h",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/SkyExposure.tsx",
+    "kind": "text",
+    "value": "ms",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/SkyExposure.tsx",
+    "kind": "text",
+    "value": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "count": 1,
+    "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
+  },
+  {
+    "file": "src/Spectrometer.tsx",
+    "kind": "text",
+    "value": "K",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/SpectrumInstrument.tsx",
+    "kind": "text",
+    "value": "OpenCLEA",
+    "count": 1,
+    "reason": "Product/edition name or original catalog identifier, preserved as source identity."
+  },
+  {
+    "file": "src/SpectrumInstrument.tsx",
+    "kind": "rendered literal",
+    "value": "A0000049.SP",
+    "count": 1,
+    "reason": "Exact original library filename; preserve source identity rather than translating it."
+  },
+  {
+    "file": "src/SpectrumInstrument.tsx",
+    "kind": "text",
+    "value": "λ′ = (1 + z) λ",
+    "count": 1,
+    "reason": "Literal recovered mathematical relation, physical constant or scientific variable; does not pass through translation."
+  },
+  {
+    "file": "src/SpectrumInstrument.tsx",
+    "kind": "text",
+    "value": "Δλ · Å",
+    "count": 1,
+    "reason": "Literal recovered mathematical relation, physical constant or scientific variable; does not pass through translation."
+  },
+  {
+    "file": "src/SpectrumInstrument.tsx",
+    "kind": "text",
+    "value": "SHA-256",
+    "count": 1,
+    "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
+  },
+  {
+    "file": "src/SpectrumInstrument.tsx",
+    "kind": "text",
+    "value": "VIREO 0x58499c: λ′ = (1 + z) λ.",
+    "count": 1,
+    "reason": "Literal recovered mathematical relation, physical constant or scientific variable; does not pass through translation."
+  },
+  {
+    "file": "src/SpectrumInstrument.tsx",
+    "kind": "text",
+    "value": "z =",
+    "count": 1,
+    "reason": "Literal recovered mathematical relation, physical constant or scientific variable; does not pass through translation."
+  },
+  {
+    "file": "src/StarExposure.tsx",
+    "kind": "text",
+    "value": "ms",
+    "count": 1,
+    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
+  },
+  {
+    "file": "src/VelocityAnalysis.tsx",
+    "kind": "text",
+    "value": "v = c z · c = 299792.458 km/s",
+    "count": 1,
+    "reason": "Literal recovered mathematical relation, physical constant or scientific variable; does not pass through translation."
+  }
+]

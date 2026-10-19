@@ -1,0 +1,18 @@
+CLEA reference assets
+Project CLEA, Gettysburg College, with NSF support.
+Official source: https://public.gettysburg.edu/~marschal/clea/CLEAhome.html
+Local original archive: CLEA_Vireo.zip. Per-file identities: PROVENANCE.json.
+
+Included unchanged for this local research increment:
+GLXYLNS.LST, BALMER.LST, AGN_QSO.LST, Spectra/Galaxies/GLXYTMPL.SP.
+Educational/noncommercial conditions are documented in the source materials.
+A general permission to redistribute a derived web application and these assets has not been established. No public deployment is authorized. This notice does not relicense the original assets.
+
+React/React DOM, Vite, Vitest and type packages: respective MIT notices in node_modules.
+TypeScript and Playwright: respective Apache-2.0 notices in node_modules.
+Exact versions, dependency graph and integrity: package-lock.json.
+New authored code does not grant rights to third-party original CLEA assets.
+
+OpenCLEA observatory preview additionally uses a declared compact-GSC subset, image/coordinate and Hubble hot lists, original galaxy library spectra and lossless PNG derivatives of original bitmaps. Full source/derived identities, conversion checks and the invalid-bitmap exclusion are in data/sky/PROVENANCE.json. Catalog/image/spectrum upstream rights require separate verification before redistribution. None of the reference resources is a new observation acquired by OpenCLEA.
+
+The bounded stellar classification lab additionally uses57 unchanged original VIREO jspect2 SP files, all8 ATLAS2.LST atlas memberships/CLASSIFY.LST associations and SPECLNS.LNL line identities. Exact original/source/manual/license hashes and limits are retained in data/classification/provenance.json. This is local-only practice; original assets are not newly acquired observations and no public redistribution license is granted.
