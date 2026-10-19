@@ -148,13 +148,6 @@
   },
   {
     "file": "src/SpectrumInstrument.tsx",
-    "kind": "text",
-    "value": "OpenCLEA",
-    "count": 1,
-    "reason": "Product/edition name or original catalog identifier, preserved as source identity."
-  },
-  {
-    "file": "src/SpectrumInstrument.tsx",
     "kind": "rendered literal",
     "value": "A0000049.SP",
     "count": 1,

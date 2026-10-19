@@ -321,3 +321,6 @@ Build/typecheck, 999 unit contracts across 104 files, all 180 frozen-source brow
 ## A06 telescope motion — review launch denied
 
 The bounded A06 motor/programmed-slew increment is implemented and locally verified; see [exact validation and pending review](TELESCOPE-MOTION-VALIDATION.md). Native Claude Opus5.5/high was prepared but automatic permission review rejected the launch against the earlier no-Claude instruction. It did not execute; there is no effective-model report or external review result for A06, and no workaround/retry. Explicit renewed human authorization is pending. Original package statuses remain partial/unchanged. Earlier completed reports below/above retain their own scopes.
+
+
+Current review gate: after the user renewed general Claude authorization, exactly one retry with unchanged CLI arguments was denied before execution. Automatic review now requires explicit approval for the exact broad repository/research payload and Anthropic destination. No Claude stream/model output exists and no further retry occurred. See local evidence `claude-a06-motion-review/BLOCKED-RETRY.json`. This supersedes the earlier authorization-pending explanation without erasing that denial.

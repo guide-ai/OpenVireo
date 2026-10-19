@@ -1,53 +1,45 @@
-# OpenCLEA
+# OpenVireo
 
-A local browser reconstruction of the CLEA educational observatory, built with React, TypeScript and Vite. Start in the observatory, explore original catalog fields, point to a target and reach the spectrum analyzer through that flow.
+**Open Virtual Educational Observatory.** A local React/TypeScript/Vite reconstruction of Project CLEA, previously presented as OpenCLEA. Original CLEA/VIREO attribution is retained. This is a bounded reconstruction based on static binary/data evidence, not a complete VIREO port or a claim of original runtime/x87 equivalence.
 
-This is a preview, not a complete VIREO port. Original catalog positions and projection arithmetic are recovered; immediate pointing and discrete browsing are web adaptations. Exposure acquisition, synthesis/noise, tracking/time/horizon behavior, photometry, cameras, radio and complete exercise outcomes remain pending. Library images and spectra are original references, not observations acquired by the browser.
+## Current local capabilities
 
-## First visit
+- Observatory, three compiled telescope/site profiles, finder/telescope views, shared UT/tracking preview, held directional movement and confirmed programmed slew.
+- Supported star, three Hubble galaxies and pinned sky acquisition through the checked profiles; raw replay, SSP/JSON/CSV, manual spectral alignment and explicit Hubble inputs.
+- Fixed-list UBV photometry with16/14/10 telescope-specific target domains, sizes5/10/15, measured skies and manual notebooks/colors. Native model/reference trials and reversible reference exclusions remain distinct from acquired measurements.
+- 25 original classification practices/eight atlases and supported acquired/imported-spectrum paths. Session backups preserve represented observations, student measurements and drafts; restoring never resumes an active motor.
 
-Open **http://127.0.0.1:5173/** on this computer.
+General fields/options/instruments, native global timing/RNG/x87 fidelity, original-runtime differential validation, classroom acceptance and public resource redistribution remain open. The full [implementation plan](docs/IMPLEMENTATION-PLAN.md) and [row-level acceptance assessment](docs/ACCEPTANCE-STATUS.md) distinguish implemented slices from complete packages.
 
-1. Click **Open dome ↗**.
-2. In **Target**, choose **M82 · NGC 3034**.
-3. Click **Point telescope ↗**. The readout becomes RA **9.93000 h**, Dec **69.68333°**.
-4. Click **Switch to telescope view ↗**. The original M82 library image appears.
-5. Click **Open spectrum analyzer ↗** to inspect `NGC3034.SP` as an original reference. Its flux is rescaled only for display; original samples are unchanged.
-6. Click **← Return to observatory**. Target, pointing and dome state are preserved. Choose another target, switch back to **Finder · 2.5°**, or browse with **North/East/South/West**.
+## Local resources are required
 
-These steps require no technical settings and are covered by browser tests. They do not simulate a new exposure. Acquisition will be added after its scientific contracts are recovered and validated.
+The proposed source history deliberately excludes `data/` and `public/original/`: they contain original/derived scientific catalogs, spectra, images, models, byte-bearing evidence and local-only reference data. Their redistribution permissions are unresolved. **A fresh source-only checkout is not a self-contained runnable distribution.** A TypeScript/Vite build and dataset-dependent tests require the matching validated local resource directories first.
 
-## Measure an imported spectrum
+On this workstation the resources remain in place. The complete pre-Git tree is backed up outside the repository. [The resource manifest](docs/LOCAL-RESOURCES.json) records relative paths, sizes and SHA-256 without the original payloads. Supply those exact local resources from an authorized private backup or reproduce them with the preserved local research generators; merely downloading an original archive is not a verified generated-resource setup. There is no automatic download, fabricated fallback dataset or public resource upload.
 
-The analyzer accepts UTF-8 text with positive, strictly increasing wavelength in Å and intensity already normalized from 0 to 1. Two columns may be separated by spaces or commas; optional CSV header: `wavelength,intensity`. Limits: 2 MiB, 2–50,000 samples and at least one sample in 3650–7000 Å. Imports are not silently sorted or normalized.
+See [first-commit inventory and publication gates](docs/FIRST-COMMIT-INVENTORY.md) before publishing anything to the public destination. No general source license has been chosen here and no third-party rights are granted by this name change.
 
-Choose a line list, import a spectrum, explicitly set **z step per tick**, align the lines, confirm a measurement and export CSV. The step is an analyst parameter because original acquisition calibration is pending. Local step limit: (0,1]; control position: −100…100. Recentering and fine/coarse changes preserve z; **New adjustment** sets z=0 and invalidates the step. Selecting the already active factor is a no-op. A library reference alone cannot be recorded as an observation. Recording also checks the stored float32 domain, rejecting a value rounded to z=−1.
+## Run and verify with local resources
 
-CSV **schema 2** uses English column identifiers, decimal points, CRLF and explicit numerical policy independently of display locale. It includes source name/SHA-256, Number z, float32 z/bits and control state. The log is RAM-only: export before closing. This is a new interchange format, not native CLEA compatibility.
-
-## Run and verify
+Use the existing installed dependencies or install the versions pinned by `package-lock.json`. No dependency changed for branding/Git preparation.
 
 ```sh
-cd /home/dobleuber/Projects/personal/clea-web
-npm ci --ignore-scripts
 npm run dev
 npm run build
-npm test
-npm run test:e2e
+npm test -- --maxWorkers=4
+npm run test:e2e -- --workers=2
 ```
 
-The existing preview is managed by transient user unit `clea-web-preview.service`, listening only on `127.0.0.1:5173`. It survives tool-shell completion; it is not enabled for boot/login. Inspect with `systemctl --user status clea-web-preview.service` or stop with `systemctl --user stop clea-web-preview.service`. Do not launch a second server on the strict port. The test browser is already installed under `.local/browsers`.
+The existing preview is `http://127.0.0.1:5173/`, managed by transient user unit `clea-web-preview.service`. The folder remains `clea-web` and the service name is unchanged. It survives tool-shell completion but is not enabled at boot. A separate strict-port server must not replace it.
 
-Node 22.23.2 and exact dependencies are recorded in the lockfile. No backend, accounts, external runtime services, public deployment or push is required. See [the full implementation plan](docs/IMPLEMENTATION-PLAN.md) for scope, capability count, gates and effort assumptions.
+## Try movement and slew
 
-## Evidence, language and rights
+Open [the observatory](http://127.0.0.1:5173/#observatory), open the dome, then use **Move the telescope**. Hold North/East/South/West with pointer, Space or Enter; release to stop. Choose **Slew to selected object**, cancel once, then confirm. **Save investigation** during motion and restore it: the motor stays stopped and existing manual values/counts/RNG are retained. [Exact evidence, limits and steps](docs/TELESCOPE-MOTION.md); [local validation and pending external review](docs/TELESCOPE-MOTION-VALIDATION.md).
 
-The scientific core is separate from React. `src/i18n/en.json` contains stable English UI/help keys; `Intl` handles presentation numbers. No language selector or additional translation is implemented. Scientific file formats remain stable independently of future locales.
+## Evidence and compatibility
 
-Original downloads, executables and analysis stay outside this project under `/tmp/clea-static-research` and `/home/dobleuber/Documents/Codex/2026-10-17/task-2`. No original executable was run. Root `PROVENANCE.json` documents initial spectral contracts; `data/sky/PROVENANCE.json` identifies catalog/image/reference derivatives. See [recovery](docs/RECOVERY.md), [validation](docs/VALIDATION.md) and [review results](docs/REVIEW-RESULT.md).
+Scientific functions/state remain pure TypeScript, separate from rendering. Existing session identifiers, numerical policies, raw/full format versions, filenames and historical OpenCLEA provenance are intentionally preserved. Visible branding does not migrate or relabel scientific work. Manual measurements, photometry transcriptions, interpretations and Hubble inputs are never filled from catalog answers.
 
-Original CLEA resources are credited to Gettysburg College/NSF and their respective sources. Educational/noncommercial terms do not establish general permission for web redistribution. Public release permission remains unresolved. `THIRD_PARTY_NOTICES.txt` does not relicense original assets.
+Original downloads/executables and byte-bearing analysis stay outside this source tree. The old ProgrammedSlew dossier was obtained through REA's MCP using Ghidra; recent closing captures used GNU objdump and Python operand/hash/reference calculations. Unit/browser checks exercise the port and analytic references, not an executed CLEA oracle. No original program, Windows or emulator was run for these increments. Claude review remains pending after an automatic egress-scope rejection; it is not reported as completed.
 
-The reviewed observatory release uses 864 coordinate tiles, exact packed-record preservation and a bounded cache. It was checked separately before applying and then rechecked on the served project: build, 20 unit tests and 11 browser flows pass. Original-executable fidelity and the complete observation cycle remain unvalidated.
-
-The next Hubble increment adds explicit-state random draws, quadratic spectrum sampling, recovered Poisson/log-gamma, centered RGB slit sampling, magnitude calibration and a transactional 600-bin supplied-mean exposure reducer. See [Hubble recovery and integration gates](docs/HUBBLE-RECOVERY.md) and `data/hubble/PROVENANCE.json`. These are not connected to an exposure button or included as a completed Hubble exercise. The original x87 tangent midpoint remains an explicit precision gate. One authorized retry of Claude `/code-review` completed with Opus 5.5/high; local corrections and slit/calibration work followed it and were verified independently.
+Project CLEA, Gettysburg College and NSF support remain credited in [provenance](PROVENANCE.json) and [third-party notices](THIRD_PARTY_NOTICES.txt). Educational/noncommercial terms do not establish general derived-web redistribution permission. The public GitHub destination is identified; no push or deployment is authorized by its URL alone.

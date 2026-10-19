@@ -32,3 +32,6 @@ Local source/data-flow inspection covered strict22 parsing before base restorati
 ## REA usage
 
 A06 and the recent photometer-domain clarification used saved REA/Ghidra evidence plus GNU`objdump` and Python PE/operand/hash/Fraction/Decimal inspection. No fresh REA MCP engine/target analysis was invoked for these increments. The latest availability receipt inspected is18October2026,14:22UTC (`evidence/rea-independent-availability-20261018/` under the earlier research root): initialize,tools/list,binary_session, no target opened or analysis run. Historical actual analysis is preserved separately in `analysis/observatory/REA-SNAPSHOT.json`. Current post-reboot REA engine health was not tested. These distinctions are recorded in `REA-STATUS-RESUMPTION.json`.
+
+
+Current review gate: after the user renewed general Claude authorization, exactly one retry with unchanged CLI arguments was denied before execution. Automatic review now requires explicit approval for the exact broad repository/research payload and Anthropic destination. No Claude stream/model output exists and no further retry occurred. See local evidence `claude-a06-motion-review/BLOCKED-RETRY.json`. This supersedes the earlier authorization-pending explanation without erasing that denial.

@@ -3,7 +3,7 @@ import { formatNumber, locale, t } from './index';
 import { configureStep, createMeasurement, INITIAL_CONTROL, measurementCsv, parseLibrarySpectrum, parseSpectrum } from '../core/spectrum';
 describe('English catalog and scientific data boundary',()=>{
   it('interpolates stable keys and formats presentation separately',()=>{
-    expect(locale).toBe('en-US');expect(t('app.name')).toBe('OpenCLEA');
+    expect(locale).toBe('en-US');expect(t('app.name')).toBe('OpenVireo');
     expect(t('sky.pointed',{target:'M82'})).toBe('Telescope centered on M82.');
     expect(formatNumber(12345.5)).toBe('12,345.5');
     const row=createMeasurement(1,'M82','observed.csv','a'.repeat(64),configureStep(INITIAL_CONTROL,.001),'GLXYLNS.LST');
