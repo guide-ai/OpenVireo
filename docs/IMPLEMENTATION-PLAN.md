@@ -1,5 +1,18 @@
 # OpenCLEA implementation plan
 
+## Current scope reconciliation
+
+The dated narrative and baseline inventory below contain historical descriptions of work that was subsequently delivered. Use the latest feature evidence and `data/planning/acceptance-status.json` together; the package statuses are acceptance outcomes, not a percentage of code ported.
+
+- Delivered bounded optical slices: all three compiled telescope/site profiles; the supported star, three Hubble galaxies and pinned sky acquisitions; SSP/JSON/CSV interoperability; shared stationary spectral clock/access; fixed-list UBV photometry with 16/14/10 telescope-specific domains, sizes 5/10/15 and recovered timing choices; blank manual entries, explicit colors and fits; six native model families and sixteen reference-dataset comparisons with reversible manual exclusions; raw owners 1–10/full investigation 8–21 continuity.
+- Still absent or incomplete: general native motor/programmed-slew options and runtime behavior, general field/cache/source preparation and active reentry, complete coordinate/option/native-file branches, broader classification tools, R/I and general HR observing, multi-object spectroscopy, cameras/FITS/astrometry, radio and the remaining historical/associated laboratories. Reference analysis is not photon acquisition or a membership result.
+- Still unproved: original runtime/x87/global RNG/VCL event fidelity, general pixel/cursor equivalence, full edition coverage and classroom acceptance. Public redistribution remains rights-gated. Additional languages and autosave are optional; Workers/IndexedDB/PWA/WebGL require a demonstrated need.
+- The port's per-draw mean ceiling and all-settings target whitelist are technical admission policies. The original photometer's actual-count ceiling is real and must remain. A06 is not authorization to expand optical count domains or synthesize moving-source photons.
+
+A06 is the current bounded increment. The compiled-default coordinate branches of ProgrammedSlew, both timer paths, rate producers and normalizers have been traced for this admitted slice. General options, native interruption/global event behavior and moving-source acquisition remain specific gates. A partial movement slice must not mark A06 or the full observatory complete.
+
+The bounded A06 motion slice now has a pure coordinate engine,explicit held-direction/programmed controls and stopped outer22 preference continuity. See [A06 scope,evidence and manual steps](TELESCOPE-MOTION.md). Native global timing/options/moving photon fidelity remain open;no primary package is newly complete. [Local validation and review gate](TELESCOPE-MOTION-VALIDATION.md): actual build,1058 unit contracts,185/186 first-pass browser flows with the one timeout passing all3 cases in an isolated follow-up,20 compiled-build flows and desktop/mobile visual QA. The prepared native Claude review was denied by automatic permission review and was not executed; explicit renewed human authorization is pending. No next feature has begun.
+
 19 October 2026 domain clarification: [Native versus port photometer limits and exercise identity](PHOTOMETER-DOMAIN-LIMITS.md) explains the six retained Mayall exclusions, distinguishes the original actual-count ceiling from the port mean/all-settings policies, and removes unproved cluster-membership implications. Numerical domains, readings, raw1–10/full8–21 and all64 primary statuses remain unchanged. No shorter-series route or range expansion is added. [Final validation](PHOTOMETER-DOMAIN-LIMITS-VALIDATION.md): 999 unit contracts, 180 complete browser flows and 32 compiled-build flows; no next feature started.
 
 19 October 2026 Mayall-photometry follow-up: [Mayall Pleiades photometry](MAYALL-PHOTOMETER.md) admits ten complete U/B/V fields with original photometer zero14/Single1.8 seeing, all checked aperture/timing choices, fresh skies across all three telescopes and raw10 inside full8–21. Six brighter targets are withheld by the existing all-duration integer/Poisson adapter domain; the earlier sixteen/fourteen-target profiles and raw1–9 remain unchanged. Native setup/access/time/runtime fidelity and uncertainty remain open; I01/N03/E04 and all64 primary statuses remain unchanged. [Final bounded validation](MAYALL-PHOTOMETER-VALIDATION.md): 995 unit contracts, 176 complete browser flows and 23 production flows; no next increment started.
@@ -107,7 +120,7 @@ The baseline is **58 functional capability packages**, including **15 historical
 
 VIREO is the platform integrating several exercises; it is not counted again as a sixteenth CLEA exercise. Jupiter and Roemer share a package but remain two exercise paths. HR uses VIREO rather than a separately established executable. Astrometry Toolkit and Height of Lunar Mountains are associated scope, with their own versions and permissions; the latter is not represented as one of the 15 CLEA exercises.
 
-## Present state and evidence standard
+## Historical preview snapshot and evidence standard
 
 18 October update: the first bounded **sky background exposure** now works at
 `#sky-exposure`, with activation, calibrated sky counts, pause/reset/cancel,
@@ -122,11 +135,13 @@ The local application is an **observatory preview with a recovered measurement i
 - Recovered evidence: Delphi form trees and published-method maps; projection initialization/x/y assembly; compact GSC record reader; hot-list coordinate offsets; selected spectrum state and float32 storage routines. A recovered routine is not automatically an implemented or validated feature.
 - Data: 18,841,240 compact GSC source records inspected; 2,369,926 records retained in a declared magnitude-limited preview subset; 191 target entries including the 13 original Hubble hot-list entries. The original catalog is incomplete/heterogeneous and catalog points are not asserted to be a cleaned modern stellar catalog. Images are archival references; one invalid original bitmap is excluded. Source hashes and derived-file checks are in `data/sky/PROVENANCE.json`.
 - Additional implemented pure contracts:600-bin supplied-mean exposure reducer; bounded selected-SP/shifted-fallback source sampling; pre-GDI galaxy tables; normalized601-point B_nu continuum; morphology-derived catalog temperature and explicit-seed blue/red continuation. The default Coma1 interval now has an independent full600-channel static vector using its catalog morphology/z. A native-scene nearest/arbitration contract is implemented separately; the new spectrometer route previews prepared source shapes for three verified targets, with acquisition disabled pending actual scene/slit calibration. These are tested subcontracts, not completed acquisition or exercise packages. The Windows oracle preparation was stopped and its dedicated resources moved to recoverable Trash at the user's request.
-- Still pending: real exposure integration, complete source synthesis, tracking and time progression, horizon/site/precession behavior, telescope selection/parameters, photometry, cameras, radio and complete exercise outcomes. Immediate pointing and quarter-field movement are declared web adaptations, not recovered motor timing. Pure quadratic sampling, explicit-state PRNG/Poisson, supplied-image slit sampling and magnitude-calibration building blocks are now implemented; integration and original numerical fidelity remain gated (see HUBBLE-RECOVERY.md).
+- Historical initial-preview assessment: the dated pending list is superseded by the current scope reconciliation. Bounded exposures,photometry,compiled telescopes and stationary clock/tracking are implemented;general source formation,full option/site/coordinate behavior,cameras/radio and complete native exercise fidelity remain open.
 
 Status codes below: **C** = accepted against the full original package criterion with current evidence; **P** = a partial web implementation exists; **R** = relevant original resources, forms or static structure have been identified, but the feature is not implemented; this does not mean its scientific behavior is recovered. **N** = planned scope without enough inspected supporting material. No package is marked complete merely because a preview element is visible. Individual implemented subcontracts are recorded in the recovery documents.
 
 ## Functional inventory: 58 packages
+
+Current state letters below follow the row-level acceptance inventory;the original full-package criteria are retained. Earlier dated implementation claims are historical and superseded by the current scope reconciliation.
 
 ### Observatory — 8
 
@@ -137,9 +152,9 @@ Status codes below: **C** = accepted against the full original package criterion
 | A03 | Finder/telescope field selection and instrument overlays | P | Original scale/options, aperture/slit/CCD overlay geometry, rounding and clipping checked. |
 | A04 | Coordinate and target pointing | P | Original validation, wrap, J2000/B1950 and target-selection behavior; no silent coordinate substitution. |
 | A05 | Site, observing time, sidereal time, tracking and horizon | P | Time/site conventions, drift, limits and displayed values agree with approved reference scenarios. |
-| A06 | Directional motion and programmed slew | P | Motor/timer rates, pole reflection, interruption and slew completion recovered; current discrete browsing remains separately identified. |
+| A06 | Directional motion and programmed slew | P | Bounded compiled-default N/E/S/W holds and timed programmed slew are implemented with native per-callback increments, view scales, wrap/arrival rules, shared clock, interruption and stopped preferences. Full native options, queued VCL/host timing, moving acquisition/reentry, original runtime/x87/GDI/audio, UI pole scope beyond85degrees and classroom acceptance remain open;A06 is not complete. |
 | A07 | Hot lists, search, bookmarks and target information | P | Read/edit/save original lists, object matching, duplicates and unknown targets handled with evidence. |
-| A08 | Instrument access and context-preserving navigation | P | View/tracking/access gates and return/reentry semantics checked across every implemented instrument. |
+| A08 | Instrument access and context-preserving navigation | P | Existing stationary spectral access now also excludes actual active motor/programmed motion. Movement releases retained acquisitions;no moving-source means or photons are admitted. Complete native focus/modal/cache/reentry, other instrument access and option policies remain open. |
 
 ### Data and assets — 8
 
@@ -149,7 +164,7 @@ Status codes below: **C** = accepted against the full original package criterion
 | D02 | GSC, finder and naked-eye catalog readers | P | Full schemas and per-mode semantics, not divisibility alone; malformed/truncated/edge records tested. |
 | D03 | Galaxy, QSO, variable-star, cluster and orbit catalogs | P | Native record layouts and associations recovered; current explicit image/hot-list data are only a subset. |
 | D04 | SP/SSP/library spectra, line lists and template readers | P | Every required legacy variant, header, unit, grid, interpolation and source association tested. |
-| D05 | FITS image/header support | N | Required BITPIX, axes, scaling, endian and metadata conventions identified and validated per edition. |
+| D05 | FITS image/header support | R | Required BITPIX, axes, scaling, endian and metadata conventions identified and validated per edition. |
 | D06 | BMP/PNG, overlays and historical media | P | Lossless conversion or faithful rendering, provenance and permissions; invalid assets remain visible limitations. |
 | D07 | Legacy options, observation and result files | R | Round trips preserve documented fields, types, precision and exercise-specific variants. |
 | D08 | Stable interchange, export and print output | P | Versioned data contracts, formula-safe text cells, units, numeric policy and supported legacy compatibility checked. |
@@ -158,16 +173,16 @@ Status codes below: **C** = accepted against the full original package criterion
 
 | ID | Capability package | State | Remaining acceptance outcome |
 |---|---|---|---|
-| I01 | Aperture photometer and filters | R | Aperture placement, sky reading, integration, filter and calibration workflow checked. |
+| I01 | Aperture photometer and filters | P | Fixed original-list UBV photometry is implemented for16/14/10 targets through0.4m/0.9m/Mayall with native sizes5/10/15,timing choices,measured sky,manual entries/colors and raw1-10 continuity. General pointing/fields,real blends,missing-color/variable associations,RI,seeing overrides,transformations,native result/modal/report files,uncertainty and full exercise/classroom/native-runtime acceptance remain open. Six Mayall exclusions retain the documented port mean/all-settings policy over the real native actual-count ceiling. |
 | I02 | Single-slit spectrometer | P | Pointing/slit selection, start/stop, spectral range, acquisition and save workflow recovered. |
 | I03 | Multi-aperture/multi-object spectrometer | R | Object/fiber association, concurrent spectra, selection and persistence checked. |
 | I04 | CCD camera | R | Chip, exposure, saturation, counts, bias/dark/read noise and image output contracts checked. |
 | I05 | Infrared camera and IR resources | R | Supported bands, source data, noise and image formation identified and tested. |
 | I06 | Radio telescope pointing and beam response | R | Original antenna behavior, coordinates and observing modes checked. |
 | I07 | Receiver, channels and pulsar signal acquisition | R | Sampling, timing, dispersion/frequency channels and receiver controls traced. |
-| I08 | Telescope optical/site parameters and access policies | P | Aperture, focal length, seeing, availability and restrictions agree with the selected edition. |
+| I08 | Telescope optical/site parameters and access policies | P | All three compiled optical/site profiles support verified bounded star/three-galaxy/sky and UBV photometer domains;native compiled motion-rate defaults and current-view scale are admitted separately by A06. Instructor overrides,restricted requests,other instruments and complete native site/switch/lifecycle policies remain open. |
 | I09 | Photon/source synthesis, PRNG and noise engine | P | Seeds, state, draw consumption, source/sky accumulation and conversion policy verified before producing observations. |
-| I10 | Observation clocks, timer/event ordering and acquisition lifecycle | P | Start/pause/stop/cancel/save/reentry ordering tested independently of browser frame rate. |
+| I10 | Observation clocks, timer/event ordering and acquisition lifecycle | P | Supported stationary spectral acquisition shares the normal-speed observatory clock;bounded aperture photometry retains its separate integration model. A06 motor/programmed coordinate callbacks now run on a declared monotonic browser schedule and release safely on Stop/navigation/hidden/save/restore. Native global VCL/message/modal ordering,host-clock changes,RNG interleavings and moving-source photon preparation remain unproved. No native wall-time or bit equality is claimed. |
 
 ### Analysis engines — 8
 
@@ -175,8 +190,8 @@ Status codes below: **C** = accepted against the full original package criterion
 |---|---|---|---|
 | N01 | Spectral line alignment, redshift and measurement record | P | Cursor/zoom/text rendering and remaining RecordZ branches; acquisition-derived calibration and x87 numerical policy checked. |
 | N02 | Stellar spectral classification | P | All 25 practices/eight original atlases and supported-star continuity implemented; bounded manual width for practice unknowns implemented; bounded SP/SSP visual imports implemented; broader import profiles, full cursor/photo/feature tools and native result/grade contracts remain pending. |
-| N03 | Photometry reduction, colors and magnitude calibration | P | Supplied post-integration area-scaled sky/count/magnitude kernel and manual B−V implemented; timer/base-count units and filter/telescope bank bindings now traced; source/neighbor/aperture association, telescope reentry and acquisition replay/calibration, extinction/reddening and transformations remain open. |
-| N04 | HR/color-magnitude diagrams and isochrone fitting | R | Data selection, axes, theoretical curves, fitting and uncertainty workflow checked. |
+| N03 | Photometry reduction, colors and magnitude calibration | P | Bounded acquired UBV reduction through all three profiles and sizes5/10/15,area-scaled measured sky,original count/time units,explicit manual B-V and retained reading provenance are implemented. Wider sources/fields,missing colors,RI,transforms/extinction/aperture-loss corrections,uncertainty,exact native precision/global lifecycle and full scientific acceptance remain open. |
+| N04 | HR/color-magnitude diagrams and isochrone fitting | P | All16 reference datasets/2873known-color points support manual native ZAMS/isochrone trials,explicit presets,interpretation,comparison and reversible exclusions through full21. Actual general standard-photometer HRobserving,optional CCD,native import/autoscaling,uncertainty,classroom,pixel picking and original runtime/x87 fidelity remain open. Reference data are not acquired measurements. |
 | N05 | Velocity, distance and Hubble analysis | P | Bounded Single velocity, sourced V-distance recipes and manual origin fit implemented; remaining original branches, instructor options, native regression/runtime validation and historical-edition differences remain open. |
 | N06 | Large-scale-structure wedge plots and surveys | R | Selection, positions, distances, projection and survey masks checked. |
 | N07 | Pulsar timing/profile/dispersion analysis | R | Period and dispersion workflows, filtering and recorded outputs checked. |
@@ -187,7 +202,7 @@ Status codes below: **C** = accepted against the full original package criterion
 | ID | Capability package | State | Remaining acceptance outcome |
 |---|---|---|---|
 | P01 | English UI/help with translation-ready catalogs | C | All authored user text keyed, interpolation tested, locale/scientific formatting separated; later locales remain optional. [Accepted evidence](P01-ACCEPTANCE.md). |
-| P02 | Session/project state, save and restore | P | Bounded full investigation v14 preserves represented scientific state, nonmodal editing drafts, selected/pending compiled optical profiles and independent star/three-target galaxy journals across all three compiled telescopes, with strict earlier migrations and stopped restoration; additional real instrument/edition/option state awaits its owning contracts. See P02-ACCEPTANCE.md for the original criterion and precise dependencies. |
+| P02 | Session/project state, save and restore | P | Represented scientific state and nonmodal drafts retain raw1-10 and existing full1-21 scopes. Optional outer22 saves the explicitly used manual motion multiplier over a validated earlier base;actual pointing/clock retain their existing owners and restore stopped with no saved running motor orautomatic resume. Earlier files retain current unrepresented motion preferences. Full-suite integration awaits the additional instrument/edition/option contracts. Autosave,window placement andnative file formats are not new P02 gates. |
 | P03 | Beginner guidance and exercise instructions | P | Full first-observation and exercise paths understandable without hidden technical prerequisites. |
 | P04 | Instructor preferences, exercise modes and restrictions | R | Original switches affecting science and access recorded; classroom defaults reviewed. |
 | P05 | Observation log, result editing and audit trail | P | Original record branches, corrections, annotations, undo and exports checked. |
@@ -203,8 +218,8 @@ Each row requires the selected edition's instructions, original data, instrument
 | E01 | The Hubble Redshift–Distance Relation | P | A, D, I02/I09/I10, N01/N05. Existing analyzer is only a substep; standalone HubLab differences retained. |
 | E02 | Large-Scale Structure of the Universe | R | E01, I03, N06; survey fields and completeness. |
 | E03 | Classification of Stellar Spectra | P | Original main-sequence practice and one supported acquired-star flow are usable; broader exercise configurations, full feature-tool coverage beyond the bounded practice-width path, native/standalone differences and educator acceptance remain open. |
-| E04 | Photoelectric Photometry of the Pleiades | R | I01, N03; photometry and background workflow. |
-| E05 | HR Diagrams of Star Clusters | R | Standard path: I01/N03/N04. The original HR manual pp. 13–18 uses the aperture photometer; the optional instructor CCD-photometry variant additionally needs I04 and closes in phase 5. |
+| E04 | Photoelectric Photometry of the Pleiades | P | Bounded original-list UBV observing,measured sky,manual notebooks/colors,printed-manual diagram/distance and six-family native model trials are implemented across16/14/10 profile domains and sizes5/10/15. General fields/associations,RI,transformations,native result/modal formats,uncertainty,classroom and original-runtime/x87/VCL fidelity remain open. List association does not establish physical membership orclassification. |
+| E05 | HR Diagrams of Star Clusters | P | All16 original reference datasets support independent manual comparison,trials,presets and reversible exclusions. Standard HR observing through general original fields,optional CCD,native import/autoscaling,uncertainty,classroom and original runtime/x87/pixel fidelity remain open. Reference catalog inclusion is not a membership determination. |
 | E06 | Radio Astronomy of Pulsars | R | I06/I07/I09/I10, N07; compare independent and VIREO editions. |
 | E07 | Astrometry of Asteroids | R | D05, I04, N08; original images and reference catalogs. |
 | E08 | The Quest for Object X | R | Cross-instrument/time-dependent workflow, original unknown/orbit assignments; independent edition still inventoried separately. |
@@ -375,7 +390,7 @@ Test families: original-format records and round trips; independent arithmetic/p
 
 Continue authorized local implementation, static REA/Ghidra inspection and read-only review. Keep the persistent loopback preview available. Do not run original CLEA, add emulators, change security settings, publish assets, push or deploy under this plan.
 
-The guided observatory preview is applied and verified; the authorized external numerical-core review completed. Next: recover original image/slit composition and galaxy source preparation, connect their calibrated means to the tested exposure reducer, finish phase-0 inventory/rights and the separate NE pilot, and propose a concrete original-oracle experiment for separate authorization when needed. Do not expand to a substitute educational model to make a missing feature appear finished.
+The original early queue is historical: bounded image/slit/source acquisition and much optical analysis are now delivered. The selected next slice A06 adds only evidence-backed coordinate motion. Its general options/global event fidelity and moving acquisition remain open. Phase-0 edition/rights/NE risks and the other row-level dependencies remain separate;no original execution ornew instrument is implied.
 
 ## Supporting records
 
@@ -387,7 +402,7 @@ The guided observatory preview is applied and verified; the authorized external 
 
 A project-scoped native Claude /code-review completed successfully with effective claude-opus-5-5 and high configured effort. Its report identified four planning gaps and six implementation issues. Planning ownership, quality allocation and HR dependencies have been corrected here; implementation findings have been resolved and locally verified on candidate and served builds, without a second external review. See docs/REVIEW-RESULT.md. This external review does not certify the estimates or original fidelity.
 
-## Current completed increment: portable analysis and static scene/save evidence
+## Historical increment: portable analysis and static scene/save evidence
 
 Static recovery added the native3×widget scene composition and original600-row save/header dossiers. Complete catalog population, GDI raster/cropping and3×19slit values still gate exact acquisition; start/pause/resume remain available only in the tested pure supplied-mean reducer. The UI does not claim an exposure. The authorized fallback increment adds portable version1JSON sessions, exact original imported-file download and atomic restoration of spectrum/control/log with local integrity and numerical checks. SeeANALYSIS-SESSIONS.md. Native magnitude/code-review completed by project path and its confirmed evidence/domain omissions were resolved; separate security-review remains denied/pending without overnight questions. NoWindows, original execution, push or deployment. Continue static frame/filter/slit recovery before connecting acquisition, then decode original formatter/header details before claimingCLEA-save compatibility.
 

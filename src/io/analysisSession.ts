@@ -1,3 +1,4 @@
+import {readMotionPreferences,TELESCOPE_MOTION_POLICY,TELESCOPE_MOTION_SHA256,type MotionPreferences} from '../core/telescopeMotion';
 import {CLUSTER_SELECTION_POLICY,CLUSTER_SELECTION_SHA256,type ClusterSelectionWorkspace} from '../core/clusterSelection';
 import {readClusterComparisonWorkspace,CLUSTER_COMPARISON_SHA256,CLUSTER_COMPARISON_POLICY,type ClusterComparisonWorkspace} from '../core/clusterComparison';
 import {NATIVE_CLUSTER_POLICY,NATIVE_CLUSTER_SHA256} from '../core/nativeCluster';
@@ -31,7 +32,7 @@ const REFERENCES={galaxy:'GLXYLNS.LST',balmer:'BALMER.LST',qso:'AGN_QSO.LST'} as
 export type SessionObservation=(ImportedSpectrum & Readonly<{name:string;kind?:undefined}>)|AcquisitionObservation;
 export type AnalysisSession=Readonly<{
   observation:SessionObservation|null; control:ShiftControl; stepInput:string;
-  reference:keyof typeof REFERENCES; wide:boolean; object:string; rows:readonly Measurement[]; hubble:HubbleWorkspace; acquisitions?:readonly AcquisitionObservation[];classification?:ClassificationWorkspace;photometry?:PhotometerState;observing?:ObservingWorkspace;editing?:EditingWorkspace;optical?:OpticalWorkspace;clusterDatabase?:ClusterDatabaseWorkspace;clusterComparison?:ClusterComparisonWorkspace;clusterSelection?:ClusterSelectionWorkspace;
+  reference:keyof typeof REFERENCES; wide:boolean; object:string; rows:readonly Measurement[]; hubble:HubbleWorkspace; acquisitions?:readonly AcquisitionObservation[];classification?:ClassificationWorkspace;photometry?:PhotometerState;observing?:ObservingWorkspace;editing?:EditingWorkspace;optical?:OpticalWorkspace;clusterDatabase?:ClusterDatabaseWorkspace;clusterComparison?:ClusterComparisonWorkspace;clusterSelection?:ClusterSelectionWorkspace;motion?:MotionPreferences;
 }>;
 export class AnalysisSessionError extends Error {
   constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
@@ -76,6 +77,11 @@ function measurement(value:unknown,previousId:number,acquisitions:readonly Acqui
 async function restore(value:unknown,verifySources=true):Promise<AnalysisSession> {
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===22){
+    const r=record(value,['format','version','numericalPolicy','base','motionPolicy','motionProofSHA256','motion']);
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.motionPolicy!==TELESCOPE_MOTION_POLICY||r.motionProofSHA256!==TELESCOPE_MOTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>21)fail('format');
+    let motion:MotionPreferences;try{motion=readMotionPreferences(r.motion);}catch{fail('state');}const base=await restore(r.base,verifySources);return Object.freeze({...base,motion});
+  }
   if(version===21){
     const r=record(value,['format','version','numericalPolicy','base','clusterComparisonPolicy','clusterComparisonSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterSelectionPolicy','clusterSelectionSHA256','clusterSelection']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterComparisonPolicy!==CLUSTER_COMPARISON_POLICY||r.clusterComparisonSHA256!==CLUSTER_COMPARISON_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||r.clusterSelectionPolicy!==CLUSTER_SELECTION_POLICY||r.clusterSelectionSHA256!==CLUSTER_SELECTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
@@ -151,6 +157,7 @@ async function restore(value:unknown,verifySources=true):Promise<AnalysisSession
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 async function portable(session:AnalysisSession):Promise<unknown> {
+  if(session.motion!==undefined){let motion:MotionPreferences;try{motion=readMotionPreferences(session.motion);}catch{fail('state');}return {format:FORMAT,version:22,numericalPolicy:POLICY,base:await portable({...session,motion:undefined}),motionPolicy:TELESCOPE_MOTION_POLICY,motionProofSHA256:TELESCOPE_MOTION_SHA256,motion};}
   if(session.clusterSelection!==undefined){if(session.clusterComparison!==undefined||session.clusterDatabase!==undefined)fail('state');const clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(session.clusterSelection);return {format:FORMAT,version:21,numericalPolicy:POLICY,base:await portable({...session,clusterSelection:undefined}),clusterComparisonPolicy:CLUSTER_COMPARISON_POLICY,clusterComparisonSHA256:CLUSTER_COMPARISON_SHA256,nativeClusterPolicy:NATIVE_CLUSTER_POLICY,nativeClusterContractSHA256:NATIVE_CLUSTER_SHA256,clusterSelectionPolicy:CLUSTER_SELECTION_POLICY,clusterSelectionSHA256:CLUSTER_SELECTION_SHA256,clusterSelection};}
   if(session.clusterComparison!==undefined){if(session.clusterDatabase!==undefined)fail('state');const clusterComparison=readClusterComparisonWorkspace(session.clusterComparison);return {format:FORMAT,version:20,numericalPolicy:POLICY,base:await portable({...session,clusterComparison:undefined}),clusterComparisonPolicy:CLUSTER_COMPARISON_POLICY,clusterComparisonSHA256:CLUSTER_COMPARISON_SHA256,nativeClusterPolicy:NATIVE_CLUSTER_POLICY,nativeClusterContractSHA256:NATIVE_CLUSTER_SHA256,clusterComparison};}
   if(session.clusterDatabase!==undefined){const clusterDatabase=readClusterDatabaseWorkspace(session.clusterDatabase);return {format:FORMAT,version:19,numericalPolicy:POLICY,base:await portable({...session,clusterDatabase:undefined}),clusterDatabasePolicy:CLUSTER_DATABASE_POLICY,clusterDatabaseSHA256:CLUSTER_DATABASE_SHA256,nativeClusterPolicy:NATIVE_CLUSTER_POLICY,nativeClusterContractSHA256:NATIVE_CLUSTER_SHA256,clusterDatabase};}

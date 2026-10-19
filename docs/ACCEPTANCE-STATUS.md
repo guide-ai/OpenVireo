@@ -6,6 +6,8 @@
 
 This assessment supersedes stale remaining-work wording in earlier dated increments; it does not erase their evidence. A complete package needs its full listed outcome, applicable edition/data contracts, error and cancellation paths, and the scientific/learner acceptance required by its original scope. Passing tests establish the declared software contract only. **P01 is accepted complete against its original criteria; every other full package remains open.** See [criterion-by-criterion evidence](P01-ACCEPTANCE.md).
 
+A06 follow-up: [bounded motor and programmed slew](TELESCOPE-MOTION.md) adds coordinate motion and stopped outer22 preferences. It changes no acquisition/noise calibration and marks no full package complete.
+
 ## Functional scope: 58 packages
 
 | Category | Complete | Partial | Unimplemented: missing contract/data | Not started | Total |
@@ -37,7 +39,11 @@ Original-runtime witnesses are absent for16 explicitly tracked fidelity/verifica
 
 [M67 reference laboratory](CLUSTER-DATABASE.md) advances E05 to partial without changing its full original acceptance criterion. The direct native compact-reader field yields506 known-color reference points;the pupil chooses the trial andinterpretation. All16reference fields are nowdelivered in the subsequent comparison increment. Acquisition,optionalCCD,uncertainty,classroom andoriginalexecution fidelity remain separate gates.
 
-## Priority queue
+## Current priority queue
+
+The earlier acquisition/HR queue below is a historical dependency record. Three-profile UBV with sizes5/10/15,native model trials,all16reference datasets and reversible exclusions are now delivered. A06 bounded motion is the current increment;general moving acquisition and native global/options/runtime behavior remain open. Port mean/all-settings admission debt must be assessed before broadening optical count domains. The64primary statuses/counts and original criteria are unchanged.
+
+### Historical priority queue
 
 1. **Delivered N03 scalar reduction**: aperture-scaled sky, supplied counts/time-counter/calibration to magnitude and supplied B−V. [Contract and verification](PHOTOMETRY-REDUCTION.md). This describes the supplied-input increment; the later bounded visual UBV/three-target acquisition is delivered separately. [Context follow-up](PHOTOMETER-CONTEXT-RECOVERY.md) resolves the count/time naming and bank bindings without claiming acquisition.
 2. **Next optical acquisition, I01→E04**: timer milliseconds, base-count normalization and per-filter/telescope bank bindings are now recovered. The bounded separation/aperture and known-color UBV neighbor kernel is now ported;24 hot-list and16 cluster positioning records are traced. Three original compact targets/six fixed-field associations and fresh-sky UBV observing flow and explicit saved B−V are now implemented for an explicit1′ profile. The visual fixed-profile flow is now delivered with explicit web context release, Stop/restart, manual notebook and separate raw replay. Broader telescope/field switching, R/I and native modal and result-file compatibility remain open. See [visual flow](PHOTOMETER-VISUAL.md). See [field follow-up](PHOTOMETER-FIELD.md). See [source follow-up](PHOTOMETER-SOURCE.md). Exact missing artifacts/addresses are listed in the contract. The bounded three-target observing flow is usable; full exercise acceptance remains open.
