@@ -27,4 +27,10 @@ OpenVireo is the visible name andOpen Virtual Educational Observatory the descri
 
 The current native Claude review/model audit and resolution status are maintained in [A06 validation](TELESCOPE-MOTION-VALIDATION.md#read-only-review-and-current-resolution-state). Historical approval denials remain in the task evidence; review consent is separate from public Git publication consent.
 
-No push,PR,remote commit,resource upload ordeployment is performed. The final inventory/local commit SHAs andremaining rights/privacy/review decisions must be reviewed before anypublication approval.
+During initial preparation no push, PR, remote commit, resource upload or deployment was performed. The subsequent explicit source-only publication instruction is recorded below; original-resource publication and deployment remain outside scope.
+
+## Source-only publication boundary
+
+The user subsequently explicitly requested that the prepared code appear in `guide-ai/OpenVireo`. The five existing local commits are preserved; the incomplete arrival follow-up is excluded from this publication. A separate documentation commit clarifies this source-only boundary. Every outgoing historical tree was checked, not only the latest index:405current files,444distinct UTF-8 blobs across five prepared commits, no data/public-original payload path, binary/opaque payload, temporary/private tooling state or high-confidence credential pattern found. These are inspection results, not a universal secret-absence or legal-clearance guarantee. Existing author/committer identity and textual local research-path provenance remain commit metadata/documentation; no email/credential configuration or raw external review log is included.
+
+No original/derived scientific resource payload is added to make the public checkout build. Matching validated local resource directories remain required. Existing third-party attribution and unresolved resource rights are retained; no global source license is invented. Local code publication does not authorize deployment, original execution or later resource publication. The source-only push must be normal and must preserve any new remote history. Publication receipts and exact remote SHA are recorded outside source; no success is asserted merely from preparing a commit.

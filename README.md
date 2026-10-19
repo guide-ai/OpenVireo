@@ -13,11 +13,11 @@ General fields/options/instruments, native global timing/RNG/x87 fidelity, origi
 
 ## Local resources are required
 
-The proposed source history deliberately excludes `data/` and `public/original/`: they contain original/derived scientific catalogs, spectra, images, models, byte-bearing evidence and local-only reference data. Their redistribution permissions are unresolved. **A fresh source-only checkout is not a self-contained runnable distribution.** A TypeScript/Vite build and dataset-dependent tests require the matching validated local resource directories first.
+The source history deliberately excludes `data/` and `public/original/`: they contain original/derived scientific catalogs, spectra, images, models, byte-bearing evidence and local-only reference data. Their redistribution permissions are unresolved. **A fresh source-only checkout is not a self-contained runnable distribution.** A TypeScript/Vite build and dataset-dependent tests require the matching validated local resource directories first.
 
 On this workstation the resources remain in place. The complete pre-Git tree is backed up outside the repository. [The resource manifest](docs/LOCAL-RESOURCES.json) records relative paths, sizes and SHA-256 without the original payloads. Supply those exact local resources from an authorized private backup or reproduce them with the preserved local research generators; merely downloading an original archive is not a verified generated-resource setup. There is no automatic download, fabricated fallback dataset or public resource upload.
 
-See [first-commit inventory and publication gates](docs/FIRST-COMMIT-INVENTORY.md) before publishing anything to the public destination. No general source license has been chosen here and no third-party rights are granted by this name change.
+This repository publishes authored source, tests and documentation only. Original and derived resource payloads remain excluded. [The preparation inventory](docs/FIRST-COMMIT-INVENTORY.md) records that boundary. No general source license has been chosen; public visibility does not grant a third-party asset license or establish original-runtime equivalence.
 
 ## Run and verify with local resources
 
@@ -34,7 +34,7 @@ The existing preview is `http://127.0.0.1:5173/`, managed by transient user unit
 
 ## Try movement and slew
 
-Open [the observatory](http://127.0.0.1:5173/#observatory), open the dome, then use **Move the telescope**. Hold North/East/South/West with pointer, Space or Enter; release to stop. Choose **Slew to selected object**, cancel once, then confirm. **Save investigation** during motion and restore it: the motor stays stopped and existing manual values/counts/RNG are retained. [Exact evidence, limits and steps](docs/TELESCOPE-MOTION.md); [local validation and pending external review](docs/TELESCOPE-MOTION-VALIDATION.md).
+Open [the observatory](http://127.0.0.1:5173/#observatory), open the dome, then use **Move the telescope**. Hold North/East/South/West with pointer, Space or Enter; release to stop. Choose **Slew to selected object**, cancel once, then confirm. **Save investigation** during motion and restore it: the motor stays stopped and existing manual values/counts/RNG are retained. [Exact evidence, limits and steps](docs/TELESCOPE-MOTION.md); [local validation and completed review resolutions](docs/TELESCOPE-MOTION-VALIDATION.md).
 
 ## Evidence and compatibility
 
