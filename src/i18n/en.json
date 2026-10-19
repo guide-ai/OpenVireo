@@ -1244,7 +1244,7 @@
   "motion.idle": "Motion stopped. No motor command has been started.",
   "motion.moving": "Telescope moving. Instrument acquisition is unavailable.",
   "motion.complete": "Programmed slew finished under the admitted axis rules. Tracking retains its previous setting.",
-  "motion.limited": "Motion stopped at its last committed position by a clock, pole or numerical-boundary guard. No uncommitted motion interval was applied.",
+  "motion.limited": "Motion stopped at its last committed position by a clock, pole or unresolved numerical-comparison guard. No uncommitted motion interval was applied; the observatory clock was paused. Review the admitted controls before starting again.",
   "motion.stopped": "Motion stopped at the current committed pointing. The shared clock may continue; Pause observatory clock stops both.",
   "motion.callbacks": "Committed motion callbacks: {count}",
   "motion.invalid": "Motion was not started. Use finite RA from 0 (inclusive) to 24 (exclusive) hours and declination within ±85°. A numerical comparison too close to an unresolved boundary is withheld; existing work is retained.",

@@ -1,17 +1,19 @@
-# A06 validation — implemented slice; external review pending
+# A06 validation — implemented slice and reviewed corrections
 
 The held-direction and programmed-slew coordinate slice is implemented in the actual project and available at `http://127.0.0.1:5173/#observatory`. The whole A06 package remains partial. All64 primary acceptance statuses/criteria and the16 runtime-witness overlay memberships remain unchanged. See [behavior, limits and exact manual steps](TELESCOPE-MOTION.md).
 
 ## Actual-project verification
 
-- `npm run build`: passed, including TypeScript project checks.
-- `vitest run --maxWorkers=4`: **1058 tests /106 files passed**. The new motion core/session contracts add59 tests to the999 baseline. An earlier staging run at default high concurrency timed out two pre-existing heavy unit cases; no timeout was increased. The constrained final actual-project run passed.
-- Complete default Playwright run: **185/186 passed**; the existing mobile60s galaxy exposure/keyboard-analysis case reached its30s test timeout. The full `galaxy-analysis.spec.ts` was then run with `--workers=1`: **3/3 passed**, including that mobile case in13.2s. No product/test code or timeouts changed. This is not reported as a single all-green186-test invocation. Resource contention is plausible, not proved as the cause.
-- All **6 new motion flows passed** in the full actual-project run: held keyboard/pointer and captured release outside; rate/view differences; cancel and programmed wrap; partial save/reload22 with unchanged spectral counts/RNG; invalid proofs/running fields/downgrades; legacy continuity; gaps/hidden tabs; explicit Stop and direct hash navigation; exact-target no-slew.
-- Compiled Vite build on temporary loopback5176: **20/20 passed**, covering all6 new flows plus existing instrument control, shared clock, Mayall photometry and SSP interoperability. The temporary server exited; persistent5173 was not replaced by this check.
-- Direct persistent-preview visual smoke: desktop and360px mobile confirmation, actual moving-pointing/status, Stop and Cancel. No page errors or horizontal overflow. Manual8× remained8× while the program used its fixed temporary native rate. Screenshots were opened and inspected.
+Final corrected actual-project verification, 19 October 2026:
 
-Evidence directory: `/home/dobleuber/Documents/Codex/2026-10-18/task-3/a06-motion-recovery/`. Relevant logs are `final-build.log`, `final-unit.log`, `final-browser.log`, `initial-browser-timeout.md`, `final-galaxy-followup.log`, `production-browser.log` and `final-visuals/visual-smoke.json`; before-reboot staging checks remain separately labeled.
+- `npm run build`: passed, including TypeScript project checks.
+- `vitest run --maxWorkers=4`: **1068 passed /106 files; 0 failed**. This includes the prior1058 contracts and ten new motion regression contracts; no earlier assertion was removed.
+- Complete Playwright suite with no test filters, two workers: **190 passed, 0 failed, 0 skipped, 0 flaky**, in309540.891ms. This supersedes the earlier185/186 run and isolated3/3 follow-up; those historical results are not relabeled as a complete pass.
+- Corrected compiled Vite build on temporary loopback5176: **17 passed, 0 failed, 0 skipped**, covering all ten motion flows plus the seven observatory/P01 flows. The earlier20-flow production run remains historical evidence for its earlier snapshot.
+- Regression reproduction before correction: branding assertions **2 failed/5 passed**; canonical RA boundary **1 failed/61 passed**; four new motion browser flows **4 failed**. After correction, branding **7/7**, motion/browser **10/10**, and motion/session unit subset **69/69** passed. The complete final suites above include the corrected cases.
+- Direct persistent-preview smoke and desktop/360px mobile images cover held movement/release, Cancel, explicit Stop, completed programmed arrival and the retained precision-withdrawal message. No page errors or horizontal overflow; images were opened for visual inspection.
+
+Final logs and JSON statistics are outside web source at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-a06-motion-review/`: `final-correction-build.log`, `final-correction-unit.log`, `final-complete-browser.log/json`, `corrected-production.log/json`, before/after regression logs and `corrected-visual.json/png`. Earlier A06 evidence remains in the neighboring `a06-motion-recovery/`; no historical failure record was replaced.
 
 ## Native evidence and preservation
 
@@ -29,9 +31,25 @@ Native `/code-review` completed directly on the actual project after explicit hu
 
 Raw report,stream,launch andaudit are preserved separately at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-a06-motion-review/`. `review.txt` is the unedited report; `audit.json` records model/tools/paths/source identity. It contains nine observations requiring local contrast,not nine accepted defects.
 
-Confirmed for correction: an admitted tiny westward RA crossing can emit24h; rejected/no-op preflight can pause the clock/release work; invalid targets can open confirmation; motion withdrawal can display a misleading clock-limit alert; dome closure pauses the clock inconsistently; connected-domain literals duplicate the pure policy. Half-turn reference withdrawal tests are being completed. The reported3East/3West example did not reproduce over the checked admitted rates/views; a different valid just-below-step RA input reproduces the same domain defect. The guarded nudge-and-return arrival is a real declared unsupported precision case; it is not permission to invent an epsilon snap/native callback count. The performance allegation has no demonstrated>1000ms stall and is not a confirmed defect.
+Independent disposition of all nine report observations:
 
-Resolution/testing is in progress. The external review ran; full A06/native/runtime acceptance remains partial. Final correction counts andfinding dispositions will be recorded here after verification.
+| Report item | Validated result and resolution |
+| --- | --- |
+| 1. RA normalization | Confirmed for a valid just-below-step starting RA: a west callback rounded to24h. Canonicalize that wrapped boundary to0h, with pure and browser regressions. The review's specific three-East/three-West example did not reproduce across200 rate/view combinations; it is not claimed as the witness. |
+| 2. Nudge/return arrival | Reproduced after40 default4× manual north callbacks. The arrival comparison remains deliberately withheld by the declared Number guard. A regression now asserts withdrawal. No epsilon snap or native completion callback is invented; use the separate explicit Point shortcut when this boundary is encountered. This remains a usability/scientific admission limit. |
+| 3. Withdrawal notice | Confirmed misleading clock-limit alert. A motion error now reports motion withdrawal without a false clock-limit alert. Conservatively pausing the clock remains the documented browser policy. |
+| 4. Start preflight | Confirmed rejected/no-op side effects. Pure admission validates the sampled pointing before pausing or releasing confirmed work; exact no-op returns without adding motion session scope. Regression checks the continuing clock and save owner. |
+| 5. Impossible confirmation | Confirmed. Out-of-domain coordinate drafts show a local error before opening the modal. RA25 and Dec86 flows retain the running clock. |
+| 6. Dome release | Confirmed timing-dependent clock pause. Dome closure now releases the motor consistently; a valid shared clock may continue. |
+| 7. Duplicated pole policy | Confirmed. Connected admission and atomic batch enforcement are pure TypeScript helpers reading the proof's maximum declination, with a clock-policy equality test. Mathematical native pole recurrences remain separately testable. |
+| 8. Half-turn coverage | Confirmed coverage gap. All four reference half-turn cases now explicitly assert withdrawal, retaining all previous tests. Every one of the54 independent reference vectors has a matched recurrence or declared-withdrawal assertion. |
+| 9. Performance | Unconfirmed hardware hypothesis: no measured>1000ms stall was supplied or reproduced. No Worker, IndexedDB, callback folding or scientific change was introduced. Low-end hardware/native scheduling acceptance remains open. |
+
+The five subsequently reported local-commit issues were also corrected separately: exact title/description E2E assertions, explicit historical session-identifier explanation, OpenVireo PresentationError text, a single current review-status source here linked from the review log/inventory, and a complete final E2E invocation with exact outcomes. Legacy serialized identifiers, versions and policy hashes remain unchanged.
+
+One optional test-cleanup action was denied before execution by automatic review because it could weaken existing assertions. It was discarded; all old assertions and selectors were retained and the missing cases were added independently. That denial is not a remaining blocker (`rejected-optional-test-cleanup.json`).
+
+These corrections follow the immutable external report and were independently verified locally; no second Claude sign-off is claimed. Full A06/native/runtime acceptance remains partial. No original execution, remote push, public resource upload or new feature was included in this correction package.
 
 ## REA usage
 

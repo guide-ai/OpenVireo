@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
-import {advanceTelescopeMotion,createManualMotion,createProgrammedMotion,motionIntervalMS,stopTelescopeMotion,type MotionDirection,type TelescopeMotion} from './core/telescopeMotion';
+import {advanceBrowserTelescopeMotion,prepareBrowserTelescopeMotion,TelescopeMotionError,motionIntervalMS,stopTelescopeMotion,type MotionDirection,type TelescopeMotion} from './core/telescopeMotion';
 import type {FieldMode} from './core/sky';
 import {CLOCK_DRIVE_MAX_GAP_MS,advanceClockDrive,createClockDrive,clockDrivePointing,repointClockDrive,toggleClockTracking,type ClockDriveWorkspace} from './core/clockDrive';
 import type {Pointing} from './core/sky';
@@ -17,20 +17,22 @@ export function useObservatoryClock(active:boolean,onPointing:(p:Pointing)=>void
   if(document.visibilityState==='hidden'){release();return current.current;}
   if(now<last.current||now-last.current>CLOCK_DRIVE_MAX_GAP_MS){finishMotor(true);release();setLimited(true);return current.current;}
   try{let next=advanceClockDrive(current.current,base.current+Math.floor(now-anchor.current));
-   if(motor.current){const ticks=Math.floor((now-motorAnchor.current)/motionIntervalMS(motor.current)),m=advanceTelescopeMotion(motor.current,ticks-motorDelivered.current);if(Math.abs(m.pointing.dec)>85)throw new Error('Motion pole limit');motorDelivered.current=ticks;next=repointClockDrive(next,m.pointing);motor.current=m.phase==='moving'?m:null;setMotion(m);}
-   last.current=now;publish(next);}catch{finishMotor(true);release();setLimited(true);}return current.current;
+   if(motor.current){const ticks=Math.floor((now-motorAnchor.current)/motionIntervalMS(motor.current)),m=advanceBrowserTelescopeMotion(motor.current,ticks-motorDelivered.current);motorDelivered.current=ticks;next=repointClockDrive(next,m.pointing);motor.current=m.phase==='moving'?m:null;setMotion(m);}
+   last.current=now;publish(next);}catch(error){finishMotor(true);release();setLimited(!(error instanceof TelescopeMotionError));}return current.current;
  }
- function pause(){const w=sample();release();return w;}
+ function pauseAt(now:number){const w=sample(now);release();return w;}
+ function pause(){return pauseAt(performance.now());}
  function replace(w:ClockDriveWorkspace|null){release();setLimited(false);publish(w);}
  function start(utc:string,pointing:Pointing){if(document.visibilityState==='hidden'){release();return false;}pause();const w=current.current??createClockDrive(utc,pointing);try{advanceClockDrive(w,w.elapsedMS);}catch{setLimited(true);return false;}publish(w);anchor.current=last.current=performance.now();base.current=w.elapsedMS;live.current=true;setRunning(true);setLimited(false);return true;}
  function toggle(utc:string,pointing:Pointing){const wasRunning=live.current,w=sample()??createClockDrive(utc,pointing),canResume=live.current;release();const next=toggleClockTracking(w);replace(next);if(wasRunning&&canResume)start(utc,clockDrivePointing(next));}
  function prepareTracked(utc:string,pointing:Pointing){const w=pause();replace(w?{...repointClockDrive(w,pointing),tracking:true}:{...createClockDrive(utc,pointing),tracking:true});}
- function beginMotion(kind:MotionDirection|Pointing,rateIndex:number,mode:FieldMode,utc:string,pointing:Pointing){
-  if(motor.current)throw new Error('Motion busy');const stopped=pause();const p=stopped?clockDrivePointing(stopped):pointing;
-  if(Math.abs(p.dec)>85||typeof kind!=='string'&&Math.abs(kind.dec)>85)throw new Error('Motion pole limit');
-  const prepared=typeof kind==='string'?createManualMotion(p,mode,rateIndex,kind):createProgrammedMotion(p,kind,mode);
+ function beginMotion(kind:MotionDirection|Pointing,rateIndex:number,mode:FieldMode,utc:string,pointing:Pointing,onAccepted?:()=>void){
+  if(motor.current)throw new Error('Motion busy');const now=performance.now(),sampled=sample(now),p=sampled?clockDrivePointing(sampled):pointing;
+  const prepared=prepareBrowserTelescopeMotion(p,kind,mode,rateIndex);
   if(prepared.phase==='complete'){setMotion(prepared);return prepared;}
-  if(!start(utc,p))throw new Error('Clock limit');motor.current=prepared;motorAnchor.current=performance.now();motorDelivered.current=0;setMotion(prepared);return prepared;
+  if(document.visibilityState==='hidden')throw new Error('Clock hidden');const drive=sampled??createClockDrive(utc,p);advanceClockDrive(drive,drive.elapsedMS);
+  // Validate against the sampled point before pausing/releasing confirmed work.
+  pauseAt(now);onAccepted?.();if(!start(utc,p))throw new Error('Clock limit');motor.current=prepared;motorAnchor.current=performance.now();motorDelivered.current=0;setMotion(prepared);return prepared;
  }
  function stopMotion(){if(motor.current){sample();finishMotor();}}
  function safeForIntegration(){sample();return !motor.current&&live.current&&current.current?.tracking===true;}

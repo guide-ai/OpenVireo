@@ -9,7 +9,7 @@ export class TelescopeMotionError extends Error{constructor(readonly code:'input
 const arc=proof.original.operands.find(v=>v.name==='arcsecDegrees')!.value,epsilon=proof.original.operands.find(v=>v.name==='initialRaToleranceHours')!.value;
 const near=(value:number,boundary:number,scale=1)=>Math.abs(value-boundary)<=32*Number.EPSILON*Math.max(1,scale,Math.abs(value),Math.abs(boundary));
 const freeze=(w:TelescopeMotion):TelescopeMotion=>Object.freeze({...w,pointing:Object.freeze(w.pointing),target:w.target&&Object.freeze(w.target)});
-const wrap=(ra:number)=>{let r=ra-Math.trunc(ra/24)*24;if(r<0)r+=24;return r;};
+const wrap=(ra:number)=>{let r=ra-Math.trunc(ra/24)*24;if(r<0)r+=24;return r===24?0:r;};
 export function readMotionPreferences(value:unknown):MotionPreferences{if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==1||!Object.hasOwn(value,'rateIndex'))throw new TelescopeMotionError('input');const rateIndex=(value as MotionPreferences).rateIndex;if(!Number.isInteger(rateIndex)||rateIndex<0||rateIndex>4||Object.is(rateIndex,-0))throw new TelescopeMotionError('input');return Object.freeze({rateIndex});}
 export function manualMotionStep(mode:FieldMode,rateIndex:number){readMotionPreferences({rateIndex});if(mode!=='finder'&&mode!=='telescope')throw new TelescopeMotionError('input');return proof.native.baseRate*2**rateIndex*arc/proof.native.scale[mode];}
 function initial(pointing:Pointing,mode:FieldMode,rateIndex:number):TelescopeMotion{const p=validatePointing(pointing.ra,pointing.dec);manualMotionStep(mode,rateIndex);return freeze({kind:'manual',phase:'moving',pointing:{...p},mode,rateIndex,callbacks:0,flipped:false,direction:'N',target:null,raDone:false,decDone:false,raStep:0,decStep:0});}
@@ -40,6 +40,13 @@ export function tickTelescopeMotion(w:TelescopeMotion):TelescopeMotion{
  return freeze({...w,pointing:{ra:wrap(ra),dec},flipped,raDone,decDone,callbacks:w.callbacks+1});
 }
 /** Atomic browser batches. A rejected comparison leaves the input state untouched. */
-export function advanceTelescopeMotion(w:TelescopeMotion,callbacks:number):TelescopeMotion{if(!Number.isInteger(callbacks)||callbacks<0||callbacks>proof.browser.maximumBatchCallbacks)throw new TelescopeMotionError('input');let next=w;for(let i=0;i<callbacks&&next.phase==='moving';i++)next=tickTelescopeMotion(next);return next;}
+export const MOTION_MAX_ABS_DECLINATION=proof.browser.maximumAbsDeclination;
+function checkBrowserDeclination(dec:number){if(Math.abs(dec)>MOTION_MAX_ABS_DECLINATION)throw new TelescopeMotionError('pole');}
+/** Connected preview admission is a browser policy, separate from the native pole recurrence. */
+export function validateBrowserMotionPointing(pointing:Pointing):Pointing{const p=validatePointing(pointing.ra,pointing.dec);checkBrowserDeclination(p.dec);return Object.freeze(p);}
+export function prepareBrowserTelescopeMotion(pointing:Pointing,request:MotionDirection|Pointing,mode:FieldMode,rateIndex:number):TelescopeMotion{validateBrowserMotionPointing(pointing);if(typeof request!=='string')validateBrowserMotionPointing(request);return typeof request==='string'?createManualMotion(pointing,mode,rateIndex,request):createProgrammedMotion(pointing,request,mode);}
+function advanceMotion(w:TelescopeMotion,callbacks:number,browser:boolean):TelescopeMotion{if(!Number.isInteger(callbacks)||callbacks<0||callbacks>proof.browser.maximumBatchCallbacks)throw new TelescopeMotionError('input');if(browser)validateBrowserMotionPointing(w.pointing);let next=w;for(let i=0;i<callbacks&&next.phase==='moving';i++){next=tickTelescopeMotion(next);if(browser)checkBrowserDeclination(next.pointing.dec);}return next;}
+export function advanceTelescopeMotion(w:TelescopeMotion,callbacks:number):TelescopeMotion{return advanceMotion(w,callbacks,false);}
+export function advanceBrowserTelescopeMotion(w:TelescopeMotion,callbacks:number):TelescopeMotion{return advanceMotion(w,callbacks,true);}
 export const motionIntervalMS=(w:TelescopeMotion)=>w.kind==='manual'?proof.native.manualIntervalMS:proof.native.programIntervalMS;
 export const stopTelescopeMotion=(w:TelescopeMotion,limited=false)=>freeze({...w,phase:limited?'limited':w.phase==='complete'?'complete':'stopped'});
