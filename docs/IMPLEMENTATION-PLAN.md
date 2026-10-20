@@ -1,5 +1,7 @@
 # OpenVireo implementation plan
 
+Current manual-window follow-up: [zoom/pan during manual feature marking](FEATURE-MARK-VIEWPORT.md) connects the existing interval policy to source-bound pointer/keyboard coordinates, preserves numeric work while outside marks hide, and cancels stale-view gestures. Native paired-pan/paint/sentinel and shared-photo geometry remain open; no format/integrator or acceptance-status change.
+
 N02 conditional-edit follow-up: [manual shoulder revalidation and held geometry](CONDITIONAL-SHOULDERS.md) ports right-first/left-second constraints into the existing source-bound trace tool, adds left-center/right-shoulder mouse action and cancels stale screen-transform gestures. Continuous wavelength/field clearing/release commit remain declared browser adapters. User formats, integrator, source flux and all64 primary statuses remain unchanged; full shared-pane/pixel/native runtime contracts stay open.
 
 N02 selected-source width follow-up: [manual source→region→calculation→result](SELECTED-SOURCE-WIDTH.md) now connects the native unknown/upper/lower resolver to verified original/imported/acquired sources. Legacy practice width archives remain unchanged; other results are explicitly temporary, with no user-format change. The recovered refinement stopping test is not an absolute integration-error bound. Full native context/format/result-file/runtime/classroom gates and all64 primary statuses remain open/unchanged as applicable.

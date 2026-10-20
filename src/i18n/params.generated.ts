@@ -1460,4 +1460,7 @@ export interface MessageParameters {
   "widthSource.identity": never;
   "widthSource.limits": never;
   "cursor.mouseButtons": never;
+  "cursor.window": never;
+  "cursor.rangeLabel": never;
+  "cursor.windowHelp": never;
 }

@@ -1,5 +1,7 @@
 # Manual spectral feature cursor
 
+Current view follow-up: [manual measurement zoom/pan](FEATURE-MARK-VIEWPORT.md) adds a separate ephemeral window for marking, with visible-range coordinate mapping and cancellation on view changes. Full native paired-pan/pixel/shared-photo geometry remains open.
+
 Current edit follow-up: [conditional right-then-left shoulders and held geometry](CONDITIONAL-SHOULDERS.md) replaces the initial unconditional center-clearing policy, supports native left-center/right-shoulder mouse action and cancels stale transforms. Source-bound width formats/integration are unchanged; full native pixel/shared-pane behavior remains unproved.
 
 Current source follow-up: [selected-source equivalent width](SELECTED-SOURCE-WIDTH.md) reuses this manual trace cursor for the actual selected upper/unknown/lower admitted source, with source-specific labels. Practice archives remain unchanged; reference/imported/acquired inputs/results are temporary. The earlier practice-only admission statements below describe the initial slice, not the new calculation boundary.

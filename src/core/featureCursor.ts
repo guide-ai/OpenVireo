@@ -1,3 +1,4 @@
+import type {ClassificationRange} from './classificationViewport';
 import {featureDraftNumber,FEATURE_WAVELENGTH_MIN,FEATURE_WAVELENGTH_MAX,type FeatureDraft} from './featureWidth';
 /** Trace-height/manual shoulders:VIREO-EW-ST-07[0x5094cc,0x5096dc),
  * VIREO-EW-ST-08[0x5096dc,0x509f24),with end-exclusive source ranges.
@@ -9,16 +10,24 @@ export type FeatureCursorMode='inspect'|'center'|'shoulder';
 export class FeatureCursorError extends Error{}
 export const DEFAULT_FEATURE_CURSOR:FeatureCursorPoint=Object.freeze({wavelength:(FEATURE_CURSOR_FRAME.minimum+FEATURE_CURSOR_FRAME.maximum)/2,intensity:.5});
 const validPoint=(p:FeatureCursorPoint)=>Number.isFinite(p.wavelength)&&Number.isFinite(p.intensity)&&p.wavelength>=FEATURE_CURSOR_FRAME.minimum&&p.wavelength<=FEATURE_CURSOR_FRAME.maximum&&p.intensity>=0&&p.intensity<=1;
-export function featureCursorPoint(x:number,y:number):FeatureCursorPoint|null{
+export type FeatureCursorWindow=ClassificationRange;
+/** Independent manual SVG geometry over the recovered display interval.
+ * No native500-column quantization/sentinel is applied to scientific inputs. */
+function checkWindow(view:FeatureCursorWindow){if(!view||!Number.isFinite(view.minimum)||!Number.isFinite(view.maximum)||view.minimum<FEATURE_WAVELENGTH_MIN||view.maximum>FEATURE_WAVELENGTH_MAX||view.minimum>=view.maximum)throw new FeatureCursorError();}
+export function featureCursorAnchor(view:FeatureCursorWindow,center:number|null):FeatureCursorPoint{
+ checkWindow(view);return Object.freeze({wavelength:center!==null&&Number.isFinite(center)&&center>=view.minimum&&center<=view.maximum?center:(view.minimum+view.maximum)/2,intensity:.5});
+}
+export function featureCursorPoint(x:number,y:number,view:FeatureCursorWindow=FEATURE_CURSOR_FRAME):FeatureCursorPoint|null{
+ checkWindow(view);
  const f=FEATURE_CURSOR_FRAME;if(!Number.isFinite(x)||!Number.isFinite(y)||x<f.left||x>f.right||y<f.top||y>f.bottom)return null;
- return Object.freeze({wavelength:f.minimum+(x-f.left)/(f.right-f.left)*(f.maximum-f.minimum),intensity:(f.bottom-y)/(f.bottom-f.top)});
+ return Object.freeze({wavelength:view.minimum+(x-f.left)/(f.right-f.left)*(view.maximum-view.minimum),intensity:(f.bottom-y)/(f.bottom-f.top)});
 }
-export function featureCursorLocation(p:FeatureCursorPoint):Readonly<{x:number;y:number}>|null{
- if(!validPoint(p))return null;const f=FEATURE_CURSOR_FRAME;return Object.freeze({x:f.left+(p.wavelength-f.minimum)/(f.maximum-f.minimum)*(f.right-f.left),y:f.bottom-p.intensity*(f.bottom-f.top)});
+export function featureCursorLocation(p:FeatureCursorPoint,view:FeatureCursorWindow=FEATURE_CURSOR_FRAME):Readonly<{x:number;y:number}>|null{
+ checkWindow(view);if(!validPoint(p)||p.wavelength<view.minimum||p.wavelength>view.maximum)return null;const f=FEATURE_CURSOR_FRAME;return Object.freeze({x:f.left+(p.wavelength-view.minimum)/(view.maximum-view.minimum)*(f.right-f.left),y:f.bottom-p.intensity*(f.bottom-f.top)});
 }
-export function moveFeatureCursor(p:FeatureCursorPoint,key:'ArrowLeft'|'ArrowRight'|'ArrowUp'|'ArrowDown',large=false):FeatureCursorPoint{
- if(!validPoint(p))throw new FeatureCursorError();const horizontal=large?10:1,vertical=large ? .1 : .01;
- return Object.freeze({wavelength:Math.max(FEATURE_CURSOR_FRAME.minimum,Math.min(FEATURE_CURSOR_FRAME.maximum,p.wavelength+(key==='ArrowLeft'?-horizontal:key==='ArrowRight'?horizontal:0))),intensity:Math.max(0,Math.min(1,p.intensity+(key==='ArrowUp'?vertical:key==='ArrowDown'?-vertical:0)))});
+export function moveFeatureCursor(p:FeatureCursorPoint,key:'ArrowLeft'|'ArrowRight'|'ArrowUp'|'ArrowDown',large=false,view:FeatureCursorWindow=FEATURE_CURSOR_FRAME):FeatureCursorPoint{
+ checkWindow(view);if(!validPoint(p))throw new FeatureCursorError();const horizontal=large?10:1,vertical=large ? .1 : .01;
+ return Object.freeze({wavelength:Math.max(view.minimum,Math.min(view.maximum,p.wavelength+(key==='ArrowLeft'?-horizontal:key==='ArrowRight'?horizontal:0))),intensity:Math.max(0,Math.min(1,p.intensity+(key==='ArrowUp'?vertical:key==='ArrowDown'?-vertical:0)))});
 }
 const decimal=(value:number)=>Number(value.toFixed(6)).toString();
 const draftNumber=(text:string)=>{try{return featureDraftNumber(text);}catch{return NaN;}};

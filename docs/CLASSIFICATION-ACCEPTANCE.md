@@ -1,5 +1,7 @@
 # N02/E03 bounded acceptance — 18 October 2026
 
+Current manual-window follow-up: [zoom/pan during manual feature marking](FEATURE-MARK-VIEWPORT.md) connects the existing interval policy to source-bound pointer/keyboard coordinates, preserves numeric work while outside marks hide, and cancels stale-view gestures. Native paired-pan/paint/sentinel and shared-photo geometry remain open; no format/integrator or acceptance-status change.
+
 Current editing follow-up: [conditional shoulders and held geometry](CONDITIONAL-SHOULDERS.md) supersedes blanket cursor-center clearing for the bounded logical-width adapter, preserving records and source isolation. Full native shared-pane/pixel/runtime/file/classroom acceptance remains partial.
 
 Current width follow-up: [selected-source manual calculation](SELECTED-SOURCE-WIDTH.md) supersedes earlier standard/imported/acquired calculation exclusions for admitted3900–4500Å profiles. Only original-practice unknowns use the existing input archive; other results remain temporary. Full native geometry/modal/format/file/classroom acceptance stays partial.

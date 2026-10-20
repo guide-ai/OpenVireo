@@ -1,0 +1,405 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-FEATURE-VIEW-01",
+      "start": "0x50a6e0",
+      "endExclusive": "0x50a8c4",
+      "byteRangeSHA256": "b77760a93a6ee743fbe54fdbbf71e561f118af52eeffb74945ceeed2cccff1e2",
+      "listingSHA256": "18aa91e06feb45626fe5646d84468e3e819ef64dd66a4f4510dbf84ecc41513e",
+      "localListing": "zoom-in.asm"
+    },
+    {
+      "evidenceId": "VIREO-FEATURE-VIEW-02",
+      "start": "0x50a8c4",
+      "endExclusive": "0x50aab4",
+      "byteRangeSHA256": "7e4a7bab18e67099514a8f6921ce4eab51c163d36b49c83f06760aef21eeeb81",
+      "listingSHA256": "00c2a328a70be15eb74aec573b865a47079e876365f5ae9e97525e07f9bc377d",
+      "localListing": "zoom-out.asm"
+    },
+    {
+      "evidenceId": "VIREO-FEATURE-VIEW-03",
+      "start": "0x50aab4",
+      "endExclusive": "0x50ac88",
+      "byteRangeSHA256": "287492cec927dc7516370cdbd504a7cf67795d90a04007728596523d3bfc1760",
+      "listingSHA256": "7b08e203f8611eae2709eeac6249addf8f9241a61621191a6ae17480137da1f3",
+      "localListing": "pan-left.asm"
+    },
+    {
+      "evidenceId": "VIREO-FEATURE-VIEW-04",
+      "start": "0x50ac88",
+      "endExclusive": "0x50ae60",
+      "byteRangeSHA256": "9847c511bc840d50eca09851b00fa327b086668f0cc99e0051010ab140bb0934",
+      "listingSHA256": "405466f11dd1b3d2bfbb76e646c287baa5d92c264d2574cd7efbc22212f0874d",
+      "localListing": "pan-right.asm"
+    },
+    {
+      "evidenceId": "VIREO-FEATURE-VIEW-05",
+      "start": "0x50ae60",
+      "endExclusive": "0x50afa8",
+      "byteRangeSHA256": "09c6714e7f380f7d35545394179835a5a43d678efb94ddf41de27d7c833adc16",
+      "listingSHA256": "b4d72fbb490b8030f1830092e5cae751a6bb7b5d8df3af5af98cac3da6e81207",
+      "localListing": "reset.asm"
+    },
+    {
+      "evidenceId": "VIREO-FEATURE-VIEW-06",
+      "start": "0x5081e4",
+      "endExclusive": "0x5081f2",
+      "byteRangeSHA256": "92a94bac43bed602a72dbb77f8d1744d9e6f27f77a88f509293e7e162ab30935",
+      "listingSHA256": "43651dab61bbab81f6679b7ec9660fbb064ff00d32866580b87bf0bcc889b2ed",
+      "localListing": "paint-mark-calls.asm"
+    },
+    {
+      "evidenceId": "VIREO-FEATURE-VIEW-07",
+      "start": "0x509dc0",
+      "endExclusive": "0x509eac",
+      "byteRangeSHA256": "bd0b1fd80b77033b016646ad665e6e227ecd604f8837d0e84830835e775c4e4c",
+      "listingSHA256": "e04b75912d2a9a49c93b8246e38bf99029020911a4140473bd9486da66bdf8c7",
+      "localListing": "shoulder-paint.asm"
+    }
+  ],
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "contracts": {
+    "zoomIn": "0x50a6e0 doubles zoom up to16; visible center from min+X*step, else midpoint; new range +/-oldwidth/4; center strict1..499 after projection; active measurement reprojects both stored Extended shoulders",
+    "zoomOut": "0x50a8c4 halves zoom; marker/cached center; range +/-oldwidth,full bounds at1; active measurement reprojects stored shoulder wavelengths",
+    "pan": "0x50aab4/0x50ac88 shift10percent and bound range; reproject center; active-measurement pair projects only if right wavelength<=maximum and left wavelength>=minimum,otherwise both shoulder X clear. These writes do not clear Extended wavelength/continuum scalars",
+    "reset": "0x50ae60 restores full bounds and zoom1; reprojects center when present and both shoulder wavelength fields when active",
+    "paint": "0x5081e4..0x5081ee calls center then shoulder painting; center paint calls right-then-left guard. Shoulder paint requires positive X. Pixel/sentinel behavior is not independently portable as simple SVG clipping"
+  },
+  "implemented": [
+    "Existing classificationViewport interval policy reused, default3900..4500 only;Number,nearest-even range endpoints and marker-column zoom anchor remain its existing declared adapter",
+    "Manual graph gets independent ephemeral viewport; visible window drives existing printed-point crop and continuous SVG/manual coordinate conversion; no sample interpolation or normalized-source-value inference added",
+    "Explicit marked center is zoom anchor; off-window cursor marks hidden individually, retained scientific draft strings survive all view actions and redraw on return",
+    "Pointer snapshot includes viewport identity; all view actions clear/release held and keyboard preview. Source changes remount/reset. Numeric fields,records,integrator,JSON/CSV and source authority unchanged",
+    "Existing keyboard1/10Angstrom and.01/.1intensity steps clamp to visible manual window; mobile3axislabels are authored presentation"
+  ],
+  "remainingNativeContracts": [
+    "Native500column/sentinel/Extendedscalar vs X/Y separation and asymmetriczoom-in/out/reset event ordering; no integer pixel equivalence",
+    "Native paired pan clearing plus center-paint revalidation after projection; this browser increment clips individual off-window marks and does not claim that native lifecycle",
+    "Shared comparison/photo-pane Y geometry,pane inversion/focus/global configuration and native GDI,VCL modal/format behavior",
+    "ScientificNumber/x87differences and known independent integration residual limits remain;no persistent schema,grade or wider measurement-domain change"
+  ],
+  "uncertainty": "Read-only static evidence. No original execution,emulation or resource addition; existing CLEA/Gettysburg credits/license uncertainty retained. Browser clipping/state safety are explicit adapters,not recovered native visual equivalence."
+}
