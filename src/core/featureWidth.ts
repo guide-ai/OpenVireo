@@ -13,15 +13,18 @@ export type FeatureRecord=FeatureRegion&Readonly<{id:number;unknownId:string}>;
 export type FeatureWorkspace=Readonly<{policy:typeof FEATURE_POLICY;drafts:readonly FeatureDraft[];records:readonly FeatureRecord[]}>;
 export const EMPTY_FEATURES:FeatureWorkspace=Object.freeze({policy:FEATURE_POLICY,drafts:Object.freeze([]),records:Object.freeze([])});
 export function emptyFeatureDraft(unknownId:string):FeatureDraft{return {unknownId,center:'',left:'',leftContinuum:'',right:'',rightContinuum:''};}
-const fields=['center','left','leftContinuum','right','rightContinuum'] as const;
+export const FEATURE_DRAFT_FIELDS=Object.freeze(['center','left','leftContinuum','right','rightContinuum'] as const);
+export const FEATURE_WAVELENGTH_MIN=3900,FEATURE_WAVELENGTH_MAX=4500;
+const fields=FEATURE_DRAFT_FIELDS;
+export function featureDraftNumber(text:string):number{if(!/^\+?(?:\d+(?:\.\d*)?|\.\d+)$/.test(text))throw Error('Enter all five manual region values as decimal numbers.');return Number(text);}
 function obj(value:unknown,keys:readonly string[]):Record<string,unknown>{if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==keys.length||keys.some(k=>!Object.hasOwn(value,k)))throw Error('Invalid feature schema');return value as Record<string,unknown>;}
 export function featureRegion(value:FeatureRegion):FeatureRegion{
- if(!fields.every(k=>Number.isFinite(value[k]))||!(3900<=value.left&&value.left<value.center&&value.center<value.right&&value.right<=4500)||value.leftContinuum<=0||value.leftContinuum>1||value.rightContinuum<=0||value.rightContinuum>1)throw Error('Mark a center between two shoulders in 3900–4500 Å and positive continuum levels up to 1.');
+ if(!fields.every(k=>Number.isFinite(value[k]))||!(FEATURE_WAVELENGTH_MIN<=value.left&&value.left<value.center&&value.center<value.right&&value.right<=FEATURE_WAVELENGTH_MAX)||value.leftContinuum<=0||value.leftContinuum>1||value.rightContinuum<=0||value.rightContinuum>1)throw Error('Mark a center between two shoulders in 3900–4500 Å and positive continuum levels up to 1.');
  return Object.freeze({...value});
 }
 export function regionFromDraft(draft:FeatureDraft):FeatureRegion{
  const values={} as Record<typeof fields[number],number>;
- for(const k of fields){if(!/^\+?(?:\d+(?:\.\d*)?|\.\d+)$/.test(draft[k]))throw Error('Enter all five manual region values as decimal numbers.');values[k]=Number(draft[k]);}
+ for(const k of fields)values[k]=featureDraftNumber(draft[k]);
  return featureRegion(values);
 }
 /** Source identity validation is supplied by the fixed practice inventory.

@@ -59,16 +59,17 @@ export function serializeHtl(list:HtlList):Uint8Array{
  if(list.length>HTL_MAX_RECORDS)return fail('limit');
  const bytes=new Uint8Array(list.length*86);list.forEach((row,index)=>{if(!row[original]||row[original].length!==86)return fail('layout',index+1);bytes.set(row[original],index*86);});return bytes;
 }
-function writeText(bytes:Uint8Array,at:number,max:number,text:string,row:number){
- if(typeof text!=='string'||text.length>max||!/^[\x20-\x7e]*$/.test(text))return fail('text',row);
+function writeText(bytes:Uint8Array,at:number,max:number,text:string,row:number,source=''){
+ const high=(s:string)=>s.replace(/[\x20-\x7e]/g,'');
+ if(typeof text!=='string'||text.length>max||!/^[\x20-\x7e\xa0-\xff]*$/.test(text)||high(text)!==''&&high(text)!==high(source))return fail('text',row);
  // Preserve bytes after the new short-string value;their native semantics are unknown.
  bytes[at]=text.length;for(let i=0;i<text.length;i++)bytes[at+1+i]=text.charCodeAt(i);
 }
 export function updateHtlRecord(source:HtlRecord|null,fields:HtlFields,row=1):HtlRecord{
- if(typeof fields.id!=='string'||!fields.id.trim())return fail('text',row);coordinates(fields.ra,fields.dec,row);
+ if(typeof fields.id!=='string'||!fields.id.trim()&&(!source||fields.id!==source.id))return fail('text',row);coordinates(fields.ra,fields.dec,row);
  const bytes=source?Uint8Array.from(source[original]):new Uint8Array(86);
- if(!source||source.id!==fields.id)writeText(bytes,0,24,fields.id,row);
- if(!source||source.remarks!==fields.remarks)writeText(bytes,45,40,fields.remarks,row);
+ if(!source||source.id!==fields.id)writeText(bytes,0,24,fields.id,row,source?.id);
+ if(!source||source.remarks!==fields.remarks)writeText(bytes,45,40,fields.remarks,row,source?.remarks);
  if(!source||!Object.is(source.ra,fields.ra))bytes.set(encodeHtlExtended(fields.ra),25);
  if(!source||!Object.is(source.dec,fields.dec))bytes.set(encodeHtlExtended(fields.dec),35);
  return record(bytes,row);

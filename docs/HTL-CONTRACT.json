@@ -152,10 +152,11 @@
   "authoredPolicies": [
     "1000rows/86000bytes bound",
     "new emptylist/addtarget/coordinateediting",
-    "printableASCII editedstrings;highbyte importsdisplayed asLatin1 without claiming Windowscodepage",
+    "newcharactersprintableASCII;ASCIIeditsaround unchanged imported highbyte sequence allowed;Latin1byteview doesnotclaimWindowscodepage",
     "file-order/duplicate preservation",
     "separateHTLdocument save outside investigationJSON",
-    "immediatePoint through existing validated pointing function;knowncatalog association only exactID+Numbercoordinates"
+    "immediatePoint through existing validated pointing function;knowncatalog association only exactID+Numbercoordinates",
+    "Unchanged imported blank/whitespace IDs mayremain during edits to other fields;new/changedIDs mustbenonblank"
   ],
   "analysisArtifacts": [
     {

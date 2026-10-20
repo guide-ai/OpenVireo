@@ -1277,7 +1277,7 @@
   "htl.readError": "The HTL file could not be read. The confirmed list was kept.",
   "htl.error.size": "The HTL file exceeds the supported 86,000-byte / 1,000-record limit. The confirmed list was kept.",
   "htl.error.layout": "Invalid HTL layout: expected a headerless sequence of 86-byte records. The confirmed list was kept.",
-  "htl.error.text": "Unsupported HTL text. ID holds up to 24 bytes and remarks up to 40. Edits require printable ASCII and a nonblank ID; imported control bytes are not supported.",
+  "htl.error.text": "Unsupported HTL text. IDs hold up to 24 bytes and remarks up to 40. New or changed IDs must be nonblank. New text must be printable ASCII; existing imported high-byte characters may be kept unchanged while editing the ASCII around them.",
   "htl.error.number": "Unsupported HTL Extended coordinate: nonfinite, noncanonical or too small for a nonzero browser Number.",
   "htl.error.coordinates": "Enter finite coordinates with a decimal dot: RA from 0 to less than 24 hours and declination from −90 to +90 degrees.",
   "htl.error.index": "Choose an existing HTL row before editing.",
@@ -1302,7 +1302,7 @@
   "htl.remarks": "HTL remarks",
   "htl.ra": "HTL right ascension · hours",
   "htl.dec": "HTL declination · degrees",
-  "htl.editHelp": "Keep ID/remarks within the original byte capacities. Coordinates use browser Number precision; unchanged coordinates retain their full original Extended bytes.",
+  "htl.editHelp": "Keep ID/remarks within their original byte capacities. New characters must be printable ASCII; existing imported high-byte characters can stay in the same order. Unchanged coordinates keep their full Extended bytes; coordinate edits use browser Number precision.",
   "htl.apply": "Apply HTL edit",
   "htl.cancelEdit": "Cancel HTL edit",
   "htl.point": "Point to HTL selection",
@@ -1322,5 +1322,6 @@
   "cursor.readout": "Cursor wavelength {wavelength} Å · cursor height {intensity}",
   "cursor.empty": "No cursor preview. Confirmed manual inputs are kept.",
   "cursor.policy": "Cursor height is your selected trace level, not a sampled flux. Marking a new center clears the draft shoulders; saved width records stay unchanged. Calculate and review the width separately.",
-  "cursor.invalid": "Mark a center strictly inside 3900–4500 Å first. Each shoulder must lie on a different side of that center with a positive continuum height up to 1."
+  "cursor.invalid": "Mark a center strictly inside 3900–4500 Å first. Each shoulder must lie on a different side of that center with a positive continuum height up to 1.",
+  "cursor.shoulderHint": "Move the cursor left or right of the center before applying a shoulder. The two shoulders are chosen manually."
 }

@@ -1324,4 +1324,5 @@ export interface MessageParameters {
   "cursor.empty": never;
   "cursor.policy": never;
   "cursor.invalid": never;
+  "cursor.shoulderHint": never;
 }
