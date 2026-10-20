@@ -590,7 +590,7 @@
   "classLink.provenance": "Acquired classification provenance",
   "classLink.acquired": "Acquired star · browser simulation",
   "classLink.context": "Committed exposure {time} ms · random state {seed} · draws {draws}. The replay journal, curve hash and acquisition identity stay linked to your measurement and classification records.",
-  "classLink.domain": "The acquired 3700–4698.33 Å interval covers the shared 3900–4500 Å comparison window. The 600 acquired bins and the original atlas grids differ. Only wavelength-aligned visual comparison is enabled; no resampling, alignment or automatic grade is applied.",
+  "classLink.domain": "The acquired 3700–4698.33 Å interval covers the shared 3900–4500 Å comparison window. Its 600 printed bins and the original atlas grids differ, so point-by-point difference and acquired equivalent width remain unavailable. Numerical readouts and photos use the explicit endpoint-grid source policy; no wavelength alignment or automatic grade is supplied.",
   "classLink.template": "The supported star is generated from one assigned original template, A0000049.SP, using the bounded source-plus-sky acquisition. Comparing it with this atlas is a teaching exercise, not independent validation of its physical spectral type or the original simulator. Noise and sky affect feature depths. No catalog type is entered as your answer.",
   "classLink.identity": "Acquisition identity:",
   "classLink.measure": "Measure this acquired star",
