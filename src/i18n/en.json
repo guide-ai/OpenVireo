@@ -1368,7 +1368,7 @@
   "photo.invalidSource": "Photo hidden: this curve could not be associated with its verified source identity. Reload the comparison sources. No fallback trace is shown for this source-integrity failure.",
   "photo.scrollLabel": "Photographic strip and wavelength scale; scroll horizontally to inspect all columns",
   "photo.scrollHelp": "On a narrow screen, scroll horizontally or focus this image and use the arrow keys to inspect the whole wavelength interval. Available photo strips scroll together across the same displayed wavelength interval.",
-  "photo.regionNote": "Manual draft wavelength markers: left {left} Å · center {center} Å · right {right} Å. Continuum heights remain on the intensity trace; no width is calculated from these photo markers.",
+  "photo.regionNote": "Manual draft wavelength markers: left {left} Å · center {center} Å · right {right} Å. The outlined continuum projects your manual heights; it does not measure brightness or calculate a width.",
   "photo.acquiredPolicy": "The acquired source-plus-sky derivative and the atlas have not been continuum-matched. Photo display scaling does not subtract sky, remove noise or provide a physical spectral type.",
   "photo.importedPolicy": "Imported bytes and printed samples are retained; photo uses its admitted endpoint-grid profile. A labelled unavailable-photo fallback keeps the original printed-coordinate trace. File names and header claims do not establish acquisition or original authorship; no continuum matching or wavelength alignment is supplied.",
   "combined.option": "Combined photo and trace",
@@ -1377,7 +1377,7 @@
   "combined.readout": "Unknown trace · {label}",
   "combined.traceUnavailable": "Sampled unknown trace unavailable under the admitted source, positive-maximum or integer-height policy. The labelled printed-coordinate trace is retained.",
   "combined.tracePolicy": "The unknown uses the same 500 sampled positions and positive visible maximum as its photo. The trace has a 100-pixel amplitude with nearest-even integer heights. Reversing the photos does not reverse this trace. This is a display scale; numerical readings still report retained relative intensity.",
-  "combined.regionPolicy": "Draft markers show manually entered wavelengths only. Continuum heights and equivalent-width work remain in the separate manual trace tool.",
+  "combined.regionPolicy": "Continuum marks project the selected source’s manual inputs without scaling by the displayed peak. Equivalent-width calculation remains a separate reviewed action.",
   "combined.scrollLabel": "Sampled unknown trace and wavelength scale; scroll horizontally with the other strips",
   "combined.fallback": "{label} · printed-coordinate trace fallback",
   "viewport.legend": "Wavelength window",
@@ -1443,7 +1443,7 @@
   "range.limits": "A source must cover the requested sampled window. Unavailable photo or sampled views retain a labelled full-range printed-point fallback; no extrapolation or random intensity is added. Printed views show retained points only. Manual equivalent width remains in its existing 3900–4500 Å practice profile. Range preferences are temporary and are not saved in investigation files. Default fills the draft; Apply confirms it.",
   "range.invalidRead": "Enter a decimal wavelength from {minimum} to {maximum} Å using a dot, within the actual source coverage. No scientific work was changed.",
   "range.readScope": "The recovered numerical sampler reads within the applied {minimum}–{maximum} Å range and actual source coverage. No extrapolation or random intensity is supplied. Native pixel/event and x87 equivalence remain unverified.",
-  "widthSource.intro": "Choose the actual spectrum to measure, then mark a center and two continuum shoulders or enter their values. You choose the continuum; the tool does not fit it or classify the source.",
+  "widthSource.intro": "Choose the actual spectrum to measure, then mark a center and two continuum shoulders or enter their values. You choose the continuum; the tool does not fit it or classify the source. Comparison marks follow the selected source’s manual inputs wherever that source is displayed. Combined view repeats the unknown and does not display the lower standard.",
   "widthSource.choose": "Equivalent-width source",
   "widthSource.source": "Measuring: {source} · {kind}.",
   "widthSource.resultSource": "Result source: {source} · {kind} · SHA-256 {sha256}",
@@ -1461,5 +1461,6 @@
   "cursor.mouseButtons": "With Mark center selected, left mouse marks the center and right mouse marks a continuum shoulder. A center must exist first. The shoulder tool still supports the primary button, touch and keyboard. Inspect cursor leaves the browser context menu available.",
   "cursor.window": "Manual measurement window",
   "cursor.rangeLabel": "Manual measurement wavelength range",
-  "cursor.windowHelp": "Zoom up to 16× around your marked center when visible. Without a visible center, zoom in uses the window midpoint and zoom out uses the retained window center. Pan by 10% of the visible interval. Marks outside the window are hidden; their numeric inputs and confirmed records are retained. Reset restores 3900–4500 Å. This separate tool window is not saved and does not change the comparison display or the width calculation."
+  "cursor.windowHelp": "Zoom up to 16× around your marked center when visible. Without a visible center, zoom in uses the window midpoint and zoom out uses the retained window center. Pan by 10% of the visible interval. Marks outside the window are hidden; their numeric inputs and confirmed records are retained. Reset restores 3900–4500 Å. This separate tool window is not saved and does not change the comparison display or the width calculation.",
+  "sharedMarks.policy": "Continuum marks project your selected source’s manual inputs. Heights are not sampled flux or photographic brightness, and do not follow each curve’s peak normalization. Off-window marks are clipped without changing numeric inputs; out-of-band photo heights remain available in the numeric fields and separate manual tool."
 }

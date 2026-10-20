@@ -1,4 +1,6 @@
 import FeatureCursor from './FeatureCursor';
+import type{FeatureComparisonDraft}from'./core/comparisonFeatureGeometry';
+import{featureDraftMarkers}from'./core/featureCursor';
 import{useEffect,useMemo,useRef,useState}from'react';import{t,scientific}from'./i18n';
 import{CLASSIFICATION_CATALOG}from'./core/classification';import type{FluxChoice}from'./core/comparisonProbe';
 import{selectedFeatureSource,measureSelectedFeature,SelectedFeatureSourceError}from'./core/selectedFeatureWidth';
@@ -6,7 +8,7 @@ import{EMPTY_FEATURES,MAX_FEATURE_RECORDS,emptyFeatureDraft,regionFromDraft,upda
 const kindKeys={practice:'widthSource.kind.practice',standard:'widthSource.kind.standard','imported-spectrum':'widthSource.kind.imported-spectrum','catalog-star-acquisition':'widthSource.kind.catalog-star-acquisition'}as const;
 const practiceIds=CLASSIFICATION_CATALOG.practice.map(p=>p.id);
 type WidthReading=Readonly<{key:string;region:FeatureRegion;result:FeatureResult;source:ReturnType<typeof selectedFeatureSource>}>;
-export default function FeatureMeasurement({active,unknownId,choices,workspace,onChange,disabled}:{active:boolean;unknownId:string;choices:readonly FluxChoice[];workspace?:FeatureWorkspace;onChange:(w:FeatureWorkspace)=>void;disabled:boolean}){
+export default function FeatureMeasurement({active,unknownId,choices,workspace,onChange,disabled,onOverlay}:{active:boolean;unknownId:string;choices:readonly FluxChoice[];workspace?:FeatureWorkspace;onChange:(w:FeatureWorkspace)=>void;disabled:boolean;onOverlay?:(binding:FeatureComparisonDraft|null)=>void}){
  const w=workspace??EMPTY_FEATURES,[role,setRole]=useState<'unknown'|'upper'|'lower'>('unknown'),choice=choices.find(c=>c.role===role),key=unknownId+'|'+role+'|'+(choice?.sourceId??'')+'|'+(choice?.spectrum?.sha256??'');
  const admission=useMemo(()=>{try{return{source:choice?selectedFeatureSource(choice):null,error:null};}catch(e){return{source:null,error:e instanceof SelectedFeatureSourceError?e.code:'source'};}},[choice]);
  const source=admission.source,persistent=role==='unknown'&&practiceIds.includes(unknownId)&&choice?.sourceId==='practice:'+unknownId,usable=active&&!disabled&&!!source;
@@ -15,6 +17,8 @@ export default function FeatureMeasurement({active,unknownId,choices,workspace,o
  const currentPending=usable&&pending?.key===key?pending:null,currentInspected=usable&&inspected?.key===key?inspected:null;
  useEffect(()=>{setPending(null);setInspected(null);setTemp(null);setError('');dialog.current?.close();},[key,active,choice?.spectrum]);
  useEffect(()=>{if(disabled){setPending(null);dialog.current?.close();}},[disabled]);
+ const markers=featureDraftMarkers(draft),hasMarks=markers.center!==null||markers.left!==null||markers.right!==null;
+ useEffect(()=>{onOverlay?.(usable&&choice&&hasMarks?{choice,draft}:null);return()=>onOverlay?.(null);},[onOverlay,usable,choice,hasMarks,unknownId,draft.center,draft.left,draft.leftContinuum,draft.right,draft.rightContinuum]);
  function changeDraft(next:FeatureDraft){if(!usable)return;setError('');setInspected(null);if(persistent)onChange(updateFeatureDraft(w,next,practiceIds));else setTemp({key,draft:next});}
  function edit(k:keyof Omit<FeatureDraft,'unknownId'>,value:string){changeDraft({...draft,[k]:value});}
  function calculate(){if(!usable||!choice)return;try{const reading=measureSelectedFeature(choice,regionFromDraft(draft));setPending({key,...reading});setError('');dialog.current?.showModal();}catch{setError(t('feature.invalid'));}}

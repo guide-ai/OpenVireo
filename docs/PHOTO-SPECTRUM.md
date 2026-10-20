@@ -1,5 +1,7 @@
 # Positive and reversed photographic comparison
 
+Current geometry follow-up: [source-bound manual comparison marks](SHARED-FEATURE-GEOMETRY.md) projects partial/manual inputs on the selected source’s printed, sampled and photographic panes with recovered125-row/100-level/25-row-offset geometry. This supersedes wavelength-only/unknown-only overlays; direct shared-pane picking and full native pixel/event behavior remain open. No integrator/record/format or acceptance-status change.
+
 The classification laboratory now offers **Grayscale photo** and **Reverse photographic grayscale** for its upper standard, unknown and lower standard. This implements the recovered photo transfer and logical columns, rather than inventing an image/noise model. It uses the actual displayed original or eligible acquired/imported source. Manual classification, numerical readout, feature drafts/records, raw acquisition and file/session identity remain separate.
 
 The [combined/window follow-up](COMBINED-SPECTRUM.md) now adds the recovered combined layout and bounded photo/combined zoom/pan. Full-domain assertions below describe the original photo increment.

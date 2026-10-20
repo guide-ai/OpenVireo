@@ -1,5 +1,7 @@
 # N02/E03 bounded acceptance — 18 October 2026
 
+Current geometry follow-up: [source-bound manual comparison marks](SHARED-FEATURE-GEOMETRY.md) projects partial/manual inputs on the selected source’s printed, sampled and photographic panes with recovered125-row/100-level/25-row-offset geometry. This supersedes wavelength-only/unknown-only overlays; direct shared-pane picking and full native pixel/event behavior remain open. No integrator/record/format or acceptance-status change.
+
 Current manual-window follow-up: [zoom/pan during manual feature marking](FEATURE-MARK-VIEWPORT.md) connects the existing interval policy to source-bound pointer/keyboard coordinates, preserves numeric work while outside marks hide, and cancels stale-view gestures. Native paired-pan/paint/sentinel and shared-photo geometry remain open; no format/integrator or acceptance-status change.
 
 Current editing follow-up: [conditional shoulders and held geometry](CONDITIONAL-SHOULDERS.md) supersedes blanket cursor-center clearing for the bounded logical-width adapter, preserving records and source isolation. Full native shared-pane/pixel/runtime/file/classroom acceptance remains partial.

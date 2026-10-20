@@ -41,3 +41,7 @@
 .classification-range{border-top:1px solid #d7e4df;padding-top:8px}.classification-range summary{cursor:pointer;min-height:44px;align-content:center}.classification-range fieldset{min-width:0;margin:0;padding:8px;border:1px solid #c9dbd3}.classification-range input{width:100%;box-sizing:border-box}.classification-range [role=alert]{color:#853e2e;background:#fff0e8;padding:8px}
 
 .feature-measurement>label[for=width-source]{display:block;font-weight:600;margin:12px 0 6px}.feature-measurement>select{width:100%;max-width:100%;min-height:44px;padding:8px;border:1px solid #c9dbd3;border-radius:5px}.feature-measurement>p,.feature-measurement dialog p{overflow-wrap:anywhere}
+
+.shared-feature-marks .photo-mark-front{stroke-dasharray:4 3}.manual-feature-endpoint{fill:#102d3c;stroke:#fff;stroke-width:2}
+
+.shared-feature-marks .photo-mark-back{stroke:#fff;stroke-width:5;stroke-dasharray:none}.shared-feature-marks .photo-mark-front{stroke:#000;stroke-width:2;stroke-dasharray:4 3}

@@ -1,5 +1,7 @@
 # Manual spectral feature cursor
 
+Current geometry follow-up: [source-bound manual comparison marks](SHARED-FEATURE-GEOMETRY.md) projects partial/manual inputs on the selected source’s printed, sampled and photographic panes with recovered125-row/100-level/25-row-offset geometry. This supersedes wavelength-only/unknown-only overlays; direct shared-pane picking and full native pixel/event behavior remain open. No integrator/record/format or acceptance-status change.
+
 Current view follow-up: [manual measurement zoom/pan](FEATURE-MARK-VIEWPORT.md) adds a separate ephemeral window for marking, with visible-range coordinate mapping and cancellation on view changes. Full native paired-pan/pixel/shared-photo geometry remains open.
 
 Current edit follow-up: [conditional right-then-left shoulders and held geometry](CONDITIONAL-SHOULDERS.md) replaces the initial unconditional center-clearing policy, supports native left-center/right-shoulder mouse action and cancels stale transforms. Source-bound width formats/integration are unchanged; full native pixel/shared-pane behavior remains unproved.

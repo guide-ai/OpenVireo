@@ -1,0 +1,411 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-SHARED-MARK-01",
+      "start": "0x507849",
+      "endExclusive": "0x5078b3",
+      "byteRangeSHA256": "1dcd680d93b8e18f76388734ba6b2626f25a7d0ac6a3809d549e4bcbed3bac57",
+      "listingSHA256": "b7c32d222d0485d507cd72d4e5ea49f3d10996a4a7622e4ab74214f8842ee036",
+      "localListing": "panel-geometry.asm"
+    },
+    {
+      "evidenceId": "VIREO-SHARED-MARK-02",
+      "start": "0x509a63",
+      "endExclusive": "0x509af8",
+      "byteRangeSHA256": "de47773641259f235e1bafd5b4c77dd4a888d989961e740eb80b567682416266",
+      "listingSHA256": "e90d178305f455799d9caf8fa247075be4fdfffb27f139117ad3c7c350f6f52c",
+      "localListing": "manual-shoulder-values.asm"
+    },
+    {
+      "evidenceId": "VIREO-SHARED-MARK-03",
+      "start": "0x509eac",
+      "endExclusive": "0x509f24",
+      "byteRangeSHA256": "ac99f018ec1ee4e98af1743cc843cec877b2fae6e409aa594c2065f96680d65b",
+      "listingSHA256": "bae355590a2e54a3d0ba56330c8728c25303c2f625c9da1125c295458f9196d0",
+      "localListing": "pane-map.asm"
+    },
+    {
+      "evidenceId": "VIREO-SHARED-MARK-04",
+      "start": "0x509dc0",
+      "endExclusive": "0x509eac",
+      "byteRangeSHA256": "bd0b1fd80b77033b016646ad665e6e227ecd604f8837d0e84830835e775c4e4c",
+      "listingSHA256": "e04b75912d2a9a49c93b8246e38bf99029020911a4140473bd9486da66bdf8c7",
+      "localListing": "shoulder-paint.asm"
+    },
+    {
+      "evidenceId": "VIREO-SHARED-MARK-05",
+      "start": "0x509cf4",
+      "endExclusive": "0x509dc0",
+      "byteRangeSHA256": "85f5d0a32cc14d1e653173d3a82f0d524ab44ac8ee48c6c4716bc65be78a216a",
+      "listingSHA256": "48a430026d03735e7af57b76b6c265339bc710c9746c756f05d493b81989d97d",
+      "localListing": "center-paint.asm"
+    },
+    {
+      "evidenceId": "VIREO-SHARED-MARK-06",
+      "start": "0x508a5d",
+      "endExclusive": "0x508a94",
+      "byteRangeSHA256": "3f5fbc3442cb3bedb0a1d1942f756f3c16bc6b254433f7cae4544f7223ef3a85",
+      "listingSHA256": "d8b96d2edc8cb310ad64b3e8079b810c23bf4f99db1252fbaab3abfcb0f39131",
+      "localListing": "unknown-photo-band.asm"
+    },
+    {
+      "evidenceId": "VIREO-SHARED-MARK-07",
+      "start": "0x508f37",
+      "endExclusive": "0x508f6b",
+      "byteRangeSHA256": "4d801a8b440b6be2346c66443d12ef2fa9ec1974310a4162e40c6ef540893dc9",
+      "listingSHA256": "3649d4a0594a0df2c3fa4ae824e2341f693f09229b4823d7ef5b5d3e3aa99f26",
+      "localListing": "standard-photo-band.asm"
+    }
+  ],
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "manualDivisor": {
+    "address": "0x509c4c",
+    "bytes": 4,
+    "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01",
+    "value": 100
+  },
+  "contracts": {
+    "panels": "0x507849..0x5078b3 establishes X0..500 and panel ranges0..125,125..250,250..375",
+    "manual": "0x509a63..0x509af8 calls0x509eac;left/right wavelength=min+localX*step;manual continuum=(paneBottom-globalY)/100;not sampled intensity or gray transfer",
+    "photo": "Unknown0x508a62..0x508a94:top=unknownPaneTop+25,bottom=unknownPaneBottom-15. Standard0x508f3c..0x508f6b:top=bottom-125+25,bottom=bottom-15. Both85rows in125pane;local photo Y=100-100*C",
+    "shoulderPaint": "0x509dc0..0x509eac:each positive-X shoulder stem from manually storedY to selected pane bottom;join the two shoulder Y points when both flags present",
+    "centerPaint": "0x509cf4..0x509dc0 draws a full shared vertical marker then selected-pane horizontal readout mark and revalidates. This browser overlay projects center only on source-associated panes,not global nativecenterX/Ystate"
+  },
+  "implemented": [
+    "Retained admitted measurement source/draft snapshot bound by exact FluxChoice identity,actual sourceID/hash/preparation;unknown/upper/lower overlays cannot migrate onto replaced sources",
+    "Partial numeric/manual marks project on corresponding comparison panes;combined unknown photo+trace show same source/manual values in their own coordinate systems",
+    "Photo Y=100-100*C,sampledY=125-100*C,printed browseraxisY=306-250*C;no visible-peak,gray,reverse or source-flux continuum inference",
+    "Individual marks and continuum clipped geometrically to actual displaywindow/band,without clamping/deleting stored inputs;connector requires a complete correctly bracketed center/shoulder region",
+    "Existing passive region prop retained for standalone renderer;native-style source selection remains explicit existing browser width selector;no direct comparison-pane editing added",
+    "No scientific integrator,sampler,counts/seed,archive/JSON/CSV,grade,sourcebytes or resource additions"
+  ],
+  "remaining": [
+    "Direct native shared/photo-pane marking and same-pane mouseYguard,full shared vertical center/readout marker,integer X/Y sentinels and Extended retained scalar split",
+    "Native paired-pan/repaint/zoom lifecycle and focus/reentry/global configuration,GDI/VCL/x87/formatting",
+    "Wider numerical domains,result/grade/legacy interchange,broader instrument/edition and classroom/rights acceptance"
+  ],
+  "uncertainty": "Read-only static recovery,not original execution/emulation. Continuous SVG/sixdecimal/manual positive<=1 policy and clipped85-row photo are browser adapters. Existing CLEA/Gettysburg source credits and license uncertainty retained."
+}

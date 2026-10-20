@@ -1463,4 +1463,5 @@ export interface MessageParameters {
   "cursor.window": never;
   "cursor.rangeLabel": never;
   "cursor.windowHelp": never;
+  "sharedMarks.policy": never;
 }
