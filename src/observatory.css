@@ -29,3 +29,7 @@
 .telescope-motion .observatory-note{font-size:.85rem;line-height:1.6}.telescope-motion .motion-directions button{font-size:.95rem}.telescope-motion .button-row>button{min-height:44px;font-size:.85rem}
 
 .target-search{display:grid;gap:8px;margin:16px 0}.target-search input{width:100%;min-width:0}.target-search p{margin:0}.target-search button{justify-self:start}
+
+.htl-card summary h2{display:inline;font-size:1.2rem}.htl-card input{width:100%;min-width:0}.htl-card select{width:100%;max-width:100%}.htl-card fieldset{min-width:0;display:grid;gap:8px;margin:12px 0;padding:12px}.htl-card .button-row{flex-wrap:wrap;gap:8px;margin:12px 0}.htl-source,.htl-card p{overflow-wrap:anywhere}
+
+.htl-card{padding:24px}.htl-card .button-row{display:flex}.htl-card .button-row button{max-width:100%}

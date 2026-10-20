@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "originalExecutableSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "recordBytes": 86,
+  "fields": [
+    {
+      "offset": 0,
+      "bytes": 25,
+      "contract": "PascalShortString24 identifier"
+    },
+    {
+      "offset": 25,
+      "bytes": 10,
+      "contract": "little-endian x87Extended RA,hours"
+    },
+    {
+      "offset": 35,
+      "bytes": 10,
+      "contract": "little-endian x87Extended declination,degrees"
+    },
+    {
+      "offset": 45,
+      "bytes": 41,
+      "contract": "PascalShortString40 annotation;not an acquired measurement"
+    }
+  ],
+  "procedures": [
+    {
+      "name": "HTLread",
+      "address": "0x5903d8",
+      "range": "0x590424\u20130x5904d6",
+      "evidence": "typedfile0x56 recordsize,readloop+linkedlist insertion"
+    },
+    {
+      "name": "THotListForm1_SaveList1Click",
+      "address": "0x5919b4",
+      "range": "0x591b12\u20130x591bc5",
+      "evidence": "typedfile0x56 recordsize,linkedlist iteration/write"
+    },
+    {
+      "name": "THotListForm1_EditSelectedLine1Click",
+      "address": "0x591488",
+      "range": "0x59153b\u20130x5915a3",
+      "evidence": "copies0x15dwords+word=86bytes through editor on accepted modalresult;not proof of web coordinate editing"
+    },
+    {
+      "name": "THotListForm1_DeleteSelectedLine1Click",
+      "address": "0x59172c"
+    },
+    {
+      "name": "THotListForm1_UndoEditDelete1Click",
+      "address": "0x5918d0"
+    },
+    {
+      "name": "THotListForm1_Slew1Click",
+      "address": "0x591e24",
+      "range": "0x591e94\u20130x591edc",
+      "evidence": "selectedrow+0x19/+0x23 two10byteExtended copies,then modalclose"
+    }
+  ],
+  "dfm": {
+    "class": "THotListForm1",
+    "sha256": "55e515a9b10153cd5e9f906fd3cf8633491337a07af9faa87348f8fd8b7d66cf",
+    "source": "task-2/analysis/observatory/THotListForm1.json",
+    "eventMap": "task-2/analysis/observatory/method-map.json"
+  },
+  "originalFiles": [
+    {
+      "name": "Hubble.HTL",
+      "bytes": 1118,
+      "sha256": "02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986",
+      "rows": 13
+    },
+    {
+      "name": "LSS_Field01.HTL",
+      "bytes": 1978,
+      "sha256": "4981140366916c6aa410afe7905a165bceb89af47686375c4f0cf60f42acbe9e",
+      "rows": 23
+    },
+    {
+      "name": "LSS_Field02.HTL",
+      "bytes": 2150,
+      "sha256": "994bfeb21bcde528faeb3969fb25c24fe7a0c8de8940c33beffec50248b4ec3d",
+      "rows": 25
+    },
+    {
+      "name": "LSS_Field03.HTL",
+      "bytes": 2150,
+      "sha256": "1b62cf132edca82187a793b6ed2671eea715b040b884412e6131cf0aa0a2e830",
+      "rows": 25
+    },
+    {
+      "name": "LSS_Field04.HTL",
+      "bytes": 1978,
+      "sha256": "d19f8c5b3fc159e991baaa4572c1357bff15bdfdf72e83062fadebd17eb5ea53",
+      "rows": 23
+    },
+    {
+      "name": "LSS_Field05.HTL",
+      "bytes": 2064,
+      "sha256": "7c2b82906a816398398ae1d62adb82d030675f28201623563b1bbf0baf90b8fe",
+      "rows": 24
+    },
+    {
+      "name": "LSS_Field06.HTL",
+      "bytes": 1806,
+      "sha256": "799d7c24623114f012899ad2b538fe8e128364e5f084816392a4243a822fa253",
+      "rows": 21
+    },
+    {
+      "name": "LSS_Field07.HTL",
+      "bytes": 2236,
+      "sha256": "ee4b402123321c5127badb72761e6f766205d5fc19f6877d6c90165def0d3d62",
+      "rows": 26
+    },
+    {
+      "name": "LSS_Field08.HTL",
+      "bytes": 2150,
+      "sha256": "ae677d270a1e11cf6a09bafa890716065c81b8a20e267570fa8c9b44599b3b2d",
+      "rows": 25
+    },
+    {
+      "name": "LSS_Field09.HTL",
+      "bytes": 2322,
+      "sha256": "b4ab710dd3adb9fe0f6cc980978688faa5c522dba233df972edcd8800d89350e",
+      "rows": 27
+    },
+    {
+      "name": "ObjectX.HTL",
+      "bytes": 1462,
+      "sha256": "fd9e68e4c1cd1c89584581be329c157af1edf139aabc7591f397fd49858243b3",
+      "rows": 17
+    },
+    {
+      "name": "PLEIADES.HTL",
+      "bytes": 2064,
+      "sha256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2",
+      "rows": 24
+    },
+    {
+      "name": "Pulsars.HTL",
+      "bytes": 688,
+      "sha256": "9dfba54887a0bf493ca665f53e69f48c13f3a54f7aa4f878912914468e28a439",
+      "rows": 8
+    }
+  ],
+  "corpusRows": 281,
+  "unusedNonzeroStringBytes": 6665,
+  "scope": "Static original-file and machine-code evidence;no original execution or original writer oracle. Additional original HTL payloads are not bundled or publicly uploaded.",
+  "numericalPolicy": "Exact integer nearest-even Extended-to-binary64 conversion;noncanonical/nonfinite/zero-underflow rejected;unchanged fields retain bytes. Edited Number expanded exactly to canonicalExtended. Not x87 arithmetic/runtime equivalence.",
+  "sourceTerms": "See existing THIRD_PARTY_NOTICES.txt and docs/RESOURCE-PROVENANCE.json. CLEA/NSF/Gettysburg credits;source-specific terms and uncertainties retained;no universal public-domain or new license assertion.",
+  "authoredPolicies": [
+    "1000rows/86000bytes bound",
+    "new emptylist/addtarget/coordinateediting",
+    "printableASCII editedstrings;highbyte importsdisplayed asLatin1 without claiming Windowscodepage",
+    "file-order/duplicate preservation",
+    "separateHTLdocument save outside investigationJSON",
+    "immediatePoint through existing validated pointing function;knowncatalog association only exactID+Numbercoordinates"
+  ],
+  "analysisArtifacts": [
+    {
+      "file": "native-save.asm",
+      "sha256": "bd3dc9494cb997d86fa17be194525f808d7b6dc2e3e03b4141bf8a17574c4bd6",
+      "location": "External task-3/htl-recovery;not original runtime output"
+    },
+    {
+      "file": "native-edit-delete-undo.asm",
+      "sha256": "e67e58cd97488c4ccb23f0f288a35793f6f24f233a0d0b47970daf7a774a37fd",
+      "location": "External task-3/htl-recovery;not original runtime output"
+    },
+    {
+      "file": "native-format.asm",
+      "sha256": "ee2110d3c338844bedc24bbb5f47416244adfcc4f88c6cb8abe5d48c7511f1e5",
+      "location": "External task-3/htl-recovery;not original runtime output"
+    },
+    {
+      "file": "recover.py",
+      "sha256": "2e01ea30267f12290d333f9f5cce755a2c47e6ed234b814428b4dbb48fad3122",
+      "location": "External task-3/htl-recovery;not original runtime output"
+    },
+    {
+      "file": "original-list-vectors.json",
+      "sha256": "163813e2a1cff1f4ab8663fef94d9565b677665027ef80a4f24c1dd3e0ec47d7",
+      "location": "External task-3/htl-recovery;not original runtime output"
+    },
+    {
+      "file": "original-validation.json",
+      "sha256": "f094488797b9cbab0d87e3882f133a751248d7d050b5b52bbef6f7dd9e0ee398",
+      "location": "External task-3/htl-recovery;not original runtime output"
+    }
+  ]
+}

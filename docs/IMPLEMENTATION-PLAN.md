@@ -6,6 +6,8 @@ Q06 resource-readiness follow-up: [local resource preflight](LOCAL-SETUP.md) ver
 
 A07 bounded search follow-up: [existing catalog search](TARGET-SEARCH.md) adds names/IDs/list filtering while retaining the current selection,explicit pointing and manual pupil work. Original list editing/bookmarks and native runtime matching remain pending;all64acceptance statuses are unchanged.
 
+A07 native HTL follow-up: [original hot-list files](HTL-CONTRACT.md) now load/edit/save the recovered86byte layout,retain untouched Extended/string bytes andconnect an explicit selected-row pointing action. Original local corpus13files/281rows andbrowser roundtrips support this bounded file contract. New-target/coordinate editing andseparate-document browser lifecycle are explicit adaptations;native runtime,other layouts andall64primary acceptance statuses remain unchanged.
+
 The dated narrative and baseline inventory below contain historical descriptions of work that was subsequently delivered. Use the latest feature evidence and `data/planning/acceptance-status.json` together; the package statuses are acceptance outcomes, not a percentage of code ported.
 
 - Delivered bounded optical slices: all three compiled telescope/site profiles; the supported star, three Hubble galaxies and pinned sky acquisitions; SSP/JSON/CSV interoperability; shared stationary spectral clock/access; fixed-list UBV photometry with 16/14/10 telescope-specific domains, sizes 5/10/15 and recovered timing choices; blank manual entries, explicit colors and fits; six native model families and sixteen reference-dataset comparisons with reversible manual exclusions; raw owners 1–10/full investigation 8–21 continuity.
