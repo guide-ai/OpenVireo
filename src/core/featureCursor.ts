@@ -23,14 +23,31 @@ export function moveFeatureCursor(p:FeatureCursorPoint,key:'ArrowLeft'|'ArrowRig
 const decimal=(value:number)=>Number(value.toFixed(6)).toString();
 const draftNumber=(text:string)=>{try{return featureDraftNumber(text);}catch{return NaN;}};
 export function hasFeatureCenter(draft:FeatureDraft):boolean{const center=draftNumber(draft.center);return Number.isFinite(center)&&center>FEATURE_CURSOR_FRAME.minimum&&center<FEATURE_CURSOR_FRAME.maximum;}
-/** Explicit user marks only. A new center clears draft shoulders to avoid
- * carrying a different region forward;confirmed width records are untouched. */
+/** Original0x5096fd..0x509745 calls the shared guard0x509c50 right first,
+ * then left after the right coordinate may have been cleared. In this bounded
+ * single-source wavelength adapter,valid pairs stand for present same-panel
+ * marks;invalidated X/Y is represented by a blank input pair. Native integer
+ * pixels/sentinels and retained Extended scalars are not reproduced.
+ * docs/CONDITIONAL-SHOULDERS-PROVENANCE.json. */
+export function retainFeatureShoulders(draft:FeatureDraft,center:number){
+ if(!Number.isFinite(center)||center<=FEATURE_CURSOR_FRAME.minimum||center>=FEATURE_CURSOR_FRAME.maximum)throw new FeatureCursorError();
+ const pair=(w:string,i:string)=>{const p={wavelength:draftNumber(w),intensity:draftNumber(i)};return validPoint(p)&&p.intensity>0?p:null;};
+ let left=pair(draft.left,draft.leftContinuum),right=pair(draft.right,draft.rightContinuum);
+ const valid=(candidate:FeatureCursorPoint|null)=>!!candidate&&(!right||center<right.wavelength)&&(!left||center>left.wavelength);
+ if(!valid(right))right=null;
+ if(!valid(left))left=null;
+ return Object.freeze({left:left?draft.left:'',leftContinuum:left?draft.leftContinuum:'',right:right?draft.right:'',rightContinuum:right?draft.rightContinuum:''});
+}
+/** Original measurement uses left center/right shoulder. Explicit tool buttons
+ * retain primary-button touch/keyboard use;inspect keeps its context menu. */
+export function featurePointerAction(mode:FeatureCursorMode,button:number):FeatureCursorMode|null{if(!['inspect','center','shoulder'].includes(mode))return null;return button===0?mode:button===2&&mode!=='inspect'?'shoulder':null;}
+/** Explicit user marks only;confirmed width records are untouched. */
 export function markFeatureDraft(draft:FeatureDraft,mode:'center'|'shoulder',point:FeatureCursorPoint):FeatureDraft{
  if(!validPoint(point))throw new FeatureCursorError();
  const wavelength=decimal(point.wavelength),intensity=decimal(point.intensity),w=Number(wavelength),i=Number(intensity);
  if(mode==='center'){
   if(w<=FEATURE_CURSOR_FRAME.minimum||w>=FEATURE_CURSOR_FRAME.maximum)throw new FeatureCursorError();
-  return Object.freeze({...draft,center:wavelength,left:'',leftContinuum:'',right:'',rightContinuum:''});
+  return Object.freeze({...draft,center:wavelength,...retainFeatureShoulders(draft,w)});
  }
  const center=draftNumber(draft.center);if(!hasFeatureCenter(draft)||i<=0||w===center)throw new FeatureCursorError();
  return Object.freeze(w<center?{...draft,left:wavelength,leftContinuum:intensity}:{...draft,right:wavelength,rightContinuum:intensity});

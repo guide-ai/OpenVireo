@@ -1,0 +1,23 @@
+# Conditional shoulder validation
+
+Baseline `b0f6619`, separate local branch. The [contract](CONDITIONAL-SHOULDERS.md) and [six-fragment provenance](CONDITIONAL-SHOULDERS-PROVENANCE.json) distinguish recovered right-then-left constraints from continuous-wavelength draft and browser-release/geometry adapters. All1279 original size/SHA-256 checks pass. No archive/schema, integrator, source-flux, count/seed, grade or asset change.
+
+Verification passes: **1301 unit tests in128 files**, **65 affected complete browser flows**, TypeScript/production build. Scoped checks passed18 core/message contracts and15 relevant cursor/source-width flows. The existing large-chunk build advisory remains. These65 flows are the affected set, not the entire repository E2E suite. No new failure was observed in this increment. The earlier unit expectation for unconditional clearing was replaced with the delivered retention contract; new strict-boundary/asymmetric tests prevent weakening it into independent side filtering.
+
+Core tests cover both retained pairs, right-only invalidation, left-crossing invalidation of both, equality, one/malformed/out-of-domain/nonpositive pair, exact preservation of valid text/source identity, confirmed-record immutability and unchanged integrated area when only center moves inside a retained region. Explicit button mappings preserve inspect/middle non-writing behavior. Existing six-decimal and positive/domain safeguards remain covered.
+
+## Independent state contrast
+
+324 synthetic marker/continuum combinations ×599 interior centers give **194076 complete manual-draft transitions**. They include absent, outside and boundary shoulders plus malformed/zero continuum. Actual outputs are captured through `markFeatureDraft`; source identity, canonical center, preserved retained strings and unmodified input objects are checked. Independent Python uses closed-form Boolean constraints and exact-rational positivity, without importing port code or executing/interpreting original instructions. All compact transition digests match.
+
+This checks the declared continuous-wavelength/six-decimal, single-source adapter. It does not certify native500px mouse rounding, positive-X sentinel behavior, VCL/FPU/GDI or retained Extended scalar lifecycle. The original clears coordinate flags; the browser visibly clears the corresponding draft pair. Synthetic state fixtures are not spectra or original observations. Numerical width evidence from the preceding increment remains scoped to its unchanged integrator; the known0.1295Å example of stopping-test versus ideal-integral difference is not removed by this editing change.
+
+## Actual browser and visual checks
+
+The five new flows verify left-center/right-shoulder marking and right-drag preview until release; preserving both inside the bracket, clearing right on crossing it and clearing both on crossing left; unchanged confirmed records/manual class; canceled geometry after document scroll, CSS transform, same-breakpoint resize and window blur; draft/source change during a held right gesture; normal inspect context menu versus consumed marking menu; missing-center rejection; temporary reference JSON isolation and unchanged width area for a center-only move; touch/keyboard controls and mobile no-overflow. Existing pointer cancel/capture/hidden/escape, imported/acquired/restoration and scientific flows remain covered.
+
+Inspected desktop/mobile screenshots show the actual `practice:u1` curve and manually retained markers. The visual receipt retains identical shoulder strings4099.999997/4200.00001 and0.99 heights after center4175.000007; crossing right removes only that pair, crossing left removes both. A geometry-canceled gesture preserves exact investigation bytes. The360px keyboard center≈4151 keeps both shoulders, with no document overflow, unchanged manual answer and0 page errors/external requests. Tiny coordinate differences are existing DOM/SVG quantization, not measurement uncertainty or native pixel fidelity.
+
+Raw captures/hashes, state generator/digests, independent scripts/results, test/build logs and inspected images/receipts remain outside source at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/conditional-shoulders-recovery/`. Original executable/assets were only read, never executed or emulated.
+
+External `/review` remains **not attempted**, under the explicit parent hold pending human decision. Earlier inspection-review completion and separate sampled-trace denial are different scopes; neither reviews this increment. No retry, alternate external review, push, deployment or additional original-resource upload. N02/E03 stay partial and all64 primary statuses remain unchanged.

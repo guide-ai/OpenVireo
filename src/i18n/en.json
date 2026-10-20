@@ -1321,7 +1321,7 @@
   "cursor.surface": "Manual spectrum cursor: arrows move, Enter applies, Escape cancels",
   "cursor.readout": "Cursor wavelength {wavelength} Å · cursor height {intensity}",
   "cursor.empty": "No cursor preview. Confirmed manual inputs are kept.",
-  "cursor.policy": "Cursor height is your selected trace level, not a sampled flux. Marking a new center clears the draft shoulders; saved width records stay unchanged. Calculate and review the width separately.",
+  "cursor.policy": "Cursor height is your selected trace level, not sampled source flux. Marking a center rechecks the right shoulder first and then the left against the remaining marks; valid brackets are retained, invalidated draft pairs clear. Confirmed width records stay unchanged. Calculate and review the width separately.",
   "cursor.invalid": "Mark a center strictly inside 3900–4500 Å first. Each shoulder must lie on a different side of that center with a positive continuum height up to 1.",
   "cursor.shoulderHint": "Move the cursor left or right of the center before applying a shoulder. The two shoulders are chosen manually.",
   "probe.title": "Read spectral intensity",
@@ -1457,5 +1457,6 @@
   "widthSource.cursor": "{source} · manual trace cursor",
   "widthSource.grid": "Width calculation is unavailable for this source grid. It requires at least three samples and the admitted endpoint-grid profile covering 3900–4500 Å. No substitute source or interpolation policy is selected.",
   "widthSource.identity": "Width calculation is unavailable because the actual source identity/integrity association is missing. No result is supplied.",
-  "widthSource.limits": "Unknown, upper and lower sources use the same recovered endpoint-grid integrand. Imported/acquired sources require their existing verified source preparation and grid admission. The tool stays within 3900–4500 Å; visible-maximum plots and the broader display range do not set the continuum or rescale source flux. Native tool geometry, formatting, x87 and result-file interchange remain unverified."
+  "widthSource.limits": "Unknown, upper and lower sources use the same recovered endpoint-grid integrand. Imported/acquired sources require their existing verified source preparation and grid admission. The tool stays within 3900–4500 Å; visible-maximum plots and the broader display range do not set the continuum or rescale source flux. Native tool geometry, formatting, x87 and result-file interchange remain unverified.",
+  "cursor.mouseButtons": "With Mark center selected, left mouse marks the center and right mouse marks a continuum shoulder. A center must exist first. The shoulder tool still supports the primary button, touch and keyboard. Inspect cursor leaves the browser context menu available."
 }
