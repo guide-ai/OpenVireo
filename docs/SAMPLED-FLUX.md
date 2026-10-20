@@ -1,5 +1,7 @@
 # Manual original-spectrum intensity readout
 
+Current sampled-intensity extension: [loaded-curve readout](LOADED-FLUX.md) now supports eligible acquired/imported unknowns under a separate identity/grid policy. Earlier numerical-readout exclusions below describe the prior increment;imported/acquired equivalent width and general native photographic behavior remain unavailable.
+
 The classification laboratory can read relative intensity at an explicitly entered wavelength from the original upper standard, practice unknown or lower standard. The student still chooses the source and wavelength. The readout does not set a continuum, feature width, spectral type, reason or acquired measurement. It is temporary inspection state; investigation JSON and existing session versions are unchanged.
 
 ## Recovered contract and provenance
@@ -26,8 +28,8 @@ The completed native `/review`, independently validated dispositions and post-co
 
 ## Try the feature
 
-1. Open http://127.0.0.1:5173/#classification and find **Read original spectral intensity**. Keep the original practice unknown selected in **Original spectrum to inspect**.
+1. Open http://127.0.0.1:5173/#classification and find **Read spectral intensity**. Keep the original practice unknown selected in **Spectrum to inspect**.
 2. Enter `3900` in **Read wavelength (Å)** and click **Read sampled flux**. For the first practice, expect approximately `0.648665918`, with the original source file named below it. Expand the method details to inspect its SHA-256 and numerical policy.
 3. Choose the upper standard, enter `4101.74` and read again. In the initial main-sequence pair (`A0000001.SP`), expect approximately `0.451400903`. Select the lower standard to inspect its own independent file. Change atlas or practice: the old result disappears until explicitly read again.
 4. Enter `3899` or `1e3`: expect an error and no new result. **Clear intensity readout** removes only this temporary result. Your proposed type, reason and feature draft remain intact.
-5. Import an SP/SSP or use **Classify acquired star** after a positive exposure. Its unknown readout is unavailable; select an original upper/lower standard explicitly to inspect that reference. Save/reload/restore your investigation to confirm student work and raw acquired data remain intact; temporary intensity readings are not restored.
+5. Import an SP/SSP or use **Classify acquired star** after a positive exposure. Its eligible unknown can now be read under the separate loaded-curve policy; see LOADED-FLUX.md for its grid and provenance gates. Save/reload/restore your investigation to confirm student work and raw acquired data remain intact; temporary intensity readings are not restored.

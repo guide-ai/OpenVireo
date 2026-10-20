@@ -1,0 +1,64 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "file": "cursor-shoulders.asm",
+      "start": "0x5096dc",
+      "endExclusive": "0x509f24",
+      "byteRangeSha256": "a7b8cd5b7624cfa1a0d334dfdd030289a1394b72a8f6763286f0c127681010c1",
+      "listingSha256": "b685d6612d8fa453644afb2c8c18f687200568891a6410aed9368671d7e14d5b",
+      "evidenceId": "VIREO-EW-ST-08",
+      "scope": "Code ranges may include alignment/literal pools; those bytes are not additional instructions."
+    },
+    {
+      "file": "spectrum-grid-sampler.asm",
+      "start": "0x55df2c",
+      "endExclusive": "0x55e13c",
+      "byteRangeSha256": "691cb1b00ce7ac46162f256c9218749a2f0a022c0ec243b61e16c5877809e8f1",
+      "listingSha256": "556a75ab15f553e092355559feaf0ced9b0c118c1d3f151cfc7b920c11bc1668",
+      "evidenceId": "VIREO-EW-ST-09",
+      "scope": "Code ranges may include alignment/literal pools; those bytes are not additional instructions."
+    },
+    {
+      "file": "headerless-loader.asm",
+      "start": "0x55ef64",
+      "endExclusive": "0x55f05e",
+      "byteRangeSha256": "c43c52a404ed470ad4fe99b7c100a6db99c4fc70cc01c452b5652f512701b6f7",
+      "listingSha256": "69daf7538e5fb2a36d961d69e073c4fca7e33695508b430d68de1314c27a0f3e",
+      "evidenceId": "VIREO-EW-ST-10",
+      "scope": "Code ranges may include alignment/literal pools; those bytes are not additional instructions."
+    },
+    {
+      "file": "native-file-reader.asm",
+      "start": "0x55ee14",
+      "endInclusive": "0x55f09e",
+      "rawRangeSHA256": "e8376f46ece7e582f8753214442c5ed215da61b13be0d758b641c01694e1eae2",
+      "artifactSHA256": "ca4449e63da0333d23243c9cf214b65b7e35e68e91ee86b7540b6e32bcde4847",
+      "evidenceId": "VIREO-SSP-reader",
+      "endExclusive": "0x55f09f",
+      "byteRangeSha256": "e8376f46ece7e582f8753214442c5ed215da61b13be0d758b641c01694e1eae2"
+    }
+  ],
+  "meaning": "Existing retained static ranges rehashed against pinned PE;no original execution.",
+  "policy": "VIREO-loaded-flux-Number-v1",
+  "sampler": "0x55dfe0",
+  "unknownCall": "0x509876",
+  "doubleStore": "0x5098d6",
+  "originalReader": "Discard interior wavelength tokens;construct first/last/lastIndex grid.",
+  "browserGuard": {
+    "minimumRows": 3,
+    "maximumRows": 50000,
+    "maximumPrintedDeviationAngstrom": 0.01,
+    "numberAllowanceAngstrom": 1e-09,
+    "wavelengthWindowAngstrom": [
+      3900,
+      4500
+    ],
+    "inputIntensityRange": [
+      0,
+      1
+    ],
+    "originalValidation": false
+  },
+  "trustedBoundary": "Pure adapter relies on IO byte hashing/reparse or acquired journal replay;never classify imported claims as acquired/library origin."
+}

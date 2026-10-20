@@ -1,5 +1,7 @@
 # Stellar classification: original practice and acquired spectra
 
+Current sampled-intensity extension: [loaded-curve readout](LOADED-FLUX.md) now supports eligible acquired/imported unknowns under a separate identity/grid policy. Earlier numerical-readout exclusions below describe the prior increment;imported/acquired equivalent width and general native photographic behavior remain unavailable.
+
 Current imported-file extension: [CLASSIFICATION-IMPORT.md](CLASSIFICATION-IMPORT.md)
 adds bounded SP/SSP visual contexts and full v7; earlier pending/version statements
 below are historical for this subset. Imported equivalent width remains disabled.

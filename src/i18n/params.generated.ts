@@ -1345,4 +1345,11 @@ export interface MessageParameters {
   "probe.sourceFile": "file";
   "probe.scope": never;
   "probe.shaLabel": never;
+  "probe.unsupportedGrid": never;
+  "probe.loadedPolicy": never;
+  "probe.originImported": never;
+  "probe.originAcquired": never;
+  "probe.originOriginal": never;
+  "probe.resultOrigin": "origin";
+  "probe.acquisitionId": "id";
 }

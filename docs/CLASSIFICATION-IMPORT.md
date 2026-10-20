@@ -1,5 +1,7 @@
 # Imported SP/SSP visual classification
 
+Current sampled-intensity extension: [loaded-curve readout](LOADED-FLUX.md) now supports eligible acquired/imported unknowns under a separate identity/grid policy. Earlier numerical-readout exclusions below describe the prior increment;imported/acquired equivalent width and general native photographic behavior remain unavailable.
+
 Entry: http://127.0.0.1:5173/#classification → **Import spectrum for comparison**.
 An already imported analyser file also has **Compare imported spectrum** when it
 meets the comparator's declared domain. This is a bounded N02/E03 source adapter,
