@@ -106,3 +106,5 @@ All16original reference datasets are nowavailable in the separate[comparison lab
 ## Reversible reference-point exclusions — 19 October2026
 
 [Manual reference exclusions](CLUSTER-EXCLUSIONS.md) add the recovered record-marker removal and Restoreall route to the16-dataset laboratory. Point identity, explicit confirmation, independent selections, retained trial text and strict full21 scope are web adaptations; no automatic membership or scientific answer is supplied. Existing raw1–7 and base1–18/19/20 owners remain compatible. E05/N04 stay partial with the original acceptance criteria unchanged. Actual observing/CCD, axes/import, uncertainty, classroom and native runtime/pixel fidelity remain open.
+
+[Pane-selected width source and global manual marker](PANE-SOURCE-GLOBAL-MARKER.md) adds opt-in admitted center routing and common-wavelength/cross-origin drawing on primary frames. Combined bottom source ambiguity remains explicitly gated; no integrator, records, formats or primary status changes. N02/E03 stay partial with native pixel/sentinel/lifecycle, result/grade/legacy and historical acceptance gaps.

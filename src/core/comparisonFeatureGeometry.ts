@@ -7,7 +7,7 @@ import type{InspectionKind}from'./comparisonInspection';
 /** Source-bound presentation snapshot; created only after width-source admission.
  * Exact retained choice identity prevents an old asynchronous snapshot from
  * drawing on a replaced source,role,atlas or loaded preparation. */
-export type FeatureComparisonDraft=Readonly<{choice:FluxChoice;draft:FeatureDraft;editing?:Readonly<{mode:ComparisonMarkAction;originPane:string|null;onMark:(pane:string,action:ComparisonMarkAction,point:FeatureCursorPoint)=>void}>}>;
+export type FeatureComparisonDraft=Readonly<{choice:FluxChoice;draft:FeatureDraft;context?:string;marker?:Readonly<{pane:string;point:FeatureCursorPoint}>;editing?:Readonly<{mode:ComparisonMarkAction;originPane:string|null;autoSource?:boolean;targets?:readonly FluxChoice[];onMark:(pane:string,action:ComparisonMarkAction,point:FeatureCursorPoint,target?:FluxChoice)=>void}>}>;
 export function comparisonFeatureDraft(binding:FeatureComparisonDraft|null,choice:FluxChoice):FeatureDraft|undefined{
  const p=choice.preparation.probe,s=choice.spectrum;
  return binding?.choice===choice&&p&&s&&choice.sourceId===p.source.probeId&&s.sha256===p.source.sha256?binding.draft:undefined;

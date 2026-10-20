@@ -1,5 +1,7 @@
 # Direct manual marks on comparison panes
 
+Follow-up: [pane-selected source and global manual marker](PANE-SOURCE-GLOBAL-MARKER.md) adds an optional automatic source control and global drawing. The explicit-selection behavior described below remains the unchecked default and the required path for the combined bottom trace.
+
 The classification comparison can now edit the selected equivalent-width source's center and shoulders directly on printed traces, sampled traces or photographic bands. Editing is opt-in; other sources retain inspection. A center establishes an ephemeral **panel origin**. In combined mode, the unknown photograph and unknown trace share source data but are different panels: shoulders cannot cross between them.
 
 The [hashed static recovery](DIRECT-COMPARISON-MARKS-PROVENANCE.json) and [validation](DIRECT-COMPARISON-MARKS-VALIDATION.md) distinguish the supported native intent from explicit browser policies. The integrator, source sampler, confirmed records, acquisition/count/seed and JSON/CSV formats are unchanged. This does not close full native pixel/GDI/x87 or historical exercise acceptance.

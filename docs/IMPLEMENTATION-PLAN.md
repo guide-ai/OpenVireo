@@ -1,5 +1,7 @@
 # OpenVireo implementation plan
 
+Current pane follow-up: [pane-selected source and global manual marker](PANE-SOURCE-GLOBAL-MARKER.md) adds opt-in admitted center-to-source selection and a common wavelength across primary frames with a cross in the origin pane. Combined bottom remains explicit because recovered rendering/resolution and forced trace entry do not establish its automatic policy. Integrator/records/formats/statuses remain unchanged; native pixel/sentinel/lifecycle and external review gates remain open.
+
 Current editing follow-up: [direct comparison marks and panel origin](DIRECT-COMPARISON-MARKS.md) adds opt-in editing on the actual selected source’s printed/sampled/photo panes, same-panel shoulder admission and stale-gesture cancellation. Explicit source choice, categorical origin, continuous coordinates and release commit remain browser adapters. Integrator/records/formats and all64primary statuses are unchanged; full native global pixel/lifecycle behavior remains open.
 
 Current geometry follow-up: [source-bound manual comparison marks](SHARED-FEATURE-GEOMETRY.md) projects partial/manual inputs on the selected source’s printed, sampled and photographic panes with recovered125-row/100-level/25-row-offset geometry. This supersedes wavelength-only/unknown-only overlays; direct shared-pane picking and full native pixel/event behavior remain open. No integrator/record/format or acceptance-status change.

@@ -1,0 +1,421 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-01",
+      "start": "0x50670f",
+      "endExclusive": "0x506819",
+      "byteRangeSHA256": "8aac962b32a38c664a813b1cd685eee9e727a5355fbc18ee261e0515c7fe722b",
+      "listingSHA256": "56203ec5aeb1cda027b459115cf02846b147e0769fc7105d7f985572fdc0e735",
+      "localListing": "source-resolver.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-02",
+      "start": "0x50668b",
+      "endExclusive": "0x50670f",
+      "byteRangeSHA256": "92c684328e21e90dc8b5f51e082b95cd9f1e3209e89b3012a7aaa56dbe6d2ba7",
+      "listingSHA256": "1f1d633887624f284fad7e81a013c767de4bb36874da8e8d3224ebda56e69696",
+      "localListing": "width-ok-before-resolver.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-03",
+      "start": "0x50b06c",
+      "endExclusive": "0x50b181",
+      "byteRangeSHA256": "b67c060a78b24708c68769828a0ae0b6cbd7f70b1df20242320ad9d16b007366",
+      "listingSHA256": "3a41ce071b074503d0f3c9f7e7a3649e7ecf123a99be325984e88e7dd63f7af0",
+      "localListing": "width-entry.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-04",
+      "start": "0x5093e0",
+      "endExclusive": "0x5093f8",
+      "byteRangeSHA256": "1c1f40e06db1df6fddc35ad83db7872741872b480a76019f6f8f850b2ba2f468",
+      "listingSHA256": "67f04626b46189c50a79d01170c1d038b66adcf81d56cf14ed30e840c1f43fb6",
+      "localListing": "trace-menu.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-05",
+      "start": "0x5077d0",
+      "endExclusive": "0x507814",
+      "byteRangeSHA256": "02bbe140d48b9d9f6fb043af13e09d15ea83178de104ca377a66de09ba45f92a",
+      "listingSHA256": "97a229c722919bc4dcfa70ad8ea170c9908d055ca8f8be84a7b61246d223104d",
+      "localListing": "mode-setter.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-06",
+      "start": "0x509cf4",
+      "endExclusive": "0x509dc0",
+      "byteRangeSHA256": "85f5d0a32cc14d1e653173d3a82f0d524ab44ac8ee48c6c4716bc65be78a216a",
+      "listingSHA256": "48a430026d03735e7af57b76b6c265339bc710c9746c756f05d493b81989d97d",
+      "localListing": "global-center-paint.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-07",
+      "start": "0x509eac",
+      "endExclusive": "0x509f24",
+      "byteRangeSHA256": "ac99f018ec1ee4e98af1743cc843cec877b2fae6e409aa594c2065f96680d65b",
+      "listingSHA256": "bae355590a2e54a3d0ba56330c8728c25303c2f625c9da1125c295458f9196d0",
+      "localListing": "pane-map.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-08",
+      "start": "0x507849",
+      "endExclusive": "0x5078b3",
+      "byteRangeSHA256": "1dcd680d93b8e18f76388734ba6b2626f25a7d0ac6a3809d549e4bcbed3bac57",
+      "listingSHA256": "b7c32d222d0485d507cd72d4e5ea49f3d10996a4a7622e4ab74214f8842ee036",
+      "localListing": "panel-geometry.asm"
+    },
+    {
+      "evidenceId": "VIREO-PANE-SOURCE-GLOBAL-09",
+      "start": "0x508075",
+      "endExclusive": "0x508155",
+      "byteRangeSHA256": "06106d9a2ad9e8cf897ab8deee4fda134eab4e0b0dfceb5b8a3f9bf0befff2f4",
+      "listingSHA256": "a6e39c6f193682cb5dba3a925a04d79139b342df0d5c6b8e0e7f1165d462a087",
+      "localListing": "combined-paint.asm"
+    }
+  ],
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "contracts": {
+    "source": "0x50670f reads selected pane baseline+0x503:unknown+0x517 resolves actual unknown+0x4bf;upper+0x50f resolves current atlas index+0x4c3 in table+0x4c7;lower+0x51f resolves next index. Table entries supply spectrum pointer at+0 and label at+4. No combined-layout source override in this recovered resolver. Existing atlas pair admission remains authoritative.",
+    "globalMarker": "0x509cf4 when centerX+0x531>0 draws vertical from top+0x513 to bottom+0x51f at centerX,then horizontal X-10..X+10 at centerY+0x535;calls0x5096dc for ordered center revalidation/readout. No-positive-X clears native readout fields.",
+    "paneMapping": "0x509eac globalY establishes one125-row pane baseline+0x503 and top+0x507;0x507849 establishes three stacked125-row panes and500columns.",
+    "combinedCaveat": "Existing combined rendering shows the unknown twice,including bottom trace,while recovered source resolver maps lower baseline to next atlas row. Width entry0x50b06c clears shoulder coordinate flags and0x50b101 calls trace-menu0x5093e0 when display+0x494 nonzero;trace-menu sets mode0 and redraws. This is evidence of trace entry,not proof of every subsequent event or reachability. No automatic source is inferred for combined bottom."
+  },
+  "browserAdapters": [
+    "Optional unchecked Select width source from the center pane toggle;only a committed center on actual admitted unknown/upper/lower source panes switches role. Preview/cancel/right shoulder never switches source. Native source lookup occurs during width confirmation;browser makes selected identity visible at center commit.",
+    "Exact retained FluxChoice token and selectedFeatureSource admission bind targets;source identifier/hash/preparation authority is unchanged. Unknown-trace duplicate,residual and combined bottom/fallback cannot be automatic targets. Explicit Unknown direct marking in combined bottom remains existing behavior.",
+    "Atomic role/draft/origin transition;fresh bracket on foreign-pane center,ordered same-pane shoulder retention. Existing practice drafts/confirmed records preserved when leaving practice;explicit center on practice replaces that current draft bracket. Other sources retain existing temporary storage.",
+    "One retained manual wavelength projects vertically on each primary source/difference frame. Cross only in origin pane;20logical columns wide(photo/sampled) or same width fraction on printed860column plot. Caption gaps,separate SVGs,outline,dashes,clipping,continuous coordinates and visible-window edge inclusion are presentation choices. Supplemental fourth difference pane is outside this global marker.",
+    "Actual center ordinate positions the cross;no source flux/photo gray/catalog sets continuum. Numeric/separate-tool edit,source/render/activity change invalidates origin/global marker;Inspect alone retains it. Pane/auto option/global geometry are ephemeral and absent from all existing formats.",
+    "Release commit,keyboard/touch opt-in,stale snapshot/choice/context/view/CTM/button/option cancellation are browser policies,not Win32 event/pixel equivalence.",
+    "No change to integrator,samplers,acquisition counts/seed,grade,records,file formats or1279resource bytes/hashes."
+  ],
+  "remaining": [
+    "Combined bottom automatic source policy after native forced trace entry and subsequent modes/events",
+    "Native integer positive-X/sentinel versus retained Extended scalar semantics,paired pan/paint/zoom/reentry marker lifecycle and readout clearing",
+    "GDI pixel boundaries,unsafe FPU/x87/runtime/formatting,wider width domain,observational results/grade/legacy interchange and broader edition/classroom/rights gates"
+  ],
+  "uncertainty": "Static read-only recovered intent,not original-runtime execution,emulation or numerical/pixel equivalence. Source-specific credits/license uncertainties preserved."
+}
