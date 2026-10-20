@@ -13,32 +13,52 @@ export function resourceEntries(manifest) {
   const seen = new Set();
   return manifest.files.map((entry, index) => {
     if (!entry || typeof entry.path !== 'string' || !/^(data|public\/original)\//.test(entry.path)
-      || /[\\\x00-\x1f\x7f:]|\p{Cf}/u.test(entry.path) || entry.path.split('/').some(part => !part || part === '.' || part === '..')) throw new ResourceManifestError('path', index);
+      || !/^[A-Za-z0-9 _./-]+$/.test(entry.path) || entry.path.split('/').some(part => !part || part === '.' || part === '..' || /[. ]$/.test(part) || /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(part))) throw new ResourceManifestError('path', index);
     if (!Number.isSafeInteger(entry.bytes) || entry.bytes < 0) throw new ResourceManifestError('bytes', index);
     if (typeof entry.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(entry.sha256)) throw new ResourceManifestError('sha256', index);
-    const key = entry.path.normalize('NFC').toLowerCase();
+    const key = entry.path.toLowerCase();
     if (seen.has(key)) throw new ResourceManifestError('duplicate portable path', index);
     seen.add(key);
     return {path: entry.path, bytes: entry.bytes, sha256: entry.sha256};
   });
 }
 const ioReason = code => ({ENOENT: 'missing', ENOTDIR: 'parent is not a directory', ELOOP: 'symlink loop', EACCES: 'permission denied', EPERM: 'permission denied', EISDIR: 'not a regular file'}[code] ?? 'unreadable');
-async function checkEntry(root, entry) {
-  let handle;
+const isFilesystemError = error => typeof error?.code === 'string' && (/^E[A-Z0-9]+$/.test(error.code) || error.code === 'UNKNOWN');
+const ioIssue = (entry, error, phase) => ({path: entry.path, reason: phase === 'close' ? 'close failed' : ioReason(error.code), code: error.code});
+/** Takes ownership of one opened descriptor; unexpected Node/program errors propagate. */
+export async function checkOpenedResource(handle, entry) {
+  let result = null;
   try {
-    // NONBLOCK prevents opening a FIFO from hanging before fstat can reject it.
-    // One descriptor binds the type/size check and stream to the same open file.
-    handle = await open(path.join(root, entry.path), constants.O_RDONLY | constants.O_NONBLOCK);
     const info = await handle.stat();
-    if (!info.isFile()) return {path: entry.path, reason: 'not a regular file'};
-    if (info.size !== entry.bytes) return {path: entry.path, reason: 'size mismatch'};
-    const hash = createHash('sha256');
-    for await (const chunk of handle.createReadStream({autoClose: false})) hash.update(chunk);
-    return hash.digest('hex') === entry.sha256 ? null : {path: entry.path, reason: 'SHA-256 mismatch'};
-  } catch (error) {
-    if (typeof error?.code !== 'string') throw error;
-    return {path: entry.path, reason: ioReason(error.code), code: error.code};
-  } finally {await handle?.close();}
+    if (!info.isFile()) result = {path: entry.path, reason: 'not a regular file'};
+    else if (info.size !== entry.bytes) result = {path: entry.path, reason: 'size mismatch'};
+    else {
+      const hash = createHash('sha256');
+      for await (const chunk of handle.createReadStream({autoClose: false})) hash.update(chunk);
+      if (hash.digest('hex') !== entry.sha256) result = {path: entry.path, reason: 'SHA-256 mismatch'};
+    }
+  } catch (error) {if (!isFilesystemError(error)) throw error; result = ioIssue(entry, error);}
+  finally {
+    try {await handle.close();}
+    catch (error) {if (!isFilesystemError(error)) throw error; result = ioIssue(entry, error, 'close');}
+  }
+  return result;
+}
+async function checkEntry(root, entry, directories) {
+  try {
+    const parts = entry.path.split('/');
+    for (let i = 1; i < parts.length; i++) {
+      const dir = path.join(root, ...parts.slice(0, i));
+      if (!directories.has(dir)) directories.set(dir, lstat(dir).then(info => info.isSymbolicLink() ? 'SYMLINK' : !info.isDirectory() ? 'ENOTDIR' : null));
+      const code = await directories.get(dir);
+      if (code) return {path: entry.path, reason: code === 'SYMLINK' ? 'resource path is a symlink' : ioReason(code), code};
+    }
+    const file = path.join(root, entry.path);
+    if ((await lstat(file)).isSymbolicLink()) return {path: entry.path, reason: 'resource path is a symlink', code: 'SYMLINK'};
+    // NONBLOCK rejects FIFO races; NOFOLLOW rejects a final-component link swap.
+    const handle = await open(file, constants.O_RDONLY | constants.O_NONBLOCK | (constants.O_NOFOLLOW ?? 0));
+    return await checkOpenedResource(handle, entry);
+  } catch (error) {if (!isFilesystemError(error)) throw error; return ioIssue(entry, error);}
 }
 async function rootDiagnostics(root, entries) {
   const roots = [...new Set(entries.map(e => e.path.startsWith('data/') ? 'data' : 'public/original'))], issues = [];
@@ -46,20 +66,21 @@ async function rootDiagnostics(root, entries) {
     let link = false;
     try {
       const file = path.join(root, name); link = (await lstat(file)).isSymbolicLink();
+      if (link) {await stat(file); issues.push({path: name, reason: 'resource root is a symlink', code: 'SYMLINK'}); continue;}
       if (!(await stat(file)).isDirectory()) issues.push({path: name, reason: 'resource root is not a directory'});
     } catch (error) {
-      if (typeof error?.code !== 'string') throw error;
-      issues.push({path: name, reason: link && error.code === 'ENOENT' ? 'resource root link target missing' : ioReason(error.code), code: error.code});
+      if (!isFilesystemError(error)) throw error;
+      issues.push({path: name, reason: link && error.code === 'ENOENT' ? 'resource root link target missing' : ioReason(error.code), code: link ? 'SYMLINK' : error.code});
     }
   }
   return issues;
 }
 export async function checkResources(root, manifest) {
   const entries = resourceEntries(manifest); // Validate every entry before resource IO.
-  const roots = await rootDiagnostics(root, entries), results = new Array(entries.length);
+  const roots = await rootDiagnostics(root, entries), results = new Array(entries.length), directories = new Map();
   let next = 0;
   const workers = Array.from({length: Math.min(8, entries.length)}, async () => {
-    while (next < entries.length) {const i = next++; results[i] = await checkEntry(root, entries[i]);}
+    while (next < entries.length) {const i = next++; results[i] = await checkEntry(root, entries[i], directories);}
   });
   await Promise.all(workers);
   const issues = results.filter(Boolean);
@@ -69,7 +90,7 @@ export async function resourceCheckCommand(root, args = [], output = console.log
   if (args.length) {output('Usage: node scripts/check-resources.mjs'); return 2;}
   let text, manifest, report;
   try {text = await readFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), 'utf8');}
-  catch (error) {if (typeof error?.code !== 'string') throw error; output(`Resource manifest unavailable (${error.code}). See docs/LOCAL-RESOURCES.json.`); return 2;}
+  catch (error) {if (!isFilesystemError(error)) throw error; output(`Resource manifest unavailable (${error.code}). See docs/LOCAL-RESOURCES.json.`); return 2;}
   try {manifest = JSON.parse(text);}
   catch (error) {if (!(error instanceof SyntaxError)) throw error; output('Resource manifest contains malformed JSON.'); return 2;}
   try {report = await checkResources(root, manifest);}

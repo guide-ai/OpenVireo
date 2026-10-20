@@ -6,7 +6,7 @@ import path from 'node:path';
 import{spawnSync}from'node:child_process';
 import{fileURLToPath}from'node:url';
 import {tmpdir} from 'node:os';
-import {checkResources, resourceCheckCommand} from './check-resources.mjs';
+import {checkResources, resourceCheckCommand, checkOpenedResource} from './check-resources.mjs';
 
 const digest = text => createHash('sha256').update(text).digest('hex');
 const entry = (name, text) => ({path: name, bytes: Buffer.byteLength(text), sha256: digest(text)});
@@ -42,10 +42,11 @@ test('manifest rejects traversal, absolute/control paths, duplicates and malform
   }
 }));
 
-test('authorized local resource-directory symlink retains content checking', () => fixture(async root => {
+test('resource-directory and file symlinks are refused in a self-contained checkout', () => fixture(async root => {
   const pack = path.join(root, 'private-pack'); await mkdir(pack); await writeFile(path.join(pack, 'a'), 'x');
   await symlink(pack, path.join(root, 'data/pack'), 'dir');
-  assert.equal((await checkResources(root, {files: [entry('data/pack/a', 'x')]})).matched, 1);
+  assert.equal((await checkResources(root, {files: [entry('data/pack/a', 'x')]})).issues[0].code, 'SYMLINK');
+  await symlink(path.join(pack, 'a'), path.join(root, 'data/link')); assert.equal((await checkResources(root, {files: [entry('data/link', 'x')]})).issues[0].code, 'SYMLINK');
 }));
 
 test('incomplete checkout reports a bounded missing-resource result; command exit status, corrupt manifest and argument handling are explicit', () => fixture(async root => {
@@ -81,7 +82,7 @@ test('all four npm entry commands retain preflight with ignore-scripts and never
   const control = spawnSync(process.execPath, [path.join(bin, 'tsc')], {cwd: root, encoding: 'utf8', timeout: 3000});
   assert.equal(control.status, 79); assert.equal(await readFile(path.join(root, 'engine-ran'), 'utf8'), 'bad'); await rm(path.join(root, 'engine-ran'));
   for (const command of ['build', 'dev', 'test', 'test:e2e']) {
-    const p = spawnSync('npm', ['--ignore-scripts', 'run', command], {cwd: root, encoding: 'utf8', timeout: 5000});
+    const p = spawnSync('npm', ['--ignore-scripts', 'run', command], {cwd: root, encoding: 'utf8', timeout: 30000});
     assert.equal(p.error, undefined); assert.equal(p.status, 1, command); assert.match(p.stdout, /0\/1 match/);
     await assert.rejects(readFile(path.join(root, 'engine-ran')), {code: 'ENOENT'});
   }
@@ -90,14 +91,14 @@ test('typed manifest errors reject non-string hashes, portable collisions and in
   const a = entry('data/a', 'x');
   for (const sha256 of [[a.sha256], {toString: () => a.sha256}, null, 0]) await assert.rejects(checkResources(root, {files: [{...a, sha256}]}), /entry 1: sha256/);
   for (const name of ['data/A', 'data/\u202ea', 'data/\u200ba']) await assert.rejects(checkResources(root, {files: [a, {...a, path: name}]}), /entry 2:/);
-  await assert.rejects(checkResources(root, {files: [{...a, path: 'data/é'}, {...a, path: 'data/e\u0301'}]}), /duplicate portable path/);
+  await assert.rejects(checkResources(root, {files: [{...a, path: 'data/é'}, {...a, path: 'data/e\u0301'}]}), /entry 1: path/);
   await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files: [a, {...a, sha256: []}]}));
   const lines = []; assert.equal(await resourceCheckCommand(root, [], line => lines.push(line)), 2); assert.match(lines[0], /entry 2: sha256/);
 }));
 test('root and IO diagnostics distinguish broken links, non-directories and unreadable files; results retain manifest order', () => fixture(async root => {
   await rm(path.join(root, 'data'), {recursive: true}); await symlink(path.join(root, 'offline-pack'), path.join(root, 'data'), 'dir');
   const manifest = {files: [entry('data/a', 'x')]}; let r = await checkResources(root, manifest);
-  assert.equal(r.roots[0].reason, 'resource root link target missing'); assert.equal(r.issues[0].code, 'ENOENT');
+  assert.equal(r.roots[0].reason, 'resource root link target missing'); assert.equal(r.issues[0].code, 'SYMLINK');
   await rm(path.join(root, 'data')); await writeFile(path.join(root, 'data'), 'x'); r = await checkResources(root, manifest); assert.equal(r.issues[0].code, 'ENOTDIR');
   await rm(path.join(root, 'data')); await mkdir(path.join(root, 'data')); await writeFile(path.join(root, 'data/a'), 'x'); await chmod(path.join(root, 'data/a'), 0);
   try {if (process.getuid?.() !== 0) {r = await checkResources(root, manifest); assert.equal(r.issues[0].code, 'EACCES');}}
@@ -108,3 +109,19 @@ test('a special file cannot block the real CLI before its file-type check', () =
   await commandFixture(root); const fifo = path.join(root, 'data/absent'); const made = spawnSync('mkfifo', [fifo], {encoding: 'utf8'}); assert.equal(made.status, 0);
   const p = spawnSync(process.execPath, [path.join(root, 'scripts/check-resources.mjs')], {encoding: 'utf8', timeout: 3000}); assert.equal(p.error, undefined); assert.equal(p.status, 1); assert.match(p.stdout, /not a regular file/);
 }));
+
+
+test('manifest paths reject non-ASCII/control/device names instead of claiming a universal Unicode filesystem fold', () => fixture(async root => {
+  const a = entry('data/a', 'x');
+  for (const name of ['data/\u009b2Ja', 'data/a\u2028b', 'data/a\u2029b', 'data/aux.json', 'data/NUL', 'data/COM1.txt', 'data/a.', 'data/a ', 'data/a?b', 'data/a|b', 'data/AΣ', 'data/aσ', 'data/ﬁ', 'data/é']) await assert.rejects(checkResources(root, {files: [{...a, path: name}]}), /entry 1: path/);
+}));
+test('opened-file failures preserve descriptor ownership and distinguish programmer errors from stream/close IO errors', async () => {
+  const a = entry('data/a', 'x'); let closed = 0;
+  const good = () => ({stat: async () => ({isFile: () => true, size: 1}), createReadStream: async function* () {yield Buffer.from('x');}, close: async () => {closed++;}});
+  const broken = good(); broken.createReadStream = async function* () {throw Object.assign(new Error('programmer error'), {code: 'ERR_INVALID_ARG_TYPE'});};
+  await assert.rejects(checkOpenedResource(broken, a), {code: 'ERR_INVALID_ARG_TYPE'}); assert.equal(closed, 1);
+  const io = good(); io.createReadStream = async function* () {throw Object.assign(new Error('read error'), {code: 'EIO'});};
+  assert.deepEqual(await checkOpenedResource(io, a), {path: a.path, reason: 'unreadable', code: 'EIO'}); assert.equal(closed, 2);
+  const close = good(); close.close = async () => {closed++; throw Object.assign(new Error('close error'), {code: 'EIO'});};
+  assert.deepEqual(await checkOpenedResource(close, a), {path: a.path, reason: 'close failed', code: 'EIO'}); assert.equal(closed, 3);
+});

@@ -26,7 +26,7 @@ PLAYWRIGHT_BROWSERS_PATH=.local/browsers npx playwright install chromium
 npm run test:e2e -- --workers=2
 ```
 
-The nine Node tool contracts run without scientific data or application dependencies. Vitest covers the scientific/state contracts; Playwright covers complete user flows. The browser installation is ordinary test tooling, ignored by Git. No dependency version changes for resource inclusion.
+The eleven Node tool contracts run without scientific data or application dependencies. Vitest covers the scientific/state contracts; Playwright covers complete user flows. The browser installation is ordinary test tooling, ignored by Git. E2E starts its own strict loopback5175server by default and refuses reuse of an existing preview. No dependency version changes for resource inclusion.
 
 ## Current capabilities
 

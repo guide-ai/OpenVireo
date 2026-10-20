@@ -1,7 +1,8 @@
 import{projectTestPort}from'./src/core/projectMetadata';
+import{fileURLToPath}from'node:url';
 import { defineConfig } from '@playwright/test';
-process.env.PLAYWRIGHT_BROWSERS_PATH ??= new URL('./.local/browsers', import.meta.url).pathname;
+process.env.PLAYWRIGHT_BROWSERS_PATH ??= fileURLToPath(new URL('./.local/browsers', import.meta.url));
 const port=projectTestPort(process.env);
 if(!Number.isInteger(port)||port<1024||port>65535)throw new Error('Invalid local test port');
 const baseURL=`http://127.0.0.1:${port}`;
-export default defineConfig({ testDir: './tests', use: { baseURL, viewport: { width: 1440, height: 1050 } }, webServer: { command: `node node_modules/vite/bin/vite.js --host 127.0.0.1 --port ${port}`, url: baseURL, reuseExistingServer: !process.env.CI }, reporter: 'list' });
+export default defineConfig({ testDir: './tests', use: { baseURL, viewport: { width: 1440, height: 1050 } }, webServer: { command: `node node_modules/vite/bin/vite.js --host 127.0.0.1 --port ${port}`, url: baseURL, reuseExistingServer: false }, reporter: 'list' });

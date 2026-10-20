@@ -59,6 +59,6 @@ export const projectTextFits=(text:string,payloadLimit:number)=>projectBytesFit(
 /** Configuration compatibility reads known saved producer spelling without retaining it as a literal. */
 export function projectTestPort(environment:Readonly<Record<string,string|undefined>>):number {
  const alias=Object.keys(environment).find(key=>key!=='OPENVIREO_TEST_PORT'&&projectMarker(key)==='OPENVIREO_TEST_PORT');
- const port=Number(environment.OPENVIREO_TEST_PORT??(alias?environment[alias]:undefined)??5173);
+ const port=Number(environment.OPENVIREO_TEST_PORT??(alias?environment[alias]:undefined)??5175);
  if(!Number.isInteger(port)||port<1024||port>65535)throw new Error('Invalid local test port');return port;
 }

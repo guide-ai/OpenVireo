@@ -5,7 +5,7 @@
 - Validate units, data schemas, conversion points (Extended/x87, double, float32), domain and rounding. Report the numerical policy; Number/WASM is not automatic x87 equivalence.
 - Check SEH epilogues, stack cleanup, calls, cancellation, reentry and state. Preserve uncertainty. Tests are evidence of the chosen implementation contract, not an oracle for the original.
 - Keep synthetic validation vectors separate from original observations; never present them as acquired CLEA spectra.
-- Keep license/provenance inventory. No public redistribution authorized.
+- Keep license/provenance inventory. The user explicitly authorized versioning all1279manifested resources and normal Git publication to guide-ai/OpenVireo. This is an operational scope update,not a blanket third-party license or original-runtime equivalence grant. Preserve source-specific notices/uncertainties;hosting,deployment and extra uploads remain outside scope.
 
 ## Engineering
 - Pure core; React handles presentation. Inputs bounded and validated. Accessible controls and responsive layout. No raw HTML from imported text. Review parsing, file limits, CSV escaping, export behavior, dependencies and network surface.
