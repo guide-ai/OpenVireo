@@ -4,17 +4,13 @@
   "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "tsc -b && vite build",
-    "test": "vitest run",
-    "test:e2e": "playwright test",
+    "dev": "node scripts/check-resources.mjs && vite --host 127.0.0.1",
+    "build": "node scripts/check-resources.mjs && tsc -b && vite build",
+    "test": "node scripts/check-resources.mjs && vitest run",
+    "test:e2e": "node scripts/check-resources.mjs && playwright test",
     "preview": "vite preview --host 127.0.0.1",
     "check:resources": "node scripts/check-resources.mjs",
-    "test:resources": "node scripts/check-resources.test.mjs",
-    "prebuild": "npm run check:resources",
-    "predev": "npm run check:resources",
-    "pretest": "npm run check:resources",
-    "pretest:e2e": "npm run check:resources"
+    "test:resources": "node scripts/check-resources.test.mjs"
   },
   "dependencies": {
     "react": "19.3.1",

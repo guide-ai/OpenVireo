@@ -1,8 +1,10 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {mkdtemp, mkdir, writeFile, readFile, rm, symlink} from 'node:fs/promises';
+import {mkdtemp, mkdir, writeFile, readFile, rm, symlink, copyFile, chmod} from 'node:fs/promises';
 import path from 'node:path';
+import{spawnSync}from'node:child_process';
+import{fileURLToPath}from'node:url';
 import {tmpdir} from 'node:os';
 import {checkResources, resourceCheckCommand} from './check-resources.mjs';
 
@@ -33,10 +35,10 @@ test('valid UTF-8 bytes pass; same-size corruption, wrong size, missing and non-
 test('manifest rejects traversal, absolute/control paths, duplicates and malformed sizes/hashes before resource IO', () => fixture(async root => {
   const valid = entry('data/a.json', 'x');
   for (const name of ['../secret', '/data/a', 'data/../a', 'data//a', 'data/./a', 'data/a\n', 'data/a\\b', 'public/private/a', 'data/C:a']) {
-    await assert.rejects(checkResources(root, {files: [valid, {...valid, path: name}]}), /Invalid resource manifest/);
+    await assert.rejects(checkResources(root, {files: [valid, {...valid, path: name}]}),  /files must|entry [0-9]+:/);
   }
   for (const files of [[valid, valid], [{...valid, bytes: -1}], [{...valid, bytes: 1.5}], [{...valid, sha256: 'bad'}], []]) {
-    await assert.rejects(checkResources(root, {files}), /Invalid resource manifest/);
+    await assert.rejects(checkResources(root, {files}),  /files must|entry [0-9]+:/);
   }
 }));
 
@@ -50,7 +52,7 @@ test('source-only checkout reports a bounded missing-pack result; command exit s
   const files = Array.from({length: 25}, (_, i) => entry(`data/${i}.json`, 'x'));
   await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files}));
   let lines = []; assert.equal(await resourceCheckCommand(root, [], line => lines.push(line)), 1);
-  assert.equal(lines.filter(line => /: missing$/.test(line)).length, 20); assert.ok(lines.some(line => line.includes('5 additional')));
+  assert.equal(lines.filter(line => /: missing \(ENOENT\)$/.test(line)).length, 20); assert.ok(lines.some(line => line.includes('5 additional')));
   assert.ok(lines.some(line => line.includes('0/25'))); assert.ok(lines.some(line => line.includes('Nothing was downloaded')));
   assert.equal(await resourceCheckCommand(root, ['--download'], () => {}), 2);
   await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), '{');
@@ -58,4 +60,51 @@ test('source-only checkout reports a bounded missing-pack result; command exit s
   await writeFile(path.join(root, 'data/a'), 'x');
   await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files: [entry('data/a', 'x')]}));
   assert.equal(await resourceCheckCommand(root, [], () => {}), 0);
+}));
+
+const checkerFile = fileURLToPath(new URL('./check-resources.mjs', import.meta.url));
+async function commandFixture(root) {
+  await mkdir(path.join(root, 'scripts')); await copyFile(checkerFile, path.join(root, 'scripts/check-resources.mjs'));
+  await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files: [entry('data/absent', 'x')]}));
+}
+test('real CLI through an aliased checkout cannot silently skip a missing-pack check', () => fixture(async root => {
+  await commandFixture(root); const alias = root + '-alias'; await symlink(root, alias, 'dir');
+  try {const p = spawnSync(process.execPath, [path.join(alias, 'scripts/check-resources.mjs')], {encoding: 'utf8', timeout: 3000}); assert.equal(p.error, undefined); assert.equal(p.status, 1); assert.match(p.stdout, /0\/1 match/);}
+  finally {await rm(alias);}
+}));
+test('all four npm entry commands retain preflight with ignore-scripts and never reach an engine on a missing pack', () => fixture(async root => {
+  await commandFixture(root);
+  const actual = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({type: 'module', scripts: actual.scripts}));
+  const bin = path.join(root, 'node_modules/.bin'); await mkdir(bin, {recursive: true});
+  for (const name of ['tsc', 'vite', 'vitest', 'playwright']) {const file = path.join(bin, name); await writeFile(file, '#!/usr/bin/env node\nimport{writeFileSync}from"node:fs";writeFileSync("engine-ran", "bad");process.exit(79);\n'); await chmod(file, 0o755);}
+  const control = spawnSync(process.execPath, [path.join(bin, 'tsc')], {cwd: root, encoding: 'utf8', timeout: 3000});
+  assert.equal(control.status, 79); assert.equal(await readFile(path.join(root, 'engine-ran'), 'utf8'), 'bad'); await rm(path.join(root, 'engine-ran'));
+  for (const command of ['build', 'dev', 'test', 'test:e2e']) {
+    const p = spawnSync('npm', ['--ignore-scripts', 'run', command], {cwd: root, encoding: 'utf8', timeout: 5000});
+    assert.equal(p.error, undefined); assert.equal(p.status, 1, command); assert.match(p.stdout, /0\/1 match/);
+    await assert.rejects(readFile(path.join(root, 'engine-ran')), {code: 'ENOENT'});
+  }
+}));
+test('typed manifest errors reject non-string hashes, portable collisions and invisible diagnostic controls', () => fixture(async root => {
+  const a = entry('data/a', 'x');
+  for (const sha256 of [[a.sha256], {toString: () => a.sha256}, null, 0]) await assert.rejects(checkResources(root, {files: [{...a, sha256}]}), /entry 1: sha256/);
+  for (const name of ['data/A', 'data/\u202ea', 'data/\u200ba']) await assert.rejects(checkResources(root, {files: [a, {...a, path: name}]}), /entry 2:/);
+  await assert.rejects(checkResources(root, {files: [{...a, path: 'data/é'}, {...a, path: 'data/e\u0301'}]}), /duplicate portable path/);
+  await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files: [a, {...a, sha256: []}]}));
+  const lines = []; assert.equal(await resourceCheckCommand(root, [], line => lines.push(line)), 2); assert.match(lines[0], /entry 2: sha256/);
+}));
+test('root and IO diagnostics distinguish broken links, non-directories and unreadable files; results retain manifest order', () => fixture(async root => {
+  await rm(path.join(root, 'data'), {recursive: true}); await symlink(path.join(root, 'offline-pack'), path.join(root, 'data'), 'dir');
+  const manifest = {files: [entry('data/a', 'x')]}; let r = await checkResources(root, manifest);
+  assert.equal(r.roots[0].reason, 'resource root link target missing'); assert.equal(r.issues[0].code, 'ENOENT');
+  await rm(path.join(root, 'data')); await writeFile(path.join(root, 'data'), 'x'); r = await checkResources(root, manifest); assert.equal(r.issues[0].code, 'ENOTDIR');
+  await rm(path.join(root, 'data')); await mkdir(path.join(root, 'data')); await writeFile(path.join(root, 'data/a'), 'x'); await chmod(path.join(root, 'data/a'), 0);
+  try {if (process.getuid?.() !== 0) {r = await checkResources(root, manifest); assert.equal(r.issues[0].code, 'EACCES');}}
+  finally {await chmod(path.join(root, 'data/a'), 0o600);}
+  const files = Array.from({length: 24}, (_, i) => entry(`data/missing-${i}`, 'x')); r = await checkResources(root, {files}); assert.deepEqual(r.issues.map(e => e.path), files.map(e => e.path));
+}));
+test('a special file cannot block the real CLI before its file-type check', () => fixture(async root => {
+  await commandFixture(root); const fifo = path.join(root, 'data/absent'); const made = spawnSync('mkfifo', [fifo], {encoding: 'utf8'}); assert.equal(made.status, 0);
+  const p = spawnSync(process.execPath, [path.join(root, 'scripts/check-resources.mjs')], {encoding: 'utf8', timeout: 3000}); assert.equal(p.error, undefined); assert.equal(p.status, 1); assert.match(p.stdout, /not a regular file/);
 }));

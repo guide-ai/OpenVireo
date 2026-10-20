@@ -11,7 +11,7 @@ node scripts/check-resources.mjs
 npm run check:resources
 ```
 
-The checker reads the revision's `docs/LOCAL-RESOURCES.json`, validates every relative resource path before resource IO, then streams each file to verify its byte length and SHA-256. It reports counts and up to20 issue paths. It never prints source contents, downloads, generates, copies or repairs files. Local worktrees may link to an authorized existing private resource directory; the target contents receive the same byte checks. The manifest establishes expected identity only, not authenticity, original-runtime equivalence or redistribution permission.
+The CLI resolves filesystem aliases before selecting its main entry. The checker reads the revision's `docs/LOCAL-RESOURCES.json`, validates every relative resource path before resource IO, then streams each file through a single nonblocking descriptor (at most8files concurrently) to verify its byte length and SHA-256. It reports counts and up to20 issue paths. It never prints source contents, downloads, generates, copies or repairs files. Local worktrees may link to an authorized existing private resource directory; the target contents receive the same byte checks. The manifest establishes expected identity only, not authenticity, original-runtime equivalence or redistribution permission.
 
 Exit0 means all listed files match. Exit1 means missing, unreadable, non-file or mismatched resources. Exit2 means invalid/unavailable manifest or unsupported command arguments. A source-only checkout intentionally exits1 with a clear private-pack requirement before compilation; it does not fail later on hundreds of unresolved JSON imports.
 
@@ -27,7 +27,7 @@ npm test -- --maxWorkers=4
 npm run test:e2e -- --workers=2
 ```
 
-`prebuild`, `predev`, `pretest` and `pretest:e2e` run the same read-only preflight. `npm run test:resources` runs four synthetic checker contracts without the scientific pack or application dependencies. Scientific/state contracts continue to use Vitest; complete application flows use Playwright. `npm run dev` binds to loopback as before. Keep the existing persistent5173 preview service unchanged; use a different loopback port for temporary checks.
+The build,dev,test andtest:e2e scripts invoke the same read-only preflight directly,including when npm ignore-scripts is enabled. The default Playwright server starts local Vite directly after the npm E2E entry check. `npm run test:resources` runs nine synthetic checker contracts without the scientific pack or application dependencies. Scientific/state contracts continue to use Vitest; complete application flows use Playwright. `npm run dev` binds to loopback as before. Keep the existing persistent5173 preview service unchanged; use a different loopback port for temporary checks.
 
 ## Publication boundary
 

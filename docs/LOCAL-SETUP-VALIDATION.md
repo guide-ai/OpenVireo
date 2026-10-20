@@ -1,22 +1,28 @@
-# Q06 local resource preflight — validation
+# Q06 resource preflight — validation and review
 
-The resource checker is a bounded packaging increment. It adds no scientific/state/UI contract or dataset. It validates the existing identity manifest and the authorized private pack before npm build/dev/test, with a clear source-only diagnostic. All64primary statuses and original acceptance criteria remain unchanged; Q06 is still partial.
+The checker validates file identity only. It is not a license, authentication boundary, native-execution oracle or filesystem transaction. The latest resource-inclusion instruction supersedes the initial private-pack packaging decision; its separate commit preserves all1279resource bytes and hashes.
 
-## Exact checks
+## Current correction
 
-- Real local pack: **1279/1279** files match size and SHA-256. Every resource remains ignored and unchanged. The verifier streams bytes without logging contents or writing files.
-- Four Node built-in tool contracts pass, covering valid Unicode bytes, same-size hash corruption, size mismatch, missing/non-file paths, path traversal/control/duplicate/malformed-manifest rejection, authorized directory links, bounded diagnostics and command exit statuses. Inputs are synthetic temporary strings, not acquired or original data. Application science/state tests remain Vitest.
-- A complete source archive based on9008097 with the exact authored candidate changes, no resource payloads and no node_modules, verifies the actual failure path: `npm run check:resources` exits1 with0/1279 and only20listed paths plus1259remaining; `npm run build` exits1 in prebuild before TypeScript/Vite; `npm run test:resources` passes all4cases without dependencies. A final source-archive receipt is kept externally after commit.
-- With the matching pack, `npm run build` passes project typechecking and Vite, including the new prebuild. `npm test -- --maxWorkers=4` passes **1202 contracts/110files**, including pretest. No dependency or lockfile changes.
-- `npm run test:e2e` invokes pretest:e2e, starts a fresh temporary loopback server through predev and passes **15 flows**: P01, saved-file naming/reimport/error handling and all12motion flows. The server exits normally. The complete193browser/24production and desktop/mobile visual checks from9008097 cover the unchanged application code; this increment repeats the launch-hook paths, not a relabelled full-browser run.
-- All30generated JS/CSS content-hash filenames match the A06 build. No file under src/,tests/,data/ or public/ changes in this increment. No source+sky, seeds/RNG, acquisition IDs or manual pupil values change.
+The nine Node tool contracts pass, including real CLI entry through a directory alias, all four npm commands with ignore-scripts enabled and sentinel engines, non-string hashes, portable path collisions/invisible characters, typed manifest diagnostics, broken root links, non-directory paths, nonroot permission denial and a FIFO. Synthetic fixtures are temporary strings,not scientific observations. The initial sandbox run had6pass/3process-EPERM;the allowed subprocess run passes9/9 without changing assertions. All1202Vitest contracts and TypeScript/Vite build pass against the unchanged resources. The corrected npm E2E entry and default direct-Vite server pass15browser flows (P01,naming compatibility andall12motion flows),without repeated npm pre-hooks. Source application models,counts/RNG and pupil measures are unchanged.
 
-Evidence outside source: `/home/dobleuber/Documents/Codex/2026-10-18/task-3/resource-readiness/`, including `installed-checker-tests.log`, `local-pack-candidate.json`, `source-only-verification.json`, the three source-only logs, `build.log`, `full-unit.log`, `hook-browser.log/json`, `bundle-preservation.json` and final source/index receipts. A native `node --test` trial reported a single file-level aggregate; the delivered command runs the test module directly and its TAP receipt explicitly records all4cases. No success count is inferred from that earlier aggregate.
+Before-fix receipts prove an aliased CLI returned0 with no output,and npm ignore-scripts bypassed the pre-hook and reached the missing compiler (exit127). These are preflight bypasses,not claims that an invalid scientific build succeeded.
 
-## Review status and publication boundary
+## Completed native review
 
-Local inspection and the checks above are complete. The new native Claude `/code-review` launch for Q06 was **denied before command/process creation** by automatic approval review, which cited the earlier no-Claude instruction. No launch files, init, stream, effective model or report were produced by that denied command. The rejection receipt is external `code-review/BLOCKED.json`. It was not retried or routed through another model/path. The separate earlier naming security fallback remains denied and was not invoked by this increment. No external code-review or security approval for Q06 is claimed; the successful naming/A06 reports cover their earlier scopes only.
+After explicit human authorization,one retry of the same native `/code-review` completed against actual commit18344d6. EffectiveOpus5.5 is recorded in final model usage;CLIeffort high configured,provider effort telemetry unavailable. There were26Read/Glob/Grep calls,no source changes across419snapshotfiles,and exit0. Raw report/stream/audit remain outside source in the task-3resource-readiness/code-review directory;the initial denied attempt is preserved separately. This is distinct from the earlier security fallback,which remains stopped. No second external sign-off on post-report fixes is claimed.
 
-The remote Git preflight was independently denied before execution, citing the initial no-remote instruction. No normal push of these increments has been attempted; this is distinct from a failed or uncertain push. Local commits do not establish remote publication. Exact action/target/reason/status is in the external naming-correction remote-preflight receipt.
+| Item | Validated disposition |
+| --- | --- |
+| 1. Aliased main entry | Reproduced and fixed by canonical realpath comparison;real CLI regression. |
+| 2. npm ignore-scripts | Reproduced and fixed by direct command gates;four sentinel-engine regressions. |
+| 3. SHA coercion | Require string;typed invalid-manifest exit2 with entry/field. |
+| 4. Two-open race | One nonblocking descriptor for fstat+hash;close in finally. FIFO cannot hang before type check. Later external mutations remain outside a point-in-time check. |
+| 5. Generic errors | Distinct IO/syntax/typed manifest failures;unexpected programmer errors are not relabelled. |
+| 6. Setup diagnostics | Broken root links and filesystem error codes are explicit. |
+| 7. Portable collisions | NFC/case duplicate key and format/control-character rejection. |
+| 8. Double preflight | Default npm E2E checks once;its loopback server launches Vite directly. Raw engine commands are explicit advanced bypasses,not promised protected entrypoints. |
+| 9. Serial IO | Bounded8async streams,stable result order;no workers,new service or timing guarantee. |
+| 10. Test gaps | Real child-process CLI/npm/special-file and filesystem-negative cases added. |
 
-Original/derived resource redistribution remains unresolved, so the1279payloads, generated dist/, originals and review/private state remain excluded. The manifest grants no license/authenticity/runtime-equivalence guarantee. No download, upload, deployment, service, dependency installation or original execution occurs. See [manual commands and limitations](LOCAL-SETUP.md).
+Current raw failures,resolutions and exact suite logs are external under task-3/q06-fixes. The earlier four-contract source-only snapshot and its1202unit/15browser receipts remain under resource-readiness;they are not relabelled as testing these fixes. The193completebrowser/24production baseline covers the unchanged astronomy/runtime code;subsequent entrypoint,resource-inclusive clone andfunctional-flow verification are reported separately.
