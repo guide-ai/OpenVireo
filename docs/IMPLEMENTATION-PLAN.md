@@ -2,6 +2,8 @@
 
 ## Current scope reconciliation
 
+Q06 resource-readiness follow-up: [local resource preflight](LOCAL-SETUP.md) verifies the excluded pack before build/dev/test, with explicit clean-checkout diagnostics and synthetic checker contracts. It downloads or changes nothing. Reproducible public application packaging, resource rights, license choice and full release/classroom acceptance remain open; all64primary acceptance statuses/criteria are unchanged.
+
 The dated narrative and baseline inventory below contain historical descriptions of work that was subsequently delivered. Use the latest feature evidence and `data/planning/acceptance-status.json` together; the package statuses are acceptance outcomes, not a percentage of code ported.
 
 - Delivered bounded optical slices: all three compiled telescope/site profiles; the supported star, three Hubble galaxies and pinned sky acquisitions; SSP/JSON/CSV interoperability; shared stationary spectral clock/access; fixed-list UBV photometry with 16/14/10 telescope-specific domains, sizes 5/10/15 and recovered timing choices; blank manual entries, explicit colors and fits; six native model families and sixteen reference-dataset comparisons with reversible manual exclusions; raw owners 1–10/full investigation 8–21 continuity.
@@ -265,7 +267,7 @@ These historical version values come from the preserved CLEA version inventory. 
 3. **Q03 — Robustness and security:** bounded readers, import/export handling, malformed files, dependency checks and controlled network surface.
 4. **Q04 — Performance and determinism:** catalog/image budgets, cancellation, background processing only when measured, event/PRNG reproducibility.
 5. **Q05 — Rights and attribution:** CLEA educational terms, third-party catalog/image/spectrum/media rights, permission evidence and release-specific notices.
-6. **Q06 — Packaging, documentation and release:** versioned compatibility matrix, installation/offline options, instructor/student documentation, regression reports and reproducible builds. No public release is currently authorized.
+6. **Q06 — Packaging, documentation and release:** versioned compatibility matrix, installation/offline options, instructor/student documentation, regression reports and reproducible builds. Source-only Git publication has been separately authorized; hosting and resource redistribution are not included.
 
 ## Architecture
 

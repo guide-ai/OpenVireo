@@ -8,7 +8,13 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "check:resources": "node scripts/check-resources.mjs",
+    "test:resources": "node scripts/check-resources.test.mjs",
+    "prebuild": "npm run check:resources",
+    "predev": "npm run check:resources",
+    "pretest": "npm run check:resources",
+    "pretest:e2e": "npm run check:resources"
   },
   "dependencies": {
     "react": "19.3.1",

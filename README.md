@@ -15,7 +15,7 @@ General fields/options/instruments, native global timing/RNG/x87 fidelity, origi
 
 The source history deliberately excludes `data/` and `public/original/`: they contain original/derived scientific catalogs, spectra, images, models, byte-bearing evidence and local-only reference data. Their redistribution permissions are unresolved. **A fresh source-only checkout is not a self-contained runnable distribution.** A TypeScript/Vite build and dataset-dependent tests require the matching validated local resource directories first.
 
-On this workstation the resources remain in place. The complete pre-Git tree is backed up outside the repository. [The resource manifest](docs/LOCAL-RESOURCES.json) records relative paths, sizes and SHA-256 without the original payloads. Supply those exact local resources from an authorized private backup or reproduce them with the preserved local research generators; merely downloading an original archive is not a verified generated-resource setup. There is no automatic download, fabricated fallback dataset or public resource upload.
+On this workstation the resources remain in place. The complete pre-Git tree is backed up outside the repository. [The resource manifest](docs/LOCAL-RESOURCES.json) records relative paths, sizes and SHA-256 without the original payloads. Supply those exact local resources from an authorized private backup or reproduce them with the preserved local research generators; merely downloading an original archive is not a verified generated-resource setup. There is no automatic download, fabricated fallback dataset or public resource upload. `npm run check:resources` verifies all listed paths, sizes and SHA-256 without application dependencies; build/dev/test commands run it first. A source-only checkout stops with a bounded missing-pack report. See [local setup and exit codes](docs/LOCAL-SETUP.md).
 
 This repository publishes authored source, tests and documentation only. Original and derived resource payloads remain excluded. [The preparation inventory](docs/FIRST-COMMIT-INVENTORY.md) records that boundary. No general source license has been chosen; public visibility does not grant a third-party asset license or establish original-runtime equivalence.
 
@@ -24,6 +24,8 @@ This repository publishes authored source, tests and documentation only. Origina
 Use the existing installed dependencies or install the versions pinned by `package-lock.json`. No dependency changed for branding/Git preparation.
 
 ```sh
+npm run check:resources
+npm run test:resources
 npm run dev
 npm run build
 npm test -- --maxWorkers=4
