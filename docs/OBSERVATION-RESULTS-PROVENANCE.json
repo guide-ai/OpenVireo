@@ -1,0 +1,980 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive);exception table and literal pools are data,not disassembled instructions",
+  "captures": [
+    {
+      "evidenceId": "VIREO-OBS-01",
+      "start": "0x50b1dc",
+      "endExclusive": "0x50b2c2",
+      "byteRangeSHA256": "836b6f2352d7346ac3de5521485f8694f948ee7cd64bc223ccff808a75378641",
+      "listingSHA256": "7fa34a5c6126c0c8bd836497e8e33abf3b1f571eda4093642b66565bb4ed8ed6",
+      "localListing": "classification-entry.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-02",
+      "start": "0x54a73c",
+      "endExclusive": "0x54a814",
+      "byteRangeSHA256": "3c73fa8c8473944b1f3ba80ce6428b4f44ee4b306bd3448af10cfb98246fd38b",
+      "listingSHA256": "8d16f073fefa024bef1a914328365fb9bde352b9fabebf911497f75721fbe711",
+      "localListing": "record-find.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-03",
+      "start": "0x54a814",
+      "endExclusive": "0x54a91a",
+      "byteRangeSHA256": "539c8ee848cc95ce256d7729f2c781aa3fe5fc743a91e5c2edbed6aa8706468b",
+      "listingSHA256": "145588496a5ebd67f5b4a1f768c2013926814c0f7210c303e02a58e5f632af95",
+      "localListing": "record-create.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-04",
+      "start": "0x546de0",
+      "endExclusive": "0x546e1b",
+      "byteRangeSHA256": "87b6b814083f9e1c98d3e4fbc519bd8ee1194dc1e499b06947e3f063d5956823",
+      "listingSHA256": "d0e934ba9eda5547c2bbd6216c2a5d9ad8b00d5587961967548d04e670da001a",
+      "localListing": "list-create.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-05",
+      "start": "0x54a91c",
+      "endExclusive": "0x54afd4",
+      "byteRangeSHA256": "4d8bcb9e79e5201e8b9c57d583e5e658fc57775a4910deec8602c39d5a4d9aec",
+      "listingSHA256": "25e1e909ea54a59c11480c712d7a71f72edd9fec00827c0cf1a207676ae16c5c",
+      "localListing": "form-activate.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-06",
+      "start": "0x54b02c",
+      "endExclusive": "0x54b1b1",
+      "byteRangeSHA256": "ccf067392a190d233b0f386ac994c23a3f20573d08fc7c3f250392607a16d01d",
+      "listingSHA256": "2adb81d48f870f1d742d740204eac2b3fd77d63cd3c281fda45d8fa226b420a4",
+      "localListing": "form-confirm-main.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-07",
+      "start": "0x54b1bd",
+      "endExclusive": "0x54b22b",
+      "byteRangeSHA256": "3f121f5a148edca9962f37839bba1da9b70b60725662aaf3f1685335822d19dc",
+      "listingSHA256": "2022622fcebe192a9251a61f92a8069bc70d0d6040a7f375b79520b3a8224653",
+      "localListing": "form-confirm-handler.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-08",
+      "start": "0x54b2dc",
+      "endExclusive": "0x54b2eb",
+      "byteRangeSHA256": "84fa4a12e1e8700e67292efad875cd1296aacb8018a20a716f54d437121d57c4",
+      "listingSHA256": "0a0e9d037ed490d51db84090bf49cdda5b9c5a0e6ec5b212772a69fae25aa446",
+      "localListing": "form-cancel.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-09",
+      "start": "0x549620",
+      "endExclusive": "0x549760",
+      "byteRangeSHA256": "85f20d2353fb9cf7a34e0eee60fbce7530e876d99ad7a201a884948b0c7d7b5a",
+      "listingSHA256": "4f7428977fb7e5291f67d31dbf1d3472423de16279ea2dbf42e733006277ce8d",
+      "localListing": "list-edit.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-10",
+      "start": "0x55d840",
+      "endExclusive": "0x55dd09",
+      "byteRangeSHA256": "09358dd5ba7cfa49121244c414ef59a057b7e5c825dbfe4145c7fa49b160fe92",
+      "listingSHA256": "f60b1c8cdab58058575a2784938218ca500a4632cd23e1d24c01cc1897053a51",
+      "localListing": "spectral-parse.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-11",
+      "start": "0x55d4f4",
+      "endExclusive": "0x55d835",
+      "byteRangeSHA256": "ae664848a779cc8b9bb4884613aeb73f287e998c500002882902fcadebd09556",
+      "listingSHA256": "d9d297ef65b7b1c291a16a81a4597be2bdabd6dec67749be3cef35d1fc32a687",
+      "localListing": "spectral-format.asm"
+    },
+    {
+      "evidenceId": "VIREO-OBS-12",
+      "start": "0x403c5c",
+      "endExclusive": "0x403c75",
+      "byteRangeSHA256": "328a56cade21bfff6293d4c1af035ff3fbf0efd9175497707e84afdf6a4b0741",
+      "listingSHA256": "ec1810aff22103cd12a01e3b0c218eff47e9afbd476d8407507d131026224af9",
+      "localListing": "short-string-copy.asm"
+    }
+  ],
+  "dataRanges": [
+    {
+      "start": "0x54b1b1",
+      "endExclusive": "0x54b1bd",
+      "byteRangeSHA256": "89d63c51888f2a3084e7745b048965ab6862e0da44e9b12cf527a3e3e591c266",
+      "meaning": "one exception class/handler table;not code"
+    },
+    {
+      "start": "0x54b22c",
+      "endExclusive": "0x54b242",
+      "byteRangeSHA256": "53e918fa69a9ba577c8eb3d714590fbc8fc336e91973105840c5c59518a672b6",
+      "meaning": "velocity Extended constants separated by alignment;not implemented in bounded practice path"
+    }
+  ],
+  "formResource": {
+    "fileOffset": 2112256,
+    "bytes": 4786,
+    "SHA256": "7bb02ba22d7533bb87d65450bd1ae9a24eef463dec005a2898fabdfd13a9709e",
+    "kind": "TObsRsltsDlg1;OnActivate0x54a91c,bkOK/bkCancel;SpEdMaxLength12,RmrksEd36,IDEdReadOnly"
+  },
+  "compilerFields": {
+    "start": "0x546baa",
+    "endExclusive": "0x546d14",
+    "byteRangeSHA256": "c3e12073ac4ae839d69b832bea840185e2efa6630c71f96e555654c584c0f025",
+    "matchedResourceFields": [
+      {
+        "name": "ObjLbl",
+        "offset": "0x360",
+        "entryVA": "0x546baa",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "IDEd",
+        "offset": "0x364",
+        "entryVA": "0x546bb7",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "JDLbl",
+        "offset": "0x368",
+        "entryVA": "0x546bc2",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "JDEd",
+        "offset": "0x36c",
+        "entryVA": "0x546bce",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "ULbl",
+        "offset": "0x370",
+        "entryVA": "0x546bd9",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "BLbl",
+        "offset": "0x374",
+        "entryVA": "0x546be4",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "VLbl",
+        "offset": "0x378",
+        "entryVA": "0x546bef",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "UMagEd",
+        "offset": "0x37c",
+        "entryVA": "0x546bfa",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "BMagEd",
+        "offset": "0x380",
+        "entryVA": "0x546c07",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "VMagEd",
+        "offset": "0x384",
+        "entryVA": "0x546c14",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "ResultsLbl",
+        "offset": "0x388",
+        "entryVA": "0x546c21",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "RmrksLbl",
+        "offset": "0x38c",
+        "entryVA": "0x546c32",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "RmrksEd",
+        "offset": "0x390",
+        "entryVA": "0x546c41",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "OKBtn",
+        "offset": "0x394",
+        "entryVA": "0x546c4f",
+        "typeIndex": 2,
+        "resourceClass": "TBitBtn"
+      },
+      {
+        "name": "CnclBtn",
+        "offset": "0x398",
+        "entryVA": "0x546c5b",
+        "typeIndex": 2,
+        "resourceClass": "TBitBtn"
+      },
+      {
+        "name": "SpLbl",
+        "offset": "0x39c",
+        "entryVA": "0x546c69",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "SpEd",
+        "offset": "0x3a0",
+        "entryVA": "0x546c75",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "IMagLbl",
+        "offset": "0x3a4",
+        "entryVA": "0x546c80",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "RMagLbl",
+        "offset": "0x3a8",
+        "entryVA": "0x546c8e",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "IMagEd",
+        "offset": "0x3ac",
+        "entryVA": "0x546c9c",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "RMagEd",
+        "offset": "0x3b0",
+        "entryVA": "0x546ca9",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "ZLbl",
+        "offset": "0x3b4",
+        "entryVA": "0x546cb6",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "ZEd",
+        "offset": "0x3b8",
+        "entryVA": "0x546cc1",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "VelLbl",
+        "offset": "0x3bc",
+        "entryVA": "0x546ccb",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "VelEd",
+        "offset": "0x3c0",
+        "entryVA": "0x546cd8",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "RAEd",
+        "offset": "0x3c4",
+        "entryVA": "0x546ce4",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "DecEd",
+        "offset": "0x3c8",
+        "entryVA": "0x546cef",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "RALbl",
+        "offset": "0x3cc",
+        "entryVA": "0x546cfb",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "DecLbl",
+        "offset": "0x3d0",
+        "entryVA": "0x546d07",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      }
+    ]
+  },
+  "genericTypeTables": {
+    "spectral": {
+      "start": "0x5b486c",
+      "endExclusive": "0x5b490c",
+      "byteRangeSHA256": "cb4f9f1ea1b2fe11f50698878cbba80e96ca4f94df3e9325caabb8844b13df74",
+      "rows": [
+        {
+          "code": 11,
+          "text": "WR"
+        },
+        {
+          "code": 12,
+          "text": "WN"
+        },
+        {
+          "code": 13,
+          "text": "WC"
+        },
+        {
+          "code": 81,
+          "text": "DA"
+        },
+        {
+          "code": 82,
+          "text": "DB"
+        },
+        {
+          "code": 83,
+          "text": "DC"
+        },
+        {
+          "code": 84,
+          "text": "DO"
+        },
+        {
+          "code": 85,
+          "text": "DZ"
+        },
+        {
+          "code": 86,
+          "text": "DQ"
+        },
+        {
+          "code": 71,
+          "text": "R"
+        },
+        {
+          "code": 72,
+          "text": "N"
+        },
+        {
+          "code": 73,
+          "text": "S"
+        },
+        {
+          "code": 14,
+          "text": "W"
+        },
+        {
+          "code": 10,
+          "text": "O"
+        },
+        {
+          "code": 20,
+          "text": "B"
+        },
+        {
+          "code": 30,
+          "text": "A"
+        },
+        {
+          "code": 40,
+          "text": "F"
+        },
+        {
+          "code": 50,
+          "text": "G"
+        },
+        {
+          "code": 60,
+          "text": "K"
+        },
+        {
+          "code": 70,
+          "text": "M"
+        }
+      ]
+    },
+    "luminosity": {
+      "start": "0x5b490c",
+      "endExclusive": "0x5b499c",
+      "byteRangeSHA256": "0ff719a96e237db8af20b31e265005dac858f5dc5209ce6c9a546597c9baa07f",
+      "rows": [
+        {
+          "code": 35,
+          "text": "III-IV"
+        },
+        {
+          "code": 25,
+          "text": "II-III"
+        },
+        {
+          "code": 17,
+          "text": "Ib-II"
+        },
+        {
+          "code": 45,
+          "text": "IV-V"
+        },
+        {
+          "code": 16,
+          "text": "I-II"
+        },
+        {
+          "code": 9,
+          "text": "0-Ia"
+        },
+        {
+          "code": 30,
+          "text": "III"
+        },
+        {
+          "code": 20,
+          "text": "II"
+        },
+        {
+          "code": 14,
+          "text": "Iab"
+        },
+        {
+          "code": 13,
+          "text": "Ia"
+        },
+        {
+          "code": 15,
+          "text": "Ib"
+        },
+        {
+          "code": 40,
+          "text": "IV"
+        },
+        {
+          "code": 60,
+          "text": "VI"
+        },
+        {
+          "code": 62,
+          "text": "SD"
+        },
+        {
+          "code": 70,
+          "text": "WD"
+        },
+        {
+          "code": 8,
+          "text": "0"
+        },
+        {
+          "code": 10,
+          "text": "I"
+        },
+        {
+          "code": 50,
+          "text": "V"
+        }
+      ]
+    },
+    "prefix": {
+      "start": "0x5b499c",
+      "endExclusive": "0x5b49cc",
+      "byteRangeSHA256": "92341b834f34228a41fc5f919303d04ecc67f4807ac27bfd709ff7de08408b2c",
+      "rows": [
+        {
+          "code": 21,
+          "text": "sg"
+        },
+        {
+          "code": 61,
+          "text": "sd"
+        },
+        {
+          "code": 12,
+          "text": "c"
+        },
+        {
+          "code": 31,
+          "text": "g"
+        },
+        {
+          "code": 51,
+          "text": "d"
+        },
+        {
+          "code": 71,
+          "text": "w"
+        }
+      ]
+    },
+    "peculiarity": {
+      "start": "0x5b49cc",
+      "endExclusive": "0x5b4a4c",
+      "byteRangeSHA256": "c2c44ca7176639f4f3e935c9ef6245b2d9925cb3630d72e6443388a7de17808e",
+      "rows": [
+        {
+          "code": 30,
+          "text": "nne"
+        },
+        {
+          "code": 31,
+          "text": "npe"
+        },
+        {
+          "code": 32,
+          "text": "pne"
+        },
+        {
+          "code": 20,
+          "text": "nn"
+        },
+        {
+          "code": 21,
+          "text": "en"
+        },
+        {
+          "code": 22,
+          "text": "ne"
+        },
+        {
+          "code": 23,
+          "text": "pe"
+        },
+        {
+          "code": 24,
+          "text": "ep"
+        },
+        {
+          "code": 10,
+          "text": "e"
+        },
+        {
+          "code": 11,
+          "text": "f"
+        },
+        {
+          "code": 12,
+          "text": "p"
+        },
+        {
+          "code": 13,
+          "text": "n"
+        },
+        {
+          "code": 14,
+          "text": "s"
+        },
+        {
+          "code": 15,
+          "text": "k"
+        },
+        {
+          "code": 16,
+          "text": "m"
+        },
+        {
+          "code": 17,
+          "text": "w"
+        }
+      ]
+    }
+  },
+  "globals": {
+    "0x5b5ef8": "static imported-variable pointer to0x5bcafc,the current record pointer;not a separate scratch copy",
+    "0x5b5bd4": "static imported-variable pointer to0x5bcb00,the list form variable",
+    "0x5b5b48": "static imported-variable pointer to0x5bcae4;Cancel clears byte at that form+0x480,no record deletion/rollback in this handler"
+  },
+  "recordLayout": {
+    "bytes": 144,
+    "evidence": "FormCreate sets list element size0x90;selected Edit copies0x24DWords",
+    "fields": {
+      "0x00": "object shortstring15",
+      "0x10": "JDdouble,not two coordinates",
+      "0x18": "RAExtended",
+      "0x22": "DecExtended",
+      "0x2c": "five10byte photometry values;kind byte selects display,not universally magnitudes",
+      "0x5e": "magnitude-kind byte",
+      "0x5f": "spectral int32",
+      "0x63": "redshift single",
+      "0x67": "velocity single",
+      "0x6b": "remarks shortstring36"
+    }
+  },
+  "contracts": {
+    "prepare": "When global option+0x2e8c=0,case-sensitive exact object-ID lookup scans first to last and returns first match;otherwise/new miss creates zero-initialized record before opening dialog. Classifier then copies RA/Dec Extended fields from spectrum+0x31/+0x3b.",
+    "activate": "Loads fields from current record and calls spectral formatter;zero sentinel numerical fields show blank. It may calculate/store velocity on activation under a separate option and nonzero redshift,so this path is not a purely read-only native preview.",
+    "confirm": "Copies readonly ID up to15,remarks up to36,converts entered spectral text to packedcode+0x5f,then optionally parses a nonempty velocity and checks relative error againstC*z. Native can modify textual fields before a later velocity rejection. No spectral grade or nonempty type/remarks requirement here.",
+    "cancel": "bkCancel plus handler clears the unrelated owner flag+0x480. No record rollback/delete found in handler;web must not claim native provisional rows disappeared.",
+    "type": "Case-sensitive generic table lookup;remove ASCIIspaces/colons;optional lower-case luminosity prefix;one-digit subclass plus optionalone decimaldigit,rounded*10;missing subclass99;ordered luminosity/suffix handling;packclass*1000000+sub*10000+lum*100+pec. Unrecognized initialclass returns0. Other trailing text may be ignored or supply one peculiarity.",
+    "format": "Decompose integer code;prefix aliases,integer/one-decimal subclass,ordered suffixes,12byte final shortstring. Subclass99 omitted;zero omitted for prefix/early spectral groups. This is not lossless textual or code roundtrip for every label.",
+    "velocityNotImplemented": {
+      "C_exactFraction": "10548009391697539629/35184372088832",
+      "relativeTolerance_exactFraction": "5902958103587056517/590295810358705651712",
+      "reason": "No verified redshift/velocity/time/position/magnitudes in retained practice source. Nonempty velocity and unsafe zero/FPU paths not ported;no native FPU oracle."
+    }
+  },
+  "implementedBoundary": [
+    "Original25practiceidentities verified by existing catalog hashes and IO readiness;acquired/imported identities are not promoted. IDsource names all<=15bytes andunique. No catalog scientific measurement supplied.",
+    "Temporary in-memory observation notebook only;no JSON/CSV/schema/nativefile output changes. Existing free40/1000answers,records andmanualwidth remain separate.",
+    "Core generic type conversion/formatting and exact short remarks;source-bound first-object reuse,separate confirmations,selected-row editing. No answer key read or grade produced.",
+    "Explicit printable Windows1252 and byte-cap admission;colon-only nil-string hazard rejected. Machine ACP,unsafe string reads and runtime/FPU equivalence not claimed.",
+    "Web transaction stages row creation/writes until confirmation,keeps cancel atomic and rechecks source/ledger/mode/context;this differs from native early allocation/possible activation/partial velocity writes. Default reuse and100rowcap are authored browser choices exposing recovered branches.",
+    "Readonly unavailable metadata remains explicit;velocity validation/autofill/photometry/nativefilepersistence/delete/undo remain outside this increment."
+  ],
+  "sourcePracticeList": {
+    "path": "CLASSIFY.LST",
+    "bytes": 675,
+    "SHA256": "a1a869ba1dcd71406b435ed4432d6c440adcaefefd0ee9d9f45d9dc49280fe70",
+    "scope": "25source names/SP associations,not answer key or type solutions"
+  },
+  "rights": "Existing1279manifested assets retain original bytes/credits/source-specific uncertainty and established user publication scope. No new original asset files,binary uploads,push or deployment. Generic lookup constants are ported algorithm semantics,not a new asset collection.",
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "remaining": [
+    "Full native observational numerical fields,formatting,velocity gates/unsafe FPU",
+    "Native file headers/list persistence/import/export and delete/undo/runtime options",
+    "Broader acquired/imported result identity and source authority mappings",
+    "Full six-indicator/GDI/x87/Extended/edition/classroom/rights acceptance"
+  ],
+  "externalReview": "Explicit parent hold,pending human authorization,0attempts;no push/deployment/original execution/emulation"
+}

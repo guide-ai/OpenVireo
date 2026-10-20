@@ -522,3 +522,8 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Combined bottom width-source increment — 20 October2026
 
 [Combined lower-source selection](COMBINED-LOWER-WIDTH.md) closes the categorical route previously withheld after forced trace entry. Newly inspected normal-show versus modal control flow supports a subsequent combined action while width is active; the bottom resolver selects the next atlas standard while its displayed trace remains unknown. Existing opt-in/manual continuum, temporary reference results, actual source admission, pan/review guards and formats remain. Independent original ATL/SP controls cover30pairs/eight atlases. Full six-indicator/native FPU/pixel lifecycle and observational-result/file behavior remain separate open contracts;all64primary statuses unchanged,N02/E03partial. No external review attempt,push or deployment.
+
+
+## Observation-results manual fields — 20 October2026
+
+[Observation results](OBSERVATION-RESULTS.md) recovers the native type-code/short-remarks writes and original-practice first-object/append/selected-row flow in a temporary browser notebook. Cancel/reopen/confirm,byte admission,permissive unknown0conversion and stale-context protection preserve existing free answers,records and all file formats. No observing time,coordinates,photometry or velocity is invented;those numerical/nativefile/delete/undo paths remain open. Source metadata and all1279assets retained;N02/E03andall64statuses unchanged. No native runtime/FPU equivalence,grade,externalreviewattempt,push or deployment.
