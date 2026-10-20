@@ -1546,4 +1546,25 @@ export interface MessageParameters {
   "obs.file.confirm": never;
   "obs.file.restored": "count";
   "obs.file.conflict": never;
+  "obs.delete.open": "id";
+  "obs.delete.title": never;
+  "obs.delete.warning": never;
+  "obs.delete.confirm": never;
+  "obs.delete.cancel": never;
+  "obs.delete.done": never;
+  "obs.delete.pending": never;
+  "obs.delete.already": never;
+  "obs.delete.different": never;
+  "obs.delete.invalid": never;
+  "obs.delete.export": never;
+  "obs.delete.undo": never;
+  "obs.delete.undone": never;
+  "obs.delete.cleanup": never;
+  "obs.delete.finishOpen": never;
+  "obs.delete.finishTitle": never;
+  "obs.delete.finishWarning": never;
+  "obs.delete.finishConfirm": never;
+  "obs.delete.finished": never;
+  "obs.delete.failed": never;
+  "obs.delete.locked": never;
 }

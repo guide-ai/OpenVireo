@@ -531,3 +531,7 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Observation notebook web persistence — 20 October2026
 
 [Separate notebook persistence](OBSERVATION-PERSISTENCE.md) extends the earlier in-memory form with confirmed-only local browser storage and lossless bounded export/restore. Explicit restore review/cancel/replace,invalid-file/corrupt-copy/storage-failure/other-tab guards preserve current work. Historical investigation/classification JSON/CSV remain unchanged;no silent schema migration or free-answer conversion. Newly captured native0x90typed-file writer/reader do not supply the missing numerical observation metadata,so nativeDAT/textinterchange remains open. Integrator/acquisition/grade/source assets andall64primary statuses unchanged;project partial,no push/deploy/external review attempt.
+
+## Observation deletion and recovery — 20 October2026
+
+[Confirmed deletion and exact persisted undo](OBSERVATION-DELETE.md) closes a bounded web notebook lifecycle with one separate recovery slot,export/cancel/explicit finish,staged-before-write guards and cross-tab/error/reload handling. Recovered native handlers back confirmation/full-record backup/single Undo;web order/transaction/lock policies are explicit adaptations. Main notebook-v1 and historical investigation/classification/CSV formats remain unchanged. General edit Undo/native list/runtime and DAT/numerical metadata remain partial,all64primary statuses unchanged;no external review attempt,push or deployment.

@@ -1,0 +1,411 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "evidenceId": "VIREO-OBS-DELETE-01",
+      "start": "0x54978c",
+      "endExclusive": "0x5498d5",
+      "byteRangeSHA256": "214e68185f57c4dd63cdd8b9b42a27e832166d77126b2439eed9ea9abd9018cc",
+      "listingSHA256": "404f616e8f6bc92f87e9f8cc54ecb6a62bc2374d91cde95310854162dd5c02ba",
+      "localListing": "delete-confirmed.asm",
+      "boundary": "complete through SEH cleanup and return"
+    },
+    {
+      "evidenceId": "VIREO-OBS-DELETE-02",
+      "start": "0x54993c",
+      "endExclusive": "0x549a27",
+      "byteRangeSHA256": "794ea47cc6608a9e82fc571138a174bcbe9ff1d81bad77aeb642cf0e3a7624f9",
+      "listingSHA256": "50de4d059b6a659083422822a0dfe9337b076e7d85f2efbfb34efd192e570849",
+      "localListing": "undo-edit-delete.asm",
+      "boundary": "complete through SEH cleanup and return"
+    },
+    {
+      "evidenceId": "VIREO-OBS-DELETE-03",
+      "start": "0x4925dc",
+      "endExclusive": "0x492628",
+      "byteRangeSHA256": "59b5cde53241394e86d3ec98adb548a34652d67839a1d14f8af88b84d16304fa",
+      "listingSHA256": "528c31bb35e54f20fb60f11c646249b4ae691e8058613096e05318fbd2881ae3",
+      "localListing": "list-remove-explore.asm",
+      "boundary": "exploratory helper range;not a complete function boundary"
+    },
+    {
+      "evidenceId": "VIREO-OBS-DELETE-04",
+      "start": "0x492728",
+      "endExclusive": "0x492788",
+      "byteRangeSHA256": "b0b536fe106db354495727dfeaf4c20340da82fe48c4e04dd56c29d71dd8dccf",
+      "listingSHA256": "c064eb89e25d2a42c8d5bcca1f4d161546c5b48c2a4cb4c47511e1b18cfc8db5",
+      "localListing": "list-add-explore.asm",
+      "boundary": "exploratory helper range;not a complete function boundary"
+    }
+  ],
+  "literalData": [
+    {
+      "start": "0x5498d8",
+      "endExclusive": "0x549902",
+      "byteRangeSHA256": "0362ddb8a6f7e308a9c24b98269ea0b4978aa589ad50dfcddc754361edb3a20a",
+      "meaning": "No Selection / Select Item for Deletion"
+    },
+    {
+      "start": "0x549904",
+      "endExclusive": "0x54993a",
+      "byteRangeSHA256": "4f7e4adf7c1683a8293a554a8ec4eea545b9db702e4367ce8c70d19669789db8",
+      "meaning": "Confirm Deletion / Are You Sure? (Data will be lost!)"
+    }
+  ],
+  "contracts": {
+    "delete": "0x5497a4 disables Undo and clears +3ec first;requires selected list index>=1 (header occupies0). Confirmation result7 aborts. Selected data entry(index-1) is copied as0x24DWORDs to form+3f0;selected display text/index retained in+3c8/+3cc. Removes current list entry0x4925dc and display row,sets+3ec=1/enablesUndo.",
+    "undo": "0x549956 tests+3ec. Delete branch calls0x492728 with saved144byte record and recreates/inserts display string at saved display index. Edit branch copies saved144bytes back to selected record and replaces display text. Both disable Undo at end. Single saved record/slot,not multi-level history.",
+    "uncertainty": "Undo delete data-list helper and display insertion use distinct operations;not asserted as native whole-list exact-order equivalence. Native cancellation can clear prior Undo before returning;web preserves recovery on cancelled review. No execution/FPU/pixel equivalence."
+  },
+  "webAdaptation": [
+    "Only delete undo in this increment,not general edit undo. Full immutable before/after web snapshots preserve exact code/remarks/source/id/order/mode. Explicit confirmation and one pending recovery slot.",
+    "Separate origin-scoped recovery journal,portable recovery exported in existing notebookv1. Existing main key and notebook/investigation/classification/CSV formats unchanged.",
+    "Persist recovery before committing deletion;on storage failure/conflict no destructive in-memory change. Pending recovery blocks notebook mutations until undo or explicit finish;reads/exports remain available.",
+    "Undo restores exact prior snapshot only when current notebook/browser main copy matches reviewed after snapshot. Stale/mismatched records never merge by inference;export both copies.",
+    "Two localStorage keys are not a multi-process transaction;ordered staging and persisted before copy preserve recovery across interruption. Perfectly concurrent older clients remain a declared limit."
+  ],
+  "remaining": [
+    "General native edit undo/full list-pointer/order/runtime lifecycle",
+    "Native numerical metadata/velocity/fullDAT/textinterchange,broader source authority and scientific/educator/rights acceptance"
+  ],
+  "externalReview": "Explicit parenthold;pending human authorization,0attempts,no substitute",
+  "publication": "No original execution/emulation,push,deployment or new original uploads",
+  "methodBindings": [
+    {
+      "method": "DeleteSelectedLine1Click",
+      "entryVA": "0x54699d",
+      "handlerVA": "0x54978c",
+      "bytes": 31,
+      "entrySHA256": "af133c09573bd072deb1944c2d626523947f25b7b092993cd8f60897c6f4dcf2"
+    },
+    {
+      "method": "UndoEditDelete1Click",
+      "entryVA": "0x5469bc",
+      "handlerVA": "0x54993c",
+      "bytes": 27,
+      "entrySHA256": "ae2bc04a31b8b23a5e06c053ef3975a1b98c394aebbd15df9a21857b000a3869"
+    }
+  ],
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ]
+}
