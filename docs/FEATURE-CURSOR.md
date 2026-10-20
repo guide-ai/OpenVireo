@@ -1,5 +1,7 @@
 # Manual spectral feature cursor
 
+Current source follow-up: [selected-source equivalent width](SELECTED-SOURCE-WIDTH.md) reuses this manual trace cursor for the actual selected upper/unknown/lower admitted source, with source-specific labels. Practice archives remain unchanged; reference/imported/acquired inputs/results are temporary. The earlier practice-only admission statements below describe the initial slice, not the new calculation boundary.
+
 The classification lab now lets the student mark a practice spectrum's center and continuum shoulders on the curve. It reuses the existing equivalent-width integrator, manual drafts, review dialog, confirmed records and session formats. No line detection, continuum fit, sampled-flux snapping, classification answer or acquired measurement is supplied automatically.
 
 ## Try the feature

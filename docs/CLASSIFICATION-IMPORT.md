@@ -1,5 +1,7 @@
 # Imported SP/SSP visual classification
 
+Current width follow-up: [selected-source manual calculation](SELECTED-SOURCE-WIDTH.md) admits eligible imported/acquired sources for temporary3900–4500Å width results. It supersedes the earlier calculation exclusions below without adding archive fields; original-practice width persistence remains unchanged.
+
 Current sampled-intensity extension: [loaded-curve readout](LOADED-FLUX.md) now supports eligible acquired/imported unknowns under a separate identity/grid policy. Earlier numerical-readout exclusions below describe the prior increment;imported/acquired equivalent width and general native photographic behavior remain unavailable.
 
 Entry: http://127.0.0.1:5173/#classification → **Import spectrum for comparison**.

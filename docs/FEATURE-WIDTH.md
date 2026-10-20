@@ -1,5 +1,7 @@
 # Recovered spectral intensity and equivalent width
 
+Current selected-source follow-up: [upper/unknown/lower calculation and result](SELECTED-SOURCE-WIDTH.md) admits verified reference/imported/acquired sources through the same unchanged integrator. Earlier practice-only calculation exclusions below are historical for this bounded profile. Practice archives/formats and3900–4500Å measurement domain remain unchanged; other-source regions/results are temporary.
+
 Current imported-file extension: [CLASSIFICATION-IMPORT.md](CLASSIFICATION-IMPORT.md)
 adds bounded SP/SSP visual contexts and full v7; earlier pending/version statements
 below are historical for this subset. Imported equivalent width remains disabled.

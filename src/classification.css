@@ -39,3 +39,5 @@
 .sampled-difference-method{margin:12px 18px;font-size:12px}.sampled-difference-method summary{cursor:pointer;min-height:44px;align-content:center}
 
 .classification-range{border-top:1px solid #d7e4df;padding-top:8px}.classification-range summary{cursor:pointer;min-height:44px;align-content:center}.classification-range fieldset{min-width:0;margin:0;padding:8px;border:1px solid #c9dbd3}.classification-range input{width:100%;box-sizing:border-box}.classification-range [role=alert]{color:#853e2e;background:#fff0e8;padding:8px}
+
+.feature-measurement>label[for=width-source]{display:block;font-weight:600;margin:12px 0 6px}.feature-measurement>select{width:100%;max-width:100%;min-height:44px;padding:8px;border:1px solid #c9dbd3;border-radius:5px}.feature-measurement>p,.feature-measurement dialog p{overflow-wrap:anywhere}

@@ -1444,4 +1444,19 @@ export interface MessageParameters {
   "range.limits": never;
   "range.invalidRead": "maximum" | "minimum";
   "range.readScope": "maximum" | "minimum";
+  "widthSource.intro": never;
+  "widthSource.choose": never;
+  "widthSource.source": "kind" | "source";
+  "widthSource.resultSource": "kind" | "sha256" | "source";
+  "widthSource.kind.practice": never;
+  "widthSource.kind.standard": never;
+  "widthSource.kind.imported-spectrum": never;
+  "widthSource.kind.catalog-star-acquisition": never;
+  "widthSource.persistent": never;
+  "widthSource.temporary": never;
+  "widthSource.close": never;
+  "widthSource.cursor": "source";
+  "widthSource.grid": never;
+  "widthSource.identity": never;
+  "widthSource.limits": never;
 }

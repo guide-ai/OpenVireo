@@ -1,5 +1,7 @@
 # N02/E03 bounded acceptance — 18 October 2026
 
+Current width follow-up: [selected-source manual calculation](SELECTED-SOURCE-WIDTH.md) supersedes earlier standard/imported/acquired calculation exclusions for admitted3900–4500Å profiles. Only original-practice unknowns use the existing input archive; other results remain temporary. Full native geometry/modal/format/file/classroom acceptance stays partial.
+
 Current range follow-up: [3500–7400Å display endpoints](CLASSIFICATION-RANGE.md) extends source-aware visualization/flux readout while retaining manual-width admission and file schemas. [Remaining contract map](CLASSIFICATION-REMAINING-CONTRACTS.md) reconciles delivered slices and open gates; full native/classroom acceptance remains partial.
 
 Current difference follow-up: [normalized sampled preview](SAMPLED-DIFFERENCE.md) supplements the three source panes for exact-grid upper-standard/unknown pairs. This display-only recovered subtraction does not change the earlier printed-grid difference, manual result records or full N02/E03 acceptance; native layout/event/precision and broader options remain open.

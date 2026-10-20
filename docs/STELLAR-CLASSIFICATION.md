@@ -1,5 +1,7 @@
 # Stellar classification: original practice and acquired spectra
 
+Current width follow-up: [selected-source manual calculation](SELECTED-SOURCE-WIDTH.md) completes the admitted unknown/upper/lower calculation/result flow. Reference/imported/acquired results are temporary, while original-practice width archives remain unchanged. Earlier calculation exclusions below describe previous slices.
+
 Current photographic extension: [positive/reversed photo comparison](PHOTO-SPECTRUM.md) adds a bounded recovered grayscale renderer. Earlier full-photo exclusions below remain historical for this slice;combined/zoom/pan/photo-event andnativeGDI/x87 fidelity remain open.
 
 Current sampled-intensity extension: [loaded-curve readout](LOADED-FLUX.md) now supports eligible acquired/imported unknowns under a separate identity/grid policy. Earlier numerical-readout exclusions below describe the prior increment;imported/acquired equivalent width and general native photographic behavior remain unavailable.
