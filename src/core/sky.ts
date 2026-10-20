@@ -1,7 +1,7 @@
 import {diagnosticError} from './diagnostics';
 
 export type Pointing = Readonly<{ ra: number; dec: number }>;
-export type SkyObject = Pointing & Readonly<{ id: string; label: string; sourceLine?: number; hotList?: string; image: string | null; spectrum: { url: string; name: string; sha256: string } | null }>;
+export type SkyObject = Pointing & Readonly<{ id: string; label: string; sourceLabel?: string; sourceLine?: number; hotList?: string; image: string | null; spectrum: { url: string; name: string; sha256: string } | null }>;
 export type CatalogStar = Pointing & Readonly<{ magnitude: number }>;
 export const FIELDS = { finder: 2.5, telescope: 0.25 } as const;
 export type FieldMode = keyof typeof FIELDS;

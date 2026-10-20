@@ -1260,8 +1260,9 @@
   "motion.same": "Target already matches the current coordinates. No slew was started.",
   "sky.searchLabel": "Search catalog",
   "sky.searchClear": "Clear search",
-  "sky.searchHelp": "Search listed names, identifiers or the Hubble list. Choose a target, then Point telescope. Escape clears the filter.",
+  "sky.searchHelp": "Search listed names or identifiers. Hubble or Hubble.HTL selects the original Hubble list. Choose a target, then Point telescope. Escape clears the filter.",
   "sky.searchMatches": "{count} matching targets.",
   "sky.searchNone": "No matching targets. Your current target stays available.",
-  "sky.searchCurrent": "Current target"
+  "sky.searchCurrent": "Current target",
+  "sky.searchOne": "1 matching target."
 }

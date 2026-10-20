@@ -38,22 +38,20 @@ import { decodeGsc, FIELDS, pan, project, requiredSkyTiles, targetCentered, vali
 import type { Sample } from './core/spectrum';
 import { loadVerifiedLibrarySpectrum } from './io/spectrumFiles';
 import { formatNumber, t } from './i18n';
-import data from '../data/sky/catalog.json';
+import {buildTargetCatalog,SUPPORTED_STAR_POINT} from './core/targetCatalog';
 
 const ClusterDatabaseLab=lazy(()=>import('./ClusterDatabaseLab'));
 const Photometer=lazy(()=>import('./Photometer'));
 const ClassificationLab=lazy(()=>import('./ClassificationLab'));
 const GalaxyExposure=lazy(()=>import('./GalaxyExposure'));
-const supportedGalaxies:readonly SkyObject[]=GALAXY_TARGETS.map(g=>({id:`${g.id}-acquisition`,label:t('sky.supportedGalaxyLabel',{id:g.id,label:g.label}),ra:g.ra,dec:g.dec,image:null,spectrum:null}));
+
 const StarExposure=lazy(()=>import('./StarExposure'));
-const StarPoint={ra:.4987684,dec:.03628};
+const StarPoint=SUPPORTED_STAR_POINT;
 const SkyExposure=lazy(()=>import('./SkyExposure'));
 type Route='observatory'|'spectrum'|'spectrometer'|'sky-exposure'|'star-exposure'|'galaxy-exposure'|'classification'|'photometer'|'cluster-database';
-const supportedStar:SkyObject={id:'N0000.DAT@14428',label:t('sky.supportedStarLabel',{id:'N0000.DAT@14428'}),...StarPoint,image:null,spectrum:null};
-const catalog: readonly SkyObject[] = [...data,supportedStar,...supportedGalaxies];
+const {catalog,supportedStar,supportedGalaxies,groups}=buildTargetCatalog({star:t('sky.supportedStarLabel',{id:'N0000.DAT@14428'}),galaxy:(id,label)=>t('sky.supportedGalaxyLabel',{id,label})});
 const initial = catalog.find(o => o.id === 'NGC3031')!;
-const suggestions = ['NGC3031','NGC3034','NGC5194','NGC598','NGC4889'];
-const targetGroups:readonly TargetGroup[]=[{label:t('continuity.supportedTarget'),items:[supportedStar,...supportedGalaxies]},{label:t('sky.suggested'),items:suggestions.map(id=>catalog.find(o=>o.id===id)).filter((o):o is SkyObject=>!!o)},{label:t('sky.hubble'),items:catalog.filter(o=>o.hotList&&!suggestions.includes(o.id))},{label:t('sky.allTargets'),items:catalog.filter(o=>!o.hotList&&!suggestions.includes(o.id)&&o.id!==supportedStar.id&&!supportedGalaxies.some(g=>g.id===o.id))}];
+const targetGroups:readonly TargetGroup[]=groups.map(group=>({label:t(group.key),items:group.items}));
 const cache = new Map<string, readonly CatalogStar[]>();
 type Library = Readonly<{ targetId: string; target: string; name: string; sha256: string; samples: readonly Sample[] }>;
 const coord = (n: number) => formatNumber(n,{minimumFractionDigits:5,maximumFractionDigits:5,useGrouping:false});

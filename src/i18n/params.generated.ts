@@ -1265,4 +1265,5 @@ export interface MessageParameters {
   "sky.searchMatches": "count";
   "sky.searchNone": never;
   "sky.searchCurrent": never;
+  "sky.searchOne": never;
 }
