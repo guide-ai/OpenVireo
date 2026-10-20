@@ -1,4 +1,5 @@
-import{featureDraftMarkers}from'./featureCursor';
+import{featureDraftMarkers,type FeatureCursorPoint}from'./featureCursor';
+import type{ComparisonMarkAction}from'./comparisonFeatureEditing';
 import{FEATURE_DRAFT_FIELDS,type FeatureDraft,type FeatureRegion}from'./featureWidth';
 import type{FluxChoice}from'./comparisonProbe';
 import{viewportStep,type ClassificationViewport}from'./classificationViewport';
@@ -6,7 +7,7 @@ import type{InspectionKind}from'./comparisonInspection';
 /** Source-bound presentation snapshot; created only after width-source admission.
  * Exact retained choice identity prevents an old asynchronous snapshot from
  * drawing on a replaced source,role,atlas or loaded preparation. */
-export type FeatureComparisonDraft=Readonly<{choice:FluxChoice;draft:FeatureDraft}>;
+export type FeatureComparisonDraft=Readonly<{choice:FluxChoice;draft:FeatureDraft;editing?:Readonly<{mode:ComparisonMarkAction;originPane:string|null;onMark:(pane:string,action:ComparisonMarkAction,point:FeatureCursorPoint)=>void}>}>;
 export function comparisonFeatureDraft(binding:FeatureComparisonDraft|null,choice:FluxChoice):FeatureDraft|undefined{
  const p=choice.preparation.probe,s=choice.spectrum;
  return binding?.choice===choice&&p&&s&&choice.sourceId===p.source.probeId&&s.sha256===p.source.sha256?binding.draft:undefined;

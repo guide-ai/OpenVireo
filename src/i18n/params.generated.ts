@@ -1464,4 +1464,18 @@ export interface MessageParameters {
   "cursor.rangeLabel": never;
   "cursor.windowHelp": never;
   "sharedMarks.policy": never;
+  "comparisonMark.tools": never;
+  "comparisonMark.inspect": never;
+  "comparisonMark.center": never;
+  "comparisonMark.shoulder": never;
+  "comparisonMark.help": never;
+  "comparisonMark.bound": never;
+  "comparisonMark.unbound": never;
+  "comparisonMark.surface": "kind" | "label";
+  "comparisonMark.keyboard": never;
+  "comparisonMark.preview": "intensity" | "label" | "wavelength";
+  "comparisonMark.ready": never;
+  "comparisonMark.inactive": never;
+  "comparisonMark.originError": never;
+  "comparisonMark.inputError": never;
 }

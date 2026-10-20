@@ -45,3 +45,5 @@
 .shared-feature-marks .photo-mark-front{stroke-dasharray:4 3}.manual-feature-endpoint{fill:#102d3c;stroke:#fff;stroke-width:2}
 
 .shared-feature-marks .photo-mark-back{stroke:#fff;stroke-width:5;stroke-dasharray:none}.shared-feature-marks .photo-mark-front{stroke:#000;stroke-width:2;stroke-dasharray:4 3}
+
+.comparison-feature-surface{touch-action:none;cursor:crosshair}.comparison-feature-surface:focus-visible{outline:2px solid #e99e32;outline-offset:-2px}.comparison-feature-preview{stroke:#e99e32;stroke-width:2;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}.comparison-mark-controls{min-width:0;border:1px solid #c9dbd3;padding:12px}.comparison-mark-controls button[aria-pressed=true]{outline:2px solid #206252}.comparison-marking-status{padding:12px 18px}

@@ -1,5 +1,7 @@
 # Source-bound comparison feature marks
 
+Current editing follow-up: [direct comparison marks and panel origin](DIRECT-COMPARISON-MARKS.md) adds opt-in editing on the actual selected source’s printed/sampled/photo panes, same-panel shoulder admission and stale-gesture cancellation. Explicit source choice, categorical origin, continuous coordinates and release commit remain browser adapters. Integrator/records/formats and all64primary statuses are unchanged; full native global pixel/lifecycle behavior remains open.
+
 The comparison display now projects the selected equivalent-width source's **manual draft**, including partial center/shoulder marks. Upper/lower references, practice unknowns and admitted imported/acquired unknowns use the actual retained source association. Selecting another width source removes the old overlay from that pane; the draft does not migrate to a different spectrum. In combined mode, the unknown photograph and unknown trace show the same manual values through their own coordinate systems. The lower standard is not displayed in combined mode, so its marks have no pane there.
 
 This is passive geometry after marking on the existing separate manual graph or typing numeric inputs. Comparison-pane gestures continue to inspect intensity; they do not edit the continuum. Direct native shared/photo picking, cross-pane event geometry and full integer marker lifecycle remain open. All classification and continuum choices remain the student's.

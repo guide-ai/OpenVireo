@@ -1462,5 +1462,19 @@
   "cursor.window": "Manual measurement window",
   "cursor.rangeLabel": "Manual measurement wavelength range",
   "cursor.windowHelp": "Zoom up to 16× around your marked center when visible. Without a visible center, zoom in uses the window midpoint and zoom out uses the retained window center. Pan by 10% of the visible interval. Marks outside the window are hidden; their numeric inputs and confirmed records are retained. Reset restores 3900–4500 Å. This separate tool window is not saved and does not change the comparison display or the width calculation.",
-  "sharedMarks.policy": "Continuum marks project your selected source’s manual inputs. Heights are not sampled flux or photographic brightness, and do not follow each curve’s peak normalization. Off-window marks are clipped without changing numeric inputs; out-of-band photo heights remain available in the numeric fields and separate manual tool."
+  "sharedMarks.policy": "Continuum marks project your selected source’s manual inputs. Heights are not sampled flux or photographic brightness, and do not follow each curve’s peak normalization. Off-window marks are clipped without changing numeric inputs; out-of-band photo heights remain available in the numeric fields and separate manual tool.",
+  "comparisonMark.tools": "Comparison pane marking",
+  "comparisonMark.inspect": "Inspect comparison panes",
+  "comparisonMark.center": "Mark comparison center",
+  "comparisonMark.shoulder": "Mark comparison shoulder",
+  "comparisonMark.help": "Choose the equivalent-width source, then enable center marking on its comparison pane. Left mouse marks a center; right mouse marks a shoulder in that same pane. The shoulder button also supports primary click, touch and keyboard. Choose Inspect comparison panes to swipe/scroll, then enable marking again. Shoulder heights are your manual continuum, not photographic brightness or sampled flux.",
+  "comparisonMark.bound": "The center has a panel origin. Shoulders must be marked in that same panel, including in combined view.",
+  "comparisonMark.unbound": "Mark a center in a comparison pane first. Numeric or separate-tool edits require a new comparison center; that new center starts a fresh bracket.",
+  "comparisonMark.surface": "Edit manual marks on {label} · {kind}",
+  "comparisonMark.keyboard": "With comparison marking enabled, hold and release inside the selected source’s pane to apply a mark. Releasing outside or Escape cancels. Arrows preview one visible column or 0.01 manual height; Shift moves ten. Enter or Space applies the tool. Touch marks instead of scrolling only on these enabled panes. View, layout, source and tool changes cancel held input.",
+  "comparisonMark.preview": "Manual mark preview · {label} · {wavelength} Å · height {intensity}",
+  "comparisonMark.ready": "Comparison marking enabled. Mark the center first in the intended panel, then its shoulders.",
+  "comparisonMark.inactive": "Comparison panes inspect intensity. Enable manual marking in Manual equivalent width to edit a region.",
+  "comparisonMark.originError": "Mark a center in this panel first. Both shoulders must share its panel; the photo and trace in combined view are separate panels. No input was changed.",
+  "comparisonMark.inputError": "No mark applied. Use a center strictly inside 3900–4500 Å and shoulders on different sides with manual heights greater than 0 and at most 1. A new center in another panel starts a fresh bracket."
 }
