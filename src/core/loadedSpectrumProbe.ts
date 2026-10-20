@@ -1,3 +1,4 @@
+import type{ClassificationRange}from'./classificationViewport';
 import {classificationCoverage,type ClassificationExternalSource} from './classification';
 import {featureSpectrum} from './featureWidth';
 import {sampleFluxGrid,SpectrumProbeError} from './spectrumProbe';
@@ -26,7 +27,7 @@ export function prepareLoadedFluxProbe(input:ClassificationExternalSource):Loade
  const source=Object.freeze({probeId:acquired?'acquired:'+input.acquisitionId:'imported:'+input.sha256,kind:input.kind,label:input.name,file:input.name,sha256:input.sha256,...(acquired?{acquisitionId:input.acquisitionId}:{})});
  return Object.freeze({[brand]:true as const,policy:LOADED_FLUX_POLICY,source,grid});
 }
-export function sampleLoadedFlux(probe:LoadedFluxProbe,wavelengthText:string){
+export function sampleLoadedFlux(probe:LoadedFluxProbe,wavelengthText:string,bounds?:ClassificationRange){
  if(!probe||probe[brand]!==true)throw new SpectrumProbeError('source');
- return Object.freeze({policy:LOADED_FLUX_POLICY,sourceId:probe.source.probeId,sourceKind:probe.source.kind,sha256:probe.source.sha256,...(probe.source.acquisitionId?{acquisitionId:probe.source.acquisitionId}:{}),...sampleFluxGrid(probe.grid,wavelengthText)});
+ return Object.freeze({policy:LOADED_FLUX_POLICY,sourceId:probe.source.probeId,sourceKind:probe.source.kind,sha256:probe.source.sha256,...(probe.source.acquisitionId?{acquisitionId:probe.source.acquisitionId}:{}),...sampleFluxGrid(probe.grid,wavelengthText,bounds)});
 }

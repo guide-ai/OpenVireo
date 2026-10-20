@@ -1,4 +1,4 @@
-import{roundNearestEven}from'./numericPolicy';import{viewportStep,type ClassificationViewport}from'./classificationViewport';import{readComparisonFlux,type FluxChoice}from'./comparisonProbe';import{SpectrumProbeError}from'./spectrumProbe';
+import{roundNearestEven}from'./numericPolicy';import{classificationBounds,viewportStep,type ClassificationViewport}from'./classificationViewport';import{readComparisonFlux,type FluxChoice}from'./comparisonProbe';import{SpectrumProbeError}from'./spectrumProbe';
 export type InspectionKind='photo'|'sampled-trace'|'printed-trace';
 export type InspectionPosition=Readonly<{column:number;y:number}>;
 /** Original 0x5094cc/0x509530/0x50956c held/read/release,
@@ -12,7 +12,7 @@ export function inspectionPosition(x:number,y:number,height:number,columnRule:'n
 export function inspectComparison(choice:FluxChoice,view:ClassificationViewport,kind:InspectionKind,point:InspectionPosition,height:number){
  if(!['photo','sampled-trace','printed-trace'].includes(kind)||!Number.isInteger(point.column)||point.column<0||point.column>499||!Number.isInteger(point.y)||point.y<0||point.y>height||!Number.isFinite(height)||height<=0)throw new RangeError('Invalid inspection position');
  const wavelength=view.minimum+point.column*viewportStep(view),probe=choice.preparation.probe;if(!probe)throw new SpectrumProbeError(choice.preparation.error??'source');
- const intensity=kind==='photo'?readComparisonFlux(probe,String(wavelength)).intensity:kind==='sampled-trace'?(height-point.y)/100:(height-point.y)/height;
+ const intensity=kind==='photo'?readComparisonFlux(probe,String(wavelength),classificationBounds(view)).intensity:kind==='sampled-trace'?(height-point.y)/100:(height-point.y)/height;
  return Object.freeze({sourceId:choice.sourceId,sha256:probe.source.sha256,label:choice.label,role:choice.role,kind,wavelength,intensity,...point,minimum:view.minimum,maximum:view.maximum});
 }
 export type ComparisonInspection=ReturnType<typeof inspectComparison>;

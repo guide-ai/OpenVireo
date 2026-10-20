@@ -1,5 +1,7 @@
 # N02/E03 bounded acceptance — 18 October 2026
 
+Current range follow-up: [3500–7400Å display endpoints](CLASSIFICATION-RANGE.md) extends source-aware visualization/flux readout while retaining manual-width admission and file schemas. [Remaining contract map](CLASSIFICATION-REMAINING-CONTRACTS.md) reconciles delivered slices and open gates; full native/classroom acceptance remains partial.
+
 Current difference follow-up: [normalized sampled preview](SAMPLED-DIFFERENCE.md) supplements the three source panes for exact-grid upper-standard/unknown pairs. This display-only recovered subtraction does not change the earlier printed-grid difference, manual result records or full N02/E03 acceptance; native layout/event/precision and broader options remain open.
 
 Current display follow-ups:[combined/window](COMBINED-SPECTRUM.md),[cursor/printed window](COMPARISON-INSPECTION.md) and[sampled intensity traces](SAMPLED-INTENSITY-TRACES.md) supersede their earlier bounded exclusions below. Complete native event/option/precision/feature/result contracts andoriginal package acceptance remain partial.

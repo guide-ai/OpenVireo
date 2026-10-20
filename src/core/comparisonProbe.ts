@@ -1,3 +1,4 @@
+import type{ClassificationRange}from'./classificationViewport';
 import{prepareOriginalFluxProbe,sampleOriginalFlux,SpectrumProbeError,type OriginalFluxProbe,type VerifiedProbeSpectrum}from'./spectrumProbe';
 import{prepareLoadedFluxProbe,sampleLoadedFlux,type LoadedFluxProbe}from'./loadedSpectrumProbe';
 import type{ClassificationExternalSource}from'./classification';
@@ -17,4 +18,4 @@ export function prepareFluxChoice(input:FluxChoiceInput):FluxChoice{
  }catch(value){preparation=Object.freeze({probe:null,error:value instanceof SpectrumProbeError?value.code:'source'});}
  return Object.freeze({...input,preparation});
 }
-export function readComparisonFlux(probe:ComparisonProbe,text:string){return 'policy'in probe?sampleLoadedFlux(probe,text):sampleOriginalFlux(probe,text);}
+export function readComparisonFlux(probe:ComparisonProbe,text:string,bounds?:ClassificationRange){return 'policy'in probe?sampleLoadedFlux(probe,text,bounds):sampleOriginalFlux(probe,text,bounds);}

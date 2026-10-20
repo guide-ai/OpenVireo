@@ -1431,4 +1431,17 @@ export interface MessageParameters {
   "sampledDiff.fallback": never;
   "sampledDiff.method": never;
   "sampledDiff.limits": never;
+  "range.title": never;
+  "range.help": never;
+  "range.applied": "maximum" | "minimum";
+  "range.draft": never;
+  "range.minimum": never;
+  "range.maximum": never;
+  "range.apply": never;
+  "range.cancel": never;
+  "range.default": never;
+  "range.invalid": never;
+  "range.limits": never;
+  "range.invalidRead": "maximum" | "minimum";
+  "range.readScope": "maximum" | "minimum";
 }

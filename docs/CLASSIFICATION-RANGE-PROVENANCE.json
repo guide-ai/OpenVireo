@@ -1,0 +1,157 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-CLASS-RANGE-01",
+      "start": "0x50b898",
+      "endExclusive": "0x50b8a5",
+      "byteRangeSHA256": "d64461f4cf6542741ad1c265f76dc02472dd0ef19bd79243f62157d2332c1dac",
+      "listingSHA256": "72f6efaa5d311d81c66b4fbe7b8075d76f83c33e57f5423810abb101c818764d",
+      "localListing": "range-menu.asm"
+    },
+    {
+      "evidenceId": "VIREO-CLASS-RANGE-02",
+      "start": "0x50c994",
+      "endExclusive": "0x50ccb8",
+      "byteRangeSHA256": "6d4598cd08d47be50f25e77baaa6a2c42df54e63ca6ec219dc52ea6b9c89dab4",
+      "listingSHA256": "693d7049ded2ce35917f39c733d91b4e4544c56d45a66bb4ea96988aa54edbe7",
+      "localListing": "range-dialog.asm"
+    },
+    {
+      "evidenceId": "VIREO-CLASS-RANGE-03",
+      "start": "0x50ccb8",
+      "endExclusive": "0x50cf78",
+      "byteRangeSHA256": "d6a1980fc3f6f8fcc729d6d1815405502e1f63768903bd88b55bffb5306774a6",
+      "listingSHA256": "4c60014122cbb3035c7246f72cb6b7cec4588dbea92378dc0c993d7af5cdcf51",
+      "localListing": "range-scroll.asm"
+    },
+    {
+      "evidenceId": "VIREO-CLASS-RANGE-04",
+      "start": "0x507a08",
+      "endExclusive": "0x507b80",
+      "byteRangeSHA256": "bcd0037cde37c6bbec786ab2602714f1631ffe7fbc95df23a84810a0ac48c303",
+      "listingSHA256": "6c3a5c8bc7c2d62a0e3df185f62b5c78203de5d13757fb71a7d26147a7ad9b59",
+      "localListing": "range-setter.asm"
+    },
+    {
+      "evidenceId": "VIREO-CLASS-RANGE-05",
+      "start": "0x507814",
+      "endExclusive": "0x507a08",
+      "byteRangeSHA256": "314e902c588cc9a5beabc4ddf5cdbe09ac78d3d4f1b0c38aa7a502024216ab4e",
+      "listingSHA256": "d34f9a75c77cc21886e4d812bbd80a4ac77a2d250330aae44f3d46d6e5e154b4",
+      "localListing": "form-show.asm"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x50ca94",
+      "type": "Single",
+      "value": 3500.0,
+      "SHA256": "93523465b31616c13e30d8edfd20e06df3c94d7174e131c301698c31e3c3a4ec"
+    },
+    {
+      "address": "0x50ccb4",
+      "type": "Single",
+      "value": 3500.0,
+      "SHA256": "93523465b31616c13e30d8edfd20e06df3c94d7174e131c301698c31e3c3a4ec"
+    },
+    {
+      "address": "0x50ce14",
+      "type": "Single",
+      "value": 3500.0,
+      "SHA256": "93523465b31616c13e30d8edfd20e06df3c94d7174e131c301698c31e3c3a4ec"
+    },
+    {
+      "address": "0x50ce18",
+      "type": "Single",
+      "value": 100.0,
+      "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01"
+    },
+    {
+      "address": "0x50cf6c",
+      "type": "Single",
+      "value": 3500.0,
+      "SHA256": "93523465b31616c13e30d8edfd20e06df3c94d7174e131c301698c31e3c3a4ec"
+    },
+    {
+      "address": "0x50cf70",
+      "type": "Single",
+      "value": 100.0,
+      "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01"
+    }
+  ],
+  "contracts": {
+    "menu": "PublishedSpectralRange1Click0x50b898showsexistingTSpecRangeDlg",
+    "activate": "0x50c994copiescurrentglobalSingle2520/2524toExtendedsnapshot+384/+38e;scrollpositionsderivedwith3500anddivide100",
+    "default": "0x50ca98readsconfigureddefaultSingles2518/251c;livewritesandFormShow/Paintwhencomparatorvisible",
+    "cancel": "0x50cbc8restorescurrentSinglesfromactivationExtendedsnapshot;FormShow/Paintifvisible;hide",
+    "apply": "0x50cc28currentrange=3500+100*scrollpositions;storeSingles;hide;separateFormShowobservesglobals",
+    "scroll": "0x50ccb8/0x50ce1c enforce100\u00c5separation,updatelabels,writeSinglesandredrawwhenvisible",
+    "domain": "CLASSHLPSetWavelengthRangelines245..254:3500..7400;compiledclassificationdefault3900..4500alreadyrecovered;FormShowsetsnativefullrangeandzoom1"
+  },
+  "webAdapters": [
+    "ExplicitApply;Defaultchangesdraftonly;Canceldiscarddraft,nointermediateliveglobalwrites",
+    "Native100\u00c5endpoints,100minimumseparation;UIrejectsbadpairsinsteadofautomaticallymovingotherslider",
+    "Rangepreferencesephemeral;nousersession/CSVformat change",
+    "Inbounds500samplingonly;nooutofsourceRandomornewintensity;labelledfullappliedrangeprintedfallback",
+    "ManualEWremains3900..4500;sourcefluxreadwithinappliedrangeandactualsourcecoverage",
+    "IntegerendpointsNumberarithmeticandresponsiveUI;notx87/VCL/GDIequivalence"
+  ],
+  "sourceCredits": [
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "SHA256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7"
+    },
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "SHA256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    }
+  ],
+  "uncertainty": "ExistingCLEA/Gettysburgnoticesandrightsuncertaintypreserved.Nooriginalexecutionorneworiginalasset;instructoroverrides/defaultvariantsandnativeglobalcallbackorderingremainopen.",
+  "resourceBinding": {
+    "identity": [
+      10,
+      "TSPECRANGEDLG",
+      0
+    ],
+    "offset": 2258276,
+    "bytes": 2179,
+    "sha256": "bcd370d13c923bf71c9efb236e8ea7ca4b46366f1bec99321a4008cef2e97d55",
+    "dfm_root_class": "TSpecRangeDlg",
+    "dfm_root_name": "SpecRangeDlg",
+    "dfm_event_binding_candidates": [
+      {
+        "event": "OnActivate",
+        "handler": "FormActivate",
+        "payload_offset": 371
+      },
+      {
+        "event": "OnClick",
+        "handler": "OKBtnClick",
+        "payload_offset": 756
+      },
+      {
+        "event": "OnClick",
+        "handler": "CancelBtnClick",
+        "payload_offset": 922
+      },
+      {
+        "event": "OnClick",
+        "handler": "DfltBtnClick",
+        "payload_offset": 1377
+      },
+      {
+        "event": "OnScroll",
+        "handler": "MinLmdaScrScroll",
+        "payload_offset": 2022
+      },
+      {
+        "event": "OnScroll",
+        "handler": "MaxLmdaScrScroll",
+        "payload_offset": 2149
+      }
+    ]
+  },
+  "metadataSHA256": "2b404df2571ad013e6fe28f5d257035be182294dba61abe6d6ee61f1627d0312"
+}

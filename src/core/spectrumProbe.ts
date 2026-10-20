@@ -1,3 +1,4 @@
+import type{ClassificationRange}from'./classificationViewport';
 import {CLASSIFICATION_CATALOG} from './classification';
 import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
 import {featureSpectrum,featureDraftNumber,FEATURE_WAVELENGTH_MIN,FEATURE_WAVELENGTH_MAX} from './featureWidth';
@@ -31,15 +32,15 @@ export function prepareOriginalFluxProbe(id:string,verified:VerifiedProbeSpectru
 }
 /** Reuses the original quadratic endpoint-grid sampler,including its1e-5
  * nearest-grid snap. Finite overshoot is reported without normalization/clipping. */
-export function sampleOriginalFlux(probe:OriginalFluxProbe,wavelengthText:string){
+export function sampleOriginalFlux(probe:OriginalFluxProbe,wavelengthText:string,bounds?:ClassificationRange){
  if(!probe||probe[brand]!==true)throw new SpectrumProbeError('source');
- return Object.freeze({policy:SPECTRUM_PROBE_POLICY,sourceId:probe.source.probeId,sha256:probe.source.sha256,...sampleFluxGrid(probe.grid,wavelengthText)});
+ return Object.freeze({policy:SPECTRUM_PROBE_POLICY,sourceId:probe.source.probeId,sha256:probe.source.sha256,...sampleFluxGrid(probe.grid,wavelengthText,bounds)});
 }
 /** Shared bounded read only;source authority is supplied by each preparation API. */
-export function sampleFluxGrid(grid:UniformSpectrum,wavelengthText:string){
+export function sampleFluxGrid(grid:UniformSpectrum,wavelengthText:string,bounds:ClassificationRange={minimum:FEATURE_WAVELENGTH_MIN,maximum:FEATURE_WAVELENGTH_MAX}){
  let wavelength:number;
  try{if(typeof wavelengthText!=='string'||wavelengthText.length>24)throw Error();wavelength=featureDraftNumber(wavelengthText);}catch{throw new SpectrumProbeError('wavelength');}
- if(!Number.isFinite(wavelength)||wavelength<FEATURE_WAVELENGTH_MIN||wavelength>FEATURE_WAVELENGTH_MAX||wavelength<grid.minimum||wavelength>grid.maximum)throw new SpectrumProbeError('wavelength');
+ if(!bounds||!Number.isFinite(bounds.minimum)||!Number.isFinite(bounds.maximum)||bounds.minimum<3500||bounds.maximum>7400||bounds.minimum>=bounds.maximum||!Number.isFinite(wavelength)||wavelength<bounds.minimum||wavelength>bounds.maximum||wavelength<grid.minimum||wavelength>grid.maximum)throw new SpectrumProbeError('wavelength');
  let result;try{result=sampleUniformSpectrum(grid,wavelength);}catch{throw new SpectrumProbeError('wavelength');}if(!result.valid||!Number.isFinite(result.value))throw new SpectrumProbeError('wavelength');
  return Object.freeze({wavelength,intensity:result.value});
 }

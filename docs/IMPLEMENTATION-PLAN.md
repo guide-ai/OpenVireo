@@ -1,5 +1,7 @@
 # OpenVireo implementation plan
 
+N02 range follow-up: [classification wavelength range](CLASSIFICATION-RANGE.md) closes the fixed display window with native3500–7400Å/100Å choices, applied-range zoom/pan and source-aware sampled coverage. Explicit Apply/Cancel/default drafts are browser adapters; no session/CSV or manual-width domain changes. The [remaining contract map](CLASSIFICATION-REMAINING-CONTRACTS.md) records open source/tool/options/results/edition/precision and classroom gates. All64 primary statuses remain unchanged.
+
 N02 difference follow-up: [normalized sampled difference preview](SAMPLED-DIFFERENCE.md) adds a source-bound read-only supplemental curve with recovered independent visible maxima, round-once subtraction, asymmetric native baseline and clipped-run segmentation. Exact printed-grid admission, manual answers/widths, source counts and session/CSV contracts remain unchanged. Independent binary64 checks cover3.8million points; ideal-rational differences reach2px and do not establish x87/GDI fidelity. External review is on the explicit parent hold; all64 primary acceptance statuses remain unchanged.
 
 
