@@ -1526,4 +1526,24 @@ export interface MessageParameters {
   "obs.error.stale": never;
   "obs.error.limit": never;
   "obs.error.record": never;
+  "obs.cache.empty": never;
+  "obs.cache.saved": never;
+  "obs.cache.invalid": never;
+  "obs.cache.unavailable": never;
+  "obs.cache.conflict": never;
+  "obs.file.export": never;
+  "obs.file.restore": never;
+  "obs.file.recovery": never;
+  "obs.file.label": never;
+  "obs.file.reading": never;
+  "obs.file.cancelRead": never;
+  "obs.file.invalid": never;
+  "obs.file.downloadError": never;
+  "obs.file.review": never;
+  "obs.file.replace": "current" | "file" | "incoming";
+  "obs.file.separate": never;
+  "obs.file.cancel": never;
+  "obs.file.confirm": never;
+  "obs.file.restored": "count";
+  "obs.file.conflict": never;
 }

@@ -527,3 +527,7 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Observation-results manual fields — 20 October2026
 
 [Observation results](OBSERVATION-RESULTS.md) recovers the native type-code/short-remarks writes and original-practice first-object/append/selected-row flow in a temporary browser notebook. Cancel/reopen/confirm,byte admission,permissive unknown0conversion and stale-context protection preserve existing free answers,records and all file formats. No observing time,coordinates,photometry or velocity is invented;those numerical/nativefile/delete/undo paths remain open. Source metadata and all1279assets retained;N02/E03andall64statuses unchanged. No native runtime/FPU equivalence,grade,externalreviewattempt,push or deployment.
+
+## Observation notebook web persistence — 20 October2026
+
+[Separate notebook persistence](OBSERVATION-PERSISTENCE.md) extends the earlier in-memory form with confirmed-only local browser storage and lossless bounded export/restore. Explicit restore review/cancel/replace,invalid-file/corrupt-copy/storage-failure/other-tab guards preserve current work. Historical investigation/classification JSON/CSV remain unchanged;no silent schema migration or free-answer conversion. Newly captured native0x90typed-file writer/reader do not supply the missing numerical observation metadata,so nativeDAT/textinterchange remains open. Integrator/acquisition/grade/source assets andall64primary statuses unchanged;project partial,no push/deploy/external review attempt.

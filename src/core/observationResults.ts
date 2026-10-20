@@ -62,7 +62,7 @@ export function openObservation(book:ObservationNotebook,id:string,mode:Observat
  * stale source/ledger checks are explicit web transaction policies. */
 export function confirmObservation(book:ObservationNotebook,edit:ObservationEdit,id:string,mode:ObservationMode,input:Readonly<{typeText:string;remarks:string}>):ObservationNotebook{
  if(book!==edit.base||edit.source!==observationSource(id)||mode!==edit.mode||edit.target&&!book.records.includes(edit.target))throw new ObservationResultError('stale');
- const spectralCode=parseObservationType(input.typeText),remarks=observationText(input.remarks,36);if(!edit.target&&book.records.length>=MAX_OBSERVATIONS)throw new ObservationResultError('limit');
+ const spectralCode=parseObservationType(input.typeText),remarks=observationText(input.remarks,36);if(!edit.target&&(book.records.length>=MAX_OBSERVATIONS||(book.records.at(-1)?.id??0)>=Number.MAX_SAFE_INTEGER-1))throw new ObservationResultError('limit');
  const record:ObservationRecord=Object.freeze({id:edit.target?.id??(book.records.at(-1)?.id??0)+1,source:edit.source,spectralCode,remarks});
  return Object.freeze({records:Object.freeze(edit.target?book.records.map(r=>r===edit.target?record:r):[...book.records,record])});
 }

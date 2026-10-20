@@ -1,0 +1,420 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "evidenceId": "VIREO-OBS-PERSIST-01",
+      "start": "0x547b0c",
+      "endExclusive": "0x547e62",
+      "byteRangeSHA256": "33bf209eea45a359c129386330b6bf9af665c94b9bcafced26ea1f97a51c8c72",
+      "listingSHA256": "23ee3d7e62380c75367218c0c56b5e2dbdda7f9fedf753f1014e2cd06a6cfd29",
+      "localListing": "binary-writer.asm",
+      "boundary": "complete body through return or stub jump"
+    },
+    {
+      "evidenceId": "VIREO-OBS-PERSIST-02",
+      "start": "0x549aa8",
+      "endExclusive": "0x549cff",
+      "byteRangeSHA256": "c9291bc92b93ee44e15eb6417943f14593c4cd3b4c84025425ca486336778903",
+      "listingSHA256": "a4006a88930bb15f33d44ee69669acb3a3c040023c7fa6fc4f1274e8d7d540ec",
+      "localListing": "binary-reader.asm",
+      "boundary": "complete body through return or stub jump"
+    },
+    {
+      "evidenceId": "VIREO-OBS-PERSIST-03",
+      "start": "0x4043b8",
+      "endExclusive": "0x404400",
+      "byteRangeSHA256": "19f998787ab7ae396f8d196788ea09ead9ba98f936f783fe823d309f3e28a6ca",
+      "listingSHA256": "d678e3660ec5fd7f32bd50b1bcddf070207e164263ea5298887fe8eb603e18a8",
+      "localListing": "typed-write-record.asm",
+      "boundary": "complete body through return or stub jump"
+    },
+    {
+      "evidenceId": "VIREO-OBS-PERSIST-04",
+      "start": "0x404228",
+      "endExclusive": "0x40424f",
+      "byteRangeSHA256": "7a9ef93f151d54c5a7e6c2b5df656060340ded7222c4c59dffb0057ea9b52ddf",
+      "listingSHA256": "7f1e980d2923515aebf3c4479a5b6b7c4a1317c3f43af994e340440b9461642e",
+      "localListing": "typed-reset-rewrite.asm",
+      "boundary": "complete body through return or stub jump"
+    },
+    {
+      "evidenceId": "VIREO-OBS-PERSIST-05",
+      "start": "0x403ef8",
+      "endExclusive": "0x403f70",
+      "byteRangeSHA256": "dc2056d20b0ca23a9d1686074a350fdd99a320fabd2489bdfe107fb03649c341",
+      "listingSHA256": "0a122975015dcd2da7055d0cd31b611848cb2d7bdd2fbb2d376b50dc83e00db0",
+      "localListing": "typed-read-explore.asm",
+      "boundary": "exploratory only; end not interpreted as a function boundary"
+    },
+    {
+      "evidenceId": "VIREO-OBS-PERSIST-06",
+      "start": "0x401328",
+      "endExclusive": "0x40132e",
+      "byteRangeSHA256": "1ca01ea702da2bacdff4e60027d6127b2563eb6bfb335cb6961268037f16f811",
+      "listingSHA256": "690de8200737c5cffb023f6cd76eb9aef55d73f0179aaaa5649ae7c230d33b7b",
+      "localListing": "write-import-stub.asm",
+      "boundary": "complete body through return or stub jump"
+    }
+  ],
+  "data": [
+    {
+      "start": "0x547e78",
+      "endExclusive": "0x547e7d",
+      "meaning": "native data-file extension .DAT followed by NUL",
+      "byteRangeSHA256": "a2bb323703b852653ee94922bcd5f4b670957be498f8860fc3e29b41c3783c98"
+    }
+  ],
+  "observations": [
+    "Writer sets typed file record size0x90 at0x547d1f and rewrites through0x404244,then loops list records and calls typed write helper0x4043b8 with the current record pointer;no application header write observed in this captured writer.",
+    "Helper0x4043b8 pushes file record size+[8] and data pointer to import stub0x401328,checks actual bytes written equal record size. No native execution or writer-output specimen.",
+    "Reader0x549aa8 sets record size0x90 at0x549af1 and reset0x404228,offers add/current-data-clear/cancel choices,reads into144byte buffer and appends records. First record display-kind+0x5e controls list formatting. Does not establish owned missing numerical values for web notebook.",
+    "Adjacent text-reader candidate0x549e04..0x54a3af includes exercise/configuration compatibility messages at0x54a418/0x54a46c/0x54a53c/0x54a5d4;not recovered as a complete text codec in this increment."
+  ],
+  "nativeExportNotImplementedBecause": [
+    "Current admitted notebook has no owned JD,RA/Dec,5photometry values,display-kind,redshift or velocity. A144byte writer would have to fabricate them or falsely claim original fields.",
+    "Full text codec,ACP/Extended/float serialization/error/partial-record behavior and independent original writer-output witness remain unverified. Static memory layout and calls are not native-runtime equivalence."
+  ],
+  "webPolicy": {
+    "format": "OpenVireo observation notebook",
+    "version": 1,
+    "policy": "original-practice-id-sha256-web-v1",
+    "limitBytes": 131072,
+    "limitRecords": 100,
+    "fields": "stable ordered integerid,verifiedoriginalpractice{id,objectId,sha256},integer spectralCode,exact short remarks;reuse/append mode",
+    "lossless": "Store packedcode directly,never roundtrip canonical display label. No numerical metadata,grade,original file claim or legacy session schema change.",
+    "local": "Separate origin-scoped localStorage key;confirmed-only writes,validation before load,invalid copy preservation,compare before/after write,other-tab conflict warning. Exported file is portable backup;not encrypted,not a secret store,no strong simultaneous-tab transaction.",
+    "migration": "Existing investigation/classification/CSV remain unchanged,do not acquire or erase this separate notebook. Files are rejected cross-format and future versions rejected;restore preview and explicit replacement before mutation."
+  },
+  "originalExecution": false,
+  "externalReview": "Pending explicit human authorization under parent hold;0new attempts,no substitute",
+  "publication": "No push/deploy/new original resource upload",
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "existingFormEvidence": "docs/OBSERVATION-RESULTS-PROVENANCE.json preserves the complete144byte record field layout and original form binding",
+  "writeImport": {
+    "stubVA": "0x401328",
+    "IATSlotVA": "0x620a74",
+    "name": "WriteFile",
+    "binding": "Existing immutable PE import inventory analysis/hubble-acquisition/dossiers/pe-imports.txt gives RVA0x220a74 WriteFile;VA=0x400000+RVA. Stub bytes ff25740a6200 captured."
+  }
+}
