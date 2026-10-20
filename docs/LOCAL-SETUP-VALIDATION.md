@@ -12,7 +12,7 @@ Resource inclusion is now explicit:all1279files in LOCAL-RESOURCES.json are regu
 
 The first custom clone browser harness used an external output directory;26flows passed andP01's hardcoded cwd artifact write failed ENOENT. The corrected run used checkout/test-results,matching the repository default;27passed with no code/assertion changes. Both logs are retained. Browser binaries were ordinary existing Playwright test tooling;application data/dependencies came from the clone. These observations do not prove native CLEA fidelity.
 
-The post-review follow-up adds11Node contracts covering real CLI aliases,all4npm commands with ignore-scripts and a positively checked sentinel engine,FIFO,resource links,portable ASCII names,manifest diagnostics,stream/close errors andprogrammer-error propagation. It isolates default E2E on strict5175without server reuse and decodes browser paths withfileURLToPath. The follow-up TypeScript/Vite build and1202Vitest contracts pass;space-path/browser verification is recorded separately when completed;the earlier snapshot counts are not relabelled.
+The post-review follow-up adds11Node contracts covering real CLI aliases,all4npm commands with ignore-scripts and a positively checked sentinel engine,FIFO,resource links,portable ASCII names,manifest diagnostics,stream/close errors andprogrammer-error propagation. It isolates default E2E on strict5175without server reuse and decodes browser paths withfileURLToPath. The follow-up TypeScript/Vite build and1202Vitest contracts pass;20default-config browser flows passed in a clean checkout with spaces and ñ in its path,using Chromium freshly installed inside that checkout. The earlier snapshot counts are not relabelled.
 
 ## Native reviews and local dispositions
 
@@ -33,3 +33,7 @@ The resource-inclusive native/code-review then completed on5713cfe:effectiveOpus
 | 10. Metadata privacy |61resource JSON files contain workstation/research/capture paths as provenance text. Their filenames andbounded credential scan are recorded in RESOURCE-PROVENANCE.json;no runtime consumer resolves those metadata paths. Exact bytes are retained under the explicit all1279instruction. |
 
 All original resource hashes and scientific models/counts/RNG/manual pupil values are unchanged. No native executable,installer/archive,private tooling,credential/cache or generated dist is included. No deployment,new backend or original execution is introduced. A raw review is evidence for its named snapshot,not approval of later edits or of universal rights.
+
+## Published resource-inclusive revision
+
+Commit43cae5c7616f529ca666d0998cb77f578b443d71 was normally pushed to guide-ai/OpenVireo/main and independently confirmed by Git ls-remote andthe GitHub commit API. All1279resources matched before/after fast-forwarding the persistent checkout. The clean-clone checks above used the same committed resource bytes;the space/Unicode check ran the43cae5c fixes with checkout-local dependencies andbrowser. Source-only/private-pack instructions are historical. No hosting/deployment is implied.

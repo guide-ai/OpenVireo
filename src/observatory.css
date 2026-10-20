@@ -27,3 +27,5 @@
 .telescope-motion{padding:1.5rem;margin-bottom:1.5rem;min-width:0}.telescope-motion label{display:block;margin:.8rem 0 .35rem}.telescope-motion select{max-width:15rem}.motion-directions{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0}.telescope-motion .button-row{display:flex;flex-wrap:wrap;gap:.6rem}.telescope-motion .button-row button{white-space:normal}.motion-directions button{font-size:.95rem;min-height:44px;touch-action:none}.telescope-motion :focus-visible{outline:3px solid #b87328;outline-offset:3px}.telescope-motion dialog{max-width:36rem}.telescope-motion dialog button{width:auto}@media(max-width:600px){.telescope-motion{padding:1rem}.telescope-motion .button-row{flex-direction:column;align-items:stretch}}
 
 .telescope-motion .observatory-note{font-size:.85rem;line-height:1.6}.telescope-motion .motion-directions button{font-size:.95rem}.telescope-motion .button-row>button{min-height:44px;font-size:.85rem}
+
+.target-search{display:grid;gap:8px;margin:16px 0}.target-search input{width:100%;min-width:0}.target-search p{margin:0}.target-search button{justify-self:start}

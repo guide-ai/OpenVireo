@@ -1259,4 +1259,10 @@ export interface MessageParameters {
   "motion.current": "dec" | "ra";
   "motion.timing": never;
   "motion.same": never;
+  "sky.searchLabel": never;
+  "sky.searchClear": never;
+  "sky.searchHelp": never;
+  "sky.searchMatches": "count";
+  "sky.searchNone": never;
+  "sky.searchCurrent": never;
 }

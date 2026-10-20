@@ -1,0 +1,11 @@
+# Bounded A07 search verification
+
+The authored search engine is separate from React and reads only existing ID,label and hot-list name. Six contracts bind the191original identities/catalog SHA,aliases,unchanged references/order,distinct36773entries,unknown input and80unit bound. The existing application adds its four previously supported acquisition choices,for195total. No scientific model/counting/measurement code orresource bytes changed.
+
+TypeScript/Vite build passed. All1208Vitest contracts in111files passed. Nine relevant Playwright flows passed:three new search/keyboard/restore flows,five existing observatory/image/coordinate/catalog flows andone full21migration/restore flow. Search-only changes preserve saved investigation bytes,including pupil-manual work/counts/RNG. Actual clock callbacks continue while searching/selecting;pointing waits for explicit Point. Unknown/no-file/bad-proof/valid-reimport/reload paths preserve their declared state. Desktop and360pxmobile screenshots were opened and visually inspected without horizontal overflow.
+
+The first browser attempt exposed an implementation syntax error. The first build also found a test using toSorted outside the configured target. Both were corrected. Two subsequent flows failed only at screenshots because `.target-card` also matched hidden instrument cards;the selector now scopes to observatory controls. The full unit run then found the i18n render-file inventory still expected23files;it now expects24for the new component,with every reviewed literal receipt unchanged. Raw failures remain in external task-3/target-search evidence and are not counted as passes.
+
+Native Claude `/code-review` was launched against this actual complete project with Opus5.5/high configured andexisting read-only restrictions. At this verification snapshot its report is pending;no external approval orsecurity-review success is claimed. The earlier dedicated security fallback remains denied andwas not retried. Later confirmed findings andtheir dispositions must be recorded separately from the raw report.
+
+[Manual steps andscientific limits](TARGET-SEARCH.md) describe the supported behavior. A07/fullobservatory/native matching andall64acceptance statuses remain incomplete. Original runtime/x87/GDI/global-event equality is not established.

@@ -174,7 +174,7 @@
   "sky.originalReference": "Original library reference · {target} · {file}",
   "sky.originalReferenceHelp": "This is a saved CLEA library spectrum, not a spectrum acquired by the web telescope. The original acquisition and noise simulation are still pending. The reference curve is rescaled for display only; original flux samples are unchanged. Reference and imported curves use independent display scales; compare line positions, not their flux amplitudes.",
   "sky.instruments": "Other original instruments",
-  "sky.pendingInstruments": "Aperture photometer, multi-object spectrometer, CCD/IR cameras and radio telescope: not implemented yet.",
+  "sky.pendingInstruments": "General photometer fields and R/I filters, multi-object spectroscopy, CCD/IR cameras and radio observing remain incomplete.",
   "sky.limitTitle": "A recovered observatory, still in progress",
   "sky.limitHelp": "Catalog coordinates, sky projection, original images and library spectra are recovered. Dome controls, target browsing and immediate pointing are new web adaptations. Separate sky, catalog-star and three-galaxy exposure routes support explicitly verified configurations with recovered calibration and declared browser timing, seed and raster policies. The shared clock adds current-pointing geometric horizon information; horizon enforcement, other acquisitions and atmospheric effects remain unavailable.",
   "sky.attribution": "Original CLEA VIREO resources · Gettysburg College / NSF · local educational research",
@@ -1257,5 +1257,11 @@
   "motion.hold": "Hold {direction}",
   "motion.current": "Current pointing: RA {ra} h · Dec {dec}°",
   "motion.timing": "Motion timing details",
-  "motion.same": "Target already matches the current coordinates. No slew was started."
+  "motion.same": "Target already matches the current coordinates. No slew was started.",
+  "sky.searchLabel": "Search catalog",
+  "sky.searchClear": "Clear search",
+  "sky.searchHelp": "Search listed names, identifiers or the Hubble list. Choose a target, then Point telescope. Escape clears the filter.",
+  "sky.searchMatches": "{count} matching targets.",
+  "sky.searchNone": "No matching targets. Your current target stays available.",
+  "sky.searchCurrent": "Current target"
 }
