@@ -39,6 +39,11 @@ export function readFeatures(value:unknown,practiceIds:readonly string[]):Featur
 export function updateFeatureDraft(w:FeatureWorkspace,draft:FeatureDraft,practiceIds:readonly string[]):FeatureWorkspace{return readFeatures({...w,drafts:w.drafts.some(d=>d.unknownId===draft.unknownId)?w.drafts.map(d=>d.unknownId===draft.unknownId?draft:d):[...w.drafts,draft]},practiceIds);}
 export function recordFeature(w:FeatureWorkspace,unknownId:string,region:FeatureRegion,practiceIds:readonly string[]):FeatureWorkspace{return readFeatures({...w,records:[...w.records,{...region,unknownId,id:(w.records.at(-1)?.id??0)+1}]},practiceIds);}
 export type FeatureResult=Readonly<{width:number;centerFlux:number;iterations:number;evaluations:number;converged:boolean;lastDelta:number}>;
+/** Shared original headerless-SP endpoint-grid construction,not printed-grid interpolation. */
+export function featureSpectrum(samples:readonly Sample[]){
+ if(samples.length<3||samples.length>50000||samples.some((p,i)=>!Number.isFinite(p.wavelength)||!Number.isFinite(p.intensity)||(i>0&&p.wavelength<=samples[i-1].wavelength)))throw Error('Invalid feature spectrum');
+ return uniformSpectrum(samples[0].wavelength,samples.at(-1)!.wavelength,samples.map(p=>p.intensity));
+}
 /** Original headerless loader reconstructs the endpoint grid. The comparator
  * still draws printed points; only this named numerical path uses that grid.
  * Max20 refinements and STRICT relative 1e-4 convergence are recovered.
@@ -46,8 +51,7 @@ export type FeatureResult=Readonly<{width:number;centerFlux:number;iterations:nu
  * replacement integrator or fabricated uncertainty is introduced. */
 export function measureFeature(samples:readonly Sample[],input:FeatureRegion):FeatureResult{
  const r=featureRegion(input);
- if(samples.length<3||samples.length>50000||samples.some((p,i)=>!Number.isFinite(p.wavelength)||!Number.isFinite(p.intensity)||(i>0&&p.wavelength<=samples[i-1].wavelength)))throw Error('Invalid feature spectrum');
- const grid=uniformSpectrum(samples[0].wavelength,samples.at(-1)!.wavelength,samples.map(p=>p.intensity));
+ const grid=featureSpectrum(samples);
  if(r.left<grid.minimum||r.right>grid.maximum)throw Error('Feature shoulders exceed the source domain.');
  const slope=(r.rightContinuum-r.leftContinuum)/(r.right-r.left);
  let evaluations=0;

@@ -2,6 +2,8 @@
 
 ## Current scope reconciliation
 
+N02 sampled-intensity follow-up: [manual source-sampled flux](SAMPLED-FLUX.md) connects the recovered upper/unknown/lower numerical source-selection branch to explicit wavelength entry for original practices and references. Independent rational vectors cover57files/63identities;no continuum,answer,measurement orphotographic renderer is supplied. Imported/acquired unknowns remain gated;all64acceptance statuses remain unchanged.
+
 Q06 resource-readiness follow-up: [local resource preflight](LOCAL-SETUP.md) verifies the now-versioned1279resources before build/dev/test, with explicit incomplete-checkout diagnostics and synthetic checker contracts. The explicit subsequent inclusion instruction replaces the initial source-only boundary;all resource hashes are preserved. The checker downloads or changes nothing. Source-specific rights/credits,license choice and full release/classroom acceptance remain open; all64primary acceptance statuses/criteria are unchanged.
 
 A07 bounded search follow-up: [existing catalog search](TARGET-SEARCH.md) adds names/IDs/list filtering while retaining the current selection,explicit pointing and manual pupil work. Original list editing/bookmarks and native runtime matching remain pending;all64acceptance statuses are unchanged.

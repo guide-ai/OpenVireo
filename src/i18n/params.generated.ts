@@ -1325,4 +1325,24 @@ export interface MessageParameters {
   "cursor.policy": never;
   "cursor.invalid": never;
   "cursor.shoulderHint": never;
+  "probe.title": never;
+  "probe.intro": never;
+  "probe.source": never;
+  "probe.upper": "label";
+  "probe.unknown": "label";
+  "probe.lower": "label";
+  "probe.unsupported": never;
+  "probe.wavelength": never;
+  "probe.read": never;
+  "probe.clear": never;
+  "probe.invalidWavelength": never;
+  "probe.invalidSource": never;
+  "probe.result": "intensity" | "wavelength";
+  "probe.resultSource": "file" | "source";
+  "probe.manual": never;
+  "probe.method": never;
+  "probe.policy": never;
+  "probe.sourceFile": "file";
+  "probe.scope": never;
+  "probe.shaLabel": never;
 }
