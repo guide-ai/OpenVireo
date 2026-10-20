@@ -1,0 +1,430 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-01",
+      "start": "0x506664",
+      "endExclusive": "0x506a65",
+      "byteRangeSHA256": "7d458c251da03cd554e1895a99d0b1e2c6dc6b72fd80e803bb61f2d1934e550f",
+      "listingSHA256": "7831af85480890cc263e41363b45d636749222bbe20293cd158da675b37eb64a",
+      "localListing": "width-ok-complete.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-02",
+      "start": "0x50668b",
+      "endExclusive": "0x5066fc",
+      "byteRangeSHA256": "26690f6e9ec7042c49d604f3cd8e83c66bd049142645fdb643818222b2b28fde",
+      "listingSHA256": "0f360191d861e4cee0e1f330241d64cd42433835dc307f0fcda8edb5fcc59fb4",
+      "localListing": "width-zero-guard.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-03",
+      "start": "0x50abdf",
+      "endExclusive": "0x50ac64",
+      "byteRangeSHA256": "ec822e68738b2f5ab0a23c717ffdb91ebd92d0f659ad644685e6c29964d46978",
+      "listingSHA256": "8f12c92e20bec6401439262d88fe6f6d88b340dd3a6381bd1b5490f3688c5a65",
+      "localListing": "pan-left-flags.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-04",
+      "start": "0x50adb7",
+      "endExclusive": "0x50ae3c",
+      "byteRangeSHA256": "389ebe74ee34dc4844866dc170657b86db628ae2b47a69fb33389892bd62e392",
+      "listingSHA256": "01a62749fe9d5bb406a919a28eb7d332950ec9abf580a348d491c7e1be926e7b",
+      "localListing": "pan-right-flags.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-05",
+      "start": "0x5096dc",
+      "endExclusive": "0x50974b",
+      "byteRangeSHA256": "6d29e210520f0294945738032754f0a4d48a550a4693206a33c51d2579d7a969",
+      "listingSHA256": "2dca84d1df0d47f55e279cc01c04f586084ee377471de6dbd2613cf04d5480f7",
+      "localListing": "center-assignment.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-06",
+      "start": "0x507849",
+      "endExclusive": "0x5078b3",
+      "byteRangeSHA256": "1dcd680d93b8e18f76388734ba6b2626f25a7d0ac6a3809d549e4bcbed3bac57",
+      "listingSHA256": "b7c32d222d0485d507cd72d4e5ea49f3d10996a4a7622e4ab74214f8842ee036",
+      "localListing": "panel-geometry.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-07",
+      "start": "0x509a63",
+      "endExclusive": "0x509af8",
+      "byteRangeSHA256": "de47773641259f235e1bafd5b4c77dd4a888d989961e740eb80b567682416266",
+      "listingSHA256": "e90d178305f455799d9caf8fa247075be4fdfffb27f139117ad3c7c350f6f52c",
+      "localListing": "shoulder-height-assignment.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-08",
+      "start": "0x509cf4",
+      "endExclusive": "0x509dc0",
+      "byteRangeSHA256": "85f5d0a32cc14d1e653173d3a82f0d524ab44ac8ee48c6c4716bc65be78a216a",
+      "listingSHA256": "48a430026d03735e7af57b76b6c265339bc710c9746c756f05d493b81989d97d",
+      "localListing": "global-center-paint.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-09",
+      "start": "0x50670f",
+      "endExclusive": "0x506819",
+      "byteRangeSHA256": "8aac962b32a38c664a813b1cd685eee9e727a5355fbc18ee261e0515c7fe722b",
+      "listingSHA256": "56203ec5aeb1cda027b459115cf02846b147e0769fc7105d7f985572fdc0e735",
+      "localListing": "source-resolver.asm"
+    },
+    {
+      "evidenceId": "VIREO-WIDTH-ZERO-10",
+      "start": "0x50b06c",
+      "endExclusive": "0x50b181",
+      "byteRangeSHA256": "b67c060a78b24708c68769828a0ae0b6cbd7f70b1df20242320ad9d16b007366",
+      "listingSHA256": "3a41ce071b074503d0f3c9f7e7a3649e7ecf123a99be325984e88e7dd63f7af0",
+      "localListing": "width-entry.asm"
+    }
+  ],
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "contracts": {
+    "sixFlags": "0x50668b..0x5066cd compares leftY+0x539,rightY+0x53d,leftX+0x541,rightX+0x545,centerX+0x531,centerY+0x535 against0. ANY zero takes message path0x5066cd then jumps0x506a41;nonzero continuation begins0x5066fc before source resolution0x50670f and numerical construction. The full0x506664..0x506a65capture includes prologue,SEH cleanup/epilogue andreturn;rejection skips numerical/result continuation and the later direct+0x571clear/window-control calls on the success path. No scalar/coordinate erasure inferred from the rejection.",
+    "pairedPan": "Active pan failure writes both shoulder Xflags0 at0x50ac54..0x50ac64 or0x50ae2c..0x50ae3c,retaining numeric scalars/Y;this known zero state must not enter the width computation path.",
+    "center": "0x5096e8/0x5096ee store centerX/Y from coordinates.0x507849..0x5078b3sets Xorigin0,width500 and upperpane0..125. Manual C=(paneBottom-Y)/100 from0x509a63..0x509af8makes upper sampled top C1.25correspond to globalY0. Exact shared pane boundaries elsewhere and rounded nearzero rows/columns are not established by continuous projection.",
+    "painterDifference": "Global painter0x509cf4tests centerX>0,while OKtests centerX!=0. This increment ports only known zero-confirmation blocks;it does not replace positive-Xpaint/readout or emulate negative/stale flag behavior."
+  },
+  "implemented": [
+    "Known zeros only:unchanged complete paired-pan cleared state;exact stored center at actual window minimum;exact upper:sampled-trace centerC1.25. Null means no known block,not certified native coordinate validity. Numeric/unbound and full-range fallback workflows retain prior admission.",
+    "The browser prevents Calculate before integration and invalidates pending Save/Close when a known zero appears. Reason-specific English/i18n status explains recovery;inputs,confirmed records and inspect-record operation retained.",
+    "Decision uses the live local source/key/context-bound origin/point rather than awaiting an old overlay effect. Actual frame metadata excludes differently scaled fallbacks. Existing source admission/hash/preparation remains authoritative.",
+    "Browser two-phase result review captures immutable six input strings,mark revision and comparison context,with existing source key/hash recheck. Input or mark changes close pending review;detached stale confirmation cannot append a record. This is an authored transaction policy,not native modal/VCL parity.",
+    "Numeric/separate-tool edits,source/render/activity changes and restoration retain established origin invalidation/independent numeric paths. No origin,gate,snapshot or new version enters JSON/CSV.",
+    "No integrator,sampler,source normalization,raw acquisition/count/seed,record definition or grade change. Known-zero guard changes new-result eligibility only in supported bound cases."
+  ],
+  "remaining": [
+    "Full six-coordinate flag reconstruction,integer rounding/near-zero columns/rows,positive-Xversusnonzero sentinel split and stale/negative flags",
+    "Center/Yordered revalidation and asymmetriczoom/pan/reset/paint/readout/reentry with retained Extended scalars",
+    "Native modal lifecycle beyond the guarded continuation;numeric/unbound browser workflow remains a declared adapter",
+    "Automatic combined-bottom source after forced native trace entry remains unresolved",
+    "GDI/x87/unsafeFPU/convergence witnesses,wider domains,result/grade/legacy interchange and broader edition/classroom/rights gates"
+  ],
+  "uncertainty": "Read-only recovered conditions plus declared continuous-coordinate and browser review policies. No original execution/emulation or runtime oracle. Source-specific credits/license uncertainty retained;all1279resources unchanged."
+}

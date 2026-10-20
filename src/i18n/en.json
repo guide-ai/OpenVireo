@@ -1479,5 +1479,9 @@
   "comparisonMark.inputError": "No mark applied. Use a center strictly inside 3900–4500 Å and shoulders on different sides with manual heights greater than 0 and at most 1. A new center in another panel starts a fresh bracket.",
   "paneSource.option": "Select width source from the center pane",
   "paneSource.help": "With center marking enabled, a committed center can select its actual upper, unknown or lower source. Hovering or cancelling does not switch sources. Only admitted width sources participate. For the combined unknown trace, choose Unknown explicitly before marking; automatic choice covers its photographs.",
-  "panMarks.hidden": "Both shoulder marks are hidden after panning because at least one shoulder is outside the window. Your numeric inputs and confirmed records are retained. Zoom, reset or mark again to redraw the region."
+  "panMarks.hidden": "Both shoulder marks are hidden after panning because at least one shoulder is outside the window. Your numeric inputs and confirmed records are retained. Zoom, reset or mark again to redraw the region.",
+  "widthCoordinates.pan-cleared": "Width calculation is paused: panning cleared both shoulder indicators. Pan back, zoom out or reset to redraw the region before calculating. Your numeric inputs and saved records were kept.",
+  "widthCoordinates.center-x-zero": "Width calculation is paused: the marked center is on the zero-column boundary. Move the center inside the comparison window and verify both shoulders before calculating. Your numeric inputs and saved records were kept.",
+  "widthCoordinates.center-y-zero": "Width calculation is paused: the center is on the upper sampled pane’s zero row. Move the center below the top edge and verify both shoulders before calculating. Center height does not set the continuum.",
+  "widthCoordinates.reviewChanged": "The pending width review was closed because its inputs or comparison marks changed. Check the region and calculate again; saved records were kept."
 }

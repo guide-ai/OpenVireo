@@ -1,5 +1,7 @@
 # OpenVireo implementation plan
 
+Current confirmation follow-up: [known-zero width guard](WIDTH-COORDINATE-GUARD.md) blocks cleared paired-pan coordinates and exact supported centerX/Yzeros before calculation, and retires stale input/mark reviews. Live origin/source/frame binding preserves numeric work and existing files. Full six-flag/rounding/paint/modal/runtime parity remains open; no integrator/record/format or primary-status change.
+
 Current pan-paint follow-up: [paired shoulder painting](PAIRED-PAN-MARKS.md) ports the recovered both-Xflags containment predicate for complete pane-bound regions while retaining numeric inputs. Repaint/Inspect/reverse keep the snapshot; pan return/zoom/reset reconstruct existing geometry. Full native X/Y/sentinel/confirmation and asymmetric lifecycle remain open; no integrator/record/format or primary-status change.
 
 Current pane follow-up: [pane-selected source and global manual marker](PANE-SOURCE-GLOBAL-MARKER.md) adds opt-in admitted center-to-source selection and a common wavelength across primary frames with a cross in the origin pane. Combined bottom remains explicit because recovered rendering/resolution and forced trace entry do not establish its automatic policy. Integrator/records/formats/statuses remain unchanged; native pixel/sentinel/lifecycle and external review gates remain open.

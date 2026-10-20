@@ -1481,4 +1481,8 @@ export interface MessageParameters {
   "paneSource.option": never;
   "paneSource.help": never;
   "panMarks.hidden": never;
+  "widthCoordinates.pan-cleared": never;
+  "widthCoordinates.center-x-zero": never;
+  "widthCoordinates.center-y-zero": never;
+  "widthCoordinates.reviewChanged": never;
 }
