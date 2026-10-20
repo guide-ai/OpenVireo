@@ -1,0 +1,398 @@
+{
+  "policy": "OpenCLEA-bounded-telescope-motion-v1",
+  "original": {
+    "program": "VIREO",
+    "version": "1.504",
+    "execution": false,
+    "sources": [
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+        "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+      },
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+        "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+      },
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+        "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+      }
+    ],
+    "form": {
+      "offset": 2117044,
+      "bytes": 17628,
+      "sha256": "7aed67cbd651bc02d9130f3d6f3b0f4179d44e6208ba29601362a1f6a65923dc"
+    },
+    "ranges": [
+      {
+        "name": "north-down",
+        "start": "0x5387e8",
+        "endExclusive": "0x5388a1",
+        "byteRangeSHA256": "5a91b5dec3e513d9ed98909e41b5057a3c9f53686d62ece88d2b6c51e221cea0",
+        "listingSHA256": "ec944eb9f229ef8efd5ce30624107ae361e2a3d103c51365cf54b934b85f7e69",
+        "id": "A06-01"
+      },
+      {
+        "name": "north-up",
+        "start": "0x5388c8",
+        "endExclusive": "0x53896d",
+        "byteRangeSHA256": "71fc3f93d26331d5b3034bf315f53f6b834a30deddd6b08b1ceafc6cb882f814",
+        "listingSHA256": "19d0b005e176aff82be1835854398c3df3204e865afadd7104e6f3c65a723c54",
+        "id": "A06-02"
+      },
+      {
+        "name": "south-down",
+        "start": "0x538970",
+        "endExclusive": "0x538a2b",
+        "byteRangeSHA256": "6ab4641e54baf96ea2ee7bf51a202fcb61f2f9475f0f486f0d2c10967de589ed",
+        "listingSHA256": "45379b6c898014bb5768491eada7db3d48b43d14f8e37c05b85ea96620fee1ef",
+        "id": "A06-03"
+      },
+      {
+        "name": "south-up",
+        "start": "0x538a50",
+        "endExclusive": "0x538af5",
+        "byteRangeSHA256": "dd2f9532c881ef0f4f298d5094bce0c03a03079c492e291327dd96b5b396cf42",
+        "listingSHA256": "c255476150134cbbb7a10c2f58be01b0af1fcc77733c2ab757c6ec02c27fc6f7",
+        "id": "A06-04"
+      },
+      {
+        "name": "west-down",
+        "start": "0x538af8",
+        "endExclusive": "0x538bb7",
+        "byteRangeSHA256": "82b391a05beb9b1f641d3d770df6978feca6a1e8b0936cf1a137b2b7634fd324",
+        "listingSHA256": "574853f71e73fa8ba61a191d3aa658ce51bcc5c766aba56efc2ed6ce712f03e1",
+        "id": "A06-05"
+      },
+      {
+        "name": "west-up",
+        "start": "0x538be4",
+        "endExclusive": "0x538ca1",
+        "byteRangeSHA256": "7951c4e19d65f391b7e2a6f2771723c8ad0eeb253e956a1b54cee2326bd296b2",
+        "listingSHA256": "5bfb54e0da7903e20f4027e89835010d979df1f9d7a18ea1b782677ebb50f9c0",
+        "id": "A06-06"
+      },
+      {
+        "name": "east-down",
+        "start": "0x538ca4",
+        "endExclusive": "0x538d61",
+        "byteRangeSHA256": "8cb4ee38be600a576eb5d8e9667ef5812709cf591fb5b844dc328311820afb4e",
+        "listingSHA256": "ab2ecdd86494ba1ab27bf4d51c721d69054cd5dafa32c636698489beb1ad6970",
+        "id": "A06-07"
+      },
+      {
+        "name": "east-up",
+        "start": "0x538d8c",
+        "endExclusive": "0x538e49",
+        "byteRangeSHA256": "063a82f3a7633022ceb24fccd2507abbbb7b371b528c10f1fe1e4b5cd56af72f",
+        "listingSHA256": "a5520b7808f7b6869c5153ae4b960751a9e9110236a256b5c950231fd7f9668f",
+        "id": "A06-08"
+      },
+      {
+        "name": "manual-timer",
+        "start": "0x538e4c",
+        "endExclusive": "0x5391fc",
+        "byteRangeSHA256": "2dba5c7058c2a2d08b50aca11c0a7278cfb6b3266f2d2d0e612459fb2e288691",
+        "listingSHA256": "b325a6aa5ca20199077599370aaa6a78d2734a89979b2765d82562fd7e2009a2",
+        "id": "A06-09"
+      },
+      {
+        "name": "program-timer",
+        "start": "0x5395cc",
+        "endExclusive": "0x5399df",
+        "byteRangeSHA256": "25b9a97db496ffc8d05e7f5105b5287a285219097313d1baf251e0c3c453e8f0",
+        "listingSHA256": "a54bfba2f1e3d2d4f56d75fe059b852d870be5b86483414fb1fda906b8a25b9c",
+        "id": "A06-10"
+      },
+      {
+        "name": "program-setup",
+        "start": "0x5399e8",
+        "endExclusive": "0x539fa9",
+        "byteRangeSHA256": "5977b6d845b3cad89100c1d28172f878d9ba38cec3aeab21f3c6f798f63b478a",
+        "listingSHA256": "d6ebe9cd0d97e1d6d60657b37134d1168bc7588a5fe1240d2d4501d4805e2e9e",
+        "id": "A06-11"
+      },
+      {
+        "name": "rate",
+        "start": "0x53e1e0",
+        "endExclusive": "0x53e228",
+        "byteRangeSHA256": "0bffbb20f43699427567cee4953feac33df157a113250aa40c4c14176dc9a71c",
+        "listingSHA256": "188e357b582dab875f91d86cde73ec5f6d40dfebfa442b56551717b4c9a041f9",
+        "id": "A06-12"
+      },
+      {
+        "name": "power",
+        "start": "0x4270c0",
+        "endExclusive": "0x427145",
+        "byteRangeSHA256": "d03995b11025ee7e96da88e8bd158d5b79b3ab2895c500227f6d231bb09bad5d",
+        "listingSHA256": "c75f3054cc30a2f9adea29cea0590f48de5aab0be5c4f977cc16cfcbe3b1b660",
+        "id": "A06-13"
+      },
+      {
+        "name": "double-sign",
+        "start": "0x4272d4",
+        "endExclusive": "0x42731b",
+        "byteRangeSHA256": "79e3b24795a1f4709166b77f168de592dfb40c2459f670e5284d01b0d53e451a",
+        "listingSHA256": "919fa56447dfdf32218d04ea506e94bb1f42523b7fc5f89a8c0125d11f4760a8",
+        "id": "A06-14"
+      },
+      {
+        "name": "set-coordinates",
+        "start": "0x53caec",
+        "endExclusive": "0x53cb6b",
+        "byteRangeSHA256": "024d73d2867e3b60d825ade78437b6a34f829a251e9bd93362e25907c0c07c72",
+        "listingSHA256": "003ec82098ad36556dc3030bac4545740a4f501383ed9420000a3992476a69de",
+        "id": "A06-15"
+      },
+      {
+        "name": "wrap-hours",
+        "start": "0x4bad9c",
+        "endExclusive": "0x4badfa",
+        "byteRangeSHA256": "3591e1084ca9e5584febe1e969474f23bd34d0d767817854587a233d12f7d950",
+        "listingSHA256": "87896ccec79964dac17d575bf54c746152a71737951b9b4a4804f64a4f19c8cd",
+        "id": "A06-16"
+      },
+      {
+        "name": "default-record",
+        "start": "0x5a21d0",
+        "endExclusive": "0x5a2c92",
+        "byteRangeSHA256": "758da1fbccbb0eafc75ad7d518698464dfd62a04162fecb02b63e472688f223a",
+        "listingSHA256": "ff51ae02c8c29b5a8e485719f619d54d8fc44d28fe735a122b924727c47bb064",
+        "id": "A06-17"
+      },
+      {
+        "name": "copy-options",
+        "start": "0x5879b8",
+        "endExclusive": "0x5879d2",
+        "byteRangeSHA256": "2fede7cb86291b01d4f6730c6453224962f761d2ef1c13f7795b11794ecad723",
+        "listingSHA256": "002c2d88310de4d6f116074163445478477d795a6b1eeaf573147913785a898b",
+        "id": "A06-18"
+      },
+      {
+        "name": "redraw-and-scale",
+        "start": "0x53a40c",
+        "endExclusive": "0x53ae5b",
+        "byteRangeSHA256": "f9df8fd965c36c3e4665ccba06742be630d6f616998ed108ff6181e74258e46a",
+        "listingSHA256": "2e9b03ef55df1c8e942a2a86385034f0c9c51742d5123e62768ecd144dceacd8",
+        "id": "A06-19"
+      },
+      {
+        "name": "default-manual-rate",
+        "start": "0x537ffd",
+        "endExclusive": "0x538041",
+        "byteRangeSHA256": "ba4c903441f1bac05e48bd5888bb6e8844ce97aea94444f66e06587ee4153849",
+        "listingSHA256": "b420da5ae0371263c1e0663cf1f6939e5637523cc4793208c72fa1e8ab596a6d",
+        "id": "A06-20"
+      }
+    ],
+    "operands": [
+      {
+        "name": "arcsecDegrees",
+        "address": "0x53a130",
+        "encoding": "Extended80",
+        "value": 0.0002777777777777778,
+        "exactFraction": "10494147739710322697/37778931862957161709568",
+        "operandSHA256": "af5db8382e0a53d811f971c5972dbcba23568b6339de1e6930e899c5f7bf041e"
+      },
+      {
+        "name": "initialRaToleranceHours",
+        "address": "0x53a144",
+        "encoding": "Extended80",
+        "value": 1e-05,
+        "exactFraction": "12089258196146291747/1208925819614629174706176",
+        "operandSHA256": "cb32a56726bd369f5a401888c1137856f7029470aff7df7bcfded317b43a0d88"
+      },
+      {
+        "name": "programFactor",
+        "address": "0x53a12c",
+        "encoding": "Single",
+        "value": 10.0,
+        "exactFraction": "10",
+        "operandSHA256": "80c8a717ccd70c8809eb78e6a9591c003e11c721fe0ccaf62fd592abda1a5593"
+      },
+      {
+        "name": "hoursToDegrees",
+        "address": "0x53a150",
+        "encoding": "Single",
+        "value": 15.0,
+        "exactFraction": "15",
+        "operandSHA256": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e"
+      },
+      {
+        "name": "finderDegrees",
+        "address": "0x5a29e8",
+        "encoding": "Single",
+        "value": 2.5,
+        "exactFraction": "5/2",
+        "operandSHA256": "072e3304b03423a4767d28c5fed09f81d5190ff60a3d078c6c1350eeb8bee28b"
+      },
+      {
+        "name": "telescopeArcmin",
+        "address": "0x5a29fc",
+        "encoding": "Single",
+        "value": 15.0,
+        "exactFraction": "15",
+        "operandSHA256": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e"
+      },
+      {
+        "name": "arcminPerDegree",
+        "address": "0x53af20",
+        "encoding": "Single",
+        "value": 60.0,
+        "exactFraction": "60",
+        "operandSHA256": "fb7614b89815f3ebaaba34a1cbd1fe490c839c39571d6a45e3a3cff5fcb1383c"
+      },
+      {
+        "name": "baseRate",
+        "address": "0x5a2a84",
+        "encoding": "Single",
+        "value": 5.0,
+        "exactFraction": "5",
+        "operandSHA256": "fca31f1667a6aa1bba12fca4e4ea1becd503379d80da3213af07f6cc5702828d"
+      },
+      {
+        "name": "arrivalLower",
+        "address": "0x5399e0",
+        "encoding": "Single",
+        "value": 0.0,
+        "exactFraction": "0",
+        "operandSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      },
+      {
+        "name": "arrivalUpper",
+        "address": "0x5399e4",
+        "encoding": "Single",
+        "value": 12.0,
+        "exactFraction": "12",
+        "operandSHA256": "d9fc8a51763953481a1808af3156bcb8144c2f925e96dec623c886f6d9d975b2"
+      },
+      {
+        "name": "directionHalfTurn",
+        "address": "0x53a13c",
+        "encoding": "Single",
+        "value": 12.0,
+        "exactFraction": "12",
+        "operandSHA256": "d9fc8a51763953481a1808af3156bcb8144c2f925e96dec623c886f6d9d975b2"
+      },
+      {
+        "name": "manualPole",
+        "address": "0x539204",
+        "encoding": "Single",
+        "value": 90.0,
+        "exactFraction": "90",
+        "operandSHA256": "375f9f99bd284d0e60013f795d63d10f14ed23414c86cd3788905485d77a6a95"
+      },
+      {
+        "name": "manualZero",
+        "address": "0x539208",
+        "encoding": "Single",
+        "value": 0.0,
+        "exactFraction": "0",
+        "operandSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      },
+      {
+        "name": "positiveReflection",
+        "address": "0x53920c",
+        "encoding": "Single",
+        "value": 180.0,
+        "exactFraction": "180",
+        "operandSHA256": "21b9ff9cf99927e92d16d0fcc3190c14680a24c02dad89f9777d5107fdeb5db1"
+      },
+      {
+        "name": "negativeReflection",
+        "address": "0x539210",
+        "encoding": "Single",
+        "value": -180.0,
+        "exactFraction": "-180",
+        "operandSHA256": "d6ec10c44ac528cfd5e51a887454fbca5b534c3f9f64403c5b593ef0ab48cf2b"
+      },
+      {
+        "name": "poleRaShift",
+        "address": "0x539214",
+        "encoding": "Single",
+        "value": 12.0,
+        "exactFraction": "12",
+        "operandSHA256": "d9fc8a51763953481a1808af3156bcb8144c2f925e96dec623c886f6d9d975b2"
+      },
+      {
+        "name": "raWrap",
+        "address": "0x4badfc",
+        "encoding": "Single",
+        "value": 24.0,
+        "exactFraction": "24",
+        "operandSHA256": "e4d11efbb477a76acb589cc3c6d78f8067d35f26293029ec6dc2bda8df62bff4"
+      }
+    ]
+  },
+  "native": {
+    "baseRate": 5,
+    "manualDefaultRateIndex": 2,
+    "programRateIndex": 4,
+    "manualIntervalMS": 20,
+    "programIntervalMS": 1,
+    "scale": {
+      "finder": 1,
+      "telescope": 10
+    },
+    "scaleProducer": "FormPaint+0x53a64c;finder position1 gives1, telescope position0 gives2.5*60/15.",
+    "rateProducer": "RateSliderClick raises Single2 to Single position, multiplies Environment Single+0x2bdc (default5) and stores Extended.",
+    "copyBinding": "Default-record EBX=object+4;record+0x2528 maps to Environment+0x6b4+0x2528=0x2bdc. Default program index record+0x27af maps to+0x2e63.",
+    "instantDefault": false,
+    "horizonEnforcedDefault": false,
+    "manualStep": "Dec +/- rate*arcsecDegrees/scale;RA +/- rate*arcsecDegrees/(scale*15). No cos(dec) is inserted. Pole crossing reflects Dec, adds12h RA andtoggles N/S orientation.",
+    "programStep": "Identical RA/Dec returns before confirmation/timer in the admitted timed branch. Uses rate index4 and factor10; initial rawRA difference negated whenabs>12, signed Double helper sets RA increment. Dec snaps on crossing;RA snaps only in direction-dependent [0,12) crossing window. InitialRA<=tolerance marks axis done without snapping. Cleanup is the following callback after both axis flags.",
+    "nativeStop": "Mouse-up releases manual timer. Complete programmed timer restores previous rate. Browser explicit Stop/cancel/navigation/background/save rules are separate adaptations.",
+    "literalBindings": [
+      {
+        "name": "base rate",
+        "address": "0x5a2a7e",
+        "length": 10,
+        "storeSHA256": "24484f914e48fca480f29f1e024d010b2e84bfa7b4c161c5ab7ec4a38644d499",
+        "value": 5,
+        "field": "record+0x2528 -> Environment+0x2bdc"
+      },
+      {
+        "name": "program rate index",
+        "address": "0x5a2ab0",
+        "length": 7,
+        "storeSHA256": "ca1e0d50a533db21b25f5ad6a946dba6047028a81cafae400d9c7897be0aed00",
+        "value": 4,
+        "field": "record+0x27af -> Environment+0x2e63"
+      },
+      {
+        "name": "instant default",
+        "address": "0x5a2ac5",
+        "length": 7,
+        "storeSHA256": "ed4962560a549bdac437880ede39b7673798ca3a54b432604ee83f0515f3ac83",
+        "value": 0,
+        "field": "record+0x27c8 -> Environment+0x2e7c"
+      },
+      {
+        "name": "horizon default",
+        "address": "0x5a2acc",
+        "length": 7,
+        "storeSHA256": "c1575ab2b864b6ad06521e0e8ac321a83a755d31f4a6f23031863893cb5f4c5d",
+        "value": 0,
+        "field": "record+0x27c9 -> Environment+0x2e7d"
+      },
+      {
+        "name": "manual default index",
+        "address": "0x537ffd",
+        "length": 5,
+        "storeSHA256": "717212bc721f58e47dba45e7480207f86059c3eebbdb53dca2d094f0d3fc24b0",
+        "value": 2,
+        "field": "ESI -> Observatory+0x5df"
+      }
+    ]
+  },
+  "browser": {
+    "maximumAbsDeclination": 85,
+    "maximumBatchCallbacks": 1000,
+    "precision": "Number arithmetic with explicit ambiguous-comparison withdrawal;not x87 equivalence.",
+    "timing": "Nominal executed20ms/manual and1ms/program callbacks drained from monotonic elapsed time;not Windows timer delivery equality. Existing shared clock gap/date/elapsed guards remain.",
+    "motionAcquisition": "Release existing acquisitions before motion;no new source means,photons orRNG consumption.",
+    "save": "Stop motion andclock,saving validated pointing/clock through prior scopes;optional outer22 retains manual rate only. No saved running flag orautomatic resume.",
+    "options": "Only compiled no-instant/no-enforced-horizon defaults. No arbitrary option override,moving photon orGDI/audio behavior.",
+    "rights": "Local research;public redistribution not authorized"
+  }
+}

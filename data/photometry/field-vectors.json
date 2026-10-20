@@ -1,0 +1,119 @@
+{
+  "kind": "Synthetic independent numerical fixtures, not original observations",
+  "method": "Decimal90 Gaussian power series + native .1 interpolation; source flux directly times fraction. Integer modulo PRNG; Python math.lgamma Poisson reference, decision margins retained. Decimal70 reduction. No binary execution/microemulation.",
+  "means": {
+    "centralFraction": "0.821208715768938675224430684011663111128353458826655998908715979902846141110696424782459718",
+    "objectSourceMean": "532.664119172835814461016877661836404989014955256878854405217385865693396873671242547932679",
+    "skySourceMean": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+    "skyMean": "1.58489319246111348520210137339150701326944213382503906831629681231665686366845398011020270",
+    "catalogVSingle": "9.47000026702880859375"
+  },
+  "rareSkySourceSeed": 1298181734,
+  "pairs": [
+    {
+      "seed": 0,
+      "sky": {
+        "sourceCount": 0,
+        "skyCount": 0,
+        "totalPhotonCount": 0,
+        "seed": 134775814,
+        "draws": 2,
+        "minimumDecisionMargin": 0.17358974473263464
+      },
+      "object": {
+        "sourceCount": 517,
+        "skyCount": 1,
+        "totalPhotonCount": 518,
+        "seed": 2884733762,
+        "draws": 4,
+        "minimumDecisionMargin": 0.02166090921792438
+      },
+      "netCountRate": 5180,
+      "magnitude": "9.714175600636917443163985392859353329413162580119033763920644185902632"
+    },
+    {
+      "seed": 1,
+      "sky": {
+        "sourceCount": 0,
+        "skyCount": 1,
+        "totalPhotonCount": 1,
+        "seed": 870078620,
+        "draws": 3,
+        "minimumDecisionMargin": 0.030537654746295273
+      },
+      "object": {
+        "sourceCount": 583,
+        "skyCount": 1,
+        "totalPhotonCount": 584,
+        "seed": 1828254910,
+        "draws": 6,
+        "minimumDecisionMargin": 0.04651757970815759
+      },
+      "netCountRate": 5830,
+      "magnitude": "9.585828613102464784042019342824297913994488520596522812023395063862553"
+    },
+    {
+      "seed": 42,
+      "sky": {
+        "sourceCount": 0,
+        "skyCount": 1,
+        "totalPhotonCount": 1,
+        "seed": 882243745,
+        "draws": 3,
+        "minimumDecisionMargin": 0.02472805037986306
+      },
+      "object": {
+        "sourceCount": 550,
+        "skyCount": 2,
+        "totalPhotonCount": 552,
+        "seed": 1705058,
+        "draws": 5,
+        "minimumDecisionMargin": 0.20472447656977788
+      },
+      "netCountRate": 5510,
+      "magnitude": "9.647121002870537377827049403184539226986440611795871400069460559099158"
+    },
+    {
+      "seed": 123456789,
+      "sky": {
+        "sourceCount": 0,
+        "skyCount": 1,
+        "totalPhotonCount": 1,
+        "seed": 1678830432,
+        "draws": 3,
+        "minimumDecisionMargin": 0.050254095342841726
+      },
+      "object": {
+        "sourceCount": 536,
+        "skyCount": 2,
+        "totalPhotonCount": 538,
+        "seed": 230876653,
+        "draws": 5,
+        "minimumDecisionMargin": 0.08816655694224729
+      },
+      "netCountRate": 5370,
+      "magnitude": "9.675064285751110982836473512429565178421997612826938778056014661987033"
+    },
+    {
+      "seed": 1298181734,
+      "sky": {
+        "sourceCount": 1,
+        "skyCount": 0,
+        "totalPhotonCount": 1,
+        "seed": 866343917,
+        "draws": 3,
+        "minimumDecisionMargin": 3.980830950434111e-06
+      },
+      "object": {
+        "sourceCount": 519,
+        "skyCount": 2,
+        "totalPhotonCount": 521,
+        "seed": 1369248244,
+        "draws": 7,
+        "minimumDecisionMargin": 0.060726974304563114
+      },
+      "netCountRate": 5200,
+      "magnitude": "9.709991640913002100915042631521713789084727621721786613944885256870576"
+    }
+  ]
+}

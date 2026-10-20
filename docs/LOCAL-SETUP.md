@@ -1,37 +1,35 @@
-# Local resource preflight
+# Local setup and resource integrity
 
-This bounded Q06 increment makes source-only setup failures explicit before Vite or dataset-dependent tests. It does not supply the missing resource pack or make the public checkout self-contained. No scientific or acceptance criterion changes.
+The repository now includes all1279resources in `LOCAL-RESOURCES.json`;the earlier source-only packaging boundary is superseded by the explicit inclusion instruction. Catalogs,spectra,images,models and authored fixtures are regular versioned files,not links to a private workstation. Source-specific credits/uncertainties are in [RESOURCE-PROVENANCE.json](RESOURCE-PROVENANCE.json);inclusion does not assign one universal license.
 
-## Check a source checkout
+## Install and verify
 
-With Node available, run either command; no installed application dependencies are required for the check:
+Use Node20.19+ or22.12+ with npm (tested with22.23.2):
 
 ```sh
-node scripts/check-resources.mjs
+npm ci --ignore-scripts
 npm run check:resources
+npm run build
+npm run dev -- --port 5173
 ```
 
-The CLI resolves filesystem aliases before selecting its main entry. The checker reads the revision's `docs/LOCAL-RESOURCES.json`, validates every relative resource path before resource IO, then streams each file through a single nonblocking descriptor (at most8files concurrently) to verify its byte length and SHA-256. It reports counts and up to20 issue paths. It never prints source contents, downloads, generates, copies or repairs files. Local worktrees may link to an authorized existing private resource directory; the target contents receive the same byte checks. The manifest establishes expected identity only, not authenticity, original-runtime equivalence or redistribution permission.
+The browser URL is `http://127.0.0.1:5173/`. A compiled build can be served with `npm run preview -- --port 5178`. Both bind to loopback. Use an unused port when the existing persistent5173preview is running;do not replace that service.
 
-Exit0 means all listed files match. Exit1 means missing, unreadable, non-file or mismatched resources. Exit2 means invalid/unavailable manifest or unsupported command arguments. A source-only checkout intentionally exits1 with a clear private-pack requirement before compilation; it does not fail later on hundreds of unresolved JSON imports.
+The checker resolves its CLI path through filesystem aliases,validates every manifest path/size/hash field before resource IO,and streams at most8files concurrently. One nonblocking descriptor binds each file's type/size check and SHA stream;it is closed on success/failure. Results retain manifest order. This is a point-in-time identity check,not a filesystem lock,signature,license or original-runtime oracle.
 
-## Supply and verify authorized local data
+All four npm build/dev/test/test:e2e entries call it directly,including with ignore-scripts enabled. Default Playwright starts local Vite directly after the E2E check,so it does not rehash the pack through a nested npm hook. Direct engine commands are advanced explicit bypasses of this npm admission step.
 
-1. Obtain the matching `data/` and `public/original/` directories from an authorized private backup, or use the preserved local research generators outside the source tree. This utility provides no acquisition or download route. An original archive alone is not the complete generated web pack.
-2. Run the check again. The current manifest has1279 files; require **1279/1279** before building. A hash mismatch should be investigated against the preserved source receipts, not replaced with a new expected hash to silence the checker.
-3. Use installed dependencies or `npm ci` with the pinned lockfile, then run:
+Exit0 means all listed files match. Exit1 identifies missing,non-file,unreadable or mismatched resources,with root-link and filesystem-code diagnostics. Exit2 identifies unavailable/malformed manifests or typed entry/field errors. Diagnostics list at most20resource issues plus a remaining count. Invalid values/file contents are never echoed. Restore altered/missing files from the matching source revision;the checker does not download,generate,copy or repair them.
+
+## Tests
 
 ```sh
-npm run build
+npm run test:resources
 npm test -- --maxWorkers=4
+PLAYWRIGHT_BROWSERS_PATH=.local/browsers npx playwright install chromium
 npm run test:e2e -- --workers=2
 ```
 
-The build,dev,test andtest:e2e scripts invoke the same read-only preflight directly,including when npm ignore-scripts is enabled. The default Playwright server starts local Vite directly after the npm E2E entry check. `npm run test:resources` runs nine synthetic checker contracts without the scientific pack or application dependencies. Scientific/state contracts continue to use Vitest; complete application flows use Playwright. `npm run dev` binds to loopback as before. Keep the existing persistent5173 preview service unchanged; use a different loopback port for temporary checks.
+Nine Node tool contracts use synthetic temporary files and real child processes,including alias/ignore-scripts/sentinel-engine/FIFO and filesystem-error cases. Scientific/state contracts use Vitest;complete workflows use Playwright. Browser caches,dependencies,build output and private tooling remain ignored. The supported observing sample,counts/RNG and pupil-manual controls are unchanged by packaging.
 
-## Publication boundary
-
-All1279 resource payloads remain excluded by Git. The public source is useful for inspection and development with the authorized local pack; it is not yet a runnable public observatory distribution. Q05 rights clearance, a general authored-code license decision and release/classroom acceptance remain open. No resource upload, deployment, service or new dependency is introduced. The public identity manifest contains paths, sizes and hashes only.
-
-
-[Exact validation and review status](LOCAL-SETUP-VALIDATION.md) distinguish local checks, the denied external review and publication status.
+[Exact validation/review status](LOCAL-SETUP-VALIDATION.md) separates the original source-only snapshot,the corrected preflight and the resource-inclusive clone checks. No deployment,new backend,new dependency version,original execution or emulator is introduced.

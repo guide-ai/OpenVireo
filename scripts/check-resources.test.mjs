@@ -48,7 +48,7 @@ test('authorized local resource-directory symlink retains content checking', () 
   assert.equal((await checkResources(root, {files: [entry('data/pack/a', 'x')]})).matched, 1);
 }));
 
-test('source-only checkout reports a bounded missing-pack result; command exit status, corrupt manifest and argument handling are explicit', () => fixture(async root => {
+test('incomplete checkout reports a bounded missing-resource result; command exit status, corrupt manifest and argument handling are explicit', () => fixture(async root => {
   const files = Array.from({length: 25}, (_, i) => entry(`data/${i}.json`, 'x'));
   await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files}));
   let lines = []; assert.equal(await resourceCheckCommand(root, [], line => lines.push(line)), 1);
@@ -67,7 +67,7 @@ async function commandFixture(root) {
   await mkdir(path.join(root, 'scripts')); await copyFile(checkerFile, path.join(root, 'scripts/check-resources.mjs'));
   await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files: [entry('data/absent', 'x')]}));
 }
-test('real CLI through an aliased checkout cannot silently skip a missing-pack check', () => fixture(async root => {
+test('real CLI through an aliased checkout cannot silently skip a missing-resource check', () => fixture(async root => {
   await commandFixture(root); const alias = root + '-alias'; await symlink(root, alias, 'dir');
   try {const p = spawnSync(process.execPath, [path.join(alias, 'scripts/check-resources.mjs')], {encoding: 'utf8', timeout: 3000}); assert.equal(p.error, undefined); assert.equal(p.status, 1); assert.match(p.stdout, /0\/1 match/);}
   finally {await rm(alias);}

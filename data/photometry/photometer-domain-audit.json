@@ -1,0 +1,441 @@
+{
+  "id": "PHOTO-DOMAIN-AUDIT-01",
+  "kind": "Static native evidence plus reused independent Decimal90 means and separately inspectable aggregation;not original observations,second independent RE recovery orruntime equivalence",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PLEIADES.HTL",
+      "sha256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "bindings": [
+    {
+      "file": "data/photometry/mayall-photometer-contract.json",
+      "sha256": "62f1d9a78c558a1bb4585add18bab6b9e7b32d664bc95e63235a34d7c0b0b0b9"
+    },
+    {
+      "file": "data/photometry/mayall-photometer-literals.json",
+      "sha256": "ea5e389d2a01011bc8ab46892734e0c2b6893945e35e0d15ddaa3c3f97875dde"
+    },
+    {
+      "file": "data/photometry/ubv-contract.json",
+      "sha256": "27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf"
+    },
+    {
+      "file": "data/photometry/pinned-pleiades-v.json",
+      "sha256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624"
+    },
+    {
+      "file": "data/photometry/pleiades-target-fields.json",
+      "sha256": "5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356"
+    },
+    {
+      "file": "data/photometry/pleiades-expanded-fields.json",
+      "sha256": "86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40"
+    }
+  ],
+  "ranges": [
+    {
+      "id": "PHOTO-DOMAIN-01",
+      "start": "0x55f0f4",
+      "endExclusive": "0x55f325",
+      "byteRangeSHA256": "f29a4bca58a6ce756321883d50dab69a1075e1b50f4363c5111e69778c2c1237",
+      "listingSHA256": "b22a3bfd882c04218367b703f098cf5ebd60ad19cbfe0a8ea19315d3ec691504",
+      "meaning": "Complete recovered sampler inclret12;mean12 branch/cache,nonnegativecandidate,exponent-30 andacceptance comparisons. No1e6 mean check inthis routine."
+    },
+    {
+      "id": "PHOTO-DOMAIN-02",
+      "start": "0x55f354",
+      "endExclusive": "0x55f448",
+      "byteRangeSHA256": "dc74f92904f6fad4c06c5b8b65368da012d8b43d9f94fa56c6d8ed596947cd59",
+      "listingSHA256": "57e54034aaf3053b826ef3ec508d7bca5f6500ff23c6297d3aee63804ba491cd",
+      "meaning": "Recovered gamma helper;positive log arguments,not a1e6 domain admission."
+    },
+    {
+      "id": "PHOTO-DOMAIN-03",
+      "start": "0x403700",
+      "endExclusive": "0x403734",
+      "byteRangeSHA256": "84e5c63dd72b3cfa874a1940660444872ae1d873c8e62fdb45057a022b3ebc2c",
+      "listingSHA256": "b53c64578ed2f7bdea9ea8acdce083abf484d3a9780cf3c931cc35405ab541f2",
+      "meaning": "Round/truncate throughx87 FISTP QWORD;not a per-drawint32 limit."
+    },
+    {
+      "id": "PHOTO-DOMAIN-04",
+      "start": "0x5014e4",
+      "endExclusive": "0x50198c",
+      "byteRangeSHA256": "240bd38fb3f17e1351153de40b9f8ea04c643f816fb4a89504cfb7d74f4b937d",
+      "listingSHA256": "9deccc8d8d389801d81539da7d8ef2dc8f9f15328c66f33a76955ade1186fb1c",
+      "meaning": "Source then sky in Extended,actual period/aggregate limit checks before32-bit stores andoverflowhandler."
+    },
+    {
+      "id": "PHOTO-DOMAIN-05",
+      "start": "0x5019a0",
+      "endExclusive": "0x501a08",
+      "byteRangeSHA256": "dce566cde939ce478b04f90e546708c200e88c2b87ee95c226554a966f5cb2b1",
+      "listingSHA256": "e34fbc7ebd6e41b6e7a0d7bec35b506690fb2246ec6e34878d949328bd4a0843",
+      "meaning": "Calls original message andunlocks;no record/reduction continuation certified."
+    },
+    {
+      "id": "PHOTO-DOMAIN-06",
+      "start": "0x590424",
+      "endExclusive": "0x590480",
+      "byteRangeSHA256": "d2fd9c0b788c38023edf01f612fde6685013f229784f3725507f5e12164a05d5",
+      "listingSHA256": "405a05a60a38c717a02f69548e1629d051ce8a122017b9ff648574c95f72d212",
+      "meaning": "86-byte record reader."
+    },
+    {
+      "id": "PHOTO-DOMAIN-07",
+      "start": "0x591e99",
+      "endExclusive": "0x591ed5",
+      "byteRangeSHA256": "397179ecfc802cd1ee8b74af505625c9d814ab83d47d9fedae9b78a9d659e5aa",
+      "listingSHA256": "ae7c16ed0e4b9bf49a0eb799df4db6554a6636c9eca08a2b08d56f7ae0617ac4",
+      "meaning": "Copies two Extended pointings from+0x19/+0x23."
+    }
+  ],
+  "native": {
+    "actualCountCeiling": 2147483647,
+    "ceilingOperand": {
+      "address": "0x50198c",
+      "bytes": 10,
+      "encoding": "Extended80",
+      "sha256": "2f245941644f0fdeabfe6388bf7b81210aa89b15dca01c46d644557219df36f1"
+    },
+    "samplerCallInputs": {
+      "start": "0x5014ea",
+      "endExclusive": "0x50158e",
+      "byteRangeSHA256": "0e91f53964807fbeec95e8f4d7b0292edc1d59be62aae8873d99643ca184276d",
+      "meaning": "Complete draw-input/source-then-sky/base-count-add segment;the actual-count checks follow at0x50158e. The entire timer remains bound by PHOTO-DOMAIN-04."
+    },
+    "checks": "Actual per-period source+sky andcumulative totals are compared withceiling beforeinteger conversion/store. Native allows equality;port also retainsactualcount guard.",
+    "storage": "Poisson returnsExtended afterint64 truncation;period andcumulative counts storeDWORD afterceilingchecks.",
+    "samplerMeanCeiling": "No1e6 admission in the complete recovered sampler andphotometer callback path. This is bounded-path evidence,not a proof about every original option/caller.",
+    "overflowHint": "Original handler recommends shorter integration time,fewer integrations or a smaller telescope. No target-whitelist exclusion is inferred.",
+    "messageQuote": "This star is too bright for the current settings!"
+  },
+  "port": {
+    "meanLimitPerDraw": 1000000,
+    "meanLimitOrigin": "New Number/Math adapter guard,not an original telescope orastrophysical ceiling",
+    "allSettingsAdmission": "Existing Mayall target domain requires allthree apertures,UBV andalltiming/repeat choices toremain within the declared expected-count domain. This conservative profile-level admission isaport policy;actual stochastic overflow guards arestillchecked.",
+    "decision": "Retain six exclusions andallprotective/session/numerical contracts. No widened sampler orshorter-series subdomain isadmitted.",
+    "sessionCompatibility": "No reading,event,owner,proof,domain orRNG change;raw1-10/full8-21 retained."
+  },
+  "exclusions": [
+    {
+      "targetId": "N2230.DAT@147993",
+      "label": "01803-01585",
+      "hotlistNumber": 5,
+      "primaryReason": "Poisson-mean-bound",
+      "maximumIndividualDrawMean": 12693902.38809218,
+      "maximumCombinedCallbackMean": 12694003.84574204,
+      "sourceMeanAtMaximumTotal": 12693902.38809218,
+      "skyMeanAtMaximumTotal": 101.45764985840444,
+      "maximumConfiguration": {
+        "filter": "U",
+        "aperture": 15,
+        "seconds": 100,
+        "repeats": 5,
+        "callbacks": 5000
+      },
+      "expectedLongestSeriesTotal": 63470019228.7102,
+      "expectedShortSingleCallbackTotal": 12694003.84574204,
+      "meanPassesCurrentPortLimit": false,
+      "longestSeriesExceedsOriginalActualCountCeiling": true,
+      "analytical100sRepeatUpperBound": 0,
+      "shorterRouteAdmittedByThisIncrement": false
+    },
+    {
+      "targetId": "N2230.DAT@149142",
+      "label": "01800-01908",
+      "hotlistNumber": 10,
+      "primaryReason": "all-duration-count-domain",
+      "maximumIndividualDrawMean": 436109.05309759534,
+      "maximumCombinedCallbackMean": 436454.4232467915,
+      "sourceMeanAtMaximumTotal": 436109.05309759534,
+      "skyMeanAtMaximumTotal": 345.3701491961746,
+      "maximumConfiguration": {
+        "filter": "V",
+        "aperture": 15,
+        "seconds": 100,
+        "repeats": 5,
+        "callbacks": 5000
+      },
+      "expectedLongestSeriesTotal": 2182272116.233958,
+      "expectedShortSingleCallbackTotal": 436454.4232467915,
+      "meanPassesCurrentPortLimit": true,
+      "longestSeriesExceedsOriginalActualCountCeiling": true,
+      "analytical100sRepeatUpperBound": 4,
+      "shorterRouteAdmittedByThisIncrement": false
+    },
+    {
+      "targetId": "N2230.DAT@149656",
+      "label": "01804-02081",
+      "hotlistNumber": 14,
+      "primaryReason": "all-duration-count-domain",
+      "maximumIndividualDrawMean": 862174.4806956325,
+      "maximumCombinedCallbackMean": 862275.938345491,
+      "sourceMeanAtMaximumTotal": 862174.4806956325,
+      "skyMeanAtMaximumTotal": 101.45764985840444,
+      "maximumConfiguration": {
+        "filter": "U",
+        "aperture": 15,
+        "seconds": 100,
+        "repeats": 5,
+        "callbacks": 5000
+      },
+      "expectedLongestSeriesTotal": 4311379691.727455,
+      "expectedShortSingleCallbackTotal": 862275.938345491,
+      "meanPassesCurrentPortLimit": true,
+      "longestSeriesExceedsOriginalActualCountCeiling": true,
+      "analytical100sRepeatUpperBound": 2,
+      "shorterRouteAdmittedByThisIncrement": false
+    },
+    {
+      "targetId": "N2230.DAT@150112",
+      "label": "01800-02202",
+      "hotlistNumber": 16,
+      "primaryReason": "Poisson-mean-bound",
+      "maximumIndividualDrawMean": 42422395.171042316,
+      "maximumCombinedCallbackMean": 42422496.62869217,
+      "sourceMeanAtMaximumTotal": 42422395.171042316,
+      "skyMeanAtMaximumTotal": 101.45764985840444,
+      "maximumConfiguration": {
+        "filter": "U",
+        "aperture": 15,
+        "seconds": 100,
+        "repeats": 5,
+        "callbacks": 5000
+      },
+      "expectedLongestSeriesTotal": 212112483143.46088,
+      "expectedShortSingleCallbackTotal": 42422496.62869217,
+      "meanPassesCurrentPortLimit": false,
+      "longestSeriesExceedsOriginalActualCountCeiling": true,
+      "analytical100sRepeatUpperBound": 0,
+      "shorterRouteAdmittedByThisIncrement": false
+    },
+    {
+      "targetId": "N2230.DAT@150975",
+      "label": "01800-02207",
+      "hotlistNumber": 20,
+      "primaryReason": "Poisson-mean-bound",
+      "maximumIndividualDrawMean": 3798351.174456087,
+      "maximumCombinedCallbackMean": 3798452.632105945,
+      "sourceMeanAtMaximumTotal": 3798351.174456087,
+      "skyMeanAtMaximumTotal": 101.45764985840444,
+      "maximumConfiguration": {
+        "filter": "U",
+        "aperture": 15,
+        "seconds": 100,
+        "repeats": 5,
+        "callbacks": 5000
+      },
+      "expectedLongestSeriesTotal": 18992263160.529724,
+      "expectedShortSingleCallbackTotal": 3798452.632105945,
+      "meanPassesCurrentPortLimit": false,
+      "longestSeriesExceedsOriginalActualCountCeiling": true,
+      "analytical100sRepeatUpperBound": 0,
+      "shorterRouteAdmittedByThisIncrement": false
+    },
+    {
+      "targetId": "N2230.DAT@151125",
+      "label": "01800-01601",
+      "hotlistNumber": 21,
+      "primaryReason": "all-duration-count-domain",
+      "maximumIndividualDrawMean": 660077.9367978114,
+      "maximumCombinedCallbackMean": 660423.3069470075,
+      "sourceMeanAtMaximumTotal": 660077.9367978114,
+      "skyMeanAtMaximumTotal": 345.3701491961746,
+      "maximumConfiguration": {
+        "filter": "V",
+        "aperture": 15,
+        "seconds": 100,
+        "repeats": 5,
+        "callbacks": 5000
+      },
+      "expectedLongestSeriesTotal": 3302116534.735038,
+      "expectedShortSingleCallbackTotal": 660423.3069470075,
+      "meanPassesCurrentPortLimit": true,
+      "longestSeriesExceedsOriginalActualCountCeiling": true,
+      "analytical100sRepeatUpperBound": 3,
+      "shorterRouteAdmittedByThisIncrement": false
+    }
+  ],
+  "exerciseScope": {
+    "sourceList": "PLEIADES.HTL",
+    "sourceListSHA256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2",
+    "listRows": 24,
+    "boundAssociations": [
+      {
+        "hotlistNumber": 1,
+        "label": "01799-01442",
+        "targetId": "N2230.DAT@144496",
+        "nativeName": "N2230-01442",
+        "raHours": 3.6883333,
+        "decDegrees": 23.96667,
+        "originalRecordSHA256": "e676290f8fdf391da43df201250c1d2fbf7bfa8d058797dfbf0b48a551ad6f88"
+      },
+      {
+        "hotlistNumber": 2,
+        "label": "01803-00478",
+        "targetId": "N2230.DAT@145877",
+        "nativeName": "N2230-00478",
+        "raHours": 3.715302,
+        "decDegrees": 24.49326,
+        "originalRecordSHA256": "578a42de134147765951e24eee6f68fbc07c37cfd2ca29e254cd465c1a6f5dae"
+      },
+      {
+        "hotlistNumber": 5,
+        "label": "01803-01585",
+        "targetId": "N2230.DAT@147993",
+        "nativeName": "N2230-01585",
+        "raHours": 3.7534747,
+        "decDegrees": 24.46719,
+        "originalRecordSHA256": "29a1c8b4e08d6e5ebddb797ec634a2ed5361d686066047055e48350bbae0e51a"
+      },
+      {
+        "hotlistNumber": 7,
+        "label": "01803-01554",
+        "targetId": "N2230.DAT@148460",
+        "nativeName": "N2230-01554",
+        "raHours": 3.761788,
+        "decDegrees": 25.05727,
+        "originalRecordSHA256": "2533f25134a9b4c94ea8e2b7b7544f7c1691e4a4a6ef1d5363996650f3894ecf"
+      },
+      {
+        "hotlistNumber": 9,
+        "label": "01803-00990",
+        "targetId": "N2230.DAT@148546",
+        "nativeName": "N2230-00990",
+        "raHours": 3.7634487,
+        "decDegrees": 24.87849,
+        "originalRecordSHA256": "cedd188db2d16cb81d6cf7ce9ba49f4c6944b95cb15ebdd5c97d3fb6b48887ad"
+      },
+      {
+        "hotlistNumber": 10,
+        "label": "01800-01908",
+        "targetId": "N2230.DAT@149142",
+        "nativeName": "N2230-01908",
+        "raHours": 3.7742382,
+        "decDegrees": 24.25502,
+        "originalRecordSHA256": "a4f11acc766cb7f4840a904035c8888bb0b68eab969b2b2a0c807fe6bc07cebf"
+      },
+      {
+        "hotlistNumber": 12,
+        "label": "01800-01621",
+        "targetId": "N2230.DAT@149260",
+        "nativeName": "N2230-01621",
+        "raHours": 3.77616,
+        "decDegrees": 23.62423,
+        "originalRecordSHA256": "cdccba7cf7629f7293ea19def66052817363dd1178ef86d340a651491625c3c9"
+      },
+      {
+        "hotlistNumber": 14,
+        "label": "01804-02081",
+        "targetId": "N2230.DAT@149656",
+        "nativeName": "N2230-02081",
+        "raHours": 3.7831517,
+        "decDegrees": 24.52006,
+        "originalRecordSHA256": "a7ef9a5e05ce427d830ad155449d7d3a7ffe93c8d227f22c7e20bf139c0a2750"
+      },
+      {
+        "hotlistNumber": 16,
+        "label": "01800-02202",
+        "targetId": "N2230.DAT@150112",
+        "nativeName": "N2230-02202",
+        "raHours": 3.7914087,
+        "decDegrees": 24.10514,
+        "originalRecordSHA256": "5f18d707d32b03753f87896aebf8760c471b93ee0185847f38e6bf3d6868bf1b"
+      },
+      {
+        "hotlistNumber": 17,
+        "label": "01800-02192",
+        "targetId": "N2230.DAT@150246",
+        "nativeName": "N2230-02192",
+        "raHours": 3.79358,
+        "decDegrees": 23.60942,
+        "originalRecordSHA256": "bf6783a7693db6176439cccb411e76d16b859cac2b54cb9306a5f35188d7d7fe"
+      },
+      {
+        "hotlistNumber": 18,
+        "label": "01804-02091",
+        "targetId": "N2230.DAT@150480",
+        "nativeName": "N2230-02091",
+        "raHours": 3.7974427,
+        "decDegrees": 24.67915,
+        "originalRecordSHA256": "d5efab6ef2712533e1790eb08fd3a131006f6881ae0b026b61f2e9ffa8babe12"
+      },
+      {
+        "hotlistNumber": 19,
+        "label": "01804-02449",
+        "targetId": "N2230.DAT@150861",
+        "nativeName": "N2230-02449",
+        "raHours": 3.803724,
+        "decDegrees": 25.09881,
+        "originalRecordSHA256": "601847c365468817c6cc3444454e803b0c1fcd549085b55540b2634d15e3c911"
+      },
+      {
+        "hotlistNumber": 20,
+        "label": "01800-02207",
+        "targetId": "N2230.DAT@150975",
+        "nativeName": "N2230-02207",
+        "raHours": 3.805772,
+        "decDegrees": 23.42114,
+        "originalRecordSHA256": "44a48dc16910bd9c35fffeb58228aa108c1eadec1d2f60b88fbb1e3b7b8b8ae8"
+      },
+      {
+        "hotlistNumber": 21,
+        "label": "01800-01601",
+        "targetId": "N2230.DAT@151125",
+        "nativeName": "N2230-01601",
+        "raHours": 3.8083505,
+        "decDegrees": 24.34565,
+        "originalRecordSHA256": "2f97f878a84952262a1790f2148bed9c055608b59d68dccf3dc3262889fbec66"
+      },
+      {
+        "hotlistNumber": 22,
+        "label": "01800-01175",
+        "targetId": "N2230.DAT@151890",
+        "nativeName": "N2230-01175",
+        "raHours": 3.8187515,
+        "decDegrees": 24.0111,
+        "originalRecordSHA256": "c5be7ba38b0e9f9ae665121b0c9b528ebcd96c0927cba0a2477fd40a6f766955"
+      },
+      {
+        "hotlistNumber": 24,
+        "label": "01800-00985",
+        "targetId": "N2230.DAT@152989",
+        "nativeName": "N2230-00985",
+        "raHours": 3.8323777,
+        "decDegrees": 24.34902,
+        "originalRecordSHA256": "14101ea7cfbfb0cdbc4850bd2ea0ffc7d3dc6cb89011ee4f2452a8c8d655652b"
+      }
+    ],
+    "raBoundsHours": [
+      3.6883333,
+      3.8323777
+    ],
+    "decBoundsDegrees": [
+      23.42114,
+      25.09881
+    ],
+    "evidenceLimit": "Only names/pointings andexact catalogassociations aredecoded here. Remaining HTLschema isnotfully recovered. List inclusion,position orcatalogmatch doesnotestablish cluster membership,spectral class orstar formation history.",
+    "toolScope": "Photometer admits only the fixed exercise list;Observatory choices,stellar spectral-classification work andimported spectra cannot introduce foreign targets."
+  },
+  "aggregationSource": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-limits-recovery/summarize-means.py",
+    "sha256": "05c2c13c713c0161e5daf6cbb9fb984a67c576b6385c0825dbbbfa18c73bd5d6",
+    "scope": "All288 configuration rows from the reused independent analytic reference;maxima are recomputed without contract means as inputs."
+  },
+  "rights": "Local research only;no public redistributionauthorized",
+  "originalExecution": false
+}

@@ -1,0 +1,3201 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-native-cluster-comparison-v1",
+  "evidenceId": "VIREO-HR-16-DATASETS-STATIC-2026-10-19",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N3000.DAT",
+      "sha256": "2cb76117cc1c7fda678f2b78bb7430f3222cb14c891b9a7ed926697d52efc8c6",
+      "bytes": 27909279
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N3730.DAT",
+      "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+      "bytes": 27031482
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N4500.DAT",
+      "sha256": "513a9deab803f1c7b5ef9cda029044b2c13c79edde6f51ee998f5ef2a75156cb",
+      "bytes": 24072741
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N5230.DAT",
+      "sha256": "17e899286fba7af6b286fb88580449e5513e98a86a24544030d870f0d8af851d",
+      "bytes": 18166950
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N1500.DAT",
+      "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55",
+      "bytes": 27745902
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N2230.DAT",
+      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+      "bytes": 28767987
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0730.DAT",
+      "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1",
+      "bytes": 28576611
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S6000.DAT",
+      "sha256": "f3d47f7e2c0ee7476f1c45a85bbceae80abd5fd076ec8261ef34b5ac755648c8",
+      "bytes": 18602109
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S6730.DAT",
+      "sha256": "f05c38d22f9b557eed6d75131e340b8b1d8529d04a07a940cb4cca71a92b9ad4",
+      "bytes": 13232052
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S7500.DAT",
+      "sha256": "55904d49d1e2e651263f1866e074ecd1acf3da7579bd86178e27d8ae633f6baa",
+      "bytes": 7612110
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S1500.DAT",
+      "sha256": "c2bc97a911be613ec7f540148816329c5953ee6fed75b5604f6cdf2dcea37a31",
+      "bytes": 28582308
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S4500.DAT",
+      "sha256": "3012858aa9d6248bf7e64605f15ce1d69b6332a533614a8c4ac492762734cb43",
+      "bytes": 27536328
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S5230.DAT",
+      "sha256": "4b1678aa1b69f2404efba0b192df32dcfdd5e2fcdb0a55b17159915a4837c95a",
+      "bytes": 22817619
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "bytes": 31481649
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S3000.DAT",
+      "sha256": "fa9ee76f4a2c5ea7ee5a17dc2f84c583478ff6d339f981ab25836a201fcd0228",
+      "bytes": 28126008
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S0730.DAT",
+      "sha256": "c029ac362f2a0b31d167719d4d9e4fa4fa412f15a459a59701a0c2b9ef496e19",
+      "bytes": 27365769
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLUSTERS.DAT",
+      "sha256": "bec9dfb53969ba3828dff98962d9c80c3c7b5e51646f2a88ef70bcf634545ff2",
+      "bytes": 1632
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/HRAnalHlp.TXT",
+      "sha256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b",
+      "bytes": 7557
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+      "bytes": 152
+    }
+  ],
+  "legacyM67ContractSHA256": "228907286f3538ccc0b99995ca6f6f871b6e0d93aa2056b931b83cb2d120b152",
+  "nativeModelContractSHA256": "f636ff44388ef27b2dee68d76f51fa9fc96c5bc11b504ab14a3fb7720288d0a0",
+  "procedureContracts": {
+    "selector": "0x545989 typed records102;0x54648f..0x5464c0 copies selected name,Double RA/Dec andSingle angular size/E",
+    "region": "0x5464c8..0x546576:halfDec=Extended1.1*size/Single60;halfRA=halfDec/(cos(dec*degToRad)*Single15);stored Double rectangle,Single limit25",
+    "query": "0x534254..0x5345cf:construct NewGSCFieldObj;region enumeration0x5977e0;direct VMT+8 compact reader0x59ad98. Does not call full field0x597ac8 or auxiliary QSO/variable/galaxy merge. Region Single magnitude limit25 is set at0x546510 (+0x53 of selected global record);0x534312 initializes a tracked minimum statistic,not the admission limit.",
+    "filter": "0x5344dd..0x53452b:approx tangent distance0x59a49c *Single60 <=selected Single size AND decoded missing-color byte+0x3b is0;packed flag bit4.",
+    "coordinates": "0x59b055..0x59b0af:RAint/1e7,Decint/1e5 toDouble;Vint/1000,BVint/1000 toSingle. +0x29/+0x2d plotted directly,not inferred B/V acquisitions.",
+    "plot": "0x542cae..0x542d5f:database bank,skip type4 removed marker;V at+0x29,BV at+0x2d. Dataset starts with no removed points.",
+    "preset": "0x543a32..0x543a66:option+0x2e90 anddatabase flag gate SingleE*100 tointeger slider ticks;web applies only on explicit Use catalog reddening action. Compiled option default is not asserted."
+  },
+  "captures": [
+    {
+      "file": "catalog-distance.asm",
+      "sha256": "c011f610e6a424fee2e285ce71f7aabaf55cfb85147364b67824e9eb4d9649e2"
+    },
+    {
+      "file": "cluster-field-end.asm",
+      "sha256": "94076489abf740b70bf79ecbf593d7de610083d393b820f8982847a260fd3425"
+    },
+    {
+      "file": "cluster-field.asm",
+      "sha256": "477be8bea1e6840ac1ceb63ddf86974b2ec9b002dd7a4fc389d9aaec261d4075"
+    },
+    {
+      "file": "cluster-list.asm",
+      "sha256": "462c4c795d67bddca666b6a8b6504e56b583ddf7f3a1eb3afc73f67a56257dcf"
+    },
+    {
+      "file": "cluster-proc.asm",
+      "sha256": "1ba77da2a6e7c83a01b2afd97197f4fd70b8ad0427f5a7d24c8ef97819703a76"
+    },
+    {
+      "file": "cluster-region.asm",
+      "sha256": "d1d80c6bf9e894fa2d36869f61ecaee9be222fa6dfae3a732270934c7574117c"
+    },
+    {
+      "file": "hr-defaults.asm",
+      "sha256": "d2f15f7978c89760f891c7faff5b2319bfa3636b6963d398b06c926c3b90856c"
+    },
+    {
+      "file": "region-table.asm",
+      "sha256": "e51d5a8114aeea76439c6a51cbb0d33d1bf5aab8b4ac5838d07b66e18d85c0bd"
+    },
+    {
+      "file": "select.asm",
+      "sha256": "a06227306a902195f9d2c2c5355c40bb79d4a6de2d6bbe6a7c595db9535164cd"
+    }
+  ],
+  "clusters": [
+    {
+      "id": "ngc752",
+      "index": 0,
+      "name": "NGC 752",
+      "file": "cluster-reference-ngc752.json",
+      "sha256": "8e40676d36a2c55f8bfe0177b6fb73107e9dee83551ffe0a2ca45f6215c7be9e",
+      "rows": 120,
+      "catalogRa": 1.9633333333333334,
+      "catalogDec": 37.68333333333333,
+      "angularLimitArcmin": 75.0,
+      "catalogEbvSingle": 0.029999999329447746,
+      "presetEbvTicks": 3,
+      "regionIds": [
+        2319,
+        2320,
+        2816,
+        2829
+      ],
+      "bandOrder": [
+        "N3000",
+        "N3730"
+      ],
+      "area": {
+        "minimumRa": 1.8475050465161325,
+        "maximumRa": 2.0791616201505345,
+        "minimumDec": 36.30833333333333,
+        "maximumDec": 39.05833333333333,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N3000",
+          "sourceSHA256": "2cb76117cc1c7fda678f2b78bb7430f3222cb14c891b9a7ed926697d52efc8c6",
+          "sourceBytes": 27909279,
+          "records": 1033677,
+          "roundedRaKey": 18475050,
+          "probes": [
+            [
+              516838,
+              147439267
+            ],
+            [
+              258418,
+              53583047
+            ],
+            [
+              129208,
+              28524073
+            ],
+            [
+              64603,
+              15525447
+            ],
+            [
+              96905,
+              21964953
+            ],
+            [
+              80754,
+              18811247
+            ],
+            [
+              72678,
+              17237140
+            ],
+            [
+              76716,
+              18019276
+            ],
+            [
+              78735,
+              18424593
+            ],
+            [
+              79744,
+              18615227
+            ],
+            [
+              79239,
+              18515540
+            ],
+            [
+              78987,
+              18469027
+            ],
+            [
+              79113,
+              18490713
+            ],
+            [
+              79050,
+              18479967
+            ],
+            [
+              79018,
+              18475053
+            ],
+            [
+              79002,
+              18472400
+            ],
+            [
+              79010,
+              18474060
+            ],
+            [
+              79014,
+              18474627
+            ],
+            [
+              79016,
+              18474927
+            ],
+            [
+              79017,
+              18475007
+            ]
+          ],
+          "start": 79017,
+          "end": 91071,
+          "rectangleCount": 1739,
+          "wholeRectangleCount": 1739,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 1024,
+          "knownColor": 25,
+          "minimumRadialMarginArcmin": 0.021419434995905817
+        },
+        {
+          "band": "N3730",
+          "sourceSHA256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+          "sourceBytes": 27031482,
+          "records": 1001166,
+          "roundedRaKey": 18475050,
+          "probes": [
+            [
+              500583,
+              115055127
+            ],
+            [
+              250291,
+              45330147
+            ],
+            [
+              125145,
+              23467140
+            ],
+            [
+              62572,
+              12076200
+            ],
+            [
+              93858,
+              17945673
+            ],
+            [
+              109501,
+              20733300
+            ],
+            [
+              101679,
+              19267079
+            ],
+            [
+              97768,
+              18610499
+            ],
+            [
+              95813,
+              18267627
+            ],
+            [
+              96790,
+              18439120
+            ],
+            [
+              97279,
+              18524163
+            ],
+            [
+              97034,
+              18484333
+            ],
+            [
+              96912,
+              18461540
+            ],
+            [
+              96973,
+              18471740
+            ],
+            [
+              97003,
+              18477867
+            ],
+            [
+              96988,
+              18474700
+            ],
+            [
+              96995,
+              18476407
+            ],
+            [
+              96991,
+              18475280
+            ],
+            [
+              96989,
+              18474707
+            ],
+            [
+              96990,
+              18475107
+            ]
+          ],
+          "start": 96990,
+          "end": 109834,
+          "rectangleCount": 2651,
+          "wholeRectangleCount": 2651,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 1753,
+          "knownColor": 95,
+          "minimumRadialMarginArcmin": 0.018423385819644977
+        }
+      ]
+    },
+    {
+      "id": "m34",
+      "index": 1,
+      "name": "M 34 (NGC 1039)",
+      "file": "cluster-reference-m34.json",
+      "sha256": "915a9e0cccfe7cc0eee05605eee7d29119b2a1eb4b2cb595c2ed836d49c6ca07",
+      "rows": 43,
+      "catalogRa": 2.7,
+      "catalogDec": 42.78333333333333,
+      "angularLimitArcmin": 25.0,
+      "catalogEbvSingle": 0.10000000149011612,
+      "presetEbvTicks": 10,
+      "regionIds": [
+        2840,
+        2844,
+        2853,
+        2857
+      ],
+      "bandOrder": [
+        "N3730"
+      ],
+      "area": {
+        "minimumRa": 2.6583670640497146,
+        "maximumRa": 2.741632935950286,
+        "minimumDec": 42.324999999999996,
+        "maximumDec": 43.24166666666667,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N3730",
+          "sourceSHA256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+          "sourceBytes": 27031482,
+          "records": 1001166,
+          "roundedRaKey": 26583671,
+          "probes": [
+            [
+              500583,
+              115055127
+            ],
+            [
+              250291,
+              45330147
+            ],
+            [
+              125145,
+              23467140
+            ],
+            [
+              187718,
+              34468512
+            ],
+            [
+              156431,
+              29131007
+            ],
+            [
+              140788,
+              26155873
+            ],
+            [
+              148609,
+              27562947
+            ],
+            [
+              144698,
+              26883084
+            ],
+            [
+              142743,
+              26522580
+            ],
+            [
+              143720,
+              26703793
+            ],
+            [
+              143231,
+              26614860
+            ],
+            [
+              142987,
+              26569127
+            ],
+            [
+              143109,
+              26592733
+            ],
+            [
+              143048,
+              26582100
+            ],
+            [
+              143078,
+              26586667
+            ],
+            [
+              143063,
+              26584353
+            ],
+            [
+              143055,
+              26582913
+            ],
+            [
+              143059,
+              26583800
+            ],
+            [
+              143057,
+              26583460
+            ],
+            [
+              143058,
+              26583740
+            ]
+          ],
+          "start": 143058,
+          "end": 147823,
+          "rectangleCount": 648,
+          "wholeRectangleCount": 648,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 415,
+          "knownColor": 43,
+          "minimumRadialMarginArcmin": 0.006967033892607333
+        }
+      ]
+    },
+    {
+      "id": "mel20",
+      "index": 2,
+      "name": "Mel 20 (Alpha-Per)",
+      "file": "cluster-reference-mel20.json",
+      "sha256": "9dbe00a72d34dae6a2d7267ceda09c57d7a38d4dacd32aa40d660d238e2c5f7e",
+      "rows": 305,
+      "catalogRa": 3.4052777777777776,
+      "catalogDec": 49.861666666666665,
+      "angularLimitArcmin": 300.0,
+      "catalogEbvSingle": 0.09000000357627869,
+      "presetEbvTicks": 9,
+      "regionIds": [
+        2858,
+        2859,
+        2860,
+        2873,
+        2874,
+        2875,
+        2876,
+        3297,
+        3301,
+        3305,
+        3309,
+        3310,
+        3311,
+        3312,
+        3313,
+        3314,
+        3315,
+        3316,
+        3317,
+        3318,
+        3319,
+        3320,
+        3321,
+        3322,
+        3323,
+        3324,
+        3325,
+        3326,
+        3327,
+        3330,
+        3331,
+        3334,
+        3335,
+        3338,
+        3339,
+        3700,
+        3701,
+        3702,
+        3703,
+        3704,
+        3705,
+        3706,
+        3707,
+        3716,
+        3717,
+        3720,
+        3721
+      ],
+      "bandOrder": [
+        "N3730",
+        "N4500",
+        "N5230"
+      ],
+      "area": {
+        "minimumRa": 2.836480669299245,
+        "maximumRa": 3.9740748862563104,
+        "minimumDec": 44.361666666666665,
+        "maximumDec": 55.361666666666665,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N3730",
+          "sourceSHA256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+          "sourceBytes": 27031482,
+          "records": 1001166,
+          "roundedRaKey": 28364807,
+          "probes": [
+            [
+              500583,
+              115055127
+            ],
+            [
+              250291,
+              45330147
+            ],
+            [
+              125145,
+              23467140
+            ],
+            [
+              187718,
+              34468512
+            ],
+            [
+              156431,
+              29131007
+            ],
+            [
+              140788,
+              26155873
+            ],
+            [
+              148609,
+              27562947
+            ],
+            [
+              152520,
+              28396267
+            ],
+            [
+              150564,
+              27992160
+            ],
+            [
+              151542,
+              28190153
+            ],
+            [
+              152031,
+              28291080
+            ],
+            [
+              152275,
+              28341013
+            ],
+            [
+              152397,
+              28372013
+            ],
+            [
+              152336,
+              28357553
+            ],
+            [
+              152366,
+              28364673
+            ],
+            [
+              152381,
+              28367713
+            ],
+            [
+              152373,
+              28366287
+            ],
+            [
+              152369,
+              28365187
+            ],
+            [
+              152367,
+              28364820
+            ]
+          ],
+          "start": 152367,
+          "end": 221058,
+          "rectangleCount": 6648,
+          "wholeRectangleCount": 6648,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 259,
+          "knownColor": 0,
+          "minimumRadialMarginArcmin": 0.006033216877256109
+        },
+        {
+          "band": "N4500",
+          "sourceSHA256": "513a9deab803f1c7b5ef9cda029044b2c13c79edde6f51ee998f5ef2a75156cb",
+          "sourceBytes": 24072741,
+          "records": 891583,
+          "roundedRaKey": 28364807,
+          "probes": [
+            [
+              445791,
+              137018507
+            ],
+            [
+              222895,
+              48814100
+            ],
+            [
+              111447,
+              24731460
+            ],
+            [
+              167171,
+              36186353
+            ],
+            [
+              139309,
+              30414927
+            ],
+            [
+              125378,
+              27526740
+            ],
+            [
+              132343,
+              28932940
+            ],
+            [
+              128860,
+              28220047
+            ],
+            [
+              130601,
+              28577013
+            ],
+            [
+              129730,
+              28399220
+            ],
+            [
+              129295,
+              28306487
+            ],
+            [
+              129512,
+              28354093
+            ],
+            [
+              129621,
+              28374227
+            ],
+            [
+              129566,
+              28365053
+            ],
+            [
+              129539,
+              28360240
+            ],
+            [
+              129552,
+              28362487
+            ],
+            [
+              129559,
+              28363360
+            ],
+            [
+              129562,
+              28364047
+            ],
+            [
+              129564,
+              28364360
+            ],
+            [
+              129565,
+              28364927
+            ]
+          ],
+          "start": 129565,
+          "end": 185941,
+          "rectangleCount": 56376,
+          "wholeRectangleCount": 56376,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 41952,
+          "knownColor": 299,
+          "minimumRadialMarginArcmin": 0.00012850775317474472
+        },
+        {
+          "band": "N5230",
+          "sourceSHA256": "17e899286fba7af6b286fb88580449e5513e98a86a24544030d870f0d8af851d",
+          "sourceBytes": 18166950,
+          "records": 672850,
+          "roundedRaKey": 28364807,
+          "probes": [
+            [
+              336425,
+              121686533
+            ],
+            [
+              168212,
+              50088394
+            ],
+            [
+              84105,
+              21222660
+            ],
+            [
+              126158,
+              33590147
+            ],
+            [
+              105131,
+              25282553
+            ],
+            [
+              115644,
+              28248193
+            ],
+            [
+              120901,
+              30487153
+            ],
+            [
+              118272,
+              29333347
+            ],
+            [
+              116958,
+              28753353
+            ],
+            [
+              116301,
+              28500107
+            ],
+            [
+              115972,
+              28385353
+            ],
+            [
+              115808,
+              28321533
+            ],
+            [
+              115890,
+              28351343
+            ],
+            [
+              115931,
+              28367233
+            ],
+            [
+              115910,
+              28357767
+            ],
+            [
+              115920,
+              28361173
+            ],
+            [
+              115925,
+              28363413
+            ],
+            [
+              115928,
+              28363993
+            ],
+            [
+              115929,
+              28364553
+            ],
+            [
+              115930,
+              28365617
+            ]
+          ],
+          "start": 115930,
+          "end": 138144,
+          "rectangleCount": 7543,
+          "wholeRectangleCount": 7543,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 3321,
+          "knownColor": 6,
+          "minimumRadialMarginArcmin": 0.018404383120525836
+        }
+      ]
+    },
+    {
+      "id": "pleiades",
+      "index": 3,
+      "name": "M 45 (Pleiades)",
+      "file": "cluster-reference-pleiades.json",
+      "sha256": "8203e9ee571bd4a1a5ee00e269bceb15d162c927fb2ea5d4adb6a62dd17b4ccb",
+      "rows": 297,
+      "catalogRa": 3.7913888888888887,
+      "catalogDec": 24.105,
+      "angularLimitArcmin": 120.0,
+      "catalogEbvSingle": 0.03999999910593033,
+      "presetEbvTicks": 4,
+      "regionIds": [
+        1247,
+        1260,
+        1261,
+        1799,
+        1800,
+        1803,
+        1804,
+        1807,
+        1808,
+        1813,
+        1817,
+        1821
+      ],
+      "bandOrder": [
+        "N1500",
+        "N2230"
+      ],
+      "area": {
+        "minimumRa": 3.6307108638844428,
+        "maximumRa": 3.9520669138933346,
+        "minimumDec": 21.905,
+        "maximumDec": 26.305,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N1500",
+          "sourceSHA256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55",
+          "sourceBytes": 27745902,
+          "records": 1027626,
+          "roundedRaKey": 36307109,
+          "probes": [
+            [
+              513813,
+              139560027
+            ],
+            [
+              256906,
+              64471653
+            ],
+            [
+              128452,
+              40924833
+            ],
+            [
+              64225,
+              20990400
+            ],
+            [
+              96338,
+              31619733
+            ],
+            [
+              112395,
+              36277707
+            ],
+            [
+              120423,
+              38757617
+            ],
+            [
+              116409,
+              37580333
+            ],
+            [
+              114402,
+              36915260
+            ],
+            [
+              113398,
+              36587047
+            ],
+            [
+              112896,
+              36424293
+            ],
+            [
+              112645,
+              36355091
+            ],
+            [
+              112520,
+              36314027
+            ],
+            [
+              112457,
+              36295733
+            ],
+            [
+              112488,
+              36304033
+            ],
+            [
+              112504,
+              36308160
+            ],
+            [
+              112496,
+              36305020
+            ],
+            [
+              112500,
+              36306733
+            ],
+            [
+              112502,
+              36307480
+            ],
+            [
+              112501,
+              36307007
+            ]
+          ],
+          "start": 112501,
+          "end": 123257,
+          "rectangleCount": 1167,
+          "wholeRectangleCount": 1167,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 312,
+          "knownColor": 1,
+          "minimumRadialMarginArcmin": 0.04523589232860559
+        },
+        {
+          "band": "N2230",
+          "sourceSHA256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+          "sourceBytes": 28767987,
+          "records": 1065481,
+          "roundedRaKey": 36307109,
+          "probes": [
+            [
+              532740,
+              145614463
+            ],
+            [
+              266369,
+              59698320
+            ],
+            [
+              133184,
+              34360560
+            ],
+            [
+              199776,
+              47723930
+            ],
+            [
+              166480,
+              40412660
+            ],
+            [
+              149832,
+              37862287
+            ],
+            [
+              141508,
+              36257940
+            ],
+            [
+              145670,
+              37113667
+            ],
+            [
+              143589,
+              36701113
+            ],
+            [
+              142548,
+              36482407
+            ],
+            [
+              142028,
+              36372173
+            ],
+            [
+              141768,
+              36313667
+            ],
+            [
+              141638,
+              36286713
+            ],
+            [
+              141703,
+              36297393
+            ],
+            [
+              141735,
+              36305087
+            ],
+            [
+              141751,
+              36308860
+            ],
+            [
+              141743,
+              36306400
+            ],
+            [
+              141747,
+              36307613
+            ],
+            [
+              141745,
+              36306907
+            ],
+            [
+              141746,
+              36307487
+            ]
+          ],
+          "start": 141746,
+          "end": 161408,
+          "rectangleCount": 9157,
+          "wholeRectangleCount": 9157,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 6341,
+          "knownColor": 296,
+          "minimumRadialMarginArcmin": 9.264727364666214e-05
+        }
+      ]
+    },
+    {
+      "id": "hyades",
+      "index": 4,
+      "name": "Hyades",
+      "file": "cluster-reference-hyades.json",
+      "sha256": "6f64992daab6e68749640fb7f834473348e08a6228cc7e383b557f73a0946dce",
+      "rows": 372,
+      "catalogRa": 4.448333333333333,
+      "catalogDec": 15.866666666666667,
+      "angularLimitArcmin": 329.0,
+      "catalogEbvSingle": 0.0,
+      "presetEbvTicks": 0,
+      "regionIds": [
+        659,
+        662,
+        665,
+        670,
+        671,
+        672,
+        673,
+        674,
+        675,
+        676,
+        677,
+        678,
+        679,
+        680,
+        681,
+        686,
+        687,
+        688,
+        690,
+        691,
+        692,
+        694,
+        695,
+        696,
+        1250,
+        1251,
+        1254,
+        1255,
+        1258,
+        1259,
+        1262,
+        1263,
+        1264,
+        1265,
+        1266,
+        1267,
+        1268,
+        1269,
+        1270,
+        1271,
+        1272,
+        1273,
+        1274,
+        1275,
+        1276,
+        1277,
+        1278,
+        1279,
+        1280,
+        1284,
+        1288,
+        1292
+      ],
+      "bandOrder": [
+        "N0730",
+        "N1500"
+      ],
+      "area": {
+        "minimumRa": 4.030295190453287,
+        "maximumRa": 4.86637147621338,
+        "minimumDec": 9.835,
+        "maximumDec": 21.898333333333333,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N0730",
+          "sourceSHA256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1",
+          "sourceBytes": 28576611,
+          "records": 1058393,
+          "roundedRaKey": 40302952,
+          "probes": [
+            [
+              529196,
+              149773500
+            ],
+            [
+              264597,
+              68997860
+            ],
+            [
+              132298,
+              50151747
+            ],
+            [
+              66148,
+              28033027
+            ],
+            [
+              99223,
+              42772413
+            ],
+            [
+              82685,
+              35327335
+            ],
+            [
+              90954,
+              39216020
+            ],
+            [
+              95088,
+              40872247
+            ],
+            [
+              93021,
+              39996153
+            ],
+            [
+              94054,
+              40426867
+            ],
+            [
+              93537,
+              40197513
+            ],
+            [
+              93795,
+              40313100
+            ],
+            [
+              93666,
+              40254087
+            ],
+            [
+              93730,
+              40282760
+            ],
+            [
+              93762,
+              40294605
+            ],
+            [
+              93778,
+              40303427
+            ],
+            [
+              93770,
+              40299147
+            ],
+            [
+              93774,
+              40301740
+            ],
+            [
+              93776,
+              40303227
+            ],
+            [
+              93775,
+              40302173
+            ]
+          ],
+          "start": 93775,
+          "end": 124042,
+          "rectangleCount": 20257,
+          "wholeRectangleCount": 20257,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 11772,
+          "knownColor": 118,
+          "minimumRadialMarginArcmin": 0.0013546638710408843
+        },
+        {
+          "band": "N1500",
+          "sourceSHA256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55",
+          "sourceBytes": 27745902,
+          "records": 1027626,
+          "roundedRaKey": 40302952,
+          "probes": [
+            [
+              513813,
+              139560027
+            ],
+            [
+              256906,
+              64471653
+            ],
+            [
+              128452,
+              40924833
+            ],
+            [
+              64225,
+              20990400
+            ],
+            [
+              96338,
+              31619733
+            ],
+            [
+              112395,
+              36277707
+            ],
+            [
+              120423,
+              38757617
+            ],
+            [
+              124437,
+              39822767
+            ],
+            [
+              126444,
+              40363840
+            ],
+            [
+              125440,
+              40090760
+            ],
+            [
+              125942,
+              40234993
+            ],
+            [
+              126193,
+              40297433
+            ],
+            [
+              126318,
+              40333773
+            ],
+            [
+              126255,
+              40316653
+            ],
+            [
+              126224,
+              40306547
+            ],
+            [
+              126208,
+              40302353
+            ],
+            [
+              126216,
+              40304647
+            ],
+            [
+              126212,
+              40303447
+            ],
+            [
+              126210,
+              40302860
+            ],
+            [
+              126211,
+              40303047
+            ]
+          ],
+          "start": 126211,
+          "end": 161140,
+          "rectangleCount": 31231,
+          "wholeRectangleCount": 31231,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 19359,
+          "knownColor": 254,
+          "minimumRadialMarginArcmin": 0.006455594998442393
+        }
+      ]
+    },
+    {
+      "id": "30dor",
+      "index": 5,
+      "name": "30 Doradus (LMC)",
+      "file": "cluster-reference-30dor.json",
+      "sha256": "873a87eb3528bd1c04a6f49eff86512a14d1aabd1131c221bcfa1484b53c033a",
+      "rows": 609,
+      "catalogRa": 5.65,
+      "catalogDec": -69.1,
+      "angularLimitArcmin": 450.0,
+      "catalogEbvSingle": 0.0,
+      "presetEbvTicks": 0,
+      "regionIds": [
+        8868,
+        8869,
+        8871,
+        8872,
+        8874,
+        8875,
+        8876,
+        8877,
+        8878,
+        8879,
+        8880,
+        8881,
+        8882,
+        8883,
+        8884,
+        8885,
+        8886,
+        8887,
+        8888,
+        8889,
+        8890,
+        8891,
+        8892,
+        8893,
+        8894,
+        8895,
+        8896,
+        8897,
+        8898,
+        8899,
+        8900,
+        8901,
+        8902,
+        8903,
+        8904,
+        8905,
+        8906,
+        8907,
+        8908,
+        8909,
+        8912,
+        8913,
+        8916,
+        8917,
+        8920,
+        8921,
+        9153,
+        9154,
+        9156,
+        9157,
+        9159,
+        9160,
+        9161,
+        9162,
+        9163,
+        9164,
+        9165,
+        9166,
+        9167,
+        9168,
+        9169,
+        9170,
+        9171,
+        9172,
+        9173,
+        9174,
+        9175,
+        9176,
+        9177,
+        9178,
+        9181,
+        9182,
+        9185,
+        9186,
+        9189,
+        9190,
+        9364,
+        9365,
+        9368,
+        9369,
+        9378,
+        9379,
+        9380,
+        9382,
+        9383,
+        9384
+      ],
+      "bandOrder": [
+        "S6000",
+        "S6730",
+        "S7500"
+      ],
+      "area": {
+        "minimumRa": 4.108252271838252,
+        "maximumRa": 7.191747728161749,
+        "minimumDec": -77.35,
+        "maximumDec": -60.849999999999994,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "S6000",
+          "sourceSHA256": "f3d47f7e2c0ee7476f1c45a85bbceae80abd5fd076ec8261ef34b5ac755648c8",
+          "sourceBytes": 18602109,
+          "records": 688967,
+          "roundedRaKey": 41082523,
+          "probes": [
+            [
+              344483,
+              135744900
+            ],
+            [
+              172241,
+              87494280
+            ],
+            [
+              86120,
+              59531400
+            ],
+            [
+              43059,
+              34203440
+            ],
+            [
+              64589,
+              48733993
+            ],
+            [
+              53824,
+              42398263
+            ],
+            [
+              48441,
+              38816540
+            ],
+            [
+              51132,
+              40736667
+            ],
+            [
+              52478,
+              41552473
+            ],
+            [
+              51805,
+              41164167
+            ],
+            [
+              51468,
+              40949317
+            ],
+            [
+              51636,
+              41054266
+            ],
+            [
+              51720,
+              41111703
+            ],
+            [
+              51678,
+              41083807
+            ],
+            [
+              51657,
+              41065353
+            ],
+            [
+              51667,
+              41074124
+            ],
+            [
+              51672,
+              41078417
+            ],
+            [
+              51675,
+              41080687
+            ],
+            [
+              51676,
+              41083473
+            ]
+          ],
+          "start": 51676,
+          "end": 118909,
+          "rectangleCount": 58611,
+          "wholeRectangleCount": 58611,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 32741,
+          "knownColor": 237,
+          "minimumRadialMarginArcmin": 0.0013519238419803514
+        },
+        {
+          "band": "S6730",
+          "sourceSHA256": "f05c38d22f9b557eed6d75131e340b8b1d8529d04a07a940cb4cca71a92b9ad4",
+          "sourceBytes": 13232052,
+          "records": 490076,
+          "roundedRaKey": 41082523,
+          "probes": [
+            [
+              245038,
+              127944227
+            ],
+            [
+              122518,
+              85795940
+            ],
+            [
+              61258,
+              47927307
+            ],
+            [
+              30628,
+              19745273
+            ],
+            [
+              45943,
+              34839880
+            ],
+            [
+              53600,
+              41570393
+            ],
+            [
+              49771,
+              38316553
+            ],
+            [
+              51685,
+              39897225
+            ],
+            [
+              52642,
+              40690600
+            ],
+            [
+              53121,
+              41143293
+            ],
+            [
+              52881,
+              40908280
+            ],
+            [
+              53001,
+              41018260
+            ],
+            [
+              53061,
+              41067207
+            ],
+            [
+              53091,
+              41103940
+            ],
+            [
+              53076,
+              41086047
+            ],
+            [
+              53068,
+              41075060
+            ],
+            [
+              53072,
+              41078500
+            ],
+            [
+              53074,
+              41082873
+            ],
+            [
+              53073,
+              41079173
+            ]
+          ],
+          "start": 53073,
+          "end": 94196,
+          "rectangleCount": 41122,
+          "wholeRectangleCount": 41122,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 34237,
+          "knownColor": 367,
+          "minimumRadialMarginArcmin": 0.0015459909637343117
+        },
+        {
+          "band": "S7500",
+          "sourceSHA256": "55904d49d1e2e651263f1866e074ecd1acf3da7579bd86178e27d8ae633f6baa",
+          "sourceBytes": 7612110,
+          "records": 281930,
+          "roundedRaKey": 41082523,
+          "probes": [
+            [
+              140965,
+              126401253
+            ],
+            [
+              70482,
+              69140540
+            ],
+            [
+              35240,
+              40129092
+            ],
+            [
+              52861,
+              56861513
+            ],
+            [
+              44050,
+              49648438
+            ],
+            [
+              39645,
+              45152833
+            ],
+            [
+              37442,
+              42679487
+            ],
+            [
+              36341,
+              41377154
+            ],
+            [
+              35790,
+              40741998
+            ],
+            [
+              36065,
+              41082487
+            ],
+            [
+              36203,
+              41240793
+            ],
+            [
+              36134,
+              41156867
+            ],
+            [
+              36099,
+              41121311
+            ],
+            [
+              36082,
+              41100157
+            ],
+            [
+              36073,
+              41087947
+            ],
+            [
+              36069,
+              41084480
+            ],
+            [
+              36067,
+              41083547
+            ],
+            [
+              36066,
+              41083540
+            ]
+          ],
+          "start": 36066,
+          "end": 73333,
+          "rectangleCount": 10935,
+          "wholeRectangleCount": 10935,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 2628,
+          "knownColor": 5,
+          "minimumRadialMarginArcmin": 0.035625022849274046
+        }
+      ]
+    },
+    {
+      "id": "m41",
+      "index": 6,
+      "name": "M 41 (NGC 2287)",
+      "file": "cluster-reference-m41.json",
+      "sha256": "9b408b0c94160bbdf530fad4a337d5e6caf1cc52de05ce051ed1bd640632a372",
+      "rows": 44,
+      "catalogRa": 6.767777777777778,
+      "catalogDec": -20.758333333333333,
+      "angularLimitArcmin": 40.0,
+      "catalogEbvSingle": 0.05999999865889549,
+      "presetEbvTicks": 6,
+      "regionIds": [
+        5957,
+        5958,
+        5961,
+        5962
+      ],
+      "bandOrder": [
+        "S1500"
+      ],
+      "area": {
+        "minimumRa": 6.71549487471341,
+        "maximumRa": 6.820060680842146,
+        "minimumDec": -21.491666666666667,
+        "maximumDec": -20.025,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "S1500",
+          "sourceSHA256": "c2bc97a911be613ec7f540148816329c5953ee6fed75b5604f6cdf2dcea37a31",
+          "sourceBytes": 28582308,
+          "records": 1058604,
+          "roundedRaKey": 67154949,
+          "probes": [
+            [
+              529302,
+              113488207
+            ],
+            [
+              264650,
+              73114580
+            ],
+            [
+              132324,
+              56369280
+            ],
+            [
+              198487,
+              65727200
+            ],
+            [
+              231568,
+              69533627
+            ],
+            [
+              215027,
+              67649707
+            ],
+            [
+              206757,
+              66713640
+            ],
+            [
+              210892,
+              67188663
+            ],
+            [
+              208824,
+              66976687
+            ],
+            [
+              209858,
+              67089587
+            ],
+            [
+              210375,
+              67140120
+            ],
+            [
+              210633,
+              67163320
+            ],
+            [
+              210504,
+              67152647
+            ],
+            [
+              210568,
+              67157480
+            ],
+            [
+              210536,
+              67155467
+            ],
+            [
+              210520,
+              67153740
+            ],
+            [
+              210528,
+              67154427
+            ],
+            [
+              210532,
+              67154887
+            ],
+            [
+              210534,
+              67155207
+            ],
+            [
+              210533,
+              67155137
+            ]
+          ],
+          "start": 210533,
+          "end": 220637,
+          "rectangleCount": 2162,
+          "wholeRectangleCount": 2162,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 1439,
+          "knownColor": 44,
+          "minimumRadialMarginArcmin": 0.0014262746624353895
+        }
+      ]
+    },
+    {
+      "id": "m44",
+      "index": 7,
+      "name": "M 44 (NGC 2632)",
+      "file": "cluster-reference-m44.json",
+      "sha256": "9f6f690b6429164acd508a08e9b4844d5fedfcbd5d704d8194edab03c13d7854",
+      "rows": 198,
+      "catalogRa": 8.673333333333334,
+      "catalogDec": 19.666666666666668,
+      "angularLimitArcmin": 70.0,
+      "catalogEbvSingle": 0.03999999910593033,
+      "presetEbvTicks": 4,
+      "regionIds": [
+        1395,
+        1396,
+        1398,
+        1399
+      ],
+      "bandOrder": [
+        "N1500"
+      ],
+      "area": {
+        "minimumRa": 8.582477859981765,
+        "maximumRa": 8.764188806684903,
+        "minimumDec": 18.383333333333333,
+        "maximumDec": 20.950000000000003,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N1500",
+          "sourceSHA256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55",
+          "sourceBytes": 27745902,
+          "records": 1027626,
+          "roundedRaKey": 85824779,
+          "probes": [
+            [
+              513813,
+              139560027
+            ],
+            [
+              256906,
+              64471653
+            ],
+            [
+              385359,
+              85705907
+            ],
+            [
+              449586,
+              107416207
+            ],
+            [
+              417472,
+              93773947
+            ],
+            [
+              401415,
+              89006673
+            ],
+            [
+              393387,
+              87289442
+            ],
+            [
+              389373,
+              86501850
+            ],
+            [
+              387366,
+              86112093
+            ],
+            [
+              386362,
+              85915536
+            ],
+            [
+              385860,
+              85817717
+            ],
+            [
+              386111,
+              85864133
+            ],
+            [
+              385985,
+              85842590
+            ],
+            [
+              385922,
+              85828787
+            ],
+            [
+              385891,
+              85822428
+            ],
+            [
+              385906,
+              85826007
+            ],
+            [
+              385898,
+              85823802
+            ],
+            [
+              385902,
+              85825302
+            ],
+            [
+              385900,
+              85825147
+            ],
+            [
+              385899,
+              85824030
+            ]
+          ],
+          "start": 385899,
+          "end": 395142,
+          "rectangleCount": 3441,
+          "wholeRectangleCount": 3441,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 2094,
+          "knownColor": 198,
+          "minimumRadialMarginArcmin": 0.008614037461541102
+        }
+      ]
+    },
+    {
+      "id": "ic2391",
+      "index": 8,
+      "name": "IC 2391",
+      "file": "cluster-reference-ic2391.json",
+      "sha256": "e0dcef0cb93ca8d4ace7a2550bd222c89e04c754f7aa28e98be7dbeb1df098b7",
+      "rows": 38,
+      "catalogRa": 8.675555555555556,
+      "catalogDec": -53.035,
+      "angularLimitArcmin": 60.0,
+      "catalogEbvSingle": 0.009999999776482582,
+      "presetEbvTicks": 1,
+      "regionIds": [
+        8162,
+        8163,
+        8568,
+        8569
+      ],
+      "bandOrder": [
+        "S4500",
+        "S5230"
+      ],
+      "area": {
+        "minimumRa": 8.553603062212881,
+        "maximumRa": 8.797508048898232,
+        "minimumDec": -54.135,
+        "maximumDec": -51.934999999999995,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "S4500",
+          "sourceSHA256": "3012858aa9d6248bf7e64605f15ce1d69b6332a533614a8c4ac492762734cb43",
+          "sourceBytes": 27536328,
+          "records": 1019864,
+          "roundedRaKey": 85536031,
+          "probes": [
+            [
+              509932,
+              128326220
+            ],
+            [
+              254965,
+              85284387
+            ],
+            [
+              382448,
+              105293347
+            ],
+            [
+              318706,
+              96299660
+            ],
+            [
+              286835,
+              88725527
+            ],
+            [
+              270900,
+              86970057
+            ],
+            [
+              262932,
+              86186020
+            ],
+            [
+              258948,
+              85754393
+            ],
+            [
+              256956,
+              85523860
+            ],
+            [
+              257952,
+              85644675
+            ],
+            [
+              257454,
+              85586841
+            ],
+            [
+              257205,
+              85556780
+            ],
+            [
+              257080,
+              85540213
+            ],
+            [
+              257018,
+              85532700
+            ],
+            [
+              257049,
+              85536940
+            ],
+            [
+              257033,
+              85534183
+            ],
+            [
+              257041,
+              85535427
+            ],
+            [
+              257045,
+              85536053
+            ],
+            [
+              257043,
+              85535847
+            ],
+            [
+              257044,
+              85535867
+            ]
+          ],
+          "start": 257044,
+          "end": 281082,
+          "rectangleCount": 1114,
+          "wholeRectangleCount": 1114,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 493,
+          "knownColor": 2,
+          "minimumRadialMarginArcmin": 0.006166808278365465
+        },
+        {
+          "band": "S5230",
+          "sourceSHA256": "4b1678aa1b69f2404efba0b192df32dcfdd5e2fcdb0a55b17159915a4837c95a",
+          "sourceBytes": 22817619,
+          "records": 845097,
+          "roundedRaKey": 85536031,
+          "probes": [
+            [
+              422548,
+              126751213
+            ],
+            [
+              211273,
+              87268020
+            ],
+            [
+              105636,
+              61592107
+            ],
+            [
+              158454,
+              76049187
+            ],
+            [
+              184863,
+              82146570
+            ],
+            [
+              198068,
+              85025300
+            ],
+            [
+              204670,
+              86127113
+            ],
+            [
+              201369,
+              85593238
+            ],
+            [
+              199718,
+              85321153
+            ],
+            [
+              200543,
+              85454339
+            ],
+            [
+              200956,
+              85521433
+            ],
+            [
+              201162,
+              85558593
+            ],
+            [
+              201059,
+              85540867
+            ],
+            [
+              201007,
+              85532361
+            ],
+            [
+              201033,
+              85536607
+            ],
+            [
+              201020,
+              85534732
+            ],
+            [
+              201026,
+              85536067
+            ],
+            [
+              201023,
+              85535360
+            ],
+            [
+              201024,
+              85535499
+            ],
+            [
+              201025,
+              85535817
+            ]
+          ],
+          "start": 201025,
+          "end": 215673,
+          "rectangleCount": 3521,
+          "wholeRectangleCount": 3521,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 2660,
+          "knownColor": 36,
+          "minimumRadialMarginArcmin": 0.01247596401073281
+        }
+      ]
+    },
+    {
+      "id": "m67",
+      "index": 9,
+      "name": "M 67 (NGC 2682)",
+      "file": "cluster-m67.json",
+      "sha256": "128c55e63a48a9b6b8a4987e8e6c7a2fdd0d502b8fd618e59a689d05cbe6cfc6",
+      "rows": 506,
+      "catalogRa": 8.856666666666667,
+      "catalogDec": 11.816666666666666,
+      "angularLimitArcmin": 25.0,
+      "catalogEbvSingle": 0.029999999329447746,
+      "presetEbvTicks": 3,
+      "regionIds": [
+        813,
+        814
+      ],
+      "bandOrder": [
+        "N0730"
+      ],
+      "area": {
+        "minimumRa": 8.825449553741624,
+        "maximumRa": 8.88788377959171,
+        "minimumDec": 11.358333333333333,
+        "maximumDec": 12.275,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N0730",
+          "sourceSHA256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1",
+          "sourceBytes": 28576611,
+          "records": 1058393,
+          "roundedRaKey": 88254496,
+          "probes": [
+            [
+              529196,
+              149773500
+            ],
+            [
+              264597,
+              68997860
+            ],
+            [
+              396896,
+              92614240
+            ],
+            [
+              330746,
+              79510533
+            ],
+            [
+              363821,
+              85175233
+            ],
+            [
+              380358,
+              88461040
+            ],
+            [
+              372089,
+              86811427
+            ],
+            [
+              376223,
+              87640263
+            ],
+            [
+              378290,
+              88053173
+            ],
+            [
+              379324,
+              88257313
+            ],
+            [
+              378807,
+              88154800
+            ],
+            [
+              379065,
+              88206693
+            ],
+            [
+              379194,
+              88229003
+            ],
+            [
+              379259,
+              88243280
+            ],
+            [
+              379291,
+              88251487
+            ],
+            [
+              379307,
+              88255187
+            ],
+            [
+              379299,
+              88253733
+            ],
+            [
+              379303,
+              88254660
+            ],
+            [
+              379301,
+              88254060
+            ],
+            [
+              379302,
+              88254253
+            ]
+          ],
+          "start": 379302,
+          "end": 382750,
+          "rectangleCount": 974,
+          "wholeRectangleCount": 974,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 290,
+          "knownColor": 506,
+          "minimumRadialMarginArcmin": 0.05546921448785369
+        }
+      ]
+    },
+    {
+      "id": "mel111",
+      "index": 10,
+      "name": "Mel 111 (Coma)",
+      "file": "cluster-reference-mel111.json",
+      "sha256": "650b2413db25979eefce867834e90614e3efa6c55f0705b668363a512f2c58f1",
+      "rows": 70,
+      "catalogRa": 12.418333333333333,
+      "catalogDec": 26.116666666666667,
+      "angularLimitArcmin": 120.0,
+      "catalogEbvSingle": 0.0,
+      "presetEbvTicks": 0,
+      "regionIds": [
+        1986,
+        1988,
+        1989,
+        1990,
+        1991,
+        1992
+      ],
+      "bandOrder": [
+        "N2230"
+      ],
+      "area": {
+        "minimumRa": 12.254989154941212,
+        "maximumRa": 12.581677511725454,
+        "minimumDec": 23.916666666666668,
+        "maximumDec": 28.316666666666666,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N2230",
+          "sourceSHA256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+          "sourceBytes": 28767987,
+          "records": 1065481,
+          "roundedRaKey": 122549892,
+          "probes": [
+            [
+              532740,
+              145614463
+            ],
+            [
+              266369,
+              59698320
+            ],
+            [
+              399554,
+              84362900
+            ],
+            [
+              466147,
+              109343593
+            ],
+            [
+              499443,
+              128100393
+            ],
+            [
+              482795,
+              118692733
+            ],
+            [
+              491119,
+              124238500
+            ],
+            [
+              486957,
+              121207400
+            ],
+            [
+              489038,
+              122805120
+            ],
+            [
+              487997,
+              122005213
+            ],
+            [
+              488517,
+              122402120
+            ],
+            [
+              488777,
+              122619140
+            ],
+            [
+              488647,
+              122514120
+            ],
+            [
+              488712,
+              122567080
+            ],
+            [
+              488679,
+              122540587
+            ],
+            [
+              488695,
+              122549860
+            ],
+            [
+              488703,
+              122558353
+            ],
+            [
+              488699,
+              122555180
+            ],
+            [
+              488697,
+              122553327
+            ],
+            [
+              488696,
+              122552147
+            ]
+          ],
+          "start": 488696,
+          "end": 494570,
+          "rectangleCount": 3577,
+          "wholeRectangleCount": 3577,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 2283,
+          "knownColor": 70,
+          "minimumRadialMarginArcmin": 0.011659615457446648
+        }
+      ]
+    },
+    {
+      "id": "ic4665",
+      "index": 11,
+      "name": "IC 4665",
+      "file": "cluster-reference-ic4665.json",
+      "sha256": "217b239a770219562580c0efeccdb80b3397c0be2b99656e21996f5345c33b8f",
+      "rows": 45,
+      "catalogRa": 17.77,
+      "catalogDec": 5.883333333333334,
+      "angularLimitArcmin": 70.0,
+      "catalogEbvSingle": 0.18000000715255737,
+      "presetEbvTicks": 18,
+      "regionIds": [
+        423,
+        424,
+        427,
+        428
+      ],
+      "bandOrder": [
+        "N0000"
+      ],
+      "area": {
+        "minimumRa": 17.683991409345285,
+        "maximumRa": 17.856008590654714,
+        "minimumDec": 4.6000000000000005,
+        "maximumDec": 7.166666666666667,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N0000",
+          "sourceSHA256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+          "sourceBytes": 31481649,
+          "records": 1165987,
+          "roundedRaKey": 176839914,
+          "probes": [
+            [
+              582993,
+              139529653
+            ],
+            [
+              874490,
+              193338699
+            ],
+            [
+              728741,
+              172690480
+            ],
+            [
+              801615,
+              182106420
+            ],
+            [
+              765178,
+              178459120
+            ],
+            [
+              746959,
+              175523693
+            ],
+            [
+              756068,
+              176964453
+            ],
+            [
+              751513,
+              176252353
+            ],
+            [
+              753790,
+              176608680
+            ],
+            [
+              754929,
+              176787753
+            ],
+            [
+              755498,
+              176870727
+            ],
+            [
+              755213,
+              176827787
+            ],
+            [
+              755355,
+              176847987
+            ],
+            [
+              755284,
+              176837833
+            ],
+            [
+              755319,
+              176841760
+            ],
+            [
+              755301,
+              176839533
+            ],
+            [
+              755310,
+              176840773
+            ],
+            [
+              755305,
+              176839780
+            ],
+            [
+              755307,
+              176840220
+            ],
+            [
+              755306,
+              176839880
+            ]
+          ],
+          "start": 755306,
+          "end": 765836,
+          "rectangleCount": 3541,
+          "wholeRectangleCount": 3541,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 2324,
+          "knownColor": 45,
+          "minimumRadialMarginArcmin": 0.0005540269723383062
+        }
+      ]
+    },
+    {
+      "id": "m7",
+      "index": 12,
+      "name": "M 7 (NGC 6475)",
+      "file": "cluster-reference-m7.json",
+      "sha256": "263bdd0d59d4afd9ef251d9f2414261fa0e2a51754dcc90ad37456aca5fa92db",
+      "rows": 69,
+      "catalogRa": 17.8975,
+      "catalogDec": -34.79333333333334,
+      "angularLimitArcmin": 80.0,
+      "catalogEbvSingle": 0.05999999865889549,
+      "presetEbvTicks": 6,
+      "regionIds": [
+        7381,
+        7382,
+        7385,
+        7386,
+        7389,
+        7390,
+        7395,
+        7399,
+        7403
+      ],
+      "bandOrder": [
+        "S3000"
+      ],
+      "area": {
+        "minimumRa": 17.778435315046828,
+        "maximumRa": 18.016564684953174,
+        "minimumDec": -36.260000000000005,
+        "maximumDec": -33.32666666666667,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "S3000",
+          "sourceSHA256": "fa9ee76f4a2c5ea7ee5a17dc2f84c583478ff6d339f981ab25836a201fcd0228",
+          "sourceBytes": 28126008,
+          "records": 1041704,
+          "roundedRaKey": 177784353,
+          "probes": [
+            [
+              520852,
+              120446820
+            ],
+            [
+              781278,
+              172846160
+            ],
+            [
+              911491,
+              195974570
+            ],
+            [
+              846384,
+              185284767
+            ],
+            [
+              813831,
+              181072040
+            ],
+            [
+              797554,
+              178159653
+            ],
+            [
+              789416,
+              175527882
+            ],
+            [
+              793485,
+              176944307
+            ],
+            [
+              795519,
+              177635000
+            ],
+            [
+              796536,
+              177927813
+            ],
+            [
+              796027,
+              177789820
+            ],
+            [
+              795773,
+              177710227
+            ],
+            [
+              795900,
+              177748007
+            ],
+            [
+              795963,
+              177773980
+            ],
+            [
+              795995,
+              177781187
+            ],
+            [
+              796011,
+              177784387
+            ],
+            [
+              796003,
+              177783107
+            ],
+            [
+              796007,
+              177783573
+            ],
+            [
+              796009,
+              177784040
+            ],
+            [
+              796010,
+              177784313
+            ]
+          ],
+          "start": 796010,
+          "end": 808988,
+          "rectangleCount": 4506,
+          "wholeRectangleCount": 4506,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 3187,
+          "knownColor": 69,
+          "minimumRadialMarginArcmin": 0.0038402592962398785
+        }
+      ]
+    },
+    {
+      "id": "m16",
+      "index": 13,
+      "name": "M 16 (NGC 6611)",
+      "file": "cluster-reference-m16.json",
+      "sha256": "a8fac04a11ac1bf0f92d73e470752233d916fcc65e082ce762f5e5e873600274",
+      "rows": 59,
+      "catalogRa": 18.313333333333333,
+      "catalogDec": -13.75,
+      "angularLimitArcmin": 7.0,
+      "catalogEbvSingle": 0.8999999761581421,
+      "presetEbvTicks": 90,
+      "regionIds": [
+        5689
+      ],
+      "bandOrder": [
+        "S0730"
+      ],
+      "area": {
+        "minimumRa": 18.304525359477942,
+        "maximumRa": 18.322141307188723,
+        "minimumDec": -13.878333333333334,
+        "maximumDec": -13.621666666666666,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "S0730",
+          "sourceSHA256": "c029ac362f2a0b31d167719d4d9e4fa4fa412f15a459a59701a0c2b9ef496e19",
+          "sourceBytes": 27365769,
+          "records": 1013547,
+          "roundedRaKey": 183045254,
+          "probes": [
+            [
+              506773,
+              112945693
+            ],
+            [
+              760160,
+              186208680
+            ],
+            [
+              633466,
+              157179200
+            ],
+            [
+              696813,
+              173575560
+            ],
+            [
+              728486,
+              182883773
+            ],
+            [
+              744323,
+              184747820
+            ],
+            [
+              736404,
+              183885300
+            ],
+            [
+              732445,
+              183421127
+            ],
+            [
+              730465,
+              183176533
+            ],
+            [
+              729475,
+              183042300
+            ],
+            [
+              729970,
+              183109567
+            ],
+            [
+              729722,
+              183076920
+            ],
+            [
+              729598,
+              183059327
+            ],
+            [
+              729536,
+              183050420
+            ],
+            [
+              729505,
+              183046707
+            ],
+            [
+              729490,
+              183045220
+            ],
+            [
+              729497,
+              183045947
+            ],
+            [
+              729493,
+              183045760
+            ],
+            [
+              729491,
+              183045233
+            ],
+            [
+              729492,
+              183045440
+            ]
+          ],
+          "start": 729492,
+          "end": 730783,
+          "rectangleCount": 88,
+          "wholeRectangleCount": 88,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 13,
+          "knownColor": 59,
+          "minimumRadialMarginArcmin": 0.15174862628401886
+        }
+      ]
+    },
+    {
+      "id": "cygob2",
+      "index": 14,
+      "name": "Cyg OB2",
+      "file": "cluster-reference-cygob2.json",
+      "sha256": "7e6cd6f9f0b80a555a4ec0bd27b4167fca62e6c6a9762e2e8f230e53ce741462",
+      "rows": 69,
+      "catalogRa": 20.54888888888889,
+      "catalogDec": 41.27722222222222,
+      "angularLimitArcmin": 50.0,
+      "catalogEbvSingle": 0.0,
+      "presetEbvTicks": 0,
+      "regionIds": [
+        3156,
+        3157,
+        3160,
+        3161
+      ],
+      "bandOrder": [
+        "N3730"
+      ],
+      "area": {
+        "minimumRa": 20.467572907759198,
+        "maximumRa": 20.63020487001858,
+        "minimumDec": 40.36055555555556,
+        "maximumDec": 42.193888888888885,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N3730",
+          "sourceSHA256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+          "sourceBytes": 27031482,
+          "records": 1001166,
+          "roundedRaKey": 204675729,
+          "probes": [
+            [
+              500583,
+              115055127
+            ],
+            [
+              750875,
+              197851677
+            ],
+            [
+              876021,
+              219087860
+            ],
+            [
+              813448,
+              209801080
+            ],
+            [
+              782161,
+              202382660
+            ],
+            [
+              797804,
+              205625333
+            ],
+            [
+              789982,
+              203754747
+            ],
+            [
+              793893,
+              204592960
+            ],
+            [
+              795848,
+              205081107
+            ],
+            [
+              794870,
+              204832880
+            ],
+            [
+              794381,
+              204711927
+            ],
+            [
+              794137,
+              204654793
+            ],
+            [
+              794259,
+              204683873
+            ],
+            [
+              794198,
+              204672000
+            ],
+            [
+              794228,
+              204678087
+            ],
+            [
+              794213,
+              204676147
+            ],
+            [
+              794205,
+              204675060
+            ],
+            [
+              794209,
+              204675793
+            ],
+            [
+              794207,
+              204675653
+            ],
+            [
+              794208,
+              204675747
+            ]
+          ],
+          "start": 794208,
+          "end": 799872,
+          "rectangleCount": 1645,
+          "wholeRectangleCount": 1645,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 1015,
+          "knownColor": 69,
+          "minimumRadialMarginArcmin": 0.011520214639830328
+        }
+      ]
+    },
+    {
+      "id": "m39",
+      "index": 15,
+      "name": "M 39 (NGC 7092)",
+      "file": "cluster-reference-m39.json",
+      "sha256": "845676860a034880a791448ae4c1efdfbc4053015371635ba0df4986cb86bbf3",
+      "rows": 29,
+      "catalogRa": 21.536666666666665,
+      "catalogDec": 48.45,
+      "angularLimitArcmin": 30.0,
+      "catalogEbvSingle": 0.009999999776482582,
+      "presetEbvTicks": 1,
+      "regionIds": [
+        3594,
+        3595,
+        3598,
+        3599
+      ],
+      "bandOrder": [
+        "N4500"
+      ],
+      "area": {
+        "minimumRa": 21.481385288569765,
+        "maximumRa": 21.591948044763566,
+        "minimumDec": 47.900000000000006,
+        "maximumDec": 49.0,
+        "limitingMagnitude": 25
+      },
+      "traces": [
+        {
+          "band": "N4500",
+          "sourceSHA256": "513a9deab803f1c7b5ef9cda029044b2c13c79edde6f51ee998f5ef2a75156cb",
+          "sourceBytes": 24072741,
+          "records": 891583,
+          "roundedRaKey": 214813853,
+          "probes": [
+            [
+              445791,
+              137018507
+            ],
+            [
+              668687,
+              203573213
+            ],
+            [
+              780135,
+              219484933
+            ],
+            [
+              724411,
+              211467667
+            ],
+            [
+              752273,
+              215014973
+            ],
+            [
+              738342,
+              212621127
+            ],
+            [
+              745307,
+              213649828
+            ],
+            [
+              748790,
+              214414873
+            ],
+            [
+              750531,
+              214746640
+            ],
+            [
+              751402,
+              214880000
+            ],
+            [
+              750966,
+              214809407
+            ],
+            [
+              751184,
+              214843507
+            ],
+            [
+              751075,
+              214824580
+            ],
+            [
+              751020,
+              214815860
+            ],
+            [
+              750993,
+              214812473
+            ],
+            [
+              751006,
+              214813793
+            ],
+            [
+              751013,
+              214814593
+            ],
+            [
+              751009,
+              214814013
+            ],
+            [
+              751007,
+              214813820
+            ],
+            [
+              751008,
+              214813853
+            ]
+          ],
+          "start": 751008,
+          "end": 757880,
+          "rectangleCount": 1000,
+          "wholeRectangleCount": 1000,
+          "wholeMatches": true,
+          "adjacentKeyRectanglesMatch": true,
+          "radialMissingColor": 620,
+          "knownColor": 29,
+          "minimumRadialMarginArcmin": 0.0017707264955575397
+        }
+      ]
+    }
+  ],
+  "totalReferencePoints": 2873,
+  "independentValidationSHA256": "917d5f654aa452ea64f0c56cb2b4d5c3035881f400a74f605d2e86e7dabf6283",
+  "numericalPolicy": "Stored source Doublecoordinates andSingleV/BV;Number/Math adaptation ofnative approximate tangent query;Decimal80 andexactFractionbinary32 independentlycontrast chosenstaticcontract,notnativeexecution.",
+  "workspacePolicy": "Independent dataset notebooks preserve confirmed choices andunapplied drafts;new datasets start blank,other notebooks remain unchanged. This differs from native overlay retention across dataset changes anddoes not assert UIstate equivalence.",
+  "limits": [
+    "Reference catalog values,never acquired counts orstudent transcriptions;no variable/QSO/galaxy merge onthis native direct-reader route.",
+    "Stored E preset is explicitly copied andeditable;zero is kept as stored withno inferred physical meaning.",
+    "No automatic fit,age,metallicity,membership,catalog distance,uncertainty orscientific correctness grade.",
+    "All16 reference datasets admitted;observing field availability is unchanged,including8excluded Pleiades targets.",
+    "Original finite native control/model ranges maynot provide a satisfactory fit for every entry;record conclusions manually,no synthetic extensions.",
+    "Fixed display axes/reference tables,notnative autoscaling/removal/import orGDI/x87/runtime equivalence.",
+    "No public redistribution authorization;original sources/license/Copyright unchanged."
+  ],
+  "queryEvidenceSHA256": "9c2df4a9bb790bfb60e1a14c9318e46e92724692e80eeab6a7b40433c76d43a9"
+}

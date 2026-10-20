@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "evidenceId": "VIREO-HR-ADMISSION-DECODED-2026-10-19",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "missingColor": {
+    "packedOffset": 20,
+    "maskValue": 4,
+    "maskHex": "0x04",
+    "bitIndexZeroBased": 2,
+    "maskAddress": "0x5b4d20",
+    "decode": "0x59b0e2 reads packedoffset20;0x59b0e9 masks withoriginalconstant;0x59b0f4 stores normalizednonzero flag atrecord+0x3b",
+    "filter": "0x534518..0x53452b keeps onlydecodedflag0 afterradialadmission"
+  },
+  "magnitude": {
+    "limit": 25,
+    "literalStore": "0x546510",
+    "regionAdmission": "0x599ef1..0x599f09 compares source SingleV withregionSinglelimit anduses setbe(inclusive<=)"
+  },
+  "distancePrecision": {
+    "procedure": "0x59a49c..0x59a532",
+    "staticObservation": "Shown intermediate spills use TBYTE Extended,coordinates load QWORD Double;no Single result spill appears inthis range. Caller0x534500 multiplies bySingle60 thencompares directly. This is static evidence,not original runtime/cos/FPUcontrol proof."
+  },
+  "ranges": [
+    {
+      "start": "0x59b0e2",
+      "endExclusive": "0x59b0f7",
+      "sha256": "8431f74df7f240b037e6eac2df830d48902a9aa9fc114b0fb583548254ab8bf4"
+    },
+    {
+      "start": "0x599ef1",
+      "endExclusive": "0x599f0e",
+      "sha256": "320b56c1b2bbfdaa7c66dcba77530bbef7dca8f6fc87fdaffb216a8e2500f1bc"
+    },
+    {
+      "start": "0x5344dd",
+      "endExclusive": "0x53452d",
+      "sha256": "325333c7f4258ea059fe5e439d1c8cbbcf5703b28012bdd05df81302ce36d600"
+    },
+    {
+      "start": "0x59a49c",
+      "endExclusive": "0x59a532",
+      "sha256": "dc12bbc03dadfe30fe07b085eacc1c9340d51df0009a4ff584b4c94c42fde3c7"
+    }
+  ],
+  "captures": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/compact-gsc-order-recovery/compact-scan-and-insert.asm",
+      "sha256": "0813570654eb4b4da033be7c730560b536920e4680f53ea54f2604c0b78ec6fd"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/compact-gsc-order-recovery/region-admission.asm",
+      "sha256": "0cba3495a80704c611e373c9480b7c14fd6569cd057c7a0d8f6ac983da1287b8"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/cluster-datasets-recovery/cluster-field-end.asm",
+      "sha256": "94076489abf740b70bf79ecbf593d7de610083d393b820f8982847a260fd3425"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/cluster-datasets-recovery/catalog-distance.asm",
+      "sha256": "c011f610e6a424fee2e285ce71f7aabaf55cfb85147364b67824e9eb4d9649e2"
+    }
+  ],
+  "independentValidationLimits": "Decimal/Fraction checker reuses scan extents,mask/offset assumptions anddoes not independently decode original instructions orVlimit. Those semantics are separately inspected statically here. The5746 checks are V/BV conversions,not independent querydecisions.",
+  "rights": "Original binary/listings remain outside websource;onlydecoded values,addresses andhashes here. No original execution orpublic redistribution."
+}

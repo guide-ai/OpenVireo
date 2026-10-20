@@ -1,0 +1,270 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-native-M67-dataset-v1",
+  "evidenceId": "VIREO-HR-M67-STATIC-2026-10-19",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "bytes": 2288128,
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLUSTERS.DAT",
+      "bytes": 1632,
+      "sha256": "bec9dfb53969ba3828dff98962d9c80c3c7b5e51646f2a88ef70bcf634545ff2"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0730.DAT",
+      "bytes": 28576611,
+      "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "bytes": 343368,
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/HRAnalHlp.TXT",
+      "bytes": 7557,
+      "sha256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "bytes": 32096,
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "bytes": 152,
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "dataset": {
+    "id": "m67",
+    "name": "M 67 (NGC 2682)",
+    "clusterRecord": 9,
+    "recordBytes": 102,
+    "ra": 8.856666666666667,
+    "dec": 11.816666666666666,
+    "angularLimitArcmin": 25,
+    "catalogEbvSingle": 0.029999999329447746,
+    "presetEbvTicks": 3,
+    "file": "cluster-m67.json",
+    "sha256": "128c55e63a48a9b6b8a4987e8e6c7a2fdd0d502b8fd618e59a689d05cbe6cfc6",
+    "rows": 506,
+    "rectangleCount": 974,
+    "radialMissingColor": 290,
+    "radiusKnownCount": 506,
+    "regionIds": [
+      813,
+      814
+    ],
+    "area": {
+      "minimumRa": 8.825449553741624,
+      "maximumRa": 8.88788377959171,
+      "minimumDec": 11.358333333333333,
+      "maximumDec": 12.275,
+      "limitingMagnitude": 25
+    },
+    "trace": {
+      "band": "N0730",
+      "sourceSHA256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1",
+      "sourceBytes": 28576611,
+      "records": 1058393,
+      "roundedRaKey": 88254496,
+      "probes": [
+        [
+          529196,
+          149773500
+        ],
+        [
+          264597,
+          68997860
+        ],
+        [
+          396896,
+          92614240
+        ],
+        [
+          330746,
+          79510533
+        ],
+        [
+          363821,
+          85175233
+        ],
+        [
+          380358,
+          88461040
+        ],
+        [
+          372089,
+          86811427
+        ],
+        [
+          376223,
+          87640263
+        ],
+        [
+          378290,
+          88053173
+        ],
+        [
+          379324,
+          88257313
+        ],
+        [
+          378807,
+          88154800
+        ],
+        [
+          379065,
+          88206693
+        ],
+        [
+          379194,
+          88229003
+        ],
+        [
+          379259,
+          88243280
+        ],
+        [
+          379291,
+          88251487
+        ],
+        [
+          379307,
+          88255187
+        ],
+        [
+          379299,
+          88253733
+        ],
+        [
+          379303,
+          88254660
+        ],
+        [
+          379301,
+          88254060
+        ],
+        [
+          379302,
+          88254253
+        ]
+      ],
+      "start": 379302,
+      "end": 382750,
+      "rectangle": 974,
+      "radialKnownColor": 506,
+      "radialMissingColor": 290,
+      "minimumRadialBoundaryMarginArcmin": 0.05546921448785369,
+      "wholeBandMatches": true
+    }
+  },
+  "procedures": {
+    "selector": "0x545989 typed records102;0x54648f..0x5464c0 copies selected name,Double RA/Dec andSingle angular size/E",
+    "region": "0x5464c8..0x546576:halfDec=Extended1.1*size/Single60;halfRA=halfDec/(cos(dec*degToRad)*Single15);stored Double rectangle,Single limit25",
+    "query": "0x534254..0x5345cf:construct NewGSCFieldObj;region enumeration0x5977e0;direct VMT+8 compact reader0x59ad98. Does not call full field0x597ac8 or auxiliary QSO/variable/galaxy merge. Region Single magnitude limit25 is set at0x546510 (+0x53 of selected global record);0x534312 initializes a tracked minimum statistic,not the admission limit.",
+    "filter": "0x5344dd..0x53452b:approx tangent distance0x59a49c *Single60 <=selected Single size AND decoded missing-color byte+0x3b is0;packed flag bit4.",
+    "coordinates": "0x59b055..0x59b0af:RAint/1e7,Decint/1e5 toDouble;Vint/1000,BVint/1000 toSingle. +0x29/+0x2d plotted directly,not inferred B/V acquisitions.",
+    "plot": "0x542cae..0x542d5f:database bank,skip type4 removed marker;V at+0x29,BV at+0x2d. Dataset starts with no removed points.",
+    "preset": "0x543a32..0x543a66:option+0x2e90 anddatabase flag gate SingleE*100 tointeger slider ticks;web applies only on explicit Use catalog reddening action. Compiled option default is not asserted."
+  },
+  "captures": [
+    {
+      "file": "catalog-distance.asm",
+      "sha256": "c011f610e6a424fee2e285ce71f7aabaf55cfb85147364b67824e9eb4d9649e2"
+    },
+    {
+      "file": "cluster-field-end.asm",
+      "sha256": "94076489abf740b70bf79ecbf593d7de610083d393b820f8982847a260fd3425"
+    },
+    {
+      "file": "cluster-field.asm",
+      "sha256": "477be8bea1e6840ac1ceb63ddf86974b2ec9b002dd7a4fc389d9aaec261d4075"
+    },
+    {
+      "file": "cluster-list.asm",
+      "sha256": "462c4c795d67bddca666b6a8b6504e56b583ddf7f3a1eb3afc73f67a56257dcf"
+    },
+    {
+      "file": "cluster-proc.asm",
+      "sha256": "1ba77da2a6e7c83a01b2afd97197f4fd70b8ad0427f5a7d24c8ef97819703a76"
+    },
+    {
+      "file": "cluster-region.asm",
+      "sha256": "d1d80c6bf9e894fa2d36869f61ecaee9be222fa6dfae3a732270934c7574117c"
+    },
+    {
+      "file": "hr-defaults.asm",
+      "sha256": "d2f15f7978c89760f891c7faff5b2319bfa3636b6963d398b06c926c3b90856c"
+    },
+    {
+      "file": "region-table.asm",
+      "sha256": "e51d5a8114aeea76439c6a51cbb0d33d1bf5aab8b4ac5838d07b66e18d85c0bd"
+    },
+    {
+      "file": "select.asm",
+      "sha256": "a06227306a902195f9d2c2c5355c40bb79d4a6de2d6bbe6a7c595db9535164cd"
+    }
+  ],
+  "independentValidation": {
+    "method": "Decimal80 Taylor cosine and squared separation across every scan record;whole untruncated band positional admission vs native last-midpoint seek;source integers androw IDs preserved",
+    "match": true,
+    "references": [
+      {
+        "recordIndex": 379668,
+        "raInt": 88324533,
+        "decInt": 1169251,
+        "vInt": 9840,
+        "bvInt": 1360,
+        "recordSHA256": "87ec0c754792da402c6046b4f8dac940ac312f1f9d54ba56cbc46dfeb04b724a"
+      },
+      {
+        "recordIndex": 379848,
+        "raInt": 88367527,
+        "decInt": 1185680,
+        "vInt": 8860,
+        "bvInt": 1590,
+        "recordSHA256": "28266b6644aaffe4e09f3d401269512b57951ba1a6646fc34066247f74e67a04"
+      },
+      {
+        "recordIndex": 379923,
+        "raInt": 88384120,
+        "decInt": 1192259,
+        "vInt": 9980,
+        "bvInt": 1100,
+        "recordSHA256": "8b4424d6aa887407741c73e741a7bd80a9e56be6021c13382725bdffe05b83b5"
+      },
+      {
+        "recordIndex": 380125,
+        "raInt": 88421000,
+        "decInt": 1198129,
+        "vInt": 15368,
+        "bvInt": 501,
+        "recordSHA256": "138a32c2000148eb920c1b9fff58a31127274dce7cfd5cc997e5a62430b4f288"
+      },
+      {
+        "recordIndex": 380153,
+        "raInt": 88425907,
+        "decInt": 1181724,
+        "vInt": 14422,
+        "bvInt": 656,
+        "recordSHA256": "804a0858df1b8a1b7d11d82085a8433caf473261a5333f1ab0ebf91ed0117407"
+      }
+    ],
+    "radialBoundaryMarginArcmin": 0.05546921448785369,
+    "raKeyHalfIntegerMargin": 0.037416234612464905
+  },
+  "limits": [
+    "Only original M67 record9 admitted;other15records are not silently synthesized.",
+    "Reference catalog rows are not acquired observations or student transcriptions;existing photometer/Hubble journals untouched.",
+    "No preset distance,age,metallicity,membership or automatic fit. E copy is explicit and editable.",
+    "Number/Math/tangent-distance adaptation is not original Extended/x87 or runtime equivalence.",
+    "Fixed paper axes and source file order are web presentation policies,not native autoscaling/sorted collection order.",
+    "No formal uncertainty contract found in HR help/handlers;no uncertainty formula invented.",
+    "Original rights retained for local research;no public redistribution authorized."
+  ]
+}

@@ -1,0 +1,393 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-Pleiades-sixteen-targets-v5",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PLEIADES.HTL",
+      "sha256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2",
+      "bytes": 2064
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+      "bytes": 152
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N2230.DAT",
+      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+      "bytes": 28767987
+    }
+  ],
+  "fieldPacketSHA256": "86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40",
+  "vectorsSHA256": "f0e6ba66157032ff56c4a6928c2759fd973d8e75c3ce6ef6643c5815658945ce",
+  "bindings": [
+    {
+      "file": "data/photometry/pinned-pleiades-v.json",
+      "sha256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624"
+    },
+    {
+      "file": "data/photometry/pleiades-target-fields.json",
+      "sha256": "5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356"
+    },
+    {
+      "file": "data/photometry/targets-provenance.json",
+      "sha256": "dfa0977bc3d3b777cef3d144b1bd9bdffdcc82e383174ad796c852b73c6de372"
+    },
+    {
+      "file": "data/photometry/ubv-contract.json",
+      "sha256": "27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf"
+    },
+    {
+      "file": "data/photometry/integration-provenance.json",
+      "sha256": "b11fcc556da1011dc89b0c6e66c143d0f9fae3f6de653538daa4a4e38cf2fab0"
+    },
+    {
+      "file": "data/photometry/integration-vectors.json",
+      "sha256": "5d1382ab7b65b6be3ee030e6f8ef69847c0d92cb0f96b16eb001b6685ed45a92"
+    }
+  ],
+  "nativeCaptures": [
+    {
+      "id": "PHOTO-TARGETS-01",
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/total-count-guard.asm",
+      "start": "0x50158e",
+      "endExclusive": "0x5015ba",
+      "byteRangeSha256": "c468a655cef79fda24ceb36fed5e3c5f37977888cafcf97d85fc9cad4a35a05f",
+      "listingSha256": "ed1557b2079f60d09b2a529b3792fc0b11f961d5d04e678f85cfb1f226ed3f1a"
+    },
+    {
+      "id": "PHOTO-TARGETS-02",
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/hotlist-reader.asm",
+      "start": "0x590424",
+      "endExclusive": "0x590480",
+      "byteRangeSha256": "d2fd9c0b788c38023edf01f612fde6685013f229784f3725507f5e12164a05d5",
+      "listingSha256": "405a05a60a38c717a02f69548e1629d051ce8a122017b9ff648574c95f72d212"
+    },
+    {
+      "id": "PHOTO-TARGETS-03",
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/hotlist-pointing.asm",
+      "start": "0x591e99",
+      "endExclusive": "0x591ed5",
+      "byteRangeSha256": "397179ecfc802cd1ee8b74af505625c9d814ab83d47d9fedae9b78a9d659e5aa",
+      "listingSha256": "ae7c16ed0e4b9bf49a0eb799df4db6554a6636c9eca08a2b08d56f7ae0617ac4"
+    }
+  ],
+  "acceptedHotlistRecords": [
+    0,
+    1,
+    4,
+    6,
+    8,
+    9,
+    11,
+    13,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    23
+  ],
+  "acceptedTargetIds": [
+    "N2230.DAT@144496",
+    "N2230.DAT@145877",
+    "N2230.DAT@147993",
+    "N2230.DAT@148460",
+    "N2230.DAT@148546",
+    "N2230.DAT@149142",
+    "N2230.DAT@149260",
+    "N2230.DAT@149656",
+    "N2230.DAT@150112",
+    "N2230.DAT@150246",
+    "N2230.DAT@150480",
+    "N2230.DAT@150861",
+    "N2230.DAT@150975",
+    "N2230.DAT@151125",
+    "N2230.DAT@151890",
+    "N2230.DAT@152989"
+  ],
+  "addedTargets": [
+    {
+      "hotlistRecord": 6,
+      "hotlistLabel": "01803-01554",
+      "nativeName": "N2230-01554",
+      "catalogId": "N2230.DAT@148460",
+      "pointing": {
+        "ra": 3.761788,
+        "dec": 25.05727
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 8,
+      "hotlistLabel": "01803-00990",
+      "nativeName": "N2230-00990",
+      "catalogId": "N2230.DAT@148546",
+      "pointing": {
+        "ra": 3.7634487,
+        "dec": 24.87849
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 9,
+      "hotlistLabel": "01800-01908",
+      "nativeName": "N2230-01908",
+      "catalogId": "N2230.DAT@149142",
+      "pointing": {
+        "ra": 3.7742382,
+        "dec": 24.25502
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 11,
+      "hotlistLabel": "01800-01621",
+      "nativeName": "N2230-01621",
+      "catalogId": "N2230.DAT@149260",
+      "pointing": {
+        "ra": 3.77616,
+        "dec": 23.62423
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 13,
+      "hotlistLabel": "01804-02081",
+      "nativeName": "N2230-02081",
+      "catalogId": "N2230.DAT@149656",
+      "pointing": {
+        "ra": 3.7831517,
+        "dec": 24.52006
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 15,
+      "hotlistLabel": "01800-02202",
+      "nativeName": "N2230-02202",
+      "catalogId": "N2230.DAT@150112",
+      "pointing": {
+        "ra": 3.7914087,
+        "dec": 24.10514
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 16,
+      "hotlistLabel": "01800-02192",
+      "nativeName": "N2230-02192",
+      "catalogId": "N2230.DAT@150246",
+      "pointing": {
+        "ra": 3.79358,
+        "dec": 23.60942
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 17,
+      "hotlistLabel": "01804-02091",
+      "nativeName": "N2230-02091",
+      "catalogId": "N2230.DAT@150480",
+      "pointing": {
+        "ra": 3.7974427,
+        "dec": 24.67915
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 18,
+      "hotlistLabel": "01804-02449",
+      "nativeName": "N2230-02449",
+      "catalogId": "N2230.DAT@150861",
+      "pointing": {
+        "ra": 3.803724,
+        "dec": 25.09881
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 19,
+      "hotlistLabel": "01800-02207",
+      "nativeName": "N2230-02207",
+      "catalogId": "N2230.DAT@150975",
+      "pointing": {
+        "ra": 3.805772,
+        "dec": 23.42114
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 20,
+      "hotlistLabel": "01800-01601",
+      "nativeName": "N2230-01601",
+      "catalogId": "N2230.DAT@151125",
+      "pointing": {
+        "ra": 3.8083505,
+        "dec": 24.34565
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 21,
+      "hotlistLabel": "01800-01175",
+      "nativeName": "N2230-01175",
+      "catalogId": "N2230.DAT@151890",
+      "pointing": {
+        "ra": 3.8187515,
+        "dec": 24.0111
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    },
+    {
+      "hotlistRecord": 23,
+      "hotlistLabel": "01800-00985",
+      "nativeName": "N2230-00985",
+      "catalogId": "N2230.DAT@152989",
+      "pointing": {
+        "ra": 3.8323777,
+        "dec": 24.34902
+      },
+      "association": "Exact stored Number coordinate equality and matching Pascal suffix; preserve original differing HTL/native prefixes."
+    }
+  ],
+  "unavailable": [
+    {
+      "hotlistRecord": 2,
+      "hotlistLabel": "01799-00526",
+      "reason": "unvalidated-pointing-association",
+      "matchingCatalogId": "N2230.DAT@146960",
+      "exactNumberCoordinateMatch": true
+    },
+    {
+      "hotlistRecord": 3,
+      "hotlistLabel": "01799-00306",
+      "reason": "mixed-variable-field",
+      "matchingCatalogId": "N2230.DAT@147896",
+      "exactNumberCoordinateMatch": true
+    },
+    {
+      "hotlistRecord": 5,
+      "hotlistLabel": "01803-00156",
+      "reason": "mixed-variable-field",
+      "matchingCatalogId": "N2230.DAT@148417",
+      "exactNumberCoordinateMatch": true
+    },
+    {
+      "hotlistRecord": 7,
+      "hotlistLabel": "01799-00319",
+      "reason": "unvalidated-pointing-association",
+      "matchingCatalogId": "N2230.DAT@148468",
+      "exactNumberCoordinateMatch": true
+    },
+    {
+      "hotlistRecord": 10,
+      "hotlistLabel": "01800-02089",
+      "reason": "mixed-variable-field",
+      "matchingCatalogId": "N2230.DAT@149159",
+      "exactNumberCoordinateMatch": true
+    },
+    {
+      "hotlistRecord": 12,
+      "hotlistLabel": "N2230-01627",
+      "reason": "mixed-variable-field",
+      "matchingCatalogId": "N2230.DAT@149519",
+      "exactNumberCoordinateMatch": false
+    },
+    {
+      "hotlistRecord": 14,
+      "hotlistLabel": "01800-01820",
+      "reason": "unvalidated-pointing-association",
+      "matchingCatalogId": "N2230.DAT@149698",
+      "exactNumberCoordinateMatch": true
+    },
+    {
+      "hotlistRecord": 22,
+      "hotlistLabel": "N2230-01127",
+      "reason": "unvalidated-pointing-association",
+      "matchingCatalogId": "N2230.DAT@152292",
+      "exactNumberCoordinateMatch": false
+    }
+  ],
+  "survey": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/survey.json",
+    "sha256": "15608fc6110692f70635593c7ca50e8cb759bc5713b9178650b7416f384a72cb"
+  },
+  "fieldGenerator": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pleiades-sample-recovery/generate-fields.py",
+    "sha256": "71b25a24d1a2d857191e6cf7131386a8d7f9d9d55437493fa7ae1cbd579a5276"
+  },
+  "reference": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pleiades-sample-recovery/reference.py",
+    "sha256": "561b1d2fdb4777caec3830c28a0e537b7166945eae840a712791b0962b000e37",
+    "poissonSource": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/analytic-vectors.py",
+    "poissonSHA256": "344712a12222056dd084548b98df7ca518fd324b41735ec4028fc70c5e718b49",
+    "timedSequences": 48,
+    "legacySequences": 13
+  },
+  "legacyWriterFixtures": {
+    "file": "data/photometry/legacy-owner-fixtures.json",
+    "sha256": "d7c094c652f277e14b9f6920111039f09a09c77fb24e34d032e886b956af29ce",
+    "scope": "Canonical v1\u2013v4 bytes captured from the unchanged pre-expansion OpenCLEA writer,not native CLEA observations"
+  },
+  "coverage": "13 additional object/sky fields with whole1,065,481-row admission,exact-rational stored-Double bounds,adjacent-key controls and whole mixed-catalog absence;prior3 fields unchanged.",
+  "domain": {
+    "targets": 16,
+    "originalHotlistPositions": 24,
+    "fixedFields": 32,
+    "cachedConfigurations": 96,
+    "telescopeRecord": 0,
+    "filters": [
+      "U",
+      "B",
+      "V"
+    ],
+    "maximumMean": 1000000.0,
+    "totalCountCap": 2147483647
+  },
+  "persistence": "New target history requires owner5 and new field proof plus all previous field/UBV/three-target/integration proofs. Histories confined to prior3 targets retain v1\u2013v4 header/bytes and reject injected new targets under old markers. Outer full8\u201318 nested-owner protocol unchanged.",
+  "uncertainty": [
+    "8 positions remain unavailable:4 mixed variable fields and4 unvalidated exact pointing associations. No suffix-only approximation is admitted.",
+    "Number/Math source/reduction/Poisson and integer nominal100ms callback timing are adaptations,not native x87/VCL/runtime equivalence.",
+    "No arbitrary pointing,telescope/aperture/seeing/RI/generated cluster,HR fit/reddening/distance or classroom acceptance added."
+  ],
+  "rights": "Original License.rtf and Copyright.txt retained with SHA;local authorized research only,no public redistribution grant."
+}

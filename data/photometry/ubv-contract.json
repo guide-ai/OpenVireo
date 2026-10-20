@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-Pleiades-UBV-observing-v2",
+  "binarySha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "fieldFixtureSHA256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624",
+  "filters": [
+    "U",
+    "B",
+    "V"
+  ],
+  "nativeFilterIndices": {
+    "U": 0,
+    "B": 1,
+    "V": 2
+  },
+  "source": "Original Single V,B-V,U-B; B=V+(B-V), U=B+(U-B), then original aperture attenuation and ordered neighbor addition. Known colors from target N2230.DAT@145877; no missing-color fallback.",
+  "sky": {
+    "V": 16,
+    "B": 17,
+    "U": 17.33
+  },
+  "skyLiterals": [
+    {
+      "address": "0x4ff864",
+      "bytes": 4,
+      "sha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+      "meaning": "sky B\u2212V offset",
+      "numerator": "1",
+      "denominator": "1",
+      "value": 1.0
+    },
+    {
+      "address": "0x4ff868",
+      "bytes": 10,
+      "sha256": "785435ea017a4d98571b190cfd6d61108cd6d0e7afbcec017418a3de0464db26",
+      "meaning": "sky U\u2212B offset",
+      "numerator": "12174851088648304067",
+      "denominator": "36893488147419103232",
+      "value": 0.33
+    }
+  ],
+  "zeroPoint": 9,
+  "calibrationConstants": [
+    {
+      "address": "0x500ac0",
+      "value": 5,
+      "bytes": 4,
+      "sha256": "fca31f1667a6aa1bba12fca4e4ea1becd503379d80da3213af07f6cc5702828d",
+      "meaning": "photometer common zero-point offset"
+    },
+    {
+      "address": "0x5a2a06",
+      "value": 6,
+      "bytes": 4,
+      "sha256": "fedcca07b1ccdacce623cb6d8afdeed0314e8508d763e228871f18d4e0ebb7c4",
+      "meaning": "compiled base magnitude"
+    },
+    {
+      "address": "0x5a2a10",
+      "value": 16,
+      "bytes": 4,
+      "sha256": "140efb356462f70dd1c7f1dfb10bcc07d0f14d439043fb9e9d50f4d7be71ea96",
+      "meaning": "compiled V sky magnitude"
+    },
+    {
+      "address": "0x5a31c1",
+      "value": -2,
+      "bytes": 4,
+      "sha256": "e4767380eb5e2fc046bce28b8b2a30c81c733be1a56203cd9499066086617f6c",
+      "meaning": "telescope0 Single correction"
+    }
+  ],
+  "zeroPointReason": "Original telescope0 Single base6+correction(-2)=4; Start adds5 outside the filter index operation, common prepared9 for U/B/V. No independent guessed band zero points.",
+  "captures": [
+    {
+      "id": "PHOTO-UBV-01",
+      "file": "source-colors.asm",
+      "start": "0x4ffbd7",
+      "endExclusive": "0x4ffd52",
+      "byteRangeSha256": "3227703011b8e20bc3ed14c60504af5bdd1bf403e3a0a743a74efc48735af64b",
+      "listingSha256": "a0ce29598e1c051d054724f305fe02397c498d500edf1dd1338577c6a221b561"
+    },
+    {
+      "id": "PHOTO-UBV-02",
+      "file": "sky-colors.asm",
+      "start": "0x4ff6aa",
+      "endExclusive": "0x4ff700",
+      "byteRangeSha256": "ef1771991ee47676fc1eea94d63f45eaeb435d2a17bd319c1a6cdb73f0beae48",
+      "listingSha256": "d12d638cb3273f81ab99e756b437778652ae400a4c900948780a8a1636e389b8"
+    },
+    {
+      "id": "PHOTO-UBV-03",
+      "file": "filter-control.asm",
+      "start": "0x501e04",
+      "endExclusive": "0x501e1d",
+      "byteRangeSha256": "39c81d84f6d21aff8f67072394728f3e59c8ade90983300d7f4056bebe36c0fd",
+      "listingSha256": "dbd694f11f96faa81fc720a3a709fec3eee24c75c3312551948191a8321e1bb4"
+    },
+    {
+      "id": "PHOTO-UBV-04",
+      "file": "filter-reset.asm",
+      "start": "0x50052c",
+      "endExclusive": "0x500565",
+      "byteRangeSha256": "417a6e4b5bb73a8596722f679cd07755277221d28e770561a6d87c68629de20a",
+      "listingSha256": "868252385bee78b2db11968f68b36c440320fea466f1a69ed7c71fe9befd3844"
+    },
+    {
+      "id": "PHOTO-UBV-05",
+      "file": "filter-sky-gate.asm",
+      "start": "0x5008e0",
+      "endExclusive": "0x500916",
+      "byteRangeSha256": "b7f41f320264bd4145d9c2c7c36efaf376e2220f99f64490843608ddc837ebf8",
+      "listingSha256": "69145f832920fb2f10e4b8fda6e29741996ba27ab37cd54a54dca7b852f1abea"
+    },
+    {
+      "id": "PHOTO-UBV-06",
+      "file": "common-zero-point-amplitudes.asm",
+      "start": "0x50095a",
+      "endExclusive": "0x5009fa",
+      "byteRangeSha256": "c49596d55ff5367a758d967372596d716a82d24a4e74be54d4313032f0733390",
+      "listingSha256": "fce2611de345315bcb800d882c13315ebdcf6c2ceb2478b4854be7a7170973ac"
+    },
+    {
+      "id": "PHOTO-UBV-07",
+      "file": "sky-bank-store.asm",
+      "start": "0x501831",
+      "endExclusive": "0x501873",
+      "byteRangeSha256": "2ffc022bd3720193c81298d3c035eb5a641befde1f9e26ca48e9a01880489b39",
+      "listingSha256": "3e6f6a5056b735e1cf242c585968a81281fa873018fb9198dd025d7a13407cef"
+    }
+  ],
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/openclea-photometer-ubv-work/data/photometry/context-provenance.json",
+      "sha256": "889607d37de487f248165e1c7d2418f0593676602794d69c3c903a81fee15439"
+    },
+    {
+      "path": "/tmp/openclea-photometer-ubv-work/data/photometry/source-provenance.json",
+      "sha256": "281b8cd1c912afb7ae96f057ec6cf0c40a5bd07838a0096d58f4f89a3bcb318b"
+    },
+    {
+      "path": "/tmp/openclea-photometer-ubv-work/data/photometry/field-provenance.json",
+      "sha256": "013e62ac66483f8c4cabbf4510b70610da200757b53c9cab91fbff124c34dfd5"
+    },
+    {
+      "path": "/tmp/openclea-photometer-ubv-work/data/photometry/reduction-provenance.json",
+      "sha256": "545f15918eb2795a0347fa82dcfb7ca2c58704af24074e36e5e7a217c2dbb662"
+    }
+  ],
+  "filterChange": "0x501e04 stores chosen index;0x501e17->0x50052c->0x500bcc resets current reading/counters, does not clear other filter skies.0x5008fa gates only current telescope/filter entry;0x50186d stores only that entry.",
+  "release": "Declared existing web boundary clears all current-context UBV sky banks; no broader native telescope invalidation claim.",
+  "bv": "Manual student Pleiades relation B-V, already pinned in reduction provenance. Explicit saved notebook B/V entries must reference acquired, available same-target readings. Show acquired difference and manual transcription difference separately; never substitute catalog colors.",
+  "limits": [
+    "Same original complete two fields and non-default1arcmin profile; only telescope0, UBV,0.1second",
+    "Native R/I artificial colors, variable/generated cluster scenes and missing source colors excluded",
+    "Number/Math projection of exact recorded Single/Extended constants; no original runtime/x87 oracle",
+    "V-only v1 journal remains readable/writable with exact bytes; filter/color histories use v2 with this contract SHA; analysis v7 unchanged"
+  ],
+  "rights": "Original license hash retained; local research only; no public redistribution authorized."
+}

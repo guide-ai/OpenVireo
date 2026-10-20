@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-Pleiades-manual-overlay-v1",
+  "source": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Labex1/Student Manuals pdf Format/Photoelectric Photometry of the Pleiades 11-24-2008.pdf",
+    "sha256": "c2e708f61523c06da4a56c088249f6701c4342edd7db1f376b57619cc39eb2b3",
+    "bytes": 301058,
+    "title": "Photoelectric Photometry of the Pleiades, 11-24-2008",
+    "locations": [
+      "p4 Figure1: B-V -0.4..1.8, V0..25",
+      "p5 Eq1: D=10*10^((m-M)/5) parsecs",
+      "p11 table caption Table2 (prose calls it Table3):14 standards, slide vertical only;central portion;nearest0.1mag",
+      "p12 Q2:1pc=3.26ly;Q3:(calculated-410)/410*100 signed percent"
+    ]
+  },
+  "evidenceId": "PLEIADES-PAPER-ANALYSIS-2008",
+  "procedureAddresses": null,
+  "addressReason": "Printed educational procedure;not a port of the VIREO ZAMS/isochrone executable tool",
+  "rights": "CLEA manual;table adapted from Allen, Astrophysical Quantities. Local authorized research only;public redistribution rights not established. Original unchanged outside web source.",
+  "standards": [
+    {
+      "absoluteV": -5.8,
+      "bMinusV": -0.35,
+      "spectralLabelAsPrinted": "O5"
+    },
+    {
+      "absoluteV": -4.1,
+      "bMinusV": -0.31,
+      "spectralLabelAsPrinted": "BO"
+    },
+    {
+      "absoluteV": -1.1,
+      "bMinusV": -0.16,
+      "spectralLabelAsPrinted": "B5"
+    },
+    {
+      "absoluteV": -0.7,
+      "bMinusV": 0,
+      "spectralLabelAsPrinted": "AO"
+    },
+    {
+      "absoluteV": 2,
+      "bMinusV": 0.13,
+      "spectralLabelAsPrinted": "A5"
+    },
+    {
+      "absoluteV": 2.6,
+      "bMinusV": 0.27,
+      "spectralLabelAsPrinted": "F0"
+    },
+    {
+      "absoluteV": 3.4,
+      "bMinusV": 0.42,
+      "spectralLabelAsPrinted": "F5"
+    },
+    {
+      "absoluteV": 4.4,
+      "bMinusV": 0.58,
+      "spectralLabelAsPrinted": "GO"
+    },
+    {
+      "absoluteV": 5.1,
+      "bMinusV": 0.7,
+      "spectralLabelAsPrinted": "G5"
+    },
+    {
+      "absoluteV": 5.9,
+      "bMinusV": 0.89,
+      "spectralLabelAsPrinted": "KO"
+    },
+    {
+      "absoluteV": 7.3,
+      "bMinusV": 1.18,
+      "spectralLabelAsPrinted": "K5"
+    },
+    {
+      "absoluteV": 9,
+      "bMinusV": 1.45,
+      "spectralLabelAsPrinted": "MO"
+    },
+    {
+      "absoluteV": 11.8,
+      "bMinusV": 1.63,
+      "spectralLabelAsPrinted": "M5"
+    },
+    {
+      "absoluteV": 16,
+      "bMinusV": 1.8,
+      "spectralLabelAsPrinted": "M8"
+    }
+  ],
+  "plot": {
+    "bMinusVMin": -0.4,
+    "bMinusVMax": 1.8,
+    "vMin": 0,
+    "vMax": 25
+  },
+  "lightYearsPerParsec": 3.26,
+  "historicalComparisonLy": 410,
+  "webAdaptations": [
+    "Only explicit manual B/V pairs from16 admitted VIREO fields;8 excluded positions stay excluded;2008 paper exercise and VIREO catalog edition are not asserted identical.",
+    "Manual numeric vertical translation,not automatic fit;piecewise straight display guides,not a new physical/interpolation model.",
+    "Guard modulus -25..40 in0.1mag steps;at least2 confirmed paired targets before committing;bounds/minimum are new UI policy,not recovered native limits.",
+    "No horizontal/color shift,reddening,extinction,age,metallicity,isochrones,automatic membership/outlier labels or uncertainties.",
+    "Unapplied preview is not persisted;confirmed modulus replays with exact selected pair references;changing a color invalidates confirmation.",
+    "JavaScript Number/Math.pow;no x87 or original executable equivalence witness.",
+    "410ly is the manual historical exercise reference,not a current astronomical estimate."
+  ]
+}

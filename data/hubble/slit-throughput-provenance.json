@@ -1,0 +1,49 @@
+{
+  "targetSha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "procedure": "0x50f338",
+  "selectedRange": "0x50f338..0x50f467 inclusive",
+  "evidenceId": "ev_6e7bb16660d9d81879e2c4cc5dbab41d65b476b665a6095d99fbe51814be6bfd",
+  "rawResponse": "analysis/rea-ghidra-hubble2-results/slit-throughput.json",
+  "rawResponseSha256": "f3ceb5125804e53f1506788cb29c5d4927506b02367b9ffa0f26a6ebdf4b2dfb",
+  "selectedBytesSha256": "cce886b5bb47d76f8d7b83a72a6b289ef440ccabe721cba5cab7f34646c25556",
+  "constants": [
+    {
+      "address": "0x50f468",
+      "bytes": "9f93de37bef6cc92f33f",
+      "exactDecimal": "0.000280000000000000000008495740460960632400855274681816808879375457763671875",
+      "Number": 0.00028
+    },
+    {
+      "address": "0x50f474",
+      "bytes": "2c6519e25817b7d1f73f",
+      "exactDecimal": "0.006400000000000000000073183646642771549295503064058721065521240234375",
+      "Number": 0.0064
+    },
+    {
+      "address": "0x50f480",
+      "format": "Single",
+      "value": 200
+    }
+  ],
+  "branchRanges": {
+    "absence": "0x50f349..0x50f360",
+    "typeDispatch": "0x50f3c1..0x50f3cc",
+    "stellar": "0x50f3d2..0x50f42a",
+    "galaxy": "0x50f42c..0x50f45a"
+  },
+  "storage": "ObjectRA/DecDouble+0x19/+0x21; pointingExtended observatory+0x65f/+0x669; pixelLevel from0x53e338; returnExtended ST0. New helper accepts explicit Number projections.",
+  "guards": "Presenttypes only0,1,2,3; boundedfiniteRA0..24/Dec-90..90; pixelinteger0..765; conservative8EPS*max(1,abscoords) nearthreshold rejects precision-required, not a measured native error bound.",
+  "pseudocodeCaveat": "Ghidra body and assembly include304bytes, but its current C rendering drops the FPU-returning branches. Bind to assembly plus independent objdump, not that abbreviated pseudocode.",
+  "catalogReportsReviewed": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/CONTRACT.md",
+      "sha256": "03a38a86ba304f73f08d2b3a3126a4838e0e8b12f3de0e7ec9436eb8d66b524f"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/nearest-index-audit/REPORT.md",
+      "sha256": "c726370534d9307f1a22fa5655063526ad34b8e2fb1bac52e6dedd8e2d150395"
+    }
+  ],
+  "catalogBoundary": "Three mutation callers re-resolve saved positional index after delete; fourth uses winning pointer. Conditional static divergence is not fixed, generalized or represented as original runtime output. Caller must supply an actually selected object; this helper does not reconstruct merges/selection.",
+  "scope": "Pure supplied-input throughput; no complete raster, catalog attestation, nativeFPU equivalence, acquisitionUIenable, Windows, Claude or pendingpermissionretry."
+}

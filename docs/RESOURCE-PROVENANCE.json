@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "scope": "All1279files from LOCAL-RESOURCES.json included with byte-identical contents by explicit instruction;no executable,installer or downloaded archive is among them.",
+  "totalFiles": 1279,
+  "totalBytes": 76793135,
+  "extensions": {
+    ".json": 1025,
+    ".LST": 3,
+    ".SP": 81,
+    ".png": 170
+  },
+  "groups": {
+    "data/classification": {
+      "files": 7,
+      "bytes": 114119,
+      "materialClass": "mixed-derived-and-authored",
+      "description": "Parsed practice/atlas associations and source/proof metadata",
+      "usedBy": "Classification tools and dataset tests",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "data/feature-width": {
+      "files": 2,
+      "bytes": 19246,
+      "materialClass": "mixed-derived-and-authored",
+      "description": "Authored analytic fixtures and recovered-contract metadata",
+      "usedBy": "Equivalent-width contracts/tests",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "data/hubble": {
+      "files": 59,
+      "bytes": 3061203,
+      "materialClass": "mixed-derived-and-authored",
+      "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
+      "usedBy": "Star/sky/three-galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "data/observatory": {
+      "files": 14,
+      "bytes": 160766,
+      "materialClass": "mixed-derived-and-authored",
+      "description": "Authored recovered-contract packets and reference vectors with original operand/provenance bindings",
+      "usedBy": "Optical profiles, access, UT/site/tracking/horizon/motion and tests",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "data/original": {
+      "files": 4,
+      "bytes": 57615,
+      "materialClass": "unchanged-original-text-resource",
+      "description": "Unchanged original bytes:3line lists and1spectral template",
+      "usedBy": "Spectral line lists and unshifted template",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "data/photometry": {
+      "files": 75,
+      "bytes": 6139853,
+      "materialClass": "mixed-derived-and-authored",
+      "description": "Mixed catalog/model tables, source fields, analytic tests, proof metadata and earlier web-writer fixtures",
+      "usedBy": "UBV photometry, clusters/ZAMS/isochrones, compatibility and scientific tests",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "data/planning": {
+      "files": 1,
+      "bytes": 42715,
+      "materialClass": "authored-project-assessment",
+      "description": "Our authored acceptance/planning assessment",
+      "usedBy": "Capability/status UI and acceptance tests",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "data/sky": {
+      "files": 3,
+      "bytes": 326781,
+      "materialClass": "mixed-derived-and-authored",
+      "description": "Parsed original coordinates/hot-list associations plus our provenance/retile metadata",
+      "usedBy": "Initial observatory target list and sky contracts",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "public/original/classification": {
+      "files": 57,
+      "bytes": 3190860,
+      "materialClass": "unchanged-original-text-resource",
+      "description": "57unchanged original SP files",
+      "usedBy": "Runtime fetched stellar practice/atlas spectra",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "public/original/images": {
+      "files": 170,
+      "bytes": 2079004,
+      "materialClass": "lossless-image-conversion",
+      "description": "170PNG conversions of original BMPs;verified RGB preservation",
+      "usedBy": "Runtime galaxy reference-image cards",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "public/original/sky": {
+      "files": 864,
+      "bytes": 60936453,
+      "materialClass": "generated-catalog-subset",
+      "description": "864generated JSON tiles of original compact GSC;2369926selected records",
+      "usedBy": "Runtime star fields,24RAhours x36declination bands",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "public/original/spectra": {
+      "files": 23,
+      "bytes": 664520,
+      "materialClass": "unchanged-original-text-resource",
+      "description": "23unchanged original SP files",
+      "usedBy": "Runtime galaxy library and template spectra",
+      "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    }
+  },
+  "authoredExamples": [
+    "data/planning/acceptance-status.json",
+    "data/feature-width/analytic-fixtures.json",
+    "data/observatory/telescope-motion-reference.json"
+  ],
+  "authoredMaterialNote": "Other files mix our contract descriptions,analytic vectors and previous web-writer captures with original scientific inputs or raw-byte witnesses. They are not all original observations or subject to one blanket license.",
+  "credits": {
+    "ProjectCLEA": "Project CLEA,Gettysburg College;NSF support. Copyright1992\u20132012 notice retained in THIRD_PARTY_NOTICES.txt.",
+    "catalogFamilies": "VIREO manual pp60\u201380: NASAADC distribution included multiple-author catalogs;GSC-ACT/ProjectPluto andSTScI policies are product/version-specific. NASA hosting alone is not NASA authorship.",
+    "imageFamilies": "VIREO manual describes galaxy BMP sources chiefly from the1961Carnegie HubbleAtlas. PNG conversion preserves RGB pixels;individual image credits have not all been independently matched.",
+    "spectralFamilies": "VIREO manual credits Jacoby/Hunter/Christian andKennicutt spectral resources,and some CLEA synthetic inputs. Individual file/source-policy mapping remains incomplete.",
+    "NASA": "NASA policy applies to NASA-created material with its stated conditions and third-party exceptions;the1279resources are not universally labelled NASA works."
+  },
+  "sourceNotices": [
+    {
+      "name": "CLEA License.rtf",
+      "sourceArchive": "CLEA_Vireo.zip",
+      "archiveSHA256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+      "bytes": 32096,
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "recordedTerms": "Free noncommercial use,unlimited copies for students,lab notebooks at cost;credits requested for CLEA,NSF,Gettysburg;for-profit distribution/marketing prohibited. Does not expressly describe this extracted/converted web packaging."
+    },
+    {
+      "name": "Copyright.txt",
+      "bytes": 152,
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+      "attribution": "CLEA Exercises and Software,1992\u20132012,Contemporary Laboratory Experiences in Astronomy,Gettysburg College."
+    }
+  ],
+  "references": [
+    "https://public.gettysburg.edu/~marschal/clea/CLEAbase.html",
+    "https://www.gettysburg.edu/faculty-pages/marschal/clea/clea_products/manuals/vireo%20manual.pdf",
+    "https://gsss.stsci.edu/Acknowledgements/DataUsePolicy.htm",
+    "https://gsss.stsci.edu/Acknowledgements/DataCopyrights.htm",
+    "https://www.nasa.gov/nasa-brand-center/images-and-media/"
+  ],
+  "currentPublicationPolicy": "Resources are included as requested with provenance/uncertainty retained;not a new license grant or blanket prohibition. Historical local-research-only stamps inside hash-bound packets describe their earlier operational boundary.",
+  "preservedProducerBytes": "Captured regression journals and source packets retain exact historical producer bytes required by their identities;current UI,authored code and new exports use OpenVireo."
+}

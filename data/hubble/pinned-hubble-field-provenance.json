@@ -1,0 +1,225 @@
+{
+  "schema": 1,
+  "evidenceDependencies": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/implementation/data/hubble/PROVENANCE.json",
+      "sha256": "071e7bda3520309df41378f4531ba57427852e33bbcdfaf8a56bf67c9f394a87"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/implementation/data/hubble/slit-throughput-provenance.json",
+      "sha256": "2d7d74ca9fd3cd854b37d8d5f076c3fee0066988063c3ec6632582c5a65a4e8e"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/environment-create.asm",
+      "sha256": "7d7044b77eb08f97b03511ecb96298483fbdbaa4c8bb00552b53bd1c98f45df7"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/telescope-object-selection.c",
+      "sha256": "28a5a173abdfac62416a959b8835c072742c5dd0df4c5a6cad5036c75f899b3b"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/field-assembly.asm",
+      "sha256": "81aae233a3feb98be4074ac7cb99e094982d286fcf1f7de57831b3ae632f4943"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/galaxy-reader.asm",
+      "sha256": "48ae58924b4726287cfe40151d9ccfa17448db4ff286036d53b563880567b496"
+    }
+  ],
+  "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Hubble.HTL",
+      "sha256": "02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986",
+      "bytes": 1118,
+      "recordBytes": 86
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524,
+      "recordBytes": 92
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988,
+      "recordBytes": 52
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071,
+      "recordBytes": 59
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "bytes": 31481649,
+      "recordBytes": 27
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S0000.DAT",
+      "sha256": "0cc5484587b734d4c468ad0d38e3eab78936a253d1409bd69d83f0bf26fe44f9",
+      "bytes": 27456219,
+      "recordBytes": 27
+    }
+  ],
+  "ranges": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/area-and-load.asm",
+      "sha256": "70a1643eb637f9b2d77b640eeff19b8b2ade0dc5cd1086e30684787aae36c23a",
+      "start": "0x53be70",
+      "endInclusive": "0x53c0b3",
+      "sourceBytesSHA256": "2929298c688b42dbc116f1886f2005d9beac4129ff86f39c0c219050f7bad94b"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/regions-load.asm",
+      "sha256": "6083563eab3e78a821c6dab4988dc198b0df21c6f0825fd7b36704bfb66383b4",
+      "start": "0x597644",
+      "endInclusive": "0x59776e",
+      "sourceBytesSHA256": "6f74ce23b140561afcee7f600b37e922a18b1a8a72d5ea9c50d321189650596f"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/regions-enumerate.asm",
+      "sha256": "e59e9a38b47196a19b43cb0ff1af11c0118998af1cc8935dc69bae183c38b5e1",
+      "start": "0x5977e0",
+      "endInclusive": "0x59787d",
+      "sourceBytesSHA256": "e59ad7444ec170281294cc81200a24fa2eaa25bda6bf04e22289d236cdfb874e"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/regions-overlap.asm",
+      "sha256": "905d577ba1356cc4da3bcfd30f5c6c41c90b583c46f2434dd8972cf9c2c6e6d0",
+      "start": "0x5978c0",
+      "endInclusive": "0x597963",
+      "sourceBytesSHA256": "29ef40e07b8b1fa51b34accc6c3e8fb642817c16384badd5d3953177abaf8f89"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/compact-reader.asm",
+      "sha256": "6bc17876c3d5680ca9b83bd77e9f13c60240a69a2c491b0e41373a1a63935e67",
+      "start": "0x59ad98",
+      "endInclusive": "0x59b26d",
+      "sourceBytesSHA256": "324a2d5de134173f1b16f037df415f2a42722b8f9ba38367128daf3f5e88163a"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/context-global-init.asm",
+      "sha256": "cca0bead204095adc5d0b4bb65df93af1dd0f85185fb22c25ab55f3dcf81fccc",
+      "start": "0x5ad080",
+      "endInclusive": "0x5ad0e8",
+      "sourceBytesSHA256": "068eb2e77ca335aae78306f6bae01261f48224c97e81216b71c203e14ae180a3"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/context-creation-guard.asm",
+      "sha256": "4c81dec0b4a0692541c001d9372cf535b3f0bd5a752f69e0201e0bd89722de61",
+      "start": "0x58b39e",
+      "endInclusive": "0x58b3ca",
+      "sourceBytesSHA256": "05ea0b86dc58cceb84ab447558767845dfae94e1e39c36ba51747dbc30e20bd0"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/hubble-mode.asm",
+      "sha256": "7453cfc078583df692c331d709c4454d952d87ffaea3947b2be8ca22be881a39",
+      "start": "0x58a8ca",
+      "endInclusive": "0x58a922",
+      "sourceBytesSHA256": "b43743dbe41688916c68b27e5a5bee571a8e8ba66d91425071b6b926e15cba46"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/native-field-global-init.asm",
+      "sha256": "911c0710a1fa153d1f070bf7d70a9a71e77db021b35ebf6f744a89891795055b",
+      "start": "0x5ad26c",
+      "endInclusive": "0x5ad2af",
+      "sourceBytesSHA256": "ee367918ac71f90b3dc1d5a2e5676d3374a80a0dc46a4f5322e4800171276be3"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/compact-field-constructor.asm",
+      "sha256": "616c0909fd9e134dcb08a4cb6c011c193a4e2c4823d455effacd379763c95856",
+      "start": "0x59ad60",
+      "endInclusive": "0x59ad97",
+      "sourceBytesSHA256": "cc980042aebc04cc21c8e84b673330c5728ec0501f744f63e1edddd982ec2827"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/catalog-base-constructor.asm",
+      "sha256": "8db4b2aaa3e2605114fe6ebe59e61f2df96b4271700d7a9b7ea2b9c93c262086",
+      "start": "0x5979d4",
+      "endInclusive": "0x597a66",
+      "sourceBytesSHA256": "e09edc1cefcef220bc0af15152d7336337dbff1521d552eb70b718ebe813dbd4"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/date-dialog-mode-guard.asm",
+      "sha256": "b652d09723f7c4e57a37488c45bc164b1a612637b62e8e882aa51cfba07ec914",
+      "start": "0x58a0ec",
+      "endInclusive": "0x58a122",
+      "sourceBytesSHA256": "439de3acce19dfe71cf20b7d8298213ec21460a23c92f28311fd5dbbe78413f2"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/fallback-fov-and-multiplier.asm",
+      "sha256": "71fd6f0bbadfa70fbe545ee7a6ee1204e2a046dc365fc21d404c8e7c775e4cd1",
+      "start": "0x5a29e2",
+      "endInclusive": "0x5a2a7d",
+      "sourceBytesSHA256": "cc6d2c239369caa29c1a694e63496a70ca89f2f66f592f6461a63f9593c6378f"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/hubble-hotlist-selector.asm",
+      "sha256": "1c3576da5d1e3ca0280c0cb8c68d3b7d2d39664793eef3ed9ef2ae52f60c5021",
+      "start": "0x58b098",
+      "endInclusive": "0x58b2a1",
+      "sourceBytesSHA256": "e541baf6beb7472a8578ef5d3e63e2736703c2334f8a0f205d0388cdb1718078"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/hotlist-loader.asm",
+      "sha256": "31fb39530e2f3a0e3fccfb2a0e2420d86f0f2ed71d487a6de1c99955fa5e28c8",
+      "start": "0x5903d8",
+      "endInclusive": "0x590530",
+      "sourceBytesSHA256": "cd3e95b940cedf3c6e49f977d0ea88d8005c1ef94bcefe72040d965a8988963f"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/photo-list-load-and-filter.asm",
+      "sha256": "ed7dc75781f4499a843bdcfb62591b1a87925ae5f447c77ca40ec8d7a7ae4c26",
+      "start": "0x596a9c",
+      "endInclusive": "0x596d4c",
+      "sourceBytesSHA256": "f2f2f9daa55aff3fcd9417035136f1221b9b500055a58fc4d91a46619f0b3bdb"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/galaxy-photo-association-and-insert.asm",
+      "sha256": "3a80627969d68bea768813f2cf2d834037e801d519e18878e3d98aff669dc939",
+      "start": "0x598e00",
+      "endInclusive": "0x5991a7",
+      "sourceBytesSHA256": "da5392ce5f90deda6c2a1366067e1b9c4a86dc95c09cdc06d889f08ad8cb5ee2"
+    }
+  ],
+  "constants": {
+    "activeFovStore": "0x5a29f6: record+0x2508=Single15",
+    "fieldMultiplierStore": "0x5a2a74: record+0x279b=3",
+    "limitStore": "0x53befe: Single20",
+    "regionUpperTableVA": "0x5b4bac",
+    "bandNamesVA": "0x5b4c10",
+    "cosAngleExtendedVA": "0x53c09c",
+    "contextPointerSlotVA": "0x5b5838 -> 0x5bc958",
+    "contextZeroInit": "0x5ad09c",
+    "contextOnlyCreationObserved": "0x58b3be..0x58b3c9, guarded by exercise0/1",
+    "hubbleModeStore": "0x58a8e6:4"
+  },
+  "hotlistClarification": "Historical dossier hubble-options-select actually chooses/loads Hubble.HTL (13x86bytes) via0x5903d8, not per-exercise options. Loading it does not insert its targets into the native field; manual pointing remains independent.",
+  "configurationFileAbsence": "VEO_OPTS.INI absent in immutable extracted package; explicit fallback/unmodified domain, not a universal user setting.",
+  "snapshotSHA256": "bc16506fbbe5c7c60a5b9afdbcc3faab27e8dc40afe0ac7af3599f994267ea1a",
+  "regionSnapshotSHA256": "c44e720c775b05f48b940d54c9897b3542a6cec77395de3090942215b29564fd",
+  "scope": "one fixed original fallback configuration, no external options, fresh direct Hubble, RA0.5h/Dec0; no other pointing or lifecycle attested",
+  "contextLimit": "Static direct references and the guarded fresh path; no proof against arbitrary writes, external modules or prior exercise/history",
+  "originalExecution": false,
+  "externalReview": "denied/pending; no retries",
+  "remaining": "Pinned field may support sky-only activation independently of pixel value; configuration and activation/reset/sky/timing integration still unimplemented. Other pointings need general population and source/image work. No acquisition enabled."
+}

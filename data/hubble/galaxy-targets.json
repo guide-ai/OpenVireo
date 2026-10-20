@@ -1,0 +1,44 @@
+[
+  {
+    "id": "36773",
+    "label": "UM-I – 2",
+    "ra": 11.789361111111111,
+    "dec": 55.68888888888889,
+    "magnitude": 15.800000190734863,
+    "recordIndex": 12119,
+    "policyId": "openclea-pinned-galaxy-36773-v1",
+    "fieldSnapshotSHA256": "cbe1f9aae57ab325095a074499d185bb469e9f6730997cc21e87359d27e26eca",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 114,
+    "galaxies": 6,
+    "sourceFile": "GLXYTMPL.SP"
+  },
+  {
+    "id": "36747",
+    "label": "UM-I – 1",
+    "ra": 11.781083333333333,
+    "dec": 55.705555555555556,
+    "magnitude": 15.600000381469727,
+    "recordIndex": 12109,
+    "policyId": "openclea-pinned-galaxy-36747-v1",
+    "fieldSnapshotSHA256": "67cd4050b627a30c18be46810c3fb367c1b84794d6112209f16aba435bba2588",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 109,
+    "galaxies": 7,
+    "sourceFile": "GLXYTMPL.SP"
+  },
+  {
+    "id": "54876",
+    "label": "CorBor – 2",
+    "ra": 15.3735,
+    "dec": 27.72222222222222,
+    "magnitude": 16.0,
+    "recordIndex": 18484,
+    "policyId": "openclea-pinned-galaxy-54876-v1",
+    "fieldSnapshotSHA256": "7413ecaf083338c6d4a052299228c1b973f5433baa1b8f827a83703a6c163ce1",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 141,
+    "galaxies": 6,
+    "sourceFile": "GLXYTMPL.SP"
+  }
+]

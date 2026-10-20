@@ -3,10 +3,10 @@ Project CLEA, Gettysburg College, with NSF support.
 Official source: https://public.gettysburg.edu/~marschal/clea/CLEAhome.html
 Local original archive: CLEA_Vireo.zip. Per-file identities: PROVENANCE.json.
 
-Included unchanged for this local research increment:
+Original reference files retained unchanged:
 GLXYLNS.LST, BALMER.LST, AGN_QSO.LST, Spectra/Galaxies/GLXYTMPL.SP.
 Educational/noncommercial conditions are documented in the source materials.
-A general permission to redistribute a derived web application and these assets has not been established. No public deployment is authorized. This notice does not relicense the original assets.
+The source terms do not expressly describe all extracted/converted web assets. Source-specific matching and terms remain documented uncertainties;no blanket prohibition or uniform open-license grant is inferred. Hosting/deployment is a separate action. This notice does not relicense the original assets.
 
 React/React DOM, Vite, Vitest and type packages: respective MIT notices in node_modules.
 TypeScript and Playwright: respective Apache-2.0 notices in node_modules.
@@ -17,4 +17,18 @@ OpenVireo observatory preview additionally uses a declared compact-GSC subset, i
 
 The bounded stellar classification lab additionally uses57 unchanged original VIREO jspect2 SP files, all8 ATLAS2.LST atlas memberships/CLASSIFY.LST associations and SPECLNS.LNL line identities. Exact original/source/manual/license hashes and limits are retained in data/classification/provenance.json. This is local-only practice; original assets are not newly acquired observations and no public redistribution license is granted.
 
-OpenVireo source-only Git history excludes data/ and public/original/. These notices credit the resources retained locally; they do not assert that the source repository bundles them. docs/LOCAL-RESOURCES.json retains identities only. Resource redistribution rights remain unresolved; these excluded payloads are not published with the source. No general license for new authored code has been selected or inferred. Public source visibility does not relicense third-party materials.
+Current resource inclusion
+All1279identified files in docs/LOCAL-RESOURCES.json are now versioned by explicit project-owner instruction. No executable,installer or original archive is among them. Exact byte sizes/SHA-256 are preserved;docs/RESOURCE-PROVENANCE.json separates originals,conversions,catalog derivatives and authored references. Earlier local-only notes in hash-bound packets are historical packaging assessments,not a universal ban on use or copying.
+
+Original CLEA Copyright.txt credits Contemporary Laboratory Experiences in Astronomy,Gettysburg College,1992–2012 (SHA-25650d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952). License.rtf (32096bytes,SHA-256fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af) allows free noncommercial software/manual use and unlimited student copies,permits laboratory notebooks at cost,and requests CLEA/NSF/Gettysburg recognition. Its express restriction is: "Distribution for profit or marketing these materials in any form is prohibited."
+
+Source families described by the VIREO manual pp60–80 include multiple-author catalogs distributed by NASAADC,GSC-ACT/ProjectPluto,galaxy images chiefly from the1961Carnegie HubbleAtlas,and Jacoby/Hunter/Christian andKennicutt spectra,with some CLEA synthetic inputs. These are family-level credits;individual-image/spectrum/source-policy matching remains incomplete. NASA hosting is not automatically NASA authorship,and NASA's media policy retains third-party exceptions. Preserve specific source acknowledgements where identified;no third-party work is relicensed here.
+
+Primary references:
+https://public.gettysburg.edu/~marschal/clea/CLEAbase.html
+https://www.gettysburg.edu/faculty-pages/marschal/clea/clea_products/manuals/vireo%20manual.pdf
+https://gsss.stsci.edu/Acknowledgements/DataUsePolicy.htm
+https://gsss.stsci.edu/Acknowledgements/DataCopyrights.htm
+https://www.nasa.gov/nasa-brand-center/images-and-media/
+
+No general license for new authored code has been selected. Public visibility and this inclusion instruction do not establish a universal asset license or original-runtime equivalence.

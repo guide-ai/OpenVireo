@@ -1,0 +1,110 @@
+{
+  "method": "Decimal80 with original Extended pi and input Single projections. Exact mathematical reference, not x87 execution or intermediate-rounding emulation.",
+  "sourceCatalogSha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+  "calibrationScenario": {
+    "kind": "synthetic supplied inputs, no detector observation",
+    "zeroPoint": 9,
+    "skyMagnitude": 19,
+    "slitFraction": 0.25,
+    "expectedSkyAmplitude": 0.0001
+  },
+  "vectors": [
+    {
+      "label": "NGC 3034",
+      "kind": "original decoded catalog",
+      "recordIndex": 9497,
+      "majorArcminutes": 10.5,
+      "minorArcminutes": 5.099999904632568,
+      "apparentMagnitude": 9.199999809265137,
+      "expectedArea": 42.0580708634686,
+      "expectedMagnitude": 13.259623180297531,
+      "syntheticAmplitude": 0.004944139734330021,
+      "recordSha256": "6633088b12fc1224f6e8ef7691c4fa9082bdd4033ad59bfad013740c9b2e19ef"
+    },
+    {
+      "label": "NGC 4874",
+      "kind": "original decoded catalog",
+      "recordIndex": 15036,
+      "majorArcminutes": 2.4000000953674316,
+      "minorArcminutes": 2.4000000953674316,
+      "apparentMagnitude": 12.899999618530273,
+      "expectedArea": 4.523893780696056,
+      "expectedMagnitude": 14.53878061679029,
+      "syntheticAmplitude": 0.0015220459434634767,
+      "recordSha256": "8a4bd32c388e7d879d20392202ca1c88c4b00a453e966f5fe8282fcd6253c686"
+    },
+    {
+      "label": "NGC 4889",
+      "kind": "original decoded catalog",
+      "recordIndex": 15074,
+      "majorArcminutes": 2.799999952316284,
+      "minorArcminutes": 2.0,
+      "apparentMagnitude": 12.5,
+      "expectedArea": 4.398229640124305,
+      "expectedMagnitude": 14.108194752440951,
+      "syntheticAmplitude": 0.002262883041176573,
+      "recordSha256": "ae9f0a949515198f5f815c993a03532647003150d766bd9f0627b385d2642b6a"
+    },
+    {
+      "label": "Single conversion discriminant",
+      "kind": "synthetic",
+      "majorArcminutes": 0.85,
+      "minorArcminutes": 1.1,
+      "apparentMagnitude": 12.0000001,
+      "expectedArea": 0.7343473192910499,
+      "expectedMagnitude": 11.664753784583501,
+      "syntheticAmplitude": 0.021480208611959293
+    }
+  ],
+  "catalogFieldVerification": {
+    "source_sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+    "record_bytes": 59,
+    "checks": [
+      {
+        "index": 9497,
+        "identifier": "NGC 3034",
+        "record_sha256": "6633088b12fc1224f6e8ef7691c4fa9082bdd4033ad59bfad013740c9b2e19ef",
+        "fields_verified": [
+          "major+0x10 Single",
+          "minor+0x14 Single",
+          "magnitude+0x18 Single"
+        ]
+      },
+      {
+        "index": 15036,
+        "identifier": "NGC 4874",
+        "record_sha256": "8a4bd32c388e7d879d20392202ca1c88c4b00a453e966f5fe8282fcd6253c686",
+        "fields_verified": [
+          "major+0x10 Single",
+          "minor+0x14 Single",
+          "magnitude+0x18 Single"
+        ]
+      },
+      {
+        "index": 15074,
+        "identifier": "NGC 4889",
+        "record_sha256": "ae9f0a949515198f5f815c993a03532647003150d766bd9f0627b385d2642b6a",
+        "fields_verified": [
+          "major+0x10 Single",
+          "minor+0x14 Single",
+          "magnitude+0x18 Single"
+        ]
+      }
+    ],
+    "fieldOffsets": {
+      "majorArcminutes": {
+        "offset": "0x10",
+        "format": "Single little-endian"
+      },
+      "minorArcminutes": {
+        "offset": "0x14",
+        "format": "Single little-endian"
+      },
+      "apparentMagnitude": {
+        "offset": "0x18",
+        "format": "Single little-endian"
+      }
+    },
+    "reader": "0x598acc"
+  }
+}

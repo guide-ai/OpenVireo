@@ -1,0 +1,230 @@
+{
+  "schema": 1,
+  "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "procedures": [
+    "0x593df8",
+    "0x594018",
+    "0x5948b0"
+  ],
+  "startup": "0x5ad220",
+  "parameters": [
+    {
+      "index": 0,
+      "address": "0x5b4b6c",
+      "bytes": "00000000fa440000c04000007a44",
+      "threshold": 0,
+      "amplitude": 2000.0,
+      "sigma": 6.0,
+      "spike": 1000.0,
+      "tableAddress": "0x5bcfa0"
+    },
+    {
+      "index": 1,
+      "address": "0x5b4b7c",
+      "bytes": "030000c0da450000904000007a44",
+      "threshold": 3,
+      "amplitude": 7000.0,
+      "sigma": 4.5,
+      "spike": 1000.0,
+      "tableAddress": "0x5c68c4"
+    },
+    {
+      "index": 2,
+      "address": "0x5b4b8c",
+      "bytes": "060000409c460000604000007a44",
+      "threshold": 6,
+      "amplitude": 20000.0,
+      "sigma": 3.5,
+      "spike": 1000.0,
+      "tableAddress": "0x5d01e8"
+    },
+    {
+      "index": 3,
+      "address": "0x5b4b9c",
+      "bytes": "090000c82f470000004000007a44",
+      "threshold": 9,
+      "amplitude": 45000.0,
+      "sigma": 2.0,
+      "spike": 1000.0,
+      "tableAddress": "0x5d9b0c"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x593f50",
+      "bytes": "00000040",
+      "value": 2.0
+    },
+    {
+      "address": "0x593f54",
+      "bytes": "00004842",
+      "value": 50.0
+    },
+    {
+      "address": "0x593f58",
+      "bytes": "0000803f",
+      "value": 1.0
+    },
+    {
+      "address": "0x593f5c",
+      "bytes": "0000c842",
+      "value": 100.0
+    },
+    {
+      "address": "0x593f60",
+      "bytes": "0000003f",
+      "value": 0.5
+    }
+  ],
+  "scaleExtendedBytes": "ae47e17a14ae47a1fe3f",
+  "callerAddresses": {
+    "0x593df8": [
+      "0x5ad233",
+      "0x5ad242",
+      "0x5ad251",
+      "0x5ad260"
+    ],
+    "0x594018": [
+      "0x5948df"
+    ],
+    "0x5948b0": [
+      "0x53b291",
+      "0x53b712",
+      "0x53c261",
+      "0x53c5cf",
+      "0x553d26",
+      "0x553f0d"
+    ]
+  },
+  "numericalPolicy": "Number/nearest-even, integer-exponent RTL tree; x87 equivalence unverified",
+  "evidence": [
+    {
+      "file": "kernel.asm",
+      "start": "0x593df8",
+      "endInclusive": "0x593f4d",
+      "originalRangeSHA256": "60ca43d3b43610794d333c486b49261ebb8c85119627cb3db45eeeba6db7ae98",
+      "artifactSHA256": "20ace0bce677bb655c6a4b58febc0beb8a6d1b130202ce7e0828c8697a9566a2"
+    },
+    {
+      "file": "level-builder.asm",
+      "start": "0x594018",
+      "endInclusive": "0x59417a",
+      "originalRangeSHA256": "c3f0851f386ef08f1738cd7ef7c5f99aa7a2726723244324353a31d319b467c9",
+      "artifactSHA256": "de0671cbd8aab097cbf58be3f999c4efb45751fd028b1a771baaeb70e888c468"
+    },
+    {
+      "file": "bank-initializer.asm",
+      "start": "0x5948b0",
+      "endInclusive": "0x594907",
+      "originalRangeSHA256": "c3f1cacd4d9223a23fb9fc9beec056e9b9fc2d3bd119aa6902102d369bbfab8d",
+      "artifactSHA256": "a1cea74966ac2000226f6e54208a7d8074a1a08728855c65e2f1e9d883a3f39a"
+    },
+    {
+      "file": "startup.asm",
+      "start": "0x5ad220",
+      "endInclusive": "0x5ad26a",
+      "originalRangeSHA256": "939166912fa55575c5c4bc27986c3fe4d2d58281490910a598bd6fd4358401f9",
+      "artifactSHA256": "ff562e85c798584efb267c3f099fa6e2c1880b62ee63175edb9bdf8870298e92"
+    },
+    {
+      "file": "integer-power-helper.asm",
+      "start": "0x42703c",
+      "endInclusive": "0x4270bd",
+      "originalRangeSHA256": "85094fa68cdaf411f9a96eb8aaf546f9b327f4956cc7f079e4322c799aa072bd",
+      "artifactSHA256": "7e615ea43b1c8d56fc207e609865a09aef72dd970875ecd4708b6e2a70c47653"
+    },
+    {
+      "file": "exp-helper.asm",
+      "start": "0x40368c",
+      "endInclusive": "0x4036a9",
+      "originalRangeSHA256": "9f17ca64e65ef2b98402a72ea851a8f99bc70000c33d40b30e5841644a1257ea",
+      "artifactSHA256": "4642715039e3e1a2419de8758d7eb3d9c4da0a918865e938293e7422cd1f2f3e"
+    },
+    {
+      "file": "integer-conversion.asm",
+      "start": "0x403700",
+      "endInclusive": "0x403709",
+      "originalRangeSHA256": "8c144f1eac0c96ef3bd0218cfba1361deb4e41de9ab485b113a00fa178f5568f",
+      "artifactSHA256": "e3dfea5730183f4e98a1b18a7811069f805faba50c49d3613289864116ce3316"
+    },
+    {
+      "file": "telescope-caller.asm",
+      "start": "0x53b6fd",
+      "endInclusive": "0x53b7c0",
+      "originalRangeSHA256": "191609cf80fed4177e2ca5431b16e32d8f769cfe85024c4b7444c0c61c102a48",
+      "artifactSHA256": "8a4f45768efcb907ff619baf66e7a099e48dc79fd20ece2b6f3e5617e3a22327"
+    },
+    {
+      "file": "caller-53b291.asm",
+      "start": "0x53b27c",
+      "endInclusive": "0x53b295",
+      "originalRangeSHA256": "079fcb0b1da5aa7827b1431b8c81cc5181f2feb0ab720bb0bc4a25728809adfe",
+      "artifactSHA256": "6d7e4b40c9f57322551f0c32f7531dabe226acf57893cb0376e8f22a2578e8c5"
+    },
+    {
+      "file": "caller-53c261.asm",
+      "start": "0x53c252",
+      "endInclusive": "0x53c265",
+      "originalRangeSHA256": "1c65a8cc160d3c713b101822b801446b48828cdf5295f974bf773c26905262ce",
+      "artifactSHA256": "f1c7ac4d936b2df0d9a7afe8c3915b3355544722b88888a4dc1f0e3904cbc862"
+    },
+    {
+      "file": "caller-53c5cf.asm",
+      "start": "0x53c5c0",
+      "endInclusive": "0x53c5d3",
+      "originalRangeSHA256": "ddb262ba348c7a6e9cb88dca8316126ff5d104a55970bb55c58e526123daa972",
+      "artifactSHA256": "8079841ab223a971ecd92a0f5e80c66b328d5a20843bdc67af1059bc9d2b5680"
+    },
+    {
+      "file": "caller-553d26.asm",
+      "start": "0x553d13",
+      "endInclusive": "0x553d2a",
+      "originalRangeSHA256": "31ad7612a3a4a0a0457165c2766acb1a7e7003eb2246a879b41170774ab7d8d7",
+      "artifactSHA256": "32cd3eb30d8b6b530ee1f26b40ba84e6dbb615799e6d659ebabd0c51944478e3"
+    },
+    {
+      "file": "caller-553f0d.asm",
+      "start": "0x553eef",
+      "endInclusive": "0x553f11",
+      "originalRangeSHA256": "b982e20c83636b3d7fc33202b08d5f148ad0b166d3a0f709fc0a4d3d1f3b2d7b",
+      "artifactSHA256": "95cd5810c60e63ecd11a7ecc0a79dfa93a48db9fe3224506819e9de483003af1"
+    },
+    {
+      "existingFile": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-pixel-recovery/star-profile-build.asm",
+      "sha256": "9184ff654e5b5644a7738359d8c2051b9aebbdf1b97d9f903d672ef1815bb905"
+    },
+    {
+      "existingFile": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-pixel-recovery/star-stamp-initialize.asm",
+      "sha256": "292129c54fd21fbc1a8a4b5bb77e9279e35801e50b740dc40f6256c1626e0629"
+    },
+    {
+      "existingFile": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-pixel-recovery/star-base-construction-independent.asm",
+      "sha256": "dc02f942564cb4d108268529490c295a9a0793d870a007b2019eb592f9a88fb3"
+    },
+    {
+      "existingFile": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/rea-ghidra-scene-pixel-results/star-profile-build.json",
+      "sha256": "745c741100334ddae21d9c042a2c6319bb07a0029c653fdf493e026b9e3673c6"
+    },
+    {
+      "existingFile": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/rea-ghidra-scene-pixel-results/star-stamp-initialize.json",
+      "sha256": "37ed75fac671a30748774212fb7b9350919e0d18b7493f8da34f88f072570021"
+    },
+    {
+      "existingFile": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/rea-ghidra-scene-pixel-results/star-base-table-xrefs.json",
+      "sha256": "8d46e898f3ce7683870d333eeca80ba33cad2d431e7deffaa5cad90550df9ef1"
+    }
+  ],
+  "originalExecution": false,
+  "reviewStatus": "local mathematical and isolated compiler/runtime checks; external review pending",
+  "consolidationV2Followup": {
+    "note": "Bank arguments are now identified as converter offset/flag; table API remains independent. Cached-level and draw-stage state must not be conflated.",
+    "ranges": [
+      "0x53c5c0..0x53c5cf",
+      "0x53c965",
+      "0x53cae0..0x53cae3",
+      "0x53b6fd..0x53b712",
+      "0x594908..0x594937"
+    ],
+    "documentation": "docs/CONTRACT-COMPOSITION-REVIEW.md"
+  }
+}

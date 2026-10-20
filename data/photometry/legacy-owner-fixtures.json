@@ -1,0 +1,26 @@
+{
+  "kind": "Canonical pre-expansion OpenCLEA writer fixtures,not original observations",
+  "sourceSHA256": "09e08d0c499d533f6c3b5274f30a627cabd4008abf90a1bb1f808127fe46c107",
+  "rows": [
+    {
+      "version": 1,
+      "text": "{\n  \"format\": \"OpenCLEA Pleiades photometer session\",\n  \"version\": 1,\n  \"policy\": \"OpenCLEA-Pleiades-V-observing-v1\",\n  \"numericalPolicy\": \"Number_Math_native_x87_equivalence_unvalidated\",\n  \"fieldSnapshotSHA256\": \"143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624\",\n  \"seedAtStart\": 42,\n  \"events\": [\n    {\n      \"type\": \"activate\"\n    },\n    {\n      \"type\": \"point\",\n      \"kind\": \"sky\"\n    },\n    {\n      \"type\": \"start\"\n    },\n    {\n      \"type\": \"complete\"\n    },\n    {\n      \"type\": \"deactivate\"\n    }\n  ]\n}\n",
+      "sha256": "e69ee8e2d46d1051f7e7d5c9a466d033a64ec324034844cb2394ff3694b92d42"
+    },
+    {
+      "version": 2,
+      "text": "{\n  \"format\": \"OpenCLEA Pleiades photometer session\",\n  \"version\": 2,\n  \"policy\": \"OpenCLEA-Pleiades-UBV-observing-v2\",\n  \"numericalPolicy\": \"Number_Math_native_x87_equivalence_unvalidated\",\n  \"fieldSnapshotSHA256\": \"143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624\",\n  \"ubvContractSHA256\": \"27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf\",\n  \"seedAtStart\": 42,\n  \"events\": [\n    {\n      \"type\": \"activate\"\n    },\n    {\n      \"type\": \"filter\",\n      \"filter\": \"B\"\n    },\n    {\n      \"type\": \"point\",\n      \"kind\": \"sky\"\n    },\n    {\n      \"type\": \"start\"\n    },\n    {\n      \"type\": \"complete\"\n    },\n    {\n      \"type\": \"deactivate\"\n    }\n  ]\n}\n",
+      "sha256": "3e8e6333b818807b4e86a74e6b2812872a435e8ae88395f634f5eae45c1b04ef"
+    },
+    {
+      "version": 3,
+      "text": "{\n  \"format\": \"OpenCLEA Pleiades photometer session\",\n  \"version\": 3,\n  \"policy\": \"OpenCLEA-Pleiades-three-targets-v3\",\n  \"numericalPolicy\": \"Number_Math_native_x87_equivalence_unvalidated\",\n  \"fieldSnapshotSHA256\": \"143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624\",\n  \"ubvContractSHA256\": \"27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf\",\n  \"targetFieldsSHA256\": \"5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356\",\n  \"seedAtStart\": 42,\n  \"events\": [\n    {\n      \"type\": \"activate\"\n    },\n    {\n      \"type\": \"target\",\n      \"targetId\": \"N2230.DAT@144496\"\n    },\n    {\n      \"type\": \"point\",\n      \"kind\": \"sky\"\n    },\n    {\n      \"type\": \"start\"\n    },\n    {\n      \"type\": \"complete\"\n    },\n    {\n      \"type\": \"deactivate\"\n    }\n  ]\n}\n",
+      "sha256": "edfb052b4edbcbd8f6f4b3ccf6e62ee0c706e7681d039d67aa44f96a2113b64d"
+    },
+    {
+      "version": 4,
+      "text": "{\n  \"format\": \"OpenCLEA Pleiades photometer session\",\n  \"version\": 4,\n  \"policy\": \"OpenCLEA-Pleiades-timed-observing-v4\",\n  \"numericalPolicy\": \"Number_Math_native_x87_equivalence_unvalidated\",\n  \"fieldSnapshotSHA256\": \"143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624\",\n  \"ubvContractSHA256\": \"27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf\",\n  \"targetFieldsSHA256\": \"5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356\",\n  \"integrationContractSHA256\": \"b11fcc556da1011dc89b0c6e66c143d0f9fae3f6de653538daa4a4e38cf2fab0\",\n  \"seedAtStart\": 42,\n  \"events\": [\n    {\n      \"type\": \"activate\"\n    },\n    {\n      \"type\": \"timing\",\n      \"secondsPerIntegration\": 1,\n      \"integrations\": 3\n    },\n    {\n      \"type\": \"point\",\n      \"kind\": \"sky\"\n    },\n    {\n      \"type\": \"start\"\n    },\n    {\n      \"type\": \"advance\",\n      \"callbacks\": 10\n    },\n    {\n      \"type\": \"stop\"\n    },\n    {\n      \"type\": \"deactivate\"\n    }\n  ]\n}\n",
+      "sha256": "1b5c342cf0771d42d974db1463c228bda02560afb8acd2bddba7d230ef309688"
+    }
+  ]
+}

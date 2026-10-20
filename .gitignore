@@ -26,11 +26,9 @@ playwright-report/
 /exports/
 /sessions/
 
-# Original scientific resources: kept locally, not proposed for public Git.
-# This also fences JSON containing original bytes/derived catalog/model data.
-# See docs/FIRST-COMMIT-INVENTORY.md and docs/LOCAL-RESOURCES.json.
-/data
-/public/original
+# Runtime/scientific resources in docs/LOCAL-RESOURCES.json are now versioned.
+# Source-specific notices and material classes: docs/RESOURCE-PROVENANCE.json.
+# Native installers/executables and private/build state remain excluded.
 
 # Original installers, executables, captures and downloaded archives
 *.exe

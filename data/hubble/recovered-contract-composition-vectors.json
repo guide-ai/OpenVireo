@@ -1,0 +1,54 @@
+{
+  "policy": "Consolidation composition diagnostics; synthetic frame/counts, no native runtime or completeness claim",
+  "star": {
+    "magnitude": 9.5,
+    "conversionOffset": 1,
+    "drawingOffset": -2,
+    "conversion": "round",
+    "magnitudeShift": 0,
+    "cachedLevel": 9,
+    "recomputedLevel": 12,
+    "correctSlitLevel": 314,
+    "recomputedSlitLevel": 121,
+    "slitExpectedSource": "Existing independent Fraction/Decimal star-profile painter/slit vectors; src/core/starProfiles.test.ts"
+  },
+  "compact": {
+    "sourceFixture": "compact-gsc-read-order-vectors.json",
+    "sourceRecordCount": 1165987,
+    "maximumRa": 1.710626,
+    "normalMinimumRa": 1.710625,
+    "normalRoundedKey": 17106250,
+    "normalVisits": [
+      43828,
+      43829,
+      43830
+    ],
+    "normalAdmitted": [
+      43828,
+      43829
+    ],
+    "equalMinimumRa": 1.710626,
+    "equalRoundedKey": 17106260,
+    "equalVisits": [
+      43829,
+      43830
+    ],
+    "equalAdmitted": [
+      43829,
+      43830
+    ],
+    "minimumDec": -90,
+    "maximumDec": 90,
+    "limitingMagnitude": 20
+  },
+  "resultUnderflow": {
+    "meanSmallestPositiveInput": 5e-324,
+    "meanExpectedNumberBeforeGuard": 0,
+    "fitDistanceMpc": 1e+100,
+    "fitVelocityKmS": 1e-300,
+    "fitExpectedNumberBeforeGuard": 0,
+    "exactMeanPositive": true,
+    "exactFitPositive": true,
+    "guardClassification": "new adapter range protection; not native Excel/x87 behavior"
+  }
+}

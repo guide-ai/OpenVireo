@@ -1,0 +1,1756 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-native-cluster-models-v1",
+  "evidenceId": "VIREO-HR-STATIC-ISO-2026-10-19",
+  "binary": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bytes": 2288128
+  },
+  "manual": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/HRdiag_sm.pdf",
+    "sha256": "31a598d69a53a7672a78ca2245ea0b7d51f5edece134601011330002a4fb3bf0",
+    "pages": [
+      10,
+      11,
+      12,
+      13
+    ]
+  },
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/HRAnalHlp.TXT",
+      "sha256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b",
+      "bytes": 7557
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+      "bytes": 152
+    }
+  ],
+  "models": [
+    {
+      "decodedFloat32SHA256": "2d1614c4b98f5fc37e17122abeb537863d867822de5183af6d614cbc090d75c0",
+      "index": 0,
+      "label": "[Z=0.0004, Y=0.230]",
+      "z": 0.0004,
+      "y": 0.23,
+      "file": "native-isochrones-0004.json",
+      "sha256": "3a8e1bfb21f470411ceb5fe31c4c2e8fbd76719c329c12f45b83e667f8ed541a",
+      "source": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Isochrones/isocz0004.dat",
+      "sourceSHA256": "73e4c39b2f9a0a1e82df257c77cd90032a78fd5582399f5d402140d84011e8fc",
+      "sourceBytes": 1120726,
+      "rows": 9402,
+      "ageRows": [
+        152,
+        151,
+        155,
+        156,
+        155,
+        188,
+        183,
+        190,
+        188,
+        201,
+        196,
+        188,
+        190,
+        188,
+        192,
+        191,
+        194,
+        193,
+        190,
+        195,
+        191,
+        200,
+        203,
+        201,
+        194,
+        210,
+        233,
+        220,
+        217,
+        216,
+        219,
+        220,
+        212,
+        203,
+        198,
+        197,
+        194,
+        191,
+        180,
+        181,
+        180,
+        177,
+        177,
+        175,
+        168,
+        166,
+        166,
+        158,
+        158,
+        161
+      ],
+      "sourceAgeLines": [
+        {
+          "first": 3,
+          "last": 154
+        },
+        {
+          "first": 157,
+          "last": 307
+        },
+        {
+          "first": 310,
+          "last": 464
+        },
+        {
+          "first": 467,
+          "last": 622
+        },
+        {
+          "first": 625,
+          "last": 779
+        },
+        {
+          "first": 782,
+          "last": 969
+        },
+        {
+          "first": 972,
+          "last": 1154
+        },
+        {
+          "first": 1157,
+          "last": 1346
+        },
+        {
+          "first": 1349,
+          "last": 1536
+        },
+        {
+          "first": 1539,
+          "last": 1739
+        },
+        {
+          "first": 1742,
+          "last": 1937
+        },
+        {
+          "first": 1940,
+          "last": 2127
+        },
+        {
+          "first": 2130,
+          "last": 2319
+        },
+        {
+          "first": 2322,
+          "last": 2509
+        },
+        {
+          "first": 2512,
+          "last": 2703
+        },
+        {
+          "first": 2706,
+          "last": 2896
+        },
+        {
+          "first": 2899,
+          "last": 3092
+        },
+        {
+          "first": 3095,
+          "last": 3287
+        },
+        {
+          "first": 3290,
+          "last": 3479
+        },
+        {
+          "first": 3482,
+          "last": 3676
+        },
+        {
+          "first": 3679,
+          "last": 3869
+        },
+        {
+          "first": 3872,
+          "last": 4071
+        },
+        {
+          "first": 4074,
+          "last": 4276
+        },
+        {
+          "first": 4279,
+          "last": 4479
+        },
+        {
+          "first": 4482,
+          "last": 4675
+        },
+        {
+          "first": 4678,
+          "last": 4887
+        },
+        {
+          "first": 4890,
+          "last": 5122
+        },
+        {
+          "first": 5125,
+          "last": 5344
+        },
+        {
+          "first": 5347,
+          "last": 5563
+        },
+        {
+          "first": 5566,
+          "last": 5781
+        },
+        {
+          "first": 5784,
+          "last": 6002
+        },
+        {
+          "first": 6005,
+          "last": 6224
+        },
+        {
+          "first": 6227,
+          "last": 6438
+        },
+        {
+          "first": 6441,
+          "last": 6643
+        },
+        {
+          "first": 6646,
+          "last": 6843
+        },
+        {
+          "first": 6846,
+          "last": 7042
+        },
+        {
+          "first": 7045,
+          "last": 7238
+        },
+        {
+          "first": 7241,
+          "last": 7431
+        },
+        {
+          "first": 7434,
+          "last": 7613
+        },
+        {
+          "first": 7616,
+          "last": 7796
+        },
+        {
+          "first": 7799,
+          "last": 7978
+        },
+        {
+          "first": 7981,
+          "last": 8157
+        },
+        {
+          "first": 8160,
+          "last": 8336
+        },
+        {
+          "first": 8339,
+          "last": 8513
+        },
+        {
+          "first": 8516,
+          "last": 8683
+        },
+        {
+          "first": 8686,
+          "last": 8851
+        },
+        {
+          "first": 8854,
+          "last": 9019
+        },
+        {
+          "first": 9022,
+          "last": 9179
+        },
+        {
+          "first": 9182,
+          "last": 9339
+        },
+        {
+          "first": 9342,
+          "last": 9502
+        }
+      ]
+    },
+    {
+      "decodedFloat32SHA256": "5d93ab67477c938ef93b6ab8e97db09b6f9df43356e1d23f42416b3f8afcc917",
+      "index": 1,
+      "label": "[Z=0.001, Y=0.230]",
+      "z": 0.001,
+      "y": 0.23,
+      "file": "native-isochrones-001.json",
+      "sha256": "19443466b3e64fa56dd61dbb2ad0ec1dad0f5624601f926fa37f4dc80dc7d194",
+      "source": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Isochrones/isocz001.dat",
+      "sourceSHA256": "4ca860c305f9a96eb90c8e98c3edb505c94e27c780bf857764f4266cad04767c",
+      "sourceBytes": 1101580,
+      "rows": 9254,
+      "ageRows": [
+        144,
+        139,
+        150,
+        149,
+        147,
+        189,
+        185,
+        176,
+        169,
+        185,
+        188,
+        188,
+        188,
+        187,
+        184,
+        183,
+        186,
+        187,
+        187,
+        188,
+        188,
+        194,
+        191,
+        197,
+        206,
+        205,
+        226,
+        219,
+        216,
+        216,
+        215,
+        213,
+        203,
+        195,
+        199,
+        198,
+        195,
+        193,
+        181,
+        180,
+        182,
+        179,
+        178,
+        179,
+        175,
+        175,
+        176,
+        165,
+        158,
+        158
+      ],
+      "sourceAgeLines": [
+        {
+          "first": 3,
+          "last": 146
+        },
+        {
+          "first": 149,
+          "last": 287
+        },
+        {
+          "first": 290,
+          "last": 439
+        },
+        {
+          "first": 442,
+          "last": 590
+        },
+        {
+          "first": 593,
+          "last": 739
+        },
+        {
+          "first": 742,
+          "last": 930
+        },
+        {
+          "first": 933,
+          "last": 1117
+        },
+        {
+          "first": 1120,
+          "last": 1295
+        },
+        {
+          "first": 1298,
+          "last": 1466
+        },
+        {
+          "first": 1469,
+          "last": 1653
+        },
+        {
+          "first": 1656,
+          "last": 1843
+        },
+        {
+          "first": 1846,
+          "last": 2033
+        },
+        {
+          "first": 2036,
+          "last": 2223
+        },
+        {
+          "first": 2226,
+          "last": 2412
+        },
+        {
+          "first": 2415,
+          "last": 2598
+        },
+        {
+          "first": 2601,
+          "last": 2783
+        },
+        {
+          "first": 2786,
+          "last": 2971
+        },
+        {
+          "first": 2974,
+          "last": 3160
+        },
+        {
+          "first": 3163,
+          "last": 3349
+        },
+        {
+          "first": 3352,
+          "last": 3539
+        },
+        {
+          "first": 3542,
+          "last": 3729
+        },
+        {
+          "first": 3732,
+          "last": 3925
+        },
+        {
+          "first": 3928,
+          "last": 4118
+        },
+        {
+          "first": 4121,
+          "last": 4317
+        },
+        {
+          "first": 4320,
+          "last": 4525
+        },
+        {
+          "first": 4528,
+          "last": 4732
+        },
+        {
+          "first": 4735,
+          "last": 4960
+        },
+        {
+          "first": 4963,
+          "last": 5181
+        },
+        {
+          "first": 5184,
+          "last": 5399
+        },
+        {
+          "first": 5402,
+          "last": 5617
+        },
+        {
+          "first": 5620,
+          "last": 5834
+        },
+        {
+          "first": 5837,
+          "last": 6049
+        },
+        {
+          "first": 6052,
+          "last": 6254
+        },
+        {
+          "first": 6257,
+          "last": 6451
+        },
+        {
+          "first": 6454,
+          "last": 6652
+        },
+        {
+          "first": 6655,
+          "last": 6852
+        },
+        {
+          "first": 6855,
+          "last": 7049
+        },
+        {
+          "first": 7052,
+          "last": 7244
+        },
+        {
+          "first": 7247,
+          "last": 7427
+        },
+        {
+          "first": 7430,
+          "last": 7609
+        },
+        {
+          "first": 7612,
+          "last": 7793
+        },
+        {
+          "first": 7796,
+          "last": 7974
+        },
+        {
+          "first": 7977,
+          "last": 8154
+        },
+        {
+          "first": 8157,
+          "last": 8335
+        },
+        {
+          "first": 8338,
+          "last": 8512
+        },
+        {
+          "first": 8515,
+          "last": 8689
+        },
+        {
+          "first": 8692,
+          "last": 8867
+        },
+        {
+          "first": 8870,
+          "last": 9034
+        },
+        {
+          "first": 9037,
+          "last": 9194
+        },
+        {
+          "first": 9197,
+          "last": 9354
+        }
+      ]
+    },
+    {
+      "decodedFloat32SHA256": "e215ebd9d7a873fc75914b33aa3c3e80a83a3acaffeddc4af16eaed798e26f88",
+      "index": 2,
+      "label": "[Z=0.004, Y=0.240]",
+      "z": 0.004,
+      "y": 0.24,
+      "file": "native-isochrones-004.json",
+      "sha256": "81c3f537119b9a01c35138574a80b17614ec3532e264eafa71683a5097a1aa41",
+      "source": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Isochrones/isocz004.dat",
+      "sourceSHA256": "e65f4d2b8869dfb4fe6e97b01120ccefc889ae23a2ffb19f2c751f595b8b41bc",
+      "sourceBytes": 1104764,
+      "rows": 9291,
+      "ageRows": [
+        149,
+        144,
+        142,
+        142,
+        142,
+        157,
+        201,
+        197,
+        192,
+        189,
+        179,
+        180,
+        180,
+        182,
+        181,
+        178,
+        185,
+        188,
+        189,
+        191,
+        201,
+        204,
+        205,
+        210,
+        212,
+        226,
+        225,
+        233,
+        217,
+        212,
+        206,
+        204,
+        202,
+        196,
+        194,
+        198,
+        190,
+        190,
+        186,
+        185,
+        184,
+        184,
+        178,
+        178,
+        178,
+        165,
+        166,
+        161,
+        158,
+        155
+      ],
+      "sourceAgeLines": [
+        {
+          "first": 3,
+          "last": 151
+        },
+        {
+          "first": 154,
+          "last": 297
+        },
+        {
+          "first": 300,
+          "last": 441
+        },
+        {
+          "first": 444,
+          "last": 585
+        },
+        {
+          "first": 588,
+          "last": 729
+        },
+        {
+          "first": 732,
+          "last": 888
+        },
+        {
+          "first": 891,
+          "last": 1091
+        },
+        {
+          "first": 1094,
+          "last": 1290
+        },
+        {
+          "first": 1293,
+          "last": 1484
+        },
+        {
+          "first": 1487,
+          "last": 1675
+        },
+        {
+          "first": 1678,
+          "last": 1856
+        },
+        {
+          "first": 1859,
+          "last": 2038
+        },
+        {
+          "first": 2041,
+          "last": 2220
+        },
+        {
+          "first": 2223,
+          "last": 2404
+        },
+        {
+          "first": 2407,
+          "last": 2587
+        },
+        {
+          "first": 2590,
+          "last": 2767
+        },
+        {
+          "first": 2770,
+          "last": 2954
+        },
+        {
+          "first": 2957,
+          "last": 3144
+        },
+        {
+          "first": 3147,
+          "last": 3335
+        },
+        {
+          "first": 3338,
+          "last": 3528
+        },
+        {
+          "first": 3531,
+          "last": 3731
+        },
+        {
+          "first": 3734,
+          "last": 3937
+        },
+        {
+          "first": 3940,
+          "last": 4144
+        },
+        {
+          "first": 4147,
+          "last": 4356
+        },
+        {
+          "first": 4359,
+          "last": 4570
+        },
+        {
+          "first": 4573,
+          "last": 4798
+        },
+        {
+          "first": 4801,
+          "last": 5025
+        },
+        {
+          "first": 5028,
+          "last": 5260
+        },
+        {
+          "first": 5263,
+          "last": 5479
+        },
+        {
+          "first": 5482,
+          "last": 5693
+        },
+        {
+          "first": 5696,
+          "last": 5901
+        },
+        {
+          "first": 5904,
+          "last": 6107
+        },
+        {
+          "first": 6110,
+          "last": 6311
+        },
+        {
+          "first": 6314,
+          "last": 6509
+        },
+        {
+          "first": 6512,
+          "last": 6705
+        },
+        {
+          "first": 6708,
+          "last": 6905
+        },
+        {
+          "first": 6908,
+          "last": 7097
+        },
+        {
+          "first": 7100,
+          "last": 7289
+        },
+        {
+          "first": 7292,
+          "last": 7477
+        },
+        {
+          "first": 7480,
+          "last": 7664
+        },
+        {
+          "first": 7667,
+          "last": 7850
+        },
+        {
+          "first": 7853,
+          "last": 8036
+        },
+        {
+          "first": 8039,
+          "last": 8216
+        },
+        {
+          "first": 8219,
+          "last": 8396
+        },
+        {
+          "first": 8399,
+          "last": 8576
+        },
+        {
+          "first": 8579,
+          "last": 8743
+        },
+        {
+          "first": 8746,
+          "last": 8911
+        },
+        {
+          "first": 8914,
+          "last": 9074
+        },
+        {
+          "first": 9077,
+          "last": 9234
+        },
+        {
+          "first": 9237,
+          "last": 9391
+        }
+      ]
+    },
+    {
+      "decodedFloat32SHA256": "fa554d0ddd4c33f003efc88b594908be5e42a1bb9716b4e7db0e4033161f7959",
+      "index": 3,
+      "label": "[Z=0.008, Y=0.250]",
+      "z": 0.008,
+      "y": 0.25,
+      "file": "native-isochrones-008.json",
+      "sha256": "f75810d30ef7a528b71baed16d2600c9366f0a192197bb41ae3e50f4305fbd4d",
+      "source": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Isochrones/isocz008.dat",
+      "sourceSHA256": "0735ec400ca8c695aa0137c390a39864b3ee3b8f3c8fc195a58a74b2dab41424",
+      "sourceBytes": 1095401,
+      "rows": 9227,
+      "ageRows": [
+        142,
+        143,
+        142,
+        141,
+        141,
+        139,
+        197,
+        195,
+        187,
+        188,
+        179,
+        178,
+        176,
+        177,
+        177,
+        179,
+        179,
+        199,
+        202,
+        202,
+        204,
+        204,
+        205,
+        208,
+        205,
+        220,
+        228,
+        218,
+        206,
+        210,
+        207,
+        202,
+        193,
+        196,
+        186,
+        188,
+        192,
+        191,
+        184,
+        187,
+        184,
+        183,
+        183,
+        180,
+        181,
+        167,
+        166,
+        169,
+        163,
+        154
+      ],
+      "sourceAgeLines": [
+        {
+          "first": 3,
+          "last": 144
+        },
+        {
+          "first": 147,
+          "last": 289
+        },
+        {
+          "first": 292,
+          "last": 433
+        },
+        {
+          "first": 436,
+          "last": 576
+        },
+        {
+          "first": 579,
+          "last": 719
+        },
+        {
+          "first": 722,
+          "last": 860
+        },
+        {
+          "first": 863,
+          "last": 1059
+        },
+        {
+          "first": 1062,
+          "last": 1256
+        },
+        {
+          "first": 1259,
+          "last": 1445
+        },
+        {
+          "first": 1448,
+          "last": 1635
+        },
+        {
+          "first": 1638,
+          "last": 1816
+        },
+        {
+          "first": 1819,
+          "last": 1996
+        },
+        {
+          "first": 1999,
+          "last": 2174
+        },
+        {
+          "first": 2177,
+          "last": 2353
+        },
+        {
+          "first": 2356,
+          "last": 2532
+        },
+        {
+          "first": 2535,
+          "last": 2713
+        },
+        {
+          "first": 2716,
+          "last": 2894
+        },
+        {
+          "first": 2897,
+          "last": 3095
+        },
+        {
+          "first": 3098,
+          "last": 3299
+        },
+        {
+          "first": 3302,
+          "last": 3503
+        },
+        {
+          "first": 3506,
+          "last": 3709
+        },
+        {
+          "first": 3712,
+          "last": 3915
+        },
+        {
+          "first": 3918,
+          "last": 4122
+        },
+        {
+          "first": 4125,
+          "last": 4332
+        },
+        {
+          "first": 4335,
+          "last": 4539
+        },
+        {
+          "first": 4542,
+          "last": 4761
+        },
+        {
+          "first": 4764,
+          "last": 4991
+        },
+        {
+          "first": 4994,
+          "last": 5211
+        },
+        {
+          "first": 5214,
+          "last": 5419
+        },
+        {
+          "first": 5422,
+          "last": 5631
+        },
+        {
+          "first": 5634,
+          "last": 5840
+        },
+        {
+          "first": 5843,
+          "last": 6044
+        },
+        {
+          "first": 6047,
+          "last": 6239
+        },
+        {
+          "first": 6242,
+          "last": 6437
+        },
+        {
+          "first": 6440,
+          "last": 6625
+        },
+        {
+          "first": 6628,
+          "last": 6815
+        },
+        {
+          "first": 6818,
+          "last": 7009
+        },
+        {
+          "first": 7012,
+          "last": 7202
+        },
+        {
+          "first": 7205,
+          "last": 7388
+        },
+        {
+          "first": 7391,
+          "last": 7577
+        },
+        {
+          "first": 7580,
+          "last": 7763
+        },
+        {
+          "first": 7766,
+          "last": 7948
+        },
+        {
+          "first": 7951,
+          "last": 8133
+        },
+        {
+          "first": 8136,
+          "last": 8315
+        },
+        {
+          "first": 8318,
+          "last": 8498
+        },
+        {
+          "first": 8501,
+          "last": 8667
+        },
+        {
+          "first": 8670,
+          "last": 8835
+        },
+        {
+          "first": 8838,
+          "last": 9006
+        },
+        {
+          "first": 9009,
+          "last": 9171
+        },
+        {
+          "first": 9174,
+          "last": 9327
+        }
+      ]
+    },
+    {
+      "decodedFloat32SHA256": "aee117e26d4db33fbac676e5d01e0e851a1f9b1571107a2a25115785832e5c3b",
+      "index": 4,
+      "label": "[Z=0.019, Y=0.273] (Solar Values)",
+      "z": 0.019,
+      "y": 0.273,
+      "file": "native-isochrones-019.json",
+      "sha256": "b07927ecbac3e162cf039003aa1f7c786712e510db3698423fcfba4402b18a2b",
+      "source": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Isochrones/isocz019.dat",
+      "sourceSHA256": "4852effe6998873938c09e54d9f1e8426ab9ca72239a1db5c817bf94f0e4dc31",
+      "sourceBytes": 1073038,
+      "rows": 9064,
+      "ageRows": [
+        137,
+        136,
+        132,
+        132,
+        131,
+        128,
+        188,
+        187,
+        181,
+        175,
+        176,
+        182,
+        184,
+        184,
+        186,
+        185,
+        187,
+        189,
+        197,
+        198,
+        197,
+        197,
+        197,
+        200,
+        203,
+        212,
+        220,
+        230,
+        217,
+        216,
+        204,
+        195,
+        195,
+        201,
+        195,
+        194,
+        194,
+        192,
+        177,
+        174,
+        176,
+        177,
+        170,
+        167,
+        169,
+        165,
+        165,
+        158,
+        156,
+        156
+      ],
+      "sourceAgeLines": [
+        {
+          "first": 3,
+          "last": 139
+        },
+        {
+          "first": 142,
+          "last": 277
+        },
+        {
+          "first": 280,
+          "last": 411
+        },
+        {
+          "first": 414,
+          "last": 545
+        },
+        {
+          "first": 548,
+          "last": 678
+        },
+        {
+          "first": 681,
+          "last": 808
+        },
+        {
+          "first": 811,
+          "last": 998
+        },
+        {
+          "first": 1001,
+          "last": 1187
+        },
+        {
+          "first": 1190,
+          "last": 1370
+        },
+        {
+          "first": 1373,
+          "last": 1547
+        },
+        {
+          "first": 1550,
+          "last": 1725
+        },
+        {
+          "first": 1728,
+          "last": 1909
+        },
+        {
+          "first": 1912,
+          "last": 2095
+        },
+        {
+          "first": 2098,
+          "last": 2281
+        },
+        {
+          "first": 2284,
+          "last": 2469
+        },
+        {
+          "first": 2472,
+          "last": 2656
+        },
+        {
+          "first": 2659,
+          "last": 2845
+        },
+        {
+          "first": 2848,
+          "last": 3036
+        },
+        {
+          "first": 3039,
+          "last": 3235
+        },
+        {
+          "first": 3238,
+          "last": 3435
+        },
+        {
+          "first": 3438,
+          "last": 3634
+        },
+        {
+          "first": 3637,
+          "last": 3833
+        },
+        {
+          "first": 3836,
+          "last": 4032
+        },
+        {
+          "first": 4035,
+          "last": 4234
+        },
+        {
+          "first": 4237,
+          "last": 4439
+        },
+        {
+          "first": 4442,
+          "last": 4653
+        },
+        {
+          "first": 4656,
+          "last": 4875
+        },
+        {
+          "first": 4878,
+          "last": 5107
+        },
+        {
+          "first": 5110,
+          "last": 5326
+        },
+        {
+          "first": 5329,
+          "last": 5544
+        },
+        {
+          "first": 5547,
+          "last": 5750
+        },
+        {
+          "first": 5753,
+          "last": 5947
+        },
+        {
+          "first": 5950,
+          "last": 6144
+        },
+        {
+          "first": 6147,
+          "last": 6347
+        },
+        {
+          "first": 6350,
+          "last": 6544
+        },
+        {
+          "first": 6547,
+          "last": 6740
+        },
+        {
+          "first": 6743,
+          "last": 6936
+        },
+        {
+          "first": 6939,
+          "last": 7130
+        },
+        {
+          "first": 7133,
+          "last": 7309
+        },
+        {
+          "first": 7312,
+          "last": 7485
+        },
+        {
+          "first": 7488,
+          "last": 7663
+        },
+        {
+          "first": 7666,
+          "last": 7842
+        },
+        {
+          "first": 7845,
+          "last": 8014
+        },
+        {
+          "first": 8017,
+          "last": 8183
+        },
+        {
+          "first": 8186,
+          "last": 8354
+        },
+        {
+          "first": 8357,
+          "last": 8521
+        },
+        {
+          "first": 8524,
+          "last": 8688
+        },
+        {
+          "first": 8691,
+          "last": 8848
+        },
+        {
+          "first": 8851,
+          "last": 9006
+        },
+        {
+          "first": 9009,
+          "last": 9164
+        }
+      ]
+    },
+    {
+      "decodedFloat32SHA256": "fab82b41c70b347064bcae8b31d35e456a62ca074ba2a08bed6d9d6fac7af2b9",
+      "index": 5,
+      "label": "[Z=0.030, Y=0.300]",
+      "z": 0.03,
+      "y": 0.3,
+      "file": "native-isochrones-030.json",
+      "sha256": "c472d635018f26a68ab17c48ee96b606f05190b9198b6acab723d8b72eb3bd83",
+      "source": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Isochrones/isocz030.dat",
+      "sourceSHA256": "773ea00fe961609f2bf5ec2fdb251e01987677a6da247675a7b92f45aa136554",
+      "sourceBytes": 1034848,
+      "rows": 8755,
+      "ageRows": [
+        121,
+        123,
+        127,
+        127,
+        129,
+        132,
+        186,
+        182,
+        178,
+        180,
+        178,
+        175,
+        174,
+        175,
+        182,
+        181,
+        182,
+        183,
+        192,
+        191,
+        194,
+        192,
+        192,
+        198,
+        196,
+        196,
+        202,
+        218,
+        212,
+        205,
+        202,
+        201,
+        199,
+        192,
+        196,
+        193,
+        186,
+        182,
+        177,
+        178,
+        166,
+        170,
+        156,
+        154,
+        151,
+        151,
+        152,
+        150,
+        148,
+        148
+      ],
+      "sourceAgeLines": [
+        {
+          "first": 3,
+          "last": 123
+        },
+        {
+          "first": 126,
+          "last": 248
+        },
+        {
+          "first": 251,
+          "last": 377
+        },
+        {
+          "first": 380,
+          "last": 506
+        },
+        {
+          "first": 509,
+          "last": 637
+        },
+        {
+          "first": 640,
+          "last": 771
+        },
+        {
+          "first": 774,
+          "last": 959
+        },
+        {
+          "first": 962,
+          "last": 1143
+        },
+        {
+          "first": 1146,
+          "last": 1323
+        },
+        {
+          "first": 1326,
+          "last": 1505
+        },
+        {
+          "first": 1508,
+          "last": 1685
+        },
+        {
+          "first": 1688,
+          "last": 1862
+        },
+        {
+          "first": 1865,
+          "last": 2038
+        },
+        {
+          "first": 2041,
+          "last": 2215
+        },
+        {
+          "first": 2218,
+          "last": 2399
+        },
+        {
+          "first": 2402,
+          "last": 2582
+        },
+        {
+          "first": 2585,
+          "last": 2766
+        },
+        {
+          "first": 2769,
+          "last": 2951
+        },
+        {
+          "first": 2954,
+          "last": 3145
+        },
+        {
+          "first": 3148,
+          "last": 3338
+        },
+        {
+          "first": 3341,
+          "last": 3534
+        },
+        {
+          "first": 3537,
+          "last": 3728
+        },
+        {
+          "first": 3731,
+          "last": 3922
+        },
+        {
+          "first": 3925,
+          "last": 4122
+        },
+        {
+          "first": 4125,
+          "last": 4320
+        },
+        {
+          "first": 4323,
+          "last": 4518
+        },
+        {
+          "first": 4521,
+          "last": 4722
+        },
+        {
+          "first": 4725,
+          "last": 4942
+        },
+        {
+          "first": 4945,
+          "last": 5156
+        },
+        {
+          "first": 5159,
+          "last": 5363
+        },
+        {
+          "first": 5366,
+          "last": 5567
+        },
+        {
+          "first": 5570,
+          "last": 5770
+        },
+        {
+          "first": 5773,
+          "last": 5971
+        },
+        {
+          "first": 5974,
+          "last": 6165
+        },
+        {
+          "first": 6168,
+          "last": 6363
+        },
+        {
+          "first": 6366,
+          "last": 6558
+        },
+        {
+          "first": 6561,
+          "last": 6746
+        },
+        {
+          "first": 6749,
+          "last": 6930
+        },
+        {
+          "first": 6933,
+          "last": 7109
+        },
+        {
+          "first": 7112,
+          "last": 7289
+        },
+        {
+          "first": 7292,
+          "last": 7457
+        },
+        {
+          "first": 7460,
+          "last": 7629
+        },
+        {
+          "first": 7632,
+          "last": 7787
+        },
+        {
+          "first": 7790,
+          "last": 7943
+        },
+        {
+          "first": 7946,
+          "last": 8096
+        },
+        {
+          "first": 8099,
+          "last": 8249
+        },
+        {
+          "first": 8252,
+          "last": 8403
+        },
+        {
+          "first": 8406,
+          "last": 8555
+        },
+        {
+          "first": 8558,
+          "last": 8705
+        },
+        {
+          "first": 8708,
+          "last": 8855
+        }
+      ]
+    }
+  ],
+  "zams": {
+    "file": "native-zams.json",
+    "sha256": "11976060fa4cdb8f6a6db8e1a4b4d2a8271ba42b5cb2d7c5623660ea52ea4d95",
+    "address": "0x5b424c",
+    "rows": 35,
+    "strideBytes": 12,
+    "columns": [
+      "B-V",
+      "unused-native-column",
+      "Mv"
+    ],
+    "interpolation": "0x55dd34 picks5 adjacent knots,clamped window0..30;0x485d6c Neville;render0x543660 samples from first Single color to last using Extended0.01"
+  },
+  "procedures": {
+    "isoLoader": "0x5413c0..0x5416c9:tab text,skip#;seek selected age within Extended0.001;load next complete non-comment group only",
+    "tabReader": "0x48692f..0x48695a strips leading spaces/tabs;0x48698e..0x4869b6 parses numeric token then removes it;no empty leading token column shift",
+    "row": "0x541744..0x5417fc:discard7 fields,Mu/Mb/Mv to Single,then Single(Mu-Mb),Single(Mb-Mv)",
+    "age": "0x541800..0x5418f4:Extended7.8 +0.05*position;small widget10^(logAge-9)Gyr at0x54185d..0x54188f;parameter-report Myr=10^(logAge-6) in0x544032..0x54404a",
+    "metallicity": "DFM list6 entries;constructor0x541281 selects index4;0x541421 usespointer table0x5b41b4 withseven names,the019nov entry6 is not exposed by this six-item form",
+    "overlay": "0x54389d..0x5438f2:V=SingleMv+apparentModulus;B-V=SingleBminusV+E+extraOffset;ZAMS0x5436e3..0x543708 adds same modulus/E without extraOffset",
+    "sliders": "0x543b30..0x543be1:modulus/EBV ticks divide100;0x541914..0x541977 offset ticks/100",
+    "optionalDistance": "0x543f43..0x543f8f:option+0x2e7c;10^((apparentModulus+5-3*E)/5). Single3 at0x544208,not3.1",
+    "events": "FormCreate/FormShow,show/hide andredraw bindings retained in external listings;browser confirmation/draft events are new"
+  },
+  "forms": {
+    "HR": {
+      "fileOffset": 2065104,
+      "bytes": 2994,
+      "sha256": "ca537f7743627df4b5e1dd8ca5c69f5a6ac2fd905fd79d45e1b7e8dd68e05c9d"
+    },
+    "Isochrone": {
+      "fileOffset": 2079816,
+      "bytes": 2452,
+      "sha256": "cc6de31f0b7b9561aabcdc243c0abfc6fa9d9dfd02f6fd93758348675c0f88a5"
+    },
+    "decodedSources": [
+      "hr-form.json",
+      "iso-form.json"
+    ]
+  },
+  "controls": {
+    "modulusTicks": [
+      0,
+      1500
+    ],
+    "ebvTicks": [
+      0,
+      250
+    ],
+    "ageIndex": [
+      0,
+      49
+    ],
+    "offsetTicks": [
+      -100,
+      100
+    ],
+    "offsetMaxUncertainty": "DFM explicit Min=-100;Max absent,the standard TScrollBar default100 is treated as a bounded web upper guard rather than a proved overridden value.",
+    "logAgeStart": "7.80",
+    "logAgeStep": "0.05",
+    "extinctionCoefficient": 3,
+    "modelCount": 6
+  },
+  "captures": [
+    {
+      "file": "isochrone.asm",
+      "start": "0x541230",
+      "endExclusive": "0x541a58",
+      "byteRangeSHA256": "4ecab4f202e63a85b29ddda46655201d24014f98625519f355eb55695e3257a8",
+      "listingSHA256": "1e318c1bda5c603047d32fc4032a35d6b005f84303a2fdb90631c635b77ff672"
+    },
+    {
+      "file": "hr-display.asm",
+      "start": "0x542128",
+      "endExclusive": "0x5442e0",
+      "byteRangeSHA256": "6744c4cb3cfca265d009aa75c82ef241ef6182936d2be0dcea16e056a2a5be58",
+      "listingSHA256": "2bb655dc913f3c1796281b63967e90ab7fbe0dd921aa77502956485f8b1bb036"
+    },
+    {
+      "file": "zams.asm",
+      "start": "0x55dd34",
+      "endExclusive": "0x55de00",
+      "byteRangeSHA256": "455caadbda8049c401f30ad3d5c64b3a0533ad0c4869bb0b78040891f1f34e00",
+      "listingSHA256": "6ad9365ad392e598a6fd1b2886862587b90a0428f6b21565ee82f853de117c4d"
+    },
+    {
+      "file": "neville.asm",
+      "start": "0x485d6c",
+      "endExclusive": "0x485fcd",
+      "byteRangeSHA256": "efa6b58743ca6468bf66058ac883592887d40440db43d8511c7810e9bff93618",
+      "listingSHA256": "785c4577c4a975c2c9c722ecfb7dddea8fd7b6820ba44ba2eff9509cae50d168"
+    },
+    {
+      "file": "tab-reader.asm",
+      "start": "0x48690c",
+      "endExclusive": "0x4869fd",
+      "byteRangeSHA256": "bcbc3a82acac8fb7871b2946197c7abb72c744f6e68f39140dc6d475d6707dda",
+      "listingSHA256": "6cc6b735df1c3fd47063bb242ce421ac31e522954ea3147d45ce767e247d9075"
+    }
+  ],
+  "webPolicies": [
+    "Manual observed points from the existing16 admissible targets only;no acquisition/catalog autofill,automatic fit,membership/turnoff label or new associations.",
+    "Empty manual modulus/E/age/model choices;native solar/youngest defaults not silently assigned to a cluster. Extra offset starts0.",
+    "Explicit optional extinction checkbox;compiled option default/cluster preset provenance unported. Display geometry uses fixed existing paper-manual axes,not native autoscaling/GDI pixel scheduling.",
+    "Source curves retain all rows in original file order;no age/metallicity interpolation,smoothing,sorting,decimation or synthetic curve generation.",
+    "Single parsing/colors are explicit fround;subsequent arithmetic,Neville,0.01 grid andpow use Number/Math,not x87-equivalent.",
+    "Confirmed interpretation/model fit is separate from unconfirmed editable text;128KiB/256event/100000callback budgets remain.",
+    "Age is a trial model selected by the pupil,not a derived Pleiades age or automatic result;limited sample/edition equivalence remains unverified."
+  ],
+  "decodedCurveDigest": "Derived SHA256 over50 groups:little-endian uint32 row count then each row little-endian float32(B-V),float32(Mv);not original file bytes. Bundled model admission verifies this digest before use.",
+  "rights": "Original CLEA license/Copyright hashes retained;isochrone authorship/redistribution rights not independently established. Local authorized research only;no public release.",
+  "unavailable": [
+    "isocz019nov.dat:present seventh pointer but not in six-entry UI;not exposed",
+    "Other cluster catalogs,preset E(B-V),native HR import,autoaxes,arbitrary grids andoriginal runtime/x87 fidelity remain unverified."
+  ]
+}

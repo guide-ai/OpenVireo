@@ -1,0 +1,222 @@
+{
+  "schema": 1,
+  "policyId": "openclea-pinned-kpno09-star-exposure-v1",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "domain": {
+    "exercise": "hubble",
+    "exerciseMode": 4,
+    "catalogMode": 1,
+    "telescopeRecord": 1,
+    "options": "compiled-fallback-unmodified",
+    "history": "fresh-process-direct-hubble",
+    "pointing": {
+      "ra": 0.4987684,
+      "dec": 0.03628
+    },
+    "fieldArcminutes": 15,
+    "fieldMultiplier": 3,
+    "dynamicContext": "absent"
+  },
+  "opticalProfileSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "fieldSnapshotSHA256": "44a444d309ef4985a52787a68989da864392bcdb8a5821de0e3119aac73d5c96",
+  "sourceSnapshotSHA256": "4389a64f2fe9cbc4d7c2c2c8b3111e7ae8d3b5b7ad78421ce45abc11a170b41d",
+  "originalSources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Hubble.HTL",
+      "sha256": "02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986",
+      "bytes": 1118
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "bytes": 31481649
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S0000.DAT",
+      "sha256": "0cc5484587b734d4c468ad0d38e3eab78936a253d1409bd69d83f0bf26fe44f9",
+      "bytes": 27456219
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/JSPEC2.SPI",
+      "sha256": "5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa",
+      "bytes": 3168
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000049.SP",
+      "sha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220",
+      "bytes": 55980
+    }
+  ],
+  "licenses": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+      "bytes": 152
+    }
+  ],
+  "calibration": {
+    "baseZeroPoint": 6,
+    "telescopeCorrection": 0,
+    "storedZeroPoint": 6,
+    "magnitudeShift": 0,
+    "skyMagnitude": 19,
+    "elapsedMultiplier": 50,
+    "maximumTickMS": 300,
+    "whyMaximum": "Bounded browser product-Poisson branch: maximum source mean at300ms <12. Longer delayed ticks pause atomically; no substep/rescaling/large-mean approximation."
+  },
+  "rasterVerification": {
+    "width": 936,
+    "height": 936,
+    "sha256": "cfc90ef7cb228c74b4d8bb70a788ca28704b1ee4c1cb8f8fc4613ba112f022e7",
+    "cropSHA256": "6b697c184a651e52f0b9c9c5b7f35fc2debe56327d508ebbfe399c0f5cf8f58a",
+    "slitSum": 4365,
+    "slitLevel": 77,
+    "targetPaint": {
+      "stored": 13,
+      "level": 13,
+      "magnitudeSingle": 13.92199993133545
+    },
+    "levelsHistogram": {
+      "14": 55,
+      "13": 38,
+      "12": 13,
+      "9": 2,
+      "10": 6,
+      "11": 13,
+      "7": 1
+    },
+    "saturatedBytes": 39
+  },
+  "evidence": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/selected-telescope.asm",
+      "sha256": "abef60b8555c831433060fbd17a5a2d3b380dd07b1ec9ca965871ce10bec2d67",
+      "from": "0x53df24",
+      "endExclusive": "0x53e178"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/field-area.asm",
+      "sha256": "70a1643eb637f9b2d77b640eeff19b8b2ade0dc5cd1086e30684787aae36c23a",
+      "from": "0x53be70",
+      "endExclusive": "0x53c0b4"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/frame-setup.asm",
+      "sha256": "0b2ca9b2a544237d978642d4b8e9892daa684b0287cac183cfe62be98ad06e8b",
+      "from": "0x53c500",
+      "endExclusive": "0x53c99c"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/stellar-paint.asm",
+      "sha256": "0aef103f4cd88aa7767f3e6f45805b9c18617aacd99c39bbd58e0c19463236c2",
+      "from": "0x53b6fd",
+      "endExclusive": "0x53b804"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/reset-amplitudes.asm",
+      "sha256": "3b4fbe1914ad01c4744422ec1b2f974caac8c430286bad23a2b8a86c142ff3a9",
+      "from": "0x50e0d7",
+      "endExclusive": "0x50e273"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/star-throughput.asm",
+      "sha256": "f903bbee66eac69e95856bd441ec2b01489e575b49c0a05fab6162aa0af329e5",
+      "from": "0x50f338",
+      "endExclusive": "0x50f470"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/go-sample.asm",
+      "sha256": "e94df47126cc7b7fa074ef7d94b19468059661ec282d5e8c77144993a471a2d0",
+      "from": "0x50f4f9",
+      "endExclusive": "0x50f5ca"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/kpno09-recovery/integrate.asm",
+      "sha256": "30b4eeb401549fb4ed76955af343e666bfc03626d2e7dabe8a20b08a4390654f",
+      "from": "0x50f76c",
+      "endExclusive": "0x50fa74"
+    }
+  ],
+  "claims": [
+    {
+      "id": "KP09-C01",
+      "range": "0x53df4f..0x53df75",
+      "contract": "Single base6+record1.scopeFactor0 -> observatory+0x6f0 Single6; Round(scopeFactor0)->+0x6f8 integer0"
+    },
+    {
+      "id": "KP09-C02",
+      "range": "0x53be70..0x53c0b3 /0x53c531..0x53c57a",
+      "contract": "Field uses sharedSingle15arcmin, fieldMultiplier3, limitingSingle20, CRT1=312; telescope physical aperture/focal/seeing does not enter this field/star raster branch"
+    },
+    {
+      "id": "KP09-C03",
+      "range": "0x53b748..0x53b77c /0x50f338..0x50f42a",
+      "contract": "Paint cached stellar level minus rounded scopefactor, clamp0..14; exact-centered type0 positive slit ->fraction1"
+    },
+    {
+      "id": "KP09-C04",
+      "range": "0x50e0e4..0x50e147 /0x50e233..0x50e26a",
+      "contract": "Native powers source=10^((storedSingleMagnitude-zero)/-2.5), sky=10^((19-zero)/-2.5), no telescope-area factor"
+    },
+    {
+      "id": "KP09-C05",
+      "range": "0x50f4f9..0x50f5c9 /0x50f76c",
+      "contract": "Same template/grid/sampler; perbin source then sky product-Poisson, source PLUS sky summed; explicit browser seed/timer"
+    },
+    {
+      "id": "KP09-C06",
+      "range": "0x58a8ca..0x58a8d3 /0x53cce4..0x53ce57",
+      "contract": "Native Hubble unrestricted flag bypasses request/allocation gates; no invented availability draws/credits"
+    }
+  ],
+  "fieldVerification": {
+    "admitted": 128,
+    "identicalPopulationToPinned0": true,
+    "fieldRecoverySHA256": "3faf0a9c527a0bcd32dffb3fbba89ad582840a65abeb94b12a187d70dd6766b2"
+  },
+  "independentVectorsSHA256": "14acde128c701ebd75dde7340893a7e33cf87dccbd2b5c9ebbcafe05f3158bd1",
+  "numericalPolicy": "Number/Math nearest-even raster and interpolation; Decimal100 independent vectors and whole-source field verification; not native runtime/x87/GDI equivalence",
+  "newWebStatePolicy": "Separate stopped0.4m/0.9m star journals, explicit activation; switching does not retag/rescale existing counts or manual rows. Native astronomical-time/site/coordinate reinitialization remains outside this bounded direct-centered route.",
+  "rights": "Original licenses preserved; local research only, no public redistribution grant.",
+  "remaining": [
+    "Other0.9m targets/galaxy/photometer/sky routes",
+    "4m acquisition",
+    "Global native RNG/time/site lifecycle",
+    "Original runtime/precision/writer equivalence"
+  ]
+}

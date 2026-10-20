@@ -1,6 +1,6 @@
 # Project naming correction — validation and review
 
-The current versioned tree uses OpenVireo for the product, package, component, tests, documentation and own format/policy labels. Published Git history and the physical directory/service are preserved. Original Project CLEA / VIREO attribution remains. The separate A06 arrival change is excluded from this commit.
+The source-only naming snapshot atced9384 uses OpenVireo for the product, package, component, tests, documentation and own format/policy labels. Published Git history and the physical directory/service are preserved. Original Project CLEA / VIREO attribution remains. The separate A06 arrival change is excluded from this commit.
 
 ## Verification
 
@@ -35,4 +35,4 @@ The unmodified report, stream and audit remain separate from `code-review/dispos
 
 Native `/security-review` returned exit0 but **zero turns, empty result, no assistant/model usage and no tool calls**. It performed no assessment; the reason is unknown. The dedicated full-project security/import/data-flow fallback was **denied before process creation** by automatic approval review, which cited the earlier no-Claude instruction. It was not retried or routed through another disclosure path. No security approval is claimed. The completed general code review did inspect imports/data flow and found the independently corrected identity defect. The denied action concerns that external review only; local verification and the user's authorized source-code publication can proceed.
 
-No scientific model, photon/RNG behavior, native resource byte/hash, format version or original-runtime equivalence claim is introduced. The public source checkout still requires the excluded validated local resource pack. No original/derived resource publication or deployment is included.
+No scientific model, photon/RNG behavior, native resource byte/hash, format version or original-runtime equivalence claim is introduced. That naming-only snapshot required the excluded local pack. A later explicit instruction now includes all1279byte-identical resources;see RESOURCE-PROVENANCE.json and LOCAL-SETUP.md. Captured producer strings inside hash-bound resource inputs are preserved;the current authored UI/code andnewexports use OpenVireo. No deployment or native-execution equivalence is implied.

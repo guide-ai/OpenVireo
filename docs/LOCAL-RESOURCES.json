@@ -1,6 +1,6 @@
 {
-  "purpose": "Identity manifest only; payloads excluded from proposed public source history",
-  "rights": "Local research only; redistribution not established",
+  "purpose": "Exact identity manifest for the1279versioned runtime,test and provenance resources;originals,derived resources and authored fixtures are distinguished in RESOURCE-PROVENANCE.json.",
+  "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
       "path": "data/classification/acquisition-domain.json",

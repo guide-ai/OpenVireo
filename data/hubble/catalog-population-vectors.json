@@ -1,0 +1,9283 @@
+{
+  "policy": "Static Boolean/integer adapter vectors, not original acquired detector or complete field",
+  "admission": [
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-0",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 10,
+        "maximumRa": 12,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-1",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 23,
+        "maximumRa": 1,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 0,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 1,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 5,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 10,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 11,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 12,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 23,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": -1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 0,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 19.99999
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20.0000001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    },
+    {
+      "label": "predicate-grid-2",
+      "record": {
+        "ra": 24,
+        "dec": 1.0001,
+        "magnitude": 20.00001
+      },
+      "region": {
+        "minimumRa": 5,
+        "maximumRa": 5,
+        "minimumDec": -1,
+        "maximumDec": 1,
+        "limitingMagnitude": 20
+      },
+      "admitted": false
+    }
+  ],
+  "levels": [
+    {
+      "magnitude": -3,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": -3.0,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -3,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": -3.0,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -3,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": -3.0,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -3,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": -3.0,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -2.5,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": -2.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -2.5,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": -2.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -2.5,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": -2.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -2.5,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": -2.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -1.5,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": -1.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -1.5,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": -1.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -1.5,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": -1.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -1.5,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": -1.5,
+      "storedLevel": 1
+    },
+    {
+      "magnitude": -0.5,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": -0.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -0.5,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": -0.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": -0.5,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": -0.5,
+      "storedLevel": 2
+    },
+    {
+      "magnitude": -0.5,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": -0.5,
+      "storedLevel": 2
+    },
+    {
+      "magnitude": 0,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 0.0,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": 0,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 0.0,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": 0,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 0.0,
+      "storedLevel": 2
+    },
+    {
+      "magnitude": 0,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 0.0,
+      "storedLevel": 2
+    },
+    {
+      "magnitude": 0.5,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 0.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": 0.5,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 0.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": 0.5,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 0.5,
+      "storedLevel": 2
+    },
+    {
+      "magnitude": 0.5,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 0.5,
+      "storedLevel": 2
+    },
+    {
+      "magnitude": 1.5,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 1.5,
+      "storedLevel": 1
+    },
+    {
+      "magnitude": 1.5,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 1.5,
+      "storedLevel": 0
+    },
+    {
+      "magnitude": 1.5,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 1.5,
+      "storedLevel": 4
+    },
+    {
+      "magnitude": 1.5,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 1.5,
+      "storedLevel": 3
+    },
+    {
+      "magnitude": 8.4999999,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 8.5,
+      "storedLevel": 7
+    },
+    {
+      "magnitude": 8.4999999,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 8.5,
+      "storedLevel": 7
+    },
+    {
+      "magnitude": 8.4999999,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 8.5,
+      "storedLevel": 10
+    },
+    {
+      "magnitude": 8.4999999,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 8.5,
+      "storedLevel": 10
+    },
+    {
+      "magnitude": 9.5,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 9.5,
+      "storedLevel": 9
+    },
+    {
+      "magnitude": 9.5,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 9.5,
+      "storedLevel": 8
+    },
+    {
+      "magnitude": 9.5,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 9.5,
+      "storedLevel": 12
+    },
+    {
+      "magnitude": 9.5,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 9.5,
+      "storedLevel": 11
+    },
+    {
+      "magnitude": 12.5,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 12.5,
+      "storedLevel": 11
+    },
+    {
+      "magnitude": 12.5,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 12.5,
+      "storedLevel": 11
+    },
+    {
+      "magnitude": 12.5,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 12.5,
+      "storedLevel": 14
+    },
+    {
+      "magnitude": 12.5,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 12.5,
+      "storedLevel": 14
+    },
+    {
+      "magnitude": 14,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 14.0,
+      "storedLevel": 13
+    },
+    {
+      "magnitude": 14,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 14.0,
+      "storedLevel": 13
+    },
+    {
+      "magnitude": 14,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 14.0,
+      "storedLevel": 16
+    },
+    {
+      "magnitude": 14,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 14.0,
+      "storedLevel": 16
+    },
+    {
+      "magnitude": 99,
+      "bankOffset": 1,
+      "conversion": "round",
+      "singleMagnitude": 99.0,
+      "storedLevel": 98
+    },
+    {
+      "magnitude": 99,
+      "bankOffset": 1,
+      "conversion": "truncate",
+      "singleMagnitude": 99.0,
+      "storedLevel": 98
+    },
+    {
+      "magnitude": 99,
+      "bankOffset": -2,
+      "conversion": "round",
+      "singleMagnitude": 99.0,
+      "storedLevel": 101
+    },
+    {
+      "magnitude": 99,
+      "bankOffset": -2,
+      "conversion": "truncate",
+      "singleMagnitude": 99.0,
+      "storedLevel": 101
+    }
+  ],
+  "paint": [
+    {
+      "type": 0,
+      "storedLevel": 0,
+      "magnitudeShift": 0,
+      "level": 0
+    },
+    {
+      "type": 0,
+      "storedLevel": 0,
+      "magnitudeShift": 3,
+      "level": 0
+    },
+    {
+      "type": 0,
+      "storedLevel": 0,
+      "magnitudeShift": -2,
+      "level": 2
+    },
+    {
+      "type": 0,
+      "storedLevel": 1,
+      "magnitudeShift": 0,
+      "level": 1
+    },
+    {
+      "type": 0,
+      "storedLevel": 1,
+      "magnitudeShift": 3,
+      "level": 0
+    },
+    {
+      "type": 0,
+      "storedLevel": 1,
+      "magnitudeShift": -2,
+      "level": 3
+    },
+    {
+      "type": 0,
+      "storedLevel": 8,
+      "magnitudeShift": 0,
+      "level": 8
+    },
+    {
+      "type": 0,
+      "storedLevel": 8,
+      "magnitudeShift": 3,
+      "level": 5
+    },
+    {
+      "type": 0,
+      "storedLevel": 8,
+      "magnitudeShift": -2,
+      "level": 10
+    },
+    {
+      "type": 0,
+      "storedLevel": 9,
+      "magnitudeShift": 0,
+      "level": 9
+    },
+    {
+      "type": 0,
+      "storedLevel": 9,
+      "magnitudeShift": 3,
+      "level": 6
+    },
+    {
+      "type": 0,
+      "storedLevel": 9,
+      "magnitudeShift": -2,
+      "level": 11
+    },
+    {
+      "type": 0,
+      "storedLevel": 12,
+      "magnitudeShift": 0,
+      "level": 12
+    },
+    {
+      "type": 0,
+      "storedLevel": 12,
+      "magnitudeShift": 3,
+      "level": 9
+    },
+    {
+      "type": 0,
+      "storedLevel": 12,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 0,
+      "storedLevel": 14,
+      "magnitudeShift": 0,
+      "level": 14
+    },
+    {
+      "type": 0,
+      "storedLevel": 14,
+      "magnitudeShift": 3,
+      "level": 11
+    },
+    {
+      "type": 0,
+      "storedLevel": 14,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 0,
+      "storedLevel": 101,
+      "magnitudeShift": 0,
+      "level": 14
+    },
+    {
+      "type": 0,
+      "storedLevel": 101,
+      "magnitudeShift": 3,
+      "level": 14
+    },
+    {
+      "type": 0,
+      "storedLevel": 101,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 1,
+      "storedLevel": 0,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 0,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 0,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 1,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 1,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 1,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 8,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 8,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 8,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 9,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 9,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 9,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 12,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 12,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 12,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 14,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 14,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 14,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 101,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 101,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 1,
+      "storedLevel": 101,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 2,
+      "storedLevel": 0,
+      "magnitudeShift": 0,
+      "level": 0
+    },
+    {
+      "type": 2,
+      "storedLevel": 0,
+      "magnitudeShift": 3,
+      "level": 0
+    },
+    {
+      "type": 2,
+      "storedLevel": 0,
+      "magnitudeShift": -2,
+      "level": 2
+    },
+    {
+      "type": 2,
+      "storedLevel": 1,
+      "magnitudeShift": 0,
+      "level": 1
+    },
+    {
+      "type": 2,
+      "storedLevel": 1,
+      "magnitudeShift": 3,
+      "level": 0
+    },
+    {
+      "type": 2,
+      "storedLevel": 1,
+      "magnitudeShift": -2,
+      "level": 3
+    },
+    {
+      "type": 2,
+      "storedLevel": 8,
+      "magnitudeShift": 0,
+      "level": 8
+    },
+    {
+      "type": 2,
+      "storedLevel": 8,
+      "magnitudeShift": 3,
+      "level": 5
+    },
+    {
+      "type": 2,
+      "storedLevel": 8,
+      "magnitudeShift": -2,
+      "level": 10
+    },
+    {
+      "type": 2,
+      "storedLevel": 9,
+      "magnitudeShift": 0,
+      "level": 9
+    },
+    {
+      "type": 2,
+      "storedLevel": 9,
+      "magnitudeShift": 3,
+      "level": 6
+    },
+    {
+      "type": 2,
+      "storedLevel": 9,
+      "magnitudeShift": -2,
+      "level": 11
+    },
+    {
+      "type": 2,
+      "storedLevel": 12,
+      "magnitudeShift": 0,
+      "level": 12
+    },
+    {
+      "type": 2,
+      "storedLevel": 12,
+      "magnitudeShift": 3,
+      "level": 9
+    },
+    {
+      "type": 2,
+      "storedLevel": 12,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 2,
+      "storedLevel": 14,
+      "magnitudeShift": 0,
+      "level": 14
+    },
+    {
+      "type": 2,
+      "storedLevel": 14,
+      "magnitudeShift": 3,
+      "level": 11
+    },
+    {
+      "type": 2,
+      "storedLevel": 14,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 2,
+      "storedLevel": 101,
+      "magnitudeShift": 0,
+      "level": 14
+    },
+    {
+      "type": 2,
+      "storedLevel": 101,
+      "magnitudeShift": 3,
+      "level": 14
+    },
+    {
+      "type": 2,
+      "storedLevel": 101,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 3,
+      "storedLevel": 0,
+      "magnitudeShift": 0,
+      "level": 0
+    },
+    {
+      "type": 3,
+      "storedLevel": 0,
+      "magnitudeShift": 3,
+      "level": 0
+    },
+    {
+      "type": 3,
+      "storedLevel": 0,
+      "magnitudeShift": -2,
+      "level": 2
+    },
+    {
+      "type": 3,
+      "storedLevel": 1,
+      "magnitudeShift": 0,
+      "level": 1
+    },
+    {
+      "type": 3,
+      "storedLevel": 1,
+      "magnitudeShift": 3,
+      "level": 0
+    },
+    {
+      "type": 3,
+      "storedLevel": 1,
+      "magnitudeShift": -2,
+      "level": 3
+    },
+    {
+      "type": 3,
+      "storedLevel": 8,
+      "magnitudeShift": 0,
+      "level": 8
+    },
+    {
+      "type": 3,
+      "storedLevel": 8,
+      "magnitudeShift": 3,
+      "level": 5
+    },
+    {
+      "type": 3,
+      "storedLevel": 8,
+      "magnitudeShift": -2,
+      "level": 10
+    },
+    {
+      "type": 3,
+      "storedLevel": 9,
+      "magnitudeShift": 0,
+      "level": 9
+    },
+    {
+      "type": 3,
+      "storedLevel": 9,
+      "magnitudeShift": 3,
+      "level": 6
+    },
+    {
+      "type": 3,
+      "storedLevel": 9,
+      "magnitudeShift": -2,
+      "level": 11
+    },
+    {
+      "type": 3,
+      "storedLevel": 12,
+      "magnitudeShift": 0,
+      "level": 12
+    },
+    {
+      "type": 3,
+      "storedLevel": 12,
+      "magnitudeShift": 3,
+      "level": 9
+    },
+    {
+      "type": 3,
+      "storedLevel": 12,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 3,
+      "storedLevel": 14,
+      "magnitudeShift": 0,
+      "level": 14
+    },
+    {
+      "type": 3,
+      "storedLevel": 14,
+      "magnitudeShift": 3,
+      "level": 11
+    },
+    {
+      "type": 3,
+      "storedLevel": 14,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 3,
+      "storedLevel": 101,
+      "magnitudeShift": 0,
+      "level": 14
+    },
+    {
+      "type": 3,
+      "storedLevel": 101,
+      "magnitudeShift": 3,
+      "level": 14
+    },
+    {
+      "type": 3,
+      "storedLevel": 101,
+      "magnitudeShift": -2,
+      "level": 14
+    },
+    {
+      "type": 4,
+      "storedLevel": 0,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 0,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 0,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 1,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 1,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 1,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 8,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 8,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 8,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 9,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 9,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 9,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 12,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 12,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 12,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 14,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 14,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 14,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 101,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 101,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 4,
+      "storedLevel": 101,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 0,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 0,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 0,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 1,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 1,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 1,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 8,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 8,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 8,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 9,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 9,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 9,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 12,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 12,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 12,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 14,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 14,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 14,
+      "magnitudeShift": -2,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 101,
+      "magnitudeShift": 0,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 101,
+      "magnitudeShift": 3,
+      "level": null
+    },
+    {
+      "type": 255,
+      "storedLevel": 101,
+      "magnitudeShift": -2,
+      "level": null
+    }
+  ],
+  "galaxyLimits": [
+    {
+      "mode": 0,
+      "requestedLimit": 8,
+      "limit": 8.0
+    },
+    {
+      "mode": 0,
+      "requestedLimit": 12,
+      "limit": 12.0
+    },
+    {
+      "mode": 0,
+      "requestedLimit": 14,
+      "limit": 12
+    },
+    {
+      "mode": 0,
+      "requestedLimit": 16,
+      "limit": 12
+    },
+    {
+      "mode": 0,
+      "requestedLimit": 20,
+      "limit": 12
+    },
+    {
+      "mode": 1,
+      "requestedLimit": 8,
+      "limit": 16
+    },
+    {
+      "mode": 1,
+      "requestedLimit": 12,
+      "limit": 16
+    },
+    {
+      "mode": 1,
+      "requestedLimit": 14,
+      "limit": 16
+    },
+    {
+      "mode": 1,
+      "requestedLimit": 16,
+      "limit": 16.0
+    },
+    {
+      "mode": 1,
+      "requestedLimit": 20,
+      "limit": 20.0
+    }
+  ],
+  "originalSamples": [
+    {
+      "file": "N0000.DAT",
+      "index": 0,
+      "recordSHA256": "451f38d174d7df0996c3b001ca7a84ba9358aac198bff9f1bb41e13d44a455cb",
+      "rawRa": 0,
+      "rawDec": 595000,
+      "rawMagnitude": 7570,
+      "flags": 240,
+      "decodedFlags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "record": {
+        "ra": 0.0,
+        "dec": 5.95,
+        "magnitude": 7.570000171661377
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "N0000.DAT",
+      "index": 1,
+      "recordSHA256": "738a12715c0c0ad495ee515b91476fb39c39a9818a235a0245c8c53078f5e887",
+      "rawRa": 250,
+      "rawDec": 538060,
+      "rawMagnitude": 12941,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 2.5e-05,
+        "dec": 5.3806,
+        "magnitude": 12.940999984741211
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "N0000.DAT",
+      "index": 2,
+      "recordSHA256": "1ec370800f01a830aae95cffae9b752ebd63158f46a558e18ac52752856615bc",
+      "rawRa": 595,
+      "rawDec": 108901,
+      "rawMagnitude": 9512,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 5.95e-05,
+        "dec": 1.08901,
+        "magnitude": 9.51200008392334
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "N0000.DAT",
+      "index": 3,
+      "recordSHA256": "b1f8211bc8b11fb5dace5b08ec04e2a640d3369d89bb4ee70c24228bc9d7c69d",
+      "rawRa": 780,
+      "rawDec": 66530,
+      "rawMagnitude": 14970,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 7.8e-05,
+        "dec": 0.6653,
+        "magnitude": 14.970000267028809
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "N0000.DAT",
+      "index": 4,
+      "recordSHA256": "1b0ce72425e444fe956ca68a6dc1fffa83e6e277f432af98497ea3c6ac42f158",
+      "rawRa": 880,
+      "rawDec": 302122,
+      "rawMagnitude": 13102,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 8.8e-05,
+        "dec": 3.02122,
+        "magnitude": 13.10200023651123
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "N0000.DAT",
+      "index": 5,
+      "recordSHA256": "b7f676787e7cea9186e4f14e83d884641ce713ff0824613b93d9b3539b7e2c97",
+      "rawRa": 1480,
+      "rawDec": 275438,
+      "rawMagnitude": 14730,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.000148,
+        "dec": 2.75438,
+        "magnitude": 14.729999542236328
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "N0000.DAT",
+      "index": 6,
+      "recordSHA256": "4c6ac4e68b26279eb47ca9d820e8a0b9876ee5f94d0f2b4f535748b7528ff879",
+      "rawRa": 1533,
+      "rawDec": 328358,
+      "rawMagnitude": 15300,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0001533,
+        "dec": 3.28358,
+        "magnitude": 15.300000190734863
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "N0000.DAT",
+      "index": 7,
+      "recordSHA256": "ca789e0fb37b0397774b1a089084ba27883d700976e455e41fd6e8414019167c",
+      "rawRa": 1607,
+      "rawDec": 42507,
+      "rawMagnitude": 15560,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0001607,
+        "dec": 0.42507,
+        "magnitude": 15.5600004196167
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 0,
+      "recordSHA256": "baa1e734d6754b9f115e46a6e05d25e42591e5be1c45b60787a76be93a195ff9",
+      "rawRa": 113,
+      "rawDec": -549435,
+      "rawMagnitude": 9990,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 1.13e-05,
+        "dec": -5.49435,
+        "magnitude": 9.989999771118164
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 1,
+      "recordSHA256": "9e4c068c7abf7b13d24e5d40f12f47ca04c090d2e107748d7c2918bcb558f868",
+      "rawRa": 1160,
+      "rawDec": -310315,
+      "rawMagnitude": 15390,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.000116,
+        "dec": -3.10315,
+        "magnitude": 15.390000343322754
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 2,
+      "recordSHA256": "367508b7bc59fd706a8e0748f9fa92d05bc8e7cf7076990a0178430eaf6986b5",
+      "rawRa": 1213,
+      "rawDec": -462745,
+      "rawMagnitude": 15260,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0001213,
+        "dec": -4.62745,
+        "magnitude": 15.260000228881836
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 3,
+      "recordSHA256": "93b3ff66729bca27b557b843450f3b9455c9fe941b3f4b50d52afe60a231619f",
+      "rawRa": 1633,
+      "rawDec": -385043,
+      "rawMagnitude": 15200,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0001633,
+        "dec": -3.85043,
+        "magnitude": 15.199999809265137
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 4,
+      "recordSHA256": "f0cd16ca938fe0b23431146a67f05b96108df8f972a33818d1afb4d590cad842",
+      "rawRa": 1767,
+      "rawDec": -448347,
+      "rawMagnitude": 13060,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0001767,
+        "dec": -4.48347,
+        "magnitude": 13.0600004196167
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 5,
+      "recordSHA256": "c7a33f5102cf19b1cbcd8023c67917c476f7b7c42a8f0c53a24c1da1bea43299",
+      "rawRa": 1953,
+      "rawDec": -497896,
+      "rawMagnitude": 13930,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0001953,
+        "dec": -4.97896,
+        "magnitude": 13.930000305175781
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 6,
+      "recordSHA256": "bd78ff34bdfb2c0507d54b04acc208adcb70c6f1a3be8465629b842239dc43fd",
+      "rawRa": 2113,
+      "rawDec": -573910,
+      "rawMagnitude": 15270,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0002113,
+        "dec": -5.7391,
+        "magnitude": 15.270000457763672
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    },
+    {
+      "file": "S0000.DAT",
+      "index": 7,
+      "recordSHA256": "fd2ffc164522264a13e5686a55414e48b7ad904bcd6ac878cbfe035b885bacea",
+      "rawRa": 2233,
+      "rawDec": -27804,
+      "rawMagnitude": 12860,
+      "flags": 15,
+      "decodedFlags": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "record": {
+        "ra": 0.0002233,
+        "dec": -0.27804,
+        "magnitude": 12.859999656677246
+      },
+      "region": {
+        "minimumRa": 0,
+        "maximumRa": 24,
+        "minimumDec": -8,
+        "maximumDec": 8,
+        "limitingMagnitude": 20
+      },
+      "admitted": true
+    }
+  ]
+}

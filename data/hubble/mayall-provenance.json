@@ -1,0 +1,485 @@
+{
+  "schema": 1,
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "opticalProfileSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "calibration": {
+    "telescopeRecord": 2,
+    "scopeFactor": 3,
+    "baseZeroPoint": 6,
+    "storedZeroPoint": 9,
+    "skyMagnitude": 19,
+    "elapsedMultiplier": 50,
+    "maximumTickMS": 1000,
+    "targetCadenceMS": 100,
+    "poissonMeanDomainMaximum": 1000000
+  },
+  "star": {
+    "policyId": "openclea-mayall-star-exposure-v1",
+    "domain": {
+      "exercise": "hubble",
+      "exerciseMode": 4,
+      "catalogMode": 1,
+      "telescopeRecord": 2,
+      "options": "compiled-fallback-unmodified",
+      "history": "fresh-process-direct-hubble",
+      "pointing": {
+        "ra": 0.4987684,
+        "dec": 0.03628
+      },
+      "fieldArcminutes": 15,
+      "fieldMultiplier": 3,
+      "dynamicContext": "absent"
+    },
+    "fieldSnapshotSHA256": "44a444d309ef4985a52787a68989da864392bcdb8a5821de0e3119aac73d5c96",
+    "sourceSnapshotSHA256": "4389a64f2fe9cbc4d7c2c2c8b3111e7ae8d3b5b7ad78421ce45abc11a170b41d",
+    "raster": {
+      "width": 936,
+      "height": 936,
+      "sha256": "0b11d7b39a0586dcfe54f544ec4ade460c7ee64faa7312c83e05f75b9e1aaa7b",
+      "cropSHA256": "12bbe0f3efccccecdef3a49d44dabf708d25154780b140ecbfd8f57f30399e88",
+      "slitSum": 14919,
+      "slitLevel": 262,
+      "targetPaint": {
+        "stored": 13,
+        "level": 10,
+        "magnitudeSingle": 13.92199993133545
+      },
+      "levelsHistogram": {
+        "11": 48,
+        "10": 38,
+        "12": 7,
+        "9": 13,
+        "6": 2,
+        "7": 6,
+        "8": 13,
+        "4": 1
+      },
+      "saturatedBytes": 573
+    },
+    "maximumMean1000ms": "534.8137799698079904706958677309536694042675192930090005165010387732680493045211553718470780380938300",
+    "vectorsSHA256": "426e0b82012c0bb699a0a0698582bffeaa7df2349141f2b8297d4cd9d816a3c1",
+    "fieldRecoverySHA256": "4782a9f1ab3eb28a1731249fe9bc64b51517f07cffe6ba3bbf36d17ce04fd741"
+  },
+  "galaxies": [
+    {
+      "id": "36773",
+      "policyId": "openclea-mayall-galaxy-36773-v1",
+      "domain": {
+        "exercise": "hubble",
+        "exerciseMode": 4,
+        "catalogMode": 1,
+        "telescopeRecord": 2,
+        "options": "compiled-fallback-unmodified",
+        "history": "fresh-process-direct-hubble",
+        "pointing": {
+          "ra": 11.789361111111111,
+          "dec": 55.68888888888889
+        },
+        "fieldArcminutes": 15,
+        "fieldMultiplier": 3,
+        "dynamicContext": "absent",
+        "minimum": 4000,
+        "maximum": 5000,
+        "rasterPolicy": "nearest-center-stretch-v1"
+      },
+      "fieldSnapshotSHA256": "cbe1f9aae57ab325095a074499d185bb469e9f6730997cc21e87359d27e26eca",
+      "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+      "raster": {
+        "cropSHA256": "1c85b36daaaa110146deca158bb764669bb6d477af9682bab382325ceb82c6e9",
+        "slitSum": 4518,
+        "slitLevel": 79,
+        "fraction": 0.15602500000000002,
+        "geometries": [
+          {
+            "id": "36641",
+            "majorRadius": 3,
+            "minorRadius": 3,
+            "level": 3,
+            "angle": 5.9341194567858,
+            "correctedMagnitude": 12.242874714092794
+          },
+          {
+            "id": "NGC 3850",
+            "majorRadius": 22,
+            "minorRadius": 10,
+            "level": 6,
+            "angle": 3.839724354387525,
+            "correctedMagnitude": 14.643273272413346
+          },
+          {
+            "id": "36747",
+            "majorRadius": 7,
+            "minorRadius": 3,
+            "level": 5,
+            "angle": 3.4906585039835796,
+            "correctedMagnitude": 13.643273346373256
+          },
+          {
+            "id": "36773",
+            "majorRadius": 4,
+            "minorRadius": 4,
+            "level": 5,
+            "angle": 5.585053606392013,
+            "correctedMagnitude": 13.548024883147564
+          },
+          {
+            "id": "NGC 3888",
+            "majorRadius": 19,
+            "minorRadius": 15,
+            "level": 4,
+            "angle": 3.665191429188092,
+            "correctedMagnitude": 13.44122581738226
+          },
+          {
+            "id": "36805",
+            "majorRadius": 9,
+            "minorRadius": 7,
+            "level": 6,
+            "angle": 5.9341194567858,
+            "correctedMagnitude": 14.636075648327491
+          }
+        ]
+      },
+      "maximumMean1000ms": "109.5660704567893034274343613850468055983032488161585410791119823936926765917993847471331799110357048",
+      "vectorsSHA256": "e3913536a4b9db08d94de99ba3093497b08265c0dda33cda034ab8fe44589dfd",
+      "fieldRecoverySHA256": "8ad11ecee4b94ae04ed83493627b6461755bd9c23afa1ad27228d303c94c54e9"
+    },
+    {
+      "id": "36747",
+      "policyId": "openclea-mayall-galaxy-36747-v1",
+      "domain": {
+        "exercise": "hubble",
+        "exerciseMode": 4,
+        "catalogMode": 1,
+        "telescopeRecord": 2,
+        "options": "compiled-fallback-unmodified",
+        "history": "fresh-process-direct-hubble",
+        "pointing": {
+          "ra": 11.781083333333333,
+          "dec": 55.705555555555556
+        },
+        "fieldArcminutes": 15,
+        "fieldMultiplier": 3,
+        "dynamicContext": "absent",
+        "minimum": 4000,
+        "maximum": 5000,
+        "rasterPolicy": "nearest-center-stretch-v1"
+      },
+      "fieldSnapshotSHA256": "67cd4050b627a30c18be46810c3fb367c1b84794d6112209f16aba435bba2588",
+      "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+      "raster": {
+        "cropSHA256": "749b4f70303f045a288efe623fbcd56140c3c8ce30fec51262195a2f82221a8d",
+        "slitSum": 3690,
+        "slitLevel": 65,
+        "fraction": 0.10562500000000001,
+        "geometries": [
+          {
+            "id": "NGC 3846",
+            "majorRadius": 10,
+            "minorRadius": 7,
+            "level": 5,
+            "angle": 3.9269908169872414,
+            "correctedMagnitude": 13.55046959422623
+          },
+          {
+            "id": "36641",
+            "majorRadius": 3,
+            "minorRadius": 3,
+            "level": 3,
+            "angle": 5.9341194567858,
+            "correctedMagnitude": 12.242874714092794
+          },
+          {
+            "id": "NGC 3850",
+            "majorRadius": 22,
+            "minorRadius": 10,
+            "level": 6,
+            "angle": 3.839724354387525,
+            "correctedMagnitude": 14.643273272413346
+          },
+          {
+            "id": "36747",
+            "majorRadius": 7,
+            "minorRadius": 3,
+            "level": 5,
+            "angle": 3.4906585039835796,
+            "correctedMagnitude": 13.643273346373256
+          },
+          {
+            "id": "36773",
+            "majorRadius": 4,
+            "minorRadius": 4,
+            "level": 5,
+            "angle": 5.585053606392013,
+            "correctedMagnitude": 13.548024883147564
+          },
+          {
+            "id": "NGC 3888",
+            "majorRadius": 19,
+            "minorRadius": 15,
+            "level": 4,
+            "angle": 3.665191429188092,
+            "correctedMagnitude": 13.44122581738226
+          },
+          {
+            "id": "36805",
+            "majorRadius": 9,
+            "minorRadius": 7,
+            "level": 6,
+            "angle": 5.9341194567858,
+            "correctedMagnitude": 14.636075648327491
+          }
+        ]
+      },
+      "maximumMean1000ms": "67.91578331078271522049082249376764400753808286077822107356838352164609163208486561969290174253457755",
+      "vectorsSHA256": "ffb1ec012a9db0b961dc23615c3be3535ea59751839bae2590f456a5bcda7e22",
+      "fieldRecoverySHA256": "0a7aeb94fcbaba44264c912ebec7afdb2f92f72ece8dd3174f77de918fdfd31d"
+    },
+    {
+      "id": "54876",
+      "policyId": "openclea-mayall-galaxy-54876-v1",
+      "domain": {
+        "exercise": "hubble",
+        "exerciseMode": 4,
+        "catalogMode": 1,
+        "telescopeRecord": 2,
+        "options": "compiled-fallback-unmodified",
+        "history": "fresh-process-direct-hubble",
+        "pointing": {
+          "ra": 15.3735,
+          "dec": 27.72222222222222
+        },
+        "fieldArcminutes": 15,
+        "fieldMultiplier": 3,
+        "dynamicContext": "absent",
+        "minimum": 4000,
+        "maximum": 5000,
+        "rasterPolicy": "nearest-center-stretch-v1"
+      },
+      "fieldSnapshotSHA256": "7413ecaf083338c6d4a052299228c1b973f5433baa1b8f827a83703a6c163ce1",
+      "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+      "raster": {
+        "cropSHA256": "9c5ff8c5690f811f3ceac728eff362050dbd78d355ea067719d15c6f5fe9ce36",
+        "slitSum": 4305,
+        "slitLevel": 76,
+        "fraction": 0.1444,
+        "geometries": [
+          {
+            "id": "54868",
+            "majorRadius": 5,
+            "minorRadius": 3,
+            "level": 6,
+            "angle": 5.585053606369155,
+            "correctedMagnitude": 15.17795285105463
+          },
+          {
+            "id": "54870",
+            "majorRadius": 3,
+            "minorRadius": 2,
+            "level": 5,
+            "angle": 5.585053606392013,
+            "correctedMagnitude": 14.29029896199339
+          },
+          {
+            "id": "54876",
+            "majorRadius": 4,
+            "minorRadius": 4,
+            "level": 5,
+            "angle": 1.3962634015980033,
+            "correctedMagnitude": 13.7480246924127
+          },
+          {
+            "id": "54875",
+            "majorRadius": 3,
+            "minorRadius": 3,
+            "level": 4,
+            "angle": 5.585053606369155,
+            "correctedMagnitude": 13.142874332623068
+          },
+          {
+            "id": "54891",
+            "majorRadius": 3,
+            "minorRadius": 2,
+            "level": 3,
+            "angle": 3.141592653589793,
+            "correctedMagnitude": 11.79029896199339
+          },
+          {
+            "id": "54890",
+            "majorRadius": 3,
+            "minorRadius": 1,
+            "level": 5,
+            "angle": 3.141592653589793,
+            "correctedMagnitude": 13.53052828100632
+          }
+        ]
+      },
+      "maximumMean1000ms": "84.33593868180709716773786474291905889470452508759795897588814749326371676638921124258091010790751410",
+      "vectorsSHA256": "e6ae31699296cb2ad285d645c2d7cb1e53f4ba2ecc92982d37b3a69424073d48",
+      "fieldRecoverySHA256": "521f34f937f7c74384d0bce18a11c03cea470092c08a4264dcf32a2c955c540a"
+    }
+  ],
+  "originalSources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Hubble.HTL",
+      "sha256": "02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986",
+      "bytes": 1118
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.NDX",
+      "sha256": "312fe73d57da2ce0abfc89c78a852e81f17b0a81706bc4295af51a5585144134",
+      "bytes": 192
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N5230.DAT",
+      "sha256": "17e899286fba7af6b286fb88580449e5513e98a86a24544030d870f0d8af851d",
+      "bytes": 18166950
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/Galaxies/GLXYTMPL.SP",
+      "sha256": "05602de89d005ddd5ea1bdd97f50b6519e1a17e222dc855930208792ac679cc5",
+      "bytes": 56967
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST",
+      "sha256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+      "bytes": 576
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N2230.DAT",
+      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+      "bytes": 28767987
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "bytes": 31481649
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S0000.DAT",
+      "sha256": "0cc5484587b734d4c468ad0d38e3eab78936a253d1409bd69d83f0bf26fe44f9",
+      "bytes": 27456219
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/JSPEC2.SPI",
+      "sha256": "5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa",
+      "bytes": 3168
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000049.SP",
+      "sha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220",
+      "bytes": 55980
+    }
+  ],
+  "licenses": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+      "bytes": 152
+    }
+  ],
+  "ranges": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/selected-telescope.asm",
+      "from": "0x53df24",
+      "endExclusive": "0x53e178",
+      "sha256": "abef60b8555c831433060fbd17a5a2d3b380dd07b1ec9ca965871ce10bec2d67"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/paint-shift.asm",
+      "from": "0x53b51f",
+      "endExclusive": "0x53b7c2",
+      "sha256": "771a2e68fe8f2e130fdf06fff5fee14832395feed8dc4607f96234b953169c82"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/amplitude.asm",
+      "from": "0x50e0d7",
+      "endExclusive": "0x50e26b",
+      "sha256": "cf8d55f5b5c07c6bd659462057e28468c7acaa29a2c245242c33f1e069f23d62"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/poisson.asm",
+      "from": "0x55f0f4",
+      "endExclusive": "0x55f354",
+      "sha256": "6b8dc125ac07b210b467a308b8ccc469f6ac9ec2b7e030d47cdbc9bbc7f8a16e"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/gamma.asm",
+      "from": "0x55f354",
+      "endExclusive": "0x55f448",
+      "sha256": "57e54034aaf3053b826ef3ec508d7bca5f6500ff23c6297d3aee63804ba491cd"
+    }
+  ],
+  "claims": [
+    {
+      "id": "M4-C01",
+      "range": "0x53df4f..0x53df75",
+      "contract": "Original record2 scope correction+3 ->storedSingle zero9, rounded paint shift3; original nominal4m is stored aperture3810mm/focal10287mm, no aperture-area replacement."
+    },
+    {
+      "id": "M4-C02",
+      "range": "0x53b538..0x53b55e;0x53b748..0x53b77c",
+      "contract": "Cached galaxy/star paint level minus3, clamp0..14; entire fields repainted before slit reads."
+    },
+    {
+      "id": "M4-C03",
+      "range": "0x53be70..0x53c0b3;0x53c531..0x53c57a;0x53e338",
+      "contract": "Shared complete native field/window, original area/magnitude and chosen browser raster; slit and source/sky powers use zero9. Explicit record2 domains reconstructed independently."
+    },
+    {
+      "id": "M4-C04",
+      "range": "0x55f197..0x55f307;0x55f354..0x55f429",
+      "contract": "At means>=12 original rejection sampler uses sqrt(2mean), separate sin/cos, rawExtended pi, controlled truncation, six original gamma coefficients, -30 cutoff and0.9 acceptance. Existing Number kernel retained; new Decimal100 reference uses raw native constants and Taylor sin/cos."
+    },
+    {
+      "id": "M4-C05",
+      "range": "0x50f76c;0x58a8ca..0x58a8d3",
+      "contract": "Source then sky uniforms, summed raw bins; unrestricted Hubble; no request lottery or invented credits."
+    }
+  ],
+  "reference": {
+    "method": "Independent binary64/nearest-even raster; Decimal100 original-text interpolation/calibration and raw-native-constant product/rejection Poisson with Taylor sin/cos and exact integer LCG. Mathematical references, not original execution/microemulation.",
+    "script": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/poisson_reference.py",
+    "sha256": "72a2a6df8efbc56e4842df8494e5b390e3498cab5d29cc054a9707835f4b169a",
+    "trajectories": 20,
+    "binsEach": 600
+  },
+  "numericalPolicy": "Number/Math and nearest-center galaxy scaling are explicit adapters, not native x87/GDI/runtime equivalence. Existing scalar kernels unchanged; exact uniform0.5 in rejection branch raises a precision guard and the whole tick rolls back.",
+  "newWebState": "Independent record2 star and three-galaxy journals, explicit activation and stopped atomic restore. Full14 archive bound12 covers all12 current acquired target/profile kinds; old formats retain limit8, event/byte budgets unchanged.",
+  "rights": "Original licenses preserved; local research only, no public redistribution grant."
+}

@@ -1,0 +1,145 @@
+{
+  "kind": "Synthetic algebraic fixtures, not native observations or an execution oracle",
+  "method": "Python Fraction for exact algebra; Decimal precision70 for log10/sqrt, independently from TypeScript Number/Math",
+  "absoluteMagnitudeTolerance": 1e-12,
+  "vectors": [
+    {
+      "id": "reference",
+      "input": {
+        "totalPhotonCount": 1200,
+        "integrations": 1,
+        "secondsPerIntegration": 10,
+        "apertureSelector": 10,
+        "nativeBaseCountSum": 1000,
+        "zeroPointMagnitude": 20,
+        "skyAtReferenceAperture": 20
+      },
+      "expected": {
+        "apertureFactor": "1",
+        "integrationSeconds": "10",
+        "meanCountRate": "120",
+        "baseCountRate": "100",
+        "scaledSkyRate": "20",
+        "netCountRate": "100",
+        "ratio": "1",
+        "magnitude": "20",
+        "nativeDisplaySnr": "34.64101615137754587054892683011744733885610507620761256111613958903866"
+      }
+    },
+    {
+      "id": "repeated",
+      "input": {
+        "totalPhotonCount": 6000,
+        "integrations": 5,
+        "secondsPerIntegration": 10,
+        "apertureSelector": 10,
+        "nativeBaseCountSum": 5000,
+        "zeroPointMagnitude": 20,
+        "skyAtReferenceAperture": 20
+      },
+      "expected": {
+        "apertureFactor": "1",
+        "integrationSeconds": "50",
+        "meanCountRate": "120",
+        "baseCountRate": "100",
+        "scaledSkyRate": "20",
+        "netCountRate": "100",
+        "ratio": "1",
+        "magnitude": "20",
+        "nativeDisplaySnr": "77.45966692414833770358530799564799221665843410583181653175147532226966"
+      }
+    },
+    {
+      "id": "larger-aperture",
+      "input": {
+        "totalPhotonCount": 178100,
+        "integrations": 1,
+        "secondsPerIntegration": 100,
+        "apertureSelector": 20,
+        "nativeBaseCountSum": 10000,
+        "zeroPointMagnitude": 20,
+        "skyAtReferenceAperture": 441
+      },
+      "expected": {
+        "apertureFactor": "3.811791383219954648526077097505668934240362811791383219954648526077098",
+        "integrationSeconds": "100",
+        "meanCountRate": "1781",
+        "baseCountRate": "100",
+        "scaledSkyRate": "1681",
+        "netCountRate": "100",
+        "ratio": "1",
+        "magnitude": "20",
+        "nativeDisplaySnr": "422.0189569201838591739249567213542929872829543881504014189127451015383"
+      }
+    },
+    {
+      "id": "tenfold",
+      "input": {
+        "totalPhotonCount": 10200,
+        "integrations": 1,
+        "secondsPerIntegration": 10,
+        "apertureSelector": 10,
+        "nativeBaseCountSum": 1000,
+        "zeroPointMagnitude": 20,
+        "skyAtReferenceAperture": 20
+      },
+      "expected": {
+        "apertureFactor": "1",
+        "integrationSeconds": "10",
+        "meanCountRate": "1020",
+        "baseCountRate": "100",
+        "scaledSkyRate": "20",
+        "netCountRate": "1000",
+        "ratio": "10",
+        "magnitude": "17.50000000000000000000000000000000000000000000000000000000000000000000",
+        "nativeDisplaySnr": "100.9950493836207795336338591706960071060389896447961294185302476232528"
+      }
+    },
+    {
+      "id": "low-count",
+      "input": {
+        "totalPhotonCount": 1,
+        "integrations": 1,
+        "secondsPerIntegration": 100,
+        "apertureSelector": 10,
+        "nativeBaseCountSum": 10000,
+        "zeroPointMagnitude": 20,
+        "skyAtReferenceAperture": 0
+      },
+      "expected": {
+        "apertureFactor": "1",
+        "integrationSeconds": "100",
+        "meanCountRate": "0.01",
+        "baseCountRate": "100",
+        "scaledSkyRate": "0",
+        "netCountRate": "0.01",
+        "ratio": "0.0001",
+        "magnitude": "30.00000000000000000000000000000000000000000000000000000000000000000000",
+        "nativeDisplaySnr": "1"
+      }
+    },
+    {
+      "id": "background-snr",
+      "input": {
+        "totalPhotonCount": 10000,
+        "integrations": 1,
+        "secondsPerIntegration": 10,
+        "apertureSelector": 10,
+        "nativeBaseCountSum": 10000,
+        "zeroPointMagnitude": 20,
+        "skyAtReferenceAperture": 100
+      },
+      "expected": {
+        "apertureFactor": "1",
+        "integrationSeconds": "10",
+        "meanCountRate": "1000",
+        "baseCountRate": "1000",
+        "scaledSkyRate": "100",
+        "netCountRate": "900",
+        "ratio": "0.9",
+        "magnitude": "20.11439372640168781352486048372442345399935567904652067585067179847385",
+        "nativeDisplaySnr": "100"
+      }
+    }
+  ]
+}

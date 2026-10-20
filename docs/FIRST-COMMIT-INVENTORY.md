@@ -39,3 +39,8 @@ No original/derived scientific resource payload is added to make the public chec
 ## Current naming correction
 
 The current tree uses OpenVireo throughout; published history is preserved. Naming and saved-file compatibility are documented in [project naming](PROJECT-NAMING.md) and its [validation](PROJECT-NAMING-VALIDATION.md). Historical private screenshot/report paths containing superseded product spelling are represented here by external evidence-record references. The original filenames, reports, hashes and manifests remain unchanged outside the repository; no renamed historical artifact is claimed. Current component names in historical summaries identify their present counterparts, not a rewrite of captured source manifests.
+
+
+## Subsequent explicit resource inclusion
+
+The earlier source-only preparation/push sections are historical snapshots. The later explicit instruction includes all1279manifested resources with exact bytes/hashes,while native programs/installers,private state and caches remain excluded. The broad folder exclusions are removed. [Current material classes/credits](RESOURCE-PROVENANCE.json) distinguish original,derived and authored files without imposing a blanket license conclusion. [Current setup](LOCAL-SETUP.md) and clone verification supersede the former private-pack requirement.

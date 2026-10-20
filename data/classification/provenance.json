@@ -1,0 +1,702 @@
+{
+  "sourceArchive": "CLEA_Vireo.zip",
+  "sourceArchiveSHA256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+  "manualContract": "VIREO Manual pp24\u201327; CLASSHLP.TXT Load Standard Spectra (main sequence before luminosity); 2008 Classification student manual p3 (MK luminosity labels and optional luminosity exploration), pp7\u201310 (comparison/difference). No new physical luminosity/distance formula.",
+  "scope": "All 8 original ATLAS2.LST atlases (13 MS + 25 luminosity memberships) and all 25 practices; no key, inferred labels or grade",
+  "rights": "CLEA original copyright/License.rtf; local research only, public redistribution not authorized",
+  "files": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Labex1/Student Manuals pdf Format/The Classification of Stellar Spectra 11-24-2008.pdf",
+      "bytes": 417205,
+      "sha256": "dd26f087cb6e762e153f69f8457362731dbff0cfad257345ee63e7a719e6fcc3"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "bytes": 2996327,
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/A3_LUM.ATL",
+      "bytes": 79,
+      "sha256": "ee8c447a79702eab0f36057f64ec20facc1d0c4f13b8eac027a629b1755cf362"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/ATLAS2.LST",
+      "bytes": 268,
+      "sha256": "4c1b7983cb552ce13cf3e62340a104491fe0248b78ea391c0b2299e4944bd4a9"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/B2_LUM.ATL",
+      "bytes": 105,
+      "sha256": "311e57d0a70311ab0557bf3a0b4a2dbe9a08d11168f45a2d7c7d29018d2633cd"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "bytes": 11919,
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSIFY.LST",
+      "bytes": 675,
+      "sha256": "a1a869ba1dcd71406b435ed4432d6c440adcaefefd0ee9d9f45d9dc49280fe70"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "bytes": 152,
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/F5_LUM.ATL",
+      "bytes": 105,
+      "sha256": "4b7b4200941ff7efa7cbf816aa25ac51d173431009210db5da75f1f618f8552d"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/G2_LUM.ATL",
+      "bytes": 105,
+      "sha256": "b07ad806b05efd2a06cca2a3cc7449096fc6164db80f5897a0081b7550c4d539"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/K0_LUM.ATL",
+      "bytes": 79,
+      "sha256": "55239c11bef829c911dacb810efd41ca6cea6aa9cc325b4b8561d97a435bbf57"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "bytes": 32096,
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/M2_LUM.ATL",
+      "bytes": 105,
+      "sha256": "621061c595b3d3f96513895f51dc62fbfdd09d5b9fd2faf8c56b4c7697e4abef"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/MS.ATL",
+      "bytes": 313,
+      "sha256": "2042ad2e007fbf090bebbd96e04931412f9dd907e9b822c2d058bf29bca8aaff"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/O8_LUM.ATL",
+      "bytes": 85,
+      "sha256": "00b591b025483f51b0070d0454a41a1b3430fc276036ba1740787e035f61489a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/SPECLNS.LNL",
+      "bytes": 1005,
+      "sha256": "c3c4eb3171ba2b8f35c5248fc28a084ec49f7abfe18918df89d6285c8369b6c5"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/SPECLNS.TXT",
+      "bytes": 3557,
+      "sha256": "495d0627f11e1f8a5e780f04aa4f402a6b6650e6a26181c5842b7ecaea9faa5a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000001.SP",
+      "bytes": 55980,
+      "sha256": "6311f2dab943fd9a790f8be36f50900661e1ff3224528c0a6391f67c2310e6f0"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000004.SP",
+      "bytes": 55980,
+      "sha256": "f501cd73bfc43a15aeb27eea672ac3c69bdb5830b7a48b475f05f4ec046749be"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000006.SP",
+      "bytes": 55980,
+      "sha256": "7265bfb181f27e8b8a8b7384725c662f2dc9f8d2c866fbb7aebb3774dd53cf97"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000007.SP",
+      "bytes": 55980,
+      "sha256": "5b8236331aa87a9145845f25e9b3ffbb5d333b665f6f47b7baa66b766bce8769"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000011.SP",
+      "bytes": 55980,
+      "sha256": "0b68a7d9502bdd794c03b9bc35023143abf563d52851325898f2e522e2bca006"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000012.SP",
+      "bytes": 55980,
+      "sha256": "c5de0192331eb777190c34d0168a91fab281f7069f1442ddad1388a195abb160"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000013.SP",
+      "bytes": 55980,
+      "sha256": "5960f7700c327252a6215476fd62635a57b6deca7a2d40010f362f262e744298"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000014.SP",
+      "bytes": 55980,
+      "sha256": "6a5ee6362deab2059d100789c4fd0c49372b2360f898c469932b2d00b0dd5328"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000015.SP",
+      "bytes": 55980,
+      "sha256": "cc4e0ec889f8829081534b1852e348ce5486bf5c8aa94e13e8f0cfda139ed4af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000016.SP",
+      "bytes": 55980,
+      "sha256": "df6204701d3e0bce322b5b3bd993e98992a3a390d6eb7ec2f0d3bb32287b450d"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000017.SP",
+      "bytes": 55980,
+      "sha256": "efe769a8c81ec029f0aea41acfdc09417aec06301aaea9a819290d5187efbb6e"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000018.SP",
+      "bytes": 55980,
+      "sha256": "ee65da16e6884d93af66df7c6285664c9dddde3cf1e747c4638af6a36711698a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000019.SP",
+      "bytes": 55980,
+      "sha256": "b04ce24eb2b61ede4504d5d62b13b69150bc1aef12ebd70c838711738c6423f8"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000020.SP",
+      "bytes": 55980,
+      "sha256": "2ffb360fa1b0b3cd41e59192e2200b4462f6905e92665b2943bbad9298dcc19c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000021.SP",
+      "bytes": 55980,
+      "sha256": "0bdf4fa2f810014e38f8f0a8a1d9a3685ab4fe570d3ebcd69c36ed7cc19d9d3a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000024.SP",
+      "bytes": 55980,
+      "sha256": "4e108b1ed6db32aac6c280b34b39d097c1089f56db593cb2c67801e6459980d8"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000025.SP",
+      "bytes": 55980,
+      "sha256": "3df49866bfabd9ee5d3a8109f1f8e65095d24f39427c0adb61e7f99e2e2c76c0"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000026.SP",
+      "bytes": 55980,
+      "sha256": "e0862f86857313a3b8ecd240d9c7bf134b526481fde6e5c885299c7ae8948dd2"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000027.SP",
+      "bytes": 55980,
+      "sha256": "eac85c6e1140ca5b91e1e77e7b188d0e14d7a1121550660b5f3c83ee1f4e1ffc"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000030.SP",
+      "bytes": 55980,
+      "sha256": "7c631037192d1c4e5713f359b3b65af210af0efcc0ceb1411d4b034f8cf631f8"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000031.SP",
+      "bytes": 55980,
+      "sha256": "a680b8dc806458110bed4db3d61a8d72caf53a37fc9fac94c0f7edd57fe7b93b"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000032.SP",
+      "bytes": 55980,
+      "sha256": "4e12734393d94b906fcbd3035b46f209f22de07ebc5df9a9aaddba2fb9ea4bd6"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000033.SP",
+      "bytes": 55980,
+      "sha256": "0026b06905657a02d03084182076ec3de806c0d6a8005dc850a767a072ba350a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000034.SP",
+      "bytes": 55980,
+      "sha256": "c04874efa960b10df3931c6b81899f8607387e1d722fc4c69178d70117672a9d"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000036.SP",
+      "bytes": 55980,
+      "sha256": "e0b4c0a245af2b04659854ab809b9b9abea8699422aa918d3262e05c4ca4631f"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000040.SP",
+      "bytes": 55980,
+      "sha256": "108987ce781ef6cf91d49702c407fefd206a2d3f309b46bc8f15e531cf06ca25"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000042.SP",
+      "bytes": 55980,
+      "sha256": "7f919cfc5f7a239862adb05a5e25038acef8c96badcf767bf51c3bb805ebb880"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000043.SP",
+      "bytes": 55980,
+      "sha256": "1feab8938f6f92918ee06384f50e3aa8dd5b6b9c92d43e5bd6d084094b63a00d"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000044.SP",
+      "bytes": 55980,
+      "sha256": "6d49365b7b52266afd3477df21f30c123d89f5d1cf0771f2c6264487c37800c4"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000045.SP",
+      "bytes": 55980,
+      "sha256": "65d6501e6e715a86861409703d720f01bd6fe8000dc68fe252f6f5111998a5d7"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000048.SP",
+      "bytes": 55980,
+      "sha256": "e84d7fe32c8111849c07dcc26a17d8b626de809dbd062de40bb6ab5f00391d9a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000049.SP",
+      "bytes": 55980,
+      "sha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000052.SP",
+      "bytes": 55980,
+      "sha256": "3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000053.SP",
+      "bytes": 55980,
+      "sha256": "0767e98bb8d9ddd547f03617f4df519ade729b3a99a8434f6864b74d1a6160af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000054.SP",
+      "bytes": 55980,
+      "sha256": "0577be73298b29e5dcc347387d6fb18175825181c09e98b23c8e5d879d6f3419"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000055.SP",
+      "bytes": 55980,
+      "sha256": "3ef2cbdacfb0aacb3c07e9c0e95bf69198a1653722bec4cb0bb66bad10856011"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000056.SP",
+      "bytes": 55980,
+      "sha256": "41214387eb8ff27c65bd04e6cad5f8938a5534d99809d5b24b0409ef0d3a2f1f"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000057.SP",
+      "bytes": 55980,
+      "sha256": "7d0ef80a736d2b6afaa888c1981df0608368c78006c445d7c8ff473d658d97c8"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000060.SP",
+      "bytes": 55980,
+      "sha256": "b0370205f94133550ce41f5e86430851ad3795658610e89702c1245ea77a35ae"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000064.SP",
+      "bytes": 55980,
+      "sha256": "f4ddbb2fd7cdeea1d8d658a8603c7ac66571f7fa3d86e40df09be45f536d99fe"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000067.SP",
+      "bytes": 55980,
+      "sha256": "4428517e816e9b8a2c0a362a2c1cfc7ee7cc829311dd4f70bd3bb97841af4755"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000077.SP",
+      "bytes": 55980,
+      "sha256": "f781f314d52bd414c1e2e4de0d961884386456b0e9aa486c866168c72edaab98"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000082.SP",
+      "bytes": 55980,
+      "sha256": "33ee96f008d6faa52112ea52230ff03cda2a5729bb12d3045ae65505d99546b4"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000088.SP",
+      "bytes": 55980,
+      "sha256": "b2f13a503d2b45d5f5f07004fc4b1c07a2402419a567b7aa811dfaddcd56ccc5"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000097.SP",
+      "bytes": 55980,
+      "sha256": "c977ba8778bafea3150a7da69b6670d86c1e92f29df77101d0e42fc607b61f5a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000103.SP",
+      "bytes": 55980,
+      "sha256": "2dadd3939bb0066a42bd534a78149f301f1fa7c32f8797cf1c0919a0e6c29dd6"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000106.SP",
+      "bytes": 55980,
+      "sha256": "8d1c5ff740077e7c42ab0aaa705c176212a8ea84974156a3224093a3e0ef82ac"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000108.SP",
+      "bytes": 55980,
+      "sha256": "4ac005400174e9359ff1bac94b07714f2e22fe9c7a07325df0752e32cfe9ef52"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000112.SP",
+      "bytes": 55980,
+      "sha256": "f1d44e527637c035148615020ad37586fcc04d54fab510d2d8bf92cc5a7e1134"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000115.SP",
+      "bytes": 55980,
+      "sha256": "f62a189b6c195133964972e9bb196c8d5eb743213703b9dc2332dbf46d391c59"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000119.SP",
+      "bytes": 55980,
+      "sha256": "0bff0de62c825769c6b22901ecbda6c964ebf587a5422ab07cd1269a1c73dac9"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000129.SP",
+      "bytes": 55980,
+      "sha256": "e0ed186b268f634ebc7a979088584142e99732b2f358c55cf871646bbcf20694"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000137.SP",
+      "bytes": 55980,
+      "sha256": "0131393c099fbbf6e437f316953fcdbe9ea1fc2cc9f096375e0453213c142bc3"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000143.SP",
+      "bytes": 55980,
+      "sha256": "52f142d849d5b8e069c87592dd71db03c9bf34dff23c96f5f3dbb756c40a020d"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000146.SP",
+      "bytes": 55980,
+      "sha256": "a564082b77910d4669e583d978b522506850dc540d9cd2273e0107cb374c0fc6"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000152.SP",
+      "bytes": 55980,
+      "sha256": "406143e087518eb2faae5ac9f03b4daa282feb8edd88f928f24d3c5170b224cb"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000155.SP",
+      "bytes": 55980,
+      "sha256": "f5f30c1b90476314aaad603ea9e21003d1fa5b0b63c047cc541bc4941cbe6a4c"
+    }
+  ],
+  "datasetFingerprint": "ed75373f7f8e02129ab115470e56c2e5159db500f0fa3ee5babfc1d9e74c00ce",
+  "validation": {
+    "allAtlasAndPracticePrintedGridsEqual": true,
+    "rowsPerSpectrum": 2799,
+    "fluxDomain": [
+      0,
+      1
+    ],
+    "uniqueRuntimeSPFiles": 57
+  },
+  "adaptations": [
+    "Printed wavelengths retained, no endpoint grid reconstruction",
+    "Number subtraction at identical printed wavelengths; no new interpolation/normalization",
+    "SVG, form/session/CSV and recording states are new web behavior"
+  ],
+  "atlasMemberships": [
+    {
+      "atlas": "main",
+      "atlasRow": 1,
+      "label": "O5 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000001.SP",
+      "spectrumSHA256": "6311f2dab943fd9a790f8be36f50900661e1ff3224528c0a6391f67c2310e6f0"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 2,
+      "label": "B0 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000012.SP",
+      "spectrumSHA256": "c5de0192331eb777190c34d0168a91fab281f7069f1442ddad1388a195abb160"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 3,
+      "label": "B6 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000017.SP",
+      "spectrumSHA256": "efe769a8c81ec029f0aea41acfdc09417aec06301aaea9a819290d5187efbb6e"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 4,
+      "label": "A1 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000019.SP",
+      "spectrumSHA256": "b04ce24eb2b61ede4504d5d62b13b69150bc1aef12ebd70c838711738c6423f8"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 5,
+      "label": "A5 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000025.SP",
+      "spectrumSHA256": "3df49866bfabd9ee5d3a8109f1f8e65095d24f39427c0adb61e7f99e2e2c76c0"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 6,
+      "label": "F0 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000031.SP",
+      "spectrumSHA256": "a680b8dc806458110bed4db3d61a8d72caf53a37fc9fac94c0f7edd57fe7b93b"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 7,
+      "label": "F5 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000034.SP",
+      "spectrumSHA256": "c04874efa960b10df3931c6b81899f8607387e1d722fc4c69178d70117672a9d"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 8,
+      "label": "G0 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000043.SP",
+      "spectrumSHA256": "1feab8938f6f92918ee06384f50e3aa8dd5b6b9c92d43e5bd6d084094b63a00d"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 9,
+      "label": "G6 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000048.SP",
+      "spectrumSHA256": "e84d7fe32c8111849c07dcc26a17d8b626de809dbd062de40bb6ab5f00391d9a"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 10,
+      "label": "K0 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000052.SP",
+      "spectrumSHA256": "3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 11,
+      "label": "K5 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000054.SP",
+      "spectrumSHA256": "0577be73298b29e5dcc347387d6fb18175825181c09e98b23c8e5d879d6f3419"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 12,
+      "label": "M0 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000055.SP",
+      "spectrumSHA256": "3ef2cbdacfb0aacb3c07e9c0e95bf69198a1653722bec4cb0bb66bad10856011"
+    },
+    {
+      "atlas": "main",
+      "atlasRow": 13,
+      "label": "M5 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000057.SP",
+      "spectrumSHA256": "7d0ef80a736d2b6afaa888c1981df0608368c78006c445d7c8ff473d658d97c8"
+    },
+    {
+      "atlas": "o8",
+      "atlasRow": 1,
+      "label": "O8 I",
+      "uninterpretedField": 0,
+      "spectrum": "A0000115.SP",
+      "spectrumSHA256": "f62a189b6c195133964972e9bb196c8d5eb743213703b9dc2332dbf46d391c59"
+    },
+    {
+      "atlas": "o8",
+      "atlasRow": 2,
+      "label": "O8.5 III",
+      "uninterpretedField": 0,
+      "spectrum": "A0000064.SP",
+      "spectrumSHA256": "f4ddbb2fd7cdeea1d8d658a8603c7ac66571f7fa3d86e40df09be45f536d99fe"
+    },
+    {
+      "atlas": "o8",
+      "atlasRow": 3,
+      "label": "O8 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000007.SP",
+      "spectrumSHA256": "5b8236331aa87a9145845f25e9b3ffbb5d333b665f6f47b7baa66b766bce8769"
+    },
+    {
+      "atlas": "b2",
+      "atlasRow": 1,
+      "label": "B2 I",
+      "uninterpretedField": 0,
+      "spectrum": "A0000119.SP",
+      "spectrumSHA256": "0bff0de62c825769c6b22901ecbda6c964ebf587a5422ab07cd1269a1c73dac9"
+    },
+    {
+      "atlas": "b2",
+      "atlasRow": 2,
+      "label": "B2 II",
+      "uninterpretedField": 0,
+      "spectrum": "A0000106.SP",
+      "spectrumSHA256": "8d1c5ff740077e7c42ab0aaa705c176212a8ea84974156a3224093a3e0ef82ac"
+    },
+    {
+      "atlas": "b2",
+      "atlasRow": 3,
+      "label": "B2 III",
+      "uninterpretedField": 0,
+      "spectrum": "A0000067.SP",
+      "spectrumSHA256": "4428517e816e9b8a2c0a362a2c1cfc7ee7cc829311dd4f70bd3bb97841af4755"
+    },
+    {
+      "atlas": "b2",
+      "atlasRow": 4,
+      "label": "B1.5 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000013.SP",
+      "spectrumSHA256": "5960f7700c327252a6215476fd62635a57b6deca7a2d40010f362f262e744298"
+    },
+    {
+      "atlas": "a3",
+      "atlasRow": 1,
+      "label": "A3 I",
+      "uninterpretedField": 0,
+      "spectrum": "A0000129.SP",
+      "spectrumSHA256": "e0ed186b268f634ebc7a979088584142e99732b2f358c55cf871646bbcf20694"
+    },
+    {
+      "atlas": "a3",
+      "atlasRow": 2,
+      "label": "A3 III",
+      "uninterpretedField": 0,
+      "spectrum": "A0000077.SP",
+      "spectrumSHA256": "f781f314d52bd414c1e2e4de0d961884386456b0e9aa486c866168c72edaab98"
+    },
+    {
+      "atlas": "a3",
+      "atlasRow": 3,
+      "label": "A3 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000024.SP",
+      "spectrumSHA256": "4e108b1ed6db32aac6c280b34b39d097c1089f56db593cb2c67801e6459980d8"
+    },
+    {
+      "atlas": "f5",
+      "atlasRow": 1,
+      "label": "F5 I",
+      "uninterpretedField": 0,
+      "spectrum": "A0000137.SP",
+      "spectrumSHA256": "0131393c099fbbf6e437f316953fcdbe9ea1fc2cc9f096375e0453213c142bc3"
+    },
+    {
+      "atlas": "f5",
+      "atlasRow": 2,
+      "label": "F5 II",
+      "uninterpretedField": 0,
+      "spectrum": "A0000108.SP",
+      "spectrumSHA256": "4ac005400174e9359ff1bac94b07714f2e22fe9c7a07325df0752e32cfe9ef52"
+    },
+    {
+      "atlas": "f5",
+      "atlasRow": 3,
+      "label": "F5 III",
+      "uninterpretedField": 0,
+      "spectrum": "A0000082.SP",
+      "spectrumSHA256": "33ee96f008d6faa52112ea52230ff03cda2a5729bb12d3045ae65505d99546b4"
+    },
+    {
+      "atlas": "f5",
+      "atlasRow": 4,
+      "label": "F5 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000034.SP",
+      "spectrumSHA256": "c04874efa960b10df3931c6b81899f8607387e1d722fc4c69178d70117672a9d"
+    },
+    {
+      "atlas": "g2",
+      "atlasRow": 1,
+      "label": "G2 I",
+      "uninterpretedField": 0,
+      "spectrum": "A0000143.SP",
+      "spectrumSHA256": "52f142d849d5b8e069c87592dd71db03c9bf34dff23c96f5f3dbb756c40a020d"
+    },
+    {
+      "atlas": "g2",
+      "atlasRow": 2,
+      "label": "G2 III",
+      "uninterpretedField": 0,
+      "spectrum": "A0000088.SP",
+      "spectrumSHA256": "b2f13a503d2b45d5f5f07004fc4b1c07a2402419a567b7aa811dfaddcd56ccc5"
+    },
+    {
+      "atlas": "g2",
+      "atlasRow": 3,
+      "label": "G2 IV",
+      "uninterpretedField": 0,
+      "spectrum": "A0000060.SP",
+      "spectrumSHA256": "b0370205f94133550ce41f5e86430851ad3795658610e89702c1245ea77a35ae"
+    },
+    {
+      "atlas": "g2",
+      "atlasRow": 4,
+      "label": "G2 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000045.SP",
+      "spectrumSHA256": "65d6501e6e715a86861409703d720f01bd6fe8000dc68fe252f6f5111998a5d7"
+    },
+    {
+      "atlas": "k0",
+      "atlasRow": 1,
+      "label": "K0 I",
+      "uninterpretedField": 0,
+      "spectrum": "A0000146.SP",
+      "spectrumSHA256": "a564082b77910d4669e583d978b522506850dc540d9cd2273e0107cb374c0fc6"
+    },
+    {
+      "atlas": "k0",
+      "atlasRow": 2,
+      "label": "K0 III",
+      "uninterpretedField": 0,
+      "spectrum": "A0000097.SP",
+      "spectrumSHA256": "c977ba8778bafea3150a7da69b6670d86c1e92f29df77101d0e42fc607b61f5a"
+    },
+    {
+      "atlas": "k0",
+      "atlasRow": 3,
+      "label": "K0 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000052.SP",
+      "spectrumSHA256": "3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897"
+    },
+    {
+      "atlas": "m2",
+      "atlasRow": 1,
+      "label": "M2 I",
+      "uninterpretedField": 0,
+      "spectrum": "A0000152.SP",
+      "spectrumSHA256": "406143e087518eb2faae5ac9f03b4daa282feb8edd88f928f24d3c5170b224cb"
+    },
+    {
+      "atlas": "m2",
+      "atlasRow": 2,
+      "label": "M3 II",
+      "uninterpretedField": 0,
+      "spectrum": "A0000112.SP",
+      "spectrumSHA256": "f1d44e527637c035148615020ad37586fcc04d54fab510d2d8bf92cc5a7e1134"
+    },
+    {
+      "atlas": "m2",
+      "atlasRow": 3,
+      "label": "M3 III",
+      "uninterpretedField": 0,
+      "spectrum": "A0000103.SP",
+      "spectrumSHA256": "2dadd3939bb0066a42bd534a78149f301f1fa7c32f8797cf1c0919a0e6c29dd6"
+    },
+    {
+      "atlas": "m2",
+      "atlasRow": 4,
+      "label": "M1 V",
+      "uninterpretedField": 0,
+      "spectrum": "A0000056.SP",
+      "spectrumSHA256": "41214387eb8ff27c65bd04e6cad5f8938a5534d99809d5b24b0409ef0d3a2f1f"
+    }
+  ],
+  "legacyMainFingerprint": "fe69077720dc86db2df44e5b1487de41598cf293cacb40cd544994ab20113d00",
+  "uncertainty": "Associations/labels/order read directly from immutable text lists. Numeric 0 field not interpreted. Printed-grid Number difference and web state/session/CSV are adaptations, not native runtime/classification recovery. Near-type labels are not coerced to equal temperature. No key was read."
+}

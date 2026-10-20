@@ -1,0 +1,154 @@
+{
+  "vectorsSHA256": "3ecb33434ae49719751ed933298deee40c6b6d1cf271be160e2df1dd366d421b",
+  "schema": 1,
+  "policy": "VIREO-static-site-clock-v1",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "opticalProfileSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "constants": {
+    "epochJD": {
+      "address": "0x4882f0",
+      "storage": "single",
+      "rawLE": "64a1154a",
+      "decimal": "2451545",
+      "number": 2451545.0
+    },
+    "centuryDays": {
+      "address": "0x4882f4",
+      "storage": "single",
+      "rawLE": "00ad0e47",
+      "decimal": "36525",
+      "number": 36525.0
+    },
+    "cubic": {
+      "address": "0x4882f8",
+      "storage": "extended",
+      "rawLE": "59067dcd9ba0e7dde53f",
+      "decimal": "2.583311806000000000043271023943238626674641367220175425245543010532855987548828125E-8",
+      "number": 2.583311806e-08
+    },
+    "quadratic": {
+      "address": "0x488304",
+      "storage": "extended",
+      "rawLE": "e5fb5b62627c63cbf33f",
+      "decimal": "0.000387932999999999999987351602588094012791231079972931183874607086181640625",
+      "number": 0.000387933
+    },
+    "daily": {
+      "address": "0x488310",
+      "storage": "extended",
+      "rawLE": "9652cd61b1297eb40740",
+      "decimal": "360.9856473662899999932385242118471069261431694030761718750",
+      "number": 360.98564736629
+    },
+    "originDegrees": {
+      "address": "0x48831c",
+      "storage": "extended",
+      "rawLE": "2a1d8bf18af53a8c0740",
+      "decimal": "280.4606183699999999991980814684211509302258491516113281250",
+      "number": 280.46061837
+    },
+    "circleDegrees": {
+      "address": "0x488328",
+      "storage": "single",
+      "rawLE": "0000b443",
+      "decimal": "360",
+      "number": 360.0
+    },
+    "radiansPerDegree": {
+      "address": "0x48832c",
+      "storage": "extended",
+      "rawLE": "aec8e9941235fa8ef93f",
+      "decimal": "0.017453292519943295769139146242365789873929315945133566856384277343750",
+      "number": 0.017453292519943295
+    },
+    "zero": {
+      "address": "0x488338",
+      "storage": "single",
+      "rawLE": "00000000",
+      "decimal": "0",
+      "number": 0.0
+    },
+    "circleRadians": {
+      "address": "0x48833c",
+      "storage": "extended",
+      "rawLE": "35c26821a2da0fc90140",
+      "decimal": "6.2831853071795864770256179188123724088654853403568267822265625",
+      "number": 6.283185307179586
+    },
+    "hoursPerDay": {
+      "address": "0x488348",
+      "storage": "single",
+      "rawLE": "0000c041",
+      "decimal": "24",
+      "number": 24.0
+    }
+  },
+  "ranges": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observatory-clock-recovery/sidereal-exact.asm",
+      "start": "0x4881ac",
+      "endExclusive": "0x48834c",
+      "sha256": "ee997bb2dcec707a59f00c52623936cb1f1de6fa29388f1181bb30bc5a524cf7"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observatory-clock-recovery/julian-exact.asm",
+      "start": "0x487bcc",
+      "endExclusive": "0x487be8",
+      "sha256": "553e07004bd84a90b8a42d8ea76cdf0b9760ad514eb32b017ba97b839c8d8f35"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observatory-clock-recovery/fraction.asm",
+      "start": "0x40365c",
+      "endExclusive": "0x4036a0",
+      "sha256": "66d92e44cb02e894ea758db8acbe7e2bfd36df3d030db7843ef6ac05eef33d47"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observatory-clock-recovery/clock-consumer.asm",
+      "start": "0x5384b0",
+      "endExclusive": "0x5386e3",
+      "sha256": "6ab0fd3845195fc7b1b9814441232648f44d6582349213fd4ef30d63cc68848e"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observatory-clock-recovery/date-dialog.asm",
+      "start": "0x58b2ec",
+      "endExclusive": "0x58b442",
+      "sha256": "bad7fbb00853319eea2312891abc6e2f63e02353b2daee06cb463a8cfcd2090d"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observatory-clock-recovery/date-setter.asm",
+      "start": "0x487b64",
+      "endExclusive": "0x487bcc",
+      "sha256": "a9f04cd60e3b74c9f3f01d8ea0119e8edf7d6289fa8a0dae755a4ff4103b508c"
+    }
+  ],
+  "reference": {
+    "script": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observatory-clock-recovery/reference.py",
+    "sha256": "bc4ed81347bb12305fa94aa0e06e8fe54c6f5d6fd58f748120d4c5fa2ad38896",
+    "method": "Decimal100 raw-Extended constants; integer Gregorian ordinal + exact seconds/day; no native execution."
+  },
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "boundaries": {
+    "utc": "Explicit fixed UT worksheet,1900..2099,whole seconds,no leap seconds",
+    "calendar": "New UTC/Gregorian browser adapter; not a port of Delphi date parsing or host time offset",
+    "longitude": "Compiled site radians, east-positive; no arbitrary override",
+    "numerics": "Number/Math truncation adapter; native strict h>24 wrap preserved, no runtime equivalence",
+    "notImplemented": [
+      "Live native clock/offset/event ordering",
+      "Tracking drift or horizon enforcement",
+      "DST,refraction,precession or acquisition effects"
+    ]
+  }
+}

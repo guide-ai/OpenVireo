@@ -1,0 +1,15 @@
+{
+  "origin": "Prior OpenCLEA full10/editing-v1 writer,not original CLEA runtime",
+  "writerSources": [
+    {
+      "path": "src/core/editingWorkspace.ts",
+      "sha256": "ff20a2862bf3caa0f5e2441cf6620fb543f550ef072cb22c707c3933c2d33d66"
+    },
+    {
+      "path": "src/io/analysisSession.ts",
+      "sha256": "71f289ca0a6a61d1d0deb07600b0df3bf4a1ec8f0f71bf67830d2e5697f4cd3c"
+    }
+  ],
+  "text": "{\n  \"format\": \"OpenCLEA analysis session\",\n  \"version\": 10,\n  \"editingPolicy\": \"OpenCLEA-editing-workspace-v1\",\n  \"editing\": {\n    \"preparationSeedText\": \" pending σ \",\n    \"photometry\": {\n      \"seedText\": \"42\",\n      \"bReadingId\": null,\n      \"vReadingId\": null\n    },\n    \"velocity\": {\n      \"measurementId\": null,\n      \"answerText\": \"\",\n      \"checked\": false\n    }\n  },\n  \"observing\": {\n    \"policy\": \"OpenCLEA-stopped-observing-workspace-v1\",\n    \"edition\": {\n      \"program\": \"VIREO\",\n      \"version\": \"1.504\",\n      \"binarySHA256\": \"781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c\"\n    },\n    \"context\": {\n      \"domeOpen\": false,\n      \"mode\": \"finder\",\n      \"selectedId\": \"NGC3031\",\n      \"pointing\": {\n        \"ra\": 0,\n        \"dec\": 0\n      },\n      \"raText\": \"0\",\n      \"decText\": \"0\",\n      \"hasPointed\": false,\n      \"galaxyTargetId\": \"36773\"\n    },\n    \"sky\": {\n      \"seedText\": \"1\",\n      \"source\": {\n        \"kind\": \"empty\"\n      }\n    },\n    \"star\": {\n      \"seedText\": \"1\",\n      \"source\": {\n        \"kind\": \"empty\"\n      }\n    },\n    \"galaxies\": {\n      \"36747\": {\n        \"seedText\": \"1\",\n        \"source\": {\n          \"kind\": \"empty\"\n        }\n      },\n      \"36773\": {\n        \"seedText\": \"1\",\n        \"source\": {\n          \"kind\": \"empty\"\n        }\n      },\n      \"54876\": {\n        \"seedText\": \"1\",\n        \"source\": {\n          \"kind\": \"empty\"\n        }\n      }\n    }\n  },\n  \"photometry\": null,\n  \"classification\": null,\n  \"acquisitions\": [],\n  \"hubble\": {\n    \"recipeId\": \"\",\n    \"rows\": []\n  },\n  \"numericalPolicy\": \"Number_x87_equivalence_unvalidated\",\n  \"observation\": null,\n  \"adjustment\": {\n    \"control\": {\n      \"base\": 0,\n      \"position\": 0,\n      \"factor\": 1,\n      \"step\": 0\n    },\n    \"stepInput\": \"Manual baseline text\",\n    \"reference\": \"galaxy\",\n    \"wide\": false,\n    \"object\": \"Pre-analysis editing fixture\"\n  },\n  \"measurements\": []\n}\n",
+  "sha256": "b3417a05aca63ad02b954238b1451a331167c869e0d67364f0615ff22ac58583"
+}

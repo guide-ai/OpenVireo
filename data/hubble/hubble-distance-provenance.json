@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "originalSources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "bytes": 2288128,
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Hubble Data.xls",
+      "bytes": 18432,
+      "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/HUBHLP.LST",
+      "bytes": 880,
+      "sha256": "ec4b9c183d430d371e13b6c3e5ea65167a58aeb8a866563b0425def1f7c25cf7"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "bytes": 2996327,
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Labex1/Student Manuals pdf Format/The Hubble Redshift Distance Relation 11-24-2008.pdf",
+      "bytes": 289980,
+      "sha256": "9b3a7808f7afc63bf93ea10eb8a1f9a4ac3f4f0cff9d70db48985ea5cfada357"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Labex1/Users Guides pdf only/HUB_UG.PDF",
+      "bytes": 139115,
+      "sha256": "5ac73e04ab2b5f8cbf817c0af0f7973b6b44fb0b4925a2d2de968d452bbd9426"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Labex1/HubLab.EXE",
+      "bytes": 3477887,
+      "sha256": "0a72fcc3cd6517f96626cebeb422395ec2980edb2d210ea5afe50086f9d6acb5"
+    },
+    {
+      "path": "/tmp/clea-static-research/manual-text/CLEA_Vireo/Documentation/Vireo Manual.txt",
+      "bytes": 182906,
+      "sha256": "e5533ecb3cb3c62bf0f6f20fa8d7898ae8861bfc50aa8000fd1bbb507c0353a9"
+    },
+    {
+      "path": "/tmp/clea-static-research/manual-text/CLEA_Labex1/Student Manuals pdf Format/The Hubble Redshift Distance Relation 11-24-2008.txt",
+      "bytes": 36440,
+      "sha256": "8e598d0b8bedce7149203a39bfb137a3707b7352be3292813abf0673e61ec466"
+    },
+    {
+      "path": "/tmp/clea-static-research/manual-text/CLEA_Labex1/Users Guides pdf only/HUB_UG.txt",
+      "bytes": 36906,
+      "sha256": "96e7e20a6f7f8210e1babd89462227db75130f35781fd205cc41d7a405674e42"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/hubble-exercise-enter.c",
+      "bytes": 1524,
+      "sha256": "c086ca42adb50c340f5f2f668fb8e7644260c133da109a7ec239c986e3d85ec1"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/rea-ghidra-hubble4-results/exercise-defaults.json",
+      "bytes": 555447,
+      "sha256": "b9393d097277d1f6ccbfe81d731ccd2a2d5e152768b09adecaa9d3135796692a"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/rea-ghidra-hubble4-results/options-defaults.json",
+      "bytes": 13211833,
+      "sha256": "26262d8ed953db92ee9b6fa09812f81b766ea4e16df254500a1a7b2c60c74ae3"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/rea-ghidra-hubble4-results/options-ini-read.json",
+      "bytes": 13623501,
+      "sha256": "44dacc687b99fe1c3cff848d17e2a5b024f400c247373c1ba2c3164c1e2cfe36"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-pixel-recovery/hubble-results-activate.asm",
+      "bytes": 14597,
+      "sha256": "9664ed8220ea07b17b8f21d8da04b4a7a8d2c2f3ee885371c119429b1b611f54"
+    }
+  ],
+  "nativeRanges": [
+    {
+      "file": "hubble-exercise-entry.asm",
+      "start": "0x58a7d0",
+      "endInclusive": "0x58a922",
+      "sourceRangeSHA256": "f2d85191da5774d2031691da25517961c096dbd5c3b9d665709b4a7fa59e7ed5",
+      "artifactSHA256": "f925da3c047ce49077ce2c415f88cee8b5e5dda6b81ae808615f22b527c3715b"
+    },
+    {
+      "file": "external-spreadsheet-handler.asm",
+      "start": "0x58d6dc",
+      "endInclusive": "0x58dabf",
+      "sourceRangeSHA256": "585208f0cdd34e747e76c1915e28ae39269dfe60fa79f9230feb9138e7de66f3",
+      "artifactSHA256": "0e8ab1f44272effe45a244b7ab039487becfa8f44591a3f783db5a6112832e35"
+    },
+    {
+      "file": "velocity-autofill-option.asm",
+      "start": "0x54aed4",
+      "endInclusive": "0x54af24",
+      "sourceRangeSHA256": "69defec98073e50b760dd044045cccfb279a887e2db3ce1bae8803dd36c358d6",
+      "artifactSHA256": "42047afddee11cd3785a99fb751f43264d3867aad8268544d0ccae5ad4d08225"
+    },
+    {
+      "file": "velocity-option-compiled-default.asm",
+      "start": "0x5a2b4b",
+      "endInclusive": "0x5a2b66",
+      "sourceRangeSHA256": "beeb4c8be358f14a14d72abe6682f4fe3e27876502cf354ebb5f5de78722a347",
+      "artifactSHA256": "9d8e578d031a5b86547a5473ae71dc559f5014df3069d4ebe7acec51dd67e9da"
+    },
+    {
+      "file": "velocity-option-file-load.asm",
+      "start": "0x5a430a",
+      "endInclusive": "0x5a432b",
+      "sourceRangeSHA256": "42497446d53092e4c0b2c2b6ec4eb05b47cdfb7deb3cf4af3de46cd05b381922",
+      "artifactSHA256": "3c4c39e863560cd8a1ccf151c337c1f2864c13159cbff858037857a8fd83138b"
+    }
+  ],
+  "sourceAuthorityDistinction": {
+    "executable": "Hubble mode, Single velocity/autofill and external spreadsheet delegation; no native regression recovered",
+    "workbook": "Shipped formulas, Double inputs, M=-21.0, unweighted mean(v/D); no persisted trendline",
+    "studentManual": "Linear XY fit with intercept explicitly0, pp11-12; slope formula is a mathematical adaptation",
+    "vireoManual": "M=-21.4 recommendation for13 designated targets, not all galaxies",
+    "standaloneTechnicalManual": "Different model/defaultM=-22,H=75,mag-noise=.5; not VIREO acquisition behavior"
+  },
+  "workbook": {
+    "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed",
+    "sheet": "Sheet1",
+    "absoluteMagnitudeCell": "J2",
+    "absoluteMagnitude": -21,
+    "cCell": "I2",
+    "cKmS": 299792.458,
+    "cDoubleLittleEndian": "b6f3fdd4414c1241",
+    "formulaCount": 79,
+    "unknownTokens": 0,
+    "formulas": {
+      "E2": {
+        "formula": "=(D2*$I$2)",
+        "streamTokenBytes": "44010003c0440100080005"
+      },
+      "F2": {
+        "formula": "=((((C2-$J$2)+5))/5)",
+        "streamTokenBytes": "44010002c04401000900041e050003151e050006"
+      },
+      "G2": {
+        "formula": "=(POWER(10,F2)/1000000.0)",
+        "streamTokenBytes": "1e0a0044010005c04151011f0000000080842e4106"
+      },
+      "H2": {
+        "formula": "=(E2/G2)",
+        "streamTokenBytes": "44010004c044010006c006"
+      },
+      "H16": {
+        "formula": "=AVERAGE(H2:H14)",
+        "streamTokenBytes": "2501000d0007c007c042010500"
+      }
+    },
+    "chart": {
+      "typeRecord": "0x101b",
+      "type": "XY scatter",
+      "x": "Sheet1!K2:K14",
+      "y": "Sheet1!L2:L14",
+      "trendlineRecord0x104bPresent": false,
+      "regressionFunctionsPresent": false,
+      "scope": "all79cellformulas and capturedchartrecords"
+    }
+  },
+  "mathematicalDerivations": {
+    "distance": "10^((apparentV-assumedAbsoluteV+5)/5)/1000000 Mpc",
+    "worksheetMean": "sum(v_i/D_i)/n km/s/Mpc",
+    "manualOriginOLS": "sum(D_i*v_i)/sum(D_i^2), intercept0; not recovered native machine code"
+  },
+  "numericalPolicy": "Explicit Number inputs; no hidden Single narrowing, absoluteM default, calibration-magnitude substitution or exact Excel/x87 claim",
+  "patchUIIntegration": {
+    "component": "src/HubbleAnalysis.tsx",
+    "adapter": "src/core/hubbleAnalysis.ts",
+    "sessionVersion": 2,
+    "workbookExampleInputs": "data/hubble/workbook-examples.json",
+    "recipeBindings": {
+      "workbook": {
+        "M": -21.0,
+        "summary": "mean(v/D)",
+        "fitLine": false
+      },
+      "vireo": {
+        "M": -21.4,
+        "scope": "13 designated targets, operator identification required for working rows",
+        "summary": "student manual origin-constrained unweighted least-squares mathematical adaptation"
+      }
+    },
+    "acquisitionEnabled": false,
+    "cachedResultsImported": false,
+    "externalReview": "denied/pending; no retry"
+  },
+  "originalExecution": false,
+  "externalReview": "pending; not invoked or substituted",
+  "consolidationV2Followup": {
+    "note": "New adapter guards reject final Number-division underflow of a nonzero mean/slope numerator; not native exception behavior.",
+    "documentation": "docs/CONTRACT-COMPOSITION-REVIEW.md"
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "binarySha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sourceArchiveSha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+  "captures": [
+    {
+      "id": "PHOTO-STATIC-01",
+      "file": "aperture-factor.asm",
+      "start": "0x500acc",
+      "endExclusive": "0x500b02",
+      "byteRangeSha256": "10a578f26c0eb047d28e685a721f53703ee849b91f0b6cecb5b4f1f52e1eb212",
+      "listingSha256": "ab6c7d9e4d3656abe01a8d2e677cfe1547ca87270797ae92ab5eefe6559bd8b2",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    },
+    {
+      "id": "PHOTO-STATIC-02",
+      "file": "start-reading.asm",
+      "start": "0x5008b4",
+      "endExclusive": "0x500a7a",
+      "byteRangeSha256": "2d45ac5424a5c112507f12ee69ea131d80dd6de7a705c5665e91d1c568833fc4",
+      "listingSha256": "070b8e12ee9f0f0e159c95980c72e8ac20402fc2f3608cb453d0d71670252a7e",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    },
+    {
+      "id": "PHOTO-STATIC-03",
+      "file": "reading-reset.asm",
+      "start": "0x500bcc",
+      "endExclusive": "0x500c65",
+      "byteRangeSha256": "afe3153e42e1116728709423bc1a2f8ef38f1849a8fe83c54cdbce64a7bfda22",
+      "listingSha256": "a1d9055a89939d80bc527efc149e8ee2a6bb80d751e37943064e71a92133651b",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    },
+    {
+      "id": "PHOTO-STATIC-04",
+      "file": "photo-timer-complete.asm",
+      "start": "0x5014e4",
+      "endExclusive": "0x50198c",
+      "byteRangeSha256": "240bd38fb3f17e1351153de40b9f8ea04c643f816fb4a89504cfb7d74f4b937d",
+      "listingSha256": "9deccc8d8d389801d81539da7d8ef2dc8f9f15328c66f33a76955ade1186fb1c",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    },
+    {
+      "id": "PHOTO-STATIC-05",
+      "file": "finite-reduction-block.asm",
+      "start": "0x501687",
+      "endExclusive": "0x5018a9",
+      "byteRangeSha256": "d5e7c5d83d7db42d5fe1c39a685f2326a35ab2bb85d74c4f12f5681844996e1b",
+      "listingSha256": "5e8d6454370320b03b212680cc8ca6c46192b8033fda2df1567067a6208c2901",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    },
+    {
+      "id": "PHOTO-STATIC-06",
+      "file": "record-handler.asm",
+      "start": "0x501e7c",
+      "endExclusive": "0x5020e0",
+      "byteRangeSha256": "672c57d3d0ef92ec8c981427251c064e7e283047a234a4c069b1a7a61fad0560",
+      "listingSha256": "75873714dba87563bb1b8a811cbddc01bad4a5e25accd7912286071d41b60bf7",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    },
+    {
+      "id": "PHOTO-STATIC-07",
+      "file": "log10-helper.asm",
+      "start": "0x42702c",
+      "endExclusive": "0x42703b",
+      "byteRangeSha256": "6889188c208b3db2901578ecf7bf2d833b1c8a42842359624e033b3528bc4c53",
+      "listingSha256": "4d9164c1d83bd8046917e3d3649b64e0ac4e6a466843619b78632d3b7dbdf857",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    },
+    {
+      "id": "PHOTO-STATIC-08",
+      "file": "sqrt-helper.asm",
+      "start": "0x4036f0",
+      "endExclusive": "0x4036fd",
+      "byteRangeSha256": "32acf2ea0996c5e1059ecd00e14f3c4f645ed521cd5b5f63c0e5e2f4b1e70e8c",
+      "listingSha256": "7377ce4897d1858375a88fab05c9180ab677305497b4fb69ca668eb0441e79ef",
+      "scope": "A bounded capture, not all bytes are instruction starts. Only cited finite branches are ported."
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x500b04",
+      "bytes": 4,
+      "sha256": "d99e58435243d9fef9c88273b8d553b4fba4d0baf8009d29eae74fa99e0d9f57",
+      "meaning": "selector offset",
+      "numerator": "1",
+      "denominator": "2",
+      "value": 0.5
+    },
+    {
+      "address": "0x500b08",
+      "bytes": 10,
+      "sha256": "086667a78d874cc21599eadc038f8e1bc9229bdc068871711b21cb6ec6d73380",
+      "meaning": "reference aperture scale",
+      "numerator": "21",
+      "denominator": "2",
+      "value": 10.5
+    },
+    {
+      "address": "0x50198c",
+      "bytes": 10,
+      "sha256": "2f245941644f0fdeabfe6388bf7b81210aa89b15dca01c46d644557219df36f1",
+      "meaning": "maximum accumulated count",
+      "numerator": "2147483647",
+      "denominator": "1",
+      "value": 2147483647.0
+    },
+    {
+      "address": "0x501998",
+      "bytes": 4,
+      "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+      "meaning": "zero comparisons",
+      "numerator": "0",
+      "denominator": "1",
+      "value": 0.0
+    },
+    {
+      "address": "0x50199c",
+      "bytes": 4,
+      "sha256": "072e3304b03423a4767d28c5fed09f81d5190ff60a3d078c6c1350eeb8bee28b",
+      "meaning": "magnitude multiplier",
+      "numerator": "5",
+      "denominator": "2",
+      "value": 2.5
+    },
+    {
+      "address": "0x500ac0",
+      "bytes": 4,
+      "sha256": "fca31f1667a6aa1bba12fca4e4ea1becd503379d80da3213af07f6cc5702828d",
+      "meaning": "upstream zero-point addend (not automatically used)",
+      "numerator": "5",
+      "denominator": "1",
+      "value": 5.0
+    },
+    {
+      "address": "0x500ac4",
+      "bytes": 4,
+      "sha256": "2f90de89a933bd8118953f22550293198c812014b434e29d79bcdea4cb34c56a",
+      "meaning": "upstream count-amplitude divisor (not ported)",
+      "numerator": "-5",
+      "denominator": "2",
+      "value": -2.5
+    }
+  ],
+  "files": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PHOTOHLP.TXT",
+      "sha256": "aaf7f6827f418cf1aa1e2da70185b96ecf96ffd919899d84547a8695afa42d8a",
+      "bytes": 12647
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Labex1/Student Manuals pdf Format/Photoelectric Photometry of the Pleiades 11-24-2008.pdf",
+      "sha256": "c2e708f61523c06da4a56c088249f6701c4342edd7db1f376b57619cc39eb2b3",
+      "bytes": 301058
+    }
+  ],
+  "mapping": {
+    "totalCount": "int32 self+0x4fa",
+    "integrationCount": "int32 self+0x585",
+    "secondsPerIntegration": "Extended self+0x57b",
+    "preparedZeroPoint": "Extended self+0x483",
+    "skyReferenceRate": "Extended bank self+0x58a +10*filter +50*bank",
+    "apertureSelector": "int32 global scope+0x41c481",
+    "nativeBaseCountSum": "int32 self+0x4de; incremented from global+0x2e53 at0x501582\u20130x501588; base photon-count normalizer, NOT elapsed time (see context-provenance.json)"
+  },
+  "manualContract": "PHOTOHLP: aperture sky scaling, per-filter sky prerequisites,0.1/1/10/100second integrations and1\u20135 repetitions. Pleiades student manual: B\u2212V=B\u2212V from supplied magnitudes. VIREO kernel and standalone student exercise are distinct editions.",
+  "newGuards": "Finite supplied scalars; explicit null for missing sky; aperture selector0..1000000 as adapter bound; withheld Number zero-magnitude boundary. No conflation of base counts with milliseconds/seconds; no automatic calibration default.",
+  "missingForAcquisition": [
+    "Source aperture/neighbor and original UBV catalog association",
+    "Complete telescope change/reentry sky invalidation implementation",
+    "Stop/partial integration, replay/records and native rounding contracts"
+  ],
+  "rights": "Original CLEA license retained; local research only, no redistribution permission established.",
+  "uncertainty": "Static evidence and independent calculations do not establish original execution/x87/record equivalence. No observations are generated.",
+  "analyticFixtures": {
+    "path": "data/photometry/reduction-vectors.json",
+    "sha256": "fb97b49ff971b8fce24ae1f1feb897a2562dcd10d2e90f2f76e861fb5dd14f24",
+    "generator": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-acquisition-recovery/analytic-vectors.py",
+    "generatorSha256": "afc4c8bacd31ba6eb5231d0df41b335b89a9238a9ba0d1d1184f46613f52c46a",
+    "kind": "Synthetic algebraic checks, no original observation/runtime oracle"
+  },
+  "followup": {
+    "manifest": "data/photometry/context-provenance.json",
+    "contract": "docs/PHOTOMETER-CONTEXT-RECOVERY.md",
+    "correction": "The prior nativeElapsedUnits name was an intentionally opaque but misleading label. self+0x4de is now correctly named nativeBaseCountSum. Timer milliseconds accumulate separately via env+0x2e57/1000; scalar arithmetic unchanged; no v7 photometry fields exist."
+  }
+}

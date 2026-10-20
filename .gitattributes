@@ -1,0 +1,3 @@
+# Preserve exact resource bytes, including original CRLF and captured JSON.
+data/** -text
+public/original/** -text

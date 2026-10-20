@@ -1,0 +1,201 @@
+{
+  "status": "explicit amendment; historical artifact preserved unchanged",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "amends": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-save-recovery/contracts.json",
+    "sha256": "ac64242f15c5ed92bb45e6fcf8ad4022ae3221f57611ff08b74526d85eac4e05",
+    "jsonPointer": "/save_contracts/1/reading",
+    "historicalReading": "Finds maximum starting0 over600 signed integer source-minus-sky bins(+0x437+i*0x13, i1..600). Zero maximum is a visible unhandled denominator boundary in this body; original global FPU/exception policy is not inferred.",
+    "replacementReading": "Finds maximum starting0 over600 signed int32 accumulated source-plus-sky bins (sky-only mode skips source draws)(+0x437+i*0x13, i1..600). Zero maximum is a visible unhandled denominator boundary in this body; original global FPU/exception policy is not inferred."
+  },
+  "buffers": {
+    "mean": "P+0x42d+19*i, i=1..600, Extended",
+    "count": "P+0x437+19*i, int32",
+    "displayY": "P+0x43b+19*i, int32",
+    "poissonCache": "P+0x30c8",
+    "sourceTotal": "P+0x3116, int64",
+    "skyTotal": "P+0x3112, int32"
+  },
+  "byteBindings": [
+    {
+      "address": "0x50e287",
+      "expected": "89480a",
+      "actual": "89480a",
+      "matches": true
+    },
+    {
+      "address": "0x50f7cf",
+      "expected": "8dbc032d040000",
+      "actual": "8dbc032d040000",
+      "matches": true
+    },
+    {
+      "address": "0x50f7fc",
+      "expected": "01470a",
+      "actual": "01470a",
+      "matches": true
+    },
+    {
+      "address": "0x50f841",
+      "expected": "8d94132d040000",
+      "actual": "8d94132d040000",
+      "matches": true
+    },
+    {
+      "address": "0x50f848",
+      "expected": "01420a",
+      "actual": "01420a",
+      "matches": true
+    },
+    {
+      "address": "0x50f84b",
+      "expected": "018312310000",
+      "actual": "018312310000",
+      "matches": true
+    },
+    {
+      "address": "0x50f88c",
+      "expected": "dec1",
+      "actual": "dec1",
+      "matches": true
+    },
+    {
+      "address": "0x50f712",
+      "expected": "89843b3b040000",
+      "actual": "89843b3b040000",
+      "matches": true
+    },
+    {
+      "address": "0x50feec",
+      "expected": "db840737040000",
+      "actual": "db840737040000",
+      "matches": true
+    },
+    {
+      "address": "0x50fef6",
+      "expected": "def9",
+      "actual": "def9",
+      "matches": true
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "label": "rtl-round",
+      "address": "0x403700",
+      "ranges": [
+        {
+          "start": "0x403700",
+          "end": "0x403709"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_cb3a66c78ebe451fefbebd2f65e38346095a79550a24138e2b61ef5152588323",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/rtl-round.json"
+    },
+    {
+      "label": "spectrometer-activate",
+      "address": "0x50dac4",
+      "ranges": [
+        {
+          "start": "0x50dac4",
+          "end": "0x50dbd2"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_2be516dc2aee56ebedf8bb8107f5402203752ec1786a814af24cd46e1eb70e46",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/spectrometer-activate.json"
+    },
+    {
+      "label": "spectrometer-reset",
+      "address": "0x50df64",
+      "ranges": [
+        {
+          "start": "0x50df64",
+          "end": "0x50e2fd"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_8470e6373bd35f5207301f2d622e5b123cc0d5cf5b97242fd3c1021ed1e90a9d",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/spectrometer-reset.json"
+    },
+    {
+      "label": "spectrometer-go",
+      "address": "0x50f484",
+      "ranges": [
+        {
+          "start": "0x50f484",
+          "end": "0x50f615"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses",
+      "evidence_id": "ev_81d3c9010df90676c31f51ae9640ff954435e657ca070ad2eb8e04cbddea6113",
+      "raw_response": "analysis/rea-ghidra-acquisition-results/spectrometer-go-dossier.json"
+    },
+    {
+      "label": "spectrometer-stop",
+      "address": "0x50f618",
+      "ranges": [
+        {
+          "start": "0x50f618",
+          "end": "0x50f768"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses",
+      "evidence_id": "ev_70ca20be32d58a8792de4daf4b842181de6c9b3bdbf43f2f2eb89aed5e0d24cb",
+      "raw_response": "analysis/rea-ghidra-acquisition-results/spectrometer-stop-dossier.json"
+    },
+    {
+      "label": "spectrometer-timer",
+      "address": "0x50f76c",
+      "ranges": [
+        {
+          "start": "0x50f76c",
+          "end": "0x50fa84"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses",
+      "evidence_id": "ev_f2c33d52606ad0034211df31c5d104f07ff6fed6eabbf44241af310ff5d1fea8",
+      "raw_response": "analysis/rea-ghidra-acquisition-results/spectrometer-timer-dossier.json"
+    },
+    {
+      "label": "poisson-sampler",
+      "address": "0x55f0f4",
+      "ranges": [
+        {
+          "start": "0x55f0f4",
+          "end": "0x55f324"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_2fbb20aa54dd96e7a17fdc1fe88d346d5c2f06f3e2a98916d2d64cc81f10d0d8",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/poisson-sampler.json"
+    }
+  ],
+  "independentVectors": {
+    "path": "data/hubble/spectrum-accumulation-vectors.json",
+    "sha256": "6a6b7c64442ac45ff5a8e5defc8f73ec0772436806d1224b0b15356d714b1644",
+    "generator": "/home/dobleuber/Documents/Codex/2026-10-18/task/recovered-contracts-integration/generate_accumulation_vectors.py",
+    "generatorSHA256": "507a3f92467bec3f5f1ee02add66c3249a38632fc9ac180cc83f968bbdfc690d",
+    "precisionChecks": [
+      80,
+      100
+    ],
+    "allVectorsAgree": true,
+    "minimumDecisionMargin": "0.0000303924787092722028235748489608674458111310317678345078368016974614957448998033571472743459196437",
+    "fixtureSHA256": "6a6b7c64442ac45ff5a8e5defc8f73ec0772436806d1224b0b15356d714b1644",
+    "cases": 5,
+    "rowsPerCase": 600,
+    "firstTotals": [
+      748,
+      631
+    ],
+    "firstSeed": 444487908,
+    "firstDraws": 2579
+  },
+  "limits": [
+    "Synthetic adapter fixtures, not original acquired spectra",
+    "No x87 runtime or exceptional-domain equivalence",
+    "No exhaustive indirect-alias proof for every CLEA instrument",
+    "New helpers unconnected to acquisition UI; original gates retained"
+  ]
+}

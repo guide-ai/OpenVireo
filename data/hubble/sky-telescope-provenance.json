@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "policy": "VIREO-fixed-sky-three-optical-profiles-v1",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "profiles": [
+    {
+      "index": 0,
+      "policyId": "openclea-pinned-sky-exposure-v1",
+      "domain": {
+        "exercise": "hubble",
+        "exerciseMode": 4,
+        "catalogMode": 1,
+        "telescopeRecord": 0,
+        "options": "compiled-fallback-unmodified",
+        "history": "fresh-process-direct-hubble",
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "fieldArcminutes": 15,
+        "fieldMultiplier": 3,
+        "dynamicContext": "absent"
+      },
+      "zeroPoint": 4,
+      "skyMeanDecimal": "0.000001",
+      "skyMeanNumber": 1e-06,
+      "maximumTickMS": 1000
+    },
+    {
+      "index": 1,
+      "policyId": "openclea-pinned-sky-kpno09-v2",
+      "domain": {
+        "exercise": "hubble",
+        "exerciseMode": 4,
+        "catalogMode": 1,
+        "telescopeRecord": 1,
+        "options": "compiled-fallback-unmodified",
+        "history": "fresh-process-direct-hubble",
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "fieldArcminutes": 15,
+        "fieldMultiplier": 3,
+        "dynamicContext": "absent"
+      },
+      "zeroPoint": 6,
+      "skyMeanDecimal": "0.000006309573444801932494343601366223438646729452571882287245277295288334949432976868075729140677436522649",
+      "skyMeanNumber": 6.30957344480193e-06,
+      "maximumTickMS": 1000
+    },
+    {
+      "index": 2,
+      "policyId": "openclea-pinned-sky-mayall-v2",
+      "domain": {
+        "exercise": "hubble",
+        "exerciseMode": 4,
+        "catalogMode": 1,
+        "telescopeRecord": 2,
+        "options": "compiled-fallback-unmodified",
+        "history": "fresh-process-direct-hubble",
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "fieldArcminutes": 15,
+        "fieldMultiplier": 3,
+        "dynamicContext": "absent"
+      },
+      "zeroPoint": 9,
+      "skyMeanDecimal": "0.0001",
+      "skyMeanNumber": 0.0001,
+      "maximumTickMS": 1000
+    }
+  ],
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "ranges": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/sky-profiles-recovery/selected-telescope.asm",
+      "from": "0x58ba88",
+      "endExclusive": "0x58bf10",
+      "sha256": "c4c47fadc11d994574e4fc7adf082aab400fffd582ef9c80bcb7ae903d9036d9"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/sky-profiles-recovery/field-parameters.asm",
+      "from": "0x53c500",
+      "endExclusive": "0x53c9d4",
+      "sha256": "7e1d76a261c81c3f8dbc93eb7e9ec93775391e0d34ebfcd390df1860ddb83692"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/sky-profiles-recovery/sky-calibration-reset.asm",
+      "from": "0x50df64",
+      "endExclusive": "0x50e314",
+      "sha256": "45d0984933a7e9333b9de7df1da8e11299c4f7ec4c3d94c0e6c088d668a6149b"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/sky-profiles-recovery/sky-source-gate-go.asm",
+      "from": "0x50f484",
+      "endExclusive": "0x50f618",
+      "sha256": "36f44b08dada9f3556b88123eee5c2d4458c74af1fc882059432e71eb35618f3"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/sky-profiles-recovery/source-sky-timer.asm",
+      "from": "0x50f76c",
+      "endExclusive": "0x50fa93",
+      "sha256": "f1aff0bbbb34e76f5a06a46c02d63558da6ba4f710e6e22ed8b11f818619cb43"
+    }
+  ],
+  "bindings": [
+    {
+      "file": "data/hubble/sky-exposure-provenance.json",
+      "sha256": "37dfa9f204c1802c7b7aac115d5553d17832b043705982e1a7124c2ae4e0c153"
+    },
+    {
+      "file": "data/hubble/pinned-hubble-field.json",
+      "sha256": "bc16506fbbe5c7c60a5b9afdbcc3faab27e8dc40afe0ac7af3599f994267ea1a"
+    },
+    {
+      "file": "data/observatory/compiled-optical-profiles.json",
+      "sha256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc"
+    },
+    {
+      "file": "data/hubble/kpno09-star-provenance.json",
+      "sha256": "41d12e419961090c8685996203ab48576a121b3c720b7ccdb3da6e23a889bbc6"
+    },
+    {
+      "file": "data/hubble/mayall-provenance.json",
+      "sha256": "6a1e6fd5f8b876967adfc0f549e0e95036ceaf9f3a1f51aa1d02f14842ab118b"
+    }
+  ],
+  "fieldProof": {
+    "stars": 132,
+    "nearestId": "N0000.DAT@14428",
+    "everyStellarAngularAdmissionZero": true,
+    "newPixelsInvented": false,
+    "reason": "All original surviving records fail a strict coordinate cut independently of image level;same complete original catalog/area/frame and nearest order for each selected optical record."
+  },
+  "vectorsSHA256": "e42f0f79ac803a4965c837da1141d904cd82d3987d498c3335d7634f50c3a795",
+  "reference": {
+    "script": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/sky-profiles-recovery/reference.py",
+    "sha256": "b7aca72df9d2ffee31a5e37c365ccc3f8fc7f2c9306fdf0e81aa11dc1e57e9bf",
+    "poissonScript": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/poisson_reference.py",
+    "poissonSHA256": "72a2a6df8efbc56e4842df8494e5b390e3498cab5d29cc054a9707835f4b169a",
+    "method": "Whole original band admission/order and Decimal100 native calibrated sky mean,low-mean Poisson and exact integer LCG. No production TypeScript imports or original execution.",
+    "trajectories": 15
+  },
+  "nativeContracts": [
+    "Compiled telescope corrections-2/0/3 produce zero4/6/9;sky magnitude19 and elapsed multiplier50 remain native literals.",
+    "Sky fraction0 is proven for every original source in this exact field;nonnull native source selection remains valid for reset metadata copy.",
+    "Source mode is disabled;each600-bin tick consumes only sky draws. Sky counts are not a subtraction spectrum or a star acquisition.",
+    "Maximum1000ms gives Mayall mean5<12;no new large-mean approximation or substepping."
+  ],
+  "calibrationNumberPolicy": "Python binary64 reference and JS Math power can differ1ULP;relative4EPS guard admits calibration,not an original x87 error bound. Full600-bin/count/draw/final-seed vectors remain independently checked.",
+  "browserPolicy": "Existing explicit per-segment seed and bounded callback policy;tracking/current-field gate remains required. Separate profile journals;stopped full18 backup and strict old-scope preservation.",
+  "remaining": "Native cache-miss/focus/reentry/global RNG ordering remains unported;see spectral-reentry-recovery/audit.json. No moving/offset photons admitted.",
+  "rights": "Original licenses retained;local research,no public grant."
+}

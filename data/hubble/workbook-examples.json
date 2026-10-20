@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "kind": "original workbook examples; not session acquisitions",
+  "source": "Hubble Data.xls",
+  "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed",
+  "sheet": "Sheet1",
+  "cKmS": 299792.458,
+  "rows": [
+    {
+      "worksheetRow": 2,
+      "object": "UM-I - 1",
+      "targetId": "36747",
+      "apparentV": 15.6,
+      "zDouble": 0.04997
+    },
+    {
+      "worksheetRow": 3,
+      "object": "UM-I - 2",
+      "targetId": "36773",
+      "apparentV": 15.8,
+      "zDouble": 0.04899
+    },
+    {
+      "worksheetRow": 4,
+      "object": "UM-I - 3",
+      "targetId": "36805",
+      "apparentV": 15.4,
+      "zDouble": 0.0509
+    },
+    {
+      "worksheetRow": 5,
+      "object": "Coma-1",
+      "targetId": "NGC 4874",
+      "apparentV": 12.9,
+      "zDouble": 0.02394
+    },
+    {
+      "worksheetRow": 6,
+      "object": "Coma-2",
+      "targetId": "NGC 4889",
+      "apparentV": 12.5,
+      "zDouble": 0.02167
+    },
+    {
+      "worksheetRow": 7,
+      "object": "Boo-1",
+      "targetId": "51976",
+      "apparentV": 18.5,
+      "zDouble": 0.1302
+    },
+    {
+      "worksheetRow": 8,
+      "object": "Boo-2",
+      "targetId": "51975",
+      "apparentV": 17.6,
+      "zDouble": 0.1317
+    },
+    {
+      "worksheetRow": 9,
+      "object": "CB-2",
+      "targetId": "54876",
+      "apparentV": 16.0,
+      "zDouble": 0.0693
+    },
+    {
+      "worksheetRow": 10,
+      "object": "CB-1",
+      "targetId": "54875",
+      "apparentV": 16.9,
+      "zDouble": 0.07943
+    },
+    {
+      "worksheetRow": 11,
+      "object": "CB-3",
+      "targetId": "54891",
+      "apparentV": 16.3,
+      "zDouble": 0.07368
+    },
+    {
+      "worksheetRow": 12,
+      "object": "Peg-1",
+      "targetId": "NGC 7499",
+      "apparentV": 14.1,
+      "zDouble": 0.03915
+    },
+    {
+      "worksheetRow": 13,
+      "object": "Peg-2",
+      "targetId": "NGC 7501",
+      "apparentV": 14.7,
+      "zDouble": 0.04266
+    },
+    {
+      "worksheetRow": 14,
+      "object": "Peg-3",
+      "targetId": "NGC 7503",
+      "apparentV": 14.4,
+      "zDouble": 0.04424
+    }
+  ],
+  "mapping": "B2:B11 catalog IDs; Peg-1/2/3 labels matched explicitly to HUBHLP.LST Peg targets. CB-2 precedes CB-1; retain worksheet order.",
+  "recoverySourceSHA256": "6f2f41343ee048e70f9014d938203cf7fed4d3c83202195e68eb12734668f597"
+}

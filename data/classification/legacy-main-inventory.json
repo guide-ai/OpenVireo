@@ -1,0 +1,498 @@
+{
+  "datasetId": "VIREO-MS-25-v1",
+  "fingerprint": "fe69077720dc86db2df44e5b1487de41598cf293cacb40cd544994ab20113d00",
+  "schema": 1,
+  "atlasSha256": "2042ad2e007fbf090bebbd96e04931412f9dd907e9b822c2d058bf29bca8aaff",
+  "practiceListSha256": "a1a869ba1dcd71406b435ed4432d6c440adcaefefd0ee9d9f45d9dc49280fe70",
+  "lineListSha256": "c3c4eb3171ba2b8f35c5248fc28a084ec49f7abfe18918df89d6285c8369b6c5",
+  "standards": [
+    {
+      "id": "s1",
+      "label": "O5 V",
+      "file": "A0000001.SP",
+      "url": "/original/classification/A0000001.SP",
+      "sha256": "6311f2dab943fd9a790f8be36f50900661e1ff3224528c0a6391f67c2310e6f0",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s2",
+      "label": "B0 V",
+      "file": "A0000012.SP",
+      "url": "/original/classification/A0000012.SP",
+      "sha256": "c5de0192331eb777190c34d0168a91fab281f7069f1442ddad1388a195abb160",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s3",
+      "label": "B6 V",
+      "file": "A0000017.SP",
+      "url": "/original/classification/A0000017.SP",
+      "sha256": "efe769a8c81ec029f0aea41acfdc09417aec06301aaea9a819290d5187efbb6e",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s4",
+      "label": "A1 V",
+      "file": "A0000019.SP",
+      "url": "/original/classification/A0000019.SP",
+      "sha256": "b04ce24eb2b61ede4504d5d62b13b69150bc1aef12ebd70c838711738c6423f8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s5",
+      "label": "A5 V",
+      "file": "A0000025.SP",
+      "url": "/original/classification/A0000025.SP",
+      "sha256": "3df49866bfabd9ee5d3a8109f1f8e65095d24f39427c0adb61e7f99e2e2c76c0",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s6",
+      "label": "F0 V",
+      "file": "A0000031.SP",
+      "url": "/original/classification/A0000031.SP",
+      "sha256": "a680b8dc806458110bed4db3d61a8d72caf53a37fc9fac94c0f7edd57fe7b93b",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s7",
+      "label": "F5 V",
+      "file": "A0000034.SP",
+      "url": "/original/classification/A0000034.SP",
+      "sha256": "c04874efa960b10df3931c6b81899f8607387e1d722fc4c69178d70117672a9d",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s8",
+      "label": "G0 V",
+      "file": "A0000043.SP",
+      "url": "/original/classification/A0000043.SP",
+      "sha256": "1feab8938f6f92918ee06384f50e3aa8dd5b6b9c92d43e5bd6d084094b63a00d",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s9",
+      "label": "G6 V",
+      "file": "A0000048.SP",
+      "url": "/original/classification/A0000048.SP",
+      "sha256": "e84d7fe32c8111849c07dcc26a17d8b626de809dbd062de40bb6ab5f00391d9a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s10",
+      "label": "K0 V",
+      "file": "A0000052.SP",
+      "url": "/original/classification/A0000052.SP",
+      "sha256": "3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s11",
+      "label": "K5 V",
+      "file": "A0000054.SP",
+      "url": "/original/classification/A0000054.SP",
+      "sha256": "0577be73298b29e5dcc347387d6fb18175825181c09e98b23c8e5d879d6f3419",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s12",
+      "label": "M0 V",
+      "file": "A0000055.SP",
+      "url": "/original/classification/A0000055.SP",
+      "sha256": "3ef2cbdacfb0aacb3c07e9c0e95bf69198a1653722bec4cb0bb66bad10856011",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s13",
+      "label": "M5 V",
+      "file": "A0000057.SP",
+      "url": "/original/classification/A0000057.SP",
+      "sha256": "7d0ef80a736d2b6afaa888c1981df0608368c78006c445d7c8ff473d658d97c8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    }
+  ],
+  "practice": [
+    {
+      "id": "u1",
+      "label": "HD 124320",
+      "file": "A0000021.SP",
+      "url": "/original/classification/A0000021.SP",
+      "sha256": "0bdf4fa2f810014e38f8f0a8a1d9a3685ab4fe570d3ebcd69c36ed7cc19d9d3a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u2",
+      "label": "HD 37767",
+      "file": "A0000014.SP",
+      "url": "/original/classification/A0000014.SP",
+      "sha256": "6a5ee6362deab2059d100789c4fd0c49372b2360f898c469932b2d00b0dd5328",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u3",
+      "label": "HD 35619",
+      "file": "A0000004.SP",
+      "url": "/original/classification/A0000004.SP",
+      "sha256": "f501cd73bfc43a15aeb27eea672ac3c69bdb5830b7a48b475f05f4ec046749be",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u4",
+      "label": "HD 23733",
+      "file": "A0000030.SP",
+      "url": "/original/classification/A0000030.SP",
+      "sha256": "7c631037192d1c4e5713f359b3b65af210af0efcc0ceb1411d4b034f8cf631f8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u5",
+      "label": "O 1015",
+      "file": "A0000018.SP",
+      "url": "/original/classification/A0000018.SP",
+      "sha256": "ee65da16e6884d93af66df7c6285664c9dddde3cf1e747c4638af6a36711698a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u6",
+      "label": "HD 24189",
+      "file": "A0000036.SP",
+      "url": "/original/classification/A0000036.SP",
+      "sha256": "e0b4c0a245af2b04659854ab809b9b9abea8699422aa918d3262e05c4ca4631f",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u7",
+      "label": "HD 107399",
+      "file": "A0000042.SP",
+      "url": "/original/classification/A0000042.SP",
+      "sha256": "7f919cfc5f7a239862adb05a5e25038acef8c96badcf767bf51c3bb805ebb880",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u8",
+      "label": "HD 240344",
+      "file": "A0000016.SP",
+      "url": "/original/classification/A0000016.SP",
+      "sha256": "df6204701d3e0bce322b5b3bd993e98992a3a390d6eb7ec2f0d3bb32287b450d",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u9",
+      "label": "HD 17647",
+      "file": "A0000044.SP",
+      "url": "/original/classification/A0000044.SP",
+      "sha256": "6d49365b7b52266afd3477df21f30c123d89f5d1cf0771f2c6264487c37800c4",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u10",
+      "label": "BD+63 137",
+      "file": "A0000056.SP",
+      "url": "/original/classification/A0000056.SP",
+      "sha256": "41214387eb8ff27c65bd04e6cad5f8938a5534d99809d5b24b0409ef0d3a2f1f",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u11",
+      "label": "HD 66171",
+      "file": "A0000045.SP",
+      "url": "/original/classification/A0000045.SP",
+      "sha256": "65d6501e6e715a86861409703d720f01bd6fe8000dc68fe252f6f5111998a5d7",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u12",
+      "label": "HZ 948",
+      "file": "A0000032.SP",
+      "url": "/original/classification/A0000032.SP",
+      "sha256": "4e12734393d94b906fcbd3035b46f209f22de07ebc5df9a9aaddba2fb9ea4bd6",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u13",
+      "label": "HD 35215",
+      "file": "A0000013.SP",
+      "url": "/original/classification/A0000013.SP",
+      "sha256": "5960f7700c327252a6215476fd62635a57b6deca7a2d40010f362f262e744298",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u14",
+      "label": "Feige 40",
+      "file": "A0000015.SP",
+      "url": "/original/classification/A0000015.SP",
+      "sha256": "cc4e0ec889f8829081534b1852e348ce5486bf5c8aa94e13e8f0cfda139ed4af",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u15",
+      "label": "Feige 41",
+      "file": "A0000020.SP",
+      "url": "/original/classification/A0000020.SP",
+      "sha256": "2ffb360fa1b0b3cd41e59192e2200b4462f6905e92665b2943bbad9298dcc19c",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u16",
+      "label": "HD 6111",
+      "file": "A0000040.SP",
+      "url": "/original/classification/A0000040.SP",
+      "sha256": "108987ce781ef6cf91d49702c407fefd206a2d3f309b46bc8f15e531cf06ca25",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u17",
+      "label": "HD 23863",
+      "file": "A0000027.SP",
+      "url": "/original/classification/A0000027.SP",
+      "sha256": "eac85c6e1140ca5b91e1e77e7b188d0e14d7a1121550660b5f3c83ee1f4e1ffc",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u18",
+      "label": "HD 221741",
+      "file": "A0000024.SP",
+      "url": "/original/classification/A0000024.SP",
+      "sha256": "4e108b1ed6db32aac6c280b34b39d097c1089f56db593cb2c67801e6459980d8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u19",
+      "label": "HD 242936",
+      "file": "A0000006.SP",
+      "url": "/original/classification/A0000006.SP",
+      "sha256": "7265bfb181f27e8b8a8b7384725c662f2dc9f8d2c866fbb7aebb3774dd53cf97",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u20",
+      "label": "HD 5351",
+      "file": "A0000053.SP",
+      "url": "/original/classification/A0000053.SP",
+      "sha256": "0767e98bb8d9ddd547f03617f4df519ade729b3a99a8434f6864b74d1a6160af",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u21",
+      "label": "SAO 81292",
+      "file": "A0000155.SP",
+      "url": "/original/classification/A0000155.SP",
+      "sha256": "f5f30c1b90476314aaad603ea9e21003d1fa5b0b63c047cc541bc4941cbe6a4c",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u22",
+      "label": "HD 27685",
+      "file": "A0000049.SP",
+      "url": "/original/classification/A0000049.SP",
+      "sha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u23",
+      "label": "HD 21619",
+      "file": "A0000026.SP",
+      "url": "/original/classification/A0000026.SP",
+      "sha256": "e0862f86857313a3b8ecd240d9c7bf134b526481fde6e5c885299c7ae8948dd2",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u24",
+      "label": "HD 23511",
+      "file": "A0000033.SP",
+      "url": "/original/classification/A0000033.SP",
+      "sha256": "0026b06905657a02d03084182076ec3de806c0d6a8005dc850a767a072ba350a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u25",
+      "label": "HD 158659",
+      "file": "A0000011.SP",
+      "url": "/original/classification/A0000011.SP",
+      "sha256": "0b68a7d9502bdd794c03b9bc35023143abf563d52851325898f2e522e2bca006",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    }
+  ],
+  "lines": [
+    {
+      "wavelength": 3933.682,
+      "label": "Ca II (K line)"
+    },
+    {
+      "wavelength": 3964.729,
+      "label": "He I"
+    },
+    {
+      "wavelength": 3968.492,
+      "label": "Ca II (H line)"
+    },
+    {
+      "wavelength": 3970.072,
+      "label": "H I (H Epsilon)"
+    },
+    {
+      "wavelength": 4026.191,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4030.76,
+      "label": "Mn I"
+    },
+    {
+      "wavelength": 4045.825,
+      "label": "Fe I"
+    },
+    {
+      "wavelength": 4068.0,
+      "label": "C III"
+    },
+    {
+      "wavelength": 4073.0,
+      "label": "O II"
+    },
+    {
+      "wavelength": 4088.85,
+      "label": "Si IV"
+    },
+    {
+      "wavelength": 4097.33,
+      "label": "N III"
+    },
+    {
+      "wavelength": 4100.04,
+      "label": "He II"
+    },
+    {
+      "wavelength": 4101.748,
+      "label": "H I (H Delta)"
+    },
+    {
+      "wavelength": 4120.82,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4130.89,
+      "label": "Si II"
+    },
+    {
+      "wavelength": 4143.76,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4143.878,
+      "label": "Fe I"
+    },
+    {
+      "wavelength": 4226.74,
+      "label": "Ca I"
+    },
+    {
+      "wavelength": 4300.0,
+      "label": "CH & Metals (G Band)"
+    },
+    {
+      "wavelength": 4317.14,
+      "label": "O II"
+    },
+    {
+      "wavelength": 4340.475,
+      "label": "H I (H Gamma)"
+    },
+    {
+      "wavelength": 4383.557,
+      "label": "Fe I"
+    },
+    {
+      "wavelength": 4387.929,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4471.479,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4471.68,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4481.2,
+      "label": "Mg II"
+    }
+  ]
+}

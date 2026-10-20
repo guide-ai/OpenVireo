@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "policy": "VIREO-bounded-tracked-instrument-access-v1",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "clockDriveProofSHA256": "a786e66498c34e900b6ead81c1a8e662ed69ada71f06b0c2536ad7d4e77e87fe",
+  "opticalProfileSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "ranges": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/controls-on.asm",
+      "from": "0x53a210",
+      "endExclusive": "0x53a310",
+      "sha256": "de6ae75669a573cdc232310f6a03661f8807b6a883a28513f7efce9860d765e4"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/controls-off.asm",
+      "from": "0x53a168",
+      "endExclusive": "0x53a210",
+      "sha256": "e6a29eaa2f9b46629df1ec19cfe49a0efb862aa8db5627037a3c5faf4504fc48"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/narrow-field.asm",
+      "from": "0x53a310",
+      "endExclusive": "0x53a3e7",
+      "sha256": "d9ecb77c737bf9c45cdd21c47f77035b277040f08ef814b52f3004b043666025"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/instrument-access.asm",
+      "from": "0x53cce4",
+      "endExclusive": "0x53ce58",
+      "sha256": "29fbd07e22bbfc995292abb975513b580b3049508a65ea080575921294abfd5d"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/tracking-toggle.asm",
+      "from": "0x538768",
+      "endExclusive": "0x5387e7",
+      "sha256": "1649190e85b372da574d6db07c2b19b3f5e6fe4e021ac2b4cfb89ece34627d97"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/clock-enable.asm",
+      "from": "0x538204",
+      "endExclusive": "0x5382c4",
+      "sha256": "c9e9f45fadef1e12d0c691420ec55b3047e8332e66f5881bc2f81713a8699a20"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/spectrometer-show.asm",
+      "from": "0x50d8b8",
+      "endExclusive": "0x50dac4",
+      "sha256": "d53338fc301d2b903b2e350908cc5bd01a7bbe4986b091ae276a3f44bc192179"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/hubble-unrestricted.asm",
+      "from": "0x58a8ca",
+      "endExclusive": "0x58a8d8",
+      "sha256": "023c170f9ef8ab173a31b54a025aee210bd0d283f26b746bb4d5a972df3a77ce"
+    }
+  ],
+  "publishedFields": {
+    "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/tracked-acquisition-recovery/observatory-fields.json",
+    "sha256": "16a9578137ac894d7d69922034c224f18d769f1b429761720d800a89b7049a3b",
+    "tableFrom": "0x53690a",
+    "tableEndExclusive": "0x537104",
+    "ClockTimer": "0x3cc",
+    "DriveBtn": "0x400",
+    "ViewSlider": "0x410",
+    "RdngBtn": "0x424"
+  },
+  "vectorsSHA256": "38e3f29c4e748de643096375950e89374d1e61adb26725b24712557b17f5ed28",
+  "contracts": [
+    "Tracking off disables optical control/read affordances;tracking on restores then finder mode excludes readout.",
+    "Hubble bypasses request/allocation counters;no new restrictions are invented.",
+    "ClockTimer is independently enabled;modal spectrometer changes control availability,not clock scientific rate.",
+    "Spectrometer activation caches the selected target/source at its pinned pointed field;source+sky stays ADD."
+  ],
+  "browserAdaptations": [
+    "Prepare fixed field explicitly opens dome,repoints and engages tracking;current-pointing activation never repoints.",
+    "Tracked supported spectral routes share running UT;start requires a live safe clock and callbacks recheck it.",
+    "Turning tracking off or pausing the shared clock releases spectral acquisition before changing context.",
+    "Only exact already verified star/three-galaxy/sky domains are admitted;no untracked-offset or temporal photon synthesis.",
+    "Photometer remains an explicitly separate bounded bench;shared clock pauses there.",
+    "Moving=true is an inadmissible browser guard,not an asserted native motor/read-button transition;all live supported inputs are stationary."
+  ],
+  "remaining": [
+    "Native moving/motor/slew transitions",
+    "Configured horizon/option effects and native global event order",
+    "Observing-UT history in native spectral files",
+    "Native x87/GDI/runtime equivalence"
+  ],
+  "rights": "Original licenses preserved;local research,no public grant."
+}

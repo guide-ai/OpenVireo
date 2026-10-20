@@ -1,0 +1,539 @@
+{
+  "policy": "Independent Python Fraction exact binary32 round-to-nearest-even for all source U/B/V and B-V;Lagrange5 exact Fraction vs production Neville;Decimal90 age/distance,no production imports or original execution",
+  "contractSHA256": "f636ff44388ef27b2dee68d76f51fa9fc96c5bc11b504ab14a3fb7720288d0a0",
+  "zams": [
+    {
+      "color": -0.33000001311302185,
+      "expectedMv": -5.199999809265137,
+      "window": 0
+    },
+    {
+      "color": -0.31,
+      "expectedMv": -3.9948177489896346,
+      "window": 0
+    },
+    {
+      "color": -0.1,
+      "expectedMv": 0.6000000414748983,
+      "window": 7
+    },
+    {
+      "color": 0.0,
+      "expectedMv": 1.5,
+      "window": 8
+    },
+    {
+      "color": 0.15,
+      "expectedMv": 2.0999998733401197,
+      "window": 11
+    },
+    {
+      "color": 0.62,
+      "expectedMv": 4.795839711834592,
+      "window": 19
+    },
+    {
+      "color": 1.85,
+      "expectedMv": 14.816406714900916,
+      "window": 30
+    },
+    {
+      "color": 2.0,
+      "expectedMv": 16.700000762939453,
+      "window": 30
+    }
+  ],
+  "sourceSingleRows": [
+    {
+      "modelIndex": 0,
+      "ageIndex": 0,
+      "rowIndex": 0,
+      "sourceLine": 3,
+      "uToken": "13.922",
+      "bToken": "12.907",
+      "vToken": "11.548",
+      "bSingle": 12.906999588012695,
+      "vSingle": 11.54800033569336,
+      "bMinusVSingle": 1.358999252319336
+    },
+    {
+      "modelIndex": 0,
+      "ageIndex": 0,
+      "rowIndex": 19,
+      "sourceLine": 22,
+      "uToken": "2.311",
+      "bToken": "2.455",
+      "vToken": "2.487",
+      "bSingle": 2.4549999237060547,
+      "vSingle": 2.486999988555908,
+      "bMinusVSingle": -0.032000064849853516
+    },
+    {
+      "modelIndex": 0,
+      "ageIndex": 4,
+      "rowIndex": 0,
+      "sourceLine": 625,
+      "uToken": "13.922",
+      "bToken": "12.907",
+      "vToken": "11.547",
+      "bSingle": 12.906999588012695,
+      "vSingle": 11.54699993133545,
+      "bMinusVSingle": 1.359999656677246
+    },
+    {
+      "modelIndex": 0,
+      "ageIndex": 4,
+      "rowIndex": 19,
+      "sourceLine": 644,
+      "uToken": "2.567",
+      "bToken": "2.641",
+      "vToken": "2.640",
+      "bSingle": 2.6410000324249268,
+      "vSingle": 2.640000104904175,
+      "bMinusVSingle": 0.0009999275207519531
+    },
+    {
+      "modelIndex": 0,
+      "ageIndex": 49,
+      "rowIndex": 0,
+      "sourceLine": 9342,
+      "uToken": "13.707",
+      "bToken": "12.751",
+      "vToken": "11.420",
+      "bSingle": 12.75100040435791,
+      "vSingle": 11.420000076293945,
+      "bMinusVSingle": 1.3310003280639648
+    },
+    {
+      "modelIndex": 0,
+      "ageIndex": 49,
+      "rowIndex": 19,
+      "sourceLine": 9361,
+      "uToken": "4.828",
+      "bToken": "5.054",
+      "vToken": "4.616",
+      "bSingle": 5.053999900817871,
+      "vSingle": 4.616000175476074,
+      "bMinusVSingle": 0.4379997253417969
+    },
+    {
+      "modelIndex": 1,
+      "ageIndex": 0,
+      "rowIndex": 0,
+      "sourceLine": 3,
+      "uToken": "14.418",
+      "bToken": "13.223",
+      "vToken": "11.773",
+      "bSingle": 13.222999572753906,
+      "vSingle": 11.77299976348877,
+      "bMinusVSingle": 1.4499998092651367
+    },
+    {
+      "modelIndex": 1,
+      "ageIndex": 0,
+      "rowIndex": 19,
+      "sourceLine": 22,
+      "uToken": "2.581",
+      "bToken": "2.615",
+      "vToken": "2.601",
+      "bSingle": 2.615000009536743,
+      "vSingle": 2.6010000705718994,
+      "bMinusVSingle": 0.01399993896484375
+    },
+    {
+      "modelIndex": 1,
+      "ageIndex": 4,
+      "rowIndex": 0,
+      "sourceLine": 593,
+      "uToken": "14.417",
+      "bToken": "13.223",
+      "vToken": "11.773",
+      "bSingle": 13.222999572753906,
+      "vSingle": 11.77299976348877,
+      "bMinusVSingle": 1.4499998092651367
+    },
+    {
+      "modelIndex": 1,
+      "ageIndex": 4,
+      "rowIndex": 19,
+      "sourceLine": 612,
+      "uToken": "2.568",
+      "bToken": "2.601",
+      "vToken": "2.589",
+      "bSingle": 2.6010000705718994,
+      "vSingle": 2.5889999866485596,
+      "bMinusVSingle": 0.012000083923339844
+    },
+    {
+      "modelIndex": 1,
+      "ageIndex": 49,
+      "rowIndex": 0,
+      "sourceLine": 9197,
+      "uToken": "14.263",
+      "bToken": "13.103",
+      "vToken": "11.674",
+      "bSingle": 13.102999687194824,
+      "vSingle": 11.673999786376953,
+      "bMinusVSingle": 1.428999900817871
+    },
+    {
+      "modelIndex": 1,
+      "ageIndex": 49,
+      "rowIndex": 19,
+      "sourceLine": 9216,
+      "uToken": "5.038",
+      "bToken": "5.219",
+      "vToken": "4.743",
+      "bSingle": 5.218999862670898,
+      "vSingle": 4.743000030517578,
+      "bMinusVSingle": 0.4759998321533203
+    },
+    {
+      "modelIndex": 2,
+      "ageIndex": 0,
+      "rowIndex": 0,
+      "sourceLine": 3,
+      "uToken": "14.917",
+      "bToken": "13.688",
+      "vToken": "12.190",
+      "bSingle": 13.687999725341797,
+      "vSingle": 12.1899995803833,
+      "bMinusVSingle": 1.498000144958496
+    },
+    {
+      "modelIndex": 2,
+      "ageIndex": 0,
+      "rowIndex": 19,
+      "sourceLine": 22,
+      "uToken": "2.198",
+      "bToken": "2.238",
+      "vToken": "2.233",
+      "bSingle": 2.23799991607666,
+      "vSingle": 2.2330000400543213,
+      "bMinusVSingle": 0.004999876022338867
+    },
+    {
+      "modelIndex": 2,
+      "ageIndex": 4,
+      "rowIndex": 0,
+      "sourceLine": 588,
+      "uToken": "14.917",
+      "bToken": "13.688",
+      "vToken": "12.190",
+      "bSingle": 13.687999725341797,
+      "vSingle": 12.1899995803833,
+      "bMinusVSingle": 1.498000144958496
+    },
+    {
+      "modelIndex": 2,
+      "ageIndex": 4,
+      "rowIndex": 19,
+      "sourceLine": 607,
+      "uToken": "2.181",
+      "bToken": "2.219",
+      "vToken": "2.214",
+      "bSingle": 2.2190001010894775,
+      "vSingle": 2.2139999866485596,
+      "bMinusVSingle": 0.005000114440917969
+    },
+    {
+      "modelIndex": 2,
+      "ageIndex": 49,
+      "rowIndex": 0,
+      "sourceLine": 9237,
+      "uToken": "14.826",
+      "bToken": "13.596",
+      "vToken": "12.106",
+      "bSingle": 13.595999717712402,
+      "vSingle": 12.105999946594238,
+      "bMinusVSingle": 1.489999771118164
+    },
+    {
+      "modelIndex": 2,
+      "ageIndex": 49,
+      "rowIndex": 19,
+      "sourceLine": 9256,
+      "uToken": "5.796",
+      "bToken": "5.807",
+      "vToken": "5.189",
+      "bSingle": 5.807000160217285,
+      "vSingle": 5.189000129699707,
+      "bMinusVSingle": 0.6180000305175781
+    },
+    {
+      "modelIndex": 3,
+      "ageIndex": 0,
+      "rowIndex": 0,
+      "sourceLine": 3,
+      "uToken": "15.293",
+      "bToken": "14.091",
+      "vToken": "12.562",
+      "bSingle": 14.090999603271484,
+      "vSingle": 12.562000274658203,
+      "bMinusVSingle": 1.5289993286132812
+    },
+    {
+      "modelIndex": 3,
+      "ageIndex": 0,
+      "rowIndex": 19,
+      "sourceLine": 22,
+      "uToken": "2.312",
+      "bToken": "2.287",
+      "vToken": "2.230",
+      "bSingle": 2.2869999408721924,
+      "vSingle": 2.2300000190734863,
+      "bMinusVSingle": 0.056999921798706055
+    },
+    {
+      "modelIndex": 3,
+      "ageIndex": 4,
+      "rowIndex": 0,
+      "sourceLine": 579,
+      "uToken": "15.293",
+      "bToken": "14.090",
+      "vToken": "12.562",
+      "bSingle": 14.09000015258789,
+      "vSingle": 12.562000274658203,
+      "bMinusVSingle": 1.5279998779296875
+    },
+    {
+      "modelIndex": 3,
+      "ageIndex": 4,
+      "rowIndex": 19,
+      "sourceLine": 598,
+      "uToken": "2.298",
+      "bToken": "2.272",
+      "vToken": "2.215",
+      "bSingle": 2.2720000743865967,
+      "vSingle": 2.2149999141693115,
+      "bMinusVSingle": 0.057000160217285156
+    },
+    {
+      "modelIndex": 3,
+      "ageIndex": 49,
+      "rowIndex": 0,
+      "sourceLine": 9174,
+      "uToken": "15.214",
+      "bToken": "14.015",
+      "vToken": "12.493",
+      "bSingle": 14.015000343322754,
+      "vSingle": 12.493000030517578,
+      "bMinusVSingle": 1.5220003128051758
+    },
+    {
+      "modelIndex": 3,
+      "ageIndex": 49,
+      "rowIndex": 19,
+      "sourceLine": 9193,
+      "uToken": "5.860",
+      "bToken": "5.757",
+      "vToken": "5.093",
+      "bSingle": 5.756999969482422,
+      "vSingle": 5.0929999351501465,
+      "bMinusVSingle": 0.6640000343322754
+    },
+    {
+      "modelIndex": 4,
+      "ageIndex": 0,
+      "rowIndex": 0,
+      "sourceLine": 3,
+      "uToken": "15.683",
+      "bToken": "14.473",
+      "vToken": "12.911",
+      "bSingle": 14.472999572753906,
+      "vSingle": 12.91100025177002,
+      "bMinusVSingle": 1.5619993209838867
+    },
+    {
+      "modelIndex": 4,
+      "ageIndex": 0,
+      "rowIndex": 19,
+      "sourceLine": 22,
+      "uToken": "4.143",
+      "bToken": "4.191",
+      "vToken": "3.725",
+      "bSingle": 4.190999984741211,
+      "vSingle": 3.7249999046325684,
+      "bMinusVSingle": 0.4660000801086426
+    },
+    {
+      "modelIndex": 4,
+      "ageIndex": 4,
+      "rowIndex": 0,
+      "sourceLine": 548,
+      "uToken": "15.683",
+      "bToken": "14.473",
+      "vToken": "12.911",
+      "bSingle": 14.472999572753906,
+      "vSingle": 12.91100025177002,
+      "bMinusVSingle": 1.5619993209838867
+    },
+    {
+      "modelIndex": 4,
+      "ageIndex": 4,
+      "rowIndex": 19,
+      "sourceLine": 567,
+      "uToken": "3.254",
+      "bToken": "3.321",
+      "vToken": "2.988",
+      "bSingle": 3.321000099182129,
+      "vSingle": 2.98799991607666,
+      "bMinusVSingle": 0.33300018310546875
+    },
+    {
+      "modelIndex": 4,
+      "ageIndex": 49,
+      "rowIndex": 0,
+      "sourceLine": 9009,
+      "uToken": "15.617",
+      "bToken": "14.410",
+      "vToken": "12.854",
+      "bSingle": 14.40999984741211,
+      "vSingle": 12.854000091552734,
+      "bMinusVSingle": 1.555999755859375
+    },
+    {
+      "modelIndex": 4,
+      "ageIndex": 49,
+      "rowIndex": 19,
+      "sourceLine": 9028,
+      "uToken": "7.350",
+      "bToken": "6.851",
+      "vToken": "5.972",
+      "bSingle": 6.85099983215332,
+      "vSingle": 5.9720001220703125,
+      "bMinusVSingle": 0.8789997100830078
+    },
+    {
+      "modelIndex": 5,
+      "ageIndex": 0,
+      "rowIndex": 0,
+      "sourceLine": 3,
+      "uToken": "15.822",
+      "bToken": "14.589",
+      "vToken": "13.011",
+      "bSingle": 14.58899974822998,
+      "vSingle": 13.01099967956543,
+      "bMinusVSingle": 1.5780000686645508
+    },
+    {
+      "modelIndex": 5,
+      "ageIndex": 0,
+      "rowIndex": 19,
+      "sourceLine": 22,
+      "uToken": "2.754",
+      "bToken": "2.739",
+      "vToken": "2.470",
+      "bSingle": 2.739000082015991,
+      "vSingle": 2.4700000286102295,
+      "bMinusVSingle": 0.2690000534057617
+    },
+    {
+      "modelIndex": 5,
+      "ageIndex": 4,
+      "rowIndex": 0,
+      "sourceLine": 509,
+      "uToken": "15.822",
+      "bToken": "14.589",
+      "vToken": "13.011",
+      "bSingle": 14.58899974822998,
+      "vSingle": 13.01099967956543,
+      "bMinusVSingle": 1.5780000686645508
+    },
+    {
+      "modelIndex": 5,
+      "ageIndex": 4,
+      "rowIndex": 19,
+      "sourceLine": 528,
+      "uToken": "3.882",
+      "bToken": "3.890",
+      "vToken": "3.425",
+      "bSingle": 3.890000104904175,
+      "vSingle": 3.424999952316284,
+      "bMinusVSingle": 0.4650001525878906
+    },
+    {
+      "modelIndex": 5,
+      "ageIndex": 49,
+      "rowIndex": 0,
+      "sourceLine": 8708,
+      "uToken": "15.745",
+      "bToken": "14.516",
+      "vToken": "12.942",
+      "bSingle": 14.515999794006348,
+      "vSingle": 12.942000389099121,
+      "bMinusVSingle": 1.5739994049072266
+    },
+    {
+      "modelIndex": 5,
+      "ageIndex": 49,
+      "rowIndex": 19,
+      "sourceLine": 8727,
+      "uToken": "7.291",
+      "bToken": "6.673",
+      "vToken": "5.767",
+      "bSingle": 6.672999858856201,
+      "vSingle": 5.767000198364258,
+      "bMinusVSingle": 0.9059996604919434
+    }
+  ],
+  "distance": [
+    {
+      "modulusTicks": 550,
+      "ebvTicks": 4,
+      "extinctionCorrected": false,
+      "parsecs": "125.892541179416721042395410639580060609361740946693106910792301952664761578250202412105097",
+      "extinctionMagnitude": "0"
+    },
+    {
+      "modulusTicks": 550,
+      "ebvTicks": 4,
+      "extinctionCorrected": true,
+      "parsecs": "119.124200802737482882755023643620765277495811358713077027210226823711530687415563800613243",
+      "extinctionMagnitude": "0.12"
+    },
+    {
+      "modulusTicks": 615,
+      "ebvTicks": 13,
+      "extinctionCorrected": true,
+      "parsecs": "141.905752168909215612312383999962321184565617945047107379647836040941251601543585237032178",
+      "extinctionMagnitude": "0.39"
+    },
+    {
+      "modulusTicks": 0,
+      "ebvTicks": 250,
+      "extinctionCorrected": true,
+      "parsecs": "0.316227766016837933199889354443271853371955513932521682685750485279259443863923822134424811",
+      "extinctionMagnitude": "7.5"
+    },
+    {
+      "modulusTicks": 1500,
+      "ebvTicks": 0,
+      "extinctionCorrected": false,
+      "parsecs": "10000",
+      "extinctionMagnitude": "0"
+    }
+  ],
+  "ages": [
+    {
+      "index": 0,
+      "logAge": "7.80",
+      "ageMyr": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914068"
+    },
+    {
+      "index": 4,
+      "logAge": "8.00",
+      "ageMyr": "100"
+    },
+    {
+      "index": 25,
+      "logAge": "9.05",
+      "ageMyr": "1122.01845430196343559103894647790573672230850736055296244507444817010330268622435594232241"
+    },
+    {
+      "index": 49,
+      "logAge": "10.25",
+      "ageMyr": "17782.7941003892280122542119519268484473579052640225535801183072277630188153949380490030040"
+    }
+  ]
+}

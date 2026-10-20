@@ -1,0 +1,256 @@
+{
+  "id": "PHOTO-MAYALL-OBSERVE-01",
+  "policy": "OpenCLEA-Pleiades-Mayall-photometry-v10",
+  "edition": {
+    "program": "VIREO",
+    "version": "1.504",
+    "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "profile": {
+    "index": 2,
+    "name": "KPNO 4m (158\") Mayall Telescope",
+    "scopeFactorMag": 3.0,
+    "seeingArcsecSingle": 1.7999999523162842,
+    "seeingWidthDegrees": 0.0002499999933772617,
+    "storedScopeZeroPointSingle": 9.0,
+    "preparedPhotometerZeroPoint": 14.0,
+    "correctionStore": "0x5a33bb..0x5a33c2",
+    "seeingStore": "0x5a33c2..0x5a33c9"
+  },
+  "profilePacketSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "field": {
+    "baseFieldArcMinutes": 1,
+    "multiplier": 3,
+    "cachedWidthPixels": 936,
+    "cachedFieldDegrees": 0.05,
+    "history": "Explicit fresh reconstructed complete-field configuration per reading;no generated/resumed native scene context claim",
+    "telescopesIndependentPositionInputs": "0x53bed7..0x53befe and0x53c53e..0x53c554 read only shared option field size/multiplier andcanvas dimensions,not telescope index;explicit1arcmin\u00d73/936 uses the prior complete positions. Reentry/native timer/access lottery is not certified.",
+    "fieldProofs": [
+      {
+        "file": "pinned-pleiades-v.json",
+        "sha256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624"
+      },
+      {
+        "file": "pleiades-target-fields.json",
+        "sha256": "5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356"
+      },
+      {
+        "file": "pleiades-expanded-fields.json",
+        "sha256": "86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40"
+      }
+    ]
+  },
+  "domain": {
+    "telescopeIndex": 2,
+    "filters": [
+      "U",
+      "B",
+      "V"
+    ],
+    "apertures": [
+      5,
+      10,
+      15
+    ],
+    "seconds": [
+      0.1,
+      1,
+      10,
+      100
+    ],
+    "repeats": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "eligibleTargetIds": [
+      "N2230.DAT@145877",
+      "N2230.DAT@144496",
+      "N2230.DAT@148460",
+      "N2230.DAT@148546",
+      "N2230.DAT@149260",
+      "N2230.DAT@150246",
+      "N2230.DAT@150480",
+      "N2230.DAT@150861",
+      "N2230.DAT@151890",
+      "N2230.DAT@152989"
+    ],
+    "excludedTargets": [
+      {
+        "targetId": "N2230.DAT@147993",
+        "maximumMean": 12694003.84574204,
+        "expected5000CallbackTotal": 63470019228.7102,
+        "reason": "Poisson-mean-bound"
+      },
+      {
+        "targetId": "N2230.DAT@149142",
+        "maximumMean": 436454.4232467915,
+        "expected5000CallbackTotal": 2182272116.233958,
+        "reason": "all-duration-count-domain"
+      },
+      {
+        "targetId": "N2230.DAT@149656",
+        "maximumMean": 862275.938345491,
+        "expected5000CallbackTotal": 4311379691.727455,
+        "reason": "all-duration-count-domain"
+      },
+      {
+        "targetId": "N2230.DAT@150112",
+        "maximumMean": 42422496.62869217,
+        "expected5000CallbackTotal": 212112483143.46088,
+        "reason": "Poisson-mean-bound"
+      },
+      {
+        "targetId": "N2230.DAT@150975",
+        "maximumMean": 3798452.632105945,
+        "expected5000CallbackTotal": 18992263160.529724,
+        "reason": "Poisson-mean-bound"
+      },
+      {
+        "targetId": "N2230.DAT@151125",
+        "maximumMean": 660423.3069470075,
+        "expected5000CallbackTotal": 3302116534.735038,
+        "reason": "all-duration-count-domain"
+      }
+    ],
+    "maximumExpected5000CallbackTotal": 1900902216.4199138,
+    "actualCountsGuard": 2147483647,
+    "maximumPoissonMean": 1000000.0,
+    "whyExclude": "Bounded web profile supports all admitted per-reading durations within existing session budgets;not an original claim the six withheld targets cannot be observed at shorter times. Existing0.4m/0.9m domains remain intact."
+  },
+  "nativeCaptures": [
+    {
+      "id": "PHOTO-MAYALL-C01",
+      "file": "selected-calibration.asm",
+      "start": "0x53df24",
+      "endExclusive": "0x53df7b",
+      "byteRangeSHA256": "b3fc536baeb88a242e3ed71b9419dc54b231b264323b19343c39293741302afc",
+      "listingSHA256": "d8fde07c4ce9e1358bd6c0b7cf169e4c925b6e7b31658fe8bad747f8fbdfa372",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    },
+    {
+      "id": "PHOTO-MAYALL-C02",
+      "file": "seeing-prepare.asm",
+      "start": "0x4ff8b0",
+      "endExclusive": "0x4ff909",
+      "byteRangeSHA256": "791531ac71458efa75202ae98116be29fbf639bd974778171cd8b861be58aa5e",
+      "listingSHA256": "1cb45e31badc1bfa0e881cf7fa72154efb737a9fad17c550626eae69a577a938",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    },
+    {
+      "id": "PHOTO-MAYALL-C03",
+      "file": "zero-point-amplitudes.asm",
+      "start": "0x50095a",
+      "endExclusive": "0x5009fa",
+      "byteRangeSHA256": "c49596d55ff5367a758d967372596d716a82d24a4e74be54d4313032f0733390",
+      "listingSHA256": "fce2611de345315bcb800d882c13315ebdcf6c2ceb2478b4854be7a7170973ac",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    },
+    {
+      "id": "PHOTO-MAYALL-C04",
+      "file": "shared-field-area.asm",
+      "start": "0x53be70",
+      "endExclusive": "0x53c0b4",
+      "byteRangeSHA256": "2929298c688b42dbc116f1886f2005d9beac4129ff86f39c0c219050f7bad94b",
+      "listingSHA256": "70a1643eb637f9b2d77b640eeff19b8b2ade0dc5cd1086e30684787aae36c23a",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    },
+    {
+      "id": "PHOTO-MAYALL-C05",
+      "file": "shared-frame-geometry.asm",
+      "start": "0x53c531",
+      "endExclusive": "0x53c70b",
+      "byteRangeSHA256": "3a55768843079d2fe348f62f1997505c499d9786f9a03bb62af119549fb0a719",
+      "listingSHA256": "86fe0e7d292361c4172b7f1a489b2132fc49a7a4836a3058a568ded4f547dd77",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    },
+    {
+      "id": "PHOTO-MAYALL-C06",
+      "file": "sky-bank-gate.asm",
+      "start": "0x5008b4",
+      "endExclusive": "0x500945",
+      "byteRangeSHA256": "98a38ab5bbd6537ef71e7f8b0a860a77530c31a3ff10e7de2eba3f15258f4c80",
+      "listingSHA256": "0e4bb228aff7e061cc71c52fba87b7e0f3c50984e570c194f655fbc745462e8d",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    },
+    {
+      "id": "PHOTO-MAYALL-C07",
+      "file": "sky-bank-store.asm",
+      "start": "0x501831",
+      "endExclusive": "0x501873",
+      "byteRangeSHA256": "2ffc022bd3720193c81298d3c035eb5a641befde1f9e26ca48e9a01880489b39",
+      "listingSHA256": "3e6f6a5056b735e1cf242c585968a81281fa873018fb9198dd025d7a13407cef",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    },
+    {
+      "id": "PHOTO-MAYALL-C08",
+      "file": "compiled-telescopes.asm",
+      "start": "0x5a3174",
+      "endExclusive": "0x5a3490",
+      "byteRangeSHA256": "5b56f253f36bec0216d39c47c5b203311737bc38dfe2baef4165206dbe841f97",
+      "listingSHA256": "7b36cafde6b4bf0ac9f027525954cf309690b6a696d1dbf08c3247a494291f34",
+      "scope": "Static read-only original bytes;not execution,an instruction emulator,or an original-runtime oracle."
+    }
+  ],
+  "photoHelp": {
+    "file": "PHOTOHLP.TXT",
+    "sha256": "aaf7f6827f418cf1aa1e2da70185b96ecf96ffd919899d84547a8695afa42d8a",
+    "freshSky": "New filter skies are required after telescope change,even on returning;PHOTOHLP.TXT lines78-80. Conservative web deactivation clears all current banks;no native internal clearing order claim."
+  },
+  "lifecycle": "Web telescope event is inactive-only,clears current/partial work andall currentfilter skies,retains RNG/callbackbudget andprior readings/notebook/fits. Subsequent activation requires freshfilter skies,including returnto any earlier telescope. Raw10 required after any telescope2 history;otherwise earlier minimal owners remain;absent telescopeIndex means0 for prior owners. B/V pairing requires same target,aperture andtelescope;no cross-telescope photometric correction. UI optical selection is explicit andseparate from retained reading provenance.",
+  "activationTarget": "Retain the previous target if admitted for the selected telescope;otherwise explicitly select the known default for fresh sky andexplain why.No photons before Start. This is a browser profile adaptation.",
+  "access": "Uses the existing explicitly unrestricted observatory selector andcompiled optical records;no Pleiades-native availability/lottery/timer/reentry equivalence claimed.",
+  "numericalPolicy": "Original selected Single(6+3)=9;photometer adds Single5 for Extended14;original Single1.8 seeing;Number/Math projection,source-then-sky Poisson SUM.No area/diameter scaling,noise invention or native-runtime oracle.",
+  "rights": {
+    "License.rtf": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+    "Copyright.txt": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+    "scope": "Local research only;no public redistribution authorized."
+  },
+  "research": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-mayall-recovery",
+  "independentVectorsSHA256": "902f3a16b535088ca322736dccef4bc85302e7b43040ca2a617899575d2ca7e1",
+  "nativeInstructionAssertions": [
+    {
+      "address": "0x5a3379",
+      "length": 6,
+      "sha256": "95f02a8ffde3fa67f28721f9c359d52819b1c9e064d0022bed39b2d7ebacaf4e"
+    },
+    {
+      "address": "0x5a33bb",
+      "length": 3,
+      "sha256": "61b1e967493404157b0c2d41929245d5d58df14fde3f41bb3acbb1da86d99ec3"
+    },
+    {
+      "address": "0x5a33c2",
+      "length": 3,
+      "sha256": "448d8669d043cbf3a2cfd5c664b17b32b1f1ec7d63ab59a8a771efba42adc140"
+    },
+    {
+      "address": "0x5a2a00",
+      "length": 6,
+      "sha256": "0c765bd2237e1c5e4f12aa148018973773abdf681f47f0c15f135f9557836f6f"
+    },
+    {
+      "address": "0x53df4f",
+      "length": 15,
+      "sha256": "58b758f333ec5d8e78ee6482e806b6541dbb3d191d3e2b9619df6268d01e08d9"
+    },
+    {
+      "address": "0x500976",
+      "length": 18,
+      "sha256": "a8f637b01cc39f310418046927e6d46594202f57769df27f5e24fceccdc78b6a"
+    },
+    {
+      "address": "0x4ff8db",
+      "length": 19,
+      "sha256": "ae9b1c78e0302bcef16c640b5ff875a13d5cbbb7eff781202b43cee2e801952b"
+    },
+    {
+      "address": "0x4ff8ee",
+      "length": 19,
+      "sha256": "8ae5f7a2da334896141678ce1b2b3f28534ab5eca3197b867a3793b21bb9b228"
+    }
+  ],
+  "storedPrecisionOrder": "Selected common base+correction is stored Single;photometer adds Single5 then stores Extended.Seeing is read Single,divided bySingle2,stored/reloaded Extended,then divided bySingle3600 andstored Extended.Number projection does not certify x87 runtime."
+}

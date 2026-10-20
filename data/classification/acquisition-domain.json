@@ -1,0 +1,28 @@
+{
+  "acquisitionContract": "src/io/starObservation.ts + core/exposureSpectrum.ts, existing replay-verified source-plus-sky600-bin adaptation",
+  "assignedTemplate": {
+    "file": "A0000049.SP",
+    "sha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220",
+    "indexMappingSHA256": "5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa"
+  },
+  "classificationWindowAngstrom": [
+    3900,
+    4500
+  ],
+  "acquiredPrintedDomain": [
+    3700.0,
+    4698.33
+  ],
+  "standardPrintedDomain": [
+    3510.0,
+    7427.2
+  ],
+  "visibleAcquiredBins": 361,
+  "visibleAtlasSamples": 429,
+  "equalPrintedGrid": false,
+  "policy": "Visual comparison only for acquired spectra. No interpolation, resampling, quantitative difference or grade. Original template/noise source is shared, not an independent truth reference.",
+  "previousInventorySHA256": "b0489a1b51939e00d9e5f43f4b4c91b02a635aba2cd96dfdfe8c6216af9929be",
+  "legacyFirstThreeMappingsUnchanged": true,
+  "currentFingerprint": "fe69077720dc86db2df44e5b1487de41598cf293cacb40cd544994ab20113d00",
+  "allOriginalSPFiles": 38
+}

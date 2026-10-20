@@ -1,0 +1,117 @@
+{
+  "binarySha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "id": "PHOTO-VISUAL-01",
+      "file": "start-reset.asm",
+      "start": "0x500b58",
+      "endExclusive": "0x500c65",
+      "byteRangeSha256": "1379f3288e5f8872483ba8982cbb341ea3129ede7fc222cf53725c0776fa4425",
+      "listingSha256": "1c6d475667eecb800ec5fec9b1e697a5212702fff696f0a117bad1603bd93004"
+    },
+    {
+      "id": "PHOTO-VISUAL-02",
+      "file": "close-query.asm",
+      "start": "0x501b84",
+      "endExclusive": "0x501cf0",
+      "byteRangeSha256": "e466f65cab2c61ba1d86eaa4496309be7b86e95edacc4e9b35e4b799799bddaf",
+      "listingSha256": "267108b37ede27e03688ebfb4334d34704510b61200a41bbf3b4af1f1fb5ff23"
+    },
+    {
+      "id": "PHOTO-VISUAL-03",
+      "file": "close-query-tail.asm",
+      "start": "0x501cef",
+      "endExclusive": "0x501d54",
+      "byteRangeSha256": "5a658d3c6cc195f9d52decc65bc108bc225646939a5a903971e1659fc2ba9804",
+      "listingSha256": "6f9f3ad43aac070d8e70f409812e143a75577a5677dedc11e739ee699c0a78d0"
+    },
+    {
+      "id": "PHOTO-VISUAL-04",
+      "file": "result-open-close.asm",
+      "start": "0x546de0",
+      "endExclusive": "0x5472e0",
+      "byteRangeSha256": "68d4d87abc682ebdee3176f9f5d5a58f5e5b74af139dcf41da35ead448d763f3",
+      "listingSha256": "e29cff5aedc6538e6f3149e03a0d6465550d2f3dae8ec2969c33f9af7e90348c"
+    },
+    {
+      "id": "PHOTO-VISUAL-05",
+      "file": "telescope-finalize.asm",
+      "start": "0x53e0e0",
+      "endExclusive": "0x53e194",
+      "byteRangeSha256": "732aaabde84ecbca82f5784879a921bb53f7c6749d6f2deacfbdf7203ef7d5a8",
+      "listingSha256": "f6d7ea8c4c195f3e7038e584d24b85d139e8351ae01d161e7df4cb385413dca6"
+    },
+    {
+      "id": "PHOTO-VISUAL-06",
+      "file": "telescope-setting.asm",
+      "start": "0x53df24",
+      "endExclusive": "0x53e0e0",
+      "byteRangeSha256": "c2daffca1be79e8cdf99968d5a57137dcc65e5a2ead575ca1c15ff1c56164354",
+      "listingSha256": "6cc4cb728b65772ade6ad753d8d729c31a03d3298c9750dfd6324d00b574b8d2"
+    },
+    {
+      "id": "PHOTO-VISUAL-07",
+      "file": "result-edit.asm",
+      "start": "0x549620",
+      "endExclusive": "0x54978c",
+      "byteRangeSha256": "e8e0d6e5f2c39f189e25891a603aee3aca8eabc02b8ff54397ea502071cb38db",
+      "listingSha256": "aea3f38827175b4e517bb115cc0f115d1014b524d10c897c7f1d34496e8bc56d"
+    },
+    {
+      "id": "PHOTO-VISUAL-08",
+      "file": "text-writer.asm",
+      "start": "0x59e92c",
+      "endExclusive": "0x59ed1c",
+      "byteRangeSha256": "6e81d314f95c5a85a0eaaf1e9df5653d794cf2b635d02df3914c9edbce04156c",
+      "listingSha256": "c1b1fe05465620673d011b962a4527c287349b7ae6a19aaf591f75b695b9a1c0"
+    },
+    {
+      "id": "PHOTO-VISUAL-09",
+      "file": "result-dialog-buttons.asm",
+      "start": "0x54b02c",
+      "endExclusive": "0x54b2ec",
+      "byteRangeSha256": "3c4c2c5311818a11e3cd1a7440b7ce5ea6130e67cdf943be52c91b9ad795de62",
+      "listingSha256": "cf8fea1fa9733236620a9f6ce84e55c8416c5693ef33e666bff863e3833b2753"
+    }
+  ],
+  "supportingSources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/home/dobleuber/Projects/personal/clea-web/data/photometry/field-provenance.json",
+      "sha256": "013e62ac66483f8c4cabbf4510b70610da200757b53c9cab91fbff124c34dfd5"
+    },
+    {
+      "path": "/home/dobleuber/Projects/personal/clea-web/data/photometry/context-provenance.json",
+      "sha256": "889607d37de487f248165e1c7d2418f0593676602794d69c3c903a81fee15439"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f"
+    }
+  ],
+  "nativeContracts": {
+    "start": "0x500945->0x500bcc resets elapsed, source/background/total/base counts, integration counter, SNR and list. PRNG is not reseeded there.",
+    "stop": "0x500b58 disables PhotoTimer then0x501abc unlocks; no reducer/Record. Bounded100ms/one-callback UI Stop before callback keeps seed unchanged and produces no completed reading. A subsequent Start clears integration counters rather than resuming.",
+    "sky": "Existing current-bank/filter negative-sky gate and sky normalization retained. Fixed telescope0 only. Native constructor initializes banks and activation chooses bank; broader switch/return invalidation remains uncertified and is not exposed.",
+    "telescope": "0x53df24 stores selected telescope/calibration. No evidence here that it clears all photometer banks. The manual fresh-sky requirement is applied at each web context release/reactivation; no native bank-reuse claim.",
+    "close": "0x501b84 rejects close based on enabled control and unrecorded flag; Yes0x501d16 invokes Record; Cancel0x501d21 clears canClose. New fixed UI uses explicit release retaining audit history, not an emulation of that modal chain.",
+    "modal": "Prior Record pre-mutates live observation; Cancel only clears HR-display flag. New manual notebook confirmation is an explicit independent web action, starts blank, and Cancel performs no notebook mutation. Native collection initialized0x546dea uses0x90-byte records, distinct from0x5f neighbor records.",
+    "writer": "TInfoListForm1.SaveasText1Click0x59e92c:0x59eb49 obtains list strings,0x59eb58 count,0x59eb6f iterates each item,0x59eb8c/0x59eb91 writes string/newline,0x59eba7 closes. This text-report branch is not a scientific raw-observation replay contract; exact native formatting/binary import is not ported."
+  },
+  "newWebPolicies": {
+    "context": "Leaving route, hidden tab, explicit release, save and restore stop pending callback and invalidate current sky. Only one fixed telescope/calibration exists, so no unsupported telescope is synthesized.",
+    "timer": "One100ms callback per start; no wall-time catchup or partial callback counts. Generation guard excludes stale completion.",
+    "notebook": "User-supplied finite V transcription[-50,100] and note<=500chars, linked to completed object reading. No catalog answer/auto grade or native Record equivalence.",
+    "persistence": "Separate OpenCLEA Pleiades photometer session v1; seed plus strict events only,128KiB/256events, fieldSHA pinned, replay counts/reduction, released context required. Existing full analysis v7 unchanged and not accepted as this format.",
+    "boundary": "Bounded pointings/telescope0/V/explicit1arcmin/profile only. General telescope/filters, native report compatibility, generated cluster and whole-I01/E04 not claimed."
+  },
+  "rights": "Original license hash retained; local only; no public redistribution authorization.",
+  "uncertainty": "Static code and independent arithmetic plus Chromium validation are not original runtime/x87/binary equivalence. UI context/replay/notebook policies are marked new behavior."
+}

@@ -1,0 +1,116 @@
+{
+  "id": "PHOTO-MAYALL-LITERAL-02",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "profilePacketSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "method": "Direct PE operand decode, complete store-instruction and individual operand SHA-256;static byte identity only,not native execution or emulation. No original byte strings are redistributed here.",
+  "literals": [
+    {
+      "name": "baseZero",
+      "address": "0x5a2a06",
+      "bytes": 4,
+      "storage": "Single",
+      "value": 6.0,
+      "operandSHA256": "fedcca07b1ccdacce623cb6d8afdeed0314e8508d763e228871f18d4e0ebb7c4",
+      "instruction": {
+        "address": "0x5a2a00",
+        "bytes": 10,
+        "sha256": "818a105aaf0b18b413c12256ea3d9528bdb42e42b5ebf770cec677878d9cfe28"
+      }
+    },
+    {
+      "name": "scopeCorrection",
+      "address": "0x5a33be",
+      "bytes": 4,
+      "storage": "Single",
+      "value": 3.0,
+      "operandSHA256": "ea2845900b5856c9bf354b1aa9761b5aa6888e5ed61738fe9579ca42bc0f6054",
+      "instruction": {
+        "address": "0x5a33bb",
+        "bytes": 7,
+        "sha256": "501473096deaac695ce82de9dd9a15a98229cc833b8267f390bb001fb1d3abd3"
+      }
+    },
+    {
+      "name": "seeingArcsec",
+      "address": "0x5a33c5",
+      "bytes": 4,
+      "storage": "Single",
+      "value": 1.7999999523162842,
+      "operandSHA256": "bbe1d6b54f890c9431839072d39fcb11e98717384223934286b95f5c23a7dfa8",
+      "instruction": {
+        "address": "0x5a33c2",
+        "bytes": 7,
+        "sha256": "46ba9755157ee901891115a7ca3e8734a11ee8f49b5cba1d10f1b8195d582dc8"
+      }
+    },
+    {
+      "name": "photoOffset",
+      "address": "0x500ac0",
+      "bytes": 4,
+      "storage": "Single",
+      "value": 5.0,
+      "operandSHA256": "fca31f1667a6aa1bba12fca4e4ea1becd503379d80da3213af07f6cc5702828d",
+      "instruction": {
+        "address": "0x50097c",
+        "bytes": 6,
+        "sha256": "cdfa85ff449bdf97c61d01bd3981b1ca0a944c2df8bd2c46f4583165d36d9fb8"
+      }
+    },
+    {
+      "name": "seeingDivisor",
+      "address": "0x4ffa24",
+      "bytes": 4,
+      "storage": "Single",
+      "value": 2.0,
+      "operandSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d",
+      "instruction": {
+        "address": "0x4ff8e2",
+        "bytes": 6,
+        "sha256": "943e7a276c25c664f06db751d4854222eba72af82fec1bd629ba585ae2e7655a"
+      }
+    },
+    {
+      "name": "arcsecPerDegree",
+      "address": "0x4ffa28",
+      "bytes": 4,
+      "storage": "Single",
+      "value": 3600.0,
+      "operandSHA256": "a2de4eae6b06803de770c5571556a05a1479d295004dfad1797d469370265d2b",
+      "instruction": {
+        "address": "0x4ff8f5",
+        "bytes": 6,
+        "sha256": "162ddb8ca2001b593aefc716280899f8e171bc53e9e8d8f1c2ad7ba17872e0f8"
+      }
+    }
+  ],
+  "storedScopeZeroPointSingle": 9.0,
+  "preparedPhotometerZeroPoint": 14.0,
+  "seeingWidthDegrees": 0.0002499999933772617,
+  "orderedStores": [
+    {
+      "address": "0x53df4f",
+      "bytes": 15,
+      "sha256": "58b758f333ec5d8e78ee6482e806b6541dbb3d191d3e2b9619df6268d01e08d9",
+      "meaning": "Read common Single base,add selected Single correction,store Single"
+    },
+    {
+      "address": "0x500976",
+      "bytes": 18,
+      "sha256": "a8f637b01cc39f310418046927e6d46594202f57769df27f5e24fceccdc78b6a",
+      "meaning": "Read selected stored Single,add Single5,store Extended"
+    },
+    {
+      "address": "0x4ff8db",
+      "bytes": 19,
+      "sha256": "ae9b1c78e0302bcef16c640b5ff875a13d5cbbb7eff781202b43cee2e801952b",
+      "meaning": "Read selected Single seeing,divide Single2,store Extended"
+    },
+    {
+      "address": "0x4ff8ee",
+      "bytes": 19,
+      "sha256": "8ae5f7a2da334896141678ce1b2b3f28534ab5eca3197b867a3793b21bb9b228",
+      "meaning": "Wait/reload Extended seeing width,divide Single3600,store Extended"
+    }
+  ],
+  "wireCompatibility": "Supplemental evidence only;existing raw10 contract hash andall earlier owners are unchanged."
+}

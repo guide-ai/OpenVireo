@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-Pleiades-three-targets-v3",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PLEIADES.HTL",
+      "sha256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2",
+      "bytes": 2064
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N2230.DAT",
+      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+      "bytes": 28767987
+    }
+  ],
+  "captures": [
+    {
+      "id": "PHOTO-TARGETS-01",
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/total-count-guard.asm",
+      "start": "0x50158e",
+      "endExclusive": "0x5015ba",
+      "byteRangeSha256": "c468a655cef79fda24ceb36fed5e3c5f37977888cafcf97d85fc9cad4a35a05f",
+      "listingSha256": "ed1557b2079f60d09b2a529b3792fc0b11f961d5d04e678f85cfb1f226ed3f1a"
+    },
+    {
+      "id": "PHOTO-TARGETS-02",
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/hotlist-reader.asm",
+      "start": "0x590424",
+      "endExclusive": "0x590480",
+      "byteRangeSha256": "d2fd9c0b788c38023edf01f612fde6685013f229784f3725507f5e12164a05d5",
+      "listingSha256": "405a05a60a38c717a02f69548e1629d051ce8a122017b9ff648574c95f72d212"
+    },
+    {
+      "id": "PHOTO-TARGETS-03",
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/hotlist-pointing.asm",
+      "start": "0x591e99",
+      "endExclusive": "0x591ed5",
+      "byteRangeSha256": "397179ecfc802cd1ee8b74af505625c9d814ab83d47d9fedae9b78a9d659e5aa",
+      "listingSha256": "ae7c16ed0e4b9bf49a0eb799df4db6554a6636c9eca08a2b08d56f7ae0617ac4"
+    }
+  ],
+  "contractsReused": [
+    {
+      "file": "data/photometry/pinned-pleiades-v.json",
+      "sha256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624"
+    },
+    {
+      "file": "data/photometry/ubv-contract.json",
+      "sha256": "27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf"
+    },
+    {
+      "file": "data/photometry/field-provenance.json",
+      "sha256": "013e62ac66483f8c4cabbf4510b70610da200757b53c9cab91fbff124c34dfd5"
+    },
+    {
+      "file": "data/photometry/context-provenance.json",
+      "sha256": "889607d37de487f248165e1c7d2418f0593676602794d69c3c903a81fee15439"
+    },
+    {
+      "file": "data/photometry/source-provenance.json",
+      "sha256": "281b8cd1c912afb7ae96f057ec6cf0c40a5bd07838a0096d58f4f89a3bcb318b"
+    },
+    {
+      "file": "data/photometry/reduction-provenance.json",
+      "sha256": "545f15918eb2795a0347fa82dcfb7ca2c58704af24074e36e5e7a217c2dbb662"
+    }
+  ],
+  "targetFieldsSHA256": "5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356",
+  "independentVectorsSHA256": "526d25862431ccb4d3cb885192dc661517f3d542970fa44512120ae8e5a4c065",
+  "scripts": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/survey.py",
+      "sha256": "d363ebcf351c053dc9a99dc72bc44fe3a0f0c6cc2fea407fd2db0d7b83a7251a"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/generate.py",
+      "sha256": "b68a3fcfd6bd1de2a98fc22dd8be83b4ef03296cf17dd57fb926dd985bb21750"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/analytic-vectors.py",
+      "sha256": "344712a12222056dd084548b98df7ca518fd324b41735ec4028fc70c5e718b49"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/capture.py",
+      "sha256": "5e343c811209dcb6f2f5d3f42aa5c66fb97f6f883a0adfb0dbcb3e3e9d70974c"
+    }
+  ],
+  "targetIds": [
+    "N2230.DAT@144496",
+    "N2230.DAT@147993"
+  ],
+  "association": "HTL86byte Extended coordinates projected to Number equal original compact27byte decoded coordinates; matching Pascal suffix; preserve different HTL/native prefixes. HTL0 and4 added, prior HTL1 unchanged. Individual raw-record SHA retained.",
+  "fieldCompleteness": "Each new object and fixed sky field replays native binary-search/forward scan, region/band order and all admitted rows; full1,065,481-row band admission, exact-rational stored-bounds admission and adjacent-key controls agree. Whole variable/QSO/galaxy/image position admission is empty at all four new fields. Not a preview-subset completeness claim.",
+  "skyReuse": "0x5008e0 current telescope/filter gate and0x501831 filter-bank store reused from UBV contract. Target choice is a bounded web event; fields have same profile and identical proven empty aperture. Same active context may retain current-filter sky with explicit original fieldTargetId/skyReadingId. No inference that native target UI has identical event semantics. Release still clears every filter.",
+  "countGuard": {
+    "address": "0x50198c",
+    "bytes": 10,
+    "format": "x87 Extended",
+    "rawHex": "00000000feffffff1d40",
+    "sha256": "2f245941644f0fdeabfe6388bf7b81210aa89b15dca01c46d644557219df36f1",
+    "value": 2147483647,
+    "meaning": "Compiled total photon guard at0x50158e..0x5015ba. New bright target mean under1e6 existing Poisson adapter bound; no new count formula."
+  },
+  "webState": "Object observations and explicit B/V pairs always share active original targetId. Keep global reading IDs and per-target confirmed colors. v3 journal requires target-field SHA; v1/v2 unchanged. This journal is new web persistence, not native result export.",
+  "numericalPolicy": "Number/Math adaptations. Decimal90 independent flux, prior analytic aperture, integer-modulo PRNG, Python lgamma count controls and Decimal70 magnitudes. No original runtime oracle, binary or x87 equivalence.",
+  "rights": "License.rtf unchanged/hash retained. Authorized local research only; no redistribution, public upload or deployment.",
+  "remaining": [
+    "Other21 hotlist targets not implemented",
+    "Arbitrary slews/telescopes/seeing/aperture/integration options not supported",
+    "Generated clusters, HR fit, missing-color and overlapping variable/QSO/galaxy merges remain open",
+    "Native modal/report writer fidelity and original execution/classroom acceptance remain open"
+  ]
+}

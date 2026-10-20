@@ -1,0 +1,115 @@
+{
+  "targetSha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "constantAddress": "0x54b22c",
+  "constantBytes": "2db29defa70e62921140",
+  "constantExtendedDecimal": "299792.457999999999998408384271897375583648681640625",
+  "constantNumber": 299792.458,
+  "autoFillConstantAddress": "0x54b020",
+  "toleranceAddress": "0x54b238",
+  "toleranceBytes": "0ad7a3703d0ad7a3f83f",
+  "toleranceExtendedDecimal": "0.0099999999999999999997967120926589679186236025998368859291076660156250",
+  "referenceMethod": "Decimal90 with exact Single input and decoded Extended constant; final Single via independent struct.pack conversion. Mathematical references, not original FPU intermediate rounding/exception oracle. Vectors avoid final Single ties.",
+  "vectors": [
+    {
+      "label": "NGC 3034",
+      "kind": "original catalog Single redshift",
+      "zSingle": 0.0008906160364858806,
+      "referenceKmS": 266.99997071231985,
+      "storedKmS": 266.9999694824219,
+      "storedHex": "43857fff"
+    },
+    {
+      "label": "NGC 4874",
+      "kind": "original catalog Single redshift",
+      "zSingle": 0.0239365566521883,
+      "referenceKmS": 7175.999154815782,
+      "storedKmS": 7175.9990234375,
+      "storedHex": "45e03ffe"
+    },
+    {
+      "label": "NGC 4889",
+      "kind": "original catalog Single redshift",
+      "zSingle": 0.021671656519174576,
+      "referenceKmS": 6496.99917681507,
+      "storedKmS": 6496.9990234375,
+      "storedHex": "45cb07fe"
+    },
+    {
+      "label": "0",
+      "kind": "synthetic numerical vector",
+      "zSingle": 0.0,
+      "referenceKmS": 0.0,
+      "storedKmS": 0.0,
+      "storedHex": "00000000"
+    },
+    {
+      "label": "-0.0",
+      "kind": "synthetic numerical vector",
+      "zSingle": -0.0,
+      "referenceKmS": -0.0,
+      "storedKmS": -0.0,
+      "storedHex": "80000000"
+    },
+    {
+      "label": "0.015625",
+      "kind": "synthetic numerical vector",
+      "zSingle": 0.015625,
+      "referenceKmS": 4684.25715625,
+      "storedKmS": 4684.25732421875,
+      "storedHex": "4592620f"
+    },
+    {
+      "label": "-0.015625",
+      "kind": "synthetic numerical vector",
+      "zSingle": -0.015625,
+      "referenceKmS": -4684.25715625,
+      "storedKmS": -4684.25732421875,
+      "storedHex": "c592620f"
+    },
+    {
+      "label": "0.1",
+      "kind": "synthetic numerical vector",
+      "zSingle": 0.10000000149011612,
+      "referenceKmS": 29979.246246725575,
+      "storedKmS": 29979.24609375,
+      "storedHex": "46ea367e"
+    },
+    {
+      "label": "1",
+      "kind": "synthetic numerical vector",
+      "zSingle": 1.0,
+      "referenceKmS": 299792.458,
+      "storedKmS": 299792.46875,
+      "storedHex": "4892620f"
+    },
+    {
+      "label": "1e-30",
+      "kind": "synthetic numerical vector",
+      "zSingle": 1.0000000031710769e-30,
+      "referenceKmS": 2.9979245895066493e-25,
+      "storedKmS": 2.997924614886614e-25,
+      "storedHex": "16b99003"
+    },
+    {
+      "label": "1.401298464324817e-45",
+      "kind": "synthetic numerical vector",
+      "zSingle": 1.401298464324817e-45,
+      "referenceKmS": 4.200987110115622e-40,
+      "storedKmS": 4.200980692168656e-40,
+      "storedHex": "00049310"
+    },
+    {
+      "label": "1e+32",
+      "kind": "synthetic numerical vector",
+      "zSingle": 1.0000000331813535e+32,
+      "referenceKmS": 2.9979246794751954e+37,
+      "storedKmS": 2.99792470934711e+37,
+      "storedHex": "7db46e58"
+    }
+  ],
+  "unsupportedBoundary": {
+    "z": 0.2501041293144226,
+    "answer": 75729.125,
+    "relativeErrorDecimal": "0.0100000000006426515981099258001762204310849947114071351974502502464076166133604275483539002"
+  }
+}

@@ -1,0 +1,1860 @@
+{
+  "schema": 1,
+  "contractSHA256": "f636ff44388ef27b2dee68d76f51fa9fc96c5bc11b504ab14a3fb7720288d0a0",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "models": [
+    {
+      "index": 0,
+      "sourceSHA256": "73e4c39b2f9a0a1e82df257c77cd90032a78fd5582399f5d402140d84011e8fc",
+      "groups": [
+        {
+          "sourceLogAge": "7.80",
+          "first": 3,
+          "last": 154,
+          "rows": 152
+        },
+        {
+          "sourceLogAge": "7.85",
+          "first": 157,
+          "last": 307,
+          "rows": 151
+        },
+        {
+          "sourceLogAge": "7.90",
+          "first": 310,
+          "last": 464,
+          "rows": 155
+        },
+        {
+          "sourceLogAge": "7.95",
+          "first": 467,
+          "last": 622,
+          "rows": 156
+        },
+        {
+          "sourceLogAge": "8.00",
+          "first": 625,
+          "last": 779,
+          "rows": 155
+        },
+        {
+          "sourceLogAge": "8.05",
+          "first": 782,
+          "last": 969,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.10",
+          "first": 972,
+          "last": 1154,
+          "rows": 183
+        },
+        {
+          "sourceLogAge": "8.15",
+          "first": 1157,
+          "last": 1346,
+          "rows": 190
+        },
+        {
+          "sourceLogAge": "8.20",
+          "first": 1349,
+          "last": 1536,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.25",
+          "first": 1539,
+          "last": 1739,
+          "rows": 201
+        },
+        {
+          "sourceLogAge": "8.30",
+          "first": 1742,
+          "last": 1937,
+          "rows": 196
+        },
+        {
+          "sourceLogAge": "8.35",
+          "first": 1940,
+          "last": 2127,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.40",
+          "first": 2130,
+          "last": 2319,
+          "rows": 190
+        },
+        {
+          "sourceLogAge": "8.45",
+          "first": 2322,
+          "last": 2509,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.50",
+          "first": 2512,
+          "last": 2703,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "8.55",
+          "first": 2706,
+          "last": 2896,
+          "rows": 191
+        },
+        {
+          "sourceLogAge": "8.60",
+          "first": 2899,
+          "last": 3092,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "8.65",
+          "first": 3095,
+          "last": 3287,
+          "rows": 193
+        },
+        {
+          "sourceLogAge": "8.70",
+          "first": 3290,
+          "last": 3479,
+          "rows": 190
+        },
+        {
+          "sourceLogAge": "8.75",
+          "first": 3482,
+          "last": 3676,
+          "rows": 195
+        },
+        {
+          "sourceLogAge": "8.80",
+          "first": 3679,
+          "last": 3869,
+          "rows": 191
+        },
+        {
+          "sourceLogAge": "8.85",
+          "first": 3872,
+          "last": 4071,
+          "rows": 200
+        },
+        {
+          "sourceLogAge": "8.90",
+          "first": 4074,
+          "last": 4276,
+          "rows": 203
+        },
+        {
+          "sourceLogAge": "8.95",
+          "first": 4279,
+          "last": 4479,
+          "rows": 201
+        },
+        {
+          "sourceLogAge": "9.00",
+          "first": 4482,
+          "last": 4675,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "9.05",
+          "first": 4678,
+          "last": 4887,
+          "rows": 210
+        },
+        {
+          "sourceLogAge": "9.10",
+          "first": 4890,
+          "last": 5122,
+          "rows": 233
+        },
+        {
+          "sourceLogAge": "9.15",
+          "first": 5125,
+          "last": 5344,
+          "rows": 220
+        },
+        {
+          "sourceLogAge": "9.20",
+          "first": 5347,
+          "last": 5563,
+          "rows": 217
+        },
+        {
+          "sourceLogAge": "9.25",
+          "first": 5566,
+          "last": 5781,
+          "rows": 216
+        },
+        {
+          "sourceLogAge": "9.30",
+          "first": 5784,
+          "last": 6002,
+          "rows": 219
+        },
+        {
+          "sourceLogAge": "9.35",
+          "first": 6005,
+          "last": 6224,
+          "rows": 220
+        },
+        {
+          "sourceLogAge": "9.40",
+          "first": 6227,
+          "last": 6438,
+          "rows": 212
+        },
+        {
+          "sourceLogAge": "9.45",
+          "first": 6441,
+          "last": 6643,
+          "rows": 203
+        },
+        {
+          "sourceLogAge": "9.50",
+          "first": 6646,
+          "last": 6843,
+          "rows": 198
+        },
+        {
+          "sourceLogAge": "9.55",
+          "first": 6846,
+          "last": 7042,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "9.60",
+          "first": 7045,
+          "last": 7238,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "9.65",
+          "first": 7241,
+          "last": 7431,
+          "rows": 191
+        },
+        {
+          "sourceLogAge": "9.70",
+          "first": 7434,
+          "last": 7613,
+          "rows": 180
+        },
+        {
+          "sourceLogAge": "9.75",
+          "first": 7616,
+          "last": 7796,
+          "rows": 181
+        },
+        {
+          "sourceLogAge": "9.80",
+          "first": 7799,
+          "last": 7978,
+          "rows": 180
+        },
+        {
+          "sourceLogAge": "9.85",
+          "first": 7981,
+          "last": 8157,
+          "rows": 177
+        },
+        {
+          "sourceLogAge": "9.90",
+          "first": 8160,
+          "last": 8336,
+          "rows": 177
+        },
+        {
+          "sourceLogAge": "9.95",
+          "first": 8339,
+          "last": 8513,
+          "rows": 175
+        },
+        {
+          "sourceLogAge": "10.00",
+          "first": 8516,
+          "last": 8683,
+          "rows": 168
+        },
+        {
+          "sourceLogAge": "10.05",
+          "first": 8686,
+          "last": 8851,
+          "rows": 166
+        },
+        {
+          "sourceLogAge": "10.10",
+          "first": 8854,
+          "last": 9019,
+          "rows": 166
+        },
+        {
+          "sourceLogAge": "10.15",
+          "first": 9022,
+          "last": 9179,
+          "rows": 158
+        },
+        {
+          "sourceLogAge": "10.20",
+          "first": 9182,
+          "last": 9339,
+          "rows": 158
+        },
+        {
+          "sourceLogAge": "10.25",
+          "first": 9342,
+          "last": 9502,
+          "rows": 161
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "sourceSHA256": "4ca860c305f9a96eb90c8e98c3edb505c94e27c780bf857764f4266cad04767c",
+      "groups": [
+        {
+          "sourceLogAge": "7.80",
+          "first": 3,
+          "last": 146,
+          "rows": 144
+        },
+        {
+          "sourceLogAge": "7.85",
+          "first": 149,
+          "last": 287,
+          "rows": 139
+        },
+        {
+          "sourceLogAge": "7.90",
+          "first": 290,
+          "last": 439,
+          "rows": 150
+        },
+        {
+          "sourceLogAge": "7.95",
+          "first": 442,
+          "last": 590,
+          "rows": 149
+        },
+        {
+          "sourceLogAge": "8.00",
+          "first": 593,
+          "last": 739,
+          "rows": 147
+        },
+        {
+          "sourceLogAge": "8.05",
+          "first": 742,
+          "last": 930,
+          "rows": 189
+        },
+        {
+          "sourceLogAge": "8.10",
+          "first": 933,
+          "last": 1117,
+          "rows": 185
+        },
+        {
+          "sourceLogAge": "8.15",
+          "first": 1120,
+          "last": 1295,
+          "rows": 176
+        },
+        {
+          "sourceLogAge": "8.20",
+          "first": 1298,
+          "last": 1466,
+          "rows": 169
+        },
+        {
+          "sourceLogAge": "8.25",
+          "first": 1469,
+          "last": 1653,
+          "rows": 185
+        },
+        {
+          "sourceLogAge": "8.30",
+          "first": 1656,
+          "last": 1843,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.35",
+          "first": 1846,
+          "last": 2033,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.40",
+          "first": 2036,
+          "last": 2223,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.45",
+          "first": 2226,
+          "last": 2412,
+          "rows": 187
+        },
+        {
+          "sourceLogAge": "8.50",
+          "first": 2415,
+          "last": 2598,
+          "rows": 184
+        },
+        {
+          "sourceLogAge": "8.55",
+          "first": 2601,
+          "last": 2783,
+          "rows": 183
+        },
+        {
+          "sourceLogAge": "8.60",
+          "first": 2786,
+          "last": 2971,
+          "rows": 186
+        },
+        {
+          "sourceLogAge": "8.65",
+          "first": 2974,
+          "last": 3160,
+          "rows": 187
+        },
+        {
+          "sourceLogAge": "8.70",
+          "first": 3163,
+          "last": 3349,
+          "rows": 187
+        },
+        {
+          "sourceLogAge": "8.75",
+          "first": 3352,
+          "last": 3539,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.80",
+          "first": 3542,
+          "last": 3729,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.85",
+          "first": 3732,
+          "last": 3925,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "8.90",
+          "first": 3928,
+          "last": 4118,
+          "rows": 191
+        },
+        {
+          "sourceLogAge": "8.95",
+          "first": 4121,
+          "last": 4317,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "9.00",
+          "first": 4320,
+          "last": 4525,
+          "rows": 206
+        },
+        {
+          "sourceLogAge": "9.05",
+          "first": 4528,
+          "last": 4732,
+          "rows": 205
+        },
+        {
+          "sourceLogAge": "9.10",
+          "first": 4735,
+          "last": 4960,
+          "rows": 226
+        },
+        {
+          "sourceLogAge": "9.15",
+          "first": 4963,
+          "last": 5181,
+          "rows": 219
+        },
+        {
+          "sourceLogAge": "9.20",
+          "first": 5184,
+          "last": 5399,
+          "rows": 216
+        },
+        {
+          "sourceLogAge": "9.25",
+          "first": 5402,
+          "last": 5617,
+          "rows": 216
+        },
+        {
+          "sourceLogAge": "9.30",
+          "first": 5620,
+          "last": 5834,
+          "rows": 215
+        },
+        {
+          "sourceLogAge": "9.35",
+          "first": 5837,
+          "last": 6049,
+          "rows": 213
+        },
+        {
+          "sourceLogAge": "9.40",
+          "first": 6052,
+          "last": 6254,
+          "rows": 203
+        },
+        {
+          "sourceLogAge": "9.45",
+          "first": 6257,
+          "last": 6451,
+          "rows": 195
+        },
+        {
+          "sourceLogAge": "9.50",
+          "first": 6454,
+          "last": 6652,
+          "rows": 199
+        },
+        {
+          "sourceLogAge": "9.55",
+          "first": 6655,
+          "last": 6852,
+          "rows": 198
+        },
+        {
+          "sourceLogAge": "9.60",
+          "first": 6855,
+          "last": 7049,
+          "rows": 195
+        },
+        {
+          "sourceLogAge": "9.65",
+          "first": 7052,
+          "last": 7244,
+          "rows": 193
+        },
+        {
+          "sourceLogAge": "9.70",
+          "first": 7247,
+          "last": 7427,
+          "rows": 181
+        },
+        {
+          "sourceLogAge": "9.75",
+          "first": 7430,
+          "last": 7609,
+          "rows": 180
+        },
+        {
+          "sourceLogAge": "9.80",
+          "first": 7612,
+          "last": 7793,
+          "rows": 182
+        },
+        {
+          "sourceLogAge": "9.85",
+          "first": 7796,
+          "last": 7974,
+          "rows": 179
+        },
+        {
+          "sourceLogAge": "9.90",
+          "first": 7977,
+          "last": 8154,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "9.95",
+          "first": 8157,
+          "last": 8335,
+          "rows": 179
+        },
+        {
+          "sourceLogAge": "10.00",
+          "first": 8338,
+          "last": 8512,
+          "rows": 175
+        },
+        {
+          "sourceLogAge": "10.05",
+          "first": 8515,
+          "last": 8689,
+          "rows": 175
+        },
+        {
+          "sourceLogAge": "10.10",
+          "first": 8692,
+          "last": 8867,
+          "rows": 176
+        },
+        {
+          "sourceLogAge": "10.15",
+          "first": 8870,
+          "last": 9034,
+          "rows": 165
+        },
+        {
+          "sourceLogAge": "10.20",
+          "first": 9037,
+          "last": 9194,
+          "rows": 158
+        },
+        {
+          "sourceLogAge": "10.25",
+          "first": 9197,
+          "last": 9354,
+          "rows": 158
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "sourceSHA256": "e65f4d2b8869dfb4fe6e97b01120ccefc889ae23a2ffb19f2c751f595b8b41bc",
+      "groups": [
+        {
+          "sourceLogAge": "7.80",
+          "first": 3,
+          "last": 151,
+          "rows": 149
+        },
+        {
+          "sourceLogAge": "7.85",
+          "first": 154,
+          "last": 297,
+          "rows": 144
+        },
+        {
+          "sourceLogAge": "7.90",
+          "first": 300,
+          "last": 441,
+          "rows": 142
+        },
+        {
+          "sourceLogAge": "7.95",
+          "first": 444,
+          "last": 585,
+          "rows": 142
+        },
+        {
+          "sourceLogAge": "8.00",
+          "first": 588,
+          "last": 729,
+          "rows": 142
+        },
+        {
+          "sourceLogAge": "8.05",
+          "first": 732,
+          "last": 888,
+          "rows": 157
+        },
+        {
+          "sourceLogAge": "8.10",
+          "first": 891,
+          "last": 1091,
+          "rows": 201
+        },
+        {
+          "sourceLogAge": "8.15",
+          "first": 1094,
+          "last": 1290,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "8.20",
+          "first": 1293,
+          "last": 1484,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "8.25",
+          "first": 1487,
+          "last": 1675,
+          "rows": 189
+        },
+        {
+          "sourceLogAge": "8.30",
+          "first": 1678,
+          "last": 1856,
+          "rows": 179
+        },
+        {
+          "sourceLogAge": "8.35",
+          "first": 1859,
+          "last": 2038,
+          "rows": 180
+        },
+        {
+          "sourceLogAge": "8.40",
+          "first": 2041,
+          "last": 2220,
+          "rows": 180
+        },
+        {
+          "sourceLogAge": "8.45",
+          "first": 2223,
+          "last": 2404,
+          "rows": 182
+        },
+        {
+          "sourceLogAge": "8.50",
+          "first": 2407,
+          "last": 2587,
+          "rows": 181
+        },
+        {
+          "sourceLogAge": "8.55",
+          "first": 2590,
+          "last": 2767,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "8.60",
+          "first": 2770,
+          "last": 2954,
+          "rows": 185
+        },
+        {
+          "sourceLogAge": "8.65",
+          "first": 2957,
+          "last": 3144,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.70",
+          "first": 3147,
+          "last": 3335,
+          "rows": 189
+        },
+        {
+          "sourceLogAge": "8.75",
+          "first": 3338,
+          "last": 3528,
+          "rows": 191
+        },
+        {
+          "sourceLogAge": "8.80",
+          "first": 3531,
+          "last": 3731,
+          "rows": 201
+        },
+        {
+          "sourceLogAge": "8.85",
+          "first": 3734,
+          "last": 3937,
+          "rows": 204
+        },
+        {
+          "sourceLogAge": "8.90",
+          "first": 3940,
+          "last": 4144,
+          "rows": 205
+        },
+        {
+          "sourceLogAge": "8.95",
+          "first": 4147,
+          "last": 4356,
+          "rows": 210
+        },
+        {
+          "sourceLogAge": "9.00",
+          "first": 4359,
+          "last": 4570,
+          "rows": 212
+        },
+        {
+          "sourceLogAge": "9.05",
+          "first": 4573,
+          "last": 4798,
+          "rows": 226
+        },
+        {
+          "sourceLogAge": "9.10",
+          "first": 4801,
+          "last": 5025,
+          "rows": 225
+        },
+        {
+          "sourceLogAge": "9.15",
+          "first": 5028,
+          "last": 5260,
+          "rows": 233
+        },
+        {
+          "sourceLogAge": "9.20",
+          "first": 5263,
+          "last": 5479,
+          "rows": 217
+        },
+        {
+          "sourceLogAge": "9.25",
+          "first": 5482,
+          "last": 5693,
+          "rows": 212
+        },
+        {
+          "sourceLogAge": "9.30",
+          "first": 5696,
+          "last": 5901,
+          "rows": 206
+        },
+        {
+          "sourceLogAge": "9.35",
+          "first": 5904,
+          "last": 6107,
+          "rows": 204
+        },
+        {
+          "sourceLogAge": "9.40",
+          "first": 6110,
+          "last": 6311,
+          "rows": 202
+        },
+        {
+          "sourceLogAge": "9.45",
+          "first": 6314,
+          "last": 6509,
+          "rows": 196
+        },
+        {
+          "sourceLogAge": "9.50",
+          "first": 6512,
+          "last": 6705,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "9.55",
+          "first": 6708,
+          "last": 6905,
+          "rows": 198
+        },
+        {
+          "sourceLogAge": "9.60",
+          "first": 6908,
+          "last": 7097,
+          "rows": 190
+        },
+        {
+          "sourceLogAge": "9.65",
+          "first": 7100,
+          "last": 7289,
+          "rows": 190
+        },
+        {
+          "sourceLogAge": "9.70",
+          "first": 7292,
+          "last": 7477,
+          "rows": 186
+        },
+        {
+          "sourceLogAge": "9.75",
+          "first": 7480,
+          "last": 7664,
+          "rows": 185
+        },
+        {
+          "sourceLogAge": "9.80",
+          "first": 7667,
+          "last": 7850,
+          "rows": 184
+        },
+        {
+          "sourceLogAge": "9.85",
+          "first": 7853,
+          "last": 8036,
+          "rows": 184
+        },
+        {
+          "sourceLogAge": "9.90",
+          "first": 8039,
+          "last": 8216,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "9.95",
+          "first": 8219,
+          "last": 8396,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "10.00",
+          "first": 8399,
+          "last": 8576,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "10.05",
+          "first": 8579,
+          "last": 8743,
+          "rows": 165
+        },
+        {
+          "sourceLogAge": "10.10",
+          "first": 8746,
+          "last": 8911,
+          "rows": 166
+        },
+        {
+          "sourceLogAge": "10.15",
+          "first": 8914,
+          "last": 9074,
+          "rows": 161
+        },
+        {
+          "sourceLogAge": "10.20",
+          "first": 9077,
+          "last": 9234,
+          "rows": 158
+        },
+        {
+          "sourceLogAge": "10.25",
+          "first": 9237,
+          "last": 9391,
+          "rows": 155
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "sourceSHA256": "0735ec400ca8c695aa0137c390a39864b3ee3b8f3c8fc195a58a74b2dab41424",
+      "groups": [
+        {
+          "sourceLogAge": "7.80",
+          "first": 3,
+          "last": 144,
+          "rows": 142
+        },
+        {
+          "sourceLogAge": "7.85",
+          "first": 147,
+          "last": 289,
+          "rows": 143
+        },
+        {
+          "sourceLogAge": "7.90",
+          "first": 292,
+          "last": 433,
+          "rows": 142
+        },
+        {
+          "sourceLogAge": "7.95",
+          "first": 436,
+          "last": 576,
+          "rows": 141
+        },
+        {
+          "sourceLogAge": "8.00",
+          "first": 579,
+          "last": 719,
+          "rows": 141
+        },
+        {
+          "sourceLogAge": "8.05",
+          "first": 722,
+          "last": 860,
+          "rows": 139
+        },
+        {
+          "sourceLogAge": "8.10",
+          "first": 863,
+          "last": 1059,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "8.15",
+          "first": 1062,
+          "last": 1256,
+          "rows": 195
+        },
+        {
+          "sourceLogAge": "8.20",
+          "first": 1259,
+          "last": 1445,
+          "rows": 187
+        },
+        {
+          "sourceLogAge": "8.25",
+          "first": 1448,
+          "last": 1635,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.30",
+          "first": 1638,
+          "last": 1816,
+          "rows": 179
+        },
+        {
+          "sourceLogAge": "8.35",
+          "first": 1819,
+          "last": 1996,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "8.40",
+          "first": 1999,
+          "last": 2174,
+          "rows": 176
+        },
+        {
+          "sourceLogAge": "8.45",
+          "first": 2177,
+          "last": 2353,
+          "rows": 177
+        },
+        {
+          "sourceLogAge": "8.50",
+          "first": 2356,
+          "last": 2532,
+          "rows": 177
+        },
+        {
+          "sourceLogAge": "8.55",
+          "first": 2535,
+          "last": 2713,
+          "rows": 179
+        },
+        {
+          "sourceLogAge": "8.60",
+          "first": 2716,
+          "last": 2894,
+          "rows": 179
+        },
+        {
+          "sourceLogAge": "8.65",
+          "first": 2897,
+          "last": 3095,
+          "rows": 199
+        },
+        {
+          "sourceLogAge": "8.70",
+          "first": 3098,
+          "last": 3299,
+          "rows": 202
+        },
+        {
+          "sourceLogAge": "8.75",
+          "first": 3302,
+          "last": 3503,
+          "rows": 202
+        },
+        {
+          "sourceLogAge": "8.80",
+          "first": 3506,
+          "last": 3709,
+          "rows": 204
+        },
+        {
+          "sourceLogAge": "8.85",
+          "first": 3712,
+          "last": 3915,
+          "rows": 204
+        },
+        {
+          "sourceLogAge": "8.90",
+          "first": 3918,
+          "last": 4122,
+          "rows": 205
+        },
+        {
+          "sourceLogAge": "8.95",
+          "first": 4125,
+          "last": 4332,
+          "rows": 208
+        },
+        {
+          "sourceLogAge": "9.00",
+          "first": 4335,
+          "last": 4539,
+          "rows": 205
+        },
+        {
+          "sourceLogAge": "9.05",
+          "first": 4542,
+          "last": 4761,
+          "rows": 220
+        },
+        {
+          "sourceLogAge": "9.10",
+          "first": 4764,
+          "last": 4991,
+          "rows": 228
+        },
+        {
+          "sourceLogAge": "9.15",
+          "first": 4994,
+          "last": 5211,
+          "rows": 218
+        },
+        {
+          "sourceLogAge": "9.20",
+          "first": 5214,
+          "last": 5419,
+          "rows": 206
+        },
+        {
+          "sourceLogAge": "9.25",
+          "first": 5422,
+          "last": 5631,
+          "rows": 210
+        },
+        {
+          "sourceLogAge": "9.30",
+          "first": 5634,
+          "last": 5840,
+          "rows": 207
+        },
+        {
+          "sourceLogAge": "9.35",
+          "first": 5843,
+          "last": 6044,
+          "rows": 202
+        },
+        {
+          "sourceLogAge": "9.40",
+          "first": 6047,
+          "last": 6239,
+          "rows": 193
+        },
+        {
+          "sourceLogAge": "9.45",
+          "first": 6242,
+          "last": 6437,
+          "rows": 196
+        },
+        {
+          "sourceLogAge": "9.50",
+          "first": 6440,
+          "last": 6625,
+          "rows": 186
+        },
+        {
+          "sourceLogAge": "9.55",
+          "first": 6628,
+          "last": 6815,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "9.60",
+          "first": 6818,
+          "last": 7009,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "9.65",
+          "first": 7012,
+          "last": 7202,
+          "rows": 191
+        },
+        {
+          "sourceLogAge": "9.70",
+          "first": 7205,
+          "last": 7388,
+          "rows": 184
+        },
+        {
+          "sourceLogAge": "9.75",
+          "first": 7391,
+          "last": 7577,
+          "rows": 187
+        },
+        {
+          "sourceLogAge": "9.80",
+          "first": 7580,
+          "last": 7763,
+          "rows": 184
+        },
+        {
+          "sourceLogAge": "9.85",
+          "first": 7766,
+          "last": 7948,
+          "rows": 183
+        },
+        {
+          "sourceLogAge": "9.90",
+          "first": 7951,
+          "last": 8133,
+          "rows": 183
+        },
+        {
+          "sourceLogAge": "9.95",
+          "first": 8136,
+          "last": 8315,
+          "rows": 180
+        },
+        {
+          "sourceLogAge": "10.00",
+          "first": 8318,
+          "last": 8498,
+          "rows": 181
+        },
+        {
+          "sourceLogAge": "10.05",
+          "first": 8501,
+          "last": 8667,
+          "rows": 167
+        },
+        {
+          "sourceLogAge": "10.10",
+          "first": 8670,
+          "last": 8835,
+          "rows": 166
+        },
+        {
+          "sourceLogAge": "10.15",
+          "first": 8838,
+          "last": 9006,
+          "rows": 169
+        },
+        {
+          "sourceLogAge": "10.20",
+          "first": 9009,
+          "last": 9171,
+          "rows": 163
+        },
+        {
+          "sourceLogAge": "10.25",
+          "first": 9174,
+          "last": 9327,
+          "rows": 154
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "sourceSHA256": "4852effe6998873938c09e54d9f1e8426ab9ca72239a1db5c817bf94f0e4dc31",
+      "groups": [
+        {
+          "sourceLogAge": "7.80",
+          "first": 3,
+          "last": 139,
+          "rows": 137
+        },
+        {
+          "sourceLogAge": "7.85",
+          "first": 142,
+          "last": 277,
+          "rows": 136
+        },
+        {
+          "sourceLogAge": "7.90",
+          "first": 280,
+          "last": 411,
+          "rows": 132
+        },
+        {
+          "sourceLogAge": "7.95",
+          "first": 414,
+          "last": 545,
+          "rows": 132
+        },
+        {
+          "sourceLogAge": "8.00",
+          "first": 548,
+          "last": 678,
+          "rows": 131
+        },
+        {
+          "sourceLogAge": "8.05",
+          "first": 681,
+          "last": 808,
+          "rows": 128
+        },
+        {
+          "sourceLogAge": "8.10",
+          "first": 811,
+          "last": 998,
+          "rows": 188
+        },
+        {
+          "sourceLogAge": "8.15",
+          "first": 1001,
+          "last": 1187,
+          "rows": 187
+        },
+        {
+          "sourceLogAge": "8.20",
+          "first": 1190,
+          "last": 1370,
+          "rows": 181
+        },
+        {
+          "sourceLogAge": "8.25",
+          "first": 1373,
+          "last": 1547,
+          "rows": 175
+        },
+        {
+          "sourceLogAge": "8.30",
+          "first": 1550,
+          "last": 1725,
+          "rows": 176
+        },
+        {
+          "sourceLogAge": "8.35",
+          "first": 1728,
+          "last": 1909,
+          "rows": 182
+        },
+        {
+          "sourceLogAge": "8.40",
+          "first": 1912,
+          "last": 2095,
+          "rows": 184
+        },
+        {
+          "sourceLogAge": "8.45",
+          "first": 2098,
+          "last": 2281,
+          "rows": 184
+        },
+        {
+          "sourceLogAge": "8.50",
+          "first": 2284,
+          "last": 2469,
+          "rows": 186
+        },
+        {
+          "sourceLogAge": "8.55",
+          "first": 2472,
+          "last": 2656,
+          "rows": 185
+        },
+        {
+          "sourceLogAge": "8.60",
+          "first": 2659,
+          "last": 2845,
+          "rows": 187
+        },
+        {
+          "sourceLogAge": "8.65",
+          "first": 2848,
+          "last": 3036,
+          "rows": 189
+        },
+        {
+          "sourceLogAge": "8.70",
+          "first": 3039,
+          "last": 3235,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "8.75",
+          "first": 3238,
+          "last": 3435,
+          "rows": 198
+        },
+        {
+          "sourceLogAge": "8.80",
+          "first": 3438,
+          "last": 3634,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "8.85",
+          "first": 3637,
+          "last": 3833,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "8.90",
+          "first": 3836,
+          "last": 4032,
+          "rows": 197
+        },
+        {
+          "sourceLogAge": "8.95",
+          "first": 4035,
+          "last": 4234,
+          "rows": 200
+        },
+        {
+          "sourceLogAge": "9.00",
+          "first": 4237,
+          "last": 4439,
+          "rows": 203
+        },
+        {
+          "sourceLogAge": "9.05",
+          "first": 4442,
+          "last": 4653,
+          "rows": 212
+        },
+        {
+          "sourceLogAge": "9.10",
+          "first": 4656,
+          "last": 4875,
+          "rows": 220
+        },
+        {
+          "sourceLogAge": "9.15",
+          "first": 4878,
+          "last": 5107,
+          "rows": 230
+        },
+        {
+          "sourceLogAge": "9.20",
+          "first": 5110,
+          "last": 5326,
+          "rows": 217
+        },
+        {
+          "sourceLogAge": "9.25",
+          "first": 5329,
+          "last": 5544,
+          "rows": 216
+        },
+        {
+          "sourceLogAge": "9.30",
+          "first": 5547,
+          "last": 5750,
+          "rows": 204
+        },
+        {
+          "sourceLogAge": "9.35",
+          "first": 5753,
+          "last": 5947,
+          "rows": 195
+        },
+        {
+          "sourceLogAge": "9.40",
+          "first": 5950,
+          "last": 6144,
+          "rows": 195
+        },
+        {
+          "sourceLogAge": "9.45",
+          "first": 6147,
+          "last": 6347,
+          "rows": 201
+        },
+        {
+          "sourceLogAge": "9.50",
+          "first": 6350,
+          "last": 6544,
+          "rows": 195
+        },
+        {
+          "sourceLogAge": "9.55",
+          "first": 6547,
+          "last": 6740,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "9.60",
+          "first": 6743,
+          "last": 6936,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "9.65",
+          "first": 6939,
+          "last": 7130,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "9.70",
+          "first": 7133,
+          "last": 7309,
+          "rows": 177
+        },
+        {
+          "sourceLogAge": "9.75",
+          "first": 7312,
+          "last": 7485,
+          "rows": 174
+        },
+        {
+          "sourceLogAge": "9.80",
+          "first": 7488,
+          "last": 7663,
+          "rows": 176
+        },
+        {
+          "sourceLogAge": "9.85",
+          "first": 7666,
+          "last": 7842,
+          "rows": 177
+        },
+        {
+          "sourceLogAge": "9.90",
+          "first": 7845,
+          "last": 8014,
+          "rows": 170
+        },
+        {
+          "sourceLogAge": "9.95",
+          "first": 8017,
+          "last": 8183,
+          "rows": 167
+        },
+        {
+          "sourceLogAge": "10.00",
+          "first": 8186,
+          "last": 8354,
+          "rows": 169
+        },
+        {
+          "sourceLogAge": "10.05",
+          "first": 8357,
+          "last": 8521,
+          "rows": 165
+        },
+        {
+          "sourceLogAge": "10.10",
+          "first": 8524,
+          "last": 8688,
+          "rows": 165
+        },
+        {
+          "sourceLogAge": "10.15",
+          "first": 8691,
+          "last": 8848,
+          "rows": 158
+        },
+        {
+          "sourceLogAge": "10.20",
+          "first": 8851,
+          "last": 9006,
+          "rows": 156
+        },
+        {
+          "sourceLogAge": "10.25",
+          "first": 9009,
+          "last": 9164,
+          "rows": 156
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "sourceSHA256": "773ea00fe961609f2bf5ec2fdb251e01987677a6da247675a7b92f45aa136554",
+      "groups": [
+        {
+          "sourceLogAge": "7.80",
+          "first": 3,
+          "last": 123,
+          "rows": 121
+        },
+        {
+          "sourceLogAge": "7.85",
+          "first": 126,
+          "last": 248,
+          "rows": 123
+        },
+        {
+          "sourceLogAge": "7.90",
+          "first": 251,
+          "last": 377,
+          "rows": 127
+        },
+        {
+          "sourceLogAge": "7.95",
+          "first": 380,
+          "last": 506,
+          "rows": 127
+        },
+        {
+          "sourceLogAge": "8.00",
+          "first": 509,
+          "last": 637,
+          "rows": 129
+        },
+        {
+          "sourceLogAge": "8.05",
+          "first": 640,
+          "last": 771,
+          "rows": 132
+        },
+        {
+          "sourceLogAge": "8.10",
+          "first": 774,
+          "last": 959,
+          "rows": 186
+        },
+        {
+          "sourceLogAge": "8.15",
+          "first": 962,
+          "last": 1143,
+          "rows": 182
+        },
+        {
+          "sourceLogAge": "8.20",
+          "first": 1146,
+          "last": 1323,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "8.25",
+          "first": 1326,
+          "last": 1505,
+          "rows": 180
+        },
+        {
+          "sourceLogAge": "8.30",
+          "first": 1508,
+          "last": 1685,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "8.35",
+          "first": 1688,
+          "last": 1862,
+          "rows": 175
+        },
+        {
+          "sourceLogAge": "8.40",
+          "first": 1865,
+          "last": 2038,
+          "rows": 174
+        },
+        {
+          "sourceLogAge": "8.45",
+          "first": 2041,
+          "last": 2215,
+          "rows": 175
+        },
+        {
+          "sourceLogAge": "8.50",
+          "first": 2218,
+          "last": 2399,
+          "rows": 182
+        },
+        {
+          "sourceLogAge": "8.55",
+          "first": 2402,
+          "last": 2582,
+          "rows": 181
+        },
+        {
+          "sourceLogAge": "8.60",
+          "first": 2585,
+          "last": 2766,
+          "rows": 182
+        },
+        {
+          "sourceLogAge": "8.65",
+          "first": 2769,
+          "last": 2951,
+          "rows": 183
+        },
+        {
+          "sourceLogAge": "8.70",
+          "first": 2954,
+          "last": 3145,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "8.75",
+          "first": 3148,
+          "last": 3338,
+          "rows": 191
+        },
+        {
+          "sourceLogAge": "8.80",
+          "first": 3341,
+          "last": 3534,
+          "rows": 194
+        },
+        {
+          "sourceLogAge": "8.85",
+          "first": 3537,
+          "last": 3728,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "8.90",
+          "first": 3731,
+          "last": 3922,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "8.95",
+          "first": 3925,
+          "last": 4122,
+          "rows": 198
+        },
+        {
+          "sourceLogAge": "9.00",
+          "first": 4125,
+          "last": 4320,
+          "rows": 196
+        },
+        {
+          "sourceLogAge": "9.05",
+          "first": 4323,
+          "last": 4518,
+          "rows": 196
+        },
+        {
+          "sourceLogAge": "9.10",
+          "first": 4521,
+          "last": 4722,
+          "rows": 202
+        },
+        {
+          "sourceLogAge": "9.15",
+          "first": 4725,
+          "last": 4942,
+          "rows": 218
+        },
+        {
+          "sourceLogAge": "9.20",
+          "first": 4945,
+          "last": 5156,
+          "rows": 212
+        },
+        {
+          "sourceLogAge": "9.25",
+          "first": 5159,
+          "last": 5363,
+          "rows": 205
+        },
+        {
+          "sourceLogAge": "9.30",
+          "first": 5366,
+          "last": 5567,
+          "rows": 202
+        },
+        {
+          "sourceLogAge": "9.35",
+          "first": 5570,
+          "last": 5770,
+          "rows": 201
+        },
+        {
+          "sourceLogAge": "9.40",
+          "first": 5773,
+          "last": 5971,
+          "rows": 199
+        },
+        {
+          "sourceLogAge": "9.45",
+          "first": 5974,
+          "last": 6165,
+          "rows": 192
+        },
+        {
+          "sourceLogAge": "9.50",
+          "first": 6168,
+          "last": 6363,
+          "rows": 196
+        },
+        {
+          "sourceLogAge": "9.55",
+          "first": 6366,
+          "last": 6558,
+          "rows": 193
+        },
+        {
+          "sourceLogAge": "9.60",
+          "first": 6561,
+          "last": 6746,
+          "rows": 186
+        },
+        {
+          "sourceLogAge": "9.65",
+          "first": 6749,
+          "last": 6930,
+          "rows": 182
+        },
+        {
+          "sourceLogAge": "9.70",
+          "first": 6933,
+          "last": 7109,
+          "rows": 177
+        },
+        {
+          "sourceLogAge": "9.75",
+          "first": 7112,
+          "last": 7289,
+          "rows": 178
+        },
+        {
+          "sourceLogAge": "9.80",
+          "first": 7292,
+          "last": 7457,
+          "rows": 166
+        },
+        {
+          "sourceLogAge": "9.85",
+          "first": 7460,
+          "last": 7629,
+          "rows": 170
+        },
+        {
+          "sourceLogAge": "9.90",
+          "first": 7632,
+          "last": 7787,
+          "rows": 156
+        },
+        {
+          "sourceLogAge": "9.95",
+          "first": 7790,
+          "last": 7943,
+          "rows": 154
+        },
+        {
+          "sourceLogAge": "10.00",
+          "first": 7946,
+          "last": 8096,
+          "rows": 151
+        },
+        {
+          "sourceLogAge": "10.05",
+          "first": 8099,
+          "last": 8249,
+          "rows": 151
+        },
+        {
+          "sourceLogAge": "10.10",
+          "first": 8252,
+          "last": 8403,
+          "rows": 152
+        },
+        {
+          "sourceLogAge": "10.15",
+          "first": 8406,
+          "last": 8555,
+          "rows": 150
+        },
+        {
+          "sourceLogAge": "10.20",
+          "first": 8558,
+          "last": 8705,
+          "rows": 148
+        },
+        {
+          "sourceLogAge": "10.25",
+          "first": 8708,
+          "last": 8855,
+          "rows": 148
+        }
+      ]
+    }
+  ],
+  "zamsWindow": {
+    "procedure": "0x55dd34..0x55de00",
+    "trace": [
+      "0x55dd3f: k=1",
+      "0x55dd47..0x55dd5d: increment until color<=table[k].BminusV or k=34",
+      "0x55dd5f..0x55dd68: base=max(0,k-2)",
+      "0x55dd70..0x55dd76: decrement base until base+4<=34"
+    ],
+    "discriminatingCase": {
+      "color": 0.62,
+      "upperBracket": 21,
+      "window": 19,
+      "alternativeLowerWindow": 18
+    },
+    "scope": "Static address interpretation, not original execution. Fraction Lagrange independently checks interpolation arithmetic, not selection recovery."
+  },
+  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pleiades-isochrone-recovery/"
+}

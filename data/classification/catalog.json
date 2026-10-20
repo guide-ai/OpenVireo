@@ -1,0 +1,953 @@
+{
+  "datasetId": "VIREO-MS-LUM-25-v2",
+  "fingerprint": "ed75373f7f8e02129ab115470e56c2e5159db500f0fa3ee5babfc1d9e74c00ce",
+  "schema": 2,
+  "atlasSha256": "2042ad2e007fbf090bebbd96e04931412f9dd907e9b822c2d058bf29bca8aaff",
+  "practiceListSha256": "a1a869ba1dcd71406b435ed4432d6c440adcaefefd0ee9d9f45d9dc49280fe70",
+  "lineListSha256": "c3c4eb3171ba2b8f35c5248fc28a084ec49f7abfe18918df89d6285c8369b6c5",
+  "standards": [
+    {
+      "id": "s1",
+      "label": "O5 V",
+      "file": "A0000001.SP",
+      "url": "/original/classification/A0000001.SP",
+      "sha256": "6311f2dab943fd9a790f8be36f50900661e1ff3224528c0a6391f67c2310e6f0",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s2",
+      "label": "B0 V",
+      "file": "A0000012.SP",
+      "url": "/original/classification/A0000012.SP",
+      "sha256": "c5de0192331eb777190c34d0168a91fab281f7069f1442ddad1388a195abb160",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s3",
+      "label": "B6 V",
+      "file": "A0000017.SP",
+      "url": "/original/classification/A0000017.SP",
+      "sha256": "efe769a8c81ec029f0aea41acfdc09417aec06301aaea9a819290d5187efbb6e",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s4",
+      "label": "A1 V",
+      "file": "A0000019.SP",
+      "url": "/original/classification/A0000019.SP",
+      "sha256": "b04ce24eb2b61ede4504d5d62b13b69150bc1aef12ebd70c838711738c6423f8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s5",
+      "label": "A5 V",
+      "file": "A0000025.SP",
+      "url": "/original/classification/A0000025.SP",
+      "sha256": "3df49866bfabd9ee5d3a8109f1f8e65095d24f39427c0adb61e7f99e2e2c76c0",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s6",
+      "label": "F0 V",
+      "file": "A0000031.SP",
+      "url": "/original/classification/A0000031.SP",
+      "sha256": "a680b8dc806458110bed4db3d61a8d72caf53a37fc9fac94c0f7edd57fe7b93b",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s7",
+      "label": "F5 V",
+      "file": "A0000034.SP",
+      "url": "/original/classification/A0000034.SP",
+      "sha256": "c04874efa960b10df3931c6b81899f8607387e1d722fc4c69178d70117672a9d",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s8",
+      "label": "G0 V",
+      "file": "A0000043.SP",
+      "url": "/original/classification/A0000043.SP",
+      "sha256": "1feab8938f6f92918ee06384f50e3aa8dd5b6b9c92d43e5bd6d084094b63a00d",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s9",
+      "label": "G6 V",
+      "file": "A0000048.SP",
+      "url": "/original/classification/A0000048.SP",
+      "sha256": "e84d7fe32c8111849c07dcc26a17d8b626de809dbd062de40bb6ab5f00391d9a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s10",
+      "label": "K0 V",
+      "file": "A0000052.SP",
+      "url": "/original/classification/A0000052.SP",
+      "sha256": "3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s11",
+      "label": "K5 V",
+      "file": "A0000054.SP",
+      "url": "/original/classification/A0000054.SP",
+      "sha256": "0577be73298b29e5dcc347387d6fb18175825181c09e98b23c8e5d879d6f3419",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s12",
+      "label": "M0 V",
+      "file": "A0000055.SP",
+      "url": "/original/classification/A0000055.SP",
+      "sha256": "3ef2cbdacfb0aacb3c07e9c0e95bf69198a1653722bec4cb0bb66bad10856011",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "s13",
+      "label": "M5 V",
+      "file": "A0000057.SP",
+      "url": "/original/classification/A0000057.SP",
+      "sha256": "7d0ef80a736d2b6afaa888c1981df0608368c78006c445d7c8ff473d658d97c8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    }
+  ],
+  "practice": [
+    {
+      "id": "u1",
+      "label": "HD 124320",
+      "file": "A0000021.SP",
+      "url": "/original/classification/A0000021.SP",
+      "sha256": "0bdf4fa2f810014e38f8f0a8a1d9a3685ab4fe570d3ebcd69c36ed7cc19d9d3a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u2",
+      "label": "HD 37767",
+      "file": "A0000014.SP",
+      "url": "/original/classification/A0000014.SP",
+      "sha256": "6a5ee6362deab2059d100789c4fd0c49372b2360f898c469932b2d00b0dd5328",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u3",
+      "label": "HD 35619",
+      "file": "A0000004.SP",
+      "url": "/original/classification/A0000004.SP",
+      "sha256": "f501cd73bfc43a15aeb27eea672ac3c69bdb5830b7a48b475f05f4ec046749be",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u4",
+      "label": "HD 23733",
+      "file": "A0000030.SP",
+      "url": "/original/classification/A0000030.SP",
+      "sha256": "7c631037192d1c4e5713f359b3b65af210af0efcc0ceb1411d4b034f8cf631f8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u5",
+      "label": "O 1015",
+      "file": "A0000018.SP",
+      "url": "/original/classification/A0000018.SP",
+      "sha256": "ee65da16e6884d93af66df7c6285664c9dddde3cf1e747c4638af6a36711698a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u6",
+      "label": "HD 24189",
+      "file": "A0000036.SP",
+      "url": "/original/classification/A0000036.SP",
+      "sha256": "e0b4c0a245af2b04659854ab809b9b9abea8699422aa918d3262e05c4ca4631f",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u7",
+      "label": "HD 107399",
+      "file": "A0000042.SP",
+      "url": "/original/classification/A0000042.SP",
+      "sha256": "7f919cfc5f7a239862adb05a5e25038acef8c96badcf767bf51c3bb805ebb880",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u8",
+      "label": "HD 240344",
+      "file": "A0000016.SP",
+      "url": "/original/classification/A0000016.SP",
+      "sha256": "df6204701d3e0bce322b5b3bd993e98992a3a390d6eb7ec2f0d3bb32287b450d",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u9",
+      "label": "HD 17647",
+      "file": "A0000044.SP",
+      "url": "/original/classification/A0000044.SP",
+      "sha256": "6d49365b7b52266afd3477df21f30c123d89f5d1cf0771f2c6264487c37800c4",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u10",
+      "label": "BD+63 137",
+      "file": "A0000056.SP",
+      "url": "/original/classification/A0000056.SP",
+      "sha256": "41214387eb8ff27c65bd04e6cad5f8938a5534d99809d5b24b0409ef0d3a2f1f",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u11",
+      "label": "HD 66171",
+      "file": "A0000045.SP",
+      "url": "/original/classification/A0000045.SP",
+      "sha256": "65d6501e6e715a86861409703d720f01bd6fe8000dc68fe252f6f5111998a5d7",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u12",
+      "label": "HZ 948",
+      "file": "A0000032.SP",
+      "url": "/original/classification/A0000032.SP",
+      "sha256": "4e12734393d94b906fcbd3035b46f209f22de07ebc5df9a9aaddba2fb9ea4bd6",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u13",
+      "label": "HD 35215",
+      "file": "A0000013.SP",
+      "url": "/original/classification/A0000013.SP",
+      "sha256": "5960f7700c327252a6215476fd62635a57b6deca7a2d40010f362f262e744298",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u14",
+      "label": "Feige 40",
+      "file": "A0000015.SP",
+      "url": "/original/classification/A0000015.SP",
+      "sha256": "cc4e0ec889f8829081534b1852e348ce5486bf5c8aa94e13e8f0cfda139ed4af",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u15",
+      "label": "Feige 41",
+      "file": "A0000020.SP",
+      "url": "/original/classification/A0000020.SP",
+      "sha256": "2ffb360fa1b0b3cd41e59192e2200b4462f6905e92665b2943bbad9298dcc19c",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u16",
+      "label": "HD 6111",
+      "file": "A0000040.SP",
+      "url": "/original/classification/A0000040.SP",
+      "sha256": "108987ce781ef6cf91d49702c407fefd206a2d3f309b46bc8f15e531cf06ca25",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u17",
+      "label": "HD 23863",
+      "file": "A0000027.SP",
+      "url": "/original/classification/A0000027.SP",
+      "sha256": "eac85c6e1140ca5b91e1e77e7b188d0e14d7a1121550660b5f3c83ee1f4e1ffc",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u18",
+      "label": "HD 221741",
+      "file": "A0000024.SP",
+      "url": "/original/classification/A0000024.SP",
+      "sha256": "4e108b1ed6db32aac6c280b34b39d097c1089f56db593cb2c67801e6459980d8",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u19",
+      "label": "HD 242936",
+      "file": "A0000006.SP",
+      "url": "/original/classification/A0000006.SP",
+      "sha256": "7265bfb181f27e8b8a8b7384725c662f2dc9f8d2c866fbb7aebb3774dd53cf97",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u20",
+      "label": "HD 5351",
+      "file": "A0000053.SP",
+      "url": "/original/classification/A0000053.SP",
+      "sha256": "0767e98bb8d9ddd547f03617f4df519ade729b3a99a8434f6864b74d1a6160af",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u21",
+      "label": "SAO 81292",
+      "file": "A0000155.SP",
+      "url": "/original/classification/A0000155.SP",
+      "sha256": "f5f30c1b90476314aaad603ea9e21003d1fa5b0b63c047cc541bc4941cbe6a4c",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u22",
+      "label": "HD 27685",
+      "file": "A0000049.SP",
+      "url": "/original/classification/A0000049.SP",
+      "sha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u23",
+      "label": "HD 21619",
+      "file": "A0000026.SP",
+      "url": "/original/classification/A0000026.SP",
+      "sha256": "e0862f86857313a3b8ecd240d9c7bf134b526481fde6e5c885299c7ae8948dd2",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u24",
+      "label": "HD 23511",
+      "file": "A0000033.SP",
+      "url": "/original/classification/A0000033.SP",
+      "sha256": "0026b06905657a02d03084182076ec3de806c0d6a8005dc850a767a072ba350a",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    },
+    {
+      "id": "u25",
+      "label": "HD 158659",
+      "file": "A0000011.SP",
+      "url": "/original/classification/A0000011.SP",
+      "sha256": "0b68a7d9502bdd794c03b9bc35023143abf563d52851325898f2e522e2bca006",
+      "rows": 2799,
+      "minimum": 3510.0,
+      "maximum": 7427.2
+    }
+  ],
+  "lines": [
+    {
+      "wavelength": 3933.682,
+      "label": "Ca II (K line)"
+    },
+    {
+      "wavelength": 3964.729,
+      "label": "He I"
+    },
+    {
+      "wavelength": 3968.492,
+      "label": "Ca II (H line)"
+    },
+    {
+      "wavelength": 3970.072,
+      "label": "H I (H Epsilon)"
+    },
+    {
+      "wavelength": 4026.191,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4030.76,
+      "label": "Mn I"
+    },
+    {
+      "wavelength": 4045.825,
+      "label": "Fe I"
+    },
+    {
+      "wavelength": 4068.0,
+      "label": "C III"
+    },
+    {
+      "wavelength": 4073.0,
+      "label": "O II"
+    },
+    {
+      "wavelength": 4088.85,
+      "label": "Si IV"
+    },
+    {
+      "wavelength": 4097.33,
+      "label": "N III"
+    },
+    {
+      "wavelength": 4100.04,
+      "label": "He II"
+    },
+    {
+      "wavelength": 4101.748,
+      "label": "H I (H Delta)"
+    },
+    {
+      "wavelength": 4120.82,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4130.89,
+      "label": "Si II"
+    },
+    {
+      "wavelength": 4143.76,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4143.878,
+      "label": "Fe I"
+    },
+    {
+      "wavelength": 4226.74,
+      "label": "Ca I"
+    },
+    {
+      "wavelength": 4300.0,
+      "label": "CH & Metals (G Band)"
+    },
+    {
+      "wavelength": 4317.14,
+      "label": "O II"
+    },
+    {
+      "wavelength": 4340.475,
+      "label": "H I (H Gamma)"
+    },
+    {
+      "wavelength": 4383.557,
+      "label": "Fe I"
+    },
+    {
+      "wavelength": 4387.929,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4471.479,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4471.68,
+      "label": "He I"
+    },
+    {
+      "wavelength": 4481.2,
+      "label": "Mg II"
+    }
+  ],
+  "atlases": [
+    {
+      "id": "main",
+      "label": "Main Sequence",
+      "file": "MS.ATL",
+      "sha256": "2042ad2e007fbf090bebbd96e04931412f9dd907e9b822c2d058bf29bca8aaff",
+      "kind": "main-sequence",
+      "standards": [
+        {
+          "id": "s1",
+          "label": "O5 V",
+          "file": "A0000001.SP",
+          "url": "/original/classification/A0000001.SP",
+          "sha256": "6311f2dab943fd9a790f8be36f50900661e1ff3224528c0a6391f67c2310e6f0",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s2",
+          "label": "B0 V",
+          "file": "A0000012.SP",
+          "url": "/original/classification/A0000012.SP",
+          "sha256": "c5de0192331eb777190c34d0168a91fab281f7069f1442ddad1388a195abb160",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s3",
+          "label": "B6 V",
+          "file": "A0000017.SP",
+          "url": "/original/classification/A0000017.SP",
+          "sha256": "efe769a8c81ec029f0aea41acfdc09417aec06301aaea9a819290d5187efbb6e",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s4",
+          "label": "A1 V",
+          "file": "A0000019.SP",
+          "url": "/original/classification/A0000019.SP",
+          "sha256": "b04ce24eb2b61ede4504d5d62b13b69150bc1aef12ebd70c838711738c6423f8",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s5",
+          "label": "A5 V",
+          "file": "A0000025.SP",
+          "url": "/original/classification/A0000025.SP",
+          "sha256": "3df49866bfabd9ee5d3a8109f1f8e65095d24f39427c0adb61e7f99e2e2c76c0",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s6",
+          "label": "F0 V",
+          "file": "A0000031.SP",
+          "url": "/original/classification/A0000031.SP",
+          "sha256": "a680b8dc806458110bed4db3d61a8d72caf53a37fc9fac94c0f7edd57fe7b93b",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s7",
+          "label": "F5 V",
+          "file": "A0000034.SP",
+          "url": "/original/classification/A0000034.SP",
+          "sha256": "c04874efa960b10df3931c6b81899f8607387e1d722fc4c69178d70117672a9d",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s8",
+          "label": "G0 V",
+          "file": "A0000043.SP",
+          "url": "/original/classification/A0000043.SP",
+          "sha256": "1feab8938f6f92918ee06384f50e3aa8dd5b6b9c92d43e5bd6d084094b63a00d",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s9",
+          "label": "G6 V",
+          "file": "A0000048.SP",
+          "url": "/original/classification/A0000048.SP",
+          "sha256": "e84d7fe32c8111849c07dcc26a17d8b626de809dbd062de40bb6ab5f00391d9a",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s10",
+          "label": "K0 V",
+          "file": "A0000052.SP",
+          "url": "/original/classification/A0000052.SP",
+          "sha256": "3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s11",
+          "label": "K5 V",
+          "file": "A0000054.SP",
+          "url": "/original/classification/A0000054.SP",
+          "sha256": "0577be73298b29e5dcc347387d6fb18175825181c09e98b23c8e5d879d6f3419",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s12",
+          "label": "M0 V",
+          "file": "A0000055.SP",
+          "url": "/original/classification/A0000055.SP",
+          "sha256": "3ef2cbdacfb0aacb3c07e9c0e95bf69198a1653722bec4cb0bb66bad10856011",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "s13",
+          "label": "M5 V",
+          "file": "A0000057.SP",
+          "url": "/original/classification/A0000057.SP",
+          "sha256": "7d0ef80a736d2b6afaa888c1981df0608368c78006c445d7c8ff473d658d97c8",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    },
+    {
+      "id": "o8",
+      "label": "Luminosity near O8",
+      "file": "O8_LUM.ATL",
+      "sha256": "00b591b025483f51b0070d0454a41a1b3430fc276036ba1740787e035f61489a",
+      "kind": "luminosity",
+      "standards": [
+        {
+          "id": "o8-s1",
+          "label": "O8 I",
+          "file": "A0000115.SP",
+          "url": "/original/classification/A0000115.SP",
+          "sha256": "f62a189b6c195133964972e9bb196c8d5eb743213703b9dc2332dbf46d391c59",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "o8-s2",
+          "label": "O8.5 III",
+          "file": "A0000064.SP",
+          "url": "/original/classification/A0000064.SP",
+          "sha256": "f4ddbb2fd7cdeea1d8d658a8603c7ac66571f7fa3d86e40df09be45f536d99fe",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "o8-s3",
+          "label": "O8 V",
+          "file": "A0000007.SP",
+          "url": "/original/classification/A0000007.SP",
+          "sha256": "5b8236331aa87a9145845f25e9b3ffbb5d333b665f6f47b7baa66b766bce8769",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "label": "Luminosity near B2",
+      "file": "B2_LUM.ATL",
+      "sha256": "311e57d0a70311ab0557bf3a0b4a2dbe9a08d11168f45a2d7c7d29018d2633cd",
+      "kind": "luminosity",
+      "standards": [
+        {
+          "id": "b2-s1",
+          "label": "B2 I",
+          "file": "A0000119.SP",
+          "url": "/original/classification/A0000119.SP",
+          "sha256": "0bff0de62c825769c6b22901ecbda6c964ebf587a5422ab07cd1269a1c73dac9",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "b2-s2",
+          "label": "B2 II",
+          "file": "A0000106.SP",
+          "url": "/original/classification/A0000106.SP",
+          "sha256": "8d1c5ff740077e7c42ab0aaa705c176212a8ea84974156a3224093a3e0ef82ac",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "b2-s3",
+          "label": "B2 III",
+          "file": "A0000067.SP",
+          "url": "/original/classification/A0000067.SP",
+          "sha256": "4428517e816e9b8a2c0a362a2c1cfc7ee7cc829311dd4f70bd3bb97841af4755",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "b2-s4",
+          "label": "B1.5 V",
+          "file": "A0000013.SP",
+          "url": "/original/classification/A0000013.SP",
+          "sha256": "5960f7700c327252a6215476fd62635a57b6deca7a2d40010f362f262e744298",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    },
+    {
+      "id": "a3",
+      "label": "Luminosity at A3",
+      "file": "A3_LUM.ATL",
+      "sha256": "ee8c447a79702eab0f36057f64ec20facc1d0c4f13b8eac027a629b1755cf362",
+      "kind": "luminosity",
+      "standards": [
+        {
+          "id": "a3-s1",
+          "label": "A3 I",
+          "file": "A0000129.SP",
+          "url": "/original/classification/A0000129.SP",
+          "sha256": "e0ed186b268f634ebc7a979088584142e99732b2f358c55cf871646bbcf20694",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "a3-s2",
+          "label": "A3 III",
+          "file": "A0000077.SP",
+          "url": "/original/classification/A0000077.SP",
+          "sha256": "f781f314d52bd414c1e2e4de0d961884386456b0e9aa486c866168c72edaab98",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "a3-s3",
+          "label": "A3 V",
+          "file": "A0000024.SP",
+          "url": "/original/classification/A0000024.SP",
+          "sha256": "4e108b1ed6db32aac6c280b34b39d097c1089f56db593cb2c67801e6459980d8",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    },
+    {
+      "id": "f5",
+      "label": "Luminosity at F5",
+      "file": "F5_LUM.ATL",
+      "sha256": "4b7b4200941ff7efa7cbf816aa25ac51d173431009210db5da75f1f618f8552d",
+      "kind": "luminosity",
+      "standards": [
+        {
+          "id": "f5-s1",
+          "label": "F5 I",
+          "file": "A0000137.SP",
+          "url": "/original/classification/A0000137.SP",
+          "sha256": "0131393c099fbbf6e437f316953fcdbe9ea1fc2cc9f096375e0453213c142bc3",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "f5-s2",
+          "label": "F5 II",
+          "file": "A0000108.SP",
+          "url": "/original/classification/A0000108.SP",
+          "sha256": "4ac005400174e9359ff1bac94b07714f2e22fe9c7a07325df0752e32cfe9ef52",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "f5-s3",
+          "label": "F5 III",
+          "file": "A0000082.SP",
+          "url": "/original/classification/A0000082.SP",
+          "sha256": "33ee96f008d6faa52112ea52230ff03cda2a5729bb12d3045ae65505d99546b4",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "f5-s4",
+          "label": "F5 V",
+          "file": "A0000034.SP",
+          "url": "/original/classification/A0000034.SP",
+          "sha256": "c04874efa960b10df3931c6b81899f8607387e1d722fc4c69178d70117672a9d",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    },
+    {
+      "id": "g2",
+      "label": "Luminosity at G2",
+      "file": "G2_LUM.ATL",
+      "sha256": "b07ad806b05efd2a06cca2a3cc7449096fc6164db80f5897a0081b7550c4d539",
+      "kind": "luminosity",
+      "standards": [
+        {
+          "id": "g2-s1",
+          "label": "G2 I",
+          "file": "A0000143.SP",
+          "url": "/original/classification/A0000143.SP",
+          "sha256": "52f142d849d5b8e069c87592dd71db03c9bf34dff23c96f5f3dbb756c40a020d",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "g2-s2",
+          "label": "G2 III",
+          "file": "A0000088.SP",
+          "url": "/original/classification/A0000088.SP",
+          "sha256": "b2f13a503d2b45d5f5f07004fc4b1c07a2402419a567b7aa811dfaddcd56ccc5",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "g2-s3",
+          "label": "G2 IV",
+          "file": "A0000060.SP",
+          "url": "/original/classification/A0000060.SP",
+          "sha256": "b0370205f94133550ce41f5e86430851ad3795658610e89702c1245ea77a35ae",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "g2-s4",
+          "label": "G2 V",
+          "file": "A0000045.SP",
+          "url": "/original/classification/A0000045.SP",
+          "sha256": "65d6501e6e715a86861409703d720f01bd6fe8000dc68fe252f6f5111998a5d7",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    },
+    {
+      "id": "k0",
+      "label": "Luminosity at K0",
+      "file": "K0_LUM.ATL",
+      "sha256": "55239c11bef829c911dacb810efd41ca6cea6aa9cc325b4b8561d97a435bbf57",
+      "kind": "luminosity",
+      "standards": [
+        {
+          "id": "k0-s1",
+          "label": "K0 I",
+          "file": "A0000146.SP",
+          "url": "/original/classification/A0000146.SP",
+          "sha256": "a564082b77910d4669e583d978b522506850dc540d9cd2273e0107cb374c0fc6",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "k0-s2",
+          "label": "K0 III",
+          "file": "A0000097.SP",
+          "url": "/original/classification/A0000097.SP",
+          "sha256": "c977ba8778bafea3150a7da69b6670d86c1e92f29df77101d0e42fc607b61f5a",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "k0-s3",
+          "label": "K0 V",
+          "file": "A0000052.SP",
+          "url": "/original/classification/A0000052.SP",
+          "sha256": "3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "label": "Luminosity near M2",
+      "file": "M2_LUM.ATL",
+      "sha256": "621061c595b3d3f96513895f51dc62fbfdd09d5b9fd2faf8c56b4c7697e4abef",
+      "kind": "luminosity",
+      "standards": [
+        {
+          "id": "m2-s1",
+          "label": "M2 I",
+          "file": "A0000152.SP",
+          "url": "/original/classification/A0000152.SP",
+          "sha256": "406143e087518eb2faae5ac9f03b4daa282feb8edd88f928f24d3c5170b224cb",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "m2-s2",
+          "label": "M3 II",
+          "file": "A0000112.SP",
+          "url": "/original/classification/A0000112.SP",
+          "sha256": "f1d44e527637c035148615020ad37586fcc04d54fab510d2d8bf92cc5a7e1134",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "m2-s3",
+          "label": "M3 III",
+          "file": "A0000103.SP",
+          "url": "/original/classification/A0000103.SP",
+          "sha256": "2dadd3939bb0066a42bd534a78149f301f1fa7c32f8797cf1c0919a0e6c29dd6",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        },
+        {
+          "id": "m2-s4",
+          "label": "M1 V",
+          "file": "A0000056.SP",
+          "url": "/original/classification/A0000056.SP",
+          "sha256": "41214387eb8ff27c65bd04e6cad5f8938a5534d99809d5b24b0409ef0d3a2f1f",
+          "rows": 2799,
+          "minimum": 3510.0,
+          "maximum": 7427.2
+        }
+      ]
+    }
+  ],
+  "atlasIndexSha256": "4c1b7983cb552ce13cf3e62340a104491fe0248b78ea391c0b2299e4944bd4a9"
+}

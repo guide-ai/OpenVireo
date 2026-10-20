@@ -1,0 +1,354 @@
+{
+  "schema": 1,
+  "kind": "static workbook samples and labelled synthetic mathematics; not new observations",
+  "workbookSHA256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed",
+  "distances": [
+    {
+      "label": "UM-I - 1",
+      "kind": "shipped worksheet input",
+      "apparentV": 15.6,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.3199999999999999289457264239899814128875732421875",
+      "parsecs": "208929613.085403914129560445784949610710886914160225447721302477665269866651779434054540244",
+      "megaparsecs": "208.929613085403914129560445784949610710886914160225447721302477665269866651779434054540244"
+    },
+    {
+      "label": "UM-I - 2",
+      "kind": "shipped worksheet input",
+      "apparentV": 15.8,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.360000000000000142108547152020037174224853515625",
+      "parsecs": "229086765.276777379533497664865806545174622473635966691557143977697750975699771730160207948",
+      "megaparsecs": "229.086765276777379533497664865806545174622473635966691557143977697750975699771730160207948"
+    },
+    {
+      "label": "UM-I - 3",
+      "kind": "shipped worksheet input",
+      "apparentV": 15.4,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.2800000000000000710542735760100185871124267578125",
+      "parsecs": "190546071.796324749443760526597567017544676353566171042939537248293923325583275336463126376",
+      "megaparsecs": "190.546071796324749443760526597567017544676353566171042939537248293923325583275336463126376"
+    },
+    {
+      "label": "Coma-1",
+      "kind": "shipped worksheet input",
+      "apparentV": 12.9,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "7.7800000000000000710542735760100185871124267578125",
+      "parsecs": "60255958.6074357845555179710253767101467580832164925712471817650931190828390556465871594925",
+      "megaparsecs": "60.2559586074357845555179710253767101467580832164925712471817650931190828390556465871594925"
+    },
+    {
+      "label": "Coma-2",
+      "kind": "shipped worksheet input",
+      "apparentV": 12.5,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "7.7",
+      "parsecs": "50118723.3627272285001554186884945768060471989832819263929697455889011255688830688959770540",
+      "megaparsecs": "50.118723362727228500155418688494576806047198983281926392969745588901125568883068895977054"
+    },
+    {
+      "label": "Boo-1",
+      "kind": "shipped worksheet input",
+      "apparentV": 18.5,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.9",
+      "parsecs": "794328234.724281502065918282836387932588960631755484332092323929316955697191487537497095252",
+      "megaparsecs": "794.328234724281502065918282836387932588960631755484332092323929316955697191487537497095252"
+    },
+    {
+      "label": "Boo-2",
+      "kind": "shipped worksheet input",
+      "apparentV": 17.6,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.72000000000000028421709430404007434844970703125",
+      "parsecs": "524807460.249772940816180961797533731527376481693454405708408722215905341847470677293843262",
+      "megaparsecs": "524.807460249772940816180961797533731527376481693454405708408722215905341847470677293843262"
+    },
+    {
+      "label": "CB-2",
+      "kind": "shipped worksheet input",
+      "apparentV": 16,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.4",
+      "parsecs": "251188643.150958011108503206779932739415851810078247542867988842090824324772356130845385101",
+      "megaparsecs": "251.188643150958011108503206779932739415851810078247542867988842090824324772356130845385101"
+    },
+    {
+      "label": "CB-1",
+      "kind": "shipped worksheet input",
+      "apparentV": 16.9,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.57999999999999971578290569595992565155029296875",
+      "parsecs": "380189396.320560947340821912579733753561323868762814789334544401547785656628437090506808232",
+      "megaparsecs": "380.189396320560947340821912579733753561323868762814789334544401547785656628437090506808232"
+    },
+    {
+      "label": "CB-3",
+      "kind": "shipped worksheet input",
+      "apparentV": 16.3,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.460000000000000142108547152020037174224853515625",
+      "parsecs": "288403150.312660688609616980163975383824165726389156715494485917388054459796021375724663121",
+      "megaparsecs": "288.403150312660688609616980163975383824165726389156715494485917388054459796021375724663121"
+    },
+    {
+      "label": "Peg-1",
+      "kind": "shipped worksheet input",
+      "apparentV": 14.1,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.0199999999999999289457264239899814128875732421875",
+      "parsecs": "104712854.805089936214535932357732703799885907253208475853468420646222103857066166436434334",
+      "megaparsecs": "104.712854805089936214535932357732703799885907253208475853468420646222103857066166436434334"
+    },
+    {
+      "label": "Peg-2",
+      "kind": "shipped worksheet input",
+      "apparentV": 14.7,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.139999999999999857891452847979962825775146484375",
+      "parsecs": "138038426.460288438615748385298224082252147020181590458870513173192702682302979363105592756",
+      "megaparsecs": "138.038426460288438615748385298224082252147020181590458870513173192702682302979363105592756"
+    },
+    {
+      "label": "Peg-3",
+      "kind": "shipped worksheet input",
+      "apparentV": 14.4,
+      "assumedAbsoluteV": -21,
+      "log10Parsecs": "8.0800000000000000710542735760100185871124267578125",
+      "parsecs": "120226443.461741310253330684706855113485358002578931408426360840865374693728232211929533235",
+      "megaparsecs": "120.226443461741310253330684706855113485358002578931408426360840865374693728232211929533235"
+    },
+    {
+      "label": "ten-parsecs",
+      "kind": "synthetic validation, not target observation",
+      "apparentV": 0,
+      "assumedAbsoluteV": 0,
+      "log10Parsecs": "1",
+      "parsecs": "10",
+      "megaparsecs": "0.00001"
+    },
+    {
+      "label": "one-megaparsec",
+      "kind": "synthetic validation, not target observation",
+      "apparentV": 25,
+      "assumedAbsoluteV": 0,
+      "log10Parsecs": "6",
+      "parsecs": "1000000",
+      "megaparsecs": "1"
+    },
+    {
+      "label": "manual-vireo-example",
+      "kind": "synthetic validation, not target observation",
+      "apparentV": 15,
+      "assumedAbsoluteV": -21.4,
+      "log10Parsecs": "8.27999999999999971578290569595992565155029296875",
+      "parsecs": "190546071.796324593568964985605403551377913475579327294883552339718844662675613506674086420",
+      "megaparsecs": "190.54607179632459356896498560540355137791347557932729488355233971884466267561350667408642"
+    },
+    {
+      "label": "legacy-manual-example",
+      "kind": "synthetic validation, not target observation",
+      "apparentV": 15,
+      "assumedAbsoluteV": -22,
+      "log10Parsecs": "8.4",
+      "parsecs": "251188643.150958011108503206779932739415851810078247542867988842090824324772356130845385101",
+      "megaparsecs": "251.188643150958011108503206779932739415851810078247542867988842090824324772356130845385101"
+    },
+    {
+      "label": "negative-apparent-magnitude",
+      "kind": "synthetic validation, not target observation",
+      "apparentV": -2,
+      "assumedAbsoluteV": -21.4,
+      "log10Parsecs": "4.87999999999999971578290569595992565155029296875",
+      "parsecs": "75857.7575029183272314776239227830653292517484616196853884674737423421254957045445405197356",
+      "megaparsecs": "0.0758577575029183272314776239227830653292517484616196853884674737423421254957045445405197356"
+    }
+  ],
+  "aggregates": [
+    {
+      "label": "discriminates-mean-vs-fit",
+      "kind": "synthetic exact-rational validation",
+      "points": [
+        {
+          "distanceMpc": 1,
+          "velocityKmS": 100
+        },
+        {
+          "distanceMpc": 10,
+          "velocityKmS": 500
+        }
+      ],
+      "meanIndividualH": "75",
+      "meanExact": [
+        "75",
+        "1"
+      ],
+      "originSlope": "50.4950495049504950495049504950495049504950495049504950495049504950495049504950495049504950",
+      "originSlopeExact": [
+        "5100",
+        "101"
+      ]
+    },
+    {
+      "label": "constant-ratio",
+      "kind": "synthetic exact-rational validation",
+      "points": [
+        {
+          "distanceMpc": 2,
+          "velocityKmS": 140
+        },
+        {
+          "distanceMpc": 5,
+          "velocityKmS": 350
+        },
+        {
+          "distanceMpc": 20,
+          "velocityKmS": 1400
+        }
+      ],
+      "meanIndividualH": "70",
+      "meanExact": [
+        "70",
+        "1"
+      ],
+      "originSlope": "70",
+      "originSlopeExact": [
+        "70",
+        "1"
+      ]
+    },
+    {
+      "label": "permits-signed-velocities",
+      "kind": "synthetic exact-rational validation",
+      "points": [
+        {
+          "distanceMpc": 1,
+          "velocityKmS": -10
+        },
+        {
+          "distanceMpc": 2,
+          "velocityKmS": 20
+        },
+        {
+          "distanceMpc": 4,
+          "velocityKmS": 0
+        }
+      ],
+      "meanIndividualH": "0",
+      "meanExact": [
+        "0",
+        "1"
+      ],
+      "originSlope": "1.42857142857142857142857142857142857142857142857142857142857142857142857142857142857142857",
+      "originSlopeExact": [
+        "10",
+        "7"
+      ]
+    },
+    {
+      "label": "one-supplied-point",
+      "kind": "synthetic exact-rational validation",
+      "points": [
+        {
+          "distanceMpc": 3,
+          "velocityKmS": 210
+        }
+      ],
+      "meanIndividualH": "70",
+      "meanExact": [
+        "70",
+        "1"
+      ],
+      "originSlope": "70",
+      "originSlopeExact": [
+        "70",
+        "1"
+      ]
+    },
+    {
+      "label": "zero-velocities",
+      "kind": "synthetic exact-rational validation",
+      "points": [
+        {
+          "distanceMpc": 1,
+          "velocityKmS": 0
+        },
+        {
+          "distanceMpc": 2,
+          "velocityKmS": 0
+        }
+      ],
+      "meanIndividualH": "0",
+      "meanExact": [
+        "0",
+        "1"
+      ],
+      "originSlope": "0",
+      "originSlopeExact": [
+        "0",
+        "1"
+      ]
+    }
+  ],
+  "worksheetAggregate": {
+    "points": [
+      {
+        "distanceMpc": 208.9296130854039,
+        "velocityKmS": 14980.629126259999
+      },
+      {
+        "distanceMpc": 229.08676527677738,
+        "velocityKmS": 14686.832517419998
+      },
+      {
+        "distanceMpc": 190.54607179632475,
+        "velocityKmS": 15259.4361122
+      },
+      {
+        "distanceMpc": 60.25595860743579,
+        "velocityKmS": 7177.031444519999
+      },
+      {
+        "distanceMpc": 50.11872336272723,
+        "velocityKmS": 6496.502564859999
+      },
+      {
+        "distanceMpc": 794.3282347242815,
+        "velocityKmS": 39032.9780316
+      },
+      {
+        "distanceMpc": 524.8074602497729,
+        "velocityKmS": 39482.666718600005
+      },
+      {
+        "distanceMpc": 251.188643150958,
+        "velocityKmS": 20775.6173394
+      },
+      {
+        "distanceMpc": 380.18939632056095,
+        "velocityKmS": 23812.51493894
+      },
+      {
+        "distanceMpc": 288.40315031266067,
+        "velocityKmS": 22088.70830544
+      },
+      {
+        "distanceMpc": 104.71285480508993,
+        "velocityKmS": 11736.8747307
+      },
+      {
+        "distanceMpc": 138.03842646028843,
+        "velocityKmS": 12789.146258279998
+      },
+      {
+        "distanceMpc": 120.22644346174131,
+        "velocityKmS": 13262.81834192
+      }
+    ],
+    "meanIndividualH": "86.6139548517465452544445453990987147494320012874868483518630831059552642346405619638531285",
+    "originSlope": "63.1168292818288911173993224936603766991752626397259308588198409385702450034583358768948056",
+    "scope": "mean supported by workbook H16; origin fit derived from the separate student-manual prescription"
+  }
+}

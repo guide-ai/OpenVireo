@@ -1,0 +1,257 @@
+{
+  "kind": "Independent synthetic analytic fixtures, not original acquired data or native runtime output",
+  "method": "Reuse previously independently verified Decimal90 Gaussian/interpolation fraction; exact native Single source colors and Extended sky offset. Decimal90 direct flux. Integer modulo PRNG, Python lgamma Poisson with decision margins. Decimal70 magnitudes.",
+  "means": {
+    "V": {
+      "source": "532.664119172835814461016877661836404989014955256878854405217385865693396873671242547932679",
+      "sky": "1.58489319246111348520210137339150701326944213382503906831629681231665686366845398011020270",
+      "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281"
+    },
+    "B": {
+      "source": "342.336690230712931643438186970052364822026248401708124690877840478393236236418925287515527",
+      "sky": "0.630957344480193249434360136622343864672945257188228724527729528833494943297686807572914059",
+      "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281"
+    },
+    "U": {
+      "source": "339.198128659279951091672707496220923779817198861924963365000417429696254105770619492305718",
+      "sky": "0.465586093522958948086016845393176910278003403541074762644390605069726355496948741646646214",
+      "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281"
+    }
+  },
+  "sequences": [
+    {
+      "seed": 42,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "filter": "V",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 882243745,
+            "draws": 3,
+            "minimumDecisionMargin": 0.02472805037986306
+          },
+          "object": {
+            "filter": "V",
+            "kind": "object",
+            "sourceCount": 550,
+            "skyCount": 2,
+            "totalPhotonCount": 552,
+            "seed": 1705058,
+            "draws": 5,
+            "minimumDecisionMargin": 0.20472447656977788
+          },
+          "magnitude": "9.647121002870537377827049403184539226986440611795871400069460559099158"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "filter": "B",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2136124382,
+            "draws": 4,
+            "minimumDecisionMargin": 0.04207333271745761
+          },
+          "object": {
+            "filter": "B",
+            "kind": "object",
+            "sourceCount": 330,
+            "skyCount": 1,
+            "totalPhotonCount": 331,
+            "seed": 1940294672,
+            "draws": 6,
+            "minimumDecisionMargin": 0.03337971795831684
+          },
+          "magnitude": "10.20701025512506426218391085489540791589156126311521691614758898747794"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "filter": "U",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2337622956,
+            "draws": 4,
+            "minimumDecisionMargin": 0.10145909681083654
+          },
+          "object": {
+            "filter": "U",
+            "kind": "object",
+            "sourceCount": 354,
+            "skyCount": 0,
+            "totalPhotonCount": 354,
+            "seed": 1084970409,
+            "draws": 5,
+            "minimumDecisionMargin": 0.2579922567081888
+          },
+          "magnitude": "10.13364334130467245795276388783627656113087100555751049712830918921176"
+        }
+      ],
+      "acquiredBMinusV": "0.5598892522545268843568614517"
+    },
+    {
+      "seed": 1,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "filter": "V",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 870078620,
+            "draws": 3,
+            "minimumDecisionMargin": 0.030537654746295273
+          },
+          "object": {
+            "filter": "V",
+            "kind": "object",
+            "sourceCount": 583,
+            "skyCount": 1,
+            "totalPhotonCount": 584,
+            "seed": 1828254910,
+            "draws": 6,
+            "minimumDecisionMargin": 0.04651757970815759
+          },
+          "magnitude": "9.585828613102464784042019342824297913994488520596522812023395063862553"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "filter": "B",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 0,
+            "totalPhotonCount": 0,
+            "seed": 2039224980,
+            "draws": 2,
+            "minimumDecisionMargin": 0.05728810652213634
+          },
+          "object": {
+            "filter": "B",
+            "kind": "object",
+            "sourceCount": 348,
+            "skyCount": 0,
+            "totalPhotonCount": 348,
+            "seed": 256513635,
+            "draws": 3,
+            "minimumDecisionMargin": 0.054451624038686974
+          },
+          "magnitude": "10.14605189013354771236161886081660911502299238749483302870970632446992"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "filter": "U",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1580146294,
+            "draws": 3,
+            "minimumDecisionMargin": 0.2895176415670957
+          },
+          "object": {
+            "filter": "U",
+            "kind": "object",
+            "sourceCount": 316,
+            "skyCount": 1,
+            "totalPhotonCount": 317,
+            "seed": 3625686706,
+            "draws": 4,
+            "minimumDecisionMargin": 0.038810107891587786
+          },
+          "magnitude": "10.25078229345399045394425206018191064995189554512658150440698433112040"
+        }
+      ],
+      "acquiredBMinusV": "0.5602232770310829283195995180"
+    },
+    {
+      "seed": 123456789,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "filter": "V",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1678830432,
+            "draws": 3,
+            "minimumDecisionMargin": 0.050254095342841726
+          },
+          "object": {
+            "filter": "V",
+            "kind": "object",
+            "sourceCount": 536,
+            "skyCount": 2,
+            "totalPhotonCount": 538,
+            "seed": 230876653,
+            "draws": 5,
+            "minimumDecisionMargin": 0.08816655694224729
+          },
+          "magnitude": "9.675064285751110982836473512429565178421997612826938778056014661987033"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "filter": "B",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 3077390393,
+            "draws": 4,
+            "minimumDecisionMargin": 0.031087431210179206
+          },
+          "object": {
+            "filter": "B",
+            "kind": "object",
+            "sourceCount": 322,
+            "skyCount": 1,
+            "totalPhotonCount": 323,
+            "seed": 2660801091,
+            "draws": 6,
+            "minimumDecisionMargin": 0.10180855684217438
+          },
+          "magnitude": "10.23373741898781980467607714320862261168263561043821195797118087808500"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "filter": "U",
+            "kind": "sky",
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 3797942998,
+            "draws": 3,
+            "minimumDecisionMargin": 0.0009219160974967
+          },
+          "object": {
+            "filter": "U",
+            "kind": "object",
+            "sourceCount": 345,
+            "skyCount": 2,
+            "totalPhotonCount": 347,
+            "seed": 1790865013,
+            "draws": 11,
+            "minimumDecisionMargin": 0.07445365209858484
+          },
+          "magnitude": "10.15230975301805847556432711629260271362531712350741203322674567553107"
+        }
+      ],
+      "acquiredBMinusV": "0.5586731332367088218396036308"
+    }
+  ]
+}

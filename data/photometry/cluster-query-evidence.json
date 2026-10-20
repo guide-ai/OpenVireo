@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "M67ContractSHA256": "228907286f3538ccc0b99995ca6f6f871b6e0d93aa2056b931b83cb2d120b152",
+  "evidenceId": "VIREO-HR-QUERY-LITERAL-25-2026-10-19",
+  "literalMagnitudeLimit": {
+    "address": "0x546510",
+    "destination": "selected cluster working record+0x53",
+    "decodedOperation": "store literal Single25,not a copied angular-size operand",
+    "value": 25,
+    "instructionRangeSHA256": "79966a0f41b9d756c1d863e298c15fb473299c7a6dbd6807358d2b6eb4e53615"
+  },
+  "distinctAngularLimit": {
+    "copy": "0x5464b4..0x5464bd copies the selected record+0x29/+0x2d fields",
+    "geometry": "0x5464c8..0x5464d7 scales selected angular size by1.1/60",
+    "radialComparison": "0x534500..0x534510 compares tangent distance*60 against selected angular size",
+    "record9AngularArcmin": 25,
+    "noncoincidentRecords": [
+      {
+        "index": 0,
+        "angularArcmin": 75,
+        "magnitudeLimit": 25
+      },
+      {
+        "index": 13,
+        "angularArcmin": 7,
+        "magnitudeLimit": 25
+      },
+      {
+        "index": 5,
+        "angularArcmin": 450,
+        "magnitudeLimit": 25
+      }
+    ]
+  },
+  "query": "0x5342c8 and0x534331 pass region pointer atselected+0x33 to region enumeration/direct compact VMT+8 reader;limiting magnitude is region+32,selected+0x53.",
+  "scope": "Decoded static instruction/literal evidence,not original execution;no binary byte payload orassembly byte columns included."
+}

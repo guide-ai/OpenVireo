@@ -1,0 +1,46 @@
+{
+  "source": "CLEA_GLX.DAT",
+  "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+  "recordBytes": 59,
+  "recordCount": 24069,
+  "reader": "0x598acc",
+  "samples": [
+    {
+      "raHours": 9.931666666666667,
+      "decDegrees": 69.6825,
+      "majorArcminutes": 10.5,
+      "minorArcminutes": 5.099999904632568,
+      "apparentMagnitude": 9.199999809265137,
+      "redshift": 0.0008906160364858806,
+      "positionAngleDegrees": 65,
+      "morphology": 0,
+      "index": 9497,
+      "identifier": "NGC 3034"
+    },
+    {
+      "raHours": 12.99311111111111,
+      "decDegrees": 27.959722222222222,
+      "majorArcminutes": 2.4000000953674316,
+      "minorArcminutes": 2.4000000953674316,
+      "apparentMagnitude": 12.899999618530273,
+      "redshift": 0.0239365566521883,
+      "positionAngleDegrees": 0,
+      "morphology": -3,
+      "index": 15036,
+      "identifier": "NGC 4874"
+    },
+    {
+      "raHours": 13.002305555555555,
+      "decDegrees": 27.9775,
+      "majorArcminutes": 2.799999952316284,
+      "minorArcminutes": 2.0,
+      "apparentMagnitude": 12.5,
+      "redshift": 0.021671656519174576,
+      "positionAngleDegrees": 80,
+      "morphology": -4,
+      "index": 15074,
+      "identifier": "NGC 4889"
+    }
+  ],
+  "use": "Static decoded fixtures only, not connected to observatory selection or acquisition. No raw catalog bytes included."
+}

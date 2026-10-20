@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "policy": "VIREO-current-pointing-geometric-horizon-v1",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "ranges": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/horizon-guard.asm",
+      "from": "0x539290",
+      "endExclusive": "0x5393ec",
+      "sha256": "9303ce726457d6b5d448a2089b6ad911ef53d380b40b3be1442505e347fdcb29"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/sincos.asm",
+      "from": "0x4036ac",
+      "endExclusive": "0x4036c9",
+      "sha256": "3ecfc63271f7d7297507286a29ec8f79e67da5c0db9644063997fdced88a0059"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/asin.asm",
+      "from": "0x426ff4",
+      "endExclusive": "0x42700a",
+      "sha256": "4ecc28a8d1ee1049de1a53975671172739b787478fe54af7bb8a1b6c8b0b1b09"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/clock-caller.asm",
+      "from": "0x5385e0",
+      "endExclusive": "0x5386b3",
+      "sha256": "bf924879feb7232de47ed4d6ac2d91ab46be5a6ee4508af40adfd0b0693b5b1b"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/option-default.asm",
+      "from": "0x5a2ada",
+      "endExclusive": "0x5a2af6",
+      "sha256": "0be5b4627bb2923b6cd9cd316c75d5308b76df880d501c59137b612f34978d98"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/option-copy.asm",
+      "from": "0x5879b8",
+      "endExclusive": "0x5879d0",
+      "sha256": "3ef7a6112e3f2f6f181962c6f43d593378ece83add7118a7c69e254c2fd02f74"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/drive-toggle.asm",
+      "from": "0x538768",
+      "endExclusive": "0x5387e8",
+      "sha256": "aae06d11a76227cf7c96da19afa6a941c52eddcc3fb2a574b2a92e28ceed0d12"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/spectrometer-form-show.asm",
+      "from": "0x50d8b8",
+      "endExclusive": "0x50dac4",
+      "sha256": "d53338fc301d2b903b2e350908cc5bd01a7bbe4986b091ae276a3f44bc192179"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/spectrometer-selection.asm",
+      "from": "0x50dac4",
+      "endExclusive": "0x50dbd3",
+      "sha256": "85fcf98602bb8a37ec9542b6ac8f3159acd5aa6a5a05e43bf18010a2928f8672"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/spectrometer-go.asm",
+      "from": "0x50f484",
+      "endExclusive": "0x50f618",
+      "sha256": "36f44b08dada9f3556b88123eee5c2d4458c74af1fc882059432e71eb35618f3"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/spectrometer-tick.asm",
+      "from": "0x50f76c",
+      "endExclusive": "0x50fa93",
+      "sha256": "f1aff0bbbb34e76f5a06a46c02d63558da6ba4f710e6e22ed8b11f818619cb43"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/manual-motor-north.asm",
+      "from": "0x5387e8",
+      "endExclusive": "0x5388c8",
+      "sha256": "3cf18c73b3c29a4eb117beefe9417249c02e28947184e3d0c5316345b2a0d8b5"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/motor-timer.asm",
+      "from": "0x538e4c",
+      "endExclusive": "0x539203",
+      "sha256": "1a64500ba83403ca3739a85feee41abba4053c636419614821014f748e2fb9f9"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/source-refresh.asm",
+      "from": "0x5110b0",
+      "endExclusive": "0x5110eb",
+      "sha256": "b4188082bce8baf7e6782bd1dfc6c2867c25a14ac9f8b09dcbb80faf715d665c"
+    }
+  ],
+  "constants": {
+    "circleRadians": {
+      "address": "0x5393cc",
+      "storage": "extended",
+      "rawLE": "35c26821a2da0fc90140",
+      "decimal": "6.2831853071795864770256179188123724088654853403568267822265625",
+      "number": 6.283185307179586
+    },
+    "hoursPerDay": {
+      "address": "0x5393d8",
+      "storage": "single",
+      "rawLE": "0000c041",
+      "decimal": "24.0",
+      "number": 24.0
+    },
+    "radiansPerDegree": {
+      "address": "0x5393dc",
+      "storage": "extended",
+      "rawLE": "aec8e9941235fa8ef93f",
+      "decimal": "0.017453292519943295769139146242365789873929315945133566856384277343750",
+      "number": 0.017453292519943295
+    },
+    "maximumAbsCurrentDeclination": {
+      "address": "0x5393e8",
+      "storage": "single",
+      "rawLE": "0000b442",
+      "decimal": "90.0",
+      "number": 90.0
+    }
+  },
+  "profileSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "siteClockProofSHA256": "4d20272f847a8e449a2d9e933e627eb722912fc15cce69af7c835db80b7446f9",
+  "runningClockProofSHA256": "a786e66498c34e900b6ead81c1a8e662ed69ada71f06b0c2536ad7d4e77e87fe",
+  "vectorsSHA256": "a2cdb94c991ec3cc340f3e97f3c646bb201baa59b54f35232d22339a5d2349cc",
+  "reference": {
+    "script": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/horizon-motion-recovery/reference.py",
+    "sha256": "134273d05e4e86ecb384a1e7e10072dcdd2d4e3d80f37cf95134eda0efa18b9f",
+    "method": "Decimal100 native literals/profile radians + independent Taylor sin/cos and bisection inverse sine; full original sidereal polynomial for clock scenarios. No original execution.",
+    "scenarios": 54
+  },
+  "nativeSemantics": {
+    "formula": "asin(sin(dec)*sin(latitude)+cos(dec)*cos(hourAngle)*cos(latitude))",
+    "hourAngle": "local sidereal hours minus current RA; radians=hours*stored2pi/24",
+    "optionalGuard": "if disabled return true;else altitude>configured horizon AND abs(stored current dec)<=90. Equality at horizon rejects.",
+    "compiledEnforcementEnabled": false,
+    "option": "Options+0x27cd=0 -> Environment+0x2e7d",
+    "siteFields": "Environment+0x2b90 latitudeRadians,+0x2b9e horizonRadians; compiled profiles already pinned.",
+    "candidateCaveat": "Native motor guard receives candidate dec/hourAngle but separately tests stored current dec. This readout uses current pointing for both; candidate motor enforcement is not ported."
+  },
+  "browserPolicy": {
+    "boundaryGuardDegrees": 1e-10,
+    "sineClampToleranceEPS": 16,
+    "zenithWarningEPS": 32,
+    "comparison": "above,at-or-below,or precision-boundary;guard is a browser admission policy,not a measured native error bound",
+    "scope": "Derived current-pointing geometry only; no new enforcement switch or horizon option,blocked acquisition,precession,refraction,extinction or obstruction synthesis. No saved derived permissions."
+  },
+  "acquisitionAudit": {
+    "trackingOffStop": "Browser scope protection,not native acquisition equivalence. Native spectrometer FormShow disables DriveBtn;no corresponding photon-stop call was found in the native drive-toggle body.",
+    "drift": "Existing native24h/day drift moves current field; pixel/nearest/slit/refresh scheduling across drift remains unadmitted.",
+    "slit": "Native stellar strict rawRA/Dec cuts and positive pixel;galaxy pixel level/200 squared capped1 are already separate contracts.",
+    "selectionEvent": "Published TSpectrometer.FormActivate=0x50dac4,not a per-photon callback;identity inventory hash is retained.",
+    "cachedMean": "Go fills600 source means;tick consumes these cached means and sky. Selection/reinitialization paths must be connected with repaint/object arbitration and preserved count lifecycle before claiming dynamic throughput.",
+    "motors": "Native manual motor timer20ms and rate/optical scale must be recovered together;new continuous motor controls are deferred."
+  },
+  "auditSources": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/observatory/TObsrvtry.json",
+      "sha256": "c97282ae55d4c7eea1d4b39890ba42f52563561d6dd2ab6ff3e184aeee3d0512"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/CONCLUSION.md",
+      "sha256": "abe33fd80a9b4784f82e68a0740ec92a26d4bc7245888441bfb23ed43b0e92f4"
+    },
+    {
+      "path": "/home/dobleuber/Projects/personal/clea-web/data/hubble/slit-throughput-provenance.json",
+      "sha256": "2d7d74ca9fd3cd854b37d8d5f076c3fee0066988063c3ec6632582c5a65a4e8e"
+    }
+  ],
+  "rights": "Original licenses retained;local research,no public redistribution grant.",
+  "uncertainty": "Number/Math/Taylor reconstruction is not original Extended/x87,global VCL event order or runtime equivalence."
+}

@@ -2,7 +2,7 @@
 
 ## Current scope reconciliation
 
-Q06 resource-readiness follow-up: [local resource preflight](LOCAL-SETUP.md) verifies the excluded pack before build/dev/test, with explicit clean-checkout diagnostics and synthetic checker contracts. It downloads or changes nothing. Reproducible public application packaging, resource rights, license choice and full release/classroom acceptance remain open; all64primary acceptance statuses/criteria are unchanged.
+Q06 resource-readiness follow-up: [local resource preflight](LOCAL-SETUP.md) verifies the now-versioned1279resources before build/dev/test, with explicit incomplete-checkout diagnostics and synthetic checker contracts. The explicit subsequent inclusion instruction replaces the initial source-only boundary;all resource hashes are preserved. The checker downloads or changes nothing. Source-specific rights/credits,license choice and full release/classroom acceptance remain open; all64primary acceptance statuses/criteria are unchanged.
 
 The dated narrative and baseline inventory below contain historical descriptions of work that was subsequently delivered. Use the latest feature evidence and `data/planning/acceptance-status.json` together; the package statuses are acceptance outcomes, not a percentage of code ported.
 

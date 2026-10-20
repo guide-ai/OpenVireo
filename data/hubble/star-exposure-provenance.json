@@ -1,0 +1,300 @@
+{
+  "schema": 1,
+  "policyId": "openclea-pinned-star-exposure-v1",
+  "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "domain": {
+    "exercise": "hubble",
+    "exerciseMode": 4,
+    "catalogMode": 1,
+    "telescopeRecord": 0,
+    "options": "compiled-fallback-unmodified",
+    "history": "fresh-process-direct-hubble",
+    "pointing": {
+      "ra": 0.4987684,
+      "dec": 0.03628
+    },
+    "fieldArcminutes": 15,
+    "fieldMultiplier": 3,
+    "dynamicContext": "absent"
+  },
+  "fieldSnapshotSHA256": "44a444d309ef4985a52787a68989da864392bcdb8a5821de0e3119aac73d5c96",
+  "sourceSnapshotSHA256": "4389a64f2fe9cbc4d7c2c2c8b3111e7ae8d3b5b7ad78421ce45abc11a170b41d",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Hubble.HTL",
+      "sha256": "02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986",
+      "bytes": 1118
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "bytes": 31481649
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S0000.DAT",
+      "sha256": "0cc5484587b734d4c468ad0d38e3eab78936a253d1409bd69d83f0bf26fe44f9",
+      "bytes": 27456219
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/JSPEC2.SPI",
+      "sha256": "5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa",
+      "bytes": 3168
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000049.SP",
+      "sha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220",
+      "bytes": 55980
+    }
+  ],
+  "ranges": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/star-file-loader.asm",
+      "start": "0x55ee14",
+      "endInclusive": "0x55f098",
+      "sha256": "c8519c8c1874b431f76ce194619a2b862c069f5434c9c7b079c6e658c315a0a4",
+      "sourceBytesSHA256": "e62bf373bd56450d0c9ddd29e0d76b58f7bb5257b965de924802ab6a0892ee81"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/default-spectrum-index-path.asm",
+      "start": "0x5a233b",
+      "endInclusive": "0x5a23b7",
+      "sha256": "013b7ea1437ee3efd0b3cf910fa92b3b80991bc3ef0c99e39d11c582a5b7cb93",
+      "sourceBytesSHA256": "2acf73461b4bb7fd2ed11694ec26b0ad703c1d0d285b48486e8749a060327fcc"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/star-index-load.asm",
+      "start": "0x50d460",
+      "endInclusive": "0x50d5d6",
+      "sha256": "402fca138b8b8f76e478f9ee6b606e5d060778dbaec59474e45d08b1caafc0d9",
+      "sourceBytesSHA256": "d0790f8e45aa6bbb2844c1aa18447da7bb8cd855615b13a4205a97bbe9fa89e4"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/star-index-match.asm",
+      "start": "0x50d660",
+      "endInclusive": "0x50d824",
+      "sha256": "05cf769384ca72087023bb6b66c17740734196e1b35f70bd3e2214ff40c9d0ca",
+      "sourceBytesSHA256": "ff3adc64e94a76ae6b35aee4b5700980135873b39cea48318f8d1717024e5898"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/index-integer-comparators.asm",
+      "start": "0x50d448",
+      "endInclusive": "0x50d45f",
+      "sha256": "e6cee29ea9eb42c410552274b5d46bbab9f8fe98d59ba3bb112763c9c1cb8c85",
+      "sourceBytesSHA256": "37d863bda3c5677209cf4e9c19e80b78179b1419b967f5453992f5fc0bf548d0"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/index-list-insert.asm",
+      "start": "0x492728",
+      "endInclusive": "0x4927fb",
+      "sha256": "0481772c6c38fc23be9385cd4970b87cfe0a64749f6af6a0fbb6d20b7fd3630a",
+      "sourceBytesSHA256": "134ceed0190bf07e09eab50152dea74700038380d28434a06e0a8da109677840"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/telescope-calibration.asm",
+      "start": "0x53df24",
+      "endInclusive": "0x53df7a",
+      "sha256": "d8fde07c4ce9e1358bd6c0b7cf169e4c925b6e7b31658fe8bad747f8fbdfa372",
+      "sourceBytesSHA256": "b3fc536baeb88a242e3ed71b9419dc54b231b264323b19343c39293741302afc"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/observation-allotment-binding.asm",
+      "start": "0x53cce4",
+      "endInclusive": "0x53cd86",
+      "sha256": "c7616605a5b5c70c8fd5a972b968259b0f33d90fef2b336c5f9c69e46fa78625",
+      "sourceBytesSHA256": "3fd181825c072ac4927afe76bdeac4f968be189a749c2a2ee892c255ebb297b5"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/star-calibration.asm",
+      "start": "0x50e0d7",
+      "endInclusive": "0x50e152",
+      "sha256": "185323b9bc43ecc84ab7bbc78018cebe701416cc06cfcc8cdf4295926f064029",
+      "sourceBytesSHA256": "ca10f0100ea883c6b61407a53b88e8ff64f4817ccce161a4892c383217d09b81"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/star-level-cache.asm",
+      "start": "0x53ca7c",
+      "endInclusive": "0x53caeb",
+      "sha256": "af571caad8b4b883755640e16967992817baeb4fe776505d1b282f283bf1f552",
+      "sourceBytesSHA256": "9b9a52209cac900182f5f82506444a27474460e06f7329f4204bae7c2f85d781"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/object-exposure-recovery/star-draw.asm",
+      "start": "0x53b712",
+      "endInclusive": "0x53b7cf",
+      "sha256": "b810d59933e2e620b2eb86becbab2aeb2ab07f9b0075281f49189c2efeafee6e",
+      "sourceBytesSHA256": "3f3bdc35cd30b6ee3c082ebdaf22b7cd992c2e82e4e752fc6337df5c521fb95d"
+    }
+  ],
+  "spectralIndexBinding": {
+    "defaultPathVA": "0x5a2d10",
+    "defaultPath": "SPECTRA\\JSPECT2\\JSPEC2.SPI",
+    "configStoreVA": "0x5a2359",
+    "indexValidityAlias": "spectrometer+0x431 = (index list at+0x417)+0x1a; set by successful0x50d460 load",
+    "indexRows": 132,
+    "fileAlreadyOrdered": false,
+    "nativeInsertion": "0x492728 with signed-integer greater comparator0x50d454; sorted ascending collection, not raw file append",
+    "exactMatchFileRow": 36,
+    "exactMatchSortedRow": 103,
+    "matchedEntry": "50705000 'A0000049.sp'"
+  },
+  "target": {
+    "id": "N0000.DAT@14428",
+    "rawHex": "241b4c002c0e000068b205036236d0020b0100000f053030303038",
+    "ra": 0.4987684,
+    "dec": 0.03628,
+    "magnitudeSingle": 13.92199993133545,
+    "spectrumIndex": 50705000,
+    "sourceFile": "A0000049.SP"
+  },
+  "frame": {
+    "width": 936,
+    "height": 936,
+    "viewportWidth": 312,
+    "viewportHeight": 312,
+    "cropLeft": 312,
+    "cropTop": 312,
+    "fieldDegrees": 0.75,
+    "anchorX": 468,
+    "anchorY": 468,
+    "projectionOffsets": [
+      0,
+      0
+    ],
+    "backgroundRGB": [
+      0,
+      0,
+      0
+    ]
+  },
+  "calibration": {
+    "baseZeroPoint": 6,
+    "telescopeCorrection": -2,
+    "zeroPoint": 4,
+    "skyMagnitude": 19,
+    "skyMean": 1e-06,
+    "multiplier": 50,
+    "magnitudeShift": -2,
+    "bankOffsetAtCache": 1,
+    "bankConversion": "round-nearest-even",
+    "sourceAmplitude": 0.00010744841845974996
+  },
+  "selectionWitnesses": [
+    {
+      "id": "N0000.DAT@14428",
+      "x": 468.0,
+      "y": 468.0,
+      "distance": 0.0
+    },
+    {
+      "id": "N0000.DAT@14492",
+      "x": 430.8576641074106,
+      "y": 446.68416,
+      "distance": 42.82427057713342
+    },
+    {
+      "id": "N0000.DAT@14313",
+      "x": 531.556267604077,
+      "y": 486.68256,
+      "distance": 66.24528058597569
+    }
+  ],
+  "observationAllotment": {
+    "comparisonConstantVA": "0x53ce58",
+    "comparisonSingle": 1.0,
+    "defaultTelescopeValueStore": "0x5a3196",
+    "defaultTelescopeValue": 1,
+    "branch": "0x53cd21->0x53cd7f: clear allotment pointer for telescope record0; no invented observation credits"
+  },
+  "originalExecution": false,
+  "browserPolicy": "Number/Math nearest-even raster and interpolation; recovered algorithms/parameters; no native x87/GDI equivalence requirement",
+  "remaining": "Enabled only after local tests and fixed-domain proof; no original execution or x87/GDI equivalence claim",
+  "rasterVerification": {
+    "width": 936,
+    "height": 936,
+    "sha256": "20dc9a2da6c8f8657e3bb0eb8160fea3c546c31f0f35509ff55e1cad974b8863",
+    "cropSHA256": "df72d0d99cdc1b4706d5271bd7d390de33794b2f9c3927380f82af9f5458dab3",
+    "slitSum": 2343,
+    "slitLevel": 41,
+    "targetPaint": {
+      "stored": 13,
+      "level": 14,
+      "magnitudeSingle": 13.92199993133545
+    },
+    "levelsHistogram": {
+      "14": 106,
+      "11": 2,
+      "12": 6,
+      "13": 13,
+      "9": 1
+    },
+    "saturatedBytes": 0
+  },
+  "dependencies": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/sky-exposure-recovery/frame-binding.json",
+      "sha256": "d17d2e2971f12c9d855c7029335893ef983d54962ba8ab50254e006de16a46cf"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-pixel-recovery/telescope-scene-setup.asm",
+      "sha256": "f3bb63c197a6af83b11d35a2c105770357bc914fa9da89c88f5ac4eb6eeb9a91"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-save-recovery/telescope-scene-compose.asm",
+      "sha256": "571142530e509099c639ab3a013952a095e1fa9cad911b30fe0c4430132c06a7"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-pixel-recovery/sky-render.asm",
+      "sha256": "fa788964d3c72ccfcbc01bd5f6432ba42f48fb3e5a1961d9ce93df9c00f89e8a"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-pixel-recovery/slit-final-image-read.asm",
+      "sha256": "32cc944bd8962aeb7eb1677bbe13d9ce282417a0409de6e039466934fa6e3a56"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/star-spectrum-prepare.asm",
+      "sha256": "06b5dd14390edab57190eb29e850bcb44659f40832a6c4dcadf245f04a08aa8d"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/recovered-functions-acquisition/spectrum-sampler-dossier.asm",
+      "sha256": "cfb57f0ac778326c15b3d977f07c4f5f444ff4070dcf90f689da3adec446d04a"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/implementation/data/hubble/star-profile-provenance.json",
+      "sha256": "2026dabecb91bfa71bb2e3adcc640df01b491e97c5710a39527263cddfd5b7a2"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/implementation/data/hubble/pinned-hubble-field-provenance.json",
+      "sha256": "4cd3815cad429043bc5fac2ce923764ba580141903182bd414a229c215fa7b4f"
+    }
+  ]
+}

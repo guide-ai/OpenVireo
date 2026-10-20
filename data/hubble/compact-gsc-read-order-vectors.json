@@ -1,0 +1,2356 @@
+{
+  "scope": "One original compact band and narrow read traces only; no field completeness or post-merge slit selection",
+  "band": {
+    "file": "N0000.DAT",
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+    "recordBytes": 27,
+    "recordCount": 1165987,
+    "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+    "nondecreasingRaVerified": true
+  },
+  "cases": [
+    {
+      "label": "before-identical-pair",
+      "roundedMinimumRaKey": 17106250,
+      "maximumRa": 1.7106261,
+      "region": {
+        "minimumRa": 1.710625,
+        "maximumRa": 1.7106261,
+        "minimumDec": 3.27084,
+        "maximumDec": 3.27086,
+        "limitingMagnitude": 20.0
+      },
+      "maximumScanRecords": 100,
+      "expectedSearchIndex": 43828,
+      "expectedExactKeyMatch": false,
+      "expectedProbes": [
+        {
+          "recordIndex": 582993,
+          "packedRa": 139529653
+        },
+        {
+          "recordIndex": 291496,
+          "packedRa": 68038113
+        },
+        {
+          "recordIndex": 145747,
+          "packedRa": 48827493
+        },
+        {
+          "recordIndex": 72873,
+          "packedRa": 28391927
+        },
+        {
+          "recordIndex": 36436,
+          "packedRa": 13908403
+        },
+        {
+          "recordIndex": 54654,
+          "packedRa": 21763613
+        },
+        {
+          "recordIndex": 45545,
+          "packedRa": 17892473
+        },
+        {
+          "recordIndex": 40990,
+          "packedRa": 15847656
+        },
+        {
+          "recordIndex": 43267,
+          "packedRa": 16859827
+        },
+        {
+          "recordIndex": 44406,
+          "packedRa": 17356300
+        },
+        {
+          "recordIndex": 43836,
+          "packedRa": 17109697
+        },
+        {
+          "recordIndex": 43551,
+          "packedRa": 16983820
+        },
+        {
+          "recordIndex": 43693,
+          "packedRa": 17045307
+        },
+        {
+          "recordIndex": 43764,
+          "packedRa": 17079900
+        },
+        {
+          "recordIndex": 43800,
+          "packedRa": 17096273
+        },
+        {
+          "recordIndex": 43818,
+          "packedRa": 17101796
+        },
+        {
+          "recordIndex": 43827,
+          "packedRa": 17105851
+        },
+        {
+          "recordIndex": 43831,
+          "packedRa": 17108699
+        },
+        {
+          "recordIndex": 43829,
+          "packedRa": 17106260
+        },
+        {
+          "recordIndex": 43828,
+          "packedRa": 17106260
+        }
+      ],
+      "expectedVisits": [
+        {
+          "recordIndex": 43828,
+          "packedRa": 17106260
+        },
+        {
+          "recordIndex": 43829,
+          "packedRa": 17106260
+        },
+        {
+          "recordIndex": 43830,
+          "packedRa": 17108200
+        }
+      ],
+      "expectedStopReason": "past-upper-ra",
+      "expectedError": null,
+      "expectedAdmittedIndices": [
+        43828,
+        43829
+      ],
+      "comparisonLowerBoundIndex": 43828,
+      "comparisonIntervalIndices": [
+        43828,
+        43829
+      ],
+      "keyRoundingMarginGreaterThanPoint49": true,
+      "records": [
+        {
+          "recordIndex": 36436,
+          "byteOffset": 983772,
+          "recordSHA256": "6ca8c38b1c32582c6d2324c35f5942c835f4d7d48c3726bc92d6c2644005d231",
+          "packedRa": 13908403,
+          "packedDec": 409136,
+          "packedMagnitude": 14962,
+          "flags": 15,
+          "rowReference": "N0000.DAT@36436",
+          "storedRa": 1.3908403,
+          "storedDec": 4.09136,
+          "storedMagnitude": 14.961999893188477
+        },
+        {
+          "recordIndex": 40990,
+          "byteOffset": 1106730,
+          "recordSHA256": "7ecb3d95d85e4a6d63798733934b0c62d48141968fa6c2e7760cee4d8cb87852",
+          "packedRa": 15847656,
+          "packedDec": 666440,
+          "packedMagnitude": 14493,
+          "flags": 15,
+          "rowReference": "N0000.DAT@40990",
+          "storedRa": 1.5847656,
+          "storedDec": 6.6644,
+          "storedMagnitude": 14.493000030517578
+        },
+        {
+          "recordIndex": 43267,
+          "byteOffset": 1168209,
+          "recordSHA256": "7ba5ffe2d6d54693753d47812f5bfbaa658b9d51c0cb800017fefdb331d538b4",
+          "packedRa": 16859827,
+          "packedDec": 601140,
+          "packedMagnitude": 14760,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43267",
+          "storedRa": 1.6859827,
+          "storedDec": 6.0114,
+          "storedMagnitude": 14.760000228881836
+        },
+        {
+          "recordIndex": 43551,
+          "byteOffset": 1175877,
+          "recordSHA256": "31798a7214fe277c1d128b25bf50b48ec7db88c1a8c7005f8d5668768d5d01f8",
+          "packedRa": 16983820,
+          "packedDec": 531146,
+          "packedMagnitude": 14542,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43551",
+          "storedRa": 1.698382,
+          "storedDec": 5.31146,
+          "storedMagnitude": 14.541999816894531
+        },
+        {
+          "recordIndex": 43693,
+          "byteOffset": 1179711,
+          "recordSHA256": "fc1aba92c5ccd7826f2c2ecbc81f7af8f932b009bc27d22d9bc15e3faccb34dd",
+          "packedRa": 17045307,
+          "packedDec": 688817,
+          "packedMagnitude": 14070,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43693",
+          "storedRa": 1.7045307,
+          "storedDec": 6.88817,
+          "storedMagnitude": 14.069999694824219
+        },
+        {
+          "recordIndex": 43764,
+          "byteOffset": 1181628,
+          "recordSHA256": "c010f64e864f315f2db53ecf83d4610bf9f1a378eb2c14493b8ffa4062cfb935",
+          "packedRa": 17079900,
+          "packedDec": 200130,
+          "packedMagnitude": 11386,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43764",
+          "storedRa": 1.70799,
+          "storedDec": 2.0013,
+          "storedMagnitude": 11.38599967956543
+        },
+        {
+          "recordIndex": 43800,
+          "byteOffset": 1182600,
+          "recordSHA256": "9d20f0f572d988deb38e8875a89ab109ec63a2e00431f624e1de257f5dbb1fc1",
+          "packedRa": 17096273,
+          "packedDec": 717930,
+          "packedMagnitude": 14380,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43800",
+          "storedRa": 1.7096273,
+          "storedDec": 7.1793,
+          "storedMagnitude": 14.380000114440918
+        },
+        {
+          "recordIndex": 43818,
+          "byteOffset": 1183086,
+          "recordSHA256": "857a62eb6ea94d8833f2afcfd6a36f21b50a66c87ab9b03dac2723afd5ffe654",
+          "packedRa": 17101796,
+          "packedDec": 539624,
+          "packedMagnitude": 12913,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43818",
+          "storedRa": 1.7101796,
+          "storedDec": 5.39624,
+          "storedMagnitude": 12.913000106811523
+        },
+        {
+          "recordIndex": 43827,
+          "byteOffset": 1183329,
+          "recordSHA256": "ecdf3d2b5a47f6f8b57a47e7e2b95c1b8962c82fb781e59270473e50866515e2",
+          "packedRa": 17105851,
+          "packedDec": 373164,
+          "packedMagnitude": 13666,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43827",
+          "storedRa": 1.7105851,
+          "storedDec": 3.73164,
+          "storedMagnitude": 13.666000366210938
+        },
+        {
+          "recordIndex": 43828,
+          "byteOffset": 1183356,
+          "recordSHA256": "6d2ae36a75e968dabddfddc52a07626094ac07d32e97333fe98355531b00c0c7",
+          "packedRa": 17106260,
+          "packedDec": 327085,
+          "packedMagnitude": 15360,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43828",
+          "storedRa": 1.710626,
+          "storedDec": 3.27085,
+          "storedMagnitude": 15.359999656677246
+        },
+        {
+          "recordIndex": 43829,
+          "byteOffset": 1183383,
+          "recordSHA256": "85e0619bbf9d3068edc852a3896c52c4e6efab1fa768f863b8713aef90897fb7",
+          "packedRa": 17106260,
+          "packedDec": 327085,
+          "packedMagnitude": 15360,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43829",
+          "storedRa": 1.710626,
+          "storedDec": 3.27085,
+          "storedMagnitude": 15.359999656677246
+        },
+        {
+          "recordIndex": 43830,
+          "byteOffset": 1183410,
+          "recordSHA256": "eda7c26c5d5145740d69cba480c5dd832a0f926be08728f84babc3f83877e9a7",
+          "packedRa": 17108200,
+          "packedDec": 327091,
+          "packedMagnitude": 15340,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43830",
+          "storedRa": 1.71082,
+          "storedDec": 3.27091,
+          "storedMagnitude": 15.34000015258789
+        },
+        {
+          "recordIndex": 43831,
+          "byteOffset": 1183437,
+          "recordSHA256": "2c0b20015d13b8d3b0aa5a2c559f79512813cb19e3c9ac9554b29d89370c02df",
+          "packedRa": 17108699,
+          "packedDec": 649822,
+          "packedMagnitude": 14227,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43831",
+          "storedRa": 1.7108699,
+          "storedDec": 6.49822,
+          "storedMagnitude": 14.22700023651123
+        },
+        {
+          "recordIndex": 43836,
+          "byteOffset": 1183572,
+          "recordSHA256": "66724cf935282e9a619e455cea4727ef6c55711e9fba63910cba0048fae500d7",
+          "packedRa": 17109697,
+          "packedDec": 134311,
+          "packedMagnitude": 14501,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43836",
+          "storedRa": 1.7109697,
+          "storedDec": 1.34311,
+          "storedMagnitude": 14.50100040435791
+        },
+        {
+          "recordIndex": 44406,
+          "byteOffset": 1198962,
+          "recordSHA256": "b38e2c4cc3e9c3cab77688bd92652965f89d4ffa01b539931796296bf803a624",
+          "packedRa": 17356300,
+          "packedDec": 239489,
+          "packedMagnitude": 13048,
+          "flags": 15,
+          "rowReference": "N0000.DAT@44406",
+          "storedRa": 1.73563,
+          "storedDec": 2.39489,
+          "storedMagnitude": 13.04800033569336
+        },
+        {
+          "recordIndex": 45545,
+          "byteOffset": 1229715,
+          "recordSHA256": "b45da0d0c72b9bfdb049a2cbfa2c1943a8d93ae42c88130893b0e193d315c9a1",
+          "packedRa": 17892473,
+          "packedDec": 308567,
+          "packedMagnitude": 15320,
+          "flags": 15,
+          "rowReference": "N0000.DAT@45545",
+          "storedRa": 1.7892473,
+          "storedDec": 3.08567,
+          "storedMagnitude": 15.319999694824219
+        },
+        {
+          "recordIndex": 54654,
+          "byteOffset": 1475658,
+          "recordSHA256": "2a31f9324e7daf3ce6dc471a77fdba3eee8f1f0644bf96bf87eebb6b0a81cfd5",
+          "packedRa": 21763613,
+          "packedDec": 704021,
+          "packedMagnitude": 12470,
+          "flags": 15,
+          "rowReference": "N0000.DAT@54654",
+          "storedRa": 2.1763613,
+          "storedDec": 7.04021,
+          "storedMagnitude": 12.470000267028809
+        },
+        {
+          "recordIndex": 72873,
+          "byteOffset": 1967571,
+          "recordSHA256": "09fb7279234185e257c3196dbb989e4960e64a2f824dce2a12cef8e90a112a64",
+          "packedRa": 28391927,
+          "packedDec": 578613,
+          "packedMagnitude": 15220,
+          "flags": 15,
+          "rowReference": "N0000.DAT@72873",
+          "storedRa": 2.8391927,
+          "storedDec": 5.78613,
+          "storedMagnitude": 15.220000267028809
+        },
+        {
+          "recordIndex": 145747,
+          "byteOffset": 3935169,
+          "recordSHA256": "41edf7ad85b5af5a943d7c4f45db298e049c88b25db5ea5d1ab5f555568919ed",
+          "packedRa": 48827493,
+          "packedDec": 491441,
+          "packedMagnitude": 13930,
+          "flags": 15,
+          "rowReference": "N0000.DAT@145747",
+          "storedRa": 4.8827493,
+          "storedDec": 4.91441,
+          "storedMagnitude": 13.930000305175781
+        },
+        {
+          "recordIndex": 291496,
+          "byteOffset": 7870392,
+          "recordSHA256": "43d6c7c8e5abec040c7446df1d391df5cf594d37721980c5f349bd7369472748",
+          "packedRa": 68038113,
+          "packedDec": 5072,
+          "packedMagnitude": 12440,
+          "flags": 15,
+          "rowReference": "N0000.DAT@291496",
+          "storedRa": 6.8038113,
+          "storedDec": 0.05072,
+          "storedMagnitude": 12.4399995803833
+        },
+        {
+          "recordIndex": 582993,
+          "byteOffset": 15740811,
+          "recordSHA256": "1e77bf10d6d6b7ee88830577eb91338d6e9c790961066c8cac9b8c1730d5884d",
+          "packedRa": 139529653,
+          "packedDec": 565872,
+          "packedMagnitude": 13690,
+          "flags": 15,
+          "rowReference": "N0000.DAT@582993",
+          "storedRa": 13.9529653,
+          "storedDec": 5.65872,
+          "storedMagnitude": 13.6899995803833
+        }
+      ]
+    },
+    {
+      "label": "at-identical-pair",
+      "roundedMinimumRaKey": 17106260,
+      "maximumRa": 1.7106261,
+      "region": {
+        "minimumRa": 1.710626,
+        "maximumRa": 1.7106261,
+        "minimumDec": 3.27084,
+        "maximumDec": 3.27086,
+        "limitingMagnitude": 20.0
+      },
+      "maximumScanRecords": 100,
+      "expectedSearchIndex": 43829,
+      "expectedExactKeyMatch": true,
+      "expectedProbes": [
+        {
+          "recordIndex": 582993,
+          "packedRa": 139529653
+        },
+        {
+          "recordIndex": 291496,
+          "packedRa": 68038113
+        },
+        {
+          "recordIndex": 145747,
+          "packedRa": 48827493
+        },
+        {
+          "recordIndex": 72873,
+          "packedRa": 28391927
+        },
+        {
+          "recordIndex": 36436,
+          "packedRa": 13908403
+        },
+        {
+          "recordIndex": 54654,
+          "packedRa": 21763613
+        },
+        {
+          "recordIndex": 45545,
+          "packedRa": 17892473
+        },
+        {
+          "recordIndex": 40990,
+          "packedRa": 15847656
+        },
+        {
+          "recordIndex": 43267,
+          "packedRa": 16859827
+        },
+        {
+          "recordIndex": 44406,
+          "packedRa": 17356300
+        },
+        {
+          "recordIndex": 43836,
+          "packedRa": 17109697
+        },
+        {
+          "recordIndex": 43551,
+          "packedRa": 16983820
+        },
+        {
+          "recordIndex": 43693,
+          "packedRa": 17045307
+        },
+        {
+          "recordIndex": 43764,
+          "packedRa": 17079900
+        },
+        {
+          "recordIndex": 43800,
+          "packedRa": 17096273
+        },
+        {
+          "recordIndex": 43818,
+          "packedRa": 17101796
+        },
+        {
+          "recordIndex": 43827,
+          "packedRa": 17105851
+        },
+        {
+          "recordIndex": 43831,
+          "packedRa": 17108699
+        },
+        {
+          "recordIndex": 43829,
+          "packedRa": 17106260
+        }
+      ],
+      "expectedVisits": [
+        {
+          "recordIndex": 43829,
+          "packedRa": 17106260
+        },
+        {
+          "recordIndex": 43830,
+          "packedRa": 17108200
+        }
+      ],
+      "expectedStopReason": "past-upper-ra",
+      "expectedError": null,
+      "expectedAdmittedIndices": [
+        43829
+      ],
+      "comparisonLowerBoundIndex": 43828,
+      "comparisonIntervalIndices": [
+        43828,
+        43829
+      ],
+      "keyRoundingMarginGreaterThanPoint49": true,
+      "records": [
+        {
+          "recordIndex": 36436,
+          "byteOffset": 983772,
+          "recordSHA256": "6ca8c38b1c32582c6d2324c35f5942c835f4d7d48c3726bc92d6c2644005d231",
+          "packedRa": 13908403,
+          "packedDec": 409136,
+          "packedMagnitude": 14962,
+          "flags": 15,
+          "rowReference": "N0000.DAT@36436",
+          "storedRa": 1.3908403,
+          "storedDec": 4.09136,
+          "storedMagnitude": 14.961999893188477
+        },
+        {
+          "recordIndex": 40990,
+          "byteOffset": 1106730,
+          "recordSHA256": "7ecb3d95d85e4a6d63798733934b0c62d48141968fa6c2e7760cee4d8cb87852",
+          "packedRa": 15847656,
+          "packedDec": 666440,
+          "packedMagnitude": 14493,
+          "flags": 15,
+          "rowReference": "N0000.DAT@40990",
+          "storedRa": 1.5847656,
+          "storedDec": 6.6644,
+          "storedMagnitude": 14.493000030517578
+        },
+        {
+          "recordIndex": 43267,
+          "byteOffset": 1168209,
+          "recordSHA256": "7ba5ffe2d6d54693753d47812f5bfbaa658b9d51c0cb800017fefdb331d538b4",
+          "packedRa": 16859827,
+          "packedDec": 601140,
+          "packedMagnitude": 14760,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43267",
+          "storedRa": 1.6859827,
+          "storedDec": 6.0114,
+          "storedMagnitude": 14.760000228881836
+        },
+        {
+          "recordIndex": 43551,
+          "byteOffset": 1175877,
+          "recordSHA256": "31798a7214fe277c1d128b25bf50b48ec7db88c1a8c7005f8d5668768d5d01f8",
+          "packedRa": 16983820,
+          "packedDec": 531146,
+          "packedMagnitude": 14542,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43551",
+          "storedRa": 1.698382,
+          "storedDec": 5.31146,
+          "storedMagnitude": 14.541999816894531
+        },
+        {
+          "recordIndex": 43693,
+          "byteOffset": 1179711,
+          "recordSHA256": "fc1aba92c5ccd7826f2c2ecbc81f7af8f932b009bc27d22d9bc15e3faccb34dd",
+          "packedRa": 17045307,
+          "packedDec": 688817,
+          "packedMagnitude": 14070,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43693",
+          "storedRa": 1.7045307,
+          "storedDec": 6.88817,
+          "storedMagnitude": 14.069999694824219
+        },
+        {
+          "recordIndex": 43764,
+          "byteOffset": 1181628,
+          "recordSHA256": "c010f64e864f315f2db53ecf83d4610bf9f1a378eb2c14493b8ffa4062cfb935",
+          "packedRa": 17079900,
+          "packedDec": 200130,
+          "packedMagnitude": 11386,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43764",
+          "storedRa": 1.70799,
+          "storedDec": 2.0013,
+          "storedMagnitude": 11.38599967956543
+        },
+        {
+          "recordIndex": 43800,
+          "byteOffset": 1182600,
+          "recordSHA256": "9d20f0f572d988deb38e8875a89ab109ec63a2e00431f624e1de257f5dbb1fc1",
+          "packedRa": 17096273,
+          "packedDec": 717930,
+          "packedMagnitude": 14380,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43800",
+          "storedRa": 1.7096273,
+          "storedDec": 7.1793,
+          "storedMagnitude": 14.380000114440918
+        },
+        {
+          "recordIndex": 43818,
+          "byteOffset": 1183086,
+          "recordSHA256": "857a62eb6ea94d8833f2afcfd6a36f21b50a66c87ab9b03dac2723afd5ffe654",
+          "packedRa": 17101796,
+          "packedDec": 539624,
+          "packedMagnitude": 12913,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43818",
+          "storedRa": 1.7101796,
+          "storedDec": 5.39624,
+          "storedMagnitude": 12.913000106811523
+        },
+        {
+          "recordIndex": 43827,
+          "byteOffset": 1183329,
+          "recordSHA256": "ecdf3d2b5a47f6f8b57a47e7e2b95c1b8962c82fb781e59270473e50866515e2",
+          "packedRa": 17105851,
+          "packedDec": 373164,
+          "packedMagnitude": 13666,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43827",
+          "storedRa": 1.7105851,
+          "storedDec": 3.73164,
+          "storedMagnitude": 13.666000366210938
+        },
+        {
+          "recordIndex": 43828,
+          "byteOffset": 1183356,
+          "recordSHA256": "6d2ae36a75e968dabddfddc52a07626094ac07d32e97333fe98355531b00c0c7",
+          "packedRa": 17106260,
+          "packedDec": 327085,
+          "packedMagnitude": 15360,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43828",
+          "storedRa": 1.710626,
+          "storedDec": 3.27085,
+          "storedMagnitude": 15.359999656677246
+        },
+        {
+          "recordIndex": 43829,
+          "byteOffset": 1183383,
+          "recordSHA256": "85e0619bbf9d3068edc852a3896c52c4e6efab1fa768f863b8713aef90897fb7",
+          "packedRa": 17106260,
+          "packedDec": 327085,
+          "packedMagnitude": 15360,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43829",
+          "storedRa": 1.710626,
+          "storedDec": 3.27085,
+          "storedMagnitude": 15.359999656677246
+        },
+        {
+          "recordIndex": 43830,
+          "byteOffset": 1183410,
+          "recordSHA256": "eda7c26c5d5145740d69cba480c5dd832a0f926be08728f84babc3f83877e9a7",
+          "packedRa": 17108200,
+          "packedDec": 327091,
+          "packedMagnitude": 15340,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43830",
+          "storedRa": 1.71082,
+          "storedDec": 3.27091,
+          "storedMagnitude": 15.34000015258789
+        },
+        {
+          "recordIndex": 43831,
+          "byteOffset": 1183437,
+          "recordSHA256": "2c0b20015d13b8d3b0aa5a2c559f79512813cb19e3c9ac9554b29d89370c02df",
+          "packedRa": 17108699,
+          "packedDec": 649822,
+          "packedMagnitude": 14227,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43831",
+          "storedRa": 1.7108699,
+          "storedDec": 6.49822,
+          "storedMagnitude": 14.22700023651123
+        },
+        {
+          "recordIndex": 43836,
+          "byteOffset": 1183572,
+          "recordSHA256": "66724cf935282e9a619e455cea4727ef6c55711e9fba63910cba0048fae500d7",
+          "packedRa": 17109697,
+          "packedDec": 134311,
+          "packedMagnitude": 14501,
+          "flags": 15,
+          "rowReference": "N0000.DAT@43836",
+          "storedRa": 1.7109697,
+          "storedDec": 1.34311,
+          "storedMagnitude": 14.50100040435791
+        },
+        {
+          "recordIndex": 44406,
+          "byteOffset": 1198962,
+          "recordSHA256": "b38e2c4cc3e9c3cab77688bd92652965f89d4ffa01b539931796296bf803a624",
+          "packedRa": 17356300,
+          "packedDec": 239489,
+          "packedMagnitude": 13048,
+          "flags": 15,
+          "rowReference": "N0000.DAT@44406",
+          "storedRa": 1.73563,
+          "storedDec": 2.39489,
+          "storedMagnitude": 13.04800033569336
+        },
+        {
+          "recordIndex": 45545,
+          "byteOffset": 1229715,
+          "recordSHA256": "b45da0d0c72b9bfdb049a2cbfa2c1943a8d93ae42c88130893b0e193d315c9a1",
+          "packedRa": 17892473,
+          "packedDec": 308567,
+          "packedMagnitude": 15320,
+          "flags": 15,
+          "rowReference": "N0000.DAT@45545",
+          "storedRa": 1.7892473,
+          "storedDec": 3.08567,
+          "storedMagnitude": 15.319999694824219
+        },
+        {
+          "recordIndex": 54654,
+          "byteOffset": 1475658,
+          "recordSHA256": "2a31f9324e7daf3ce6dc471a77fdba3eee8f1f0644bf96bf87eebb6b0a81cfd5",
+          "packedRa": 21763613,
+          "packedDec": 704021,
+          "packedMagnitude": 12470,
+          "flags": 15,
+          "rowReference": "N0000.DAT@54654",
+          "storedRa": 2.1763613,
+          "storedDec": 7.04021,
+          "storedMagnitude": 12.470000267028809
+        },
+        {
+          "recordIndex": 72873,
+          "byteOffset": 1967571,
+          "recordSHA256": "09fb7279234185e257c3196dbb989e4960e64a2f824dce2a12cef8e90a112a64",
+          "packedRa": 28391927,
+          "packedDec": 578613,
+          "packedMagnitude": 15220,
+          "flags": 15,
+          "rowReference": "N0000.DAT@72873",
+          "storedRa": 2.8391927,
+          "storedDec": 5.78613,
+          "storedMagnitude": 15.220000267028809
+        },
+        {
+          "recordIndex": 145747,
+          "byteOffset": 3935169,
+          "recordSHA256": "41edf7ad85b5af5a943d7c4f45db298e049c88b25db5ea5d1ab5f555568919ed",
+          "packedRa": 48827493,
+          "packedDec": 491441,
+          "packedMagnitude": 13930,
+          "flags": 15,
+          "rowReference": "N0000.DAT@145747",
+          "storedRa": 4.8827493,
+          "storedDec": 4.91441,
+          "storedMagnitude": 13.930000305175781
+        },
+        {
+          "recordIndex": 291496,
+          "byteOffset": 7870392,
+          "recordSHA256": "43d6c7c8e5abec040c7446df1d391df5cf594d37721980c5f349bd7369472748",
+          "packedRa": 68038113,
+          "packedDec": 5072,
+          "packedMagnitude": 12440,
+          "flags": 15,
+          "rowReference": "N0000.DAT@291496",
+          "storedRa": 6.8038113,
+          "storedDec": 0.05072,
+          "storedMagnitude": 12.4399995803833
+        },
+        {
+          "recordIndex": 582993,
+          "byteOffset": 15740811,
+          "recordSHA256": "1e77bf10d6d6b7ee88830577eb91338d6e9c790961066c8cac9b8c1730d5884d",
+          "packedRa": 139529653,
+          "packedDec": 565872,
+          "packedMagnitude": 13690,
+          "flags": 15,
+          "rowReference": "N0000.DAT@582993",
+          "storedRa": 13.9529653,
+          "storedDec": 5.65872,
+          "storedMagnitude": 13.6899995803833
+        }
+      ]
+    },
+    {
+      "label": "inexact-start-below-minimum",
+      "roundedMinimumRaKey": 15097619,
+      "maximumRa": 1.5097621,
+      "region": {
+        "minimumRa": 1.5097619,
+        "maximumRa": 1.5097621,
+        "minimumDec": 1.0716,
+        "maximumDec": 1.07162,
+        "limitingMagnitude": 20.0
+      },
+      "maximumScanRecords": 100,
+      "expectedSearchIndex": 39195,
+      "expectedExactKeyMatch": false,
+      "expectedProbes": [
+        {
+          "recordIndex": 582993,
+          "packedRa": 139529653
+        },
+        {
+          "recordIndex": 291496,
+          "packedRa": 68038113
+        },
+        {
+          "recordIndex": 145747,
+          "packedRa": 48827493
+        },
+        {
+          "recordIndex": 72873,
+          "packedRa": 28391927
+        },
+        {
+          "recordIndex": 36436,
+          "packedRa": 13908403
+        },
+        {
+          "recordIndex": 54654,
+          "packedRa": 21763613
+        },
+        {
+          "recordIndex": 45545,
+          "packedRa": 17892473
+        },
+        {
+          "recordIndex": 40990,
+          "packedRa": 15847656
+        },
+        {
+          "recordIndex": 38713,
+          "packedRa": 14879147
+        },
+        {
+          "recordIndex": 39851,
+          "packedRa": 15357297
+        },
+        {
+          "recordIndex": 39282,
+          "packedRa": 15134383
+        },
+        {
+          "recordIndex": 38997,
+          "packedRa": 15010427
+        },
+        {
+          "recordIndex": 39139,
+          "packedRa": 15072311
+        },
+        {
+          "recordIndex": 39210,
+          "packedRa": 15103357
+        },
+        {
+          "recordIndex": 39174,
+          "packedRa": 15087627
+        },
+        {
+          "recordIndex": 39192,
+          "packedRa": 15096713
+        },
+        {
+          "recordIndex": 39201,
+          "packedRa": 15098703
+        },
+        {
+          "recordIndex": 39196,
+          "packedRa": 15097620
+        },
+        {
+          "recordIndex": 39194,
+          "packedRa": 15097257
+        },
+        {
+          "recordIndex": 39195,
+          "packedRa": 15097451
+        }
+      ],
+      "expectedVisits": [
+        {
+          "recordIndex": 39195,
+          "packedRa": 15097451
+        },
+        {
+          "recordIndex": 39196,
+          "packedRa": 15097620
+        },
+        {
+          "recordIndex": 39197,
+          "packedRa": 15097620
+        },
+        {
+          "recordIndex": 39198,
+          "packedRa": 15097727
+        }
+      ],
+      "expectedStopReason": "past-upper-ra",
+      "expectedError": null,
+      "expectedAdmittedIndices": [
+        39196,
+        39197
+      ],
+      "comparisonLowerBoundIndex": 39196,
+      "comparisonIntervalIndices": [
+        39196,
+        39197
+      ],
+      "keyRoundingMarginGreaterThanPoint49": true,
+      "records": [
+        {
+          "recordIndex": 36436,
+          "byteOffset": 983772,
+          "recordSHA256": "6ca8c38b1c32582c6d2324c35f5942c835f4d7d48c3726bc92d6c2644005d231",
+          "packedRa": 13908403,
+          "packedDec": 409136,
+          "packedMagnitude": 14962,
+          "flags": 15,
+          "rowReference": "N0000.DAT@36436",
+          "storedRa": 1.3908403,
+          "storedDec": 4.09136,
+          "storedMagnitude": 14.961999893188477
+        },
+        {
+          "recordIndex": 38713,
+          "byteOffset": 1045251,
+          "recordSHA256": "4c84faddd5a76c43c5b67e7c93794576983e3d44dd43992d1ca901126859caf2",
+          "packedRa": 14879147,
+          "packedDec": 688127,
+          "packedMagnitude": 14850,
+          "flags": 15,
+          "rowReference": "N0000.DAT@38713",
+          "storedRa": 1.4879147,
+          "storedDec": 6.88127,
+          "storedMagnitude": 14.850000381469727
+        },
+        {
+          "recordIndex": 38997,
+          "byteOffset": 1052919,
+          "recordSHA256": "53139b3396cd41cb326534c41023bf5d41931a472160d830731cbe91f5b2f3c0",
+          "packedRa": 15010427,
+          "packedDec": 586169,
+          "packedMagnitude": 11099,
+          "flags": 15,
+          "rowReference": "N0000.DAT@38997",
+          "storedRa": 1.5010427,
+          "storedDec": 5.86169,
+          "storedMagnitude": 11.098999977111816
+        },
+        {
+          "recordIndex": 39139,
+          "byteOffset": 1056753,
+          "recordSHA256": "e96dd936868bcf82c1543d4d02af88f3b036411b7990577fb16a70d79d114652",
+          "packedRa": 15072311,
+          "packedDec": 359039,
+          "packedMagnitude": 14955,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39139",
+          "storedRa": 1.5072311,
+          "storedDec": 3.59039,
+          "storedMagnitude": 14.954999923706055
+        },
+        {
+          "recordIndex": 39174,
+          "byteOffset": 1057698,
+          "recordSHA256": "6624f4fa8fe748f8034724b7311a6e8e9d866d789b93c5bd796acc9cfab9ccce",
+          "packedRa": 15087627,
+          "packedDec": 520513,
+          "packedMagnitude": 15360,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39174",
+          "storedRa": 1.5087627,
+          "storedDec": 5.20513,
+          "storedMagnitude": 15.359999656677246
+        },
+        {
+          "recordIndex": 39192,
+          "byteOffset": 1058184,
+          "recordSHA256": "4be7c9d7fc7ebfed2146a1c7762aa3485b35b0b886d8a0bbd40566ba858fcdc7",
+          "packedRa": 15096713,
+          "packedDec": 352868,
+          "packedMagnitude": 12369,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39192",
+          "storedRa": 1.5096713,
+          "storedDec": 3.52868,
+          "storedMagnitude": 12.369000434875488
+        },
+        {
+          "recordIndex": 39194,
+          "byteOffset": 1058238,
+          "recordSHA256": "7c56aa8555f935cd338a42e0cb9ee9fa7608d9ae46b882f1735c07fe3c625a4d",
+          "packedRa": 15097257,
+          "packedDec": 629361,
+          "packedMagnitude": 12140,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39194",
+          "storedRa": 1.5097257,
+          "storedDec": 6.29361,
+          "storedMagnitude": 12.140000343322754
+        },
+        {
+          "recordIndex": 39195,
+          "byteOffset": 1058265,
+          "recordSHA256": "cb0cdf822b72d4bab6b9ed7f2a1332a1102eadd511575b7afae3a4c25db72603",
+          "packedRa": 15097451,
+          "packedDec": 366315,
+          "packedMagnitude": 13352,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39195",
+          "storedRa": 1.5097451,
+          "storedDec": 3.66315,
+          "storedMagnitude": 13.35200023651123
+        },
+        {
+          "recordIndex": 39196,
+          "byteOffset": 1058292,
+          "recordSHA256": "6f66cd1f988e64e3c6c3fbe47f06abe74df4a9dfcdb2cac8e62fecc516f93d1b",
+          "packedRa": 15097620,
+          "packedDec": 107161,
+          "packedMagnitude": 15220,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39196",
+          "storedRa": 1.509762,
+          "storedDec": 1.07161,
+          "storedMagnitude": 15.220000267028809
+        },
+        {
+          "recordIndex": 39197,
+          "byteOffset": 1058319,
+          "recordSHA256": "563460d875a8878d6660d47605d498bd930761365b9caf244f36661f03da3337",
+          "packedRa": 15097620,
+          "packedDec": 107161,
+          "packedMagnitude": 15220,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39197",
+          "storedRa": 1.509762,
+          "storedDec": 1.07161,
+          "storedMagnitude": 15.220000267028809
+        },
+        {
+          "recordIndex": 39198,
+          "byteOffset": 1058346,
+          "recordSHA256": "dfbb34c758602ea64005905af6cc41c71ff6116b82d9d7e567a41618a2b030cf",
+          "packedRa": 15097727,
+          "packedDec": 353046,
+          "packedMagnitude": 14110,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39198",
+          "storedRa": 1.5097727,
+          "storedDec": 3.53046,
+          "storedMagnitude": 14.109999656677246
+        },
+        {
+          "recordIndex": 39201,
+          "byteOffset": 1058427,
+          "recordSHA256": "c661bd1e4f0dbc439d52873f619f60bcd2e25c704f57ef41376a5b7e23071d7c",
+          "packedRa": 15098703,
+          "packedDec": 468579,
+          "packedMagnitude": 9756,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39201",
+          "storedRa": 1.5098703,
+          "storedDec": 4.68579,
+          "storedMagnitude": 9.755999565124512
+        },
+        {
+          "recordIndex": 39210,
+          "byteOffset": 1058670,
+          "recordSHA256": "3ab49684877c877a8b9715305d27a855eb009f0f165f0198fc975c2a56d828bd",
+          "packedRa": 15103357,
+          "packedDec": 498367,
+          "packedMagnitude": 13578,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39210",
+          "storedRa": 1.5103357,
+          "storedDec": 4.98367,
+          "storedMagnitude": 13.57800006866455
+        },
+        {
+          "recordIndex": 39282,
+          "byteOffset": 1060614,
+          "recordSHA256": "20be2aebcd9db993e0b23b96e38ce6f30e50a49426a3652b2e5bb3e8fcee26fb",
+          "packedRa": 15134383,
+          "packedDec": 614050,
+          "packedMagnitude": 14517,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39282",
+          "storedRa": 1.5134383,
+          "storedDec": 6.1405,
+          "storedMagnitude": 14.517000198364258
+        },
+        {
+          "recordIndex": 39851,
+          "byteOffset": 1075977,
+          "recordSHA256": "5606d32c4b2a305aaeef2cd1fffd7ba7c1d87284a79cec5b872d6155bf20ece8",
+          "packedRa": 15357297,
+          "packedDec": 424446,
+          "packedMagnitude": 13157,
+          "flags": 15,
+          "rowReference": "N0000.DAT@39851",
+          "storedRa": 1.5357297,
+          "storedDec": 4.24446,
+          "storedMagnitude": 13.156999588012695
+        },
+        {
+          "recordIndex": 40990,
+          "byteOffset": 1106730,
+          "recordSHA256": "7ecb3d95d85e4a6d63798733934b0c62d48141968fa6c2e7760cee4d8cb87852",
+          "packedRa": 15847656,
+          "packedDec": 666440,
+          "packedMagnitude": 14493,
+          "flags": 15,
+          "rowReference": "N0000.DAT@40990",
+          "storedRa": 1.5847656,
+          "storedDec": 6.6644,
+          "storedMagnitude": 14.493000030517578
+        },
+        {
+          "recordIndex": 45545,
+          "byteOffset": 1229715,
+          "recordSHA256": "b45da0d0c72b9bfdb049a2cbfa2c1943a8d93ae42c88130893b0e193d315c9a1",
+          "packedRa": 17892473,
+          "packedDec": 308567,
+          "packedMagnitude": 15320,
+          "flags": 15,
+          "rowReference": "N0000.DAT@45545",
+          "storedRa": 1.7892473,
+          "storedDec": 3.08567,
+          "storedMagnitude": 15.319999694824219
+        },
+        {
+          "recordIndex": 54654,
+          "byteOffset": 1475658,
+          "recordSHA256": "2a31f9324e7daf3ce6dc471a77fdba3eee8f1f0644bf96bf87eebb6b0a81cfd5",
+          "packedRa": 21763613,
+          "packedDec": 704021,
+          "packedMagnitude": 12470,
+          "flags": 15,
+          "rowReference": "N0000.DAT@54654",
+          "storedRa": 2.1763613,
+          "storedDec": 7.04021,
+          "storedMagnitude": 12.470000267028809
+        },
+        {
+          "recordIndex": 72873,
+          "byteOffset": 1967571,
+          "recordSHA256": "09fb7279234185e257c3196dbb989e4960e64a2f824dce2a12cef8e90a112a64",
+          "packedRa": 28391927,
+          "packedDec": 578613,
+          "packedMagnitude": 15220,
+          "flags": 15,
+          "rowReference": "N0000.DAT@72873",
+          "storedRa": 2.8391927,
+          "storedDec": 5.78613,
+          "storedMagnitude": 15.220000267028809
+        },
+        {
+          "recordIndex": 145747,
+          "byteOffset": 3935169,
+          "recordSHA256": "41edf7ad85b5af5a943d7c4f45db298e049c88b25db5ea5d1ab5f555568919ed",
+          "packedRa": 48827493,
+          "packedDec": 491441,
+          "packedMagnitude": 13930,
+          "flags": 15,
+          "rowReference": "N0000.DAT@145747",
+          "storedRa": 4.8827493,
+          "storedDec": 4.91441,
+          "storedMagnitude": 13.930000305175781
+        },
+        {
+          "recordIndex": 291496,
+          "byteOffset": 7870392,
+          "recordSHA256": "43d6c7c8e5abec040c7446df1d391df5cf594d37721980c5f349bd7369472748",
+          "packedRa": 68038113,
+          "packedDec": 5072,
+          "packedMagnitude": 12440,
+          "flags": 15,
+          "rowReference": "N0000.DAT@291496",
+          "storedRa": 6.8038113,
+          "storedDec": 0.05072,
+          "storedMagnitude": 12.4399995803833
+        },
+        {
+          "recordIndex": 582993,
+          "byteOffset": 15740811,
+          "recordSHA256": "1e77bf10d6d6b7ee88830577eb91338d6e9c790961066c8cac9b8c1730d5884d",
+          "packedRa": 139529653,
+          "packedDec": 565872,
+          "packedMagnitude": 13690,
+          "flags": 15,
+          "rowReference": "N0000.DAT@582993",
+          "storedRa": 13.9529653,
+          "storedDec": 5.65872,
+          "storedMagnitude": 13.6899995803833
+        }
+      ]
+    },
+    {
+      "label": "start-of-band-gap",
+      "roundedMinimumRaKey": 1,
+      "maximumRa": 2.5e-05,
+      "region": {
+        "minimumRa": 1e-07,
+        "maximumRa": 2.5e-05,
+        "minimumDec": -8.0,
+        "maximumDec": 8.0,
+        "limitingMagnitude": 20.0
+      },
+      "maximumScanRecords": 100,
+      "expectedSearchIndex": 0,
+      "expectedExactKeyMatch": false,
+      "expectedProbes": [
+        {
+          "recordIndex": 582993,
+          "packedRa": 139529653
+        },
+        {
+          "recordIndex": 291496,
+          "packedRa": 68038113
+        },
+        {
+          "recordIndex": 145747,
+          "packedRa": 48827493
+        },
+        {
+          "recordIndex": 72873,
+          "packedRa": 28391927
+        },
+        {
+          "recordIndex": 36436,
+          "packedRa": 13908403
+        },
+        {
+          "recordIndex": 18217,
+          "packedRa": 6363909
+        },
+        {
+          "recordIndex": 9108,
+          "packedRa": 3162623
+        },
+        {
+          "recordIndex": 4553,
+          "packedRa": 1592427
+        },
+        {
+          "recordIndex": 2276,
+          "packedRa": 840873
+        },
+        {
+          "recordIndex": 1137,
+          "packedRa": 412677
+        },
+        {
+          "recordIndex": 568,
+          "packedRa": 207033
+        },
+        {
+          "recordIndex": 283,
+          "packedRa": 102983
+        },
+        {
+          "recordIndex": 141,
+          "packedRa": 49987
+        },
+        {
+          "recordIndex": 70,
+          "packedRa": 23493
+        },
+        {
+          "recordIndex": 34,
+          "packedRa": 10667
+        },
+        {
+          "recordIndex": 16,
+          "packedRa": 3080
+        },
+        {
+          "recordIndex": 7,
+          "packedRa": 1607
+        },
+        {
+          "recordIndex": 3,
+          "packedRa": 780
+        },
+        {
+          "recordIndex": 1,
+          "packedRa": 250
+        },
+        {
+          "recordIndex": 0,
+          "packedRa": 0
+        }
+      ],
+      "expectedVisits": [
+        {
+          "recordIndex": 0,
+          "packedRa": 0
+        },
+        {
+          "recordIndex": 1,
+          "packedRa": 250
+        },
+        {
+          "recordIndex": 2,
+          "packedRa": 595
+        }
+      ],
+      "expectedStopReason": "past-upper-ra",
+      "expectedError": null,
+      "expectedAdmittedIndices": [
+        1
+      ],
+      "comparisonLowerBoundIndex": 1,
+      "comparisonIntervalIndices": [
+        1
+      ],
+      "keyRoundingMarginGreaterThanPoint49": true,
+      "records": [
+        {
+          "recordIndex": 0,
+          "byteOffset": 0,
+          "recordSHA256": "451f38d174d7df0996c3b001ca7a84ba9358aac198bff9f1bb41e13d44a455cb",
+          "packedRa": 0,
+          "packedDec": 595000,
+          "packedMagnitude": 7570,
+          "flags": 240,
+          "rowReference": "N0000.DAT@0",
+          "storedRa": 0.0,
+          "storedDec": 5.95,
+          "storedMagnitude": 7.570000171661377
+        },
+        {
+          "recordIndex": 1,
+          "byteOffset": 27,
+          "recordSHA256": "738a12715c0c0ad495ee515b91476fb39c39a9818a235a0245c8c53078f5e887",
+          "packedRa": 250,
+          "packedDec": 538060,
+          "packedMagnitude": 12941,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1",
+          "storedRa": 2.5e-05,
+          "storedDec": 5.3806,
+          "storedMagnitude": 12.940999984741211
+        },
+        {
+          "recordIndex": 2,
+          "byteOffset": 54,
+          "recordSHA256": "1ec370800f01a830aae95cffae9b752ebd63158f46a558e18ac52752856615bc",
+          "packedRa": 595,
+          "packedDec": 108901,
+          "packedMagnitude": 9512,
+          "flags": 15,
+          "rowReference": "N0000.DAT@2",
+          "storedRa": 5.95e-05,
+          "storedDec": 1.08901,
+          "storedMagnitude": 9.51200008392334
+        },
+        {
+          "recordIndex": 3,
+          "byteOffset": 81,
+          "recordSHA256": "b1f8211bc8b11fb5dace5b08ec04e2a640d3369d89bb4ee70c24228bc9d7c69d",
+          "packedRa": 780,
+          "packedDec": 66530,
+          "packedMagnitude": 14970,
+          "flags": 15,
+          "rowReference": "N0000.DAT@3",
+          "storedRa": 7.8e-05,
+          "storedDec": 0.6653,
+          "storedMagnitude": 14.970000267028809
+        },
+        {
+          "recordIndex": 7,
+          "byteOffset": 189,
+          "recordSHA256": "ca789e0fb37b0397774b1a089084ba27883d700976e455e41fd6e8414019167c",
+          "packedRa": 1607,
+          "packedDec": 42507,
+          "packedMagnitude": 15560,
+          "flags": 15,
+          "rowReference": "N0000.DAT@7",
+          "storedRa": 0.0001607,
+          "storedDec": 0.42507,
+          "storedMagnitude": 15.5600004196167
+        },
+        {
+          "recordIndex": 16,
+          "byteOffset": 432,
+          "recordSHA256": "7244f9a2066382332fbc2a124d65770b8165112ae3464b613291b4bceb2f14f8",
+          "packedRa": 3080,
+          "packedDec": 464874,
+          "packedMagnitude": 10834,
+          "flags": 15,
+          "rowReference": "N0000.DAT@16",
+          "storedRa": 0.000308,
+          "storedDec": 4.64874,
+          "storedMagnitude": 10.833999633789062
+        },
+        {
+          "recordIndex": 34,
+          "byteOffset": 918,
+          "recordSHA256": "d46224619f506c6df9e76ca8e06cb676d90b0b9c3385f6718ed5f567ca7201ba",
+          "packedRa": 10667,
+          "packedDec": 603575,
+          "packedMagnitude": 13416,
+          "flags": 15,
+          "rowReference": "N0000.DAT@34",
+          "storedRa": 0.0010667,
+          "storedDec": 6.03575,
+          "storedMagnitude": 13.416000366210938
+        },
+        {
+          "recordIndex": 70,
+          "byteOffset": 1890,
+          "recordSHA256": "0919433b44812c8241b356acf5cfeeb11c74f5ee403a8dd3a2400131627efc28",
+          "packedRa": 23493,
+          "packedDec": 561685,
+          "packedMagnitude": 12089,
+          "flags": 15,
+          "rowReference": "N0000.DAT@70",
+          "storedRa": 0.0023493,
+          "storedDec": 5.61685,
+          "storedMagnitude": 12.08899974822998
+        },
+        {
+          "recordIndex": 141,
+          "byteOffset": 3807,
+          "recordSHA256": "e819cc62f046618ca30122cfcbf82f6738d81a30d64f57f29fc063dbbdcc822f",
+          "packedRa": 49987,
+          "packedDec": 497460,
+          "packedMagnitude": 14419,
+          "flags": 15,
+          "rowReference": "N0000.DAT@141",
+          "storedRa": 0.0049987,
+          "storedDec": 4.9746,
+          "storedMagnitude": 14.418999671936035
+        },
+        {
+          "recordIndex": 283,
+          "byteOffset": 7641,
+          "recordSHA256": "514eb9a7e8f892687d28ff84662af6505678198f93d5e2bd805e80b62db4be9e",
+          "packedRa": 102983,
+          "packedDec": 604898,
+          "packedMagnitude": 15020,
+          "flags": 15,
+          "rowReference": "N0000.DAT@283",
+          "storedRa": 0.0102983,
+          "storedDec": 6.04898,
+          "storedMagnitude": 15.020000457763672
+        },
+        {
+          "recordIndex": 568,
+          "byteOffset": 15336,
+          "recordSHA256": "dbf4955b5926fd705a39686b7907c44dced28108e23e6a293fd278c47328a2fa",
+          "packedRa": 207033,
+          "packedDec": 687657,
+          "packedMagnitude": 14770,
+          "flags": 15,
+          "rowReference": "N0000.DAT@568",
+          "storedRa": 0.0207033,
+          "storedDec": 6.87657,
+          "storedMagnitude": 14.770000457763672
+        },
+        {
+          "recordIndex": 1137,
+          "byteOffset": 30699,
+          "recordSHA256": "6a9ea09cdeb6d8f766c879edc5581d622117465eb3d9d16cc30516101c229708",
+          "packedRa": 412677,
+          "packedDec": 585478,
+          "packedMagnitude": 12713,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1137",
+          "storedRa": 0.0412677,
+          "storedDec": 5.85478,
+          "storedMagnitude": 12.713000297546387
+        },
+        {
+          "recordIndex": 2276,
+          "byteOffset": 61452,
+          "recordSHA256": "8688ba90dfe25c72818848eb935d892ecc48a25b5142e3fa3877133fdf9e5a2b",
+          "packedRa": 840873,
+          "packedDec": 637114,
+          "packedMagnitude": 15440,
+          "flags": 15,
+          "rowReference": "N0000.DAT@2276",
+          "storedRa": 0.0840873,
+          "storedDec": 6.37114,
+          "storedMagnitude": 15.4399995803833
+        },
+        {
+          "recordIndex": 4553,
+          "byteOffset": 122931,
+          "recordSHA256": "01d20c84c6953c251e4149cacb5e1cd5ae7cdb645212395e347ef32125308d11",
+          "packedRa": 1592427,
+          "packedDec": 717357,
+          "packedMagnitude": 14310,
+          "flags": 15,
+          "rowReference": "N0000.DAT@4553",
+          "storedRa": 0.1592427,
+          "storedDec": 7.17357,
+          "storedMagnitude": 14.3100004196167
+        },
+        {
+          "recordIndex": 9108,
+          "byteOffset": 245916,
+          "recordSHA256": "96cfb561badbeb94993f2e03a56c6166147bccc11ea25f5eaa5a9b2a448f73fe",
+          "packedRa": 3162623,
+          "packedDec": 430811,
+          "packedMagnitude": 13897,
+          "flags": 15,
+          "rowReference": "N0000.DAT@9108",
+          "storedRa": 0.3162623,
+          "storedDec": 4.30811,
+          "storedMagnitude": 13.897000312805176
+        },
+        {
+          "recordIndex": 18217,
+          "byteOffset": 491859,
+          "recordSHA256": "e9fa951c3738368417bfbe7fb404a45cc88a027015970026492056be6371dba8",
+          "packedRa": 6363909,
+          "packedDec": 268918,
+          "packedMagnitude": 15134,
+          "flags": 15,
+          "rowReference": "N0000.DAT@18217",
+          "storedRa": 0.6363909,
+          "storedDec": 2.68918,
+          "storedMagnitude": 15.133999824523926
+        },
+        {
+          "recordIndex": 36436,
+          "byteOffset": 983772,
+          "recordSHA256": "6ca8c38b1c32582c6d2324c35f5942c835f4d7d48c3726bc92d6c2644005d231",
+          "packedRa": 13908403,
+          "packedDec": 409136,
+          "packedMagnitude": 14962,
+          "flags": 15,
+          "rowReference": "N0000.DAT@36436",
+          "storedRa": 1.3908403,
+          "storedDec": 4.09136,
+          "storedMagnitude": 14.961999893188477
+        },
+        {
+          "recordIndex": 72873,
+          "byteOffset": 1967571,
+          "recordSHA256": "09fb7279234185e257c3196dbb989e4960e64a2f824dce2a12cef8e90a112a64",
+          "packedRa": 28391927,
+          "packedDec": 578613,
+          "packedMagnitude": 15220,
+          "flags": 15,
+          "rowReference": "N0000.DAT@72873",
+          "storedRa": 2.8391927,
+          "storedDec": 5.78613,
+          "storedMagnitude": 15.220000267028809
+        },
+        {
+          "recordIndex": 145747,
+          "byteOffset": 3935169,
+          "recordSHA256": "41edf7ad85b5af5a943d7c4f45db298e049c88b25db5ea5d1ab5f555568919ed",
+          "packedRa": 48827493,
+          "packedDec": 491441,
+          "packedMagnitude": 13930,
+          "flags": 15,
+          "rowReference": "N0000.DAT@145747",
+          "storedRa": 4.8827493,
+          "storedDec": 4.91441,
+          "storedMagnitude": 13.930000305175781
+        },
+        {
+          "recordIndex": 291496,
+          "byteOffset": 7870392,
+          "recordSHA256": "43d6c7c8e5abec040c7446df1d391df5cf594d37721980c5f349bd7369472748",
+          "packedRa": 68038113,
+          "packedDec": 5072,
+          "packedMagnitude": 12440,
+          "flags": 15,
+          "rowReference": "N0000.DAT@291496",
+          "storedRa": 6.8038113,
+          "storedDec": 0.05072,
+          "storedMagnitude": 12.4399995803833
+        },
+        {
+          "recordIndex": 582993,
+          "byteOffset": 15740811,
+          "recordSHA256": "1e77bf10d6d6b7ee88830577eb91338d6e9c790961066c8cac9b8c1730d5884d",
+          "packedRa": 139529653,
+          "packedDec": 565872,
+          "packedMagnitude": 13690,
+          "flags": 15,
+          "rowReference": "N0000.DAT@582993",
+          "storedRa": 13.9529653,
+          "storedDec": 5.65872,
+          "storedMagnitude": 13.6899995803833
+        }
+      ]
+    },
+    {
+      "label": "last-record-eof",
+      "roundedMinimumRaKey": 239999937,
+      "maximumRa": 24.0,
+      "region": {
+        "minimumRa": 23.9999937,
+        "maximumRa": 24.0,
+        "minimumDec": -8.0,
+        "maximumDec": 8.0,
+        "limitingMagnitude": 20.0
+      },
+      "maximumScanRecords": 100,
+      "expectedSearchIndex": 1165986,
+      "expectedExactKeyMatch": true,
+      "expectedProbes": [
+        {
+          "recordIndex": 582993,
+          "packedRa": 139529653
+        },
+        {
+          "recordIndex": 874490,
+          "packedRa": 193338699
+        },
+        {
+          "recordIndex": 1020239,
+          "packedRa": 208224296
+        },
+        {
+          "recordIndex": 1093113,
+          "packedRa": 218830655
+        },
+        {
+          "recordIndex": 1129550,
+          "packedRa": 227934980
+        },
+        {
+          "recordIndex": 1147769,
+          "packedRa": 233323213
+        },
+        {
+          "recordIndex": 1156878,
+          "packedRa": 236793672
+        },
+        {
+          "recordIndex": 1161433,
+          "packedRa": 238391208
+        },
+        {
+          "recordIndex": 1163710,
+          "packedRa": 239166548
+        },
+        {
+          "recordIndex": 1164849,
+          "packedRa": 239561187
+        },
+        {
+          "recordIndex": 1165418,
+          "packedRa": 239778163
+        },
+        {
+          "recordIndex": 1165703,
+          "packedRa": 239894959
+        },
+        {
+          "recordIndex": 1165845,
+          "packedRa": 239944893
+        },
+        {
+          "recordIndex": 1165916,
+          "packedRa": 239976069
+        },
+        {
+          "recordIndex": 1165952,
+          "packedRa": 239989123
+        },
+        {
+          "recordIndex": 1165970,
+          "packedRa": 239995533
+        },
+        {
+          "recordIndex": 1165979,
+          "packedRa": 239997660
+        },
+        {
+          "recordIndex": 1165983,
+          "packedRa": 239998433
+        },
+        {
+          "recordIndex": 1165985,
+          "packedRa": 239999497
+        },
+        {
+          "recordIndex": 1165986,
+          "packedRa": 239999937
+        }
+      ],
+      "expectedVisits": [
+        {
+          "recordIndex": 1165986,
+          "packedRa": 239999937
+        }
+      ],
+      "expectedStopReason": "band-eof",
+      "expectedError": null,
+      "expectedAdmittedIndices": [
+        1165986
+      ],
+      "comparisonLowerBoundIndex": 1165986,
+      "comparisonIntervalIndices": [
+        1165986
+      ],
+      "keyRoundingMarginGreaterThanPoint49": true,
+      "records": [
+        {
+          "recordIndex": 582993,
+          "byteOffset": 15740811,
+          "recordSHA256": "1e77bf10d6d6b7ee88830577eb91338d6e9c790961066c8cac9b8c1730d5884d",
+          "packedRa": 139529653,
+          "packedDec": 565872,
+          "packedMagnitude": 13690,
+          "flags": 15,
+          "rowReference": "N0000.DAT@582993",
+          "storedRa": 13.9529653,
+          "storedDec": 5.65872,
+          "storedMagnitude": 13.6899995803833
+        },
+        {
+          "recordIndex": 874490,
+          "byteOffset": 23611230,
+          "recordSHA256": "0bb10126dbf95a58bb3377f511551a51d10301421ecb283fb06f6b58917bd8e3",
+          "packedRa": 193338699,
+          "packedDec": 436059,
+          "packedMagnitude": 13831,
+          "flags": 15,
+          "rowReference": "N0000.DAT@874490",
+          "storedRa": 19.3338699,
+          "storedDec": 4.36059,
+          "storedMagnitude": 13.831000328063965
+        },
+        {
+          "recordIndex": 1020239,
+          "byteOffset": 27546453,
+          "recordSHA256": "7c4963e11521886b79f255411f1cdc780e770684d17140070b5ac92762eaf7f5",
+          "packedRa": 208224296,
+          "packedDec": 328867,
+          "packedMagnitude": 14111,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1020239",
+          "storedRa": 20.8224296,
+          "storedDec": 3.28867,
+          "storedMagnitude": 14.111000061035156
+        },
+        {
+          "recordIndex": 1093113,
+          "byteOffset": 29514051,
+          "recordSHA256": "67ecaa24cea2ddb1e8c942f84123e95eb749a3dceed4b9037ee1a5236ca8981d",
+          "packedRa": 218830655,
+          "packedDec": 127492,
+          "packedMagnitude": 14157,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1093113",
+          "storedRa": 21.8830655,
+          "storedDec": 1.27492,
+          "storedMagnitude": 14.156999588012695
+        },
+        {
+          "recordIndex": 1129550,
+          "byteOffset": 30497850,
+          "recordSHA256": "4cf15cd7d97e663372f2067d78eeba26a774e0d616d783ad2aca45444bcc40a2",
+          "packedRa": 227934980,
+          "packedDec": 38158,
+          "packedMagnitude": 15290,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1129550",
+          "storedRa": 22.793498,
+          "storedDec": 0.38158,
+          "storedMagnitude": 15.289999961853027
+        },
+        {
+          "recordIndex": 1147769,
+          "byteOffset": 30989763,
+          "recordSHA256": "4884a1054d6d01252d2c83429f297214d143873bedd28a78637a24a262824ffd",
+          "packedRa": 233323213,
+          "packedDec": 348775,
+          "packedMagnitude": 15430,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1147769",
+          "storedRa": 23.3323213,
+          "storedDec": 3.48775,
+          "storedMagnitude": 15.430000305175781
+        },
+        {
+          "recordIndex": 1156878,
+          "byteOffset": 31235706,
+          "recordSHA256": "e8b174100b3c9aa542b42cd5eef7bf799a2b626cdeca90882b0c9a3fd29748de",
+          "packedRa": 236793672,
+          "packedDec": 588560,
+          "packedMagnitude": 14247,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1156878",
+          "storedRa": 23.6793672,
+          "storedDec": 5.8856,
+          "storedMagnitude": 14.246999740600586
+        },
+        {
+          "recordIndex": 1161433,
+          "byteOffset": 31358691,
+          "recordSHA256": "e231dd18924a47153cd304b7b6675a7f636bcba37be270484c33bd5e7a3e2ddf",
+          "packedRa": 238391208,
+          "packedDec": 191800,
+          "packedMagnitude": 9471,
+          "flags": 14,
+          "rowReference": "N0000.DAT@1161433",
+          "storedRa": 23.8391208,
+          "storedDec": 1.918,
+          "storedMagnitude": 9.470999717712402
+        },
+        {
+          "recordIndex": 1163710,
+          "byteOffset": 31420170,
+          "recordSHA256": "8d3904c6f575b5f35eb97e646af7a86b3d46e2b9176db750962b7044b9fafaae",
+          "packedRa": 239166548,
+          "packedDec": 160672,
+          "packedMagnitude": 13310,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1163710",
+          "storedRa": 23.9166548,
+          "storedDec": 1.60672,
+          "storedMagnitude": 13.3100004196167
+        },
+        {
+          "recordIndex": 1164849,
+          "byteOffset": 31450923,
+          "recordSHA256": "62104fa290a2d50670cde1060246b4c42e92adb98c0db86e8ccf0c617f1a5d39",
+          "packedRa": 239561187,
+          "packedDec": 689579,
+          "packedMagnitude": 13980,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1164849",
+          "storedRa": 23.9561187,
+          "storedDec": 6.89579,
+          "storedMagnitude": 13.979999542236328
+        },
+        {
+          "recordIndex": 1165418,
+          "byteOffset": 31466286,
+          "recordSHA256": "588675dc27bbf9d4e746b9f9704d31789db44fc3e75db083fcb8437a67cfb46f",
+          "packedRa": 239778163,
+          "packedDec": 39187,
+          "packedMagnitude": 11229,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165418",
+          "storedRa": 23.9778163,
+          "storedDec": 0.39187,
+          "storedMagnitude": 11.229000091552734
+        },
+        {
+          "recordIndex": 1165703,
+          "byteOffset": 31473981,
+          "recordSHA256": "012932cf2ab29a5f0463591dbfeb0dd261631762f5847ef6f6cd743e89755c2f",
+          "packedRa": 239894959,
+          "packedDec": 187571,
+          "packedMagnitude": 12986,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165703",
+          "storedRa": 23.9894959,
+          "storedDec": 1.87571,
+          "storedMagnitude": 12.986000061035156
+        },
+        {
+          "recordIndex": 1165845,
+          "byteOffset": 31477815,
+          "recordSHA256": "09cf374366e20d3cf7691c890fc642344a32c356b3524aa38365ef60dbed48ff",
+          "packedRa": 239944893,
+          "packedDec": 29445,
+          "packedMagnitude": 15260,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165845",
+          "storedRa": 23.9944893,
+          "storedDec": 0.29445,
+          "storedMagnitude": 15.260000228881836
+        },
+        {
+          "recordIndex": 1165916,
+          "byteOffset": 31479732,
+          "recordSHA256": "84872c96652b9fa90b126c35f347b68f59f1d438d0937b45efccabf9b12283cd",
+          "packedRa": 239976069,
+          "packedDec": 156040,
+          "packedMagnitude": 14627,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165916",
+          "storedRa": 23.9976069,
+          "storedDec": 1.5604,
+          "storedMagnitude": 14.626999855041504
+        },
+        {
+          "recordIndex": 1165952,
+          "byteOffset": 31480704,
+          "recordSHA256": "49c9ed1b4cf8601f58fe5a2df4ad99346c7663f6232cefce65190646f14000f0",
+          "packedRa": 239989123,
+          "packedDec": 271214,
+          "packedMagnitude": 14648,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165952",
+          "storedRa": 23.9989123,
+          "storedDec": 2.71214,
+          "storedMagnitude": 14.64799976348877
+        },
+        {
+          "recordIndex": 1165970,
+          "byteOffset": 31481190,
+          "recordSHA256": "be27d00dc795d0694763e6c1856c5127b82fdadac441cb7c144b22febc51f2c5",
+          "packedRa": 239995533,
+          "packedDec": 70224,
+          "packedMagnitude": 14250,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165970",
+          "storedRa": 23.9995533,
+          "storedDec": 0.70224,
+          "storedMagnitude": 14.25
+        },
+        {
+          "recordIndex": 1165979,
+          "byteOffset": 31481433,
+          "recordSHA256": "99f09557a795f9455d4d3b3b006faff005dfd54d74e75d3451ea60fb8f532985",
+          "packedRa": 239997660,
+          "packedDec": 49369,
+          "packedMagnitude": 10770,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165979",
+          "storedRa": 23.999766,
+          "storedDec": 0.49369,
+          "storedMagnitude": 10.770000457763672
+        },
+        {
+          "recordIndex": 1165983,
+          "byteOffset": 31481541,
+          "recordSHA256": "31ea5708e9e8c83a5eafa25dc055bbff150fc8585cdc0f6f67ffb34f32572ad5",
+          "packedRa": 239998433,
+          "packedDec": 298112,
+          "packedMagnitude": 15400,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165983",
+          "storedRa": 23.9998433,
+          "storedDec": 2.98112,
+          "storedMagnitude": 15.399999618530273
+        },
+        {
+          "recordIndex": 1165985,
+          "byteOffset": 31481595,
+          "recordSHA256": "359b9facbfa084245ff2ecce7a19edc90ae8abda3ca913fcd861ef0c50a9891a",
+          "packedRa": 239999497,
+          "packedDec": 237899,
+          "packedMagnitude": 12965,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165985",
+          "storedRa": 23.9999497,
+          "storedDec": 2.37899,
+          "storedMagnitude": 12.96500015258789
+        },
+        {
+          "recordIndex": 1165986,
+          "byteOffset": 31481622,
+          "recordSHA256": "abb952fc669e6108f9e5da437c2d9ffc3d432f73ccef3baeaf78d8ac0ff985e8",
+          "packedRa": 239999937,
+          "packedDec": 520852,
+          "packedMagnitude": 11346,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165986",
+          "storedRa": 23.9999937,
+          "storedDec": 5.20852,
+          "storedMagnitude": 11.345999717712402
+        }
+      ]
+    },
+    {
+      "label": "one-past-end-search",
+      "roundedMinimumRaKey": 240000000,
+      "maximumRa": 24.0,
+      "region": {
+        "minimumRa": 24.0,
+        "maximumRa": 24.0,
+        "minimumDec": -8.0,
+        "maximumDec": 8.0,
+        "limitingMagnitude": 20.0
+      },
+      "maximumScanRecords": 100,
+      "expectedSearchIndex": 1165987,
+      "expectedExactKeyMatch": null,
+      "expectedProbes": [
+        {
+          "recordIndex": 582993,
+          "packedRa": 139529653
+        },
+        {
+          "recordIndex": 874490,
+          "packedRa": 193338699
+        },
+        {
+          "recordIndex": 1020239,
+          "packedRa": 208224296
+        },
+        {
+          "recordIndex": 1093113,
+          "packedRa": 218830655
+        },
+        {
+          "recordIndex": 1129550,
+          "packedRa": 227934980
+        },
+        {
+          "recordIndex": 1147769,
+          "packedRa": 233323213
+        },
+        {
+          "recordIndex": 1156878,
+          "packedRa": 236793672
+        },
+        {
+          "recordIndex": 1161433,
+          "packedRa": 238391208
+        },
+        {
+          "recordIndex": 1163710,
+          "packedRa": 239166548
+        },
+        {
+          "recordIndex": 1164849,
+          "packedRa": 239561187
+        },
+        {
+          "recordIndex": 1165418,
+          "packedRa": 239778163
+        },
+        {
+          "recordIndex": 1165703,
+          "packedRa": 239894959
+        },
+        {
+          "recordIndex": 1165845,
+          "packedRa": 239944893
+        },
+        {
+          "recordIndex": 1165916,
+          "packedRa": 239976069
+        },
+        {
+          "recordIndex": 1165952,
+          "packedRa": 239989123
+        },
+        {
+          "recordIndex": 1165970,
+          "packedRa": 239995533
+        },
+        {
+          "recordIndex": 1165979,
+          "packedRa": 239997660
+        },
+        {
+          "recordIndex": 1165983,
+          "packedRa": 239998433
+        },
+        {
+          "recordIndex": 1165985,
+          "packedRa": 239999497
+        },
+        {
+          "recordIndex": 1165986,
+          "packedRa": 239999937
+        }
+      ],
+      "expectedVisits": [],
+      "expectedStopReason": null,
+      "expectedError": {
+        "code": "read-boundary",
+        "phase": "search",
+        "recordIndex": 1165987
+      },
+      "expectedAdmittedIndices": [],
+      "comparisonLowerBoundIndex": 1165987,
+      "comparisonIntervalIndices": [],
+      "keyRoundingMarginGreaterThanPoint49": true,
+      "records": [
+        {
+          "recordIndex": 582993,
+          "byteOffset": 15740811,
+          "recordSHA256": "1e77bf10d6d6b7ee88830577eb91338d6e9c790961066c8cac9b8c1730d5884d",
+          "packedRa": 139529653,
+          "packedDec": 565872,
+          "packedMagnitude": 13690,
+          "flags": 15,
+          "rowReference": "N0000.DAT@582993",
+          "storedRa": 13.9529653,
+          "storedDec": 5.65872,
+          "storedMagnitude": 13.6899995803833
+        },
+        {
+          "recordIndex": 874490,
+          "byteOffset": 23611230,
+          "recordSHA256": "0bb10126dbf95a58bb3377f511551a51d10301421ecb283fb06f6b58917bd8e3",
+          "packedRa": 193338699,
+          "packedDec": 436059,
+          "packedMagnitude": 13831,
+          "flags": 15,
+          "rowReference": "N0000.DAT@874490",
+          "storedRa": 19.3338699,
+          "storedDec": 4.36059,
+          "storedMagnitude": 13.831000328063965
+        },
+        {
+          "recordIndex": 1020239,
+          "byteOffset": 27546453,
+          "recordSHA256": "7c4963e11521886b79f255411f1cdc780e770684d17140070b5ac92762eaf7f5",
+          "packedRa": 208224296,
+          "packedDec": 328867,
+          "packedMagnitude": 14111,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1020239",
+          "storedRa": 20.8224296,
+          "storedDec": 3.28867,
+          "storedMagnitude": 14.111000061035156
+        },
+        {
+          "recordIndex": 1093113,
+          "byteOffset": 29514051,
+          "recordSHA256": "67ecaa24cea2ddb1e8c942f84123e95eb749a3dceed4b9037ee1a5236ca8981d",
+          "packedRa": 218830655,
+          "packedDec": 127492,
+          "packedMagnitude": 14157,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1093113",
+          "storedRa": 21.8830655,
+          "storedDec": 1.27492,
+          "storedMagnitude": 14.156999588012695
+        },
+        {
+          "recordIndex": 1129550,
+          "byteOffset": 30497850,
+          "recordSHA256": "4cf15cd7d97e663372f2067d78eeba26a774e0d616d783ad2aca45444bcc40a2",
+          "packedRa": 227934980,
+          "packedDec": 38158,
+          "packedMagnitude": 15290,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1129550",
+          "storedRa": 22.793498,
+          "storedDec": 0.38158,
+          "storedMagnitude": 15.289999961853027
+        },
+        {
+          "recordIndex": 1147769,
+          "byteOffset": 30989763,
+          "recordSHA256": "4884a1054d6d01252d2c83429f297214d143873bedd28a78637a24a262824ffd",
+          "packedRa": 233323213,
+          "packedDec": 348775,
+          "packedMagnitude": 15430,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1147769",
+          "storedRa": 23.3323213,
+          "storedDec": 3.48775,
+          "storedMagnitude": 15.430000305175781
+        },
+        {
+          "recordIndex": 1156878,
+          "byteOffset": 31235706,
+          "recordSHA256": "e8b174100b3c9aa542b42cd5eef7bf799a2b626cdeca90882b0c9a3fd29748de",
+          "packedRa": 236793672,
+          "packedDec": 588560,
+          "packedMagnitude": 14247,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1156878",
+          "storedRa": 23.6793672,
+          "storedDec": 5.8856,
+          "storedMagnitude": 14.246999740600586
+        },
+        {
+          "recordIndex": 1161433,
+          "byteOffset": 31358691,
+          "recordSHA256": "e231dd18924a47153cd304b7b6675a7f636bcba37be270484c33bd5e7a3e2ddf",
+          "packedRa": 238391208,
+          "packedDec": 191800,
+          "packedMagnitude": 9471,
+          "flags": 14,
+          "rowReference": "N0000.DAT@1161433",
+          "storedRa": 23.8391208,
+          "storedDec": 1.918,
+          "storedMagnitude": 9.470999717712402
+        },
+        {
+          "recordIndex": 1163710,
+          "byteOffset": 31420170,
+          "recordSHA256": "8d3904c6f575b5f35eb97e646af7a86b3d46e2b9176db750962b7044b9fafaae",
+          "packedRa": 239166548,
+          "packedDec": 160672,
+          "packedMagnitude": 13310,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1163710",
+          "storedRa": 23.9166548,
+          "storedDec": 1.60672,
+          "storedMagnitude": 13.3100004196167
+        },
+        {
+          "recordIndex": 1164849,
+          "byteOffset": 31450923,
+          "recordSHA256": "62104fa290a2d50670cde1060246b4c42e92adb98c0db86e8ccf0c617f1a5d39",
+          "packedRa": 239561187,
+          "packedDec": 689579,
+          "packedMagnitude": 13980,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1164849",
+          "storedRa": 23.9561187,
+          "storedDec": 6.89579,
+          "storedMagnitude": 13.979999542236328
+        },
+        {
+          "recordIndex": 1165418,
+          "byteOffset": 31466286,
+          "recordSHA256": "588675dc27bbf9d4e746b9f9704d31789db44fc3e75db083fcb8437a67cfb46f",
+          "packedRa": 239778163,
+          "packedDec": 39187,
+          "packedMagnitude": 11229,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165418",
+          "storedRa": 23.9778163,
+          "storedDec": 0.39187,
+          "storedMagnitude": 11.229000091552734
+        },
+        {
+          "recordIndex": 1165703,
+          "byteOffset": 31473981,
+          "recordSHA256": "012932cf2ab29a5f0463591dbfeb0dd261631762f5847ef6f6cd743e89755c2f",
+          "packedRa": 239894959,
+          "packedDec": 187571,
+          "packedMagnitude": 12986,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165703",
+          "storedRa": 23.9894959,
+          "storedDec": 1.87571,
+          "storedMagnitude": 12.986000061035156
+        },
+        {
+          "recordIndex": 1165845,
+          "byteOffset": 31477815,
+          "recordSHA256": "09cf374366e20d3cf7691c890fc642344a32c356b3524aa38365ef60dbed48ff",
+          "packedRa": 239944893,
+          "packedDec": 29445,
+          "packedMagnitude": 15260,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165845",
+          "storedRa": 23.9944893,
+          "storedDec": 0.29445,
+          "storedMagnitude": 15.260000228881836
+        },
+        {
+          "recordIndex": 1165916,
+          "byteOffset": 31479732,
+          "recordSHA256": "84872c96652b9fa90b126c35f347b68f59f1d438d0937b45efccabf9b12283cd",
+          "packedRa": 239976069,
+          "packedDec": 156040,
+          "packedMagnitude": 14627,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165916",
+          "storedRa": 23.9976069,
+          "storedDec": 1.5604,
+          "storedMagnitude": 14.626999855041504
+        },
+        {
+          "recordIndex": 1165952,
+          "byteOffset": 31480704,
+          "recordSHA256": "49c9ed1b4cf8601f58fe5a2df4ad99346c7663f6232cefce65190646f14000f0",
+          "packedRa": 239989123,
+          "packedDec": 271214,
+          "packedMagnitude": 14648,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165952",
+          "storedRa": 23.9989123,
+          "storedDec": 2.71214,
+          "storedMagnitude": 14.64799976348877
+        },
+        {
+          "recordIndex": 1165970,
+          "byteOffset": 31481190,
+          "recordSHA256": "be27d00dc795d0694763e6c1856c5127b82fdadac441cb7c144b22febc51f2c5",
+          "packedRa": 239995533,
+          "packedDec": 70224,
+          "packedMagnitude": 14250,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165970",
+          "storedRa": 23.9995533,
+          "storedDec": 0.70224,
+          "storedMagnitude": 14.25
+        },
+        {
+          "recordIndex": 1165979,
+          "byteOffset": 31481433,
+          "recordSHA256": "99f09557a795f9455d4d3b3b006faff005dfd54d74e75d3451ea60fb8f532985",
+          "packedRa": 239997660,
+          "packedDec": 49369,
+          "packedMagnitude": 10770,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165979",
+          "storedRa": 23.999766,
+          "storedDec": 0.49369,
+          "storedMagnitude": 10.770000457763672
+        },
+        {
+          "recordIndex": 1165983,
+          "byteOffset": 31481541,
+          "recordSHA256": "31ea5708e9e8c83a5eafa25dc055bbff150fc8585cdc0f6f67ffb34f32572ad5",
+          "packedRa": 239998433,
+          "packedDec": 298112,
+          "packedMagnitude": 15400,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165983",
+          "storedRa": 23.9998433,
+          "storedDec": 2.98112,
+          "storedMagnitude": 15.399999618530273
+        },
+        {
+          "recordIndex": 1165985,
+          "byteOffset": 31481595,
+          "recordSHA256": "359b9facbfa084245ff2ecce7a19edc90ae8abda3ca913fcd861ef0c50a9891a",
+          "packedRa": 239999497,
+          "packedDec": 237899,
+          "packedMagnitude": 12965,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165985",
+          "storedRa": 23.9999497,
+          "storedDec": 2.37899,
+          "storedMagnitude": 12.96500015258789
+        },
+        {
+          "recordIndex": 1165986,
+          "byteOffset": 31481622,
+          "recordSHA256": "abb952fc669e6108f9e5da437c2d9ffc3d432f73ccef3baeaf78d8ac0ff985e8",
+          "packedRa": 239999937,
+          "packedDec": 520852,
+          "packedMagnitude": 11346,
+          "flags": 15,
+          "rowReference": "N0000.DAT@1165986",
+          "storedRa": 23.9999937,
+          "storedDec": 5.20852,
+          "storedMagnitude": 11.345999717712402
+        }
+      ]
+    }
+  ]
+}

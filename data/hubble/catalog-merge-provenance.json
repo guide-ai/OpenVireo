@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "scope": "0x59a2e0 nearest pruning and0x5980cc one-galaxy cleanup on supplied ordered records; not full telescope population",
+  "nativeRanges": [
+    {
+      "start": "0x59a2e0",
+      "endInclusive": "0x59a487",
+      "bytes": 424,
+      "sourceBytesSHA256": "ead3be800271b384f8a1123b218a7610a110525eb8c14ed54f19e54a1ab99876"
+    },
+    {
+      "start": "0x5980cc",
+      "endInclusive": "0x598191",
+      "bytes": 198,
+      "sourceBytesSHA256": "6b8b5927b2695b4db07ce9cedcc7c74254fe6f01a14d99da2fabfb6301a75ae0"
+    },
+    {
+      "start": "0x59a49c",
+      "endInclusive": "0x59a531",
+      "bytes": 150,
+      "sourceBytesSHA256": "dc12bbc03dadfe30fe07b085eacc1c9340d51df0009a4ff584b4c94c42fde3c7"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x59a490",
+      "bytes": "d9cef753e3a59bc4f73f",
+      "numerator": "14167099448608935641",
+      "denominator": "2361183241434822606848",
+      "decimalApproximation": "0.006"
+    },
+    {
+      "address": "0x59a53c",
+      "bytes": "aec8e9941235fa8ef93f",
+      "numerator": "5151302725743731799",
+      "denominator": "295147905179352825856",
+      "decimalApproximation": "0.017453292519943295"
+    }
+  ],
+  "initialBestExtendedLittleEndian": "8988888888888888fa3f",
+  "originalSources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "bytes": 117988,
+      "recordBytes": 52,
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "bytes": 31481649,
+      "recordBytes": 27,
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "bytes": 2865524,
+      "recordBytes": 92,
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "bytes": 1420071,
+      "recordBytes": 59,
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/CONTRACT.md",
+      "sha256": "03a38a86ba304f73f08d2b3a3126a4838e0e8b12f3de0e7ec9436eb8d66b524f"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/static-manifest.json",
+      "sha256": "62918c999776541477cffaa4505b94b8d5d8009db80427f3d70d9a3bc8a0a7d5"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/nearest-for-merge.asm",
+      "sha256": "5c4d1b08e6f0dd6953168415a639c25ee83942abcf8e6d4bb0569347f94e2386"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/galaxy-cleanup.asm",
+      "sha256": "3a1c4cfddf82980d35781b71a57e89774999b04837cb3eb70d1fc2f51efcac49"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/merge-angular-distance.asm",
+      "sha256": "c1705f77cefc75aafebf1cf4db3b78d6bd8786b89e2b4efa71d2f16e761163ce"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/catalog-merge-recovery/list-operations.asm",
+      "sha256": "9bedaac812b19cb9aea621dd8b3f76f0b8322ac2d88ebeedc0ddb3675d000672"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/nearest-index-audit/REPORT.md",
+      "sha256": "c726370534d9307f1a22fa5655063526ad34b8e2fb1bac52e6dedd8e2d150395"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/nearest-index-audit/static-manifest.json",
+      "sha256": "5f75edcf5d1faff2eb3f51924b3840457bd778c7acae3a4b9c5449907d202b8c"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/nearest-index-audit/index_contract.py",
+      "sha256": "2e5747fd3ebe45129cf4ba1ca5dd2232c49d744e4be103d1a3455febe0f43076"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/nearest-index-audit/state-traces.json",
+      "sha256": "2f5c4f7dca745a48c977429dc206c9363ec5903fb12109653b90bd5bcc94ab0b"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/nearest-index-audit/original-entry-witnesses.json",
+      "sha256": "450a135010a8998756e25e43b88f6cdb816d01d6b063767cbdc2ceb5d0d961fe"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-activate.c",
+      "sha256": "b98c2d255aab492635ac2d70131165190cef376bb2dcaa840cb78831a1157d81"
+    }
+  ],
+  "numericalPolicy": "Number distances/Math geometry, explicit Single magnitudes, branch guards within8EPSILON*max(1,abs(value),abs(boundary)) of projected Extended initial/gap and30arcsec; conservative support exclusion, not measured x87 bound",
+  "newProtectionPolicies": [
+    "200000 records",
+    "owned frozen minimal records; unique IDs are identities not names",
+    "near-boundary precision rejection",
+    "null caller lookup throws atomically, not a native crash claim"
+  ],
+  "orderPolicy": "retain pre-delete winner index, lookup old numeric position; never repair or re-sort",
+  "productionConnection": "core only; no complete-field attestation from navigation subset",
+  "originalExecution": false,
+  "externalReview": "denied/pending; no retry"
+}

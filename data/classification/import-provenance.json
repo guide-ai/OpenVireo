@@ -1,0 +1,73 @@
+{
+  "policy": "OpenCLEA-visual-import-v1",
+  "sourceArchive": {
+    "file": "CLEA_Vireo.zip",
+    "sha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b"
+  },
+  "binary": {
+    "file": "CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "existingContracts": [
+    {
+      "guide": "docs/SPECTRUM-SAVE-CONTRACT.md",
+      "reader": "0x55ee14",
+      "meaning": "Marker/optional magnitude and original endpoint reconstruction; the existing web adapter instead preserves printed wavelengths and header absence."
+    },
+    {
+      "guide": "docs/FEATURE-WIDTH.md",
+      "classificationLoadEvent": "0x50829c",
+      "meaning": "Published LoadSavedSpectrum handler identity from prior Delphi inventory. New file archive, pure source scopes and web workflow are adaptations, not recovered native state/session semantics."
+    }
+  ],
+  "sharedParsers": [
+    {
+      "path": "src/io/spectrumFiles.ts",
+      "sha256": "755b1e9277b0caa961079740652111fc90d710a94ddb339e15fa7fda38cd62cd",
+      "changed": false
+    },
+    {
+      "path": "src/core/legacySpectrumFile.ts",
+      "sha256": "9cc243b435fefe01992c4f9a4fc23946a900b7ff3e321e8648a373273e7bb7bd",
+      "changed": false
+    },
+    {
+      "path": "src/core/spectrum.ts",
+      "sha256": "dee30f0d56a14e81c18d4566feeb17baf561dda91795456cef307d6710f7eee1",
+      "changed": false
+    }
+  ],
+  "derivedGrid": {
+    "source": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/jspect2/A0000001.SP",
+    "sourceSha256": "6311f2dab943fd9a790f8be36f50900661e1ff3224528c0a6391f67c2310e6f0",
+    "rows": 2799,
+    "allOriginalGridsVerified": 57,
+    "derivedGridSha256": "501af04152d01e310ce768bd154217938e72cab5a77ccd0e0c13ca759eda8383",
+    "policy": "Identical full printed grid only; never reconstructed from endpoints or interpolated."
+  },
+  "bounds": {
+    "fileBytes": 2097152,
+    "files": 4,
+    "combinedTextBytes": 4194304,
+    "sessionBytes": 16777216,
+    "comparisonAngstrom": [
+      3900,
+      4500
+    ],
+    "flux": [
+      0,
+      1
+    ],
+    "minimumVisibleSamples": 2
+  },
+  "session": "New full investigation v7/importPolicy; raw name/SHA256/exact UTF8 text only. Restore rehashes/reparses. Practice-only v1\u2013v3 and prior full v1\u2013v6 remain readable. No trusted cached samples/header/grid/computed width.",
+  "adaptations": [
+    "SHA256 identifies exact bytes; same-byte repeats retain first name and existing state; different bytes with the same name remain separate.",
+    "Imported role is manually selected by the user; no original/catalog/acquired/stellar authorship is inferred.",
+    "Difference uses Number subtraction only for exact equality of every parsed printed wavelength against the verified original atlas grid. No interpolation or redshift alignment.",
+    "Imported equivalent width remains disabled even if its grid matches an original practice.",
+    "Import cancellation discards pending completion, not old sources or work. Full restore replaces; practice-only restore merges."
+  ],
+  "rights": "Original CLEA license remains local research only; importing files grants no public redistribution rights.",
+  "uncertainty": "No original execution, native writer oracle, x87 equivalence, native file chooser/window behavior or astrophysical type validation. Signed or flux>1 data can be valid in other paths while outside this comparator profile."
+}

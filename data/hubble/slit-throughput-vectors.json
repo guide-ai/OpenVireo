@@ -1,0 +1,488 @@
+{
+  "targetSha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "method": "Exact Fraction comparisons of chosen Double coordinate inputs against original Extended threshold bytes; original actual pointing was Extended and is not recreated. No CPU/FPU emulation. Synthetic diagnostics only.",
+  "ra": {
+    "address": "0x50f468",
+    "bytes": "9f93de37bef6cc92f33f",
+    "exactDecimal": "0.000280000000000000000008495740460960632400855274681816808879375457763671875",
+    "Number": 0.00028
+  },
+  "dec": {
+    "address": "0x50f474",
+    "bytes": "2c6519e25817b7d1f73f",
+    "exactDecimal": "0.006400000000000000000073183646642771549295503064058721065521240234375",
+    "Number": 0.0064
+  },
+  "stellar": [
+    {
+      "label": "center",
+      "objectType": 0,
+      "pixelLevel": 1,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "zero pixels",
+      "objectType": 0,
+      "pixelLevel": 0,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "RA inside",
+      "objectType": 0,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002772,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "RA outside",
+      "objectType": 0,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002828,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "Dec inside",
+      "objectType": 0,
+      "pixelLevel": 765,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20.006336
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "Dec outside",
+      "objectType": 0,
+      "pixelLevel": 765,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20.006464
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "negative offsets",
+      "objectType": 0,
+      "pixelLevel": 199,
+      "object": {
+        "raHours": 11.99986,
+        "decDegrees": 19.9968
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "unwrapped RA crossing",
+      "objectType": 0,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 5e-05,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 23.9999,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "high declination still raw RA",
+      "objectType": 0,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002828,
+        "decDegrees": 89
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 89
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "low positive level",
+      "objectType": 0,
+      "pixelLevel": 1,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "center",
+      "objectType": 2,
+      "pixelLevel": 1,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "zero pixels",
+      "objectType": 2,
+      "pixelLevel": 0,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "RA inside",
+      "objectType": 2,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002772,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "RA outside",
+      "objectType": 2,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002828,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "Dec inside",
+      "objectType": 2,
+      "pixelLevel": 765,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20.006336
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "Dec outside",
+      "objectType": 2,
+      "pixelLevel": 765,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20.006464
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "negative offsets",
+      "objectType": 2,
+      "pixelLevel": 199,
+      "object": {
+        "raHours": 11.99986,
+        "decDegrees": 19.9968
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "unwrapped RA crossing",
+      "objectType": 2,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 5e-05,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 23.9999,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "high declination still raw RA",
+      "objectType": 2,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002828,
+        "decDegrees": 89
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 89
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "low positive level",
+      "objectType": 2,
+      "pixelLevel": 1,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "center",
+      "objectType": 3,
+      "pixelLevel": 1,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "zero pixels",
+      "objectType": 3,
+      "pixelLevel": 0,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "RA inside",
+      "objectType": 3,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002772,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "RA outside",
+      "objectType": 3,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002828,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "Dec inside",
+      "objectType": 3,
+      "pixelLevel": 765,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20.006336
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "Dec outside",
+      "objectType": 3,
+      "pixelLevel": 765,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20.006464
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "negative offsets",
+      "objectType": 3,
+      "pixelLevel": 199,
+      "object": {
+        "raHours": 11.99986,
+        "decDegrees": 19.9968
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    },
+    {
+      "label": "unwrapped RA crossing",
+      "objectType": 3,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 5e-05,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 23.9999,
+        "decDegrees": 20
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "high declination still raw RA",
+      "objectType": 3,
+      "pixelLevel": 200,
+      "object": {
+        "raHours": 12.0002828,
+        "decDegrees": 89
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 89
+      },
+      "expectedFraction": 0
+    },
+    {
+      "label": "low positive level",
+      "objectType": 3,
+      "pixelLevel": 1,
+      "object": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "pointing": {
+        "raHours": 12,
+        "decDegrees": 20
+      },
+      "expectedFraction": 1
+    }
+  ],
+  "galaxy": [
+    {
+      "pixelLevel": 0,
+      "expectedFraction": 0.0
+    },
+    {
+      "pixelLevel": 1,
+      "expectedFraction": 2.5e-05
+    },
+    {
+      "pixelLevel": 100,
+      "expectedFraction": 0.25
+    },
+    {
+      "pixelLevel": 199,
+      "expectedFraction": 0.990025
+    },
+    {
+      "pixelLevel": 200,
+      "expectedFraction": 1
+    },
+    {
+      "pixelLevel": 765,
+      "expectedFraction": 1
+    }
+  ],
+  "guardedBoundaries": [
+    {
+      "label": "RA projected equality",
+      "object": {
+        "raHours": 0.00028,
+        "decDegrees": 0
+      },
+      "pointing": {
+        "raHours": 0,
+        "decDegrees": 0
+      }
+    },
+    {
+      "label": "Dec projected equality",
+      "object": {
+        "raHours": 0,
+        "decDegrees": 0.0064
+      },
+      "pointing": {
+        "raHours": 0,
+        "decDegrees": 0
+      }
+    }
+  ]
+}

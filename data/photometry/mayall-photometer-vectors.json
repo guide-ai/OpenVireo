@@ -1,0 +1,6550 @@
+{
+  "kind": "Independent synthetic numerical fixtures; not original CLEA observations",
+  "method": "Mayall4m zero14/original Single1.8 width;Decimal90 analytic Gaussian power series and knot interpolation; integer-coordinate Decimal cosine/separation,direct flux sums andarea scaling; independent integer-modulo PRNG andPython math.lgamma Poisson;no original execution/emulation.",
+  "sourceBindings": [
+    {
+      "file": "pinned-pleiades-v.json",
+      "sha256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624"
+    },
+    {
+      "file": "pleiades-target-fields.json",
+      "sha256": "5f1a9c4feb879fa004cec1b739551866e347c078a652c875f9fd8746dbdbd356"
+    },
+    {
+      "file": "pleiades-expanded-fields.json",
+      "sha256": "86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40"
+    }
+  ],
+  "eligibleTargetIds": [
+    "N2230.DAT@145877",
+    "N2230.DAT@144496",
+    "N2230.DAT@148460",
+    "N2230.DAT@148546",
+    "N2230.DAT@149260",
+    "N2230.DAT@150246",
+    "N2230.DAT@150480",
+    "N2230.DAT@150861",
+    "N2230.DAT@151890",
+    "N2230.DAT@152989"
+  ],
+  "excludedTargets": [
+    {
+      "targetId": "N2230.DAT@147993",
+      "maximumMean": 12694003.84574204,
+      "expected5000CallbackTotal": 63470019228.7102,
+      "reason": "Poisson-mean-bound"
+    },
+    {
+      "targetId": "N2230.DAT@149142",
+      "maximumMean": 436454.4232467915,
+      "expected5000CallbackTotal": 2182272116.233958,
+      "reason": "all-duration-count-domain"
+    },
+    {
+      "targetId": "N2230.DAT@149656",
+      "maximumMean": 862275.938345491,
+      "expected5000CallbackTotal": 4311379691.727455,
+      "reason": "all-duration-count-domain"
+    },
+    {
+      "targetId": "N2230.DAT@150112",
+      "maximumMean": 42422496.62869217,
+      "expected5000CallbackTotal": 212112483143.46088,
+      "reason": "Poisson-mean-bound"
+    },
+    {
+      "targetId": "N2230.DAT@150975",
+      "maximumMean": 3798452.632105945,
+      "expected5000CallbackTotal": 18992263160.529724,
+      "reason": "Poisson-mean-bound"
+    },
+    {
+      "targetId": "N2230.DAT@151125",
+      "maximumMean": 660423.3069470075,
+      "expected5000CallbackTotal": 3302116534.735038,
+      "reason": "all-duration-count-domain"
+    }
+  ],
+  "rows": [
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "31377.1665663834578726220335318950116334130527914523566668547181462636256669372631639211920",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 31377,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 31565,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 31313,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.025148360830600902
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "31667.4959075120578818830457757496020248114561136660006001166388897919465707027472435521922",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 31667,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 31856,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 31603,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023087854529920127
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "49273.5347841806017875348710235292354960225816998761901021533534511031724704643522452137159",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 49273,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 49509,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 49194,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02200714476702348
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "40270.6696244424190132264157560886882375188734236670830077403099344830869930767109748621068",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 40270,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 40484,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 40198,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.024363779417701292
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "40643.2895343420619717415891689747692881968101308260112619333884529010223494922412505294876",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 40643,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 40857,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 40571,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02328483227091782
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "63239.5610459009409979400397522550065618102157071950041853246473144478204279771030321374429",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 63239,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 63507,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 63149,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02421569716731864
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "41266.2531367307079259302215078885736970996037167333636679393165462629283039099065201918766",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 41266,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 41482,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 41193,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.025182975782112038
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "41648.0850672425253645315198762749967223885476161023608009627522812950931564354800900132886",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 41648,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 41865,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 41574,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.024899944444475408
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "64802.9883464351682996943570843771293126988024697468675506569418691158585245407601169973820",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@145877"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 64802,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 65074,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 64711,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02249607329443626
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "2682.95682839520980148441426794793486059089799406200489896066269893967865064135796118741895",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 2682,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 2738,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 2664,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.019866966102781602
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "18391.3517255655831052962265279088096109047561168526740519841768196963824245626245421225533",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 18391,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 18535,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 18342,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.026480039327018257
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "90492.7232257309348877081120552000489096252045418459443160500105057639004286107583316592814",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 90492,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 90813,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 90384,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023244494143175976
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "3443.41060319643089559609720670616993129729516773416026378082088001899241480507405844158377",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 3443,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 3505,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 3422,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.03018094046328672
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "23604.1724073537363814846327280013633552826340547467010091376016839956099961511912510605462",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 23604,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 23767,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 23549,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023419288360829293
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "116141.862354894898786007831347545795626910726636794654176923598595450630363288105530383913",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 116141,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 116504,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 116019,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02250468476151457
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "3528.53962773344229179523707248450533968964247608891339603330931044343620754886693557276063",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 3528,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 3591,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 3507,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023918669318067964
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "24187.7218017176232407096702030885807393782460816010469146089748329051203364139471739951943",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 24187,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 24353,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 24132,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022049389407274855
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "119013.156135835851882007904240587767390511667370787779504410115588192815267995759744997343",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@144496"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 119013,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 119380,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 118889,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023129169809110173
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "225.846770402671750869452682532045015000576750432156298003218506323625730980446479776315482",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 225,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 241,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 220,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.0252327470714917
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "466.244674993545243336728934692284892365831882062960263324094704590761090451458558858278432",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 466,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 489,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 458,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02782423224377284
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "1260.70623850130115159814481051122248252102342763492856264922211628180916520132547476788484",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1260,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1298,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1247,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.027808300580363876
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "289.860483654295336893486688764359792312859133752201833493061317429255028384984509515728420",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 289,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 307,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 283,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.028800199119630495
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "598.396455941837973540456104047434239751492673124564471363610767186634260422663913871540347",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 598,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 624,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 589,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02948980254407371
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "1618.03916605243412161679779510049960042955514801226515693257475820168215189298492970057747",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1618,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1660,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1603,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023159499858267152
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "297.026501033230866429010776446205672334490851134043951424522179316973843197675163640846893",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 297,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 315,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 290,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02772780371837047
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "613.190191702959876833500927524662450507805793179136996319842092961740260168922606244171561",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 613,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 639,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 604,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023862923979144912
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "1658.04081318126058817496283780094228557502994300843673998153922086015268818339226957145902",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@148460"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1658,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1701,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1643,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.03005168543881815
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148460",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "832.940086425400061830238296777534814623696201727891054906795784323157418640093359639497896",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 832,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 863,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 822,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.018423778521287404
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "1805.56760079958262834727667481140882422079084638253926916983313615410181087056431054537792",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1805,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1850,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1790,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.029739331859722107
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "4577.34607888056365098706201374114591101706120033975732524729640299324970574046494904257354",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 4577,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 4649,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 4553,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022251074315072117
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "1069.02753524369567253897550853196966120816184836745214446578987605550876945734780273252590",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1069,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1103,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1057,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02880942960400401
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "2317.33532033762182079603941263544834778911919911940168507761953877846502357008270784901235",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 2317,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 2368,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 2300,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.01790411378631518
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "5874.74306545016959008798960115194850229142426715711940974063395841452038499628260308403735",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 5874,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 5956,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 5847,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.019741118895898246
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "1095.45635299607858453762401590748580108940173046076760184890714256287248614419821336293027",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1095,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1130,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1083,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.029746414247442458
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "2374.62517568115288511269778997432380090515616399500698568800284223756172374040114277999307",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 2374,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 2426,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 2357,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02984235686391068
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "6019.98021669292423465653947535069867340605185904963920253235367186646157423780912054138815",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@148546"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 6019,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 6102,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 5992,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023201381787555708
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@148546",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "94757.5799458167564476415618391408049387476247506953502697274088178690922884740674518678266",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 94757,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 95085,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 94647,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023545630251067262
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "123769.591403794634103156636376805740290141506863665020906571994396098988501880124069308376",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 123769,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 124144,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 123643,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022833755596663674
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "172430.450533813974279331193933323058000144785067587956305267503412500733517224586539341294",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 172430,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 172872,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 172281,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022577495679912962
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "121615.544486351774329140676419881862776993063559377734119976446789307071214379671857120639",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 121615,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 121986,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 121490,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022626381823752983
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "158850.682531495777942271530218348068256243109487599309886344882290732051600928174027442095",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 158850,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 159275,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 158707,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02311783489682062
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "221303.911937047106963380943906310371261667959401385240784872147934405738933624052362984479",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 221303,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 221804,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 221135,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023297537577451788
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "124622.160270438110599930434444562512795915283528959249690975668148298608080675759918906273",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 124622,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 124998,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 124495,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023751099165468248
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "162777.836510284086063356213157235328717316291298642559245908248375539660253248609578724670",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 162777,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 163207,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 162633,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.0239966380866653
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "226775.053290894762289135380846650166738412356449317266570143948505322400686757463384052182",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@149260"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 226775,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 227282,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 226604,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022596191222512996
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@149260",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "28616.3211323081161162630925371183396839040944045367954729242369379272312719247424431340693",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 28616,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 28796,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 28555,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.024405749723481862
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "80281.1902515871999310268702999332966032338865745301854138492157481532625541468932601084267",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 80281,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 80582,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 80179,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.024040957090869286
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "249237.743320363395001790397129942906947458641856605204119250815826820521153906844520365956",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 249237,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 249769,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 249058,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02348549946737144
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "36727.2937710307711317639896022497403708592024146399894601637320611009037924300618351931914",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 36727,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 36931,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 36658,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.025718514724577535
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "103035.985828700959036492892916905298121040664892177120108496755437425587551708772632282290",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 103035,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 103377,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 102921,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022891164506052775
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "319881.363346212398760369110490928632578032682595704789414061125427990671867427758462777909",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 319881,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 320483,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 319678,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02317563299333636
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "37635.2768880339536854632296004724631022826426643264649890722885569687584306074296538692597",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 37635,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 37841,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 37565,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.024528475774091785
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "105583.272219021189078566605843270340158736777099768392159942995632201160846033177266259128",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 105583,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 105929,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 105466,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02410559951945801
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "327789.565871915941134901216448863603647499745425163351905088910316002204318637192085399885",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@150246"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 327789,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 328399,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 327584,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023898517852584344
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150246",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "111.844336941297923868786918303032256220050999837891107872922729385468391168507534710004591",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 111,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 123,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 108,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.026256440596760574
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "310.895191415665001176554659412712866281392089103886589587785407002261322976880831242514133",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 310,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 329,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 304,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02840765184122092
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "1010.68074884201443442689869235916702062732695375101823980900204822277091532902914304119689",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1010,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1044,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 999,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.016898164010413996
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "143.545349539410856971462622379833447229008903493028839892301254510506618319449972444093907",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 143,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 156,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 139,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.00032136184661812894
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "399.014917897065118090761904147654144075736587105266211157323549437128053729925442226904037",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 399,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 420,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 391,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.029278442807898708
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "1297.14677857516993157690940173637536506129350527856942961237386873871134236839609553570509",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1297,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1335,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1284,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02663644609968896
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "147.094120508452708441687206345087821441500590603416079508505035503032049059752017115074958",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 147,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 160,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 142,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02808351608162923
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "408.879483773920303757924711803188620033407999231354563152668313786734561973379962498479147",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 408,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 430,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 401,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02630349773567109
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "1329.21522833800865489133161387344678517580066278039906338608899055394226455430362301042561",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@150480"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 1329,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 1368,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 1316,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.018716289523168617
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150480",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "5503.18199677314788536879580610079763656707191880251623390189971685558379422948630727092370",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 5503,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 5582,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 5476,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.028351573301390043
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "6739.28581335272027050471753717644982859970934645313373218853342468132370879216300380258349",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 6739,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 6826,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 6709,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022934818577362903
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "13080.1850048735415966254691986790183451552916211488898166592295276419714348620607948312433",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 13080,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 13201,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 13039,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.021987074321821787
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "7062.99670514750401965617871423095526416985299916722032845120118824905964366738227503180768",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 7062,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 7152,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 7032,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02138603496939462
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "8649.46017098255315989846298239453710628900954533831965126593307017080517816641325558399624",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 8649,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 8748,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 8616,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02022112660057962
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "16787.6155370316238496196569651077416298999774292496012033254961875707063104214217196584525",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 16787,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 16925,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 16741,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02096575510008447
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "7237.61021747716708383200136362812519216545005220337034243703793194929901776647129818676606",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 7237,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 7328,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 7207,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02724340258910596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "8863.29470655724449594246478060121207068197379001557466106994052599946753283173033004184188",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 8863,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 8963,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 8829,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.026506108033464315
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "17202.6439782065650901229823941535523841138811049693894687944531834351672394908378794367421",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@150861"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 17202,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 17342,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 17155,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02402232700744411
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@150861",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "4927.35496617593588095291385327832202608843442573270791922005123662645477789620892833820969",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 4927,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 5002,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 4902,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02875138363447516
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "6739.28544338004720471260034332055223712639259215706632422882445986327542897224139985401316",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 6739,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 6826,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 6709,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.0229312332143784
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "14080.3631561713740775084816058095537864046160648284848983036112419003962863325282827084266",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 14080,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 14206,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 14037,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.0223653070737444
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "6323.95801403611647437371338869593107626993285445659507222844630165302072651518326021195028",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 6323,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 6408,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 6295,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.024376495816224475
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "8649.45969614530947242201893712955932095573241142372830586176730809915561199998655671797260",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 8649,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 8748,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 8616,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.020217064975852295
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "18071.2828755494699338645046847711257227604755618245820463529053476281822111632735084728183",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 18071,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 18214,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 18023,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02098831939065382
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "6480.30079129543359888423493621613311388985432588882713109292175975233385427121327063818543",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 6480,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 6566,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 6451,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.028370125391706247
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "8863.29421998093276603305554431619423664653255481873945978091515496154329142578445116108466",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 8863,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 8963,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 8829,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.026501993963512382
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "18518.0465237475313440158670176041744243514245708595005390193974744197164912002377651779288",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@151890"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 18518,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 18662,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 18469,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02204266940351629
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@151890",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "249237.709113789849118434601140573987714656952554963859149396973898114179910264050347511398",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 249237,
+          "skyCount": 10,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6899840878926803
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 249769,
+          "skyCount": 13,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.04672357769451607
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 249058,
+          "skyCount": 10,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023430899683728246
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "268295.723343920226047540529175964483342826708489251926505386665413426016206561674145889288",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 268295,
+          "skyCount": 14,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6645265623573495
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 268847,
+          "skyCount": 17,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.06185593860563532
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 268110,
+          "skyCount": 14,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023410833929950692
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "288811.012669730562185302443726249589675010767552025747867810598329901617212650696275392544",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 288811,
+          "skyCount": 39,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.7077356922042458
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 289383,
+          "skyCount": 44,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.048266987561564445
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 288618,
+          "skyCount": 39,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.022796436959401145
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "319881.319444172380708030287792714091052117500139430258094455285863364867218031511701817508",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 319881,
+          "skyCount": 42,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.713244517200643
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 320483,
+          "skyCount": 47,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05014789099506167
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 319678,
+          "skyCount": 42,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023113775925481916
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "344341.112304556288053137739295826398234368815240687770354578665890495132825095474915050682",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 344341,
+          "skyCount": 57,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6476980142502319
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 344965,
+          "skyCount": 63,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05687733053198907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 344130,
+          "skyCount": 58,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023628094415901302
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "370671.228407986913110197742863790555757247060394633470327059724471712460842934673307257550",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 370671,
+          "skyCount": 150,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6910514263673365
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 371319,
+          "skyCount": 159,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.054067101225914405
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 370453,
+          "skyCount": 150,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023525022811469065
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "327789.520884516588226487524195209371009914418879672276383907518531005052576423027094616164",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 327789,
+          "skyCount": 94,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6569422291883628
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 328399,
+          "skyCount": 102,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05255456601322872
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 327584,
+          "skyCount": 95,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023835896906460152
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "352854.016043443965439112262667240357871067704829646825600934692820594521463118915015074969",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 352854,
+          "skyCount": 129,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6628361238773974
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 353486,
+          "skyCount": 138,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05376675164973321
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 352641,
+          "skyCount": 130,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.023581370596863382
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "object",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "379835.073134786580047646165253553818739647262956362505432433429986925630884441160167973757",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [
+        "N2230.DAT@152989"
+      ],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 379835,
+          "skyCount": 333,
+          "seed": 870078620,
+          "draws": 4,
+          "minimumDecisionMargin": 0.6893016818579711
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 380491,
+          "skyCount": 346,
+          "seed": 3638705852,
+          "draws": 6,
+          "minimumDecisionMargin": 0.05491841001827624
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 379614,
+          "skyCount": 333,
+          "seed": 3077390393,
+          "draws": 12,
+          "minimumDecisionMargin": 0.02306791347460546
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "12.7745844254598713648586979179994998873827706026268224931665770611053580402289760715538422",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03816379557076888
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 10,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.647947632671037
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 13,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09080585116384066
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "17.3119815605676605853872055626538792801420354013096770221894043058623329113424271465584131",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.05338564557929493
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 14,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6236082753634125
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 17,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.10605321583042915
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 5,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "43.4857315845339527685837338277488318833565755539296433710367152585749388897693722433865142",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03971633278792097
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 39,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6649195351257013
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 44,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09236099072277126
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "46.5586093522958948091131056350229706639322465765159398304666155698137429400080863434317722",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.0416083594262876
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 42,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6701863965787676
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 47,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.09425618875046948
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "63.0957344480193249434360136622343864672945257188228724527729528833494943297686807572914065",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03552817866185454
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 58,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6789410745320632
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 64,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08816581646969146
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 10,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "158.489319246111348520210137339150701326944213382503906831629681231665686366845398011020271",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.036990859510234286
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 151,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6816445216606907
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 160,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08963094904382596
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "U",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "101.457649858404432906026518175186110675825145034085755503579178146464868402149140535233408",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.044029266934440425
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 95,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6722171292362863
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 102,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.0966811541508783
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "B",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "137.494332890128279525265326824052710646417322484781815027471219321766131634711342874732521",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.03543148648157901
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 130,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.669690947286909
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 139,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08806896221529781
+        }
+      ]
+    },
+    {
+      "targetId": "N2230.DAT@152989",
+      "kind": "sky",
+      "filter": "V",
+      "aperture": 15,
+      "sourceMean": "0.000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018317",
+      "skyMean": "345.370149196174616616603043045178739172774124853937084955093250937938151017093939883425126",
+      "neighborIds": [],
+      "draws": [
+        {
+          "initialSeed": 0,
+          "sourceCount": 0,
+          "skyCount": 347,
+          "seed": 3698175007,
+          "draws": 3,
+          "minimumDecisionMargin": 0.04214479281859662
+        },
+        {
+          "initialSeed": 42,
+          "sourceCount": 0,
+          "skyCount": 334,
+          "seed": 882243745,
+          "draws": 3,
+          "minimumDecisionMargin": 0.6763234147442875
+        },
+        {
+          "initialSeed": 123456789,
+          "sourceCount": 0,
+          "skyCount": 348,
+          "seed": 3478552678,
+          "draws": 5,
+          "minimumDecisionMargin": 0.08795661065756588
+        }
+      ]
+    }
+  ]
+}

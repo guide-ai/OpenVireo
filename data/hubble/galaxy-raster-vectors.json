@@ -1,0 +1,158 @@
+{
+  "method": "Independent Python Decimal precision80 for base/tone; binary64 projection at scale power and multiplication; half-even adapter. Includes exact decoded Extended scale but does not claim x87 Pow/multiplication equivalence or GDI rasterization.",
+  "points": [
+    {
+      "x": 125,
+      "y": 125,
+      "base": 255,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        255,
+        230,
+        122,
+        77
+      ]
+    },
+    {
+      "x": 80,
+      "y": 125,
+      "base": 155,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        155,
+        140,
+        90,
+        52
+      ]
+    },
+    {
+      "x": 125,
+      "y": 170,
+      "base": 155,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        155,
+        140,
+        90,
+        52
+      ]
+    },
+    {
+      "x": 35,
+      "y": 125,
+      "base": 35,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        52,
+        48,
+        17,
+        0
+      ]
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "base": 0,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "x": 124,
+      "y": 124,
+      "base": 255,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        255,
+        230,
+        122,
+        77
+      ]
+    },
+    {
+      "x": 30,
+      "y": 90,
+      "base": 20,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        26,
+        20,
+        0,
+        0
+      ]
+    },
+    {
+      "x": 50,
+      "y": 50,
+      "base": 16,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        12,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "x": 249,
+      "y": 249,
+      "base": 0,
+      "toneLevels": [
+        0,
+        1,
+        7,
+        14
+      ],
+      "tones": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

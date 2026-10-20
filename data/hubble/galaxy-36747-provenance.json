@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "policyId": "openclea-pinned-galaxy-36747-v1",
+  "target": {
+    "id": "36747",
+    "recordIndex": 12109,
+    "ra": 11.781083333333333,
+    "dec": 55.705555555555556,
+    "majorArcminutes": 0.699999988079071,
+    "minorArcminutes": 0.30000001192092896,
+    "magnitude": 15.600000381469727,
+    "redshift": 0.04997457191348076,
+    "positionAngleDegrees": 0,
+    "morphology": 20,
+    "rawHex": "133c9827ea8f2740a54ffaa44fda4b403333333f9a99993e9a99794123b24c3d000014202044020033383739410000053336373437000000000000"
+  },
+  "domain": {
+    "exercise": "hubble",
+    "exerciseMode": 4,
+    "catalogMode": 1,
+    "telescopeRecord": 0,
+    "options": "compiled-fallback-unmodified",
+    "history": "fresh-process-direct-hubble",
+    "pointing": {
+      "ra": 11.781083333333333,
+      "dec": 55.705555555555556
+    },
+    "fieldArcminutes": 15,
+    "fieldMultiplier": 3,
+    "dynamicContext": "absent",
+    "minimum": 4000,
+    "maximum": 5000,
+    "rasterPolicy": "nearest-center-stretch-v1"
+  },
+  "fieldSnapshotSHA256": "67cd4050b627a30c18be46810c3fb367c1b84794d6112209f16aba435bba2588",
+  "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Hubble.HTL",
+      "sha256": "02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986",
+      "bytes": 1118
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.NDX",
+      "sha256": "312fe73d57da2ce0abfc89c78a852e81f17b0a81706bc4295af51a5585144134",
+      "bytes": 192
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N5230.DAT",
+      "sha256": "17e899286fba7af6b286fb88580449e5513e98a86a24544030d870f0d8af851d",
+      "bytes": 18166950
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/Galaxies/GLXYTMPL.SP",
+      "sha256": "05602de89d005ddd5ea1bdd97f50b6519e1a17e222dc855930208792ac679cc5",
+      "bytes": 56967
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST",
+      "sha256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+      "bytes": 576
+    }
+  ],
+  "ranges": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-bank-level.asm",
+      "start": "0x594908",
+      "endInclusive": "0x5949c7",
+      "sha256": "74eb85be9e25922fb0b12bdaa129e5639094e1813c003183c96e72374de953ad",
+      "sourceBytesSHA256": "001babd6022e2d181d9121bc7e6ec3949882ef176c49ba82688732217c9901c9"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-collection-comparator.asm",
+      "start": "0x5969e0",
+      "endInclusive": "0x596a07",
+      "sha256": "34bd4a3931df59f87d4bb1cb7836a32af31ff1138115d552c40f527d8a8e9ab9",
+      "sourceBytesSHA256": "ad8cf958d072226ad7e86ddb8b3165c2a8798e26c7848dee6f8a730697b37718"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-axes.asm",
+      "start": "0x53b94c",
+      "endInclusive": "0x53bae3",
+      "sha256": "7cede7d45647a4d86527b97d2bfa2439a4f15b79fb3755cc87faf91216ea6965",
+      "sourceBytesSHA256": "d63f48a50474b5056fb2c174220b15d9e295cf95b61be3dfeabe7b4968a8e434"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-rotation.asm",
+      "start": "0x59456c",
+      "endInclusive": "0x594807",
+      "sha256": "149207ae867b7ce2440a20d0aa3491ba1a791229a141919a504a4ecc42bdf6ad",
+      "sourceBytesSHA256": "9e0789c897512db48f3b80cc19e5d86c04550526c042b4bb4b5f4d95dad82229"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-image-brightness.asm",
+      "start": "0x599324",
+      "endInclusive": "0x59940b",
+      "sha256": "c11ceae834cbb031f56eb6377775e405c3465e783b815a036673afbc00824f88",
+      "sourceBytesSHA256": "58c7fe17bfc10fcfcf4e7447f1a78e03e0712ee8fe1591d986fa3d93c2c5d4e8"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-geometry.asm",
+      "start": "0x5943d4",
+      "endInclusive": "0x594487",
+      "sha256": "d26258d94437550187c46a2d17abd84d1a8d229f59c1148e76dcbea263e102ba",
+      "sourceBytesSHA256": "fe041833b71c1283b19c0abc73a10e2ed187900225324d616279206d5c93257d"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-cleanup.asm",
+      "start": "0x5980cc",
+      "endInclusive": "0x59819f",
+      "sha256": "3a1c4cfddf82980d35781b71a57e89774999b04837cb3eb70d1fc2f51efcac49",
+      "sourceBytesSHA256": "a481551127dd5df7eddb2c6018da60ff6a9824a8a8d7e1053d1c7cdbb5e6902d"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/multi-galaxy-recovery/36747/galaxy-draw.asm",
+      "start": "0x53b432",
+      "endInclusive": "0x53b5ce",
+      "sha256": "056285edfc887fa1df2289ec799deca38ccbe77f1b7f8fcfe4321ed7ee4a3e28",
+      "sourceBytesSHA256": "fa6587a2224a5b7c554b0af2dee90267f6248fedde5eeb1ef682be08e8a4f5d1"
+    }
+  ],
+  "calibration": {
+    "baseZeroPoint": 6,
+    "telescopeCorrection": -2,
+    "skyMagnitude": 19,
+    "multiplier": 50,
+    "galaxyBankOffset": 6,
+    "magnitudeShift": -2
+  },
+  "decision": {
+    "selectedCatalogId": "36747",
+    "selectedRecordIndex": 12109,
+    "label": "UM-I \u2013 1",
+    "basis": "Original13-target comparison plus whole field. No variable/QSO/photo matches. Preserve all neighboring galaxies. Source uses original fallback and fixed4000\u20135000 interval.",
+    "limits": [
+      "Same declared nearest-center raster adaptation; not original GDI/x87 equality",
+      "For54868 neighboring CorBor galaxy only, raw axes0/0 use original major0.5 and morphology0 ratio0.6; no RA-fraction fallback needed",
+      "No catalog redshift is transferred into student measurement controls"
+    ]
+  },
+  "originalExecution": false
+}

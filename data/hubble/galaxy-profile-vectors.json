@@ -1,0 +1,1121 @@
+{
+  "method": "Independent Python Fraction three-point Lagrange polynomial and decimal source fluxes; no browser sampler calls. Static data checks, not original-run observations.",
+  "gridMinimum": 3700,
+  "gridMaximum": 4700,
+  "profiles": [
+    {
+      "file": "NGC3034.SP",
+      "sha256": "fbda64779c9ff30aba4ea8598ca4fe63ed6005baa7c2fd0608a2b9108e13662a",
+      "matchedLibrary": true,
+      "catalogZ": 0.0008906160364858806,
+      "gridMinimum": 3700,
+      "gridMaximum": 4700,
+      "samples": 1726,
+      "minimum": 3650.0,
+      "maximum": 7100.0,
+      "vectors": [
+        {
+          "bin": 0,
+          "wavelength": 3700.0,
+          "value": 0.3425
+        },
+        {
+          "bin": 1,
+          "wavelength": 3701.6666666666665,
+          "value": 0.3038888888888889
+        },
+        {
+          "bin": 3,
+          "wavelength": 3705.0,
+          "value": 0.3766125
+        },
+        {
+          "bin": 9,
+          "wavelength": 3715.0,
+          "value": 0.341625
+        },
+        {
+          "bin": 15,
+          "wavelength": 3725.0,
+          "value": 0.4800625
+        },
+        {
+          "bin": 20,
+          "wavelength": 3733.3333333333335,
+          "value": 0.5030555555555556
+        },
+        {
+          "bin": 21,
+          "wavelength": 3735.0,
+          "value": 0.4035
+        },
+        {
+          "bin": 27,
+          "wavelength": 3745.0,
+          "value": 0.3776875
+        },
+        {
+          "bin": 33,
+          "wavelength": 3755.0,
+          "value": 0.366975
+        },
+        {
+          "bin": 39,
+          "wavelength": 3765.0,
+          "value": 0.4133625
+        },
+        {
+          "bin": 45,
+          "wavelength": 3775.0,
+          "value": 0.3710875
+        },
+        {
+          "bin": 51,
+          "wavelength": 3785.0,
+          "value": 0.5330375
+        },
+        {
+          "bin": 57,
+          "wavelength": 3795.0,
+          "value": 0.4223625
+        },
+        {
+          "bin": 63,
+          "wavelength": 3805.0,
+          "value": 0.3952875
+        },
+        {
+          "bin": 69,
+          "wavelength": 3815.0,
+          "value": 0.5526125
+        },
+        {
+          "bin": 75,
+          "wavelength": 3825.0,
+          "value": 0.4803125
+        },
+        {
+          "bin": 81,
+          "wavelength": 3835.0,
+          "value": 0.361
+        },
+        {
+          "bin": 87,
+          "wavelength": 3845.0,
+          "value": 0.4128625
+        },
+        {
+          "bin": 93,
+          "wavelength": 3855.0,
+          "value": 0.5719125
+        },
+        {
+          "bin": 99,
+          "wavelength": 3865.0,
+          "value": 0.562025
+        },
+        {
+          "bin": 105,
+          "wavelength": 3875.0,
+          "value": 0.58175
+        },
+        {
+          "bin": 111,
+          "wavelength": 3885.0,
+          "value": 0.4383875
+        },
+        {
+          "bin": 117,
+          "wavelength": 3895.0,
+          "value": 0.389025
+        },
+        {
+          "bin": 123,
+          "wavelength": 3905.0,
+          "value": 0.499325
+        },
+        {
+          "bin": 129,
+          "wavelength": 3915.0,
+          "value": 0.7305875
+        },
+        {
+          "bin": 135,
+          "wavelength": 3925.0,
+          "value": 0.610325
+        },
+        {
+          "bin": 141,
+          "wavelength": 3935.0,
+          "value": 0.3639875
+        },
+        {
+          "bin": 147,
+          "wavelength": 3945.0,
+          "value": 0.5893125
+        },
+        {
+          "bin": 153,
+          "wavelength": 3955.0,
+          "value": 0.6292375
+        },
+        {
+          "bin": 159,
+          "wavelength": 3965.0,
+          "value": 0.456025
+        },
+        {
+          "bin": 165,
+          "wavelength": 3975.0,
+          "value": 0.32015
+        },
+        {
+          "bin": 171,
+          "wavelength": 3985.0,
+          "value": 0.5811875
+        },
+        {
+          "bin": 177,
+          "wavelength": 3995.0,
+          "value": 0.657225
+        },
+        {
+          "bin": 183,
+          "wavelength": 4005.0,
+          "value": 0.699425
+        },
+        {
+          "bin": 189,
+          "wavelength": 4015.0,
+          "value": 0.735475
+        },
+        {
+          "bin": 195,
+          "wavelength": 4025.0,
+          "value": 0.7389625
+        },
+        {
+          "bin": 200,
+          "wavelength": 4033.3333333333335,
+          "value": 0.7068777777777778
+        },
+        {
+          "bin": 201,
+          "wavelength": 4035.0,
+          "value": 0.6954125
+        },
+        {
+          "bin": 207,
+          "wavelength": 4045.0,
+          "value": 0.7346875
+        },
+        {
+          "bin": 213,
+          "wavelength": 4055.0,
+          "value": 0.7354625
+        },
+        {
+          "bin": 219,
+          "wavelength": 4065.0,
+          "value": 0.7110125
+        },
+        {
+          "bin": 225,
+          "wavelength": 4075.0,
+          "value": 0.6983875
+        },
+        {
+          "bin": 231,
+          "wavelength": 4085.0,
+          "value": 0.69895
+        },
+        {
+          "bin": 237,
+          "wavelength": 4095.0,
+          "value": 0.6558125
+        },
+        {
+          "bin": 243,
+          "wavelength": 4105.0,
+          "value": 0.50115
+        },
+        {
+          "bin": 249,
+          "wavelength": 4115.0,
+          "value": 0.620525
+        },
+        {
+          "bin": 255,
+          "wavelength": 4125.0,
+          "value": 0.6881
+        },
+        {
+          "bin": 261,
+          "wavelength": 4135.0,
+          "value": 0.6821
+        },
+        {
+          "bin": 267,
+          "wavelength": 4145.0,
+          "value": 0.7389375
+        },
+        {
+          "bin": 273,
+          "wavelength": 4155.0,
+          "value": 0.735675
+        },
+        {
+          "bin": 279,
+          "wavelength": 4165.0,
+          "value": 0.7849625
+        },
+        {
+          "bin": 285,
+          "wavelength": 4175.0,
+          "value": 0.7725125
+        },
+        {
+          "bin": 291,
+          "wavelength": 4185.0,
+          "value": 0.733725
+        },
+        {
+          "bin": 297,
+          "wavelength": 4195.0,
+          "value": 0.7914125
+        },
+        {
+          "bin": 303,
+          "wavelength": 4205.0,
+          "value": 0.759
+        },
+        {
+          "bin": 309,
+          "wavelength": 4215.0,
+          "value": 0.8014375
+        },
+        {
+          "bin": 315,
+          "wavelength": 4225.0,
+          "value": 0.7969
+        },
+        {
+          "bin": 321,
+          "wavelength": 4235.0,
+          "value": 0.7907
+        },
+        {
+          "bin": 327,
+          "wavelength": 4245.0,
+          "value": 0.7669
+        },
+        {
+          "bin": 333,
+          "wavelength": 4255.0,
+          "value": 0.7683375
+        },
+        {
+          "bin": 339,
+          "wavelength": 4265.0,
+          "value": 0.783825
+        },
+        {
+          "bin": 345,
+          "wavelength": 4275.0,
+          "value": 0.7208
+        },
+        {
+          "bin": 351,
+          "wavelength": 4285.0,
+          "value": 0.75365
+        },
+        {
+          "bin": 357,
+          "wavelength": 4295.0,
+          "value": 0.7186125
+        },
+        {
+          "bin": 363,
+          "wavelength": 4305.0,
+          "value": 0.6600125
+        },
+        {
+          "bin": 369,
+          "wavelength": 4315.0,
+          "value": 0.671325
+        },
+        {
+          "bin": 375,
+          "wavelength": 4325.0,
+          "value": 0.7587375
+        },
+        {
+          "bin": 381,
+          "wavelength": 4335.0,
+          "value": 0.6715125
+        },
+        {
+          "bin": 387,
+          "wavelength": 4345.0,
+          "value": 0.6167125
+        },
+        {
+          "bin": 393,
+          "wavelength": 4355.0,
+          "value": 0.6254625
+        },
+        {
+          "bin": 399,
+          "wavelength": 4365.0,
+          "value": 0.7813625
+        },
+        {
+          "bin": 405,
+          "wavelength": 4375.0,
+          "value": 0.79195
+        },
+        {
+          "bin": 411,
+          "wavelength": 4385.0,
+          "value": 0.772575
+        },
+        {
+          "bin": 417,
+          "wavelength": 4395.0,
+          "value": 0.7676875
+        },
+        {
+          "bin": 423,
+          "wavelength": 4405.0,
+          "value": 0.768325
+        },
+        {
+          "bin": 429,
+          "wavelength": 4415.0,
+          "value": 0.8009
+        },
+        {
+          "bin": 435,
+          "wavelength": 4425.0,
+          "value": 0.8021375
+        },
+        {
+          "bin": 441,
+          "wavelength": 4435.0,
+          "value": 0.7878625
+        },
+        {
+          "bin": 447,
+          "wavelength": 4445.0,
+          "value": 0.7839
+        },
+        {
+          "bin": 453,
+          "wavelength": 4455.0,
+          "value": 0.8358375
+        },
+        {
+          "bin": 459,
+          "wavelength": 4465.0,
+          "value": 0.7997625
+        },
+        {
+          "bin": 465,
+          "wavelength": 4475.0,
+          "value": 0.8163375
+        },
+        {
+          "bin": 471,
+          "wavelength": 4485.0,
+          "value": 0.816325
+        },
+        {
+          "bin": 477,
+          "wavelength": 4495.0,
+          "value": 0.836725
+        },
+        {
+          "bin": 483,
+          "wavelength": 4505.0,
+          "value": 0.848675
+        },
+        {
+          "bin": 489,
+          "wavelength": 4515.0,
+          "value": 0.8754
+        },
+        {
+          "bin": 495,
+          "wavelength": 4525.0,
+          "value": 0.85415
+        },
+        {
+          "bin": 501,
+          "wavelength": 4535.0,
+          "value": 0.805725
+        },
+        {
+          "bin": 507,
+          "wavelength": 4545.0,
+          "value": 0.8468
+        },
+        {
+          "bin": 513,
+          "wavelength": 4555.0,
+          "value": 0.828925
+        },
+        {
+          "bin": 519,
+          "wavelength": 4565.0,
+          "value": 0.8645875
+        },
+        {
+          "bin": 525,
+          "wavelength": 4575.0,
+          "value": 0.87095
+        },
+        {
+          "bin": 531,
+          "wavelength": 4585.0,
+          "value": 0.843825
+        },
+        {
+          "bin": 537,
+          "wavelength": 4595.0,
+          "value": 0.8605375
+        },
+        {
+          "bin": 543,
+          "wavelength": 4605.0,
+          "value": 0.8607
+        },
+        {
+          "bin": 549,
+          "wavelength": 4615.0,
+          "value": 0.907175
+        },
+        {
+          "bin": 555,
+          "wavelength": 4625.0,
+          "value": 0.888425
+        },
+        {
+          "bin": 561,
+          "wavelength": 4635.0,
+          "value": 0.8785
+        },
+        {
+          "bin": 567,
+          "wavelength": 4645.0,
+          "value": 0.881975
+        },
+        {
+          "bin": 573,
+          "wavelength": 4655.0,
+          "value": 0.879925
+        },
+        {
+          "bin": 579,
+          "wavelength": 4665.0,
+          "value": 0.9001875
+        },
+        {
+          "bin": 585,
+          "wavelength": 4675.0,
+          "value": 0.8333125
+        },
+        {
+          "bin": 591,
+          "wavelength": 4685.0,
+          "value": 0.8577375
+        },
+        {
+          "bin": 597,
+          "wavelength": 4695.0,
+          "value": 0.8848875
+        },
+        {
+          "bin": 599,
+          "wavelength": 4698.333333333333,
+          "value": 0.8742805555555555
+        }
+      ]
+    },
+    {
+      "file": "NGC4889.SP",
+      "sha256": "d48f79640fa5d70d947388968bccb41beabf9ea8ea95c51ca877c381da101e39",
+      "matchedLibrary": true,
+      "catalogZ": 0.021671656519174576,
+      "gridMinimum": 3700,
+      "gridMaximum": 4700,
+      "samples": 1726,
+      "minimum": 3650.0,
+      "maximum": 7100.0,
+      "vectors": [
+        {
+          "bin": 0,
+          "wavelength": 3700.0,
+          "value": 0.3143
+        },
+        {
+          "bin": 1,
+          "wavelength": 3701.6666666666665,
+          "value": 0.30083472222222224
+        },
+        {
+          "bin": 3,
+          "wavelength": 3705.0,
+          "value": 0.2928125
+        },
+        {
+          "bin": 9,
+          "wavelength": 3715.0,
+          "value": 0.2598125
+        },
+        {
+          "bin": 15,
+          "wavelength": 3725.0,
+          "value": 0.3071875
+        },
+        {
+          "bin": 20,
+          "wavelength": 3733.3333333333335,
+          "value": 0.35625555555555555
+        },
+        {
+          "bin": 21,
+          "wavelength": 3735.0,
+          "value": 0.36745
+        },
+        {
+          "bin": 27,
+          "wavelength": 3745.0,
+          "value": 0.380975
+        },
+        {
+          "bin": 33,
+          "wavelength": 3755.0,
+          "value": 0.3490375
+        },
+        {
+          "bin": 39,
+          "wavelength": 3765.0,
+          "value": 0.2954625
+        },
+        {
+          "bin": 45,
+          "wavelength": 3775.0,
+          "value": 0.3555
+        },
+        {
+          "bin": 51,
+          "wavelength": 3785.0,
+          "value": 0.334575
+        },
+        {
+          "bin": 57,
+          "wavelength": 3795.0,
+          "value": 0.348775
+        },
+        {
+          "bin": 63,
+          "wavelength": 3805.0,
+          "value": 0.321625
+        },
+        {
+          "bin": 69,
+          "wavelength": 3815.0,
+          "value": 0.285075
+        },
+        {
+          "bin": 75,
+          "wavelength": 3825.0,
+          "value": 0.2913375
+        },
+        {
+          "bin": 81,
+          "wavelength": 3835.0,
+          "value": 0.290275
+        },
+        {
+          "bin": 87,
+          "wavelength": 3845.0,
+          "value": 0.3035625
+        },
+        {
+          "bin": 93,
+          "wavelength": 3855.0,
+          "value": 0.368025
+        },
+        {
+          "bin": 99,
+          "wavelength": 3865.0,
+          "value": 0.41155
+        },
+        {
+          "bin": 105,
+          "wavelength": 3875.0,
+          "value": 0.3156875
+        },
+        {
+          "bin": 111,
+          "wavelength": 3885.0,
+          "value": 0.3216375
+        },
+        {
+          "bin": 117,
+          "wavelength": 3895.0,
+          "value": 0.3005875
+        },
+        {
+          "bin": 123,
+          "wavelength": 3905.0,
+          "value": 0.24055
+        },
+        {
+          "bin": 129,
+          "wavelength": 3915.0,
+          "value": 0.23165
+        },
+        {
+          "bin": 135,
+          "wavelength": 3925.0,
+          "value": 0.2517125
+        },
+        {
+          "bin": 141,
+          "wavelength": 3935.0,
+          "value": 0.2708875
+        },
+        {
+          "bin": 147,
+          "wavelength": 3945.0,
+          "value": 0.3004375
+        },
+        {
+          "bin": 153,
+          "wavelength": 3955.0,
+          "value": 0.2729625
+        },
+        {
+          "bin": 159,
+          "wavelength": 3965.0,
+          "value": 0.2996
+        },
+        {
+          "bin": 165,
+          "wavelength": 3975.0,
+          "value": 0.361975
+        },
+        {
+          "bin": 171,
+          "wavelength": 3985.0,
+          "value": 0.4147375
+        },
+        {
+          "bin": 177,
+          "wavelength": 3995.0,
+          "value": 0.4339625
+        },
+        {
+          "bin": 183,
+          "wavelength": 4005.0,
+          "value": 0.40165
+        },
+        {
+          "bin": 189,
+          "wavelength": 4015.0,
+          "value": 0.272075
+        },
+        {
+          "bin": 195,
+          "wavelength": 4025.0,
+          "value": 0.292925
+        },
+        {
+          "bin": 200,
+          "wavelength": 4033.3333333333335,
+          "value": 0.4009111111111111
+        },
+        {
+          "bin": 201,
+          "wavelength": 4035.0,
+          "value": 0.40855
+        },
+        {
+          "bin": 207,
+          "wavelength": 4045.0,
+          "value": 0.3787
+        },
+        {
+          "bin": 213,
+          "wavelength": 4055.0,
+          "value": 0.294525
+        },
+        {
+          "bin": 219,
+          "wavelength": 4065.0,
+          "value": 0.4646875
+        },
+        {
+          "bin": 225,
+          "wavelength": 4075.0,
+          "value": 0.56025
+        },
+        {
+          "bin": 231,
+          "wavelength": 4085.0,
+          "value": 0.6101125
+        },
+        {
+          "bin": 237,
+          "wavelength": 4095.0,
+          "value": 0.6217375
+        },
+        {
+          "bin": 243,
+          "wavelength": 4105.0,
+          "value": 0.6752625
+        },
+        {
+          "bin": 249,
+          "wavelength": 4115.0,
+          "value": 0.6260625
+        },
+        {
+          "bin": 255,
+          "wavelength": 4125.0,
+          "value": 0.6222625
+        },
+        {
+          "bin": 261,
+          "wavelength": 4135.0,
+          "value": 0.64545
+        },
+        {
+          "bin": 267,
+          "wavelength": 4145.0,
+          "value": 0.60505
+        },
+        {
+          "bin": 273,
+          "wavelength": 4155.0,
+          "value": 0.5992
+        },
+        {
+          "bin": 279,
+          "wavelength": 4165.0,
+          "value": 0.636175
+        },
+        {
+          "bin": 285,
+          "wavelength": 4175.0,
+          "value": 0.735325
+        },
+        {
+          "bin": 291,
+          "wavelength": 4185.0,
+          "value": 0.6342875
+        },
+        {
+          "bin": 297,
+          "wavelength": 4195.0,
+          "value": 0.621175
+        },
+        {
+          "bin": 303,
+          "wavelength": 4205.0,
+          "value": 0.6758125
+        },
+        {
+          "bin": 309,
+          "wavelength": 4215.0,
+          "value": 0.6199
+        },
+        {
+          "bin": 315,
+          "wavelength": 4225.0,
+          "value": 0.60945
+        },
+        {
+          "bin": 321,
+          "wavelength": 4235.0,
+          "value": 0.590425
+        },
+        {
+          "bin": 327,
+          "wavelength": 4245.0,
+          "value": 0.606975
+        },
+        {
+          "bin": 333,
+          "wavelength": 4255.0,
+          "value": 0.61605
+        },
+        {
+          "bin": 339,
+          "wavelength": 4265.0,
+          "value": 0.625075
+        },
+        {
+          "bin": 345,
+          "wavelength": 4275.0,
+          "value": 0.6138125
+        },
+        {
+          "bin": 351,
+          "wavelength": 4285.0,
+          "value": 0.629475
+        },
+        {
+          "bin": 357,
+          "wavelength": 4295.0,
+          "value": 0.61335
+        },
+        {
+          "bin": 363,
+          "wavelength": 4305.0,
+          "value": 0.655225
+        },
+        {
+          "bin": 369,
+          "wavelength": 4315.0,
+          "value": 0.6425
+        },
+        {
+          "bin": 375,
+          "wavelength": 4325.0,
+          "value": 0.64065
+        },
+        {
+          "bin": 381,
+          "wavelength": 4335.0,
+          "value": 0.69735
+        },
+        {
+          "bin": 387,
+          "wavelength": 4345.0,
+          "value": 0.655375
+        },
+        {
+          "bin": 393,
+          "wavelength": 4355.0,
+          "value": 0.6612
+        },
+        {
+          "bin": 399,
+          "wavelength": 4365.0,
+          "value": 0.6426
+        },
+        {
+          "bin": 405,
+          "wavelength": 4375.0,
+          "value": 0.6608
+        },
+        {
+          "bin": 411,
+          "wavelength": 4385.0,
+          "value": 0.612225
+        },
+        {
+          "bin": 417,
+          "wavelength": 4395.0,
+          "value": 0.5254875
+        },
+        {
+          "bin": 423,
+          "wavelength": 4405.0,
+          "value": 0.5971125
+        },
+        {
+          "bin": 429,
+          "wavelength": 4415.0,
+          "value": 0.6872375
+        },
+        {
+          "bin": 435,
+          "wavelength": 4425.0,
+          "value": 0.7593375
+        },
+        {
+          "bin": 441,
+          "wavelength": 4435.0,
+          "value": 0.7408375
+        },
+        {
+          "bin": 447,
+          "wavelength": 4445.0,
+          "value": 0.7607375
+        },
+        {
+          "bin": 453,
+          "wavelength": 4455.0,
+          "value": 0.8232375
+        },
+        {
+          "bin": 459,
+          "wavelength": 4465.0,
+          "value": 0.7777875
+        },
+        {
+          "bin": 465,
+          "wavelength": 4475.0,
+          "value": 0.7178875
+        },
+        {
+          "bin": 471,
+          "wavelength": 4485.0,
+          "value": 0.7225125
+        },
+        {
+          "bin": 477,
+          "wavelength": 4495.0,
+          "value": 0.7561375
+        },
+        {
+          "bin": 483,
+          "wavelength": 4505.0,
+          "value": 0.807
+        },
+        {
+          "bin": 489,
+          "wavelength": 4515.0,
+          "value": 0.8334625
+        },
+        {
+          "bin": 495,
+          "wavelength": 4525.0,
+          "value": 0.8362625
+        },
+        {
+          "bin": 501,
+          "wavelength": 4535.0,
+          "value": 0.8506375
+        },
+        {
+          "bin": 507,
+          "wavelength": 4545.0,
+          "value": 0.8664875
+        },
+        {
+          "bin": 513,
+          "wavelength": 4555.0,
+          "value": 0.820525
+        },
+        {
+          "bin": 519,
+          "wavelength": 4565.0,
+          "value": 0.878875
+        },
+        {
+          "bin": 525,
+          "wavelength": 4575.0,
+          "value": 0.9492625
+        },
+        {
+          "bin": 531,
+          "wavelength": 4585.0,
+          "value": 0.941725
+        },
+        {
+          "bin": 537,
+          "wavelength": 4595.0,
+          "value": 0.9335
+        },
+        {
+          "bin": 543,
+          "wavelength": 4605.0,
+          "value": 0.9744625
+        },
+        {
+          "bin": 549,
+          "wavelength": 4615.0,
+          "value": 0.9681125
+        },
+        {
+          "bin": 555,
+          "wavelength": 4625.0,
+          "value": 0.9042375
+        },
+        {
+          "bin": 561,
+          "wavelength": 4635.0,
+          "value": 0.886525
+        },
+        {
+          "bin": 567,
+          "wavelength": 4645.0,
+          "value": 0.931175
+        },
+        {
+          "bin": 573,
+          "wavelength": 4655.0,
+          "value": 0.9546875
+        },
+        {
+          "bin": 579,
+          "wavelength": 4665.0,
+          "value": 0.989075
+        },
+        {
+          "bin": 585,
+          "wavelength": 4675.0,
+          "value": 0.9805875
+        },
+        {
+          "bin": 591,
+          "wavelength": 4685.0,
+          "value": 0.9543
+        },
+        {
+          "bin": 597,
+          "wavelength": 4695.0,
+          "value": 0.9647625
+        },
+        {
+          "bin": 599,
+          "wavelength": 4698.333333333333,
+          "value": 0.9482972222222222
+        }
+      ]
+    },
+    {
+      "file": "GLXYTMPL.SP",
+      "sha256": "05602de89d005ddd5ea1bdd97f50b6519e1a17e222dc855930208792ac679cc5",
+      "matchedLibrary": false,
+      "catalogZ": 0.0239365566521883,
+      "gridMinimum": 3800,
+      "gridMaximum": 4700,
+      "samples": 3351,
+      "minimum": 3650.0,
+      "maximum": 7000.0,
+      "vectors": [
+        {
+          "bin": 0,
+          "wavelength": 3800.0,
+          "value": 0.36274264628046743
+        },
+        {
+          "bin": 1,
+          "wavelength": 3801.5,
+          "value": 0.3667252446026598
+        },
+        {
+          "bin": 20,
+          "wavelength": 3830.0,
+          "value": 0.3004114621575784
+        },
+        {
+          "bin": 200,
+          "wavelength": 4100.0,
+          "value": 0.593859883109707
+        },
+        {
+          "bin": 599,
+          "wavelength": 4698.5,
+          "value": 0.8683385304411456
+        }
+      ]
+    }
+  ]
+}

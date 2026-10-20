@@ -1,0 +1,313 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sources": [
+    {
+      "name": "parameter-setup-before-cache",
+      "start": "0x53c500",
+      "endExclusive": "0x53c99f",
+      "bytesSHA256": "ac22576ca95231a8dd9333ab6c92930c937e3d933f36ec0a5f68b96f187a2ca9",
+      "capture": "parameter-setup-before-cache.asm",
+      "captureSHA256": "8506f124fabbd0f906053b60b5bfa9f0479f6d4324ba37729f7f3926c868361d"
+    },
+    {
+      "name": "finder-galaxy-prologue",
+      "start": "0x59b894",
+      "endExclusive": "0x59b8c8",
+      "bytesSHA256": "a77e90ba044761af215d040f051dd6036d9f2c1c40c83397125f58169b79c18a",
+      "capture": "finder-galaxy-prologue.asm",
+      "captureSHA256": "356c098062b7547bcbf68a42e5d75122e76c5d37f34082fefa5ab52ea5638d5b"
+    },
+    {
+      "name": "star-accept",
+      "start": "0x599e08",
+      "endExclusive": "0x599f19",
+      "bytesSHA256": "ddbec3c640fcf36fc395cd85b78cbc3346445f09c13424e4aa04b46d8f56c7d4",
+      "capture": "star-accept.asm",
+      "captureSHA256": "0cba3495a80704c611e373c9480b7c14fd6569cd057c7a0d8f6ac983da1287b8"
+    },
+    {
+      "name": "legacy-reader",
+      "start": "0x59994c",
+      "endExclusive": "0x599d73",
+      "bytesSHA256": "e0769232a151ffe2e5529d70c160ca15abff0ed689a7af169e2e3173577f689e",
+      "capture": "legacy-reader.asm",
+      "captureSHA256": "c01815f6a684c9cc6dfd0e608fd3b7a26be0d55d6497892faeeb09293cb8fc61"
+    },
+    {
+      "name": "compact-reader",
+      "start": "0x59ad98",
+      "endExclusive": "0x59b26c",
+      "bytesSHA256": "1cc5fac82d69fd0a9f9864cad0980ba573dfc209695bf66fd7d528d738cc99bd",
+      "capture": "compact-reader.asm",
+      "captureSHA256": "b9fabec0b68cce7976b9801646e7c67cbf514c3dba4e6aafcecbba17c4d230f9"
+    },
+    {
+      "name": "field-assembly",
+      "start": "0x597ac8",
+      "endExclusive": "0x597ed1",
+      "bytesSHA256": "2113bdbaca19e9a18e995809563745bc5a53809207fe3a090f8c9bb3324e5beb",
+      "capture": "field-assembly.asm",
+      "captureSHA256": "81aae233a3feb98be4074ac7cb99e094982d286fcf1f7de57831b3ae632f4943"
+    },
+    {
+      "name": "galaxy-load",
+      "start": "0x598acc",
+      "endExclusive": "0x5991e3",
+      "bytesSHA256": "f1df4f2a8ac149c303defe213da6744d6f8e5381df8e435a9475695ce482dc17",
+      "capture": "galaxy-load.asm",
+      "captureSHA256": "6476bf1d5b26d5d6753d74ed9ad91e7d2bc4e5745e5b7ce90e75a4f94a0d75bd"
+    },
+    {
+      "name": "stellar-render",
+      "start": "0x53b6ce",
+      "endExclusive": "0x53b7f4",
+      "bytesSHA256": "105f2ac52e0522d2805dfc24a75fb13478f4d9f56f710f98528475ff3407bd18",
+      "capture": "stellar-render.asm",
+      "captureSHA256": "4b7a7510b55231a2d051ea8c5157401e432acd64066601f91d6b4c21b071e6b0"
+    },
+    {
+      "name": "qso-loader",
+      "start": "0x5987e4",
+      "endExclusive": "0x598a68",
+      "bytesSHA256": "e6b7aa75f5ae57ea2c5ee486b530bab19e930f3e69c63f834eede3f76ad4d7b9",
+      "capture": "qso-loader.asm",
+      "captureSHA256": "e4500f6c913352f5bf83891e448999a92eabfd7bf27e8cacada6c31f5468cc21"
+    },
+    {
+      "name": "stellar-magnitude-level",
+      "start": "0x594908",
+      "endExclusive": "0x59493a",
+      "bytesSHA256": "258990e6ea8f493f54c66938176f019b99d1cae1323778fb94aa61659cac3da6",
+      "capture": "stellar-magnitude-level.asm",
+      "captureSHA256": "302a290718ca096be08df1ddace16daf894ba8d47eb48221fae16c3ae39d3404"
+    },
+    {
+      "name": "stellar-bank",
+      "start": "0x5948b0",
+      "endExclusive": "0x594908",
+      "bytesSHA256": "c3f1cacd4d9223a23fb9fc9beec056e9b9fc2d3bd119aa6902102d369bbfab8d",
+      "capture": "stellar-bank.asm",
+      "captureSHA256": "a1cea74966ac2000226f6e54208a7d8074a1a08728855c65e2f1e9d883a3f39a"
+    },
+    {
+      "name": "star-project",
+      "start": "0x53ca7c",
+      "endExclusive": "0x53caec",
+      "bytesSHA256": "9b9a52209cac900182f5f82506444a27474460e06f7329f4204bae7c2f85d781",
+      "capture": "star-project.asm",
+      "captureSHA256": "af571caad8b4b883755640e16967992817baeb4fe776505d1b282f283bf1f552"
+    },
+    {
+      "name": "native-global-catalogs",
+      "start": "0x5ad26c",
+      "endExclusive": "0x5ad2b0",
+      "bytesSHA256": "ee367918ac71f90b3dc1d5a2e5676d3374a80a0dc46a4f5322e4800171276be3",
+      "capture": "native-global-catalogs.asm",
+      "captureSHA256": "911c0710a1fa153d1f070bf7d70a9a71e77db021b35ebf6f744a89891795055b"
+    },
+    {
+      "name": "field-constructor",
+      "start": "0x5979d4",
+      "endExclusive": "0x597a68",
+      "bytesSHA256": "6cc7dae485fc9456ec0caceecd74fdcc9ca714cf1c0c0d9261f461d7b48f89e3",
+      "capture": "field-constructor.asm",
+      "captureSHA256": "c807d3c0f3ddba37adcf40b97a33767314cabea8aa92cd5e3a7e3c80a4520c52"
+    },
+    {
+      "name": "compact-constructor",
+      "start": "0x59ad60",
+      "endExclusive": "0x59ad95",
+      "bytesSHA256": "f7e8b1eff66d17231917712a855cc32c2c76ad0c8ed595fe6513c491a7c8c330",
+      "capture": "compact-constructor.asm",
+      "captureSHA256": "199a40e2738b8640e760896f3554933587320888e4f2135388df831ed6031537"
+    },
+    {
+      "name": "finder-constructor",
+      "start": "0x59b304",
+      "endExclusive": "0x59b33d",
+      "bytesSHA256": "1b8acf137384042436b1104c0c1965144c5e65f0df005c20d5cacc4f586afe4e",
+      "capture": "finder-constructor.asm",
+      "captureSHA256": "9d97c0ca5596d944501807bdd4f9b47a098294465ed6f2acfe9878c825696bd6"
+    },
+    {
+      "name": "telescope-load",
+      "start": "0x53be70",
+      "endExclusive": "0x53c098",
+      "bytesSHA256": "7fe25f1abd4ceef3547e54b773182fd3e804cab0cb768b68130ab3ca9928278d",
+      "capture": "telescope-load.asm",
+      "captureSHA256": "69ee87766d32606bf17b2df20ee75ce79fd2d9156f04c48278226072690bb329"
+    },
+    {
+      "name": "finder-load",
+      "start": "0x53bae4",
+      "endExclusive": "0x53be38",
+      "bytesSHA256": "f306c7bc949b66267cd48035a5478c9e30116dac4da1d1b70691dd65497f1d01",
+      "capture": "finder-load.asm",
+      "captureSHA256": "c3baabdf1f70946bf8cf38949c5e6c72281f296001ac85fa02f44121c171fbce"
+    },
+    {
+      "name": "position-region-test",
+      "start": "0x59677c",
+      "endExclusive": "0x59681a",
+      "bytesSHA256": "7bb5a849d06733fde6d08c83daf555a3710a772c6df4af58fc6a2da97761dd71",
+      "capture": "position-region-test.asm",
+      "captureSHA256": "a128c29f1fe3ba1580e34913c46f574845da2be6f712df28e6d3dcafbe6fd321"
+    },
+    {
+      "name": "qso-merge",
+      "start": "0x597f90",
+      "endExclusive": "0x5980c4",
+      "bytesSHA256": "c5b769676ef03b88331a7c7090b2e6177891808509696be28c18e39052c37b7c",
+      "capture": "qso-merge.asm",
+      "captureSHA256": "4ad4df14e7cc12e08c95c1abddb64de0f2afb43ee0f6e874b57c81ed45bbac27"
+    },
+    {
+      "name": "galaxy-star-cleanup",
+      "start": "0x5980cc",
+      "endExclusive": "0x598194",
+      "bytesSHA256": "db5cba02d8c8c81d3193423094607c141df1b95594025ace2a96358ed0747540",
+      "capture": "galaxy-star-cleanup.asm",
+      "captureSHA256": "b32168c54beb96aa551aecb9635bcb96ed02e0a85ca159c24935c7021c8e677f"
+    }
+  ],
+  "tables": [
+    {
+      "name": "GSCFieldObj",
+      "address": "0x594d4c",
+      "bytes": "1c9f590010a059004c995900cc8a5900",
+      "slots": [
+        "0x599f1c",
+        "0x59a010",
+        "0x59994c",
+        "0x598acc"
+      ]
+    },
+    {
+      "name": "NewGSCFieldObj",
+      "address": "0x594db4",
+      "bytes": "1c9f590010a0590098ad5900cc8a5900",
+      "slots": [
+        "0x599f1c",
+        "0x59a010",
+        "0x59ad98",
+        "0x598acc"
+      ]
+    },
+    {
+      "name": "FSCFieldObj",
+      "address": "0x594e20",
+      "bytes": "40b359005cb3590074b3590094b85900",
+      "slots": [
+        "0x59b340",
+        "0x59b35c",
+        "0x59b374",
+        "0x59b894"
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x5b56ac",
+      "bytes": "40fd6100",
+      "format": "<I",
+      "value": 6421824
+    },
+    {
+      "address": "0x5b5e1c",
+      "bytes": "fcfc6100",
+      "format": "<I",
+      "value": 6421756
+    },
+    {
+      "address": "0x597f88",
+      "bytes": "00008041",
+      "format": "<f",
+      "value": 16.0
+    },
+    {
+      "address": "0x597f8c",
+      "bytes": "00004041",
+      "format": "<f",
+      "value": 12.0
+    },
+    {
+      "address": "0x599de4",
+      "bytes": "8096184b",
+      "format": "<f",
+      "value": 10000000.0
+    },
+    {
+      "address": "0x599de8",
+      "bytes": "0050c347",
+      "format": "<f",
+      "value": 100000.0
+    },
+    {
+      "address": "0x599dec",
+      "bytes": "00007a44",
+      "format": "<f",
+      "value": 1000.0
+    },
+    {
+      "address": "0x5b4d18",
+      "bytes": "01",
+      "value": 1,
+      "decodedFlagOffset": "0x39"
+    },
+    {
+      "address": "0x5b4d1c",
+      "bytes": "02",
+      "value": 2,
+      "decodedFlagOffset": "0x3a"
+    },
+    {
+      "address": "0x5b4d20",
+      "bytes": "04",
+      "value": 4,
+      "decodedFlagOffset": "0x3b"
+    },
+    {
+      "address": "0x5b4d24",
+      "bytes": "08",
+      "value": 8,
+      "decodedFlagOffset": "0x3c"
+    }
+  ],
+  "scope": "Bounded GSC admission, copied galaxy limit, explicit-state stored stellar level and separate cached-level painting; not complete native population reconstruction",
+  "originalCatalogs": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "bytes": 31481649
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/S0000.DAT",
+      "sha256": "0cc5484587b734d4c468ad0d38e3eab78936a253d1409bd69d83f0bf26fe44f9",
+      "bytes": 27456219
+    }
+  ],
+  "vectorGenerator": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/detector-population-recovery/generate_vectors.py",
+    "sha256": "5bf981a33df2555a9d4ebb5e625cd256323112f26e04cb9520bac56e1459297d",
+    "method": "Fraction comparisons and Decimal exact Single nearest-even conversion; original sample record hashes and file hashes, no native execution"
+  },
+  "vectorSHA256": "aeaf86e79004ddcf3835912c7fcbb656900d2eddb5c00fa47fe3e00cbbf31e47",
+  "remainingGates": [
+    "Region index/scan/binary-seek order and duplicate boundaries for complete populations",
+    "QSO30arcsec and variable-record matching/replacement in original ordered lists",
+    "One-galaxy cleanup normal non-null path is now ported in catalogMerge.ts; complete ordered loader/orchestration and native-null outcome remain separate",
+    "Complete native frame, image/photographic transforms, palette and GDI slit throughput",
+    "Options/time/pointing and original x87 conversion policy",
+    "No preview population can attest original completeness"
+  ],
+  "guardsAreNew": [
+    "Finite Double/Single and RA0..24 record dec-90..90 checks",
+    "Reject signed-byte level wrapping and int32 arithmetic overflow; do not claim original invalid-domain behavior"
+  ],
+  "statefulBankFinding": {
+    "parameterSetup": "0x53c5cf offset+1/flag0 before loop call0x53c965 caches levels",
+    "laterCompositor": "0x53b712 offset-2/flag0; reads cached record+0x57 rather than recomputing",
+    "requiredBoundary": "Keep bank state at conversion separate from bank state at paint; no universal -2 magnitude conversion inferred"
+  },
+  "laterClosure": "docs/ACQUISITION-READINESS.md and data/hubble/catalog-merge-provenance.json"
+}

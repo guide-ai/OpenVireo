@@ -1,0 +1,306 @@
+{
+  "schema": 1,
+  "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "ranges": [
+    {
+      "file": "formatter-wrapper.asm",
+      "start": "0x486268",
+      "endInclusive": "0x486291",
+      "rawRangeSHA256": "2a81311b096c52cd2e2b584ceaf521a1a59277f9dd160860b21556ab73106db5",
+      "artifactSHA256": "c8da74d059764f2a09b34f0c63e2f95aa4bc34fbd1095593443340b33f7a765c"
+    },
+    {
+      "file": "float-to-string-wrapper.asm",
+      "start": "0x40cf28",
+      "endInclusive": "0x40cf5c",
+      "rawRangeSHA256": "cb07558a1ec624e17e8f2c1656776dee6d806a47c0cdb125f79e0c460ed94a5b",
+      "artifactSHA256": "77f37e9871934c73cbf5bcc8e47e73a9f5aa2d30dde3469b7e3166e5d07f9655"
+    },
+    {
+      "file": "float-to-text.asm",
+      "start": "0x40c5dc",
+      "endInclusive": "0x40c8ae",
+      "rawRangeSHA256": "100e13b1180285649d988b2971e84afb9301468a828eb1afd8a8869e29161048",
+      "artifactSHA256": "de600ec6437ff31901b7321173d64ac4d96a0723d1c6dfc55114f8359e5323f0"
+    },
+    {
+      "file": "float-to-decimal.asm",
+      "start": "0x40cb88",
+      "endInclusive": "0x40cdb3",
+      "rawRangeSHA256": "940aaadc1143a1b4464beedafda191fa72dc927df994ac25cb2a3e834387a6fa",
+      "artifactSHA256": "1da1fb51a6dc465c75556d746bd3c89f8a15e7eb81304da0a1c8dc5b677ad8cf"
+    },
+    {
+      "file": "short-string-append.asm",
+      "start": "0x403c20",
+      "endInclusive": "0x403c4f",
+      "rawRangeSHA256": "802ed804bbb046416025dcbfd45310a87a3ccbba3cb1158cb909c182d2300caa",
+      "artifactSHA256": "dbd2f8d8ee1b1ee0f5bf0decb57b830834051ba2cf61acad6b40511e961f91df"
+    },
+    {
+      "file": "save-spectrum.asm",
+      "start": "0x50fb1c",
+      "endInclusive": "0x50ff9f",
+      "rawRangeSHA256": "2bdec7e50729ffa1dd0a3ff2f023de78820b24b6b214eb807659e45e9b962e3b",
+      "artifactSHA256": "dc2205108b047eb07d46169592fe41f0315bd427f7e49e64ef70e921c04a5228"
+    },
+    {
+      "file": "save-header.asm",
+      "start": "0x510090",
+      "endInclusive": "0x5101ca",
+      "rawRangeSHA256": "51f70159ae0fc7c211be95ecc485ada43e70dc8061a6187c16b2a8ba850ffed8",
+      "artifactSHA256": "9867bfe6a9a7990cce2e1347a1c47853fa25b42312619ad53a3cab62a871803d"
+    },
+    {
+      "file": "reset-bins.asm",
+      "start": "0x50e26b",
+      "endInclusive": "0x50e2e2",
+      "rawRangeSHA256": "04446f0aaf11b7cb9c1de093ae840ae130ce20f906d9bf5bdc1f3ff354ffa3f4",
+      "artifactSHA256": "d5682212b900624ff1f4d1bf5d384c1923701db4bd29895a48462289dfd4d276"
+    },
+    {
+      "file": "timer-bin-accumulation.asm",
+      "start": "0x50f7be",
+      "endInclusive": "0x50f87f",
+      "rawRangeSHA256": "2db1f43c670d743d6e8fc4d217dda50b6367c9b8a649928593e2b73dc04f649a",
+      "artifactSHA256": "ecdc4b5f80ea2dae0fd715918bdb31c284773bbc0d136d51aaf159f32913f84c"
+    },
+    {
+      "file": "pause-display-only.asm",
+      "start": "0x50f618",
+      "endInclusive": "0x50f768",
+      "rawRangeSHA256": "290692d773552834c6a768229502728c7e3d55a36d4a25b5435fd4e032ec9170",
+      "artifactSHA256": "f2e9e92855c84feeb02510c37d38985d074f917735d8e7effa02aa910116811c"
+    },
+    {
+      "file": "text-file-initialize.asm",
+      "start": "0x403a20",
+      "endInclusive": "0x403a84",
+      "rawRangeSHA256": "7a743e85419805ff8f7bb0d6fb2ae288d334e5b40c76c252d73c7a351a3f2222",
+      "artifactSHA256": "31b39810a6fdf84f557017f92918abb580dae02eb258725565cf37547f68cdbc"
+    },
+    {
+      "file": "write-line-end.asm",
+      "start": "0x40460c",
+      "endInclusive": "0x404652",
+      "rawRangeSHA256": "3fa9aeedca2ad4ea93e27824b6c6d33782b1ef107c6168e6c466a08a96b9b245",
+      "artifactSHA256": "0c8435ebe5b86f333d914d8b06d88607bb6e465eac7edee324c00cc3f95b45c8"
+    },
+    {
+      "file": "locale-decimal-selection.asm",
+      "start": "0x4104f8",
+      "endInclusive": "0x41051d",
+      "rawRangeSHA256": "bd11f12b650bd93e88588b0ec39b54a625515794e1d73c5d10ad62ca0a17fbde",
+      "artifactSHA256": "533343da8f8fe89fdd38d62d00a505b22278e34cd3ec5f6380299f2364edf76e"
+    },
+    {
+      "file": "locale-character-query.asm",
+      "start": "0x40eb04",
+      "endInclusive": "0x40eb2c",
+      "rawRangeSHA256": "d5ea36df38c1bab88490c4ff1ba1ed2bd006184c49a108e6c50ab928b3337d0e",
+      "artifactSHA256": "1eade10259c6b30d1a6b01c751572ca40550ea8bfc75332e8cbfaef670dd0dc9"
+    },
+    {
+      "file": "native-file-reader.asm",
+      "start": "0x55ee14",
+      "endInclusive": "0x55f09e",
+      "rawRangeSHA256": "e8376f46ece7e582f8753214442c5ed215da61b13be0d758b641c01694e1eae2",
+      "artifactSHA256": "ca4449e63da0333d23243c9cf214b65b7e35e68e91ee86b7540b6e32bcde4847"
+    },
+    {
+      "file": "analyzer-load-handler.asm",
+      "start": "0x582a70",
+      "endInclusive": "0x582d69",
+      "rawRangeSHA256": "900329416b6e1505767c4cacb04a9f46310882d4a3f52562e804112c4d6c2010",
+      "artifactSHA256": "abfaed300f3678b5dac0556544b707470e1ed6b009c96cb83f8241f9397b6f2e"
+    },
+    {
+      "file": "galaxy-record-magnitude.asm",
+      "start": "0x598eef",
+      "endInclusive": "0x598efa",
+      "rawRangeSHA256": "98ae36428c23498190a93d70265724ce9bdb6423f263abb9146ac7738cc96f6c",
+      "artifactSHA256": "42e713c73ac4b8994855989262f18c7fb64db6a983bfd6ac122f8ad586672b4a"
+    },
+    {
+      "file": "selected-object-adaptation.asm",
+      "start": "0x53ce8c",
+      "endInclusive": "0x53cf90",
+      "rawRangeSHA256": "69a356b469a7c2dfc6a7c7be4e3f136845e622546eedaae18ac15e59dc054fbe",
+      "artifactSHA256": "e0da63fb7e1c4de5408b98c840d18aaad23afe4233a9bf84fd110bec4bbcedc7"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x5101d0",
+      "bytes": "082a53704864722a20",
+      "meaning": "ShortString length8, *SpHdr* plus trailing space"
+    },
+    {
+      "address": "0x5101dc",
+      "bytes": "012c",
+      "meaning": "ShortString comma"
+    },
+    {
+      "address": "0x5101e8",
+      "bytes": "2c00",
+      "meaning": "AnsiString comma payload+NUL"
+    },
+    {
+      "address": "0x51008c",
+      "bytes": "2000",
+      "meaning": "AnsiString one space payload+NUL"
+    },
+    {
+      "address": "0x55f0a8",
+      "bytes": "2a53704864722a00",
+      "meaning": "reader marker *SpHdr*+NUL"
+    },
+    {
+      "address": "0x55f0b8",
+      "bytes": "2000",
+      "meaning": "reader strips through first space"
+    },
+    {
+      "address": "0x5ae034",
+      "bytes": "01",
+      "meaning": "default TextRec flags copied to file+6"
+    },
+    {
+      "address": "0x40c6cc",
+      "bytes": "494e464e414e",
+      "meaning": "INF/NAN spelling"
+    },
+    {
+      "address": "0x55ef47",
+      "bytes": "c743450000c642",
+      "meaning": "missing magnitude fallback Single99.0 instruction"
+    }
+  ],
+  "followup": {
+    "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "defaultExtension": {
+      "value": ".SSP",
+      "literalAddress": "0x5a2f34",
+      "literalBytes": "042e535350",
+      "generalRecordOffset": "0x24cd",
+      "environmentOffset": "0x2b81",
+      "assignmentRange": [
+        "0x5a2742",
+        "0x5a2750"
+      ],
+      "runtimeOptionsMayOverride": true
+    },
+    "magnitudeBinding": {
+      "rawGalaxyRecordOffset": "0x18",
+      "galaxyObjectOffset": "0x23",
+      "adaptedSelectedObjectOffset": "0x29",
+      "headerLoadsSingle": true,
+      "proofRanges": [
+        "0x598ef5..0x598efa",
+        "0x53cf4a..0x53cf4f",
+        "0x510167..0x510180"
+      ]
+    },
+    "newFinding": "Prior source-minus-sky label is contradicted by reset/timer/pause/save data flow; stored signed bin accumulates source plus sky",
+    "scalarDefaultMissingMagnitude": {
+      "readerInstruction": "0x55ef47",
+      "singleBits": "42c60000",
+      "value": 99,
+      "meaning": "reader default; physical/sentinel interpretation not invented"
+    },
+    "noOriginalSavedSSPFixtureFound": true
+  },
+  "selectedFormatterCalls": [
+    {
+      "address": "0x50feb9",
+      "surroundingBytes": "b002e8aa63f7ff",
+      "selectorAL": 2
+    },
+    {
+      "address": "0x50ff07",
+      "surroundingBytes": "b006e85c63f7ff",
+      "selectorAL": 6
+    },
+    {
+      "address": "0x510126",
+      "surroundingBytes": "b006e83d61f7ff",
+      "selectorAL": 6
+    },
+    {
+      "address": "0x510153",
+      "surroundingBytes": "b005e81061f7ff",
+      "selectorAL": 5
+    },
+    {
+      "address": "0x51017c",
+      "surroundingBytes": "b003e8e760f7ff",
+      "selectorAL": 3
+    }
+  ],
+  "signedBinMeaning": "source-plus-sky accumulator in inspected reset/timer/pause/save path; earlier source-minus-sky label contradicted",
+  "normalization": "600 signed int32 bins; maximum starts0; each count/maximum; no absolute-value or baseline correction",
+  "zeroMaximum": "native FPU/exception behavior unresolved; proposed writer rejects atomically",
+  "header": {
+    "prefix": "*SpHdr* ",
+    "prefixBytes": 8,
+    "prefixPlusNameLimit": 32,
+    "maximumObjectBytes": 24,
+    "pointingDecimals": [
+      6,
+      5
+    ],
+    "magnitudeDecimals": 3,
+    "epochEncoded": false,
+    "apparentMagnitudeIsSingle": true
+  },
+  "body": {
+    "wavelengthDecimals": 2,
+    "intensityDecimals": 6,
+    "minimumStorage": "Single then Extended",
+    "stepStorage": "Extended, repeated stored addition; proposed Number adaptation"
+  },
+  "originalInventorySummary": {
+    "total": 210,
+    "families": [
+      {
+        "extension": ".sp",
+        "grammar": "headerless-two-column",
+        "files": 210
+      }
+    ],
+    "headeredFiles": 0,
+    "plainFilesWithFluxOverOne": 48,
+    "rowCounts": {
+      "3351": 1,
+      "1726": 48,
+      "2799": 161
+    }
+  },
+  "originalProjectExamples": [
+    {
+      "projectPath": "public/original/spectra/GLXYTMPL.SP",
+      "sha256": "05602de89d005ddd5ea1bdd97f50b6519e1a17e222dc855930208792ac679cc5",
+      "nonemptyLines": 3351,
+      "maximumIntensity": 1.0
+    },
+    {
+      "projectPath": "public/original/spectra/NGC3034.SP",
+      "sha256": "fbda64779c9ff30aba4ea8598ca4fe63ed6005baa7c2fd0608a2b9108e13662a",
+      "nonemptyLines": 1726,
+      "maximumIntensity": 4.0537
+    },
+    {
+      "projectPath": "public/original/spectra/NGC4889.SP",
+      "sha256": "d48f79640fa5d70d947388968bccb41beabf9ea8ea95c51ca877c381da101e39",
+      "nonemptyLines": 1726,
+      "maximumIntensity": 1.0994
+    }
+  ],
+  "readerDifference": "native uses first/last uniform grid and discards interior wavelengths; proposed parser preserves printed rows",
+  "supportedProfile": "ASCII/dot decimal/CRLF output; exact source bytes retained independently",
+  "numericalLimit": "BigInt/Fraction-style quantization and Number sequence are NOT original eighteen-digit x87/BCD output",
+  "nativeWriterReferenceAvailable": false,
+  "uiIntegration": false,
+  "originalExecution": false,
+  "externalReview": "pending; not invoked"
+}

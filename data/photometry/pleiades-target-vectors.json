@@ -1,0 +1,785 @@
+{
+  "kind": "Independent synthetic references, not original acquired observations or binary execution",
+  "method": "Prior independently verified Decimal90 aperture/interpolation; original exact Single UBV colors; Decimal90 linear flux; integer-modulo PRNG and Python lgamma with decision margins; Decimal70 magnitudes. Also independent fixed-context per-filter sky reuse across object slews.",
+  "means": {
+    "N2230.DAT@145877": {
+      "V": {
+        "source": "532.664119172835814461016877661836404989014955256878854405217385865693396873671242547932679",
+        "sky": "1.58489319246111348520210137339150701326944213382503906831629681231665686366845398011020270",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "9.47000026702880859375"
+      },
+      "B": {
+        "source": "342.336690230712931643438186970052364822026248401708124690877840478393236236418925287515527",
+        "sky": "0.630957344480193249434360136622343864672945257188228724527729528833494943297686807572914059",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "9.9500002562999725341796875"
+      },
+      "U": {
+        "source": "339.198128659279951091672707496220923779817198861924963365000417429696254105770619492305718",
+        "sky": "0.465586093522958948086016845393176910278003403541074762644390605069726355496948741646646214",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "9.96000025607645511627197265625"
+      }
+    },
+    "N2230.DAT@144496": {
+      "V": {
+        "source": "978.257941503734820658248966426434203756594385645386777391475598746043817412417536507960472",
+        "sky": "1.58489319246111348520210137339150701326944213382503906831629681231665686366845398011020270",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "8.81000041961669921875"
+      },
+      "B": {
+        "source": "198.816935099232410331309277297834394291870173856200981945040617000989765423253077328401199",
+        "sky": "0.630957344480193249434360136622343864672945257188228724527729528833494943297686807572914059",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "10.540000438690185546875"
+      },
+      "U": {
+        "source": "29.0037003035288778604901763022848266278329280184473512001539037364503703225000132404315467",
+        "sky": "0.465586093522958948086016845393176910278003403541074762644390605069726355496948741646646214",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "12.6300003528594970703125"
+      }
+    },
+    "N2230.DAT@147993": {
+      "V": {
+        "source": "62871.4628448324234534961465348295901364427814932613101792719091625884518831354645429638326",
+        "sky": "1.58489319246111348520210137339150701326944213382503906831629681231665686366845398011020270",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "4.28999996185302734375"
+      },
+      "B": {
+        "source": "69575.0560793644614234521170804621071831122663002585800926569676234713788953389952914672957",
+        "sky": "0.630957344480193249434360136622343864672945257188228724527729528833494943297686807572914059",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "4.17999996244907379150390625"
+      },
+      "U": {
+        "source": "104340.656302326759059526114115726696877191636591282477901656570235332734404531750153311877",
+        "sky": "0.465586093522958948086016845393176910278003403541074762644390605069726355496948741646646214",
+        "skySource": "0.00000398107170553497250770252305087752043487677037297380446865284148060224853869458039074018281",
+        "sourceMagnitudeSingleColors": "3.73999996483325958251953125"
+      }
+    }
+  },
+  "sequences": [
+    {
+      "targetId": "N2230.DAT@145877",
+      "initialSeed": 42,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 882243745,
+            "draws": 3,
+            "minimumDecisionMargin": 0.02472805037986306
+          },
+          "object": {
+            "sourceCount": 550,
+            "skyCount": 2,
+            "totalPhotonCount": 552,
+            "seed": 1705058,
+            "draws": 5,
+            "minimumDecisionMargin": 0.20472447656977788
+          },
+          "magnitude": "9.647121002870537377827049403184539226986440611795871400069460559099158"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2136124382,
+            "draws": 4,
+            "minimumDecisionMargin": 0.04207333271745761
+          },
+          "object": {
+            "sourceCount": 330,
+            "skyCount": 1,
+            "totalPhotonCount": 331,
+            "seed": 1940294672,
+            "draws": 6,
+            "minimumDecisionMargin": 0.03337971795831684
+          },
+          "magnitude": "10.20701025512506426218391085489540791589156126311521691614758898747794"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2337622956,
+            "draws": 4,
+            "minimumDecisionMargin": 0.10145909681083654
+          },
+          "object": {
+            "sourceCount": 354,
+            "skyCount": 0,
+            "totalPhotonCount": 354,
+            "seed": 1084970409,
+            "draws": 5,
+            "minimumDecisionMargin": 0.2579922567081888
+          },
+          "magnitude": "10.13364334130467245795276388783627656113087100555751049712830918921176"
+        }
+      ],
+      "bMinusV": "0.559889252254526884356861451710868688905120651319345516078128428378782"
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "initialSeed": 1,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 870078620,
+            "draws": 3,
+            "minimumDecisionMargin": 0.030537654746295273
+          },
+          "object": {
+            "sourceCount": 583,
+            "skyCount": 1,
+            "totalPhotonCount": 584,
+            "seed": 1828254910,
+            "draws": 6,
+            "minimumDecisionMargin": 0.04651757970815759
+          },
+          "magnitude": "9.585828613102464784042019342824297913994488520596522812023395063862553"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 0,
+            "totalPhotonCount": 0,
+            "seed": 2039224980,
+            "draws": 2,
+            "minimumDecisionMargin": 0.05728810652213634
+          },
+          "object": {
+            "sourceCount": 348,
+            "skyCount": 0,
+            "totalPhotonCount": 348,
+            "seed": 256513635,
+            "draws": 3,
+            "minimumDecisionMargin": 0.054451624038686974
+          },
+          "magnitude": "10.14605189013354771236161886081660911502299238749483302870970632446992"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1580146294,
+            "draws": 3,
+            "minimumDecisionMargin": 0.2895176415670957
+          },
+          "object": {
+            "sourceCount": 316,
+            "skyCount": 1,
+            "totalPhotonCount": 317,
+            "seed": 3625686706,
+            "draws": 4,
+            "minimumDecisionMargin": 0.038810107891587786
+          },
+          "magnitude": "10.25078229345399045394425206018191064995189554512658150440698433112040"
+        }
+      ],
+      "bMinusV": "0.560223277031082928319599517992311201028503866898310216686311260607367"
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "initialSeed": 123456789,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1678830432,
+            "draws": 3,
+            "minimumDecisionMargin": 0.050254095342841726
+          },
+          "object": {
+            "sourceCount": 536,
+            "skyCount": 2,
+            "totalPhotonCount": 538,
+            "seed": 230876653,
+            "draws": 5,
+            "minimumDecisionMargin": 0.08816655694224729
+          },
+          "magnitude": "9.675064285751110982836473512429565178421997612826938778056014661987033"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 3077390393,
+            "draws": 4,
+            "minimumDecisionMargin": 0.031087431210179206
+          },
+          "object": {
+            "sourceCount": 322,
+            "skyCount": 1,
+            "totalPhotonCount": 323,
+            "seed": 2660801091,
+            "draws": 6,
+            "minimumDecisionMargin": 0.10180855684217438
+          },
+          "magnitude": "10.23373741898781980467607714320862261168263561043821195797118087808500"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 3797942998,
+            "draws": 3,
+            "minimumDecisionMargin": 0.0009219160974967
+          },
+          "object": {
+            "sourceCount": 345,
+            "skyCount": 2,
+            "totalPhotonCount": 347,
+            "seed": 1790865013,
+            "draws": 11,
+            "minimumDecisionMargin": 0.07445365209858484
+          },
+          "magnitude": "10.15230975301805847556432711629260271362531712350741203322674567553107"
+        }
+      ],
+      "bMinusV": "0.558673133236708821839603630779057433260637997611273179915166216097967"
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "initialSeed": 42,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 882243745,
+            "draws": 3,
+            "minimumDecisionMargin": 0.02472805037986306
+          },
+          "object": {
+            "sourceCount": 1002,
+            "skyCount": 2,
+            "totalPhotonCount": 1004,
+            "seed": 1705058,
+            "draws": 5,
+            "minimumDecisionMargin": 0.20472447656977788
+          },
+          "magnitude": "8.996747667448954702997934302841296827664220366610470967730864880929638"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2136124382,
+            "draws": 4,
+            "minimumDecisionMargin": 0.04207333271745761
+          },
+          "object": {
+            "sourceCount": 190,
+            "skyCount": 1,
+            "totalPhotonCount": 191,
+            "seed": 1940294672,
+            "draws": 6,
+            "minimumDecisionMargin": 0.03337836252260769
+          },
+          "magnitude": "10.80884548956688964350675007910504469729010252775986749751692031341515"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2337622956,
+            "draws": 4,
+            "minimumDecisionMargin": 0.10145909681083654
+          },
+          "object": {
+            "sourceCount": 33,
+            "skyCount": 0,
+            "totalPhotonCount": 33,
+            "seed": 1084970409,
+            "draws": 5,
+            "minimumDecisionMargin": 0.2579922386468552
+          },
+          "magnitude": "12.77159576541431830083323974970396069424074610423953836015412569981102"
+        }
+      ],
+      "bMinusV": "1.812097822117934940508815776263747869625882161149396529786055432485512"
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "initialSeed": 1,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 870078620,
+            "draws": 3,
+            "minimumDecisionMargin": 0.030537654746295273
+          },
+          "object": {
+            "sourceCount": 1047,
+            "skyCount": 1,
+            "totalPhotonCount": 1048,
+            "seed": 1828254910,
+            "draws": 6,
+            "minimumDecisionMargin": 0.04651757970815759
+          },
+          "magnitude": "8.950133295802894165412000298963135069053925672636084292427761630172013"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 0,
+            "totalPhotonCount": 0,
+            "seed": 2039224980,
+            "draws": 2,
+            "minimumDecisionMargin": 0.05728810652213634
+          },
+          "object": {
+            "sourceCount": 203,
+            "skyCount": 0,
+            "totalPhotonCount": 203,
+            "seed": 256513635,
+            "draws": 3,
+            "minimumDecisionMargin": 0.05506599309330806
+          },
+          "magnitude": "10.73125990521696770488734244609527203815533296447220188107742034657290"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1580146294,
+            "draws": 3,
+            "minimumDecisionMargin": 0.2895176415670957
+          },
+          "object": {
+            "sourceCount": 22,
+            "skyCount": 1,
+            "totalPhotonCount": 23,
+            "seed": 3625686706,
+            "draws": 4,
+            "minimumDecisionMargin": 0.038810107891587786
+          },
+          "magnitude": "13.14394329794448441009015283508120682881276982017859591023258380048285"
+        }
+      ],
+      "bMinusV": "1.781126609414073539475342147132136969101407291836117588649658716400887"
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "initialSeed": 123456789,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1678830432,
+            "draws": 3,
+            "minimumDecisionMargin": 0.050254095342841726
+          },
+          "object": {
+            "sourceCount": 982,
+            "skyCount": 2,
+            "totalPhotonCount": 984,
+            "seed": 230876653,
+            "draws": 5,
+            "minimumDecisionMargin": 0.09220610917493233
+          },
+          "magnitude": "9.018616205419660943125912688146406120062751774952120842587098420354964"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 3077390393,
+            "draws": 4,
+            "minimumDecisionMargin": 0.031087431210179206
+          },
+          "object": {
+            "sourceCount": 183,
+            "skyCount": 1,
+            "totalPhotonCount": 184,
+            "seed": 2660801091,
+            "draws": 6,
+            "minimumDecisionMargin": 0.10180855684217438
+          },
+          "magnitude": "10.84982153003731301216884922185135587229627133456714445096186652539271"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 3797942998,
+            "draws": 3,
+            "minimumDecisionMargin": 0.0009219160974967
+          },
+          "object": {
+            "sourceCount": 30,
+            "skyCount": 2,
+            "totalPhotonCount": 32,
+            "seed": 1790865013,
+            "draws": 11,
+            "minimumDecisionMargin": 0.024746921701110147
+          },
+          "magnitude": "12.77159576541431830083323974970396069424074610423953836015412569981102"
+        }
+      ],
+      "bMinusV": "1.831205324617652069042936533704949752233519559615023608374768105037746"
+    },
+    {
+      "targetId": "N2230.DAT@147993",
+      "initialSeed": 42,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 882243745,
+            "draws": 3,
+            "minimumDecisionMargin": 0.02472805037986306
+          },
+          "object": {
+            "sourceCount": 63061,
+            "skyCount": 2,
+            "totalPhotonCount": 63063,
+            "seed": 1705058,
+            "draws": 5,
+            "minimumDecisionMargin": 0.20472447656977788
+          },
+          "magnitude": "4.500580649495575194625323974616408026168984000666199580541717828704205"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2136124382,
+            "draws": 4,
+            "minimumDecisionMargin": 0.04207333271745761
+          },
+          "object": {
+            "sourceCount": 69413,
+            "skyCount": 1,
+            "totalPhotonCount": 69414,
+            "seed": 1940294672,
+            "draws": 6,
+            "minimumDecisionMargin": 0.033384466026873706
+          },
+          "magnitude": "4.396413604724898369756809082982949310118622675042227737849785529334762"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 2337622956,
+            "draws": 4,
+            "minimumDecisionMargin": 0.10145909681083654
+          },
+          "object": {
+            "sourceCount": 104613,
+            "skyCount": 0,
+            "totalPhotonCount": 104613,
+            "seed": 1084970409,
+            "draws": 5,
+            "minimumDecisionMargin": 0.2579922568905401
+          },
+          "magnitude": "3.951056615915521211972555624302086610574905897897271489460523929878045"
+        }
+      ],
+      "bMinusV": "-0.104167044770676824868514891633458716050361325623971842691932299369443"
+    },
+    {
+      "targetId": "N2230.DAT@147993",
+      "initialSeed": 1,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 870078620,
+            "draws": 3,
+            "minimumDecisionMargin": 0.030537654746295273
+          },
+          "object": {
+            "sourceCount": 63425,
+            "skyCount": 1,
+            "totalPhotonCount": 63426,
+            "seed": 1828254910,
+            "draws": 6,
+            "minimumDecisionMargin": 0.04651757970815759
+          },
+          "magnitude": "4.494348810265579184404333129211549139502151009033396131422049895144087"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 0,
+            "totalPhotonCount": 0,
+            "seed": 2039224980,
+            "draws": 2,
+            "minimumDecisionMargin": 0.05728810652213634
+          },
+          "object": {
+            "sourceCount": 69659,
+            "skyCount": 0,
+            "totalPhotonCount": 69659,
+            "seed": 256513635,
+            "draws": 3,
+            "minimumDecisionMargin": 0.05764942181170196
+          },
+          "magnitude": "4.392556911028047244204024943648433727296311713776603686476606780531555"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1580146294,
+            "draws": 3,
+            "minimumDecisionMargin": 0.2895176415670957
+          },
+          "object": {
+            "sourceCount": 103949,
+            "skyCount": 1,
+            "totalPhotonCount": 103950,
+            "seed": 3625686706,
+            "draws": 4,
+            "minimumDecisionMargin": 0.038810107891587786
+          },
+          "magnitude": "3.957949210674254421104711843046955908761774110914234309946960265713947"
+        }
+      ],
+      "bMinusV": "-0.101791899237531940200308185563115412205839295256792444945443114612532"
+    },
+    {
+      "targetId": "N2230.DAT@147993",
+      "initialSeed": 123456789,
+      "pairs": [
+        {
+          "filter": "V",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 1678830432,
+            "draws": 3,
+            "minimumDecisionMargin": 0.050254095342841726
+          },
+          "object": {
+            "sourceCount": 62909,
+            "skyCount": 2,
+            "totalPhotonCount": 62911,
+            "seed": 230876653,
+            "draws": 5,
+            "minimumDecisionMargin": 0.09000288206775764
+          },
+          "magnitude": "4.503200787037484289814443636894486778777898272762544576180657280331894"
+        },
+        {
+          "filter": "B",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 2,
+            "totalPhotonCount": 2,
+            "seed": 3077390393,
+            "draws": 4,
+            "minimumDecisionMargin": 0.031087431210179206
+          },
+          "object": {
+            "sourceCount": 69294,
+            "skyCount": 1,
+            "totalPhotonCount": 69295,
+            "seed": 2660801091,
+            "draws": 6,
+            "minimumDecisionMargin": 0.10180855684217438
+          },
+          "magnitude": "4.398276589333474333787772697651527707515123654812364889214485858053037"
+        },
+        {
+          "filter": "U",
+          "sky": {
+            "sourceCount": 0,
+            "skyCount": 1,
+            "totalPhotonCount": 1,
+            "seed": 3797942998,
+            "draws": 3,
+            "minimumDecisionMargin": 0.0009219160974967
+          },
+          "object": {
+            "sourceCount": 104457,
+            "skyCount": 2,
+            "totalPhotonCount": 104459,
+            "seed": 1790865013,
+            "draws": 11,
+            "minimumDecisionMargin": 0.06581462053998793
+          },
+          "magnitude": "3.952645734043823478514531525262555483383763225270035336785682168002522"
+        }
+      ],
+      "bMinusV": "-0.104924197704009956026670939242959071262774617950179686966171422278857"
+    }
+  ],
+  "sharedSkySequence": [
+    {
+      "targetId": "N2230.DAT@145877",
+      "filter": "V",
+      "kind": "sky",
+      "callback": {
+        "sourceCount": 0,
+        "skyCount": 1,
+        "totalPhotonCount": 1,
+        "seed": 882243745,
+        "draws": 3,
+        "minimumDecisionMargin": 0.02472805037986306
+      },
+      "magnitude": null
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "filter": "V",
+      "kind": "object",
+      "callback": {
+        "sourceCount": 550,
+        "skyCount": 2,
+        "totalPhotonCount": 552,
+        "seed": 1705058,
+        "draws": 5,
+        "minimumDecisionMargin": 0.20472447656977788
+      },
+      "magnitude": "9.647121002870537377827049403184539226986440611795871400069460559099158"
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "filter": "B",
+      "kind": "sky",
+      "callback": {
+        "sourceCount": 0,
+        "skyCount": 2,
+        "totalPhotonCount": 2,
+        "seed": 2136124382,
+        "draws": 4,
+        "minimumDecisionMargin": 0.04207333271745761
+      },
+      "magnitude": null
+    },
+    {
+      "targetId": "N2230.DAT@145877",
+      "filter": "B",
+      "kind": "object",
+      "callback": {
+        "sourceCount": 330,
+        "skyCount": 1,
+        "totalPhotonCount": 331,
+        "seed": 1940294672,
+        "draws": 6,
+        "minimumDecisionMargin": 0.03337971795831684
+      },
+      "magnitude": "10.20701025512506426218391085489540791589156126311521691614758898747794"
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "filter": "B",
+      "kind": "object",
+      "callback": {
+        "sourceCount": 199,
+        "skyCount": 1,
+        "totalPhotonCount": 200,
+        "seed": 2337622956,
+        "draws": 4,
+        "minimumDecisionMargin": 0.043306628448170015
+      },
+      "magnitude": "10.75833702434617222361501331880563028281212549922511658608325559895670"
+    },
+    {
+      "targetId": "N2230.DAT@144496",
+      "filter": "V",
+      "kind": "object",
+      "callback": {
+        "sourceCount": 1004,
+        "skyCount": 1,
+        "totalPhotonCount": 1005,
+        "seed": 2429276238,
+        "draws": 6,
+        "minimumDecisionMargin": 0.047644674417643335
+      },
+      "magnitude": "8.995665717977498675579932234610274661515383879206576521808368412830532"
+    },
+    {
+      "targetId": "N2230.DAT@147993",
+      "filter": "V",
+      "kind": "object",
+      "callback": {
+        "sourceCount": 62713,
+        "skyCount": 2,
+        "totalPhotonCount": 62715,
+        "seed": 938969907,
+        "draws": 5,
+        "minimumDecisionMargin": 0.09058127431369334
+      },
+      "magnitude": "4.506588745848005934210431269143787394414531127247579062336037180954201"
+    },
+    {
+      "targetId": "N2230.DAT@147993",
+      "filter": "B",
+      "kind": "object",
+      "callback": {
+        "sourceCount": 69686,
+        "skyCount": 0,
+        "totalPhotonCount": 69686,
+        "seed": 645329272,
+        "draws": 9,
+        "minimumDecisionMargin": 0.002186954620476189
+      },
+      "magnitude": "4.392167319797627425162110329262888751578699100161418533291198388479692"
+    }
+  ]
+}

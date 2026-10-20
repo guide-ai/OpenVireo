@@ -79,7 +79,7 @@ export async function resourceCheckCommand(root, args = [], output = console.log
   for (const issue of report.roots ?? []) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   for (const issue of report.issues.slice(0, 20)) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   if (report.issues.length > 20) output(`  ... ${report.issues.length - 20} additional resource issues.`);
-  output('Build and data-dependent tests require the matching authorized private resource pack.');
+  output('Restore missing or changed versioned resources from the matching source revision.');
   output('See README.md and docs/LOCAL-RESOURCES.json. Nothing was downloaded, generated or changed.');
   return 1;
 }

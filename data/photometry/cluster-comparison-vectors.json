@@ -1,0 +1,535 @@
+{
+  "precision": "Decimal80 independent Taylor cosine and squared radial predicate;Fraction exact IEEEbinary32 nearest-even for every V/BV",
+  "clusters": [
+    {
+      "clusterIndex": 0,
+      "points": 120,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N3000.DAT@80343",
+          "vInt": 6890,
+          "bvInt": 430,
+          "vSingle": 6.889999866485596,
+          "bvSingle": 0.4300000071525574,
+          "recordSHA256": "565c2ad93a98fca54b70750bc873ec316cd8fd7c6ac774cea7d14dbc0e56a037"
+        },
+        {
+          "id": "N3000.DAT@82487",
+          "vInt": 6260,
+          "bvInt": 1170,
+          "vSingle": 6.260000228881836,
+          "bvSingle": 1.1699999570846558,
+          "recordSHA256": "4bb809fcb6cab1f004aed2910db169be0d1d6e21e3e70eaf3a1e5040b03a947e"
+        },
+        {
+          "id": "N3000.DAT@82523",
+          "vInt": 11650,
+          "bvInt": 490,
+          "vSingle": 11.649999618530273,
+          "bvSingle": 0.49000000953674316,
+          "recordSHA256": "a7083ba12e15be001cf38328ccaa34284fd73a3c71539877e2efb9eebc504e4b"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.018423385819644977
+    },
+    {
+      "clusterIndex": 1,
+      "points": 43,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N3730.DAT@144227",
+          "vInt": 11650,
+          "bvInt": 360,
+          "vSingle": 11.649999618530273,
+          "bvSingle": 0.36000001430511475,
+          "recordSHA256": "deded699cd6db4a2cd42e532d15c9c1927be32927a647d2d5ad9b7d3cefcd6a3"
+        },
+        {
+          "id": "N3730.DAT@144449",
+          "vInt": 9640,
+          "bvInt": 30,
+          "vSingle": 9.640000343322754,
+          "bvSingle": 0.029999999329447746,
+          "recordSHA256": "d19f0aee7d8fb3308a92ec4571c85b029c2fdaca4a76b9782c5dd52eff9194e0"
+        },
+        {
+          "id": "N3730.DAT@144486",
+          "vInt": 10610,
+          "bvInt": 470,
+          "vSingle": 10.609999656677246,
+          "bvSingle": 0.4699999988079071,
+          "recordSHA256": "4c519816263da69526929a1d2852d05d6ab645d34973d0181fea5257ab540c98"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.006967033892607333
+    },
+    {
+      "clusterIndex": 2,
+      "points": 305,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N4500.DAT@132991",
+          "vInt": 6530,
+          "bvInt": 1100,
+          "vSingle": 6.53000020980835,
+          "bvSingle": 1.100000023841858,
+          "recordSHA256": "5307e4f7c12bf3aca943faa785eb365042d4dac6acea7c5df55d5c9dfdadcdc6"
+        },
+        {
+          "id": "N4500.DAT@134945",
+          "vInt": 6210,
+          "bvInt": 1570,
+          "vSingle": 6.210000038146973,
+          "bvSingle": 1.5700000524520874,
+          "recordSHA256": "8cd0eeff1fb75a9e8a96a1934ae9d906b7b4b5f505cde174a56d8d332a1adca0"
+        },
+        {
+          "id": "N4500.DAT@135153",
+          "vInt": 9520,
+          "bvInt": 120,
+          "vSingle": 9.520000457763672,
+          "bvSingle": 0.11999999731779099,
+          "recordSHA256": "3d2b098d840d706c1d5fb2981e3b112ec71f2afdbbdf1d1f46fea8b670a254ce"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.00012850775317474472
+    },
+    {
+      "clusterIndex": 3,
+      "points": 297,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N1500.DAT@118903",
+          "vInt": 5070,
+          "bvInt": -10,
+          "vSingle": 5.070000171661377,
+          "bvSingle": -0.009999999776482582,
+          "recordSHA256": "58062a267edf42ae42599fb36b7ecd35aef480c4cbf81c7ddc3629b509138617"
+        },
+        {
+          "id": "N2230.DAT@142812",
+          "vInt": 10400,
+          "bvInt": 620,
+          "vSingle": 10.399999618530273,
+          "bvSingle": 0.6200000047683716,
+          "recordSHA256": "3b645188ac19611d556641c742b102ef3c981f87ebb4c73cc1da4b9d45e47c8a"
+        },
+        {
+          "id": "N2230.DAT@143824",
+          "vInt": 14320,
+          "bvInt": 1420,
+          "vSingle": 14.319999694824219,
+          "bvSingle": 1.4199999570846558,
+          "recordSHA256": "f7835143819b595930dffc8fa35eb23b6360abc75b3741bf611464d1195aae63"
+        }
+      ],
+      "minimumRadialMarginArcmin": 9.264727364666214e-05
+    },
+    {
+      "clusterIndex": 4,
+      "points": 372,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N0730.DAT@95145",
+          "vInt": 10590,
+          "bvInt": 1010,
+          "vSingle": 10.59000015258789,
+          "bvSingle": 1.0099999904632568,
+          "recordSHA256": "67c342129823051f5616a9263c400009b0fd17350764f09d4b668f49e2e99a60"
+        },
+        {
+          "id": "N0730.DAT@95569",
+          "vInt": 13520,
+          "bvInt": 1470,
+          "vSingle": 13.520000457763672,
+          "bvSingle": 1.4700000286102295,
+          "recordSHA256": "7d4c7d62f8f42abd761d38c578f5996cd006e085f271d97ad98e834e69884de9"
+        },
+        {
+          "id": "N0730.DAT@95686",
+          "vInt": 8980,
+          "bvInt": 680,
+          "vSingle": 8.979999542236328,
+          "bvSingle": 0.6800000071525574,
+          "recordSHA256": "f57d8c2c88f6a033df53cc9b1b9389b17842ffb087b5bec5969dd2ae30580368"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.0013546638710408843
+    },
+    {
+      "clusterIndex": 5,
+      "points": 609,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "S6000.DAT@56715",
+          "vInt": 12530,
+          "bvInt": -170,
+          "vSingle": 12.529999732971191,
+          "bvSingle": -0.17000000178813934,
+          "recordSHA256": "84f8849e68957bdfaf8f8e49ae2ed3796a1a3e99281388b4f6630916a16389ef"
+        },
+        {
+          "id": "S6000.DAT@57906",
+          "vInt": 8060,
+          "bvInt": 50,
+          "vSingle": 8.0600004196167,
+          "bvSingle": 0.05000000074505806,
+          "recordSHA256": "007d52c342ec9cabaf21a9e2f54223aef8a50e8013343ee87e463240edc85f0a"
+        },
+        {
+          "id": "S6000.DAT@58853",
+          "vInt": 8390,
+          "bvInt": 900,
+          "vSingle": 8.390000343322754,
+          "bvSingle": 0.8999999761581421,
+          "recordSHA256": "a644ab383875cc09f00c74b6611f2f09c30871f0d5cbce2a43859da753bdc1db"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.0013519238419803514
+    },
+    {
+      "clusterIndex": 6,
+      "points": 44,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "S1500.DAT@213103",
+          "vInt": 9150,
+          "bvInt": -40,
+          "vSingle": 9.149999618530273,
+          "bvSingle": -0.03999999910593033,
+          "recordSHA256": "de2ed0d2ed9a914a4e5a80e2b427985afd65b0899682eebcba65e800ac5ee923"
+        },
+        {
+          "id": "S1500.DAT@213831",
+          "vInt": 9240,
+          "bvInt": 20,
+          "vSingle": 9.239999771118164,
+          "bvSingle": 0.019999999552965164,
+          "recordSHA256": "8a32b2ec0d399398376282dc30673cec0af2cc20e9426fae356df275139a81b9"
+        },
+        {
+          "id": "S1500.DAT@213964",
+          "vInt": 10330,
+          "bvInt": -30,
+          "vSingle": 10.329999923706055,
+          "bvSingle": -0.029999999329447746,
+          "recordSHA256": "e5101ad69ffa4b56f61269a0125a2c30017c1243ccf4fa56e70130e90de753f6"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.0014262746624353895
+    },
+    {
+      "clusterIndex": 7,
+      "points": 198,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N1500.DAT@386392",
+          "vInt": 11640,
+          "bvInt": 430,
+          "vSingle": 11.640000343322754,
+          "bvSingle": 0.4300000071525574,
+          "recordSHA256": "db9c5b883ca8202369e19f4593c0c9652ccaa79197c15c47a9c3a554e1ee4645"
+        },
+        {
+          "id": "N1500.DAT@386585",
+          "vInt": 7500,
+          "bvInt": 170,
+          "vSingle": 7.5,
+          "bvSingle": 0.17000000178813934,
+          "recordSHA256": "3284503effa4b34069de42cb7fb883c96940a4af844e9c984486a98898ab0ceb"
+        },
+        {
+          "id": "N1500.DAT@386690",
+          "vInt": 11930,
+          "bvInt": 520,
+          "vSingle": 11.930000305175781,
+          "bvSingle": 0.5199999809265137,
+          "recordSHA256": "925b41b2b5833e62c1f08119153918b1078316779bdaeacf651c09e82680c003"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.008614037461541102
+    },
+    {
+      "clusterIndex": 8,
+      "points": 38,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "S4500.DAT@266624",
+          "vInt": 8520,
+          "bvInt": 220,
+          "vSingle": 8.520000457763672,
+          "bvSingle": 0.2199999988079071,
+          "recordSHA256": "db29f9449759c782cf50eb80fb391cd38d3fcba0980d64a8bc8556dc139a0fda"
+        },
+        {
+          "id": "S4500.DAT@272321",
+          "vInt": 9640,
+          "bvInt": 460,
+          "vSingle": 9.640000343322754,
+          "bvSingle": 0.46000000834465027,
+          "recordSHA256": "c91ddaa8e02fb10d17445391011359183e88a8874102e2386d975b9a45faf2a4"
+        },
+        {
+          "id": "S5230.DAT@204319",
+          "vInt": 8350,
+          "bvInt": 40,
+          "vSingle": 8.350000381469727,
+          "bvSingle": 0.03999999910593033,
+          "recordSHA256": "15629e467cf3e50ce92ca21dc64c9cfa477ccb34aaea941525d6c185920c383b"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.006166808278365465
+    },
+    {
+      "clusterIndex": 9,
+      "points": 506,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N0730.DAT@379668",
+          "vInt": 9840,
+          "bvInt": 1360,
+          "vSingle": 9.84000015258789,
+          "bvSingle": 1.3600000143051147,
+          "recordSHA256": "87ec0c754792da402c6046b4f8dac940ac312f1f9d54ba56cbc46dfeb04b724a"
+        },
+        {
+          "id": "N0730.DAT@379848",
+          "vInt": 8860,
+          "bvInt": 1590,
+          "vSingle": 8.859999656677246,
+          "bvSingle": 1.590000033378601,
+          "recordSHA256": "28266b6644aaffe4e09f3d401269512b57951ba1a6646fc34066247f74e67a04"
+        },
+        {
+          "id": "N0730.DAT@379923",
+          "vInt": 9980,
+          "bvInt": 1100,
+          "vSingle": 9.979999542236328,
+          "bvSingle": 1.100000023841858,
+          "recordSHA256": "8b4424d6aa887407741c73e741a7bd80a9e56be6021c13382725bdffe05b83b5"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.05546921448785369
+    },
+    {
+      "clusterIndex": 10,
+      "points": 70,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N2230.DAT@489270",
+          "vInt": 10870,
+          "bvInt": 670,
+          "vSingle": 10.869999885559082,
+          "bvSingle": 0.6700000166893005,
+          "recordSHA256": "09bbbaa3984866419a4cf8d772db733317587f1da8aac05558cbb924d83ffce6"
+        },
+        {
+          "id": "N2230.DAT@489272",
+          "vInt": 7890,
+          "bvInt": 350,
+          "vSingle": 7.889999866485596,
+          "bvSingle": 0.3499999940395355,
+          "recordSHA256": "5c8f93c80a4f0c713d7d8a270a1b043d97e77a170be22e3b056e10d81eb7b4bc"
+        },
+        {
+          "id": "N2230.DAT@489361",
+          "vInt": 11270,
+          "bvInt": 460,
+          "vSingle": 11.270000457763672,
+          "bvSingle": 0.46000000834465027,
+          "recordSHA256": "ab71b46d7728c66a97616eb592f8afa16cda0dcf5d2ee71f82a4c678cbd344aa"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.011659615457446648
+    },
+    {
+      "clusterIndex": 11,
+      "points": 45,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N0000.DAT@758208",
+          "vInt": 8780,
+          "bvInt": 70,
+          "vSingle": 8.779999732971191,
+          "bvSingle": 0.07000000029802322,
+          "recordSHA256": "f7ec5371235124ae951dd746aeec6cacf1434aefba29235a181fdfafd017f964"
+        },
+        {
+          "id": "N0000.DAT@758233",
+          "vInt": 7616,
+          "bvInt": 60,
+          "vSingle": 7.616000175476074,
+          "bvSingle": 0.05999999865889549,
+          "recordSHA256": "6826d760df87e19f956ee19c1ab9832c7e84f3046221251bca75683f50e3b3e3"
+        },
+        {
+          "id": "N0000.DAT@758294",
+          "vInt": 10320,
+          "bvInt": 270,
+          "vSingle": 10.319999694824219,
+          "bvSingle": 0.27000001072883606,
+          "recordSHA256": "414217662d0e0508c304a66eb768b70f443ac97adcd6a32c0c1dfe97b6cc0a0b"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.0005540269723383062
+    },
+    {
+      "clusterIndex": 12,
+      "points": 69,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "S3000.DAT@796978",
+          "vInt": 7810,
+          "bvInt": 20,
+          "vSingle": 7.809999942779541,
+          "bvSingle": 0.019999999552965164,
+          "recordSHA256": "7540c64043d8bbad43d27ecd151c518ee52855ac670c4ee9c8c0539330479de5"
+        },
+        {
+          "id": "S3000.DAT@797367",
+          "vInt": 8950,
+          "bvInt": 520,
+          "vSingle": 8.949999809265137,
+          "bvSingle": 0.5199999809265137,
+          "recordSHA256": "42be2e7692b017a01fe72d97da17ae64ad55ad28c8fe49999bdf4d1b7b6539a7"
+        },
+        {
+          "id": "S3000.DAT@799141",
+          "vInt": 7830,
+          "bvInt": 30,
+          "vSingle": 7.829999923706055,
+          "bvSingle": 0.029999999329447746,
+          "recordSHA256": "1176beeb10b9cec5bacf331874941ca8047bb705718ae4514040d776ef471efc"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.0038402592962398785
+    },
+    {
+      "clusterIndex": 13,
+      "points": 59,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "S0730.DAT@729572",
+          "vInt": 11740,
+          "bvInt": 390,
+          "vSingle": 11.739999771118164,
+          "bvSingle": 0.38999998569488525,
+          "recordSHA256": "2f150bafd284d499915c4cb7858d10065a6a1cd104f807aa590953bff460c20c"
+        },
+        {
+          "id": "S0730.DAT@729737",
+          "vInt": 14550,
+          "bvInt": 1020,
+          "vSingle": 14.550000190734863,
+          "bvSingle": 1.0199999809265137,
+          "recordSHA256": "6a2528277b84ab39d06fee14681e0d87eddb9a2cd1d3d0672185581cb13be2ea"
+        },
+        {
+          "id": "S0730.DAT@729757",
+          "vInt": 9213,
+          "bvInt": 470,
+          "vSingle": 9.213000297546387,
+          "bvSingle": 0.4699999988079071,
+          "recordSHA256": "55863f4e455252987b99802bcd0c54c4db8e1de3e786607a71e436169fc67fcb"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.15174862628401886
+    },
+    {
+      "clusterIndex": 14,
+      "points": 69,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N3730.DAT@795800",
+          "vInt": 8000,
+          "bvInt": -120,
+          "vSingle": 8.0,
+          "bvSingle": -0.11999999731779099,
+          "recordSHA256": "89655b9a6a0e72f401a6dae108fcc9f6de45542c8af74835486fb9a4964c8e34"
+        },
+        {
+          "id": "N3730.DAT@795954",
+          "vInt": 12930,
+          "bvInt": 1640,
+          "vSingle": 12.930000305175781,
+          "bvSingle": 1.6399999856948853,
+          "recordSHA256": "ac640dde7b44a9287b549fa3a8e6c39b7945d77231c89d30c1fb47c38b2928b9"
+        },
+        {
+          "id": "N3730.DAT@796235",
+          "vInt": 10377,
+          "bvInt": 1470,
+          "vSingle": 10.376999855041504,
+          "bvSingle": 1.4700000286102295,
+          "recordSHA256": "fd3d0d4201bc294b9a337ee4fb9386aa886bac2b9a3e9b55f179af802319b2ef"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.011520214639830328
+    },
+    {
+      "clusterIndex": 15,
+      "points": 29,
+      "decimal80RadialIDsMatch": true,
+      "exactBinary32RoundToNearestEvenMatches": true,
+      "references": [
+        {
+          "id": "N4500.DAT@752527",
+          "vInt": 7340,
+          "bvInt": -20,
+          "vSingle": 7.340000152587891,
+          "bvSingle": -0.019999999552965164,
+          "recordSHA256": "5968d9b77857de4965666481720266ed832ed535a63487d0bf06faf222bacf4b"
+        },
+        {
+          "id": "N4500.DAT@752870",
+          "vInt": 10530,
+          "bvInt": 600,
+          "vSingle": 10.529999732971191,
+          "bvSingle": 0.6000000238418579,
+          "recordSHA256": "7731f1cba859a7538ac21f18ce049fdcb2fbc2f97ff9d7b1b6e379553f3aee08"
+        },
+        {
+          "id": "N4500.DAT@752973",
+          "vInt": 9150,
+          "bvInt": 160,
+          "vSingle": 9.149999618530273,
+          "bvSingle": 0.1599999964237213,
+          "recordSHA256": "7185051dc51778659e9ad2fc96654f734b383426228c611f8f1b9a41dd80a3f6"
+        }
+      ],
+      "minimumRadialMarginArcmin": 0.0017707264955575397
+    }
+  ],
+  "binary32Checks": 5746,
+  "originalRuntimeExecuted": false
+}

@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "policy": "VIREO-browser-running-clock-drive-v1",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sourceClockProofSHA256": "4d20272f847a8e449a2d9e933e627eb722912fc15cce69af7c835db80b7446f9",
+  "opticalProfileSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "ranges": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/clock-timer.asm",
+      "from": "0x5384b0",
+      "endExclusive": "0x5386e3",
+      "sha256": "6ab0fd3845195fc7b1b9814441232648f44d6582349213fd4ef30d63cc68848e"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/tracking-toggle.asm",
+      "from": "0x538768",
+      "endExclusive": "0x5387e7",
+      "sha256": "1649190e85b372da574d6db07c2b19b3f5e6fe4e021ac2b4cfb89ece34627d97"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/drift.asm",
+      "from": "0x53cb6c",
+      "endExclusive": "0x53cce4",
+      "sha256": "5cd4d7fd719169c32c13ca84bcb8eac0b0737c6d7ee0fab26f8105c3340a4022"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/projection-init.asm",
+      "from": "0x5949c8",
+      "endExclusive": "0x594a40",
+      "sha256": "21a2b8c7fb0de3520733ece29aa2fd35ccb382021686825589165095797b9488"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/projection-x.asm",
+      "from": "0x594a44",
+      "endExclusive": "0x594b04",
+      "sha256": "47c58c52f46ad2d3c8c3a8f9c59caf0b953a3aa28294fe9158ceafdeb6abefc2"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/inverse-x.asm",
+      "from": "0x594b40",
+      "endExclusive": "0x594b9c",
+      "sha256": "6e38f11bc2e6a3e59f0037251541ddb963a9b80225c2a22a5d7a0b3970955098"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/normalize-ra.asm",
+      "from": "0x4bad9c",
+      "endExclusive": "0x4bae04",
+      "sha256": "741422c5e82be276f5ead1d9694b314dde33e08c266293132271b8a7165e9190"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/drift-anchor.asm",
+      "from": "0x53c9d4",
+      "endExclusive": "0x53ca54",
+      "sha256": "34d119620d5adb4983cb80fec785206b0b7a2203509a074c6ed6d13c9ab214de"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/horizon-option-default.asm",
+      "from": "0x5a2ada",
+      "endExclusive": "0x5a2af6",
+      "sha256": "0be5b4627bb2923b6cd9cd316c75d5308b76df880d501c59137b612f34978d98"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/horizon-limit.asm",
+      "from": "0x539290",
+      "endExclusive": "0x5393ec",
+      "sha256": "9303ce726457d6b5d448a2089b6ad911ef53d380b40b3be1442505e347fdcb29"
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/option-copy.asm",
+      "from": "0x5879b8",
+      "endExclusive": "0x5879d0",
+      "sha256": "3ef7a6112e3f2f6f181962c6f43d593378ece83add7118a7c69e254c2fd02f74"
+    }
+  ],
+  "constants": {
+    "nativeDriftHoursPerDay": {
+      "address": "0x53cce0",
+      "type": "Single",
+      "rawLE": "0000c041",
+      "value": 24
+    },
+    "normalizeHours": {
+      "address": "0x4badfc",
+      "type": "Single",
+      "rawLE": "0000c041",
+      "value": 24
+    },
+    "radiansPerDegree": {
+      "address": "0x53ccd4",
+      "type": "Extended",
+      "rawLE": "aec8e9941235fa8ef93f",
+      "decimal": "0.017453292519943295769139146242365789873929315945133566856384277343750"
+    },
+    "compiledHorizonEnabled": false
+  },
+  "vectorsSHA256": "9eece32a222fb6c6c8b6456537bcba533713ef06f00b0c8d4a146d3957dd0fbb",
+  "reference": {
+    "script": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/running-clock-recovery/reference.py",
+    "sha256": "6ad40e8c2001496c44c2b082a570e755b2548a1be8c785e844ce9d85d9ff88ef",
+    "method": "Decimal100,Taylor cosine,full forward/drift/inverse composition and signed RA normalization. Mathematical reconstruction; no native execution.",
+    "vectors": 48
+  },
+  "browserPolicy": {
+    "maximumElapsedMS": 86400000,
+    "maximumCallbackGapMS": 1000,
+    "targetCadenceMS": 100,
+    "maximumAbsDeclination": 85,
+    "clock": "1:1 monotonic browser milliseconds,UT anchor explicit;paused on save/route/hidden/site/repoint/restore",
+    "tracking": "on keeps RA/Dec;off drifts solar24h/day as recovered,not replaced by modern sidereal rate",
+    "scope": "Bounded observatory preview;no new temporal photon synthesis,horizon enforcement,motor slew or global native scheduler"
+  },
+  "uncertainty": "Analytical cancellation of cos(dec) and projection scale gives RA0+elapsedDays*24. Number absolute-anchor evaluation avoids callback accumulation but is not native x87 projection-step equivalence. Near-pole preview running is gated. Native wall-clock jumps/global PRNG/window timing remain unported.",
+  "rights": "Original licenses retained;local research,no redistribution grant."
+}

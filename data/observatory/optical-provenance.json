@@ -1,0 +1,288 @@
+{
+  "schema": 1,
+  "edition": {
+    "program": "VIREO",
+    "version": "1.504",
+    "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "profileFile": "data/observatory/compiled-optical-profiles.json",
+  "profileSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "sourceInventory": {
+    "sources": [
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+        "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+        "bytes": 2288128
+      },
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/OBSRVHLP.TXT",
+        "sha256": "2dcae5e678d69ed80784bb2958ed856289ff04779edd19656681288846102bd7",
+        "bytes": 5275
+      },
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/VIRMNHLP.TXT",
+        "sha256": "6267cd7f2ae72562f8218b4404e566817682b75143cd67bc34fa133fe8dddebc",
+        "bytes": 19231
+      },
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+        "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+        "bytes": 32096
+      },
+      {
+        "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+        "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+        "bytes": 152
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/telescope-zero-point.c",
+        "sha256": "29dab9c31bf78ee42c0d5371ad5b79116facfaa26104fffc53d5c02b2e7bfdea",
+        "bytes": 2814
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/telescope-zero-point.asm",
+        "sha256": "9a6ff9b64d2d63e9a669ae7f36808ddca2ea943d828688380786b1c6ff052b39",
+        "bytes": 5136
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-read.c",
+        "sha256": "5746e54d4f37a2b66737e45a9161ba154e8b104fb0a8df454365c6750835fded",
+        "bytes": 6275
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-read.asm",
+        "sha256": "e51b761e6461070dc2645d236a0dbdb8cd0d7994df1d978727df536806b69b9e",
+        "bytes": 10865
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-defaults.c",
+        "sha256": "5bdfb358adda8df583f77a186fc887c1ae34e47b71b67dc65f1b078f588163b3",
+        "bytes": 34350
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-defaults.asm",
+        "sha256": "6584b8bf43a2bf440ebf3985121353335ab4cec74e9a8ebaeb040dac9084d381",
+        "bytes": 22823
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/default-telescopes.c",
+        "sha256": "575589956581df18e3a71402697ae5f1ba0d42b48a45f56c97915ae4ee22b398",
+        "bytes": 4612
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/default-telescopes.asm",
+        "sha256": "1a94fec914d91188e02ea4897f70ad5ea7a1d6b4486901554d0f71a7ee52c091",
+        "bytes": 6590
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-ini-read.c",
+        "sha256": "0af013806a3e28d1f483d13a942f772d2864196f97d3de17fc157a7390e1b0f5",
+        "bytes": 12246
+      },
+      {
+        "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-ini-read.asm",
+        "sha256": "3202948724a1e9bd91cc6bc4ae1b59651f2fe916f7f58208da7adf760c931546",
+        "bytes": 28072
+      }
+    ],
+    "existingStaticEvidence": [
+      {
+        "label": "telescope-zero-point",
+        "address": "0x53df24",
+        "ranges": [
+          {
+            "start": "0x53df24",
+            "end": "0x53e177"
+          }
+        ],
+        "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+        "evidence_id": "ev_ea3be7a821ec183908a1d2f52326534ff06e30dacd2245a815bb9f4c7464eee0",
+        "raw_response": "analysis/rea-ghidra-hubble4-results/telescope-zero-point.json"
+      },
+      {
+        "label": "options-read",
+        "address": "0x5a1a08",
+        "ranges": [
+          {
+            "start": "0x5a1a08",
+            "end": "0x5a200f"
+          }
+        ],
+        "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+        "evidence_id": "ev_b78376d3e36acc95c44912044ee1c30b12525007ef3688a80d57fdd43b50193b",
+        "raw_response": "analysis/rea-ghidra-hubble4-results/options-read.json"
+      },
+      {
+        "label": "options-defaults",
+        "address": "0x5a21d0",
+        "ranges": [
+          {
+            "start": "0x5a21d0",
+            "end": "0x5a2c83"
+          }
+        ],
+        "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+        "evidence_id": "ev_bb9b327aca48744f607f49ca2ed67df3eb116de36a77a285a89d479bf7d7cea6",
+        "raw_response": "analysis/rea-ghidra-hubble4-results/options-defaults.json"
+      },
+      {
+        "label": "default-telescopes",
+        "address": "0x5a3174",
+        "ranges": [
+          {
+            "start": "0x5a3174",
+            "end": "0x5a348f"
+          }
+        ],
+        "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+        "evidence_id": "ev_bc4e439651a91034edede1c8d4d5488e444a5977778c4774963cf05eec855b3c",
+        "raw_response": "analysis/rea-ghidra-hubble4-results/default-telescopes.json"
+      },
+      {
+        "label": "options-ini-read",
+        "address": "0x5a3534",
+        "ranges": [
+          {
+            "start": "0x5a3534",
+            "end": "0x5a448b"
+          },
+          {
+            "start": "0x5a453a",
+            "end": "0x5a455f"
+          }
+        ],
+        "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+        "evidence_id": "ev_f082bd9d132e86aa787341ee1ce3bdcb5711761ed196004909c6546364240c88",
+        "raw_response": "analysis/rea-ghidra-hubble4-results/options-ini-read.json"
+      }
+    ],
+    "rights": "Original CLEA copyrighted Gettysburg College; source License.rtf retained and hashed. Local research/port receipt only; no publication or redistribution authorization inferred."
+  },
+  "lifecycle": {
+    "schema": "openclea-static-telescope-lifecycle-evidence",
+    "version": 1,
+    "source": {
+      "name": "CLEA_VEO.exe",
+      "version": "1.504",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "localPath": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe"
+    },
+    "evidenceMethod": "read-only GNU objdump on immutable PE plus independent Delphi published-method/field tables; no original execution",
+    "license": "Local research only; no inferred redistribution grant. Existing inventory remains authoritative.",
+    "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/i08-a01-recovery/lifecycle",
+    "claims": [
+      {
+        "id": "I08-L01",
+        "contract": "same selected optical index is no-op",
+        "ranges": [
+          "0x58b444..0x58b48e",
+          "0x58b490..0x58b4da",
+          "0x58b4dc..0x58b526"
+        ]
+      },
+      {
+        "id": "I08-L02",
+        "contract": "compiled immediateSwitch option false; selected telescope import otherwise uses pending/dome-close timer path",
+        "ranges": [
+          "0x5a2b52..0x5a2b58",
+          "0x5879b8..0x5879cd",
+          "0x58b554..0x58b766",
+          "0x58b838..0x58ba23"
+        ]
+      },
+      {
+        "id": "I08-L03",
+        "contract": "native Hubble profile has unrestricted optical access with no request lottery",
+        "ranges": [
+          "0x58a8ca..0x58a8d3",
+          "0x589cb5..0x589cde"
+        ],
+        "values": {
+          "timeRestriction": false,
+          "access1m": true,
+          "access4m": true,
+          "requestTimeMenu": false
+        }
+      },
+      {
+        "id": "I08-L04",
+        "contract": "request probability and exclusive object-use award bounds; cancellation consumes prior RNG draws but does not commit grant",
+        "ranges": [
+          "0x58ba88..0x58bf06",
+          "0x4035c8..0x40360a"
+        ],
+        "compiledFallback": [
+          {
+            "index": 0,
+            "availability": 1,
+            "configuredMinimum": 255,
+            "configuredMaximumExclusive": 255,
+            "cooldownMinutes": 0,
+            "requestExposed": false
+          },
+          {
+            "index": 1,
+            "availability": 0.5,
+            "minimumUsesInclusive": 12,
+            "maximumUsesExclusive": 24,
+            "cooldownMinutes": 10
+          },
+          {
+            "index": 2,
+            "availability": 0.25,
+            "minimumUsesInclusive": 8,
+            "maximumUsesExclusive": 16,
+            "cooldownMinutes": 15
+          }
+        ]
+      },
+      {
+        "id": "I08-L05",
+        "contract": "dome closed0/open1/opening2/closing3; commands can reverse; requestselection awaits closingphasecompletion",
+        "ranges": [
+          "0x58c45c..0x58c5f2",
+          "0x58c608..0x58c842",
+          "0x58d154..0x58d3eb",
+          "0x58b861..0x58b868"
+        ]
+      },
+      {
+        "id": "I08-L06",
+        "contract": "instrument gate bypasses for availability1 or unrestricted exercise; restricted counters deny at<=0, decrement per completed use",
+        "ranges": [
+          "0x53cce4..0x53ce57",
+          "0x5001a9..0x500201",
+          "0x5122d4..0x51232c"
+        ]
+      },
+      {
+        "id": "I08-L07",
+        "contract": "selected telescope copies site/calibration; pendingcommit reinitializes coordinate-related state",
+        "ranges": [
+          "0x53df24..0x53e177",
+          "0x58b96e..0x58b9bf",
+          "0x537f08..0x5381cc"
+        ],
+        "uncertainty": "This subtask does not assign exact RA/Dec semantics to all copied site/time fields."
+      }
+    ],
+    "browserAdaptations": [
+      "staged Apply/Cancel selection is new UI; native Access selection has no confirmdialog",
+      "closed/stopped atomic apply with preserved acquired journals and manualanswers is a preservationpolicy, not a nativebinaryequivalence claim"
+    ],
+    "unsupportedClaims": [
+      "alternate-telescope acquisition/calibration compatibility",
+      "global native PRNG ordering across science, availability and sounds",
+      "complete runtime window, timing or binary equivalence",
+      "full site/time/tracking contract"
+    ]
+  },
+  "newBrowserContract": [
+    "Staged Apply/Cancel is an explicit web adaptation, not native Access modal behavior.",
+    "Changed telescope closes preview dome and releases supported acquisitions while retaining their journals/manual work and catalog pointing. Native site/time coordinate reinitialization is not emulated.",
+    "Hubble unrestricted access is used; request probability/award metadata is shown only, no request lottery/RNG draws or allocation credits.",
+    "Alternate telescope acquisition is not enabled; all existing supported acquisitions require original record0."
+  ],
+  "numericalPolicy": "Exact original Single values and raw Extended bytes preserved; site degree values are Number projections of independently calculated exact raw80 \u00d7 native conversion-constant products. Focal products use explicit nearest-even Single projection. No x87/runtime equivalence claimed.",
+  "rights": "Existing original license remains authoritative. Local research only; no redistribution/publication grant."
+}

@@ -1,0 +1,274 @@
+{
+  "binarySha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "archiveSha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+  "captures": [
+    {
+      "id": "PHOTO-FIELD-01",
+      "file": "neighbor-query.asm",
+      "start": "0x59ac54",
+      "endExclusive": "0x59ad52",
+      "byteRangeSha256": "75f57f00442f01521aea5985a85400f6b7b03756a62b5b86a2238a804d676453",
+      "listingSha256": "844ce4412a607f8cde82526110629a5492f674199c8c65928e22d7a19eaf7649",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-02",
+      "file": "compact-colors-name.asm",
+      "start": "0x59b030",
+      "endExclusive": "0x59b1f7",
+      "byteRangeSha256": "4b4fd90862bb8ab35d1318183b8fa20635ce1e7bfbb120165c595f1f3d2e0adc",
+      "listingSha256": "78957679a786a1073c6b930de751e7d46ceddaa454952a8a555e65b5938c1eec",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-03",
+      "file": "field-size-option.asm",
+      "start": "0x5a63c6",
+      "endExclusive": "0x5a63e6",
+      "byteRangeSha256": "e68c1dd99f9c6bc2d6dbd0eeb171b5a97be5c1d47347c1a0faf085ab844a2e2c",
+      "listingSha256": "03f02dbd211519f62fd77f6b56d51a45d18795d02646be5a848cf639e72cf7ff",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-04",
+      "file": "pleiades-mode.asm",
+      "start": "0x58a39b",
+      "endExclusive": "0x58a3d7",
+      "byteRangeSha256": "b015b89db22d8864c8688a7757a492247470a5f907c7a83e9ccef1b93b71d1d7",
+      "listingSha256": "344f086a8881f30ed48cfbd138d353efc6528000a2c869e7b843feab78f1cc0b",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-05",
+      "file": "dynamic-context-gate.asm",
+      "start": "0x58b39e",
+      "endExclusive": "0x58b41a",
+      "byteRangeSha256": "8fcb9bd77f04e1eb3a6da86ccd8ee73c54847cd9a8dc8dddf6f1bbf05d6f5c9e",
+      "listingSha256": "37b978b207ad4e6e53eabbc79ed3fdd6f644970a79306e9ef4910651e5203af5",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-06",
+      "file": "record-lookup.asm",
+      "start": "0x54a73c",
+      "endExclusive": "0x54a91c",
+      "byteRangeSha256": "08f0d4072feb71c8b05da0976da1e1569a1291db487a264f5c18386e7f218bf3",
+      "listingSha256": "9b4a95da71596826749bdf0e2c08ce664c61a2ee6a95675d69e18004b230f697",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-07",
+      "file": "record-dialog.asm",
+      "start": "0x54a91c",
+      "endExclusive": "0x54b2ec",
+      "byteRangeSha256": "33422f97aba82dbedc40b2fae075a91a67b28083cdddb946db6d3050d513dc9b",
+      "listingSha256": "64e068f8a5a75f156d478d3898ffbbe33c58159024e74616f7d0c514bbb1890f",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-08",
+      "file": "record-handler.asm",
+      "start": "0x501e7c",
+      "endExclusive": "0x502071",
+      "byteRangeSha256": "e9629238445f0a26ff68d3f2004776d311842c01fa5d2d808c74d4f174095626",
+      "listingSha256": "9060850325d448cb78156b39f34e22276a8125cdeae5f46d0f53d846e3153165",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-09",
+      "file": "cancel-exact.asm",
+      "start": "0x54b2dc",
+      "endExclusive": "0x54b2eb",
+      "byteRangeSha256": "84fa4a12e1e8700e67292efad875cd1296aacb8018a20a716f54d437121d57c4",
+      "listingSha256": "0a0e9d037ed490d51db84090bf49cdda5b9c5a0e6ec5b212772a69fae25aa446",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-10",
+      "file": "cancel-global-factory.asm",
+      "start": "0x5ad58a",
+      "endExclusive": "0x5ad59d",
+      "byteRangeSha256": "78d3a2072f7036bc2d25f2218be90115090e646f65de91dee164dde38a69caf4",
+      "listingSha256": "0aafa41161368afb8fdf90d0adf7e346daf3cbea9f2f37c9f9287615a99061d4",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-11",
+      "file": "source-sky-amplitudes.asm",
+      "start": "0x500945",
+      "endExclusive": "0x500a14",
+      "byteRangeSha256": "70e392f7a1c9aefd2c3f3eeeb9efd5e50722b9350be0cc927c8f4f5479cd9272",
+      "listingSha256": "c59b2ee0d7b6c8cf76d9e11c0f027f06b7fc7a0361cce7ad378caa8952e6a2fe",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-12",
+      "file": "timer-callback.asm",
+      "start": "0x5014e4",
+      "endExclusive": "0x5016bf",
+      "byteRangeSha256": "02cbeb306e79e798a87041c1c7a42e7980ff7ea37d5bb1e7fe1ec7198ec690ab",
+      "listingSha256": "c916e6ae0b7cec4a9abe4bb09dc929b979880fa8d472ad628bf4f11c4bf0672b",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    },
+    {
+      "id": "PHOTO-FIELD-13",
+      "file": "integration-selection.asm",
+      "start": "0x501e20",
+      "endExclusive": "0x501e5f",
+      "byteRangeSha256": "9bead429c2aacfe1e276d4ff9b0bb044fa4691195f87bebf23653fcd72bace04",
+      "listingSha256": "5f2bcf20e9acfa7b9ba0258df99f227bdc086da4a5140598263c44907793decd",
+      "scope": "Bounded static listing, not execution; only documented branches are ported."
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x59ad54",
+      "bytes": 10,
+      "sha256": "504b8eddbb3c10a38bc819f2cb2012f05cf5cf6dd41fad418e996d074c401d3b",
+      "meaning": "neighbor margin degrees",
+      "numerator": "11805916207174113035",
+      "denominator": "4722366482869645213696",
+      "value": 0.0025
+    },
+    {
+      "address": "0x5b3a40",
+      "bytes": 10,
+      "sha256": "9e3186f308caf4ab481f125fe2749d0563c07ebe773040b2a5433cf916bc06a2",
+      "meaning": "first integration duration Extended seconds",
+      "numerator": "14757395258967641293",
+      "denominator": "147573952589676412928",
+      "value": 0.1
+    },
+    {
+      "address": "0x500ac8",
+      "bytes": 4,
+      "sha256": "07883481b5c147464597d44401db095d88c2a6b049fbbcd7b278de98a5ceeb71",
+      "meaning": "timer milliseconds divisor",
+      "numerator": "1000",
+      "denominator": "1",
+      "value": 1000.0
+    }
+  ],
+  "aliases": [
+    {
+      "address": "0x5b5b48",
+      "value": "0x5bcae4",
+      "sha256": "af84d9475778756768502d073d8dd624921c9ae0f53aacc6a8d6c3fff8480819"
+    },
+    {
+      "address": "0x5b5bd4",
+      "value": "0x5bcb00",
+      "sha256": "039db7b79082d216517a3690dde5d93b1dffd2a44e0413b42d0ba352f16203d6"
+    },
+    {
+      "address": "0x5b5c1c",
+      "value": "0x5bcaf8",
+      "sha256": "0f79dc87cdf45a74197a1cc63d6ef9075d91ffa5c9ee6f98c7cf13594f906597"
+    },
+    {
+      "address": "0x5b5ef8",
+      "value": "0x5bcafc",
+      "sha256": "90bc4952369924aa921378fbe6afcfab187344bf9ca26f559b90251ac76cd3e4"
+    },
+    {
+      "address": "0x541a0c",
+      "value": "0x541a58",
+      "sha256": "644d087749ce5c4ed72d451fe040f69eecdf47fe740d640bb264e08f32371405"
+    }
+  ],
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PLEIADES.HTL",
+      "sha256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2",
+      "bytes": 2064
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/TABLES/REGIONS.BIN",
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+      "bytes": 343368
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "bytes": 2865524
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "bytes": 117988
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "bytes": 1420071
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "bytes": 10103
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N2230.DAT",
+      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+      "bytes": 28767987
+    }
+  ],
+  "supportingEvidence": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-source-recovery/reader-witness.json",
+      "sha256": "dffa32646c268f896ce883488e43ef91d40b9821117bda7d1bfe4f255dd5796a"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f"
+    }
+  ],
+  "generatedArtifacts": [
+    {
+      "path": "data/photometry/pinned-pleiades-v.json",
+      "sha256": "143ddf5cb0f4fed671135f1dbc105022f5627588d794ff258772fe3056138624"
+    },
+    {
+      "path": "data/photometry/field-vectors.json",
+      "sha256": "40fb95f75a08119f208e99fb4713dfde7030abe5a28f89132bf734198a11c41c"
+    }
+  ],
+  "generators": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-field-recovery/generate.py",
+      "sha256": "42ecc0d7708e8db35ab552725331903b330cd08d8b5f001b773ef9a1ed3ef383"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-field-recovery/analytic-vectors.py",
+      "sha256": "f9e93dd444d2dbc652c034e92ded6ce9e12380a38836d9bc47570d88a6bbb244"
+    }
+  ],
+  "ported": {
+    "query": "PHOTO-FIELD-01: first field+5 then field+35; native flat distance <= aperture+.0025deg, no type/magnitude filtering, no sort/dedup/central exclusion. Native downstream excludes equal central name.",
+    "source": "Original compact offset12 V,14 B-V,16 U-B int16/1000->Single, prefix band +dash+Pascal suffix. Hotlist index1 exact stored coordinate association with N2230.DAT@145877; preserve different HTL label.",
+    "coverage": "For each fixed .05deg field, independent whole N2230 band admission equals native seek/scan and exact Fraction admission against stored Double bounds; adjacent rounded RA keys preserve membership. Full variable/QSO/galaxy/image list position scans have zero admissions before any magnitude/time filter. This avoids all variable/galaxy merge mutations, including saved-index deletion behavior.",
+    "profile": "Explicit native field-size Single option1arcmin, multiplier3. Not compiled field15arcmin, not a supplied preset/runtime witness. Fresh mode3 bypasses dynamic creation modes0/1; no prior generated contexts.",
+    "oneCallback": "Source Poisson then sky Poisson, sum.1000 base photons per callback, timer100ms separately /1000. First integration table Extended.1 equals exact100/1000 rounded to64-bit significand; no broad callback/timer overshoot extrapolation.",
+    "sky": "Manual Sky selector does not suppress source magnitude conversion. With nearest target inside350pixels but aperture fraction0 and no queried neighbors, attenuation returns30 and source mean remains3.9810717055e-6, not0.",
+    "reduction": "One fresh sky callback then object callback, same fixed V/tel0 context. Supplied reducer uses counts/.1 and base1000/.1 with preparedZP9; independent analytic magnitudes are not catalog answers or original measurements."
+  },
+  "lifecycle": {
+    "lookup": "PHOTO-FIELD-06: collection search by native label equality unless always-new option; existing live record or immediately appended new record.",
+    "record": "PHOTO-FIELD-08: fills live record before modal, then sets self+6b0 from ModalResult1; no direct rollback on cancel path.",
+    "cancel": "PHOTO-FIELD-09/10 and aliases: cancel only clears THRDisplayForm1 instance+480 (global5bcae4), NOT result list or observation pointer. Modal-close dispatch/full writer/replay not yet certified.",
+    "stop": "Previously recovered0x500b58 disables timer/unlocks; does not reduce/Record. Not implemented by this finite replay.",
+    "skyValidity": "Replay always acquires fresh fixed-context sky. General telescope-change/bank invalidation and return-to-bank behavior still gated."
+  },
+  "rights": "Original license hash retained; local research only. No public redistribution authorization or asset upload.",
+  "uncertainty": "Number/Math and explicit seed replace x87/global state. No original runtime, original writer, binary/x87 or whole-I01/E04 equivalence. Narrow supplied-field profile is an explicit analyst choice, supported by native option storage."
+}

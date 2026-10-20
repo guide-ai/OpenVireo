@@ -1,0 +1,74 @@
+{
+  "origin": "Synthetic analytic validation; independent rational integrals and Decimal ln, not original spectra, target execution or the ported refinement routine.",
+  "coordinates": [
+    3900,
+    4200,
+    4500
+  ],
+  "vectors": [
+    {
+      "id": "flat absorption",
+      "flux": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "left": 4100,
+      "center": 4150,
+      "right": 4200,
+      "leftContinuum": 1,
+      "rightContinuum": 1,
+      "expectedWidth": "50",
+      "absoluteTolerance": 1e-12,
+      "derivation": "(4200-4100)*(1-1/2) = 50 \u00c5"
+    },
+    {
+      "id": "signed emission",
+      "flux": [
+        1,
+        1,
+        1
+      ],
+      "left": 4100,
+      "center": 4150,
+      "right": 4200,
+      "leftContinuum": 0.5,
+      "rightContinuum": 0.5,
+      "expectedWidth": "-100",
+      "absoluteTolerance": 1e-12,
+      "derivation": "100*(1-1/(1/2)) = -100 \u00c5; no clipping"
+    },
+    {
+      "id": "quadratic absorption",
+      "flux": [
+        1,
+        0.8,
+        1
+      ],
+      "left": 4100,
+      "center": 4200,
+      "right": 4300,
+      "leftContinuum": 1,
+      "rightContinuum": 1,
+      "expectedWidth": "38.51851851851851851851851851851851851851851851851851851851851851851852",
+      "absoluteTolerance": 1e-10,
+      "derivation": "F=4/5+(lambda-4200)^2/450000 on [3900,4500]; integral of 1-F on [4100,4300] = 1040/27 \u00c5"
+    },
+    {
+      "id": "sloping continuum",
+      "flux": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "left": 4100,
+      "center": 4150,
+      "right": 4200,
+      "leftContinuum": 0.5,
+      "rightContinuum": 1,
+      "expectedWidth": "30.68528194400546905827678785418234319244998656397447458793199905066064",
+      "absoluteTolerance": 0.0001,
+      "derivation": "C=1/2+(lambda-4100)/200; integral 1-(1/2)/C = 100-100*ln(2) \u00c5"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "kind": "Independent synthetic maximum-duration fixture;not original observations",
+  "method": "Brightest admitted combined mean across all180 configurations;direct original PE calibration operands,independent Decimal90 finite-quadrature flux plus separate analyticGaussian comparison,modulo LCG/Pythonlgamma;measured size5 sky1s andsize15 object100s\u00d75;Decimal70 reduction.No native execution.",
+  "sourceMeanProjection": {
+    "analyticSourceMean": "379835.073134786580047646165253553818739647262956362505432433429986925630884441160167973757",
+    "finiteQuadratureSourceMean": "379835.071488653130685463499187268226079992435224856100342084939992636886442747560681076017",
+    "relativeDifference": "-4.333811082206310873569878620961034043014859363848460684483365021596075631744980334E-9",
+    "maximumIterations": 9,
+    "centralOnly": true
+  },
+  "seed": 42,
+  "readings": [
+    {
+      "id": 1,
+      "kind": "sky",
+      "filter": "V",
+      "targetId": "N2230.DAT@152989",
+      "aperture": 5,
+      "seconds": 1,
+      "integrations": 1,
+      "callbacks": 10,
+      "initialSeed": 42,
+      "seed": 2465409253,
+      "sourceCount": 0,
+      "skyCount": 451,
+      "totalPhotonCount": 451,
+      "draws": 47,
+      "periodCounts": [
+        451
+      ],
+      "nativeBaseCountSum": 10000,
+      "minimumDecisionMargin": 0.007715738152673013
+    },
+    {
+      "id": 2,
+      "kind": "object",
+      "filter": "V",
+      "targetId": "N2230.DAT@152989",
+      "aperture": 15,
+      "seconds": 100,
+      "integrations": 5,
+      "callbacks": 5000,
+      "initialSeed": 2465409253,
+      "seed": 3746665876,
+      "sourceCount": 1899191258,
+      "skyCount": 1727286,
+      "totalPhotonCount": 1900918544,
+      "draws": 39167,
+      "periodCounts": [
+        380183365,
+        380154634,
+        380201532,
+        380216556,
+        380162457
+      ],
+      "nativeBaseCountSum": 5000000,
+      "minimumDecisionMargin": 6.2576707251134345e-06,
+      "skyReadingId": 1,
+      "scaledSkyRate": "3581.909090909090909090909090909090909090909090909090909090909090909092",
+      "netCountRate": "3798255.178909090909090909090909090909090909090909090909090909090909091",
+      "magnitude": "7.551039653322596362488624313961221461762597836892367455534838142061764",
+      "nativeDisplaySnr": "43599.52458456399269731635650164287833462204679069139510215447860776423"
+    }
+  ]
+}

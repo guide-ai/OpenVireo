@@ -1,0 +1,425 @@
+{
+  "binarySha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "archiveSha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+  "captures": [
+    {
+      "id": "PHOTO-SOURCE-01",
+      "file": "point-aperture.asm",
+      "start": "0x500568",
+      "endExclusive": "0x500898",
+      "byteRangeSha256": "2b216cac7da98c18dff34f04e80ec0c6bf29fc12d478e05d5ed528c748d628a6",
+      "listingSha256": "249d5b074571c84749783fb79cd44f76e82e774a21a6ecc2bd78efcf4815761c",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-02",
+      "file": "neighbor-preparation.asm",
+      "start": "0x4ffa30",
+      "endExclusive": "0x4fff44",
+      "byteRangeSha256": "959203b25ca27efec4c8902850a9480147dd53afd671ca5cfd1ab052cb116434",
+      "listingSha256": "ecdaf7cec0df2d14d55b15ded0a0947aebf38ec63e9a319b93c472189bcde48a",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-03",
+      "file": "magnitude-helpers.asm",
+      "start": "0x595338",
+      "endExclusive": "0x5953fc",
+      "byteRangeSha256": "a2320e9863ce96b228c86c2710ffdc078bdedc7666b054a741cf8df3d1b3afe3",
+      "listingSha256": "e3249b63e7ee5d9fc2415a5d1e9369c149210b242f087d870d5edb3e95ed4335",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-04",
+      "file": "normal-builder.asm",
+      "start": "0x55f7ac",
+      "endExclusive": "0x55f908",
+      "byteRangeSha256": "f36259609679e4d6a5fdfbff84742bb616d8be774bb3c601eabc5bae6aa9b38d",
+      "listingSha256": "75016a056b35240c2baf552f165a7f92e017aa2bb6685c866320e5470ae0db2b",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-05",
+      "file": "normal-quadrature.asm",
+      "start": "0x55f448",
+      "endExclusive": "0x55f6a4",
+      "byteRangeSha256": "2ff9b8bed1a7f9323724dfe0be9b2d82fd5537c2de3a716a1091f3939f88d517",
+      "listingSha256": "f6afb89e9949547efc17b23728fad18220e535e9fb565d289fdae29f9430a1bf",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-06",
+      "file": "normal-lookup.asm",
+      "start": "0x55f91c",
+      "endExclusive": "0x55fa68",
+      "byteRangeSha256": "e5af6e1eec74d05daad49f63d14c4940026c4738f9901b508cde62ec9900661d",
+      "listingSha256": "50127f98b71012e348bd02613aa4c11db491a5c3158403d7eb1bbdc8a28fe9a8",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-07",
+      "file": "normal-initialization.asm",
+      "start": "0x5ad150",
+      "endExclusive": "0x5ad180",
+      "byteRangeSha256": "3b4b5f54baa2dc4a6ce448c27fd7749964058efa4a1336f374ea8e0e103a1418",
+      "listingSha256": "785feb15d85390963b4cc180ae2d0658377ee0c0c5efed0f48c79d6936ed65fe",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-08",
+      "file": "photometer-create.asm",
+      "start": "0x4ff4f0",
+      "endExclusive": "0x4ff64c",
+      "byteRangeSha256": "c9e17232962354e5a6267334a482e4a49bb9a01599914b8e8fd7b377d1f33822",
+      "listingSha256": "734603a089b7a02e8acc20123f1639a3fc589298e78052ffe83c8ac93d39ff58",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-09",
+      "file": "hotlist-reader.asm",
+      "start": "0x5903d8",
+      "endExclusive": "0x590530",
+      "byteRangeSha256": "39ef0d8824fca2342ca5b3a36ab0c0844b9b6bd6fca2a4823e03ec0352388fc8",
+      "listingSha256": "e2313eea8faa9550f50d4b9a25319d164dc70f76163d900bebb432b0bfc7dee7",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-10",
+      "file": "hotlist-coordinates.asm",
+      "start": "0x591e84",
+      "endExclusive": "0x591ee1",
+      "byteRangeSha256": "438ba765487a6432c2e6e90c2e2d5626940cb6d30efe8b33cfb9a27a0489f657",
+      "listingSha256": "e2da1c33b47307fa0830d228d4703ccb3e54cd86f8485266321c63b7fae799eb",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-11",
+      "file": "cluster-list-show.asm",
+      "start": "0x531508",
+      "endExclusive": "0x5317e8",
+      "byteRangeSha256": "b28d0c15f5166f71bad4b19c6e6ca0fe378f76128b7b8b36fdcb9c8a5877e6b0",
+      "listingSha256": "562f846a47dc7075fb1e9db4810d90140e28a7b19b869c6c1c5d8cc04ae5b816",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-12",
+      "file": "cluster-reader.asm",
+      "start": "0x5326c0",
+      "endExclusive": "0x532980",
+      "byteRangeSha256": "956ec4824f9f9bce2538970a33a2a73c7d2e76eb8c0076942e688c7ddbea91fd",
+      "listingSha256": "672eb682478ec93674278ad1255dd8e36f1fb228e85a1514ee5971ca8162b98b",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-13",
+      "file": "cluster-select-copy.asm",
+      "start": "0x5325b0",
+      "endExclusive": "0x5326c0",
+      "byteRangeSha256": "c20e248d330750c2a42d0aacedb59c5b8f8a1b3b9689f0f25e5521c335c7049e",
+      "listingSha256": "ce880dad2b37f45c6c939357704695731dac5425bbde79c9c5f0ed56bfe3cb10",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-14",
+      "file": "cluster-fields.asm",
+      "start": "0x53054c",
+      "endExclusive": "0x530690",
+      "byteRangeSha256": "c06c6372567232f7d8af2024142a3920596335566da86aa6af3c21d2fa16dab0",
+      "listingSha256": "51c10e6a1613b774b94228e413df1c4af36a7240899f32df37c3ae618b897e75",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-15",
+      "file": "cluster-select.asm",
+      "start": "0x5366d4",
+      "endExclusive": "0x5367f0",
+      "byteRangeSha256": "51b4e7d5504e4c823d59658f78ee9a747e8152391b0352d678570e236df04500",
+      "listingSha256": "a764fb829d76ef74b52e24b3c9a4f131c3b2ac0e073e9d78b2ffd6b8ac69bd05",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-16",
+      "file": "stop-handler.asm",
+      "start": "0x500b58",
+      "endExclusive": "0x500b74",
+      "byteRangeSha256": "441da6dbe6f88b7f6e39b17e4b9bea67e4ccf1b5a01f52d4dee62bdb43a9319a",
+      "listingSha256": "c883a1d0babc227d25b49d417ab959a92f34c3390525c5994079121d401fb46c",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-17",
+      "file": "stop-unlock.asm",
+      "start": "0x501abc",
+      "endExclusive": "0x501b24",
+      "byteRangeSha256": "905dac137ceb677acf691570c36afe143ee5d14130602ec62042eac21882156d",
+      "listingSha256": "68620964c2cee40942cb511322c43ddebe07345bedca1de89d625f12127e2f0b",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-18",
+      "file": "record-handler.asm",
+      "start": "0x501e7c",
+      "endExclusive": "0x502074",
+      "byteRangeSha256": "35e3a2f293d370e90027f2b03a648a2ad8ed5430984fa438990ec1922a5fead7",
+      "listingSha256": "c14a58d3a659e691a8176c9d32de8aa22bf58d81f61d680b4479be433c3fedb6",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    },
+    {
+      "id": "PHOTO-SOURCE-19",
+      "file": "separation.asm",
+      "start": "0x59a49c",
+      "endExclusive": "0x59a54c",
+      "byteRangeSha256": "10e4602582faa86e9fa6afe624594233bad97b6451110587ccf896d6d9a2a9b3",
+      "listingSha256": "12b18d4176ce734467f6288de417ef0d94a41fe2113121af3a0a86d4c2dfb27d",
+      "scope": "Bounded static capture may include alignment/data/neighbor routines; only cited instruction branches are ported."
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x55f808",
+      "bytes": 4,
+      "sha256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d",
+      "meaning": "normal density exponent divisor",
+      "numerator": "2",
+      "denominator": "1",
+      "value": 2.0
+    },
+    {
+      "address": "0x55f904",
+      "bytes": 4,
+      "sha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+      "meaning": "normal table step numerator",
+      "numerator": "1",
+      "denominator": "1",
+      "value": 1.0
+    },
+    {
+      "address": "0x55f5b4",
+      "bytes": 4,
+      "sha256": "d99e58435243d9fef9c88273b8d553b4fba4d0baf8009d29eae74fa99e0d9f57",
+      "meaning": "trapezoid half",
+      "numerator": "1",
+      "denominator": "2",
+      "value": 0.5
+    },
+    {
+      "address": "0x55f69c",
+      "bytes": 4,
+      "sha256": "4f4b9b7d8b86633e2824e2f439819357b0cd010ab410ea1a691b12c5f94e91e0",
+      "meaning": "extrapolation multiplier",
+      "numerator": "4",
+      "denominator": "1",
+      "value": 4.0
+    },
+    {
+      "address": "0x55f6a0",
+      "bytes": 4,
+      "sha256": "ea2845900b5856c9bf354b1aa9761b5aa6888e5ed61738fe9579ca42bc0f6054",
+      "meaning": "extrapolation divisor",
+      "numerator": "3",
+      "denominator": "1",
+      "value": 3.0
+    },
+    {
+      "address": "0x55fa18",
+      "bytes": 4,
+      "sha256": "4bb8b6f7c4656ab2458282989317052b159802a1b162c13c61d7fcd1d96a226e",
+      "meaning": "lookup lower clip",
+      "numerator": "-5",
+      "denominator": "1",
+      "value": -5.0
+    },
+    {
+      "address": "0x55fa1c",
+      "bytes": 4,
+      "sha256": "fca31f1667a6aa1bba12fca4e4ea1becd503379d80da3213af07f6cc5702828d",
+      "meaning": "lookup upper clip",
+      "numerator": "5",
+      "denominator": "1",
+      "value": 5.0
+    },
+    {
+      "address": "0x55fa20",
+      "bytes": 4,
+      "sha256": "80c8a717ccd70c8809eb78e6a9591c003e11c721fe0ccaf62fd592abda1a5593",
+      "meaning": "lookup grid extent",
+      "numerator": "10",
+      "denominator": "1",
+      "value": 10.0
+    },
+    {
+      "address": "0x595398",
+      "bytes": 4,
+      "sha256": "2f90de89a933bd8118953f22550293198c812014b434e29d79bcdea4cb34c56a",
+      "meaning": "combine logarithm factor",
+      "numerator": "-5",
+      "denominator": "2",
+      "value": -2.5
+    },
+    {
+      "address": "0x59539c",
+      "bytes": 4,
+      "sha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+      "meaning": "combine unit flux",
+      "numerator": "1",
+      "denominator": "1",
+      "value": 1.0
+    },
+    {
+      "address": "0x5953f4",
+      "bytes": 4,
+      "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+      "meaning": "attenuation cutoff",
+      "numerator": "0",
+      "denominator": "1",
+      "value": 0.0
+    },
+    {
+      "address": "0x5953f8",
+      "bytes": 4,
+      "sha256": "2f90de89a933bd8118953f22550293198c812014b434e29d79bcdea4cb34c56a",
+      "meaning": "attenuation logarithm factor",
+      "numerator": "-5",
+      "denominator": "2",
+      "value": -2.5
+    },
+    {
+      "address": "0x4fffd0",
+      "bytes": 4,
+      "sha256": "409303c5035263c102682239f8d654e7e194daae6235aff347c036576a261d96",
+      "meaning": "missing-color threshold",
+      "numerator": "30",
+      "denominator": "1",
+      "value": 30.0
+    },
+    {
+      "address": "0x59a534",
+      "bytes": 4,
+      "sha256": "d9fc8a51763953481a1808af3156bcb8144c2f925e96dec623c886f6d9d975b2",
+      "meaning": "RA wrap threshold hours",
+      "numerator": "12",
+      "denominator": "1",
+      "value": 12.0
+    },
+    {
+      "address": "0x59a538",
+      "bytes": 4,
+      "sha256": "e4d11efbb477a76acb589cc3c6d78f8067d35f26293029ec6dc2bda8df62bff4",
+      "meaning": "RA wrap extent hours",
+      "numerator": "24",
+      "denominator": "1",
+      "value": 24.0
+    },
+    {
+      "address": "0x59a53c",
+      "bytes": 10,
+      "sha256": "59768c6f56cf8adedf2c47aa7dc875017768fbf4b6816536f38660ee93f8595d",
+      "meaning": "degrees to radians",
+      "numerator": "5151302725743731799",
+      "denominator": "295147905179352825856",
+      "value": 0.017453292519943295
+    },
+    {
+      "address": "0x59a548",
+      "bytes": 4,
+      "sha256": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e",
+      "meaning": "hours to degrees",
+      "numerator": "15",
+      "denominator": "1",
+      "value": 15.0
+    },
+    {
+      "meaning": "normal2pi",
+      "sourceImmediateAddresses": [
+        "0x5ad164",
+        "0x5ad15f",
+        "0x5ad15a"
+      ],
+      "sha256": "8d51234665467e8fe6b80b11280b863cbe02a3804bb81e4a0290e144ac5a5d86",
+      "numerator": "14488038916154245685",
+      "denominator": "2305843009213693952",
+      "value": 6.283185307179586
+    },
+    {
+      "meaning": "constructorTolerance",
+      "sourceImmediateAddresses": [
+        "0x4ff626",
+        "0x4ff621",
+        "0x4ff61c"
+      ],
+      "sha256": "6215c0a98ea3df1a123a1fac10bcdde1b7ba6437ee11b43c04fb60f39dea20ed",
+      "numerator": "3868562622766813359",
+      "denominator": "38685626227668133590597632",
+      "value": 1e-07
+    }
+  ],
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "bytes": 2288128,
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "bytes": 32096,
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PLEIADES.HTL",
+      "bytes": 2064,
+      "sha256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLUSTERS.DAT",
+      "bytes": 1632,
+      "sha256": "bec9dfb53969ba3828dff98962d9c80c3c7b5e51646f2a88ef70bcf634545ff2"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/observatory/dossiers/hot-list-slew.txt",
+      "bytes": 4085,
+      "sha256": "fa8381af7bbff227a3caaa1e5c6495b2f15c1ea76a94f967c60d258c4e410e39"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-defaults.asm",
+      "bytes": 22823,
+      "sha256": "6584b8bf43a2bf440ebf3985121353335ab4cec74e9a8ebaeb040dac9084d381"
+    }
+  ],
+  "callbackBinding": {
+    "oldObjectMethodSlot": "0x55cc34\u21920x55cc40\u21920x55f7d4",
+    "pointerSha256": "8245bbf72ceaca031cf0a84af6295c352ac0d6811bb87fe4d06321925a9563db",
+    "normalizer": "1/sqrt(stored Extended2pi), initialized at0x5ad159\u20130x5ad173"
+  },
+  "ported": {
+    "separation": "0x59a49c: abs RA difference, if>12 subtract from24; x=dRA*15*cos(pointingDec*original Extended degrees-to-radians); y=pointingDec\u2212sourceDec; sqrt(x*x+y*y). Supplied valid hour/degree coordinates; flat metric, not a spherical-distance replacement.",
+    "pointBranch": "0x50059f..0x500668; input types0/2/3 have a defined point branch, supplied radius/separation/width only",
+    "stackArguments": "After reserving12 bytes for -(r+d)/s, [esp+0x54] resolves the original lower-bound word at old+0x48; subsequent pushes send (r-d)/s as near argument.0x55fa24 returns lookup(near)\u2212lookup(far).",
+    "normalTable": "100 subdivisions,101 values. table0=0; values1..100 integrate from\u22125 to each point. Density exp(\u2212x\u00b2/2)/sqrt(2pi), trapezoid/Simpson extrapolation, max10 strict relative1e\u22127. Native constructor repeats Extended0.1 increments; Number adapter uses explicit indexed coordinates.",
+    "lookup": "x<\u22125\u21920, x>5\u21921; interior linear interpolation. x=+5 can address index101 beyond allocated101-entry table; bounded port rejects this endpoint/rounded-index100. No erf replacement or hidden endpoint clip.",
+    "attenuation": "fraction>0: m\u22122.5log10(f); native f<=0\u2192literal30. Port rejects negative or>1 f. Zero sentinel is not a physical observation.",
+    "combination": "near\u22122.5log10(1+10^((far\u2212near)/\u22122.5)); original caller passes attenuated neighbor near, accumulated central far. Number overflow/underflow rejected.",
+    "knownColorUbv": "Native Single V/B\u2212V/U\u2212B projected with fround; B=V+(B\u2212V), U=B+(U\u2212B); central attenuation then ordered positive-neighbor fold.10,000-neighbor bound is new. Central fraction0 and color>=30 cases withheld. R/I/image branches excluded."
+  },
+  "readerWitness": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-source-recovery/reader-witness.json",
+    "sha256": "dffa32646c268f896ce883488e43ef91d40b9821117bda7d1bfe4f255dd5796a",
+    "scope": "24 hotlist86-byte records;16 cluster102-byte records; field widths backed by native reader/copy consumers, not divisibility alone. Pointing subset only, no UBV/epoch/full schema or new browser importer."
+  },
+  "analyticVectors": {
+    "projectPath": "data/photometry/source-vectors.json",
+    "sha256": "bbe10f61a28bc248ed6bb05f2c814dea0f6583fd25ca2591a81b73dc03ab6443",
+    "generator": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-source-recovery/analytic-vectors.py",
+    "generatorSha256": "fa32c2e99cb6fe594645a901fa131b690790f48ac3c47a73e4972300ee2f8890",
+    "kind": "Synthetic90-digit Gaussian power-series/linear-flux reference, not original observations, binary execution or microemulation"
+  },
+  "newLifecycleEvidence": "Stop0x500b58 disables timer and calls unlock0x501abc; it does not invoke completed-integration reduction or Record. Complete modal/record/telescope validity chain still gated. Record calls collection lookup0x54a73c then modal review; no claimed SSP/JSON writer compatibility.",
+  "remaining": [
+    "Bind the now recovered separation and point fraction to actual source identities, prepared width and aperture scale in a complete field",
+    "Resolve original Pleiades target identities into actual V/B\u2212V/U\u2212B values and complete neighbor query0x59ac54; HTL/CLUSTERS pointings are not color data",
+    "Missing-color native central fallback differs from neighbor handling; no scientific fallback invented",
+    "Image-object branch0x50066d..0x500860 and R/I excluded",
+    "Telescope fresh-sky invalidation implementation, partial stop state/record dialog rollback, stored observation fields and replay schema"
+  ],
+  "rights": "Original CLEA license retained; local research only; redistribution not established.",
+  "uncertainty": "Number/Math and indexed grid are declared adaptations. Static bytes plus analytic vectors are not an original runtime/x87 oracle or complete I01/E04 acceptance."
+}

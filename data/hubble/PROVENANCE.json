@@ -1,0 +1,2675 @@
+{
+  "target_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "contracts": [
+    {
+      "label": "randomize-seed",
+      "address": "0x4035a0",
+      "ranges": [
+        {
+          "start": "0x4035a0",
+          "end": "0x4035c4"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_d9a5dec469bd7ac320a577c4fade05cb3521e39ac9dda4c573300e0d17e248d1",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/randomize-seed.json"
+    },
+    {
+      "label": "random-float",
+      "address": "0x4035e4",
+      "ranges": [
+        {
+          "start": "0x4035e4",
+          "end": "0x40360a"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_944c61fc65e81167e4d7265cbb8c053b45877d2682c2e2020c686734db17fa8d",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/random-float.json"
+    },
+    {
+      "label": "rtl-round",
+      "address": "0x403700",
+      "ranges": [
+        {
+          "start": "0x403700",
+          "end": "0x403709"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_cb3a66c78ebe451fefbebd2f65e38346095a79550a24138e2b61ef5152588323",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/rtl-round.json"
+    },
+    {
+      "label": "rtl-trunc",
+      "address": "0x40370c",
+      "ranges": [
+        {
+          "start": "0x40370c",
+          "end": "0x40372d"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_0de5d1b7f368b42a5174d1133037f3a5a7314759cd6a7a8215d3fe2a01d21db5",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/rtl-trunc.json"
+    },
+    {
+      "label": "log10-confirm",
+      "address": "0x42702c",
+      "ranges": [
+        {
+          "start": "0x42702c",
+          "end": "0x42703a"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_0b9910748c91728750a921ab4d019e46deee0e427f100a77f367591c7ba71181",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/log10-confirm.json"
+    },
+    {
+      "label": "power-helper",
+      "address": "0x42703c",
+      "ranges": [
+        {
+          "start": "0x42703c",
+          "end": "0x4270bd"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_4ff134ef1e77bc3be533ba2c2731cfd777c6ff3a4e4f949d278bad741efb860c",
+      "raw_response": "analysis/rea-ghidra-hubble3-results/power-helper.json"
+    },
+    {
+      "label": "vcl-stretch-draw",
+      "address": "0x42cb80",
+      "ranges": [
+        {
+          "start": "0x42cb80",
+          "end": "0x42cbb7"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_df1adcec754ff483e5c59acc07ae2b7460836feab291fef7b68dc4c275089971",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/vcl-stretch-draw.json"
+    },
+    {
+      "label": "spectrometer-create",
+      "address": "0x50d808",
+      "ranges": [
+        {
+          "start": "0x50d808",
+          "end": "0x50d84f"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_99ec72b1ff076079cf6d77c7a7cad939996077e92d1be6941e250a5c386c6c5f",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/spectrometer-create.json"
+    },
+    {
+      "label": "spectrometer-show",
+      "address": "0x50d8b8",
+      "ranges": [
+        {
+          "start": "0x50d8b8",
+          "end": "0x50da9d"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_4b0bd41931277b907bfd78c6187879f3de5a6c866e087515daeaa5d79e81a089",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/spectrometer-show.json"
+    },
+    {
+      "label": "spectrometer-activate",
+      "address": "0x50dac4",
+      "ranges": [
+        {
+          "start": "0x50dac4",
+          "end": "0x50dbd2"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_2be516dc2aee56ebedf8bb8107f5402203752ec1786a814af24cd46e1eb70e46",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/spectrometer-activate.json"
+    },
+    {
+      "label": "spectrometer-target-setup",
+      "address": "0x50dbd8",
+      "ranges": [
+        {
+          "start": "0x50dbd8",
+          "end": "0x50dd59"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_66614e347744971fe0ac586af961658fe97477f193cecb412986919d6d5e5745",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/spectrometer-target-setup.json"
+    },
+    {
+      "label": "spectrometer-reset",
+      "address": "0x50df64",
+      "ranges": [
+        {
+          "start": "0x50df64",
+          "end": "0x50e2fd"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_8470e6373bd35f5207301f2d622e5b123cc0d5cf5b97242fd3c1021ed1e90a9d",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/spectrometer-reset.json"
+    },
+    {
+      "label": "star-spectrum-prepare",
+      "address": "0x50e328",
+      "ranges": [
+        {
+          "start": "0x50e328",
+          "end": "0x50e503"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_fd3bc00bad5674c52b1d95592b2203384f0b37456edfb8e741ab4f0b0e3a96bb",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/star-spectrum-prepare.json"
+    },
+    {
+      "label": "galaxy-spectrum-prepare",
+      "address": "0x50e5e0",
+      "ranges": [
+        {
+          "start": "0x50e5e0",
+          "end": "0x50e703"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_2c937be181e82233992d79f3f9605954c4451149df162361a8af27945b9d1805",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/galaxy-spectrum-prepare.json"
+    },
+    {
+      "label": "qso-spectrum-prepare",
+      "address": "0x50e7b0",
+      "ranges": [
+        {
+          "start": "0x50e7b0",
+          "end": "0x50e8ff"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_3c5b9764c0d6b445afa1441d0b7f4eb1989b977be0ef42d10710e7f1a2bd2dfc",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/qso-spectrum-prepare.json"
+    },
+    {
+      "label": "channel-grid-calibration",
+      "address": "0x50ec98",
+      "ranges": [
+        {
+          "start": "0x50ec98",
+          "end": "0x50edd4"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_9ca0e8b27100102e7cc8188c81949bfd90699058095f35ec861961cb9d20cb62",
+      "raw_response": "analysis/rea-ghidra-hubble6-results/channel-grid-calibration.json"
+    },
+    {
+      "label": "slit-throughput",
+      "address": "0x50f338",
+      "ranges": [
+        {
+          "start": "0x50f338",
+          "end": "0x50f467"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_6e7bb16660d9d81879e2c4cc5dbab41d65b476b665a6095d99fbe51814be6bfd",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/slit-throughput.json"
+    },
+    {
+      "label": "spectrometer-go",
+      "address": "0x50f484",
+      "ranges": [
+        {
+          "start": "0x50f484",
+          "end": "0x50f615"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all bytes of encoded instructions",
+      "evidence_id": "ev_81d3c9010df90676c31f51ae9640ff954435e657ca070ad2eb8e04cbddea6113",
+      "raw_response": "analysis/rea-ghidra-acquisition-results/spectrometer-go-dossier.json"
+    },
+    {
+      "label": "spectrometer-stop",
+      "address": "0x50f618",
+      "ranges": [
+        {
+          "start": "0x50f618",
+          "end": "0x50f768"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all bytes of encoded instructions",
+      "evidence_id": "ev_70ca20be32d58a8792de4daf4b842181de6c9b3bdbf43f2f2eb89aed5e0d24cb",
+      "raw_response": "analysis/rea-ghidra-acquisition-results/spectrometer-stop-dossier.json"
+    },
+    {
+      "label": "spectrometer-timer",
+      "address": "0x50f76c",
+      "ranges": [
+        {
+          "start": "0x50f76c",
+          "end": "0x50fa84"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all bytes of encoded instructions",
+      "evidence_id": "ev_f2c33d52606ad0034211df31c5d104f07ff6fed6eabbf44241af310ff5d1fea8",
+      "raw_response": "analysis/rea-ghidra-acquisition-results/spectrometer-timer-dossier.json"
+    },
+    {
+      "label": "observatory-create",
+      "address": "0x5377ec",
+      "ranges": [
+        {
+          "start": "0x5377ec",
+          "end": "0x53784b"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_b557a3fd332c8ede61b773cd8b36c6260b314096be6f0186690dd31882e64de1",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/observatory-create.json"
+    },
+    {
+      "label": "galaxy-draw-dispatch",
+      "address": "0x53b848",
+      "ranges": [
+        {
+          "start": "0x53b848",
+          "end": "0x53b8d4"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_8ff96ed1e66ce7ca59b933ab0bf930e12722d0a94c7accd5f617d6b47834bf2c",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-draw-dispatch.json"
+    },
+    {
+      "label": "galaxy-axis-ratio",
+      "address": "0x53b94c",
+      "ranges": [
+        {
+          "start": "0x53b94c",
+          "end": "0x53ba51"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_02da75501b8e18b0ba35b6cd79818a7e314a4d4773674db23458593e408e594b",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/galaxy-angular-width.json"
+    },
+    {
+      "label": "galaxy-position-angle",
+      "address": "0x53ba5c",
+      "ranges": [
+        {
+          "start": "0x53ba5c",
+          "end": "0x53babb"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_8d6e2657608f1bf4979ebf1c9f0b8ac87692cf6d8379f04df9785b79d273fc28",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/galaxy-angular-height.json"
+    },
+    {
+      "label": "telescope-catalog-setup",
+      "address": "0x53c0b4",
+      "ranges": [
+        {
+          "start": "0x53c0b4",
+          "end": "0x53c189"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_03f524aeef619a04ceb0b298627b3a4918814f4bdc0f4d490584ee7316d54bae",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/telescope-calibration-setup.json"
+    },
+    {
+      "label": "telescope-parameters-copy",
+      "address": "0x53c500",
+      "ranges": [
+        {
+          "start": "0x53c500",
+          "end": "0x53c997"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_2404d0cbf5c2d56f907f8e3c24888334db281f7cb13f0051c021426b6250fcfc",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/telescope-parameters-copy.json"
+    },
+    {
+      "label": "telescope-ra-update",
+      "address": "0x53caec",
+      "ranges": [
+        {
+          "start": "0x53caec",
+          "end": "0x53cb3c"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_74602fffaf1331221c573f4d246346fcaa6e2adf07bfb74c252a0f9a56cce7f2",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/telescope-photon-calibration.json"
+    },
+    {
+      "label": "telescope-dec-update",
+      "address": "0x53cb40",
+      "ranges": [
+        {
+          "start": "0x53cb40",
+          "end": "0x53cb6a"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_289c5921b12ccbf336c2e92be6c7ed561770f203f62460af2c58513aebfbe383",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/telescope-geometry-calibration.json"
+    },
+    {
+      "label": "object-in-slit",
+      "address": "0x53ce8c",
+      "ranges": [
+        {
+          "start": "0x53ce8c",
+          "end": "0x53cf90"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_8515df70798dea7ba3eaaa0d0fdff8d03d93cc1bcd03449074f1662834e19bf7",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/object-in-slit.json"
+    },
+    {
+      "label": "telescope-object-selection",
+      "address": "0x53cf94",
+      "ranges": [
+        {
+          "start": "0x53cf94",
+          "end": "0x53cfa5"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_44e32bceeafb7777d64f70bb736778a92981119fc8d62c2b2b6bdd26f305d56b",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/telescope-object-selection.json"
+    },
+    {
+      "label": "telescope-zero-point",
+      "address": "0x53df24",
+      "ranges": [
+        {
+          "start": "0x53df24",
+          "end": "0x53e177"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_ea3be7a821ec183908a1d2f52326534ff06e30dacd2245a815bb9f4c7464eee0",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/telescope-zero-point.json"
+    },
+    {
+      "label": "aperture-throughput",
+      "address": "0x53e338",
+      "ranges": [
+        {
+          "start": "0x53e338",
+          "end": "0x53e440"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_a9a5f011dda13c76e751c184cb91380f97e5f0e6ad6e0e46478d17e03308c3dc",
+      "raw_response": "analysis/rea-ghidra-hubble3-results/aperture-throughput.json"
+    },
+    {
+      "label": "planck-init",
+      "address": "0x55de04",
+      "ranges": [
+        {
+          "start": "0x55de04",
+          "end": "0x55de30"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_def0fdbbb648f72157c34de1618af9507e563de3a343bb08abe6e87f080bf8c7",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/planck-init.json"
+    },
+    {
+      "label": "planck-exponent",
+      "address": "0x55de58",
+      "ranges": [
+        {
+          "start": "0x55de58",
+          "end": "0x55de78"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_d111d7731e2026ea8d71c4183c36e896f71b470f13725ad800323dadf693688d",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/planck-exponent.json"
+    },
+    {
+      "label": "planck-core",
+      "address": "0x55de7c",
+      "ranges": [
+        {
+          "start": "0x55de7c",
+          "end": "0x55dee2"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_34910c5124e09529df33d14975965b311556588fa12eaf3a595a0093a626afd6",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/planck-core.json"
+    },
+    {
+      "label": "planck-value",
+      "address": "0x55def4",
+      "ranges": [
+        {
+          "start": "0x55def4",
+          "end": "0x55df1d"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_6b231693354be3dfe7e95b051f70072d3dcc1b95a15529fa2d49823d57216f33",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/planck-value.json"
+    },
+    {
+      "label": "uniform-spectrum-initialize",
+      "address": "0x55df2c",
+      "ranges": [
+        {
+          "start": "0x55df2c",
+          "end": "0x55dfca"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_fa5105e18c6c1da51a79938223bad4c87d3043873b5922516f49d8896edfe6ac",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/uniform-spectrum-initialize.json"
+    },
+    {
+      "label": "sampler-typed-context",
+      "address": "0x55dfe0",
+      "ranges": [
+        {
+          "start": "0x55dfe0",
+          "end": "0x55e13c"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_b1fef431bfc946c4f836befe604602f90836b6cbff163a382b653d1a5a07dbd3",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/sampler-typed-context.json"
+    },
+    {
+      "label": "galaxy-component-constructor",
+      "address": "0x55e154",
+      "ranges": [
+        {
+          "start": "0x55e154",
+          "end": "0x55e31a"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_3defc7ef9f55143fa9c1189a221581029ae5e2f9905ee9ca148e8d55a08538f1",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-component-constructor.json"
+    },
+    {
+      "label": "galaxy-spectrum-constructor",
+      "address": "0x55e55c",
+      "ranges": [
+        {
+          "start": "0x55e55c",
+          "end": "0x55e919"
+        },
+        {
+          "start": "0x55e923",
+          "end": "0x55e929"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_6cfdbac0dffc9fb1c7db64bce048906ebc7eb1bcc3f5822cf926cafd1921d4b1",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/galaxy-spectrum-constructor.json"
+    },
+    {
+      "label": "galaxy-spectrum-sampler",
+      "address": "0x55e97c",
+      "ranges": [
+        {
+          "start": "0x55e97c",
+          "end": "0x55ea62"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_d2da91e629a03fcf281cb6762dd2b652ea4bfe36fb8a31f6433e201044022021",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-spectrum-sampler.json"
+    },
+    {
+      "label": "galaxy-calibrated-magnitude",
+      "address": "0x55ea94",
+      "ranges": [
+        {
+          "start": "0x55ea94",
+          "end": "0x55eb49"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_540da7a5ffd41bcf047a91ff5780cd4d9c00a368e21d2211d7e16b2425cafe12",
+      "raw_response": "analysis/rea-ghidra-hubble3-results/galaxy-calibrated-magnitude.json"
+    },
+    {
+      "label": "galaxy-spectrum-match",
+      "address": "0x55eb64",
+      "ranges": [
+        {
+          "start": "0x55eb64",
+          "end": "0x55ed8d"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_fa56f8d56a9cbfc7cb212d3b31bf7d685b8c6fc4034eb0506c241bd50c7f158c",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-spectrum-match.json"
+    },
+    {
+      "label": "poisson-cache-initialize",
+      "address": "0x55f0d0",
+      "ranges": [
+        {
+          "start": "0x55f0d0",
+          "end": "0x55f0f2"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_6925d2782d71f7e7a089c091ddd40093dedab0b7717a1f95708cc468e0cc78a0",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/poisson-cache-initialize.json"
+    },
+    {
+      "label": "poisson-sampler",
+      "address": "0x55f0f4",
+      "ranges": [
+        {
+          "start": "0x55f0f4",
+          "end": "0x55f324"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_2fbb20aa54dd96e7a17fdc1fe88d346d5c2f06f3e2a98916d2d64cc81f10d0d8",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/poisson-sampler.json"
+    },
+    {
+      "label": "log-gamma",
+      "address": "0x55f354",
+      "ranges": [
+        {
+          "start": "0x55f354",
+          "end": "0x55f429"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_4033a63f39f3a8405d616c0f64c81ab5f40dc731ade32096293f8083299c39ff",
+      "raw_response": "analysis/rea-ghidra-hubble2-results/log-gamma.json"
+    },
+    {
+      "label": "environment-create",
+      "address": "0x58792c",
+      "ranges": [
+        {
+          "start": "0x58792c",
+          "end": "0x587cd8"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_31471524b6d282d80bb7d308ade5513a3eb014f6dd32786b7c622247a187143a",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/environment-create.json"
+    },
+    {
+      "label": "exercise-defaults",
+      "address": "0x589bd8",
+      "ranges": [
+        {
+          "start": "0x589bd8",
+          "end": "0x589cde"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_3d3f76fd6cd83446640357af24b8faef87945e1d54bf001672a8ccc7d066026d",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/exercise-defaults.json"
+    },
+    {
+      "label": "hubble-exercise-enter",
+      "address": "0x58a7d0",
+      "ranges": [
+        {
+          "start": "0x58a7d0",
+          "end": "0x58a922"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_5a8bafa6acd589784cddf6f46ae4eb70c247cf02d3f0b343c48a707c37b74b76",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/hubble-exercise-enter.json"
+    },
+    {
+      "label": "hubble-options-select",
+      "address": "0x58b098",
+      "ranges": [
+        {
+          "start": "0x58b098",
+          "end": "0x58b0d3"
+        },
+        {
+          "start": "0x58b0f0",
+          "end": "0x58b295"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_a16775e8df54002023dad524b4b5d1dbd229114c47e653a12580fcd6f8ff407d",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/hubble-options-select.json"
+    },
+    {
+      "label": "profile-table-initializer-crosscheck",
+      "address": "0x593f64",
+      "ranges": [
+        {
+          "start": "0x593f64",
+          "end": "0x594008"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_231d167d6b4dfc7a1df489548611700dfb616c1667eaff8dce8485a52a31b1ae",
+      "raw_response": "analysis/rea-ghidra-hubble6-results/profile-table-initializer-crosscheck.json"
+    },
+    {
+      "label": "galaxy-profile-build",
+      "address": "0x59422c",
+      "ranges": [
+        {
+          "start": "0x59422c",
+          "end": "0x5942d8"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_8935e876a527e13d3bbbe0da0ca0a030bd65a808472c67f168ed48b48b1ac29c",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-profile-build.json"
+    },
+    {
+      "label": "galaxy-profile-pixel-draw",
+      "address": "0x5942dc",
+      "ranges": [
+        {
+          "start": "0x5942dc",
+          "end": "0x5943ca"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_3e3cde842ffdb1e05ffe4f67f9a630a54e79513c72cf2a55ced3674e7514a04c",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-profile-pixel-draw.json"
+    },
+    {
+      "label": "galaxy-stamp-geometry",
+      "address": "0x5943d4",
+      "ranges": [
+        {
+          "start": "0x5943d4",
+          "end": "0x594476"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_d0719755ed09138defdf0e880557ad55a0e22eaebbc97afb79a6a2a14ce24e4f",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-stamp-geometry.json"
+    },
+    {
+      "label": "galaxy-stamp-pixels",
+      "address": "0x594488",
+      "ranges": [
+        {
+          "start": "0x594488",
+          "end": "0x594569"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_16a6fa698df8e326e4674f8d206ce5518e5438fc79b3b4a8945017e799ea81c8",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-stamp-pixels.json"
+    },
+    {
+      "label": "synthetic-galaxy-draw",
+      "address": "0x59456c",
+      "ranges": [
+        {
+          "start": "0x59456c",
+          "end": "0x594807"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_86c3f3894a642aa334bde87055c335c4f07ad60109c13dc6ee8bae64e6b3ada7",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/synthetic-galaxy-draw.json"
+    },
+    {
+      "label": "galaxy-stamp-compose",
+      "address": "0x594808",
+      "ranges": [
+        {
+          "start": "0x594808",
+          "end": "0x5948ae"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_223d128ced5915539473f6c28fa5258b4695a74402099cb2c9e96b996e040ae0",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-stamp-compose.json"
+    },
+    {
+      "label": "galaxy-profile-init-assembly",
+      "address": "0x59493c",
+      "ranges": [
+        {
+          "start": "0x59493c",
+          "end": "0x594993"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_6e6a1789ad6114007e47e549fe70c3eeb340d959a3d486063a8aea5b06fa0478",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-profile-init-assembly.json"
+    },
+    {
+      "label": "galaxy-bitmap-draw",
+      "address": "0x597470",
+      "ranges": [
+        {
+          "end": "0x5974be",
+          "start": "0x597470"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_6b6b558a4223403272da84fb5690bc33ccb33d090c955fe16eb7ffb25bfef46a",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-bitmap-draw.json"
+    },
+    {
+      "label": "catalog-region-assemble",
+      "address": "0x597ac8",
+      "ranges": [
+        {
+          "start": "0x597ac8",
+          "end": "0x597ec8"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_6529add9360716ca0fcfd8075082b474c99cb8f0213c0135b42da6b8db7f5824",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/catalog-region-assemble.json"
+    },
+    {
+      "label": "catalog-merge-populations",
+      "address": "0x597f90",
+      "ranges": [
+        {
+          "start": "0x597f90",
+          "end": "0x5980c3"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_75f35aa36eb41feae3a69fe0737d732ab11a285b4e510ac2fe0de077586e77ad",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/catalog-merge-populations.json"
+    },
+    {
+      "label": "galaxy-region-load",
+      "address": "0x5980cc",
+      "ranges": [
+        {
+          "start": "0x5980cc",
+          "end": "0x598191"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_160b0fe662c851144fb27f5df8260222c32bbcb855ab40a0614f8ef9dec567a2",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-region-load.json"
+    },
+    {
+      "label": "qso-catalog-load",
+      "address": "0x5987e4",
+      "ranges": [
+        {
+          "start": "0x5987e4",
+          "end": "0x598a5f"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_8d0a3ea204e25cf50d10fb2911839ac26d557c1e661b7f99c8eadebd6c883fc4",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/qso-catalog-load.json"
+    },
+    {
+      "label": "galaxy-file-reader",
+      "address": "0x598acc",
+      "ranges": [
+        {
+          "start": "0x598acc",
+          "end": "0x5991e2"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_62ca0075d1b1ca1847d884a486a24b8ee8ac48ec6811c3f5c592ef012cf8b356",
+      "raw_response": "analysis/rea-ghidra-hubble6-results/galaxy-file-reader.json"
+    },
+    {
+      "label": "galaxy-image-brightness",
+      "address": "0x599324",
+      "ranges": [
+        {
+          "start": "0x599324",
+          "end": "0x5993f1"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_5f099f1b9559c3cb4811228eecf7adc87b9d6fa77bf8a7d46bcffdd4ae077b85",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-image-brightness.json"
+    },
+    {
+      "label": "galaxy-catalog-load",
+      "address": "0x59940c",
+      "ranges": [
+        {
+          "start": "0x59940c",
+          "end": "0x599907"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_7b7e3082f435eb11c5103d029a6c8146d5db0615a8f5c488f9addcab71f152a8",
+      "raw_response": "analysis/rea-ghidra-hubble5-results/galaxy-catalog-load.json"
+    },
+    {
+      "label": "catalog-object-hit-test",
+      "address": "0x59a0fc",
+      "ranges": [
+        {
+          "start": "0x59a0fc",
+          "end": "0x59a2d1"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_5660818f6200a0fd191b93b7bb1d28914a92fc3e1ad528e68d04c1921be1424d",
+      "raw_response": "analysis/rea-ghidra-hubble3-results/catalog-object-hit-test.json"
+    },
+    {
+      "label": "options-read",
+      "address": "0x5a1a08",
+      "ranges": [
+        {
+          "start": "0x5a1a08",
+          "end": "0x5a200f"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_b78376d3e36acc95c44912044ee1c30b12525007ef3688a80d57fdd43b50193b",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/options-read.json"
+    },
+    {
+      "label": "options-defaults",
+      "address": "0x5a21d0",
+      "ranges": [
+        {
+          "start": "0x5a21d0",
+          "end": "0x5a2c83"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_bb9b327aca48744f607f49ca2ed67df3eb116de36a77a285a89d479bf7d7cea6",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/options-defaults.json"
+    },
+    {
+      "label": "default-telescopes",
+      "address": "0x5a3174",
+      "ranges": [
+        {
+          "start": "0x5a3174",
+          "end": "0x5a348f"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_bc4e439651a91034edede1c8d4d5488e444a5977778c4774963cf05eec855b3c",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/default-telescopes.json"
+    },
+    {
+      "label": "options-ini-read",
+      "address": "0x5a3534",
+      "ranges": [
+        {
+          "start": "0x5a3534",
+          "end": "0x5a448b"
+        },
+        {
+          "start": "0x5a453a",
+          "end": "0x5a455f"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all instruction bytes",
+      "evidence_id": "ev_f082bd9d132e86aa787341ee1ce3bdcb5711761ed196004909c6546364240c88",
+      "raw_response": "analysis/rea-ghidra-hubble4-results/options-ini-read.json"
+    },
+    {
+      "label": "nearest-star",
+      "address": "0x599f1c",
+      "ranges": [
+        {
+          "start": "0x599f1c",
+          "end": "0x59a00e"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all bytes of encoded instructions",
+      "evidence_id": "ev_e3f9732e9f9a396ebaa567660945d24eaa7ce26fc7cf7500bff734cd7801ac4d",
+      "raw_response": "analysis/rea-ghidra-selection-full-results/nearest-star.json"
+    },
+    {
+      "label": "nearest-galaxy",
+      "address": "0x59a010",
+      "ranges": [
+        {
+          "start": "0x59a010",
+          "end": "0x59a0f9"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all bytes of encoded instructions",
+      "evidence_id": "ev_7a1b2daf5e6f1e9c11a1c971e9b23074d78134bb3484223f969a41e18aa96fbd",
+      "raw_response": "analysis/rea-ghidra-selection-full-results/nearest-galaxy.json"
+    },
+    {
+      "label": "selection-projection-initialize",
+      "address": "0x5949c8",
+      "ranges": [
+        {
+          "start": "0x5949c8",
+          "end": "0x594a3e"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all bytes of encoded instructions",
+      "evidence_id": "ev_f5d6987fa2da02aaa0eed43ea99b1795f31e98f998ef26e5d7937a6f48b634aa",
+      "raw_response": "analysis/rea-ghidra-selection-full-results/selection-projection-initialize.json"
+    },
+    {
+      "label": "scene-coordinate-stores",
+      "address": "0x53ca7c",
+      "ranges": [
+        {
+          "start": "0x53ca7c",
+          "end": "0x53caeb"
+        }
+      ],
+      "range_semantics": "inclusive byte addresses; includes all bytes of encoded instructions",
+      "evidence_id": "ev_fb922f1370290324281d4e1070f7b7c9ddcd4dc27f106a40de82e226178ae746",
+      "raw_response": "analysis/rea-ghidra-selection-full-results/scene-coordinate-stores.json"
+    }
+  ],
+  "source": "CLEA VIREO CLEA_VEO.exe",
+  "analysis": "Static REA 6.5.0 / Ghidra 12.1.4, assembly checked; no original execution",
+  "constants": [
+    {
+      "address": "0x55e140",
+      "file_offset": 1430848,
+      "type": "ext",
+      "bytes_hex": "2384471b47acc5a7ee3f",
+      "value": 1e-05,
+      "exact_decimal": "0.00000999999999999999999994891332536872501079994179917775909416377544403076171875"
+    },
+    {
+      "address": "0x55e14c",
+      "file_offset": 1430860,
+      "type": "float",
+      "bytes_hex": "0000803f",
+      "value": 1.0
+    },
+    {
+      "address": "0x55e150",
+      "file_offset": 1430864,
+      "type": "float",
+      "bytes_hex": "00000040",
+      "value": 2.0
+    },
+    {
+      "address": "0x55f328",
+      "file_offset": 1435432,
+      "type": "float",
+      "bytes_hex": "00004041",
+      "value": 12.0
+    },
+    {
+      "address": "0x55f32c",
+      "file_offset": 1435436,
+      "type": "float",
+      "bytes_hex": "0000803f",
+      "value": 1.0
+    },
+    {
+      "address": "0x55f330",
+      "file_offset": 1435440,
+      "type": "float",
+      "bytes_hex": "00000040",
+      "value": 2.0
+    },
+    {
+      "address": "0x55f334",
+      "file_offset": 1435444,
+      "type": "ext",
+      "bytes_hex": "35c26821a2da0fc90040",
+      "value": 3.141592653589793,
+      "exact_decimal": "3.141592653589793238512808959406186204432742670178413391113281250"
+    },
+    {
+      "address": "0x55f340",
+      "file_offset": 1435456,
+      "type": "float",
+      "bytes_hex": "00000000",
+      "value": 0.0
+    },
+    {
+      "address": "0x55f344",
+      "file_offset": 1435460,
+      "type": "float",
+      "bytes_hex": "0000f0c1",
+      "value": -30.0
+    },
+    {
+      "address": "0x55f348",
+      "file_offset": 1435464,
+      "type": "ext",
+      "bytes_hex": "66666666666666e6fe3f",
+      "value": 0.9,
+      "exact_decimal": "0.899999999999999999978315956550289911319850943982601165771484375"
+    },
+    {
+      "address": "0x5ae008",
+      "file_offset": 1755656,
+      "type": "u32",
+      "bytes_hex": "00000000",
+      "value": 0
+    },
+    {
+      "address": "0x5ae760",
+      "file_offset": 1757536,
+      "type": "f64",
+      "bytes_hex": "000000000000f03d",
+      "value": 2.3283064365386963e-10
+    },
+    {
+      "address": "0x55f42c",
+      "file_offset": 1435692,
+      "type": "f32",
+      "bytes_hex": "0000803f",
+      "value": 1.0
+    },
+    {
+      "address": "0x55f430",
+      "file_offset": 1435696,
+      "type": "f32",
+      "bytes_hex": "0000b040",
+      "value": 5.5
+    },
+    {
+      "address": "0x55f434",
+      "file_offset": 1435700,
+      "type": "f32",
+      "bytes_hex": "00000000",
+      "value": 0.0
+    },
+    {
+      "address": "0x55f438",
+      "file_offset": 1435704,
+      "type": "f32",
+      "bytes_hex": "0000003f",
+      "value": 0.5
+    },
+    {
+      "address": "0x55f43c",
+      "file_offset": 1435708,
+      "type": "ext",
+      "bytes_hex": "382571b6ff986ca00040",
+      "value": 2.50662827465,
+      "exact_decimal": "2.506628274649999999976190956374466622946783900260925292968750"
+    },
+    {
+      "address": "0x5b4a4c",
+      "file_offset": 1782860,
+      "type": "ext",
+      "bytes_hex": "7f9742b5fb345c980540",
+      "value": 76.18009173,
+      "exact_decimal": "76.180091729999999998479420781904991599731147289276123046875000000"
+    },
+    {
+      "address": "0x5b4a56",
+      "file_offset": 1782870,
+      "type": "ext",
+      "bytes_hex": "0236b5a658b902ad05c0",
+      "value": -86.50532033,
+      "exact_decimal": "-86.50532032999999999811624463"
+    },
+    {
+      "address": "0x5b4a60",
+      "file_offset": 1782880,
+      "type": "ext",
+      "bytes_hex": "a38da70e87df1cc00340",
+      "value": 24.01409822,
+      "exact_decimal": "24.014098219999999999849094045600850222399458289146423339843750000"
+    },
+    {
+      "address": "0x5b4a6a",
+      "file_offset": 1782890,
+      "type": "ext",
+      "bytes_hex": "c4589734f5a3a99dffbf",
+      "value": -1.231739516,
+      "exact_decimal": "-1.231739515999999999996267208"
+    },
+    {
+      "address": "0x5b4a74",
+      "file_offset": 1782900,
+      "type": "ext",
+      "bytes_hex": "35886d2a6837699ef53f",
+      "value": 0.00120858003,
+      "exact_decimal": "0.0012085800300000000000088794271414782688367495211423374712467193603515625"
+    },
+    {
+      "address": "0x5b4a7e",
+      "file_offset": 1782910,
+      "type": "ext",
+      "bytes_hex": "c8880929ebdcfab3edbf",
+      "value": -5.36382e-06,
+      "exact_decimal": "-0.000005363820000000000000105481284"
+    },
+    {
+      "address": "0x53e444",
+      "type": "f32",
+      "file_offset": 1300548,
+      "bytes_hex": "00000040",
+      "value": 2.0
+    },
+    {
+      "address": "0x50f480",
+      "type": "f32",
+      "file_offset": 1108096,
+      "bytes_hex": "00004843",
+      "value": 200.0
+    },
+    {
+      "address": "0x50f468",
+      "type": "ext",
+      "file_offset": 1108072,
+      "bytes_hex": "9f93de37bef6cc92f33f",
+      "value": 0.00028,
+      "exact_decimal": "0.000280000000000000000008495740460960632400855274681816808879375457763671875"
+    },
+    {
+      "address": "0x50f474",
+      "type": "ext",
+      "file_offset": 1108084,
+      "bytes_hex": "2c6519e25817b7d1f73f",
+      "value": 0.0064,
+      "exact_decimal": "0.006400000000000000000073183646642771549295503064058721065521240234375"
+    },
+    {
+      "address": "0x50e324",
+      "type": "f32",
+      "file_offset": 1103652,
+      "bytes_hex": "000020c0",
+      "value": -2.5
+    },
+    {
+      "address": "0x55eb50",
+      "type": "ext",
+      "file_offset": 1433424,
+      "bytes_hex": "35c26821a2da0fc90040",
+      "value": 3.141592653589793,
+      "exact_decimal": "3.141592653589793238512808959406186204432742670178413391113281250"
+    },
+    {
+      "address": "0x55eb5c",
+      "type": "f32",
+      "file_offset": 1433436,
+      "bytes_hex": "00008040",
+      "value": 4.0
+    },
+    {
+      "address": "0x55eb60",
+      "type": "f32",
+      "file_offset": 1433440,
+      "bytes_hex": "00002040",
+      "value": 2.5
+    }
+  ],
+  "implemented_contracts": [
+    "random-float",
+    "uniform-spectrum-initialize",
+    "sampler-typed-context",
+    "log-gamma",
+    "poisson-sampler",
+    "aperture-throughput",
+    "slit-throughput",
+    "spectrometer-reset (amplitudes only)",
+    "telescope-zero-point",
+    "supplied-mean-600-bin-exposure-reducer",
+    "channel-grid-calibration (bounded positive range)",
+    "galaxy-spectrum-constructor (selected SP factor; continuum and catalog temperature are separate implemented subcontracts)",
+    "galaxy-spectrum-sampler (inclusive in-SP branch only)",
+    "profile-table-initializer-crosscheck (Number adapter)",
+    "galaxy-profile-build (Number adapter)",
+    "galaxy-profile-pixel-draw (tone table only, no GDI painting)",
+    "galaxy-stamp-compose (single RGB predicate only)",
+    "Planck B_nu continuum, supplied temperature only (Number adapter)",
+    "galaxy-spectrum-sampler outside bounds (explicit prepared continuum, corrections and seed, bounded auxiliary range)",
+    "galaxy catalog field27 morphology assignments and bounded continuum temperature (Number adapter)",
+    "native catalog nearest candidates and supplied-throughput arbitration (pure bounded Number adapter)",
+    "galaxy instrument magnitude correction (nonzero supplied axes; Number adapter)"
+  ],
+  "numerical_policy": "Number/Math adapter; explicit nearest-even for sampling; no original-x87 equivalence",
+  "limitations": "No integrated acquisition, calibrated source/sky amplitudes, original pixel-derived throughput, original-run oracle or complete Hubble analysis.",
+  "schema": 3,
+  "scope": "Pure numerical and supplied-image calibration building blocks; no integrated exposure or complete Hubble exercise.",
+  "implementation_to_functions": [
+    {
+      "file": "src/core/acquisition.ts",
+      "exports": [
+        "randomDraw"
+      ],
+      "procedures": [
+        "0x4035e4"
+      ]
+    },
+    {
+      "file": "src/core/acquisition.ts",
+      "exports": [
+        "uniformSpectrum",
+        "sampleUniformSpectrum"
+      ],
+      "procedures": [
+        "0x55df2c",
+        "0x55dfe0",
+        "0x403700"
+      ]
+    },
+    {
+      "file": "src/core/acquisition.ts",
+      "exports": [
+        "recoveredLogGamma",
+        "poissonDraw"
+      ],
+      "procedures": [
+        "0x55f354",
+        "0x55f0f4",
+        "0x40370c"
+      ]
+    },
+    {
+      "file": "src/core/photons.ts",
+      "exports": [
+        "slitPixelLevel"
+      ],
+      "procedures": [
+        "0x53e338",
+        "0x403700"
+      ]
+    },
+    {
+      "file": "src/core/photons.ts",
+      "exports": [
+        "galaxySlitFraction"
+      ],
+      "procedures": [
+        "0x50f338"
+      ]
+    },
+    {
+      "file": "src/core/photons.ts",
+      "exports": [
+        "telescopeZeroPoint"
+      ],
+      "procedures": [
+        "0x53df24"
+      ]
+    },
+    {
+      "file": "src/core/photons.ts",
+      "exports": [
+        "magnitudeAmplitude",
+        "photonAmplitudes"
+      ],
+      "procedures": [
+        "0x50df64",
+        "0x42703c"
+      ]
+    },
+    {
+      "file": "src/core/exposure.ts",
+      "exports": [
+        "createExposure",
+        "startExposure",
+        "pauseExposure",
+        "resetExposure",
+        "advanceExposure",
+        "exposureStatistics"
+      ],
+      "procedures": [
+        "0x50df64",
+        "0x50f484",
+        "0x50f618",
+        "0x50f76c"
+      ],
+      "scope": "600-bin supplied-mean reducer; no original source/image preparation or wall-clock integration"
+    },
+    {
+      "file": "src/core/galaxySpectrum.ts",
+      "exports": [
+        "galaxyChannelGrid",
+        "galaxyLibrarySpectrum",
+        "prepareGalaxyProfile"
+      ],
+      "procedures": [
+        "0x50ec98",
+        "0x50f484",
+        "0x55e55c",
+        "0x55e97c",
+        "0x55dfe0"
+      ],
+      "scope": "Selected SP/fallback validation and factor; prepareGalaxyProfile remains inclusive in-SP. Shared library preparer is used by full explicit catalog source composition."
+    },
+    {
+      "file": "src/core/galaxyRaster.ts",
+      "exports": [
+        "galaxyBaseProfile",
+        "galaxyToneProfile",
+        "composeGalaxyPixel"
+      ],
+      "procedures": [
+        "0x593f64",
+        "0x59422c",
+        "0x5942dc",
+        "0x594808"
+      ],
+      "scope": "table/tone/red-predicate only; not the native detector bitmap"
+    },
+    {
+      "file": "src/core/numericPolicy.ts",
+      "exports": [
+        "roundNearestEven"
+      ],
+      "procedures": [
+        "0x403700"
+      ],
+      "scope": "explicit shared nearest-even adapter, not measured original control word"
+    },
+    {
+      "file": "src/core/galaxyContinuum.ts",
+      "exports": [
+        "galaxyCatalogContinuumContext",
+        "prepareCatalogGalaxyExtension",
+        "prepareGalaxyContinuum",
+        "prepareGalaxyExtension",
+        "sampleGalaxyExtension",
+        "prepareExtendedGalaxyChannels",
+        "prepareCatalogGalaxyChannels"
+      ],
+      "procedures": [
+        "0x55de04",
+        "0x55de58",
+        "0x55de7c",
+        "0x55def4",
+        "0x55e154",
+        "0x55e55c",
+        "0x55e97c",
+        "0x4035e4",
+        "0x55dfe0",
+        "0x50f484",
+        "0x598acc"
+      ],
+      "scope": "Full parsed-SP/selected catalog parameter source-shape composition; no detector image, object lookup, amplitude or acquired counts."
+    },
+    {
+      "file": "src/core/objectSelection.ts",
+      "exports": [
+        "createNativeSelectionScene",
+        "nearestCatalogObject",
+        "galaxySelectionRadius",
+        "selectCatalogObject"
+      ],
+      "procedures": [
+        "0x599f1c",
+        "0x59a010",
+        "0x59a0fc",
+        "0x5949c8",
+        "0x403700",
+        "0x594a44",
+        "0x594b04"
+      ],
+      "scope": "Explicit native-frame projection and branded supplied-scene nearest/arbitration contracts; no automatic original population, throughput or UI detector integration."
+    },
+    {
+      "file": "src/core/galaxyCalibration.ts",
+      "exports": [
+        "galaxyInstrumentMagnitude"
+      ],
+      "procedures": [
+        "0x55ea94",
+        "0x42702c"
+      ],
+      "scope": "Nonzero supplied-axis branch only, pure numeric core; not yet used by UI acquisition. Zero axes explicitly require the separate original fallback."
+    }
+  ],
+  "new_adapters": [
+    "Explicit uint32 seed in/out, no platform randomization or shared global",
+    "Number/Math rather than Extended/x87; nearest-even sampling and image-center conversion are chosen policies",
+    "Uniform spectrum: positive finite minimum, maximum > minimum, finite positive step, 3..50000 dense finite samples, frozen copy; no original 16-bit allocation overflow",
+    "Gamma domain finite 1..MAX_SAFE_INTEGER; unsupported/nonfinite return throws rather than reproducing uninitialized state",
+    "Poisson mean finite 0..1000000, uniform draw budget 1..100000 (default10000), unsafe/nonfinite calculations throw",
+    "An exact uniform=0.5 in the large-mean branch throws precision: original Extended-pi/x87 pole decision not established",
+    "Poisson deterministic cache recomputed in Number; no original Extended-mean fidelity implied",
+    "Supplied RGB image at most4000000 pixels with exact RGB byte length and complete centered3x19 region; out-of-bounds GetPixel not ported",
+    "Galaxy level integer0..765, supplied slit fraction0..1; nonfinite calibration, overflow or positive-source underflow throws",
+    "No default telescope/calibration is selected by the UI; recovered compiled defaults are metadata only",
+    "Exposure delta milliseconds supplied explicitly; no GetTickCount/VCL event delivery or inferred animation-frame physics",
+    "Exposure immutable tick commit; failures return no partial state; explicit phase validation, reset required after S/N limit",
+    "Exposure bin/sky int32 overflow, unsafe Number source/combined totals/draws/elapsed throw; original int64/x87 and timer wrap not emulated",
+    "Galaxy profile: explicit matched/fallback selection; validates uniform interior wavelengths within1e-7 steps, although original ignores interior tokens; frozen600 values; finite positive Single-config range <=100000\u00c5 span, finite f32 redshift >-1, negative source and out-of-SP channels rejected; nonfinite interpolated results rejected, including overflow from finite source samples",
+    "Galaxy raster tables: bounded levels0..14; binary64 Math/nearest-even; fresh typed arrays; no native one-based bitmap painting, device-depth/palette realization, StretchBlt, rotation, scene crop or acquisition UI",
+    "Positive finite temperature; positive Single continuum interval with span<=100000\u00c5; nonfinite arithmetic rejected; all-zero Number normalization rejected;10000 endpoint probes, valid main-SP endpoint overlap required; out-of-continuum extension range rejected atomically. Negative source/correction rejected. Explicit uint32 seed validated even for zero-draw branches.",
+    "Requires signed integer byte morphology with an assigned field27 branch. Rejects17..19,21..127, rather than guessing unspecified field contents; finite f32 z strictly between-1 and1. Single field27 and z boundaries preserved; subsequent Number operations declared.",
+    "Dense scenes<=200000 entries; finite coordinates; bounded nonempty identifier; signed int32 integer query; nonnegative finite Single diameter; positive finite supplied vertical scale; nonfinite arithmetic and unsafe/int32 radius throw. Copied/frozen candidates; no unsupported instrument-specific throughput is guessed.",
+    "createNativeSelectionScene requires raw sky positions and explicit native width/height/field/center, projects them internally, derives the vertical scale, freezes the result and brands it with a private Symbol. selectCatalogObject accepts only that scene, and rejects unbranded runtime input. A nonempty provenance and complete-field population attestation are required; limited/unknown populations are rejected. The attestation is a caller assertion, not proof that the original catalog or detector frame was reconstructed. SVG x/y arrays cannot structurally enter the selector.",
+    "Composed catalog source errors normalize to GalaxyContinuumError, with grid/wavelength -> range and redshift domains preserved. Native-scene Single radius test uses0.85 at1200px/degree to discriminate conversion.",
+    "Input magnitude/axes projected to Single and must be finite; negative axes rejected; either zero Single axis reports axis-fallback-required. Returned area/magnitude finite and area positive; frozen return, no input mutation. Original fallback can succeed on some rejected zero-axis inputs, which remain outside this API scope."
+  ],
+  "poisson_cache": {
+    "procedure": "0x55f0f4",
+    "storage": "Extended, 10 bytes at each field",
+    "fields": {
+      "prior_mean": "self+0x0",
+      "sqrt_two_mean": "self+0xa",
+      "log_mean": "self+0x14",
+      "normalizer_or_exp_minus_mean": "self+0x1e"
+    },
+    "comparison": "FCOMPP compares Extended mean and cached Extended prior mean",
+    "initialization": "prior mean=-1 at0x55f0d0",
+    "browser_scope": "Recompute identical parameters for identical Number mean; original Extended caller/Math differences remain unvalidated."
+  },
+  "cutoff_draw_order": {
+    "range": "0x55f2a6..0x55f301",
+    "path": "Exponent<-30 writes Extended zero, jumps to0x55f2d7, builds zero threshold, calls Random at0x55f2f3, compares acceptance at0x55f2f8..0x55f301. Acceptance uniform is consumed even for zero threshold.",
+    "negative_candidate_path": "0x55f258..0x55f265 returns to angle draw before acceptance draw."
+  },
+  "gamma_zero_guards": {
+    "range": "0x55f354..0x55f429",
+    "description": "Original compares shifted term and scaled series against zero and leaves result undefined on unsupported branches; adapter validates its positive domain and throws on nonpositive series."
+  },
+  "compiled_default_fields": {
+    "evidence_id": "ev_bb9b327aca48744f607f49ca2ed67df3eb116de36a77a285a89d479bf7d7cea6",
+    "base_relation": "default routine EBX=options object+4; environment record starts +0x6b4",
+    "fields": [
+      {
+        "record_offset": "0x250c",
+        "environment_offset": "0x2bc0",
+        "name": "base_zero_point",
+        "type": "f32",
+        "bytes_hex": "0000c040",
+        "value": 6.0,
+        "authority": "literal store in default initialization; external binary VEO_OPTS.INI may override"
+      },
+      {
+        "record_offset": "0x2514",
+        "environment_offset": "0x2bc8",
+        "name": "sky_magnitude",
+        "type": "f32",
+        "bytes_hex": "00009841",
+        "value": 19.0,
+        "authority": "literal store in default initialization; external binary VEO_OPTS.INI may override"
+      },
+      {
+        "record_offset": "0x2518",
+        "environment_offset": "0x2bcc",
+        "name": "spectral_minimum",
+        "type": "f32",
+        "bytes_hex": "00406745",
+        "value": 3700.0,
+        "authority": "literal store in default initialization; external binary VEO_OPTS.INI may override"
+      },
+      {
+        "record_offset": "0x251c",
+        "environment_offset": "0x2bd0",
+        "name": "spectral_maximum",
+        "type": "f32",
+        "bytes_hex": "00e09245",
+        "value": 4700.0,
+        "authority": "literal store in default initialization; external binary VEO_OPTS.INI may override"
+      },
+      {
+        "record_offset": "0x279b",
+        "environment_offset": "0x2e4f",
+        "name": "field_multiplier",
+        "type": "i32",
+        "bytes_hex": "03000000",
+        "value": 3,
+        "authority": "literal store in default initialization; external binary VEO_OPTS.INI may override"
+      },
+      {
+        "record_offset": "0x27a7",
+        "environment_offset": "0x2e5b",
+        "name": "elapsed_multiplier",
+        "type": "i32",
+        "bytes_hex": "32000000",
+        "value": 50,
+        "authority": "literal store in default initialization; external binary VEO_OPTS.INI may override"
+      },
+      {
+        "record_offset": "0x27ab",
+        "environment_offset": "0x2e5f",
+        "name": "spectrometer_timer_interval_ms",
+        "type": "i32",
+        "bytes_hex": "01000000",
+        "value": 1,
+        "authority": "literal store in default initialization; external binary VEO_OPTS.INI may override"
+      }
+    ],
+    "aliases": [
+      {
+        "record_offset": "0x2520",
+        "environment_offset": "0x2bd4",
+        "source_record_offset": "0x2518",
+        "value": 3700,
+        "role": "active minimum spectral wavelength copied from default"
+      },
+      {
+        "record_offset": "0x2524",
+        "environment_offset": "0x2bd8",
+        "source_record_offset": "0x251c",
+        "value": 4700,
+        "role": "active maximum spectral wavelength copied from default"
+      }
+    ]
+  },
+  "default_overrides": "VEO_OPTS.INI is read by the binary options reader0x5a3534 before falling back to defaults0x5a21d0. No original user settings exist in the supplied distribution; do not infer an observed session configuration.",
+  "validation_vectors": "analysis/hubble-acquisition/poisson-independent-vectors.json: independent Python integer LCG and exact factorial/Fraction ratios at mean12; synthetic, no original run.",
+  "compiled_default_telescopes": {
+    "procedure": "0x5a3174",
+    "correction_storage": "Single at telescope record+0x3c",
+    "entries": [
+      {
+        "index": 0,
+        "name": "0.4m (16\") Telescope",
+        "correction": -2,
+        "stored_zero_point_with_base6": 4,
+        "name_evidence_id": "ev_55b882a5f63d8e850ede22e04a4e0b7659918c46336d383579694449705978d7"
+      },
+      {
+        "index": 1,
+        "name": "KPNO 0.9m (36\") Telescope",
+        "correction": 0,
+        "stored_zero_point_with_base6": 6,
+        "name_evidence_id": "ev_8eacd027d281352a635a02ac0a2441c43dd579d10803867fabbf90c1ee85e644"
+      },
+      {
+        "index": 2,
+        "name": "KPNO 4m (158\") Mayall Telescope",
+        "correction": 3,
+        "stored_zero_point_with_base6": 9,
+        "name_evidence_id": "ev_dd633d3f4d0b4ddabe647929332fca218a49bc2331a162065cbd51e2c14e4ed9"
+      }
+    ],
+    "authority": "Literal default initialization; external options may override"
+  },
+  "galaxy_preparation": {
+    "scope": "Inclusive in-SP branch only; no RNG; no object matcher, continuum preparation or acquisition UI",
+    "matched_wavelength_factor": 1,
+    "fallback_wavelength_factor": "1 + catalog f32 redshift",
+    "grid_step": "(ceil(f32 max/100)*100 - trunc(f32 min/100)*100)/600 for admitted positive ranges",
+    "grid_origin": "actual f32 configured minimum, not rounded minimum",
+    "original_default_Coma1": "Shifted fallback minimum3737.368\u00c5 exceeds3700\u00c5; extension-required",
+    "independent_vectors": "data/hubble/galaxy-profile-vectors.json",
+    "redshift_domain": "finite f32 z>-1 required for both matched and fallback as a new adapter restriction, even though matched in-SP factor is1",
+    "typed_errors": "All lower-level AcquisitionError grid/overflow errors are translated to GalaxySpectrumError at this API boundary; nonfinite shifted endpoints report overflow before grid construction."
+  },
+  "galaxy_raster": {
+    "scope": "Table/tone/replacement stages only; not a native detector bitmap",
+    "table": "i,j1..249; center125; sigma45; Round(255*exp(-r\u00b2/2))",
+    "level": "0..14; scale0.9^level; Round then upper clamp255",
+    "tone": "below15 ->0;15..119 ->Round(sqrt((b-15)/105)*120);>=120 unchanged",
+    "painting": "one-based coordinates1..249 in249 bitmap; zero edge initially black,249 edge clipped",
+    "merge": "if nonzero source red > destination red, replace fullRGB",
+    "native_draw": {
+      "address": "0x431714",
+      "inclusive_bytes": [
+        "0x431714",
+        "0x43195f"
+      ],
+      "vmt": "0x42a984+0x14",
+      "byte_evidence_id": "ev_2cf83098f4dbc2525570bdd377794345caa70e199f7c47ab1720e179ad9aecd1",
+      "identification": "VMT+REA read_bytes+independent objdump; not a defined Ghidra procedure"
+    },
+    "oracle_gate": "docs/HUBBLE-ORACLE-PROPOSAL.md",
+    "independent_vectors": "data/hubble/galaxy-raster-vectors.json",
+    "numerics": "Number/Math and explicit nearest-even; x87/GDI equivalence not established",
+    "cache": "private base-table cache; public base/toned arrays are independent owned copies; common roundNearestEven policy"
+  },
+  "galaxy_catalog": {
+    "reader": "0x598acc",
+    "record_bytes": 59,
+    "record_count": 24069,
+    "fixtures": "data/hubble/galaxy-catalog-samples.json",
+    "warning": "Do not substitute image/hot-list metadata for raw catalog astrometry/magnitude."
+  },
+  "raster_and_grid_constants": [
+    {
+      "name": "sigma",
+      "storage": "f32 data",
+      "address": "0x59400c",
+      "bytes_hex": "00003442",
+      "value": 45.0,
+      "procedure": "0x593f64",
+      "evidence_id": "ev_231d167d6b4dfc7a1df489548611700dfb616c1667eaff8dce8485a52a31b1ae"
+    },
+    {
+      "name": "gaussianExponentDivisor",
+      "storage": "f32 data",
+      "address": "0x594010",
+      "bytes_hex": "00000040",
+      "value": 2.0,
+      "procedure": "0x593f64",
+      "evidence_id": "ev_231d167d6b4dfc7a1df489548611700dfb616c1667eaff8dce8485a52a31b1ae"
+    },
+    {
+      "name": "maximumBrightness",
+      "storage": "f32 data",
+      "address": "0x594014",
+      "bytes_hex": "00007f43",
+      "value": 255.0,
+      "procedure": "0x593f64",
+      "evidence_id": "ev_231d167d6b4dfc7a1df489548611700dfb616c1667eaff8dce8485a52a31b1ae"
+    },
+    {
+      "name": "toneDivisor",
+      "storage": "f32 data",
+      "address": "0x5943cc",
+      "bytes_hex": "0000d242",
+      "value": 105.0,
+      "procedure": "0x5942dc",
+      "evidence_id": "ev_3e3cde842ffdb1e05ffe4f67f9a630a54e79513c72cf2a55ced3674e7514a04c"
+    },
+    {
+      "name": "toneMultiplier",
+      "storage": "f32 data",
+      "address": "0x5943d0",
+      "bytes_hex": "0000f042",
+      "value": 120.0,
+      "procedure": "0x5942dc",
+      "evidence_id": "ev_3e3cde842ffdb1e05ffe4f67f9a630a54e79513c72cf2a55ced3674e7514a04c"
+    },
+    {
+      "name": "channelCount",
+      "storage": "f32 data",
+      "address": "0x50edd8",
+      "bytes_hex": "00001644",
+      "value": 600.0,
+      "procedure": "0x50ec98",
+      "evidence_id": "ev_9ca0e8b27100102e7cc8188c81949bfd90699058095f35ec861961cb9d20cb62"
+    },
+    {
+      "name": "center",
+      "storage": "imm8",
+      "instruction": "0x593f7e",
+      "instruction_bytes_hex": "83e87d",
+      "value": 125,
+      "procedure": "0x593f64",
+      "evidence_id": "ev_231d167d6b4dfc7a1df489548611700dfb616c1667eaff8dce8485a52a31b1ae"
+    },
+    {
+      "name": "toneCutoff",
+      "storage": "imm8",
+      "instruction": "0x59431a",
+      "instruction_bytes_hex": "80fb0f",
+      "value": 15,
+      "procedure": "0x5942dc",
+      "evidence_id": "ev_3e3cde842ffdb1e05ffe4f67f9a630a54e79513c72cf2a55ced3674e7514a04c"
+    },
+    {
+      "name": "toneThreshold",
+      "storage": "imm8",
+      "instruction": "0x594323",
+      "instruction_bytes_hex": "80fb78",
+      "value": 120,
+      "procedure": "0x5942dc",
+      "evidence_id": "ev_3e3cde842ffdb1e05ffe4f67f9a630a54e79513c72cf2a55ced3674e7514a04c"
+    },
+    {
+      "name": "rasterBrightnessBase",
+      "storage": "10-byte Extended stack argument assembled from three PUSH imm32 instructions",
+      "instructions": [
+        "0x594242",
+        "0x594247",
+        "0x59424c"
+      ],
+      "instruction_bytes_hex": [
+        "68fe3f0000",
+        "68666666e6",
+        "6866666666"
+      ],
+      "literal_little_endian": "66666666666666e6fe3f",
+      "exact_decimal": "0.8999999999999999999783159565502899113198509439826011657714843750",
+      "Number_projection": 0.9,
+      "procedure": "0x59422c",
+      "evidence_id": "ev_8935e876a527e13d3bbbe0da0ca0a030bd65a808472c67f168ed48b48b1ac29c"
+    },
+    {
+      "name": "gridBoundary100",
+      "storage": "Extended stack local, low32 zero; high32c8000000; exponent4005",
+      "instructions": [
+        "0x50ecd8",
+        "0x50ecdd",
+        "0x50ece5"
+      ],
+      "literal_little_endian": "00000000000000c80540",
+      "exact_decimal": "100",
+      "procedure": "0x50ec98",
+      "evidence_id": "ev_9ca0e8b27100102e7cc8188c81949bfd90699058095f35ec861961cb9d20cb62"
+    }
+  ],
+  "grid_instruction_contract": {
+    "maximum_rounding": "Initialize rounded max=trunc(min/100)*100; compare max against configured Single max; add100 only while it is lower. Exact boundaries are retained.",
+    "assembly": "0x50ed14..0x50ed65",
+    "step_storage": "FSTP extended double [self+0x3173] at0x50ed88, not Single",
+    "wavelength_calculation": "i1..600; FILD(i-1), FLD Extended step, FMULP, FADD Single configured min, FSTP Extended argument; multiplication, not accumulation.",
+    "Go_assembly": "0x50f4f4..0x50f51c",
+    "amplitude": "galaxy sampler return \u00d7 Extended amplitude[self+0x30fa], store Extended per-bin mean; no additional bin-width/step factor on this branch",
+    "amplitude_assembly": "0x50f546..0x50f55d",
+    "half_index_adapter": "100 default channels i=3+6k (zero based) in each matched2\u00c5 SP are exact binary64 half-indices; nearest-even alternates lower/upper centers. Added all100 per file to independent Fraction vectors; original CW/x87 outcome not measured."
+  },
+  "galaxy_continuation": {
+    "scope": "B_nu continuum, separately recovered catalog morphology/temperature context and explicit-seed blue/red continuation. No automatic object matching, photon calibration, detector image or UI exposure.",
+    "procedures": [
+      {
+        "label": "p5-planck-init",
+        "address": "0x55de04",
+        "ranges": [
+          {
+            "start": "0x55de04",
+            "end": "0x55de30"
+          }
+        ],
+        "evidence_id": "ev_def0fdbbb648f72157c34de1618af9507e563de3a343bb08abe6e87f080bf8c7"
+      },
+      {
+        "label": "p5-planck-exponent",
+        "address": "0x55de58",
+        "ranges": [
+          {
+            "start": "0x55de58",
+            "end": "0x55de78"
+          }
+        ],
+        "evidence_id": "ev_d111d7731e2026ea8d71c4183c36e896f71b470f13725ad800323dadf693688d"
+      },
+      {
+        "label": "p5-planck-core",
+        "address": "0x55de7c",
+        "ranges": [
+          {
+            "start": "0x55de7c",
+            "end": "0x55dee2"
+          }
+        ],
+        "evidence_id": "ev_34910c5124e09529df33d14975965b311556588fa12eaf3a595a0093a626afd6"
+      },
+      {
+        "label": "p5-planck-value",
+        "address": "0x55def4",
+        "ranges": [
+          {
+            "start": "0x55def4",
+            "end": "0x55df1d"
+          }
+        ],
+        "evidence_id": "ev_6b231693354be3dfe7e95b051f70072d3dcc1b95a15529fa2d49823d57216f33"
+      },
+      {
+        "label": "p5-galaxy-component-constructor",
+        "address": "0x55e154",
+        "ranges": [
+          {
+            "start": "0x55e154",
+            "end": "0x55e31a"
+          }
+        ],
+        "evidence_id": "ev_3defc7ef9f55143fa9c1189a221581029ae5e2f9905ee9ca148e8d55a08538f1"
+      },
+      {
+        "label": "p5-galaxy-spectrum-sampler",
+        "address": "0x55e97c",
+        "ranges": [
+          {
+            "start": "0x55e97c",
+            "end": "0x55ea62"
+          }
+        ],
+        "evidence_id": "ev_d2da91e629a03fcf281cb6762dd2b652ea4bfe36fb8a31f6433e201044022021"
+      }
+    ],
+    "constants": [
+      {
+        "address": "0x55de34",
+        "format": "Extended80",
+        "hex": "000000009ddf5cdf2140",
+        "exact_decimal": "29979245800.00000000000000000000000000000",
+        "number": 29979245800.0
+      },
+      {
+        "address": "0x55de40",
+        "format": "Extended80",
+        "hex": "80cf3532c0313e83a93f",
+        "exact_decimal": "1.32521510000000000001916657725718678078496186190153535059435357327099441033212146034969692E-26",
+        "number": 1.3252151e-26
+      },
+      {
+        "address": "0x55de4c",
+        "format": "Extended80",
+        "hex": "c6acdecfe6d42d9fca3f",
+        "exact_decimal": "1.38065799999999999996116208175253224101104630478186145595750206060969844656938221305608749E-16",
+        "number": 1.380658e-16
+      },
+      {
+        "address": "0x55dee4",
+        "format": "Extended80",
+        "hex": "80cf3532c0313e83a83f",
+        "exact_decimal": "6.62607550000000000009583288628593390392480930950767675297176786635497205166060730174848459E-27",
+        "number": 6.6260755e-27
+      },
+      {
+        "address": "0x55def0",
+        "format": "Single",
+        "hex": "0000803f",
+        "exact_decimal": "1",
+        "number": 1.0
+      },
+      {
+        "address": "0x55df20",
+        "format": "Extended80",
+        "hex": "000000009ddf5cdf2140",
+        "exact_decimal": "29979245800.00000000000000000000000000000",
+        "number": 29979245800.0
+      },
+      {
+        "address": "0x55e31c",
+        "format": "Single",
+        "hex": "0000803f",
+        "exact_decimal": "1",
+        "number": 1.0
+      },
+      {
+        "address": "0x55e320",
+        "format": "Extended80",
+        "hex": "fdce61841177ccabe43f",
+        "exact_decimal": "1.0000000000000000000007074462188859769189337722838928357305121608078479766845703125E-8",
+        "number": 1e-08
+      },
+      {
+        "address": "0x55e32c",
+        "format": "Single",
+        "hex": "00000000",
+        "exact_decimal": "0",
+        "number": 0.0
+      },
+      {
+        "address": "0x55e940",
+        "format": "Single",
+        "hex": "0000803f",
+        "exact_decimal": "1",
+        "number": 1.0
+      },
+      {
+        "address": "0x55e944",
+        "format": "Extended80",
+        "hex": "a4703d0ad7a370ddfe3f",
+        "exact_decimal": "0.8650000000000000000086736173798840354720596224069595336914062500",
+        "number": 0.865
+      },
+      {
+        "address": "0x55e950",
+        "format": "Single",
+        "hex": "00700546",
+        "exact_decimal": "8540",
+        "number": 8540.0
+      },
+      {
+        "address": "0x55e954",
+        "format": "Single",
+        "hex": "00002041",
+        "exact_decimal": "10",
+        "number": 10.0
+      },
+      {
+        "address": "0x55e958",
+        "format": "Single",
+        "hex": "00000000",
+        "exact_decimal": "0",
+        "number": 0.0
+      },
+      {
+        "address": "0x55ea64",
+        "format": "Extended80",
+        "hex": "0ad7a3703d0ad7a3fc3f",
+        "exact_decimal": "0.159999999999999999996747393482543486697977641597390174865722656250",
+        "number": 0.16
+      },
+      {
+        "address": "0x55ea70",
+        "format": "Extended80",
+        "hex": "1f85eb51b81e85ebfe3f",
+        "exact_decimal": "0.9200000000000000000151788304147970620761043392121791839599609375",
+        "number": 0.92
+      },
+      {
+        "address": "0x55ea7c",
+        "format": "Extended80",
+        "hex": "0ad7a3703d0ad7a3fb3f",
+        "exact_decimal": "0.0799999999999999999983736967412717433489888207986950874328613281250",
+        "number": 0.08
+      },
+      {
+        "address": "0x55ea88",
+        "format": "Extended80",
+        "hex": "8fc2f5285c8fc2f5fe3f",
+        "exact_decimal": "0.9599999999999999999804843608952609201878658495843410491943359375",
+        "number": 0.96
+      }
+    ],
+    "constructor": "0x55e154, lastIndex600 ->601 normalized B_nu samples; wavelength converted Angstrom to cm, repeated cm step; not B_lambda",
+    "endpoint_corrections": "0x55e826..0x55e8f3: SP minimum+10\u00c5 increasing / maximum-10\u00c5 decreasing, first valid nonzero continuum sample; SPsample/continuumSample. Admitted probe must also be inside SP; no RNG in this bounded preparation.",
+    "blue": "(U*0.16*C +0.92*C)*blueCorrection; one uniform per out-of-SP blue channel",
+    "red": "(U*0.08*C +0.96*C)*redCorrection; one uniform per out-of-SP red channel",
+    "protection_policy": "Positive finite temperature; positive Single continuum interval with span<=100000\u00c5; nonfinite arithmetic rejected; all-zero Number normalization rejected;10000 endpoint probes, valid main-SP endpoint overlap required; out-of-continuum extension range rejected atomically. Negative source/correction rejected. Explicit uint32 seed validated even for zero-draw branches. Supplied temperature ceiling1e8K; thermal underflow reports temperature; exp argument below1e-4 reports precision to avoid exp(x)-1 cancellation. Negative quadratic continuum reports continuum-negative, separately from negative source. Shared continuum/channel Single configuration required; blue/red probe coordinates returned for verification.",
+    "reference_vectors": "data/hubble/galaxy-continuum-vectors.json; Decimal80 temperature and all601 samples at3000/6000/10000/12000K (interior maximum at12000K);68 morphology/redshift vectors including<-9 and-8..-6; Fraction Lagrange and integer LCG for all600 channels. No x87 or Number accumulator emulation.",
+    "unimplemented": "Automatic matching/source selection, photon/magnitude/GDI/slit context, full native constructor lifecycle, recursive/outside-SP endpoint correction branches and original invalid auxiliary-range zero/draw behavior.",
+    "catalog_temperature": {
+      "reader": "0x598acc",
+      "reader_evidence_id": "ev_62ca0075d1b1ca1847d884a486a24b8ee8ac48ec6811c3f5c592ef012cf8b356",
+      "field27_assignments": [
+        {
+          "instruction": "0x598f40",
+          "instruction_hex": "c747273333b3be",
+          "signed_morphology": "-9",
+          "field_offset": "0x27",
+          "single_bits": "0xbeb33333",
+          "single_value": -0.3499999940395355
+        },
+        {
+          "instruction": "0x598f64",
+          "instruction_hex": "c747271f856b3f",
+          "signed_morphology": "<=-5 except-9",
+          "field_offset": "0x27",
+          "single_bits": "0x3f6b851f",
+          "single_value": 0.9200000166893005
+        },
+        {
+          "instruction": "0x598f88",
+          "instruction_hex": "c747271f856b3f",
+          "signed_morphology": "-4..0",
+          "field_offset": "0x27",
+          "single_bits": "0x3f6b851f",
+          "single_value": 0.9200000166893005
+        },
+        {
+          "instruction": "0x598fac",
+          "instruction_hex": "c7472785eb513f",
+          "signed_morphology": "1..2",
+          "field_offset": "0x27",
+          "single_bits": "0x3f51eb85",
+          "single_value": 0.8199999928474426
+        },
+        {
+          "instruction": "0x598fd0",
+          "instruction_hex": "c74727295c4f3f",
+          "signed_morphology": "3",
+          "field_offset": "0x27",
+          "single_bits": "0x3f4f5c29",
+          "single_value": 0.8100000023841858
+        },
+        {
+          "instruction": "0x598ff4",
+          "instruction_hex": "c74727ae47213f",
+          "signed_morphology": "4",
+          "field_offset": "0x27",
+          "single_bits": "0x3f2147ae",
+          "single_value": 0.6299999952316284
+        },
+        {
+          "instruction": "0x599015",
+          "instruction_hex": "c74727b81e053f",
+          "signed_morphology": "5..9",
+          "field_offset": "0x27",
+          "single_bits": "0x3f051eb8",
+          "single_value": 0.5199999809265137
+        },
+        {
+          "instruction": "0x599036",
+          "instruction_hex": "c747270000003f",
+          "signed_morphology": "10..16",
+          "field_offset": "0x27",
+          "single_bits": "0x3f000000",
+          "single_value": 0.5
+        },
+        {
+          "instruction": "0x599055",
+          "instruction_hex": "c747273333333f",
+          "signed_morphology": "20",
+          "field_offset": "0x27",
+          "single_bits": "0x3f333333",
+          "single_value": 0.699999988079071
+        }
+      ],
+      "morphology_byte": "original59-byte record+0x22 -> object+0x3d; signed branches",
+      "redshift": "original59-byte record+0x1c -> object+0x39 Single",
+      "formula": "8540/(0.865+field27)*(1-z)/sqrt(1-z*z)",
+      "temperature_range": "0x55e780..0x55e7bc inclusive; DE F1 FDIVRP at0x55e7b8",
+      "protection_policy": "Requires signed integer byte morphology with an assigned field27 branch. Rejects17..19,21..127, rather than guessing unspecified field contents; finite f32 z strictly between-1 and1. Single field27 and z boundaries preserved; subsequent Number operations declared.",
+      "catalog_fixture_check": {
+        "source_sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+        "record_bytes": 59,
+        "records": [
+          {
+            "record_index": 9497,
+            "identifier": "NGC 3034",
+            "morphology": 0,
+            "redshift": 0.0008906160364858806,
+            "record_sha256": "6633088b12fc1224f6e8ef7691c4fa9082bdd4033ad59bfad013740c9b2e19ef"
+          },
+          {
+            "record_index": 15036,
+            "identifier": "NGC 4874",
+            "morphology": -3,
+            "redshift": 0.0239365566521883,
+            "record_sha256": "8a4bd32c388e7d879d20392202ca1c88c4b00a453e966f5fe8282fcd6253c686"
+          },
+          {
+            "record_index": 15074,
+            "identifier": "NGC 4889",
+            "morphology": -4,
+            "redshift": 0.021671656519174576,
+            "record_sha256": "ae9f0a949515198f5f815c993a03532647003150d766bd9f0627b385d2642b6a"
+          }
+        ],
+        "scope": "Read-only exact original records, only decoded fields and hashes retained"
+      }
+    },
+    "temperature_store": {
+      "address": "0x55e7ba",
+      "operation": "FSTP Extended [EBP-0x48]",
+      "bytes_inclusive": "0x55e7ba..0x55e7bc",
+      "evidence_id": "ev_d5954dc2625766e409a1c9bf81f57bf4b4ed697bf7e91c5ecb8b26dd8f7a6fca",
+      "interpretation": "The original keeps a10-byte Extended temperature. Number return is an explicit80->64-bit adaptation, not a missing Single store."
+    },
+    "per_sample_unit_division": {
+      "constant": "Extended1e-8 at0x55e320",
+      "instructions": [
+        "0x55e202 FLD Extended literal;0x55e208 FDIVP",
+        "0x55e268 FLD Extended literal;0x55e26e FDIVP"
+      ],
+      "evidence_id": "ev_1936b2791fb5b8a407a2b166e4af442995647a59315e42bc56b444c1ee7e7ba4",
+      "meaning": "Divide each Planck output by1e-8 before storing/normalizing; retained even though normalization removes its mathematical scale."
+    },
+    "shared_config_interval": {
+      "caller": "0x55e7cb..0x55e7e4",
+      "inputs": "General record+0x2520 minimum and+0x2524 maximum, both Single; same original spectral configuration supplies Go.",
+      "argument_mapping": "First push minimum is constructor stack+0x2c; second push maximum at+0x20; lastIndex600 gives601 samples.",
+      "adapter": "prepareExtendedGalaxyChannels requires requested Single interval equal continuum interval; the rounded600-channel grid may still extend beyond it for unaligned bounds, causing explicit extension-range if auxiliary sampling is needed."
+    }
+  },
+  "object_selection": {
+    "scope": "Pure supplied-native-scene nearest search and arbitration only. Not connected to the magnitude-limited web display; full native scene/filtering and GDI slit throughput remain required.",
+    "procedures": [
+      {
+        "analyst_label": "nearest-star",
+        "address": "0x599f1c",
+        "ranges": [
+          {
+            "start": "0x599f1c",
+            "end": "0x59a00e"
+          }
+        ],
+        "evidence_id": "ev_e3f9732e9f9a396ebaa567660945d24eaa7ce26fc7cf7500bff734cd7801ac4d"
+      },
+      {
+        "analyst_label": "nearest-galaxy",
+        "address": "0x59a010",
+        "ranges": [
+          {
+            "start": "0x59a010",
+            "end": "0x59a0f9"
+          }
+        ],
+        "evidence_id": "ev_7a1b2daf5e6f1e9c11a1c971e9b23074d78134bb3484223f969a41e18aa96fbd"
+      },
+      {
+        "analyst_label": "selection-arbitration",
+        "address": "0x59a0fc",
+        "ranges": [
+          {
+            "start": "0x59a0fc",
+            "end": "0x59a2d1"
+          }
+        ],
+        "evidence_id": "ev_c04a8b59af24dfc34e0da0ddcedb20abfc750db3789f17308747362ed9dea861"
+      },
+      {
+        "analyst_label": "slit-selection-adapter",
+        "address": "0x53ce8c",
+        "ranges": [
+          {
+            "start": "0x53ce8c",
+            "end": "0x53cf90"
+          }
+        ],
+        "evidence_id": "ev_c66c60dae6c485c1c61c3e1d7e01ff578eb7b4bf6c6161c57ea938e423026b93"
+      },
+      {
+        "analyst_label": "selection-projection-initialize",
+        "address": "0x5949c8",
+        "ranges": [
+          {
+            "start": "0x5949c8",
+            "end": "0x594a3e"
+          }
+        ],
+        "evidence_id": "ev_f5d6987fa2da02aaa0eed43ea99b1795f31e98f998ef26e5d7937a6f48b634aa"
+      },
+      {
+        "analyst_label": "scene-coordinate-stores",
+        "address": "0x53ca7c",
+        "ranges": [
+          {
+            "start": "0x53ca7c",
+            "end": "0x53caeb"
+          }
+        ],
+        "evidence_id": "ev_fb922f1370290324281d4e1070f7b7c9ddcd4dc27f106a40de82e226178ae746"
+      }
+    ],
+    "vmt": {
+      "class": "GSCFieldObj",
+      "base": "0x594d4c",
+      "first_slot": "0x599f1c",
+      "second_slot": "0x59a010",
+      "read_evidence_id": "ev_b758de2634a10c95244ce53aec8da1b92edb39276b179a078d7e5bdcae2acc29",
+      "compact_subclass_table_evidence_id": "ev_2158036776b04d6421f14fe6994e59f5fb4b0eacdae57831d4e5b37bc9839fab",
+      "limitation": "Static analyst resolution of indirect calls; Ghidra still reports calls0x59a11f and0x59a132 as unresolved. No claim that its call graph resolved them.",
+      "compact_subclass_base": "0x594db4"
+    },
+    "nearest": "Both searches begin at Extended350 pixels, only strictly smaller Euclidean square/add/sqrt distance wins. Equal distances preserve original collection order. First collection includes stellar/QSO-type records; star is its shorthand API label. Original activation passes its filter flagfalse.",
+    "coordinates": "Supplied integer signed32-bit native query and Double scene coordinates. First collection Double x/y at record+0x47/+0x4f; galaxies at+0x45/+0x4d. Do not use SVG700 view coordinates or navigation targetCentered tolerance as an original slit scene.",
+    "radius": "major diameter Single;0 becomes Extended0.5 arcmin. max(3,round(major*(verticalPixelsPerDegree/60)/2)). Projection initializer0x5949c8 stores height/field at projection+0x32=observatory+0x41c4b7. Nearest-even is an explicit browser policy, not observed original FPU CW.",
+    "arbitration": "Galaxy closer than stellar candidate: select only if galaxyDistance<radius, otherwise none. Stellar candidate closer/equal: select it if galaxyDistance>=radius; for an overlap, original evaluates star then galaxy throughput and selects galaxy iff STAR throughput==0. Unknown throughput returns throughput-required.",
+    "constants": {
+      "zero": {
+        "address": "0x59a2d4",
+        "Single": 0
+      },
+      "arcminutes_per_degree": {
+        "address": "0x59a2d8",
+        "Single": 60
+      },
+      "diameter_to_radius": {
+        "address": "0x59a2dc",
+        "Single": 2
+      },
+      "read_evidence_id": "ev_083774185c1d2e42d4f97a872bafebd89757b659e01a0b772e25bbfc58b739b7",
+      "sentinel_instruction_evidence_id": "ev_a3549c3e0bab3bab6bd3227ab48b645e97353d2f6cf29cbe577747ed9ac7d6c3"
+    },
+    "new_guards": "Dense scenes<=200000 entries; finite coordinates; bounded nonempty identifier; signed int32 integer query; nonnegative finite Single diameter; positive finite supplied vertical scale; nonfinite arithmetic and unsafe/int32 radius throw. Copied/frozen candidates; no unsupported instrument-specific throughput is guessed.",
+    "evidence_binding_policy": {
+      "canonical_for_current_selector": {
+        "0x599f1c": "ev_e3f9732e9f9a396ebaa567660945d24eaa7ce26fc7cf7500bff734cd7801ac4d",
+        "0x59a010": "ev_7a1b2daf5e6f1e9c11a1c971e9b23074d78134bb3484223f969a41e18aa96fbd",
+        "0x59a0fc": "ev_c04a8b59af24dfc34e0da0ddcedb20abfc750db3789f17308747362ed9dea861",
+        "0x53ce8c": "ev_c66c60dae6c485c1c61c3e1d7e01ff578eb7b4bf6c6161c57ea938e423026b93",
+        "0x5949c8": "ev_f5d6987fa2da02aaa0eed43ea99b1795f31e98f998ef26e5d7937a6f48b634aa",
+        "0x53ca7c": "ev_fb922f1370290324281d4e1070f7b7c9ddcd4dc27f106a40de82e226178ae746"
+      },
+      "historical_inventory": "contracts retains prior observations of the same immutable target/procedure; distinct REA IDs identify distinct analysis profiles/runs, not different executable bytes. Use the current selector bindings here for strict/tie and throughput branches.",
+      "target_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    "native_scene_boundary": "createNativeSelectionScene requires raw sky positions and explicit native width/height/field/center, projects them internally, derives the vertical scale, freezes the result and brands it with a private Symbol. selectCatalogObject accepts only that scene, and rejects unbranded runtime input. A nonempty provenance and complete-field population attestation are required; limited/unknown populations are rejected. The attestation is a caller assertion, not proof that the original catalog or detector frame was reconstructed. SVG x/y arrays cannot structurally enter the selector."
+  },
+  "source_preparation_ui": {
+    "route": "#spectrometer",
+    "targets": [
+      "NGC3034",
+      "NGC4874",
+      "NGC4889"
+    ],
+    "scope": "New web navigation and source-shape preview, not original VCL lifecycle or acquisition. Target preview matches3 verified catalog metadata records, with fixed3700..4700 compiled fallback interval and explicit default web seed1. Navigation centering is not object/slit selection.",
+    "matching_evidence": "Original GLXYSP.LST includesNGC3034.SP andNGC4889.SP; noNGC4874 match, hence GLXYTMPL.SP fallback. Existing reference paths and hashes retained.",
+    "fallback_source": {
+      "url": "/original/spectra/GLXYTMPL.SP",
+      "bytes": 56967,
+      "sha256": "05602de89d005ddd5ea1bdd97f50b6519e1a17e222dc855930208792ac679cc5",
+      "derived_from": "Existing locally authorized data/original/GLXYTMPL.SP, byte-identical copy for loopback serving only."
+    },
+    "loader": "Shared src/io/spectrumFiles.ts: fixed /original/ paths; declared Content-Length preflight and streamed byte cap before assembly/hash; common MAX_FILE_BYTES; SHA256 then strictUTF8 and library parser. Matched spectra reuse the already verified reference samples; an8-entry completed-library content-hash LRU serves later requests. Uploaded observations keep a separate normalized parser and File.size bound before reading; they never enter the library cache. Current/target/abort guards remain at consumers.",
+    "product_boundary": "Acquisition remains disabled with an explanation; graph has600 source-shape channels, not photon counts, noise, elapsed exposure or measurement record.",
+    "accessibility": "Route changes focus the visible h1; active header buttons use aria-current. Mobile chart labels have a measured >=9.5px bounding-box height in the390px flow, and plot strokes do not shrink with viewBox scaling.",
+    "seed_input": "Decimal digits only,1..10 digits plus uint32 bound; no hex/binary/octal/exponent/decimal-point forms. The displayed preview text is an unambiguous decimal seed."
+  },
+  "galaxy_instrument_magnitude": {
+    "scope": "Supplied nonzero minor-axis branch, including original zero-major ->Extended0.5. Pure core, not used by UI acquisition. Zero minor still gated.",
+    "procedure": {
+      "address": "0x55ea94",
+      "ranges": [
+        {
+          "start": "0x55ea94",
+          "end": "0x55eb49"
+        }
+      ],
+      "evidence_id": "ev_6b902fedf33c7a686734d949b039e58d1d0b05591b20491bef7b113a1cff9e6a"
+    },
+    "implemented_range": "0x55eabd..0x55eacb zero-major substitution, 0x55eafb..0x55eb49 arithmetic and Extended return; zero-minor fallback excluded",
+    "formula": "Single apparent magnitude +2.5*log10(Extended pi*major*minor/4). Single zero major uses local Extended0.5; zero minor uses local major*axisRatioFallback(original record).",
+    "implemented_formula": "Single input conversion; prepared major=major===0 ?0.5:major; apparentMagnitude+2.5*log10(((NumberProjectionOfOriginalPi*preparedMajor)*minor)/4)",
+    "constant_evidence_id": "ev_b0797f030d7a42849918910ead9141f5b9bb8ab003c62c3fd6a69222328008ee",
+    "constants": {
+      "pi_address": "0x55eb50",
+      "pi_format": "Extended80",
+      "pi_exact_decimal": "3.14159265358979323851280895940618620443274267017841339111328125",
+      "pi_Number": 3.141592653589793,
+      "area_divisor_address": "0x55eb5c",
+      "area_divisor_Single": 4,
+      "log_multiplier_address": "0x55eb60",
+      "log_multiplier_Single": 2.5
+    },
+    "units": "Axes in arcminutes, ellipse area in arcmin^2. The formula has a mean surface-brightness form, mag/arcmin^2; interpreting the historical instrument calibration as a calibrated physical photon rate is not justified.",
+    "new_guards": "Reject raw nonfinite or negative axes, Single overflow and positive-to-zero underflow; original zero major becomes0.5, zero minor reports axis-fallback-required. Final positivity/finiteness guards are defensive and unreachable for the current validated finite-Single positive domain, not evidence about x87 overflow.",
+    "unimplemented_fallback": "Zero minor ->prepared major*axisRatioFallback(original record). Morphology/Frac(1000*DoubleRA) and its Number precision boundary remain gated.",
+    "validation": "Decimal80 mathematical vectors,3 required original catalog indices/fileSHA/recordSHA/Single offsets. Tolerances compare mathematical outputs, not a claim to distinguish every reassociation or emulate x87 intermediate rounding. Operation order is tied to assembly. Synthetic supplied photon inputs are not observations.",
+    "external_review_status": "Native /code-review by route completed with Opus5.5/high on the preceding immutable snapshot (26 Read/Glob/Grep calls, no source pasted); findings independently resolved in research analysis/magnitude-recovery/claude-findings-resolution.json. Follow-up changes locally tested, no automatic original-runtime or external reapproval claim. Separate security review remains denied before execution.",
+    "target_sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "evidence_binding_policy": "Selected canonical body is selection-full/galaxy-source-magnitude ev_6b902fedf33c7a686734d949b039e58d1d0b05591b20491bef7b113a1cff9e6a; the earlier ev_540da7 entry is another static run of the same immutable target, retained historically. Ranges are confirmed from assembly, not pseudocode x87 stack variables.",
+    "result_storage": {
+      "area": "0x55eb13 FSTP Extended [ESP+0x30]",
+      "logTerm": "0x55eb31 FSTP Extended [ESP+0x40]",
+      "corrected": "0x55eb3d FSTP Extended [ESP]",
+      "return": "0x55eb41 FLD Extended [ESP], epilogue, RET0x55eb49; caller narrowing remains a separate integration boundary"
+    },
+    "catalog_field_verification": {
+      "source_sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "record_bytes": 59,
+      "checks": [
+        {
+          "index": 9497,
+          "identifier": "NGC 3034",
+          "record_sha256": "6633088b12fc1224f6e8ef7691c4fa9082bdd4033ad59bfad013740c9b2e19ef",
+          "fields_verified": [
+            "major+0x10 Single",
+            "minor+0x14 Single",
+            "magnitude+0x18 Single"
+          ]
+        },
+        {
+          "index": 15036,
+          "identifier": "NGC 4874",
+          "record_sha256": "8a4bd32c388e7d879d20392202ca1c88c4b00a453e966f5fe8282fcd6253c686",
+          "fields_verified": [
+            "major+0x10 Single",
+            "minor+0x14 Single",
+            "magnitude+0x18 Single"
+          ]
+        },
+        {
+          "index": 15074,
+          "identifier": "NGC 4889",
+          "record_sha256": "ae9f0a949515198f5f815c993a03532647003150d766bd9f0627b385d2642b6a",
+          "fields_verified": [
+            "major+0x10 Single",
+            "minor+0x14 Single",
+            "magnitude+0x18 Single"
+          ]
+        }
+      ],
+      "fieldOffsets": {
+        "majorArcminutes": {
+          "offset": "0x10",
+          "format": "Single little-endian"
+        },
+        "minorArcminutes": {
+          "offset": "0x14",
+          "format": "Single little-endian"
+        },
+        "apparentMagnitude": {
+          "offset": "0x18",
+          "format": "Single little-endian"
+        }
+      },
+      "reader": "0x598acc"
+    }
+  },
+  "post_conversion_detector_raster": {
+    "scope": "bounded pure RGB primitives; no complete scene or acquisition assertion",
+    "targetSha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bindings": [
+      {
+        "label": "canvas-copy-rect",
+        "responseFile": "analysis/rea-ghidra-scene-pixel-results/canvas-copy-rect.json",
+        "sha256": "44bd96d07ff1daea0b00b0cc79fa2398a11a25bb26793f3ace705d57d4298800",
+        "evidenceId": "ev_1408b4c051ceb23e085ec8e5bcde9bab1a4ff8cfea058bd46923d4453991cdcb",
+        "requestedProcedure": "0x42c7e0",
+        "resolvedProcedure": "0x42c7e0",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42c7e0",
+              "end": "0x42c85f"
+            }
+          ],
+          "total_bytes": 128,
+          "span_bytes": 128,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "slit-final-image-read",
+        "responseFile": "analysis/rea-ghidra-scene-pixel-results/slit-final-image-read.json",
+        "sha256": "04b8a47860453023ae54f0bba3972d5bb3da83f1d644f83d0221691f94fdbe59",
+        "evidenceId": "ev_c4db2966cacda73b964ca2b985194e6f85e161fcc3c344814fb94f0a7356c14d",
+        "requestedProcedure": "0x53e338",
+        "resolvedProcedure": "0x53e338",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x53e338",
+              "end": "0x53e440"
+            }
+          ],
+          "total_bytes": 265,
+          "span_bytes": 265,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "star-stamp-draw",
+        "responseFile": "analysis/rea-ghidra-scene-pixel-results/star-stamp-draw.json",
+        "sha256": "3d3e180d87226acecf23b8d982c783ed71f2d6433473a25190fc25ce3560ba65",
+        "evidenceId": "ev_033d21c1c1b33e8d80c29c5dd9e8c67db55f063ba00efc7ade4987cc29a8aa93",
+        "requestedProcedure": "0x59417c",
+        "resolvedProcedure": "0x59417c",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x59417c",
+              "end": "0x59422a"
+            }
+          ],
+          "total_bytes": 175,
+          "span_bytes": 175,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "star-profile-build",
+        "responseFile": "analysis/rea-ghidra-scene-pixel-results/star-profile-build.json",
+        "sha256": "745c741100334ddae21d9c042a2c6319bb07a0029c653fdf493e026b9e3673c6",
+        "evidenceId": "ev_55cc886b414ac3b4e98ab6c4ebee47c88e87389f18127bc54353bd28838fdc94",
+        "requestedProcedure": "0x594018",
+        "resolvedProcedure": "0x594018",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x594018",
+              "end": "0x59417a"
+            }
+          ],
+          "total_bytes": 355,
+          "span_bytes": 355,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "photographic-position-draw",
+        "responseFile": "analysis/rea-ghidra-scene-pixel-results/photographic-position-draw.json",
+        "sha256": "42bf86bb6908259baf643c398e19f7ca279952ce7ad001efa22830a8d7a9b5af",
+        "evidenceId": "ev_498ae4a9f09a6e3d388d2694734c2635cee7af5f953e4daf89a37cbc2d83bc40",
+        "requestedProcedure": "0x597470",
+        "resolvedProcedure": "0x597470",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x597470",
+              "end": "0x5974be"
+            }
+          ],
+          "total_bytes": 79,
+          "span_bytes": 79,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "telescope-scene-setup",
+        "responseFile": "analysis/rea-ghidra-scene-pixel-results/telescope-scene-setup.json",
+        "sha256": "4c1381e7e6d528896b208bad359242e07d8de818b3917594d5ba549046b814c5",
+        "evidenceId": "ev_7595aa1e566349f08bb50711b5ae529182f37d6d9220b9d66f742edff29d872d",
+        "requestedProcedure": "0x538420",
+        "resolvedProcedure": "0x538420",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x538420",
+              "end": "0x53848a"
+            }
+          ],
+          "total_bytes": 107,
+          "span_bytes": 107,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "canvas-getpixel-wrapper",
+        "responseFile": "analysis/rea-ghidra-scene-pixel-results/canvas-getpixel-wrapper.json",
+        "sha256": "846e2f56f231ae9cf9db1e0b4ed8720262d5e191567747322d859ad8d4e7b2c3",
+        "evidenceId": "ev_9f258dbedaa31266af346002af2999d707c745777173870c76c8b0f0b64de188",
+        "requestedProcedure": "0x42cea8",
+        "resolvedProcedure": "0x42cea8",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x42cea8",
+              "end": "0x42cecd"
+            }
+          ],
+          "total_bytes": 38,
+          "span_bytes": 38,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      }
+    ],
+    "fresh_crop": "prior sky-render0x53a810..0x53a83d and finalcopy0x53a880..0x53a8d8; actualnativeanchorsrequired; explicitnearest-evenNumber",
+    "source_regions": "CopyRectexclusiveedges;galaxycompositor0x594808inclusiveedges;sourceholesrejected",
+    "units": "nativepost-conversionRGBpixels,notSVGcoordinatesorcalibratedflux",
+    "bitmapAudit": {
+      "source": "Images/Galaxies/m82.bmp",
+      "sha256": "d7546c01ee84e788bbecdf15dc3f73568a5427143ccef488063536c48c7bc23a",
+      "bytes": 78000,
+      "width": 376,
+      "height": 205,
+      "bpp": 8,
+      "compression": "BI_RGB",
+      "paletteEntries": 216,
+      "palette": "216 descending grays215..0; indices are NOT direct intensity values",
+      "stride": 376,
+      "trailingBytes": 2,
+      "decodedRGBSha256": "d66430fd8aa5b4567a8ba816cbad528cbbb354548518c7fc280bea16dbf65229",
+      "independentCheck": "manual BMP palette/index/bottom-up expansion equals ImageMagick8bit RGB for every pixel; no scale/color transform/nativeCLEAexecution",
+      "metadataLine": "M82,3034,8.4,9.93,69.68333333,M82.BMP,376,205,188,103",
+      "calibration": "Raw resource pixels only. Not the rendered detector, slit image or permission to substitute navigationPNG into acquisition."
+    },
+    "documentation": "docs/DETECTOR-STATIC-CONTRACTS.md",
+    "officialSources": [
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-stretchblt",
+        "resolves": "rectangle transfer/currentstretchmode,notexactdeleted-pixelphase"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-setstretchbltmode",
+        "resolves": "COLORONCOLORdeletionvsHALFTONEapproximateblockmapping;notnumericfilterkernel"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-getpixel",
+        "resolves": "RGBandCLR_INVALIDoutsidecurrentclippingregion"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader",
+        "resolves": "DIBorientation,stride,paletteformat"
+      },
+      {
+        "url": "https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-rgbquad",
+        "resolves": "BGRpalettebytes"
+      }
+    ],
+    "remaining": [
+      "completecatalogpopulation/filtering",
+      "fourstarbaseprofilesandcaller/configbinding(candidate0x593df8Gaussianplusaxis-spiketerms)",
+      "native syntheticstampresampling/rotation",
+      "photographic preparation/transparency/devicepalette",
+      "pointing/cache/crop-reuse context",
+      "exactremainingStretchBltdeletedpixelphase/HALFTONEkernelunderactualnativeformats",
+      "originalFPUprecision/exceptionpolicy"
+    ]
+  },
+  "hubble_velocity": {
+    "scope": "N05boundedanalysisofsavedSinglezrecords,newderivedtable/practiceUI,separateCSV; nodistances/regression/observations",
+    "targetSha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bindings": [
+      {
+        "label": "hubble-results-ok",
+        "responseFile": "analysis/rea-ghidra-scene-results-results/hubble-results-ok.json",
+        "sha256": "81347dfba5c92af5bbafd1e8d5a84cb03102a85d8592ea5e57e4c347b5588b7c",
+        "evidenceId": "ev_80e7460e68cd895c13ec1d7712b46d53c99e1d80ce3b4a72e8c9db032d5a752c",
+        "requestedProcedure": "0x54b02c",
+        "resolvedProcedure": "0x54b02c",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x54b02c",
+              "end": "0x54b1ab"
+            },
+            {
+              "start": "0x54b1f7",
+              "end": "0x54b21c"
+            }
+          ],
+          "total_bytes": 422,
+          "span_bytes": 497,
+          "non_contiguous": true,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "hubble-results-activate",
+        "responseFile": "analysis/rea-ghidra-scene-results-results/hubble-results-activate.json",
+        "sha256": "0be0a3d4e761488e3c9e59e5eb48f326aae4b8b65e1815c9bd00f3de713b085b",
+        "evidenceId": "ev_a9604ac31bf7589cf4d0d466b5bfdd6ea927244d90be871f267f9ba4cf1a0bd1",
+        "requestedProcedure": "0x54a91c",
+        "resolvedProcedure": "0x54a91c",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x54a91c",
+              "end": "0x54afc6"
+            }
+          ],
+          "total_bytes": 1707,
+          "span_bytes": 1707,
+          "non_contiguous": false,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "lss-results-ok",
+        "responseFile": "analysis/rea-ghidra-scene-results-results/lss-results-ok.json",
+        "sha256": "b9dd6eebe454ee641b1069a806a74bc018910c201fa1e242a159a21dd92e4834",
+        "evidenceId": "ev_12ef0ced8134040154665b792cc2e35a43379fbb9ad6aa8bff3c17ca8a46478d",
+        "requestedProcedure": "0x57cd80",
+        "resolvedProcedure": "0x57cd80",
+        "body": {
+          "available": true,
+          "provenance": "ghidra-function-body-address-set",
+          "ranges": [
+            {
+              "start": "0x57cd80",
+              "end": "0x57ce76"
+            },
+            {
+              "start": "0x57ce95",
+              "end": "0x57cf21"
+            },
+            {
+              "start": "0x57cf6d",
+              "end": "0x57cf92"
+            }
+          ],
+          "total_bytes": 426,
+          "span_bytes": 531,
+          "non_contiguous": true,
+          "contains_entry": true
+        },
+        "isError": false
+      },
+      {
+        "label": "velocity-autofill-c-constant",
+        "responseFile": "analysis/rea-ghidra-scene-results-results/velocity-autofill-c-constant.json",
+        "sha256": "0e03e83e39b8e4e40c228f06814da4282109ccfef294415ef04ccd81c314f602",
+        "evidenceId": "ev_66537c3d05941fc9182d7d94fc286e7a963c2ec1c19869f4291fdc84309bb4d9",
+        "requestedProcedure": null,
+        "resolvedProcedure": null,
+        "body": null,
+        "isError": false
+      },
+      {
+        "label": "velocity-check-c-tolerance-constants",
+        "responseFile": "analysis/rea-ghidra-scene-results-results/velocity-check-c-tolerance-constants.json",
+        "sha256": "83b76f500654819e6fc3f5f89fd01a148ceccc66e775c93dac19c87996fc7ddc",
+        "evidenceId": "ev_767c6de3e6e9b15563ae7ba408300a7543b3c84c93679223072a8672fa12e437",
+        "requestedProcedure": null,
+        "resolvedProcedure": null,
+        "body": null,
+        "isError": false
+      },
+      {
+        "label": "velocity-unit-strings",
+        "responseFile": "analysis/rea-ghidra-scene-results-results/velocity-unit-strings.json",
+        "sha256": "ea13aa5e8afad07f8294c85696500c653a569e5f4cebca18b5c92fb8f74aa71a",
+        "evidenceId": "ev_df5ed86427eae3806c99aa145757408f964782aac689d1fbd809f93b4236592d",
+        "requestedProcedure": null,
+        "resolvedProcedure": null,
+        "body": null,
+        "isError": false
+      }
+    ],
+    "formula": "reference=Extendedc\u00d7recordSinglez; autofillstoresSingle; enteredanswerSinglecomparedtounroundedreference",
+    "units": "km/s,originalexportstrings0x5471f0/0x547aa8",
+    "vectors": "data/hubble/hubble-velocity-vectors.json",
+    "numericalPolicy": "NumberprojectionofExtendedconstants,Singleinput/output; nonequivalencetooriginalx87. Zerodenominatorandnear1%boundarygated; existingz>-1adapterdomain.",
+    "documentation": "docs/HUBBLE-VELOCITY.md",
+    "externalReview": "Native/code-reviewbyprojectpathdeniedbeforeprocesscreation;1attempt,0retries. Noexternalfindings/model/auditfornewincrement. Localcheckscontinued. Separatelydeniedsecurityreviewalsoremainsunexecuted/pending."
+  }
+}

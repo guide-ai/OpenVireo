@@ -1,0 +1,69 @@
+{
+  "id": "photometer-aperture-v8",
+  "original": {
+    "file": "CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bytes": 2288128,
+    "archiveSHA256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b"
+  },
+  "form": {
+    "offset": 2157372,
+    "bytes": 1693,
+    "sha256": "f320e52144263bd948e2498f9a577c477e85392b78bf1eb7a9dd79316bf913db",
+    "nativeMinimum": 5,
+    "nativeMaximum": 150,
+    "default": 10
+  },
+  "procedures": [
+    {
+      "address": "0x5404b0..0x5404dc",
+      "contract": "radiusDegrees=(selector+Single(0.5))/(936/.05)"
+    },
+    {
+      "address": "0x500acc..0x500b14",
+      "contract": "areaFactor=(selector+.5)^2/10.5^2"
+    },
+    {
+      "address": "0x500b14..0x500b58",
+      "contract": "skyMagnitude=referenceSkyMagnitude+(-2.5*log10(areaFactor))"
+    },
+    {
+      "address": "0x501831..0x50186d",
+      "contract": "measured sky reference rate=meanCountRate/areaFactor; object reduction multiplies by current areaFactor"
+    },
+    {
+      "address": "0x4fee7c..0x4fef68",
+      "contract": "Show stores old selector; Default=10; Change updates radius and diameter=radius*120 arcmin; Cancel restores old selector"
+    }
+  ],
+  "scope": {
+    "selectors": [
+      5,
+      10,
+      15
+    ],
+    "telescope": 0,
+    "targetCount": 16,
+    "filters": [
+      "U",
+      "B",
+      "V"
+    ],
+    "seeingWidthDegrees": 0.0004166666666666667,
+    "completeFieldDegrees": 0.05,
+    "nativeCachedPixels": 936
+  },
+  "browserPolicy": "Explicit Apply/Cancel modal; changes allowed only when stopped and clear current/partial reading but retain measured skies and all prior readings/notebook. Modal drafts are discarded on navigation/save/replacement. Three checked sizes are a bounded subset of original5..150. No-op Apply emits no event. Optional apertureSelector absent means10 for legacy states/readings. New history requires minimal owner8.",
+  "numericalPolicy": "JavaScript Number/Math; existing recovered table interpolation, ordered source+sky draws. No x87/native runtime equivalence.",
+  "rights": {
+    "License.rtf": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+    "Copyright.txt": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+    "status": "local research only; no public redistribution authorized"
+  },
+  "research": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-aperture-recovery; existing photometer-acquisition-recovery and photometer-ubv-recovery",
+  "help": {
+    "file": "PHOTOHLP.TXT",
+    "sha256": "aaf7f6827f418cf1aa1e2da70185b96ecf96ffd919899d84547a8695afa42d8a",
+    "contract": "Set Aperture Size: measured sky automatically scales when aperture changes"
+  }
+}

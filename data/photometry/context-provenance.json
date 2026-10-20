@@ -1,0 +1,1455 @@
+{
+  "binarySha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sourceArchiveSha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+  "captures": [
+    {
+      "id": "PHOTO-CONTEXT-01",
+      "file": "create.asm",
+      "start": "0x4ff4f0",
+      "endExclusive": "0x4ff64c",
+      "byteRangeSha256": "c9e17232962354e5a6267334a482e4a49bb9a01599914b8e8fd7b377d1f33822",
+      "listingSha256": "734603a089b7a02e8acc20123f1639a3fc589298e78052ffe83c8ac93d39ff58",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-02",
+      "file": "show.asm",
+      "start": "0x4ff674",
+      "endExclusive": "0x4ff8b0",
+      "byteRangeSha256": "c490935e3c5bf86270ec541095544a2566935e3758cbc49c50fe539fd3b5a2bc",
+      "listingSha256": "be58d164f559a4b22aa669854ee5eeed2f8baf259e9ebe52b6eec6a6f4d7db62",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-03",
+      "file": "activate-context.asm",
+      "start": "0x4ff8b0",
+      "endExclusive": "0x4fffd4",
+      "byteRangeSha256": "9c84c0b2ac33e455b7357da36e242663ffba1b697db2971061b6f42fe8f71b6c",
+      "listingSha256": "11d7a0d19ce8fc5c58707ef9945d1ea8f2c045777bfd7aed6eb9dba42d94f125",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-04",
+      "file": "sky-magnitude.asm",
+      "start": "0x500b14",
+      "endExclusive": "0x500b58",
+      "byteRangeSha256": "c5cce9d6ba61018300c00f4f73c9749140fe01e11f9e37fae6863300aa9b1fa2",
+      "listingSha256": "e5306b202a1849d0eb1000e1403bdd8f6ca4810a4c42db543850069ea3f2e091",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-05",
+      "file": "controls.asm",
+      "start": "0x501e04",
+      "endExclusive": "0x501e74",
+      "byteRangeSha256": "c861243bfa82f656b86623a9e5172c52e03bdcafe7621bee324230abdd944ded",
+      "listingSha256": "68ebda798573c95e3cd081a479ef846001569ecb9db139349812a3396d0fea10",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-06",
+      "file": "aperture-mode.asm",
+      "start": "0x502194",
+      "endExclusive": "0x502240",
+      "byteRangeSha256": "33bffbdc171d855e556bf1bf2756cc169dc817d34284cd62938034e8fe53a5a4",
+      "listingSha256": "e92fd30209ee4b06ca6f6d05abb1c8ce6903977d1804024f902a84b1e854f10c",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-07",
+      "file": "prepare-display.asm",
+      "start": "0x5019a0",
+      "endExclusive": "0x501b84",
+      "byteRangeSha256": "a26eb24acb591ecc5aec905b6fb0c33cd42771d451a47b0d0865ee6f4e12582d",
+      "listingSha256": "dc81350daf605e48b1d2baf6ac693e996ae48ea255c46ae046b4301665d94e6b",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-08",
+      "file": "defaults-photo.asm",
+      "start": "0x5a2a40",
+      "endExclusive": "0x5a2ac0",
+      "byteRangeSha256": "512d2f24c15c849f04dd99f8cb459e4fbe24cc4055dbf908f99603e609d8ee6b",
+      "listingSha256": "6fcf195233bf38d958f83dbd3667acf565838195e2fdb3cf03f00f6657b89e9e",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-09",
+      "file": "options-photo-read.asm",
+      "start": "0x5a56e0",
+      "endExclusive": "0x5a6068",
+      "byteRangeSha256": "75556683f5516c1ab5c0a6c9f5722280d55454cdd1988a038e0bcc64feb611b4",
+      "listingSha256": "89ca0a7e1a3e2775c0ae7111aa76cfaa3d5f25575c40852739fe3058a82c545b",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-10",
+      "file": "options-photo-write.asm",
+      "start": "0x5a6068",
+      "endExclusive": "0x5a6ccc",
+      "byteRangeSha256": "43ffa09c2f7e3d2afa67011cd86603bcb529d1dc4763d200b57eb995f12f9efc",
+      "listingSha256": "c515612f2c78f42cd9693d21bebf748235b47fd3d1d39dfef6b1b4d8a7e81d0d",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-11",
+      "file": "pleiades-entry.asm",
+      "start": "0x58a278",
+      "endExclusive": "0x58a458",
+      "byteRangeSha256": "312ec226119c374686337888d080eaadb372bc50630245d22647d6cc1c3cda18",
+      "listingSha256": "73e1920308c98420f7ec13f4788da927994ca96a1a74ef85cd975770906c72bb",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-12",
+      "file": "aperture-source.asm",
+      "start": "0x5004c0",
+      "endExclusive": "0x5008b4",
+      "byteRangeSha256": "72c97b8fd1b82164e2e1d839f82e0c3923c6e2fa47949a0d0ff57da989ebd470",
+      "listingSha256": "ee159ebc91ac1be03b1dcd34b33283d0d87d7bab6292e7346d47affdf076f788",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-13",
+      "file": "open-photometer.asm",
+      "start": "0x53f818",
+      "endExclusive": "0x53f934",
+      "byteRangeSha256": "e386e6f9810e9da2075fd1f9ffbe77d714fb431e57ed4c26c8b3763e03c07fb2",
+      "listingSha256": "5048581445334fe64690eb4ab4af920c89b140f7a3c108b0c6013d1e4141ae8e",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-14",
+      "file": "telescope-calibration.asm",
+      "start": "0x53df24",
+      "endExclusive": "0x53df7b",
+      "byteRangeSha256": "b3fc536baeb88a242e3ed71b9419dc54b231b264323b19343c39293741302afc",
+      "listingSha256": "d8fde07c4ce9e1358bd6c0b7cf169e4c925b6e7b31658fe8bad747f8fbdfa372",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-15",
+      "file": "close-photometer.asm",
+      "start": "0x500488",
+      "endExclusive": "0x5004c0",
+      "byteRangeSha256": "c2706ce928245a2493798eb12729da5be1c322c663a7f03504ab943e2585e90a",
+      "listingSha256": "583342bd8d7d51f73535f484770bd838f0712bca481cc9dd6471df7ee0a3c32b",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-16",
+      "file": "filter-reset.asm",
+      "start": "0x50052c",
+      "endExclusive": "0x500566",
+      "byteRangeSha256": "f1d7c89e45d2983df4c6f299f1a372d481f6396e54e6bdee8eec13b7fc952375",
+      "listingSha256": "559241fa45b89d2e7a523264744c3ec9cb766e39ebab43613bfceb234ffa6d9d",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-17",
+      "file": "timer-normalization.asm",
+      "start": "0x5009fa",
+      "endExclusive": "0x500a59",
+      "byteRangeSha256": "8ad23dc37dd8c5738f807717056cc9b6eb939fdbbbe887828e170d31b959408a",
+      "listingSha256": "332e933015e963ae028b8ed29e8fb1c25143e258f02186c570779f68ea02996f",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-18",
+      "file": "timer-draws.asm",
+      "start": "0x5014e4",
+      "endExclusive": "0x5015f0",
+      "byteRangeSha256": "b0eb630ac391f24c989e16642c48414f79683de427a9d40c5ca0a0b7e3e29c8f",
+      "listingSha256": "c5bc270e45c212af23453105a846fb360f146e68d45dbaa6f794525c5e3ee74b",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-19",
+      "file": "sky-gate.asm",
+      "start": "0x5008b4",
+      "endExclusive": "0x500945",
+      "byteRangeSha256": "98a38ab5bbd6537ef71e7f8b0a860a77530c31a3ff10e7de2eba3f15258f4c80",
+      "listingSha256": "0e4bb228aff7e061cc71c52fba87b7e0f3c50984e570c194f655fbc745462e8d",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-20",
+      "file": "aperture-dialog.asm",
+      "start": "0x4fee7c",
+      "endExclusive": "0x4fefd4",
+      "byteRangeSha256": "289c29ce7a26deea703373c36c58af5756d56f8899ac3d3b87a435f080c306b8",
+      "listingSha256": "b3da7549ed18fc393127fa1e5bcfb5ce6f7a26169f48ab1dceb1a918ad587607",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    },
+    {
+      "id": "PHOTO-CONTEXT-21",
+      "file": "aperture-geometry.asm",
+      "start": "0x5404b0",
+      "endExclusive": "0x540638",
+      "byteRangeSha256": "b411d84f5ed28329dc5cde4b9ced0b2942eb639194e0cccd6927e8f8b92fcd6c",
+      "listingSha256": "eccf3f33ca0fef479f508c32565d49cefbed53d3c30b8b7255b8866bf4fc2dbb",
+      "scope": "Bounded static context, may include adjacent procedures/alignment/data. Only cited instructions are interpreted; not execution or instruction-start certification for every byte."
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x500ac8",
+      "bytes": 4,
+      "sha256": "07883481b5c147464597d44401db095d88c2a6b049fbbcd7b278de98a5ceeb71",
+      "meaning": "timer milliseconds per second",
+      "numerator": "1000",
+      "denominator": "1",
+      "value": 1000.0
+    },
+    {
+      "address": "0x500b54",
+      "bytes": 4,
+      "sha256": "2f90de89a933bd8118953f22550293198c812014b434e29d79bcdea4cb34c56a",
+      "meaning": "aperture sky logarithm multiplier",
+      "numerator": "-5",
+      "denominator": "2",
+      "value": -2.5
+    },
+    {
+      "address": "0x4ff864",
+      "bytes": 4,
+      "sha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+      "meaning": "sky B\u2212V offset",
+      "numerator": "1",
+      "denominator": "1",
+      "value": 1.0
+    },
+    {
+      "address": "0x4ff868",
+      "bytes": 10,
+      "sha256": "785435ea017a4d98571b190cfd6d61108cd6d0e7afbcec017418a3de0464db26",
+      "meaning": "sky U\u2212B offset",
+      "numerator": "12174851088648304067",
+      "denominator": "36893488147419103232",
+      "value": 0.33
+    },
+    {
+      "address": "0x4fffd0",
+      "bytes": 4,
+      "sha256": "409303c5035263c102682239f8d654e7e194daae6235aff347c036576a261d96",
+      "meaning": "source color missing-data threshold",
+      "numerator": "30",
+      "denominator": "1",
+      "value": 30.0
+    },
+    {
+      "address": "0x5b3a40",
+      "bytes": 10,
+      "sha256": "9e3186f308caf4ab481f125fe2749d0563c07ebe773040b2a5433cf916bc06a2",
+      "meaning": "integration table index0",
+      "numerator": "14757395258967641293",
+      "denominator": "147573952589676412928",
+      "value": 0.1
+    },
+    {
+      "address": "0x5b3a4a",
+      "bytes": 10,
+      "sha256": "6bec6c0af730be07628e3696247e30fbd921d3f1e73a126faefae631a037f687",
+      "meaning": "integration table index1",
+      "numerator": "1",
+      "denominator": "1",
+      "value": 1.0
+    },
+    {
+      "address": "0x5b3a54",
+      "bytes": 10,
+      "sha256": "8183c64e867670d7f6c3cada0d8ba4577448c2ad940c00e406ac8783c8b22d42",
+      "meaning": "integration table index2",
+      "numerator": "10",
+      "denominator": "1",
+      "value": 10.0
+    },
+    {
+      "address": "0x5b3a5e",
+      "bytes": 10,
+      "sha256": "e202858d67084cf31a2b94b4546dbbd5662ffc2f6ed54d0e37dacf16fd4d827a",
+      "meaning": "integration table index3",
+      "numerator": "100",
+      "denominator": "1",
+      "value": 100.0
+    }
+  ],
+  "fieldTables": [
+    {
+      "class": "TOptionsDlg",
+      "vmt": "0x5a0a28",
+      "pointerAt": "0x5a09f0",
+      "table": "0x5a0b3e",
+      "bytes": 2164,
+      "sha256": "555b67f2d512fb47ebd6fa4c375d553d0907e3c3b26db5b3294d73473419968d",
+      "fields": [
+        {
+          "name": "OKBtn",
+          "offset": "0x360",
+          "typeIndex": 0
+        },
+        {
+          "name": "CancelBtn",
+          "offset": "0x364",
+          "typeIndex": 0
+        },
+        {
+          "name": "TblNumEd",
+          "offset": "0x368",
+          "typeIndex": 1
+        },
+        {
+          "name": "Label2",
+          "offset": "0x36c",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label3",
+          "offset": "0x370",
+          "typeIndex": 2
+        },
+        {
+          "name": "PWEd",
+          "offset": "0x374",
+          "typeIndex": 1
+        },
+        {
+          "name": "FilesBtn",
+          "offset": "0x378",
+          "typeIndex": 0
+        },
+        {
+          "name": "PageControl1",
+          "offset": "0x37c",
+          "typeIndex": 3
+        },
+        {
+          "name": "GeneralTab",
+          "offset": "0x380",
+          "typeIndex": 4
+        },
+        {
+          "name": "ParmGrp1",
+          "offset": "0x384",
+          "typeIndex": 5
+        },
+        {
+          "name": "SlwTmrLbl",
+          "offset": "0x388",
+          "typeIndex": 2
+        },
+        {
+          "name": "HorzLbl",
+          "offset": "0x38c",
+          "typeIndex": 2
+        },
+        {
+          "name": "FndrFldLbl",
+          "offset": "0x390",
+          "typeIndex": 2
+        },
+        {
+          "name": "InstFldLbl",
+          "offset": "0x394",
+          "typeIndex": 2
+        },
+        {
+          "name": "FldFctrLbl",
+          "offset": "0x398",
+          "typeIndex": 2
+        },
+        {
+          "name": "SlwTmrEd",
+          "offset": "0x39c",
+          "typeIndex": 1
+        },
+        {
+          "name": "HorzEd",
+          "offset": "0x3a0",
+          "typeIndex": 1
+        },
+        {
+          "name": "FndrFldEd",
+          "offset": "0x3a4",
+          "typeIndex": 1
+        },
+        {
+          "name": "InstFldEd",
+          "offset": "0x3a8",
+          "typeIndex": 1
+        },
+        {
+          "name": "FldFctrEd",
+          "offset": "0x3ac",
+          "typeIndex": 1
+        },
+        {
+          "name": "OptsGrp1",
+          "offset": "0x3b0",
+          "typeIndex": 5
+        },
+        {
+          "name": "EditModeBox",
+          "offset": "0x3b4",
+          "typeIndex": 6
+        },
+        {
+          "name": "DemoBox",
+          "offset": "0x3b8",
+          "typeIndex": 6
+        },
+        {
+          "name": "SlewBox",
+          "offset": "0x3bc",
+          "typeIndex": 6
+        },
+        {
+          "name": "FastSlwBox",
+          "offset": "0x3c0",
+          "typeIndex": 6
+        },
+        {
+          "name": "ObjIDBox",
+          "offset": "0x3c4",
+          "typeIndex": 6
+        },
+        {
+          "name": "PhotoTab",
+          "offset": "0x3c8",
+          "typeIndex": 4
+        },
+        {
+          "name": "ParmGrp2",
+          "offset": "0x3cc",
+          "typeIndex": 5
+        },
+        {
+          "name": "OptsGrp2",
+          "offset": "0x3d0",
+          "typeIndex": 5
+        },
+        {
+          "name": "Label7",
+          "offset": "0x3d4",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label8",
+          "offset": "0x3d8",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label9",
+          "offset": "0x3dc",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label10",
+          "offset": "0x3e0",
+          "typeIndex": 2
+        },
+        {
+          "name": "BaseMagEd",
+          "offset": "0x3e4",
+          "typeIndex": 1
+        },
+        {
+          "name": "SkyMagEd",
+          "offset": "0x3e8",
+          "typeIndex": 1
+        },
+        {
+          "name": "BaseCountEd",
+          "offset": "0x3ec",
+          "typeIndex": 1
+        },
+        {
+          "name": "PhoTimerEd",
+          "offset": "0x3f0",
+          "typeIndex": 1
+        },
+        {
+          "name": "CmptMagBox",
+          "offset": "0x3f4",
+          "typeIndex": 6
+        },
+        {
+          "name": "ScopeBtn",
+          "offset": "0x3f8",
+          "typeIndex": 0
+        },
+        {
+          "name": "InclRIBox",
+          "offset": "0x3fc",
+          "typeIndex": 6
+        },
+        {
+          "name": "FastScopeBox",
+          "offset": "0x400",
+          "typeIndex": 6
+        },
+        {
+          "name": "RstrctScpBox",
+          "offset": "0x404",
+          "typeIndex": 6
+        },
+        {
+          "name": "SoundBox",
+          "offset": "0x408",
+          "typeIndex": 6
+        },
+        {
+          "name": "SpecTab",
+          "offset": "0x40c",
+          "typeIndex": 4
+        },
+        {
+          "name": "ParmGrp3",
+          "offset": "0x410",
+          "typeIndex": 5
+        },
+        {
+          "name": "Label5",
+          "offset": "0x414",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label11",
+          "offset": "0x418",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label12",
+          "offset": "0x41c",
+          "typeIndex": 2
+        },
+        {
+          "name": "SpSkyEd",
+          "offset": "0x420",
+          "typeIndex": 1
+        },
+        {
+          "name": "SpBaseEd",
+          "offset": "0x424",
+          "typeIndex": 1
+        },
+        {
+          "name": "SpTimerEd",
+          "offset": "0x428",
+          "typeIndex": 1
+        },
+        {
+          "name": "OptsGrp3",
+          "offset": "0x42c",
+          "typeIndex": 5
+        },
+        {
+          "name": "spMagBox",
+          "offset": "0x430",
+          "typeIndex": 6
+        },
+        {
+          "name": "RadiOptsBtn",
+          "offset": "0x434",
+          "typeIndex": 0
+        },
+        {
+          "name": "FndrMagLbl",
+          "offset": "0x438",
+          "typeIndex": 2
+        },
+        {
+          "name": "FndrMagEd",
+          "offset": "0x43c",
+          "typeIndex": 1
+        },
+        {
+          "name": "CCDTab",
+          "offset": "0x440",
+          "typeIndex": 4
+        },
+        {
+          "name": "ParmGrp4",
+          "offset": "0x444",
+          "typeIndex": 5
+        },
+        {
+          "name": "PxlGrp",
+          "offset": "0x448",
+          "typeIndex": 5
+        },
+        {
+          "name": "WdthLbl",
+          "offset": "0x44c",
+          "typeIndex": 2
+        },
+        {
+          "name": "HtLbl",
+          "offset": "0x450",
+          "typeIndex": 2
+        },
+        {
+          "name": "WdPixEd",
+          "offset": "0x454",
+          "typeIndex": 1
+        },
+        {
+          "name": "HtPixEd",
+          "offset": "0x458",
+          "typeIndex": 1
+        },
+        {
+          "name": "NameGrp",
+          "offset": "0x45c",
+          "typeIndex": 5
+        },
+        {
+          "name": "NameEd",
+          "offset": "0x460",
+          "typeIndex": 1
+        },
+        {
+          "name": "ImgSzGrp",
+          "offset": "0x464",
+          "typeIndex": 5
+        },
+        {
+          "name": "Label1",
+          "offset": "0x468",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label4",
+          "offset": "0x46c",
+          "typeIndex": 2
+        },
+        {
+          "name": "WdthEd",
+          "offset": "0x470",
+          "typeIndex": 1
+        },
+        {
+          "name": "HtEd",
+          "offset": "0x474",
+          "typeIndex": 1
+        },
+        {
+          "name": "RdNoiseLbl",
+          "offset": "0x478",
+          "typeIndex": 2
+        },
+        {
+          "name": "DrkNoiseLbl",
+          "offset": "0x47c",
+          "typeIndex": 2
+        },
+        {
+          "name": "RdNoiseEd",
+          "offset": "0x480",
+          "typeIndex": 1
+        },
+        {
+          "name": "DrkNoiseEd",
+          "offset": "0x484",
+          "typeIndex": 1
+        },
+        {
+          "name": "BiasLbl",
+          "offset": "0x488",
+          "typeIndex": 2
+        },
+        {
+          "name": "BiasEd",
+          "offset": "0x48c",
+          "typeIndex": 1
+        },
+        {
+          "name": "CoolGrp",
+          "offset": "0x490",
+          "typeIndex": 7
+        },
+        {
+          "name": "Label6",
+          "offset": "0x494",
+          "typeIndex": 2
+        },
+        {
+          "name": "CCDMagLbl",
+          "offset": "0x498",
+          "typeIndex": 2
+        },
+        {
+          "name": "CCDCountLbl",
+          "offset": "0x49c",
+          "typeIndex": 2
+        },
+        {
+          "name": "CCDTimeLbl",
+          "offset": "0x4a0",
+          "typeIndex": 2
+        },
+        {
+          "name": "CCDMagEd",
+          "offset": "0x4a4",
+          "typeIndex": 1
+        },
+        {
+          "name": "CCDCountEd",
+          "offset": "0x4a8",
+          "typeIndex": 1
+        },
+        {
+          "name": "CCDTimeEd",
+          "offset": "0x4ac",
+          "typeIndex": 1
+        },
+        {
+          "name": "NoiseBox1",
+          "offset": "0x4b0",
+          "typeIndex": 6
+        },
+        {
+          "name": "TestBox1",
+          "offset": "0x4b4",
+          "typeIndex": 6
+        },
+        {
+          "name": "ADSpinBtn",
+          "offset": "0x4b8",
+          "typeIndex": 8
+        },
+        {
+          "name": "WellLbl",
+          "offset": "0x4bc",
+          "typeIndex": 2
+        },
+        {
+          "name": "WellEd",
+          "offset": "0x4c0",
+          "typeIndex": 1
+        },
+        {
+          "name": "ADEd",
+          "offset": "0x4c4",
+          "typeIndex": 1
+        },
+        {
+          "name": "ADLbl",
+          "offset": "0x4c8",
+          "typeIndex": 2
+        },
+        {
+          "name": "IRTab",
+          "offset": "0x4cc",
+          "typeIndex": 4
+        },
+        {
+          "name": "ParmGrp5",
+          "offset": "0x4d0",
+          "typeIndex": 5
+        },
+        {
+          "name": "Label14",
+          "offset": "0x4d4",
+          "typeIndex": 2
+        },
+        {
+          "name": "DrkNoiseLbl2",
+          "offset": "0x4d8",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label16",
+          "offset": "0x4dc",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label17",
+          "offset": "0x4e0",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label18",
+          "offset": "0x4e4",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label19",
+          "offset": "0x4e8",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label20",
+          "offset": "0x4ec",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label21",
+          "offset": "0x4f0",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label22",
+          "offset": "0x4f4",
+          "typeIndex": 2
+        },
+        {
+          "name": "PxlGrp2",
+          "offset": "0x4f8",
+          "typeIndex": 5
+        },
+        {
+          "name": "Label23",
+          "offset": "0x4fc",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label24",
+          "offset": "0x500",
+          "typeIndex": 2
+        },
+        {
+          "name": "WdPixEd2",
+          "offset": "0x504",
+          "typeIndex": 1
+        },
+        {
+          "name": "HtPixEd2",
+          "offset": "0x508",
+          "typeIndex": 1
+        },
+        {
+          "name": "NameGrp2",
+          "offset": "0x50c",
+          "typeIndex": 5
+        },
+        {
+          "name": "NameEd2",
+          "offset": "0x510",
+          "typeIndex": 1
+        },
+        {
+          "name": "ImgSzGrp2",
+          "offset": "0x514",
+          "typeIndex": 5
+        },
+        {
+          "name": "Label25",
+          "offset": "0x518",
+          "typeIndex": 2
+        },
+        {
+          "name": "Label26",
+          "offset": "0x51c",
+          "typeIndex": 2
+        },
+        {
+          "name": "WdthEd2",
+          "offset": "0x520",
+          "typeIndex": 1
+        },
+        {
+          "name": "HtEd2",
+          "offset": "0x524",
+          "typeIndex": 1
+        },
+        {
+          "name": "RdNoiseEd2",
+          "offset": "0x528",
+          "typeIndex": 1
+        },
+        {
+          "name": "DrkNoiseEd2",
+          "offset": "0x52c",
+          "typeIndex": 1
+        },
+        {
+          "name": "BiasEd2",
+          "offset": "0x530",
+          "typeIndex": 1
+        },
+        {
+          "name": "CoolGrp2",
+          "offset": "0x534",
+          "typeIndex": 7
+        },
+        {
+          "name": "CCDMagEd2",
+          "offset": "0x538",
+          "typeIndex": 1
+        },
+        {
+          "name": "CCDCountEd2",
+          "offset": "0x53c",
+          "typeIndex": 1
+        },
+        {
+          "name": "CCDTimeEd2",
+          "offset": "0x540",
+          "typeIndex": 1
+        },
+        {
+          "name": "NoiseBox2",
+          "offset": "0x544",
+          "typeIndex": 6
+        },
+        {
+          "name": "AdSpinBtn2",
+          "offset": "0x548",
+          "typeIndex": 8
+        },
+        {
+          "name": "WellEd2",
+          "offset": "0x54c",
+          "typeIndex": 1
+        },
+        {
+          "name": "AdEd2",
+          "offset": "0x550",
+          "typeIndex": 1
+        },
+        {
+          "name": "IRBox",
+          "offset": "0x554",
+          "typeIndex": 6
+        },
+        {
+          "name": "VObsBox",
+          "offset": "0x558",
+          "typeIndex": 6
+        },
+        {
+          "name": "LogBox",
+          "offset": "0x55c",
+          "typeIndex": 6
+        },
+        {
+          "name": "GroupBox1",
+          "offset": "0x560",
+          "typeIndex": 5
+        },
+        {
+          "name": "MinLmdaLbl",
+          "offset": "0x564",
+          "typeIndex": 2
+        },
+        {
+          "name": "MaxLmdaLbl",
+          "offset": "0x568",
+          "typeIndex": 2
+        },
+        {
+          "name": "MinLmdaEd",
+          "offset": "0x56c",
+          "typeIndex": 1
+        },
+        {
+          "name": "MaxLmdaEd",
+          "offset": "0x570",
+          "typeIndex": 1
+        },
+        {
+          "name": "RngChngBox",
+          "offset": "0x574",
+          "typeIndex": 6
+        },
+        {
+          "name": "TimeDepBox",
+          "offset": "0x578",
+          "typeIndex": 6
+        },
+        {
+          "name": "DtctSkyBox",
+          "offset": "0x57c",
+          "typeIndex": 6
+        },
+        {
+          "name": "SpclGrp",
+          "offset": "0x580",
+          "typeIndex": 5
+        },
+        {
+          "name": "AdminBox",
+          "offset": "0x584",
+          "typeIndex": 6
+        },
+        {
+          "name": "ColorBox",
+          "offset": "0x588",
+          "typeIndex": 6
+        },
+        {
+          "name": "MonoBox",
+          "offset": "0x58c",
+          "typeIndex": 6
+        },
+        {
+          "name": "PlotHRBox",
+          "offset": "0x590",
+          "typeIndex": 6
+        },
+        {
+          "name": "SetEBmVBox",
+          "offset": "0x594",
+          "typeIndex": 6
+        },
+        {
+          "name": "CmptVBox",
+          "offset": "0x598",
+          "typeIndex": 6
+        },
+        {
+          "name": "ResetBtn",
+          "offset": "0x59c",
+          "typeIndex": 0
+        }
+      ]
+    },
+    {
+      "class": "TPhotometer",
+      "vmt": "0x4fefd4",
+      "pointerAt": "0x4fef9c",
+      "table": "0x4ff0d8",
+      "bytes": 597,
+      "sha256": "c460c6cc2b68549df5ad801452cad9ddd7fc2cf13823c62bf4c847458e495037",
+      "fields": [
+        {
+          "name": "StrtBtn",
+          "offset": "0x360",
+          "typeIndex": 0
+        },
+        {
+          "name": "StpBtn",
+          "offset": "0x364",
+          "typeIndex": 0
+        },
+        {
+          "name": "ObjLbl",
+          "offset": "0x368",
+          "typeIndex": 1
+        },
+        {
+          "name": "ElspdLbl",
+          "offset": "0x36c",
+          "typeIndex": 1
+        },
+        {
+          "name": "ElpsdEd",
+          "offset": "0x370",
+          "typeIndex": 2
+        },
+        {
+          "name": "CmpltLbl",
+          "offset": "0x374",
+          "typeIndex": 1
+        },
+        {
+          "name": "CmpltEd",
+          "offset": "0x378",
+          "typeIndex": 2
+        },
+        {
+          "name": "MeanLbl",
+          "offset": "0x37c",
+          "typeIndex": 1
+        },
+        {
+          "name": "MeanEd",
+          "offset": "0x380",
+          "typeIndex": 2
+        },
+        {
+          "name": "SkyLbl",
+          "offset": "0x384",
+          "typeIndex": 1
+        },
+        {
+          "name": "SkyEd",
+          "offset": "0x388",
+          "typeIndex": 2
+        },
+        {
+          "name": "SNLbl",
+          "offset": "0x38c",
+          "typeIndex": 1
+        },
+        {
+          "name": "SNEd",
+          "offset": "0x390",
+          "typeIndex": 2
+        },
+        {
+          "name": "MagLbl",
+          "offset": "0x394",
+          "typeIndex": 1
+        },
+        {
+          "name": "MagEd",
+          "offset": "0x398",
+          "typeIndex": 2
+        },
+        {
+          "name": "RawList",
+          "offset": "0x39c",
+          "typeIndex": 3
+        },
+        {
+          "name": "RawLbl",
+          "offset": "0x3a0",
+          "typeIndex": 1
+        },
+        {
+          "name": "DigitPnl",
+          "offset": "0x3a4",
+          "typeIndex": 4
+        },
+        {
+          "name": "DigitImg",
+          "offset": "0x3a8",
+          "typeIndex": 5
+        },
+        {
+          "name": "DigitBvl",
+          "offset": "0x3ac",
+          "typeIndex": 6
+        },
+        {
+          "name": "PhotoTimer",
+          "offset": "0x3b0",
+          "typeIndex": 7
+        },
+        {
+          "name": "JDLbl",
+          "offset": "0x3b4",
+          "typeIndex": 1
+        },
+        {
+          "name": "FltrGrp",
+          "offset": "0x3b8",
+          "typeIndex": 8
+        },
+        {
+          "name": "FltrSlider",
+          "offset": "0x3bc",
+          "typeIndex": 9
+        },
+        {
+          "name": "SecsGrp",
+          "offset": "0x3c0",
+          "typeIndex": 8
+        },
+        {
+          "name": "SecsSlider",
+          "offset": "0x3c4",
+          "typeIndex": 9
+        },
+        {
+          "name": "IntegGrp",
+          "offset": "0x3c8",
+          "typeIndex": 8
+        },
+        {
+          "name": "IntegSlider",
+          "offset": "0x3cc",
+          "typeIndex": 9
+        },
+        {
+          "name": "IntegLbl",
+          "offset": "0x3d0",
+          "typeIndex": 1
+        },
+        {
+          "name": "MainMenu1",
+          "offset": "0x3d4",
+          "typeIndex": 10
+        },
+        {
+          "name": "File1",
+          "offset": "0x3d8",
+          "typeIndex": 11
+        },
+        {
+          "name": "N1",
+          "offset": "0x3dc",
+          "typeIndex": 11
+        },
+        {
+          "name": "ExitPhotometer1",
+          "offset": "0x3e0",
+          "typeIndex": 11
+        },
+        {
+          "name": "Data1",
+          "offset": "0x3e4",
+          "typeIndex": 11
+        },
+        {
+          "name": "Record1",
+          "offset": "0x3e8",
+          "typeIndex": 11
+        },
+        {
+          "name": "IDBvl",
+          "offset": "0x3ec",
+          "typeIndex": 6
+        },
+        {
+          "name": "IDText",
+          "offset": "0x3f0",
+          "typeIndex": 1
+        },
+        {
+          "name": "Help1",
+          "offset": "0x3f4",
+          "typeIndex": 11
+        },
+        {
+          "name": "Aperture1",
+          "offset": "0x3f8",
+          "typeIndex": 11
+        },
+        {
+          "name": "RdngGrp",
+          "offset": "0x3fc",
+          "typeIndex": 8
+        },
+        {
+          "name": "RdngSlider",
+          "offset": "0x400",
+          "typeIndex": 9
+        },
+        {
+          "name": "YMDLbl",
+          "offset": "0x404",
+          "typeIndex": 1
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/packages/CLEA_Vireo.zip",
+      "sha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+      "bytes": 318073706
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PHOTOHLP.TXT",
+      "sha256": "aaf7f6827f418cf1aa1e2da70185b96ecf96ffd919899d84547a8695afa42d8a",
+      "bytes": 12647
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/observatory/TOptionsDlg.json",
+      "sha256": "056b2f9e5c874c8bce95da0ecd4b4950937f9cdcf85202a04657b8b3b89643cc",
+      "bytes": 93952
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/options-defaults.asm",
+      "sha256": "6584b8bf43a2bf440ebf3985121353335ab4cec74e9a8ebaeb040dac9084d381",
+      "bytes": 22823
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/environment-create.asm",
+      "sha256": "7d7044b77eb08f97b03511ecb96298483fbdbaa4c8bb00552b53bd1c98f45df7",
+      "bytes": 6936
+    }
+  ],
+  "optionsDfmOriginalSlice": {
+    "identity": [
+      10,
+      "TOPTIONSDLG",
+      0
+    ],
+    "offset": 2134672,
+    "bytes": 21360,
+    "sha256": "183d69820285e82447c912b112179435e23c1ed3866058f7c8d31988348f99cf",
+    "dfm_root_class": "TOptionsDlg",
+    "dfm_root_name": "OptionsDlg",
+    "dfm_event_binding_candidates": [
+      {
+        "event": "OnActivate",
+        "handler": "FormActivate",
+        "payload_offset": 298
+      },
+      {
+        "event": "OnCreate",
+        "handler": "FormCreate",
+        "payload_offset": 323
+      },
+      {
+        "event": "OnClick",
+        "handler": "OKBtnClick",
+        "payload_offset": 727
+      },
+      {
+        "event": "OnClick",
+        "handler": "CancelBtnClick",
+        "payload_offset": 2615
+      },
+      {
+        "event": "OnClick",
+        "handler": "FilesBtnClick",
+        "payload_offset": 3168
+      },
+      {
+        "event": "OnClick",
+        "handler": "EditModeBoxClick",
+        "payload_offset": 5435
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "IRBoxMouseUp",
+        "payload_offset": 7005
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "IRBoxMouseUp",
+        "payload_offset": 8030
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "AdminBoxMouseUp",
+        "payload_offset": 8332
+      },
+      {
+        "event": "OnClick",
+        "handler": "CoolGrpClick",
+        "payload_offset": 14577
+      },
+      {
+        "event": "OnDownClick",
+        "handler": "ADSpinBtnDownClick",
+        "payload_offset": 15529
+      },
+      {
+        "event": "OnUpClick",
+        "handler": "ADSpinBtnUpClick",
+        "payload_offset": 15561
+      },
+      {
+        "event": "OnClick",
+        "handler": "CoolGrpClick",
+        "payload_offset": 18409
+      },
+      {
+        "event": "OnDownClick",
+        "handler": "AdSpinBtn2DownClick",
+        "payload_offset": 19365
+      },
+      {
+        "event": "OnUpClick",
+        "handler": "AdSpinBtn2UpClick",
+        "payload_offset": 19398
+      },
+      {
+        "event": "OnClick",
+        "handler": "ScopeBtnClick",
+        "payload_offset": 19799
+      },
+      {
+        "event": "OnClick",
+        "handler": "RadiOptsBtnClick",
+        "payload_offset": 20384
+      },
+      {
+        "event": "OnClick",
+        "handler": "ResetBtnClick",
+        "payload_offset": 20824
+      }
+    ]
+  },
+  "recovered": {
+    "basePhotonCount": {
+      "recordOffset": "0x279f",
+      "environmentOffset": "0x2e53",
+      "component": "BaseCountEd",
+      "componentOffset": "0x3ec",
+      "default": 1000,
+      "defaultStore": "0x5a2a88",
+      "readBinding": "0x5a58ba\u20130x5a58ce",
+      "writeBinding": "0x5a649a\u20130x5a64a4",
+      "meaning": "Photon-count mean multiplier per callback; not seconds or milliseconds"
+    },
+    "timerWaitMs": {
+      "recordOffset": "0x27a3",
+      "environmentOffset": "0x2e57",
+      "component": "PhoTimerEd",
+      "componentOffset": "0x3f0",
+      "default": 100,
+      "defaultStore": "0x5a2a92",
+      "readBinding": "0x5a58d6\u20130x5a58ea",
+      "writeBinding": "0x5a64e8\u20130x5a64f2",
+      "secondsPerCallback": "timerWaitMs/1000 at0x500a01\u20130x500a0d",
+      "actualTimerInterval": "TTimer setter0x449004 called at0x500a4b"
+    },
+    "normalizer": "self+0x4de=SUM(basePhotonCount per completed callback), reset0x500beb; normalized by selected integrations\u00d7seconds at0x5016a3\u20130x5016ba",
+    "filters": {
+      "order": [
+        "U",
+        "B",
+        "V",
+        "R",
+        "I"
+      ],
+      "defaultIndex": 2,
+      "indexField": "self+0x589",
+      "binding": "FltrSlider0x3bc Position0x340 at0x501e04\u20130x501e17",
+      "UBVLabel": "0x4ff87c",
+      "UBVRILabel": "0x4ff88c",
+      "includeRI": "Native option explicitly says R/I colors artificially generated; prospective scientific domain excludes R/I"
+    },
+    "skyBanks": {
+      "base": "self+0x58a",
+      "layout": "Extended[3 telescope banks][5 filters];10 bytes/filter,50 bytes/bank",
+      "initialValue": -1,
+      "initialization": "0x4ff55b\u20130x4ff598",
+      "telescopeBinding": "Observatory+0x6fc copied to self+0x6e7 at0x4ff8bd\u20130x4ff8c4",
+      "telescopeSelection": "0x53df2c stores selected telescope index; telescope record stride0x93",
+      "missingSkyGate": "0x5008fa\u20130x500914 rejects object start with negative bank value",
+      "filterSwitch": "0x501e17\u21920x50052c\u21920x500bcc resets reading counters, not the sky bank",
+      "freshSkyAfterTelescopeChange": "Explicit PHOTOHLP requirement including return to a previous telescope. Complete implementation reset path is not yet certified; no reuse policy is invented."
+    },
+    "apertureGeometry": "Default control sets selector10 at0x4fef0c; change/cancel call0x5404b0, which stores selector and computes radius=(selector+0.5)/scope+0x41c4b7 at0x5404b3\u20130x5404cd. Full scope scale/scene association is required before using radius in acquisition.",
+    "zeroPoint": "Single(scope base magnitude+selected telescope correction) stored at Observatory+0x6f0 by0x53df4f\u20130x53df58; photometer prepared zero point adds5 at0x500976\u20130x500982",
+    "skyMagnitudes": "V supplied from env+0x2bc4; B=V+Single1; U=B+Extended0.33; R=V\u22121; I=R\u2212Extended0.33 at0x4ff6aa\u20130x4ff700. These are original fixed sky colors, not modern physical calibration."
+  },
+  "prospectiveDomain": {
+    "status": "not enabled; insufficient source/scene and lifecycle contracts",
+    "edition": "Pinned VIREO1.504 only; standalone Pleiades not asserted equivalent",
+    "filters": [
+      "U",
+      "B",
+      "V"
+    ],
+    "telescopes": "Valid bank indices0,1,2 only; do not accept4/no-scope/high-bit flags as banks",
+    "settings": "Explicit compiled-default profile only, no external VEO_OPTS.INI; actual selected profile not inferred",
+    "initialConditions": [
+      "Fresh per-filter sky for current telescope per manual",
+      "Complete source aperture field/neighbors and known original UBV/source identity",
+      "Verified aperture selection and calibration linkage",
+      "Explicit seeded PRNG and draw order if a future Number acquisition is authorized",
+      "Captured callback count; do not infer base-count sum from wall time",
+      "Manual learner measurement; no catalog-filled result"
+    ]
+  },
+  "remaining": [
+    "0x500568 stellar aperture fraction and integrator0x55fa24, geometry0x59a49c",
+    "0x4ffa30 neighbor assembly with0x5953a0/0x595338 flux/magnitude conversion, missing color sentinel and original record identities",
+    "PLEIADES.HTL/CLUSTERS.DAT actual native readers/UBV records and completeness",
+    "Telescope change/reentry sky invalidation implementation versus documented requirement",
+    "Stop/partial integration, native rounding, result records and v7-ready replay schema"
+  ],
+  "engine": "Existing Ghidra12.1.4 artifacts and prior dossiers under /home/dobleuber/Documents/Codex/2026-10-17/task-2. No engine installation or diagnostic requested/needed; this increment used static objdump and byte/RTTI decoding only.",
+  "rights": "Original license retained; local research only. No publication or redistribution permission established.",
+  "uncertainty": "Static evidence establishes named fields/defaults/finite branch structure; not native runtime/x87 equivalence, complete pointer-alias coverage or an original acquisition oracle."
+}

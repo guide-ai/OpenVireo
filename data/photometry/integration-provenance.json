@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "policy": "VIREO-pinned-photometer-executed-callback-series-v1",
+  "editionSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952"
+    }
+  ],
+  "bindings": [
+    {
+      "file": "data/photometry/context-provenance.json",
+      "sha256": "889607d37de487f248165e1c7d2418f0593676602794d69c3c903a81fee15439"
+    },
+    {
+      "file": "data/photometry/reduction-provenance.json",
+      "sha256": "545f15918eb2795a0347fa82dcfb7ca2c58704af24074e36e5e7a217c2dbb662"
+    },
+    {
+      "file": "data/photometry/ubv-contract.json",
+      "sha256": "27ff130438aa41e6ee92bb8103ad8f749442d981bca207193e305fb01c466abf"
+    },
+    {
+      "file": "data/photometry/targets-provenance.json",
+      "sha256": "dfa0977bc3d3b777cef3d144b1bd9bdffdcc82e383174ad796c852b73c6de372"
+    },
+    {
+      "file": "data/photometry/pleiades-target-vectors.json",
+      "sha256": "526d25862431ccb4d3cb885192dc661517f3d542970fa44512120ae8e5a4c065"
+    },
+    {
+      "file": "data/photometry/field-vectors.json",
+      "sha256": "40fb95f75a08119f208e99fb4713dfde7030abe5a28f89132bf734198a11c41c"
+    },
+    {
+      "file": "data/photometry/source-provenance.json",
+      "sha256": "281b8cd1c912afb7ae96f057ec6cf0c40a5bd07838a0096d58f4f89a3bcb318b"
+    }
+  ],
+  "ranges": [
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery/timer-full.asm",
+      "from": "0x5014e4",
+      "endExclusive": "0x50198c",
+      "listingSHA256": "9deccc8d8d389801d81539da7d8ef2dc8f9f15328c66f33a76955ade1186fb1c",
+      "originalBytesSHA256": "240bd38fb3f17e1351153de40b9f8ea04c643f816fb4a89504cfb7d74f4b937d",
+      "bytes": 1192
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery/start.asm",
+      "from": "0x5008b4",
+      "endExclusive": "0x500acc",
+      "listingSHA256": "72405c891ac33b8998b993252c91c9f3400641c26a622e17442a8acc50018ab9",
+      "originalBytesSHA256": "69f514f440e13554e51450198f70955762e8074310585c4fb48edd889b29de81",
+      "bytes": 536
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery/stop-reset.asm",
+      "from": "0x500b58",
+      "endExclusive": "0x500c68",
+      "listingSHA256": "3e3817be797323824a44a2158969c5f547bafe2bf7eaca84380cdc74b88edeb4",
+      "originalBytesSHA256": "0e1248f11e5b9624c99126918e520e90bdc12b7df65b3806834f4300b53fd4f1",
+      "bytes": 272
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery/controls.asm",
+      "from": "0x501e20",
+      "endExclusive": "0x501e74",
+      "listingSHA256": "1de6a730b1dfe20b05129a855185680a808444cf876cc481cc667325593aee6d",
+      "originalBytesSHA256": "f6b7ae1060cc40d07dc823d9f7b021b2949bfc80dc61ef8d733bea5142cac5b1",
+      "bytes": 84
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery/control-lock.asm",
+      "from": "0x501abc",
+      "endExclusive": "0x501b84",
+      "listingSHA256": "83a4b153f372a59aaa4056764b494fcab2b3276694f17b5a4a0afd87a5ef3f43",
+      "originalBytesSHA256": "c4bcdfa6fb9c261cb7f93bfd1db2f8f061b673b598472a4917de64d6d9cecf25",
+      "bytes": 200
+    },
+    {
+      "file": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery/quadrature.asm",
+      "from": "0x55f4b4",
+      "endExclusive": "0x55f69c",
+      "listingSHA256": "e8424a36dd972b704c3dffbcad39a3279a1c721aae3fbd939014e7eea75ccee2",
+      "originalBytesSHA256": "2af4e6bfc83ce0cc04a32106a7a0f715197a1fdf34d743100238131e6082663e",
+      "bytes": 488
+    }
+  ],
+  "secondsTable": [
+    {
+      "address": "0x5b3a40",
+      "encoding": "Extended80 little-endian",
+      "byteLength": 10,
+      "sha256": "9e3186f308caf4ab481f125fe2749d0563c07ebe773040b2a5433cf916bc06a2",
+      "fraction": "14757395258967641293/147573952589676412928",
+      "decimal": "0.1000000000000000000013552527156068805425093160010874271392822265625",
+      "nominalSeconds": 0.1
+    },
+    {
+      "address": "0x5b3a4a",
+      "encoding": "Extended80 little-endian",
+      "byteLength": 10,
+      "sha256": "6bec6c0af730be07628e3696247e30fbd921d3f1e73a126faefae631a037f687",
+      "fraction": "1",
+      "decimal": "1",
+      "nominalSeconds": 1
+    },
+    {
+      "address": "0x5b3a54",
+      "encoding": "Extended80 little-endian",
+      "byteLength": 10,
+      "sha256": "8183c64e867670d7f6c3cada0d8ba4577448c2ad940c00e406ac8783c8b22d42",
+      "fraction": "10",
+      "decimal": "10",
+      "nominalSeconds": 10
+    },
+    {
+      "address": "0x5b3a5e",
+      "encoding": "Extended80 little-endian",
+      "byteLength": 10,
+      "sha256": "e202858d67084cf31a2b94b4546dbbd5662ffc2f6ed54d0e37dacf16fd4d827a",
+      "fraction": "100",
+      "decimal": "100",
+      "nominalSeconds": 100
+    }
+  ],
+  "native": {
+    "seconds": [
+      0.1,
+      1,
+      10,
+      100
+    ],
+    "integrations": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "defaultSeconds": 1,
+    "defaultIntegrations": 3,
+    "basePhotonsPerCallback": 1000,
+    "timerIntervalMS": 100,
+    "maximumCount": 2147483647,
+    "flow": [
+      "Start0x500945 resets counters through0x500bcc,not seed.",
+      "Each0x5014ea callback adds elapsed increment,source Poisson then sky Poisson,and baseCount1000.",
+      "0x5015cb compares elapsed with chosen Extended duration. On boundary timer pauses,completed integration index increments,integer period and aggregate counts update.",
+      "0x50165e stores each period total at0x4bc+4\u00d7index;0x50167f reduces only after chosen number.",
+      "0x501911 clears period elapsed/source/sky,retains aggregate/baseCount and RNG,and re-enables timer for next integration.",
+      "Stop0x500b58 disables timer and unlocks,does not reduce or Record.",
+      "Setting handlers0x501e20/60 only set duration/repeat fields;UI clearing current result on change is a separate web protection."
+    ]
+  },
+  "browserPolicy": {
+    "policy": "OpenCLEA-executed-100ms-photometer-callbacks-v1",
+    "maximumCallbackGapMS": 300,
+    "maximumCallbacksPerReading": 5000,
+    "maximumCallbacksPerSession": 100000,
+    "maximumEvents": 256,
+    "maximumSessionBytes": 131072,
+    "timing": "Each actually executed admitted browser callback draws once and records one nominal100ms increment. Integer nominal callback targets implement selected duration/repeats;no wall-time catchup. Adjacent callback events compact by exact executed count.",
+    "partial": "Stop/save/release preserve committed callback/RNG history,but create no finished reading. Start resets reading counters and continues current seed.",
+    "legacy": "No timing event means original v1\u2013v3 single-callback behavior and writer bytes. New timing histories use owner photometer v4;full investigation1\u201318 retain their versioned nested-owner protocol."
+  },
+  "uncertainty": [
+    "Native Extended repeated-addition/threshold callback counts and VCL queue scheduling are not witnessed;integer nominal browser timing is explicit adaptation,not x87 equivalence.",
+    "Native global RNG/reentry/modal/report behavior remains outside this fixed telescope0/source/UBV domain.",
+    "No arbitrary sky/source model,additional target,telescope,RI,atmospheric correction or classroom acceptance is added."
+  ],
+  "reference": {
+    "script": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-integration-recovery/reference.py",
+    "sha256": "5d5742ba14689487499d687e6fe1c32d62a0490bf154f723b1f93dc6f58187f0",
+    "poissonSource": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-targets-recovery/analytic-vectors.py",
+    "poissonSHA256": "344712a12222056dd084548b98df7ca518fd324b41735ec4028fc70c5e718b49",
+    "method": "Original Single UBV fields plus independent Decimal90 recovered finite quadrature(.1knot interpolation,Richardson relative1e-7);analytic Gaussian retained separately. Exact integer LCG/Python-lgamma Poisson;integer-fold counts per nominal100ms executed callback,Decimal70 reduction. No production TypeScript import and no x87/CPU emulation.",
+    "pairs": 13,
+    "sequentialPairs": 3
+  },
+  "vectorsSHA256": "5d1382ab7b65b6be3ee030e6f8ef69847c0d92cb0f96b16eb001b6685ed45a92",
+  "rights": "Original licenses retained;local research only,no public redistribution grant."
+}

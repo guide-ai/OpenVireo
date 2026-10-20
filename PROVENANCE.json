@@ -179,5 +179,14 @@
     "scope": "Recovered flat separation, point-branch tabulated normal aperture fraction and supplied known-color ordered UBV neighbor fold; no acquired observations or source selection",
     "limits": "Number/indexed-grid adaptation; unsafe+5 endpoint and missing-color domain withheld. No R/I/image branch, complete scene/color association, native result persistence or original runtime/x87 oracle. Base-count/time quantities remain separate; v7 unchanged.",
     "rights": "Original CLEA license retained; local research only; no general redistribution permission established"
+  },
+  "current_resource_publication": {
+    "manifest": "docs/LOCAL-RESOURCES.json",
+    "classification": "docs/RESOURCE-PROVENANCE.json",
+    "files": 1279,
+    "bytes_preserved": true,
+    "instruction": "Explicit project-owner instruction includes all identified resources.",
+    "terms": "Original/source-specific credits and terms retained;not a universal open-license or public-domain designation.",
+    "historical_notes": "Earlier local-research-only stamps in byte-bound packets document their previous operational boundary;the current inclusion instruction supersedes that packaging boundary."
   }
 }

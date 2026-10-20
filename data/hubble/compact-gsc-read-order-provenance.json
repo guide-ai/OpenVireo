@@ -1,0 +1,161 @@
+{
+  "scope": "One NewGSCFieldObj compact-band search/scan before all later population merges; not FSC or legacy BIN and not a complete field population",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sources": [
+    {
+      "name": "compact-search",
+      "start": "0x59af80",
+      "endExclusive": "0x59b030",
+      "bytesSHA256": "7a3b35f10a8d37c9ea1b30c0a69b5b27e77d0d37403ba995d6a874719b3d633e",
+      "capture": "compact-search.asm",
+      "captureSHA256": "55e90da993a785a31c47ee5ac85d04f58b5953a83ba765cf87feac1b997c4567"
+    },
+    {
+      "name": "compact-scan-and-insert",
+      "start": "0x59b030",
+      "endExclusive": "0x59b204",
+      "bytesSHA256": "8a62f266064ae4c5c9b517f5b7ea20506e5347f27dfc90e1ba5fbe1a67d8c770",
+      "capture": "compact-scan-and-insert.asm",
+      "captureSHA256": "0813570654eb4b4da033be7c730560b536920e4680f53ea54f2604c0b78ec6fd"
+    },
+    {
+      "name": "typed-file-size",
+      "start": "0x403e10",
+      "endExclusive": "0x403e59",
+      "bytesSHA256": "ad94ff4d105d314ecd63e0e3a0f51ab7cf01c5e0e2dd8563490607067e15191f",
+      "capture": "typed-file-size.asm",
+      "captureSHA256": "1cb3cfb6c21a00599647458dd074a2b933e69cde7255151bcbaff09129dfd3af"
+    },
+    {
+      "name": "typed-seek",
+      "start": "0x404250",
+      "endExclusive": "0x404284",
+      "bytesSHA256": "efff949b941ba17e1c8f6eed78c299f5375afc2e5631c1b39b161246c00300ca",
+      "capture": "typed-seek.asm",
+      "captureSHA256": "3165fa2da59cdd421a20e23469ab8f5ef1228148571c046cbca4a4a87bdabb9d"
+    },
+    {
+      "name": "typed-read-one",
+      "start": "0x403ef8",
+      "endExclusive": "0x403f43",
+      "bytesSHA256": "11fdcda528264964026ab4761aa2a971448dd8ba8adf6abcc7ac88d236d4389f",
+      "capture": "typed-read-one.asm",
+      "captureSHA256": "6f37589b9ceaed9a444bc78780b0c48fcccbed3f0ed8b96c32e5a407be30e6aa"
+    },
+    {
+      "name": "typed-eof",
+      "start": "0x403d6c",
+      "endExclusive": "0x403d88",
+      "bytesSHA256": "0abae434479cce718c27dc8d706be0a7a36ddb055dafc29f01310cccfee8c471",
+      "capture": "typed-eof.asm",
+      "captureSHA256": "8424104d53dfd73f9ec26ce393ac62bf5f11324fa212eb17c18afd56d99981b4"
+    },
+    {
+      "name": "io-check",
+      "start": "0x4030f8",
+      "endExclusive": "0x403114",
+      "bytesSHA256": "96712259599af0d28fd2af034ef45c6ac6d5bb00ca5c3caee706c2362060053c",
+      "capture": "io-check.asm",
+      "captureSHA256": "b8eed4edf64a15855a7ffefda07d86552345665823fc07ba8640695c17273672"
+    },
+    {
+      "name": "list-insert-head-and-after",
+      "start": "0x492528",
+      "endExclusive": "0x4925d9",
+      "bytesSHA256": "2a9c92b6585ea7edd3c96c19dfe549d491c970fee370f6346fd4972e6530e5df",
+      "capture": "list-insert-head-and-after.asm",
+      "captureSHA256": "1ede08bd219ace9d9ecaf245065514225f081c1c8901ad9041bc57e5418f03cd"
+    },
+    {
+      "name": "list-forward-iteration",
+      "start": "0x492628",
+      "endExclusive": "0x492666",
+      "bytesSHA256": "d291eb076d4542116c1c3cdcfa0be0946210b47d06c5495d91a8c5c294c875b4",
+      "capture": "list-forward-iteration.asm",
+      "captureSHA256": "01208edc7bf413befbbacb7464f60de294e680e90e3be99c9bbcab68ffad008b"
+    },
+    {
+      "name": "nearest-first-tie",
+      "start": "0x599f1c",
+      "endExclusive": "0x59a010",
+      "bytesSHA256": "813f7faa621a1e1304c14d8f7ccb78d98a652996b5a9875d60112e0c6cadf323",
+      "capture": "nearest-first-tie.asm",
+      "captureSHA256": "d331fa595eeb0d032326744814804800d2a1921d1eea5ec5eb2b2796d79bf6a7"
+    },
+    {
+      "name": "region-admission",
+      "start": "0x599e08",
+      "endExclusive": "0x599f19",
+      "bytesSHA256": "ddbec3c640fcf36fc395cd85b78cbc3346445f09c13424e4aa04b46d8f56c7d4",
+      "capture": "region-admission.asm",
+      "captureSHA256": "0cba3495a80704c611e373c9480b7c14fd6569cd057c7a0d8f6ac983da1287b8"
+    }
+  ],
+  "keyConstant": {
+    "address": "0x59b2ec",
+    "bytes": "8096184b",
+    "Single": 10000000
+  },
+  "originalBand": {
+    "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+    "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+    "bytes": 31481649,
+    "records": 1165987,
+    "divisibleBy27": true,
+    "descendingRaCount": 0,
+    "descendingExamples": [],
+    "equalRaExamples": [
+      70,
+      161,
+      289,
+      462,
+      517,
+      936,
+      1532,
+      2069,
+      2232,
+      2373,
+      2616,
+      2868
+    ],
+    "identicalPositionExamples": [
+      39196,
+      43828,
+      172788,
+      245099,
+      245582,
+      249376,
+      250276,
+      255154,
+      291198,
+      296070,
+      306059,
+      372328
+    ],
+    "firstRa": 0,
+    "lastRa": 239999937
+  },
+  "independentVectors": {
+    "path": "data/hubble/compact-gsc-read-order-vectors.json",
+    "sha256": "1e0e38492919465dbac43eff61d6cd5168b6a7632ab2b286158c0d109894e0d6",
+    "generator": "/home/dobleuber/Documents/Codex/2026-10-18/task/compact-gsc-order-recovery/generate_vectors.py",
+    "generatorSHA256": "e8103b6b6b18127289d002fdea1a40c5c5e9857cdf69bc07e59009705a87f1c9",
+    "method": "Integer midpoint and physical record trace, Fraction admission, comparison-only bisect; no production implementation or original execution"
+  },
+  "prerequisite": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/detector-population-recovery/proposed-catalog-population.patch",
+    "sha256": "068b84c01c684c925bb30399e90bdcaefec6c7e050da4f1e62a65c9053fa71b6",
+    "reason": "Tests compose with nativeCatalogAdmission from the previously delivered bounded population contract; the new trace module itself has no dependency on that module"
+  },
+  "numericalPolicy": [
+    "Already-rounded native integer RA lower key must be supplied; no original FPU control word is inferred",
+    "Raw-RA comparisons/search are integer; scan maximum uses declared binary64 stored-Double adaptation",
+    "Original identical raw RA/Dec records remain identical under the same decode/projection; synthetic query frame does not certify an actual native session"
+  ],
+  "limits": [
+    "No region/band selection, wrap concatenation, legacy BIN or FSC reader",
+    "No QSO/variable/galaxy merges or final post-merge slit winner",
+    "No completeness attestation or native catalog replacement by navigation sample",
+    "Read-boundary and budget errors are explicit browser guards; exact native final exception UI is unobserved"
+  ]
+}

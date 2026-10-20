@@ -1,0 +1,50 @@
+[
+  {
+    "tracking": false,
+    "finder": false,
+    "moving": false,
+    "boundedReadEnabled": false
+  },
+  {
+    "tracking": false,
+    "finder": false,
+    "moving": true,
+    "boundedReadEnabled": false
+  },
+  {
+    "tracking": false,
+    "finder": true,
+    "moving": false,
+    "boundedReadEnabled": false
+  },
+  {
+    "tracking": false,
+    "finder": true,
+    "moving": true,
+    "boundedReadEnabled": false
+  },
+  {
+    "tracking": true,
+    "finder": false,
+    "moving": false,
+    "boundedReadEnabled": true
+  },
+  {
+    "tracking": true,
+    "finder": false,
+    "moving": true,
+    "boundedReadEnabled": false
+  },
+  {
+    "tracking": true,
+    "finder": true,
+    "moving": false,
+    "boundedReadEnabled": false
+  },
+  {
+    "tracking": true,
+    "finder": true,
+    "moving": true,
+    "boundedReadEnabled": false
+  }
+]

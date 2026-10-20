@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "policy": "OpenCLEA-reference-cluster-exclusions-v1",
+  "evidenceId": "VIREO-HR-REMOVE-RESTORE-STATIC-2026-10-19",
+  "binary": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "methods": [
+    {
+      "name": "RemovefromHRDiagram1Click",
+      "address": "0x540b90",
+      "entryBytes": 32
+    },
+    {
+      "name": "RestoreRemovedPoints1Click",
+      "address": "0x5445fc",
+      "entryBytes": 33
+    },
+    {
+      "name": "Display1MouseUp",
+      "address": "0x543bfc",
+      "entryBytes": 22
+    }
+  ],
+  "native": {
+    "remove": "0x540b90 asks confirmation;decliningNo(result7) skipsmutation;0x540bd7 writesselectedrecord+0x3d=4;enablesRestoremenuandredraws.",
+    "render": "0x542cae..0x542d60 databasebankplot skipsrecord+0x3d==4;V/BVstoredvaluesunchanged.",
+    "restore": "0x5445fc choosescurrentclusterbank fromselectedrecord+0x32;0x544637..0x54463d resetsalltype4markers to0;disablesRestoremenuandredraws.",
+    "selection": "0x543c7a databasebranch calls0x544304 toselectapointbeforeopeningrecordtools. Nativepixelnearest/VCLlinked-order notported."
+  },
+  "ranges": [
+    {
+      "start": "0x540b90",
+      "endExclusive": "0x540c33",
+      "sha256": "9d9c76a7b6b3d0027e60c921271e230a0ec145f5248d517e8eca6faeaa5ffd8f"
+    },
+    {
+      "start": "0x5445fc",
+      "endExclusive": "0x544668",
+      "sha256": "aa1da83680ec27a92e88bb8be0bfbc535e770b8adc09393f8b0f16e3f553d786"
+    },
+    {
+      "start": "0x542cae",
+      "endExclusive": "0x542d60",
+      "sha256": "737266a238c15f3de8d8dc7c1826ed8918a2866a8543a1e01a76773a31723db9"
+    },
+    {
+      "start": "0x543bfc",
+      "endExclusive": "0x543d48",
+      "sha256": "dd567cc9c712852e999629fd07faee13b0786eebda695c5a56da914b539dcd83"
+    }
+  ],
+  "captures": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pleiades-isochrone-recovery/hr-display.asm",
+      "sha256": "2bb655dc913f3c1796281b63967e90ab7fbe0dd921aa77502956485f8b1bb036"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pleiades-isochrone-recovery/hr-form.json",
+      "sha256": "0ebffb01eb4babd7e273ec5ac619e506d3c613a43c9fddacc6198f867f8241ae"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/cluster-exclusions-recovery/remove-point.asm",
+      "sha256": "4624ae4dc3702e92bb5472187064e25b38b9fe2c852a4f610b599d02c800826e"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/cluster-exclusions-recovery/select-restore.asm",
+      "sha256": "4615e9a29178c916886da2d386b90cd32dd86d087468746986137e45239c6c1a"
+    }
+  ],
+  "sources": {
+    "comparisonContractSHA256": "1f2c524199f60429c846261d535abe99e0241f19a2b714aa02ed7dcffb504d92",
+    "nativeModelContractSHA256": "f636ff44388ef27b2dee68d76f51fa9fc96c5bc11b504ab14a3fb7720288d0a0"
+  },
+  "webPolicy": [
+    "Explicitidentifierselectorandconfirmationdialog replace nativepixelnearestselection;no automaticmembershipdecision.",
+    "Immutableoriginaldatasets;per-datasetexcludedIDsets andRestoreall;sourcevalues/readingsareunchanged.",
+    "Changingexclusions preservesmanualtrialtext/reddeningprovenance butinvalidatesaffectedconfirmation;newexplicitconfirmationrequiresatleast2includedpoints. Thisisnewwebguard,notnativefitstateequivalence.",
+    "No acquisition,source synthesis,uncertainty,errorbars,model fitoptimizer ororiginalruntime/x87equivalence.",
+    "Full21bindscomparison/native/exclusionproofs aroundonecanonical1-18base;storesper-datasetinspectionchoice/exclusions;old19M67scope resetsonlyM67selection,old20completecomparison resetsall;old1-18preserveunrepresentedlaboratory.",
+    "Noexclusionorinspectionchoicekeepsold19/20writer;Restoreallretainsinspectionchoice,andclearingitnormalizesbackafterinvalidatingthechangedfit."
+  ],
+  "rights": "Originaldownloads/license/Copyrightremainunchangedoutsidewebsource;authorizedlocaluseonly,nopublicredistribution.",
+  "legalSources": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/Copyright.txt",
+      "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
+      "bytes": 152
+    }
+  ]
+}

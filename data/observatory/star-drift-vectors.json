@@ -1,0 +1,888 @@
+{
+  "rasters": [
+    {
+      "index": 0,
+      "frameSHA256": "20dc9a2da6c8f8657e3bb0eb8160fea3c546c31f0f35509ff55e1cad974b8863"
+    },
+    {
+      "index": 1,
+      "frameSHA256": "cfc90ef7cb228c74b4d8bb70a788ca28704b1ee4c1cb8f8fc4613ba112f022e7"
+    },
+    {
+      "index": 2,
+      "frameSHA256": "0b11d7b39a0586dcfe54f544ec4ade460c7ee64faa7312c83e05f75b9e1aaa7b"
+    }
+  ],
+  "vectors": [
+    {
+      "index": 0,
+      "elapsedMS": -61000,
+      "pointing": {
+        "ra": 0.48182395555555557,
+        "dec": 0.03628
+      },
+      "status": "cache-boundary"
+    },
+    {
+      "index": 0,
+      "elapsedMS": -60000,
+      "pointing": {
+        "ra": 0.48210173333333334,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 624,
+      "queryX": 780,
+      "selectedId": "N0000.DAT@13921",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "191b8f6e56767e31e99703555662323d424761aa971b6681859500dfb1aa2957"
+    },
+    {
+      "index": 0,
+      "elapsedMS": -59000,
+      "pointing": {
+        "ra": 0.4823795111111111,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 619,
+      "queryX": 775,
+      "selectedId": "N0000.DAT@13921",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "fdbe56b8cf8cc751ddfc71d3f892ce705633938095778e8a3f919b999e38f8af"
+    },
+    {
+      "index": 0,
+      "elapsedMS": -3000,
+      "pointing": {
+        "ra": 0.49793506666666665,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 328,
+      "queryX": 484,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "3ff883d30c53272d1f053e073a6628f8683ccfd7bd71cb408031f1427de75e8c"
+    },
+    {
+      "index": 0,
+      "elapsedMS": -1000,
+      "pointing": {
+        "ra": 0.49849062222222223,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 317,
+      "queryX": 473,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "36b7909955fa4e34d62c15566851d5c30317da3383cac038fd28c02e54df1948"
+    },
+    {
+      "index": 0,
+      "elapsedMS": -100,
+      "pointing": {
+        "ra": 0.4987406222222222,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 313,
+      "queryX": 469,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 1959,
+      "pixelLevel": 34,
+      "fraction": 1,
+      "viewportSHA256": "a2cea80b1ba6edfbd5929785d277f4e74a4170601372b1805ef9eec9a187f357"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 0,
+      "pointing": {
+        "ra": 0.4987684,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 312,
+      "queryX": 468,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 2343,
+      "pixelLevel": 41,
+      "fraction": 1,
+      "viewportSHA256": "df72d0d99cdc1b4706d5271bd7d390de33794b2f9c3927380f82af9f5458dab3"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 100,
+      "pointing": {
+        "ra": 0.4987961777777778,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 311,
+      "queryX": 467,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 1959,
+      "pixelLevel": 34,
+      "fraction": 1,
+      "viewportSHA256": "b521b08c6e63d4b82f46254c2036ea3eba36d6960d57a0203d7e19235f6eebcd"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 500,
+      "pointing": {
+        "ra": 0.4989072888888889,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 309,
+      "queryX": 465,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 360,
+      "pixelLevel": 6,
+      "fraction": 1,
+      "viewportSHA256": "5147652148b19b37517ca63e84e84392bdc01ccc49b6bd0f22d6bfb364f99134"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 1000,
+      "pointing": {
+        "ra": 0.49904617777777777,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "302eddc486a7b2958fb36a9121fa46e2d47edc7db9dd33b23c6b2c45edd33ab6"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 1007,
+      "pointing": {
+        "ra": 0.4990481222222222,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "302eddc486a7b2958fb36a9121fa46e2d47edc7db9dd33b23c6b2c45edd33ab6"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 1008,
+      "pointing": {
+        "ra": 0.4990484,
+        "dec": 0.03628
+      },
+      "status": "precision-required",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "302eddc486a7b2958fb36a9121fa46e2d47edc7db9dd33b23c6b2c45edd33ab6"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 1009,
+      "pointing": {
+        "ra": 0.4990486777777778,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "302eddc486a7b2958fb36a9121fa46e2d47edc7db9dd33b23c6b2c45edd33ab6"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 1500,
+      "pointing": {
+        "ra": 0.4991850666666667,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 304,
+      "queryX": 460,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "53ff99390fe9efe100a9f1f33dcf5c99c2c76fac515ae73b8bb22b28a0d33962"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 3000,
+      "pointing": {
+        "ra": 0.49960173333333335,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 296,
+      "queryX": 452,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "f794da2fcb57ff96b74cd40386d1e3c3491785747ade540bd82bba95b9a9e65e"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 30000,
+      "pointing": {
+        "ra": 0.5071017333333333,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 156,
+      "queryX": 312,
+      "selectedId": "N0000.DAT@14678",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "d9b737c1c66e786e33e1a4a9a1218104f9e6ff43387563f94d96e63f1c537642"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 59000,
+      "pointing": {
+        "ra": 0.5151572888888889,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 5,
+      "queryX": 161,
+      "selectedId": "N0000.DAT@14951",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "fea79b23b468129208ca94ebb72b352dbadfce912f709b9d812ec532b0fcdd44"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 60000,
+      "pointing": {
+        "ra": 0.5154350666666667,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 0,
+      "queryX": 156,
+      "selectedId": "N0000.DAT@14951",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "64354fb14f873a73e74d846a216fdc8ab29a17401021004a09ecc9632c6f4f38"
+    },
+    {
+      "index": 0,
+      "elapsedMS": 61000,
+      "pointing": {
+        "ra": 0.5157128444444444,
+        "dec": 0.03628
+      },
+      "status": "cache-boundary"
+    },
+    {
+      "index": 1,
+      "elapsedMS": -61000,
+      "pointing": {
+        "ra": 0.48182395555555557,
+        "dec": 0.03628
+      },
+      "status": "cache-boundary"
+    },
+    {
+      "index": 1,
+      "elapsedMS": -60000,
+      "pointing": {
+        "ra": 0.48210173333333334,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 624,
+      "queryX": 780,
+      "selectedId": "N0000.DAT@13921",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "f6e4ed7fd2ac9c5fc56ad529f20b4e3c398a46c74ae68c9604b2768f685fcda9"
+    },
+    {
+      "index": 1,
+      "elapsedMS": -59000,
+      "pointing": {
+        "ra": 0.4823795111111111,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 619,
+      "queryX": 775,
+      "selectedId": "N0000.DAT@13921",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "86f83d04eaa5999e914612b75530734b6888edbadbec5be89222e6bec32c08a4"
+    },
+    {
+      "index": 1,
+      "elapsedMS": -3000,
+      "pointing": {
+        "ra": 0.49793506666666665,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 328,
+      "queryX": 484,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "78588c02eac20261095ed12da51e0f218c85e07709f690b8ef5f64d6c9f1776c"
+    },
+    {
+      "index": 1,
+      "elapsedMS": -1000,
+      "pointing": {
+        "ra": 0.49849062222222223,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 317,
+      "queryX": 473,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "feb8007cabff2e1f911d2a81c3959db2403402739c758b52b576367f8aa58ac0"
+    },
+    {
+      "index": 1,
+      "elapsedMS": -100,
+      "pointing": {
+        "ra": 0.4987406222222222,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 313,
+      "queryX": 469,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 3798,
+      "pixelLevel": 67,
+      "fraction": 1,
+      "viewportSHA256": "267acfbdc1d301bf4ab4626c61906c2f36365719ac921b7a8ba4a1a8aa8a20a8"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 0,
+      "pointing": {
+        "ra": 0.4987684,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 312,
+      "queryX": 468,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 4365,
+      "pixelLevel": 77,
+      "fraction": 1,
+      "viewportSHA256": "6b697c184a651e52f0b9c9c5b7f35fc2debe56327d508ebbfe399c0f5cf8f58a"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 100,
+      "pointing": {
+        "ra": 0.4987961777777778,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 311,
+      "queryX": 467,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 3798,
+      "pixelLevel": 67,
+      "fraction": 1,
+      "viewportSHA256": "b2853a548c3d62b195852199912d4e538a1c760c971f741ae2d92bc6f7ba9d3c"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 500,
+      "pointing": {
+        "ra": 0.4989072888888889,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 309,
+      "queryX": 465,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 1134,
+      "pixelLevel": 20,
+      "fraction": 1,
+      "viewportSHA256": "3ef6604800d1030d7bb8b2c95c3581647510d792dfc57cc3219f109837de1544"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 1000,
+      "pointing": {
+        "ra": 0.49904617777777777,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "b5800129e68657caf351570ac915b50e03b705289d55285cc71fd98406ddd950"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 1007,
+      "pointing": {
+        "ra": 0.4990481222222222,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "b5800129e68657caf351570ac915b50e03b705289d55285cc71fd98406ddd950"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 1008,
+      "pointing": {
+        "ra": 0.4990484,
+        "dec": 0.03628
+      },
+      "status": "precision-required",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "b5800129e68657caf351570ac915b50e03b705289d55285cc71fd98406ddd950"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 1009,
+      "pointing": {
+        "ra": 0.4990486777777778,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "b5800129e68657caf351570ac915b50e03b705289d55285cc71fd98406ddd950"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 1500,
+      "pointing": {
+        "ra": 0.4991850666666667,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 304,
+      "queryX": 460,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "4f1e353f257a91257b85f79d5ed36ee6e241da8652f9a49eda0cfdd0873a2b4c"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 3000,
+      "pointing": {
+        "ra": 0.49960173333333335,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 296,
+      "queryX": 452,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "15e20aeb0b5833e44cf843ca492e0b64c0a5b16db899be5d395735fe24622478"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 30000,
+      "pointing": {
+        "ra": 0.5071017333333333,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 156,
+      "queryX": 312,
+      "selectedId": "N0000.DAT@14678",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "5ecdf71e614662a35d3c400e5400c15170dd0f55f86a625543e87d4a7176a611"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 59000,
+      "pointing": {
+        "ra": 0.5151572888888889,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 5,
+      "queryX": 161,
+      "selectedId": "N0000.DAT@14951",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "eabfd2adfa8210b957ad189d969a0a0e0575ddaad4eeeefb21ef843c3f139bc6"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 60000,
+      "pointing": {
+        "ra": 0.5154350666666667,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 0,
+      "queryX": 156,
+      "selectedId": "N0000.DAT@14951",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "642365a00c424eefb50fbc4ee2769b4bb16d7e28d160ce4b60d1cefa8d423b69"
+    },
+    {
+      "index": 1,
+      "elapsedMS": 61000,
+      "pointing": {
+        "ra": 0.5157128444444444,
+        "dec": 0.03628
+      },
+      "status": "cache-boundary"
+    },
+    {
+      "index": 2,
+      "elapsedMS": -61000,
+      "pointing": {
+        "ra": 0.48182395555555557,
+        "dec": 0.03628
+      },
+      "status": "cache-boundary"
+    },
+    {
+      "index": 2,
+      "elapsedMS": -60000,
+      "pointing": {
+        "ra": 0.48210173333333334,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 624,
+      "queryX": 780,
+      "selectedId": "N0000.DAT@13921",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "547332fa9b103fd0c93c7562f7fd4b1a56857581da61ae31a08d7f402da15d19"
+    },
+    {
+      "index": 2,
+      "elapsedMS": -59000,
+      "pointing": {
+        "ra": 0.4823795111111111,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 619,
+      "queryX": 775,
+      "selectedId": "N0000.DAT@13921",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "c1ba306b04cef0963b5740394d0afa39f89608dbef49763994d5b896bc04cf23"
+    },
+    {
+      "index": 2,
+      "elapsedMS": -3000,
+      "pointing": {
+        "ra": 0.49793506666666665,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 328,
+      "queryX": 484,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "b7df4305ab2ffc2b731a4b395420bc6901ca7c209b5ba0f349e6a3d3cf658c11"
+    },
+    {
+      "index": 2,
+      "elapsedMS": -1000,
+      "pointing": {
+        "ra": 0.49849062222222223,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 317,
+      "queryX": 473,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 765,
+      "pixelLevel": 13,
+      "fraction": 1,
+      "viewportSHA256": "bbf2a6a099e00715ec8bad57c112af6b256286ed7e1e2fa2736103403663e437"
+    },
+    {
+      "index": 2,
+      "elapsedMS": -100,
+      "pointing": {
+        "ra": 0.4987406222222222,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 313,
+      "queryX": 469,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 13971,
+      "pixelLevel": 245,
+      "fraction": 1,
+      "viewportSHA256": "d1d42158ac7a624651fd58a4745897488de67aaf4015b043bf9047a1063b9386"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 0,
+      "pointing": {
+        "ra": 0.4987684,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 312,
+      "queryX": 468,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 14919,
+      "pixelLevel": 262,
+      "fraction": 1,
+      "viewportSHA256": "12bbe0f3efccccecdef3a49d44dabf708d25154780b140ecbfd8f57f30399e88"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 100,
+      "pointing": {
+        "ra": 0.4987961777777778,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 311,
+      "queryX": 467,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 13971,
+      "pixelLevel": 245,
+      "fraction": 1,
+      "viewportSHA256": "213b788ab448e4f09671980c1fd3ed7ba28835d6981add18e6c9fac7cb8fdcb3"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 500,
+      "pointing": {
+        "ra": 0.4989072888888889,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 309,
+      "queryX": 465,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 6753,
+      "pixelLevel": 118,
+      "fraction": 1,
+      "viewportSHA256": "e012be268aaa235abb0e0180c16f3b2ad5aff56d5e3d52a0d7f63b462170038c"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 1000,
+      "pointing": {
+        "ra": 0.49904617777777777,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 765,
+      "pixelLevel": 13,
+      "fraction": 1,
+      "viewportSHA256": "3a3db1e651373396615d4d1f09b632294a88fbdefe385e10cb00d663480ecd4c"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 1007,
+      "pointing": {
+        "ra": 0.4990481222222222,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 765,
+      "pixelLevel": 13,
+      "fraction": 1,
+      "viewportSHA256": "3a3db1e651373396615d4d1f09b632294a88fbdefe385e10cb00d663480ecd4c"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 1008,
+      "pointing": {
+        "ra": 0.4990484,
+        "dec": 0.03628
+      },
+      "status": "precision-required",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 765,
+      "pixelLevel": 13,
+      "fraction": 0,
+      "viewportSHA256": "3a3db1e651373396615d4d1f09b632294a88fbdefe385e10cb00d663480ecd4c"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 1009,
+      "pointing": {
+        "ra": 0.4990486777777778,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 307,
+      "queryX": 463,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 765,
+      "pixelLevel": 13,
+      "fraction": 0,
+      "viewportSHA256": "3a3db1e651373396615d4d1f09b632294a88fbdefe385e10cb00d663480ecd4c"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 1500,
+      "pointing": {
+        "ra": 0.4991850666666667,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 304,
+      "queryX": 460,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "b5a97a4914393899f7a1cec24cfe220bb9d3ab0952336876c2edb90a129660a0"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 3000,
+      "pointing": {
+        "ra": 0.49960173333333335,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 296,
+      "queryX": 452,
+      "selectedId": "N0000.DAT@14428",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "647b9db89e2ea00ae42b123d4d9a5bd77c6241be1fc04330c300e8b0dda61a67"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 30000,
+      "pointing": {
+        "ra": 0.5071017333333333,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 156,
+      "queryX": 312,
+      "selectedId": "N0000.DAT@14678",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "843c0a687c4f64eaa4410edadfbe684cc94dd481e4047459d5babc7255ccdbc9"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 59000,
+      "pointing": {
+        "ra": 0.5151572888888889,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 5,
+      "queryX": 161,
+      "selectedId": "N0000.DAT@14951",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "e64f6eb0413acf69ecfc6ef5530395810f17b44d21e6f7993bdf1c79368d9d6c"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 60000,
+      "pointing": {
+        "ra": 0.5154350666666667,
+        "dec": 0.03628
+      },
+      "status": "ready",
+      "cropLeft": 0,
+      "queryX": 156,
+      "selectedId": "N0000.DAT@14951",
+      "pixelSum": 0,
+      "pixelLevel": 0,
+      "fraction": 0,
+      "viewportSHA256": "827626895ccff88acbd8e0423777dd3eea8d12eece06aefbd9a5fc210dccdf60"
+    },
+    {
+      "index": 2,
+      "elapsedMS": 61000,
+      "pointing": {
+        "ra": 0.5157128444444444,
+        "dec": 0.03628
+      },
+      "status": "cache-boundary"
+    }
+  ]
+}

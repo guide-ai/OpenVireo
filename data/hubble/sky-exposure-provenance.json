@@ -1,0 +1,607 @@
+{
+  "schema": 1,
+  "policyId": "openclea-pinned-sky-exposure-v1",
+  "targetSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "fieldSnapshotSHA256": "bc16506fbbe5c7c60a5b9afdbcc3faab27e8dc40afe0ac7af3599f994267ea1a",
+  "resource": {
+    "identity": [
+      10,
+      "TOBSRVTRY",
+      0
+    ],
+    "offset": 2117044,
+    "bytes": 17628,
+    "sha256": "7aed67cbd651bc02d9130f3d6f3b0f4179d44e6208ba29601362a1f6a65923dc",
+    "dfm_root_class": "TObsrvtry",
+    "dfm_root_name": "Obsrvtry",
+    "dfm_event_binding_candidates": [
+      {
+        "event": "OnActivate",
+        "handler": "FormActivate",
+        "payload_offset": 410
+      },
+      {
+        "event": "OnClose",
+        "handler": "FormClose",
+        "payload_offset": 435
+      },
+      {
+        "event": "OnCloseQuery",
+        "handler": "FormCloseQuery",
+        "payload_offset": 454
+      },
+      {
+        "event": "OnCreate",
+        "handler": "FormCreate",
+        "payload_offset": 483
+      },
+      {
+        "event": "OnHide",
+        "handler": "FormHide",
+        "payload_offset": 504
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 521
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 544
+      },
+      {
+        "event": "OnPaint",
+        "handler": "FormPaint",
+        "payload_offset": 563
+      },
+      {
+        "event": "OnShow",
+        "handler": "FormShow",
+        "payload_offset": 582
+      },
+      {
+        "event": "OnMouseDown",
+        "handler": "CRT1MouseDown",
+        "payload_offset": 1462
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "CRT1MouseUp",
+        "payload_offset": 1489
+      },
+      {
+        "event": "OnClick",
+        "handler": "DriveBtnClick",
+        "payload_offset": 6946
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 6969
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 6992
+      },
+      {
+        "event": "OnClick",
+        "handler": "ViewSliderClick",
+        "payload_offset": 7675
+      },
+      {
+        "event": "OnMouseDown",
+        "handler": "ViewSliderMouseDown",
+        "payload_offset": 7700
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 7733
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 7756
+      },
+      {
+        "event": "OnPositionChange",
+        "handler": "ViewSliderPositionChange",
+        "payload_offset": 8296
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 8585
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 8608
+      },
+      {
+        "event": "OnPositionChange",
+        "handler": "InstSliderClick",
+        "payload_offset": 9179
+      },
+      {
+        "event": "OnClick",
+        "handler": "RdngBtnClick",
+        "payload_offset": 9521
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 9543
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 9566
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 9726
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 9749
+      },
+      {
+        "event": "OnPositionChange",
+        "handler": "RateSliderClick",
+        "payload_offset": 10275
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 10919
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 10942
+      },
+      {
+        "event": "OnMouseDown",
+        "handler": "EBtnMouseDown",
+        "payload_offset": 10961
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "EBtnMouseUp",
+        "payload_offset": 10988
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 11209
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 11232
+      },
+      {
+        "event": "OnMouseDown",
+        "handler": "NBtnMouseDown",
+        "payload_offset": 11251
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "NBtnMouseUp",
+        "payload_offset": 11278
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 11751
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 11774
+      },
+      {
+        "event": "OnMouseDown",
+        "handler": "WBtnMouseDown",
+        "payload_offset": 11793
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "WBtnMouseUp",
+        "payload_offset": 11820
+      },
+      {
+        "event": "OnKeyDown",
+        "handler": "FormKeyDown",
+        "payload_offset": 12293
+      },
+      {
+        "event": "OnKeyUp",
+        "handler": "FormKeyUp",
+        "payload_offset": 12316
+      },
+      {
+        "event": "OnMouseDown",
+        "handler": "SBtnMouseDown",
+        "payload_offset": 12335
+      },
+      {
+        "event": "OnMouseUp",
+        "handler": "SBtnMouseUp",
+        "payload_offset": 12362
+      },
+      {
+        "event": "OnNotify",
+        "handler": "MediaPlayer1Notify",
+        "payload_offset": 12759
+      },
+      {
+        "event": "OnClick",
+        "handler": "Site1Click",
+        "payload_offset": 12915
+      },
+      {
+        "event": "OnClick",
+        "handler": "StarList1Click",
+        "payload_offset": 13057
+      },
+      {
+        "event": "OnClick",
+        "handler": "VariableStars1Click",
+        "payload_offset": 13235
+      },
+      {
+        "event": "OnClick",
+        "handler": "VIREOModeled1Click",
+        "payload_offset": 13350
+      },
+      {
+        "event": "OnClick",
+        "handler": "PrintSkyImage1Click",
+        "payload_offset": 13462
+      },
+      {
+        "event": "OnClick",
+        "handler": "DataFileMerge1Click",
+        "payload_offset": 13759
+      },
+      {
+        "event": "OnClick",
+        "handler": "M671Click",
+        "payload_offset": 13886
+      },
+      {
+        "event": "OnClick",
+        "handler": "MergeBSC1Click",
+        "payload_offset": 13977
+      },
+      {
+        "event": "OnClick",
+        "handler": "MergeGCMKField1Click",
+        "payload_offset": 14064
+      },
+      {
+        "event": "OnClick",
+        "handler": "MergeGCMKClstr1Click",
+        "payload_offset": 14157
+      },
+      {
+        "event": "OnClick",
+        "handler": "MergeHDFile1Click",
+        "payload_offset": 14239
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateFinderFile1Click",
+        "payload_offset": 14328
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateNakedEyeFile1Click",
+        "payload_offset": 14427
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateNewCGSC1Click",
+        "payload_offset": 14513
+      },
+      {
+        "event": "OnClick",
+        "handler": "FromPGC1Click",
+        "payload_offset": 14669
+      },
+      {
+        "event": "OnClick",
+        "handler": "FromCFA1Click",
+        "payload_offset": 14749
+      },
+      {
+        "event": "OnClick",
+        "handler": "MergePGCintoCFA1Click",
+        "payload_offset": 14830
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateQuasarFile1Click",
+        "payload_offset": 14921
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateQSOSpFile1Click",
+        "payload_offset": 15020
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateIndexFile1Click",
+        "payload_offset": 15171
+      },
+      {
+        "event": "OnClick",
+        "handler": "ConvertFiles1Click",
+        "payload_offset": 15255
+      },
+      {
+        "event": "OnClick",
+        "handler": "ConvertRemoveZ1Click",
+        "payload_offset": 15345
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateCompositeTemplate1Click",
+        "payload_offset": 15451
+      },
+      {
+        "event": "OnClick",
+        "handler": "GenerateSpectraColors1Click",
+        "payload_offset": 15587
+      },
+      {
+        "event": "OnClick",
+        "handler": "Convert2MASSPSCData1Click",
+        "payload_offset": 15761
+      },
+      {
+        "event": "OnClick",
+        "handler": "ModifyConvertedData1Click",
+        "payload_offset": 15873
+      },
+      {
+        "event": "OnClick",
+        "handler": "CreateVaribleStarCatlg1Click",
+        "payload_offset": 16009
+      },
+      {
+        "event": "OnClick",
+        "handler": "Exit1Click",
+        "payload_offset": 16177
+      },
+      {
+        "event": "OnClick",
+        "handler": "ViewSelectfromList1Click",
+        "payload_offset": 16348
+      },
+      {
+        "event": "OnClick",
+        "handler": "AddCurrentItemtoList1Click",
+        "payload_offset": 16463
+      },
+      {
+        "event": "OnClick",
+        "handler": "LoadHotList1Click",
+        "payload_offset": 16583
+      },
+      {
+        "event": "OnClick",
+        "handler": "SaveUpdatedList1Click",
+        "payload_offset": 16676
+      },
+      {
+        "event": "OnClick",
+        "handler": "CoordBtnClick",
+        "payload_offset": 16791
+      },
+      {
+        "event": "OnClick",
+        "handler": "Return1Click",
+        "payload_offset": 16914
+      },
+      {
+        "event": "OnClick",
+        "handler": "Spectrometer1Click",
+        "payload_offset": 16994
+      },
+      {
+        "event": "OnClick",
+        "handler": "MultiSpec1Click",
+        "payload_offset": 17075
+      },
+      {
+        "event": "OnClick",
+        "handler": "Photometer1Click",
+        "payload_offset": 17154
+      },
+      {
+        "event": "OnClick",
+        "handler": "CCDCamera1Click",
+        "payload_offset": 17233
+      },
+      {
+        "event": "OnClick",
+        "handler": "IRCamera1Click",
+        "payload_offset": 17308
+      },
+      {
+        "event": "OnClick",
+        "handler": "Help1Click",
+        "payload_offset": 17366
+      },
+      {
+        "event": "OnTimer",
+        "handler": "clocktimerTimer",
+        "payload_offset": 17427
+      },
+      {
+        "event": "OnTimer",
+        "handler": "SlewTimerTimer",
+        "payload_offset": 17506
+      },
+      {
+        "event": "OnTimer",
+        "handler": "SlewTimer2Timer",
+        "payload_offset": 17585
+      }
+    ]
+  },
+  "nativeFrame": {
+    "controlWidth": 312,
+    "controlHeight": 312,
+    "fieldMultiplier": 3,
+    "width": 936,
+    "height": 936,
+    "fieldDegrees": 0.75,
+    "pointingRaHours": 0.5,
+    "pointingDecDegrees": 0,
+    "scaled": false,
+    "pixelsPerInch": 96
+  },
+  "nonnullSelectionWitnesses": [
+    {
+      "id": "N0000.DAT@14428",
+      "x": 444.9444526220518,
+      "y": 422.72256,
+      "distance": 50.80949554808053
+    },
+    {
+      "id": "N0000.DAT@14553",
+      "x": 522.3123284053376,
+      "y": 430.1856,
+      "distance": 66.17973907601355
+    }
+  ],
+  "constants": {
+    "baseZeroPoint": 6,
+    "telescopeCorrection": -2,
+    "storedZeroPoint": 4,
+    "skyMagnitude": 19,
+    "skyMeanNumber": 1e-06,
+    "elapsedMultiplier": 50,
+    "nativeTimerMs": 1,
+    "minimumAngstrom": 3700,
+    "maximumAngstrom": 4700,
+    "bins": 600,
+    "stepNumber": 1.6666666666666667
+  },
+  "browserPolicies": {
+    "timerTargetMs": 100,
+    "maximumTickGapMs": 1000,
+    "maximumJournalEvents": 12000,
+    "seed": "explicit uint32; no shared native system-seed equivalence",
+    "clock": "integer monotonic milliseconds, actual committed deltas; stop discards uncommitted tail; background/route/domain change pauses",
+    "reset": "stop before reset; counters cleared and current RNG retained",
+    "session": "current reset segment, exact tick journal and seedAtReset; stopped replay only; restores unarmed",
+    "export": "new labelled sky counts CSV and portable JSON; no native SSP header mislabel"
+  },
+  "evidence": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/observatory/TObsrvtry.json",
+      "sha256": "c97282ae55d4c7eea1d4b39890ba42f52563561d6dd2ab6ff3e184aeee3d0512"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-show.c",
+      "sha256": "fbdca272d546ebf47217a3a2c8db6e5a0d565865290e10103ff743963bd83178"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-activate.asm",
+      "sha256": "94de7251fc71bcc05b361b9322d3eda3f4813e1d358a5d9ac15b3e81eaf13439"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-target-setup.c",
+      "sha256": "d2e3b86e6f3f29fa4f7048e486037bb264825aff7e0b8ef85f02507351ba464e"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-reset.asm",
+      "sha256": "2935b23f0075c12388048ef06ea7df92e321e639195a9f0242f83eb3d25fbd49"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-go.asm",
+      "sha256": "6289f9429e2bacf63f720af8546da3102691784589d524758508929c52c09a98"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-timer.asm",
+      "sha256": "b7af553ff46c5edc746200497e33d8d687d8991c65aba0b74e8687071059cca0"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/spectrometer-stop.asm",
+      "sha256": "ca8df820998b88f20fa2d2870db7f6bf84e623a4ed1017869896e8498761743a"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/p6-channel-grid-calibration.asm",
+      "sha256": "9ee01ad1063f2b33d69a569c9aade627acab07aa702c4fd3eabb95eb1adbb003"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/telescope-zero-point.asm",
+      "sha256": "9a6ff9b64d2d63e9a669ae7f36808ddca2ea943d828688380786b1c6ff052b39"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/default-telescopes.asm",
+      "sha256": "1a94fec914d91188e02ea4897f70ad5ea7a1d6b4486901554d0f71a7ee52c091"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/scene-save-recovery/spectrometer-save-header.asm",
+      "sha256": "18db0bd830afa80a33b452439d2980a39e6b12ca18ce7bf656f7bfc62d82b1d6"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/implementation/data/hubble/PROVENANCE.json",
+      "sha256": "071e7bda3520309df41378f4531ba57427852e33bbcdfaf8a56bf67c9f394a87"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/implementation/data/hubble/pinned-hubble-field-provenance.json",
+      "sha256": "4cd3815cad429043bc5fac2ce923764ba580141903182bd414a229c215fa7b4f"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/implementation/data/hubble/slit-throughput-provenance.json",
+      "sha256": "2d7d74ca9fd3cd854b37d8d5f076c3fee0066988063c3ec6632582c5a65a4e8e"
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/hubble-acquisition/dossiers/telescope-parameters-copy.asm",
+      "sha256": "9a1487421bf7506288c14d14faeaaae1533a4b6b8512b9bd479cc32561398456"
+    }
+  ],
+  "numericalPolicy": "Number/Math+explicit Single calibration, same recovered low-mean Poisson/LCG; no original x87/GDI/timing/seed equivalence",
+  "originalExecution": false,
+  "remaining": "Object-bearing fields and other configurations remain unsupported; no source contribution or invented pixels",
+  "frameBinding": {
+    "class": "TObsrvtry",
+    "typeInfoVA": "0x5377cc",
+    "vmtVA": "0x5367f4",
+    "fieldTableVA": "0x53690a",
+    "fieldCount": 124,
+    "fieldTableSHA256": "9b9185f808b7f98d463eb941d9c01790b65ae69252a4bc9d0bededd1636e7d1d",
+    "binding": {
+      "offset": "0x3d8",
+      "typeIndex": 4,
+      "name": "CRT1",
+      "entryVA": "0x536aae"
+    },
+    "resourceSHA256": "7aed67cbd651bc02d9130f3d6f3b0f4179d44e6208ba29601362a1f6a65923dc",
+    "parameterSetupVA": "0x53c500",
+    "nativeFrame": {
+      "controlWidth": 312,
+      "controlHeight": 312,
+      "fieldMultiplier": 3,
+      "width": 936,
+      "height": 936,
+      "fieldDegrees": 0.75,
+      "pointingRaHours": 0.5,
+      "pointingDecDegrees": 0,
+      "scaled": false,
+      "pixelsPerInch": 96
+    },
+    "originalExecution": false
+  }
+}

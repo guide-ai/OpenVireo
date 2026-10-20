@@ -1,0 +1,20 @@
+[
+  {
+    "id": "36773",
+    "apparentV": 15.8,
+    "source": "Hubble Data.xls \u00b7 Sheet1!C3",
+    "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed"
+  },
+  {
+    "id": "36747",
+    "apparentV": 15.6,
+    "source": "Hubble Data.xls \u00b7 Sheet1!C2",
+    "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed"
+  },
+  {
+    "id": "54876",
+    "apparentV": 16.0,
+    "source": "Hubble Data.xls \u00b7 Sheet1!C9",
+    "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed"
+  }
+]

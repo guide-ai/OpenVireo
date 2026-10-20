@@ -1,0 +1,190 @@
+{
+  "schema": "openclea-static-optical-records-v1",
+  "artifact": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bytes": 2288128
+  },
+  "recordStride": 147,
+  "records": [
+    {
+      "recordIndex": 0,
+      "constructorOffset": "0x2530",
+      "runtimeOffset": "0x2be0",
+      "name": "0.4m (16\") Telescope",
+      "nameEvidence": {
+        "va": "0x5a3490",
+        "fileOffset": 1714320,
+        "bytes": 21,
+        "sha256": "1a4ca010ee72824fc56bc573ab109a16c01487e88350e9dbe8c984d081d3cab0"
+      },
+      "availability": 1,
+      "minimumAllocationUses": 255,
+      "maximumAllocationUses": 255,
+      "reapplyWaitMinutes": 0,
+      "apertureMM": 406.3999938964844,
+      "apertureBits": "0x43cb3333",
+      "focalLengthMM": 4627.5,
+      "focalConstruction": "literal Single",
+      "finderFactorMag": -6,
+      "scopeFactorMag": -2,
+      "seeingArcsec": 3.0,
+      "seeingBits": "0x40400000",
+      "site": {
+        "name": "Gettysburg College Observatory",
+        "longitude": {
+          "rawExtendedLE": "ac55d7944f9b8eacffbf",
+          "exactDecimalRadians": "-1.348102010591612544884027036218299144820775836706161499023437500",
+          "degreesViaNativeConstant": "-77.2405555599999999981317844299700430868896231446699279404445834724244510773396871911034012"
+        },
+        "latitude": {
+          "rawExtendedLE": "293599b0da1002b2fe3f",
+          "exactDecimalRadians": "0.6953440221701370932438392158392304054359556175768375396728515625",
+          "degreesViaNativeConstant": "39.8402777799999999969633277557540154081006836698139929388755610380404284779356182105009010"
+        },
+        "horizon": {
+          "rawExtendedLE": "da3a243a57c2b8b2fc3f",
+          "exactDecimalRadians": "0.174532925199432957698167726001692301451839739456772804260253906250",
+          "degreesViaNativeConstant": "10.0000000000000000003071862935115642152566050122957004320500782341403436764646896163163947"
+        },
+        "heightMetres": 176.78399658203125,
+        "heightBits": "0x4330c8b4",
+        "utMinusLocalStandardHours": 5
+      }
+    },
+    {
+      "recordIndex": 1,
+      "constructorOffset": "0x25c3",
+      "runtimeOffset": "0x2c73",
+      "name": "KPNO 0.9m (36\") Telescope",
+      "nameEvidence": {
+        "va": "0x5a34c8",
+        "fileOffset": 1714376,
+        "bytes": 26,
+        "sha256": "6fa4c0c103b9862d7a51196f1a5881eb6e0f5b0b758387f287dd2dbdadbfef1c"
+      },
+      "availability": 0.5,
+      "minimumAllocationUses": 12,
+      "maximumAllocationUses": 24,
+      "reapplyWaitMinutes": 10,
+      "apertureMM": 914.4000244140625,
+      "apertureBits": "0x4464999a",
+      "focalLengthMM": 9144.0,
+      "focalConstruction": "Single(round-to-nearest-even(Extended product)); numerical port policy, no runtime oracle",
+      "finderFactorMag": -5,
+      "scopeFactorMag": 0,
+      "seeingArcsec": 1.7999999523162842,
+      "seeingBits": "0x3fe66666",
+      "site": {
+        "name": "Kitt Peak Nat'l. Obs. - Arizona",
+        "longitude": {
+          "rawExtendedLE": "890fde66581951f9ffbf",
+          "exactDecimalRadians": "-1.947787445225671807834573467932415269388002343475818634033203125",
+          "degreesViaNativeConstant": "-111.599999999999999999017664223403320652655996590471270802287417150065125175712637314168196"
+        },
+        "latitude": {
+          "rawExtendedLE": "9623c3936c44d08efe3f",
+          "exactDecimalRadians": "0.5578654065209432353624960376770047787431394681334495544433593750",
+          "degreesViaNativeConstant": "31.9633333299999999994385267246814057934157005772865464689364579969063130114421901646626356"
+        },
+        "horizon": {
+          "rawExtendedLE": "da3a243a57c2b8b2fc3f",
+          "exactDecimalRadians": "0.174532925199432957698167726001692301451839739456772804260253906250",
+          "degreesViaNativeConstant": "10.0000000000000000003071862935115642152566050122957004320500782341403436764646896163163947"
+        },
+        "heightMetres": 2120.0,
+        "heightBits": "0x45048000",
+        "utMinusLocalStandardHours": 7
+      }
+    },
+    {
+      "recordIndex": 2,
+      "constructorOffset": "0x2656",
+      "runtimeOffset": "0x2d06",
+      "name": "KPNO 4m (158\") Mayall Telescope",
+      "nameEvidence": {
+        "va": "0x5a3508",
+        "fileOffset": 1714440,
+        "bytes": 32,
+        "sha256": "474b6d9156d57872829b43aeed0fc9515243cfedfb8033c228c7a7beac266eb6"
+      },
+      "availability": 0.25,
+      "minimumAllocationUses": 8,
+      "maximumAllocationUses": 16,
+      "reapplyWaitMinutes": 15,
+      "apertureMM": 3810.0,
+      "apertureBits": "0x456e2000",
+      "focalLengthMM": 10287.0,
+      "focalConstruction": "Single(round-to-nearest-even(Extended product)); numerical port policy, no runtime oracle",
+      "finderFactorMag": -4,
+      "scopeFactorMag": 3,
+      "seeingArcsec": 1.7999999523162842,
+      "seeingBits": "0x3fe66666",
+      "site": {
+        "name": "Kitt Peak Nat'l. Obs. - Arizona",
+        "longitude": {
+          "rawExtendedLE": "890fde66581951f9ffbf",
+          "exactDecimalRadians": "-1.947787445225671807834573467932415269388002343475818634033203125",
+          "degreesViaNativeConstant": "-111.599999999999999999017664223403320652655996590471270802287417150065125175712637314168196"
+        },
+        "latitude": {
+          "rawExtendedLE": "9623c3936c44d08efe3f",
+          "exactDecimalRadians": "0.5578654065209432353624960376770047787431394681334495544433593750",
+          "degreesViaNativeConstant": "31.9633333299999999994385267246814057934157005772865464689364579969063130114421901646626356"
+        },
+        "horizon": {
+          "rawExtendedLE": "da3a243a57c2b8b2fc3f",
+          "exactDecimalRadians": "0.174532925199432957698167726001692301451839739456772804260253906250",
+          "degreesViaNativeConstant": "10.0000000000000000003071862935115642152566050122957004320500782341403436764646896163163947"
+        },
+        "heightMetres": 2120.0,
+        "heightBits": "0x45048000",
+        "utMinusLocalStandardHours": 7
+      }
+    }
+  ],
+  "constants": {
+    "radiansToDegrees": {
+      "rawExtendedLE": "c3bd0f1ed3e02ee50440",
+      "exactDecimal": "57.2957795130823208766546184023127352702431380748748779296875",
+      "evidence": {
+        "va": "0x53ef14",
+        "fileOffset": 1303316,
+        "bytes": 10,
+        "sha256": "6fd0ac341b48a859893f1d4d815dd4c74f8b92cd70c177b9587ae406f391bd2d"
+      }
+    },
+    "mayallFocalRatio": {
+      "rawExtendedLE": "cdccccccccccccac0040",
+      "exactDecimal": "2.70000000000000000004336808689942017736029811203479766845703125",
+      "evidence": {
+        "va": "0x5a3528",
+        "fileOffset": 1714472,
+        "bytes": 10,
+        "sha256": "36634407954990cbda600f59e8953559b85739172073707a0ce86dad53c07156"
+      }
+    }
+  },
+  "procedures": {
+    "constructor": {
+      "va": "0x5a3174",
+      "fileOffset": 1713524,
+      "bytes": 796,
+      "sha256": "5b56f253f36bec0216d39c47c5b203311737bc38dfe2baef4165206dbe841f97"
+    },
+    "siteInformation": {
+      "va": "0x53e9e4",
+      "fileOffset": 1301988,
+      "bytes": 1210,
+      "sha256": "e742620c11af9ebee9a07b98a41b10dfe429559462d1c8bd30fd05434b9a22a2"
+    },
+    "opticalOptions": {
+      "va": "0x5933b4",
+      "fileOffset": 1648564,
+      "bytes": 2592,
+      "sha256": "2c8ddac227c6aa6cb96a6b4f6720ca39978b47a28754db5dc26065086841d985"
+    }
+  },
+  "literalStoreChecks": 57,
+  "policy": "Static byte decode and declared-store table only. No original execution, emulation, provider or binary equivalence. Extended\u2192Decimal exact; displayed degrees use recovered native conversion constant. Focal products explicitly choose nearest-even float32. Default constructor values apply only absent accepted option overrides."
+}
