@@ -1,0 +1,48 @@
+# Undo a confirmed selected observation edit
+
+**Edit observation result N** now saves one recovery before changing that selected row. **Undo last observation edit** restores the exact prior notebook,including original numeric type code,literal remarks,source identities,stable IDs,order and reuse/append setting. Recovery survives reload when browser storage works and can be exported independently. No spectral label is reparsed to undo.
+
+This is the bounded selected-row flow from native Edit→confirm→Undo. **Open observation results** retains its existing first-object reuse/append workflow and does not create edit recovery. Use the explicit row Edit button for a recoverable edit. There is no redo or multi-level history,no new observing metadata and no reconstructed DAT writer. [Native evidence and adaptations](OBSERVATION-EDIT-UNDO-PROVENANCE.json) remain separate from any runtime-equivalence claim.
+
+## Try locally
+
+1. Open `http://127.0.0.1:5173/#classification`,select an original **Practice object** and confirm a notebook observation with your own type/remarks. Its browser-saving status must report saved before the row Edit button is available. This does not change your independent free-form classification answer or width records.
+2. Click **Edit observation result N**,change the fields,Cancel or press Escape. The confirmed row and recovery slot remain unchanged. Reopen and confirm **Record observation result**. Invalid byte/length/unsafe-colon inputs retain the draft and prior row without creating recovery.
+3. After a changed selected-row confirmation,expand **Compare saved edit** to inspect exact type codes and remarks before/after. This is a recovery comparison,not a correctness grade. Existing native canonical-label conversion quirks remain:an unchanged visible spelling can still reparse to a different stored code. Undo restores the original code,including a non-roundtripping one.
+4. Click **Undo last observation edit**. The complete prior notebook returns and the recovery is cleared after saving. Repeat an edit,reload,and undo:both exact states remain available. A truly unchanged code/remarks confirmation needs no extra write or recovery;the native dialog may enable Undo even for a no-op.
+5. To keep the edit,click **Review finishing edit recovery**. Its review labels the prior selected row;**Cancel edit recovery action** or Escape keeps recovery. **Finish edit recovery** keeps the current notebook and discards only that recovery. This final discard cannot itself be undone.
+6. **Export edit recovery** downloads the prior notebook as ordinary notebook-v1 JSON. **Export observation notebook** downloads the current notebook only. Keep both to retain both states on another browser/origin;neither export embeds a pending recovery journal. A notebook restore requires finishing current recovery first and its usual replacement review.
+7. Pending edit or deletion recovery occupies the same single slot and pauses all notebook mutations:another Edit/Delete,new/reused observation,mode changes and notebook restore. Exports,manual classification/investigation workflows and read-only DAT inspection remain available. Resolve recovery explicitly before continuing. Normal cancellation/navigation/source activity closes drafts and reviews while preserving confirmed recovery.
+
+Only the existing25verified practice identities participate. Acquired/imported sources do not gain result authority. Selected-row editing requires a saved browser copy because its backup must be staged before modification;ordinary reuse/append retains its established unsaved-memory/export policy.
+
+## Shared recovery and compatibility
+
+The main `openvireo.observation-notebook.v1` key,notebook-v1 envelope,historical investigation/classification JSON/CSV and old deletion-v1 envelope remain unchanged. Existing deletion recovery is read without rewriting its raw text. One **historically named** local key `openvireo.observation-deletion-recovery.v1` now recognizes two strict profiles:
+
+| Profile | Format/version | Proof required |
+|---|---|---|
+|Existing deletion|`OpenVireo observation deletion recovery`,version1|After is before minus exactly one stable ID,other rows/mode unchanged.|
+|New selected edit|`OpenVireo observation edit recovery`,version1|Same mode/count/IDs/source/order;only the specified existing row's code and/or remarks changes. No-op and multi-row claims reject.|
+
+Both retain fields `format`, `version`, `recordId`, `before`, `after`;embedded values are ordinary validated notebook-v1 envelopes. Extra/native numeric claims,unknown versions,changed source hashes,invalid text/codes or inconsistent snapshots reject atomically. The unchanged cap is two128KiB notebook limits plus4096bytes. Parsed snapshots are owned and immutable.
+
+A deletion-aware older client cannot interpret the new edit profile:its strict parser preserves it as unreadable and pauses notebook mutation. It does not reinterpret edits as deletions. Export unreadable text and use a supporting version to inspect it;do not silently downgrade,rewrite or drop it. Still older clients that ignore recovery and perfectly overlapping writers remain a declared limit. There is no native compatibility claim in this local envelope.
+
+The shared I/O implementation preserves old deletion exports as compatibility names and centralizes the same ordered protocol. It checks current main/recovery copies,stages recovery,checks both keys,then writes/checks the edited notebook. Undo validates the requested recovery against the exact retained raw copy,checks after-state,stores/checks before-state,then removes/checks recovery. Explicit Finish compares reviewed copies and removes only recovery. Two localStorage keys are not an atomic transaction;no cross-process transaction guarantee or automatic retry is asserted. After a successful write,the UI retains that exact verified recovery instead of depending on an extra optional storage refresh. A failed later read cannot silently hide a known backup or unlock mutations. This guard also covers existing deletion.
+
+A failed stage/main write keeps the prior confirmed view and selected draft. A staged copy can exist even if the view remains unchanged. Read-back failure can leave a successful main write with an uncertain reported outcome. Export available copies and reload to inspect actual storage before deciding. If main already equals before,Undo is disabled and explicit Finish cleans the extra recovery. Undo cleanup failure keeps the restored notebook saved and the recovery retained. Different notebook/recovery states never merge automatically. Other-tab events stop saving and preserve an already known recovery for export,even when another tab removes/replaces its key.
+
+Corrupt/future/oversized recovery uses **Export unreadable observation recovery** and a generic **Finish observation recovery** review. The current notebook is not removed by cleanup. A corrupt/missing main can be repaired by exporting valid prior recovery,explicitly finishing its separate copy,and restoring that exported notebook through the unchanged v1 restore review. Browser data remain origin-scoped convenience copies;export backups before clearing storage or switching origins.
+
+## Native scope and order
+
+Original EXE SHA256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c` is unchanged. Six complete function ranges and the correct list-form method-table entries bind the selected handlers;other forms with identical method names are excluded. No original execution/emulation was used.
+
+Edit `[0x549620,0x549760)` first disables Undo and clears delete flag+0x3ec,even before checking selection. A non-header display index maps to data index-1. It copies0x24DWORDs/144bytes to+0x3f0 **before** the modal. Only modal result1 retains the display text/index,formats/replaces the changed display row and enables Undo. Cancel does not re-enable it;the separate dialog Cancel handler does not perform a record rollback. Selected Delete similarly disables/clears the shared slot before asking confirmation,then uses flag1 for its insert-back branch.
+
+Undo `[0x54993c,0x549a27)` chooses by that flag. Its edit branch resolves saved display index-1,copies the saved144bytes back,rebuilds the display row and disables Undo. This demonstrates one saved row,not independent edit/delete stacks. Generic classification prepare/first-object reuse is another entry path and does not establish this selected-row Undo contract.
+
+The browser's atomic drafts,stable identity/full snapshots,persistent backups,no-op omission and explicit lock/Finish are safety adaptations. Unlike native early invalidation,the browser preserves recovery across cancelled reviews/navigation and refuses another mutation until resolution. This protects existing data;it does not reproduce all native pointer/index/callback/reentry,partial text/velocity writes,GDI/x87 or cancellation behavior. Complete native list/runtime fidelity and full acceptance remain open.
+
+Validation logs,independent controls and desktop/mobile receipts are retained in local `observation-edit-undo-recovery/`;[validation scope](OBSERVATION-EDIT-UNDO-VALIDATION.md) records final outcomes. Integrator,sampler,source+skySUM,acquisition/counts/RNG,student answers,confirmed histories/grades and all1279original resources remain unchanged. All64primary acceptance statuses stay unchanged;project partial. No reconstructed writer or missing metadata is invented. External review is pending explicit human authorization,with0new attempts/no substitute. Local validation and report precede any publication;no deployment.

@@ -32,3 +32,5 @@ The current web notebook owns only manual type/remarks and verified source ident
 Rows from the earlier in-memory-only version were never contained in its session files or browser storage;closed/reloaded pages from that version cannot be reconstructed by this update. No missing earlier row is invented.
 
 This supersedes the in-memory-only boundary of commit2e866f2 for this separate notebook. It does not change the integrator,sampler,source+skySUM,acquisition/counts/seed,manual answer fields,confirmed classification/width records,grades or any historical file schema. Full native metadata/velocity/file interchange/delete/undo,broader sources,six-indicator/runtime/classroom/rights acceptance and external review remain open;all64primary statuses unchanged,project partial. No push/deploy or external review attempt.
+
+[Selected-row edit Undo](OBSERVATION-EDIT-UNDO.md) now stages an independent prior/current recovery in the existing shared recovery slot before a saved selected-row change. Notebook-v1 and historical exports remain unchanged;export current notebook and edit recovery separately to retain both versions.
