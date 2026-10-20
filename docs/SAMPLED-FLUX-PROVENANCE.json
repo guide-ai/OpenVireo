@@ -1,0 +1,33 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "sampler": "0x55dfe0",
+  "outputDoubleStore": "0x5098d6",
+  "cursorCapture": {
+    "file": "cursor-shoulders.asm",
+    "start": "0x5096dc",
+    "endExclusive": "0x509f24",
+    "byteRangeSha256": "a7b8cd5b7624cfa1a0d334dfdd030289a1394b72a8f6763286f0c127681010c1",
+    "listingSha256": "b685d6612d8fa453644afb2c8c18f687200568891a6410aed9368671d7e14d5b",
+    "evidenceId": "VIREO-EW-ST-08",
+    "scope": "Code ranges may include alignment/literal pools; those bytes are not additional instructions."
+  },
+  "branch": "0x5097e4",
+  "roleMapping": [
+    {
+      "role": "lower",
+      "selection": "reference list index + 1 via0x492688",
+      "call": "0x50983d"
+    },
+    {
+      "role": "unknown",
+      "selection": "unknown spectrum pointer +0x4bf",
+      "call": "0x509876"
+    },
+    {
+      "role": "upper",
+      "selection": "reference list current index via0x492688",
+      "call": "0x5098c5"
+    }
+  ],
+  "trust": "Static disassembly interpretation,range hash verified against pinned PE;not original execution,x87 orphoto-renderer equivalence."
+}
