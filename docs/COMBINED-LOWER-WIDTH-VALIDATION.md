@@ -1,5 +1,7 @@
 # Combined lower width-route validation
 
+Follow-up: [sampled mobile regression investigation](SAMPLED-MOBILE-REGRESSION.md) reproduces the resize/keyboard failure on unchanged9101dd5,fixes test synchronization and verifies the complete98case suite in one passing batch. The separate historical star-activation startup timeout is not reproduced or claimed fixed. Results below retain the originaldebf939validation scope and its two97/98failures.
+
 Baseline `9101dd548e7e2364680e5552eacba99feac4ee07`. Evidence directory: `/home/dobleuber/Documents/Codex/2026-10-18/task-3/combined-native-route-recovery/`. [Contract/steps](COMBINED-LOWER-WIDTH.md), [static provenance](COMBINED-LOWER-WIDTH-PROVENANCE.json). N02/E03 remain partial; no original execution/emulation or native runtime oracle.
 
 - Seven new core tests cover actual lower versus displayed unknown identity, explicit opt-in/center-only routing, absent lower token and malformed association, exact bottom-only retained binding, independent unchecked Unknown route, exclusion of fallback/residual identifiers and actual lower-source calculation without changing source arrays. Full suite:1343tests/135files pass.
