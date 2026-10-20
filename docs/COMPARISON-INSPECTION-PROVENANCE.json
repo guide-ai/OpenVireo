@@ -52,11 +52,13 @@
     }
   ],
   "webAdapters": [
-    "Responsive screenCTM to logical500columns;nearest-even pixel conversion;outside/cancel/lost-capture/hidden/blur/source/layout guards.",
-    "Keyboard arrows and keypad2/4/6/8 preview pixels from retained wavelength,Enter/Space retains;Escape cancels. Touch primary gestures admitted.",
+    "Responsive screenCTM to logical500columns;photo painted-cell floor and trace nearest-even pixel conversion;outside/cancel/lost-capture/hidden/blur/source/layout guards.",
+    "Keyboard arrows and keypad2/4/6/8 preview pixels from retained or selected diagnostic wavelength,Enter/Space retains;Escape cancels. Touch primary gestures admitted.",
     "Combined display ordinate=(125-y)/100;printed-coordinate ordinate=(250-y)/250 matching existing0..1axis,not a sampled flux or native trace-height equality.",
     "Cursor preview/readout/marker are ephemeral and do not enter JSON/CSV/manual-width/answer records.",
-    "Printed trace zoom uses existing integer endpoint viewport,actual retained points,clip-to-frame and dynamic ticks;manual continuum tool and labelled photo fallbacks stay full-domain."
+    "Printed trace zoom uses existing integer endpoint viewport,actual retained points,clip-to-frame and dynamic ticks;manual continuum tool and labelled photo fallbacks stay full-domain.",
+    "Touch swipes scroll by default;explicit touch-inspection opt-in arms capture. Owner-bound previews clear only their own pane;context-derived validity prevents stale source/render markers.",
+    "Sampled-trace ordinate tick is limited to the window of its recorded normalization. Printed ordinates keep their fixed0..1scale."
   ],
   "creditsAndLicensing": "Existing Gettysburg College/CLEA source credits,License.rtf hash and uncertainty in PHOTO-SPECTRUM-PROVENANCE.json and feature-width provenance;no new original resources included.",
   "uncertainty": [

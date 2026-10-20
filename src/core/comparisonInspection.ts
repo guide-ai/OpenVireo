@@ -5,9 +5,9 @@ export type InspectionPosition=Readonly<{column:number;y:number}>;
  * 0x5096dc +0x509eac pixel lambda and photo-vs-Y readout.
  * Fixed500 columns; responsive SVG mapping and printed trace ordinate are
  * browser adapters. Full provenance:docs/COMPARISON-INSPECTION.md. */
-export function inspectionPosition(x:number,y:number,height:number):InspectionPosition|null{
+export function inspectionPosition(x:number,y:number,height:number,columnRule:'nearest'|'painted'='nearest'):InspectionPosition|null{
  if(!Number.isFinite(x)||!Number.isFinite(y)||!Number.isFinite(height)||height<=0||x<0||x>=500||y<0||y>height)return null;
- return Object.freeze({column:Math.min(499,roundNearestEven(x)),y:roundNearestEven(y)});
+ return Object.freeze({column:Math.min(499,columnRule==='painted'?Math.floor(x):roundNearestEven(x)),y:roundNearestEven(y)});
 }
 export function inspectComparison(choice:FluxChoice,view:ClassificationViewport,kind:InspectionKind,point:InspectionPosition,height:number){
  if(!['photo','sampled-trace','printed-trace'].includes(kind)||!Number.isInteger(point.column)||point.column<0||point.column>499||!Number.isInteger(point.y)||point.y<0||point.y>height||!Number.isFinite(height)||height<=0)throw new RangeError('Invalid inspection position');
@@ -21,3 +21,6 @@ export function moveInspectionPosition(point:InspectionPosition,key:'ArrowLeft'|
 }
 
 export function inspectionStart(view:ClassificationViewport,marker:number|null,height:number):InspectionPosition{const step=viewportStep(view);if(!Number.isFinite(height)||height<=0)throw new RangeError('Invalid inspection height');const column=marker===null||!Number.isFinite(marker)?0:roundNearestEven((marker-view.minimum)/step);return Object.freeze({column:column>=0&&column<500?column:0,y:roundNearestEven(height/2)});}
+
+export type InspectionEntry=Readonly<{context:string;owner?:string;reading:ComparisonInspection}>;
+export function inspectionInContext(entry:InspectionEntry|null,context:string):ComparisonInspection|null{return entry?.context===context?entry.reading:null;}

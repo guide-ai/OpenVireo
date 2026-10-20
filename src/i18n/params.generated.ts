@@ -1406,4 +1406,5 @@ export interface MessageParameters {
   "inspection.kindPhoto": never;
   "inspection.kindSampled": never;
   "inspection.kindPrinted": never;
+  "inspection.touchOption": never;
 }
