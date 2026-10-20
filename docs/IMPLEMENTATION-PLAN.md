@@ -535,3 +535,7 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Observation deletion and recovery — 20 October2026
 
 [Confirmed deletion and exact persisted undo](OBSERVATION-DELETE.md) closes a bounded web notebook lifecycle with one separate recovery slot,export/cancel/explicit finish,staged-before-write guards and cross-tab/error/reload handling. Recovered native handlers back confirmation/full-record backup/single Undo;web order/transaction/lock policies are explicit adaptations. Main notebook-v1 and historical investigation/classification/CSV formats remain unchanged. General edit Undo/native list/runtime and DAT/numerical metadata remain partial,all64primary statuses unchanged;no external review attempt,push or deployment.
+
+## Native observation DAT numeric inspection — 20 October2026
+
+[Read-only native results](NATIVE-OBSERVATION-RESULTS.md) admits bounded144byte layout candidates with numeric stored-field/encoding/unit inspection,atomic errors/cancel and exact original-byte download. Corrected timeword semantics distinguish rawDouble from runtime-dependent JDdisplay. No scientific values are synthesized,admitted into notebook/acquisition or graded;existing persistence/Undo/JSON/CSV preserved. Native editable merge/writer,date/UTC/velocity/FPU/locale/runtime evidence remain partial,all64primary statuses unchanged;local validation before another push,no deployment/external review attempt.

@@ -609,7 +609,7 @@
     "evidence": "FormCreate sets list element size0x90;selected Edit copies0x24DWords",
     "fields": {
       "0x00": "object shortstring15",
-      "0x10": "JDdouble,not two coordinates",
+      "0x10": "Native date/time Double;JD display uses native date-object/runtime state,not direct rawJD. See NATIVE-OBSERVATION-RESULTS-PROVENANCE.json",
       "0x18": "RAExtended",
       "0x22": "DecExtended",
       "0x2c": "five10byte photometry values;kind byte selects display,not universally magnitudes",
@@ -976,5 +976,14 @@
     "Broader acquired/imported result identity and source authority mappings",
     "Full six-indicator/GDI/x87/Extended/edition/classroom/rights acceptance"
   ],
-  "externalReview": "Explicit parent hold,pending human authorization,0attempts;no push/deployment/original execution/emulation"
+  "externalReview": "Explicit parent hold,pending human authorization,0attempts;no push/deployment/original execution/emulation",
+  "errata": [
+    {
+      "field": "record+0x10",
+      "previousInterpretation": "JDdouble,not two coordinates",
+      "correction": "Numeric activation54a95b..54a986passesDoublethrough487b64/488188;getter487bccaddsobject+2aandruntimeglobal5bad48. No portable rawJD/UTC conversion established.",
+      "evidence": "docs/NATIVE-OBSERVATION-RESULTS-PROVENANCE.json",
+      "rawCapturePolicy": "Earlier research files/capture hashes preserved;this corrects analyst semantic labeling,not original bytes."
+    }
+  ]
 }

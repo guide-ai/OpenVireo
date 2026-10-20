@@ -1,0 +1,843 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "recordBytes": 144,
+  "rangeConvention": "[start,endExclusive);literal/exception data not disassembled as code",
+  "captures": [
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-01",
+      "start": "0x54a91c",
+      "endExclusive": "0x54afd4",
+      "byteRangeSHA256": "4d8bcb9e79e5201e8b9c57d583e5e658fc57775a4910deec8602c39d5a4d9aec",
+      "listingSHA256": "25e1e909ea54a59c11480c712d7a71f72edd9fec00827c0cf1a207676ae16c5c",
+      "localListing": "form-activate.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-02",
+      "start": "0x54b02c",
+      "endExclusive": "0x54b1b1",
+      "byteRangeSHA256": "ccf067392a190d233b0f386ac994c23a3f20573d08fc7c3f250392607a16d01d",
+      "listingSHA256": "2adb81d48f870f1d742d740204eac2b3fd77d63cd3c281fda45d8fa226b420a4",
+      "localListing": "confirm-main.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-03",
+      "start": "0x54b1bd",
+      "endExclusive": "0x54b22b",
+      "byteRangeSHA256": "3f121f5a148edca9962f37839bba1da9b70b60725662aaf3f1685335822d19dc",
+      "listingSHA256": "2022622fcebe192a9251a61f92a8069bc70d0d6040a7f375b79520b3a8224653",
+      "localListing": "confirm-handler.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-04",
+      "start": "0x549aa8",
+      "endExclusive": "0x549cff",
+      "byteRangeSHA256": "c9291bc92b93ee44e15eb6417943f14593c4cd3b4c84025425ca486336778903",
+      "listingSHA256": "a4006a88930bb15f33d44ee69669acb3a3c040023c7fa6fc4f1274e8d7d540ec",
+      "localListing": "typed-reader.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-05",
+      "start": "0x547b0c",
+      "endExclusive": "0x547e62",
+      "byteRangeSHA256": "33bf209eea45a359c129386330b6bf9af665c94b9bcafced26ea1f97a51c8c72",
+      "listingSHA256": "23ee3d7e62380c75367218c0c56b5e2dbdda7f9fedf753f1014e2cd06a6cfd29",
+      "localListing": "typed-writer.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-06",
+      "start": "0x403ef8",
+      "endExclusive": "0x403f43",
+      "byteRangeSHA256": "11fdcda528264964026ab4761aa2a971448dd8ba8adf6abcc7ac88d236d4389f",
+      "listingSHA256": "6f37589b9ceaed9a444bc78780b0c48fcccbed3f0ed8b96c32e5a407be30e6aa",
+      "localListing": "read-one-record.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-07",
+      "start": "0x401300",
+      "endExclusive": "0x401306",
+      "byteRangeSHA256": "f86e07859ad0c0dd219d613ad63d7f0da4c123f709d2ab4646276ddc7355514c",
+      "listingSHA256": "30584248202887cf8cb82b8a7be98018b0061d13d434cef50c58d24b6e812276",
+      "localListing": "read-import.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-08",
+      "start": "0x487170",
+      "endExclusive": "0x4872fc",
+      "byteRangeSHA256": "75bb1a92428e25cd05272294a6eea1defe536917e9682a780a056e5d129f5b3d",
+      "listingSHA256": "710034acc55f4623682adafb8943d7402b39a8cc29761e86543c009fd3ee136f",
+      "localListing": "ra-format.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-09",
+      "start": "0x487338",
+      "endExclusive": "0x4874fb",
+      "byteRangeSHA256": "1af5a7e071e3d4677799a345970cf6ccb5d92ec60d56712b9d74cea35513cbe9",
+      "listingSHA256": "879f4db7b38f44dbdbaa6fb92558722faa63cba0d8615073df62a985b89e64b7",
+      "localListing": "dec-format.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-10",
+      "start": "0x487b64",
+      "endExclusive": "0x487bcb",
+      "byteRangeSHA256": "6e58a1ba3575136b62999e40db7d67ed7fab98c85bfb27fb75574bebb32ff96b",
+      "listingSHA256": "a99e69b0db4c3f372f1de300f87877646f2070eff0b5245d7a5e13b286b9b4fb",
+      "localListing": "date-assign.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-11",
+      "start": "0x487bcc",
+      "endExclusive": "0x487be8",
+      "byteRangeSHA256": "cd28c4aa92ac7b923d2929b14a45a99c9131d29e558fcc01e0655fee75d3972b",
+      "listingSHA256": "553e07004bd84a90b8a42d8ea76cdf0b9760ad514eb32b017ba97b839c8d8f35",
+      "localListing": "date-jd-getter.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-12",
+      "start": "0x488188",
+      "endExclusive": "0x4881ac",
+      "byteRangeSHA256": "e26aad273e5cf73a3a0eca0fee82c52054ea36e24da2aee33f408ee9510b21ca",
+      "listingSHA256": "fe1238ff92ee423985ad33778c455c7feb5533ea172910ed3284cd765b8ad990",
+      "localListing": "date-jd-format.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    },
+    {
+      "evidenceId": "VIREO-OBS-NUMERIC-13",
+      "start": "0x5ac748",
+      "endExclusive": "0x5ac791",
+      "byteRangeSHA256": "fe85c1a625a88c8e9bdbb7bfec4449d0663b6e398e267f971792e6ca379f2aeb",
+      "listingSHA256": "10145de13250642561494df0fcd54dee89b4775874722cb2446dbe0af9028eb6",
+      "localListing": "jd-bias-init.asm",
+      "boundary": "Complete return/SEH cleanup;following data excluded. Confirm exception table54b1b1..54b1bd omitted."
+    }
+  ],
+  "literalData": [
+    {
+      "start": "0x54afd4",
+      "bytes": 4,
+      "byteRangeSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+      "meaning": "float32zero,used by activation to leave numerical zero blank"
+    },
+    {
+      "start": "0x54afe0",
+      "bytes": 23,
+      "byteRangeSHA256": "85ef95f28b3e679c739aaec47670c317b7b0bf6cfd4ccaed8de60e4a08d9a3c8",
+      "meaning": "Mean Counts per Second label includingNUL"
+    },
+    {
+      "start": "0x54b00c",
+      "bytes": 20,
+      "byteRangeSHA256": "7c9ba045962ec388c924e8f74cfe314581cffd8d735a9213f189ab6ddf8e2a75",
+      "meaning": "Observed Magnitudes label includingNUL"
+    },
+    {
+      "start": "0x5471f0",
+      "bytes": 32,
+      "byteRangeSHA256": "59bbcb40cd5d96d3027d3507d112ea1451253df5c048a78ab7068496fb435410",
+      "meaning": "Results-list header explicitly labels velocity km/s"
+    },
+    {
+      "start": "0x487310",
+      "bytes": 3,
+      "byteRangeSHA256": "ef986816d927173d99007a25780c020655c25f0e971a17260f07a183b27c43cf",
+      "meaning": "RA formatter hour-unit label"
+    },
+    {
+      "start": "0x5ac794",
+      "bytes": 4,
+      "byteRangeSHA256": "79570bd9722fc4a8f0f0b8db6aa3c9ed1b4e3b0f9e28e7b6a0aecc641249c31a",
+      "meaning": "Date initialization host/runtime threshold100000"
+    },
+    {
+      "start": "0x5ac798",
+      "bytes": 4,
+      "byteRangeSHA256": "246510947f40a5b27b5260293a8fa5840dad24494ee9658d99245c079f641053",
+      "meaning": "Conditional date epoch correction693594"
+    }
+  ],
+  "recordLayout": [
+    {
+      "name": "object",
+      "offset": 0,
+      "bytes": 16,
+      "representation": "ShortString15",
+      "unit": "claimedidentifier"
+    },
+    {
+      "name": "nativeTime",
+      "offset": 16,
+      "bytes": 8,
+      "representation": "little-endianDouble",
+      "unit": "native daycount;not rawJD,epoch/UTC context unresolved"
+    },
+    {
+      "name": "ra",
+      "offset": 24,
+      "bytes": 10,
+      "representation": "little-endianExtended",
+      "unit": "hours"
+    },
+    {
+      "name": "dec",
+      "offset": 34,
+      "bytes": 10,
+      "representation": "little-endianExtended",
+      "unit": "degrees"
+    },
+    {
+      "name": "u",
+      "offset": 44,
+      "bytes": 10,
+      "representation": "little-endianExtended",
+      "unit": "kind0counts/s,kind1magnitude,otherunknown"
+    },
+    {
+      "name": "b",
+      "offset": 54,
+      "bytes": 10,
+      "representation": "little-endianExtended",
+      "unit": "asU"
+    },
+    {
+      "name": "v",
+      "offset": 64,
+      "bytes": 10,
+      "representation": "little-endianExtended",
+      "unit": "asU"
+    },
+    {
+      "name": "r",
+      "offset": 74,
+      "bytes": 10,
+      "representation": "little-endianExtended",
+      "unit": "asU"
+    },
+    {
+      "name": "i",
+      "offset": 84,
+      "bytes": 10,
+      "representation": "little-endianExtended",
+      "unit": "asU"
+    },
+    {
+      "name": "kind",
+      "offset": 94,
+      "bytes": 1,
+      "representation": "unsignedbyte",
+      "unit": "0counts/s,1magnitudes,otherwiseunresolved"
+    },
+    {
+      "name": "spectralCode",
+      "offset": 95,
+      "bytes": 4,
+      "representation": "little-endiansignedint32",
+      "unit": "genericdisplayonly,notgrade"
+    },
+    {
+      "name": "redshift",
+      "offset": 99,
+      "bytes": 4,
+      "representation": "little-endianSingle",
+      "unit": "dimensionless"
+    },
+    {
+      "name": "velocity",
+      "offset": 103,
+      "bytes": 4,
+      "representation": "little-endianSingle",
+      "unit": "km/s"
+    },
+    {
+      "name": "remarks",
+      "offset": 107,
+      "bytes": 37,
+      "representation": "ShortString36",
+      "unit": "claimedtext;nativeACPunknown"
+    }
+  ],
+  "compilerFieldBinding": {
+    "start": "0x546baa",
+    "endExclusive": "0x546d14",
+    "byteRangeSHA256": "c3e12073ac4ae839d69b832bea840185e2efa6630c71f96e555654c584c0f025",
+    "matchedResourceFields": [
+      {
+        "name": "ObjLbl",
+        "offset": "0x360",
+        "entryVA": "0x546baa",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "IDEd",
+        "offset": "0x364",
+        "entryVA": "0x546bb7",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "JDLbl",
+        "offset": "0x368",
+        "entryVA": "0x546bc2",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "JDEd",
+        "offset": "0x36c",
+        "entryVA": "0x546bce",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "ULbl",
+        "offset": "0x370",
+        "entryVA": "0x546bd9",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "BLbl",
+        "offset": "0x374",
+        "entryVA": "0x546be4",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "VLbl",
+        "offset": "0x378",
+        "entryVA": "0x546bef",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "UMagEd",
+        "offset": "0x37c",
+        "entryVA": "0x546bfa",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "BMagEd",
+        "offset": "0x380",
+        "entryVA": "0x546c07",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "VMagEd",
+        "offset": "0x384",
+        "entryVA": "0x546c14",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "ResultsLbl",
+        "offset": "0x388",
+        "entryVA": "0x546c21",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "RmrksLbl",
+        "offset": "0x38c",
+        "entryVA": "0x546c32",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "RmrksEd",
+        "offset": "0x390",
+        "entryVA": "0x546c41",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "OKBtn",
+        "offset": "0x394",
+        "entryVA": "0x546c4f",
+        "typeIndex": 2,
+        "resourceClass": "TBitBtn"
+      },
+      {
+        "name": "CnclBtn",
+        "offset": "0x398",
+        "entryVA": "0x546c5b",
+        "typeIndex": 2,
+        "resourceClass": "TBitBtn"
+      },
+      {
+        "name": "SpLbl",
+        "offset": "0x39c",
+        "entryVA": "0x546c69",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "SpEd",
+        "offset": "0x3a0",
+        "entryVA": "0x546c75",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "IMagLbl",
+        "offset": "0x3a4",
+        "entryVA": "0x546c80",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "RMagLbl",
+        "offset": "0x3a8",
+        "entryVA": "0x546c8e",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "IMagEd",
+        "offset": "0x3ac",
+        "entryVA": "0x546c9c",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "RMagEd",
+        "offset": "0x3b0",
+        "entryVA": "0x546ca9",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "ZLbl",
+        "offset": "0x3b4",
+        "entryVA": "0x546cb6",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "ZEd",
+        "offset": "0x3b8",
+        "entryVA": "0x546cc1",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "VelLbl",
+        "offset": "0x3bc",
+        "entryVA": "0x546ccb",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "VelEd",
+        "offset": "0x3c0",
+        "entryVA": "0x546cd8",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "RAEd",
+        "offset": "0x3c4",
+        "entryVA": "0x546ce4",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "DecEd",
+        "offset": "0x3c8",
+        "entryVA": "0x546cef",
+        "typeIndex": 1,
+        "resourceClass": "TEdit"
+      },
+      {
+        "name": "RALbl",
+        "offset": "0x3cc",
+        "entryVA": "0x546cfb",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      },
+      {
+        "name": "DecLbl",
+        "offset": "0x3d0",
+        "entryVA": "0x546d07",
+        "typeIndex": 0,
+        "resourceClass": "TLabel"
+      }
+    ]
+  },
+  "timeWordCorrection": {
+    "previousAnalystLabel": "record+0x10 JDdouble",
+    "corrected": "StoredDouble is passed into date-object assignment487b64 and JD display488188/getter487bcc. Getter adds native date object+2a and runtime-initialized global5bad48;not direct display of raw recordDouble.",
+    "biasEvidence": "Global5bad48isBSS,not readable from original file bytes. Init5ac748writesDWORD0,DWORD0xd2228400,WORD0x4013=1721424.5;conditional runtime return<100000adds693594\u21922415018.5. This does not establish active per-file epoch/UTC/objectoffset+2a. No JD/MJD/calendar conversion is implemented.",
+    "reason": "The144byte record does not carry date-object configuration or host/runtime epoch decision;do not infer time metadata from a caption."
+  },
+  "nativeValidation": {
+    "binary": "Typed read403ef8 requests record-size bytes throughReadFile stub401300and checks actual count,raising IOerror100onshortread. Loader may already append earlier rows;web rejects whole candidate before replacement. No magic/header authentication in captured writer/reader.",
+    "numbers": "Activation blanks numericzero,formats ExtendedRA/Dec/photometry and SingleZ/V. It can fillV=C*z under separate runtimeoption;inspector does not execute this sideeffect.",
+    "confirm": "ID/type/remarks copied before optional nonempty velocitySingle parse/relativeC*zcheck. FullFPU/zero/locale/rounding/runtime validation not ported or graded.",
+    "units": "RAhourformatter,labelleddeclinationDMS,kind0/1photometrycaptions and explicitVel(km/s)resultsheader. Unitsdescribe storedclaim,not measuredtruth."
+  },
+  "browserBoundary": [
+    "Read-only layout candidate,1000records/144000bytesmaximum,emptycandidateallowedexplicitlyunauthenticated;structurallyinvalidlengths/partialrecordrejectatomically.",
+    "Exact rawbytes/padding/nonfinitepayload retained privately;downloadcopies originalbytesonly,no reconstructednativewriter or byteequivalencewithoriginalruntimeclaimed.",
+    "PureBigIntencoding inspection;canonicalfiniteexactbinaryplusboundedexactdecimal<=96fractionplaces/256positivebinarypower/120integerdigits. Nonfinite/noncanonical Extendedclassified/preservedwithoutoperand evaluation.",
+    "ExplicitCP1252textdisplay/control-undefinedbytesescaped;ACPunknown,rawbytesunchanged. Unknownkind/typecodesretained,notmappedtosourceauthorityorgrade.",
+    "No notebook/session/CSV/localstorage/acquisition/answer/confirmedrecordmutation. Inspector transient,mustretainoriginalorunchangeddownload,reimportafterreload.",
+    "Pendingread/cancel/context/source/file/navigationguards preserve previousinspectionand notebook/deletionrecovery."
+  ],
+  "standardReference": {
+    "title": "Intel64andIA32SDMVol1,\u00a74.8and\u00a78.2.2",
+    "url": "https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-1-manual.pdf",
+    "role": "Memory bit fields and encoding classes only;not CLEA behavior or FPU execution/emulation."
+  },
+  "fixture": {
+    "kind": "Synthetic format-check fixture;not original observations,not an original-writer specimen or scientific simulation",
+    "bytes": 432,
+    "SHA256": "67b6b101488829dd8c003d80abd833f0deb814c0baed59c483e6e9d9acca0fd2",
+    "recordBytes": 144,
+    "records": 3,
+    "fields": "Controlled dyadic metadata,nonzero unused padding,signed zero,Extended subnormal/pseudo-denormal/NaN/unsupported,unknown kind/type andliteral remarks. Field16 is native time word,not a raw JD.",
+    "generator": "Python struct and exact Fraction dyadics;no native code execution or x87emulation"
+  },
+  "specimenLimit": "No noncatalog DAT in availableVIREOtree,size1..144000,multiple144found bymetadata scan;not a claim about all possible files. No original writer-output/runtime witness. Syntheticfixture isnotobserveddata/originalwriteroutput.",
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "remaining": [
+    "Owned numerical metadata for existing practice/acquired/imported notebook records",
+    "Full native date/timeepoch/UTCstate,nonemptyvelocity/FPU/locale/rounding/runtime",
+    "Native editable import/merge/reconstructedwriter,textcodecand originaloutputwitness",
+    "Broaderedition/classroom/source-specificrights acceptance,externalreviewpending"
+  ],
+  "externalReview": "Explicit parenthold;notattempted,0newattempts,no substitute",
+  "publication": "Lastcompleted121522fpublished;thisincrement localvalidationfirst,no new push/deploy/nativeexecution/emulation/additionaloriginalupload"
+}

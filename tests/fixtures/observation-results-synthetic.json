@@ -1,0 +1,9 @@
+{
+  "kind": "Synthetic format-check fixture;not original observations,not an original-writer specimen or scientific simulation",
+  "bytes": 432,
+  "SHA256": "67b6b101488829dd8c003d80abd833f0deb814c0baed59c483e6e9d9acca0fd2",
+  "recordBytes": 144,
+  "records": 3,
+  "fields": "Controlled dyadic metadata,nonzero unused padding,signed zero,Extended subnormal/pseudo-denormal/NaN/unsupported,unknown kind/type andliteral remarks. Field16 is native time word,not a raw JD.",
+  "generator": "Python struct and exact Fraction dyadics;no native code execution or x87emulation"
+}
