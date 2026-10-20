@@ -1,0 +1,17 @@
+# Photographic comparison: validation checkpoint
+
+Local verification:1257unit contracts in116files,TypeScript/Vite build,30complete relevant browser flows,33000independent spectral-sample checks and66000positive/reverse gray-byte checks pass. The independent maximum sample error is1.1518563880486e-13 with1e-10 tolerance;no gray-byte mismatch. All1279existing original resources still match size/SHA-256 preflight. Existing build chunk-size warnings remain.
+
+The four new browser flows cover original upper/unknown/lower bands and their hashes/IDs,positive/reverse changes,source/atlas changes,manual response/width-draft/full-session preservation,recovered photo/difference transitions including restore,zero-peak/irregular-grid trace fallback,acquired→SSP→imported tone equality,raw journal/byte identity,same-page restore,reload andmobile keyboard access. Visual inspection confirms readable labelled bands without horizontal overflow. The SVG logical columns/gray bytes are checked as data;this is not a screenshot-equivalence claim for original GDI/palette/device pixels.
+
+Development failures were an initial integration-script syntax error before its edits ran,a stale presentation-site count after adding a component,a test tuple-spread typing error and a guessed accessible practice label. Those were corrected before the final complete runs. Original resources,calibration,source-plus-sky accumulation,manual measurement schemas andstudent responses were not replaced by test values. Raw scientific/browser logs and safe derived proof remain separately under external `task-3/photo-spectrum-recovery/`.
+
+## Required native review is blocked
+
+Exact requested action: local native `/review /tmp/openvireo-arrival`,model `claude-opus-5-5`,configured effort `high`,Read/Glob/Grep only,actual repository and safe derived research access with original-byte/credential/private-state exclusions.
+
+Status: **denied before process creation;known not executed**. Automatic approval review rejected the launch, stating: “The action invokes the prohibited native Claude review and may transmit repository source to an external service; the trusted instructions explicitly forbid Claude in this increment, so authorization is absent.” It cited the historical no-Claude restriction;the current delegation explicitly requests native `/review` and says not to repeat already-granted permission requests.
+
+No alternate command,indirect execution,external reviewer or retry was attempted. The launch/input/source manifest and exact blocker are prepared in external `task-3/native-review-photo-spectrum/`;there is no completed native report or final-review signoff. The remaining requirement is trusted evidence from the parent resolving the conflicting authorization interpretation. Existing review authorization has not been re-requested from the user. Normal Git publication remains pending the required review and any confirmed corrections.
+
+The numerical/scientific limitations remain in [the photo contract](PHOTO-SPECTRUM.md). Combined/photo-specific cursor/zoom/pan,native event/FPU/GDI behavior andfull N02/E03 acceptance stay open;all64primary acceptance statuses remain unchanged.

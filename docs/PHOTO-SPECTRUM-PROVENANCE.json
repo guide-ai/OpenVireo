@@ -1,0 +1,186 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-PHOTO-ST-01",
+      "file": "unknown-photo.asm",
+      "start": "0x5088f4",
+      "endExclusive": "0x508b88",
+      "byteRangeSha256": "18909758d46c8a4646958f3d70dcca0fdc4d12d08746039cae8029a08906434d",
+      "listingSha256": "0b3f20e8350f7bfd2059c9ace30925118b412919b7673777defef6b3c6afa1d9"
+    },
+    {
+      "evidenceId": "VIREO-PHOTO-ST-02",
+      "file": "standard-photo.asm",
+      "start": "0x508dc0",
+      "endExclusive": "0x509068",
+      "byteRangeSha256": "6995c243c5aadc8d43283c4078d4492e3be6a8d43f65335632fcc5b470cf030d",
+      "listingSha256": "9133126066dc22f2c7e6467d69e1207aefbb3b941e7d2ebfb18bd5d5c508d193"
+    },
+    {
+      "evidenceId": "VIREO-PHOTO-ST-03",
+      "file": "display-mode.asm",
+      "start": "0x5093e0",
+      "endExclusive": "0x5094cc",
+      "byteRangeSha256": "387e47f0f83371c25da2ea8f4d6a2aa4dcbcdd2b278c4fa5087751b9569b7c3d",
+      "listingSha256": "27cb4f7afaf1de87fe5abaf17320361298920f0a01a6fa04dd7c4ef59713d4ea"
+    },
+    {
+      "evidenceId": "VIREO-PHOTO-ST-04",
+      "file": "form-paint.asm",
+      "start": "0x507b88",
+      "endExclusive": "0x50829c",
+      "byteRangeSha256": "297da77c3910cc86a093c1a2c9573195a2433c62dfa18085bc4a1e6e883c6c30",
+      "listingSha256": "490f651d7ecffa74b49fccfb4b95707e95f76669d57de49dd42f6c3843cbc21c"
+    },
+    {
+      "evidenceId": "VIREO-PHOTO-ST-05",
+      "file": "form-show.asm",
+      "start": "0x507814",
+      "endExclusive": "0x507b80",
+      "byteRangeSha256": "b12992ee2502f269c30f325942d0ed3f5209cd60e6cc3ddcfe8dbf5fe34a57d9",
+      "listingSha256": "6c8e15650eb299a3de6810a071b14857cd281c295fcc3b7130222bded359f807"
+    },
+    {
+      "evidenceId": "VIREO-PHOTO-ST-06",
+      "file": "mode-setter.asm",
+      "start": "0x5077d0",
+      "endExclusive": "0x507814",
+      "byteRangeSha256": "02bbe140d48b9d9f6fb043af13e09d15ea83178de104ca377a66de09ba45f92a",
+      "listingSha256": "97a229c722919bc4dcfa70ad8ea170c9908d055ca8f8be84a7b61246d223104d"
+    },
+    {
+      "evidenceId": "VIREO-PHOTO-ST-07",
+      "file": "sqrt-round.asm",
+      "start": "0x4036f0",
+      "endExclusive": "0x40370a",
+      "byteRangeSha256": "ae5f6f965d38b69d3306c893f88aada2a666a833111c2c7a2a0cc2a808fde860",
+      "listingSha256": "941e298307ab59ca5440eb72b0f0da63d95c80fecf7831fa3ffe67bcdeb26abb"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x508b4c",
+      "bytes": 4,
+      "sha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+      "meaning": "reverse1",
+      "rational": "1",
+      "numberProjection": 1.0
+    },
+    {
+      "address": "0x508b50",
+      "bytes": 4,
+      "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+      "meaning": "sqrt threshold0",
+      "rational": "0",
+      "numberProjection": 0.0
+    },
+    {
+      "address": "0x508b54",
+      "bytes": 10,
+      "sha256": "a8a8d540c173a6abc9a304428fa8d415ab5893a012e6c3d84f81c3891e50b71c",
+      "meaning": "positive sqrt multiplier",
+      "rational": "8301034833169298227/9223372036854775808",
+      "numberProjection": 0.9
+    },
+    {
+      "address": "0x508b60",
+      "bytes": 4,
+      "sha256": "270696d298cc689d8e5bd75897918aa617a25a5030ccae98017053dddd974995",
+      "meaning": "byte scale255",
+      "rational": "255",
+      "numberProjection": 255.0
+    },
+    {
+      "address": "0x509020",
+      "bytes": 4,
+      "sha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c",
+      "meaning": "standard reverse1",
+      "rational": "1",
+      "numberProjection": 1.0
+    },
+    {
+      "address": "0x509024",
+      "bytes": 4,
+      "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+      "meaning": "standard sqrt threshold0",
+      "rational": "0",
+      "numberProjection": 0.0
+    },
+    {
+      "address": "0x509028",
+      "bytes": 10,
+      "sha256": "a8a8d540c173a6abc9a304428fa8d415ab5893a012e6c3d84f81c3891e50b71c",
+      "meaning": "standard positive sqrt multiplier",
+      "rational": "8301034833169298227/9223372036854775808",
+      "numberProjection": 0.9
+    },
+    {
+      "address": "0x509034",
+      "bytes": 4,
+      "sha256": "270696d298cc689d8e5bd75897918aa617a25a5030ccae98017053dddd974995",
+      "meaning": "standard byte scale255",
+      "rational": "255",
+      "numberProjection": 255.0
+    },
+    {
+      "address": "0x507b78",
+      "bytes": 4,
+      "sha256": "3dfe7e7e4845c20f97da4304d488786000c9eddecd822be0e032d2fab0878f1d",
+      "meaning": "viewport divisor500",
+      "rational": "500",
+      "numberProjection": 500.0
+    }
+  ],
+  "evidenceMeaning": {
+    "viewport": "0x507b20..0x507b2a:(max-min)/500;fixed web range3900..4500,step1.2,last4498.8",
+    "sampling": "0x508938..0x5089a0 and0x5089a2..0x508aa1:500positions;positive max initialized0;secondpass computes tones",
+    "standardSampling": "0x508e14..0x508e7b and0x508e7d..0x508f78:same transfer,each spectrum own peak",
+    "gray": "flux/peak;optional1-minus;positive only0.9*sqrt;scale255;FISTP int64;AL ->RGB components;0x02000000 palette flag",
+    "firstColumn": "0x508a5d..0x508a94 /0x508f37..0x508f6b:i1(index0) contributes max/tone butisnotpainted",
+    "band": "unknown MoveTo125+25=150,LineTo250-15=235;standardbaseline-125+25..baseline-15,85logicalrows;GDI endpoint exclusion not independently executed",
+    "mode": "0x5093f8 photo1 clearsdifference+499;0x509450 differenceforcestrace0;0x50948c reversewritesunknown+495 andstandards+497;traceflags+496/+498 unchanged"
+  },
+  "sourceCredits": [
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7"
+    },
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    }
+  ],
+  "limitations": [
+    "Static recovery;no original execution/emulation/GDI/palette/x87 oracle.",
+    "Number/sqrt/nearest-even are declared adapters;byte thresholds andFPU control word remain unverified.",
+    "Browser rejects zero-positive-peak,nonfinite/unsafeinteger tone andout-of-domain input instead of original unguarded division/FPU behavior.",
+    "Responsive SVG applies recovered byte values with logical500\u00d785 geometry;CSS/devicepixel/antialias/palette equality is notclaimed.",
+    "Only photo and reverse delivered;combined/photo-specific cursor/zoom/pan/native-event behavior stay pending."
+  ],
+  "policy": "VIREO-photo-500-Number-v1",
+  "webWindow": {
+    "minimum": 3900,
+    "maximumExclusive": 4500,
+    "positions": 500,
+    "step": 1.2,
+    "lastWavelength": 4498.8,
+    "paintedColumns": [
+      1,
+      499
+    ],
+    "bandLogicalHeight": 85
+  },
+  "formula": {
+    "peak": "max(0,500 sampled values)",
+    "q": "flux/peak;reverse ->1-q",
+    "tone": "q>0 ? Number(originalExtended0.9)*sqrt(q) : q",
+    "grayByte": "nearestEven(tone*255) modulo256",
+    "portGuards": [
+      "positive finite visible peak",
+      "valid finite samples over all500positions",
+      "finite safe-integer rounded tone"
+    ]
+  }
+}

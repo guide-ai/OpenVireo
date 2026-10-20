@@ -1,5 +1,7 @@
 # Sampled intensity of loaded comparison spectra
 
+Current photographic extension: [positive/reversed photo comparison](PHOTO-SPECTRUM.md) adds a bounded recovered grayscale renderer. Earlier full-photo exclusions below remain historical for this slice;combined/zoom/pan/photo-event andnativeGDI/x87 fidelity remain open.
+
 The classification readout now admits the unknown from the supported replay-verified stellar acquisition and from eligible imported SP/SSP/CSV curves, alongside the original references and practices. The student explicitly chooses a source and types a wavelength. The result is relative intensity of the retained normalized curve; no continuum, classification, equivalent width, redshift, distance or photon realization is inferred. Existing manual work and session schemas remain unchanged.
 
 ## Evidence and policy

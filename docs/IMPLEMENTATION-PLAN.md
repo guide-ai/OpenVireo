@@ -2,6 +2,8 @@
 
 ## Current scope reconciliation
 
+N02 photographic follow-up: [positive/reversed grayscale comparison](PHOTO-SPECTRUM.md) implements the recovered500sample/visible-peak/square-root/low-byte transfer with explicit source gates,trace fallback andphoto/difference transitions. Independent sample/tone vectors cover57originalfiles and9generated acquiredcurves. Combined mode,photo gestures,zoom/pan andnativeGDI/x87 remain pending;all64primary acceptance statuses remain unchanged.
+
 N02 loaded-intensity follow-up: [acquired/imported curve sampling](LOADED-FLUX.md) extends the recovered endpoint-grid readout with explicit source kinds, retained-byte SHA and acquired journal identity. Added grid admission preserves irregular/two-row visual work;no normalization,automatic measurement orclassification is added. Native photo/runtime/x87 andall64primary acceptance statuses remain unchanged.
 
 N02 sampled-intensity follow-up: [manual source-sampled flux](SAMPLED-FLUX.md) connects the recovered upper/unknown/lower numerical source-selection branch to explicit wavelength entry for original practices and references. Independent rational vectors cover57files/63identities;no continuum,answer,measurement orphotographic renderer is supplied. Imported/acquired unknowns remain gated;all64acceptance statuses remain unchanged.

@@ -1,0 +1,49 @@
+# Positive and reversed photographic comparison
+
+The classification laboratory now offers **Grayscale photo** and **Reverse photographic grayscale** for its upper standard, unknown and lower standard. This implements the recovered photo transfer and logical columns, rather than inventing an image/noise model. It uses the actual displayed original or eligible acquired/imported source. Manual classification, numerical readout, feature drafts/records, raw acquisition and file/session identity remain separate.
+
+## Evidence recovered before implementation
+
+Original CLEA_VEO.exe SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Original help `CLASSHLP.TXT` lines161–189 distinguishes intensity trace, positive photo, combined and reverse; source hashes/credits/rights uncertainties remain in the existing classification/resource provenance. The existing published Delphi method inventory binds `GrayscalePhoto1Click` to0x5093f8 and `ReverseDisplay1Click` to0x50948c. No CLASSIFY.KEY, original execution, emulation, new REA installation or native writer/GDI oracle was used.
+
+New read-only aligned captures and exact constants are preserved outside source in `task-3/photo-spectrum-recovery/`. [Machine-readable dossier](PHOTO-SPECTRUM-PROVENANCE.json) records all binary ranges/listing hashes, evidence IDs, source-help/license hashes, constants and limitations. Literal pools/padding in a capture are not additional instructions.
+
+| Evidence | Recovered contract |
+| --- | --- |
+|VIREO-PHOTO-ST-01,0x5088f4–0x508b88|Unknown photo reads the selected spectrum at +0x4bf;500positions,positive maximum initialized0,then a second pass divides each sampled intensity by that maximum.|
+|VIREO-PHOTO-ST-02,0x508dc0–0x509068|Each standard uses the same transfer, with its own visible maximum and selected list object.|
+|VIREO-PHOTO-ST-05,0x507b20–0x507b2a|Display step=(visible maximum−minimum)/500. Current web window is3900–4500Å:positions3900+i×1.2, i=0…499;last4498.8,not4500.|
+|0x5089ed–0x508a4f /0x508ec7–0x508f29|Optional1−normalized intensity,then positive-only sqrt×Extended0.9;scale255,FISTP,low byte AL copied into all three RGB components with native palette flag0x02000000.|
+|VIREO-PHOTO-ST-07,0x4036f0–0x40370a|The helper is FSQRT,followed by the separate FISTP64 rounding helper. Current x87 control word is not established by this capture.|
+|0x508a5d–0x508a94 /0x508f37–0x508f6b|Index0 contributes to the maximum and tone computation but is not painted. Indices1…499 draw vertical lines. Recovered band endpoints are85logical rows apart; native GDI endpoint/palette/device behavior was not executed.|
+|VIREO-PHOTO-ST-03/06,0x5093f8,0x509450,0x50948c|Selecting photo clears the difference flag; selecting difference forces trace. Reverse changes unknown/standard photo flags +0x495/+0x497; trace flags remain unchanged.|
+
+The positive sqrt multiplier is the exact80bit literal `8301034833169298227/9223372036854775808`. This port explicitly projects it to JavaScript Number0.9 and uses Number division/Math.sqrt/multiplication and the existing nearest-even policy. It does not certify x87 intermediate precision, control word, half-boundary results or original rendered pixels.
+
+## Numerical and visual policy
+
+`VIREO-photo-500-Number-v1` samples the existing verified endpoint grid with `0x55dfe0`'s ported quadratic sampler. Each strip is scaled by its own positive maximum among all500positions. Gray shades across sources are therefore not a common flux or calibrated radiance scale. The numerical readout continues to report the retained original relative intensity, without this display scaling. Acquired inputs remain their already normalized/formatted source-plus-sky derivative, not a noiseless template or a new detector simulation.
+
+Reverse happens before the nonlinear transfer. It is not CSS invert or255−positiveGray. For normalized0.25,positive gives115 and reverse gives199 under the declared policy. Positive1 gives230; reversed1 gives0. Nonpositive normalized values bypass sqrt; the original low-byte RGB operation is retained as modulo256, not silently clipped. Negative interpolation can consequently produce a bright wrapped byte. This is a recovered display operation, not a physical intensity or negative-photon model. The input samples/raw counts are never rewritten by it.
+
+The browser explicitly refuses no-positive-peak, unsupported-domain, nonfinite or unsafe-integer tones rather than guessing original FPU/zero-division behavior. Original references/practices use their existing hash/shape checks. Loaded unknowns retain the [loaded-source profile](LOADED-FLUX.md), including its stricter coordinate guard. An unavailable photo shows a labelled explanation and the existing intensity trace; eligible reference photos remain available. A flat-zero curve therefore stays visible without a fabricated photographic normalization.
+
+SVG applies499computed RGB byte columns within500×85logical geometry, leaves column0unpainted and labels the wavelength axis. Responsive CSS, SVG edge rules, host color management, device pixels and the absence of a native palette are declared presentation adaptations. Existing trace rendering remains unchanged and uses printed coordinates. The native combined mode, photo-specific cursor gestures, pan/zoom and full native event behavior remain pending; this increment does not mark the full classification package complete.
+
+Rendering and reverse are temporary view preferences, not new session fields. Selecting photo while difference is active explicitly changes the existing persisted comparison mode to bracket, matching the recovered transition. Selecting or restoring difference immediately renders trace. Other manual fields/records and exact source/raw/session bytes are unchanged. Full restore still validates every source; same-page immutable source replacement cannot retain an old photo. Reload starts with trace; the student can explicitly choose photo again after restoration.
+
+## Verification
+
+All57unique original practice/reference files and9explicitly generated acquired curves were independently checked at all500positions:33000sample comparisons,66000positive/reverse gray-byte comparisons,zero byte mismatches. Maximum sample error versus exact-rational Lagrange is1.1518563880486e-13 (tolerance1e-10). Independent tone reference uses Decimal80sqrt and explicit binary64 projection/nearest-even/modulo256 for the declared port contract. It is not an x87 emulator, original execution or GDI/palette oracle. New safe results retain per-file source and output-array hashes; original bytes/hashes remain unchanged.
+
+Unit contracts cover nonlinear reverse,zero/negative low-byte wrap,per-strip maximum,omitted first column/excluded right endpoint,immutable sources,explicit failure and pure photo/difference transitions. Browser flows cover all three positions,atlas/practice changes,manual/classification/width preservation,mode transitions/restoration,unavailable curves,acquired→SSP→imported photo-byte equality,raw journals,exact file/full-session continuity,mobile keyboard controls and restoration. No new resource, dependency, service, storage schema or automatic answer is added. All64primary acceptance statuses remain unchanged.
+
+Local validation currently passes1257unit contracts/116files,TypeScript/Vite build and30complete affected browser flows. [Validation and external-review status](PHOTO-SPECTRUM-VALIDATION.md). Native `/review` was denied before process creation by automatic approval review; it has not run for this increment, and Git publication is pending that required review.
+
+## Try the feature
+
+1. Open http://127.0.0.1:5173/#classification. In **Spectrum rendering**, select **Grayscale photo**. Expect three labelled bands with dark absorption features and their wavelength scales.
+2. Check **Reverse photographic grayscale**. Expect each band to change using the pre-transfer reverse rule. Your proposed type,reason and manual width draft remain intact. Uncheck it to return to positive.
+3. Change atlas or practice. Each photo must identify the current source; its own scaling means brightness alone is not a comparison of absolute flux. Use **Read spectral intensity** explicitly for relative numerical values.
+4. Select **Standard − unknown** in **Comparison display**: rendering returns to **Intensity trace**. Choose photo again: comparison returns to bracket. Restore a saved difference investigation while photo is visible: it must also return to trace and preserve manual work.
+5. Acquire a star via /#star-exposure,then **Classify acquired star** and choose photo. Save its SSP through **Measure this acquired star** → **Download acquired SSP**,return to classification and import it. Its unknown photo must retain the same byte tones while its source identity changes to imported. Save/reload/restore the complete investigation; choose photo again explicitly after reload.

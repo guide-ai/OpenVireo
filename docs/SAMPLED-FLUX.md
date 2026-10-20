@@ -1,5 +1,7 @@
 # Manual original-spectrum intensity readout
 
+Current photographic extension: [positive/reversed photo comparison](PHOTO-SPECTRUM.md) adds a bounded recovered grayscale renderer. Earlier full-photo exclusions below remain historical for this slice;combined/zoom/pan/photo-event andnativeGDI/x87 fidelity remain open.
+
 Current sampled-intensity extension: [loaded-curve readout](LOADED-FLUX.md) now supports eligible acquired/imported unknowns under a separate identity/grid policy. Earlier numerical-readout exclusions below describe the prior increment;imported/acquired equivalent width and general native photographic behavior remain unavailable.
 
 The classification laboratory can read relative intensity at an explicitly entered wavelength from the original upper standard, practice unknown or lower standard. The student still chooses the source and wavelength. The readout does not set a continuum, feature width, spectral type, reason or acquired measurement. It is temporary inspection state; investigation JSON and existing session versions are unchanged.

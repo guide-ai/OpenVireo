@@ -1351,4 +1351,19 @@ export interface MessageParameters {
   "probe.originOriginal": never;
   "probe.resultOrigin": "origin";
   "probe.acquisitionId": "id";
+  "photo.rendering": never;
+  "photo.trace": never;
+  "photo.photo": never;
+  "photo.reverse": never;
+  "photo.help": never;
+  "photo.method": never;
+  "photo.policy": never;
+  "photo.limits": never;
+  "photo.positive": never;
+  "photo.negative": never;
+  "photo.caption": "label" | "polarity";
+  "photo.axis": never;
+  "photo.unavailable": never;
+  "photo.noPeak": never;
+  "photo.plotPolicy": never;
 }

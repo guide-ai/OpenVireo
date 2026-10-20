@@ -1,5 +1,7 @@
 # N02/E03 bounded acceptance — 18 October 2026
 
+Current photographic extension: [positive/reversed photo comparison](PHOTO-SPECTRUM.md) adds a bounded recovered grayscale renderer. Earlier full-photo exclusions below remain historical for this slice;combined/zoom/pan/photo-event andnativeGDI/x87 fidelity remain open.
+
 **Decision: partial; the bounded local learner path is reviewable and supported.** Neither the complete classification engine nor the historical exercise is accepted complete. This assessment consolidates the delivered main-sequence, luminosity, continuity, width and import increments; earlier documents describe their narrower historical states.
 
 ## Ten supported local software outcomes
