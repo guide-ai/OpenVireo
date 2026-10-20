@@ -9,3 +9,7 @@
 .class-source p{overflow-wrap:anywhere}
 
 .class-source>button{min-height:44px}.class-plot figcaption,.feature-measurement p{overflow-wrap:anywhere}
+
+.feature-cursor{margin:16px 0;border:1px solid #d4dfdb;border-radius:8px;padding:12px}.feature-cursor summary{cursor:pointer}.feature-cursor .class-plot{margin:12px 0}.feature-cursor-surface{touch-action:none;cursor:crosshair}.feature-cursor-surface:focus{outline:3px solid #f3c26b;outline-offset:3px}.feature-cursor-marks{fill:#6dafe3;stroke:#6dafe3;stroke-width:2}.feature-cursor-marks line{stroke-dasharray:6 4}.feature-cursor-preview{stroke:#f3c26b;stroke-width:1.5;stroke-dasharray:4 4}.feature-cursor [role=status]{font-variant-numeric:tabular-nums}.feature-cursor button[aria-pressed=true]{outline:2px solid #206252}
+
+.feature-cursor .class-plot line,.feature-cursor .class-plot polyline,.feature-cursor .class-plot circle{vector-effect:non-scaling-stroke}

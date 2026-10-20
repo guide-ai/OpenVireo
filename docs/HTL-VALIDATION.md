@@ -10,7 +10,7 @@ Fifteen relevant Playwright flows passed:four HTL workflows plus existing catalo
 
 ## External review status
 
-Native Claude `/code-review` by actual project path was requested,butautomatic approval review denied execution before any Claude process/model/tools started. The stated reason retained the earlier no-Claude instruction. A second explicit attempt was also denied. No workaround orsecurity-fallback retry was used. Renewed confirmation was requested;external review remains pending. There is no external review report orapproval for this snapshot.
+Native Claude `/code-review` by actual project path was requested,butautomatic approval review denied execution before any Claude process/model/tools started. The stated reason retained the earlier no-Claude instruction. A second explicit attempt was also denied. No workaround orsecurity-fallback retry was used. The user later specified and authorized native `/review` directly on the repository. That requested command is running for HTL andthe manual feature cursor,with Opus5.5/high configured. External review remains pending until its actual report;the earlier denials remain historical.
 
 The exact denial records,prepared read-only review configuration andlocal validation logs remain separately under task-3/htl-recovery. Source/derived-document reads only were prepared;original PE/HTL/asm/private state were excluded. The pending external review does not invalidate the separately recorded local tests,andthose tests do not substitute for that review.
 

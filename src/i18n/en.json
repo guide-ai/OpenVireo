@@ -1307,5 +1307,20 @@
   "htl.cancelEdit": "Cancel HTL edit",
   "htl.point": "Point to HTL selection",
   "htl.pointHelp": "Open the dome, then point explicitly. An existing catalog target is selected only when its ID and coordinates match exactly; otherwise its catalog selection stays unchanged. This does not enable another acquisition target.",
-  "htl.limits": "The list keeps row order and repeated identifiers. New targets and coordinate edits do not add telescope acquisition support."
+  "htl.limits": "The list keeps row order and repeated identifiers. New targets and coordinate edits do not add telescope acquisition support.",
+  "cursor.title": "Mark a feature on the curve",
+  "cursor.help": "Choose Mark center and mark your approximate line center. Then choose Mark continuum shoulder and mark one point on each side. The height you choose sets the manual continuum; no line or continuum is selected for you.",
+  "cursor.tools": "Manual spectrum cursor tools",
+  "cursor.inspect": "Inspect cursor",
+  "cursor.center": "Mark center",
+  "cursor.shoulder": "Mark continuum shoulder",
+  "cursor.clear": "Clear cursor preview",
+  "cursor.keyboard": "Hold and release inside the plot to mark; releasing outside or pressing Escape cancels the preview. With the plot focused, arrow keys move the cursor (Shift moves farther), Enter or Space applies the selected tool. Numeric fields below remain available.",
+  "cursor.curve": "Practice spectrum · manual trace cursor",
+  "cursor.figure": "Practice spectrum for manual wavelength and intensity marks",
+  "cursor.surface": "Manual spectrum cursor: arrows move, Enter applies, Escape cancels",
+  "cursor.readout": "Cursor wavelength {wavelength} Å · cursor height {intensity}",
+  "cursor.empty": "No cursor preview. Confirmed manual inputs are kept.",
+  "cursor.policy": "Cursor height is your selected trace level, not a sampled flux. Marking a new center clears the draft shoulders; saved width records stay unchanged. Calculate and review the width separately.",
+  "cursor.invalid": "Mark a center strictly inside 3900–4500 Å first. Each shoulder must lie on a different side of that center with a positive continuum height up to 1."
 }

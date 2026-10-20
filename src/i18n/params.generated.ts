@@ -1309,4 +1309,19 @@ export interface MessageParameters {
   "htl.point": never;
   "htl.pointHelp": never;
   "htl.limits": never;
+  "cursor.title": never;
+  "cursor.help": never;
+  "cursor.tools": never;
+  "cursor.inspect": never;
+  "cursor.center": never;
+  "cursor.shoulder": never;
+  "cursor.clear": never;
+  "cursor.keyboard": never;
+  "cursor.curve": never;
+  "cursor.figure": never;
+  "cursor.surface": never;
+  "cursor.readout": "intensity" | "wavelength";
+  "cursor.empty": never;
+  "cursor.policy": never;
+  "cursor.invalid": never;
 }
