@@ -2,6 +2,8 @@
 
 The classification laboratory offers **Combined photo and trace**: the upper atlas reference as a photo, the unknown as a photo, and that same unknown as a sampled intensity trace below. The lower atlas reference remains in the selected pair and manual records; choose another rendering to inspect it. The lower numerical readout in combined mode identifies the unknown trace, not an unseen standard. Classification answers and continuum/equivalent-width measurements remain manual.
 
+The [cursor/printed-trace follow-up](COMPARISON-INSPECTION.md) now adds held inspection and retained-window crop zoom for printed traces. The rendering/reset limitations below describe the earlier combined increment;current behavior is documented in that follow-up.
+
 ## Recovered contracts and bounded adapters
 
 [Provenance](COMBINED-SPECTRUM-PROVENANCE.json) records the original executable SHA-256, addresses, byte-range/listing hashes and constants. It extends [photo provenance](PHOTO-SPECTRUM-PROVENANCE.json), including original CLEA/Gettysburg College source credits, help/license hashes and source-specific rights uncertainty. All original resource bytes remain unchanged. No original execution or new original asset is used.

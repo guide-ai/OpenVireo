@@ -1391,4 +1391,19 @@ export interface MessageParameters {
   "viewport.reset": never;
   "viewport.help": never;
   "combined.invalidSource": never;
+  "inspection.title": never;
+  "inspection.help": never;
+  "inspection.surface": "kind" | "label";
+  "inspection.preview": "label";
+  "inspection.retained": "label";
+  "inspection.sample": "intensity" | "wavelength";
+  "inspection.ordinate": "intensity" | "wavelength";
+  "inspection.window": "maximum" | "minimum";
+  "inspection.empty": never;
+  "inspection.clear": never;
+  "inspection.error": never;
+  "inspection.policy": never;
+  "inspection.kindPhoto": never;
+  "inspection.kindSampled": never;
+  "inspection.kindPrinted": never;
 }

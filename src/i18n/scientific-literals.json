@@ -17,7 +17,7 @@
     "file": "src/ClassificationLab.tsx",
     "kind": "text",
     "value": "SHA-256",
-    "count": 4,
+    "count": 5,
     "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
   },
   {

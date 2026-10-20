@@ -1,0 +1,77 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "helpSHA256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-CURSOR-VIEW-01",
+      "start": "0x5094cc",
+      "endExclusive": "0x509624",
+      "byteRangeSHA256": "dcda97c917ee61ca20503dce5c2bc87e0b5aa7ac89f28d6e56caa65f5553414f",
+      "listingSHA256": "eb8930548a01477ebbd51605fd0ed9f6a91c0908fd3488ccb5c008fe7e3e434d",
+      "localListing": "cursor-events.asm"
+    },
+    {
+      "evidenceId": "VIREO-CURSOR-VIEW-02",
+      "start": "0x5096dc",
+      "endExclusive": "0x50995c",
+      "byteRangeSHA256": "0b1b7363c156b8f734b02b7182bbf25fdc2f7acd9764e0ba2c949998c4b2668e",
+      "listingSHA256": "1dd0de5b4de1ae0470ef37b5ea2708d077ac1115d7ce7a818fc706153a3df012",
+      "localListing": "cursor-read.asm"
+    },
+    {
+      "evidenceId": "VIREO-CURSOR-VIEW-03",
+      "start": "0x509eac",
+      "endExclusive": "0x509f24",
+      "byteRangeSHA256": "ac99f018ec1ee4e98af1743cc843cec877b2fae6e409aa594c2065f96680d65b",
+      "listingSHA256": "bae355590a2e54a3d0ba56330c8728c25303c2f625c9da1125c295458f9196d0",
+      "localListing": "pane-coordinate.asm"
+    },
+    {
+      "evidenceId": "VIREO-CURSOR-VIEW-04",
+      "start": "0x508b88",
+      "endExclusive": "0x508dc0",
+      "byteRangeSHA256": "8c0f4ae784bbd311e0c7a2d0b798d04a62f204f52dc940359d0cb76cad1ad257",
+      "listingSHA256": "d144db7b650fff7e3e359e0e66b58bb0d3c6f76ec3f14813e97a4837f0b3dcdb",
+      "localListing": "standard-trace.asm"
+    }
+  ],
+  "nativeContracts": {
+    "heldReadRelease": "Primary left down sets+49a and reads0x5096dc;move0x509530 reads only held;up0x50956c clears and repaints,retaining numeric/marker state. Secondary shoulder branch is separate and not added.",
+    "wavelength": "0x509eac subtracts left frame fromX;0x50975c multiplies pixel column by viewport step,adds minimum; display casts Extended toDouble.",
+    "photoRead": "0x5097e4..0x5098cf selects exact top/unknown/bottom source and calls0x55dfe0. It does not read grayscale or normalize by visible peak.",
+    "traceRead": "0x5097a8 height/Single100;combined bottom branch selects same manual-Y path. Difference branch subtractsSingle0.5;not exposed by new cursor.",
+    "traceRenderer": "0x508b88 samples500points,max0,flux/max,Single100,integerheight. Printed-coordinate SVG remains existing independent raw-coordinate presentation;new zoom crops retained points and does not claim native trace scaling."
+  },
+  "constants": [
+    {
+      "address": "0x50995c",
+      "type": "Single",
+      "value": 100.0,
+      "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01"
+    }
+  ],
+  "webAdapters": [
+    "Responsive screenCTM to logical500columns;nearest-even pixel conversion;outside/cancel/lost-capture/hidden/blur/source/layout guards.",
+    "Keyboard arrows and keypad2/4/6/8 preview pixels from retained wavelength,Enter/Space retains;Escape cancels. Touch primary gestures admitted.",
+    "Combined display ordinate=(125-y)/100;printed-coordinate ordinate=(250-y)/250 matching existing0..1axis,not a sampled flux or native trace-height equality.",
+    "Cursor preview/readout/marker are ephemeral and do not enter JSON/CSV/manual-width/answer records.",
+    "Printed trace zoom uses existing integer endpoint viewport,actual retained points,clip-to-frame and dynamic ticks;manual continuum tool and labelled photo fallbacks stay full-domain."
+  ],
+  "creditsAndLicensing": "Existing Gettysburg College/CLEA source credits,License.rtf hash and uncertainty in PHOTO-SPECTRUM-PROVENANCE.json and feature-width provenance;no new original resources included.",
+  "uncertainty": [
+    "Static recovery only;no original execution,emulator or runtime oracle.",
+    "Number/nearest-even/SVG mapping and printed-coordinate adapter are explicit;not x87/Win32/GDI equivalence.",
+    "Native shoulder/right-click branches and complete grading/results remain pending;manual EW continues through existing separate tool."
+  ],
+  "sourceCredits": [
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7"
+    },
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    }
+  ]
+}

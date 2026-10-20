@@ -1388,6 +1388,21 @@
   "viewport.left": "Pan to shorter wavelengths",
   "viewport.right": "Pan to longer wavelengths",
   "viewport.reset": "Reset wavelength window",
-  "viewport.help": "Photo and combined views: zoom up to 16×, pan by 10% of the current interval, or reset to 3900–4500 Å. A diagnostic marker centers zoom only if it snaps to interior display columns 1–499; boundary/outside markers use the window center for zoom in and the cached zoom center for zoom out. Printed-coordinate traces and the manual continuum tool retain the full interval. These display settings are not saved in investigation JSON.",
-  "combined.invalidSource": "Sampled unknown trace hidden: source identity or integrity checks failed. No fallback curve is shown."
+  "viewport.help": "Zoom up to 16×, pan by 10% of the current interval, or reset to 3900–4500 Å. A retained cursor marker takes priority over the diagnostic line. Only markers snapped to interior columns 1–499 center zoom; boundary/outside markers use the window center for zoom in and cached center for zoom out. Printed traces crop their existing points without resampling or peak normalization; labelled photo fallbacks and the separate manual continuum tool retain the full interval. These display settings are not saved in investigation JSON.",
+  "combined.invalidSource": "Sampled unknown trace hidden: source identity or integrity checks failed. No fallback curve is shown.",
+  "inspection.title": "Comparison cursor readout",
+  "inspection.help": "Press and hold inside a comparison pane, move, then release to retain the reading and wavelength marker. Photo reads sample the retained spectrum at X; trace reads report your vertical display ordinate. Arrows or keypad 2/4/6/8 preview one display column/pixel; Enter or Space retains, Escape cancels. Hover alone does nothing. The difference curve has no cursor inspection.",
+  "inspection.surface": "Inspect {label} · {kind} cursor",
+  "inspection.preview": "Live cursor preview · {label}",
+  "inspection.retained": "Retained cursor reading · {label}",
+  "inspection.sample": "{wavelength} Å · sampled relative intensity {intensity}",
+  "inspection.ordinate": "{wavelength} Å · cursor display ordinate {intensity}",
+  "inspection.window": "Reading taken in the {minimum}–{maximum} Å window.",
+  "inspection.empty": "No retained comparison cursor reading.",
+  "inspection.clear": "Clear comparison cursor",
+  "inspection.error": "Cursor inspection unavailable for this position or verified source.",
+  "inspection.policy": "Cursor readings and markers are temporary. A trace ordinate is selected by your cursor height; it is not a sampled source flux. Printed traces use the existing 0–1 axis; the combined trace uses the recovered 100-pixel amplitude. Nothing fills a classification answer, continuum shoulder, equivalent width or saved measurement.",
+  "inspection.kindPhoto": "photo sampled flux",
+  "inspection.kindSampled": "sampled trace ordinate",
+  "inspection.kindPrinted": "printed trace ordinate"
 }

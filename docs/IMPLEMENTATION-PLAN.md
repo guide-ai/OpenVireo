@@ -1,7 +1,10 @@
 # OpenVireo implementation plan
 
 
-N02 combined follow-up: [combined photo/unknown trace and wavelength zoom/pan](COMBINED-SPECTRUM.md) adds recovered mode2 layout, shared500-position resampling,1–16× zoom,10% pan and reset for photo/combined views. Native cursor gestures, printed-trace zoom and general range profiles remain pending; manual measures and all64primary acceptance statuses remain unchanged.
+N02 cursor follow-up: [comparison photo/trace cursor and printed-trace window](COMPARISON-INSPECTION.md) adds held/released readout,source-bound temporary marker,keyboard/touch adapters and bounded zoom/pan of retained printed points. Trace ordinate and sampled photo flux remain explicitly distinct;manual EW/answers and all64primary acceptance statuses are unchanged.
+
+
+N02 combined follow-up: [combined photo/unknown trace and wavelength zoom/pan](COMBINED-SPECTRUM.md) adds recovered mode2 layout, shared500-position resampling,1–16× zoom,10% pan and reset for photo/combined views. The bounded cursor/printed-trace follow-up below adds inspection and crop zoom;general range profiles remain pending; manual measures and all64primary acceptance statuses remain unchanged.
 
 ## Current scope reconciliation
 
