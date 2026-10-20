@@ -30,7 +30,8 @@ export default function ClassificationLab({controllerRef,active,workspace,onChan
  const [curves,setCurves]=useState<Curves|null>(null),[curvesKey,setCurvesKey]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[importing,setImporting]=useState(false),[draft,setDraft]=useState<ClassificationRecord|null>(null);
  const completeTicket=useRef(0),loadFocus=useRef<{id:number;node:HTMLElement}|null>(null);
  const ticket=useRef(0),abort=useRef<AbortController|null>(null),dialog=useRef<HTMLDialogElement>(null),heading=useRef<HTMLHeadingElement>(null),feedback=useRef<HTMLDivElement>(null),fileInput=useRef<HTMLInputElement>(null),investigationInput=useRef<HTMLInputElement>(null),spectrumInput=useRef<HTMLInputElement>(null);
- const key=state.unknownId+':'+state.atlasId+':'+state.pair,ready=!!curves&&curvesKey===key;
+ const externalSource=externals.find(p=>state.unknownId===(p.kind==='imported-spectrum'?'imported:'+p.sha256:'acquired:'+p.acquisitionId));
+ const key=state.unknownId+':'+state.atlasId+':'+state.pair,ready=!!curves&&curvesKey===key&&(!externalSource||curves.unknown===externalSource);
  async function load(next:ClassificationState,restoring=false,practiceRestore=false){
   const origin=document.activeElement instanceof HTMLElement&&document.activeElement.matches('select,button')&&document.activeElement.closest('.classification-main')?document.activeElement:null;
   const id=++ticket.current;loadFocus.current=origin?{id,node:origin}:null;abort.current?.abort();const controller=new AbortController();abort.current=controller;setBusy(true);setError('');setNotice('');
@@ -40,7 +41,7 @@ export default function ClassificationLab({controllerRef,active,workspace,onChan
  }
  useLayoutEffect(()=>{const focus=loadFocus.current;if(!busy&&focus){loadFocus.current=null;if(focus.id===ticket.current&&focus.node.isConnected&&document.activeElement===document.body)focus.node.focus({preventScroll:true});}},[busy]);
  useEffect(()=>{if(active)heading.current?.focus();},[active]);
- useEffect(()=>{if(active&&!investigationBusy){if(!ready)void load(state);}else{ticket.current++;abort.current?.abort();setBusy(false);setImporting(false);dialog.current?.close();setDraft(null);}return()=>{abort.current?.abort();};},[active,scope,state.unknownId,state.atlasId,state.pair,investigationBusy]);
+ useEffect(()=>{if(active&&!investigationBusy){if(!ready)void load(state);}else{ticket.current++;abort.current?.abort();setBusy(false);setImporting(false);dialog.current?.close();setDraft(null);}return()=>{abort.current?.abort();};},[active,scope,state.unknownId,state.atlasId,state.pair,investigationBusy,externalSource]);
  useEffect(()=>{if(error)feedback.current?.scrollIntoView({block:'center'});},[error]);
  function download(text:string,name:string,type:string){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  async function restore(event:ChangeEvent<HTMLInputElement>){const file=event.target.files?.[0];event.target.value='';if(!file)return;const id=++ticket.current;abort.current?.abort();setBusy(true);setError('');setNotice('');try{const next=await readClassificationSession(file);if(id===ticket.current){readClassificationWorkspace({...workspace,practice:next,active:'practice'},acquisitions);await load(next,true,true);}}catch{if(id===ticket.current){setError(t('class.restoreError'));setBusy(false);}}}

@@ -29,3 +29,8 @@ it('binds replay-verified normalized star derivatives and reimported SSPs in all
  for(const index of[0,1,2]as const){let running=startStar(activateStar(createStarExposure(17,index)));for(let elapsed=0;elapsed<1000;){const delta=Math.min(starTickLimit(index),1000-elapsed);running=tickStar(running,delta);elapsed+=delta;}const state=pauseStar(running),before=JSON.stringify(state),packet=await createStarObservation(state),probe=prepareLoadedFluxProbe(packet),reading=sampleLoadedFlux(probe,'4101.74');expect(reading.sourceKind).toBe('catalog-star-acquisition');expect(reading.acquisitionId).toBe(packet.acquisitionId);expect(reading.sourceId).toBe('acquired:'+packet.acquisitionId);expect(reading.sha256).toBe(packet.sha256);expect(JSON.stringify(state)).toBe(before);
  const decoded=await readImportedSpectrum(new File([new Uint8Array(starSpectrumBytes(state))],'reimport.ssp')),upload=classificationImportFromDecoded('reimport.ssp',decoded),reimported=sampleLoadedFlux(prepareLoadedFluxProbe(upload),'4101.74');expect(reimported.intensity).toBe(reading.intensity);expect(reimported.sourceKind).toBe('imported-spectrum');expect(reimported).not.toHaveProperty('acquisitionId');expect(reimported.sha256).not.toBe(reading.sha256);}
 });
+
+it('admits a dense uniform grid but refuses a sub-centiAngstrom offset that is most of a fine channel',async()=>{
+ const text=(offset:number)=>Array.from({length:50000},(_,i)=>`${(3900+i*600/49999+(i>0&&i<49999?offset:0)).toFixed(6)} .5`).join('\n');
+ const exact=await imported(text(0));expect(sampleLoadedFlux(prepareLoadedFluxProbe(exact),'4101.74').intensity).toBe(.5);const shifted=await imported(text(.009));expect(()=>prepareLoadedFluxProbe(shifted)).toThrow(SpectrumProbeError);
+});

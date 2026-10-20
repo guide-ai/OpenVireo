@@ -1331,7 +1331,6 @@ export interface MessageParameters {
   "probe.upper": "label";
   "probe.unknown": "label";
   "probe.lower": "label";
-  "probe.unsupported": never;
   "probe.wavelength": never;
   "probe.read": never;
   "probe.clear": never;

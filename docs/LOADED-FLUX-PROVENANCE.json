@@ -30,13 +30,11 @@
     },
     {
       "file": "native-file-reader.asm",
-      "start": "0x55ee14",
-      "endInclusive": "0x55f09e",
-      "rawRangeSHA256": "e8376f46ece7e582f8753214442c5ed215da61b13be0d758b641c01694e1eae2",
-      "artifactSHA256": "ca4449e63da0333d23243c9cf214b65b7e35e68e91ee86b7540b6e32bcde4847",
       "evidenceId": "VIREO-SSP-reader",
+      "start": "0x55ee14",
       "endExclusive": "0x55f09f",
-      "byteRangeSha256": "e8376f46ece7e582f8753214442c5ed215da61b13be0d758b641c01694e1eae2"
+      "byteRangeSha256": "e8376f46ece7e582f8753214442c5ed215da61b13be0d758b641c01694e1eae2",
+      "listingSha256": "ca4449e63da0333d23243c9cf214b65b7e35e68e91ee86b7540b6e32bcde4847"
     }
   ],
   "meaning": "Existing retained static ranges rehashed against pinned PE;no original execution.",
@@ -58,7 +56,9 @@
       0,
       1
     ],
-    "originalValidation": false
+    "originalValidation": false,
+    "maximumChannelFraction": 0.01
   },
-  "trustedBoundary": "Pure adapter relies on IO byte hashing/reparse or acquired journal replay;never classify imported claims as acquired/library origin."
+  "trustedBoundary": "Pure adapter relies on IO byte hashing/reparse or acquired journal replay;never classify imported claims as acquired/library origin.",
+  "rangeConvention": "[start,endExclusive)"
 }
