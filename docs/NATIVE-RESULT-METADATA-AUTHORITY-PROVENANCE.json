@@ -1,0 +1,719 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive);scoped slices and exploratory whole-image crossrefs are not complete-function proofs",
+  "captures": [
+    {
+      "evidenceId": "VIREO-DAT-AUTH-01",
+      "name": "classification-file-load",
+      "start": "0x50829c",
+      "endExclusive": "0x508570",
+      "byteRangeSHA256": "de112662f83742646bcbee74778b80f6fba0ada4094d7cf416493fc2f8e52852",
+      "listingSHA256": "a35b01bb6fbd5f5a2ae4354e0bc4623166c4c5c40c0b41f606c0dccf14814d6b",
+      "localListing": "classification-file-load.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-02",
+      "name": "classification-programmatic-file-load",
+      "start": "0x50b378",
+      "endExclusive": "0x50b4f5",
+      "byteRangeSHA256": "71f24507f39cec543226ab769d59de3017d89be4cd4365c588425d509914d560",
+      "listingSHA256": "809431ae9fb6b49ba92fedbad0459347ebbe03693ee99eb56a13e3f443a69656",
+      "localListing": "classification-programmatic-file-load.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-03",
+      "name": "attribute-fallback",
+      "start": "0x40b114",
+      "endExclusive": "0x40b15e",
+      "byteRangeSHA256": "f94671be6b89d04b82461a55b3b642468e0017db5633f843ae98bb458d2ef9f7",
+      "listingSHA256": "cbac435c0ae7e9385b3097766ab40617331d57d8b645e28c5dffdccd654e8b55",
+      "localListing": "attribute-fallback.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-04",
+      "name": "attribute-dispatch",
+      "start": "0x40b160",
+      "endExclusive": "0x40b1a6",
+      "byteRangeSHA256": "a9cb7903a049ecb681ac363097fe76f86f2da39f1ce6d21a6b07d42f0a097b5b",
+      "listingSHA256": "c1a9651a049ac04aa996454dbbd6b2c7b5898b5ac56292e597c09cbd317b71a4",
+      "localListing": "attribute-dispatch.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-05",
+      "name": "file-age",
+      "start": "0x40b1d0",
+      "endExclusive": "0x40b221",
+      "byteRangeSHA256": "3bf0c9deb9ce3dac2f3b56ed012a9d47cdeab7151740f9763e54531ff4081336",
+      "listingSHA256": "e328a0c659d8fb2d563fcc6b6138e22658b9412680a0baa5c995de76273c78ba",
+      "localListing": "file-age.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-06",
+      "name": "dos-date-to-daycount",
+      "start": "0x40b784",
+      "endExclusive": "0x40b7ed",
+      "byteRangeSHA256": "a4b465b8741339c56da99d943c8f4a2ac943547c712cafd45d89981437070a60",
+      "listingSHA256": "5b2d8b6efeab9d4427021a42691c47304910fabf44abbc2fbbf81700d27fb8ac",
+      "localListing": "dos-date-to-daycount.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-07",
+      "name": "try-encode-date",
+      "start": "0x40d1b8",
+      "endExclusive": "0x40d281",
+      "byteRangeSHA256": "b282d0ec3c472337f445845893461d0121e194b1da7462398484499febc2e0e4",
+      "listingSHA256": "0e24eb80617aa93bb1cd4a5b92239708c706ad9db46441f2f8759c64e84b32bc",
+      "localListing": "try-encode-date.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-08",
+      "name": "encode-date",
+      "start": "0x40d284",
+      "endExclusive": "0x40d2b3",
+      "byteRangeSHA256": "4ffa4170777f41737e22dd709dc8770738f247219719826b7d59c584464b9144",
+      "listingSHA256": "7902fc192cc4c0f4baf33b0a1172f71742c513cf4b50c031dbb4a3688b47ecb2",
+      "localListing": "encode-date.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-09",
+      "name": "current-local-daycount",
+      "start": "0x40d47c",
+      "endExclusive": "0x40d4cb",
+      "byteRangeSHA256": "dc503607d45a108f3c2be835586f15daf0cae2bbe374a10efaea4e78e8b3bf4c",
+      "listingSHA256": "03ee5cbf467dbcb078afb195741630265d84a711d20dc80dfc9c41c369c85bca",
+      "localListing": "current-local-daycount.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-10",
+      "name": "record-find",
+      "start": "0x54a73c",
+      "endExclusive": "0x54a814",
+      "byteRangeSHA256": "3c73fa8c8473944b1f3ba80ce6428b4f44ee4b306bd3448af10cfb98246fd38b",
+      "listingSHA256": "8d16f073fefa024bef1a914328365fb9bde352b9fabebf911497f75721fbe711",
+      "localListing": "record-find.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-11",
+      "name": "record-create",
+      "start": "0x54a814",
+      "endExclusive": "0x54a91a",
+      "byteRangeSHA256": "539c8ee848cc95ce256d7729f2c781aa3fe5fc743a91e5c2edbed6aa8706468b",
+      "listingSHA256": "145588496a5ebd67f5b4a1f768c2013926814c0f7210c303e02a58e5f632af95",
+      "localListing": "record-create.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-12",
+      "name": "classification-results",
+      "start": "0x50b1dc",
+      "endExclusive": "0x50b2c2",
+      "byteRangeSHA256": "836b6f2352d7346ac3de5521485f8694f948ee7cd64bc223ccff808a75378641",
+      "listingSHA256": "7fa34a5c6126c0c8bd836497e8e33abf3b1f571eda4093642b66565bb4ed8ed6",
+      "localListing": "classification-results.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-13",
+      "name": "short-string-copy",
+      "start": "0x403c5c",
+      "endExclusive": "0x403c75",
+      "byteRangeSHA256": "328a56cade21bfff6293d4c1af035ff3fbf0efd9175497707e84afdf6a4b0741",
+      "listingSHA256": "ec1810aff22103cd12a01e3b0c218eff47e9afbd476d8407507d131026224af9",
+      "localListing": "short-string-copy.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-14",
+      "name": "write-one-record",
+      "start": "0x4043b8",
+      "endExclusive": "0x404400",
+      "byteRangeSHA256": "19f998787ab7ae396f8d196788ea09ead9ba98f936f783fe823d309f3e28a6ca",
+      "listingSHA256": "d678e3660ec5fd7f32bd50b1bcddf070207e164263ea5298887fe8eb603e18a8",
+      "localListing": "write-one-record.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-15",
+      "name": "write-results-file",
+      "start": "0x547b0c",
+      "endExclusive": "0x547e62",
+      "byteRangeSHA256": "33bf209eea45a359c129386330b6bf9af665c94b9bcafced26ea1f97a51c8c72",
+      "listingSHA256": "23ee3d7e62380c75367218c0c56b5e2dbdda7f9fedf753f1014e2cd06a6cfd29",
+      "localListing": "write-results-file.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-16",
+      "name": "photometry-fill-slice",
+      "start": "0x501e9c",
+      "endExclusive": "0x501f8b",
+      "byteRangeSHA256": "74c9fa8933013c619c09b609c0352cf98a6c9c037e614dbe0a4b0a5733975cd0",
+      "listingSHA256": "79e4cd8697c62c84dbe94e863a4aa9da27845d2b63ed4f5953b4cd047b601480",
+      "localListing": "photometry-fill-slice.asm",
+      "boundary": "Bounded caller slice only;not a complete function or exhaustion of its branches."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-17",
+      "name": "redshift-fill-slice",
+      "start": "0x5839cd",
+      "endExclusive": "0x583a6f",
+      "byteRangeSHA256": "504081a78e17121801235624e333652949242137c25bbc241ee3c596af7c2b83",
+      "listingSHA256": "6bbdc32eadb3d23cb599de078676b36b2b523694b2344dace3ef7026f15d7e02",
+      "localListing": "redshift-fill-slice.asm",
+      "boundary": "Bounded caller slice only;not a complete function or exhaustion of its branches."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-18",
+      "name": "spectrum-header-slice",
+      "start": "0x55eeb4",
+      "endExclusive": "0x55ef64",
+      "byteRangeSHA256": "621349d80ffccdbe60ede66e2a81897e033045c106efa7d702fda6c354a16f68",
+      "listingSHA256": "46cd71c31f267600722c5ee8f7c8be59a69baefb75e9f9cce92c0bc58c631b65",
+      "localListing": "spectrum-header-slice.asm",
+      "boundary": "Bounded caller slice only;not a complete function or exhaustion of its branches."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-19",
+      "name": "date-object-offset",
+      "start": "0x487b2c",
+      "endExclusive": "0x487b45",
+      "byteRangeSHA256": "bf252a120e06e2b0b1b0edbbdad9b67c4736ba1aff12c7f2fa40e7d64ca2fedc",
+      "listingSHA256": "0485e6758ccd7eda2f44c4446db876909bd43ce10c4fa5115e3b307d5a3b4de7",
+      "localListing": "date-object-offset.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-20",
+      "name": "date-object-assign",
+      "start": "0x487b64",
+      "endExclusive": "0x487bcb",
+      "byteRangeSHA256": "6e58a1ba3575136b62999e40db7d67ed7fab98c85bfb27fb75574bebb32ff96b",
+      "listingSHA256": "a99e69b0db4c3f372f1de300f87877646f2070eff0b5245d7a5e13b286b9b4fb",
+      "localListing": "date-object-assign.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-21",
+      "name": "date-jd-getter",
+      "start": "0x487bcc",
+      "endExclusive": "0x487be8",
+      "byteRangeSHA256": "cd28c4aa92ac7b923d2929b14a45a99c9131d29e558fcc01e0655fee75d3972b",
+      "listingSHA256": "553e07004bd84a90b8a42d8ea76cdf0b9760ad514eb32b017ba97b839c8d8f35",
+      "localListing": "date-jd-getter.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-22",
+      "name": "date-bias-init",
+      "start": "0x5ac748",
+      "endExclusive": "0x5ac791",
+      "byteRangeSHA256": "fe85c1a625a88c8e9bdbb7bfec4449d0663b6e398e267f971792e6ca379f2aeb",
+      "listingSHA256": "10145de13250642561494df0fcd54dee89b4775874722cb2446dbe0af9028eb6",
+      "localListing": "date-bias-init.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-23",
+      "name": "selected-edit",
+      "start": "0x549620",
+      "endExclusive": "0x549760",
+      "byteRangeSHA256": "85f20d2353fb9cf7a34e0eee60fbce7530e876d99ad7a201a884948b0c7d7b5a",
+      "listingSHA256": "4f7428977fb7e5291f67d31dbf1d3472423de16279ea2dbf42e733006277ce8d",
+      "localListing": "selected-edit.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    },
+    {
+      "evidenceId": "VIREO-DAT-AUTH-24",
+      "name": "undo-edit-delete",
+      "start": "0x54993c",
+      "endExclusive": "0x549a27",
+      "byteRangeSHA256": "794ea47cc6608a9e82fc571138a174bcbe9ff1d81bad77aeb642cf0e3a7624f9",
+      "listingSHA256": "50de4d059b6a659083422822a0dfe9337b076e7d85f2efbfb34efd192e570849",
+      "localListing": "undo-edit-delete.asm",
+      "boundary": "Complete function through return/SEH cleanup;following alignment/data excluded."
+    }
+  ],
+  "importStubs": [
+    {
+      "stub": "0x408324",
+      "IAT": "0x621038",
+      "import": {
+        "dll": "kernel32.dll",
+        "name": "FileTimeToDosDateTime"
+      },
+      "stubSHA256": "07b84592f42b8b6cfb7ea6b46cea894befc135dad00628a2aa862f37aabd1fdd"
+    },
+    {
+      "stub": "0x40832c",
+      "IAT": "0x621034",
+      "import": {
+        "dll": "kernel32.dll",
+        "name": "FileTimeToLocalFileTime"
+      },
+      "stubSHA256": "d0c6a62fc8fecc487b329ed51050868f2be7bd0b97a945c2b1f056bac0e57308"
+    },
+    {
+      "stub": "0x4083f4",
+      "IAT": "0x620fd0",
+      "import": {
+        "dll": "kernel32.dll",
+        "name": "GetLocalTime"
+      },
+      "stubSHA256": "65e39e0bd3852579d5c78cf9fd929403b25496ce5f754e028989d40954d38d47"
+    },
+    {
+      "stub": "0x401328",
+      "IAT": "0x620a74",
+      "import": {
+        "dll": "kernel32.dll",
+        "name": "WriteFile"
+      },
+      "stubSHA256": "1ca01ea702da2bacdff4e60027d6127b2563eb6bfb335cb6961268037f16f811"
+    },
+    {
+      "stub": "0x408414",
+      "IAT": "0x620fc0",
+      "import": {
+        "dll": "kernel32.dll",
+        "name": "GetModuleHandleA"
+      },
+      "stubSHA256": "67f5d2fc5d51f5e3857b58ea06804697f876babee3fc89f524b90d16052cf050"
+    },
+    {
+      "stub": "0x40841c",
+      "IAT": "0x620fbc",
+      "import": {
+        "dll": "kernel32.dll",
+        "name": "GetProcAddress"
+      },
+      "stubSHA256": "c53270e6e3ec655aa0cac14f7fcf2e22a3770425b3595362e97b536b38d5a695"
+    }
+  ],
+  "literalData": [
+    {
+      "start": "0x40b1a8",
+      "bytes": 20,
+      "meaning": "GetFileAttributesExA name including NUL",
+      "byteRangeSHA256": "37358ce8042e2502f451d1b1f79abde6cc493928d72182a38d714466e0b3e057"
+    },
+    {
+      "start": "0x40b1c0",
+      "bytes": 13,
+      "meaning": "kernel32.dll name including NUL",
+      "byteRangeSHA256": "d89b4bfe0229ab034c8597fbd9c4b70af3690382b8c700ec05d6923da518275c"
+    },
+    {
+      "start": "0x5ae8c0",
+      "bytes": 4,
+      "meaning": "Initial dynamic attribute function pointer 0x40b160",
+      "byteRangeSHA256": "b05d1a57507ff0f5c8c4f30863ab247b151f764d07aa457f5e03ede7669130e1"
+    },
+    {
+      "start": "0x487b48",
+      "bytes": 4,
+      "meaning": "Single24 divisor for date-object offset hours to days",
+      "byteRangeSHA256": "e4d11efbb477a76acb589cc3c6d78f8067d35f26293029ec6dc2bda8df62bff4"
+    },
+    {
+      "start": "0x5ac794",
+      "bytes": 4,
+      "meaning": "Single100000 startup daycount threshold",
+      "byteRangeSHA256": "79570bd9722fc4a8f0f0b8db6aa3c9ed1b4e3b0f9e28e7b6a0aecc641249c31a"
+    },
+    {
+      "start": "0x5ac798",
+      "bytes": 4,
+      "meaning": "Single693594 conditional epoch correction",
+      "byteRangeSHA256": "246510947f40a5b27b5260293a8fa5840dad24494ee9658d99245c079f641053"
+    }
+  ],
+  "nativeMetadataFlow": {
+    "fileTime": "Successful classification file loader50840a->40b1d0->40b784->storeDouble+4e1;programmatic path50b405same. File-age reads attributes+20=ftLastWriteTime,converts via FileTimeToLocalFileTime then FileTimeToDosDateTime. DOS words then feed date/time encoders. Time comes from filesystem,not SP/SSP body or acquisition clock.",
+    "lookup": "50b1dc pushes classifier+4e1/+4e5 to54a73c. Exact-ID existing row returns unchanged;time arguments only copied by54a814oncreation. RA/Dec are separately overwritten from spectrum+31/+3b. Reuse is therefore not a newly timestamped measurement.",
+    "initialValues": "54a814clears RA/Dec,fiveExtendedphotometry,packedtype,ZandV;sets kind from globaloption+2e7f,andemptyremarks length. These are initial values/sentinels,not measured truth or permission to fill unavailable fields.",
+    "padding": "403c5ccopies min(length,capacity) text bytes and one length. Record creation does not clear every byte of its144byte stack buffer;emptyremarks initializes only its length. Full-byte zero initialization/deterministic padding/original writer byte equivalence is not established.",
+    "photometry": "Separate caller501e9c..501f8bpasses owner measurement-struct+620time through prepare,conditionallyfillscoordinates,kind+67e,five nonzero Extendedslots+64c. This is not the classifier practice source path.",
+    "redshift": "Separate caller5839cd..583a6fwrites manual/current Extended+49f intorecordZSingle,coordinatesfromspectrum,andconditionalVphotometryfromspectrum+45. It does not establish authority from a header claim or catalog answer.",
+    "dateDisplay": "487bccadds rawDouble,dateobjectExtended+2a andglobal5bad48. Offsetsetter487b2cstores suppliedSinglehours/24. Startup helper40d47cuses GetLocalTime before100000threshold branch;stored record does not carry original host clock/zone/offset. 40d1b8usesGregorianordinal-693594,matching1899-12-30butnotproving an arbitraryDATUTCepoch/context."
+  },
+  "writer": {
+    "function": "0x547b0c..0x547e62",
+    "size": 144,
+    "transfer": "Typed file Rewrite with recordsize0x90;iterate existing list recordpointers and pass unchanged contents to4043b8->WriteFile. No application header in captured path.",
+    "shortWrite": "4043dfcompares actual bytes with requestedsize;successfulshortwrite raisesIOerror101. FailedAPI uses system error. No transaction or rollback of already written prefix is established.",
+    "boundary": "A notebook row is not an owned144byte native record. Writing missing numeric/date/kind/encoding/padding as zero would manufacture a new record profile,not recover existing observation metadata. Inputbyte-copydownload remains supported.",
+    "unrecovered": "No admitted original writer-output/runtime witness;full native ACP,velocity validation,FPU/locale/rounding and error/overwrite lifecycle remain partial."
+  },
+  "decision": "No new application control,writer,calendar conversion or metadata filling. Publish the validated inspector separately. Record recoverable flow and exact missing state;prioritize original single-level selected-row edit Undo independently of numerical/date writer authority.",
+  "nextIndependentOriginalFeature": {
+    "name": "Undo last confirmed observation edit",
+    "nativeEvidence": [
+      "selected-edit0x549620..0x549760copies144bytebefore-state,enablesUndoaftermodalresult1",
+      "undo0x54993c..0x549a27editbranchcopiesbefore-statebackanddisablesUndo"
+    ],
+    "proposedScope": "One confirmed edit for admitted practice notebook rows;retain full stable IDs/source/order/typecode/remarks. Reuse existing conflict/recovery guard and unchanged notebook-v1 rather than new invented native metadata. Determine recoveryjournal discriminant and migration requirements before implementation;no persistence schema change in this recovery.",
+    "remainingDesignEvidence": "Full callback invalidation with new/create/open/cancel and pointer/index lifetime still requires focused recovery. Existing web cancellation/snapshot journal differences must remain explicit."
+  },
+  "externalReferences": [
+    {
+      "title": "WIN32_FILE_ATTRIBUTE_DATA",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/ns-fileapi-win32_file_attribute_data",
+      "role": "Structure +20 bytes is ftLastWriteTime."
+    },
+    {
+      "title": "FileTimeToLocalFileTime",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-filetimetolocalfiletime",
+      "role": "Host local-time conversion;not historical UTC reconstruction."
+    },
+    {
+      "title": "FileTimeToDosDateTime",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-filetimetodosdatetime",
+      "role": "DOS date/time packing,1980..2107andtwo-second granularity."
+    },
+    {
+      "title": "GetLocalTime",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlocaltime",
+      "role": "Local host clock used by startup threshold;not a file observation time."
+    }
+  ],
+  "staticControlsSHA256": "76ef22bc505a9fda0a914f74e69c7d0b5d7053def519a92b55e9a2056060642a",
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Native metadata sources differ by entry route and reuse;no generic observation truth admission.",
+    "Content SHA/SPorSSPbody/manifest do not supply originalWindowsftLastWriteTime/timezone or active native dateobject/FPUstate.",
+    "Record initialization includes sentinelzeroandunassignedpadding;not all144byteszero.",
+    "No native execution/microemulation/Windows,originaloutput,externalreview,deployorneworiginalassetupload.",
+    "All64primaryacceptance statuses and scientific/userformat contracts unchanged;projectpartial."
+  ]
+}

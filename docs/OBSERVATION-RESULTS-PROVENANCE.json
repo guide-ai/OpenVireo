@@ -621,7 +621,7 @@
     }
   },
   "contracts": {
-    "prepare": "When global option+0x2e8c=0,case-sensitive exact object-ID lookup scans first to last and returns first match;otherwise/new miss creates zero-initialized record before opening dialog. Classifier then copies RA/Dec Extended fields from spectrum+0x31/+0x3b.",
+    "prepare": "When global option+0x2e8c=0,case-sensitive exact object-ID lookup scans first to last and returns first match;otherwise/new miss creates record with explicitly initialized fields (not a proven all-byte-zero buffer) before opening dialog. Classifier then copies RA/Dec Extended fields from spectrum+0x31/+0x3b.",
     "activate": "Loads fields from current record and calls spectral formatter;zero sentinel numerical fields show blank. It may calculate/store velocity on activation under a separate option and nonzero redshift,so this path is not a purely read-only native preview.",
     "confirm": "Copies readonly ID up to15,remarks up to36,converts entered spectral text to packedcode+0x5f,then optionally parses a nonempty velocity and checks relative error againstC*z. Native can modify textual fields before a later velocity rejection. No spectral grade or nonempty type/remarks requirement here.",
     "cancel": "bkCancel plus handler clears the unrelated owner flag+0x480. No record rollback/delete found in handler;web must not claim native provisional rows disappeared.",
@@ -985,5 +985,11 @@
       "evidence": "docs/NATIVE-OBSERVATION-RESULTS-PROVENANCE.json",
       "rawCapturePolicy": "Earlier research files/capture hashes preserved;this corrects analyst semantic labeling,not original bytes."
     }
-  ]
+  ],
+  "recordInitializationErratum": {
+    "previousAnalystLabel": "zero-initialized record",
+    "corrected": "Constructor initializes specified numeric fields and short-string lengths;shortstring copy403c5ccopies used bytes only. Unused144byte stack-buffer tails/padding are not proved cleared.",
+    "evidence": "NATIVE-RESULT-METADATA-AUTHORITY-PROVENANCE.json",
+    "rawEarlierResearch": "Unchanged outside repository;erratum does not rewrite original bytes or historical captures."
+  }
 }

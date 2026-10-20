@@ -1,5 +1,7 @@
 # OpenVireo implementation plan
 
+Current DAT authority recovery: [native metadata and writer boundary](NATIVE-RESULT-METADATA-AUTHORITY.md) traces classifier file time,source-specific numeric ownership,sentinel initialization and typed144-byte writes. Missing original host/time/source state prevents reconstructed notebook→DAT output;no fallback values or new UI are introduced. Single-level selected-row edit Undo is the next independent original proposal,after focused invalidation/index recovery. Inspector and existing formats remain unchanged;project partial.
+
 Current confirmation follow-up: [known-zero width guard](WIDTH-COORDINATE-GUARD.md) blocks cleared paired-pan coordinates and exact supported centerX/Yzeros before calculation, and retires stale input/mark reviews. Live origin/source/frame binding preserves numeric work and existing files. Full six-flag/rounding/paint/modal/runtime parity remains open; no integrator/record/format or primary-status change.
 
 Current pan-paint follow-up: [paired shoulder painting](PAIRED-PAN-MARKS.md) ports the recovered both-Xflags containment predicate for complete pane-bound regions while retaining numeric inputs. Repaint/Inspect/reverse keep the snapshot; pan return/zoom/reset reconstruct existing geometry. Full native X/Y/sentinel/confirmation and asymmetric lifecycle remain open; no integrator/record/format or primary-status change.
