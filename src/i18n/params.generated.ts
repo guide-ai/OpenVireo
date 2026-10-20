@@ -1407,4 +1407,16 @@ export interface MessageParameters {
   "inspection.kindSampled": never;
   "inspection.kindPrinted": never;
   "inspection.touchOption": never;
+  "sampledTrace.option": never;
+  "sampledTrace.caption": "label";
+  "sampledTrace.policy": never;
+  "sampledTrace.help": never;
+  "sampledTrace.method": never;
+  "sampledTrace.limits": never;
+  "sampledTrace.plotPolicy": never;
+  "sampledTrace.invalidSource": never;
+  "sampledTrace.unavailable": never;
+  "sampledTrace.acquiredPolicy": never;
+  "sampledTrace.importedPolicy": never;
+  "sampledTrace.scaleNote": never;
 }

@@ -1,0 +1,30 @@
+# Sampled intensity traces
+
+**Spectrum rendering → Sampled intensity traces** adds the recovered500-position/visible-maximum/100-pixel trace for the upper atlas reference,unknown and lower atlas reference. Each source has its own positive sampled maximum;equal heights are not equal physical flux or continuum calibration. **Printed-coordinate traces** retains the previous raw-coordinate crop view. Combined photo/unknown-trace behavior remains available.
+
+## Evidence and limits
+
+[Provenance](SAMPLED-INTENSITY-TRACES-PROVENANCE.json) binds the unchanged CLEA_VEO.exe SHA-256781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c tounknown0x508678–0x5088f4 andstandard0x508b88–0x508dc0,aligned captures,byte/listing hashes andexactSingle100constants. FormCreate0x507624–0x507639 initializes trace/photo flagsfalse;ReverseDisplay0x50948c writes onlyphoto flags. FormPaint selects the actual upper/unknown/lower source and each pane's baseline. Existing CLEA/Gettysburg College help/license hashes,credits andsource-specific rights uncertainty are retained;no new original resource is included.
+
+Both trace routines sample `minimum+i*(maximum−minimum)/500`,i0..499,with a positive maximum initialized0. They divide each sample by its own window maximum,multiply bySingle100,convert to integer height and draw from index0. In a125px browser pane this maps to `125−roundNearestEven(100*intensity/peak)`. Both the first vertex and its contribution to the maximum are included;the right endpoint is excluded. The generic pure policy shares the established combined-trace arithmetic but has a distinct `VIREO-sampled-trace-Number-v1` identifier.
+
+Number interpolation/nearest-even/int32 guards andSVG clipping are declared adapters,not x87/GDI equality. Nonpositive peak,unsupported grid or unsafe height retains an explicit full printed-coordinate fallback. Source identity failure closes the pane with an alert and no potentially wrong fallback. Negative overshoot remains in source/vertex values and can be clipped by the pane;it is not clamped in the source.
+
+The admitted trace flags stay uninverted. Reverse photographic grayscale affects photo/combined photos only. The new optional sampled choice enters bracket mode as an explicit web admission policy;the native mode0handler0x5093e0 itself does not clear difference. Selecting difference continues the existing printed-coordinate/exact-grid policy. No native sampled-difference renderer is claimed.
+
+## Data and pupil work
+
+Source arrays,original bytes,acquired source-plus-sky buffers,RNG journals,SSP derivatives and numerical flux readings are unchanged. The two standard panes/readout roles remain the selected atlas pair. The unknown may be an original practice,admitted acquired star or visual import;imports never gain original/acquisition authority. Source-specific continuum/sky/filename limits remain visible.
+
+Manual wavelength markers are drawn where visible. Their continuum heights stay in the separate full-domain manual tool;no peak-normalized continuum or equivalent width is supplied. Cursor inspection reports a selected display ordinate,(125−y)/100,and keeps its window identity. Touch swipes scroll by default;explicit touch-inspection opt-in arms held readings. Old-window sampled ordinate ticks stay hidden until a new same-window reading. Rendering,reverse,window,scroll andcursor remain ephemeral;no session format or scientific record schema changes.
+
+## Try locally
+
+1. Open http://127.0.0.1:5173/#classification. Under **Spectrum rendering**,choose **Sampled intensity traces**. Check upper reference,unknown andlower reference captions. Each trace has its own visible maximum1.
+2. Choose **Zoom in ×2**,pan orreset. All three axes resample the same current window;**Printed-coordinate traces** instead shows the retained points without peak normalization. Changing atlas/pair keeps source identities andyour manually entered reasoning.
+3. Use **Combined photo and trace** to compare its lower unknown trace at the same window:its shape matches the new unknown sampled trace. Switch through reversed photos andback;sampled traces stay uninverted. Difference continues through the printed view.
+4. Hold/move/release oruse arrows/keypad andEnter on a sampled pane. The cursor says **display ordinate**,not sampled source flux. For touch inspection,enable the checkbox above the panes;leave it off to swipe/scroll.
+5. Acquire a supported star,choose **Classify acquired star**,sampled rendering andzoom. **Measure this acquired star → Download acquired SSP**,then reimport that exact file. At the same window,the unknown trace matches while the origin label changes. Full investigation save/reload/restore retains manual work/raw acquisition/imported bytes;choose the ephemeral rendering/window again.
+6. A zero orirregular imported unknown shows a labelled full printed fallback while admitted standards remain sampled. A malformed import preserves the current data. Numeric/manual continuum entry remains independent.
+
+[Validation](SAMPLED-INTENSITY-TRACES-VALIDATION.md) records independent numerical comparisons andreal browser flows;the separate [new-review authorization blocker](SAMPLED-INTENSITY-TRACES-REVIEW.md) is retained. Native wider option/range/trace inversion/difference behavior,full shoulder/context tools,formatting/grade/result contracts andN02/E03/full-plan acceptance remain open. Static recovery andself-consistent checks do not establish original equivalence.

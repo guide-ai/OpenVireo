@@ -31,3 +31,5 @@
 .class-comparison{min-width:0;overflow:visible}.comparison-cursor-live{position:sticky;top:0;z-index:2;height:86px;padding:12px 18px;background:#eef5f2;border-block:1px solid #d7e4df;font-size:12px;line-height:18px;overflow:hidden}.comparison-cursor-live span:first-child{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.comparison-cursor-live span:last-child{display:block;overflow-wrap:anywhere}
 
 .inspection-touch-option{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;font-size:12px}.inspection-touch-option input{width:18px;height:18px}
+
+.sampled-intensity-trace figcaption{overflow-wrap:anywhere}

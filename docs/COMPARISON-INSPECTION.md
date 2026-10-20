@@ -20,6 +20,8 @@ Touch scrolling is the default;touch inspection requires the explicit checkbox a
 
 Preview/retained readings and markers are ephemeral. Cancellation,escape,blur,lost capture,leaving the surface,hidden tabs,source/layout changes and investigation preparation cannot commit pending work. Clearing the cursor invalidates a held gesture. Cursor state is absent from JSON/CSV. Same-page restoration and source changes clear pending work;reload starts without a cursor.
 
+The [sampled-trace follow-up](SAMPLED-INTENSITY-TRACES.md) adds a distinct500-position/visible-maximum display for all three sources;the printed trace description below retains its original meaning.
+
 ## Printed trace zoom
 
 The existing1–16×,10%pan and reset controls now operate on printed trace and difference views as well as photo/combined. All actual comparison panes share the wavelength interval;switching rendering or difference retains that window. Printed traces keep every retained sample within it,without interpolation,visible-peak normalization or automatic endpoints. Curves,manual overlays and selected wavelength are clipped to the plot frame. Sparse imports can have no points inside a narrow window;no missing spectrum is invented. Labelled photo fallbacks and the separate manual continuum tool retain their full3900–4500Åcoordinates.
@@ -29,7 +31,7 @@ The inherited Number/nearest-even viewport and half-index interpolation uncertai
 ## Try locally
 
 1. Open http://127.0.0.1:5173/#classification and choose **Grayscale photo**. Hold/move/release in the unknown photo;**Comparison cursor readout** shows sampled flux/source/window/SHA. Repeat at the same X and another Y,then reverse:the sampled intensity stays the same.
-2. Press **Zoom in ×2**. The retained wavelength centers the window where admitted. Choose **Intensity trace**:the same window remains. Hold at different heights to see **cursor display ordinate**. This is your cursor height,not an automatic flux measurement. A short horizontal tick indicates that ordinate.
+2. Press **Zoom in ×2**. The retained wavelength centers the window where admitted. Choose **Printed-coordinate traces**:the same window remains. Hold at different heights to see **cursor display ordinate**. This is your cursor height,not an automatic flux measurement. A short horizontal tick indicates that ordinate.
 3. Choose **Combined photo and trace**. Its unknown photo reports sampled flux;the lower trace reports its display ordinate. The shared wavelength marker follows the current reading. Tab to a surface,use arrows/keypad and Enter/Space;Escape cancels a preview and preserves the last retained reading.
 4. Return to trace,clear the cursor and diagnostic line,reset,then zoom:4050–4350Å. Pan left:4020–4320Å. All three trace axes and retained-point crops move together. Your manual continuum tool stays full-domain.
 5. Cancel a held gesture with Escape or by leaving the pane before release;the prior retained reading stays. Change source:the old cursor clears. Save/reload/restore an investigation or reimport an acquired SSP:manual work and exact bytes survive,but temporary cursor state is not restored. On360px screens,touch swipes scroll normally. Enable **Enable touch cursor inspection (otherwise swipe to scroll)** above the panes before touch inspection;the photo scroll viewport and keyboard/touch mapping remain aligned.

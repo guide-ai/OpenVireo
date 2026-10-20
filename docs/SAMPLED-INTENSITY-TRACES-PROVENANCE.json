@@ -1,0 +1,84 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-SAMPLED-TRACE-01",
+      "start": "0x508678",
+      "endExclusive": "0x5088f4",
+      "byteRangeSHA256": "1963fe7bbbeef5592f37a3b376ecd5267b4a11949070beb39b40f3a96c372fec",
+      "listingSHA256": "31f68376ba9481f4eb178f97a33e1399a0a99c1f11f836e6b6c3f0ad0b618fe8",
+      "localListing": "unknown-trace.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-TRACE-02",
+      "start": "0x508b88",
+      "endExclusive": "0x508dc0",
+      "byteRangeSHA256": "8c0f4ae784bbd311e0c7a2d0b798d04a62f204f52dc940359d0cb76cad1ad257",
+      "listingSHA256": "d144db7b650fff7e3e359e0e66b58bb0d3c6f76ec3f14813e97a4837f0b3dcdb",
+      "localListing": "standard-trace.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-TRACE-03",
+      "start": "0x507624",
+      "endExclusive": "0x507639",
+      "byteRangeSHA256": "256107ee8269e73a5692975a6034d7e28d886da04022c32ed6480cdb04b1131b",
+      "listingSHA256": "d54eedb4c6c70f3fa1d2dcc81e64e679dedd2e60a03257930ca55670d2012674",
+      "localListing": "trace-flags.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-TRACE-04",
+      "start": "0x507b88",
+      "endExclusive": "0x50829c",
+      "byteRangeSHA256": "297da77c3910cc86a093c1a2c9573195a2433c62dfa18085bc4a1e6e883c6c30",
+      "listingSHA256": "490f651d7ecffa74b49fccfb4b95707e95f76669d57de49dd42f6c3843cbc21c",
+      "localListing": "form-paint.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-TRACE-05",
+      "start": "0x5093e0",
+      "endExclusive": "0x5094cc",
+      "byteRangeSHA256": "387e47f0f83371c25da2ea8f4d6a2aa4dcbcdd2b278c4fa5087751b9569b7c3d",
+      "listingSHA256": "27cb4f7afaf1de87fe5abaf17320361298920f0a01a6fa04dd7c4ef59713d4ea",
+      "localListing": "display-mode.asm"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x5088b8",
+      "type": "Single",
+      "value": 100.0,
+      "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01"
+    },
+    {
+      "address": "0x508d8c",
+      "type": "Single",
+      "value": 100.0,
+      "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01"
+    }
+  ],
+  "nativeContracts": {
+    "unknown": "500 wavelength samples at minimum+i*step,i0..499;positive visible max0 initialized;intensity/max*Single100;integer height via0x403700;relativepane y125-height;firstvertex0 included.",
+    "standard": "Same math in0x508b88 after selected atlas source dispatch; upper and lower baseline passed as arguments;zero source pointer returns without inventing a curve.",
+    "flags": "FormCreate initializes+495..498 tofalse. ReverseDisplay writesphoto+495/+497 only;trace+496/+498 remain uninverted under this admitted configuration.",
+    "dispatch": "Mode0 paints upper/lower standard traces plus unknown trace;mode2 uses unknown trace below its photo. Difference is a separate branch.",
+    "transition": "0x5093e0 selects mode0 without clearing difference. New optional web sampled-trace choice is bracket-only and explicitly distinct from the old printed-coordinate trace/difference adapter."
+  },
+  "webAdapters": [
+    "Number sampling/nearest-even/int32 guards;SVG125pixel pane and clipping;not x87/GDI oracle.",
+    "Preserve old printed-coordinate traces and exact existing difference policy;new sampled option has its own disclosed bracket-only entry transition.",
+    "Manual wavelengths remain markers only;manual continuum/EW and original samples/raw counts/readouts/session fields never normalized by display.",
+    "No-positive-maximum or unsupported profile retains labelled full printed trace;identity failures show alert with no fallback."
+  ],
+  "sourceCredits": [
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7"
+    },
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    }
+  ],
+  "rightsAndUncertainty": "Existing Gettysburg College/CLEA notices andsource-specific license uncertainty remain;no new original assets included. Static recovery and mathematical reference checks do not establish original-runtime equivalence."
+}

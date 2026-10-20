@@ -33,7 +33,8 @@ export function photographicSpectrum(grid:UniformSpectrum,reverse:boolean){
  if(typeof reverse!=='boolean')throw new PhotoSpectrumError('grid');return tonePhotographicSpectrum(samplePhotographicSpectrum(grid),reverse);
 }
 
-export type SpectrumRendering='trace'|'photo'|'combined';
-/**0x5093f8 clearsdifference onphoto;0x509450 forcestrace fordifference. */
+export type SpectrumRendering='trace'|'photo'|'combined'|'sampled-trace';
+/**0x5093f8 clearsdifference onphoto;0x509450 forcestrace fordifference.
+ * Optional sampled-trace entry is a bounded bracket-only web policy. */
 export function selectSpectrumRendering(current:'bracket'|'difference',rendering:SpectrumRendering){return Object.freeze({rendering,comparison:rendering!=='trace'?'bracket' as const:current});}
 export function renderingForComparison(rendering:SpectrumRendering,comparison:'bracket'|'difference'):SpectrumRendering{return comparison==='difference'?'trace':rendering;}

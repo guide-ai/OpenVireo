@@ -11,3 +11,9 @@ export function combinedTrace(sampled:ReturnType<typeof samplePhotographicSpectr
  const columns=sampled.columns.map(p=>{const height=roundNearestEven(p.intensity/sampled.peak*100),y=125-height;if(!Number.isSafeInteger(height)||!Number.isSafeInteger(y)||height< -2147483648||height>2147483647||y< -2147483648||y>2147483647)throw new CombinedTraceError();return Object.freeze({...p,height,y});});
  return Object.freeze({policy:COMBINED_TRACE_POLICY,peak:sampled.peak,columns:Object.freeze(columns)});
 }
+
+/** Same recovered100pixel transfer for upper/unknown/lower in native mode0;
+ * standard0x508b88–0x508dc0,unknown0x508678. Initial trace flags remainfalse.
+ * Dossier:docs/SAMPLED-INTENSITY-TRACES-PROVENANCE.json. */
+export const SAMPLED_TRACE_POLICY='VIREO-sampled-trace-Number-v1';
+export function sampledIntensityTrace(sampled:ReturnType<typeof samplePhotographicSpectrum>){const trace=combinedTrace(sampled);return Object.freeze({...trace,policy:SAMPLED_TRACE_POLICY});}

@@ -1,6 +1,9 @@
 # OpenVireo implementation plan
 
 
+N02 sampled-trace follow-up: [source-correct500-position intensity traces](SAMPLED-INTENSITY-TRACES.md) adds independent upper/unknown/lower visible-maximum display scaling while preserving the printed-coordinate view,numerical source flux andmanual continuum/records. Native full configuration/difference/tool/result contracts andall64primary statuses remain unchanged.
+
+
 N02 cursor follow-up: [comparison photo/trace cursor and printed-trace window](COMPARISON-INSPECTION.md) adds held/released readout,source-bound temporary marker,keyboard/touch adapters and bounded zoom/pan of retained printed points. Trace ordinate and sampled photo flux remain explicitly distinct;manual EW/answers and all64primary acceptance statuses are unchanged.
 
 

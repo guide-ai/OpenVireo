@@ -1351,7 +1351,7 @@
   "probe.resultOrigin": "Source kind: {origin}",
   "probe.acquisitionId": "Acquisition identity: {id}",
   "photo.rendering": "Spectrum rendering",
-  "photo.trace": "Intensity trace",
+  "photo.trace": "Printed-coordinate traces",
   "photo.photo": "Grayscale photo",
   "photo.reverse": "Reverse photographic grayscale",
   "photo.help": "Each photo is scaled to its own visible sampled maximum. Gray levels across sources are not a common flux scale. The numerical readout still reports the retained relative intensity.",
@@ -1405,5 +1405,17 @@
   "inspection.kindPhoto": "photo sampled flux",
   "inspection.kindSampled": "sampled trace ordinate",
   "inspection.kindPrinted": "printed trace ordinate",
-  "inspection.touchOption": "Enable touch cursor inspection (otherwise swipe to scroll)"
+  "inspection.touchOption": "Enable touch cursor inspection (otherwise swipe to scroll)",
+  "sampledTrace.option": "Sampled intensity traces",
+  "sampledTrace.caption": "{label} · sampled intensity trace (visible maximum = 1)",
+  "sampledTrace.policy": "Each source uses 500 endpoint-grid positions in the displayed interval and its own positive sampled maximum. The recovered trace maps intensity / visible maximum to a 100-pixel amplitude, rounded to nearest-even integer heights. Index 0 is included; the right endpoint is excluded. This is a display scale, not a shared flux or continuum calibration. Numerical source readings keep their retained relative intensities.",
+  "sampledTrace.help": "Upper reference, unknown and lower reference are sampled independently. Zoom and pan resample the visible window; the original printed samples and manual work are unchanged. Reverse photographic grayscale does not reverse these traces.",
+  "sampledTrace.method": "Sampled intensity trace method",
+  "sampledTrace.limits": "Static native unknown/standard trace routines support this bounded Number profile; native x87/GDI equivalence, wider configuration and full difference rendering remain unverified. Entering this optional sampled view clears difference as a browser bracket-only policy.",
+  "sampledTrace.plotPolicy": "Sampled traces have a separate visible-maximum display scale for each source. Equal heights across sources do not establish equal physical flux or continuum matching. Wavelength markers do not calculate continuum heights or equivalent width. A labelled fallback retains its original full printed coordinates.",
+  "sampledTrace.invalidSource": "Sampled intensity trace hidden: source identity or integrity checks failed. No fallback curve is shown.",
+  "sampledTrace.unavailable": "Sampled intensity trace unavailable under the admitted source, positive-maximum or integer-height policy. The labelled full printed-coordinate trace is retained.",
+  "sampledTrace.acquiredPolicy": "The acquired source-plus-sky derivative and the atlas have not been continuum-matched. Trace display scaling does not subtract sky, remove noise or provide a physical spectral type.",
+  "sampledTrace.importedPolicy": "Imported bytes and printed samples are retained; the sampled trace uses its admitted endpoint-grid profile. A labelled unavailable-trace fallback keeps the original printed-coordinate trace. File names and header claims do not establish acquisition or original authorship; no continuum matching or wavelength alignment is supplied.",
+  "sampledTrace.scaleNote": "Visible maximum = 1 for this curve. Heights are a display scale; read retained relative flux separately."
 }
