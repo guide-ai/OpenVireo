@@ -1419,4 +1419,16 @@ export interface MessageParameters {
   "sampledTrace.acquiredPolicy": never;
   "sampledTrace.importedPolicy": never;
   "sampledTrace.scaleNote": never;
+  "sampledDiff.option": never;
+  "sampledDiff.help": never;
+  "sampledDiff.domain": never;
+  "sampledDiff.caption": "standard" | "unknown";
+  "sampledDiff.scale": never;
+  "sampledDiff.recordPolicy": never;
+  "sampledDiff.scrollLabel": never;
+  "sampledDiff.invalidSource": never;
+  "sampledDiff.unavailable": never;
+  "sampledDiff.fallback": never;
+  "sampledDiff.method": never;
+  "sampledDiff.limits": never;
 }

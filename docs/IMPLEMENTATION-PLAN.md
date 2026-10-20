@@ -1,5 +1,7 @@
 # OpenVireo implementation plan
 
+N02 difference follow-up: [normalized sampled difference preview](SAMPLED-DIFFERENCE.md) adds a source-bound read-only supplemental curve with recovered independent visible maxima, round-once subtraction, asymmetric native baseline and clipped-run segmentation. Exact printed-grid admission, manual answers/widths, source counts and session/CSV contracts remain unchanged. Independent binary64 checks cover3.8million points; ideal-rational differences reach2px and do not establish x87/GDI fidelity. External review is on the explicit parent hold; all64 primary acceptance statuses remain unchanged.
+
 
 N02 sampled-trace follow-up: [source-correct500-position intensity traces](SAMPLED-INTENSITY-TRACES.md) adds independent upper/unknown/lower visible-maximum display scaling while preserving the printed-coordinate view,numerical source flux andmanual continuum/records. Native full configuration/difference/tool/result contracts andall64primary statuses remain unchanged.
 

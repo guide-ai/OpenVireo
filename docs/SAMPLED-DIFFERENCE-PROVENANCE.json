@@ -1,0 +1,87 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-SAMPLED-DIFF-01",
+      "start": "0x509068",
+      "endExclusive": "0x5093e0",
+      "byteRangeSHA256": "cceadf3c48993017a8a291014d287ee56b86af28a863b9f2626b27789e45a2b0",
+      "listingSHA256": "d58b0840210341646887bdb612fb5ef5b81603ad9440dee3c392d66f4a3aadc4",
+      "localListing": "difference.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-DIFF-02",
+      "start": "0x507b88",
+      "endExclusive": "0x50829c",
+      "byteRangeSHA256": "297da77c3910cc86a093c1a2c9573195a2433c62dfa18085bc4a1e6e883c6c30",
+      "listingSHA256": "490f651d7ecffa74b49fccfb4b95707e95f76669d57de49dd42f6c3843cbc21c",
+      "localListing": "form-paint.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-DIFF-03",
+      "start": "0x507814",
+      "endExclusive": "0x507b80",
+      "byteRangeSHA256": "b12992ee2502f269c30f325942d0ed3f5209cd60e6cc3ddcfe8dbf5fe34a57d9",
+      "listingSHA256": "6c8e15650eb299a3de6810a071b14857cd281c295fcc3b7130222bded359f807",
+      "localListing": "form-show.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-DIFF-04",
+      "start": "0x403700",
+      "endExclusive": "0x40370a",
+      "byteRangeSHA256": "8c144f1eac0c96ef3bd0218cfba1361deb4e41de9ab485b113a00fa178f5568f",
+      "listingSHA256": "e3dfea5730183f4e98a1b18a7811069f805faba50c49d3613289864116ce3316",
+      "localListing": "round.asm"
+    },
+    {
+      "evidenceId": "VIREO-SAMPLED-DIFF-05",
+      "start": "0x507624",
+      "endExclusive": "0x507639",
+      "byteRangeSHA256": "256107ee8269e73a5692975a6034d7e28d886da04022c32ed6480cdb04b1131b",
+      "listingSHA256": "d54eedb4c6c70f3fa1d2dcc81e64e679dedd2e60a03257930ca55670d2012674",
+      "localListing": "trace-flags.asm"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x5093d8",
+      "type": "Single",
+      "value": 1.0,
+      "SHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"
+    },
+    {
+      "address": "0x5093dc",
+      "type": "Single",
+      "value": 100.0,
+      "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01"
+    }
+  ],
+  "contracts": {
+    "sources": "FormPaint0x5080f0..0x508111 passes the same selected upper-reference index to standard trace anddifference. Difference requires nonzero selected-standard andunknown pointers.",
+    "samples": "Two500-position loops:minimum+i*step,i0..499. Firstloop finds separate positive maxima initialized0;second samples andnormalizes standard/unknown separately.",
+    "signAndRounding": "0x50930d..0x509322 computes standard/stdPeak-unknown/unknownPeak,thenSingle100 andintegerconversion0x403700. Never subtract separately rounded traceheights.",
+    "geometry": "FormShow:+51f=375(lowerbaseline),+523=250(lowertop). Zero=375-50=325 =>local75.0x50932c..0x509338 clamps y>=250 =>localy>=0. No bottom clamp here.",
+    "segments": "First point MoveTo. Forlaterpoints,LineTo ifcurrenty>top orpreviousy>top;otherwiseMoveTo breaks a run where both aretop-clipped. Previousstartsattop.",
+    "flags": "Admitted traceinversion flags+496/+498 initializefalse;photoreverse writes+495/+497 only. Otherinversion/options notexposed.",
+    "cleanup": "SEH cleanup andstring-finally0x509391..0x5093b5 checked separately fromloop/pools."
+  },
+  "webAdapters": [
+    "Read-only supplemental preview rather thanchanging existing comparison mode,recordfields orsessionversions.",
+    "Preserve currentexactfullprinted-grid difference eligibility;acquired/othergrid profiles notadmitted even though native samplers aremoregeneral.",
+    "Number/nearest-even/int32guards;rejectnonpositive peaks andmismatchedsamplecoordinates.",
+    "SVG125pixelpaneclips bottom overflow;native routine hasonlytopclamp here,so noGDIbottomclip equivalenceclaim.",
+    "No cursor/EW/grade/autoanswer onthe deriveddifference;ordinary source readouts stay separate."
+  ],
+  "sourceCredits": [
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7"
+    },
+    {
+      "file": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
+    }
+  ],
+  "rightsAndUncertainty": "Existing GettysburgCollege/CLEA notices/source-specificrightsuncertainty preserved;no neworiginalasset. Static evidence andmathematicalchecks are notnative/x87/GDI runtimeoracle."
+}

@@ -1417,5 +1417,17 @@
   "sampledTrace.unavailable": "Sampled intensity trace unavailable under the admitted source, positive-maximum or integer-height policy. The labelled full printed-coordinate trace is retained.",
   "sampledTrace.acquiredPolicy": "The acquired source-plus-sky derivative and the atlas have not been continuum-matched. Trace display scaling does not subtract sky, remove noise or provide a physical spectral type.",
   "sampledTrace.importedPolicy": "Imported bytes and printed samples are retained; the sampled trace uses its admitted endpoint-grid profile. A labelled unavailable-trace fallback keeps the original printed-coordinate trace. File names and header claims do not establish acquisition or original authorship; no continuum matching or wavelength alignment is supplied.",
-  "sampledTrace.scaleNote": "Visible maximum = 1 for this curve. Heights are a display scale; read retained relative flux separately."
+  "sampledTrace.scaleNote": "Visible maximum = 1 for this curve. Heights are a display scale; read retained relative flux separately.",
+  "sampledDiff.option": "Show normalized sampled difference preview",
+  "sampledDiff.help": "Compare the upper reference and unknown after scaling each by its own visible maximum. This supplemental preview uses the current wavelength window; the main comparison and manual record mode stay selected above.",
+  "sampledDiff.domain": "This preview currently requires the same complete original printed grid as the existing difference display. Acquired and other imported grids remain outside this bounded profile.",
+  "sampledDiff.caption": "Normalized shape difference · {standard} minus {unknown}",
+  "sampledDiff.scale": "The horizontal line is zero: reference / reference visible maximum minus unknown / unknown visible maximum. This is a shape difference, not a subtraction of absolute or retained source flux.",
+  "sampledDiff.recordPolicy": "The derived preview is temporary and has no cursor or width measurement. Source-flux readings and manual records remain separate.",
+  "sampledDiff.scrollLabel": "Normalized sampled difference and wavelength scale; scroll horizontally or use arrow keys",
+  "sampledDiff.invalidSource": "Difference preview hidden: reference or unknown source identity/integrity association failed. No fallback is shown.",
+  "sampledDiff.unavailable": "Normalized difference unavailable for this window or source profile. The labelled full printed-point difference is retained below.",
+  "sampledDiff.fallback": "Fallback · full printed relative-intensity difference",
+  "sampledDiff.method": "Normalized difference method and display limits",
+  "sampledDiff.limits": "The recovered path samples 500 positions and subtracts unrounded normalized intensities before the 100-pixel integer-height conversion. Zero is at 75 pixels in this pane. The top corresponds to +0.75 and the bottom to −0.5. Runs at the top boundary are interrupted by the native draw/move rule; lower overflow is clipped by this browser pane. These are display bounds, not missing observations or a measurement uncertainty. Native x87/GDI matching remains unverified."
 }

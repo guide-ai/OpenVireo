@@ -33,3 +33,7 @@
 .inspection-touch-option{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;font-size:12px}.inspection-touch-option input{width:18px;height:18px}
 
 .sampled-intensity-trace figcaption{overflow-wrap:anywhere}
+
+.sampled-difference figcaption{overflow-wrap:anywhere}.sampled-difference-option{padding:12px 18px;border-top:1px solid #d7e4df}.sampled-difference-option label{display:flex;align-items:center;gap:8px;min-height:44px;font-size:12px}.sampled-difference-option input{width:18px;height:18px;flex-shrink:0}.sampled-difference-path{stroke-width:1.2}.sampled-difference-integrity [role=alert]{padding:12px;background:#fff0e8;color:#853e2e}.sampled-difference-fallback>p{padding:12px;background:#f1f5f2;font-size:12px}
+
+.sampled-difference-method{margin:12px 18px;font-size:12px}.sampled-difference-method summary{cursor:pointer;min-height:44px;align-content:center}

@@ -1,5 +1,7 @@
 # N02/E03 bounded acceptance — 18 October 2026
 
+Current difference follow-up: [normalized sampled preview](SAMPLED-DIFFERENCE.md) supplements the three source panes for exact-grid upper-standard/unknown pairs. This display-only recovered subtraction does not change the earlier printed-grid difference, manual result records or full N02/E03 acceptance; native layout/event/precision and broader options remain open.
+
 Current display follow-ups:[combined/window](COMBINED-SPECTRUM.md),[cursor/printed window](COMPARISON-INSPECTION.md) and[sampled intensity traces](SAMPLED-INTENSITY-TRACES.md) supersede their earlier bounded exclusions below. Complete native event/option/precision/feature/result contracts andoriginal package acceptance remain partial.
 
 Current photographic extension: [positive/reversed photo comparison](PHOTO-SPECTRUM.md) adds a bounded recovered grayscale renderer. Earlier full-photo exclusions below remain historical for this slice;combined/zoom/pan/photo-event andnativeGDI/x87 fidelity remain open.
