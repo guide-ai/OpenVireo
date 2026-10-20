@@ -517,3 +517,8 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Reversible reference-point exclusions — 19 October2026
 
 [Manual reference exclusions](CLUSTER-EXCLUSIONS.md) add the recovered record-marker removal and Restoreall route to the16-dataset laboratory. Point identity, explicit confirmation, independent selections, retained trial text and strict full21 scope are web adaptations; no automatic membership or scientific answer is supplied. Existing raw1–7 and base1–18/19/20 owners remain compatible. E05/N04 stay partial with the original acceptance criteria unchanged. Actual observing/CCD, axes/import, uncertainty, classroom and native runtime/pixel fidelity remain open.
+
+
+## Combined bottom width-source increment — 20 October2026
+
+[Combined lower-source selection](COMBINED-LOWER-WIDTH.md) closes the categorical route previously withheld after forced trace entry. Newly inspected normal-show versus modal control flow supports a subsequent combined action while width is active; the bottom resolver selects the next atlas standard while its displayed trace remains unknown. Existing opt-in/manual continuum, temporary reference results, actual source admission, pan/review guards and formats remain. Independent original ATL/SP controls cover30pairs/eight atlases. Full six-indicator/native FPU/pixel lifecycle and observational-result/file behavior remain separate open contracts;all64primary statuses unchanged,N02/E03partial. No external review attempt,push or deployment.

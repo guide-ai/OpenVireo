@@ -1485,4 +1485,6 @@ export interface MessageParameters {
   "widthCoordinates.center-x-zero": never;
   "widthCoordinates.center-y-zero": never;
   "widthCoordinates.reviewChanged": never;
+  "combinedWidth.planned": "source";
+  "combinedWidth.selected": "source";
 }
