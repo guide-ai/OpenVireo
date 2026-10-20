@@ -1663,4 +1663,26 @@ export interface MessageParameters {
   "obs.edit.before": never;
   "obs.edit.after": never;
   "obs.recovery.finished": never;
+  "program.title": never;
+  "program.help": never;
+  "program.position": "object" | "position" | "total";
+  "program.unavailable": never;
+  "program.open": never;
+  "program.next": never;
+  "program.dialogTitle": never;
+  "program.scope": never;
+  "program.choose": never;
+  "program.row": "object" | "position";
+  "program.file": "file";
+  "program.draftPolicy": never;
+  "program.cancel": never;
+  "program.confirm": never;
+  "program.cancelLoad": never;
+  "program.reading": never;
+  "program.loaded": "object";
+  "program.cancelled": never;
+  "program.end": never;
+  "program.draftError": never;
+  "program.selectionError": never;
+  "program.loadError": never;
 }

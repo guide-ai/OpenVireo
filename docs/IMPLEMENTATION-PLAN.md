@@ -543,3 +543,7 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Native observation DAT numeric inspection — 20 October2026
 
 [Read-only native results](NATIVE-OBSERVATION-RESULTS.md) admits bounded144byte layout candidates with numeric stored-field/encoding/unit inspection,atomic errors/cancel and exact original-byte download. Corrected timeword semantics distinguish rawDouble from runtime-dependent JDdisplay. No scientific values are synthesized,admitted into notebook/acquisition or graded;existing persistence/Undo/JSON/CSV preserved. Native editable merge/writer,date/UTC/velocity/FPU/locale/runtime evidence remain partial,all64primary statuses unchanged;local validation before another push,no deployment/external review attempt.
+
+## Original program-list navigation — 20 October2026
+
+[Program List and Next on List](CLASSIFICATION-PROGRAM-LIST.md) close a bounded25-practice selection/advance/end flow using recovered original order and complete static handlers. Explicit cancel,verified atomic loading,stale-context rejection and an authored unconfirmed-response guard preserve manual work,records,notebook/recovery and historical formats. No arbitrary LST loader,metadata,DAT writer,answer key or grade. Full native index/failure/VCL/FPU/paint behavior remains open;all64primary statuses unchanged,N02/E03partial. See[validation](CLASSIFICATION-PROGRAM-LIST-VALIDATION.md). No deployment/external review attempt;publication of this complete validated increment separately authorized.

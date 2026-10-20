@@ -1,0 +1,398 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "program-list",
+      "start": "0x50b5a8",
+      "endExclusive": "0x50b6ba",
+      "byteRangeSHA256": "f015f1b649dc7de470fa55575ca3e6a87f57fbe0e2a9881c8cd0f8ff541fa5ce",
+      "listingSHA256": "c0c869e6f26bff8014b5f7126c33adeecf35b407681f257ddf67cd9e33249d94",
+      "localListing": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/classification-program-list-recovery/program-list.asm",
+      "boundary": "Complete function through return/SEH cleanup;following data excluded. Earlier candidate/exploratory listings are not proof of complete boundaries.",
+      "evidenceId": "VIREO-PROGRAM-LIST-01"
+    },
+    {
+      "name": "next-on-list",
+      "start": "0x50b6bc",
+      "endExclusive": "0x50b7d1",
+      "byteRangeSHA256": "bb8a2d631304abeed1ab3a1845b4fee51609f0b9430dd82ad947fe3404951084",
+      "listingSHA256": "38c68cfca18191f355bdb747071d7f02bcfc12fbb045c4187e2f8fe667e2c1d2",
+      "localListing": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/classification-program-list-recovery/next-on-list.asm",
+      "boundary": "Complete function through return/SEH cleanup;following data excluded. Earlier candidate/exploratory listings are not proof of complete boundaries.",
+      "evidenceId": "VIREO-PROGRAM-LIST-02"
+    },
+    {
+      "name": "select-list-row",
+      "start": "0x50c09c",
+      "endExclusive": "0x50c1b1",
+      "byteRangeSHA256": "ba6eb5a32b8526707448c6f002d1e5fa9bb2f2df59b26dc71cd05e2dde5e1450",
+      "listingSHA256": "d9299ea4ba859f4473765b831b737a6ed285b40751e57297843c4d7041a3a6cb",
+      "localListing": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/classification-program-list-recovery/select-list-row.asm",
+      "boundary": "Complete function through return/SEH cleanup;following data excluded. Earlier candidate/exploratory listings are not proof of complete boundaries.",
+      "evidenceId": "VIREO-PROGRAM-LIST-03"
+    }
+  ],
+  "literalData": [
+    {
+      "start": "0x50b7d4",
+      "bytes": 16,
+      "text": "No More Spectra",
+      "byteRangeSHA256": "94561cb381b63bebade9332ebfe7d865775798d31944914413f5afa497938099"
+    },
+    {
+      "start": "0x50b7e4",
+      "bytes": 40,
+      "text": "You are at the end of the spectra list.",
+      "byteRangeSHA256": "cdf879d9d8f157138ee19ff85c86fb5976734790d791cc847d9905bbcc247702"
+    }
+  ],
+  "listOrderControl": {
+    "originalListSHA256": "a1a869ba1dcd71406b435ed4432d6c440adcaefefd0ee9d9f45d9dc49280fe70",
+    "bytes": 675,
+    "entries": 25,
+    "catalogOrderAndNamesExact": true,
+    "first": {
+      "label": "HD 124320",
+      "file": "A0000021.sp"
+    },
+    "last": {
+      "label": "HD 158659",
+      "file": "A0000011.sp"
+    },
+    "noAnswersUsed": true
+  },
+  "nativeFlow": [
+    "ProgramList1Click50b5a8uses configuredlist/opener andmodal selection;nonnegative selectedposition+390 andfilename+38c arecombinedwith source directory andpassedto50b378;enablesNextafter successful list-open branch.",
+    "NextonList1Click50b6bccompares selectedIndex withCount-1;atlastshowsNoMoreSpectraandreturnswithoutincrement/load. Otherwise increments index,invokes50c09c,thenloadsselectedfilenameusing50b378if selection/filename valid. No wraptofirst.",
+    "Selection50c09cvalidates0<=index<=Count-1,storesindex+390/+394andmatchingdisplay/file strings+388/+38c,closesmodal.",
+    "Nativeadvancehappensbeforefileload;rollbackonloadfailureisnotprovedbythispath. Existingwebverifiedloadmustretainitsatomicfailure/cancelpolicyasexplicitadaptation."
+  ],
+  "unresolved": [
+    "FullarbitraryLSTloader/tokenization/configuredpath/VMTinitialization andwindowlifecycle",
+    "Nativepartialstateafterfileloadfailure;notportingdestructivebehaviorbyguessing",
+    "Originalexecution/emulationandexternalreview remainprohibited/pending"
+  ],
+  "methodBindings": [
+    {
+      "method": "ProgramList1Click",
+      "entryVA": "0x507512",
+      "handlerVA": "0x50b5a8",
+      "bytes": 24,
+      "SHA256": "1b98e2bdf374d75381a62c5b7f7f9a2cf264953386aed50a92e44ba4f52f27f4"
+    },
+    {
+      "method": "NextonList1Click",
+      "entryVA": "0x50752a",
+      "handlerVA": "0x50b6bc",
+      "bytes": 23,
+      "SHA256": "c3f2a819b9cd641d3847d1df51d448b5540096dc3df21e9ffcf67328d609012b"
+    }
+  ],
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSIFY.LST",
+      "bytes": 675,
+      "sha256": "a1a869ba1dcd71406b435ed4432d6c440adcaefefd0ee9d9f45d9dc49280fe70"
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "catalog": {
+    "path": "data/classification/catalog.json",
+    "sha256": "19e9892b59d7f69c94239b7303aea96a1091f18d8acdcf2039879cdb3815af9a"
+  },
+  "webBoundary": [
+    "Fixed admitted25-entry CLASSIFY.LST only. Position is derived from the current admitted practice ID,not a separately persisted native global index. Imported/acquired copies retain distinct authority.",
+    "HTML dialog,touch/keyboard/focus,explicit cancellation,verified atomic source commit and stale-context rejection are browser adaptations. Native advances index before load;failure rollback is not demonstrated.",
+    "Unconfirmed free-form manual response blocks source changes through these new controls until explicitly saved in a matching classification record. Exact same-source repetition and end notice retain even unrecorded text. This protection is authored web behavior;existing Practice object selector is unchanged.",
+    "Confirmed records,per-source feature work,notebook and shared recovery remain. Successful new-source selection clears only current proposed/reason fields;no automatic classification,recording,grade or catalog answer.",
+    "No new persistent fields,schemas,storage keys,resource bytes,metadata or native writer. List selection remains ephemeral;existing classification/investigation JSON and CSV retain their contracts."
+  ],
+  "creditAndLicense": "Original CLEA/VIREO material and source-specific notices remain in LOCAL-RESOURCES.json,THIRD_PARTY_NOTICES.txt and earlier provenance. User publication scope is not a blanket license grant. No executable,installer or new original asset is added.",
+  "externalReview": "No new external review attempted;explicit human hold supersedes REVIEW.md workflow for this increment.",
+  "publication": "Normal publication of the complete validated increment explicitly authorized;never partial work,force push or deployment."
+}
