@@ -1361,8 +1361,14 @@
   "photo.positive": "positive grayscale photo",
   "photo.negative": "reversed grayscale photo",
   "photo.caption": "{label} · {polarity}",
-  "photo.axis": "Wavelength (Å) · 500 logical columns",
+  "photo.axis": "Wavelength (Å)",
   "photo.unavailable": "Photo unavailable for this curve under the numerical source/grid policy. Its existing intensity trace is retained; original reference photos remain independently available.",
   "photo.noPeak": "Photo unavailable: this visible curve has no positive sampled maximum. Its intensity trace is retained without inventing a grayscale normalization.",
-  "photo.plotPolicy": "Photographic strips use recovered endpoint-grid sampling and a separate visible-maximum display scale for each source. Gray levels are not a common physical flux scale or detector exposure. A labelled trace fallback retains its original printed coordinates."
+  "photo.plotPolicy": "Photographic strips use recovered endpoint-grid sampling and a separate visible-maximum display scale for each source. Gray levels are not a common physical flux scale or detector exposure. A labelled trace fallback retains its original printed coordinates.",
+  "photo.invalidSource": "Photo hidden: this curve could not be associated with its verified source identity. Reload the comparison sources. No fallback trace is shown for this source-integrity failure.",
+  "photo.scrollLabel": "Photographic strip and wavelength scale; scroll horizontally to inspect all columns",
+  "photo.scrollHelp": "On a narrow screen, scroll horizontally or focus this image and use the arrow keys to inspect the whole wavelength interval. Available photo strips scroll together across the same fixed interval.",
+  "photo.regionNote": "Manual draft wavelength markers: left {left} Å · center {center} Å · right {right} Å. Continuum heights remain on the intensity trace; no width is calculated from these photo markers.",
+  "photo.acquiredPolicy": "The acquired source-plus-sky derivative and the atlas have not been continuum-matched. Photo display scaling does not subtract sky, remove noise or provide a physical spectral type.",
+  "photo.importedPolicy": "Imported bytes and printed samples are retained; photo uses its admitted endpoint-grid profile. A labelled unavailable-photo fallback keeps the original printed-coordinate trace. File names and header claims do not establish acquisition or original authorship; no continuum matching or wavelength alignment is supplied."
 }

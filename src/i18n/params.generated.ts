@@ -1366,4 +1366,10 @@ export interface MessageParameters {
   "photo.unavailable": never;
   "photo.noPeak": never;
   "photo.plotPolicy": never;
+  "photo.invalidSource": never;
+  "photo.scrollLabel": never;
+  "photo.scrollHelp": never;
+  "photo.regionNote": "center" | "left" | "right";
+  "photo.acquiredPolicy": never;
+  "photo.importedPolicy": never;
 }

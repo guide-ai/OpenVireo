@@ -156,7 +156,7 @@
     "Static recovery;no original execution/emulation/GDI/palette/x87 oracle.",
     "Number/sqrt/nearest-even are declared adapters;byte thresholds andFPU control word remain unverified.",
     "Browser rejects zero-positive-peak,nonfinite/unsafeinteger tone andout-of-domain input instead of original unguarded division/FPU behavior.",
-    "Responsive SVG applies recovered byte values with logical500\u00d785 geometry;CSS/devicepixel/antialias/palette equality is notclaimed.",
+    "Fixed-width SVG applies recovered byte values with logical500\u00d785 geometry inside a synchronized scroll viewport;devicepixel/zoom/antialias/palette equality is notclaimed.",
     "Only photo and reverse delivered;combined/photo-specific cursor/zoom/pan/native-event behavior stay pending."
   ],
   "policy": "VIREO-photo-500-Number-v1",
@@ -182,5 +182,17 @@
       "valid finite samples over all500positions",
       "finite safe-integer rounded tone"
     ]
+  },
+  "presentation": {
+    "stripCssWidth": 500,
+    "stripCssHeight": 85,
+    "axisFrameWidth": 540,
+    "axisGutter": 20,
+    "narrowViewport": "All available photo rows scroll together over fixed data;no responsive shrinking or wavelength-window pan.",
+    "axisLabels": "Centered at20+(wavelength-3900)/1.2 CSSpx.",
+    "markers": "Outlined black/white non-scaling selected/manual wavelength lines;manual continuum heights remain on trace.",
+    "sourcePreparation": "One memoized shared comparison-probe association per actual source;integrity errors hide photo andfallback.",
+    "reverse": "Recolors cached immutable500samples/peak without grid preparation or sampling.",
+    "devicePixelEquivalence": false
   }
 }

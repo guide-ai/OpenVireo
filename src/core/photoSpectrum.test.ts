@@ -1,6 +1,7 @@
-import{it,expect}from'vitest';
+import{it,expect,vi,afterEach}from'vitest';
+import*as acquisition from'./acquisition';
 import{uniformSpectrum}from'./acquisition';
-import{photographicGray,photographicSpectrum,PhotoSpectrumError,selectSpectrumRendering,renderingForComparison}from'./photoSpectrum';
+import{photographicGray,photographicSpectrum,PhotoSpectrumError,selectSpectrumRendering,renderingForComparison,samplePhotographicSpectrum,tonePhotographicSpectrum}from'./photoSpectrum';
 it('reproduces the recovered transfer including pre-sqrt reverse and low-byte wrap rather than CSS inversion/clamping',()=>{
  expect(photographicGray(1,1,false)).toBe(230);expect(photographicGray(1,1,true)).toBe(0);expect(photographicGray(0,1,false)).toBe(0);expect(photographicGray(0,1,true)).toBe(230);expect(photographicGray(.25,1,false)).toBe(115);expect(photographicGray(.25,1,true)).toBe(199);expect(photographicGray(-.1,1,false)).toBe(230);expect(photographicGray(-.1,1,false)).not.toBe(0);
  for(const args of[[0,0,false],[1,-1,false],[Infinity,1,false],[1,NaN,false],[Number.MAX_VALUE,Number.MIN_VALUE,false]]as const)expect(()=>photographicGray(args[0],args[1],args[2])).toThrow(PhotoSpectrumError);
@@ -16,3 +17,6 @@ it('rejects zero/nonpositive visible peak and unsupported domain explicitly inst
 });
 
 it('keeps the recovered photo/difference transitions pure without conflating reverse or manual records',()=>{expect(selectSpectrumRendering('difference','photo')).toEqual({rendering:'photo',comparison:'bracket'});expect(selectSpectrumRendering('difference','trace')).toEqual({rendering:'trace',comparison:'difference'});expect(renderingForComparison('photo','difference')).toBe('trace');expect(renderingForComparison('photo','bracket')).toBe('photo');});
+
+afterEach(()=>vi.restoreAllMocks());
+it('recolors cached immutable samples without another sampler call',()=>{const spy=vi.spyOn(acquisition,'sampleUniformSpectrum'),sampled=samplePhotographicSpectrum(uniformSpectrum(3900,4500,[1,.5,0]));expect(spy).toHaveBeenCalledTimes(500);const before=JSON.stringify(sampled);const positive=tonePhotographicSpectrum(sampled,false),negative=tonePhotographicSpectrum(sampled,true);expect(spy).toHaveBeenCalledTimes(500);expect(positive.columns.map(p=>p.gray)).not.toEqual(negative.columns.map(p=>p.gray));expect(JSON.stringify(sampled)).toBe(before);});
