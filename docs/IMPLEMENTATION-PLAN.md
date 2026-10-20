@@ -1,8 +1,11 @@
 # OpenVireo implementation plan
 
+
+N02 combined follow-up: [combined photo/unknown trace and wavelength zoom/pan](COMBINED-SPECTRUM.md) adds recovered mode2 layout, shared500-position resampling,1–16× zoom,10% pan and reset for photo/combined views. Native cursor gestures, printed-trace zoom and general range profiles remain pending; manual measures and all64primary acceptance statuses remain unchanged.
+
 ## Current scope reconciliation
 
-N02 photographic follow-up: [positive/reversed grayscale comparison](PHOTO-SPECTRUM.md) implements the recovered500sample/visible-peak/square-root/low-byte transfer with explicit source gates,trace fallback andphoto/difference transitions. Independent sample/tone vectors cover57originalfiles and9generated acquiredcurves. Combined mode,photo gestures,zoom/pan andnativeGDI/x87 remain pending;all64primary acceptance statuses remain unchanged.
+N02 photographic follow-up: [positive/reversed grayscale comparison](PHOTO-SPECTRUM.md) implements the recovered500sample/visible-peak/square-root/low-byte transfer with explicit source gates,trace fallback andphoto/difference transitions. Independent sample/tone vectors cover57originalfiles and9generated acquiredcurves. Combined mode and bounded photo/combined zoom/pan are implemented in the follow-up below;native photo gestures andGDI/x87 remain pending;all64primary acceptance statuses remain unchanged.
 
 N02 loaded-intensity follow-up: [acquired/imported curve sampling](LOADED-FLUX.md) extends the recovered endpoint-grid readout with explicit source kinds, retained-byte SHA and acquired journal identity. Added grid admission preserves irregular/two-row visual work;no normalization,automatic measurement orclassification is added. Native photo/runtime/x87 andall64primary acceptance statuses remain unchanged.
 

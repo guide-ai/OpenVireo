@@ -2,6 +2,8 @@
 
 The classification laboratory now offers **Grayscale photo** and **Reverse photographic grayscale** for its upper standard, unknown and lower standard. This implements the recovered photo transfer and logical columns, rather than inventing an image/noise model. It uses the actual displayed original or eligible acquired/imported source. Manual classification, numerical readout, feature drafts/records, raw acquisition and file/session identity remain separate.
 
+The [combined/window follow-up](COMBINED-SPECTRUM.md) now adds the recovered combined layout and bounded photo/combined zoom/pan. Full-domain assertions below describe the original photo increment.
+
 ## Evidence recovered before implementation
 
 Original CLEA_VEO.exe SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Original help `CLASSHLP.TXT` lines161–189 distinguishes intensity trace, positive photo, combined and reverse; source hashes/credits/rights uncertainties remain in the existing classification/resource provenance. The existing published Delphi method inventory binds `GrayscalePhoto1Click` to0x5093f8 and `ReverseDisplay1Click` to0x50948c. No CLASSIFY.KEY, original execution, emulation, new REA installation or native writer/GDI oracle was used.

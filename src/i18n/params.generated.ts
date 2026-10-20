@@ -1372,4 +1372,23 @@ export interface MessageParameters {
   "photo.regionNote": "center" | "left" | "right";
   "photo.acquiredPolicy": never;
   "photo.importedPolicy": never;
+  "combined.option": never;
+  "combined.layout": never;
+  "combined.traceCaption": "label";
+  "combined.readout": "label";
+  "combined.traceUnavailable": never;
+  "combined.tracePolicy": never;
+  "combined.regionPolicy": never;
+  "combined.scrollLabel": never;
+  "combined.fallback": "label";
+  "viewport.legend": never;
+  "viewport.rangeLabel": never;
+  "viewport.range": "maximum" | "minimum" | "zoom";
+  "viewport.in": never;
+  "viewport.out": never;
+  "viewport.left": never;
+  "viewport.right": never;
+  "viewport.reset": never;
+  "viewport.help": never;
+  "combined.invalidSource": never;
 }

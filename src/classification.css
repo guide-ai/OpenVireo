@@ -21,3 +21,7 @@
 .photo-spectrum figcaption{overflow-wrap:anywhere}
 
 .photo-scroll{max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-inline:contain}.photo-scroll:focus-visible{outline:3px solid #206252;outline-offset:-3px}.photo-coordinate-frame{width:540px;margin-inline:auto}.photo-mark-back{stroke:#fff;stroke-width:5}.photo-mark-front{stroke:#000;stroke-width:2}.photo-region .photo-mark-front{stroke-dasharray:4 3}.photo-region-note,.photo-scroll-help{margin:8px 18px!important;font-size:11px!important;overflow-wrap:anywhere}.photo-integrity [role=alert]{padding:12px;background:#fff0e8;border-left:3px solid #a84b36;color:#853e2e}
+
+.combined-trace-strip{width:500px!important;max-width:none;height:125px;margin-left:20px}.combined-trace figcaption{overflow-wrap:anywhere}
+
+.class-viewport button[aria-disabled="true"]{opacity:.5;cursor:default}

@@ -1,4 +1,5 @@
 import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
+import{FULL_CLASSIFICATION_VIEW,viewportStep,type ClassificationViewport}from'./classificationViewport';
 import {roundNearestEven} from './numericPolicy';
 /** CLEA_VEO.exe SHA781bc970…c54c;0x5088f4/0x508dc0. Original gray
  * transfer,500positions,positive visible peak and omitted first painted column.
@@ -16,9 +17,10 @@ export function photographicGray(intensity:number,peak:number,reverse:boolean):n
  const integer=roundNearestEven(value*255);if(!Number.isSafeInteger(integer))throw new PhotoSpectrumError('tone');
  return ((integer%256)+256)%256;
 }
-export function samplePhotographicSpectrum(grid:UniformSpectrum){
- if(!grid||grid.minimum>PHOTO_MINIMUM||grid.maximum<PHOTO_MINIMUM+(PHOTO_COLUMNS-1)*PHOTO_STEP)throw new PhotoSpectrumError('grid');
- const columns=Array.from({length:PHOTO_COLUMNS},(_,index)=>{const wavelength=PHOTO_MINIMUM+index*PHOTO_STEP;try{const r=sampleUniformSpectrum(grid,wavelength);if(!r.valid||!Number.isFinite(r.value))throw Error();return Object.freeze({index,wavelength,intensity:r.value});}catch{throw new PhotoSpectrumError('grid');}});
+export function samplePhotographicSpectrum(grid:UniformSpectrum,view:ClassificationViewport=FULL_CLASSIFICATION_VIEW){
+ const minimum=view.minimum,step=viewportStep(view);
+ if(!grid||grid.minimum>minimum||grid.maximum<minimum+(PHOTO_COLUMNS-1)*step)throw new PhotoSpectrumError('grid');
+ const columns=Array.from({length:PHOTO_COLUMNS},(_,index)=>{const wavelength=minimum+index*step;try{const r=sampleUniformSpectrum(grid,wavelength);if(!r.valid||!Number.isFinite(r.value))throw Error();return Object.freeze({index,wavelength,intensity:r.value});}catch{throw new PhotoSpectrumError('grid');}});
  const peak=Math.max(0,...columns.map(p=>p.intensity));if(!(peak>0))throw new PhotoSpectrumError('peak');
  return Object.freeze({peak,columns:Object.freeze(columns)});
 }
@@ -31,7 +33,7 @@ export function photographicSpectrum(grid:UniformSpectrum,reverse:boolean){
  if(typeof reverse!=='boolean')throw new PhotoSpectrumError('grid');return tonePhotographicSpectrum(samplePhotographicSpectrum(grid),reverse);
 }
 
-export type SpectrumRendering='trace'|'photo';
+export type SpectrumRendering='trace'|'photo'|'combined';
 /**0x5093f8 clearsdifference onphoto;0x509450 forcestrace fordifference. */
-export function selectSpectrumRendering(current:'bracket'|'difference',rendering:SpectrumRendering){return Object.freeze({rendering,comparison:rendering==='photo'?'bracket' as const:current});}
+export function selectSpectrumRendering(current:'bracket'|'difference',rendering:SpectrumRendering){return Object.freeze({rendering,comparison:rendering!=='trace'?'bracket' as const:current});}
 export function renderingForComparison(rendering:SpectrumRendering,comparison:'bracket'|'difference'):SpectrumRendering{return comparison==='difference'?'trace':rendering;}

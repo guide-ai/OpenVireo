@@ -1,0 +1,103 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "evidenceId": "VIREO-COMBINED-VIEW-01",
+      "start": "0x508678",
+      "endExclusive": "0x5088f4",
+      "byteRangeSHA256": "1963fe7bbbeef5592f37a3b376ecd5267b4a11949070beb39b40f3a96c372fec",
+      "listingSHA256": "31f68376ba9481f4eb178f97a33e1399a0a99c1f11f836e6b6c3f0ad0b618fe8",
+      "localListing": "unknown-trace.asm"
+    },
+    {
+      "evidenceId": "VIREO-COMBINED-VIEW-02",
+      "start": "0x507a08",
+      "endExclusive": "0x507b80",
+      "byteRangeSHA256": "bcd0037cde37c6bbec786ab2602714f1631ffe7fbc95df23a84810a0ac48c303",
+      "listingSHA256": "6c3a5c8bc7c2d62a0e3df185f62b5c78203de5d13757fb71a7d26147a7ad9b59",
+      "localListing": "range.asm"
+    },
+    {
+      "evidenceId": "VIREO-COMBINED-VIEW-03",
+      "start": "0x50a6e0",
+      "endExclusive": "0x50ae60",
+      "byteRangeSHA256": "40ead5e8707517fa87efd6504f349be48b3e19a0a6e0194d273dea1903cdc059",
+      "listingSHA256": "704c86ed8eb8ac940a7d5a60e16a2d6ac12beef728a7494bee7bf7cf1f689cf2",
+      "localListing": "zoom-pan.asm"
+    },
+    {
+      "evidenceId": "VIREO-COMBINED-VIEW-04",
+      "start": "0x50ae60",
+      "endExclusive": "0x50afac",
+      "byteRangeSHA256": "7887565f97ad9757457b31a80a1e14a38a967b3f5b71fdd1f4dc5c4ddcd8986b",
+      "listingSHA256": "1eba218eddd15c98e37e4b1017156d9d15040767e859aeefd4a1b542c9de6f0e",
+      "localListing": "reset.asm"
+    },
+    {
+      "evidenceId": "VIREO-COMBINED-VIEW-05",
+      "start": "0x507814",
+      "endExclusive": "0x507b80",
+      "byteRangeSHA256": "b12992ee2502f269c30f325942d0ed3f5209cd60e6cc3ddcfe8dbf5fe34a57d9",
+      "listingSHA256": "6c8e15650eb299a3de6810a071b14857cd281c295fcc3b7130222bded359f807",
+      "localListing": "form-show.asm"
+    },
+    {
+      "evidenceId": "VIREO-COMBINED-VIEW-06",
+      "start": "0x507b88",
+      "endExclusive": "0x50829c",
+      "byteRangeSHA256": "297da77c3910cc86a093c1a2c9573195a2433c62dfa18085bc4a1e6e883c6c30",
+      "listingSHA256": "490f651d7ecffa74b49fccfb4b95707e95f76669d57de49dd42f6c3843cbc21c",
+      "localListing": "form-paint.asm"
+    },
+    {
+      "evidenceId": "VIREO-COMBINED-VIEW-07",
+      "start": "0x5093e0",
+      "endExclusive": "0x5094cc",
+      "byteRangeSHA256": "387e47f0f83371c25da2ea8f4d6a2aa4dcbcdd2b278c4fa5087751b9569b7c3d",
+      "listingSHA256": "27cb4f7afaf1de87fe5abaf17320361298920f0a01a6fa04dd7c4ef59713d4ea",
+      "localListing": "display-mode.asm"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x5088b8",
+      "type": "Single",
+      "value": 100.0,
+      "SHA256": "2238f30df488055daf5e8f362cf904e370011a172d20df193c1b7ae8e5db8e01"
+    },
+    {
+      "address": "0x50a8bc",
+      "type": "Single",
+      "value": 250.0,
+      "SHA256": "790ae12c34496bfe41c52a4786035ab076ce6771b936c6adf4608fd641420958"
+    },
+    {
+      "address": "0x50a8c0",
+      "type": "Single",
+      "value": 4.0,
+      "SHA256": "4f4b9b7d8b86633e2824e2f439819357b0cd010ab410ea1a691b12c5f94e91e0"
+    },
+    {
+      "address": "0x5078bd..0x5078da",
+      "type": "Immediate x87 Extended pan fraction",
+      "rational": "14757395258967641293/147573952589676412928",
+      "NumberProjection": 0.1
+    }
+  ],
+  "contracts": {
+    "dispatch": "Mode2:upper standard photo,unknown photo,unknown trace; clears difference. Reverse writes photo flags only.",
+    "trace": "500 samples; max initialized0; flux/max*100; nearest-even integer height; combined baseline375 => relative125-height; vertex0 included.",
+    "zoom": "1/2/4/8/16; in center +/-oldwidth/4, out center +/-oldwidth; nearest-even integer endpoints; range setter translates at full bounds; reset full.",
+    "pan": "Rounded low-width*0.1 (left), high+width*0.1 (right), clamp endpoint and retain rounded width.",
+    "scope": "Fixed3900..4500 full domain already100-aligned; native general full-domain expansion branch not exposed. Diagnostic selected-line to visible snapped column is a new web adapter; native mouse/cursor gestures remain unavailable.",
+    "zoomCenter": "0x50a74a..0x50a774: no marker zoom-in center=min+Single250*oldStep. 0x50a940..0x50a94f: no-marker zoom-out leaves cached center unchanged;0x50a9af..0x50a9de uses it. Pan0x50abc4..0x50abde/0x50ad9c..0x50adb6 resets cached center to midpoint. Diagnostic-line adapter is explicit."
+  },
+  "creditsAndLicensing": "Same original Gettysburg College/CLEA source, archive/help/license notices and source-specific uncertainty as PHOTO-SPECTRUM-PROVENANCE.json; no new original resource included.",
+  "uncertainty": [
+    "Static disassembly only; no CLEA execution or writer/visual oracle.",
+    "JavaScript Number and nearest-even policy not x87 equivalence, notably Extended0.1 operation rounding.",
+    "SVG clipping and responsive scrolling are browser adapters; GDI/device raster unknown.",
+    "No pupil answers, flux data, acquisition counts or manual continuum/EW are inferred by the display."
+  ]
+}
