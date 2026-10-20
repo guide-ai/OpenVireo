@@ -34,7 +34,7 @@ All admitted0..1000ms intervals stay inside the existing bounded scalar domain; 
 
 ## P02 and compatibility
 
-Full14 adds observing policy `OpenCLEA-stopped-observing-workspace-v4` with required `star4m` and three `galaxies4m` slots beside prior scopes. Profile/target links, inline journals and exact archive reuse remain checked. Missing/injected scopes, changed proofs, cross-profile references, cached counts and legacy-version smuggling reject before replacement. Save/restore releases hidden controllers and invalidates late work; restored instruments never restart automatically.
+Full14 adds observing policy `OpenVireo-stopped-observing-workspace-v4` with required `star4m` and three `galaxies4m` slots beside prior scopes. Profile/target links, inline journals and exact archive reuse remain checked. Missing/injected scopes, changed proofs, cross-profile references, cached counts and legacy-version smuggling reject before replacement. Save/restore releases hidden controllers and invalidates late work; restored instruments never restart automatically.
 
 There are now12admitted acquired target/profile kinds: nine galaxy combinations and three stellar combinations. The new full14 archive cap is therefore12; a test saves/reloads all12 with their exact manual Single rows and IDs. Old full1–13 retain their eight-archive cap. The24000unique-replay-event,12000per-segment,16MiBwhole-file and2MiBstandalone bounds are unchanged. These are browser resource limits, not native telescope allocation credits.
 

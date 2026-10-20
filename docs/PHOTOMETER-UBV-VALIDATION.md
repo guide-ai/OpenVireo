@@ -10,7 +10,7 @@ Delivered: U/B acquisition through the existing visual photometer, native indepe
 - Seed42 sequential V/B/U reads match independent references: target totals552/331/354, with separately acquired sky totals1/2/2. Displayed magnitudes9.647121003/10.207010255/10.133643341 produce acquired B−V0.559889252. Manual V9.647/B10.207 produce0.56; a separate mobile case deliberately enters V8.1/B9.2 and preserves manual1.1 while the acquired value remains0.559889252. No value is replaced with catalog color or graded.
 - Current actual-run desktop/mobile screenshots were visually inspected: filter status and notebook tags are visible; selected pair identity is retained; the two B−V sources are clearly distinguished. At320px the color values stack to retain all digits, and there is no horizontal page overflow. Desktop screenshot also retains an intentional invalid-proof alert with all confirmed entries/color intact.
 
-Retained screenshots: `.local/qa/openclea-photometer-ubv-desktop.png` and `openclea-photometer-ubv-mobile.png`.
+Retained screenshots: [external browser-evidence record] and [external browser-evidence record].
 
 ## Scientific/static evidence and compatibility
 

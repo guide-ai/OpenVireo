@@ -31,7 +31,7 @@ describe('manual spectral classification contracts',()=>{
  });
  it('bounds imports before reading and does not accept another lab or malformed bytes',async()=>{
   let read=false;await expect(readClassificationSession({size:MAX_CLASSIFICATION_BYTES+1,arrayBuffer:async()=>{read=true;return new ArrayBuffer(0);}} as unknown as File)).rejects.toThrow();expect(read).toBe(false);
-  await expect(readClassificationSession(new File([new Uint8Array([255,254])],'bad.json'))).rejects.toThrow();expect(()=>parseClassificationSession({format:'OpenCLEA analysis session',version:3})).toThrow();
+  await expect(readClassificationSession(new File([new Uint8Array([255,254])],'bad.json'))).rejects.toThrow();expect(()=>parseClassificationSession({format:'OpenVireo analysis session',version:3})).toThrow();
  });
  it('exports manual records, exact source identities and formula-neutralized multiline text',()=>{
   const state={...proposal(),proposed:'=FORMULA()',reason:'@external\n"claim"'},r=classificationRecord(state),csv=classificationCsv({...state,records:[r]});

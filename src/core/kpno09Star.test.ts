@@ -1,8 +1,12 @@
+import{projectResource}from'./projectMetadata';
 import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import vectors from '../../data/hubble/kpno09-star-vectors.json';
-import proof from '../../data/hubble/kpno09-star-provenance.json';
+
+import proofSource from '../../data/hubble/kpno09-star-provenance.json';
+const proof=projectResource(proofSource);
+
 import {buildPinnedKpno09StarPopulation,PINNED_KPNO09_STAR_DOMAIN} from './pinnedNativeField';
 import {verifiedStarConfiguration,createStarExposure,activateStar,startStar,tickStar,deactivateStar,resetStar,starTelescopeIndex,KPNO09_STAR_PROOF_SHA256,starCountsCsv} from './starExposure';
 const hash=(v:Uint8Array|Uint8ClampedArray)=>createHash('sha256').update(v).digest('hex');

@@ -1,6 +1,9 @@
+import{projectResource}from'./projectMetadata';
 import {isClusterReferenceId} from './clusterReferenceIdentity';
 import type {NativeClusterParameters} from './nativeCluster';
-import contract from '../../data/photometry/cluster-exclusion-contract.json';
+import contractSource from '../../data/photometry/cluster-exclusion-contract.json';
+const contract=projectResource(contractSource);
+
 import {readClusterComparisonWorkspace,clusterDatasetInfo,comparisonNotebook,comparisonDraft,confirmComparison,type ClusterComparisonWorkspace,type ClusterDatasetId,type LoadedClusterDataset} from './clusterComparison';
 export const CLUSTER_SELECTION_POLICY=contract.policy;
 export const CLUSTER_SELECTION_SHA256='f6f9b8a6ca682b97f8f76bdd4b23cb5f24624a3a60f18b468b6150da9427e13a';

@@ -1,5 +1,8 @@
+import{projectResource}from'./projectMetadata';
 import {decimal} from './decimal';
-import contract from '../../data/photometry/native-cluster-contract.json';
+import contractSource from '../../data/photometry/native-cluster-contract.json';
+const contract=projectResource(contractSource);
+
 import {pleiadesPoints,type PleiadesPoint} from './pleiadesAnalysis';
 import type {PhotometerState} from './photometer';
 export const NATIVE_CLUSTER_SHA256='f636ff44388ef27b2dee68d76f51fa9fc96c5bc11b504ab14a3fb7720288d0a0';

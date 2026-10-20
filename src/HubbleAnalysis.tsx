@@ -36,7 +36,7 @@ export default function HubbleAnalysis({detailsRef,workspace,onChange,measuremen
     if(workspace.rows.length+missing.length>MAX_HUBBLE_ROWS||nextId+missing.length>=Number.MAX_SAFE_INTEGER){setNotice(t('hubble.rowLimit',{limit:MAX_HUBBLE_ROWS}));return;}
     onChange({...workspace,rows:[...workspace.rows,...missing.map((m,i)=>measurementHubbleRow(nextId+i,m.id))]});setNotice(t('hubble.measurementsAdded'));
   }
-  function exportCsv(){const url=URL.createObjectURL(new Blob([hubbleAnalysisCsv(workspace,measurements)],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='openclea-hubble-analysis.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function exportCsv(){const url=URL.createObjectURL(new Blob([hubbleAnalysisCsv(workspace,measurements)],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='openvireo-hubble-analysis.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   return <details ref={detailsRef} className="card hubble-card"><summary>{t('hubble.title')}</summary><div className="hubble-content">
     {measurements.some(m=>m.origin?.kind==='catalog-star-acquisition')&&<p role="note" className="hubble-limit">{t('hubble.stellarExcluded')}</p>}<p>{t('hubble.intro')}</p>
     <label className="field-label" htmlFor="hubble-recipe">{t('hubble.recipe')}</label><select id="hubble-recipe" value={workspace.recipeId} disabled={busy} onChange={e=>{onChange({...workspace,recipeId:e.target.value as HubbleWorkspace['recipeId']});setNotice(t('hubble.recipeChanged'));}}><option value="">{t('hubble.chooseRecipe')}</option>{Object.keys(HUBBLE_RECIPES).map(id=><option key={id} value={id}>{recipeLabel(id as keyof typeof HUBBLE_RECIPES)}</option>)}</select>

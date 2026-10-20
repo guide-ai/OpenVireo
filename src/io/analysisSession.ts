@@ -1,3 +1,5 @@
+import{MAX_PROJECT_METADATA_GROWTH,projectBytesFit,projectTextFits}from'../core/projectMetadata';
+import{projectMetadata,projectMarker}from'../core/projectMetadata';
 import {readMotionPreferences,TELESCOPE_MOTION_POLICY,TELESCOPE_MOTION_SHA256,type MotionPreferences} from '../core/telescopeMotion';
 import {CLUSTER_SELECTION_POLICY,CLUSTER_SELECTION_SHA256,type ClusterSelectionWorkspace} from '../core/clusterSelection';
 import {readClusterComparisonWorkspace,CLUSTER_COMPARISON_SHA256,CLUSTER_COMPARISON_POLICY,type ClusterComparisonWorkspace} from '../core/clusterComparison';
@@ -13,7 +15,7 @@ import type {ObservingWorkspace} from '../core/observingWorkspace';
 import type {PhotometerState} from '../core/photometer';
 import {CLASSIFICATION_IMPORT_POLICY} from '../core/classificationImport';
 import {restoreClassificationImportWorkspace} from './classificationImports';
-import {parseClassificationSession,MAX_CLASSIFICATION_BYTES} from './classificationSession';
+import {parseClassificationSession,MAX_CLASSIFICATION_BYTES,CLASSIFICATION_PAYLOAD_BYTES} from './classificationSession';
 import type {ClassificationState} from '../core/classification';
 import {CLASSIFICATION_CATALOG,CLASSIFICATION_MAIN_FINGERPRINT,mainClassificationCompatible,classificationWorkspaceUsesNewAtlas,classificationWorkspaceHasFeatures,classificationExternalSources,portableClassificationWorkspace,legacyClassificationWorkspace,readClassificationWorkspace,currentClassification,type ClassificationWorkspace} from '../core/classification';
 import {loadClassificationSources} from './classificationSources';
@@ -25,9 +27,9 @@ import { createMeasurement, currentZ, type Measurement, type ShiftControl } from
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
-export const MAX_SESSION_BYTES=16*1024*1024;
+export const SESSION_PAYLOAD_BYTES=16*1024*1024,MAX_SESSION_BYTES=SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
 export const MAX_SESSION_ROWS=1000;
-const FORMAT='OpenCLEA analysis session', POLICY='Number_x87_equivalence_unvalidated';
+const FORMAT='OpenVireo analysis session', POLICY='Number_x87_equivalence_unvalidated';
 const REFERENCES={galaxy:'GLXYLNS.LST',balmer:'BALMER.LST',qso:'AGN_QSO.LST'} as const;
 export type SessionObservation=(ImportedSpectrum & Readonly<{name:string;kind?:undefined}>)|AcquisitionObservation;
 export type AnalysisSession=Readonly<{
@@ -74,29 +76,30 @@ function measurement(value:unknown,previousId:number,acquisitions:readonly Acqui
   if(row.object!==object||row.zFloat32Hex!==r.zFloat32Hex)fail('measurements');
   return row;
 }
-async function restore(value:unknown,verifySources=true):Promise<AnalysisSession> {
+async function restore(value:unknown,verifySources=true,migrated=false):Promise<AnalysisSession> {
+ if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
   if(version===22){
     const r=record(value,['format','version','numericalPolicy','base','motionPolicy','motionProofSHA256','motion']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.motionPolicy!==TELESCOPE_MOTION_POLICY||r.motionProofSHA256!==TELESCOPE_MOTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>21)fail('format');
-    let motion:MotionPreferences;try{motion=readMotionPreferences(r.motion);}catch{fail('state');}const base=await restore(r.base,verifySources);return Object.freeze({...base,motion});
+    let motion:MotionPreferences;try{motion=readMotionPreferences(r.motion);}catch{fail('state');}const base=await restore(r.base,verifySources,true);return Object.freeze({...base,motion});
   }
   if(version===21){
     const r=record(value,['format','version','numericalPolicy','base','clusterComparisonPolicy','clusterComparisonSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterSelectionPolicy','clusterSelectionSHA256','clusterSelection']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterComparisonPolicy!==CLUSTER_COMPARISON_POLICY||r.clusterComparisonSHA256!==CLUSTER_COMPARISON_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||r.clusterSelectionPolicy!==CLUSTER_SELECTION_POLICY||r.clusterSelectionSHA256!==CLUSTER_SELECTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
-    const base=await restore(r.base,verifySources);let clusterSelection:ClusterSelectionWorkspace;try{clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(r.clusterSelection);}catch{fail('state');}return Object.freeze({...base,clusterSelection});
+    const base=await restore(r.base,verifySources,true);let clusterSelection:ClusterSelectionWorkspace;try{clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(r.clusterSelection);}catch{fail('state');}return Object.freeze({...base,clusterSelection});
   }
   if(version===20){
     const r=record(value,['format','version','numericalPolicy','base','clusterComparisonPolicy','clusterComparisonSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterComparison']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterComparisonPolicy!==CLUSTER_COMPARISON_POLICY||r.clusterComparisonSHA256!==CLUSTER_COMPARISON_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
-    let clusterComparison:ClusterComparisonWorkspace;try{clusterComparison=readClusterComparisonWorkspace(r.clusterComparison);}catch{fail('state');}const base=await restore(r.base,verifySources);if(verifySources){const{loadClusterDataset}=await import('./clusterComparison');await Promise.all(Object.keys(clusterComparison.notebooks).map(id=>loadClusterDataset(id as NonNullable<ClusterComparisonWorkspace['activeId']>)));}return Object.freeze({...base,clusterComparison});
+    let clusterComparison:ClusterComparisonWorkspace;try{clusterComparison=readClusterComparisonWorkspace(r.clusterComparison);}catch{fail('state');}const base=await restore(r.base,verifySources,true);if(verifySources){const{loadClusterDataset}=await import('./clusterComparison');await Promise.all(Object.keys(clusterComparison.notebooks).map(id=>loadClusterDataset(id as NonNullable<ClusterComparisonWorkspace['activeId']>)));}return Object.freeze({...base,clusterComparison});
   }
   if(version===19){
     const r=record(value,['format','version','numericalPolicy','base','clusterDatabasePolicy','clusterDatabaseSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterDatabase']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterDatabasePolicy!==CLUSTER_DATABASE_POLICY||r.clusterDatabaseSHA256!==CLUSTER_DATABASE_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
     let clusterDatabase:ClusterDatabaseWorkspace;try{clusterDatabase=readClusterDatabaseWorkspace(r.clusterDatabase);}catch{fail('state');}
-    const base=await restore(r.base,verifySources);if(verifySources&&clusterDatabase.loaded)await(await import('./clusterDatabase')).loadM67Dataset();return Object.freeze({...base,clusterDatabase});
+    const base=await restore(r.base,verifySources,true);if(verifySources&&clusterDatabase.loaded)await(await import('./clusterDatabase')).loadM67Dataset();return Object.freeze({...base,clusterDatabase});
   }
   if(version!==1&&version!==2&&version!==3&&version!==4&&version!==5&&version!==6&&version!==7&&version!==8&&version!==9&&version!==10&&version!==11&&version!==12&&version!==13&&version!==14&&version!==15&&version!==16&&version!==17&&version!==18)fail('format');
   const r=record(value,['format','version','numericalPolicy','observation','adjustment','measurements',...(version>=2?['hubble']:[]),...(version>=3?['acquisitions']:[]),...(version>=4?['classification']:[]),...(version>=8?['photometry']:[]),...(version>=9?['observing']:[]),...(version>=10?['editingPolicy','editing']:[]),...(version>=11?['optical']:[]) ]);
@@ -174,7 +177,7 @@ async function portable(session:AnalysisSession):Promise<unknown> {
 }
 export async function serializeAnalysisSession(session:AnalysisSession):Promise<string> {
   const result=JSON.stringify(await portable(session),(_key,value)=>encodeSessionNumber(value),2)+'\n';
-  if(new TextEncoder().encode(result).byteLength>MAX_SESSION_BYTES)fail('size');
+  if(!projectTextFits(result,SESSION_PAYLOAD_BYTES))fail('size');
   await restore(JSON.parse(result),false);return result;
 }
 /** File.size check precedes arrayBuffer; validation is atomic and has no UI
@@ -184,7 +187,7 @@ export async function readAnalysisSession(file:File):Promise<AnalysisSession> {
   const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_SESSION_BYTES)fail('size');
   let value:unknown;
   try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{fail('format');}
-  return restore(value);
+  try{if(!projectBytesFit(bytes.byteLength,value,SESSION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}return restore(value);
 }
 
 /** One UI entry can restore a complete analysis or merge a supported legacy
@@ -193,8 +196,9 @@ export async function readAnalysisSession(file:File):Promise<AnalysisSession> {
 export async function readInvestigationSession(file:File):Promise<{kind:'analysis';session:AnalysisSession}|{kind:'practice';state:ClassificationState}>{
  if(file.size>MAX_SESSION_BYTES)fail('size');const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_SESSION_BYTES)fail('size');
  let value:unknown;try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{fail('format');}
- if(value&&typeof value==='object'&&(value as {format:unknown}).format==='OpenCLEA stellar classification session'){
-  if(bytes.byteLength>MAX_CLASSIFICATION_BYTES)fail('size');return {kind:'practice',state:parseClassificationSession(value)};
+ try{if(!projectBytesFit(bytes.byteLength,value,SESSION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}
+ if(value&&typeof value==='object'&&projectMarker((value as {format:unknown}).format)==='OpenVireo stellar classification session'){
+  if(bytes.byteLength>MAX_CLASSIFICATION_BYTES)fail('size');try{if(!projectBytesFit(bytes.byteLength,value,CLASSIFICATION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}return {kind:'practice',state:parseClassificationSession(value)};
  }
  return {kind:'analysis',session:await restore(value)};
 }

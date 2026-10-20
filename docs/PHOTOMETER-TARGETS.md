@@ -30,7 +30,7 @@ Fresh independent target sequences are different from the shared-sky sequence ab
 |2 /01803-00478(default)|N2230.DAT@145877|552|331|354|
 |5 /01803-01585|N2230.DAT@147993|63063|69414|104613|
 
-These are explicitly seeded OpenCLEA simulations, not captured CLEA observations or learner answers. Counts change with acquisition order/seed. No HR fit, reddening, temperature or distance is inferred.
+These are explicitly seeded OpenVireo simulations, not captured CLEA observations or learner answers. Counts change with acquisition order/seed. No HR fit, reddening, temperature or distance is inferred.
 
 ## Association, completeness and native contracts
 

@@ -1,15 +1,18 @@
+import{projectBytesFit,projectTextFits}from'../core/projectMetadata';
+import{projectMetadata}from'../core/projectMetadata';
 import {isLegacyPhotometerTarget} from '../core/photometerField';
 import {MAX_PHOTOMETER_EVENTS,PhotometerError,replayPhotometer,type PhotometerState,type PhotometerEvent} from '../core/photometer';
-import {photometerJournalVersion,photometerJournalHeader,photometerJournalText,photometerJournalFits,MAX_PHOTOMETER_SESSION_BYTES,PHOTOMETER_FIELD_SHA256,PHOTOMETER_UBV_SHA256,PHOTOMETER_TARGETS_SHA256} from '../core/photometerJournal';
+import {photometerJournalVersion,photometerJournalHeader,photometerJournalText,photometerJournalFits,MAX_PHOTOMETER_SESSION_BYTES,PHOTOMETER_SESSION_PAYLOAD_BYTES,PHOTOMETER_FIELD_SHA256,PHOTOMETER_UBV_SHA256,PHOTOMETER_TARGETS_SHA256} from '../core/photometerJournal';
 export {MAX_PHOTOMETER_SESSION_BYTES,PHOTOMETER_FIELD_SHA256,PHOTOMETER_UBV_SHA256,PHOTOMETER_TARGETS_SHA256};
 /** New bounded web journal; never presented as the native text report or v7. */
 export function serializePhotometerSession(s:PhotometerState):string {
  if(s.armed||s.phase==='running')throw new PhotometerError('phase');
  const timed=s.events.some(e=>e.type==='timing'||e.type==='advance');if(timed!==!!s.timing)throw new PhotometerError('session');
- const text=photometerJournalText(s.seedAtStart,s.events);if(new TextEncoder().encode(text).length>MAX_PHOTOMETER_SESSION_BYTES)throw new PhotometerError('session');return text;
+ const text=photometerJournalText(s.seedAtStart,s.events);if(!projectTextFits(text,PHOTOMETER_SESSION_PAYLOAD_BYTES))throw new PhotometerError('session');return text;
 }
 
 export function parsePhotometerSession(value:unknown):PhotometerState {
+ try{value=projectMetadata(value);}catch{throw new PhotometerError('session');}
  if(!value||typeof value!=='object'||Array.isArray(value))throw new PhotometerError('session');
  const r=value as Record<string,unknown>;
  if(typeof r.seedAtStart!=='number'||!Array.isArray(r.events)||r.events.length>MAX_PHOTOMETER_EVENTS)throw new PhotometerError('session');
@@ -23,5 +26,5 @@ export function parsePhotometerSession(value:unknown):PhotometerState {
 }
 export async function readPhotometerSession(file:File):Promise<PhotometerState>{
  if(file.size>MAX_PHOTOMETER_SESSION_BYTES)throw new PhotometerError('session');const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_PHOTOMETER_SESSION_BYTES)throw new PhotometerError('session');
- let parsed:unknown;try{parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{throw new PhotometerError('session');}return parsePhotometerSession(parsed);
+ let parsed:unknown;try{parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{throw new PhotometerError('session');}try{if(!projectBytesFit(bytes.byteLength,parsed,PHOTOMETER_SESSION_PAYLOAD_BYTES))throw new PhotometerError('session');}catch{throw new PhotometerError('session');}return parsePhotometerSession(parsed);
 }

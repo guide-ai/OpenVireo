@@ -1,5 +1,9 @@
+import{projectResource}from'./projectMetadata';
 import references from '../../data/hubble/galaxy-distance-references.json';
-import targets from '../../data/hubble/galaxy-targets.json';
+
+import targetsSource from '../../data/hubble/galaxy-targets.json';
+const targets=projectResource(targetsSource);
+
 export const GALAXY_TARGETS=Object.freeze(targets.map(t=>Object.freeze({...t})));
 export function knownGalaxyTarget(id:unknown):id is string{return typeof id==='string'&&GALAXY_TARGETS.some(t=>t.id===id);}
 export function galaxyIdentity(id:string){const t=GALAXY_TARGETS.find(t=>t.id===id);if(!t)throw Error('Unsupported acquisition galaxy.');return t;}

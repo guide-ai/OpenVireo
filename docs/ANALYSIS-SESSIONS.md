@@ -6,7 +6,7 @@ Current imported-file extension: [CLASSIFICATION-IMPORT.md](CLASSIFICATION-IMPOR
 adds bounded SP/SSP visual contexts and full v7; earlier pending/version statements
 below are historical for this subset. Imported equivalent width remains disabled.
 
-This is a new OpenCLEA browser format, version1. It is separate from the original CLEA `*SpHdr*` spectrum format and never creates detector observations. Use **Save session** on the analysis page, keep the downloaded JSON locally and use **Restore session** to continue. Restoring replaces the current analysis after all validation succeeds. Leaving/reloading the page without saving still loses unsaved work; there is no automatic browser or server persistence.
+This is a new OpenVireo browser format, version1. It is separate from the original CLEA `*SpHdr*` spectrum format and never creates detector observations. Use **Save session** on the analysis page, keep the downloaded JSON locally and use **Restore session** to continue. Restoring replaces the current analysis after all validation succeeds. Leaving/reloading the page without saving still loses unsaved work; there is no automatic browser or server persistence.
 
 A session stores the current imported file's name, exact valid UTF8 text (including BOM and line endings), original SHA256, adjustment control, pending step input, reference choice, display interval, object label and up to1000 measurements. **Download imported spectrum** returns the exact bytes represented by that validated UTF8 file, including the original BOM/CRLF; plot decimation never affects exported samples. Local download filenames may be sanitized by the browser.
 

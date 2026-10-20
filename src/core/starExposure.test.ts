@@ -1,7 +1,11 @@
+import{projectResource}from'./projectMetadata';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import vectors from '../../data/hubble/star-exposure-vectors.json';
-import provenance from '../../data/hubble/star-exposure-provenance.json';
+
+import provenanceSource from '../../data/hubble/star-exposure-provenance.json';
+const provenance=projectResource(provenanceSource);
+
 import {parseStarSession,serializeStarSession,readStarSession,MAX_STAR_SESSION_BYTES} from '../io/starSession';
 import {serializeSkySession} from '../io/skySession';
 import {prepareNativeStarProfile} from './starProfiles';

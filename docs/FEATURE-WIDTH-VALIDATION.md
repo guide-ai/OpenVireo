@@ -93,5 +93,5 @@ assuming the still-open native cursor/FPU branches and is not implemented here.
   `/home/dobleuber/Documents/Codex/2026-10-18/task-3/feature-width-recovery/`.
 - Backups, before/after hashes, code/documentation patch and verification receipts:
   `/home/dobleuber/Documents/Codex/2026-10-18/task-3/feature-width-integration/`.
-- Browser evidence: `.local/qa/openclea-feature-width-desktop.png` and
-  `.local/qa/openclea-feature-width-mobile.png`.
+- Browser evidence: [external browser-evidence record] and
+  [external browser-evidence record].

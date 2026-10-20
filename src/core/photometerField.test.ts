@@ -1,9 +1,14 @@
+import{projectResource}from'./projectMetadata';
 import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import packet from '../../data/photometry/pinned-pleiades-v.json';
+import packetSource from '../../data/photometry/pinned-pleiades-v.json';
+const packet=projectResource(packetSource);
+
 import vectors from '../../data/photometry/field-vectors.json';
+
 import provenance from '../../data/photometry/field-provenance.json';
+
 import {PINNED_PLEIADES_V_DOMAIN as domain,PINNED_PLEIADES_V_TARGET as target,PhotometerFieldError,queryPhotometerNeighbors,buildPinnedPleiadesField,simulatePinnedPleiadesVPair} from './photometerField';
 import {poissonDraw} from './acquisition';
 

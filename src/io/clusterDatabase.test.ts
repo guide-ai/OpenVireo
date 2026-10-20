@@ -1,5 +1,10 @@
-import captured from '../../data/photometry/pre-cluster-comparison-fixtures.json';import {createHash} from 'node:crypto';
-import {it,expect,vi,afterEach} from 'vitest';import {readFileSync} from 'node:fs';import old from '../../data/photometry/pre-native-cluster-fixtures.json';import {EMPTY_CLUSTER_DATABASE} from '../core/clusterDatabase';import {readAnalysisSession,serializeAnalysisSession} from './analysisSession';
+import{projectSessionText}from'../core/projectMetadata';
+import captured from '../../data/photometry/pre-cluster-comparison-fixtures.json';
+
+import {createHash} from 'node:crypto';
+import {it,expect,vi,afterEach} from 'vitest';import {readFileSync} from 'node:fs';import old from '../../data/photometry/pre-native-cluster-fixtures.json';
+
+import {EMPTY_CLUSTER_DATABASE} from '../core/clusterDatabase';import {readAnalysisSession,serializeAnalysisSession} from './analysisSession';
 afterEach(()=>vi.unstubAllGlobals());
 const bytes=()=>readFileSync(new URL('../../data/photometry/cluster-m67.json',import.meta.url));
 it('bounds/rejects failed,oversized and altered data;fresh retry succeeds,freezes506rows and shares only a validated promise',async()=>{
@@ -7,4 +12,4 @@ it('bounds/rejects failed,oversized and altered data;fresh retry succeeds,freeze
  const base=await readAnalysisSession(new File([old.full2.text],'prior.json')),text=await serializeAnalysisSession({...base,clusterDatabase:{...EMPTY_CLUSTER_DATABASE,pendingId:'m67',loaded:true}});const restored=await readAnalysisSession(new File([text],'full19.json'));expect(restored.clusterDatabase).toEqual({...EMPTY_CLUSTER_DATABASE,pendingId:'m67',loaded:true});expect(restored.photometry!.entries).toEqual(base.photometry!.entries);expect(await serializeAnalysisSession(restored)).toBe(text);
 });
 
-it('retains exact captured pre-fix full19 pending/confirmed/invalid-draft bytes without migrating their canonical base',async()=>{vi.stubGlobal('fetch',async()=>new Response(bytes()));for(const fixture of captured.fixtures){expect(createHash('sha256').update(fixture.text).digest('hex')).toBe(fixture.sha256);const loaded=await readAnalysisSession(new File([fixture.text],'prior19.json'));expect(await serializeAnalysisSession(loaded)).toBe(fixture.text);expect(loaded.photometry!.entries).toHaveLength(4);}});
+it('retains exact captured pre-fix full19 pending/confirmed/invalid-draft bytes without migrating their canonical base',async()=>{vi.stubGlobal('fetch',async()=>new Response(bytes()));for(const fixture of captured.fixtures){expect(createHash('sha256').update(fixture.text).digest('hex')).toBe(fixture.sha256);const loaded=await readAnalysisSession(new File([fixture.text],'prior19.json'));expect(await serializeAnalysisSession(loaded)).toBe(projectSessionText(fixture.text));expect(loaded.photometry!.entries).toHaveLength(4);}});

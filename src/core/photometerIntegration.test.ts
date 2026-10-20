@@ -1,5 +1,10 @@
+import{projectResource}from'./projectMetadata';
 import {it,expect} from 'vitest';import {readFileSync} from 'node:fs';import {createHash} from 'node:crypto';
-import vectors from '../../data/photometry/integration-vectors.json';import proof from '../../data/photometry/integration-provenance.json';
+import vectors from '../../data/photometry/integration-vectors.json';
+
+import proofSource from '../../data/photometry/integration-provenance.json';
+const proof=projectResource(proofSource);
+
 import {createPhotometer,photometerEvent as event,releasePhotometer,replayPhotometer,MAX_PHOTOMETER_EVENTS} from './photometer';
 import {PHOTOMETER_INTEGRATION_SHA256,PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,photometerTiming,createPhotometerIntegration,advancePhotometerIntegration,requiredPhotometerCallbacks,photometerReplayCallbacks} from './photometerIntegration';import {PINNED_PLEIADES_V_TARGET} from './photometerField';import type {PhotometerFilter} from './photometerUbvField';
 const sha=(p:string)=>createHash('sha256').update(readFileSync(new URL(p,import.meta.url))).digest('hex');

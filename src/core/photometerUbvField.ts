@@ -1,10 +1,13 @@
+import{projectResource}from'./projectMetadata';
 import {photometerTelescopeContractSHA256,photometerTelescope,isPhotometerTelescopeTarget,type PhotometerTelescopeIndex} from './photometerTelescope';
 import {photometerApertureGeometry} from './photometerAperture';
 import {buildPhotometerTargetField,queryPhotometerNeighbors,PINNED_PLEIADES_V_TARGET,PhotometerFieldError,type PleiadesFieldKind} from './photometerField';
 import {photometerPointFraction,photometerSeparation,prepareKnownColorPhotometerUbv} from './photometerSource';
 import {magnitudeAmplitude} from './photons';
 import {poissonDraw} from './acquisition';
-import contract from '../../data/photometry/ubv-contract.json';
+import contractSource from '../../data/photometry/ubv-contract.json';
+const contract=projectResource(contractSource);
+
 export const PHOTOMETER_FILTERS=['U','B','V'] as const;
 export type PhotometerFilter=typeof PHOTOMETER_FILTERS[number];
 export function isPhotometerFilter(value:unknown):value is PhotometerFilter{return value==='U'||value==='B'||value==='V';}

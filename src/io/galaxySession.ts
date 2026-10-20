@@ -1,16 +1,22 @@
+import{MAX_PROJECT_METADATA_GROWTH,projectBytesFit,projectTextFits}from'../core/projectMetadata';
+import{sourceIdentityText}from'../core/projectMetadata';
+import{projectMetadata,projectResource}from'../core/projectMetadata';
 import {MAYALL_PROOF_SHA256} from '../core/starTelescope';
-import proof from '../../data/hubble/kpno09-galaxy-provenance.json';
+import proofSource from '../../data/hubble/kpno09-galaxy-provenance.json';
+const proof=projectResource(proofSource);
+
 import {galaxyTelescopeIndex,KPNO09_GALAXY_PROOF_SHA256} from '../core/galaxyTelescope';
 import {MAX_JOURNAL_EVENTS,JournalError,type JournalEvent} from '../core/exposureJournal';
 import {replayGalaxy,galaxyStateDefinition,galaxyPolicyDefinition,type GalaxyState} from '../core/galaxyExposure';
-export const MAX_GALAXY_SESSION_BYTES=2*1024*1024;
-const FORMAT='OpenCLEA catalog galaxy exposure',NUMERICAL='Number_Math_nearest_center_stretch_v1_native_equivalence_unvalidated';
+export const GALAXY_SESSION_PAYLOAD_BYTES=2*1024*1024,MAX_GALAXY_SESSION_BYTES=GALAXY_SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
+const FORMAT='OpenVireo catalog galaxy exposure',NUMERICAL='Number_Math_nearest_center_stretch_v1_native_equivalence_unvalidated';
 export function serializeGalaxySession(state:GalaxyState):string {
   const index=galaxyTelescopeIndex(state),d=galaxyStateDefinition(state);if(state.exposure.phase==='running')throw new JournalError('phase');
   const result=JSON.stringify({format:FORMAT,version:index+1,policy:d.policyId,...(index!==0?{telescopeIndex:index,opticalProfileSHA256:proof.opticalProfileSHA256,configurationSHA256:index===2?MAYALL_PROOF_SHA256:KPNO09_GALAXY_PROOF_SHA256}:{}),numericalPolicy:NUMERICAL,fieldSnapshotSHA256:d.fieldSnapshotSHA256,sourceSnapshotSHA256:d.sourceSnapshotSHA256,domain:d.domain,seedAtReset:state.seedAtReset,events:state.events},null,2)+'\n';
-  if(new TextEncoder().encode(result).byteLength>MAX_GALAXY_SESSION_BYTES)throw new JournalError('session');return result;
+  if(!projectTextFits(result,GALAXY_SESSION_PAYLOAD_BYTES))throw new JournalError('session');return result;
 }
 export function parseGalaxySession(value:unknown):GalaxyState {
+ try{value=projectMetadata(value);}catch{throw new JournalError('session');}
   if(!value||typeof value!=='object'||Array.isArray(value))throw new JournalError('session');
   const r=value as Record<string,unknown>,index=r.version===3?2:1,alternate=r.version===2||r.version===3,keys=['format','version','policy','numericalPolicy','fieldSnapshotSHA256','domain','sourceSnapshotSHA256','seedAtReset','events',...(alternate?['telescopeIndex','opticalProfileSHA256','configurationSHA256']:[])];
   const d=galaxyPolicyDefinition(r.policy);
@@ -24,5 +30,7 @@ export async function readGalaxySession(file:File):Promise<GalaxyState> {
   if(file.size>MAX_GALAXY_SESSION_BYTES)throw new JournalError('session');
   const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_GALAXY_SESSION_BYTES)throw new JournalError('session');
   let parsed:unknown;try{parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{throw new JournalError('session');}
-  return parseGalaxySession(parsed);
+  try{if(!projectBytesFit(bytes.byteLength,parsed,GALAXY_SESSION_PAYLOAD_BYTES))throw new JournalError('session');}catch{throw new JournalError('session');}return parseGalaxySession(parsed);
 }
+
+export const galaxySessionIdentityText=(state:GalaxyState)=>sourceIdentityText(serializeGalaxySession(state),proofSource.records[0].policyId);

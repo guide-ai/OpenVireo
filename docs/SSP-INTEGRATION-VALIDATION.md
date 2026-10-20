@@ -12,8 +12,8 @@ active/running and Vite `--host 127.0.0.1 --port 5173 --strictPort`.
 - `npm run test:e2e -- --workers=2`: **39 passed**, 34.0 s (baseline 37), against
   the persistent local preview. No new runtime page errors in the SSP flow.
 - Desktop and 320 px mobile browser screenshots visually inspected:
-  `.local/qa/openclea-ssp-desktop.png`, `.local/qa/openclea-ssp-mobile.png`, and
-  the acquired CorBor mobile view `.local/qa/openclea-corbor-analysis-mobile.png`.
+  [external browser-evidence record], [external browser-evidence record], and
+  the acquired CorBor mobile view [external browser-evidence record].
   Imported metadata render as plain text; controls and buttons fit without
   horizontal overflow. In-app browser tooling was unavailable; Playwright
   screenshots of the actual local preview supplied the visual verification.

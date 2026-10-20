@@ -15,9 +15,9 @@ test('portable session survives a page reload and exports the exact imported byt
   await page.getByRole('button',{name:/Record measurement/}).click();await page.getByRole('button',{name:'Save measurement',exact:true}).click();
   const z=await page.getByTestId('z-value').textContent();
   const waiting=page.waitForEvent('download');await page.getByRole('button',{name:'Save session',exact:true}).click();
-  const file=await waiting;expect(file.suggestedFilename()).toBe('openclea-session.json');const saved=await bytes(file);
+  const file=await waiting;expect(file.suggestedFilename()).toBe('openvireo-session.json');const saved=await bytes(file);
   await page.reload();await expect(page.getByRole('button',{name:/Record measurement/})).toBeDisabled();
-  await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'openclea-session.json',mimeType:'application/json',buffer:saved});
+  await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'openvireo-session.json',mimeType:'application/json',buffer:saved});
   await expect(page.getByText('Session restored. The current spectrum and measurement arithmetic were checked.',{exact:true})).toBeVisible();
   await expect(page.getByTestId('z-value')).toHaveText(z!);await expect(page.getByLabel('Object or reference')).toHaveValue('Portable validation');
   await expect(page.getByRole('button',{name:'Coarse ×10'})).toHaveAttribute('aria-pressed','true');

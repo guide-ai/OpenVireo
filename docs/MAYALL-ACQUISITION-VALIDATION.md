@@ -25,7 +25,7 @@ External evidence directories:
 
 - `/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-recovery/`: original addresses, static field recovery, independent Decimal100 reference and numerical vectors.
 - `/home/dobleuber/Documents/Codex/2026-10-18/task-3/mayall-integration/`: baseline, backups, patch, integration/verification receipts, stage and final check logs, and visual evidence.
-- `.local/qa/openclea-mayall-*.png`: retained screenshots from the actual repository browser run.
+- [external browser-evidence record]: retained screenshots from the actual repository browser run.
 
 An exploratory product-only Mayall reference crossed the native threshold of 12; it was replaced with the recovered rejection-branch reference before the admitted vectors and implementation were validated. No original binary was executed and no native writer/runtime oracle was created. Independent mathematics and browser self-consistency are not proof of native x87/GDI/runtime equivalence. Browser RNG/time and galaxy scaling adapters remain declared. See [feature steps and scientific limits](MAYALL-ACQUISITION.md).
 

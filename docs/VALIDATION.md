@@ -2,13 +2,17 @@
 
 Validation establishes the chosen browser contracts and traceability. It does not establish original numerical or functional equivalence: CLEA has not been executed as an oracle.
 
-## Current checks
+## Current naming correction
+
+See [current naming validation](PROJECT-NAMING-VALIDATION.md) for the latest complete suites, saved-file compatibility, review resolutions and publication boundary. The earlier snapshots below retain their original scope and counts.
+
+## Initial checks
 
 - TypeScript/build: passes.
 - Vitest: 53 tests pass across the spectral/sky core, supplied-mean exposure and calibration, bounded galaxy preparation, raster-table stages and shared numerical policy. These are adapter/static-data checks, not original-run observations.
 - Playwright: 11 flows pass, including the full beginner observatory path, original M82 image/reference loading, instrument return with context, coordinate rejection, RA wrap-area browsing and mobile overflow check, plus imported-spectrum control/record/export regressions.
 - Original source/derived hashes and RGB-preserving image conversion are recorded in `data/sky/PROVENANCE.json`.
-- Browser screenshots: `.local/qa/openclea-observatory-desktop.png` and `openclea-observatory-mobile.png`; Brave is independently inspected through CUA. A screenshot does not certify science.
+- Browser screenshots: [external browser-evidence record] and [external browser-evidence record]; Brave is independently inspected through CUA. A screenshot does not certify science.
 
 ## Meaningful scenarios
 

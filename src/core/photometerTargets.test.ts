@@ -1,7 +1,11 @@
+import{projectResource}from'./projectMetadata';
 import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
-import packet from '../../data/photometry/pleiades-target-fields.json';
+import packetSource from '../../data/photometry/pleiades-target-fields.json';
+const packet=projectResource(packetSource);
+
 import vectors from '../../data/photometry/pleiades-target-vectors.json';
+
 import {LEGACY_PLEIADES_PHOTOMETER_TARGETS as PLEIADES_PHOTOMETER_TARGETS,photometerTarget,buildPhotometerTargetField,PINNED_PLEIADES_V_TARGET,buildPinnedPleiadesField,PINNED_PLEIADES_V_DOMAIN} from './photometerField';
 import {buildPinnedPleiadesUbvField,drawPinnedPleiadesUbv,type PhotometerFilter} from './photometerUbvField';
 describe('three original Pleiades target identities and complete fields',()=>{

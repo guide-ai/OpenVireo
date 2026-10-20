@@ -14,7 +14,7 @@ export default function VelocityAnalysis({rows:allRows,draft,onChange}:{rows:rea
   const result=velocityDraftCheck(draft,rows),feedback=result.kind==='result'?t(result.accepted?'velocity.accepted':'velocity.rejected',{error:scientific(result.relativeError*100,6)}):'',error=result.kind==='error'?t(result.code==='zero-reference'?'velocity.zero':result.code==='precision-boundary'?'velocity.boundary':'velocity.invalid'):'';
   function exportCsv(){
     const url=URL.createObjectURL(new Blob([hubbleVelocityCsv(rows)],{type:'text/csv;charset=utf-8'}));
-    const anchor=document.createElement('a');anchor.href=url;anchor.download='openclea-velocities.csv';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const anchor=document.createElement('a');anchor.href=url;anchor.download='openvireo-velocities.csv';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
   return <details className="card velocity-card"><summary>{t('velocity.title')}</summary><div className="velocity-content">
     <p>{t('velocity.help')}</p><p className="velocity-formula">v = c z · c = 299792.458 km/s</p>

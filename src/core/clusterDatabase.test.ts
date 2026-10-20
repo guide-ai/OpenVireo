@@ -1,6 +1,13 @@
+import{projectMetadata,projectSessionText,projectResource}from'./projectMetadata';
 import {it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';import {createHash} from 'node:crypto';
-import contract from '../../data/photometry/cluster-dataset-contract.json';import points from '../../data/photometry/cluster-m67.json';import prior from '../../data/photometry/pre-native-cluster-fixtures.json';
+import contractSource from '../../data/photometry/cluster-dataset-contract.json';
+const contract=projectResource(contractSource);
+
+import points from '../../data/photometry/cluster-m67.json';
+
+import prior from '../../data/photometry/pre-native-cluster-fixtures.json';
+
 import {CLUSTER_DATABASE_SHA256,EMPTY_CLUSTER_DATABASE,selectClusterDataset,markClusterDatasetLoaded,emptyClusterDatabaseWorkspace,clusterReddeningSourceChanged,M67,readClusterDatabaseWorkspace,clusterDatabaseDraft,useClusterCatalogReddening,setClusterDatabaseDraft,confirmClusterDatabase,clusterDatabaseDisplayFit} from './clusterDatabase';
 import {readAnalysisSession,serializeAnalysisSession} from '../io/analysisSession';
 const p={modulusTicks:950,ebvTicks:3,ageIndex:36,modelIndex:4,offsetTicks:0,extinctionCorrected:true,interpretation:'My own comparison, not a catalog age'};
@@ -18,7 +25,7 @@ it('strict workspace rejects unadmitted dataset,misbound presets,caches,extra fi
  const valid={...EMPTY_CLUSTER_DATABASE,pendingId:'m67',loaded:true,fit:{parameters:p,reddeningSource:'catalog-m67'}};for(const mutate of[(v:any)=>v.pendingId='pleiades',(v:any)=>v.points=points,(v:any)=>v.loaded=false,(v:any)=>v.fit.parameters.ebvTicks=4,(v:any)=>v.fit.parameters.ageMyr=123,(v:any)=>v.fit.parameters.interpretation='x'.repeat(501),(v:any)=>v.draftReddeningSource='catalog-m67']){const bad=structuredClone(valid);mutate(bad);expect(()=>readClusterDatabaseWorkspace(bad)).toThrow();}
 });
 it('wraps exact existing full scope in19;old bytes stay exact and invalid/nested wrappers cannot import cached results',async()=>{
- const base=await read(prior.full2.text);expect(await serializeAnalysisSession(base)).toBe(prior.full2.text);const workspace=confirmClusterDatabase(useClusterCatalogReddening({...EMPTY_CLUSTER_DATABASE,pendingId:'m67',loaded:true}),p),clusterDatabase=setClusterDatabaseDraft(workspace,{...clusterDatabaseDraft(workspace),logAge:'unfinished',interpretation:'Own unapplied thought'}),text=await serializeAnalysisSession({...base,clusterDatabase}),wire=JSON.parse(text);expect(wire.version).toBe(19);expect(wire.base).toEqual(JSON.parse(prior.full2.text));
+ const base=await read(prior.full2.text);expect(await serializeAnalysisSession(base)).toBe(projectSessionText(prior.full2.text));const workspace=confirmClusterDatabase(useClusterCatalogReddening({...EMPTY_CLUSTER_DATABASE,pendingId:'m67',loaded:true}),p),clusterDatabase=setClusterDatabaseDraft(workspace,{...clusterDatabaseDraft(workspace),logAge:'unfinished',interpretation:'Own unapplied thought'}),text=await serializeAnalysisSession({...base,clusterDatabase}),wire=JSON.parse(text);expect(wire.version).toBe(19);expect(wire.base).toEqual(projectMetadata(JSON.parse(prior.full2.text)));
  // Writer validates without network. Reader source verification is separately tested at the actual IO boundary.
  for(const mutate of[(v:any)=>v.clusterDatabaseSHA256='bad',(v:any)=>v.nativeClusterContractSHA256='bad',(v:any)=>v.nativeClusterPolicy='unknown',(v:any)=>v.clusterDatabase.fit.parameters.distancePc=50,(v:any)=>v.base.version=19,(v:any)=>delete v.base,(v:any)=>v.clusterDatabasePolicy='unknown']){const bad=structuredClone(wire);mutate(bad);await expect(read(JSON.stringify(bad))).rejects.toThrow();}
  expect(text).not.toContain('bMinusV');expect(text).not.toContain('distancePc');

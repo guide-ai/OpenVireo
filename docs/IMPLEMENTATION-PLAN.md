@@ -1,4 +1,4 @@
-# OpenCLEA implementation plan
+# OpenVireo implementation plan
 
 ## Current scope reconciliation
 
@@ -112,7 +112,7 @@ Planning baseline: 17 October 2026. This document covers the CLEA suite, rather 
 
 ## Product and scope
 
-OpenCLEA is a browser reconstruction of CLEA's educational observatories, instruments, data and exercise workflows. The opening experience must be an observatory: open the dome, find an object, point the telescope and reach the appropriate instrument. An unfamiliar learner must be able to explore a first object without entering redshift step sizes, coordinates or instructor preferences.
+OpenVireo is a browser reconstruction of CLEA's educational observatories, instruments, data and exercise workflows. The opening experience must be an observatory: open the dome, find an object, point the telescope and reach the appropriate instrument. An unfamiliar learner must be able to explore a first object without entering redshift step sizes, coordinates or instructor preferences.
 
 English is the initial product language. UI/help text lives behind stable semantic keys in `src/i18n/en.json`; presentation formatting is locale-aware. Additional translations and a language selector are deferred. Scientific inputs, exports, identifiers, archival labels, units and numerical policy remain explicitly specified independently of display locale.
 
@@ -276,7 +276,7 @@ Keep four explicit layers:
 3. **Session/exercise model:** observatory → telescope → instrument → acquisition → analysis → record/export. Recover effects of VCL events/setters as state contracts without rebuilding VCL/Win32. Explicit identity, cancellation, undo, seed/time state and migration rules.
 4. **Web presentation:** React/TypeScript, SVG for the current sky/spectrum preview, canvas/WebGL only if measured rendering volume needs them. English message catalog with stable keys and typed interpolation; `Intl` for display, machine schemas for scientific files. No mandatory backend/account/cloud service. RAM state now; IndexedDB/Workers/PWA only when their requirements are concrete.
 
-The existing path can remain `clea-web`; product/package/title is OpenCLEA. Do not rename directories merely to change branding. Keep `AGENTS.md` as the sole general agent guide and `REVIEW.md` as the review criteria. No public hosting, push or original execution is implied by this plan.
+The existing path can remain `clea-web`; product/package/title is OpenVireo. Do not rename directories merely to change branding. Keep `AGENTS.md` as the sole general agent guide and `REVIEW.md` as the review criteria. No public hosting, push or original execution is implied by this plan.
 
 ## Estimation basis and distinct scenarios
 

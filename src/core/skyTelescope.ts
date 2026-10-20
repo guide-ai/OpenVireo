@@ -1,4 +1,7 @@
-import proof from '../../data/hubble/sky-telescope-provenance.json';
+import{projectResource}from'./projectMetadata';
+import proofSource from '../../data/hubble/sky-telescope-provenance.json';
+const proof=projectResource(proofSource);
+
 import {JournalError} from './exposureJournal';
 export type SkyTelescopeIndex=0|1|2;
 export const SKY_TELESCOPE_PROOF_SHA256='2b0927bee17b01b190d4efc30a1c42892b63fb07425719a38315253742468fda';

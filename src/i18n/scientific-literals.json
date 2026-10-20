@@ -77,35 +77,35 @@
     "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
   },
   {
-    "file": "src/OpenCLEA.tsx",
+    "file": "src/OpenVireo.tsx",
     "kind": "text",
     "value": "N",
     "count": 1,
     "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
   },
   {
-    "file": "src/OpenCLEA.tsx",
+    "file": "src/OpenVireo.tsx",
     "kind": "text",
     "value": "E",
     "count": 1,
     "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
   },
   {
-    "file": "src/OpenCLEA.tsx",
+    "file": "src/OpenVireo.tsx",
     "kind": "text",
     "value": "VIREO ·",
     "count": 1,
     "reason": "Product/edition name or original catalog identifier, preserved as source identity."
   },
   {
-    "file": "src/OpenCLEA.tsx",
+    "file": "src/OpenVireo.tsx",
     "kind": "text",
     "value": "RA",
     "count": 1,
     "reason": "Established celestial coordinate/direction symbols and unit separators, preserved with the projection contract."
   },
   {
-    "file": "src/OpenCLEA.tsx",
+    "file": "src/OpenVireo.tsx",
     "kind": "text",
     "value": "h · Dec",
     "count": 1,

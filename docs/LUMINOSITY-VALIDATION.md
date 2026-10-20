@@ -51,8 +51,8 @@ Hubble measurements, distance inputs or fitting points.
 - Desktop 1440 px and mobile 320 px real browser screenshots were visually inspected:
   plots and selectors are readable, selected atlas/pair and recorded context are
   visible, mobile controls and source identities wrap without horizontal overflow.
-  Copies: `.local/qa/openclea-luminosity-desktop.png` and
-  `.local/qa/openclea-luminosity-mobile.png`.
+  Copies: [external browser-evidence record] and
+  [external browser-evidence record].
 
 The isolated candidate initially exposed an obsolete main-only CSV fingerprint
 assertion after the inventory expansion, two focus assertions and one existing

@@ -45,9 +45,9 @@ unchanged while away and after restoration. No timing behavior was changed to
 satisfy a fixture. Candidate tests and the complete final suite passed afterward.
 
 Screenshots:
-- `.local/qa/openclea-hubble-guide-desktop.png`
-- `.local/qa/openclea-hubble-guide-mobile.png`
-- `.local/qa/openclea-hubble-guide-recovery-mobile.png`
+- [external browser-evidence record]
+- [external browser-evidence record]
+- [external browser-evidence record]
 
 Scientific formulas, original manifests/resources, normalizations and session
 schema v1/v2/v3 were unchanged. Progress is recalculated from existing restored

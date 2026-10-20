@@ -1,6 +1,9 @@
+import{projectResource}from'./projectMetadata';
 import {SKY_TELESCOPE_PROOF_SHA256,skyProfile,skyTelescopeIndex,type SkyTelescopeIndex} from './skyTelescope';
 export {skyTelescopeIndex,type SkyTelescopeIndex} from './skyTelescope';
-import provenance from '../../data/hubble/sky-exposure-provenance.json';
+import provenanceSource from '../../data/hubble/sky-exposure-provenance.json';
+const provenance=projectResource(provenanceSource);
+
 import {buildPinnedSkyProfilePopulation,type PinnedNativePopulation} from './pinnedNativeField';
 import {createNativeSelectionScene,selectCatalogObject,type NativeSelectionScene} from './objectSelection';
 import {nativeStellarAngularAdmission} from './slitThroughput';

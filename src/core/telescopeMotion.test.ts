@@ -1,6 +1,12 @@
+import{projectResource}from'./projectMetadata';
 import clockProof from '../../data/observatory/running-clock-provenance.json';
+
 import{it,expect}from'vitest';import{readFileSync}from'node:fs';import{createHash}from'node:crypto';
-import vectors from'../../data/observatory/telescope-motion-reference.json';import proof from'../../data/observatory/telescope-motion-contract.json';
+import vectors from '../../data/observatory/telescope-motion-reference.json';
+
+import proofSource from '../../data/observatory/telescope-motion-contract.json';
+const proof=projectResource(proofSource);
+
 import{advanceTelescopeMotion,createManualMotion,createProgrammedMotion,tickTelescopeMotion,manualMotionStep,readMotionPreferences,validateBrowserMotionPointing,prepareBrowserTelescopeMotion,advanceBrowserTelescopeMotion,MOTION_MAX_ABS_DECLINATION,TELESCOPE_MOTION_SHA256}from'./telescopeMotion';
 it('binds source/DFM/complete timer evidence and explicit native versus browser scope',()=>{expect(createHash('sha256').update(readFileSync(new URL('../../data/observatory/telescope-motion-contract.json',import.meta.url))).digest('hex')).toBe(TELESCOPE_MOTION_SHA256);expect(proof.original.execution).toBe(false);expect(proof.original.ranges).toHaveLength(20);expect(proof.native.scale).toEqual({finder:1,telescope:10});expect(proof.native.horizonEnforcedDefault).toBe(false);});
 for(const v of vectors.vectors.filter(v=>v.kind==='manual'))it(`independent manual ${v.mode}/${v.direction}/${v.rateIndex}/${v.start.dec}`,()=>{const s=createManualMotion(v.start,v.mode as 'finder'|'telescope',v.rateIndex!,v.direction as 'N'|'S'|'E'|'W');const w=advanceTelescopeMotion(s,v.callbacks!);expect(w.pointing.ra).toBeCloseTo(v.expected.ra,10);expect(w.pointing.dec).toBeCloseTo(v.expected.dec,10);expect(w.flipped).toBe(v.expected.flipped);expect(s.callbacks).toBe(0);});

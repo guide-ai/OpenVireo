@@ -1,5 +1,13 @@
+import{projectResource}from'./projectMetadata';
 import {it,expect} from 'vitest';import {createHash}from'node:crypto';import{readFileSync}from'node:fs';
-import fields from '../../data/photometry/pleiades-expanded-fields.json';import proof from '../../data/photometry/expanded-provenance.json';import vectors from '../../data/photometry/pleiades-expanded-vectors.json';
+import fieldsSource from '../../data/photometry/pleiades-expanded-fields.json';
+const fields=projectResource(fieldsSource);
+
+import proofSource from '../../data/photometry/expanded-provenance.json';
+const proof=projectResource(proofSource);
+
+import vectors from '../../data/photometry/pleiades-expanded-vectors.json';
+
 import {PLEIADES_PHOTOMETER_TARGETS,LEGACY_PLEIADES_PHOTOMETER_TARGETS,PLEIADES_PHOTOMETER_CHOICES,EXPANDED_PHOTOMETER_FIELDS_SHA256,buildPhotometerTargetField,isExpandedPhotometerTarget} from './photometerField';import{MAX_PHOTOMETER_CONFIGURATIONS}from'./photometerIntegration';import{buildPinnedPleiadesUbvField,type PhotometerFilter}from'./photometerUbvField';
 import{createPhotometer,photometerEvent as event,releasePhotometer,replayPhotometer,type PhotometerState}from'./photometer';import{serializePhotometerSession,parsePhotometerSession}from'../io/photometerSession';
 const sha=(p:string)=>createHash('sha256').update(readFileSync(new URL(p,import.meta.url))).digest('hex');

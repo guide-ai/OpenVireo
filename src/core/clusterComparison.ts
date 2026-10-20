@@ -1,5 +1,8 @@
+import{projectResource}from'./projectMetadata';
 import {legacyClusterNotebook,comparisonHasLegacyScope,legacyScopeFromComparison} from './clusterComparisonScope';
-import contract from '../../data/photometry/cluster-comparison-contract.json';
+import contractSource from '../../data/photometry/cluster-comparison-contract.json';
+const contract=projectResource(contractSource);
+
 import {nativeClusterValues,nativeClusterDraftFromFit,validNativeClusterParameters,readNativeClusterDraft,type NativeClusterParameters,type NativeClusterDraft} from './nativeCluster';
 import {readClusterDatabaseWorkspace,type ClusterDatabaseWorkspace,type ClusterReferencePoint} from './clusterDatabase';
 export const CLUSTER_COMPARISON_SHA256='1f2c524199f60429c846261d535abe99e0241f19a2b714aa02ed7dcffb504d92';

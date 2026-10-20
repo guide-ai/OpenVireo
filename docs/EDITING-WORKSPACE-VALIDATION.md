@@ -13,7 +13,7 @@
 - A previously explicit B−V color remains separate from a deliberately cleared pending B selector; restoration does not refill it. A requested valid velocity check is recomputed, and invalid checked text restores its original error after the old text/feedback was cleared. Derived accepted/rejected values and translated feedback are not accepted cache fields.
 - Corrupt editing bindings reject the entire investigation and keep current notebook/pair/seed/manual work. Legacy full9 defaults remain explicit; standalone formats and earlier full/practice migrations retain their established scope. A cancelled delayed10 read cannot overwrite newer manual text after editors are re-enabled. Prior exposure/archive/SSP/classification/Hubble/photometry error/cancel/reentry flows all still pass.
 - P01 catalog/placeholder/runtime/generated types and14-module presentation audit remain green. Six pre-P01 scientific export digest references pass in their recorded Node/Chromium contexts. No numerical kernel or source/sky arithmetic changed.
-- Actual desktop and320px screenshots were visually reviewed: raw learner text stays literal, the original observation table remains separate, pending B/V choices and seed are usable, and mobile has no horizontal document overflow. Retained in `.local/qa/openclea-editing-workspace-{desktop,mobile}.png` and the external receipt folder.
+- Actual desktop and320px screenshots were visually reviewed: raw learner text stays literal, the original observation table remains separate, pending B/V choices and seed are usable, and mobile has no horizontal document overflow. Retained in [external browser-evidence record] and the external receipt folder.
 
 ## Scope, integrity and review
 
@@ -27,6 +27,6 @@ The existing preview service remains active/running, PID668923, bound only to127
 
 ## Scientific limits and inventory
 
-This is a new OpenCLEA web editing/persistence contract. No model, acquisition configuration, calibration, target, catalog answer, distance, fit or native result format was invented. The existing velocity check is reused only for a learner-requested check; it is never an automatic measurement. Raw source plus sky still adds to the acquired buffer, while photometer reduction separately subtracts measured sky. Number/Math versus Extended/x87 uncertainty and absence of original runtime/writer equivalence remain unchanged.
+This is a new OpenVireo web editing/persistence contract. No model, acquisition configuration, calibration, target, catalog answer, distance, fit or native result format was invented. The existing velocity check is reused only for a learner-requested check; it is never an automatic measurement. Raw source plus sky still adds to the acquired buffer, while photometer reduction separately subtracts measured sky. Number/Math versus Extended/x87 uncertainty and absence of original runtime/writer equivalence remain unchanged.
 
 Original58 functional packages remain1complete(P01),28partial,28contract-gated,1not-started. Quality remains5partial/1rights-gated; all64 remain1complete/33partial/28contract-gated/1not-started/1rights-gated. [Current acceptance status](ACCEPTANCE-STATUS.md).

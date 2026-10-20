@@ -160,7 +160,7 @@
     "limits": "No original execution/x87 equivalence. Native outside-domain Random and singular FPU branches rejected; nonconvergence not recordable; no automatic interpretation."
   },
   "classificationImports": {
-    "policy": "OpenCLEA-visual-import-v1",
+    "policy": "OpenVireo-visual-import-v1",
     "contract": "data/classification/import-provenance.json",
     "grid": "data/classification/printed-grid.json",
     "scope": "Explicit imported unknown role, exact-byte SHA256 identity, preserved parsed 0\u20131 flux and 3900\u20134500 \u00c5 coverage; subtraction only on identical complete printed grids",

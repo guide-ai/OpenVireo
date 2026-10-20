@@ -90,7 +90,7 @@ The imported classification state itself is retained as a separate file context.
 
 Full investigation v7 is emitted whenever imported classification files exist,
 even if the current view is practice/acquired. It binds the unchanged original
-inventory fingerprint plus `OpenCLEA-visual-import-v1`. Each imported source stores
+inventory fingerprint plus `OpenVireo-visual-import-v1`. Each imported source stores
 only name, SHA-256 and exact text, alongside its manual input state. Samples,
 header metadata, grids and computed results are not accepted as cached authority.
 Restore repeats byte bounds, hash, parsing, coverage, grid/mode and source/log

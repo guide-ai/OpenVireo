@@ -1,13 +1,21 @@
-import contract from '../../data/photometry/kpno09-photometer-contract.json';
-import mayallContract from '../../data/photometry/mayall-photometer-contract.json';
+import{projectResource}from'./projectMetadata';
+import contractSource from '../../data/photometry/kpno09-photometer-contract.json';
+const contract=projectResource(contractSource);
+
+import mayallContractSource from '../../data/photometry/mayall-photometer-contract.json';
+const mayallContract=projectResource(mayallContractSource);
+
 import literalProof from '../../data/photometry/mayall-photometer-literals.json';
+
 import {opticalProfile,OPTICAL_PROFILE_SHA256} from './opticalTelescope';
-import calibrationContract from '../../data/photometry/ubv-contract.json';
+import calibrationContractSource from '../../data/photometry/ubv-contract.json';
+const calibrationContract=projectResource(calibrationContractSource);
+
 import {isPhotometerTarget,PLEIADES_PHOTOMETER_TARGETS} from './photometerField';
 import {telescopeZeroPoint} from './photons';
-export const KP09_PHOTOMETER_POLICY='OpenCLEA-Pleiades-KPNO09-photometry-v9';
+export const KP09_PHOTOMETER_POLICY='OpenVireo-Pleiades-KPNO09-photometry-v9';
 export const KP09_PHOTOMETER_SHA256='f5c41cbc725f9ebffa6f89814b521c6d4003192d1dc1b7c039227ddf9e536dc7';
-export const MAYALL_PHOTOMETER_POLICY='OpenCLEA-Pleiades-Mayall-photometry-v10';
+export const MAYALL_PHOTOMETER_POLICY='OpenVireo-Pleiades-Mayall-photometry-v10';
 export const MAYALL_PHOTOMETER_SHA256='62f1d9a78c558a1bb4585add18bab6b9e7b32d664bc95e63235a34d7c0b0b0b9';
 export const MAYALL_PHOTOMETER_LITERALS_SHA256='ea5e389d2a01011bc8ab46892734e0c2b6893945e35e0d15ddaa3c3f97875dde';
 export type PhotometerTelescopeIndex=0|1|2;

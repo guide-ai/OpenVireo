@@ -1,7 +1,7 @@
 import {diagnosticError} from '../core/diagnostics';
 import template from '../../data/hubble/galaxy-source.json';
 import {galaxyTelescopeIndex,deactivateGalaxy,galaxyStateDefinition,verifiedGalaxyConfiguration,type GalaxyState} from '../core/galaxyExposure';
-import {parseGalaxySession,serializeGalaxySession} from './galaxySession';
+import {parseGalaxySession,serializeGalaxySession,galaxySessionIdentityText} from './galaxySession';
 import {galaxySpectrumBytes} from '../core/exposureSpectrum';
 import {parseSpectrum,type Sample} from '../core/spectrum';
 import type {ImportedSpectrum} from './spectrumFiles';
@@ -14,7 +14,7 @@ async function digest(text:string){const bytes=await crypto.subtle.digest('SHA-2
 async function build(state:GalaxyState,journalText:string):Promise<GalaxyObservation>{
  const e=state.exposure,GALAXY_TARGET=galaxyStateDefinition(state).target;
  if(!e.draws||!e.counts.some(n=>n>0))throw diagnosticError('error.transferPositive');
- const acquisitionId=await digest(journalText);
+ const acquisitionId=await digest(galaxySessionIdentityText(state));
  const saved=galaxySpectrumBytes(state);
  // Retain the existing headerless curve identity for linked measurements and
  // sessions. Native SSP export uses the same full recovered save profile.

@@ -10,7 +10,7 @@ URL: http://127.0.0.1:5173/#classification. Existing
 - `npm run test:e2e -- --workers=2`: **44 passed in42.9s** (baseline41), against
   the persistent loopback preview. No page errors in the complete new lab flow.
 - New desktop/320px mobile browser screenshots visually inspected and retained
-  as `.local/qa/openclea-classification-{desktop,mobile}.png`. Tablet768px width
+  as [external browser-evidence record]. Tablet768px width
   is checked too; header navigation wraps without horizontal document overflow.
   Source/restore errors are announced and scrolled into view.
 

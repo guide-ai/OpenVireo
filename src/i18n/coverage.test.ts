@@ -28,7 +28,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{
-  const html=readFileSync(path.join(root,'index.html'),'utf8'),served=documentMessages(html);expect(served).toContain(`<title>${en['app.documentTitle']}</title>`);expect(served).toContain(`content="${en['app.description']}"`);expect(served).not.toContain('__OPENCLEA_');expect(html).toContain('<html lang="en">');
+  const html=readFileSync(path.join(root,'index.html'),'utf8'),served=documentMessages(html);expect(served).toContain(`<title>${en['app.documentTitle']}</title>`);expect(served).toContain(`content="${en['app.description']}"`);expect(served).not.toContain('__OPENVIREO_');expect(html).toContain('<html lang="en">');
  });
 });
 // TypeScript checks the required interpolation names; never executed.

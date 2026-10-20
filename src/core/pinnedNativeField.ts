@@ -1,9 +1,19 @@
-import skyProfiles from '../../data/hubble/sky-telescope-provenance.json';
-import mayall from '../../data/hubble/mayall-provenance.json';
-import kpno09 from '../../data/hubble/kpno09-star-provenance.json';
+import{projectResource}from'./projectMetadata';
+import skyProfilesSource from '../../data/hubble/sky-telescope-provenance.json';
+const skyProfiles=projectResource(skyProfilesSource);
+
+import mayallSource from '../../data/hubble/mayall-provenance.json';
+const mayall=projectResource(mayallSource);
+
+import kpno09Source from '../../data/hubble/kpno09-star-provenance.json';
+const kpno09=projectResource(kpno09Source);
+
 import regions from '../../data/hubble/native-regions.json';
+
 import starSnapshot from '../../data/hubble/pinned-star-field.json';
+
 import snapshot from '../../data/hubble/pinned-hubble-field.json';
+
 import {traceCompactGscBandRead} from './compactGscReadOrder';
 import {nativeCatalogAdmission,type NativeCatalogRegion} from './catalogPopulation';
 

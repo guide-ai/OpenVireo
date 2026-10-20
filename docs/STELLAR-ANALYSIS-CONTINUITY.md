@@ -41,4 +41,4 @@ New web bounds are eight archived snapshots,24000 total archive events,1000 meas
 
 Stellar rows are excluded by UI selection, Hubble workspace validation, direct derived analysis and velocity CSV handling. Their manual line alignment is not converted into galaxy distance, cosmological velocity or a Hubble diagram point, even if renamed to a galaxy. Other imported/manual inputs remain operator claims under the prior documented rules.
 
-No original CLEA execution, new dependencies, external review, Windows, public upload/deployment or push was used. The previously pending external reviews were not retried. Screenshots are `.local/qa/openclea-star-analysis-{desktop,mobile}.png`.
+No original CLEA execution, new dependencies, external review, Windows, public upload/deployment or push was used. The previously pending external reviews were not retried. Screenshots are [external browser-evidence record].

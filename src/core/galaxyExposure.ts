@@ -1,12 +1,24 @@
-import mayall from '../../data/hubble/mayall-provenance.json';
+import{projectResource}from'./projectMetadata';
+import mayallSource from '../../data/hubble/mayall-provenance.json';
+const mayall=projectResource(mayallSource);
+
 import {MAYALL_PROOF_SHA256} from './starTelescope';
-import kpno09 from '../../data/hubble/kpno09-galaxy-provenance.json';
+import kpno09Source from '../../data/hubble/kpno09-galaxy-provenance.json';
+const kpno09=projectResource(kpno09Source);
+
 import {galaxyTelescopeIndex,KPNO09_GALAXY_PROOF_SHA256} from './galaxyTelescope';
 export {galaxyTelescopeIndex} from './galaxyTelescope';
-import provenance1 from '../../data/hubble/galaxy-36747-provenance.json';
-import provenance2 from '../../data/hubble/galaxy-54876-provenance.json';
-import provenance from '../../data/hubble/galaxy-exposure-provenance.json';
+import provenance1Source from '../../data/hubble/galaxy-36747-provenance.json';
+const provenance1=projectResource(provenance1Source);
+
+import provenance2Source from '../../data/hubble/galaxy-54876-provenance.json';
+const provenance2=projectResource(provenance2Source);
+
+import provenanceSource from '../../data/hubble/galaxy-exposure-provenance.json';
+const provenance=projectResource(provenanceSource);
+
 import source from '../../data/hubble/galaxy-source.json';
+
 import {buildPinnedGalaxyPopulation,galaxyDomainFor,GALAXY_DOMAIN as PINNED_GALAXY_DOMAIN} from './pinnedGalaxyField';
 import {paintAdaptedGalaxy} from './galaxyScene';
 import {catalogGalaxyMagnitude} from './galaxyCatalogAxes';

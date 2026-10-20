@@ -1,5 +1,12 @@
+import{projectResource}from'./projectMetadata';
 import{it,expect}from'vitest';import{readFileSync}from'node:fs';import{createHash}from'node:crypto';
-import contract from'../../data/photometry/cluster-comparison-contract.json';import refs from'../../data/photometry/cluster-comparison-vectors.json';import captured from'../../data/photometry/pre-cluster-comparison-fixtures.json';
+import contractSource from '../../data/photometry/cluster-comparison-contract.json';
+const contract=projectResource(contractSource);
+
+import refs from '../../data/photometry/cluster-comparison-vectors.json';
+
+import captured from '../../data/photometry/pre-cluster-comparison-fixtures.json';
+
 import{CLUSTER_COMPARISON_SHA256,CLUSTER_DATASETS,comparisonRetryRequest,EMPTY_CLUSTER_COMPARISON,readClusterComparisonWorkspace,selectComparisonDataset,applyComparisonDataset,useComparisonPreset,confirmComparison,draftComparison,comparisonDraft,comparisonNotebook,comparisonFromLegacy,comparisonToLegacy,comparisonCanUseLegacy,comparisonDisplayFit,confirmedComparisonRows}from'./clusterComparison';import{nativeRegionIds,nativeCompactBandOrder}from'./pinnedNativeField';import{mergeLegacyClusterComparison,comparisonHasLegacyScope,legacyScopeFromComparison}from'./clusterComparisonScope';import{readClusterDatabaseWorkspace,EMPTY_CLUSTER_DATABASE}from'./clusterDatabase';
 const p={modulusTicks:950,ebvTicks:3,ageIndex:36,modelIndex:4,offsetTicks:0,extinctionCorrected:true,interpretation:'My own manual M67 trial'};const apply=(w:typeof EMPTY_CLUSTER_COMPARISON,id:'m67'|'hyades')=>applyComparisonDataset(selectComparisonDataset(w,id),id);
 const rows=(file:string)=>JSON.parse(readFileSync(new URL('../../data/photometry/'+file,import.meta.url),'utf8'))as{id:string;ra:number;dec:number;v:number;bMinusV:number}[];

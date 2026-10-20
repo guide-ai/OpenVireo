@@ -11,8 +11,8 @@ active/running, Vite bound to127.0.0.1:5173 with strictPort. Settings unchanged.
 - Final complete Playwright (`npm run test:e2e -- --workers=2`): **47 passed in
   46.2s** (baseline44). Final build/browser run followed the UI-only focus fix.
 - Actual persistent-preview desktop and320px mobile screenshots visually checked:
-  `.local/qa/openclea-classification-continuity-desktop.png` and
-  `.local/qa/openclea-classification-continuity-mobile.png`. No horizontal overflow
+  [external browser-evidence record] and
+  [external browser-evidence record]. No horizontal overflow
   or page errors in the new complete continuity flow; keyboard pair selection
   keeps focus after loading.
 

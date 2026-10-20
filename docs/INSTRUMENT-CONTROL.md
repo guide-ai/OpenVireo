@@ -40,7 +40,7 @@ The pure access predicate is tested against eight tracking/finder/moving combina
 
 ## P02 compatibility
 
-Full17 uses observing policy `OpenCLEA-stopped-observing-workspace-v7`, adding strict `operationalAccess` policy/proof beside the stopped full16 clock/point binding. No cached ready flag or running phase is imported. Older pure writers retain their original versions/bytes; full1–16 remain supported and restore stopped. New app backups use17 once a drive or fixed spectral field is explicitly used; blank fixed-clock-only work can retain15. Raw spectral v1/v2/v3, normalized SSP, archive IDs and measurement formats are unchanged. Existing twelve-archive and event/file bounds remain.
+Full17 uses observing policy `OpenVireo-stopped-observing-workspace-v7`, adding strict `operationalAccess` policy/proof beside the stopped full16 clock/point binding. No cached ready flag or running phase is imported. Older pure writers retain their original versions/bytes; full1–16 remain supported and restore stopped. New app backups use17 once a drive or fixed spectral field is explicitly used; blank fixed-clock-only work can retain15. Raw spectral v1/v2/v3, normalized SSP, archive IDs and measurement formats are unchanged. Existing twelve-archive and event/file bounds remain.
 
 ## Verification
 

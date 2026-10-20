@@ -1,6 +1,6 @@
 # OpenVireo
 
-**Open Virtual Educational Observatory.** A local React/TypeScript/Vite reconstruction of Project CLEA, previously presented as OpenCLEA. Original CLEA/VIREO attribution is retained. This is a bounded reconstruction based on static binary/data evidence, not a complete VIREO port or a claim of original runtime/x87 equivalence.
+**Open Virtual Educational Observatory.** A local React/TypeScript/Vite reconstruction of Project CLEA. Original CLEA/VIREO attribution is retained. This is a bounded reconstruction based on static binary/data evidence, not a complete VIREO port or a claim of original runtime/x87 equivalence.
 
 ## Current local capabilities
 
@@ -38,7 +38,7 @@ Open [the observatory](http://127.0.0.1:5173/#observatory), open the dome, then 
 
 ## Evidence and compatibility
 
-Scientific functions/state remain pure TypeScript, separate from rendering. Existing session identifiers, numerical policies, raw/full format versions, filenames and historical OpenCLEA provenance are intentionally preserved. Visible branding does not migrate or relabel scientific work. Manual measurements, photometry transcriptions, interpretations and Hubble inputs are never filled from catalog answers.
+Scientific functions/state remain pure TypeScript, separate from rendering. Exports use OpenVireo identifiers. Existing local JSON is migrated at its producer metadata before the strict schema, proof and replay checks. Format versions, acquisition identities, measurements and scientific provenance are preserved; numeric values and student text are not renamed. Manual measurements, photometry transcriptions, interpretations and Hubble inputs are never filled from catalog answers.
 
 Original downloads/executables and byte-bearing analysis stay outside this source tree. The old ProgrammedSlew dossier was obtained through REA's MCP using Ghidra; recent closing captures used GNU objdump and Python operand/hash/reference calculations. Unit/browser checks exercise the port and analytic references, not an executed CLEA oracle. No original program, Windows or emulator was run for these increments. Current external-review evidence and resolution status are recorded in [A06 validation](docs/TELESCOPE-MOTION-VALIDATION.md#read-only-review-and-current-resolution-state).
 

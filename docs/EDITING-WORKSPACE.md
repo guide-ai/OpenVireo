@@ -16,7 +16,7 @@ Existing Save session/complete-investigation buttons use the same full10 snapsho
 
 ## File and state policy
 
-Full10 requires full9's admitted observing/edition context plus `editingPolicy: OpenCLEA-editing-workspace-v1` and a strict `editing` record. Every raw text draft is bounded to80 characters, including invalid/incomplete/Unicode text. Pending photometer reading IDs must reference confirmed object notebook entries in the specified filter and current target; they are never silently changed to a different reading. A velocity selection must refer to an eligible restored row; catalog-star acquisitions remain excluded. An investigation with no eligible rows admits only an empty, unchecked velocity draft. Extra fields and cached/translated feedback or accepted flags are rejected.
+Full10 requires full9's admitted observing/edition context plus `editingPolicy: OpenVireo-editing-workspace-v1` and a strict `editing` record. Every raw text draft is bounded to80 characters, including invalid/incomplete/Unicode text. Pending photometer reading IDs must reference confirmed object notebook entries in the specified filter and current target; they are never silently changed to a different reading. A velocity selection must refer to an eligible restored row; catalog-star acquisitions remain excluded. An investigation with no eligible rows admits only an empty, unchecked velocity draft. Extra fields and cached/translated feedback or accepted flags are rejected.
 
 The existing velocity formula/check is called after restoration when the saved `checked` flag is true; neither a cached grade nor a catalog answer is trusted. Invalid, zero-reference and guarded-boundary outcomes retain the existing behavior. Pure numerical kernels and scientific CSV/journal formats are unchanged. The photometer's confirmed entries and calculated colors remain in its proof-bound raw journal; pending selections and seed text are a separate editing scope.
 
@@ -28,7 +28,7 @@ This is a new web persistence contract. It introduces no astronomy model, calibr
 
 ## Manual cluster draft follow-up
 
-Pleiades `clusterModulusText` now registers with the same full-investigation editing workspace. Its optional80-character string preserves unapplied,blank and invalid learner text independently of the confirmed raw6 fit. A present field selects strict `OpenCLEA-editing-workspace-v2`;absent fields preserve exact oldv1 shape/bytes. Full scope/outer1–18 versions remain unchanged. Raw photometer restore and an explicit new photometer session reset this separate draft;full restore,release,callback/target changes and navigation retain it. See [Pleiades analysis](PLEIADES-ANALYSIS.md).
+Pleiades `clusterModulusText` now registers with the same full-investigation editing workspace. Its optional80-character string preserves unapplied,blank and invalid learner text independently of the confirmed raw6 fit. A present field selects strict `OpenVireo-editing-workspace-v2`;absent fields preserve exact oldv1 shape/bytes. Full scope/outer1–18 versions remain unchanged. Raw photometer restore and an explicit new photometer session reset this separate draft;full restore,release,callback/target changes and navigation retain it. See [Pleiades analysis](PLEIADES-ANALYSIS.md).
 
 ## Native model draft registration
 

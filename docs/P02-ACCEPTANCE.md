@@ -34,7 +34,7 @@ These are dependencies to integrate/verify as their owning packages are delivere
 
 ## Items that are not newly imposed acceptance gates
 
-Automatic browser persistence, IndexedDB/PWA, accounts/cloud services, scroll position, window/dialog placement, translated feedback strings and reopening an unconfirmed review are not required by the original P02 row. The original architecture explicitly defers IndexedDB/Workers/PWA until a concrete need. Native options/result writers belong to D07/D08; the new OpenCLEA investigation JSON does not claim native file compatibility. Educator/native scientific acceptance remains with the relevant scientific/Q workstreams. None of these items is added to inflate P02's denominator or to replace an original requirement with a narrower one.
+Automatic browser persistence, IndexedDB/PWA, accounts/cloud services, scroll position, window/dialog placement, translated feedback strings and reopening an unconfirmed review are not required by the original P02 row. The original architecture explicitly defers IndexedDB/Workers/PWA until a concrete need. Native options/result writers belong to D07/D08; the new OpenVireo investigation JSON does not claim native file compatibility. Educator/native scientific acceptance remains with the relevant scientific/Q workstreams. None of these items is added to inflate P02's denominator or to replace an original requirement with a narrower one.
 
 [Feature and manual steps](EDITING-WORKSPACE.md) · [Verification evidence](EDITING-WORKSPACE-VALIDATION.md).
 

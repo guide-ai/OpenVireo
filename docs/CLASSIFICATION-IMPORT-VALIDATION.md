@@ -90,5 +90,5 @@ witness: `data/classification/import-provenance.json` and `printed-grid.json`.
 External reproduction: `/home/dobleuber/Documents/Codex/2026-10-18/task-3/classification-import-recovery/`.
 Backups, before/after hashes, unchanged-source/source-validation receipts and
 reviewable patch: `/home/dobleuber/Documents/Codex/2026-10-18/task-3/classification-import-integration/`.
-Browser evidence: `.local/qa/openclea-classification-import-desktop.png` and
-`.local/qa/openclea-classification-import-mobile.png`.
+Browser evidence: [external browser-evidence record] and
+[external browser-evidence record].

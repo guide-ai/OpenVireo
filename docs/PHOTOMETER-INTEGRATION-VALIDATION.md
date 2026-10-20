@@ -8,7 +8,7 @@
 |---|---|
 | `npm run build` (TypeScript project checks + Vite) | Passed |
 | `npm test` |728 tests /80 files passed |
-| `OPENCLEA_TEST_PORT=5175 npx playwright test --workers=4` |128 passed |
+| `OPENVIREO_TEST_PORT=5175 npx playwright test --workers=4` |128 passed |
 | New series + review regression flows on existing5173 preview |7 passed |
 | Desktop1440px / mobile320px visual inspection |Completed series, partial Stop and editable note-limit dialog inspected; no overflow |
 | Existing scientific data/primitives |101 data files and source/UBV/Poisson/reduction primitives retain baseline SHA-256 |

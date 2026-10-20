@@ -26,7 +26,7 @@ test('pointed Coma1 reaches source preparation with explicit continuation and pr
   // Chart scaling changes with its maximum, so compare relative intensities
   // through path shape only where the same fixed SP maximum remains dominant.
   expect(changed[0]).not.toBe(original[0]);expect(changed[599]).toBe(original[599]);
-  await page.screenshot({path:'.local/qa/openclea-spectrometer-desktop.png',fullPage:true});
+  await page.screenshot({path:'.local/qa/openvireo-spectrometer-desktop.png',fullPage:true});
   await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeFocused();
   await expect(page.getByLabel('Target',{exact:true})).toHaveValue('NGC4874');
@@ -48,7 +48,7 @@ test('source integrity failure leaves no curve or acquired counts; mobile naviga
   await expect(page.getByTestId('prepared-source-curve')).toHaveCount(0);
   await expect(page.getByRole('button',{name:'Acquisition unavailable',exact:true})).toBeDisabled();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-  await page.screenshot({path:'.local/qa/openclea-spectrometer-mobile.png',fullPage:true});
+  await page.screenshot({path:'.local/qa/openvireo-spectrometer-mobile.png',fullPage:true});
 });
 
 test('the matched source remains readable on a narrow screen and consumes no preparation randomness',async({page})=>{
@@ -68,5 +68,5 @@ test('the matched source remains readable on a narrow screen and consumes no pre
   await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();
   await page.getByRole('button',{name:'Open spectrometer ↗',exact:true}).click();
   await expect(page.getByTestId('source-file')).toHaveText('NGC3034.SP');expect(requests).toBe(1);
-  await page.screenshot({path:'.local/qa/openclea-spectrometer-mobile-ready.png',fullPage:true});
+  await page.screenshot({path:'.local/qa/openvireo-spectrometer-mobile-ready.png',fullPage:true});
 });

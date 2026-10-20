@@ -31,7 +31,7 @@ Production arithmetic is JavaScript Number, including projection of raw Extended
 
 ## Persistence and compatibility
 
-Full15 uses observing policy `OpenCLEA-stopped-observing-workspace-v5` and a strict `siteClock` packet containing applied UT, bounded draft, policy and proof SHA-256. It requires the full existing telescope bank context. Derived readings are recomputed from applied UT and selected site; imported cached sidereal/Julian outputs or arbitrary site overrides are not admitted. Old writers without clock state retain their prior versions/bytes. Raw acquisition v1/v2/v3, SSP, manual rows, twelve-archive bound and replay/event/file limits remain unchanged. Represented instruments still restore stopped/deactivated. A fixed worksheet has no hidden timer to restart.
+Full15 uses observing policy `OpenVireo-stopped-observing-workspace-v5` and a strict `siteClock` packet containing applied UT, bounded draft, policy and proof SHA-256. It requires the full existing telescope bank context. Derived readings are recomputed from applied UT and selected site; imported cached sidereal/Julian outputs or arbitrary site overrides are not admitted. Old writers without clock state retain their prior versions/bytes. Raw acquisition v1/v2/v3, SSP, manual rows, twelve-archive bound and replay/event/file limits remain unchanged. Represented instruments still restore stopped/deactivated. A fixed worksheet has no hidden timer to restart.
 
 ## Verification and remaining limits
 

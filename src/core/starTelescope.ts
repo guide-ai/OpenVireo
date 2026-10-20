@@ -1,7 +1,14 @@
-import mayall from '../../data/hubble/mayall-provenance.json';
+import{projectResource}from'./projectMetadata';
+import mayallSource from '../../data/hubble/mayall-provenance.json';
+const mayall=projectResource(mayallSource);
+
 export const MAYALL_PROOF_SHA256='6a1e6fd5f8b876967adfc0f549e0e95036ceaf9f3a1f51aa1d02f14842ab118b';
-import kpno09 from '../../data/hubble/kpno09-star-provenance.json';
-import provenance from '../../data/hubble/star-exposure-provenance.json';
+import kpno09Source from '../../data/hubble/kpno09-star-provenance.json';
+const kpno09=projectResource(kpno09Source);
+
+import provenanceSource from '../../data/hubble/star-exposure-provenance.json';
+const provenance=projectResource(provenanceSource);
+
 import {JournalError,type JournalState} from './exposureJournal';
 const STAR_POLICY_ID=provenance.policyId;
 export const KPNO09_STAR_POLICY=kpno09.policyId,KPNO09_STAR_PROOF_SHA256='41d12e419961090c8685996203ab48576a121b3c720b7ccdb3da6e23a889bbc6';

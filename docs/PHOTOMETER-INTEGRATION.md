@@ -13,7 +13,7 @@ The operational photometer at **http://127.0.0.1:5173/#photometer** supports the
 5. Start10s×2 sky and Stop after positive progress. No completed reading is made. Start again: progress resets but the seed continues. Saving **Save investigation** during that series synchronously stops/releases it before asynchronous digests, retaining committed partial counts alongside spectrum/Hubble/classification/drafts. Reload/restore: partial work remains stopped and no callback is added.
 6. Check errors: hide the page, navigate, or cause a callback gap>300ms: pending callbacks add no photons. Invalid proof, extra cached counts, oversized work or stale asynchronous restores preserve confirmed work. Cancel an entry/read/file picker; no manual row is created or late file substituted. The controls and progress work at320px and with keyboard selection.
 
-These numbers describe explicitly seeded OpenCLEA simulations, not original CLEA observations. Wall-clock completion can take longer than nominal integrated time.
+These numbers describe explicitly seeded OpenVireo simulations, not original CLEA observations. Wall-clock completion can take longer than nominal integrated time.
 
 ## Native evidence and the browser boundary
 
@@ -25,7 +25,7 @@ These numbers describe explicitly seeded OpenCLEA simulations, not original CLEA
 -0x501911 resets period counts/elapsed, retaining aggregate/base counts and RNG before restarting the timer. Final0x501687–0x5016ba rates divide aggregate and base sums by chosen duration×repeats. Sky subtraction occurs in reduction using that actual sky reading's own duration/repeats. Display SNR is native sqrt(total photons), not an invented error estimate.
 - Stop0x500b58 disables the timer/unlocks without reducing or recording.
 
-Native repeated Extended addition/threshold and VCL queue callback counts lack an execution witness. OpenCLEA uses **integer nominal100ms targets**, one draw pair per admitted executed browser callback, no catch-up, and Stop before the next draw when the gap exceeds300ms or time reverses. This is an explicit browser adaptation. Number/Math Poisson, lgamma and quadrature are not proven equivalent to x87/global original RNG/modal reentry. Partial replay is a web journal contract, not original file compatibility.
+Native repeated Extended addition/threshold and VCL queue callback counts lack an execution witness. OpenVireo uses **integer nominal100ms targets**, one draw pair per admitted executed browser callback, no catch-up, and Stop before the next draw when the gap exceeds300ms or time reverses. This is an explicit browser adaptation. Number/Math Poisson, lgamma and quadrature are not proven equivalent to x87/global original RNG/modal reentry. Partial replay is a web journal contract, not original file compatibility.
 
 ## Independent numerical checks and the long-series discrepancy
 

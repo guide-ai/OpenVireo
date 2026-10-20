@@ -106,7 +106,7 @@ export default function SpectrumInstrument({onPrepareMotion,onRestoreMotion,onPr
     const anchor=document.createElement('a');anchor.href=url;anchor.download=name;anchor.click();
     setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
-  function exportRows() {download(measurementCsv(rows),'openclea-measurements.csv','text/csv;charset=utf-8');}
+  function exportRows() {download(measurementCsv(rows),'openvireo-measurements.csv','text/csv;charset=utf-8');}
   function exportObservation() {
     if(observation)download(observation.sourceText,observation.name,'text/plain;charset=utf-8');
   }
@@ -129,7 +129,7 @@ export default function SpectrumInstrument({onPrepareMotion,onRestoreMotion,onPr
       const clusterDatabase=onPrepareClusterDatabase?.(),clusterComparison=onPrepareClusterComparison?.(),clusterSelection=onPrepareClusterSelection?.();
       const saved=await serializeAnalysisSession({...(motion?{motion}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...(classificationWorkspaceUsed(classification)?{classification}:{}),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
-      download(saved,'openclea-session.json','application/json;charset=utf-8');setNotice(t('session.saved'));return true;
+      download(saved,'openvireo-session.json','application/json;charset=utf-8');setNotice(t('session.saved'));return true;
     } catch {if(ticket===generation.current)setError(t('session.exportError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }

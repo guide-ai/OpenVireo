@@ -23,7 +23,7 @@ test('import, recovered control transitions, cancelled record and CSV export', a
   await page.getByRole('button', { name: /Record measurement/ }).click(); await page.getByRole('button', { name: 'Save measurement', exact: true }).click();
   await expect(page.getByRole('cell', { name: 'Validation vector', exact: true })).toBeVisible();
   const downloadEvent = page.waitForEvent('download'); await page.getByRole('button', { name: /Export CSV/ }).click();
-  const download = await downloadEvent; expect(download.suggestedFilename()).toBe('openclea-measurements.csv');
+  const download = await downloadEvent; expect(download.suggestedFilename()).toBe('openvireo-measurements.csv');
   const stream = await download.createReadStream(); const parts: Buffer[] = []; for await (const part of stream!) parts.push(part);
   const csv = Buffer.concat(parts).toString().split('\r\n');
   expect(csv[0]).toBe('schema,id,object,file,sha256,z_number,z_float32,z_float32_hex,analyst_step,base,position,factor,reference,numerical_policy');

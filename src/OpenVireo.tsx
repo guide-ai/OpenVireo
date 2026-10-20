@@ -81,7 +81,7 @@ function SkyField({center,mode,active,selected,onSelect}:{center:Pointing;mode:F
     <div className="sky-caption" aria-live="polite">{error?<span role="alert">{error}</span>:loading?t('sky.loading'):t('sky.count',{count:formatNumber(points.length)})}<span>{t('sky.coverage')}</span></div></div>;
 }
 
-export default function OpenCLEA(){
+export default function OpenVireo(){
   const route=()=>location.hash==='#cluster-database'?'cluster-database' as const:location.hash==='#photometer'?'photometer' as const:location.hash==='#classification'?'classification' as const:location.hash==='#galaxy-exposure'?'galaxy-exposure' as const:location.hash==='#star-exposure'?'star-exposure' as const:location.hash==='#sky-exposure'?'sky-exposure' as const:location.hash==='#spectrometer'?'spectrometer' as const:['#spectrum','#measurement-log'].includes(location.hash)?'spectrum' as const:'observatory' as const;
   const [view,setView]=useState<Route>(route),[open,setOpen]=useState(false),[mode,setMode]=useState<FieldMode>('finder'),[hasPointed,setHasPointed]=useState(false);
   const [selected,setSelected]=useState<SkyObject>(initial),[pointing,setPointing]=useState<Pointing>(initial);

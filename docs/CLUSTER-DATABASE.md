@@ -37,7 +37,7 @@ E05 advances from contract-gated to **partial** for the M67 database analysis ro
 
 ## Authorized review follow-up
 
-The initially denied Claude review completed after the explicit human authorization for OpenCLEA code/decoded scientific data. Effective Opus5.5 andhigh configured effort/native preset were verified. Raw report andseparate independent resolutions remain outside source in `claude-cluster-datasets-review/`;the corrections were independently tested after the single completed review,not externally signed off a second time.
+The initially denied Claude review completed after the explicit human authorization for OpenVireo code/decoded scientific data. Effective Opus5.5 andhigh configured effort/native preset were verified. Raw report andseparate independent resolutions remain outside source in `claude-cluster-datasets-review/`;the corrections were independently tested after the single completed review,not externally signed off a second time.
 
 A manual↔catalog reddening provenance change can now be confirmed even when every numeric control stays the same. A fresh browser regression failed against the477-file pre-fix preview andpasses with the fix. Live select/load actions use pure core transitions;retry cannot apply an empty pending choice. The chooser is explicitly an unapplied selection andcan be blank while already loaded M67 data stays present,as existing v19 files allow. A cancelled automatic reload has an explicit retry affordance. A live select-and-clear with no data returns to the previous1–18scope;an explicitly restored old v19 workspace retains its representation andbytes.
 

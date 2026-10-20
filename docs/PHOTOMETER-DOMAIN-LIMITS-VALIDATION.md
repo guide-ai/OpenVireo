@@ -2,7 +2,7 @@
 
 ## Delivered boundary
 
-Six Mayall entries remain unavailable. Three exceed OpenCLEA’s per-draw mean protection; three fit that protection but fail the port’s all-settings expected-total admission. All six have a checked longest-series expectation above the original photometer’s actual-count ceiling. The native counter ceiling is real; an unconditional target blacklist or 1e6 mean cutoff is not established by the recovered native paths. No shorter route, sampler extension, calibration, target admission or automatic pupil measurement is added.
+Six Mayall entries remain unavailable. Three exceed OpenVireo’s per-draw mean protection; three fit that protection but fail the port’s all-settings expected-total admission. All six have a checked longest-series expectation above the original photometer’s actual-count ceiling. The native counter ceiling is real; an unconditional target blacklist or 1e6 mean cutoff is not established by the recovered native paths. No shorter route, sampler extension, calibration, target admission or automatic pupil measurement is added.
 
 The domains remain 16/14/10 targets at 0.4m/0.9m/Mayall. Source+sky remains addition in the callback. Native measured-sky subtraction remains in reduction. Raw photometer owners1–10 and full investigation8–21 keep their existing schemas, proofs, event semantics and compatibility. The exercise list establishes identity/pointing associations, not physical cluster membership, spectral class or the identity of stars selected in another field.
 
@@ -37,7 +37,7 @@ Before delivery, compatibility-preservation-final.json verified all 185 prior co
 ## Manual steps
 
 1. Open `http://127.0.0.1:5173/`. Observatory → select **Mayall** → **Use this telescope** → **Pleiades photometry**. Read **Measure a listed star** and the list/membership statement.
-2. Expand **Six Mayall exclusions in the current OpenCLEA profile**. Compare individual draw maximum, source+sky callback mean, filter/aperture configuration and expected 100s×5 total. Native actual counts and port admission are explained separately.
+2. Expand **Six Mayall exclusions in the current OpenVireo profile**. Compare individual draw maximum, source+sky callback mean, filter/aperture configuration and expected 100s×5 total. Native actual counts and port admission are explained separately.
 3. Activate, inspect the six disabled options and select 0.1s. The exclusions remain. On a narrow screen, focus the table region and press Right Arrow to scroll locally.
 4. Acquire V/B sky and Object readings for an admitted target. Notebook fields start blank; enter your own values and form B−V explicitly. Inspect both diagram disclaimers. Save, reimport and restore the investigation; pupil values and telescope origins remain.
 5. Retain 0.9m readings, then select Mayall in Observatory and reopen photometry before activating. The panel describes selected Mayall while the retained notebook keeps 0.9m and exports identical raw bytes. Selecting another Observatory star or importing a spectrum cannot relabel it as a member of this exercise.

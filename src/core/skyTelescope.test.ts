@@ -1,4 +1,10 @@
-import {it,expect} from 'vitest';import {readFileSync} from 'node:fs';import {createHash} from 'node:crypto';import proof from '../../data/hubble/sky-telescope-provenance.json';import vectors from '../../data/hubble/sky-telescope-vectors.json';import {skyProfile,skyTelescopeIndex,SKY_TELESCOPE_PROOF_SHA256} from './skyTelescope';import {verifiedSkyConfiguration,createSkyExposure,activateSky,startSky,tickSky,pauseSky,resetSky,skyCountsCsv} from './skyExposure';import {parseSkySession,serializeSkySession} from '../io/skySession';
+import{projectResource}from'./projectMetadata';
+import {it,expect} from 'vitest';import {readFileSync} from 'node:fs';import {createHash} from 'node:crypto';import proofSource from '../../data/hubble/sky-telescope-provenance.json';
+const proof=projectResource(proofSource);
+
+import vectors from '../../data/hubble/sky-telescope-vectors.json';
+
+import {skyProfile,skyTelescopeIndex,SKY_TELESCOPE_PROOF_SHA256} from './skyTelescope';import {verifiedSkyConfiguration,createSkyExposure,activateSky,startSky,tickSky,pauseSky,resetSky,skyCountsCsv} from './skyExposure';import {parseSkySession,serializeSkySession} from '../io/skySession';
 const sha=(p:string)=>createHash('sha256').update(readFileSync(new URL(p,import.meta.url))).digest('hex');
 it('pins original calibration/selection/field proof and independent complete photon trajectories',()=>{expect(sha('../../data/hubble/sky-telescope-provenance.json')).toBe(SKY_TELESCOPE_PROOF_SHA256);expect(sha('../../data/hubble/sky-telescope-vectors.json')).toBe(proof.vectorsSHA256);expect(proof.fieldProof.everyStellarAngularAdmissionZero).toBe(true);expect(proof.fieldProof.stars).toBe(132);});
 for(const index of [0,1,2]as const)it(`proves zero source for actual complete native field/profile${index} and retains native zero point`,()=>{const c=verifiedSkyConfiguration(index);expect(c.field.domain.telescopeRecord).toBe(index);expect(c.field.stars).toHaveLength(132);expect(c.selectedId).toBe(proof.fieldProof.nearestId);expect(Math.abs(c.skyMean-skyProfile(index).skyMeanNumber)/skyProfile(index).skyMeanNumber).toBeLessThan(4*Number.EPSILON);expect(skyProfile(index).zeroPoint).toBe([4,6,9][index]);});

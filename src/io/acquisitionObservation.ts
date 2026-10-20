@@ -1,3 +1,4 @@
+import{projectMarker}from'../core/projectMetadata';
 import type {StarObservation} from './starObservation';
 import type {GalaxyObservation} from './galaxyObservation';
 export type AcquisitionObservation=StarObservation|GalaxyObservation;
@@ -5,7 +6,7 @@ export const acquisitionJournalText=(a:AcquisitionObservation)=>a.kind==='catalo
 export const acquisitionObjectId=(a:AcquisitionObservation)=>a.kind==='catalog-star-acquisition'?'N0000.DAT@14428':a.targetId;
 export const acquisitionReference=(a:AcquisitionObservation)=>a.kind==='catalog-star-acquisition'?'balmer' as const:'galaxy' as const;
 export async function restoreAcquisitionObservation(id:unknown,journal:unknown):Promise<AcquisitionObservation>{
- if(journal&&typeof journal==='object'&&(journal as {format:unknown}).format==='OpenCLEA catalog galaxy exposure')return (await import('./galaxyObservation')).restoreGalaxyObservation(id,journal);
+ if(journal&&typeof journal==='object'&&projectMarker((journal as {format:unknown}).format)==='OpenVireo catalog galaxy exposure')return (await import('./galaxyObservation')).restoreGalaxyObservation(id,journal);
  return (await import('./starObservation')).restoreStarObservation(id,journal);
 }
 

@@ -1,10 +1,16 @@
+import{projectResource}from'./projectMetadata';
 import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import proof from '../../data/hubble/kpno09-galaxy-provenance.json';
+import proofSource from '../../data/hubble/kpno09-galaxy-provenance.json';
+const proof=projectResource(proofSource);
+
 import v1 from '../../data/hubble/kpno09-galaxy-36747-vectors.json';
+
 import v2 from '../../data/hubble/kpno09-galaxy-36773-vectors.json';
+
 import v3 from '../../data/hubble/kpno09-galaxy-54876-vectors.json';
+
 import {KPNO09_GALAXY_PROOF_SHA256,galaxyTelescopeIndex} from './galaxyTelescope';
 import {createGalaxyExposure,verifiedGalaxyConfiguration,activateGalaxy,startGalaxy,tickGalaxy,deactivateGalaxy,galaxyCountsCsv} from './galaxyExposure';
 import {parseGalaxySession,serializeGalaxySession} from '../io/galaxySession';

@@ -2,10 +2,10 @@ import {readNativeClusterDraft,type NativeClusterDraft} from './nativeCluster';
 import type {Measurement} from './spectrum';
 import type {PhotometerState} from './photometer';
 import {checkHubbleVelocity,HubbleVelocityError} from './hubbleVelocity';
-/** OpenCLEA editing state; never an observation, original options file or grade. */
-export const EDITING_POLICY='OpenCLEA-editing-workspace-v1';
-export const EDITING_NATIVE_CLUSTER_POLICY='OpenCLEA-editing-workspace-v3';
-export const EDITING_ANALYSIS_POLICY='OpenCLEA-editing-workspace-v2';
+/** OpenVireo editing state; never an observation, original options file or grade. */
+export const EDITING_POLICY='OpenVireo-editing-workspace-v1';
+export const EDITING_NATIVE_CLUSTER_POLICY='OpenVireo-editing-workspace-v3';
+export const EDITING_ANALYSIS_POLICY='OpenVireo-editing-workspace-v2';
 export const editingWorkspacePolicy=(w:EditingWorkspace)=>Object.hasOwn(w.photometry,'nativeClusterDraft')?EDITING_NATIVE_CLUSTER_POLICY:Object.hasOwn(w.photometry,'clusterModulusText')?EDITING_ANALYSIS_POLICY:EDITING_POLICY;
 export type VelocityDraft=Readonly<{measurementId:number|null;answerText:string;checked:boolean}>;
 export type PhotometryDraft=Readonly<{seedText:string;bReadingId:number|null;vReadingId:number|null;clusterModulusText?:string;nativeClusterDraft?:NativeClusterDraft}>;

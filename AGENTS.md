@@ -1,4 +1,4 @@
-# OpenCLEA
+# OpenVireo
 
 This is a local migration of CLEA based on recovered behavior, not a new astronomy model. Use TypeScript, React and Vite. Keep numerical functions and state transitions in pure TypeScript, separate from React/rendering. AGENTS.md is the only general agent guide; do not add CLAUDE.md or duplicate guides.
 

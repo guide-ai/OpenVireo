@@ -1,8 +1,8 @@
-# OpenCLEA observatory increment
+# OpenVireo observatory increment
 
 Historical pre-implementation proposal. Current implemented contracts and limitations are in RECOVERY.md; full scope and estimation assumptions are in IMPLEMENTATION-PLAN.md.
 
-OpenCLEA must open with the observatory experience. Spectral analysis is one instrument in that workflow, not the product's starting point. All product text and project documentation are English. Historical CLEA attribution and original labels in preserved data remain intact.
+OpenVireo must open with the observatory experience. Spectral analysis is one instrument in that workflow, not the product's starting point. All product text and project documentation are English. Historical CLEA attribution and original labels in preserved data remain intact.
 
 ## Original components identified
 
@@ -17,7 +17,7 @@ The original VIREO manual, pages 5–7, describes north up/east left, a 2.5-degr
 - Show original galaxy images as identified archival resources, without suggesting that clicking a button simulated a new exposure. Use original image placement/size metadata only where its meaning can be established. Do not invent stellar fields, spectra, random noise, redshifts, distances, exposures or atmospheric effects.
 - Connect a selected target to its corresponding original library spectrum where that association is explicit. Label library spectra as original reference data, never newly acquired observations. The existing imported-spectrum analyzer remains available. Measurement recording must distinguish library/reference data from user imports and may remain unavailable for library references.
 - Leave unimplemented instruments, acquisition/noise, actual tracking/time/visibility and unproven coordinate transformations explicitly pending. Do not draw controls that silently imply recovered behavior.
-- Name product, title, package metadata and UI OpenCLEA; translate errors, help, test expectations and human-authored project documentation. Keep original data intact.
+- Name product, title, package metadata and UI OpenVireo; translate errors, help, test expectations and human-authored project documentation. Keep original data intact.
 
 ## Validation and limits
 

@@ -1,7 +1,7 @@
 import grid from '../../data/classification/printed-grid.json';
 import type {Sample} from './spectrum';
 import type {LegacySpectrumHeader} from './legacySpectrumFile';
-export const CLASSIFICATION_IMPORT_POLICY='OpenCLEA-visual-import-v1';
+export const CLASSIFICATION_IMPORT_POLICY='OpenVireo-visual-import-v1';
 export const MAX_CLASSIFICATION_IMPORTS=4,MAX_CLASSIFICATION_IMPORT_BYTES=4*1024*1024;
 export type ClassificationImport=Readonly<{kind:'imported-spectrum';name:string;sha256:string;sourceText:string;samples:readonly Sample[];legacyHeader?:LegacySpectrumHeader}>;
 export function classificationCoverage(samples:readonly Sample[]):boolean{

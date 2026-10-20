@@ -1,6 +1,6 @@
 import {diagnosticError} from '../core/diagnostics';
 import {deactivateStar,verifiedStarConfiguration,starTelescopeIndex,type StarState} from '../core/starExposure';
-import {parseStarSession,serializeStarSession} from './starSession';
+import {parseStarSession,serializeStarSession,starSessionIdentityText} from './starSession';
 import {starSpectrumBytes} from '../core/exposureSpectrum';
 import {parseSpectrum,type Sample} from '../core/spectrum';
 import type {ImportedSpectrum} from './spectrumFiles';
@@ -13,7 +13,7 @@ async function digest(text:string){const bytes=await crypto.subtle.digest('SHA-2
 async function build(state:StarState,starSessionText:string):Promise<StarObservation>{
  const e=state.exposure;
  if(!e.draws||!e.counts.some(n=>n>0))throw diagnosticError('error.transferPositive');
- const acquisitionId=await digest(starSessionText);
+ const acquisitionId=await digest(starSessionIdentityText(state));
  const saved=starSpectrumBytes(state);
  // Retain the existing headerless curve identity for linked measurements and
  // sessions. Native SSP export uses the same full recovered save profile.

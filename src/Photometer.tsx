@@ -18,7 +18,7 @@ import {PHOTOMETER_FILTERS,type PhotometerFilter} from './core/photometerUbvFiel
 import {formatNumber,t} from './i18n';
 import './photometer.css';
 const num=(value:number)=>formatNumber(value,{maximumFractionDigits:9,useGrouping:false});
-function download(text:string){const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='openclea-pleiades-photometer.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function download(text:string){const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='openvireo-pleiades-photometer.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 export type PhotometerController=Readonly<{snapshot:()=>PhotometerState|null;replace:(s:PhotometerState|null)=>void}>;
 export default function Photometer({active,initialState=null,controllerRef,onStateChange,investigationBusy=false,drafts,onDraftsChange,configurationAvailable=true,telescopeIndex=0}:{telescopeIndex?:OpticalIndex;configurationAvailable?:boolean;drafts:PhotometryDraft;onDraftsChange:(d:PhotometryDraft)=>void;active:boolean;initialState?:PhotometerState|null;controllerRef?:Ref<PhotometerController>;onStateChange?:(s:PhotometerState)=>void;investigationBusy?:boolean}){
  const [state,setState]=useState<PhotometerState|null>(initialState),[notice,setNotice]=useState(''),[error,setError]=useState(''),[localBusy,setBusy]=useState(false);

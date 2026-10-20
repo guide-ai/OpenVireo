@@ -1,6 +1,9 @@
+import{projectResource}from'./projectMetadata';
 import type {PhotometerTelescopeIndex} from './photometerTelescope';
 import {photometricBMinusV} from './photometryReduction';
-import contract from '../../data/photometry/pleiades-manual-analysis.json';
+import contractSource from '../../data/photometry/pleiades-manual-analysis.json';
+const contract=projectResource(contractSource);
+
 import type {PhotometerState} from './photometer';
 import {PLEIADES_PHOTOMETER_TARGETS} from './photometerField';
 /** Printed2008 procedure,not VIREO's executable ZAMS/isochrone implementation.

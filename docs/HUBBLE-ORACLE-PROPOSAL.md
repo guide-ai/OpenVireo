@@ -8,7 +8,7 @@ See[DETECTOR-STATIC-CONTRACTS.md](DETECTOR-STATIC-CONTRACTS.md). Public GDI docs
 
 ## Current status —18 October2026
 
-The user requested stopping Windows installation, recoverably removing the VMs and continuing independent static recovery without overnight confirmation requests. Both VM services, TPM/supervisor processes and the loopback console are stopped. Seven dedicated state/config/log/media directories, including the exclusive Windows ISO, are in the normal desktop Trash bundle `OpenCLEA-Windows-VM-20261018T042500Z`, with a restore manifest. Research evidence, original CLEA data, OpenCLEA and general tools remain. Receipt: research `evidence/windows-vm-recoverable-cleanup.json`. The historical experiment below is preserved as research, not an active authorization or overnight prerequisite. Further static detector/compositor recovery can continue. A future original-runtime reference requires a separate decision.
+The user requested stopping Windows installation, recoverably removing the VMs and continuing independent static recovery without overnight confirmation requests. Both VM services, TPM/supervisor processes and the loopback console are stopped. Seven dedicated state/config/log/media directories, including the exclusive Windows ISO, are in the normal desktop Trash bundle `OpenVireo-Windows-VM-20261018T042500Z`, with a restore manifest. Research evidence, original CLEA data, OpenVireo and general tools remain. Receipt: research `evidence/windows-vm-recoverable-cleanup.json`. The historical experiment below is preserved as research, not an active authorization or overnight prerequisite. Further static detector/compositor recovery can continue. A future original-runtime reference requires a separate decision.
 
 ## Exact dependency
 

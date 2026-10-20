@@ -17,7 +17,7 @@ Delivered: clock/base-count and filter/telescope/sky context recovery, a correct
 
 SHA checks cover200 existing source/data/test/config/dependency files:195 unchanged; the five changed are the two photometryReduction files, reduction provenance/vectors and planning status. All existing session/IO/UI and other scientific implementation files, all prior E2E files and dependencies remain unchanged. No backend, Worker, IndexedDB or installation was added.
 
-Current-run desktop/mobile classification screenshots were visually inspected for retained curves, controls, source identities, error messages and responsive layout. Retained copies:`.local/qa/openclea-photometer-context-regression-desktop.png`/`openclea-photometer-context-regression-mobile.png`. The persistent `clea-web-preview.service` is active and listens only on127.0.0.1:5173. These are regression screenshots; they do not demonstrate a photometer UI.
+Current-run desktop/mobile classification screenshots were visually inspected for retained curves, controls, source identities, error messages and responsive layout. Retained copies:[external browser-evidence record]/[external browser-evidence record]. The persistent `clea-web-preview.service` is active and listens only on127.0.0.1:5173. These are regression screenshots; they do not demonstrate a photometer UI.
 
 ## Remaining acceptance gates
 

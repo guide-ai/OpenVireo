@@ -1,6 +1,9 @@
+import{projectResource}from'./projectMetadata';
 import {photometerTelescopeTargets,type PhotometerTelescopeIndex} from './photometerTelescope';
 import {PHOTOMETER_APERTURES} from './photometerAperture';
-import packet from '../../data/photometry/integration-provenance.json';
+import packetSource from '../../data/photometry/integration-provenance.json';
+const packet=projectResource(packetSource);
+
 import {buildPinnedPleiadesUbvField,type PhotometerFilter} from './photometerUbvField';
 import {PLEIADES_PHOTOMETER_TARGETS,isPhotometerTarget,type PleiadesFieldKind} from './photometerField';
 import {poissonDraw,randomDraw} from './acquisition';
@@ -9,7 +12,7 @@ export const PHOTOMETER_INTEGRATION_SHA256='b11fcc556da1011dc89b0c6e66c143d0f9fa
 export const PHOTOMETER_SECONDS=Object.freeze(packet.native.seconds),PHOTOMETER_REPEATS=Object.freeze(packet.native.integrations);
 export const MAX_PHOTOMETER_CALLBACKS_PER_READING=packet.browserPolicy.maximumCallbacksPerReading;
 export const PHOTOMETER_CALLBACK_MS=packet.native.timerIntervalMS,MAX_PHOTOMETER_GAP_MS=packet.browserPolicy.maximumCallbackGapMS,MAX_PHOTOMETER_CALLBACKS=packet.browserPolicy.maximumCallbacksPerSession;
-export const TIMED_PHOTOMETER_POLICY='OpenCLEA-Pleiades-timed-observing-v4';
+export const TIMED_PHOTOMETER_POLICY='OpenVireo-Pleiades-timed-observing-v4';
 export type PhotometerTiming=Readonly<{secondsPerIntegration:number;integrations:number}>;
 export const LEGACY_PHOTOMETER_TIMING=Object.freeze({secondsPerIntegration:.1,integrations:1});
 export class PhotometerIntegrationError extends Error{constructor(readonly code:'settings'|'phase'|'limit'|'counts'){super(`Photometer integration: ${code}`);this.name='PhotometerIntegrationError';}}

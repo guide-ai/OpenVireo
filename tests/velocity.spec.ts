@@ -14,7 +14,7 @@ test('saved redshift reaches the original velocity convention, answer check and 
   await page.getByLabel('Your velocity · km/s',{exact:true}).fill('4684.257');await page.getByRole('button',{name:'Check velocity',exact:true}).click();
   await expect(analysis.getByRole('status')).toContainText('Within the original 1% tolerance');
   const waiting=page.waitForEvent('download');await page.getByRole('button',{name:'Export velocities CSV',exact:true}).click();const downloaded=await waiting;
-  expect(downloaded.suggestedFilename()).toBe('openclea-velocities.csv');const stream=await downloaded.createReadStream(),parts:Buffer[]=[];for await(const part of stream!)parts.push(part);
+  expect(downloaded.suggestedFilename()).toBe('openvireo-velocities.csv');const stream=await downloaded.createReadStream(),parts:Buffer[]=[];for await(const part of stream!)parts.push(part);
   const csv=Buffer.concat(parts).toString();expect(csv).toContain(',299792.458,4684.25715625,4684.25732421875,4592620f,derived,');
   const sessionWaiting=page.waitForEvent('download');await page.getByRole('button',{name:'Save session',exact:true}).click();const sessionStream=await (await sessionWaiting).createReadStream(),sessionParts:Buffer[]=[];for await(const part of sessionStream!)sessionParts.push(part);
   await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'with-velocity.json',mimeType:'application/json',buffer:Buffer.concat(sessionParts)});

@@ -1,5 +1,5 @@
 # Dependencies, build output and local verification artifacts
-node_modules/
+node_modules
 dist/
 test-results/
 playwright-report/
@@ -29,8 +29,8 @@ playwright-report/
 # Original scientific resources: kept locally, not proposed for public Git.
 # This also fences JSON containing original bytes/derived catalog/model data.
 # See docs/FIRST-COMMIT-INVENTORY.md and docs/LOCAL-RESOURCES.json.
-/data/
-/public/original/
+/data
+/public/original
 
 # Original installers, executables, captures and downloaded archives
 *.exe

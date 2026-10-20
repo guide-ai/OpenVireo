@@ -9,7 +9,7 @@ describe('separate bounded photometer portable replay',()=>{
  });
  it('rejects foreign v7, unknown cache/calibration fields, altered proof, invalid sequences and running journals',()=>{
   const r=JSON.parse(save(releasePhotometer(observation())));for(const changed of [{version:7},{counts:[1,99]},{zeroPoint:20},{fieldSnapshotSHA256:'a'.repeat(64)},{events:[{type:'complete'}]},{events:[{type:'activate'},{type:'start'}]}])expect(()=>parse({...r,...changed})).toThrow();
-  expect(()=>parse({format:'OpenCLEA analysis session',version:7})).toThrow();
+  expect(()=>parse({format:'OpenVireo analysis session',version:7})).toThrow();
  });
  it('retains explicit manual values; rejects invalid event fields, sparse journals and invalid seed',()=>{
   const r=JSON.parse(save(releasePhotometer(observation())));expect(parse(r).entries[0].value).toBe(9.647);

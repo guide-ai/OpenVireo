@@ -1,7 +1,16 @@
-import expanded from '../../data/photometry/pleiades-expanded-fields.json';
-import expandedProof from '../../data/photometry/expanded-provenance.json';
-import additional from '../../data/photometry/pleiades-target-fields.json';
-import evidence from '../../data/photometry/pinned-pleiades-v.json';
+import{projectResource}from'./projectMetadata';
+import expandedSource from '../../data/photometry/pleiades-expanded-fields.json';
+const expanded=projectResource(expandedSource);
+
+import expandedProofSource from '../../data/photometry/expanded-provenance.json';
+const expandedProof=projectResource(expandedProofSource);
+
+import additionalSource from '../../data/photometry/pleiades-target-fields.json';
+const additional=projectResource(additionalSource);
+
+import evidenceSource from '../../data/photometry/pinned-pleiades-v.json';
+const evidence=projectResource(evidenceSource);
+
 import {nativeCatalogAdmission} from './catalogPopulation';
 import {traceCompactGscBandRead} from './compactGscReadOrder';
 import {decodeNativeCompactRecord,nativeCompactBandOrder,nativeRegionIds,type NativeFieldStar} from './pinnedNativeField';
@@ -129,7 +138,7 @@ export function simulatePinnedPleiadesVPair(domain:unknown,initialSeed:number){
  const reading={integrations:1,secondsPerIntegration:.1,apertureSelector:10};
  const skyReduction=reducePhotometerSky({...reading,totalPhotonCount:sky.totalPhotonCount});
  const reduction=reducePhotometerObject({...reading,totalPhotonCount:object.totalPhotonCount,nativeBaseCountSum:object.nativeBaseCountSum,zeroPointMagnitude:9,skyAtReferenceAperture:skyReduction.skyAtReferenceAperture});
- return Object.freeze({policy:evidence.policy,kind:'OpenCLEA simulated numerical fixture; not an original observation' as const,filter:'V' as const,sky,object,skyReduction,reduction});
+ return Object.freeze({policy:evidence.policy,kind:'OpenVireo simulated numerical fixture; not an original observation' as const,filter:'V' as const,sky,object,skyReduction,reduction});
 }
 
 /** One fixed callback, explicit post-setup PRNG state; the observing adapter owns Start/Stop. */

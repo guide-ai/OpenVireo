@@ -1,10 +1,18 @@
-import mayall from '../../data/hubble/mayall-provenance.json';
+import{projectResource}from'./projectMetadata';
+import mayallSource from '../../data/hubble/mayall-provenance.json';
+const mayall=projectResource(mayallSource);
+
 import {MAYALL_PROOF_SHA256} from './starTelescope';
 import {starTelescopeIndex,starTickLimit,KPNO09_STAR_POLICY,KPNO09_STAR_PROOF_SHA256,type StarTelescopeIndex} from './starTelescope';
 export {starTelescopeIndex,starTickLimit,KPNO09_STAR_POLICY,KPNO09_STAR_PROOF_SHA256,type StarTelescopeIndex} from './starTelescope';
-import kpno09 from '../../data/hubble/kpno09-star-provenance.json';
-import provenance from '../../data/hubble/star-exposure-provenance.json';
+import kpno09Source from '../../data/hubble/kpno09-star-provenance.json';
+const kpno09=projectResource(kpno09Source);
+
+import provenanceSource from '../../data/hubble/star-exposure-provenance.json';
+const provenance=projectResource(provenanceSource);
+
 import source from '../../data/hubble/star-source.json';
+
 import {buildPinnedMayallStarPopulation,PINNED_MAYALL_STAR_DOMAIN,buildPinnedStarPopulation,buildPinnedKpno09StarPopulation,PINNED_KPNO09_STAR_DOMAIN,PINNED_STAR_DOMAIN} from './pinnedNativeField';
 import {createNativeSelectionScene,selectCatalogObject} from './objectSelection';
 import {nativeStellarPaintLevel,nativeStoredStellarLevel} from './catalogPopulation';

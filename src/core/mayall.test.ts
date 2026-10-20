@@ -1,11 +1,18 @@
+import{projectResource}from'./projectMetadata';
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import proof from '../../data/hubble/mayall-provenance.json';
+import proofSource from '../../data/hubble/mayall-provenance.json';
+const proof=projectResource(proofSource);
+
 import sv from '../../data/hubble/mayall-star-vectors.json';
+
 import g1 from '../../data/hubble/mayall-galaxy-36747-vectors.json';
+
 import g2 from '../../data/hubble/mayall-galaxy-36773-vectors.json';
+
 import g3 from '../../data/hubble/mayall-galaxy-54876-vectors.json';
+
 import {MAYALL_PROOF_SHA256} from './starTelescope';
 import {verifiedStarConfiguration,createStarExposure,activateStar,startStar,tickStar,deactivateStar} from './starExposure';
 import {verifiedGalaxyConfiguration,createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy,deactivateGalaxy} from './galaxyExposure';

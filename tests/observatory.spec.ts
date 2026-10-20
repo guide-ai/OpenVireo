@@ -26,13 +26,13 @@ test('a beginner can open the sky, point to M82 and inspect original resources w
   await expect(page.getByRole('button',{name:/Record measurement/})).toBeDisabled();
   await expect(page.locator('.legend')).toContainText('Library reference · display scaled');
   await expect(page.locator('.spectrum')).toContainText('Display level');
-  await page.screenshot({path:'.local/qa/openclea-analyzer-library.png',fullPage:true});
+  await page.screenshot({path:'.local/qa/openvireo-analyzer-library.png',fullPage:true});
   await expect(page.getByRole('alert')).toHaveCount(0);
   await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();
   await expect(page.getByTestId('pointing-ra')).toHaveText('9.93000');
   await expect(page.getByLabel('Target',{exact:true})).toHaveValue('NGC3034');
   await expect(page.getByRole('button',{name:'Close dome',exact:true})).toBeVisible();
-  expect(errors).toEqual([]);await page.screenshot({path:'.local/qa/openclea-observatory-desktop.png',fullPage:true});
+  expect(errors).toEqual([]);await page.screenshot({path:'.local/qa/openvireo-observatory-desktop.png',fullPage:true});
 });
 
 test('coordinate validation, panning and mobile layout remain explicit',async({page})=>{
@@ -51,7 +51,7 @@ test('coordinate validation, panning and mobile layout remain explicit',async({p
   await expect(page.getByTestId('pointing-dec')).toHaveText('0.62500');
   await expect(page.getByRole('alert')).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.screenshot({path:'.local/qa/openclea-observatory-mobile.png',fullPage:true});
+  await page.screenshot({path:'.local/qa/openvireo-observatory-mobile.png',fullPage:true});
 });
 
 test('reference access follows actual pointing and remains stable when coordinates are resubmitted',async({page})=>{

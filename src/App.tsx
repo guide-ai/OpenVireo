@@ -1,1 +1,1 @@
-export { default } from './OpenCLEA';
+export { default } from './OpenVireo';

@@ -1,7 +1,11 @@
+import{projectResource}from'./projectMetadata';
 import {describe,it,expect} from 'vitest';
 import {buildPinnedPleiadesUbvField,drawPinnedPleiadesUbv,PINNED_UBV_SKY,type PhotometerFilter} from './photometerUbvField';
-import contract from '../../data/photometry/ubv-contract.json';
+import contractSource from '../../data/photometry/ubv-contract.json';
+const contract=projectResource(contractSource);
+
 import vectors from '../../data/photometry/ubv-vectors.json';
+
 describe('pinned recovered UBV source and independent filter sky',()=>{
  it('uses original Single colors, exact retained sky offsets and common native zero point',()=>{
   expect(PINNED_UBV_SKY).toEqual({V:16,B:17,U:17.33});expect(contract.zeroPoint).toBe(9);expect(contract.nativeFilterIndices).toEqual({U:0,B:1,V:2});expect(contract.skyLiterals[1].numerator).toBe('12174851088648304067');

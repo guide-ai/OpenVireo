@@ -1,4 +1,7 @@
-import proof from '../../data/observatory/telescope-motion-contract.json';
+import{projectResource}from'./projectMetadata';
+import proofSource from '../../data/observatory/telescope-motion-contract.json';
+const proof=projectResource(proofSource);
+
 import {validatePointing,type FieldMode,type Pointing} from './sky';
 export const TELESCOPE_MOTION_POLICY=proof.policy;
 export const TELESCOPE_MOTION_SHA256='d28bdc96af0d9c67e2600a5a3dbed38d6b542875d9bc01582b4fb32052c670d6';
