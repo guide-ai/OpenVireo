@@ -1480,4 +1480,5 @@ export interface MessageParameters {
   "comparisonMark.inputError": never;
   "paneSource.option": never;
   "paneSource.help": never;
+  "panMarks.hidden": never;
 }

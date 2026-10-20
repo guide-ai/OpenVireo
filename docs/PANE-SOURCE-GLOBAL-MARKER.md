@@ -1,5 +1,7 @@
 # Pane-selected width source and global manual marker
 
+Follow-up: [paired shoulder painting during pan](PAIRED-PAN-MARKS.md) adds the recovered both-shoulders containment rule for complete pane-bound regions. Numeric work remains retained; full native X/Y/sentinel lifecycle remains open.
+
 Classification now offers **Select width source from the center pane** under **Manual equivalent width → Comparison pane marking**. Enable it with **Mark comparison center** to select the actual admitted unknown, upper standard or lower standard by committing a center in its pane. A retained manual wavelength draws vertically through the three primary comparison frames, with a short cross only in its origin pane. Nothing supplies a continuum, classification answer or grade.
 
 [Static provenance](PANE-SOURCE-GLOBAL-MARKER-PROVENANCE.json) binds the source resolver, global drawing and trace-entry caveat to original byte-range hashes. [Validation](PANE-SOURCE-GLOBAL-MARKER-VALIDATION.md) records browser flows and independent geometry. This follows [direct comparison editing](DIRECT-COMPARISON-MARKS.md); integrator, source admission, confirmed records and existing files are unchanged. N02/E03 and all64primary statuses remain unchanged.

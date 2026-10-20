@@ -7,7 +7,7 @@ import type{InspectionKind}from'./comparisonInspection';
 /** Source-bound presentation snapshot; created only after width-source admission.
  * Exact retained choice identity prevents an old asynchronous snapshot from
  * drawing on a replaced source,role,atlas or loaded preparation. */
-export type FeatureComparisonDraft=Readonly<{choice:FluxChoice;draft:FeatureDraft;context?:string;marker?:Readonly<{pane:string;point:FeatureCursorPoint}>;editing?:Readonly<{mode:ComparisonMarkAction;originPane:string|null;autoSource?:boolean;targets?:readonly FluxChoice[];onMark:(pane:string,action:ComparisonMarkAction,point:FeatureCursorPoint,target?:FluxChoice)=>void}>}>;
+export type FeatureComparisonDraft=Readonly<{choice:FluxChoice;draft:FeatureDraft;markRevision?:number;context?:string;marker?:Readonly<{pane:string;point:FeatureCursorPoint}>;editing?:Readonly<{mode:ComparisonMarkAction;originPane:string|null;autoSource?:boolean;targets?:readonly FluxChoice[];onMark:(pane:string,action:ComparisonMarkAction,point:FeatureCursorPoint,target?:FluxChoice)=>void}>}>;
 export function comparisonFeatureDraft(binding:FeatureComparisonDraft|null,choice:FluxChoice):FeatureDraft|undefined{
  const p=choice.preparation.probe,s=choice.spectrum;
  return binding?.choice===choice&&p&&s&&choice.sourceId===p.source.probeId&&s.sha256===p.source.sha256?binding.draft:undefined;
@@ -19,9 +19,9 @@ export function featureRegionDraft(region:FeatureRegion):FeatureDraft{return Obj
  * Y=100-100*C; sampled trace Y=125-100*C. Printed SVG retains
  * its authored0..1 normalized axis. Continuous projection/clipping is a
  * browser adapter,not native integer-X/sentinel/pan/repaint lifecycle. */
-export function comparisonFeatureGeometry(draft:FeatureDraft,kind:InspectionKind,view:ClassificationViewport){
+export function comparisonFeatureGeometry(draft:FeatureDraft,kind:InspectionKind,view:ClassificationViewport,hideShoulders=false){
  const step=viewportStep(view);if(!['photo','sampled-trace','printed-trace'].includes(kind))throw new RangeError('Invalid feature projection');
  const printed=kind==='printed-trace',frame=Object.freeze(printed?{x:60,y:56,width:860,height:250,baseline:306}:kind==='photo'?{x:0,y:0,width:500,height:85,baseline:100}:{x:0,y:0,width:500,height:125,baseline:125}),marks=featureDraftMarkers(draft),x=(w:number)=>frame.x+(w-view.minimum)/(step*500)*frame.width,y=(c:number)=>printed?306-250*c:frame.baseline-100*c;
- const left=marks.left?Object.freeze({x:x(marks.left.wavelength),y:y(marks.left.intensity)}):null,right=marks.right?Object.freeze({x:x(marks.right.wavelength),y:y(marks.right.intensity)}):null,center=marks.center===null?null:x(marks.center),connected=!!(marks.left&&marks.right&&marks.center!==null&&marks.left.wavelength<marks.center&&marks.center<marks.right.wavelength);
+ const left=!hideShoulders&&marks.left?Object.freeze({x:x(marks.left.wavelength),y:y(marks.left.intensity)}):null,right=!hideShoulders&&marks.right?Object.freeze({x:x(marks.right.wavelength),y:y(marks.right.intensity)}):null,center=marks.center===null?null:x(marks.center),connected=!!(left&&right&&marks.left&&marks.right&&marks.center!==null&&marks.left.wavelength<marks.center&&marks.center<marks.right.wavelength);
  return Object.freeze({frame,center,left,right,connected});
 }

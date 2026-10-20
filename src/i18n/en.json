@@ -1478,5 +1478,6 @@
   "comparisonMark.originError": "Mark a center in this panel first. Both shoulders must share its panel; the photo and trace in combined view are separate panels. No input was changed.",
   "comparisonMark.inputError": "No mark applied. Use a center strictly inside 3900–4500 Å and shoulders on different sides with manual heights greater than 0 and at most 1. A new center in another panel starts a fresh bracket.",
   "paneSource.option": "Select width source from the center pane",
-  "paneSource.help": "With center marking enabled, a committed center can select its actual upper, unknown or lower source. Hovering or cancelling does not switch sources. Only admitted width sources participate. For the combined unknown trace, choose Unknown explicitly before marking; automatic choice covers its photographs."
+  "paneSource.help": "With center marking enabled, a committed center can select its actual upper, unknown or lower source. Hovering or cancelling does not switch sources. Only admitted width sources participate. For the combined unknown trace, choose Unknown explicitly before marking; automatic choice covers its photographs.",
+  "panMarks.hidden": "Both shoulder marks are hidden after panning because at least one shoulder is outside the window. Your numeric inputs and confirmed records are retained. Zoom, reset or mark again to redraw the region."
 }
