@@ -1,19 +1,21 @@
-# A06 validation — implemented slice and reviewed corrections
+# A06 validation — bounded motion and arrival follow-up
 
 The held-direction and programmed-slew coordinate slice is implemented in the actual project and available at `http://127.0.0.1:5173/#observatory`. The whole A06 package remains partial. All64 primary acceptance statuses/criteria and the16 runtime-witness overlay memberships remain unchanged. See [behavior, limits and exact manual steps](TELESCOPE-MOTION.md).
 
 ## Actual-project verification
 
-Final corrected actual-project verification, 19 October 2026:
+Earlier isolated arrival-follow-up snapshot, based on source-only1e0bfc5 (its exact historical counts):
 
-- `npm run build`: passed, including TypeScript project checks.
-- `vitest run --maxWorkers=4`: **1068 passed /106 files; 0 failed**. This includes the prior1058 contracts and ten new motion regression contracts; no earlier assertion was removed.
-- Complete Playwright suite with no test filters, two workers: **190 passed, 0 failed, 0 skipped, 0 flaky**, in309540.891ms. This supersedes the earlier185/186 run and isolated3/3 follow-up; those historical results are not relabeled as a complete pass.
-- Corrected compiled Vite build on temporary loopback5176: **17 passed, 0 failed, 0 skipped**, covering all ten motion flows plus the seven observatory/P01 flows. The earlier20-flow production run remains historical evidence for its earlier snapshot.
-- Regression reproduction before correction: branding assertions **2 failed/5 passed**; canonical RA boundary **1 failed/61 passed**; four new motion browser flows **4 failed**. After correction, branding **7/7**, motion/browser **10/10**, and motion/session unit subset **69/69** passed. The complete final suites above include the corrected cases.
-- Direct persistent-preview smoke and desktop/360px mobile images cover held movement/release, Cancel, explicit Stop, completed programmed arrival and the retained precision-withdrawal message. No page errors or horizontal overflow; images were opened for visual inspection.
+- TypeScript/project checks and Vite build passed, exit0.
+- Complete Vitest: **1182 passed /107files, 0failed**. The114new arrival contracts include40direction/rate/view returns, adjacent-representable/equality cases, before-wrap/cleanup ordering, retained boundaries and64independent Python binary64 vectors.
+- Complete unfiltered Playwright, two workers: **191passed, 0failed, 0skipped, 0flaky**,303253.047ms. Cancel, full save/reload/reimport, malformed running-field rejection and stopped22 continuity are included.
+- Compiled Vite build on temporary loopback5176: **18passed, 0failed, 0skipped, 0flaky**, covering all11motion flows plus7observatory/P01flows. The temporary server exited; persistent5173 remains in place.
+- Direct persistent-preview desktop/360px mobile smoke: held release, Cancel, explicit Stop, completed long slew and corrected40callback return. Both screenshots opened/inspected; no page errors or horizontal overflow. Timing details show3committed web callbacks for the corrected default return.
+- Preservation: all1279local resource hashes, native proof SHA and187other prior core/IO files unchanged. Generated64vector fixture matches its external Python output and generator SHA. Photon/RNG/source-plus-sky and student measurements remain unchanged.
 
-Final logs and JSON statistics are outside web source at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-a06-motion-review/`: `final-correction-build.log`, `final-correction-unit.log`, `final-complete-browser.log/json`, `corrected-production.log/json`, before/after regression logs and `corrected-visual.json/png`. Earlier A06 evidence remains in the neighboring `a06-motion-recovery/`; no historical failure record was replaced.
+Evidence outside source: `/home/dobleuber/Documents/Codex/2026-10-18/task-3/a06-arrival-refinement/`: `build.log`, `full-unit.log`, `complete-browser.log/json`, `production-browser.log/json`, `arrival-visual.json`, `arrival-visual-desktop.png`, `arrival-visual-mobile.png`, `preservation.json`, `arrival-evidence.json` and `local-source-contrast.json`. The initial launch denial and subsequently authorized successful review are distinguished below. Raw historical receipts remain unchanged.
+
+Historical1240b73 corrections passed1068unit/190fullbrowser/17production; earlier185/186plusisolated3pass and20production were separate snapshots, not a relabeled complete pass. Before this arrival implementation, the50new core cases recorded32failed/18passed and the browser return failed. One initial new expectation incorrectly assumed first-callback snap; independent binary64 trace proved a positive remainder, so the test now asserts the residual followed by crossing and cleanup. `after-unit.log` retains that expectation failure; `after-unit-corrected.log` records183motion/session tests passed. No epsilon was added. All historical failure logs remain separate.
 
 ## Native evidence and preservation
 
@@ -24,6 +26,21 @@ The independent Python reference computes54 rational recurrences from verified o
 At the567-file integration snapshot,548 prior baseline files were unchanged. All131 prior core files,54/55 prior IO files and162/163 prior data files hash-matched; the only intended prior IO change is optional outer22 in `analysisSession.ts`, and the only prior data change is explanatory remaining-scope text in `acceptance-status.json`. Dependencies and scientific acquisition kernels remain unchanged. Session22 stores strict multiplier preferences only; existing owners retain pointing/UT, pupil values, acquired counts and RNG. Final preservation/manifests and original-witness recovery are recorded alongside this document’s evidence.
 
 ## Read-only review and current resolution state
+
+**Current arrival review:** the initial attempt was denied before process creation by automatic approval review, citing the earlier no-Claude restriction. After direct human authorization of source/derived-data disclosure, exactly one retry of the same native `/code-review` completed successfully: effective `claude-opus-5-5` in initialization, 33 assistant messages and final model usage; CLI effort high and native high preset observed; provider effort telemetry unavailable; 33 Read/Glob/Grep calls, exit0, no forbidden paths or permission denials. All 573 snapshot files were unchanged during review. The raw report found no confirmed runtime defect and eight observations. Raw denial, report, stream and audit are retained separately from `claude-review/dispositions.json`. This completed arrival review is distinct from the later naming security fallback, which remains denied and was not retried. No second external sign-off on post-report refinements is claimed.
+
+| Arrival report item | Independent resolution |
+| --- | --- |
+| 1. Guard reachability | Corrected docs/UI: RA12h check is defensive and unreachable from admitted shorter-path construction; the connected85° cap excludes the mathematical pole boundary. |
+| 2. Python reference provenance | Contract and pinned generator SHA asserted. The separate-language evaluator shares the port operand/order and omits guards/no-op; it cannot detect a shared misreading or prove native equality. |
+| 3. Atomicity test scope | Old immutable-input assertions are only pure-core evidence. Added actual controlled-browser mid-batch pole rejection, checking committed UT,pointing and delivered callbacks. |
+| 4. Adjacent helper | Explicit positive-finite precondition prevents silently reversed negative/zero cases; current candidates satisfy it. |
+| 5. Unused scale | Removed the unused near-helper parameter. Remaining guard behavior unchanged. |
+| 6. Direct Dec operator | Uses candidate>=target / candidate<=target directly. The earlier subtraction was equivalent under binary64; no new tolerance. |
+| 7. Overlap | Existing assertions retained. Explicit residual→cross→cleanup and the broader Cancel/save/reload/reimport/badfile flow serve different scopes; no test deletion. |
+| 8. Immutable proof text | A06-ARR-01..05 documentation explicitly amends the packet's older precision sentence. Original hash, stopped22 schema and all scientific state remain unchanged. |
+
+The following successful earlier review applies to the base motion increment; it is retained as historical evidence, separately from the current arrival report.
 
 Native `/code-review` completed directly on the actual project after explicit human approval of the Anthropic/source/derived-data scope. The two earlier pre-execution denials are retained in the external evidence records; neither was bypassed. No public GitHub push or original program execution occurred.
 
@@ -36,7 +53,7 @@ Independent disposition of all nine report observations:
 | Report item | Validated result and resolution |
 | --- | --- |
 | 1. RA normalization | Confirmed for a valid just-below-step starting RA: a west callback rounded to24h. Canonicalize that wrapped boundary to0h, with pure and browser regressions. The review's specific three-East/three-West example did not reproduce across200 rate/view combinations; it is not claimed as the witness. |
-| 2. Nudge/return arrival | Reproduced after40 default4× manual north callbacks. The arrival comparison remains deliberately withheld by the declared Number guard. A regression now asserts withdrawal. No epsilon snap or native completion callback is invented; use the separate explicit Point shortcut when this boundary is encountered. This remains a usability/scientific admission limit. |
+| 2. Nudge/return arrival | Reproduced after40 default4× manual north callbacks. This was retained as a declared limit in1240b73. The subsequent bounded [inclusive arrival refinement](TELESCOPE-MOTION-ARRIVAL.md) admits the recovered operator over stored Number values, without epsilon snap or claimed native callback equality. The new review and tests below supersede the earlier withdrawal expectation. |
 | 3. Withdrawal notice | Confirmed misleading clock-limit alert. A motion error now reports motion withdrawal without a false clock-limit alert. Conservatively pausing the clock remains the documented browser policy. |
 | 4. Start preflight | Confirmed rejected/no-op side effects. Pure admission validates the sampled pointing before pausing or releasing confirmed work; exact no-op returns without adding motion session scope. Regression checks the continuing clock and save owner. |
 | 5. Impossible confirmation | Confirmed. Out-of-domain coordinate drafts show a local error before opening the modal. RA25 and Dec86 flows retain the running clock. |
@@ -54,3 +71,14 @@ These corrections follow the immutable external report and were independently ve
 ## REA usage
 
 A06 and the recent photometer-domain clarification used saved REA/Ghidra evidence plus GNU`objdump` and Python PE/operand/hash/Fraction/Decimal inspection. No fresh REA MCP engine/target analysis was invoked for these increments. The latest availability receipt inspected is18October2026,14:22UTC (`evidence/rea-independent-availability-20261018/` under the earlier research root): initialize,tools/list,binary_session, no target opened or analysis run. Historical actual analysis is preserved separately in `analysis/observatory/REA-SNAPSHOT.json`. Current post-reboot REA engine health was not tested. These distinctions are recorded in `REA-STATUS-RESUMPTION.json`.
+
+## Inclusive arrival follow-up verification
+
+The bounded follow-up removes only the zero-arrival32EPS withdrawal, with original stored-candidate comparison bindings A06-ARR-01..05. Native hashes, scientific resource packets, session22 proof/schema and prior1–21 owners remain unchanged. Reproduction before the implementation:32failed/18passed new core cases and1failed browser return. After correction,183motion/session unit contracts pass, including64independent Python binary64 cases. One initial new expectation incorrectly assumed the default return snapped in its first callback; the independent trace showed a positive residual andthreecallbacks includingcleanup. The expectation was corrected to assert that un-crossed residual, not to add a tolerance or weaken the final arrival check. Both records are retained.
+
+The initial denied launch has a later authorized successful retry, as recorded in the current review section. Both raw records remain separate and immutable. Current integrated suites and production/visual results are recorded in the latest verification section; no prior failure or historical snapshot is relabeled as a final pass. The separate remote-publication preflight denial does not change these local outcomes.
+
+
+## Integrated naming and arrival verification
+
+Based on naming commit `ced9384`, the preserved arrival draft reapplied without conflicts; both recovery stashes remain. Complete TypeScript/Vite checks and **1202 Vitest contracts across 110 files** pass. The additional fixture-binding assertion supplements the114arrival contracts; naming contributes19compatibility contracts. Complete unfiltered Playwright: **193 passed**, zero failed/skipped/flaky. Compiled-build Playwright on temporary loopback5178: **24 passed**, zero failed/skipped/flaky, including all12motion flows plus observatory, P01, naming compatibility, SSP and session flows. Logs/reports are `integrated-complete-browser.log/json` and `integrated-production-browser.log/json` in the external evidence directory. Compiled-build desktop/360px mobile screenshots were opened and inspected: the controlled40-callback return finishes at exact0.5/0 with3committed web callbacks, readable controls, no horizontal overflow or page errors. Receipts: `integrated-visual.json` and desktop/mobile PNGs outside source. The source-only publication boundary remains: all1279original/derived local resources and native proof hashes are unchanged and excluded from Git. No arrival callback count, photon model, student measurement, license grant or original x87/runtime result is inferred.

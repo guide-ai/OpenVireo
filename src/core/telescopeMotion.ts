@@ -10,7 +10,7 @@ export type MotionPreferences=Readonly<{rateIndex:number}>;
 export type TelescopeMotion=Readonly<{kind:'manual'|'programmed';phase:'moving'|'complete'|'stopped'|'limited';pointing:Pointing;mode:FieldMode;rateIndex:number;callbacks:number;flipped:boolean;direction:MotionDirection;target:Pointing|null;raDone:boolean;decDone:boolean;raStep:number;decStep:number}>;
 export class TelescopeMotionError extends Error{constructor(readonly code:'input'|'precision'|'pole'){super(code);}}
 const arc=proof.original.operands.find(v=>v.name==='arcsecDegrees')!.value,epsilon=proof.original.operands.find(v=>v.name==='initialRaToleranceHours')!.value;
-const near=(value:number,boundary:number,scale=1)=>Math.abs(value-boundary)<=32*Number.EPSILON*Math.max(1,scale,Math.abs(value),Math.abs(boundary));
+const near=(value:number,boundary:number)=>Math.abs(value-boundary)<=32*Number.EPSILON*Math.max(1,Math.abs(value),Math.abs(boundary));
 const freeze=(w:TelescopeMotion):TelescopeMotion=>Object.freeze({...w,pointing:Object.freeze(w.pointing),target:w.target&&Object.freeze(w.target)});
 const wrap=(ra:number)=>{let r=ra-Math.trunc(ra/24)*24;if(r<0)r+=24;return r===24?0:r;};
 export function readMotionPreferences(value:unknown):MotionPreferences{if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==1||!Object.hasOwn(value,'rateIndex'))throw new TelescopeMotionError('input');const rateIndex=(value as MotionPreferences).rateIndex;if(!Number.isInteger(rateIndex)||rateIndex<0||rateIndex>4||Object.is(rateIndex,-0))throw new TelescopeMotionError('input');return Object.freeze({rateIndex});}
@@ -19,7 +19,7 @@ function initial(pointing:Pointing,mode:FieldMode,rateIndex:number):TelescopeMot
 export function createManualMotion(pointing:Pointing,mode:FieldMode,rateIndex:number,direction:MotionDirection):TelescopeMotion{if(!['N','S','E','W'].includes(direction))throw new TelescopeMotionError('input');const w=initial(pointing,mode,rateIndex),delta=manualMotionStep(mode,rateIndex);return freeze({...w,direction,raStep:(direction==='E'?1:-1)*delta/15,decStep:(direction==='N'?1:-1)*delta});}
 export function createProgrammedMotion(pointing:Pointing,target:Pointing,mode:FieldMode):TelescopeMotion{
  const w=initial(pointing,mode,proof.native.programRateIndex),p=validatePointing(target.ra,target.dec);if(p.ra===w.pointing.ra&&p.dec===w.pointing.dec)return freeze({...w,kind:'programmed',phase:'complete',target:{...p},raDone:true,decDone:true});let diff=p.ra-w.pointing.ra;
- // Withdraw comparisons that Number cannot separate safely. No epsilon arrival/snap is invented.
+ // Retain setup guards where uncertainty changes direction or suppresses RA motion.
  const virtual=p.ra-diff,low=(p.ra-(diff+virtual))+(virtual-w.pointing.ra);
  if(diff!==0&&(near(Math.abs(diff),epsilon)||(near(Math.abs(diff),12)&&low!==0)))throw new TelescopeMotionError('precision');
  if(Math.abs(diff)>12)diff=-diff;const delta=manualMotionStep(mode,proof.native.programRateIndex)*10;
@@ -37,8 +37,10 @@ export function tickTelescopeMotion(w:TelescopeMotion):TelescopeMotion{
   }else ra+=w.raStep;
  }else{
   const target=w.target!;
-  if(!decDone){const candidate=dec+w.decStep,margin=candidate-target.dec;if(near(margin,0,Math.abs(dec)))throw new TelescopeMotionError('precision');if(w.decStep>0?margin>=0:margin<=0){dec=target.dec;decDone=true;}else dec=candidate;}
-  if(!raDone){const candidate=ra+w.raStep,cross=w.raStep>0?candidate-target.ra:target.ra-candidate;if(near(cross,0,Math.max(Math.abs(candidate),Math.abs(target.ra)))||near(cross,12))throw new TelescopeMotionError('precision');if(cross>=0&&cross<12){ra=target.ra;raDone=true;}else ra=candidate;}
+  // A06-ARR-01..05: inclusive crossing of the stored candidate, then later cleanup.
+  // Direct binary64 comparisons; no tolerance snap or original x87 callback claim.
+  if(!decDone){const candidate=dec+w.decStep;if(w.decStep>0?candidate>=target.dec:candidate<=target.dec){dec=target.dec;decDone=true;}else dec=candidate;}
+  if(!raDone){const candidate=ra+w.raStep,cross=w.raStep>0?candidate-target.ra:target.ra-candidate;if(near(cross,12))throw new TelescopeMotionError('precision');if(cross>=0&&cross<12){ra=target.ra;raDone=true;}else ra=candidate;}
  }
  return freeze({...w,pointing:{ra:wrap(ra),dec},flipped,raDone,decDone,callbacks:w.callbacks+1});
 }

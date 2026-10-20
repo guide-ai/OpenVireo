@@ -1,0 +1,1800 @@
+{
+  "method": "Independent Python binary64 evaluation of the port's inclusive arrival policy.\nNot original observations, x87 rounding, instruction execution or an FPU oracle.\n",
+  "generatorSHA256": "8a8b28288bdab5f03c63bea959c6ed3e97ca405218dfc0bf82aedcce182fc2cd",
+  "nativeContractSHA256": "d28bdc96af0d9c67e2600a5a3dbed38d6b542875d9bc01582b4fb32052c670d6",
+  "nativeOperatorEvidence": "A06-ARR-01..05; arrival-evidence.json outside web source",
+  "vectors": [
+    {
+      "kind": "return",
+      "label": "finder/0/N",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.05555555555555557
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/0/S",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.05555555555555557
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/0/E",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5037037037037058,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/0/W",
+      "mode": "finder",
+      "start": {
+        "ra": 0.49629629629629646,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/1/N",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.11111111111111115
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/1/S",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.11111111111111115
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/1/E",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5074074074074071,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/1/W",
+      "mode": "finder",
+      "start": {
+        "ra": 0.4925925925925929,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/2/N",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.2222222222222223
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 5.551115123125783e-17
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/2/S",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.2222222222222223
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": -5.551115123125783e-17
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/2/E",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5148148148148142,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/2/W",
+      "mode": "finder",
+      "start": {
+        "ra": 0.48518518518518583,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/3/N",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.4444444444444446
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 4,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0.22222222222222235
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/3/S",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.4444444444444446
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 4,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": -0.22222222222222235
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/3/E",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5296296296296283,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.5148148148148135,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/3/W",
+      "mode": "finder",
+      "start": {
+        "ra": 0.47037037037036944,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 4,
+        "first": {
+          "pointing": {
+            "ra": 0.4851851851851843,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/4/N",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.8888888888888892
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 6,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0.666666666666667
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/4/S",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.8888888888888892
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 6,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": -0.666666666666667
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/4/E",
+      "mode": "finder",
+      "start": {
+        "ra": 0.5592592592592611,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 6,
+        "first": {
+          "pointing": {
+            "ra": 0.5444444444444463,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "finder/4/W",
+      "mode": "finder",
+      "start": {
+        "ra": 0.4407407407407411,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 5,
+        "first": {
+          "pointing": {
+            "ra": 0.45555555555555594,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/ra/-1/-1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 0.985185185185185,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.985185185185185,
+          "dec": 1
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.9851851851851852,
+            "dec": 1
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/ra/-1/0",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 0.9851851851851852,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.9851851851851852,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.9851851851851852,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/ra/-1/1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 0.9851851851851853,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.9851851851851853,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.9851851851851853,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/ra/1/-1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1.0148148148148146,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1.0148148148148146,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1.0148148148148146,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/ra/1/0",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1.0148148148148148,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1.0148148148148148,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1.0148148148148148,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/ra/1/1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1.014814814814815,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1.014814814814815,
+          "dec": 1
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 1.0148148148148148,
+            "dec": 1
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/dec/-1/-1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 0.7777777777777777
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 0.7777777777777777
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 0.7777777777777778
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/dec/-1/0",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 0.7777777777777778
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 0.7777777777777778
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 0.7777777777777778
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/dec/-1/1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 0.7777777777777779
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 0.7777777777777779
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 0.7777777777777779
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/dec/1/-1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 1.222222222222222
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 1.222222222222222
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 1.222222222222222
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/dec/1/0",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 1.2222222222222223
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 1.2222222222222223
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 1.2222222222222223
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "finder/dec/1/1",
+      "mode": "finder",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 1.2222222222222225
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 1.2222222222222225
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 1.2222222222222223
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/0/N",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.005555555555555556
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/0/S",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.005555555555555556
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/0/E",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5003703703703684,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/0/W",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.4996296296296294,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/1/N",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.011111111111111112
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/1/S",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.011111111111111112
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/1/E",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5007407407407412,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/1/W",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.49925925925925885,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/2/N",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.022222222222222223
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/2/S",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.022222222222222223
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/2/E",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5014814814814823,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.5000000000000008,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/2/W",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.4985185185185177,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.49999999999999917,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/3/N",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.044444444444444446
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0.022222222222222223
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/3/S",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.044444444444444446
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": -0.022222222222222223
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/3/E",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5029629629629646,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 4,
+        "first": {
+          "pointing": {
+            "ra": 0.5014814814814831,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/3/W",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.4970370370370376,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.4985185185185191,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/4/N",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": 0.08888888888888889
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 5,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": 0.06666666666666667
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/4/S",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5,
+        "dec": -0.08888888888888889
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 5,
+        "first": {
+          "pointing": {
+            "ra": 0.5,
+            "dec": -0.06666666666666667
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/4/E",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.5059259259259248,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 5,
+        "first": {
+          "pointing": {
+            "ra": 0.5044444444444433,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "return",
+      "label": "telescope/4/W",
+      "mode": "telescope",
+      "start": {
+        "ra": 0.494074074074073,
+        "dec": 0
+      },
+      "target": {
+        "ra": 0.5,
+        "dec": 0
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.5,
+          "dec": 0
+        },
+        "callbacks": 6,
+        "first": {
+          "pointing": {
+            "ra": 0.49555555555555447,
+            "dec": 0
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/ra/-1/-1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 0.9985185185185184,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.9985185185185184,
+          "dec": 1
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 0.9985185185185185,
+            "dec": 1
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/ra/-1/0",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 0.9985185185185185,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.9985185185185185,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.9985185185185185,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/ra/-1/1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 0.9985185185185186,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 0.9985185185185186,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 0.9985185185185186,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/ra/1/-1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1.0014814814814812,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1.0014814814814812,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1.0014814814814812,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/ra/1/0",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1.0014814814814814,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1.0014814814814814,
+          "dec": 1
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1.0014814814814814,
+            "dec": 1
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/ra/1/1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1.0014814814814816,
+        "dec": 1
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1.0014814814814816,
+          "dec": 1
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 1.0014814814814814,
+            "dec": 1
+          },
+          "raDone": false,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/dec/-1/-1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 0.9777777777777776
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 0.9777777777777776
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 0.9777777777777777
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/dec/-1/0",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 0.9777777777777777
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 0.9777777777777777
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 0.9777777777777777
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/dec/-1/1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 0.9777777777777779
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 0.9777777777777779
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 0.9777777777777779
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/dec/1/-1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 1.022222222222222
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 1.022222222222222
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 1.022222222222222
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/dec/1/0",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 1.0222222222222221
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 1.0222222222222221
+        },
+        "callbacks": 2,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 1.0222222222222221
+          },
+          "raDone": true,
+          "decDone": true
+        }
+      }
+    },
+    {
+      "kind": "candidate",
+      "label": "telescope/dec/1/1",
+      "mode": "telescope",
+      "start": {
+        "ra": 1,
+        "dec": 1
+      },
+      "target": {
+        "ra": 1,
+        "dec": 1.0222222222222224
+      },
+      "expected": {
+        "pointing": {
+          "ra": 1,
+          "dec": 1.0222222222222224
+        },
+        "callbacks": 3,
+        "first": {
+          "pointing": {
+            "ra": 1,
+            "dec": 1.0222222222222221
+          },
+          "raDone": true,
+          "decDone": false
+        }
+      }
+    }
+  ]
+}
