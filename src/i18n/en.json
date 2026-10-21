@@ -1851,5 +1851,19 @@
   "nativeCsv.slice": "Projected native column {start}, up to {width} bytes; see the original CSV row for source text.",
   "nativeCsv.rawRow": "Original native CSV row",
   "nativeCsv.textClaim": "Projected field text retained. The original CSV row remains available; no notebook response, grade or native numeric record is constructed.",
-  "nativeText.error.download": "Could not download this saved-text candidate. Original input files are unchanged; reimport if byte ownership was lost after an application update."
+  "nativeText.error.download": "Could not download this saved-text candidate. Original input files are unchanged; reimport if byte ownership was lost after an application update.",
+  "nativeCsv.exportOpen": "Preview native CSV from TXT",
+  "nativeCsv.exportCancelPrepare": "Cancel CSV export preparation",
+  "nativeCsv.exportHashing": "Preparing and hashing a separate CSV copy. Original TXT remains unchanged.",
+  "nativeCsv.exportTitle": "Review native CSV text export",
+  "nativeCsv.exportPolicy": "This copy applies the recovered native text writer to supplied canonical TXT rows. Spacing and unit delimiters change; field spellings, row order and comments must survive the checked projection. No date or native numeric record is reconstructed. The original TXT, notebook, DAT and investigation files remain unchanged.",
+  "nativeCsv.exportSource": "Original TXT: {name} · {count} rows",
+  "nativeCsv.exportOutput": "Separate CSV copy: {name}",
+  "nativeCsv.exportCancel": "Cancel native CSV export",
+  "nativeCsv.exportDownload": "Download generated native CSV",
+  "nativeCsv.exportHashError": "Could not hash this CSV copy. Original TXT and confirmed work are unchanged.",
+  "nativeCsv.exportStale": "The CSV preview no longer matches the current TXT or context. Reopen the preview; no source data was changed.",
+  "nativeCsv.exportRequested": "CSV browser download requested. Original TXT and confirmed work remain unchanged.",
+  "nativeText.error.exportUnsupported": "CSV export requires an owned, nonempty canonical general TXT layout that the admitted CSV reader can recover. Exercise 4, ambiguous precision, blank first U, unadmitted numeric spellings, unsupported spacing/units or encoding remain unavailable; the original TXT is unchanged.",
+  "nativeText.error.exportLoss": "Native CSV spacing conversion would change an object, type, field spelling, profile or comment. Export is refused; the original TXT is unchanged."
 }

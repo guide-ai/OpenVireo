@@ -1,0 +1,96 @@
+{
+  "evidenceId": "NATIVE-TXT-CSV-WRITER-01",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "text-csv-writer",
+      "start": "0x5472e0",
+      "endExclusive": "0x547954",
+      "bytesSHA256": "60f61d99fa405286fe26078ef2e420314900053b51a358a4fa772defc0273834",
+      "listingSHA256": "d21bd424d22fa20404dec18ae4667ad5705534011d07bfadb2c35a38a5de6ff0",
+      "boundary": "Complete function through final return;trailing literal data excluded"
+    },
+    {
+      "name": "native-general-row-formatter",
+      "start": "0x5486a8",
+      "endExclusive": "0x548ba4",
+      "bytesSHA256": "61aebc9139074424fb2eddefcb94071485e6791bae8608ab60cca50f7d2dd4d5",
+      "listingSHA256": "d48d7a27927898631e32a7bd25318561069c8b62a3be233eae83a1d2fdc712d2",
+      "boundary": "Complete function through final return;trailing literal data excluded"
+    },
+    {
+      "name": "csv-fixed-projection",
+      "start": "0x548ea4",
+      "endExclusive": "0x5495a8",
+      "bytesSHA256": "d614b594a2693f140fd6bda0eeb5e45ec00bdda12e736041d10bd07802c4bb5d",
+      "listingSHA256": "aa689aa4f29947653473684039d4daab56779b46e65aaef7813c54b5ab19da3a",
+      "boundary": "Complete function through final return;trailing literal data excluded"
+    },
+    {
+      "name": "text-loader",
+      "start": "0x549e18",
+      "endExclusive": "0x54a3af",
+      "bytesSHA256": "83c996f8e127285daa44091a899b8f3d1b1e2eb035aedb286e3e1e94799b99b2",
+      "listingSHA256": "c36d289696446a12e64824094286a8e7abfedd41570340f771abeffc148411de",
+      "boundary": "Complete function through final return;trailing literal data excluded"
+    }
+  ],
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "sourceResourceBindingsReference": "NATIVE-CSV-RESULTS-PROVENANCE.json#resourceBindings",
+  "portedStage": {
+    "function": "Save text/CSV handler 0x5472e0..0x547954",
+    "stringOperations": "0x54763e..0x547756",
+    "input": "Supplied owned canonical general TXT display rows;not reconstructed numeric records",
+    "photometryWidths": {
+      "counts": 10,
+      "magnitudes": 7
+    },
+    "count": [
+      3,
+      5
+    ],
+    "delimiterPositions1Based": "12,24,28,31,36,41,44,47;48+step*(i+1) for each filter;48+N*step+12;48+N*step+25",
+    "prefixEnd": "48+N*step+25",
+    "operation": "Overwrite delimiter/unit positions with commas;remove ASCII spaces from bounded prefix;append the complete original comment tail untouched;known header and CRLF",
+    "admission": "Owned nonempty canonical general TXT only;expected unit/gap characters;strict dot numeric-looking spellings;known canonical CSV reader must preserve profile,object,all field spellings after outer ASCII padding,and full comment tail",
+    "webSafety": "Preview/hash/cancel/download;refuse internal object/type/numeric space loss;ticket/context/separator/read/disabled guards;source remains owned unchanged TXT;temporary output is a separate CSV copy"
+  },
+  "notClaimed": [
+    "native numeric/FPU/Extended or date conversion",
+    "new DAT or notebook source authority",
+    "exercise4 CSV or arbitrary quoted/locale CSV",
+    "native runtime roundtrip or full writer equivalence",
+    "browser saved-file completion"
+  ],
+  "independentControl": "768 exact output/profile/source-immutability checks across256 deterministic synthetic cases;Python source-described writer vs TypeScript implementation;not original execution",
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalBytesOrExecutablesIncluded": false,
+  "rights": "Existing source-specific credits and uncertainty remain;this is an analytical port,not an added distribution grant."
+}

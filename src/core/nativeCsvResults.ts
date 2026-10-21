@@ -1,4 +1,4 @@
-import{parseNativeTextResults,nativeTextHeader,NativeTextError,NATIVE_TEXT_MAX_BYTES,NATIVE_TEXT_MAX_ROWS,type NativeTextData,type NativeTextProfile}from'./nativeTextResults';
+import{parseNativeTextResults,nativeTextBytes,nativeTextHeader,inspectNativeTextDecimal,NativeTextError,NATIVE_TEXT_MAX_BYTES,NATIVE_TEXT_MAX_ROWS,type NativeTextData,type NativeTextProfile}from'./nativeTextResults';
 /** Recovered5472e0 writer/548ea4 projection,canonical GENERAL layouts only.
  * No RFC4180 parsing,native numeric/date construction or exercise authority. */
 const owned=new WeakMap<NativeTextData,readonly number[]>();
@@ -15,3 +15,14 @@ export function parseNativeCsvResults(input:Uint8Array,separator:'.'|','):Native
  const profile=((precision===1?'counts':'magnitudes')+count)as NativeTextProfile,native=parseNativeTextResults(encode(nativeTextHeader(profile)+'\n'+projected.join('\n')),separator),data=Object.freeze({...native,header:header!,rows:Object.freeze(native.rows.map((row,i)=>Object.freeze({...row,raw:lines[i]})))});owned.set(data,Object.freeze([...bytes]));return data;
 }
 export function nativeCsvBytes(data:NativeTextData):Uint8Array{const bytes=owned.get(data);if(!bytes)throw new NativeTextError('owner');return Uint8Array.from(bytes);}
+
+/** Port of54763e..547756 applied to an owned canonical TXT display row.
+ * String-only save;not native numeric/date reconstruction. The generated
+ * admitted CSV must retain every field spelling and complete comment tail. */
+export function exportNativeCsvFromText(data:NativeTextData):NativeTextData{
+ nativeTextBytes(data);if(data.profile==='exercise4'||data.rows.length===0)throw new NativeTextError('exportUnsupported');const count=data.profile.endsWith('5')?5:3,step=data.profile.startsWith('magnitudes')?7:10,end=48+count*step+25,positions=[12,24,28,31,36,41,44,47,...Array.from({length:count},(_,i)=>48+(i+1)*step),48+count*step+12,end];
+ const lines=data.rows.map((row,i)=>{const required:readonly(readonly[number,string])[]=[[12,' '],[24,' '],[25,' '],[28,'h'],[31,'m'],[36,'s'],[37,' '],[41,'°'],[44,"'"],[47,'"'],[48,' '],...positions.slice(8).map(p=>[p,' ']as const)];if(row.raw.length<end||required.some(([at,ch])=>row.raw[at-1]!==ch)||row.fields.some(f=>f.decimal!==null&&inspectNativeTextDecimal(f.raw,'.').kind==='invalid'))throw new NativeTextError('exportUnsupported',i+1);const chars=[...row.raw];positions.forEach(p=>chars[p-1]=',');return chars.slice(0,end).join('').replace(/ /g,'')+chars.slice(end).join('');});
+ const encoded=encode(nativeCsvHeader(count)+'\r\n'+lines.join('\r\n')+'\r\n');let result:NativeTextData;try{result=parseNativeCsvResults(encoded,data.separator);}catch{throw new NativeTextError('exportUnsupported');}
+ const trim=(s:string)=>s.replace(/^ +| +$/g,'');if(result.profile!==data.profile||result.rows.length!==data.rows.length)throw new NativeTextError('exportLoss');for(let i=0;i<data.rows.length;i++){const before=data.rows[i],after=result.rows[i];if(before.object!==after.object||before.raw.slice(end)!==after.raw.split(',').slice(10+count).join(',')||before.fields.some((f,j)=>f.id!==after.fields[j]?.id||trim(f.raw)!==trim(after.fields[j].raw)))throw new NativeTextError('exportLoss',i+1);}
+ return result;
+}

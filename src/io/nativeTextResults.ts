@@ -1,7 +1,9 @@
-import{nativeCsvBytes,parseNativeCsvResults}from'../core/nativeCsvResults';
+import{nativeCsvBytes,parseNativeCsvResults,exportNativeCsvFromText}from'../core/nativeCsvResults';
 import{nativeTextBytes,NATIVE_TEXT_MAX_BYTES,parseNativeTextResults,NativeTextError,type NativeTextData}from'../core/nativeTextResults';
 export type InspectedNativeText=Readonly<{name:string;sha256:string;data:NativeTextData;format:'txt'|'csv'}>;
 export async function readNativeTextFile(file:File,separator:'.'|',',format:'txt'|'csv'='txt'):Promise<InspectedNativeText>{if(!(format==='csv'?/\.csv$/i:/\.txt$/i).test(file.name))throw new NativeTextError('header');if(file.size>NATIVE_TEXT_MAX_BYTES)throw new NativeTextError('size');const bytes=new Uint8Array(await file.arrayBuffer()),data=format==='csv'?parseNativeCsvResults(bytes,separator):parseNativeTextResults(bytes,separator),digest=new Uint8Array(await crypto.subtle.digest('SHA-256',Uint8Array.from(bytes).buffer));return Object.freeze({format,name:file.name.slice(0,160),sha256:Array.from(digest,b=>b.toString(16).padStart(2,'0')).join(''),data});}
 
 export function nativeSavedTextBytes(value:InspectedNativeText):Uint8Array{return value.format==='csv'?nativeCsvBytes(value.data):nativeTextBytes(value.data);}
 export function reinterpretNativeSavedText(value:InspectedNativeText,separator:'.'|','):InspectedNativeText{const bytes=nativeSavedTextBytes(value);return Object.freeze({...value,data:value.format==='csv'?parseNativeCsvResults(bytes,separator):parseNativeTextResults(bytes,separator)});}
+
+export async function prepareNativeCsvExport(value:InspectedNativeText):Promise<InspectedNativeText>{if(value.format!=='txt')throw new NativeTextError('exportUnsupported');const data=exportNativeCsvFromText(value.data),bytes=nativeCsvBytes(data),digest=new Uint8Array(await crypto.subtle.digest('SHA-256',Uint8Array.from(bytes).buffer));return Object.freeze({format:'csv',data,name:(value.name.replace(/\.txt$/i,'')||'openvireo-supplied-text')+'.native.csv',sha256:Array.from(digest,b=>b.toString(16).padStart(2,'0')).join('')});}

@@ -1853,4 +1853,18 @@ export interface MessageParameters {
   "nativeCsv.rawRow": never;
   "nativeCsv.textClaim": never;
   "nativeText.error.download": never;
+  "nativeCsv.exportOpen": never;
+  "nativeCsv.exportCancelPrepare": never;
+  "nativeCsv.exportHashing": never;
+  "nativeCsv.exportTitle": never;
+  "nativeCsv.exportPolicy": never;
+  "nativeCsv.exportSource": "count" | "name";
+  "nativeCsv.exportOutput": "name";
+  "nativeCsv.exportCancel": never;
+  "nativeCsv.exportDownload": never;
+  "nativeCsv.exportHashError": never;
+  "nativeCsv.exportStale": never;
+  "nativeCsv.exportRequested": never;
+  "nativeText.error.exportUnsupported": never;
+  "nativeText.error.exportLoss": never;
 }
