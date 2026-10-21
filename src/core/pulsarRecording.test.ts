@@ -50,7 +50,7 @@ describe('PLR reader admission (PLR-READ-01)', () => {
   it('rejects headerless input: the native route leaves the metadata uninitialized', () => {
     expect(reason(admit('1,2,3\n4,5,6\n'))).toBe('headerless');
   });
-  it('classifies a non-empty file whose first line is blank as headerless-by-blank-line, not as empty', () => {
+  it('rejects a non-empty file whose first line is blank as blank-first-line, not as empty (no native route is claimed)', () => {
     expect(admit('\r\n' + SYNTH)).toEqual({ status: 'rejected', reason: 'blank-first-line', line: 1, detail: '' });
     expect(reason(admit('\n' + SYNTH.replace(/\r\n/g, '\n')))).toBe('blank-first-line');
     expect(admit('')).toEqual({ status: 'rejected', reason: 'empty', line: null, detail: '' });

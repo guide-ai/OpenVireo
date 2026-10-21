@@ -21,6 +21,19 @@ const ptr = (phase: PulsarPointer['phase'], button: PulsarPointer['button'], x: 
 const click = (s: PulsarAnalysisState, ch: 0 | 1 | 2, x: number, y = 100, button: 'left' | 'right' = 'left') =>
   st(pulsarPointer(st(pulsarPointer(s, ch, ptr('down', button, x, y))), ch, ptr('up', button, x, y)));
 
+it('admits the compiled manual comment limit80 and rejects81 without changing an existing record or draft', () => {
+  let s = st(pulsarBeginRecord(click(loaded(), 0, 40)));
+  s = st(pulsarRecordDraft(s, 'x'.repeat(80)));
+  expect(pulsarRecordDialog(s)?.draftValid).toBe(true);
+  const accepted = st(pulsarConfirmRecord(s));
+  expect(accepted.list[0].fields.comment).toBe('x'.repeat(80));
+  s = st(pulsarBeginRecord(click(accepted, 0, 60)));
+  s = st(pulsarRecordDraft(s, 'x'.repeat(81)));
+  expect(pulsarConfirmRecord(s)).toMatchObject({ outcome: 'comment-invalid', changed: false, state: s });
+  expect(pulsarRecordDialog(s)?.draft).toBe('x'.repeat(81));
+  expect(s.list).toBe(accepted.list);
+});
+
 describe('load and reset (PLR-LOAD-01, PLR-RANGE-01, PLR-RESET-01)', () => {
   it('opens properties and resets the window to [0, 400·dt] at zoom 1 and pan rate 10', () => {
     const s = loaded();
@@ -326,9 +339,30 @@ describe('record and clear (PLR-RECORD-01, PLR-CLEAR-01)', () => {
     expect([down.state.leftDrag, down.state.cursors[1].horizontalValue, down.state.cursors[1].horizontalText, down.state.cursors[1].horizontalVisible, down.state.measurement.horizontal[1]]).toEqual([true, -1, '', false, 0]);
     expect(pulsarPointer(down.state, 1, ptr('move', 'other', 5, 3, { leftHeld: true, rightHeld: false }))).toMatchObject({ outcome: 'number-unsupported', changed: false });
     const up = pulsarPointer(down.state, 1, ptr('up', 'left', 5, 0));
-    expect([up.outcome, up.state.leftDrag, up.state.pending[1]]).toEqual(['number-unsupported', false, true]);
+    // WEB: a MouseUp whose own placement is refused is not taken, so it does not mark the panel pending.
+    expect([up.outcome, up.state.leftDrag, up.state.pending[1], up.state.recordEnabled]).toEqual(['number-unsupported', false, false, false]);
     expect(up.state.recording).toBe(rec);
     expect(up.state.measurement.horizontal.every(Number.isFinite)).toBe(true);
+    expect(pulsarBeginRecord(up.state)).toMatchObject({ outcome: 'record-disabled', changed: false });
+  });
+  it('a refused MouseUp keeps the earlier pending flags and Record state; other panels still record', () => {
+    // Panel 1 has a valid unrecorded vertical measurement; panel 2 (gain 1e-320) refuses every horizontal value.
+    let s = st(pulsarMode(click(loaded(synthetic(1000, 1, '1e-320')), 0, 40), 1, 'horizontal'));
+    expect([s.pending, s.recordEnabled]).toEqual([[true, false, false], true]);
+    const r = pulsarPointer(st(pulsarPointer(s, 1, ptr('down', 'left', 5, 50))), 1, ptr('up', 'left', 5, 50));
+    expect([r.outcome, r.state.pending, r.state.recordEnabled, r.state.measurement.horizontal[1]]).toEqual(['number-unsupported', [true, false, false], true, 0]);
+    s = st(pulsarConfirmRecord(st(pulsarBeginRecord(r.state))));
+    expect([s.list.length, s.list[0].panel, s.list[0].fields.vertical, s.pending]).toEqual([1, 0, '0.400000', [false, false, false]]);
+    // A panel that was already pending stays pending through a refused MouseUp.
+    s = click(s, 1, 0, 0, 'right');                      // reference cursor + MouseUp on panel 2 marks it pending
+    expect(s.pending[1]).toBe(true);
+    const again = pulsarPointer(st(pulsarPointer(s, 1, ptr('down', 'left', 5, 50))), 1, ptr('up', 'left', 5, 50));
+    expect([again.outcome, again.state.pending[1], again.state.recordEnabled]).toEqual(['number-unsupported', true, true]);
+  });
+  it('a MouseUp outside the horizontal range still follows the native pending rule (0x56c6dc rejection is not a web refusal)', () => {
+    const s = st(pulsarMode(loaded(), 1, 'horizontal'));
+    const r = pulsarPointer(st(pulsarPointer(s, 1, ptr('down', 'left', 5, 124))), 1, ptr('up', 'left', 5, 124)); // y = base is rejected natively
+    expect([r.outcome, r.state.pending[1], r.state.recordEnabled, r.state.cursors[1].horizontalText]).toEqual(['cursor', true, true, '']);
   });
   it('a refused nonfinite click keeps the previous valid horizontal measurement and readout', () => {
     // Gain 1e-308: y = 123 at factor 1 gives a finite 1/(1e-306); y = 0 at factor 0.125 overflows.
@@ -339,6 +373,46 @@ describe('record and clear (PLR-RECORD-01, PLR-CLEAR-01)', () => {
     const r = pulsarPointer(s, 1, ptr('down', 'left', 5, 0));
     expect(r.outcome).toBe('number-unsupported');
     expect([r.state.cursors[1].horizontalValue, r.state.cursors[1].horizontalText, r.state.measurement.horizontal[1]]).toEqual([prior.horizontalValue, prior.horizontalText, prior.horizontalValue]);
+  });
+  it('a redraw whose Number product overflows is refused atomically, without hiding the line or re-quantizing other panels', () => {
+    // Gain 1e-309 on receiver 2: y = 123 stores 1/(1e-309·100·1) = 1e307 (finite). The redraw product
+    // 1e307·100 overflows Number before the gain and factor bring it back to the true projection y = 123.
+    // Panel 1 first gets a vertical cursor at zoom 0.5: t = 0.37 → x = Round(2.37·0.5/0.01) = Round(118.5) = 118.
+    let s = st(pulsarZoom(click(loaded(synthetic(1000, 1, '1e-309')), 0, 37), 'out'));
+    expect(s.cursors[0]).toMatchObject({ verticalX: 118, verticalVisible: true });
+    s = click(st(pulsarMode(s, 1, 'horizontal')), 1, 0, 123);
+    const placed = s.cursors[1];
+    expect(placed).toMatchObject({ horizontalY: 123, horizontalVisible: true });
+    expect(placed.horizontalValue * 100).toBe(Infinity);
+    expect(Number.isFinite(placed.horizontalValue)).toBe(true);
+    for (const r of [pulsarFactor(s, 1, 'up'), pulsarFactor(s, 1, 'down'), pulsarZoom(s, 'in'), pulsarZoom(s, 'out'), pulsarPan(s, 'right')]) {
+      expect([r.outcome, r.changed]).toEqual(['display-unsupported', false]);
+      expect(r.state).toBe(s);                          // same factors, zoom, window and every cursor: no partial quantization
+    }
+    expect([s.zoom, s.factors[1], s.cursors[0].verticalX]).toEqual([0.5, 1, 118]);
+    expect(s.cursors[1]).toBe(placed);
+    // A factor change on another panel does not redraw panel 2, so it is not refused.
+    expect(pulsarFactor(s, 0, 'up').outcome).toBe('factor-changed');
+    // Reset is not a redraw: it clears the cursors and is always allowed.
+    expect(pulsarReset(s).outcome).toBe('reset');
+  });
+  it('a held pan tick that would overflow a redraw is refused, so the hold stops without moving the window', () => {
+    let s = click(st(pulsarMode(loaded(synthetic(1000, 1, '1e-309')), 1, 'horizontal')), 1, 0, 123);
+    s = { ...s, panStep: 0.1 };
+    expect(pulsarPanTick(s)).toMatchObject({ outcome: 'display-unsupported', changed: false });
+  });
+  it('controls: a finite redraw of the same tiny gain still quantizes, and a finite out-of-range y is still hidden silently', () => {
+    // At factor 8, y = 123 stores 1/(1e-309·100·8) = 1.25e306; the redraw product stays finite.
+    let s = st(pulsarMode(loaded(synthetic(1000, 1, '1e-309')), 1, 'horizontal'));
+    for (let i = 0; i < 3; i++) s = st(pulsarFactor(s, 1, 'up'));
+    s = click(s, 1, 0, 123);
+    const z = pulsarZoom(s, 'in');
+    expect([z.outcome, z.state.cursors[1].horizontalY, z.state.cursors[1].horizontalVisible]).toEqual(['zoomed-in', 123, true]);
+    // Factor 4: Round(124 − 1.25e306·100·1e-309·4) = Round(123.5) = 124 is outside 0 ≤ y < base: native rejection, hidden.
+    const f = pulsarFactor(z.state, 1, 'down');
+    expect([f.outcome, f.state.factors[1], f.state.cursors[1].horizontalVisible, f.state.cursors[1].horizontalY, f.state.cursors[1].horizontalText])
+      .toEqual(['factor-changed', 4, false, 123, z.state.cursors[1].horizontalText]);
+    expect(f.state.cursors[1].horizontalText).toMatch(/^1\.2500E\+306$/);
   });
   it('record validation refuses a nonfinite number and keeps the dialog and its draft', () => {
     let s = st(pulsarRecordDraft(st(pulsarBeginRecord(click(loaded(), 0, 20))), 'kept'));

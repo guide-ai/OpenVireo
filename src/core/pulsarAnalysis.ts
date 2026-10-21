@@ -22,8 +22,8 @@ export const PULSAR_ZOOM_MIN = 0.125, PULSAR_ZOOM_MAX = 8;      // f32 0x56cf1c 
 export const PULSAR_FACTOR_MIN = 0.125, PULSAR_FACTOR_MAX = 8;  // f32 0x56c9a4 / 0x56ca50 (and panel 2/3 copies)
 export const PULSAR_PAN_RATES = Object.freeze([1, 10, 100] as const); // 0x56d1b0
 export type PulsarPanRate = typeof PULSAR_PAN_RATES[number];
-/** shortstring[81] for the comment (0x570b9d cl=0x51). */
-export const PULSAR_COMMENT_MAX = 81;
+/** TMEASFORM Cmnt1Ed.MaxLength=80. The shortstring[81] storage (0x570b9d) has a distinct capacity. */
+export const PULSAR_COMMENT_MAX = 80;
 const HORIZONTAL_SCALE = 100;            // f32 0x56c8fc / 0x56c444
 const WINDOW_SAMPLES = 400;              // f32 0x56b9c4
 const ZOOM_IN_SHIFT = 100, ZOOM_OUT_SHIFT = 200; // f32 0x56ba68 / 0x56ba70
@@ -92,7 +92,7 @@ export type PulsarOutcome =
   | 'loaded' | 'no-recording' | 'blocked-modal' | 'properties-opened' | 'properties-closed'
   | 'zoomed-in' | 'zoomed-out' | 'zoom-limit' | 'zoom-disabled' | 'reset'
   | 'factor-changed' | 'factor-limit' | 'panned' | 'pan-bound' | 'pan-rate'
-  | 'mode-changed' | 'cursor' | 'pointer-ignored' | 'pointer-released' | 'number-unsupported' | 'invalid-input'
+  | 'mode-changed' | 'cursor' | 'pointer-ignored' | 'pointer-released' | 'number-unsupported' | 'display-unsupported' | 'invalid-input'
   | 'record-disabled' | 'record-opened' | 'record-draft' | 'record-confirmed' | 'record-skipped' | 'record-finished' | 'comment-invalid'
   | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared';
 
@@ -163,18 +163,33 @@ const hide = (s: PulsarAnalysisState, ch: PulsarPanel, line: CursorLine): Pulsar
   s.cursors[ch][line] ? { ...s, cursors: with3(s.cursors, ch, Object.freeze({ ...s.cursors[ch], [line]: false })) } : s;
 /**
  * 0x56c34c, called after the panel is repainted: recompute pixels from the stored time/value. Vertical and
- * reference times are re-quantized to the pixel grid. A time or value below Single 0x56c440 (0.0) is skipped
- * (0x56c374, 0x56c3b7, 0x56c3fa), and 0x56c6dc rejects an out-of-range y. Either way the repaint has erased
- * the old line, so it is hidden here; the stored pixel, time/value, readout and measurement are kept.
+ * reference times are re-quantized to the pixel grid. A time or value below Single 0x56c440 (0.0, static data
+ * decode) is skipped (0x56c374, 0x56c3b7, 0x56c3fa), and 0x56c6dc rejects an out-of-range y. Either way the
+ * repaint has erased the old line, so it is hidden here; the stored pixel, time/value, readout and measurement
+ * are kept.
+ * WEB: returns null when a projection is not finite in Number, for example when v·100 overflows before gain
+ * and factor scale it back (Extended would not overflow there). That is not the native out-of-range rejection,
+ * so the caller refuses the whole display change instead of hiding the line. The order of operations is kept.
  */
-function redraw(s: PulsarAnalysisState, ch: PulsarPanel): PulsarAnalysisState {
+function redraw(s: PulsarAnalysisState, ch: PulsarPanel): PulsarAnalysisState | null {
   const c = s.cursors[ch];
-  s = (c.verticalTime >= 0 && placeVertical(s, ch, pixelOfTime(s, c.verticalTime))) || hide(s, ch, 'verticalVisible');
-  s = (c.referenceTime >= 0 && placeReference(s, ch, pixelOfTime(s, c.referenceTime))) || hide(s, ch, 'referenceVisible');
-  const h = c.horizontalValue >= 0 ? placeHorizontal(s, ch, roundNearestEven(PULSAR_BASES[ch] - c.horizontalValue * HORIZONTAL_SCALE * gainOf(s, ch) * s.factors[ch]), false) : 'outside';
-  return typeof h === 'object' && h !== null ? h : hide(s, ch, 'horizontalVisible');
+  const v = c.verticalTime >= 0 ? placeVertical(s, ch, pixelOfTime(s, c.verticalTime)) : hide(s, ch, 'verticalVisible');
+  const r = v && (c.referenceTime >= 0 ? placeReference(v, ch, pixelOfTime(v, c.referenceTime)) : hide(v, ch, 'referenceVisible'));
+  if (!r) return null;
+  if (!(c.horizontalValue >= 0)) return hide(r, ch, 'horizontalVisible');
+  const y = roundNearestEven(PULSAR_BASES[ch] - c.horizontalValue * HORIZONTAL_SCALE * gainOf(r, ch) * r.factors[ch]);
+  if (!Number.isFinite(y)) return null;
+  const h = placeHorizontal(r, ch, y, false);
+  return h === 'outside' ? hide(r, ch, 'horizontalVisible') : h;
 }
-const redrawAll = (s: PulsarAnalysisState) => redraw(redraw(redraw(s, 0), 1), 2);
+const redrawAll = (s: PulsarAnalysisState) => {
+  let n: PulsarAnalysisState | null = s;
+  for (const ch of PULSAR_PANELS) n = n && redraw(n, ch);
+  return n;
+};
+/** WEB: a display change whose redraw Number cannot represent is refused as a whole (no partial re-quantization). */
+const redrawn = (s: PulsarAnalysisState, next: PulsarAnalysisState | null, outcome: PulsarOutcome, evidence: readonly string[]) =>
+  next ? done(next, outcome, evidence) : keep(s, 'display-unsupported', ['PLR-REDRAW-01']);
 
 // ---------------------------------------------------------------- range, reset, load
 /** 0x56b7ac (non-placeholder branch): window [0, 400·dt], zoom 1, pan rate 10. The placeholder name branch cannot occur because admission rejects that name. */
@@ -223,7 +238,7 @@ export function pulsarZoom(s: PulsarAnalysisState, direction: 'in' | 'out'): Pul
     ? { ...s, windowStart: s.windowStart + shift, windowEnd: s.windowEnd - shift, zoom, zoomInEnabled: zoom !== PULSAR_ZOOM_MAX, zoomOutEnabled: true }
     : { ...s, windowStart: s.windowStart - shift, windowEnd: s.windowEnd + shift, zoom, zoomOutEnabled: zoom !== PULSAR_ZOOM_MIN, zoomInEnabled: true };
   const limit = direction === 'in' ? zoom === PULSAR_ZOOM_MAX : zoom === PULSAR_ZOOM_MIN;
-  return done(redrawAll(next), limit ? 'zoom-limit' : direction === 'in' ? 'zoomed-in' : 'zoomed-out', ['PLR-ZOOM-01', 'PLR-REDRAW-01']);
+  return redrawn(s, redrawAll(next), limit ? 'zoom-limit' : direction === 'in' ? 'zoomed-in' : 'zoomed-out', ['PLR-ZOOM-01', 'PLR-REDRAW-01']);
 }
 /** DispGain{n}Down/UpClick 0x56c900..0x56cd1c. Only panel ch is redrawn. At a limit the native code calls MessageBeep and changes nothing. */
 export function pulsarFactor(s: PulsarAnalysisState, ch: PulsarPanel, direction: 'up' | 'down'): PulsarTransition {
@@ -231,7 +246,7 @@ export function pulsarFactor(s: PulsarAnalysisState, ch: PulsarPanel, direction:
   if (modal(s)) return keep(s, 'blocked-modal');
   const f = s.factors[ch];
   if (direction === 'down' ? !(f > PULSAR_FACTOR_MIN) : !(f < PULSAR_FACTOR_MAX)) return keep(s, 'factor-limit', ['PLR-GAIN-01']);
-  return done(redraw({ ...s, factors: with3(s.factors, ch, direction === 'down' ? f / 2 : f * 2) }, ch), 'factor-changed', ['PLR-GAIN-01', 'PLR-REDRAW-01']);
+  return redrawn(s, redraw({ ...s, factors: with3(s.factors, ch, direction === 'down' ? f / 2 : f * 2) }, ch), 'factor-changed', ['PLR-GAIN-01', 'PLR-REDRAW-01']);
 }
 export function pulsarPanRate(s: PulsarAnalysisState, rate: number): PulsarTransition {
   if (!(PULSAR_PAN_RATES as readonly number[]).includes(rate)) return keep(s, 'invalid-input');
@@ -239,11 +254,11 @@ export function pulsarPanRate(s: PulsarAnalysisState, rate: number): PulsarTrans
   if (s.panRate === rate) return keep(s, 'pan-rate');
   return done({ ...s, panRate: rate as PulsarPanRate }, 'pan-rate', ['PLR-PAN-01']);
 }
-/** PanTimerTimer 0x56d1e4: start += step, end += step, then redraw all panels. There are no native bounds; the web refuses |window| > 1e12 s. */
+/** PanTimerTimer 0x56d1e4: start += step, end += step, then redraw all panels. There are no native bounds; the web refuses |window| > 1e12 s and a redraw Number cannot represent. */
 function panTick(s: PulsarAnalysisState, step: number): PulsarTransition {
   const start = s.windowStart + step, end = s.windowEnd + step;
   if (!(Math.abs(start) <= WEB_MAX_WINDOW && Math.abs(end) <= WEB_MAX_WINDOW)) return keep(s, 'pan-bound');
-  return done(redrawAll({ ...s, windowStart: start, windowEnd: end, panStep: step }), 'panned', ['PLR-PAN-01', 'PLR-REDRAW-01']);
+  return redrawn(s, redrawAll({ ...s, windowStart: start, windowEnd: end, panStep: step }), 'panned', ['PLR-PAN-01', 'PLR-REDRAW-01']);
 }
 /**
  * PanLftBtnMouseDown 0x56d24c / PanRtBtnMouseDown 0x56d2b0 (left button only): step := ∓rate·dt, then
@@ -281,7 +296,11 @@ const intIn = (v: number, lo: number, hi: number) => Number.isInteger(v) && v >=
  * 400 × Height[ch] paint box, clamped by the caller to [0,399] × [0,Height[ch]−1]. A native drag can
  * report captured coordinates outside the panel. A placement whose value Number cannot represent is
  * refused with 'number-unsupported': the previous cursor and measurement stay, and the drag latches
- * and pending flags follow the same rules as for any other press, move or release.
+ * follow the same rules as for any other press, move or release. A MouseUp whose own placement is
+ * refused is not taken: the panel's pending flag and Record keep their previous values (natively the
+ * Extended value would have been stored, so the native pending rule has no Number counterpart here).
+ * A placement that 0x56c6dc rejects as outside 0 ≤ y < base is a native rule, not a refusal, and
+ * still marks the panel pending.
  */
 export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: PulsarPointer): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');
@@ -310,8 +329,10 @@ export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: Pulsar
   } else {
     if (n.leftDrag && p.button === 'left') n = own({ ...n, leftDrag: false });
     else if (n.rightDrag && p.button === 'right') n = { ...refAll(n), rightDrag: false };
-    const pend = pulsarPanelRecordable(n.recording, ch);
-    n = { ...n, pending: with3(n.pending, ch, pend), recordEnabled: n.recordEnabled || pend };
+    if (!refused) {
+      const pend = pulsarPanelRecordable(n.recording, ch);
+      n = { ...n, pending: with3(n.pending, ch, pend), recordEnabled: n.recordEnabled || pend };
+    }
   }
   if (refused && n === s) return keep(s, 'number-unsupported');
   return done(n, refused ? 'number-unsupported' : 'cursor', ['PLR-MOUSE-01', p.button === 'left' && s.modes[ch] === 'horizontal' ? 'PLR-CURSOR-H-01' : 'PLR-CURSOR-V-01']);

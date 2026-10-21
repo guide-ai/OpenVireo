@@ -27,4 +27,22 @@ describe('pulsar provenance', () => {
     const docs = JSON.stringify(provenance) + readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8');
     expect(docs).not.toMatch(/TRadioFlDlg|base = 200|base is 200|interval is not recovered|timer interval is not recovered/);
   });
+  it('does not assert a native route for a blank first line, and keeps it distinct from an empty file', () => {
+    const read = provenance.contracts.find(c => c.id === 'PLR-READ-01')!;
+    const texts = [JSON.stringify(read), readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8'),
+      readFileSync(new URL('./pulsarRecording.ts', import.meta.url), 'utf8'), readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')];
+    for (const text of texts) expect(text).not.toMatch(/blank (first )?line[^.]*(takes|reads? such a file by|by) the headerless route|including a blank one, takes the headerless/i);
+    expect(read.web).toMatch(/blank first line .*not established/);
+    expect(read.web).toContain("'empty'");
+  });
+  it('binds Single 0x56c440 = 0.0 to the coordinator static data decode, without widening it to runtime FPU parity', () => {
+    const redraw = provenance.contracts.find(c => c.id === 'PLR-REDRAW-01')!;
+    expect(provenance.coordinatorEvidence.files).toHaveProperty(['COORDINATOR-correction-triage/static-data-decode.json']);
+    expect(JSON.stringify(redraw)).toMatch(/0x56c440 .*0\.0.*static data decode/);
+    expect(JSON.stringify(redraw)).not.toMatch(/0x56c440 is read as 0\.0 from listing encodings/);
+    const remaining = provenance.gates.find(g => g.startsWith('Remaining f32 constants'))!;
+    expect(remaining).not.toMatch(/0x56c440/);
+    expect(remaining).toMatch(/0x56c444/);
+    expect(provenance.gates.some(g => /x87 rounding/.test(g))).toBe(true);
+  });
 });
