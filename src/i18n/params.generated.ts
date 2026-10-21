@@ -1744,4 +1744,14 @@ export interface MessageParameters {
   "nativeEdit.error.input": never;
   "nativeEdit.error.hash": never;
   "nativeEdit.preview": "code" | "label";
+  "nativeDelete.title": never;
+  "nativeDelete.open": never;
+  "nativeDelete.warning": "index" | "object";
+  "nativeDelete.policy": never;
+  "nativeDelete.cancel": never;
+  "nativeDelete.confirm": never;
+  "nativeDelete.saved": never;
+  "nativeDelete.undone": never;
+  "nativeDelete.undo": never;
+  "nativeDelete.count": "count";
 }

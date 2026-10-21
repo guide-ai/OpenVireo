@@ -563,3 +563,5 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Owned observation-file field corrections —21October2026
 
 [Existing DAT field corrections](NATIVE-OWNED-RECORD-EDITS.md) use only owned source bytes and recovered object/remarks/int32type offsets;preserve time,coordinates,photometry,kind,Z/V and unused tails;provide safe confirmation,cancel,original/edited download,reimport,one-levelUndo and reviewed replacement. No notebook→DAT metadata reconstruction or full native numerical/FPU/runtime acceptance is implied. This is another bounded original flow;N02/E03/all64primary statuses remain partial/unchanged. See[validation](NATIVE-OWNED-RECORD-EDITS-VALIDATION.md).
+
+Owned-file deletion update: [selected DAT record deletion and exact Undo](NATIVE-OWNED-RECORD-DELETION.md) removes only one supplied144-byte chunk, preserves original/remaining bytes and adds confirmed cancellation/error/empty-file/reimport recovery. This is separate from creating native records from notebook metadata; numerical writer/reader/runtime and broader source-authority gates remain open.

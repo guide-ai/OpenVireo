@@ -1,0 +1,34 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "delete-record",
+      "start": "0x54978c",
+      "endExclusive": "0x5498d5",
+      "bytesSHA256": "214e68185f57c4dd63cdd8b9b42a27e832166d77126b2439eed9ea9abd9018cc",
+      "listingSHA256": "404f616e8f6bc92f87e9f8cc54ecb6a62bc2374d91cde95310854162dd5c02ba",
+      "scope": "Complete nativeDeleteselectedrecord,selectionbounds,confirmation,144bytebackup,remove andSEHreturn"
+    },
+    {
+      "name": "undo-record",
+      "start": "0x54993c",
+      "endExclusive": "0x549a27",
+      "bytesSHA256": "794ea47cc6608a9e82fc571138a174bcbe9ff1d81bad77aeb642cf0e3a7624f9",
+      "listingSHA256": "50de4d059b6a659083422822a0dfe9337b076e7d85f2efbfb34efd192e570849",
+      "scope": "Complete nativeUndo handler includingSEHcleanupthroughfinalret"
+    }
+  ],
+  "originalExecution": false,
+  "source": "Gettysburg CLEA VIREO historical program;existing source inventory credits/uncertainties apply",
+  "sourceExecution": false,
+  "contract": "owned144byte selected deletion and single exact previous-snapshot Undo",
+  "webPolicies": [
+    "atomic hash-before-commit",
+    "retain prior Undo on cancellation/failure",
+    "original input retained separately",
+    "zero-byte owned empty file",
+    "no source-authority promotion"
+  ],
+  "nativeRuntimeEquivalence": false,
+  "nativeWriterReaderOracle": false
+}

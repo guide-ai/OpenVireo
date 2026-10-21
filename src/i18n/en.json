@@ -1742,5 +1742,15 @@
   "nativeEdit.error.unsupportedType": "A colon-only type reaches an unsafe original parsing path and is unsupported. The type and file were kept.",
   "nativeEdit.error.input": "The text correction could not be validated. Your fields and previous file were kept.",
   "nativeEdit.error.hash": "The edited copy could not be hashed. Your fields and previous file were kept; retry or cancel.",
-  "nativeEdit.preview": "Replacement int32 code: {code} · {label}. Re-parsing an old displayed label can change its stored code even if the label looks the same. Leave replacement off to retain the exact original code."
+  "nativeEdit.preview": "Replacement int32 code: {code} · {label}. Re-parsing an old displayed label can change its stored code even if the label looks the same. Leave replacement off to retain the exact original code.",
+  "nativeDelete.title": "Delete owned DAT record",
+  "nativeDelete.open": "Delete selected DAT record",
+  "nativeDelete.warning": "Delete file record {index}: {object}? This removes its complete 144-byte record from the edited copy.",
+  "nativeDelete.policy": "The original input remains available. Other records keep their exact bytes and order. One Undo restores the immediately preceding edit or deletion; cancelling preserves it. An empty edited file contains zero records. Download your edited copy before leaving or reloading.",
+  "nativeDelete.cancel": "Keep DAT record",
+  "nativeDelete.confirm": "Delete DAT record now",
+  "nativeDelete.saved": "The selected record was removed from the edited copy. Original bytes remain available; one Undo restores this deletion.",
+  "nativeDelete.undone": "The deleted record and its prior position were restored exactly.",
+  "nativeDelete.undo": "Undo last DAT deletion",
+  "nativeDelete.count": "Edited copy: {count} records."
 }

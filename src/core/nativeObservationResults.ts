@@ -68,3 +68,12 @@ export function commitNativeRecordEdit(current:NativeObservationData,edit:Native
  if(Object.hasOwn(changes,'typeText')){const code=parseObservationType(changes.typeText!);if(!Number.isInteger(code)||code<0||code>0x7fffffff)throw new NativeRecordEditError('fields');new DataView(bytes.buffer).setInt32(offset+95,code,true);}
  return bytes.every((b,i)=>b===before[i])?current:parseNativeObservationResults(bytes);
 }
+
+/** Recovered selected-record deletion: remove one owned144-byte chunk. The
+ * caller keeps an exact prior snapshot for single Undo; no numeric field is
+ * decoded/re-encoded and no absent metadata is synthesized. */
+export function deleteNativeRecord(current:NativeObservationData,edit:NativeRecordEdit):NativeObservationData{
+ if(!recordEdits.has(edit))throw new NativeRecordEditError('owner');if(current!==edit.base)throw new NativeRecordEditError('stale');
+ const source=nativeObservationBytes(current),at=edit.index*NATIVE_RESULT_BYTES,bytes=new Uint8Array(source.length-NATIVE_RESULT_BYTES);
+ bytes.set(source.subarray(0,at));bytes.set(source.subarray(at+NATIVE_RESULT_BYTES),at);return parseNativeObservationResults(bytes);
+}
