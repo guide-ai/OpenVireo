@@ -89,8 +89,9 @@
     {
       "address": "0x54239a-0x5423af",
       "listingLines": "474830-474835",
-      "contract": "calls TMenuItem.SetEnabled0x4548ac withDL1 on+38c/+388 everyredraw;menuidentitiesunmapped;webClearemptyoverlaydisableisUIchoice",
-      "crossReference": "RADIO-CONTROL-PROVENANCE.json identifies0x4548ac"
+      "contract": "Calls 0x4548ac with DL=1 on +0x38c/+0x388 every redraw. Its TMenuItem.SetEnabled mapping is an analyst inference from the common call pattern; the menu identities remain unmapped. Disabling web Clear without overlays is a UI choice.",
+      "crossReference": "RADIO-CONTROL-PROVENANCE.json RC-08 inference, not a runtime or class-identity witness",
+      "confidence": "analyst inference"
     }
   ]
 }
