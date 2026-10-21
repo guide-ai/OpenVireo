@@ -43,9 +43,9 @@ export function fistpInt64(x:ClusterNativeDyadic):bigint{
  if(q<-(1n<<63n)||q>(1n<<63n)-1n)throw new ClusterNativeFpuGate('int64');return q;
 }
 /** Exact presentation only: cap decimal expansion like the DAT inspector.
- * Longer exponents keep an exact binary expression; arithmetic is unchanged. */
+ * Requires a rounded Extended coefficient (at most64bits);longer exponents keep an exact binary expression;arithmetic is unchanged. */
 export function dyadicDecimal(x:ClusterNativeDyadic):string{
- if(x.n===0n)return'0';const fallback=()=>x.n.toString()+' × 2^'+x.e;
+ if(x.n===0n)return'0';if(x.n>0xffffffffffffffffn||x.n< -0xffffffffffffffffn)throw new RangeError('HR presentation requires a rounded Extended coefficient');const fallback=()=>x.n.toString()+' × 2^'+x.e;
  if(x.e>256||x.e< -96)return fallback();const negative=x.n<0n,m=negative?-x.n:x.n;let s:string;
  if(x.e>=0){s=(m<<BigInt(x.e)).toString();if(s.length>120)return fallback();}else{const places=-x.e,digits=(m*5n**BigInt(places)).toString().padStart(places+1,'0');s=(digits.slice(0,-places)+'.'+digits.slice(-places)).replace(/0+$/,'').replace(/\.$/,'');}
  return(negative?'-':'')+s;
@@ -92,6 +92,12 @@ export function clusterNativeHrPlot(data:NativeObservationData):ClusterNativeHrP
   }
  }
  return Object.freeze({status:'plotted',rows:Object.freeze(rows),count,countLabel:'# of Stars: '+count,plottedCountKind,plottedOtherKind});
+}
+
+/** Web diagnostic rows when the whole plot is withheld. These labels are not
+ * claims about native partial drawing or exception recovery. No B−V is evaluated. */
+export function clusterNativeHrBlockedRows(data:NativeObservationData,blocked:Extract<ClusterNativeHrPlot,{status:'blocked'}>){
+ return Object.freeze(data.records.map(r=>Object.freeze({index:r.index,object:r.object,kind:r.kind,b:shown(field(r,'b'))??field(r,'b').kind,v:shown(field(r,'v'))??field(r,'v').kind,bMinusV:null,pixel:null,inFrame:false,status:r.index<blocked.recordIndex?'before-block' as const:r.index===blocked.recordIndex?'blocking' as const:'after-block' as const})));
 }
 
 // ---------------------------------------------------------------- frame 0x542480

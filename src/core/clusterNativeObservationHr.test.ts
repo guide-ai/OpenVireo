@@ -2,7 +2,7 @@ import{describe,expect,it}from'vitest';
 import controls from'./clusterNativeObservationHr.controls.json';
 import{parseNativeObservationResults,nativeObservationBytes,NativeObservationError,type NativeObservationData}from'./nativeObservationResults';
 import{buildNativeResultList}from'./nativeResultList';
-import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrFrame,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,dyadicDecimal,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,fistpInt64,plotClusterNativeHrObservations,roundExtended,setClusterNativeHrTrial,ClusterNativeFpuGate,ClusterNativeHrStateError,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'./clusterNativeObservationHr';
+import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrBlockedRows,clusterNativeHrFrame,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,dyadicDecimal,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,fistpInt64,plotClusterNativeHrObservations,roundExtended,setClusterNativeHrTrial,ClusterNativeFpuGate,ClusterNativeHrStateError,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'./clusterNativeObservationHr';
 
 // ---- synthetic DAT encoder(test-only;not an original writer)
 type Operand=Readonly<{kind:string;value?:string;coefficient?:string;power?:number}>;
@@ -64,6 +64,11 @@ describe('original observation HR plot 0x542990',()=>{
   expect(dyadicDecimal({n:1n,e:257})).toBe('1 × 2^257');expect(dyadicDecimal({n:1n,e:-97})).toBe('1 × 2^-97');
   expect(dyadicDecimal({n:1n,e:-96})).toMatch(/^0\./);expect(dyadicDecimal({n:-1n,e:-16445})).toBe('-1 × 2^-16445');
  });
+ it('marks web diagnostics before,at,and after a blocking row without computing partial values or changing bytes',()=>{
+  const data=dat([record({time:1,object:'DRAWN',v:decimalDyadic('12'),b:decimalDyadic('12.5')}),record({time:2,object:'ZERO',v:'+0',b:decimalDyadic('1')}),record({time:3,object:'BAD',v:'nan',b:decimalDyadic('1')}),record({time:4,object:'LATER',v:decimalDyadic('13'),b:decimalDyadic('14')})]);
+  const before=nativeObservationBytes(data),plot=clusterNativeHrPlot(data);expect(plot.status).toBe('blocked');if(plot.status!=='blocked')return;
+  const rows=clusterNativeHrBlockedRows(data,plot);expect(rows.map(r=>[r.object,r.status])).toEqual([['DRAWN','before-block'],['ZERO','before-block'],['BAD','blocking'],['LATER','after-block']]);expect(rows[2]!.v).toBe('nan');for(const row of rows){expect(row.bMinusV).toBeNull();expect(row.pixel).toBeNull();}expect(nativeObservationBytes(data)).toEqual(before);
+ });
  it('an empty list is a valid plot with zero stars(no emptiness check in0x542ed8)',()=>{expect(clusterNativeHrPlot(dat([]))).toMatchObject({status:'plotted',count:0,countLabel:'# of Stars: 0',rows:[]});});
  it('Extended rounding helpers keep nearest-even,overflow and Int64 gates',()=>{
   expect(roundExtended({n:(1n<<64n)+1n,e:0})).toEqual({n:1n,e:64});
@@ -71,7 +76,7 @@ describe('original observation HR plot 0x542990',()=>{
   expect(()=>roundExtended({n:1n,e:16384})).toThrow(ClusterNativeFpuGate);
   expect(fistpInt64({n:5n,e:-1})).toBe(2n);expect(fistpInt64({n:-5n,e:-1})).toBe(-2n);expect(fistpInt64({n:7n,e:-1})).toBe(4n);
   expect(()=>fistpInt64({n:1n,e:63})).toThrow(ClusterNativeFpuGate);expect(fistpInt64({n:-1n,e:63})).toBe(-(1n<<63n));
-  expect(dyadicDecimal({n:-7n,e:-4})).toBe('-0.4375');
+  expect(dyadicDecimal({n:-7n,e:-4})).toBe('-0.4375');expect(()=>dyadicDecimal({n:1n<<100000n,e:0})).toThrow(RangeError);expect(()=>dyadicDecimal({n:-(1n<<100000n),e:-1})).toThrow(RangeError);
  });
 });
 

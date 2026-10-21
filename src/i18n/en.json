@@ -2059,8 +2059,8 @@
   "obsHr.dismiss": "Dismiss message",
   "obsHr.plotHeading": "Load/Plot",
   "obsHr.plotButton": "Plot data from observations",
-  "obsHr.plotHelp": "Like the original menu command, this plots every current record whose stored B and V are both non-zero, with B−V = B − V. It does not ask for confirmation and does not check whether records hold magnitudes.",
-  "obsHr.notPlotted": "Observation data are not plotted yet. The empty frame shows the original fixed axes.",
+  "obsHr.plotHelp": "The original command selects observation mode. Its redraw uses every current record whose stored B and V are both non-zero, with B−V = B − V, without testing whether records hold magnitudes. The web waits for your selection; the original initial mode is unknown.",
+  "obsHr.notPlotted": "Select observation mode to show your stored records. Hiding them before selection is a web display choice; the original initial mode is not established.",
   "obsHr.chartRegion": "Scrollable observation HR diagram",
   "obsHr.chartTitle": "Observation colour–magnitude diagram on the original fixed axes",
   "obsHr.blockedField.v": "V",
@@ -2083,7 +2083,7 @@
   "obsHr.distanceOption": "Instructor option: include the distance line (original option; its default is not established)",
   "obsHr.reportHeading": "View/Print Parameters",
   "obsHr.reportNote": "Text produced with the original wording and decimal places. The first line in the original continues with the name of the last database cluster record; that record is not available for observation data, so the line is left as printed without a name.",
-  "obsHr.recordsSummary": "All records and how the original treats them",
+  "obsHr.recordsSummary": "All stored records and web plot diagnostics",
   "obsHr.colIndex": "#",
   "obsHr.colObject": "Object (stored text)",
   "obsHr.colKind": "Kind",
@@ -2121,5 +2121,8 @@
   "obsHr.workspaceSummary": "HR diagram from saved observations",
   "obsHr.persistence": "This observation HR workspace is separate from Save investigation. Download current results (DAT) before reloading. Manual overlay settings reset on reload.",
   "obsHr.loading": "Loading observation HR tools…",
-  "obsHr.blockedStatus": "Not evaluated: the whole plot is blocked."
+  "obsHr.blockedStatus": "Not evaluated: the whole plot is blocked.",
+  "obsHr.beforeBlock": "Before blocking record: web plot withheld.",
+  "obsHr.afterBlock": "After blocking record: no web calculation.",
+  "obsHr.blockingRecord": "Blocking record: {field}. Web plot withheld."
 }

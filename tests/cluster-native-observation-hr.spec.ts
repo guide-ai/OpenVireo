@@ -17,7 +17,7 @@ const button=(page:Page,name:string)=>page.getByRole('button',{name,exact:true})
 
 test('saved DAT → review/cancel → add/merge → Data from Observations on fixed axes → table and download',async({page},info)=>{
  await open(page);await expect(page.getByTestId('cnhr-current')).toHaveText('Current results: 0 records in the original time/RA order.');
- await expect(page.getByText('Observation data are not plotted yet. The empty frame shows the original fixed axes.',{exact:true})).toBeVisible();
+ await expect(page.getByText('Select observation mode to show your stored records. Hiding them before selection is a web display choice; the original initial mode is not established.',{exact:true})).toBeVisible();
  await choose(page,'night1.dat',dat(A));await expect(page.getByTestId('cnhr-pending')).toHaveText('night1.dat: 3 records');await expect(page.getByLabel(L.file,{exact:true})).toBeDisabled();
  await button(page,'Cancel and keep current results').click();await expect(page.getByTestId('cnhr-pending')).toHaveCount(0);await expect(page.getByTestId('cnhr-current')).toContainText('0 records');
  await choose(page,'night1.dat',dat(A));await button(page,'Add to current results').click();await expect(page.getByTestId('cnhr-current')).toContainText('3 records');
@@ -26,7 +26,7 @@ test('saved DAT → review/cancel → add/merge → Data from Observations on fi
  const p3=page.locator('[data-testid=cnhr-point][data-record="3"]');await expect(p3).toHaveAttribute('cx','170');await expect(p3).toHaveAttribute('cy','295');
  await expect(page.getByText('1 plotted record is marked as mean counts. The original plots their stored numbers unchanged; they are not magnitudes.',{exact:true})).toBeVisible();
  await choose(page,'night2.dat',dat(B));await button(page,'Add to current results').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 3');
- await page.getByText('All records and how the original treats them',{exact:true}).click();
+ await page.getByText('All stored records and web plot diagnostics',{exact:true}).click();
  await expect(page.getByTestId('cnhr-row')).toHaveText([/^1HD 1magnitudes10\.510.*200, 239plotted$/,/^2HD 4magnitudes98.*260, 183plotted$/,/^3HD 2magnitudes110—.*not plotted: V is zero$/,/^4HD 3mean counts12\.2512.*170, 295plotted$/]);
  const download=page.waitForEvent('download');await button(page,'Download current results (DAT)').click();const saved=await(await download).path();
  const bytes=Buffer.from(await (await import('node:fs/promises')).readFile(saved!));expect(bytes.equals(Buffer.concat([A[1]!,B[0]!,A[2]!,A[0]!].map(record)))).toBe(true);
@@ -48,7 +48,7 @@ test('invalid,late/cancelled and exception-path files keep current work and expl
  await choose(page,'nan-v.dat',dat([{time:9,object:'BAD',kind:1,v:NaN,b:1}]));await button(page,'Add to current results').click();
  await expect(page.getByTestId('cnhr-blocked')).toHaveText('Record 4 cannot be plotted under the compiled numerical policy (or its pixel position would wrap): V. Nothing is plotted. Correct or remove that record with the results tools and load the file again.');
  await expect(page.getByTestId('cnhr-point')).toHaveCount(0);await expect(page.getByTestId('cnhr-count')).toHaveCount(0);
- await page.getByText('All records and how the original treats them',{exact:true}).click();await expect(page.getByTestId('cnhr-row')).toHaveCount(4);await expect(page.getByTestId('cnhr-row').last()).toContainText('4BADmagnitudes1nan');await expect(page.getByTestId('cnhr-row').last()).toContainText('Not evaluated: the whole plot is blocked.');
+ await page.getByText('All stored records and web plot diagnostics',{exact:true}).click();await expect(page.getByTestId('cnhr-row')).toHaveCount(4);await expect(page.getByTestId('cnhr-row').last()).toContainText('4BADmagnitudes1nan');await expect(page.getByTestId('cnhr-row').last()).toContainText('Blocking record: V. Web plot withheld.');
  await choose(page,'replace.dat',dat(A));await button(page,'Replace current results…').click();await button(page,'Confirm replacing current results').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');
 });
 
@@ -92,5 +92,21 @@ test('download failure is explained and a retry preserves the exact owned DAT by
  await open(page);await choose(page,'owned.dat',dat(A));await button(page,'Add to current results').click();await button(page,'Plot data from observations').click();
  await page.evaluate(()=>{const original=URL.createObjectURL;URL.createObjectURL=()=>{URL.createObjectURL=original;throw new Error('synthetic browser download failure');};});
  await button(page,'Download current results (DAT)').click();await expect(page.getByRole('alert')).toHaveText('The browser could not start the download. Your current work was kept.');await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');await expect(page.getByTestId('cnhr-current')).toContainText('3 records');
+ await choose(page,'new-candidate.dat',dat(B));await expect(page.getByRole('alert')).toHaveCount(0);await button(page,'Cancel and keep current results').click();
  const event=page.waitForEvent('download');await button(page,'Download current results (DAT)').click();const saved=await(await event).path();const bytes=await(await import('node:fs/promises')).readFile(saved!);expect(bytes.equals(dat([A[1]!,A[2]!,A[0]!]))).toBe(true);await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
+
+test('a failed Add preserves its reviewed file and Dismiss returns focus to its enabled action',async({page})=>{
+ await open(page);const rows=(start:number,n:number)=>Array.from({length:n},(_,i)=>({time:start+i,object:'S'+i,kind:1,v:10,b:10.5}));
+ await choose(page,'current.dat',dat(rows(1,600)));await button(page,'Add to current results').press('Enter');await choose(page,'pending.dat',dat(rows(1001,500)));await button(page,'Add to current results').press('Enter');
+ await expect(page.getByRole('alert')).toHaveText(/1000/);await expect(page.getByTestId('cnhr-current')).toContainText('600 records');await expect(page.getByTestId('cnhr-pending')).toHaveText('pending.dat: 500 records');
+ await button(page,'Dismiss message').press('Enter');await expect(button(page,'Add to current results')).toBeFocused();await expect(page.getByLabel(L.file,{exact:true})).toBeDisabled();await button(page,'Cancel and keep current results').press('Enter');await expect(page.getByLabel(L.file,{exact:true})).toBeFocused();await expect(page.getByTestId('cnhr-current')).toContainText('600 records');
+});
+
+test('slow read success and failure do not steal focus from a manual model control',async({page})=>{
+ await open(page);const slider=page.getByLabel(L.modulus);
+ const slow=()=>page.evaluate(()=>{const original=File.prototype.arrayBuffer;File.prototype.arrayBuffer=function(){return new Promise((resolve,reject)=>{(window as unknown as{releaseRead:(fail:boolean)=>void}).releaseRead=(fail)=>{File.prototype.arrayBuffer=original;if(fail)reject(new Error('synthetic read failure'));else void original.call(this).then(resolve,reject);};});};});
+ await slow();await choose(page,'slow-success.dat',dat(A));await expect(button(page,'Cancel file read')).toBeFocused();await slider.focus();await slider.press('ArrowRight');await expect(slider).toHaveValue('1');await page.evaluate(()=>(window as unknown as{releaseRead:(fail:boolean)=>void}).releaseRead(false));await expect(page.getByTestId('cnhr-pending')).toHaveText('slow-success.dat: 3 records');await expect(slider).toBeFocused();await slider.press('ArrowRight');await expect(slider).toHaveValue('2');await button(page,'Cancel and keep current results').click();
+ await slow();await choose(page,'slow-failure.dat',dat(B));await expect(button(page,'Cancel file read')).toBeFocused();await slider.focus();await slider.press('ArrowRight');await page.evaluate(()=>(window as unknown as{releaseRead:(fail:boolean)=>void}).releaseRead(true));await expect(page.getByRole('alert')).toBeVisible();await expect(slider).toBeFocused();await expect(slider).toHaveValue('3');await slider.press('ArrowRight');await expect(slider).toHaveValue('4');await expect(page.getByTestId('cnhr-current')).toContainText('0 records');
 });
