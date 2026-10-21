@@ -85,6 +85,12 @@
       "address": "0x542b03-0x542b5e",
       "listingLines": "475360-475386",
       "contract": "optional selected-star marker branch (+480,+481,+485,+3d9) unimplemented;owner and initial context not recovered"
+    },
+    {
+      "address": "0x54239a-0x5423af",
+      "listingLines": "474830-474835",
+      "contract": "calls TMenuItem.SetEnabled0x4548ac withDL1 on+38c/+388 everyredraw;menuidentitiesunmapped;webClearemptyoverlaydisableisUIchoice",
+      "crossReference": "RADIO-CONTROL-PROVENANCE.json identifies0x4548ac"
     }
   ]
 }

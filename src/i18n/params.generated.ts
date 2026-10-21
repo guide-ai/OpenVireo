@@ -2122,7 +2122,6 @@ export interface MessageParameters {
   "obsHr.workspaceSummary": never;
   "obsHr.persistence": never;
   "obsHr.loading": never;
-  "obsHr.blockedStatus": never;
   "obsHr.beforeBlock": never;
   "obsHr.afterBlock": never;
   "obsHr.blockingRecord": "field";

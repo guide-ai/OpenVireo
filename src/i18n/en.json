@@ -2121,7 +2121,6 @@
   "obsHr.workspaceSummary": "HR diagram from saved observations",
   "obsHr.persistence": "This observation HR workspace is separate from Save investigation. Download current results (DAT) before reloading. Manual overlay settings reset on reload.",
   "obsHr.loading": "Loading observation HR tools…",
-  "obsHr.blockedStatus": "Not evaluated: the whole plot is blocked.",
   "obsHr.beforeBlock": "Before blocking record: web plot withheld.",
   "obsHr.afterBlock": "After blocking record: no web calculation.",
   "obsHr.blockingRecord": "Blocking record: {field}. Web plot withheld."

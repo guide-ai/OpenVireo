@@ -1,4 +1,5 @@
 import{t}from'../i18n';
+import type{StoredNumber}from'../core/nativeObservationResults';
 /** Stable presentation keys use the shared English catalog;scientific source/report values remain unchanged. */
 export const CLUSTER_NATIVE_HR_MESSAGES={
  title:t("obsHr.title"),
@@ -18,7 +19,7 @@ export const CLUSTER_NATIVE_HR_MESSAGES={
  sourceAction:{"add":t("obsHr.sourceAction.add"),"replace":t("obsHr.sourceAction.replace")},
  download:t("obsHr.download"),
  downloadError:t("obs.file.downloadError"),
- blockedStatus:t("obsHr.blockedStatus"),
+ storedNumber:(s:StoredNumber)=>s.kind==='infinity'?t(s.negative?'fits.kind.negativeInfinity':'fits.kind.positiveInfinity'):t(`nativeResults.number.${s.kind}`),
  beforeBlock:t("obsHr.beforeBlock"),
  afterBlock:t("obsHr.afterBlock"),
  blockingRecord:(field:string)=>t("obsHr.blockingRecord",{field}),

@@ -3,7 +3,7 @@ import{test,expect,type Page}from'@playwright/test';
 const URL_PATH=process.env.CLUSTER_NATIVE_HR_URL??'/#cluster-database';
 type Row=Readonly<{time:number;object:string;kind:number;v:number;b:number}>;
 function extended(value:number):Buffer{
- const out=Buffer.alloc(10);if(Number.isNaN(value)){out.writeBigUInt64LE(0xc000000000000000n,0);out.writeUInt16LE(0x7fff,8);return out;}if(value===0)return out;
+ const out=Buffer.alloc(10);if(Number.isNaN(value)){out.writeBigUInt64LE(0xc000000000000000n,0);out.writeUInt16LE(0x7fff,8);return out;}if(value===Infinity||value===-Infinity){out.writeBigUInt64LE(0x8000000000000000n,0);out.writeUInt16LE(value<0?0xffff:0x7fff,8);return out;}if(value===0)return out;
  const d=Buffer.alloc(8);d.writeDoubleLE(value,0);const bits=d.readBigUInt64LE(0),sign=Number(bits>>63n),exp=Number(bits>>52n&0x7ffn),frac=bits&((1n<<52n)-1n);
  out.writeBigUInt64LE(1n<<63n|frac<<11n,0);out.writeUInt16LE(exp-1023+16383|sign<<15,8);return out;
 }
@@ -48,7 +48,7 @@ test('invalid,late/cancelled and exception-path files keep current work and expl
  await choose(page,'nan-v.dat',dat([{time:9,object:'BAD',kind:1,v:NaN,b:1}]));await button(page,'Add to current results').click();
  await expect(page.getByTestId('cnhr-blocked')).toHaveText('Record 4 cannot be plotted under the compiled numerical policy (or its pixel position would wrap): V. Nothing is plotted. Correct or remove that record with the results tools and load the file again.');
  await expect(page.getByTestId('cnhr-point')).toHaveCount(0);await expect(page.getByTestId('cnhr-count')).toHaveCount(0);
- await page.getByText('All stored records and web plot diagnostics',{exact:true}).click();await expect(page.getByTestId('cnhr-row')).toHaveCount(4);await expect(page.getByTestId('cnhr-row').last()).toContainText('4BADmagnitudes1nan');await expect(page.getByTestId('cnhr-row').last()).toContainText('Blocking record: V. Web plot withheld.');
+ await page.getByText('All stored records and web plot diagnostics',{exact:true}).click();await expect(page.getByTestId('cnhr-row')).toHaveCount(4);await expect(page.getByTestId('cnhr-row').last()).toContainText('4BADmagnitudes1Stored NaN payload; not a finite measurement');await expect(page.getByTestId('cnhr-row').last()).toContainText('Blocking record: V. Web plot withheld.');
  await choose(page,'replace.dat',dat(A));await button(page,'Replace current results…').click();await button(page,'Confirm replacing current results').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');
 });
 
@@ -109,4 +109,16 @@ test('slow read success and failure do not steal focus from a manual model contr
  const slow=()=>page.evaluate(()=>{const original=File.prototype.arrayBuffer;File.prototype.arrayBuffer=function(){return new Promise((resolve,reject)=>{(window as unknown as{releaseRead:(fail:boolean)=>void}).releaseRead=(fail)=>{File.prototype.arrayBuffer=original;if(fail)reject(new Error('synthetic read failure'));else void original.call(this).then(resolve,reject);};});};});
  await slow();await choose(page,'slow-success.dat',dat(A));await expect(button(page,'Cancel file read')).toBeFocused();await slider.focus();await slider.press('ArrowRight');await expect(slider).toHaveValue('1');await page.evaluate(()=>(window as unknown as{releaseRead:(fail:boolean)=>void}).releaseRead(false));await expect(page.getByTestId('cnhr-pending')).toHaveText('slow-success.dat: 3 records');await expect(slider).toBeFocused();await slider.press('ArrowRight');await expect(slider).toHaveValue('2');await button(page,'Cancel and keep current results').click();
  await slow();await choose(page,'slow-failure.dat',dat(B));await expect(button(page,'Cancel file read')).toBeFocused();await slider.focus();await slider.press('ArrowRight');await page.evaluate(()=>(window as unknown as{releaseRead:(fail:boolean)=>void}).releaseRead(true));await expect(page.getByRole('alert')).toBeVisible();await expect(slider).toBeFocused();await expect(slider).toHaveValue('3');await slider.press('ArrowRight');await expect(slider).toHaveValue('4');await expect(page.getByTestId('cnhr-current')).toContainText('0 records');
+});
+
+test('slow read must not take focus after the learner clicks non-focusable model text',async({page})=>{
+ await open(page);await page.evaluate(()=>{const original=File.prototype.arrayBuffer;File.prototype.arrayBuffer=function(){return new Promise(resolve=>{(window as unknown as{releaseRead:()=>void}).releaseRead=()=>{File.prototype.arrayBuffer=original;void original.call(this).then(resolve);};});};});
+ await choose(page,'slow.dat',dat(A));await expect(button(page,'Cancel file read')).toBeFocused();await page.getByRole('heading',{name:'Model comparison (adjust by eye)',exact:true}).click();await expect.poll(()=>page.evaluate(()=>document.activeElement?.tagName)).toBe('BODY');await page.evaluate(()=>(window as unknown as{releaseRead:()=>void}).releaseRead());await expect(page.getByTestId('cnhr-pending')).toHaveText('slow.dat: 3 records');await expect(button(page,'Add to current results')).not.toBeFocused();
+});
+
+
+test('signed infinity and nonfinite encoding labels stay identical in blocked and zero-skipped tables',async({page},info)=>{
+ await page.setViewportSize({width:360,height:900});await open(page);await choose(page,'negative-infinity.dat',dat([{time:1,object:'NEG-INF',kind:1,v:-Infinity,b:1}]));await button(page,'Add to current results').click();await button(page,'Plot data from observations').click();await expect(page.getByTestId('cnhr-blocked')).toBeVisible();await page.getByText('All stored records and web plot diagnostics',{exact:true}).click();
+ const cell=page.getByTestId('cnhr-row').locator('td').nth(4);await expect(cell).toHaveText('Negative infinity');await expect(cell).toHaveAttribute('title','0x0000000000000080ffff');await expect(page.getByTestId('cnhr-row')).toHaveAttribute('data-blocking','true');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.locator('.cluster-native-hr').screenshot({path:info.outputPath('cnhr-blocked-mobile.png')});
+ await choose(page,'zero-skip.dat',dat([{time:1,object:'NEG-INF',kind:1,v:-Infinity,b:0}]));await button(page,'Replace current results…').click();await button(page,'Confirm replacing current results').click();await expect(page.getByTestId('cnhr-blocked')).toHaveCount(0);await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 0');await expect(cell).toHaveText('Negative infinity');await expect(cell).toHaveAttribute('title','0x0000000000000080ffff');await expect(page.getByTestId('cnhr-row')).toContainText('not plotted: B is zero');
 });

@@ -56,11 +56,12 @@ export function dyadicNumber(x:ClusterNativeDyadic):number{if(x.n===0n)return 0;
 const SIGNED_PIXEL_LIMIT=2**31-1024;
 const TWO=dyadicFromInteger(2),MINUS_HALF=dy(-1n,-1),PX_V=dyadicFromInteger(G.pxPerMag),PX_C=dyadicFromInteger(G.pxPerColor);
 export type ClusterNativeHrStatus='plotted'|'skipped-v-zero'|'skipped-b-zero';
-export type ClusterNativeHrRow=Readonly<{index:number;object:string;kind:number;status:ClusterNativeHrStatus;b:string|null;v:string|null;bMinusV:Readonly<{exact:string;value:number}>|null;pixel:Readonly<{x:number;y:number}>|null;inFrame:boolean}>;
+export type ClusterNativeHrRow=Readonly<{index:number;object:string;kind:number;status:ClusterNativeHrStatus;b:string|null;v:string|null;storedB:StoredNumber;storedV:StoredNumber;bMinusV:Readonly<{exact:string;value:number}>|null;pixel:Readonly<{x:number;y:number}>|null;inFrame:boolean}>;
 export type ClusterNativeHrOperand='v'|'b'|'b-v';
 export type ClusterNativeHrPlot=Readonly<{status:'plotted';rows:readonly ClusterNativeHrRow[];count:number;countLabel:string;plottedCountKind:number;plottedOtherKind:number}>|Readonly<{status:'blocked';reason:'operand'|'overflow'|'int64'|'pixel-range';recordIndex:number;field:ClusterNativeHrOperand;plottedBefore:number}>;
 const field=(r:NativeObservationRecord,id:'b'|'v')=>r.fields.find(f=>f.id===id)!.value;
 const shown=(s:StoredNumber)=>s.decimal??s.binary;
+function rowBase(r:NativeObservationRecord){const storedB=field(r,'b'),storedV=field(r,'v');return{index:r.index,object:r.object,kind:r.kind,b:shown(storedB),v:shown(storedV),storedB,storedV};}
 /** fcomp with Single0.0:NaN/unsupported raise IA(unmasked in0x1332);pseudo-denormals have
  * no admitted coefficient in the shared reader and are gated as a declared web choice. */
 const compareClass=(s:StoredNumber)=>s.kind==='nan'||s.kind==='unsupported'||s.kind==='pseudo-denormal'?'invalid':s.kind==='zero'?'zero':s.kind==='infinity'?'infinite':'finite';
@@ -77,7 +78,7 @@ function pixel(value:ClusterNativeDyadic,origin:ClusterNativeDyadic,scale:Cluste
 export function clusterNativeHrPlot(data:NativeObservationData):ClusterNativeHrPlot{
  const rows:ClusterNativeHrRow[]=[];let count=0,plottedCountKind=0,plottedOtherKind=0;
  for(const record of data.records){
-  const sv=field(record,'v'),sb=field(record,'b'),base={index:record.index,object:record.object,kind:record.kind,b:shown(sb),v:shown(sv)};
+  const base=rowBase(record),sv=base.storedV,sb=base.storedB;
   let operand:ClusterNativeHrOperand='v';
   const blocked=(reason:'operand'|'overflow'|'int64'|'pixel-range')=>Object.freeze({status:'blocked' as const,reason,recordIndex:record.index,field:operand,plottedBefore:count});
   const cv=compareClass(sv);if(cv==='invalid')return blocked('operand');if(cv==='zero'){rows.push(Object.freeze({...base,status:'skipped-v-zero',bMinusV:null,pixel:null,inFrame:false}));continue;}
@@ -97,7 +98,7 @@ export function clusterNativeHrPlot(data:NativeObservationData):ClusterNativeHrP
 /** Web diagnostic rows when the whole plot is withheld. These labels are not
  * claims about native partial drawing or exception recovery. No B−V is evaluated. */
 export function clusterNativeHrBlockedRows(data:NativeObservationData,blocked:Extract<ClusterNativeHrPlot,{status:'blocked'}>){
- return Object.freeze(data.records.map(r=>Object.freeze({index:r.index,object:r.object,kind:r.kind,b:shown(field(r,'b'))??field(r,'b').kind,v:shown(field(r,'v'))??field(r,'v').kind,bMinusV:null,pixel:null,inFrame:false,status:r.index<blocked.recordIndex?'before-block' as const:r.index===blocked.recordIndex?'blocking' as const:'after-block' as const})));
+ return Object.freeze(data.records.map(r=>Object.freeze({...rowBase(r),field:blocked.field,bMinusV:null,pixel:null,inFrame:false,status:r.index<blocked.recordIndex?'before-block' as const:r.index===blocked.recordIndex?'blocking' as const:'after-block' as const})));
 }
 
 // ---------------------------------------------------------------- frame 0x542480

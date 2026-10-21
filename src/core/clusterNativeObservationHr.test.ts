@@ -67,7 +67,11 @@ describe('original observation HR plot 0x542990',()=>{
  it('marks web diagnostics before,at,and after a blocking row without computing partial values or changing bytes',()=>{
   const data=dat([record({time:1,object:'DRAWN',v:decimalDyadic('12'),b:decimalDyadic('12.5')}),record({time:2,object:'ZERO',v:'+0',b:decimalDyadic('1')}),record({time:3,object:'BAD',v:'nan',b:decimalDyadic('1')}),record({time:4,object:'LATER',v:decimalDyadic('13'),b:decimalDyadic('14')})]);
   const before=nativeObservationBytes(data),plot=clusterNativeHrPlot(data);expect(plot.status).toBe('blocked');if(plot.status!=='blocked')return;
-  const rows=clusterNativeHrBlockedRows(data,plot);expect(rows.map(r=>[r.object,r.status])).toEqual([['DRAWN','before-block'],['ZERO','before-block'],['BAD','blocking'],['LATER','after-block']]);expect(rows[2]!.v).toBe('nan');for(const row of rows){expect(row.bMinusV).toBeNull();expect(row.pixel).toBeNull();}expect(nativeObservationBytes(data)).toEqual(before);
+  const rows=clusterNativeHrBlockedRows(data,plot);expect(rows.map(r=>[r.object,r.status])).toEqual([['DRAWN','before-block'],['ZERO','before-block'],['BAD','blocking'],['LATER','after-block']]);expect(rows[2]!.storedV.kind).toBe('nan');expect(rows[2]!.v).toBeNull();for(const row of rows){expect(row.bMinusV).toBeNull();expect(row.pixel).toBeNull();}expect(nativeObservationBytes(data)).toEqual(before);
+ });
+ it('successful and blocked rows preserve the same raw signed nonfinite metadata for translated presentation',()=>{
+  const inf=record({time:1,v:'+inf',b:decimalDyadic('1')});inf[73]|=0x80;const data=dat([inf]),plot=clusterNativeHrPlot(data);expect(plot.status).toBe('blocked');if(plot.status!=='blocked')return;const blocked=clusterNativeHrBlockedRows(data,plot)[0]!;expect(blocked.v).toBeNull();expect(blocked.storedV).toMatchObject({kind:'infinity',negative:true});
+  const zero=Uint8Array.from(inf);zero.set(extended('+0'),54);const skipped=clusterNativeHrPlot(dat([zero]));expect(skipped.status).toBe('plotted');if(skipped.status!=='plotted')return;expect(skipped.rows[0]!.storedV).toEqual(blocked.storedV);expect(skipped.rows[0]!.v).toBeNull();expect(skipped.rows[0]!.status).toBe('skipped-b-zero');
  });
  it('an empty list is a valid plot with zero stars(no emptiness check in0x542ed8)',()=>{expect(clusterNativeHrPlot(dat([]))).toMatchObject({status:'plotted',count:0,countLabel:'# of Stars: 0',rows:[]});});
  it('Extended rounding helpers keep nearest-even,overflow and Int64 gates',()=>{

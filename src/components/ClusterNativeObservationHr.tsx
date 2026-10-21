@@ -31,18 +31,20 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
  const token=useRef(0),input=useRef<HTMLInputElement>(null);
  const addButton=useRef<HTMLButtonElement>(null),confirmButton=useRef<HTMLButtonElement>(null),cancelReadButton=useRef<HTMLButtonElement>(null);
  const focusIntent=useRef<'input'|'add'|'confirm'|'cancelRead'|null>(null),activeRead=useRef<number|null>(null);
- const [downloadError,setDownloadError]=useState(false);
+ const [downloadErrorFor,setDownloadErrorFor]=useState<NativeResultList|null>(null);
+ const interactionVersion=useRef(0),asyncFocus=useRef<{owner:Element;version:number}|null>(null);
+ useEffect(()=>{const changed=()=>{interactionVersion.current++;};document.addEventListener('focusin',changed,true);document.addEventListener('pointerdown',changed,true);return()=>{document.removeEventListener('focusin',changed,true);document.removeEventListener('pointerdown',changed,true);};},[]);
  // Explicit local actions own focus; host navigation/restore must not steal it.
- useLayoutEffect(()=>{if(disabled){focusIntent.current=null;activeRead.current=null;return;}const intent=focusIntent.current;if(!intent)return;focusIntent.current=null;
+ useLayoutEffect(()=>{if(disabled){focusIntent.current=null;asyncFocus.current=null;activeRead.current=null;return;}const intent=focusIntent.current,origin=asyncFocus.current;if(!intent)return;focusIntent.current=null;asyncFocus.current=null;
+  if(origin){const active=document.activeElement;if(origin.version!==interactionVersion.current||!(active===origin.owner||(active===document.body&&(!origin.owner.isConnected||(origin.owner===input.current&&input.current.disabled)))))return;}
   const target=intent==='confirm'?confirmButton.current:intent==='add'?addButton.current:intent==='cancelRead'?cancelReadButton.current:input.current;
   if(target&&!target.disabled)target.focus();else if(addButton.current&&!addButton.current.disabled)addButton.current.focus();else if(input.current&&!input.current.disabled)input.current.focus();
  },[w,disabled]);
- const change=(action:(c:ClusterNativeHrWorkspace)=>ClusterNativeHrWorkspace,target:'input'|'add'|'confirm')=>{focusIntent.current=target;setW(action);};
+ const change=(action:(c:ClusterNativeHrWorkspace)=>ClusterNativeHrWorkspace,target:'input'|'add'|'confirm')=>{asyncFocus.current=null;focusIntent.current=target;setW(action);};
  // Navigation,collapsed workspace or host restore cancels only an in-flight
  // read. The current list,reviewed candidate and manual trial stay owned here.
  useEffect(()=>{if(disabled){activeRead.current=null;setW(cancelClusterNativeHrRead);}},[disabled]);
  useEffect(()=>()=>{activeRead.current=null;},[]);
- useEffect(()=>{setDownloadError(false);},[w.list]);
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  const records=clusterNativeHrRecords(w),busy=disabled||w.reading!==null;
  const plot=useMemo(()=>w.list?clusterNativeHrPlot(w.list.data):clusterNativeHrPlot({records:[]}),[w.list]);
@@ -58,14 +60,14 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
 
  function choose(e:ChangeEvent<HTMLInputElement>){
   const file=e.currentTarget.files?.[0];e.currentTarget.value='';if(!file||busy||w.pending)return;const t=++token.current;
-  focusIntent.current='cancelRead';activeRead.current=t;setDownloadError(false);setW(c=>beginClusterNativeHrRead(c,t,file.name));
-  const settleFocus=(target:'add'|'input')=>{const active=document.activeElement;focusIntent.current=active===cancelReadButton.current||active===input.current||active===document.body?target:null;};
+  asyncFocus.current=null;focusIntent.current='cancelRead';activeRead.current=t;setDownloadErrorFor(null);setW(c=>beginClusterNativeHrRead(c,t,file.name));
+  const settleFocus=(target:'add'|'input')=>{const owner=document.activeElement,owned=owner!==null&&(owner===cancelReadButton.current||owner===input.current);focusIntent.current=owned?target:null;asyncFocus.current=owned?{owner,version:interactionVersion.current}:null;};
   readNativeObservationFile(file).then(f=>{if(activeRead.current!==t)return;activeRead.current=null;settleFocus('add');setW(c=>completeClusterNativeHrRead(c,t,f));},error=>{if(activeRead.current!==t)return;activeRead.current=null;settleFocus('input');setW(c=>failClusterNativeHrRead(c,t,error));});
  }
  function download(){
-  if(!w.list)return;let url:string|undefined;setDownloadError(false);
+  if(!w.list)return;let url:string|undefined;setDownloadErrorFor(null);
   try{url=URL.createObjectURL(new Blob([nativeObservationBytes(w.list.data).buffer as ArrayBuffer],{type:'application/octet-stream'}));const a=document.createElement('a');a.href=url;a.download='observation-results.dat';a.click();const started=url;setTimeout(()=>URL.revokeObjectURL(started),1000);}
-  catch{if(url)URL.revokeObjectURL(url);setDownloadError(true);}
+  catch{if(url)URL.revokeObjectURL(url);setDownloadErrorFor(w.list);}
  }
  const shownPlot=w.observationsPlotted&&plot.status==='plotted'?plot:null;
  const tableRows=useMemo(()=>shownPlot?.rows??(w.observationsPlotted&&plot.status==='blocked'&&w.list?clusterNativeHrBlockedRows(w.list.data,plot):[]),[shownPlot,w.observationsPlotted,w.list,plot]);
@@ -82,7 +84,7 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
     {w.replaceArmed?<div><p>{m.replaceQuestion(records)}</p><div className="cnhr-actions"><button type="button" className="primary-button" disabled={disabled} ref={confirmButton} onClick={()=>change(confirmClusterNativeHrReplace,'input')}>{m.confirmReplace}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>change(disarmClusterNativeHrReplace,'add')}>{m.keepCurrent}</button></div></div>
     :<div className="cnhr-actions"><button type="button" className="primary-button" disabled={disabled} ref={addButton} onClick={()=>change(addClusterNativeHrPending,'input')}>{m.addPending}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>change(armClusterNativeHrReplace,records?'confirm':'input')}>{m.replacePending}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>change(cancelClusterNativeHrPending,'input')}>{m.cancelPending}</button></div>}
    </div>}
-   {downloadError&&<p role="alert">{m.downloadError}</p>}
+   {downloadErrorFor!==null&&downloadErrorFor===w.list&&<p role="alert">{m.downloadError}</p>}
    <p data-testid="cnhr-current">{m.current(records)}</p>
    {w.receipts.length>0&&<details><summary>{m.sources}</summary><ul>{w.receipts.map((r,i)=><li key={i}>{r.name} · {r.records} · {m.sourceAction[r.action]} · <code>{r.sha256}</code></li>)}</ul></details>}
    {w.list&&<><button type="button" className="secondary-button" disabled={busy} onClick={download}>{m.download}</button><p className="cluster-native-hr-note">{m.downloadNote}</p></>}
@@ -128,7 +130,7 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
   <section aria-labelledby={id('report')}><h3 id={id('report')}>{m.reportHeading}</h3><figure className="cnhr-report"><figcaption>{report.caption}</figcaption><pre data-testid="cnhr-report">{report.lines.join('\n')}</pre></figure><p className="cluster-native-hr-note">{m.reportNote}</p></section>
 
   {((shownPlot&&shownPlot.rows.length>0)||(w.observationsPlotted&&plot.status==='blocked'&&records>0))&&<details className="cnhr-records"><summary>{m.recordsSummary}</summary><div className="photometer-table"><table><thead><tr><th scope="col">{m.colIndex}</th><th scope="col">{m.colObject}</th><th scope="col">{m.colKind}</th><th scope="col">{m.colB}</th><th scope="col">{m.colV}</th><th scope="col">{m.colBV}</th><th scope="col">{m.colPixel}</th><th scope="col">{m.colStatus}</th></tr></thead>
-   <tbody>{tableRows.map(r=><tr key={r.index} data-testid="cnhr-row" data-blocking={r.status==='blocking'?'true':undefined}><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td>{r.b??'—'}</td><td>{r.v??'—'}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{r.status==='before-block'?m.beforeBlock:r.status==='blocking'?(plot.status==='blocked'?m.blockingRecord(m.blockedField[plot.field]):m.blockedStatus):r.status==='after-block'?m.afterBlock:m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td></tr>)}</tbody></table></div></details>}
+   <tbody>{tableRows.map(r=><tr key={r.index} data-testid="cnhr-row" data-blocking={r.status==='blocking'?'true':undefined}><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td title={'0x'+r.storedB.hex}>{r.b??m.storedNumber(r.storedB)}</td><td title={'0x'+r.storedV.hex}>{r.v??m.storedNumber(r.storedV)}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{r.status==='before-block'?m.beforeBlock:r.status==='blocking'?m.blockingRecord(m.blockedField[r.field]):r.status==='after-block'?m.afterBlock:m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td></tr>)}</tbody></table></div></details>}
   <p className="cluster-native-hr-note">{m.limits}</p>
  </section>;
 }
