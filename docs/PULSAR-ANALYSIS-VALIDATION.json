@@ -1,0 +1,45 @@
+{
+  "sourceHashes": {
+    "docs/PULSAR-ANALYSIS-PROVENANCE.json": "13662651122f2e50986e0a2e05bc9280ff37c6935bcb50649b53b8e18b375c14",
+    "docs/PULSAR-ANALYSIS.md": "7f18c8d1a2f1ca41f15fb46fccd0e097409488768255995a77eaa26201a239a1",
+    "src/components/PulsarAnalysis.css": "37f2949671f0dfd3449daabcf37b1f5e9824f5591175f6637bf8a84437387543",
+    "src/components/PulsarAnalysis.tsx": "bd2f1f23681b54a0df1643e60124c1459ad8e06510d454841a5efd0b3f18ca6c",
+    "src/components/PulsarMessages.ts": "d295760264307fe364b2fe22be39277167076ecd5dc7b92de0c87feab2bc7b2e",
+    "src/core/pulsarAnalysis.test.ts": "eb0474b0a3459b004fcee9efcf4319f59edb37187e7cac88f3290fd00b1013f0",
+    "src/core/pulsarAnalysis.ts": "ad7b45bd516d32f7358ceb146f102a8e18e19109038f998bda2cf3bcccd1a7fb",
+    "src/core/pulsarPanHold.test.ts": "709037b93ae087d997f0129974dfd62a32491e13a2f58756653dede97e2582c8",
+    "src/core/pulsarPanHold.ts": "b883c7d4f224270b88ef36c8b80ffdff4a371890b0fc2d77adaeb0a23da87f62",
+    "src/core/pulsarProvenance.test.ts": "46ca5805375961d24614b61940fde0be44dc79c708e966d5a26b38cf78ab7b74",
+    "src/core/pulsarRecording.test.ts": "e677828edded4f297372060bb2b09488e719114b0acbb70cbb1460bbee0628fe",
+    "src/core/pulsarRecording.ts": "1f418d7baafa883fe9172e769b6106301dbfdd62d2b1796610cfd2e5fabf5729",
+    "src/core/pulsarUiAudit.test.ts": "de3387bba5a1b9ed87e20f5ee9a3cb538455305ffbfedf04fdc9db08f495ccb4",
+    "tests/pulsar-analysis.spec.ts": "3200f193fd0797961c3222f53f30f8adcec50164c2998983b64131ea767ce272",
+    "src/i18n/coverage.test.ts": "dbdd3218cacace50cfd9261dd00878e0c56cb3e0285674b3bc23b3a59f371260"
+  },
+  "sourceStableDuringValidation": true,
+  "unitTests": {
+    "passed": 1829,
+    "failed": 0,
+    "files": 177
+  },
+  "e2e": {
+    "startTime": "2026-10-21T21:33:13.390Z",
+    "duration": 12232.765,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-pulsar-codex-final-1;exit0",
+  "resources": "1279/1279 size/SHA256 match",
+  "independentControls": "7 synthetic controls aftergeometry,source stable;not originalruntimeoracle",
+  "uiCountPin": "45\u219246 by coordinator,one newTSX,zero new directauthoredrendersites",
+  "status": "Validated candidate pending separate Claude native /review and integration",
+  "scientificLimits": [
+    "No radioacquisition/catalog/noise/period/DM",
+    "Number/nearest-even/format policy is not measuredx87/GDI/WM_TIMERparity",
+    "Originalbytesdownload isnot nativePLRwriter; nooriginalPLRwriterwitness",
+    "NativeCSV hostdate/login/formattingauthority gated",
+    "Window-localmeasurements explicitly not inSaveinvestigation;navigation inactivity preserves confirmedrecords"
+  ]
+}
