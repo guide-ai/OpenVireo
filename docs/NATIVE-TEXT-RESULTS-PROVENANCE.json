@@ -1,0 +1,534 @@
+{
+  "evidenceId": "NATIVE-TEXT-FIELDS-01",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "text-reader",
+      "start": "0x549e18",
+      "endExclusive": "0x54a3af",
+      "byteSHA256": "83c996f8e127285daa44091a899b8f3d1b1e2eb035aedb286e3e1e94799b99b2",
+      "listingSHA256": "c36d289696446a12e64824094286a8e7abfedd41570340f771abeffc148411de",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "text-record-parser",
+      "start": "0x547fd0",
+      "endExclusive": "0x548682",
+      "byteSHA256": "f17a31e857722875a5522e4ee8302f4ef971b4c4b91a72913ef4a6c326d241b6",
+      "listingSHA256": "772a5edb341b0ea20a99fe33f4f3f7d96f98c07cd89216c97aa9a7f1dd7a2cb1",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "csv-to-fixed-record",
+      "start": "0x548ea4",
+      "endExclusive": "0x5495a8",
+      "byteSHA256": "d614b594a2693f140fd6bda0eeb5e45ec00bdda12e736041d10bd07802c4bb5d",
+      "listingSHA256": "aa689aa4f29947653473684039d4daab56779b46e65aaef7813c54b5ab19da3a",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "header-builder",
+      "start": "0x54708c",
+      "endExclusive": "0x5471b4",
+      "byteSHA256": "3120b45545b1845aed0f9d9b4c9644b1dfb02c6be9a773e64fa4f59cef5716fa",
+      "listingSHA256": "6c607aafe4f2c3b53884f3b373ac8e7fae4dd4a7220e7af12943a10fd7f3df8c",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "date-current-init",
+      "start": "0x487b4c",
+      "endExclusive": "0x487b64",
+      "byteSHA256": "8f48fd7ecfb335e88ddfb54d7dd1ecfa7ce4dc397164f43cf0a3df38d29d250f",
+      "listingSHA256": "cb02a8213c3f3c347601f62adee68ca51397dd6dcdbb42495f3c5feecc3c6c98",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "date-jd-get",
+      "start": "0x487bcc",
+      "endExclusive": "0x487be8",
+      "byteSHA256": "cd28c4aa92ac7b923d2929b14a45a99c9131d29e558fcc01e0655fee75d3972b",
+      "listingSHA256": "553e07004bd84a90b8a42d8ea76cdf0b9760ad514eb32b017ba97b839c8d8f35",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "date-jd-set",
+      "start": "0x487be8",
+      "endExclusive": "0x487c0b",
+      "byteSHA256": "f9f6eed8c58cc6e83044f9a4a978deb6a7bafeeaeabfb2c844e21868b73d2f6a",
+      "listingSHA256": "abd1b846d301ce6d455e1a9e32c77828e46999e0a048bbe65df06f809278e076",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "date-format-object",
+      "start": "0x488188",
+      "endExclusive": "0x4881ac",
+      "byteSHA256": "e26aad273e5cf73a3a0eca0fee82c52054ea36e24da2aee33f408ee9510b21ca",
+      "listingSHA256": "fe1238ff92ee423985ad33778c455c7feb5533ea172910ed3284cd765b8ad990",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "date-format-scalar",
+      "start": "0x486268",
+      "endExclusive": "0x486292",
+      "byteSHA256": "2a81311b096c52cd2e2b584ceaf521a1a59277f9dd160860b21556ab73106db5",
+      "listingSHA256": "c8da74d059764f2a09b34f0c63e2f95aa4bc34fbd1095593443340b33f7a765c",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "number-wrapper",
+      "start": "0x40cf60",
+      "endExclusive": "0x40cf9b",
+      "byteSHA256": "92d309d6bb109f77f01db0abb4b938706e5badcc752f063105f61d1b61ffd312",
+      "listingSHA256": "f76b081fd377aa8786d4909023bbe715967a2f49e5c509bc301925430a1a65e5",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    },
+    {
+      "name": "number-lexical-and-fpu",
+      "start": "0x40cdb4",
+      "endExclusive": "0x40cec8",
+      "byteSHA256": "0e6bc02c00ad5e0cb2062215e82f20aa2cdc1106638e8e15d27310a54a7e8e47",
+      "listingSHA256": "5839422fe4f2a941cf98f1b66fd2e29989c8743ea4c59818fb0a4db06fb29905",
+      "scope": "Complete function through final return;float lexical function includes its local helper subroutines;no native execution"
+    }
+  ],
+  "literals": [
+    {
+      "start": "0x5471bc",
+      "length": 23,
+      "text": "Object ID    MJD(Days) ",
+      "SHA256": "b858e54e432b24f8c2a56a71568dc20f1af08da6179dc5386d3a037a523ea6bd"
+    },
+    {
+      "start": "0x5471dc",
+      "length": 11,
+      "text": "  V(Mag)   ",
+      "SHA256": "b01141e1603089a52526734f870f9eb1f495eeb97cba875d3f2f0e2e22c3fc98"
+    },
+    {
+      "start": "0x5471f0",
+      "length": 32,
+      "text": "    Z       Vel(km/s)   Comments",
+      "SHA256": "59bbcb40cd5d96d3027d3507d112ea1451253df5c048a78ab7068496fb435410"
+    },
+    {
+      "start": "0x54721c",
+      "length": 25,
+      "text": "     RA           Dec    ",
+      "SHA256": "36ffb2c12cb8d5eea791d1114d51f2b6bd63076bee16332a283b7972f1fc0c43"
+    },
+    {
+      "start": "0x547240",
+      "length": 33,
+      "text": "     Z      Spectrum     Comments",
+      "SHA256": "4fc4358d9cef3a708e56486166ec4dfd3a8b66855336faf97723cc02cdf49b24"
+    },
+    {
+      "start": "0x54868c",
+      "length": 6,
+      "text": "      ",
+      "SHA256": "399141be1d30ac2656d89eedcf0d8dcedaa72d6c29bf959cae243dc7b1442cf6"
+    },
+    {
+      "start": "0x54869c",
+      "length": 9,
+      "text": "         ",
+      "SHA256": "670af646a34cdc2a616874dc29d30abc2b5523cc091c081c25a2e51079484b9c"
+    },
+    {
+      "start": "0x54a3f4",
+      "length": 9,
+      "text": "Object ID",
+      "SHA256": "f79ceb0b00781a2e074b7c79fb0a9cb65ea4676b826b50bee45210721d47d9dd"
+    },
+    {
+      "start": "0x54a45c",
+      "length": 6,
+      "text": "V(Mag)",
+      "SHA256": "8737545177ecca74878570c6ed942349b3b2de87f8041689360174746aa0a6c4"
+    },
+    {
+      "start": "0x54a4f4",
+      "length": 1,
+      "text": ",",
+      "SHA256": "d03502c43d74a30b936740a9517dc4ea2b2ad7168caa0a774cefe793ce0b33e7"
+    },
+    {
+      "start": "0x54a500",
+      "length": 3,
+      "text": ",R,",
+      "SHA256": "3b7a52335f67d675d03d3b073d886f6b7c1e487abeee95665f8af34a7daebb82"
+    },
+    {
+      "start": "0x54a50c",
+      "length": 1,
+      "text": ".",
+      "SHA256": "cdb4ee2aea69cc6a83331bbe96dc2caa9a299d21329efb0336fc02a82e1839a8"
+    },
+    {
+      "start": "0x54a518",
+      "length": 2,
+      "text": "B ",
+      "SHA256": "d45c0ecef548074918cf28043c428c6b33565fe03bb8c69af1129a7def07e8a0"
+    },
+    {
+      "start": "0x54a524",
+      "length": 2,
+      "text": "U ",
+      "SHA256": "0e5e81c0676070bb9ec53f31e9d9902896993a14327a3a4f007f082c9a181611"
+    },
+    {
+      "start": "0x54a530",
+      "length": 2,
+      "text": "R ",
+      "SHA256": "12e94a2df908650e2fbbfc95519939f4d884d92715fc20a0fcc9cb0de6134cb5"
+    },
+    {
+      "start": "0x54a5c0",
+      "length": 8,
+      "text": "Spectrum",
+      "SHA256": "fc457d42d767a3f3eb24df58595fb1955b77c813da138fa1784dc45449cd4ca9"
+    },
+    {
+      "start": "0x5495b0",
+      "length": 1,
+      "text": ",",
+      "SHA256": "d03502c43d74a30b936740a9517dc4ea2b2ad7168caa0a774cefe793ce0b33e7"
+    }
+  ],
+  "numberLocale": {
+    "decimalByteAddress": "0x5b880f",
+    "controlWordAddress": "0x5ae8dc",
+    "controlWordHex": "0x133f",
+    "contract": "40cdb4loads runtime decimal byte,saves FPUcontrol,loads fixed word,accumulates digits,applies decimal/exponent,checks FPUstatus and restores caller control. Numeric encoding/evaluation is not ported. Dot/comma lexical inspection is explicit browser admission,not native locale snapshot."
+  },
+  "timeContract": "Parser547fd0sets offset0,initializes current local date487b4c,formats currentJD through488188->486268 with decimal-count6,keeps first3characters via Delete(start4,countlength),appends sourcecolumns13..23,parses,then487be8subtracts dateoffset andglobal5bad48 and storesDouble. File alone does not determine prefix/bias. No automatic UTC/standardMJD/nativeDAT conversion admitted.",
+  "profileContract": "Header54708cuses exercise+383f==4 specialV/Z/velocity;otherwise photometrykind0/1 and3/5filters. Exact5generatedheader-shapes admitted forlexicalinspection;no actualnativeexercise/sourceauthority promoted.",
+  "nativeUnported": "CSVheaderdetection/rewind/fieldpadding,partialIOfailure/sortedinsertion,native blank/errorzero fallback,locale specialspellings/FPUoverflow/ExtendedSingleDouble roundtrip,hostcurrentprefix/bias/ACP/padding,newDAT reconstruction.",
+  "webAdmission": "TXTonly,exactheaders,ASCII+0xb0degree,LF/CRLF,512KiB,1000rows,1024byte row,strictdecimalspelling<=96chars/abs exponent<=500;no numericFPU/nativefields created;rawfields/rawbytes retained.",
+  "productScope": "NativeTextResults readonly lexicalcandidate,independent of DAT/notebook/investigation;separator reinterpretation never alters originalbytes/hash.",
+  "execution": false,
+  "originalModified": false,
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "resourceBindings": [
+    {
+      "identity": [
+        10,
+        "TEQVWDTHCNTRL",
+        0
+      ],
+      "offset": 2024448,
+      "bytes": 792,
+      "sha256": "b5acd38c8021a676254eb89ff96093d069e4b9b16f485d6fdfca783507969a52",
+      "dfm_root_class": "TEqvWdthCntrl",
+      "dfm_root_name": "EqvWdthCntrl",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 307
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 328
+        },
+        {
+          "event": "OnClick",
+          "handler": "OkBtnClick",
+          "payload_offset": 431
+        },
+        {
+          "event": "OnClick",
+          "handler": "CnclBtnClick",
+          "payload_offset": 522
+        }
+      ]
+    },
+    {
+      "identity": [
+        10,
+        "TSPCLASSIFY",
+        0
+      ],
+      "offset": 2248676,
+      "bytes": 7447,
+      "sha256": "56f394786cab668bb4a420a410359118935471d8f1aac529ac2b06a5150dd308",
+      "dfm_root_class": "TSpClassify",
+      "dfm_root_name": "SpClassify",
+      "dfm_event_binding_candidates": [
+        {
+          "event": "OnClose",
+          "handler": "FormClose",
+          "payload_offset": 329
+        },
+        {
+          "event": "OnCreate",
+          "handler": "FormCreate",
+          "payload_offset": 348
+        },
+        {
+          "event": "OnDestroy",
+          "handler": "FormDestroy",
+          "payload_offset": 369
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 392
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 415
+        },
+        {
+          "event": "OnPaint",
+          "handler": "FormPaint",
+          "payload_offset": 434
+        },
+        {
+          "event": "OnShow",
+          "handler": "FormShow",
+          "payload_offset": 453
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "SpDisplayMouseDown",
+          "payload_offset": 2071
+        },
+        {
+          "event": "OnMouseMove",
+          "handler": "SpDisplayMouseMove",
+          "payload_offset": 2103
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "SpDisplayMouseUp",
+          "payload_offset": 2135
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "StdsBoxKeyDown",
+          "payload_offset": 3202
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "StdsBoxKeyUp",
+          "payload_offset": 3228
+        },
+        {
+          "event": "OnMouseDown",
+          "handler": "StdsBoxMouseDown",
+          "payload_offset": 3250
+        },
+        {
+          "event": "OnMouseUp",
+          "handler": "StdsBoxMouseUp",
+          "payload_offset": 3280
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3348
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3371
+        },
+        {
+          "event": "OnClickLeft",
+          "handler": "ZmPnSwitchClickLeft",
+          "payload_offset": 3452
+        },
+        {
+          "event": "OnClickUp",
+          "handler": "ZmPnSwitchClickUp",
+          "payload_offset": 3485
+        },
+        {
+          "event": "OnClickRight",
+          "handler": "ZmPnSwitchClickRight",
+          "payload_offset": 3514
+        },
+        {
+          "event": "OnClickDown",
+          "handler": "ZmPnSwitchClickDown",
+          "payload_offset": 3549
+        },
+        {
+          "event": "OnClick",
+          "handler": "ResetBtnClick",
+          "payload_offset": 3670
+        },
+        {
+          "event": "OnKeyDown",
+          "handler": "FormKeyDown",
+          "payload_offset": 3693
+        },
+        {
+          "event": "OnKeyUp",
+          "handler": "FormKeyUp",
+          "payload_offset": 3716
+        },
+        {
+          "event": "OnClick",
+          "handler": "LoadSavedSpectrum1Click",
+          "payload_offset": 4677
+        },
+        {
+          "event": "OnClick",
+          "handler": "ProgramList1Click",
+          "payload_offset": 4796
+        },
+        {
+          "event": "OnClick",
+          "handler": "NextonList1Click",
+          "payload_offset": 4879
+        },
+        {
+          "event": "OnClick",
+          "handler": "AtlasofStandardSpectra1Click",
+          "payload_offset": 4981
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralLineTable1Click",
+          "payload_offset": 5080
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 5232
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 5342
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 5428
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 5518
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 5639
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 5763
+        },
+        {
+          "event": "OnClick",
+          "handler": "Exit1Click",
+          "payload_offset": 5870
+        },
+        {
+          "event": "OnClick",
+          "handler": "ClassificationResults1Click",
+          "payload_offset": 5959
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6064
+        },
+        {
+          "event": "OnClick",
+          "handler": "ObservatoryMainControlPanel1Click",
+          "payload_offset": 6219
+        },
+        {
+          "event": "OnClick",
+          "handler": "Help1Click",
+          "payload_offset": 6296
+        },
+        {
+          "event": "OnTimer",
+          "handler": "MeasTimerTimer",
+          "payload_offset": 6474
+        },
+        {
+          "event": "OnPopup",
+          "handler": "PopupMenu1Popup",
+          "payload_offset": 6547
+        },
+        {
+          "event": "OnClick",
+          "handler": "RemoveCursorLine1Click",
+          "payload_offset": 6645
+        },
+        {
+          "event": "OnClick",
+          "handler": "SpectralRange1Click",
+          "payload_offset": 6755
+        },
+        {
+          "event": "OnClick",
+          "handler": "LineEquivalentWidth1Click",
+          "payload_offset": 6878
+        },
+        {
+          "event": "OnClick",
+          "handler": "IntensityTrace1Click",
+          "payload_offset": 6993
+        },
+        {
+          "event": "OnClick",
+          "handler": "GrayscalePhoto1Click",
+          "payload_offset": 7079
+        },
+        {
+          "event": "OnClick",
+          "handler": "CombPhotoTrace1Click",
+          "payload_offset": 7169
+        },
+        {
+          "event": "OnClick",
+          "handler": "ReverseDisplay1Click",
+          "payload_offset": 7290
+        },
+        {
+          "event": "OnClick",
+          "handler": "ShowDifference1Click",
+          "payload_offset": 7413
+        }
+      ]
+    }
+  ],
+  "licenseBoundary": "No new original assets or binary/listing payloads included;existing source-specific credits/uncertainties remain. Captured contracts are analytical recovery,not a native-runtime equivalence or new licensing grant."
+}

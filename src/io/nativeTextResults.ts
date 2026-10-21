@@ -1,0 +1,3 @@
+import{NATIVE_TEXT_MAX_BYTES,parseNativeTextResults,NativeTextError,type NativeTextData}from'../core/nativeTextResults';
+export type InspectedNativeText=Readonly<{name:string;sha256:string;data:NativeTextData}>;
+export async function readNativeTextFile(file:File,separator:'.'|','):Promise<InspectedNativeText>{if(!/\.txt$/i.test(file.name))throw new NativeTextError('header');if(file.size>NATIVE_TEXT_MAX_BYTES)throw new NativeTextError('size');const bytes=new Uint8Array(await file.arrayBuffer()),data=parseNativeTextResults(bytes,separator),digest=new Uint8Array(await crypto.subtle.digest('SHA-256',Uint8Array.from(bytes).buffer));return Object.freeze({name:file.name.slice(0,160),sha256:Array.from(digest,b=>b.toString(16).padStart(2,'0')).join(''),data});}
