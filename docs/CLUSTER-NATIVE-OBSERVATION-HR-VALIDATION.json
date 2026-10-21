@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-21",
+  "sourceSnapshot": "78766fb74333b3ac7c0aa46ec902cde1eb994954",
+  "status": "bounded saved-observation HR subflow independently validated and separately reviewed; N04/E05 remain partial; I06/I07/N07 are not accepted",
+  "unit": {
+    "passed": 1754,
+    "files": 172,
+    "logLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/async-focus-unit.log"
+  },
+  "typecheckBuild": {
+    "status": "passed",
+    "resourcesVerified": 1279,
+    "logLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/async-focus-build.log",
+    "existingChunkSizeAdvisory": true
+  },
+  "browser": {
+    "broadSnapshot": "5421404541e23368f669fcf5b59d210b2a8d6596",
+    "passed": 456,
+    "skipped": 3,
+    "minutes": 7.8,
+    "logLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/close-wide-e2e.log",
+    "finalAffectedSnapshot": "78766fb74333b3ac7c0aa46ec902cde1eb994954",
+    "finalHRFlowsPassed": 14,
+    "finalHRSeconds": 25.1,
+    "finalOutputLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/browser-results-async-focus",
+    "qualification": "Core/parsers/data ordering/host/session files unchanged after broad snapshot. Later narrow presentation/focus changes passed affected flows/typecheck/build/unit; no broad-run claim for those later snapshots.",
+    "radioIntegratedHarnessPassed": 3,
+    "radioHarnessWarning": "virtual-main pretransform warning retained; product flows passed"
+  },
+  "reviews": [
+    {
+      "range": "5d06ac5..c674548",
+      "model": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "rawReportSHA256": "73119efd9f7bf1d39f74f1bbc1b91de735403b0aa3d52a58dd71f939da4d3644",
+      "rawReportLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/claude-review/raw-report.txt",
+      "separateFromAuthoring": true,
+      "scope": "read-only source review; no original runtime oracle"
+    },
+    {
+      "range": "c674548..5a5ed87",
+      "model": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "rawReportSHA256": "e5504e42f21c3835fd7302cc280136d9028d485f9fa997ed904f17de88630387",
+      "rawReportLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/claude-review-fixes/raw-report.txt",
+      "separateFromAuthoring": true,
+      "scope": "read-only source review; no original runtime oracle"
+    },
+    {
+      "range": "5a5ed87..ea13938",
+      "model": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "rawReportSHA256": "f0bf872e319fe111dc656152080796a2d68481e45963238af589a59a3af3f9eb",
+      "rawReportLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/claude-review-final/raw-report.txt",
+      "separateFromAuthoring": true,
+      "scope": "read-only source review; no original runtime oracle"
+    },
+    {
+      "range": "ea13938..5421404",
+      "model": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "rawReportSHA256": "c0f5d645916b168e63a5298e53fbd1f816cb85971ff336a11214d9d32f4831d4",
+      "rawReportLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/claude-review-close/raw-report.txt",
+      "separateFromAuthoring": true,
+      "scope": "read-only source review; no original runtime oracle"
+    },
+    {
+      "range": "5421404..efa2333",
+      "model": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "rawReportSHA256": "a9cc1b43dc2ffd7ee84a0a5c88b8b65244ced5c06c86e797da95a4bde090f535",
+      "rawReportLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/claude-review-labels/raw-report.txt",
+      "separateFromAuthoring": true,
+      "scope": "read-only source review; no original runtime oracle"
+    },
+    {
+      "range": "efa2333..78766fb",
+      "model": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "rawReportSHA256": "6f04984320c6edd91f203810c0fab342a5ef73be1cb5a0f6cbfa5b799f7a470f",
+      "rawReportLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/claude-review-async-focus/raw-report.txt",
+      "separateFromAuthoring": true,
+      "scope": "read-only source review; no original runtime oracle"
+    }
+  ],
+  "independentReviewDispositionLocal": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/claude-review-async-focus/dispositions.json",
+  "runtimeEquivalence": false,
+  "remaining": [
+    "historical host FPU/GDI/printing/selected-star marker and original initial mode unrecovered",
+    "HR workspace intentionally separate from Save investigation; raw DAT export retains records; manual overlays reset on reload",
+    "radio control prototype unmounted; antenna/receiver/signal acquisition and recorded-data analysis not implemented",
+    "low-priority pointer-cancel overlap and focus-ref/listener structure recommendations triaged; no claim fixed"
+  ],
+  "noPushDeploymentOrNativeExecution": true
+}

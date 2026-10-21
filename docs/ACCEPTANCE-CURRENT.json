@@ -472,7 +472,7 @@
       "title": "HR/color-magnitude diagrams and isochrone fitting",
       "baselineState": "R",
       "status": "partial",
-      "remaining": "All16 reference datasets/2873known-color points support manual native ZAMS/isochrone trials,explicit presets,interpretation,comparison and reversible exclusions through full21. Actual general standard-photometer HRobserving,optional CCD,native import/autoscaling,uncertainty,classroom,pixel picking and original runtime/x87 fidelity remain open. Reference data are not acquired measurements.",
+      "remaining": "All16 reference datasets retain manual model trials and comparisons. Saved owned144-byte DAT results now support native-order add/replace/cancel,zero-skip fixed-axis HR and manual overlays/report with raw-byte export,under explicit numerical guards. Actual general standard-photometer observing/optionalCCD,uncertainty,classroom checks,selected-star picking,unrecovered native context/print/GDI andhistorical x87 fidelity remain open;the recovered observation plot has fixed axes,no autoscale.",
       "evidence": [
         "docs/IMPLEMENTATION-PLAN.md",
         "docs/PLEIADES-ANALYSIS.md",
@@ -483,7 +483,9 @@
         "docs/CLUSTER-COMPARISON.md",
         "data/photometry/cluster-comparison-contract.json",
         "docs/CLUSTER-EXCLUSIONS.md",
-        "data/photometry/cluster-exclusion-contract.json"
+        "data/photometry/cluster-exclusion-contract.json",
+        "docs/CLUSTER-NATIVE-OBSERVATION-HR.md",
+        "docs/CLUSTER-NATIVE-OBSERVATION-HR-PROVENANCE.json"
       ],
       "gateReason": "All16reference-data manual-analysis notebooks implemented;actual standard observing/optionalCCD,uncertainty/classroom andoriginalruntime fidelity remain open.",
       "originalWitnessPending": true,
@@ -719,7 +721,7 @@
       "title": "HR Diagrams of Star Clusters",
       "baselineState": "R",
       "status": "partial",
-      "remaining": "All16 original reference datasets support independent manual comparison,trials,presets and reversible exclusions. Standard HR observing through general original fields,optional CCD,native import/autoscaling,uncertainty,classroom and original runtime/x87/pixel fidelity remain open. Reference catalog inclusion is not a membership determination.",
+      "remaining": "Reference-data HR work and the bounded saved-observation DAT\u2192native-order fixed-axis plot\u2192manual ZAMS/isochrone\u2192parameters report\u2192raw DAT copy flow are implemented separately. Actual complete observing/acquisition,optional CCD andfull I04/N04/classroom/independent-edition acceptance remain open. No fitted values or absent native metadata are generated.",
       "evidence": [
         "docs/IMPLEMENTATION-PLAN.md",
         "docs/CLUSTER-DATABASE.md",
@@ -727,7 +729,9 @@
         "docs/CLUSTER-COMPARISON.md",
         "data/photometry/cluster-comparison-contract.json",
         "docs/CLUSTER-EXCLUSIONS.md",
-        "data/photometry/cluster-exclusion-contract.json"
+        "data/photometry/cluster-exclusion-contract.json",
+        "docs/CLUSTER-NATIVE-OBSERVATION-HR.md",
+        "docs/CLUSTER-NATIVE-OBSERVATION-HR-PROVENANCE.json"
       ],
       "gateReason": "All16reference-data manual-analysis notebooks implemented;actual standard observing/optionalCCD,uncertainty/classroom andoriginalruntime fidelity remain open.",
       "originalWitnessPending": true,
