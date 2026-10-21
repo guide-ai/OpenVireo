@@ -1,0 +1,751 @@
+{
+  "resourceDialogOwner": {
+    "classVariable": "0x513178",
+    "VMT": "0x5131c4",
+    "name": "TMountCDROM",
+    "nameSHA256": "6ab7f6c2626ba4ef314c468d95d2335a61b1408aadafb61c71f4e8e8da88d5b1"
+  },
+  "evidenceId": "NATIVE-CAMERA-LIFECYCLE-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "ccd-create",
+      "start": "0x511e00",
+      "endExclusive": "0x511e86",
+      "bytes": 134,
+      "bytesSHA256": "c33156d5f64bb884e6bc1772b70a76e4bcd4795c4316eccc680d33120b92e103",
+      "listingSHA256": "76d54daeb408f769613e37150ca7edd1a189ab48fd2a382a16576c72b41719d1"
+    },
+    {
+      "name": "ir-create",
+      "start": "0x513a88",
+      "endExclusive": "0x513b0e",
+      "bytes": 134,
+      "bytesSHA256": "1d822d4d83b7d757561aed966a16bc4b389eeefbf95ba2b420e3f114798bed4c",
+      "listingSHA256": "7721615a64477dd34e79e92ba04dc0577dcc3ad5b5e75a4ca1b303ee099cdece"
+    },
+    {
+      "name": "ccd-close",
+      "start": "0x511e88",
+      "endExclusive": "0x511edc",
+      "bytes": 84,
+      "bytesSHA256": "f561d68db9b26a8c36ba1d9df67bac803e6175826b002a65d5fa0f28f427bb85",
+      "listingSHA256": "7e725c9aa62f0147e999f5a0595e94314aecfba5ec7fabaa7ec8e5e08b136dec"
+    },
+    {
+      "name": "ir-close",
+      "start": "0x513b10",
+      "endExclusive": "0x513b64",
+      "bytes": 84,
+      "bytesSHA256": "37873a26a4cab337f99ad490523336363642cc3bb5331e6e233c18d0cb7628f6",
+      "listingSHA256": "354ae4a8bb79385ae298b4d3ef38ca9eae7f21cd84132786d0adb3040c18c62e"
+    },
+    {
+      "name": "ccd-close-query",
+      "start": "0x511ef8",
+      "endExclusive": "0x511f6d",
+      "bytes": 117,
+      "bytesSHA256": "b6093ed296fe9a314b0838b329b1a92a355fa56e34c9f781344743de374c269c",
+      "listingSHA256": "89a7cae00d5d6e4b3bd33466db93603eb6b8ba756c597aba17ac49f4290a85f5"
+    },
+    {
+      "name": "ir-close-query",
+      "start": "0x513b80",
+      "endExclusive": "0x513e83",
+      "bytes": 771,
+      "bytesSHA256": "bec837c229b9ca87670f250dbd3ce815c0681be24183869394269a56a1f77da7",
+      "listingSHA256": "bc995482d50ab64329be00e0aceba036aee83a8751b821b56eb1a0b025c8dba2"
+    },
+    {
+      "name": "ccd-validate",
+      "start": "0x512244",
+      "endExclusive": "0x5124f9",
+      "bytes": 693,
+      "bytesSHA256": "89216511b3f74a9d442292621f52644112ba205af5d0359840a00bee75463f00",
+      "listingSHA256": "1dd41eb2e561e40f34a908c7c12e59079b584fc2980e1ad85be33b6c45fa8a96"
+    },
+    {
+      "name": "ir-validate",
+      "start": "0x514268",
+      "endExclusive": "0x51451d",
+      "bytes": 693,
+      "bytesSHA256": "81bb027220e203a225c6f102559e2ceb61407ef597e1126f3e416824c5b416c8",
+      "listingSHA256": "48e65d7ed7ee529505187f25a65fce52cfed2efbb7b81768da04c702e52e8687"
+    },
+    {
+      "name": "ccd-go",
+      "start": "0x51265c",
+      "endExclusive": "0x5127a2",
+      "bytes": 326,
+      "bytesSHA256": "fd22bbe7bf632405cb6900fcbfa077d9c830e2f5a0a0b3c686ae3212105865d4",
+      "listingSHA256": "0e091e1284c05725d7fc45f38086fc3a53d48751596c1cd4996a9bb2c732fe81"
+    },
+    {
+      "name": "ir-go",
+      "start": "0x514680",
+      "endExclusive": "0x5147d5",
+      "bytes": 341,
+      "bytesSHA256": "e06714a27fd1ae23033abcd220cc6b0f855c1ed7f0033572ce48bc57e9a97800",
+      "listingSHA256": "4704bfa0371e492a592fc3a95599e30a0e246a336b81de52b5ad3f13fccd55eb"
+    },
+    {
+      "name": "ccd-stop",
+      "start": "0x5127f8",
+      "endExclusive": "0x512914",
+      "bytes": 284,
+      "bytesSHA256": "1e2e2f2f6463b665ef8635568f05618bd4df59b01e6610fc5583587d6f1e94b5",
+      "listingSHA256": "66a05ce59032da85957d4ab0180fc6704ff2f7bd96d39d7f4f6ffa2d294a3062"
+    },
+    {
+      "name": "ir-stop",
+      "start": "0x51482c",
+      "endExclusive": "0x514948",
+      "bytes": 284,
+      "bytesSHA256": "a4e1e0518e8835fa21f8923cba75a0cade29d943c1aa05b120f7d68e32ee154a",
+      "listingSHA256": "4c31e63bf22b3e7eb58b48632e561215aae8e37f858264da8f94018ce2adfa2f"
+    },
+    {
+      "name": "ccd-request-timer",
+      "start": "0x51298c",
+      "endExclusive": "0x512acd",
+      "bytes": 321,
+      "bytesSHA256": "71d5f0e8f2ffbf3dfe7a01c9d6d5b24441c376f7096d1e90a165e4b84f7c39b7",
+      "listingSHA256": "0caf05d7e9ae15a213571191a6287b6eb06129cf4e849f5ca6bc94378e77837f"
+    },
+    {
+      "name": "ir-request-timer",
+      "start": "0x5149bc",
+      "endExclusive": "0x514afd",
+      "bytes": 321,
+      "bytesSHA256": "4c060073ffec8e5b3efde09bbeb476210cc6f8a9a9ad3940f0792fa23073a3a1",
+      "listingSHA256": "4b4aea8425cd50c297fa7591eb91cf8188617db19536c7b112e05f5fbed1ca18"
+    },
+    {
+      "name": "ccd-observe-timer",
+      "start": "0x512b2c",
+      "endExclusive": "0x512bca",
+      "bytes": 158,
+      "bytesSHA256": "720488d17b192e1f5896bbc63ccdb36591ba60ab65f5c0c7c5f5a12a2ca3900a",
+      "listingSHA256": "31d5eb8a2159257c7abe6904ba2d9f44138a4a9939afc09a5bc6c158340859e7"
+    },
+    {
+      "name": "ir-observe-timer",
+      "start": "0x514b5c",
+      "endExclusive": "0x514bfa",
+      "bytes": 158,
+      "bytesSHA256": "7c75fc686f32a7fca4db0da68706323a03e0c885517a1eb5654e0ab122886def",
+      "listingSHA256": "4bda7bb0bd8f517e4b6ce87bf4d63300187e08f6fe4d07b2374fe91452e7c02e"
+    },
+    {
+      "name": "ccd-save-click",
+      "start": "0x512bd0",
+      "endExclusive": "0x512bfe",
+      "bytes": 46,
+      "bytesSHA256": "a1918175d671aa46754dd397d03fa06c62cfb6463e0337288ce0fde4344d90db",
+      "listingSHA256": "4833393cd41f5d0ea6b5b7b7485c0c738f3a6f7717b0af9707e2985e2d3a177d"
+    },
+    {
+      "name": "ir-save-click",
+      "start": "0x514c00",
+      "endExclusive": "0x514c2e",
+      "bytes": 46,
+      "bytesSHA256": "378773610c7e4059623f5d9ba4dc345059aa1ba66a00fa3b43546641289a1603",
+      "listingSHA256": "e07c2fc9bb1b4a2e2e2c86ce4691a1a6d0243c07df5c97ac80d34b22c6377790"
+    },
+    {
+      "name": "catalog-request-dispose",
+      "start": "0x59c60c",
+      "endExclusive": "0x59c61f",
+      "bytes": 19,
+      "bytesSHA256": "450263319cd920b57e6696608b4ba1cbf6b5fbe6bd5a39599e3fc8f22cb495c1",
+      "listingSHA256": "5ac0d09cd1d15036c8c15969d988e0627405a34e70b07a0d7c98d652b949a61d"
+    },
+    {
+      "name": "request-execute",
+      "start": "0x59d644",
+      "endExclusive": "0x59d79c",
+      "bytes": 344,
+      "bytesSHA256": "04772e62a8b05f5f4d9261524a24ccf613f4843adad9c95997f341848e0247a7",
+      "listingSHA256": "65a974c5d068d10afc828ba98d2bc0d983cb7352f691c7681b9545eb87ac3756"
+    },
+    {
+      "name": "thread-destroy",
+      "start": "0x4257c8",
+      "endExclusive": "0x42583b",
+      "bytes": 115,
+      "bytesSHA256": "02e4d43504616d201230c41dcd19f806a2cad32eedbf45654fb51667d9b57457",
+      "listingSHA256": "230088f0c77a064811fb05f376b7baf1c4c8f48d4251ae7baf657d024e368291"
+    },
+    {
+      "name": "timer-enable",
+      "start": "0x448ff4",
+      "endExclusive": "0x449002",
+      "bytes": 14,
+      "bytesSHA256": "4930a6c15b949c277629c1118b420ba3f295649888f825565d1da19e0ca19c30",
+      "listingSHA256": "5f268f379832a15c891f53330014fc9e42f5a0911f08d71cce0a996c087f0f0e"
+    },
+    {
+      "name": "timer-interval",
+      "start": "0x449004",
+      "endExclusive": "0x449012",
+      "bytes": 14,
+      "bytesSHA256": "528107b1197b7d322de6c03fe27aaaaf0e53a7053a9d8fad5a5467a05031bb15",
+      "listingSHA256": "f25c1ee01e3cae756d88e7f22d5b3952c2b630c351bde5e01f0f8b5d99b7dfb2"
+    },
+    {
+      "name": "ccd-image-presentation",
+      "start": "0x521cc8",
+      "endExclusive": "0x521fc4",
+      "bytes": 764,
+      "bytesSHA256": "976636c7cc7ffdb2c6e370fff5161ace90210e278266086896dd0ccc73ff90aa",
+      "listingSHA256": "16dc4daad9096473be88699076b12fdec6d4d6afc9e49275a2a8cc4b03b6a9b0"
+    },
+    {
+      "name": "camera-save-wrapper",
+      "start": "0x521c84",
+      "endExclusive": "0x521c90",
+      "bytes": 12,
+      "bytesSHA256": "355013ae59cbf46959b696e78b76d136fde0af290a30be4b81b82a8939ba2651",
+      "listingSHA256": "d348d3b65e68191b0c5682118a09c3f9bee7446c7d376368931fd648697c9555"
+    },
+    {
+      "name": "save-dialog-writer",
+      "start": "0x522c28",
+      "endExclusive": "0x5230db",
+      "bytes": 1203,
+      "bytesSHA256": "87d578462461da57e10b9e611cd6e7df1a765abd5479243cc8b566115682986d",
+      "listingSHA256": "f8cc3f956f18a2022dd71abfdcb36554b27de8ef01ad93deb6a5b938803f3353"
+    },
+    {
+      "name": "thread-terminate",
+      "start": "0x425bb0",
+      "endExclusive": "0x425bb5",
+      "bytes": 5,
+      "bytesSHA256": "d8078352668d0409d4e521d447a6d7349a9f3b3b6cd492fbc257ad9782f2a590",
+      "listingSHA256": "1dacec7a2b7423dff621a828cb67431d836f03d17030ac42604a182f7ff52beb"
+    }
+  ],
+  "forms": [
+    {
+      "kind": "ccd",
+      "name": "TCCDCam",
+      "resourceSHA256": "6f64acf688531ee21525297fd9bec54796b925fa5a8b158f78adac5c5acff10a",
+      "sourceFileOffset": 1985252,
+      "fieldTable": {
+        "address": "0x511ae8",
+        "count": 31,
+        "bytes": 437,
+        "sha256": "2501c3cf9b30b2d21e817ba2c117cd0aade7d4fdf13b59a2588b6ba9f57c47fd",
+        "fields": [
+          {
+            "name": "FltrGrp",
+            "offset": "0x360",
+            "typeIndex": 0
+          },
+          {
+            "name": "FltrSlider",
+            "offset": "0x364",
+            "typeIndex": 1
+          },
+          {
+            "name": "ExpClock",
+            "offset": "0x368",
+            "typeIndex": 2
+          },
+          {
+            "name": "MainMenu1",
+            "offset": "0x36c",
+            "typeIndex": 3
+          },
+          {
+            "name": "File1",
+            "offset": "0x370",
+            "typeIndex": 4
+          },
+          {
+            "name": "N1",
+            "offset": "0x374",
+            "typeIndex": 4
+          },
+          {
+            "name": "Exit1",
+            "offset": "0x378",
+            "typeIndex": 4
+          },
+          {
+            "name": "GroupBox1",
+            "offset": "0x37c",
+            "typeIndex": 0
+          },
+          {
+            "name": "WdDsply",
+            "offset": "0x380",
+            "typeIndex": 5
+          },
+          {
+            "name": "WdLbl",
+            "offset": "0x384",
+            "typeIndex": 6
+          },
+          {
+            "name": "HtDsply",
+            "offset": "0x388",
+            "typeIndex": 5
+          },
+          {
+            "name": "HtLbl",
+            "offset": "0x38c",
+            "typeIndex": 6
+          },
+          {
+            "name": "TmrLbl",
+            "offset": "0x390",
+            "typeIndex": 6
+          },
+          {
+            "name": "ExpEd",
+            "offset": "0x394",
+            "typeIndex": 7
+          },
+          {
+            "name": "ExpLbl",
+            "offset": "0x398",
+            "typeIndex": 6
+          },
+          {
+            "name": "MinSecSw",
+            "offset": "0x39c",
+            "typeIndex": 1
+          },
+          {
+            "name": "GoBtn",
+            "offset": "0x3a0",
+            "typeIndex": 8
+          },
+          {
+            "name": "StopBtn",
+            "offset": "0x3a4",
+            "typeIndex": 8
+          },
+          {
+            "name": "ObsTimer",
+            "offset": "0x3a8",
+            "typeIndex": 9
+          },
+          {
+            "name": "SaveDialog1",
+            "offset": "0x3ac",
+            "typeIndex": 10
+          },
+          {
+            "name": "CRT2Pnl",
+            "offset": "0x3b0",
+            "typeIndex": 11
+          },
+          {
+            "name": "CRT2",
+            "offset": "0x3b4",
+            "typeIndex": 12
+          },
+          {
+            "name": "StatusBox",
+            "offset": "0x3b8",
+            "typeIndex": 0
+          },
+          {
+            "name": "StatusEd",
+            "offset": "0x3bc",
+            "typeIndex": 7
+          },
+          {
+            "name": "Image1",
+            "offset": "0x3c0",
+            "typeIndex": 4
+          },
+          {
+            "name": "GainGrp",
+            "offset": "0x3c4",
+            "typeIndex": 0
+          },
+          {
+            "name": "GainSlider",
+            "offset": "0x3c8",
+            "typeIndex": 1
+          },
+          {
+            "name": "Information1",
+            "offset": "0x3cc",
+            "typeIndex": 4
+          },
+          {
+            "name": "N2",
+            "offset": "0x3d0",
+            "typeIndex": 4
+          },
+          {
+            "name": "Help1",
+            "offset": "0x3d4",
+            "typeIndex": 4
+          },
+          {
+            "name": "RqstTimer",
+            "offset": "0x3d8",
+            "typeIndex": 9
+          }
+        ]
+      },
+      "publishedMethods": {
+        "sourceFileOffset": 1118367,
+        "count": 14,
+        "bytes": 255,
+        "sha256": "4736e86df2b91add618394cf22dd584154cc30718ee418d47b4888d011a35c25",
+        "methods": [
+          {
+            "name": "RqstTimerTimer",
+            "address": "0x51298c"
+          },
+          {
+            "name": "FormClose",
+            "address": "0x511e88"
+          },
+          {
+            "name": "Exit1Click",
+            "address": "0x51223c"
+          },
+          {
+            "name": "FormCreate",
+            "address": "0x511e00"
+          },
+          {
+            "name": "FormShow",
+            "address": "0x512008"
+          },
+          {
+            "name": "GoBtnClick",
+            "address": "0x51265c"
+          },
+          {
+            "name": "StopBtnClick",
+            "address": "0x5127f8"
+          },
+          {
+            "name": "ObsTimerTimer",
+            "address": "0x512b2c"
+          },
+          {
+            "name": "Save1Click",
+            "address": "0x512bd0"
+          },
+          {
+            "name": "FormCloseQuery",
+            "address": "0x511ef8"
+          },
+          {
+            "name": "FormPaint",
+            "address": "0x512c14"
+          },
+          {
+            "name": "FormDestroy",
+            "address": "0x511edc"
+          },
+          {
+            "name": "Information1Click",
+            "address": "0x512c80"
+          },
+          {
+            "name": "Help1Click",
+            "address": "0x5130fc"
+          }
+        ]
+      },
+      "events": [
+        {
+          "component": "ObsTimer",
+          "enabled": false,
+          "event": "ObsTimerTimer",
+          "propertyOffset": 6131,
+          "propertySHA256": "f1e3403c1d7cb6d98a701efe2bab2d6621dfcdde63efb245b83d3b074e9870bd"
+        },
+        {
+          "component": "RqstTimer",
+          "enabled": false,
+          "event": "RqstTimerTimer",
+          "propertyOffset": 6296,
+          "propertySHA256": "830a57409762798b48b63e5682a0bfd40780a4b256d0a3a1dfc6d5aaec548865"
+        }
+      ]
+    },
+    {
+      "kind": "ir",
+      "name": "TIRCam",
+      "resourceSHA256": "0813b4b90d3bf81388c6d67e1c1803b0f6018ef79d535012ac1e076573d7ea86",
+      "sourceFileOffset": 2073464,
+      "fieldTable": {
+        "address": "0x513774",
+        "count": 31,
+        "bytes": 437,
+        "sha256": "4909a7262c71f59084f772bf0e5a1ea9d3e1c2504082bd8ad8388467a1934953",
+        "fields": [
+          {
+            "name": "FltrGrp",
+            "offset": "0x360",
+            "typeIndex": 0
+          },
+          {
+            "name": "FltrSlider",
+            "offset": "0x364",
+            "typeIndex": 1
+          },
+          {
+            "name": "ExpClock",
+            "offset": "0x368",
+            "typeIndex": 2
+          },
+          {
+            "name": "MainMenu1",
+            "offset": "0x36c",
+            "typeIndex": 3
+          },
+          {
+            "name": "File1",
+            "offset": "0x370",
+            "typeIndex": 4
+          },
+          {
+            "name": "N1",
+            "offset": "0x374",
+            "typeIndex": 4
+          },
+          {
+            "name": "Exit1",
+            "offset": "0x378",
+            "typeIndex": 4
+          },
+          {
+            "name": "GroupBox1",
+            "offset": "0x37c",
+            "typeIndex": 0
+          },
+          {
+            "name": "WdDsply",
+            "offset": "0x380",
+            "typeIndex": 5
+          },
+          {
+            "name": "WdLbl",
+            "offset": "0x384",
+            "typeIndex": 6
+          },
+          {
+            "name": "HtDsply",
+            "offset": "0x388",
+            "typeIndex": 5
+          },
+          {
+            "name": "HtLbl",
+            "offset": "0x38c",
+            "typeIndex": 6
+          },
+          {
+            "name": "TmrLbl",
+            "offset": "0x390",
+            "typeIndex": 6
+          },
+          {
+            "name": "ExpEd",
+            "offset": "0x394",
+            "typeIndex": 7
+          },
+          {
+            "name": "ExpLbl",
+            "offset": "0x398",
+            "typeIndex": 6
+          },
+          {
+            "name": "MinSecSw",
+            "offset": "0x39c",
+            "typeIndex": 1
+          },
+          {
+            "name": "GoBtn",
+            "offset": "0x3a0",
+            "typeIndex": 8
+          },
+          {
+            "name": "StopBtn",
+            "offset": "0x3a4",
+            "typeIndex": 8
+          },
+          {
+            "name": "ObsTimer",
+            "offset": "0x3a8",
+            "typeIndex": 9
+          },
+          {
+            "name": "SaveDialog1",
+            "offset": "0x3ac",
+            "typeIndex": 10
+          },
+          {
+            "name": "CRT2Pnl",
+            "offset": "0x3b0",
+            "typeIndex": 11
+          },
+          {
+            "name": "CRT2",
+            "offset": "0x3b4",
+            "typeIndex": 12
+          },
+          {
+            "name": "StatusBox",
+            "offset": "0x3b8",
+            "typeIndex": 0
+          },
+          {
+            "name": "StatusEd",
+            "offset": "0x3bc",
+            "typeIndex": 7
+          },
+          {
+            "name": "Image1",
+            "offset": "0x3c0",
+            "typeIndex": 4
+          },
+          {
+            "name": "GainGrp",
+            "offset": "0x3c4",
+            "typeIndex": 0
+          },
+          {
+            "name": "GainSlider",
+            "offset": "0x3c8",
+            "typeIndex": 1
+          },
+          {
+            "name": "Information1",
+            "offset": "0x3cc",
+            "typeIndex": 4
+          },
+          {
+            "name": "N2",
+            "offset": "0x3d0",
+            "typeIndex": 4
+          },
+          {
+            "name": "Help1",
+            "offset": "0x3d4",
+            "typeIndex": 4
+          },
+          {
+            "name": "RqstTimer",
+            "offset": "0x3d8",
+            "typeIndex": 9
+          }
+        ]
+      },
+      "publishedMethods": {
+        "sourceFileOffset": 1125675,
+        "count": 14,
+        "bytes": 255,
+        "sha256": "9054fb4c09b62de7af7b710cc42f862ed5e36ee256c36710db9a9521c1294ba4",
+        "methods": [
+          {
+            "name": "RqstTimerTimer",
+            "address": "0x5149bc"
+          },
+          {
+            "name": "FormClose",
+            "address": "0x513b10"
+          },
+          {
+            "name": "Exit1Click",
+            "address": "0x514260"
+          },
+          {
+            "name": "FormCreate",
+            "address": "0x513a88"
+          },
+          {
+            "name": "FormShow",
+            "address": "0x514050"
+          },
+          {
+            "name": "GoBtnClick",
+            "address": "0x514680"
+          },
+          {
+            "name": "StopBtnClick",
+            "address": "0x51482c"
+          },
+          {
+            "name": "ObsTimerTimer",
+            "address": "0x514b5c"
+          },
+          {
+            "name": "Save1Click",
+            "address": "0x514c00"
+          },
+          {
+            "name": "FormCloseQuery",
+            "address": "0x513b80"
+          },
+          {
+            "name": "FormPaint",
+            "address": "0x514c44"
+          },
+          {
+            "name": "FormDestroy",
+            "address": "0x513b64"
+          },
+          {
+            "name": "Information1Click",
+            "address": "0x514cb0"
+          },
+          {
+            "name": "Help1Click",
+            "address": "0x51512c"
+          }
+        ]
+      },
+      "events": [
+        {
+          "component": "ObsTimer",
+          "enabled": false,
+          "event": "ObsTimerTimer",
+          "propertyOffset": 6128,
+          "propertySHA256": "f1e3403c1d7cb6d98a701efe2bab2d6621dfcdde63efb245b83d3b074e9870bd"
+        },
+        {
+          "component": "RqstTimer",
+          "enabled": false,
+          "event": "RqstTimerTimer",
+          "propertyOffset": 6292,
+          "propertySHA256": "830a57409762798b48b63e5682a0bfd40780a4b256d0a3a1dfc6d5aaec548865"
+        }
+      ]
+    }
+  ],
+  "requestOwner": {
+    "classVariable": "0x594e64",
+    "VMT": "0x594eb0",
+    "name": "TNVORequest",
+    "nameSHA256": "3e7ff09c0514b1ea376c142de71d9c05072117218880ada3fc7805cd50266af6",
+    "methodSlotsSHA256": "6ca52e872e60ef2beff8278bc42f56fd342483e0722d5726173ec69343cd7bcd",
+    "destructor": "0x4257c8",
+    "execute": "0x59d644",
+    "pointer": "B1CatObj+0x3a",
+    "success": "byte+0x50",
+    "finished": "byte+0x51;written1afterbothHTTPsuccess/caughterrorpaths"
+  },
+  "scope": "Staticrecoveryonly;noHTTPcall,nativeexecution,controlleroracquisitionenabled",
+  "remaining": [
+    "Bindsuccessfulresponse/header/parser/cache/projectedcatalogownership;finishedisnotsuccess",
+    "RecovercompleteTNVORequesttransport/threadtermination/waitandmodalcallbacksforerror/cancel/reentry",
+    "ResolveIRCloseQueryMountCDROMconfiguredresourcevalidationdistinctfromCCD",
+    "Bindquota,locale/timeparsing,rootinstantflagandobservationdate/coordinateauthority",
+    "Recovercompleteimagepresentation,ownedstatisticsandnativeFITSoutputmetadata"
+  ],
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}
