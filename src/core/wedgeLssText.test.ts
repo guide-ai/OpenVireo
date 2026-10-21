@@ -1,5 +1,5 @@
 import{describe,expect,it}from'vitest';
-import{WEDGE_LIMITS,WEDGE_NATIVE_HEADER,wedgeHasTxtExtension,wedgeParseLssText,wedgeParseRow,type WedgeParseResult}from'./wedgeLssText';
+import{WEDGE_LIMITS,WEDGE_NATIVE_HEADER,wedgeAbsInt32,wedgeHasTxtExtension,wedgeParseLssText,wedgeParseRow,type WedgeParseResult}from'./wedgeLssText';
 import{wedgeBitsHex}from'./wedgeNumeric';
 // Synthetic LSS text vectors written for these tests from the recovered layout
 // (header 0x57ae64, parser 0x57b488). They are not CLEA observations or original files.
@@ -70,6 +70,41 @@ describe('LSS row parser 0x57b488',()=>{
   if(comma==='overflow'||dot==='overflow')throw new Error();
   expect(comma).toMatchObject({ra:{status:'value',s:0.5},redshift:{status:'value'},comment:'c'.repeat(36)});
   expect(dot).toMatchObject({ra:{status:'unadmitted'},redshift:{status:'unadmitted'},comment:null});
+ });
+ it('applies the signed 32-bit abs of 0x486c40/0x57b72b: INT_MIN keeps its sign, minutes stay signed',()=>{
+  // Static captures dms-helper.asm (486c53..486c5f: cdq/xor/sub on the DWORD, FILD DWORD) and
+  // lss-row-parser.asm (RA 57b65e..57b693 sign byte 1; Dec 57b6fe..57b757 sign 0x485960 then
+  // cdq/xor/sub at 57b72b). Two's-complement abs(−2^31) = −2^31; FILD reads it as signed.
+  const parse=(ra:string,dec:string)=>{const r=wedgeParseRow('INTMIN'.padEnd(11)+'1 '+ra+' '+dec+' 100 n',2,false,'.');if(r==='overflow'||r.ra.status!=='value'||r.dec.status!=='value')throw new Error(JSON.stringify(r));return r;};
+  const a=parse('-2147483648h0m0s','-2147483648'+DEG+"0'0\"");
+  // Pre-fix values (Math.abs) were RA +2147483648 and Dec −2147483648 (COORDINATOR pre-fix-facts.json).
+  expect(a.ra).toEqual({status:'value',hours:-2147483648,h:-2147483648,m:0,s:0});
+  expect(a.dec).toEqual({status:'value',degrees:2147483648,signLost:false});
+  // Minutes and seconds are added to the wrapped DWORD before the sign multiply.
+  const b=parse('-2147483648h30m36s','-2147483648'+DEG+"30'36\"");
+  if(b.ra.status!=='value'||b.dec.status!=='value')throw new Error();
+  expect(b.ra.hours).toBe((-2147483648+30/60)+36/3600);expect(b.dec.degrees).toBe(-((-2147483648+30/60)+36/3600));
+  // Neighbours keep the ordinary magnitude; minutes are never abs'd (negative minutes stay negative).
+  const c=parse('-2147483647h-30m0s','+2147483647'+DEG+"-30'0\"");
+  if(c.ra.status!=='value'||c.dec.status!=='value')throw new Error();
+  expect(c.ra.hours).toBe(2147483647-0.5);expect(c.dec.degrees).toBe(2147483647-0.5);
+  const d=parse('-5h-30m0s','-5'+DEG+"-30'0\"");
+  if(d.ra.status!=='value'||d.dec.status!=='value')throw new Error();
+  expect(d.ra.hours).toBe(4.5);expect(d.dec.degrees).toBe(-4.5);
+  // An INT_MIN minutes field is an ordinary signed value (no abs on minutes).
+  const e=parse('1h-2147483648m0s','1'+DEG+"-2147483648'0\"");
+  if(e.ra.status!=='value'||e.dec.status!=='value')throw new Error();
+  expect(e.ra.hours).toBe(1-2147483648/60);expect(e.dec.degrees).toBe(1-2147483648/60);
+  // Outside the 32-bit range stays unadmitted (raw row retained), as before.
+  const f=wedgeParseRow('X'.padEnd(11)+'1 -2147483649h0m0s 2147483648'+DEG+"0'0\" 100 n",2,false,'.');
+  if(f==='overflow')throw new Error();
+  expect(f).toMatchObject({raRaw:'-2147483649h0m0s',ra:{status:'unadmitted',reason:'hours-integer-range'},dec:{status:'unadmitted',reason:'degrees-integer-range'}});
+ });
+ it('wedgeAbsInt32 is the two\'s-complement abs on a signed DWORD',()=>{
+  expect([0,1,-1,2147483647,-2147483647,-2147483648].map(wedgeAbsInt32)).toEqual([0,1,1,2147483647,2147483647,-2147483648]);
+  // Idempotent: the Dec caller (57b72b) and the helper (486c53) both apply it.
+  for(const v of[0,-7,2147483647,-2147483648])expect(wedgeAbsInt32(wedgeAbsInt32(v))).toBe(wedgeAbsInt32(v));
+  for(const bad of[2147483648,-2147483649,0.5,NaN])expect(()=>wedgeAbsInt32(bad)).toThrow(RangeError);
  });
  it('reads Z files as Single z and derives v=Single(c·z)',()=>{
   const f=ok(wedgeParseLssText(file('Object ID MJD RA Dec Z Comments','A          1 12h0m0s 0'+DEG+"0'0\" 0.04 z-row"),'.'));

@@ -1,10 +1,10 @@
 import type{WedgeColours,WedgeOptions,WedgePlot}from'../core/wedgePlot';
-import{WEDGE_GEOMETRY as G}from'../core/wedgePlot';
+import{WEDGE_GEOMETRY as G,wedgeArcSvgPath}from'../core/wedgePlot';
 import type{WedgeRecord}from'../core/wedgeLssText';
 
 /** SVG rendering of the recovered TWedgePlot frame and points on a 550×550 client,
- * in the recovered TColor scheme. GDI Arc runs counter-clockwise on screen, i.e. SVG
- * sweep-flag 0. Text is placed at its top-left like TextOut; fonts are approximate. */
+ * in the recovered TColor scheme. Arc paths (SVG approximation of GDI Arc) come from the
+ * pure core. Text is placed at its top-left like TextOut; fonts are approximate. */
 export type WedgePlotSvgProps=Readonly<{plot:WedgePlot;records:readonly WedgeRecord[];options:WedgeOptions;colours:WedgeColours;selected:number|null;label:string;onSelect:(index:number)=>void;idPrefix:string}>;
 export default function WedgePlotSvg({plot,records,options,colours,selected,label,onSelect,idPrefix}:WedgePlotSvgProps){
  const{frame}=plot,fill=options.pointStyle===1?colours.own:'none';
@@ -14,8 +14,7 @@ export default function WedgePlotSvg({plot,records,options,colours,selected,labe
   <rect x={0} y={0} width={G.client} height={G.client} fill={colours.background} data-testid="wedge-background"/>
   <g className="wedge-grid" stroke={colours.ink} aria-hidden="true">
    {frame.lines.map((l,i)=><line key={'l'+i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}/>)}
-   {frame.arcs.map((a,i)=>{const phi=Math.atan2(a.endY-a.cy,a.endX-a.cx),ex=a.cx+a.r*Math.cos(phi),ey=a.cy+a.r*Math.sin(phi);
-    return <path key={'a'+i} d={`M ${a.startX} ${a.startY} A ${a.r} ${a.r} 0 0 0 ${ex.toFixed(3)} ${ey.toFixed(3)}`} data-radius={a.r}/>;})}
+   {frame.arcs.map((a,i)=><path key={'a'+i} d={wedgeArcSvgPath(a)} data-radius={a.r}/>)}
   </g>
   <g className="wedge-text" fill={colours.ink} aria-hidden="true">
    {frame.texts.map((t,i)=><text key={'t'+i} x={t.x} y={t.y} dominantBaseline="hanging" data-role={t.role}>{t.text}</text>)}

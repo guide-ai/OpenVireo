@@ -53,8 +53,14 @@ The panel `src/components/WedgeLab.tsx` is not mounted in `App` yet; Codex owns 
 - **Decimal separator.** You choose `.` or `,` explicitly. The choice is recorded per file because the original's `DecimalSeparator` depends on the host.
 - **Field statuses.** Numeric fields use a strict decimal/integer grammar. *Empty field* is a definite native zero-fill. *Spelling not admitted here* means the original might parse the text differently. Neither is plotted, and both are listed with their raw text. When a V/Z spelling is not admitted, the comment is left unknown, because the original's token consumption depends on whether that conversion succeeds.
 - **"−0°".** The original drops the minus sign of `-00°…` (0x485960 tests for x < 0). The port reproduces that and flags it. Dec is never used by the plot.
+- **RA hours and Dec degrees at −2147483648.** Admitted integer fields are signed 32-bit values (−2147483648 … 2147483647; anything else stays *Spelling not admitted here* with its raw text). The hours and degrees fields reach the d/m/s helper 0x486c40 as a full DWORD (0x57b668 for RA, 0x57b708/0x57b70a for Dec). The helper takes the absolute value with `cdq/xor/sub` (0x486c53…0x486c59) and reads it back with a signed `FILD DWORD` (0x486c5f). The Dec caller applies the same `cdq/xor/sub` first (0x57b72b), which changes nothing the second time. In two's complement, abs(−2³¹) stays −2³¹. The port applies that rule as the pure scalar `wedgeAbsInt32`, so:
+  - `-2147483648h0m0s` gives RA −2147483648 h, not +2147483648;
+  - `-2147483648°0'0"` gives Dec +2147483648° (sign −1 from 0x485960 times −2³¹), not −2147483648°.
+
+  Every other integer gets its ordinary magnitude. Minutes are never made absolute, so a negative minutes value (including −2³¹) is added as a signed number, as in the original. Sources: the bounded captures `COORDINATOR-review-triage/dms-helper.asm` and `lss-row-parser.asm` (SHA-256 in that directory's `static-receipts.json`). The rule covers only this integer step. The sums use Number (binary64) in the original order ((abs32(d) + m/60) + s/3600) × sign, not 80-bit Extended. Near 2³¹ that keeps about 2⁻²² h of resolution instead of Extended's finer one. The angle of such a point is huge, and Math.sin/Math.cos reduce it differently from x87 FSIN, so neither the value nor the pixel claims FPU parity.
 - **V and Z.** Values are exact binary32. Decimal input is rounded correctly to binary32 with BigInt, and inputs within 2⁻⁵⁸ (relative) of a midpoint are flagged, because native 0x40cf60 is not proven to round correctly. z = round₂₄(round₆₄(v/c)) and v = round₂₄(round₆₄(c·z)) model the compiled control word 0x1332. The historical host control word is not witnessed.
 - **Angles and pixels.** These use Number arithmetic in the original operation order. Math.sin and Math.cos stand in for FSIN/FCOS, and FISTP Round is treated as nearest-even. Results within 1e-6 px of a .5 tie are flagged as "Rounding tie". No x87, GDI, font or colour equivalence is claimed.
+- **Arcs (SVG approximation).** `wedgeFrame` keeps each GDI `Arc` call's recovered integer direction point (`endX`, `endY`), which is the point GDI aims at. GDI stops the arc where the ray from the centre through that point meets the ellipse. An SVG path needs the end on the circle, so the pure core functions `wedgeArcSvgEnd` and `wedgeArcSvgPath` (in `src/core/wedgePlot.ts`) project the direction point onto radius r with atan2/cos/sin. They draw counter-clockwise (sweep-flag 0), take the minor arc, and write 3 decimals. The drawn paths are the same as before this move: the golden strings are checked in Vitest and in the browser. They are not GDI pixels.
 
 ## Deliberate differences from the original
 
@@ -64,6 +70,11 @@ The panel `src/components/WedgeLab.tsx` is not mounted in `App` yet; Codex owns 
 - The display colour scheme is the default. The black-and-white scheme is offered as a **Plot colours** choice, whereas the original shows it only while printing. Fonts are approximate. The dashed selection ring and the transparent, enlarged hit areas around small points are new.
 - The CSV is a new schema, `openvireo-lss-wedge-points/1`. It records the file name and SHA-256, the line, the raw tokens, the statuses, the exact binary32 decimals and bits, the pixels, the options and this policy. Imported text is formula-neutralized; generated numerals are not. It is not the original save format, because the original's MJD/RA/Dec/V formatting helpers were not recovered.
 - Loaded LSS records are the student's own saved measurements. The panel never writes measurements, catalog values, distances or fits anywhere else.
+- **Keyboard.** These keyboard rules are this page's own; the original's keyboard behaviour was not recovered:
+  - Escape answers a prompt non-destructively: *Cancel* at "Retain Current Data?" and *No* at "Confirm Deletion!". It never deletes, so deleting still needs No and then Yes.
+  - After any prompt answer, or after cancelling a read, focus returns to the file input once React has enabled it again. This doesn't happen if the input is hidden or disabled, or if focus has already left the panel. Host inactivity clears any pending focus return.
+  - The Options dialog keeps Tab and Shift+Tab inside the dialog. Each radio group has one tab stop: its checked radio.
+- **Units and counts.** The table and details show the units `detail.hours` and `detail.degrees` from the presentation catalog, and the prompt and source list show row counts through `rowCount`. The figure text and the native strings are unchanged.
 - **Local workspace only.** The panel states in the window that its workspace belongs to the open window. Loaded files, the plot, options and selection are not part of Save investigation and are discarded on reload or close; the source `.TXT` files can be loaded again. This pass adds no persistence format.
 - **Host inactivity** has no original counterpart. When the host passes `disabled` (a hidden route that stays mounted, or a project operation), every control is disabled and three things are dropped before paint:
   - an in-flight read: it is aborted and its token no longer matches, so a late completion or failure changes nothing;
@@ -96,7 +107,16 @@ The Playwright file `tests/wedge-lss.spec.ts` runs only when `OPENVIREO_WEDGE_HA
 - a cancelled read that resolves late;
 - a 390 px mobile layout;
 - host inactivity (harness `?host=1`): hidden during a read that then completes late, busy while "Retain Current Data?" is open, hidden at "Confirm Deletion!", hidden with an options draft, then a reload through the native prompt;
-- translated captions (`?lang=es`, placeholder strings only) on the panel, the prompts' Yes/No/Cancel and the options dialog. All vectors are synthetic, not CLEA observations, and the tests check this contract, not original equivalence.
+- translated captions (`?lang=es`, placeholder strings only) on the panel, the prompts' Yes/No/Cancel and the options dialog;
+- review-fix regressions:
+  - the Options tab cycle with grid 1 or 2 committed, Shift+Tab to Cancel, and Escape;
+  - Escape and Yes/No/Cancel at both prompt stages, with focus returning to the enabled file input;
+  - cancelling a read returns focus to the file input;
+  - host inactivity at a prompt never moves focus;
+  - the translated units and row-count label;
+  - the golden arc paths for all three grids.
+
+All vectors are synthetic, not CLEA observations, and the tests check this contract, not original equivalence. The Vitest suites add the INT_MIN abs32 rows and `wedgeAbsInt32`, plus independent arc-end geometry: a normalised direction vector, the point on the circle and on the ray, and the golden paths. The review-fix harness and its Playwright config (desktop and 390 px mobile projects, strict port 5188) are in `claude-wedge-analysis/review-fixes/`.
 
 ## Integration notes for the coordinator
 

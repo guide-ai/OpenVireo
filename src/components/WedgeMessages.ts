@@ -33,7 +33,7 @@ export type WedgeMessageCatalog=Readonly<{
  columns:Readonly<Record<ColumnKey,string>>;selectRow:(id:string,i:number)=>string;
  plotStatus:Readonly<Record<WedgePlotStatus,string>>;boundary:string;
  fieldStatus:Readonly<Record<'native-zero-fill'|'unadmitted',string>>;signLost:string;
- detailsHeading:string;detailsNone:string;sha256:string;
+ detailsHeading:string;detailsNone:string;sha256:string;rowCount:(rows:number)=>string;
  sourceColumn:Readonly<Record<'z'|'velocity',string>>;detail:Readonly<Record<DetailKey,string>>;
  derivedFrom:Readonly<Record<'velocity'|'z',string>>;sourcesHeading:string;
  sourceAction:Readonly<Record<'first'|'add'|'replace',string>>;aboutHeading:string;about:readonly string[];
@@ -84,6 +84,7 @@ export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  detailsHeading:'Selected record',
  detailsNone:'Select a row or a plotted point to inspect it.',
  sha256:'SHA-256',
+ rowCount:(rows:number)=>`${rows} data row${rows===1?'':'s'}`,
  sourceColumn:Object.freeze({z:'Z column',velocity:'V(km/sec) column'}),
  detail:Object.freeze({redshift:'V / Z',kmPerS:'km/s',raw:'Saved line',line:'Line',source:'File',ra:'RA (hours)',dec:'Dec (degrees, original rule)',velocity:'V binary32',z:'Z binary32',derived:'Derived from',theta:'Angle from 12h spoke',radius:'Radius',pixel:'Pixel (x, y)',hours:'h',degrees:'°',px:'px'}),
  derivedFrom:Object.freeze({velocity:'V column (Z = V / c)',z:'Z column (V = c · Z)'}),

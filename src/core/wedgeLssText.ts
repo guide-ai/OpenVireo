@@ -77,6 +77,13 @@ function lexDecimal(text:string,sep:WedgeSeparator):Lex<string>{
 }
 /** Number value of an admitted decimal for RA/Dec seconds (Extended in the original). */
 const decimalNumber=(text:string)=>Number(text);
+/** Two's-complement abs of a signed 32-bit DWORD: cdq/xor/sub at 0x486c53..0x486c59 (and
+ * the Dec caller 0x57b72b..0x57b72e), read back by FILD DWORD at 0x486c5f as signed.
+ * abs(−2^31) wraps to −2^31; every other int32 gets its ordinary magnitude. */
+export function wedgeAbsInt32(v:number):number{
+ if(!Number.isInteger(v)||v< -2147483648||v>2147483647)throw new RangeError('int32');
+ return v===-2147483648?v:Math.abs(v);
+}
 
 function parseRa(token:string,sep:WedgeSeparator):WedgeRa{
  const st={s:token};
@@ -84,8 +91,9 @@ function parseRa(token:string,sep:WedgeSeparator):WedgeRa{
  const mc=cutNumber(st,'m'),m=lexInt(mc.text);if(m.status!=='value')return{status:m.status,reason:'minutes-'+m.reason};mc.consume();
  const sc=cutNumber(st,'s'),s=lexDecimal(sc.text,sep);if(s.status!=='value')return{status:s.status,reason:'seconds-'+s.reason};
  const sec=decimalNumber(s.value);if(!Number.isFinite(sec)||Math.abs(sec)>1e9)return{status:'unadmitted',reason:'seconds-range'};
- // 0x486c40: (|d| + m/60 + s/3600) × sign; the RA path stores sign=+1 (0x57b686).
- const hours=(Math.abs(h.value)+m.value/60)+sec/3600;
+ // 0x486c40: (abs32(d) + m/60 + s/3600) × sign; the RA path stores sign=+1 (0x57b686).
+ // Hours reach the helper as the full DWORD from 0x486a00 (0x57b668); minutes are not abs'd.
+ const hours=(wedgeAbsInt32(h.value)+m.value/60)+sec/3600;
  return Object.freeze({status:'value',hours,h:h.value,m:m.value,s:sec});
 }
 function parseDec(token:string,sep:WedgeSeparator):WedgeDec{
@@ -95,7 +103,9 @@ function parseDec(token:string,sep:WedgeSeparator):WedgeDec{
  const sc=cutNumber(st,'"'),s=lexDecimal(sc.text,sep);if(s.status!=='value')return{status:s.status,reason:'seconds-'+s.reason};
  const sec=decimalNumber(s.value);if(!Number.isFinite(sec)||Math.abs(sec)>1e9)return{status:'unadmitted',reason:'seconds-range'};
  // 0x485960 returns −1 only for degrees<0, so "-0°…" keeps a positive sign in the original.
- const sign=d.value<0?-1:1,degrees=sign*((Math.abs(d.value)+m.value/60)+sec/3600);
+ // The caller (0x57b72b) and 0x486c40 both apply abs32 to the degrees DWORD (idempotent), so
+ // "-2147483648°" gives (−2^31 + m/60 + s/3600) × −1.
+ const sign=d.value<0?-1:1,degrees=sign*((wedgeAbsInt32(d.value)+m.value/60)+sec/3600);
  return Object.freeze({status:'value',degrees,signLost:d.value===0&&dc.text.trim().startsWith('-')});
 }
 

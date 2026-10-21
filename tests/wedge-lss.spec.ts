@@ -204,3 +204,106 @@ test('translated presentation captions reach the native prompts and options dial
  // Text drawn inside the recovered figure stays native.
  await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 2');
 });
+
+// Regressions for the separate native /review of f491c22 (items 2, 3, 4 and 10).
+const rows=(page:Page)=>page.locator('[data-testid^="wedge-row-"]');
+const commitOptions=async(page:Page,grid:0|1|2,size:1|2|3|4|5)=>{
+ await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-'+grid).check();await page.getByTestId('wedge-size-'+size).check();await page.getByTestId('wedge-options-ok').click();
+ await expect(page.getByTestId('wedge-options')).toHaveCount(0);
+};
+
+test('options focus trap follows the checked radio of each group (one tab stop per group)',async({page})=>{
+ await open(page);await load(page,A);await expect(rows(page)).toHaveCount(4);
+ for(const grid of[1,2]as const){
+  await commitOptions(page,grid,3);
+  await page.getByTestId('wedge-options-open').click();
+  const g=page.getByTestId('wedge-grid-'+grid);await expect(g).toBeFocused();
+  // Shift+Tab from the first actual tab stop (the checked grid radio) wraps to Cancel.
+  await page.keyboard.press('Shift+Tab');await expect(page.getByTestId('wedge-options-cancel')).toBeFocused();
+  // Tab from the last stop wraps back to the checked grid radio, not to grid 0.
+  await page.keyboard.press('Tab');await expect(g).toBeFocused();
+  // Forward cycle: checked grid → checked size → checked style → OK → Cancel → checked grid.
+  for(const id of['wedge-size-3','wedge-style-0','wedge-options-ok','wedge-options-cancel','wedge-grid-'+grid]){await page.keyboard.press('Tab');await expect(page.getByTestId(id)).toBeFocused();}
+  // Backward cycle stays inside the dialog too.
+  for(const id of['wedge-options-cancel','wedge-options-ok','wedge-style-0','wedge-size-3','wedge-grid-'+grid,'wedge-options-cancel']){await page.keyboard.press('Shift+Tab');await expect(page.getByTestId(id)).toBeFocused();}
+  // Escape still discards the draft.
+  await page.getByTestId('wedge-size-5').check();await page.keyboard.press('Escape');
+  await expect(page.getByTestId('wedge-options')).toHaveCount(0);await expect(page.getByTestId('wedge-options-open')).toBeFocused();
+  await expect(page.getByTestId('wedge-point-0')).toHaveAttribute('r','3');
+ }
+});
+
+test('retain/delete prompts: Escape cancels without deleting and focus returns to the enabled file input',async({page})=>{
+ await open(page);await load(page,A);await expect(rows(page)).toHaveCount(4);
+ const prompt=page.getByTestId('wedge-prompt'),file=page.getByTestId('wedge-file');
+ const back=async(count:number)=>{await expect(prompt).toHaveCount(0);await expect(file).toBeEnabled();await expect(file).toBeFocused();await expect(rows(page)).toHaveCount(count);};
+ // Escape at "Retain Current Data?" = Cancel: current data kept.
+ await load(page,B);await expect(page.getByTestId('wedge-prompt-yes')).toBeFocused();
+ await page.keyboard.press('Escape');await back(4);await expect(notice(page)).toHaveAttribute('data-cause','cancel');
+ // Escape at "Confirm Deletion!" is the non-destructive answer (No): nothing is deleted.
+ await load(page,B);await page.getByTestId('wedge-prompt-no').click();
+ await expect(prompt).toHaveAttribute('data-stage','confirm-delete');await expect(page.getByTestId('wedge-prompt-yes')).toBeFocused();
+ await page.keyboard.press('Escape');await back(4);await expect(notice(page)).toHaveAttribute('data-cause','declined');
+ // Yes (keyboard) adds; focus returns once React has re-enabled the input.
+ await load(page,B);await page.keyboard.press('Enter');await back(6);await expect(notice(page)).toHaveAttribute('data-kind','loaded');
+ // Cancel and No → No keep data.
+ await load(page,B);await page.getByTestId('wedge-prompt-cancel').click();await back(6);
+ await load(page,B);await page.getByTestId('wedge-prompt-no').click();await page.getByTestId('wedge-prompt-no').click();await back(6);
+ // Double confirmation still replaces only after No → Yes.
+ await load(page,B);await page.getByTestId('wedge-prompt-no').click();await page.getByTestId('wedge-prompt-yes').click();await back(2);
+ await expect(page.getByTestId('wedge-row-0')).toContainText('SYN-101');
+});
+
+test('cancelling a read returns focus to the re-enabled file input',async({page})=>{
+ await page.addInitScript(()=>{const original=Blob.prototype.arrayBuffer;const gate:{release?:()=>void}={};(window as unknown as{__wedgeGate:typeof gate}).__wedgeGate=gate;
+  Blob.prototype.arrayBuffer=function(this:Blob){const self=this;return new Promise<ArrayBuffer>(resolve=>{gate.release=()=>{void original.call(self).then(resolve);};});};});
+ await open(page);await load(page,A);
+ await expect(page.getByTestId('wedge-file')).toBeDisabled();
+ await page.getByTestId('wedge-cancel-read').focus();await page.keyboard.press('Enter');
+ await expect(page.getByTestId('wedge-cancel-read')).toHaveCount(0);
+ await expect(page.getByTestId('wedge-file')).toBeEnabled();await expect(page.getByTestId('wedge-file')).toBeFocused();
+});
+
+test('host inactivity at a prompt never moves focus to hidden or disabled controls',async({page})=>{
+ await page.goto(harness!+'?host=1');await expect(page.getByTestId('wedge-lab')).toBeVisible();
+ const hide=page.getByTestId('host-hide'),busy=page.getByTestId('host-busy'),prompt=page.getByTestId('wedge-prompt');
+ await load(page,A);await expect(rows(page)).toHaveCount(4);
+ // Visible project operation while "Retain Current Data?" is open: the host control keeps focus.
+ await load(page,B);await expect(prompt).toHaveAttribute('data-stage','retain');
+ await busy.focus();await page.keyboard.press('Space');await expect(busy).toBeChecked();
+ await expect(prompt).toHaveCount(0);await expect(busy).toBeFocused();
+ await page.keyboard.press('Space');await expect(busy).not.toBeChecked();
+ await expect(page.getByTestId('wedge-file')).toBeEnabled();await expect(busy).toBeFocused();
+ // Hidden route at "Confirm Deletion!": no focus is pulled into the hidden panel, nor on return.
+ await load(page,B);await page.getByTestId('wedge-prompt-no').click();await expect(prompt).toHaveAttribute('data-stage','confirm-delete');
+ await hide.focus();await page.keyboard.press('Space');await expect(page.getByTestId('wedge-lab')).toBeHidden();await expect(hide).toBeFocused();
+ await page.keyboard.press('Space');await expect(page.getByTestId('wedge-lab')).toBeVisible();await expect(hide).toBeFocused();
+ await expect(rows(page)).toHaveCount(4);await expect(notice(page)).toHaveAttribute('data-cause','suspended');
+});
+
+test('declared presentation units and the row-count label are translatable; figure text stays native',async({page})=>{
+ await page.goto(harness!+'?lang=es');await expect(page.getByTestId('wedge-lab')).toBeVisible();
+ await load(page,A);
+ await expect(page.getByTestId('wedge-row-0')).toContainText('13.500000 hr');await expect(page.getByTestId('wedge-row-0')).toContainText('29.50000 grad');
+ await page.getByTestId('wedge-row-0').getByRole('button').click();
+ await expect(page.getByTestId('wedge-details')).toContainText('13.500000 hr');await expect(page.getByTestId('wedge-details')).toContainText('22.5000 grad');
+ await load(page,B);await expect(page.getByTestId('wedge-prompt')).toContainText('2 filas');
+ await page.keyboard.press('Escape');
+ await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 3');
+ await expect(page.locator('.wedge-text text[data-role="ra-label"]')).toHaveText(['12','13','14','15','16']);
+});
+
+test('the SVG arc paths for every grid are unchanged by the pure-core move',async({page})=>{
+ // Golden d attributes: hand-normalised GDI direction points (see src/core/wedgePlot.test.ts), toFixed(3).
+ const golden:Record<0|1|2,string[]>={
+  0:['M 445 350 A 160 160 0 0 0 306.327 430.188','M 445 190 A 320 320 0 0 0 167.904 349.945','M 445 30 A 480 480 0 0 0 29.231 270.133'],
+  1:['M 445 390 A 120 120 0 0 0 341.058 450.033','M 445 270 A 240 240 0 0 0 237.115 390.067','M 445 150 A 360 360 0 0 0 133.173 330.100','M 445 30 A 480 480 0 0 0 29.231 270.133'],
+  2:['M 445 30 A 480 480 0 0 0 29.231 270.133'],
+ };
+ const paths=async()=>page.locator('.wedge-grid path').evaluateAll(ps=>ps.map(p=>p.getAttribute('d')));
+ await open(page);
+ expect(await paths()).toEqual(golden[0]);
+ await commitOptions(page,1,1);expect(await paths()).toEqual(golden[1]);
+ await commitOptions(page,2,1);expect(await paths()).toEqual(golden[2]);
+ await commitOptions(page,0,1);expect(await paths()).toEqual(golden[0]);
+});

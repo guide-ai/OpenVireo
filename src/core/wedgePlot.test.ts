@@ -1,6 +1,7 @@
 import{describe,expect,it}from'vitest';
 import{wedgeParseRow,type WedgeRecord}from'./wedgeLssText';
-import{WEDGE_COLOUR_SCHEMES,WEDGE_DEFAULT_OPTIONS,validWedgeOptions,wedgeFrame,wedgePlot,wedgePoint}from'./wedgePlot';
+import{WEDGE_NATIVE_TEXT}from'./wedgeNativeText';
+import{WEDGE_COLOUR_SCHEMES,WEDGE_DEFAULT_OPTIONS,validWedgeOptions,wedgeArcSvgEnd,wedgeArcSvgPath,wedgeFrame,wedgePlot,wedgePoint}from'./wedgePlot';
 // Expected pixels below were derived by hand from the recovered formulas
 // (origin 445,510; radius 480; x=445−Round(r·sinθ), y=510−Round(r·cosθ)) with
 // four-place sines; they are analytic controls, not an original runtime oracle.
@@ -23,6 +24,38 @@ describe('wedge frame 0x581610',()=>{
   expect(none.lines.map(l=>[l.x2,l.y2])).toEqual([[445,30],[29,270]]);
   expect(none.texts.map(t=>t.text)).toEqual(['12','16','RA (Hours)']);
   expect(none.arcs).toEqual([{cx:445,cy:510,r:480,startX:445,startY:30,endX:29,endY:270}]);
+ });
+});
+describe('SVG approximation of the GDI Arc end (pure core, not native pixels)',()=>{
+ // Independent control: normalise the GDI direction vector (no atan2/cos/sin) and scale to r.
+ const normalised=(a:{cx:number;cy:number;r:number;endX:number;endY:number})=>{const vx=a.endX-a.cx,vy=a.endY-a.cy,len=Math.sqrt(vx*vx+vy*vy);return{x:a.cx+a.r*vx/len,y:a.cy+a.r*vy/len};};
+ // Golden paths: the d attributes WedgePlotSvg drew before the move, hand-checked to 3 decimals
+ // (e.g. r=480 through (29,270): |(−416,−240)|=480.26659…, end (29.230919, 270.133222)).
+ const golden:Record<0|1|2,string[]>={
+  0:['M 445 350 A 160 160 0 0 0 306.327 430.188','M 445 190 A 320 320 0 0 0 167.904 349.945','M 445 30 A 480 480 0 0 0 29.231 270.133'],
+  1:['M 445 390 A 120 120 0 0 0 341.058 450.033','M 445 270 A 240 240 0 0 0 237.115 390.067','M 445 150 A 360 360 0 0 0 133.173 330.100','M 445 30 A 480 480 0 0 0 29.231 270.133'],
+  2:['M 445 30 A 480 480 0 0 0 29.231 270.133'],
+ };
+ it('keeps the GDI direction points and draws the same paths as before',()=>{
+  for(const grid of[0,1,2]as const){
+   const arcs=wedgeFrame(grid).arcs;
+   expect(arcs.map(wedgeArcSvgPath)).toEqual(golden[grid]);
+   for(const a of arcs){
+    // GDI fields are the recovered integers, not the projected end.
+    expect([a.cx,a.cy,a.startX,a.startY]).toEqual([445,510,445,510-a.r]);expect(Number.isInteger(a.endX)&&Number.isInteger(a.endY)).toBe(true);
+    const e=wedgeArcSvgEnd(a),n=normalised(a);
+    expect(Math.abs(e.x-n.x)).toBeLessThan(1e-9);expect(Math.abs(e.y-n.y)).toBeLessThan(1e-9);
+    // On the circle, on the ray from the centre through the direction point, in front of the centre.
+    expect(Math.abs(Math.hypot(e.x-a.cx,e.y-a.cy)-a.r)).toBeLessThan(1e-9);
+    const vx=a.endX-a.cx,vy=a.endY-a.cy;
+    expect(Math.abs((e.x-a.cx)*vy-(e.y-a.cy)*vx)).toBeLessThan(1e-7);expect((e.x-a.cx)*vx+(e.y-a.cy)*vy).toBeGreaterThan(0);
+    // The direction point is near the 60° radial: the SVG end is within 1 px of r·(−sin60°, −cos60°).
+    expect(Math.hypot(e.x-(a.cx-a.r*Math.sqrt(3)/2),e.y-(a.cy-a.r/2))).toBeLessThan(1);
+   }
+  }
+ });
+ it('refuses a direction point at the centre (no defined GDI direction)',()=>{
+  expect(()=>wedgeArcSvgEnd({cx:445,cy:510,r:10,startX:445,startY:500,endX:445,endY:510})).toThrow(RangeError);
  });
 });
 describe('wedge colours',()=>{
@@ -51,6 +84,8 @@ describe('wedge points 0x581bc8',()=>{
  it('counts admitted records for the native "Points Plotted" text and validates options',()=>{
   const p=wedgePlot([rec('13h30m0s','6000'),rec('12h0m0s','0.1',true),rec('bad','1')],WEDGE_DEFAULT_OPTIONS);
   expect([p.admitted,p.drawn,p.excluded,p.countText]).toEqual([2,1,1,'Points Plotted: 2']);
+  // The drawn text uses the provenance literal 0x582158 (one source of truth).
+  expect(p.countText).toBe(WEDGE_NATIVE_TEXT.pointsPlotted+'2');
   expect(validWedgeOptions({grid:1,pointSize:5,pointStyle:1})).toBe(true);
   for(const bad of[{grid:3,pointSize:1,pointStyle:0},{grid:0,pointSize:6,pointStyle:0},{grid:0,pointSize:1.5,pointStyle:0},{grid:0,pointSize:1,pointStyle:2},null])expect(validWedgeOptions(bad)).toBe(false);
   expect(()=>wedgePlot([],{grid:0,pointSize:0,pointStyle:0}as never)).toThrow(RangeError);

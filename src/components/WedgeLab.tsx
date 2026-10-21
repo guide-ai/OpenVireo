@@ -1,4 +1,4 @@
-import{useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent}from'react';
+import{useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent,type KeyboardEvent}from'react';
 import'./Wedge.css';
 import{wedgeCsv}from'../core/wedgeExport';
 import type{WedgeRecord}from'../core/wedgeLssText';
@@ -39,25 +39,41 @@ function noticeLines(n:WedgeNotice,m:WedgeMessageCatalog):readonly Line[]{
  }
 }
 const fmt=(v:number,digits:number)=>Number.isFinite(v)?v.toFixed(digits):String(v);
-function raCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.ra.status==='value'?fmt(r.ra.hours,6)+' h':m.fieldStatus[r.ra.status];}
-function decCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.dec.status==='value'?fmt(r.dec.degrees,5)+'°'+(r.dec.signLost?' *':''):m.fieldStatus[r.dec.status];}
+function raCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.ra.status==='value'?fmt(r.ra.hours,6)+' '+m.detail.hours:m.fieldStatus[r.ra.status];}
+function decCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.dec.status==='value'?fmt(r.dec.degrees,5)+m.detail.degrees+(r.dec.signLost?' *':''):m.fieldStatus[r.dec.status];}
 
 export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange}:WedgeLabProps){
  const m=useMemo(()=>wedgeMessages(messages),[messages]),C=m.native;
  const[w,setW]=useState<WedgeWorkspace>(EMPTY_WEDGE_WORKSPACE);
  const[scheme,setScheme]=useState<WedgeColourScheme>(0);
- const token=useRef(0),abort=useRef<AbortController|null>(null),optionsButton=useRef<HTMLButtonElement>(null),promptButton=useRef<HTMLButtonElement>(null),fileInput=useRef<HTMLInputElement>(null);
+ const token=useRef(0),abort=useRef<AbortController|null>(null),optionsButton=useRef<HTMLButtonElement>(null),promptButton=useRef<HTMLButtonElement>(null),fileInput=useRef<HTMLInputElement>(null),root=useRef<HTMLElement>(null);
+ /** Set by a user's prompt answer or read cancel; consumed once the file input is enabled again. */
+ const refocusFile=useRef(false);
  const plot=useMemo(()=>wedgePlot(w.records,w.options),[w.records,w.options]);
  const busy=disabled||w.reading!==null||w.pending!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
- useLayoutEffect(()=>{if(disabled){abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
+ // Host inactivity also drops a pending focus return: it never pulls focus into the panel.
+ useLayoutEffect(()=>{if(disabled){refocusFile.current=false;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
  useEffect(()=>()=>{abort.current?.abort();},[]);
  useEffect(()=>{if(w.pending)promptButton.current?.focus();},[w.pending]);
+ // After the commit that re-enables the input (not synchronously in the handler, when it is
+ // still disabled). Skipped if the input is hidden or focus has already moved out of the panel.
+ useEffect(()=>{
+  if(!refocusFile.current||busy)return;refocusFile.current=false;
+  const f=fileInput.current,a=document.activeElement;
+  if(!f||f.disabled||f.getClientRects().length===0)return;
+  if(a&&a!==document.body&&!root.current?.contains(a))return;
+  f.focus();
+ },[busy]);
  /** Token-gated transitions (also used by async read completion). */
  const safe=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>setW(c=>{try{return f(c);}catch{return c;}});
  /** User actions: refused while the host has the panel disabled. */
  const act=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>{if(!disabled)safe(f);};
+ /** Prompt answers (Yes/No/Cancel/Escape): focus returns to the file input when the prompt closes. */
+ const answer=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>{if(disabled)return;refocusFile.current=true;safe(f);};
+ /** Escape is the non-destructive answer: Cancel at "Retain Current Data?", No at "Confirm Deletion!". */
+ const promptKey=(e:KeyboardEvent)=>{if(e.key!=='Escape'||!w.pending)return;e.preventDefault();answer(w.pending.stage==='retain'?cancelWedgePending:c=>confirmWedgeDelete(c,false));};
 
  async function onFile(e:ChangeEvent<HTMLInputElement>){
   const file=e.target.files?.[0];e.target.value='';if(!file||busy)return;
@@ -69,14 +85,14 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   catch(err){if(err instanceof WedgeFileError&&err.code==='aborted')return;safe(c=>failWedgeRead(c,t,err instanceof WedgeFileError&&err.code==='size'?'size':'read'));}
   finally{if(abort.current===ctrl)abort.current=null;}
  }
- const cancelRead=()=>{abort.current?.abort();abort.current=null;setW(cancelWedgeRead);fileInput.current?.focus();};
+ const cancelRead=()=>{abort.current?.abort();abort.current=null;refocusFile.current=true;setW(cancelWedgeRead);};
  const closeOptions=(commit:boolean)=>{act(commit?commitWedgeOptions:cancelWedgeOptions);requestAnimationFrame(()=>optionsButton.current?.focus());};
  const select=(i:number|null)=>act(c=>selectWedgeRecord(c,i));
  const lines=w.notice?noticeLines(w.notice,m):[];
  const sel=w.selected!==null?w.records[w.selected]:null,selPoint:WedgePoint|null=w.selected!==null?plot.points[w.selected]??null:null;
  const id=(s:string)=>idPrefix+s;
 
- return <section className="wedge-lab" aria-labelledby={id('title')} aria-disabled={disabled||undefined} data-testid="wedge-lab">
+ return <section ref={root} className="wedge-lab" aria-labelledby={id('title')} aria-disabled={disabled||undefined} data-testid="wedge-lab">
   <h2 id={id('title')}>{C.windowCaption}</h2>
   <p>{m.intro}</p>
   <p className="wedge-persistence" role="note" data-testid="wedge-persistence">{m.persistenceNote}</p>
@@ -108,16 +124,16 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   <p id={id('export-note')} className="wedge-note">{m.exportNote}</p>
   <p role="status" aria-live="polite" className="wedge-status" data-testid="wedge-status">{w.reading?m.reading(w.reading.name):w.records.length||w.receipts.length?m.statusLoaded(w.records.length,w.receipts.length):m.statusEmpty}</p>
   {w.reading&&!disabled?<button type="button" onClick={cancelRead} data-testid="wedge-cancel-read">{m.cancelRead}</button>:null}
-  {w.pending&&!disabled?<div className="wedge-prompt" role="alertdialog" aria-labelledby={id('prompt-title')} aria-describedby={id('prompt-text')} data-testid="wedge-prompt" data-stage={w.pending.stage}>
+  {w.pending&&!disabled?<div className="wedge-prompt" role="alertdialog" aria-labelledby={id('prompt-title')} aria-describedby={id('prompt-text')} onKeyDown={promptKey} data-testid="wedge-prompt" data-stage={w.pending.stage}>
    <h3 id={id('prompt-title')}>{w.pending.stage==='retain'?C.retainCaption:C.deleteCaption}</h3>
    <p id={id('prompt-text')} className="wedge-pre">{w.pending.stage==='retain'?C.retainText:C.deleteText}</p>
-   <p className="wedge-note"><code>{w.pending.name}</code> · {m.sha256} <code>{w.pending.sha256}</code> · {w.pending.file.rows.length}</p>
+   <p className="wedge-note"><code>{w.pending.name}</code> · {m.sha256} <code>{w.pending.sha256}</code> · {m.rowCount(w.pending.file.rows.length)}</p>
    <div className="wedge-actions">{w.pending.stage==='retain'?<>
-     <button ref={promptButton} type="button" disabled={disabled} onClick={()=>act(addWedgePending)} data-testid="wedge-prompt-yes">{C.yes}</button>
-     <button type="button" disabled={disabled} onClick={()=>act(clearWedgePending)} data-testid="wedge-prompt-no">{C.no}</button>
-     <button type="button" disabled={disabled} onClick={()=>act(cancelWedgePending)} data-testid="wedge-prompt-cancel">{C.cancel}</button></>:<>
-     <button ref={promptButton} type="button" disabled={disabled} onClick={()=>act(c=>confirmWedgeDelete(c,true))} data-testid="wedge-prompt-yes">{C.yes}</button>
-     <button type="button" disabled={disabled} onClick={()=>act(c=>confirmWedgeDelete(c,false))} data-testid="wedge-prompt-no">{C.no}</button></>}
+     <button ref={promptButton} type="button" disabled={disabled} onClick={()=>answer(addWedgePending)} data-testid="wedge-prompt-yes">{C.yes}</button>
+     <button type="button" disabled={disabled} onClick={()=>answer(clearWedgePending)} data-testid="wedge-prompt-no">{C.no}</button>
+     <button type="button" disabled={disabled} onClick={()=>answer(cancelWedgePending)} data-testid="wedge-prompt-cancel">{C.cancel}</button></>:<>
+     <button ref={promptButton} type="button" disabled={disabled} onClick={()=>answer(c=>confirmWedgeDelete(c,true))} data-testid="wedge-prompt-yes">{C.yes}</button>
+     <button type="button" disabled={disabled} onClick={()=>answer(c=>confirmWedgeDelete(c,false))} data-testid="wedge-prompt-no">{C.no}</button></>}
    </div>
   </div>:null}
   {lines.length?<div className={'wedge-notice'+(w.notice?.kind==='loaded'?' ok':'')} role={w.notice?.kind==='loaded'?'status':'alert'} data-testid="wedge-notice" data-kind={w.notice?.kind} data-cause={w.notice?.kind==='not-loaded'?w.notice.cause:undefined}>
@@ -145,7 +161,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
       <dt>{m.detail.velocity}</dt><dd>{wedgeSingleExact(sel.redshift.velocity)} {m.detail.kmPerS} <code>{wedgeBitsHex(sel.redshift.velocity)}</code></dd>
       <dt>{m.detail.z}</dt><dd>{wedgeSingleExact(sel.redshift.z)} <code>{wedgeBitsHex(sel.redshift.z)}</code></dd>
       <dt>{m.detail.derived}</dt><dd>{m.derivedFrom[sel.redshift.source]}</dd></>:<><dt>{m.detail.redshift}</dt><dd>{sel.redshiftRaw||'—'} → {m.fieldStatus[sel.redshift.status]}</dd></>}
-     {selPoint&&selPoint.thetaDegrees!==null?<><dt>{m.detail.theta}</dt><dd>{fmt(selPoint.thetaDegrees,4)}°</dd></>:null}
+     {selPoint&&selPoint.thetaDegrees!==null?<><dt>{m.detail.theta}</dt><dd>{fmt(selPoint.thetaDegrees,4)}{m.detail.degrees}</dd></>:null}
      {selPoint&&selPoint.radiusPx!==null?<><dt>{m.detail.radius}</dt><dd>{fmt(selPoint.radiusPx,4)} {m.detail.px}</dd></>:null}
      {selPoint&&selPoint.cx!==null?<><dt>{m.detail.pixel}</dt><dd data-testid="wedge-detail-pixel">{selPoint.cx}, {selPoint.cy}{selPoint.boundary?' · '+m.boundary:''}</dd></>:null}
      <dt>{m.columns.status}</dt><dd>{selPoint?m.plotStatus[selPoint.status]:''}</dd>
@@ -167,7 +183,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   </div>
   <details className="wedge-details-block">
    <summary>{m.sourcesHeading} ({w.receipts.length})</summary>
-   <ul data-testid="wedge-sources">{w.receipts.map((s,i)=><li key={i}><code>{s.name}</code> · {s.rows} · {m.sourceAction[s.action]} · {s.hasZ?m.sourceColumn.z:m.sourceColumn.velocity} · “{s.separator}” · {m.sha256} <code>{s.sha256}</code></li>)}</ul>
+   <ul data-testid="wedge-sources">{w.receipts.map((s,i)=><li key={i}><code>{s.name}</code> · {m.rowCount(s.rows)} ·{m.sourceAction[s.action]} · {s.hasZ?m.sourceColumn.z:m.sourceColumn.velocity} · “{s.separator}” · {m.sha256} <code>{s.sha256}</code></li>)}</ul>
   </details>
   <details className="wedge-details-block">
    <summary>{m.aboutHeading}</summary>

@@ -1,5 +1,6 @@
 import{roundNearestEven}from'./numericPolicy';
 import type{WedgeRecord}from'./wedgeLssText';
+import{WEDGE_NATIVE_TEXT}from'./wedgeNativeText';
 /** TWedgePlot paint contract (VMT 0x580af8): FormPaint 0x580ed4 → grid 0x581610,
  * points 0x581bc8. FormCreate 0x580dc0 sets a 550×550 client. Angles use FSIN
  * 0x4036bc/FCOS 0x4036ac on Extended; this port uses Number Math.sin/Math.cos and
@@ -74,6 +75,22 @@ export function wedgeFrame(grid:WedgeGridType):WedgeFrame{
  return Object.freeze({lines:Object.freeze(lines),arcs:Object.freeze(arcs),texts:Object.freeze(texts)});
 }
 
+/** SVG approximation of GDI Arc (not native pixels). GDI ends the arc where the ray from
+ * the centre through the direction point (endX,endY) meets the ellipse; an SVG elliptical
+ * arc needs that point on the circle, so it is projected onto radius r here. The recovered
+ * integer direction point stays in WedgeArc unchanged. */
+export function wedgeArcSvgEnd(a:WedgeArc):Readonly<{x:number;y:number}>{
+ if(a.endX===a.cx&&a.endY===a.cy)throw new RangeError('arc direction');
+ const phi=Math.atan2(a.endY-a.cy,a.endX-a.cx);
+ return Object.freeze({x:a.cx+a.r*Math.cos(phi),y:a.cy+a.r*Math.sin(phi)});
+}
+/** SVG path for one arc: counter-clockwise on screen (sweep-flag 0), minor arc (the
+ * recovered arcs span 60°), end rounded to 3 decimals for the attribute. */
+export function wedgeArcSvgPath(a:WedgeArc):string{
+ const e=wedgeArcSvgEnd(a);
+ return`M ${a.startX} ${a.startY} A ${a.r} ${a.r} 0 0 0 ${e.x.toFixed(3)} ${e.y.toFixed(3)}`;
+}
+
 export type WedgePlotStatus='plotted'|'outside-client'|'excluded-ra'|'excluded-redshift';
 export type WedgePoint=Readonly<{index:number;status:WedgePlotStatus;thetaDegrees:number|null;radiusPx:number|null;dx:number|null;dy:number|null;cx:number|null;cy:number|null;boundary:boolean}>;
 const PIXEL_LIMIT=1e9;
@@ -97,5 +114,5 @@ export function wedgePlot(records:readonly WedgeRecord[],options:WedgeOptions):W
  if(!validWedgeOptions(options))throw new RangeError('wedge options');
  const points=records.map((r,i)=>wedgePoint(r,i,options.pointSize));
  const admitted=points.filter(p=>p.status==='plotted'||p.status==='outside-client').length;
- return Object.freeze({frame:wedgeFrame(options.grid),points:Object.freeze(points),admitted,drawn:points.filter(p=>p.status==='plotted').length,excluded:points.length-admitted,countText:'Points Plotted: '+admitted});
+ return Object.freeze({frame:wedgeFrame(options.grid),points:Object.freeze(points),admitted,drawn:points.filter(p=>p.status==='plotted').length,excluded:points.length-admitted,countText:WEDGE_NATIVE_TEXT.pointsPlotted+admitted});
 }

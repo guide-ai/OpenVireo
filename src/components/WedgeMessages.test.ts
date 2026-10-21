@@ -40,6 +40,11 @@ describe('LSS wedge presentation catalog',()=>{
   expect([m.native.deleteCaption,m.native.retainText,m.native.headerText('f')]).toEqual([N.deleteCaption,N.retainText,N.headerText('f')]);
   expect(wedgeMessages()).toBe(WEDGE_MESSAGES);expect(Object.isFrozen(m)&&Object.isFrozen(m.native)).toBe(true);
  });
+ it('declares translatable units and a row-count label (used by the table, details and prompt)',()=>{
+  expect([WEDGE_MESSAGES.detail.hours,WEDGE_MESSAGES.detail.degrees,WEDGE_MESSAGES.rowCount(1),WEDGE_MESSAGES.rowCount(2)]).toEqual(['h','°','1 data row','2 data rows']);
+  const m=wedgeMessages({detail:{hours:'hr'},rowCount:(n:number)=>`${n} filas`});
+  expect([m.detail.hours,m.detail.degrees,m.rowCount(2)]).toEqual(['hr','°','2 filas']);
+ });
  it('keeps the source-evidence literals verbatim and ignores malformed untyped overrides',()=>{
   wedgeMessages(es);
   expect(N.yes).toBe('Yes');expect(N.retainCaption).toBe('Retain Current Data?');expect(N.gridItems).toEqual(['Velocity','Red Shift (Z)','No Grid']);

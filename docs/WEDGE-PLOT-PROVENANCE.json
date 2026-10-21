@@ -2,7 +2,7 @@
   "evidenceId": "VIREO-LSS-WEDGE-STATIC-2026-10-21",
   "packages": ["N06", "E02"],
   "scope": "Bounded LSS saved-data load → wedge plot options → plot → inspection/CSV. Not complete N06/E02.",
-  "author": "Claude (sole source author; author pass plus 2026-10-21 author correction pass; neither is a review). Codex coordinates, validates and integrates.",
+  "author": "Claude (sole source author; author pass plus 2026-10-21 author correction pass and 2026-10-21 review-fix author pass for the native /review of f491c22; none is a review). Codex coordinates, validates and integrates.",
   "originalExecuted": false,
   "executable": {
     "path": "extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
@@ -19,6 +19,8 @@
     {"kind": "coordinator results base DFM", "path": "claude-wedge-analysis/COORDINATOR-results-base-dfm.json", "sha256": "03fa2facd77980ebf7ab6105c9fe6245ac367222cf57e4b46b0638e73713db80", "use": "TInfoListForm1.ListBox1 has no initial items"},
     {"kind": "coordinator results dialog DFMs", "path": "claude-wedge-analysis/COORDINATOR-results-owner-dfm.json", "sha256": "ea157e4491da4206dfdf2c879ce8921d8db2da17e5094af005f9db9f620a15cc", "use": "contains per-record TObsRsltsDlg1 (and TLSSRsltsDlg1 is in the colours file); neither is the list owner; LSSRsltsForm1 has no own DFM and uses the inherited TInfoListForm1 form"},
     {"kind": "coordinator translation reproduction", "path": "claude-wedge-analysis/COORDINATOR-translation-failure.json", "sha256": "65bfd1ce8785172318bb14899a5675d14ecd1212f152ee30fe81aec93337e037", "use": "TS2322 on translated intro/statusEmpty; fixed by WedgeMessageOverrides and regression src/components/WedgeMessages.test.ts"},
+    {"kind": "coordinator bounded static capture (review triage)", "path": "claude-wedge-analysis/COORDINATOR-review-triage/dms-helper.asm", "sha256": "adb0ff2881b1dc82dcdf1ba33db257355130ef0454f0c2e9c615a5a0bafb36fc", "use": "0x486c40..0x486ca0: cdq/xor/sub abs on the hours/degrees DWORD, FILD DWORD, minutes not abs'd, f32 60.0/3600.0, sign byte multiply (sha256 as recorded in static-receipts.json)"},
+    {"kind": "coordinator bounded static capture (review triage)", "path": "claude-wedge-analysis/COORDINATOR-review-triage/lss-row-parser.asm", "sha256": "f68c497706f91b7baa6e9817f9fcad0632264465aaf1b4e335a9981137170ead", "use": "0x57b488..0x57b8d8: RA/Dec integer fields stored as full DWORDs; Dec caller abs at 0x57b72b (sha256 as recorded in static-receipts.json)"},
     {"kind": "existing static DFM inventory", "path": "task-3/i08-a01-recovery/optical-records/binary-inventory.json", "use": "event-binding candidates only; payloads not read"},
     {"kind": "existing repository contracts", "path": "docs/NATIVE-TEXT-RESULTS.md, docs/CLUSTER-NATIVE-OBSERVATION-HR.md, docs/HUBBLE-VELOCITY.md, docs/NATIVE-FPU-CONTEXT.md", "use": "0x486268=FloatToStrF(ffFixed,18,d); list Reset/Next/AtEnd 0x492628/0x492634/0x49271c; c bytes; 0x40cf60 number conversion; MJD prefix gate; control word 0x1332"}
   ],
@@ -53,13 +55,15 @@
     {"name": "options dialog", "address": "0x58060c/0x58078c", "fact": "FormShow loads radio indexes (size index = size−1); OK validates interval 0.1..10 min (Extended 0.1 bytes cdcccccccccccccc fb3f, f32 10.0) then stores grid/size/style; Cancel discards."},
     {"name": "LSS load branch", "address": "0x5891ef-0x5894bd", "fact": "exercise byte +0x383f=5; dialog 'Open Saved Redshifts Data File', default 'LSS_Redshifts', '*.TXT'; ExtractFileExt upper = '.TXT' else 'LSS observation files must be in text format.'/'TXT Files Only'; success 'Saved observations file \"…\" loaded.'/'Saved Data Loaded'; failure 'Data was not loaded.'/'No Data Loaded'; repaint WedgePlot when visible."},
     {"name": "loader", "address": "0x57bfb4-0x57c2b0", "seh": "try/finally only; faults inside rows propagate (file left open, list partially appended)", "fact": "Reset error → 'Cannot access results file …'/'File Error!'; header Pos('Object ID')=1 and Pos('RA')>0 else 'File … does not contain LSS redshift data!'/'No Data Loaded!'; hasZ=Pos('Z')>0; results ListBox (+0x360, Items count) non-empty → Yes/No/Cancel 'Retain Current Data?', No → 'Confirm Deletion!' (No returns without CloseFile); rows appended to +0x44a; ListBox rebuilt from header 0x57ae64 + rows 0x57b8e4."},
-    {"name": "row parser", "address": "0x57b488-0x57b8d4", "seh": "outer try/finally; per-field try/except for MJD, RA, Dec, V/Z (0x405430/0x405840); ID, comment and c-derivation outside except", "fact": "ID Copy(1,11) right-trimmed → string[15]; MJD token (prefix from current date; not reconstructible); RA h/m/s → (|h|+m/60+s/3600)·(+1) Extended @+0x18; Dec d/m/s with sign 0x485960 (x<0 → −1) @+0x22; V or Z Single @+0x30/+0x2c then z=Single(v/c) or v=Single(c·z), c Extended 2db29defa70e62921140; comment token → string[36]; +0x34=0."},
+    {"name": "row parser", "address": "0x57b488-0x57b8d4", "seh": "outer try/finally; per-field try/except for MJD, RA, Dec, V/Z (0x405430/0x405840); ID, comment and c-derivation outside except", "fact": "ID Copy(1,11) right-trimmed → string[15]; MJD token (prefix from current date; not reconstructible); RA h/m/s → (abs32(h)+m/60+s/3600)·(+1) Extended @+0x18; Dec d/m/s with sign 0x485960 (x<0 → −1), caller abs32 at 0x57b72b, @+0x22; abs32 = two's-complement cdq/xor/sub on the signed DWORD, so abs32(−2^31) = −2^31 (RA −2147483648 h; Dec +2147483648°); minutes are not abs'd; V or Z Single @+0x30/+0x2c then z=Single(v/c) or v=Single(c·z), c Extended 2db29defa70e62921140; comment token → string[36]; +0x34=0."},
     {"name": "token helpers", "address": "0x48672c, 0x486a00, 0x48690c, 0x486c40, 0x485960", "fact": "token to delimiter; StrToInt/StrToFloat after skipping leading ' ' and delimiter chars; d/m/s → value; sign."},
     {"name": "header", "address": "0x57ae64", "fact": "'Object ID    MJD(Days) ' + '     RA           Dec     V(km/sec)  Comments'."}
   ],
   "numericPolicy": {
     "VZ": "binary32 exact: decimal → binary32 by BigInt correct rounding (native 0x40cf60 not proven correctly rounded; relative distance < 2^-58 from a binary32 midpoint flagged); z=round24(round64(v/c)), v=round24(round64(c·z)) under control word 0x1332 (PC extended, RC nearest-even) — host control word not witnessed; c·z binary32 overflow = native unhandled fault → file refused.",
     "projection": "Number: RA hours in binary64 with the original operation order; Math.sin/Math.cos for FSIN/FCOS; FISTP Round as nearest-even; values within 1e-6 px of a .5 tie flagged.",
+    "int32Abs": "RA hours / Dec degrees: admitted signed int32 only (otherwise unadmitted, raw kept); wedgeAbsInt32 reproduces the integer cdq/xor/sub step exactly (−2^31 stays −2^31); the d/m/s sum then uses Number in the original order ((abs32(d)+m/60)+s/3600)·sign, not 80-bit Extended; FSIN reduction of the resulting huge angles is not claimed.",
+    "svgArc": "wedgeFrame keeps the recovered GDI Arc direction points (endX,endY); wedgeArcSvgEnd/wedgeArcSvgPath (pure core) project them onto radius r with atan2/cos/sin for an SVG minor arc, sweep-flag 0, 3 decimals. SVG approximation only; not GDI pixels. Paths unchanged by the 2026-10-21 review-fix move (golden strings in tests).",
     "labels": "FloatToStrF(…,ffFixed,18,2) emitted with '.'; host DecimalSeparator not recovered.",
     "claim": "No x87, GDI, font or colour equivalence is claimed."
   },
@@ -83,6 +87,7 @@
   "newUiBehaviour": {
     "presentationCatalog": "src/components/WedgeMessages.ts: WedgeMessageOverrides widens strings, nested groups, tuples and formatters; WEDGE_NATIVE_CAPTIONS defaults = verbatim WEDGE_NATIVE_TEXT (source evidence, never translated). Figure-drawn text stays native.",
     "hostInactivity": "disabled prop → suspendWedgeWorkspace (src/core/wedgeWorkspace.ts): aborts the read (token no longer matches), drops pending import consent and the options draft; keeps records, receipts, committed options, separator, selection. Not an original behaviour.",
+    "keyboard": "Escape = non-destructive prompt answer (Cancel at Retain, No at Confirm Deletion; never deletes); focus returns to the enabled file input after a prompt answer or read cancel, never during host inactivity or when focus has left the panel; Options tab trap uses one stop per radio group (checked radio). Native keyboard behaviour not recovered.",
     "persistence": "In-memory workspace only; visible warning that it is not included in Save investigation and is discarded on reload/close; sources can be loaded again. No persistence format."
   },
   "controls": {
