@@ -1,0 +1,426 @@
+{
+  "syntheticOnly": true,
+  "definition": "Authored fixed-column decimal rows,exact rational motion and independent IEEE32 nearest/even stores;not witnessed NOMAD service/native execution",
+  "cases": [
+    {
+      "name": "band-B",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "B",
+        "epochOffsetYears": 25.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x4161999a",
+        "raHours": 12.250571559203996,
+        "decDegrees": -30.505315500828956
+      }
+    },
+    {
+      "name": "band-V",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "V",
+        "epochOffsetYears": 25.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x41580000",
+        "raHours": 12.250571559203996,
+        "decDegrees": -30.505315500828956
+      }
+    },
+    {
+      "name": "band-R",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "R",
+        "epochOffsetYears": 25.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x414ccccd",
+        "raHours": 12.250571559203996,
+        "decDegrees": -30.505315500828956
+      }
+    },
+    {
+      "name": "band-J",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "J",
+        "epochOffsetYears": 25.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x41333333",
+        "raHours": 12.250571559203996,
+        "decDegrees": -30.505315500828956
+      }
+    },
+    {
+      "name": "band-H",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "H",
+        "epochOffsetYears": 25.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x412b3333",
+        "raHours": 12.250571559203996,
+        "decDegrees": -30.505315500828956
+      }
+    },
+    {
+      "name": "band-K",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "K",
+        "epochOffsetYears": 25.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x4124cccd",
+        "raHours": 12.250571559203996,
+        "decDegrees": -30.505315500828956
+      }
+    },
+    {
+      "name": "negative-epoch",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": ".125",
+        "DEC": "89.5",
+        "MuRA": "-123456.789",
+        "MuDEC": "123.456789",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "B",
+        "epochOffsetYears": -1000.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0xc2f6e9e0",
+        "muDecBits": "0x3dfcd6ea",
+        "magnitudeBits": "0x4161999a",
+        "raHours": 2.411236798321759,
+        "decDegrees": 89.46570644693242
+      }
+    },
+    {
+      "name": "small-motion",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": ".00012345678",
+        "MuDEC": "-.00000123",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "R",
+        "epochOffsetYears": 1000.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x34048f8b",
+        "muDecBits": "0xb0a90cc7",
+        "magnitudeBits": "0x414ccccd",
+        "raHours": 12.250000002286237,
+        "decDegrees": -30.500000000341668
+      }
+    },
+    {
+      "name": "signed-zero-motion",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "0",
+        "DEC": "-90",
+        "MuRA": "-0",
+        "MuDEC": "0",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "J",
+        "epochOffsetYears": 0.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x80000000",
+        "muDecBits": "0x00000000",
+        "magnitudeBits": "0x41333333",
+        "raHours": 0.0,
+        "decDegrees": -90.0
+      }
+    },
+    {
+      "name": "negative-magnitude",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "-1.25",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "V",
+        "epochOffsetYears": 1.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0xbfa00000",
+        "raHours": 12.25002286236816,
+        "decDegrees": -30.500212620033157
+      }
+    },
+    {
+      "name": "below-limit",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "29.9999",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "V",
+        "epochOffsetYears": 0.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x41efffcc",
+        "raHours": 12.25,
+        "decDegrees": -30.5
+      }
+    },
+    {
+      "name": "rounded-to-limit",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "29.9999999",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "V",
+        "epochOffsetYears": 0.0
+      },
+      "expected": {
+        "kind": "rejected",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x41f00000",
+        "raHours": 12.25,
+        "decDegrees": -30.5
+      }
+    },
+    {
+      "name": "zero-selected-no-fallback",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "12",
+        "V": "0",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "V",
+        "epochOffsetYears": 25.0
+      },
+      "expected": {
+        "kind": "rejected",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x00000000",
+        "raHours": 12.250571559203996,
+        "decDegrees": -30.505315500828956
+      }
+    },
+    {
+      "name": "single-underflow-selected",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": "12.25",
+        "DEC": "-30.5",
+        "MuRA": "1234.56789",
+        "MuDEC": "-765.4321",
+        "B": "14.1",
+        "V": "1e-50",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "V",
+        "epochOffsetYears": 0.0
+      },
+      "expected": {
+        "kind": "rejected",
+        "muRaBits": "0x3f9e0652",
+        "muDecBits": "0xbf43f35c",
+        "magnitudeBits": "0x0",
+        "raHours": 12.25,
+        "decDegrees": -30.5
+      }
+    },
+    {
+      "name": "no-coordinate-repair",
+      "values": {
+        "id": "SYNTHETIC-ONLY",
+        "RA": ".001",
+        "DEC": "90",
+        "MuRA": "-1200000",
+        "MuDEC": "1000000",
+        "B": "14.1",
+        "V": "13.5",
+        "R": "12.8",
+        "J": "11.2",
+        "H": "10.7",
+        "K": "10.3"
+      },
+      "context": {
+        "band": "V",
+        "epochOffsetYears": 1000.0
+      },
+      "expected": {
+        "kind": "candidate",
+        "muRaBits": "0xc4960000",
+        "muDecBits": "0x447a0000",
+        "magnitudeBits": "0x41580000",
+        "raHours": -22.221222222222224,
+        "decDegrees": 367.77777777777777
+      }
+    }
+  ]
+}
