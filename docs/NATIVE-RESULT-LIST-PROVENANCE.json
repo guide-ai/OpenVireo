@@ -1,0 +1,209 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "load-saved-data-main",
+      "start": "0x588fd8",
+      "endExclusive": "0x5894f3",
+      "bytesSHA256": "67d698dae86c0bbbd1fdfb17a07f4aa7c54c36b65296bfce3011fcc65c209242",
+      "listingSHA256": "819b89259e822b7274580e0801f266b09938de60947ecb2f4a270aabdbb1e773",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "read-dat-records",
+      "start": "0x549aa8",
+      "endExclusive": "0x549cff",
+      "bytesSHA256": "c9291bc92b93ee44e15eb6417943f14593c4cd3b4c84025425ca486336778903",
+      "listingSHA256": "a4006a88930bb15f33d44ee69669acb3a3c040023c7fa6fc4f1274e8d7d540ec",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "show-results-main",
+      "start": "0x588e38",
+      "endExclusive": "0x588fd6",
+      "bytesSHA256": "ba1fcd36f6c280083f6df84d43fbd7edb2afc41c4bf0e005b426b0ba52412698",
+      "listingSHA256": "f0efea0354bdde4b71231652b7c0c828c57b5bd2de57ceaa88ba40c83abd7f13",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "native-list-header",
+      "start": "0x54708c",
+      "endExclusive": "0x5471b4",
+      "bytesSHA256": "3120b45545b1845aed0f9d9b4c9644b1dfb02c6be9a773e64fa4f59cef5716fa",
+      "listingSHA256": "6c607aafe4f2c3b53884f3b373ac8e7fae4dd4a7220e7af12943a10fd7f3df8c",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "native-list-row",
+      "start": "0x547264",
+      "endExclusive": "0x5472dd",
+      "bytesSHA256": "7737f07fe611753becf5ea0b874d140522619882c64c3841673e142036f11d43",
+      "listingSHA256": "b5047dbe753ca84109d4791ad481f10d9538d4724129884a9c581468a25fac1f",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "compare-key-equality",
+      "start": "0x546d94",
+      "endExclusive": "0x546db4",
+      "bytesSHA256": "050fe66a7a0728d1f489414e656107cbdcb80c9709f71234d5a1a7e09c424fb4",
+      "listingSHA256": "79f268bc98ebf25357f128f4b6cb118592b571ccfe09f5573bb828a29838b4d2",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "compare-key-greater",
+      "start": "0x546db4",
+      "endExclusive": "0x546dde",
+      "bytesSHA256": "ef3eb7e4ebc7b0e378067f4c2c135a0589707040e23fd54edecdedb3d6c2324e",
+      "listingSHA256": "0a6f8878258edf45c2bfdd24cbf21b44cf50c890db33431ff14d2385a4cb8e20",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-init",
+      "start": "0x4924d4",
+      "endExclusive": "0x4924fc",
+      "bytesSHA256": "7ff4bfeb9bb3335654aa859c0ec5fe64be096cfab0d9d610927f3fe6b9be0002",
+      "listingSHA256": "380cb46b2e33762f47e86389cc54f0d287512aec0253de8b73b4b9e6ef9aa9a1",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "runtime-object-init",
+      "start": "0x404c70",
+      "endExclusive": "0x404cce",
+      "bytesSHA256": "3f84fdabdf91a814e7c375a377f9ac9cfdfbc59819abf4e13ca5fa7402b761bb",
+      "listingSHA256": "dce91449af354314a163f53edd6f3ecc32e2dcb0d897acf0d81dd2e1c71799c7",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-clear-wrapper",
+      "start": "0x4924fc",
+      "endExclusive": "0x49250a",
+      "bytesSHA256": "997ef9b85d159baa789ed76724eaeadfe35c6dba3feeefdc1a5cba5c3a54b8b0",
+      "listingSHA256": "9cc1e83b9a3144ab510acf608c401128d91b14460661e1ded3544f8d741aae16",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-clear",
+      "start": "0x49250c",
+      "endExclusive": "0x492526",
+      "bytesSHA256": "98c91294054bd3694179190eccf3780e7543c89034ca333f958a7221cd6663c0",
+      "listingSHA256": "1300f3a0af7abebf813b3c354ba2199894792785da4b8bd985d24172d44e8399",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-head-insert",
+      "start": "0x492528",
+      "endExclusive": "0x492573",
+      "bytesSHA256": "7ab1e730871a9a0935b61642e536681dc908e75631d11ef3789722d55cc322af",
+      "listingSHA256": "ef0b72494f2e6969abbd1a0f1581eb180378aa73579efa72d45bbbdf2e9872d4",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-after-insert",
+      "start": "0x492574",
+      "endExclusive": "0x4925d9",
+      "bytesSHA256": "f9261e620d6bb93972d4f185b5afb63bf06334a8f5427182552f8ff33bc06606",
+      "listingSHA256": "7c86ac8672b24908043d6c0cc505766fff5e80691a14cada78d416ca1b016c59",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-forward-reset",
+      "start": "0x492628",
+      "endExclusive": "0x492634",
+      "bytesSHA256": "61777ce40c26a34c94c6d3f9027984b51a137bd305e07142aa952fecd3d032b4",
+      "listingSHA256": "12c54d404062d2ee3de4bc413cadb8a6bd2959778551836a802ab820d8c0ecc2",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-next",
+      "start": "0x492634",
+      "endExclusive": "0x492666",
+      "bytesSHA256": "a6f9cb52098d051ed3f4da5afc63682c0ce0490bf5d788ad8159a76fd8fe04ea",
+      "listingSHA256": "305fd1adcd9b85104072be79f77b2e53bcfdd4657ab072ab0ca9fa6bfb2c6911",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-previous",
+      "start": "0x492668",
+      "endExclusive": "0x492685",
+      "bytesSHA256": "23aaf0adcd137bce0b230cc9e322f82888ef0363bde6f785fdd9984b8a098698",
+      "listingSHA256": "6982bf61aaf6ac72473758bb34db19a55676109d5566c9d435e985e6f221367b",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-is-empty",
+      "start": "0x492708",
+      "endExclusive": "0x492710",
+      "bytesSHA256": "ee771d8ca4f9b6dd149a32c4e08a8a1cd02bfb5ed5e57416f946ba930398633d",
+      "listingSHA256": "b53ec717e8154e2d37f0af9a3290281cd23585e6d63a5a41db9a7cacabc95233",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-is-head",
+      "start": "0x492710",
+      "endExclusive": "0x49271a",
+      "bytesSHA256": "4f0409db34f2d512fa10114052f15e31e34ac2c5c17cbbaaa3f8b1cda9bf6a66",
+      "listingSHA256": "2abe98f3b863ecbfb7b2c99d951020bfe82fb7ebbcd4c3b026bb22b9e5f2192b",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-is-tail",
+      "start": "0x49271c",
+      "endExclusive": "0x492726",
+      "bytesSHA256": "0c1ca7556829163505a731554696d87676ba95a1c7a6a7d9027ec0804d80f968",
+      "listingSHA256": "42c0952f6d457d6a1805eefca6c442cc2423a70dd5cb24089f40b58cc2ac4f7d",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "typed-list-sorted-insert",
+      "start": "0x492728",
+      "endExclusive": "0x4927fc",
+      "bytesSHA256": "134ceed0190bf07e09eab50152dea74700038380d28434a06e0a8da109677840",
+      "listingSHA256": "0481772c6c38fc23be9385cd4970b87cfe0a64749f6af6a0fbb6d20b7fd3630a",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "save-data-dispatch",
+      "start": "0x58f00c",
+      "endExclusive": "0x58f059",
+      "bytesSHA256": "61ca255103e70abe5c46d4e526aa8dc37514f1cc24bf9841cdebae99ce14e06e",
+      "listingSHA256": "4197c59cea7074c3de80e836c1416d7ea07defba949991fb094fb08237af90ce",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    },
+    {
+      "name": "results-create",
+      "start": "0x546de0",
+      "endExclusive": "0x546e1b",
+      "bytesSHA256": "87b6b814083f9e1c98d3e4fbc519bd8ee1194dc1e499b06947e3f063d5956823",
+      "listingSHA256": "d0e934ba9eda5547c2bbd6216c2a5d9ad8b00d5587961967548d04e670da001a",
+      "boundary": "Complete static function through final return,following padding/data excluded"
+    }
+  ],
+  "dataBindings": [
+    {
+      "start": "0x546784",
+      "bytes": 4,
+      "meaning": "results-list type/method-table pointer0x546790",
+      "SHA256": "a96995827a4b884563c2e6afecc1945200ea9aba5969b0424123e010d51839ce"
+    },
+    {
+      "start": "0x546788",
+      "bytes": 16,
+      "meaning": "objectsize26,methodtableoffset22,equality0x546d94,greater0x546db4",
+      "SHA256": "2af460eadaf11fa9a1ce0e7059253f33fe50f72029bf2004a228e2613ce2d1b8"
+    }
+  ],
+  "confirmedReader": "MainLoadSavedData1Click.DAT branch58919f..5891b2calls549aa8;Resetrecordsize144;Yesappend/No-confirmclear/Cancel;sequential read uses sorted insert492728,not concatenation.",
+  "sort": "ComparatorGreater uses storedDouble+16,thenExtended+24 when times compare equal. Normal/zero canonical values imply ascending time thenRA. Other encodings and FPUexception environment need explicit admission policy;not native runtimeparity.",
+  "ties": "If incoming>current,forward insertion uses upper equal-key bound. Otherwise backward insertion uses lower bound except equality with the minimum head inserts after that head at4927d3..4927f2. Inserted node becomes current. Full readout ends at tail;only that append entry profile is ported.",
+  "limits": [
+    "No originalexecution,CPUinterpretation/emulation or writer/runtimeoracle",
+    "Native prefix mutation on later read errors may occur;browser atomic retention differs",
+    "CSV/TXTreader549e18 andnativeformatteddate/JD state remain separate",
+    "No new numericmetadata/timevalues/sourceauthority invented"
+  ],
+  "productModification": true,
+  "evidenceId": "DAT-LIST-LOAD-01",
+  "supersedesTieSummary": "The old lower-bound summary omitted minimum-head equality:4927d3..4927f2 inserts AFTER an equal head. Source captures unchanged. TS uses lower bound except this head tie; upper bound when incoming>current.",
+  "readerProfile": "canonical normal/zero time/RA; full readout tail before append",
+  "priorTieSummary": "Insertion chooses an upper equal-key bound when incoming>current cursor key,otherwise a lower bound. Last inserted node becomes current during input. At completion full list readout ends at tail;this is a recoverable append entry profile,not proof of all native cursor histories."
+}

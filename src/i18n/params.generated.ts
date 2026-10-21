@@ -1759,4 +1759,24 @@ export interface MessageParameters {
   "nativeEdit.replaceRemarks": never;
   "nativeResults.dialogCancelled": never;
   "nativeEdit.undoUnavailable": never;
+  "nativeList.build": never;
+  "nativeList.append": never;
+  "nativeList.title": never;
+  "nativeList.review": "after" | "before";
+  "nativeList.policy": never;
+  "nativeList.input": "count" | "name";
+  "nativeList.cancel": never;
+  "nativeList.confirm": never;
+  "nativeList.active": never;
+  "nativeList.receipts": never;
+  "nativeList.receiptsPolicy": never;
+  "nativeList.empty": never;
+  "nativeList.saved": never;
+  "nativeList.undo": never;
+  "nativeList.undone": never;
+  "nativeList.error.owner": never;
+  "nativeList.error.key": never;
+  "nativeList.error.limit": never;
+  "nativeList.error.order": never;
+  "nativeList.error.format": never;
 }

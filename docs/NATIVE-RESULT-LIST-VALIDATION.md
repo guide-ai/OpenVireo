@@ -1,0 +1,16 @@
+# Native DAT list validation
+
+Base:bc67f95. Source capture and hashes:[provenance](NATIVE-RESULT-LIST-PROVENANCE.json). Safe derived artifacts live outside source in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-result-list-implementation/`.
+
+- 16meaningful core cases cover exact Double/Extended signs,extreme exponents/low bits,signedzero,head/interior ties,cursor-dependent ordering,duplicate chunks,source immutability,ownership,refresh and1000/1001bounds. Full Vitest:1423tests/148files passed.
+- Independent Python Fraction/neighbor-walk list specification generated512authored cases with seed0x549aa8. Against TypeScript binary bounds/BigInt:2048whole-byte/order/immutable-input checks passed. Vector SHA-256 `dda1cba72ad900c2c316dcf159e1088a76cd6aefa99a4a85ac2fcd51d7cd2ff4`;combined output `fbef35f18c60f3685276ef9c7101c0fc22737071e842b21abe54cb637a620415`. This is a second mathematical implementation,not an original runtime oracle.
+- 35affected Playwright flows passed with4workers,zero retries,41.7s:build,append,cancel,empty,head/interior/repeated ties,1000/1001limits,unsupported keys,malformed input,CSV/TXT rejection,chooser cancel,read/hash failure,late read/hash,another dialog,keyboard,exact edit/delete/Undo,revert/replacement,reimport,manual answers and byte-exact old JSON/CSV/notebook exports,mobile and reload.
+- Typecheck,build and1279resource size/SHA checks passed. Existing large-bundle advisory remains.
+
+Initial evidence is preserved. First7new E2E run had2pass/5fail:incorrect existing button names,a focus assertion after downloading (which intentionally moves focus),wrong hashing text,an incorrect total-visible-dialog count,and an incomplete manual-classification fixture. The second run had6pass/1fail because the manual fixture still lacked required reasoning. Valid manual inputs passed the separate mobile run;the final affected35run includes all10new flows. No timeout increase,product assertion removal or retry masking was used.
+
+Separately,complete static insertion inspection found the minimum-head equality exception missing from the earlier lower-bound summary. The TS algorithm and targeted expectations were corrected before final affected validation. The512-case independent neighbor-walk specification passes that corrected rule. Source captures and their hashes are unchanged;an erratum preserves the earlier summary rather than silently rewriting it.
+
+Complete regression:385E2E/87files passed in6.9minutes with4workers,zero retries/failures/skips;the local original HTL sample was supplied read-only for its optional case. Fresh independent desktop1440/mobile360 checks retained exact merged bytes,Undo ordinal,cancel focus and manual answer;no overflow/pageerror,and review/actions screenshots were inspected. Final receipts retain raw logs/traces. Persistent preview verification follows the local fast-forward. This new delta has not yet received a post-change Claude review;the earlier reviewed range ended at26c09f4.
+
+The first direct Node independent-runner attempts failed to resolve development TypeScript/JSON modules before running controls. The successful independent validation used the repository Vitest/Vite loader against the same real TypeScript source and generated Python vectors;2048checks are from that completed run. Failed harness artifacts remain outside source.

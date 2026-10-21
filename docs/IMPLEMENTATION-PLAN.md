@@ -569,3 +569,7 @@ Owned-file deletion update: [selected DAT record deletion and exact Undo](NATIVE
 [DAT and Program List review corrections](DAT-AND-PROGRAM-REVIEW-FIXES.md) add field-specific consent for escaped raw text, cancel cross-dialog late reads and restore useful keyboard focus. Native numerical fields, converter/record formats, notebook persistence and scientific acceptance remain unchanged.
 
 [DAT modal and recovery follow-up](DAT-MODAL-RECOVERY.md) closes late-dialog imports,held-Enter cancellation and restored-row focus/selection feedback. Numerical byte/record/session contracts remain unchanged;native sorted-load/merge is separately recovered and not yet implemented.
+
+## Native supplied-DAT list loading and merge —21October2026
+
+[DAT ordering/merge](NATIVE-RESULT-LIST.md) implements the separately recovered typed reader/list contract behind an explicit raw-inspect→order→append/review/cancel/confirm flow. Complete144-byte chunks and duplicates are retained,including the minimum-head tie exception;exact stored time/RA comparison admits canonical normal/zero only. Tail-profile refresh,temporary input receipts and exact one-level Undo are bounded web safety/state policies. No new metadata,CSV/TXT reader,scientific answer,format migration or full native FPU/runtime equivalence is invented. All64primary statuses remain unchanged;projectpartial. See[validation](NATIVE-RESULT-LIST-VALIDATION.md).
