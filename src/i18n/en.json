@@ -1946,5 +1946,17 @@
   "cameraInfo.cooling": "Cooling",
   "cameraInfo.liquidNitrogen": "Liquid Nitrogen",
   "cameraInfo.thermoelectric": "Thermoelectric",
-  "cameraInfo.close": "Close camera information"
+  "cameraInfo.close": "Close camera information",
+  "cameraPrepare.title": "CCD / IR preparation reference",
+  "cameraPrepare.owner": "Applied telescope: {name}",
+  "cameraPrepare.scope": "Nominal fields use the original compiled camera dimensions and pixel sizes with the applied telescope’s focal length. A pending telescope choice does not change this reference.",
+  "cameraPrepare.ccd": "CCD",
+  "cameraPrepare.ir": "IR",
+  "cameraPrepare.region": "{camera} preparation reference",
+  "cameraPrepare.width": "Nominal width (arcmin)",
+  "cameraPrepare.height": "Nominal height (arcmin)",
+  "cameraPrepare.filters": "Original filter positions",
+  "cameraPrepare.gains": "Original gains (electrons/ADU)",
+  "cameraPrepare.limit": "These are preparation references and available control positions. They do not start an exposure, apply a filter or gain, calibrate pixels, or establish a supplied image’s field or camera.",
+  "cameraPrepare.focal": "Applied focal length: {value} mm"
 }

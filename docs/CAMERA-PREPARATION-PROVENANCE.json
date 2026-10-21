@@ -1,0 +1,361 @@
+{
+  "evidenceId": "NATIVE-CAMERA-PREPARATION-REFERENCE-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "stored-camera-fields",
+      "start": "0x53df24",
+      "endExclusive": "0x53e178",
+      "bytes": 596,
+      "bytesSHA256": "e22c0c41b467810bd328f046dc18bb5168e87c998ce9f97bb04459e7c1f1f720",
+      "listingSHA256": "abef60b8555c831433060fbd17a5a2d3b380dd07b1ec9ca965871ce10bec2d67",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ccd-field-initialize",
+      "start": "0x5220f4",
+      "endExclusive": "0x522294",
+      "bytes": 416,
+      "bytesSHA256": "817d3569ec2ee981e15224e05f576fbdbc9c71e3bd29782faf0d1f400bcf6d2a",
+      "listingSHA256": "71f92624de054322c4c20db6947d51992876b88168f03ba5ec53bf1cb5714fcc",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ir-field-initialize",
+      "start": "0x51dd10",
+      "endExclusive": "0x51deb0",
+      "bytes": 416,
+      "bytesSHA256": "1434d4216e3e2425ec0ec8563bf43fe165a6a12fe9e122676068ff4e31f34e9c",
+      "listingSHA256": "f2a4aa51068559d7aab3133ddd5029ad136dd5ae27ec6c549b272c3966b4b4b0",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ccd-show",
+      "start": "0x512008",
+      "endExclusive": "0x51220b",
+      "bytes": 515,
+      "bytesSHA256": "11a71d6f507a6e51d92194c9659e4943d67d169928bbc2bb29dccfaa9a12ca5d",
+      "listingSHA256": "1c3bc1c8495be2d906d28486ee5214129a214c5053165b2b9324aa06a7986216",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ir-show",
+      "start": "0x514050",
+      "endExclusive": "0x514248",
+      "bytes": 504,
+      "bytesSHA256": "10b7f73439fa27513e4b420228a7dd303efc347ca15d76168d54fc114e515afe",
+      "listingSHA256": "aad7b5bf36f0fd54b2251c5945bbaa3bea0d55165e86349a8c0de4451e9c2c21",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ccd-go",
+      "start": "0x51265c",
+      "endExclusive": "0x5127a2",
+      "bytes": 326,
+      "bytesSHA256": "fd22bbe7bf632405cb6900fcbfa077d9c830e2f5a0a0b3c686ae3212105865d4",
+      "listingSHA256": "0e091e1284c05725d7fc45f38086fc3a53d48751596c1cd4996a9bb2c732fe81",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ir-go",
+      "start": "0x514680",
+      "endExclusive": "0x5147d5",
+      "bytes": 341,
+      "bytesSHA256": "e06714a27fd1ae23033abcd220cc6b0f855c1ed7f0033572ce48bc57e9a97800",
+      "listingSHA256": "4704bfa0371e492a592fc3a95599e30a0e246a336b81de52b5ad3f13fccd55eb",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ir-image-initialize",
+      "start": "0x51e3b8",
+      "endExclusive": "0x51e439",
+      "bytes": 129,
+      "bytesSHA256": "2c652fa28949cf2688a00496c56665bf7a9450f9d182278c5ecd69a6cf8f10a0",
+      "listingSHA256": "01f73142719e30d7ae6e83f27d368faa09caef4b308c59153f696a0f4f2fde8f",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    }
+  ],
+  "constants": {
+    "micronsToMM": {
+      "address": "0x53e178",
+      "type": "Extended",
+      "exactDecimal": "0.0009999999999999999999584953855845392833856521974666975438594818115234375",
+      "bytesSHA256": "b4b442ccf1e7225e0718ef7e8d10984bc37295f4b7bcc727211dbe84d1936425",
+      "numberPolicyValue": 0.001
+    },
+    "arcsecondsPerRadian": {
+      "address": "0x53e184",
+      "type": "Extended",
+      "exactDecimal": "206264.7999999999999971578290569595992565155029296875",
+      "bytesSHA256": "f2d0b2ce17e9630e26035bf5edd33eb18383ee2f5243aab31e4c6b6bbcca26f6",
+      "numberPolicyValue": 206264.8
+    },
+    "arcsecondsPerArcminute": {
+      "address": "0x53e190",
+      "type": "Single",
+      "exactDecimal": "60",
+      "bytesSHA256": "fb7614b89815f3ebaaba34a1cbd1fe490c839c39571d6a45e3a3cff5fcb1383c",
+      "numberPolicyValue": 60.0
+    },
+    "irFieldMicronsToMM": {
+      "address": "0x51dedc",
+      "type": "Extended",
+      "exactDecimal": "0.0009999999999999999999584953855845392833856521974666975438594818115234375",
+      "bytesSHA256": "b4b442ccf1e7225e0718ef7e8d10984bc37295f4b7bcc727211dbe84d1936425",
+      "numberPolicyValue": 0.001
+    },
+    "ccdFieldMicronsToMM": {
+      "address": "0x5222c0",
+      "type": "Extended",
+      "exactDecimal": "0.0009999999999999999999584953855845392833856521974666975438594818115234375",
+      "bytesSHA256": "b4b442ccf1e7225e0718ef7e8d10984bc37295f4b7bcc727211dbe84d1936425",
+      "numberPolicyValue": 0.001
+    }
+  },
+  "forms": [
+    {
+      "gainUnitHint": {
+        "text": "Electrons/ADU",
+        "propertyOffset": 5046,
+        "payloadSHA256": "86961f10e3dfb42bbfc0623d70ba42ae21520eb941aab4e110ea7c1d6f829f7f"
+      },
+      "kind": "ccd",
+      "form": "TCCDCam",
+      "sourceFileOffset": 1985252,
+      "bytes": 6355,
+      "resourceSHA256": "6f64acf688531ee21525297fd9bec54796b925fa5a8b158f78adac5c5acff10a",
+      "properties": [
+        {
+          "component": "FltrSlider",
+          "componentNameOffset": 748,
+          "property": "PositionLabels",
+          "propertyNameOffset": 807,
+          "valueType": "vaString6",
+          "text": "NF,B, V, R, I",
+          "labels": [
+            "NF",
+            "B",
+            "V",
+            "R",
+            "I"
+          ],
+          "payloadSHA256": "b9487b54a1953f1dbf10fd2be11dad775c698867612a214072b3b857373622e2"
+        },
+        {
+          "component": "GainSlider",
+          "componentNameOffset": 5006,
+          "property": "PositionLabels",
+          "propertyNameOffset": 5095,
+          "valueType": "vaString6",
+          "text": "1,2,5",
+          "labels": [
+            "1",
+            "2",
+            "5"
+          ],
+          "payloadSHA256": "c662a4cb55e62780372b4819e300a25690c9016ff025a68f0aeb95fedaa30ccd"
+        }
+      ],
+      "filters": [
+        "NF",
+        "B",
+        "V",
+        "R",
+        "I"
+      ],
+      "gainsElectronsPerADU": [
+        1,
+        2,
+        5
+      ]
+    },
+    {
+      "gainUnitHint": {
+        "text": "Electrons/ADU",
+        "propertyOffset": 5043,
+        "payloadSHA256": "86961f10e3dfb42bbfc0623d70ba42ae21520eb941aab4e110ea7c1d6f829f7f"
+      },
+      "kind": "ir",
+      "form": "TIRCam",
+      "sourceFileOffset": 2073464,
+      "bytes": 6352,
+      "resourceSHA256": "0813b4b90d3bf81388c6d67e1c1803b0f6018ef79d535012ac1e076573d7ea86",
+      "properties": [
+        {
+          "component": "FltrSlider",
+          "componentNameOffset": 756,
+          "property": "PositionLabels",
+          "propertyNameOffset": 815,
+          "valueType": "vaString6",
+          "text": "J,H,K",
+          "labels": [
+            "J",
+            "H",
+            "K"
+          ],
+          "payloadSHA256": "5ae86bd52f93091edd26345212523881793e6873169432688fe610d58f5d8dd4"
+        },
+        {
+          "component": "GainSlider",
+          "componentNameOffset": 5003,
+          "property": "PositionLabels",
+          "propertyNameOffset": 5092,
+          "valueType": "vaString6",
+          "text": "1,2,4,8",
+          "labels": [
+            "1",
+            "2",
+            "4",
+            "8"
+          ],
+          "payloadSHA256": "ac19ed9cc2b76950cb4277a15e73c6993ebcfef5ec73d17c12818df5bc873808"
+        }
+      ],
+      "filters": [
+        "J",
+        "H",
+        "K"
+      ],
+      "gainsElectronsPerADU": [
+        1,
+        2,
+        4,
+        8
+      ]
+    }
+  ],
+  "vectors": [
+    {
+      "opticalIndex": 0,
+      "camera": "ccd",
+      "focalLengthMM": 4627.5,
+      "axes": [
+        {
+          "axis": "width",
+          "exactExpressionDecimal": "18.2573878076715289022861772774974770048267945687530231002003612100753259117379759900919347",
+          "single": 18.257387161254883,
+          "singleBits": "0x41920f21"
+        },
+        {
+          "axis": "height",
+          "exactExpressionDecimal": "18.2573878076715289022861772774974770048267945687530231002003612100753259117379759900919347",
+          "single": 18.257387161254883,
+          "singleBits": "0x41920f21"
+        }
+      ]
+    },
+    {
+      "opticalIndex": 0,
+      "camera": "ir",
+      "focalLengthMM": 4627.5,
+      "axes": [
+        {
+          "axis": "width",
+          "exactExpressionDecimal": "15.2144898397262740852384810645812308373556621406275192501669676750627715931149799917432789",
+          "single": 15.214489936828613,
+          "singleBits": "0x41736e8d"
+        },
+        {
+          "axis": "height",
+          "exactExpressionDecimal": "15.2144898397262740852384810645812308373556621406275192501669676750627715931149799917432789",
+          "single": 15.214489936828613,
+          "singleBits": "0x41736e8d"
+        }
+      ]
+    },
+    {
+      "opticalIndex": 1,
+      "camera": "ccd",
+      "focalLengthMM": 9144.0,
+      "axes": [
+        {
+          "axis": "width",
+          "exactExpressionDecimal": "9.23950810148731408522848702445533408134689324878659387534745970030878944188183332175748334",
+          "single": 9.239507675170898,
+          "singleBits": "0x4113d506"
+        },
+        {
+          "axis": "height",
+          "exactExpressionDecimal": "9.23950810148731408522848702445533408134689324878659387534745970030878944188183332175748334",
+          "single": 9.239507675170898,
+          "singleBits": "0x4113d506"
+        }
+      ]
+    },
+    {
+      "opticalIndex": 1,
+      "camera": "ir",
+      "focalLengthMM": 9144.0,
+      "axes": [
+        {
+          "axis": "width",
+          "exactExpressionDecimal": "7.69959008457276173769040585371277840112241104065549489612288308359065786823486110146456944",
+          "single": 7.69959020614624,
+          "singleBits": "0x40f6630b"
+        },
+        {
+          "axis": "height",
+          "exactExpressionDecimal": "7.69959008457276173769040585371277840112241104065549489612288308359065786823486110146456944",
+          "single": 7.69959020614624,
+          "singleBits": "0x40f6630b"
+        }
+      ]
+    },
+    {
+      "opticalIndex": 2,
+      "camera": "ccd",
+      "focalLengthMM": 10287.0,
+      "axes": [
+        {
+          "axis": "width",
+          "exactExpressionDecimal": "8.21289609021094585353643291062696362786390511003252788919774195583003505945051850822887408",
+          "single": 8.212896347045898,
+          "singleBits": "0x41036806"
+        },
+        {
+          "axis": "height",
+          "exactExpressionDecimal": "8.21289609021094585353643291062696362786390511003252788919774195583003505945051850822887408",
+          "single": 8.212896347045898,
+          "singleBits": "0x41036806"
+        }
+      ]
+    },
+    {
+      "opticalIndex": 2,
+      "camera": "ir",
+      "focalLengthMM": 10287.0,
+      "axes": [
+        {
+          "axis": "width",
+          "exactExpressionDecimal": "6.84408007517578821128036075885580302321992092502710657433145162985836254954209875685739506",
+          "single": 6.844079971313477,
+          "singleBits": "0x40db02b4"
+        },
+        {
+          "axis": "height",
+          "exactExpressionDecimal": "6.84408007517578821128036075885580302321992092502710657433145162985836254954209875685739506",
+          "single": 6.844079971313477,
+          "singleBits": "0x40db02b4"
+        }
+      ]
+    }
+  ],
+  "authority": {
+    "optical": "0x53df2c commits DL to Observatory+0x6fc;0x53df3f.. uses that index*0x93 to select the focal record",
+    "camera": "CCD optionbase+0x26e5,IR+0x2740,dimension+0x49/+0x4d,pixelmicrons+0x29/+0x2d,focalMM+0x34",
+    "output": "CCD Single Observatory+0x6ce/+0x6d2;IR Single+0x6d6/+0x6da. CCDfreshFormShow reads CCD pair;IRfreshFormShow reads IR pair.",
+    "gain": "CCDGo index0/1/2\u21921/2/5;IRGo index0/1/2/3\u21921/2/4/8. Choices are not calibration or current selection.",
+    "conditionalRefreshLimit": "StoredIR pair and freshIRFormShow are distinct from the original already-visibleIR conditional refresh at0x53e09f/0x53e0be,which referencesCCD pair;web reference ports stored/fresh values only."
+  },
+  "formula": "Single((pixelCount*pixelMicrons*ExtendedMicronsToMM)*ExtendedArcsecondsPerRadian/(Single60*SingleFocalMM))",
+  "numericalPolicy": "Number conversion of exact source constants,source expression order,Math.fround output. Independent rational controls check only this declared port policy;no original x87/GDI runtime/output oracle.",
+  "limits": [
+    "Compiled camera and optical fallback records only;applied app optical index is explicit authority,not nativehost/instructorstate",
+    "Filter/gain choices are reference capabilities,not active acquisition/calibration",
+    "No image/WCS/source counts/sky/date/statistics are inferred from a supplied file",
+    "NativeIR mixed configuration ownership/source callbacks remain unresolved before acquisition admission"
+  ],
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}

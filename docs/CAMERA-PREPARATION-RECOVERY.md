@@ -20,7 +20,11 @@ The histogram helpers establish a first-maximum-bin search (`0x55fbd0..0x55fc05`
 
 Complete additional captures now include camera preparation IR `0x51e43c..0x51e712` and CCD `0x52154c..0x521c65`, histogram constructor `0x55fa68..0x55fae0`, statistics insertion IR `0x51eab0..0x51eae7` / CCD `0x521c90..0x521cc7`, and shared scalar jitter `0x520ec0..0x520f0e`. The preparation calls construct 256 bins with Extended bin width256; this is an owned camera histogram, not an arbitrary plot of the supplied FITS. The scalar helper uses a native random draw and a square-root-dependent spread; it must not be casually described as Poisson or Gaussian noise. These routes are still being followed through their actual configuration,field/star callbacks,random draw order,conversion points and clipping. Complete capture boundaries do not establish complete scientific ownership or enable acquisition. Earlier snippets/call candidates are discovery evidence only.
 
-## What is still needed for a camera feature
+## Implemented preparation boundary
+
+[CCD / IR preparation reference](CAMERA-PREPARATION.md) now follows only the applied optical index,using the recovered stored nominal Single field-size formula and compiled camera owners. Both original filter lists and distinct electron/ADU gain positions are read-only reference capabilities. Eight complete procedures and two form payloads are pinned in its provenance;12storedfields match independent rational/IEEE32 controls. Fresh FormShow and the separate already-visible IR conditional refresh are explicitly distinguished. No source pixels,live acquisition settings or missing statistics are inferred.
+
+## What is still needed for camera acquisition
 
 1. Complete the camera preparation and source/field callback chain: source star/extended-object associations,photometric scales,configuration and dimensions.
 2. Establish the exact background/dark/readout/random contracts,where statistics are collected relative to source addition/Single storage/ADC clipping,and the initial RNG ownership/order.

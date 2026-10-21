@@ -277,7 +277,7 @@
       "title": "Single-slit spectrometer",
       "baselineState": "P",
       "status": "partial",
-      "remaining": "Three-profile pinned sky acquisition now has independent calibrated counts/RNG banks, strict raw/CSV and full18 continuity. Native focus/modal/cache/global-RNG ordering remains open. Read-only supported-star cached drift inspection now connects actual pointing, cached viewport, nearest object and3×19/slit output for all three profiles; no photons or exposure means are refreshed. Native focus/mean preparation and buffer/RNG lifecycle remain open. The fixed star and three galaxies now acquire through all three original compiled telescopes, with native calibration/raster contracts, both recovered Poisson branches, manual analysis, raw replay and SSP. Broader targets/options, original global lifecycle/precision witnesses and scientific acceptance remain open.",
+      "remaining": "Three-profile pinned sky acquisition now has independent calibrated counts/RNG banks, strict raw/CSV and full18 continuity. Native focus/modal/cache/global-RNG ordering remains open. Read-only supported-star cached drift inspection now connects actual pointing, cached viewport, nearest object and3\u00d719/slit output for all three profiles; no photons or exposure means are refreshed. Native focus/mean preparation and buffer/RNG lifecycle remain open. The fixed star and three galaxies now acquire through all three original compiled telescopes, with native calibration/raster contracts, both recovered Poisson branches, manual analysis, raw replay and SSP. Broader targets/options, original global lifecycle/precision witnesses and scientific acceptance remain open.",
       "evidence": [
         "docs/IMPLEMENTATION-PLAN.md",
         "docs/KPNO09-STAR.md",
@@ -309,9 +309,12 @@
       "title": "CCD camera",
       "baselineState": "R",
       "status": "blocked-contract",
-      "remaining": "Chip, exposure, saturation, counts, bias/dark/read noise and image output contracts checked.",
+      "remaining": "Compiled fallback Information and applied-telescope nominal field/filter/gain preparation references are delivered separately. Actual CCD chip/exposure,saturation,counts,bias/dark/read-noise,source ownership and acquisition/image-output acceptance remain open.",
       "evidence": [
-        "docs/IMPLEMENTATION-PLAN.md"
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/CAMERA-INFORMATION.md",
+        "docs/CAMERA-PREPARATION.md",
+        "docs/CAMERA-PREPARATION-RECOVERY.md"
       ],
       "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
       "originalWitnessPending": false,
@@ -322,9 +325,12 @@
       "title": "Infrared camera and IR resources",
       "baselineState": "R",
       "status": "blocked-contract",
-      "remaining": "Supported bands, source data, noise and image formation identified and tested.",
+      "remaining": "Compiled fallback Information and applied-telescope nominal field/filter/gain preparation references are delivered separately. Actual IR band/source/noise/image-formation and mixed native configuration ownership remain open;the reference is not an exposure or calibration.",
       "evidence": [
-        "docs/IMPLEMENTATION-PLAN.md"
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/CAMERA-INFORMATION.md",
+        "docs/CAMERA-PREPARATION.md",
+        "docs/CAMERA-PREPARATION-RECOVERY.md"
       ],
       "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
       "originalWitnessPending": false,
@@ -648,7 +654,7 @@
     },
     {
       "id": "E01",
-      "title": "The Hubble Redshift–Distance Relation",
+      "title": "The Hubble Redshift\u2013Distance Relation",
       "baselineState": "P",
       "status": "partial",
       "remaining": "Three pinned galaxy acquisitions, manual measurements, sourced distances, origin fit, SSP/JSON/CSV and guidance locally integrated; broader fields, options, historical editions and educator/native acceptance remain open.",

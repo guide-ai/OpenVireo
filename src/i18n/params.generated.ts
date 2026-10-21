@@ -1948,4 +1948,16 @@ export interface MessageParameters {
   "cameraInfo.liquidNitrogen": never;
   "cameraInfo.thermoelectric": never;
   "cameraInfo.close": never;
+  "cameraPrepare.title": never;
+  "cameraPrepare.owner": "name";
+  "cameraPrepare.scope": never;
+  "cameraPrepare.ccd": never;
+  "cameraPrepare.ir": never;
+  "cameraPrepare.region": "camera";
+  "cameraPrepare.width": never;
+  "cameraPrepare.height": never;
+  "cameraPrepare.filters": never;
+  "cameraPrepare.gains": never;
+  "cameraPrepare.limit": never;
+  "cameraPrepare.focal": "value";
 }
