@@ -756,8 +756,10 @@ test('a pan key whose keyup is lost while the host is inactive does not swallow 
   await page.keyboard.down('Enter');
   await expect(start).toHaveText('0.010');
   await host(page, false);
+  await expect(page.getByTestId('pulsar-analysis')).toHaveAttribute('data-active', 'false');
   await page.keyboard.up('Enter'); // the panel is inert, so the keyup does not reach the pan button
   await host(page, true);
+  await expect(page.getByTestId('pulsar-analysis')).toHaveAttribute('data-active', 'true');
   await right.focus();
   await page.keyboard.press('Enter');
   await expect(start).toHaveText('0.020');
