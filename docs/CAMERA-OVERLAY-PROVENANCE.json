@@ -1,0 +1,98 @@
+{
+  "evidenceId": "NATIVE-CCD-POST-GDI-OVERLAY-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "ccd-prepare",
+      "start": "0x52154c",
+      "endExclusive": "0x521c65",
+      "bytesSHA256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+      "listingSHA256": "ff80a59dc3bd5de51a7c3f2b4a8638b2e33aa3b041631f7ee07efdccad6fe81f",
+      "boundary": "Completeentrythroughfinalreturn/cleanup;staticonly"
+    },
+    {
+      "name": "scalar-jitter",
+      "start": "0x520ec0",
+      "endExclusive": "0x520f0e",
+      "bytesSHA256": "c382ef1a0c4e6cb5bfdbbdaba222be4f890c9dd1c461bb5337b7215ad19a2f50",
+      "listingSHA256": "1effe79c22a42f5d485c2cf4323424e902323ea576124e223abbd388318665da",
+      "boundary": "Completeentrythroughfinalreturn/cleanup;staticonly"
+    },
+    {
+      "name": "canvas-getpixel",
+      "start": "0x42cea8",
+      "endExclusive": "0x42cece",
+      "bytesSHA256": "77e79b2b11e05b9158e09a8d703d007e4ebbef94c7190aea2fc4a5650567cea1",
+      "listingSHA256": "74f441dbf4d5cec8f2caf71d696b8d35a6aff858cff643755f7aafed71f9480a",
+      "boundary": "Completeentrythroughfinalreturn/cleanup;staticonly"
+    },
+    {
+      "name": "power-helper",
+      "start": "0x42703c",
+      "endExclusive": "0x4270be",
+      "bytesSHA256": "85094fa68cdaf411f9a96eb8aaf546f9b327f4956cc7f079e4322c799aa072bd",
+      "listingSHA256": "7e615ea43b1c8d56fc207e609865a09aef72dd970875ecd4708b6e2a70c47653",
+      "boundary": "Completeentrythroughfinalreturn/cleanup;staticonly"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x521c6c",
+      "type": "Single",
+      "value": 22.0,
+      "bytesSHA256": "2c173cfb1af55c53f06991e9817ae866bd5f4207b70b426001c32745a2c2df3e"
+    },
+    {
+      "address": "0x521c70",
+      "type": "Single",
+      "value": 2.5,
+      "bytesSHA256": "072e3304b03423a4767d28c5fed09f81d5190ff60a3d078c6c1350eeb8bee28b"
+    },
+    {
+      "address": "0x521c74",
+      "type": "Single",
+      "value": 4.0,
+      "bytesSHA256": "4f4b9b7d8b86633e2824e2f439819357b0cd010ab410ea1a691b12c5f94e91e0"
+    },
+    {
+      "address": "0x521c78",
+      "type": "Single",
+      "value": 150.0,
+      "bytesSHA256": "24da5299a07bd30aafb4e74978cc56120416c1df1900d48be3584565dc85d6db"
+    },
+    {
+      "address": "0x521c7c",
+      "type": "Single",
+      "value": 0.0,
+      "bytesSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+    }
+  ],
+  "contract": {
+    "gate": "CCDform+0x412only;notIRroute",
+    "raster": "TBitmapCopyRect/StretchDrawthroughVCL/GDIbeforeperpixelGetPixel;onlylowbyteused,notluminance/FITSplane",
+    "threshold": "level=Single4*redByte-Single150;processstrictlevel>Single0",
+    "scale": "delta=CCDbaseMagnitude-Single22+opticalfactorAtRecord3c;reference=CCDbaseCount/Power(10,-delta/Single2.5);exposureScale=seconds/CCDbaseExposure",
+    "addition": "Row-major,onecameraScalarJitter(mean,uniform)perpositivelevel,mean=(exposureScale*reference)*level;addtocurrentrawpixelthenstoreSingle;nohistogramreinsertion",
+    "owners": "CCDcalibrationrecordroot+6b4+26e5;opticalindexusedhereisroot+3818,distinctfromobservatory+6fc;donotinferidentitywithoutproof",
+    "scope": "Boundedpost-GDIGetPixel-lowbytesnapshotandexplicitcalibrationscaleonly;notGDIresampling/inputimage/configurationorobservingauthority"
+  },
+  "typedGetPixelIAT": {
+    "stubAddress": "0x4086f4",
+    "stubBytesSHA256": "74d9db79f1461978c64d90a15221476e4671bf6a03697a18dd5281a89d0e78a5",
+    "IAT": "0x620e44",
+    "hintNameRVA": "0x222462",
+    "decodedName": "GetPixel"
+  },
+  "powerBase": {
+    "instructionRange": [
+      "0x52192a",
+      "0x521936"
+    ],
+    "typedExtendedValue": 10,
+    "description": "ThreeimmediatepushesconstructExtended10beforeexponentargument"
+  },
+  "nativeExecution": false,
+  "microemulation": false,
+  "REAExecuted": false,
+  "originalModified": false
+}

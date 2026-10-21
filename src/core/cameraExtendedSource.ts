@@ -1,3 +1,4 @@
+import type {CameraOverlayStage} from './cameraOverlay';
 import {cameraScalarJitter,type CameraBackgroundStage} from './cameraBackground';
 import type {CameraPointStage} from './cameraPointSource';
 import {roundNearestEven} from './numericPolicy';
@@ -14,7 +15,7 @@ export type CameraExtendedPlan=Readonly<{
  gaussianVisits:number;indices:readonly number[];means:readonly number[];
 }>;
 export type CameraExtendedStage=Readonly<Omit<CameraBackgroundStage,'phase'>&{phase:'extended-sources-before-clipping'}>;
-export type CameraSourcePlane=CameraBackgroundStage|CameraPointStage|CameraExtendedStage;
+export type CameraSourcePlane=CameraBackgroundStage|CameraPointStage|CameraExtendedStage|CameraOverlayStage;
 export const CAMERA_EXTENDED_VISIT_LIMIT=65_536;
 
 export function cameraExtendedPlan(p:CameraExtendedParameters):CameraExtendedPlan {
@@ -63,7 +64,7 @@ export function cameraExtendedPlan(p:CameraExtendedParameters):CameraExtendedPla
 /** One explicit uniform per ordered visit; Single after each addition. */
 export function addCameraExtendedSource(stage:CameraSourcePlane,plan:CameraExtendedPlan,uniforms:readonly number[]):CameraExtendedStage {
  if(!plan||plan[planBrand]!==true)throw new CameraExtendedError('geometry');
- if(!stage||!['background-before-sources','point-sources-before-clipping','extended-sources-before-clipping'].includes(stage.phase)||stage.width!==plan.width||stage.height!==plan.height||
+ if(!stage||!['background-before-sources','ccd-overlay-before-sources','point-sources-before-clipping','extended-sources-before-clipping'].includes(stage.phase)||stage.width!==plan.width||stage.height!==plan.height||
   !Array.isArray(stage.pixels)||stage.pixels.length!==plan.width*plan.height||!stage.histogram||stage.histogram.binWidth!==256||!Array.isArray(stage.histogram.bins)||stage.histogram.bins.length!==256||stage.histogram.count!==plan.width*plan.height)throw new CameraExtendedError('plane');
  const pixels=Array.from(stage.pixels);if(pixels.some(p=>!Number.isFinite(p)||!Object.is(Math.fround(p),p)))throw new CameraExtendedError('plane');
  if(!Array.isArray(uniforms)||uniforms.length!==plan.indices.length)throw new CameraExtendedError('uniforms');

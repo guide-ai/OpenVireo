@@ -1,3 +1,4 @@
+import type {CameraOverlayStage} from './cameraOverlay';
 import {compiledCameraInformation,type CameraKind} from './cameraInformation';
 import preparation from '../../docs/CAMERA-PREPARATION-PROVENANCE.json';
 import type {CameraBackgroundStage} from './cameraBackground';
@@ -10,7 +11,7 @@ export class CameraFinalError extends Error {
  constructor(readonly code:'parameters'|'pixel'|'plane'){super(`Camera final contract: ${code}`);this.name='CameraFinalError';}
 }
 export type CameraFinalParameters=Readonly<{well:number;gain:number;adBits:number}>;
-export type CameraUnclippedPlane=CameraBackgroundStage|CameraPointStage|CameraExtendedStage;
+export type CameraUnclippedPlane=CameraBackgroundStage|CameraPointStage|CameraExtendedStage|CameraOverlayStage;
 export type CameraFinalStage=Readonly<Omit<CameraBackgroundStage,'phase'>&{
  phase:'well-gain-adc-only';parameters:CameraFinalParameters;
 }>;
@@ -46,7 +47,7 @@ export function cameraFinalPixel(value:number,p:CameraFinalParameters):number {
  * Preserves the exact pre-source histogram and consumes no random samples. */
 export function finalizeCameraPlane(stage:CameraUnclippedPlane,p:CameraFinalParameters):CameraFinalStage {
  const checked=parameters(p);
- if(!stage||!['background-before-sources','point-sources-before-clipping','extended-sources-before-clipping'].includes(stage.phase)||
+ if(!stage||!['background-before-sources','ccd-overlay-before-sources','point-sources-before-clipping','extended-sources-before-clipping'].includes(stage.phase)||
   !Number.isInteger(stage.width)||stage.width<1||stage.width>1024||!Number.isInteger(stage.height)||stage.height<1||stage.height>1024||
   !Array.isArray(stage.pixels)||stage.pixels.length!==stage.width*stage.height||!stage.histogram||stage.histogram.binWidth!==256||
   !Array.isArray(stage.histogram.bins)||stage.histogram.bins.length!==256||stage.histogram.count!==stage.width*stage.height)throw new CameraFinalError('plane');
