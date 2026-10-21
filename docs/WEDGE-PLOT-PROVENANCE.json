@@ -1,0 +1,94 @@
+{
+  "evidenceId": "VIREO-LSS-WEDGE-STATIC-2026-10-21",
+  "packages": ["N06", "E02"],
+  "scope": "Bounded LSS saved-data load → wedge plot options → plot → inspection/CSV. Not complete N06/E02.",
+  "author": "Claude (sole source author; author pass plus 2026-10-21 author correction pass; neither is a review). Codex coordinates, validates and integrates.",
+  "originalExecuted": false,
+  "executable": {
+    "path": "extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bytes": 2288128
+  },
+  "sources": [
+    {"kind": "original help text", "path": "extracted/CLEA_Vireo/program files/CLEA/VIREO/WdgPltHlp.TXT", "sha256": "01d062eb13b41a197aa6123256a991c5b4b4194b47968d816d60d1302f5fd10e", "use": "feature list: Load Data, grid type, point size/style, auto plot, print"},
+    {"kind": "safe derived linear listing", "path": "task-2/analysis/native-field-recovery/target.asm", "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db", "limits": "linear disassembly; inline data decodes as instructions; literals decoded by hand from instruction encodings; seeded entries re-checked with bounded objdump"},
+    {"kind": "coordinator static bindings", "path": "claude-wedge-analysis/class-bindings.json", "sha256": "c1a6510a328af72a16d6652a8bac7f834b411f008e188721105c6e4079e83f9e", "use": "VMT/method/field tables (TWedgePlot 0x580af8, TWdgPltOptsForm1 0x58015c, TLSSRsltsDlg1 0x57aa1c)"},
+    {"kind": "coordinator DFM parse", "path": "claude-wedge-analysis/COORDINATOR-form-properties.json", "sha256": "38f426d0901f6e01aff3b75ed57867ca66245884ef294e0112d0f4193149297c", "use": "captions, GridGrp/PtSizeGrp/PtStyleGrp items, IntrvlEd hint, Display1 TImage"},
+    {"kind": "coordinator .data/global extraction", "path": "claude-wedge-analysis/COORDINATOR-colors-and-results.json", "sha256": "b8d0a375491abaee2f3627ed0a283d3054ce644a56430720eddcfc43bbb56194", "use": "TColor dwords 0x5b4acc..0x5b4ae8; 0x5b5c98→0x5bced4; 0x5b5504→0x5bcec8"},
+    {"kind": "coordinator results-owner binding", "path": "claude-wedge-analysis/COORDINATOR-results-owner-binding.json", "sha256": "a22af339cecfb7aacfa4a7e01755165c2df2fdf98900b17e6f859dcf16a60f96", "use": "LSSRsltsForm1 VMT 0x57a77c (parent TInfoListForm1 0x59d9ec), FormCreate 0x57ad2c, FormShow 0x57ad7c"},
+    {"kind": "coordinator results base DFM", "path": "claude-wedge-analysis/COORDINATOR-results-base-dfm.json", "sha256": "03fa2facd77980ebf7ab6105c9fe6245ac367222cf57e4b46b0638e73713db80", "use": "TInfoListForm1.ListBox1 has no initial items"},
+    {"kind": "coordinator results dialog DFMs", "path": "claude-wedge-analysis/COORDINATOR-results-owner-dfm.json", "sha256": "ea157e4491da4206dfdf2c879ce8921d8db2da17e5094af005f9db9f620a15cc", "use": "contains per-record TObsRsltsDlg1 (and TLSSRsltsDlg1 is in the colours file); neither is the list owner; LSSRsltsForm1 has no own DFM and uses the inherited TInfoListForm1 form"},
+    {"kind": "coordinator translation reproduction", "path": "claude-wedge-analysis/COORDINATOR-translation-failure.json", "sha256": "65bfd1ce8785172318bb14899a5675d14ecd1212f152ee30fe81aec93337e037", "use": "TS2322 on translated intro/statusEmpty; fixed by WedgeMessageOverrides and regression src/components/WedgeMessages.test.ts"},
+    {"kind": "existing static DFM inventory", "path": "task-3/i08-a01-recovery/optical-records/binary-inventory.json", "use": "event-binding candidates only; payloads not read"},
+    {"kind": "existing repository contracts", "path": "docs/NATIVE-TEXT-RESULTS.md, docs/CLUSTER-NATIVE-OBSERVATION-HR.md, docs/HUBBLE-VELOCITY.md, docs/NATIVE-FPU-CONTEXT.md", "use": "0x486268=FloatToStrF(ffFixed,18,d); list Reset/Next/AtEnd 0x492628/0x492634/0x49271c; c bytes; 0x40cf60 number conversion; MJD prefix gate; control word 0x1332"}
+  ],
+  "rea": {
+    "skill": "rea-agents reverse-engineer-anything SKILL.md (pinned npx copy)",
+    "operation": "inspect-with-objdump symbols --format json",
+    "evidenceId": "ev_aa98ce9b65a9e5ec95c5c40c25c087384afa3e85af72833ca122d8113d45f9bd",
+    "provider": "gnu.objdump (objdump -t)",
+    "exitCode": 0,
+    "result": "SYMBOL TABLE: no symbols — named analysis cannot be relied upon",
+    "artifactSha256After": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "artifactChanged": false,
+    "reusedSectionMapping": "ev_be75d7d377a56116d3e0f735a646c38191fd95073d89c054e348b2bd46c558ef",
+    "notRun": ["whole-image REA disassemble", "Ghidra/provider setup"]
+  },
+  "directGnuStatic": {
+    "command": "objdump -d -Mintel --no-show-raw-insn --start-address=… --stop-address=…",
+    "windows": ["0x58d4f0-0x58d5a0", "0x58f220-0x58f348", "0x4036a0-0x403720", "0x5895e0-0x5896b0", "0x580dc0-0x580dec", "0x581610-0x581640", "0x581bc8-0x581bf3", "0x5803e0-0x580401", "0x48672c-0x486744"],
+    "note": "Direct GNU static listing, not an REA provider result."
+  },
+  "contracts": [
+    {"name": "menu entry", "address": "0x58d4f0", "fact": "TEnvironment1.LSSWedgePlot1Click shows global form 0x5b5d1c (TWedgePlot; CreateForm 0x5ad5fc)."},
+    {"name": "client size", "address": "0x580dc0", "fact": "FormCreate ClientWidth=ClientHeight=0x226 (550)."},
+    {"name": "paint", "address": "0x580ed4", "fact": "FormPaint → grid 0x581610 → points 0x581bc8 on Display1 (TImage +0x364)."},
+    {"name": "grid", "address": "0x581610-0x581b6f", "seh": "try/finally 0x581635 → 0x581b44..0x581b6f releases three strings", "fact": "origin (445,510), radius 480; spokes Round(480 sin/cos θ); RA labels Round(deg/15)+12 offset (−7−Round(20 sinθ), −5−Round(20 cosθ)); grid 0 rings 160i labels 4000i @(460,510−r−6), 'V(km/sec)' @(465,5); grid 1 rings 120i labels FloatToStrF(0.01i,2) @(465,510−r−6), 'Z(=V/C)' @(465,5); grid 2 one ring 480 and spokes 0°,60°; 'RA (Hours)' @(150,50).", "constants": {"pi_over_3_extended": "3fff:860a91c16b9b2c23", "pi_over_180_extended_bytes": "aec8e9941235fa8ef93f", "f32_15@0x581b70": "41700000", "f32_20@0x581b80": "41a00000", "f80_0.01@0x581b98": "0ad7a3703d0ad7a3f83f"}},
+    {"name": "points", "address": "0x581bc8-0x582132", "seh": "try/finally 0x581be8 → 0x582102..0x582132", "fact": "θ=(Extended RA@+0x18 − 12.0f)·15.0f·π/180; r=(100.0f·Single z@+0x2c)·120.0f; Ellipse centre (445−Round(r sinθ), 510−Round(r cosθ)) ± size; size=options+5; style options+9 (0 bsClear, 1 solid); list +0x44a own, +0x464 group only when auto plot active; 'Points Plotted: '+n @(50,460).", "constants": {"f32@0x582134": "41400000 (12.0)", "f32@0x582138": "41700000 (15.0)", "f32@0x582148": "42c80000 (100.0)", "f32@0x58214c": "42f00000 (120.0)"}},
+    {"name": "colours", "address": ".data 0x5b4acc-0x5b4ae8; selector TWedgePlot+0x394", "fact": "scheme 0 (display): background 0x00800000 #000080, pen+font 0x0000ffff #ffff00, own points 0x00ffffff #ffffff, group 0x0000ff00 #00ff00; scheme 1 (print/B&W): 0x00ffffff, 0x00000000, 0x00000000, 0x00808080. Literals recovered exactly by independent coordinator extraction (per-dword SHA-256 in COORDINATOR-colors-and-results.json). FormShow copies +0x394 from Env+0x2e8e; Print1Click sets it to not Env+0x2e8d while capturing; the historical host's active value of that flag is unknown; WdgPltHlp.TXT: display normally colour."},
+    {"name": "global aliases", "address": "0x5b5c98, 0x5b5504", "fact": "Static storage: 0x5b5c98 → 0x5bced4 (wedge options record); 0x5b5504 → 0x5bcec8 (results form global). Static values, not runtime object values."},
+    {"name": "results owner", "address": "VMT 0x57a77c, FormCreate 0x57ad2c, FormShow 0x57ad7c", "fact": "LSSRsltsForm1 (10-method table, instance 0x480, parent TInfoListForm1 VMT 0x59d9ec via 0x59d9a0) owns lists +0x44a/+0x464, each created with 0x5a-byte records; FormShow sets caption 'Recorded Results - Measured Redshifts' and default file 'LSS_Redshifts'; inherited TInfoListForm1 ListBox1 has no initial items, so the first load does not prompt. TLSSRsltsDlg1/TObsRsltsDlg1 are per-record dialogs, not the owner."},
+    {"name": "plot data", "address": "0x58100c", "fact": "Both lists empty → MessageBox 'No data to plot' / 'LSS Wedge Plot', else repaint."},
+    {"name": "options defaults", "address": "0x5803e0", "fact": "record 0x5bced4: grid 0, interval 300.0 s, size 1, style 0, auto off, file 'AutoPlot.TXT'."},
+    {"name": "options dialog", "address": "0x58060c/0x58078c", "fact": "FormShow loads radio indexes (size index = size−1); OK validates interval 0.1..10 min (Extended 0.1 bytes cdcccccccccccccc fb3f, f32 10.0) then stores grid/size/style; Cancel discards."},
+    {"name": "LSS load branch", "address": "0x5891ef-0x5894bd", "fact": "exercise byte +0x383f=5; dialog 'Open Saved Redshifts Data File', default 'LSS_Redshifts', '*.TXT'; ExtractFileExt upper = '.TXT' else 'LSS observation files must be in text format.'/'TXT Files Only'; success 'Saved observations file \"…\" loaded.'/'Saved Data Loaded'; failure 'Data was not loaded.'/'No Data Loaded'; repaint WedgePlot when visible."},
+    {"name": "loader", "address": "0x57bfb4-0x57c2b0", "seh": "try/finally only; faults inside rows propagate (file left open, list partially appended)", "fact": "Reset error → 'Cannot access results file …'/'File Error!'; header Pos('Object ID')=1 and Pos('RA')>0 else 'File … does not contain LSS redshift data!'/'No Data Loaded!'; hasZ=Pos('Z')>0; results ListBox (+0x360, Items count) non-empty → Yes/No/Cancel 'Retain Current Data?', No → 'Confirm Deletion!' (No returns without CloseFile); rows appended to +0x44a; ListBox rebuilt from header 0x57ae64 + rows 0x57b8e4."},
+    {"name": "row parser", "address": "0x57b488-0x57b8d4", "seh": "outer try/finally; per-field try/except for MJD, RA, Dec, V/Z (0x405430/0x405840); ID, comment and c-derivation outside except", "fact": "ID Copy(1,11) right-trimmed → string[15]; MJD token (prefix from current date; not reconstructible); RA h/m/s → (|h|+m/60+s/3600)·(+1) Extended @+0x18; Dec d/m/s with sign 0x485960 (x<0 → −1) @+0x22; V or Z Single @+0x30/+0x2c then z=Single(v/c) or v=Single(c·z), c Extended 2db29defa70e62921140; comment token → string[36]; +0x34=0."},
+    {"name": "token helpers", "address": "0x48672c, 0x486a00, 0x48690c, 0x486c40, 0x485960", "fact": "token to delimiter; StrToInt/StrToFloat after skipping leading ' ' and delimiter chars; d/m/s → value; sign."},
+    {"name": "header", "address": "0x57ae64", "fact": "'Object ID    MJD(Days) ' + '     RA           Dec     V(km/sec)  Comments'."}
+  ],
+  "numericPolicy": {
+    "VZ": "binary32 exact: decimal → binary32 by BigInt correct rounding (native 0x40cf60 not proven correctly rounded; relative distance < 2^-58 from a binary32 midpoint flagged); z=round24(round64(v/c)), v=round24(round64(c·z)) under control word 0x1332 (PC extended, RC nearest-even) — host control word not witnessed; c·z binary32 overflow = native unhandled fault → file refused.",
+    "projection": "Number: RA hours in binary64 with the original operation order; Math.sin/Math.cos for FSIN/FCOS; FISTP Round as nearest-even; values within 1e-6 px of a .5 tie flagged.",
+    "labels": "FloatToStrF(…,ffFixed,18,2) emitted with '.'; host DecimalSeparator not recovered.",
+    "claim": "No x87, GDI, font or colour equivalence is claimed."
+  },
+  "admission": {
+    "bytes": "0x20-0x7e, 0xb0, LF, CRLF; ≤512 KiB; ≤1024 bytes per line; ≤2000 data rows; ≤10000 workspace records",
+    "refused": ["blank line after header (native nil-string fault)", "lone CR", "other bytes/UTF encodings", "c·z overflow"],
+    "fieldStatuses": {"value": "plotted", "native-zero-fill": "empty field; original stores 0; not plotted", "unadmitted": "spelling outside the strict decimal/integer grammar; native outcome not asserted; not plotted"},
+    "separator": "explicit user choice '.' or ',' recorded per file; native DecimalSeparator (byte 0x5b880f) host-dependent"
+  },
+  "deviations": [
+    "Whole file is validated before the add/clear prompt and applied atomically (native asks first and can be left partial or with an open file).",
+    "Rows with native zero-fill or unadmitted RA/V/Z are listed but not plotted; 'Points Plotted' counts admitted rows (native counts every list entry).",
+    "Points whose ellipse lies wholly outside 0..550 are reported, not drawn; exact TImage clip insets not recovered.",
+    "Recovered colour scheme 0 is the default display and scheme 1 is offered as a view option (the original only shows it while printing; its display default depends on the historical host's Env+0x2e8e value, which is unknown). Fonts are approximate; the dashed selection ring is new.",
+    "Transparent enlarged hit areas make points clickable; the drawn radius is the recovered size."
+  ],
+  "unadmitted": ["Auto Plot group file sync (0x5821a4, 0x57c448, 0x57c710)", "Print (0x580f88)", "live plotting from spectrum measurement (0x58391a…0x583985)", "original text save format (0x57af74/0x57b8e4 helpers 0x488188, 0x486ca0, 0x48634c)", "MJD value reconstruction", "LSS field selection/region extraction (TLSSFieldsForm1, TLSSRgnDlg) and acquisition"],
+  "resolvedByCoordinator": ["colour dwords (exact literals)", "0x5b5c98→0x5bced4", "0x5b5504→0x5bcec8", "results owner LSSRsltsForm1 and inherited TInfoListForm1 DFM with empty initial ListBox"],
+  "openQuestions": ["historical host's active print/colour flag (Env+0x2e8e / Env+0x2e8d)", "GDI and font pixel equivalence", "historical host FPU control word and DecimalSeparator"],
+  "mjd": "Raw MJD token text is preserved exactly as saved; the original's date prefix (taken from the loading session's current date) is absent from the file and is not constructed; no MJD value is computed. This is not a full native record-metadata loader.",
+  "newUiBehaviour": {
+    "presentationCatalog": "src/components/WedgeMessages.ts: WedgeMessageOverrides widens strings, nested groups, tuples and formatters; WEDGE_NATIVE_CAPTIONS defaults = verbatim WEDGE_NATIVE_TEXT (source evidence, never translated). Figure-drawn text stays native.",
+    "hostInactivity": "disabled prop → suspendWedgeWorkspace (src/core/wedgeWorkspace.ts): aborts the read (token no longer matches), drops pending import consent and the options draft; keeps records, receipts, committed options, separator, selection. Not an original behaviour.",
+    "persistence": "In-memory workspace only; visible warning that it is not included in Save investigation and is discarded on reload/close; sources can be loaded again. No persistence format."
+  },
+  "controls": {
+    "vitest": ["src/core/wedgeNumeric.test.ts", "src/core/wedgeLssText.test.ts", "src/core/wedgePlot.test.ts", "src/core/wedgeWorkspace.test.ts", "src/core/wedgeUiAudit.test.ts", "src/core/wedgeProvenance.test.ts", "src/components/WedgeMessages.test.ts"],
+    "playwright": ["tests/wedge-lss.spec.ts (harness URL env)"],
+    "nature": "Synthetic vectors and hand-derived pixels/IEEE encodings; not observations, not original output, not a runtime oracle."
+  },
+  "licenseAndRights": "Original CLEA executable/help remain outside source; only addresses, hashes and short UI literals are cited. No new resource files added."
+}

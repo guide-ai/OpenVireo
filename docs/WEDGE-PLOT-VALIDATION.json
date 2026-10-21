@@ -1,0 +1,53 @@
+{
+  "sourceHashes": {
+    "docs/WEDGE-PLOT-PROVENANCE.json": "d0c7940afa09d384dc47379bf3bcec637c28d044a1ad497378c486e0a7e9a7e7",
+    "docs/WEDGE-PLOT.md": "bf06022ac5637928e954f9ed369527d33b17f7deb10e8bf938242db1d8f023b5",
+    "src/components/Wedge.css": "25c018bc042fe458889ab0ccbd04927d7ad59213846f833d1e1f3179af00327d",
+    "src/components/WedgeLab.tsx": "7a1940b2785033bbdff00fff40fed08c05c10558a90768e0704543e1d3ef5b5c",
+    "src/components/WedgeMessages.test.ts": "fb25c2076ff8898479465354cb69587863c9b986fc22043a8e585128c4d4070f",
+    "src/components/WedgeMessages.ts": "623f9bc77cbe7f36150b3345fcca7e92121dd1004e0d5a7180b93345cb418bcd",
+    "src/components/WedgeOptionsDialog.tsx": "1a11c8a32ad28c2633f8ed7c3e58ccf3411b674f68b079bb609bbb57ab06ba55",
+    "src/components/WedgePlotSvg.tsx": "57deed6dbba1be551227d621b2307eefe925b9972b6ad46aa3e220b2375c1b5d",
+    "src/core/wedgeExport.ts": "2be4d39d052b0038bedd358d45e014ea4f84e39494f3c94bf2ded688eed3d43e",
+    "src/core/wedgeLssText.test.ts": "93aa826f25ec5401a2d78693547ed68645e5fc58b917f7a38bd73377b45113f7",
+    "src/core/wedgeLssText.ts": "45e9a686cb09fb41d1add8fe474e19e3c6f9e0b958c0f4d06df302fc1f901ddf",
+    "src/core/wedgeNativeText.ts": "436a3539baa9e849f7c7bd80ccfefbf6ec43f15c8a14a03d4ff5a3af4e62ab67",
+    "src/core/wedgeNumeric.test.ts": "8073375c6dca245b92fe280626aef6e4638c51f68d0643ccf732f5ea642e01a5",
+    "src/core/wedgeNumeric.ts": "aaf1f203079e04c61faa24e7446379e09d015727191e842698adee76850cec96",
+    "src/core/wedgePlot.test.ts": "a964464331d8a98d1641216e25a8dbb481d48e75ccc5567a11daf158bcc3f909",
+    "src/core/wedgePlot.ts": "79af3add3259f24fb519520ec9cbe1e2773247ca9e31115d93c6cdc370d82734",
+    "src/core/wedgeProvenance.test.ts": "a42d7afb62d4c411eac601c6832543406381156232f28f42b12e4c1af85b259a",
+    "src/core/wedgeUiAudit.test.ts": "dd2b8bf7d7345638f63c29ea660701213b3d97a2c4a38b08b0ccd7b9583229eb",
+    "src/core/wedgeWorkspace.test.ts": "abfcf8304cdbe5d7c5f779ba524615370a4759fbd31d9bce7fc193cc5b229fe7",
+    "src/core/wedgeWorkspace.ts": "4887bf3a8a5ee3f8fe5fb062e8f37d4a10ad433a69c47a7c52d179d42bd80f8d",
+    "src/io/wedgeLssFile.ts": "ec6a47a6fc92ecc8622fd0a374e2ee3750b5354c5bb1e14ff438e77b515b412e",
+    "tests/wedge-lss.spec.ts": "8d6f302ded89b49fd33575657a2a82992a6879c1b7bc09a264e99bed06d34908",
+    "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed"
+  },
+  "sourceStableDuringValidation": true,
+  "unitTests": {
+    "passed": 1793,
+    "failed": 0,
+    "files": 179
+  },
+  "e2e": {
+    "startTime": "2026-10-21T21:42:06.936Z",
+    "duration": 9824.456,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-wedge-codex-final-1;exit0",
+  "resources": "1279/1279 size/SHA256 match",
+  "translationRegression": "Original TS2322 fixture compiles after correction;native presentation overrides exercised in browser",
+  "independentProjectionControls": "645 Decimal90 vectors plus grid/signed-zero controls fordeclaredpolicy,not native outputoracle",
+  "uiCountPin": "45\u219248 by coordinator,three newTSXfiles,sourceidentityaudits preserved",
+  "status": "Validated candidate pending separate Claude native /review and integration",
+  "limits": [
+    "No MJD numeric metadata constructed from historical hostcontext",
+    "No live LSSacquisition/groupAutoPlot/nativewriter/printing",
+    "Number trigonometry and declaredbinary32/Extendedpolicy are not runtime FPU/GDIequivalence",
+    "Window-local workspace not Saveinvestigation;raw data rows and SHAreceipt retained,not a byte-identical original-file writer"
+  ]
+}
