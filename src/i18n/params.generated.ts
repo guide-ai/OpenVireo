@@ -1928,4 +1928,24 @@ export interface MessageParameters {
   "palette.applied": "high" | "low";
   "palette.base": never;
   "palette.initial": never;
+  "cameraInfo.title": never;
+  "cameraInfo.scope": never;
+  "cameraInfo.ccd": never;
+  "cameraInfo.ir": never;
+  "cameraInfo.ccdTitle": never;
+  "cameraInfo.irTitle": never;
+  "cameraInfo.authority": never;
+  "cameraInfo.detector": never;
+  "cameraInfo.imageSize": never;
+  "cameraInfo.pixelSize": never;
+  "cameraInfo.dimensions": "height" | "width";
+  "cameraInfo.readNoise": never;
+  "cameraInfo.darkNoise": never;
+  "cameraInfo.bias": never;
+  "cameraInfo.ad": never;
+  "cameraInfo.well": never;
+  "cameraInfo.cooling": never;
+  "cameraInfo.liquidNitrogen": never;
+  "cameraInfo.thermoelectric": never;
+  "cameraInfo.close": never;
 }

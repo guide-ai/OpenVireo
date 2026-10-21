@@ -1,0 +1,396 @@
+{
+  "evidenceId": "NATIVE-CAMERA-INFORMATION-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "ccd-information",
+      "start": "0x512c80",
+      "endExclusive": "0x512f86",
+      "bytes": 774,
+      "bytesSHA256": "812d885c90444b54b83b8856d74a796c29e78e2c1cb18fda48f65d4e78df1eb5",
+      "listingSHA256": "a1681fceb59146c8b8ec3044ef41801e7559e25610149e9fe9c41b669161f456",
+      "boundary": "Complete procedure through final return/SEH cleanup;not executed"
+    },
+    {
+      "name": "ir-information",
+      "start": "0x514cb0",
+      "endExclusive": "0x514fb6",
+      "bytes": 774,
+      "bytesSHA256": "864aceb507c28e78419771aeb90947f42b453d8e65fbc55b4e4847bdc08b1096",
+      "listingSHA256": "7350d9d8608870a19cca0581bf20e49bdb0db57173b5fa9d21a5153dfcfde99b",
+      "boundary": "Complete procedure through final return/SEH cleanup;not executed"
+    },
+    {
+      "name": "compiled-defaults",
+      "start": "0x5a21d0",
+      "endExclusive": "0x5a2c92",
+      "bytes": 2754,
+      "bytesSHA256": "758da1fbccbb0eafc75ad7d518698464dfd62a04162fecb02b63e472688f223a",
+      "listingSHA256": "6132a497c78470ac8b608be5a48ec6df08fd20ef3f973080719efb76e8efb1fa",
+      "boundary": "Complete procedure through final return/SEH cleanup;not executed"
+    }
+  ],
+  "labels": [
+    {
+      "address": "0x512f90",
+      "type": "AnsiString",
+      "text": "CCD Camera Parameters",
+      "payloadSHA256": "b1c72a6cd901afc4d72aa7fb4de503b92dbd405e018c9b933e4ac7b92533dd04"
+    },
+    {
+      "address": "0x512fa8",
+      "type": "ShortString",
+      "text": "Detector: ",
+      "payloadSHA256": "c097a53388e5f2b9c62309c32ffd0b810625c91ae8afebfb6d83098906d7c3b4"
+    },
+    {
+      "address": "0x512fbc",
+      "type": "AnsiString",
+      "text": "Image Size (pixels): ",
+      "payloadSHA256": "08f711d104d744c766ad42af6c751d78e02f5e5f03d9ceccb4a35e51c422f378"
+    },
+    {
+      "address": "0x512fdc",
+      "type": "AnsiString",
+      "text": " x ",
+      "payloadSHA256": "fc191eafd9c50bef4eed244d249529de9980ffa2404607c0f98eac44c8da7728"
+    },
+    {
+      "address": "0x512fe8",
+      "type": "AnsiString",
+      "text": "Pixel Size (microns): ",
+      "payloadSHA256": "92f7ab6a300b0bbf7d0ae490cbd8f56fb02280bdfbc7d8646f89dcbd996ff169"
+    },
+    {
+      "address": "0x513008",
+      "type": "AnsiString",
+      "text": "Read Noise (electrons/pixel): ",
+      "payloadSHA256": "9746e99bfbb06495030541e3ec67f32d444caed85c3b7850b5afc319096ddbcb"
+    },
+    {
+      "address": "0x513030",
+      "type": "AnsiString",
+      "text": "Dark Noise (electrons/pixel/sec): ",
+      "payloadSHA256": "6d8ffc0329347596f3cc5a9645c2c707fbcca2f31a30335e86852afbc0cfd28b"
+    },
+    {
+      "address": "0x51305c",
+      "type": "AnsiString",
+      "text": "Bias (electrons/pixel): ",
+      "payloadSHA256": "0f5bd237ec5e3d1871d900a4f82048a73d698846da975dbae3b0073de42702f4"
+    },
+    {
+      "address": "0x513080",
+      "type": "AnsiString",
+      "text": "AD Depth (bits): ",
+      "payloadSHA256": "a05d195b1c000d360eb64a30a73fac1716012a69328660e3e96157f3731990b1"
+    },
+    {
+      "address": "0x51309c",
+      "type": "AnsiString",
+      "text": "Well Depth (electrons): ",
+      "payloadSHA256": "bb1aa798bd8961725d849722f78e629ff9a488ab674d59048008eb8de0e7e3c8"
+    },
+    {
+      "address": "0x5130c0",
+      "type": "AnsiString",
+      "text": "Cooling: ",
+      "payloadSHA256": "776eded8e0df6fdeba1a66fb9e7ed00f1f7f45fbc8eabec635c7f0ad85397079"
+    },
+    {
+      "address": "0x5130d4",
+      "type": "AnsiString",
+      "text": "Liquid Nitrogen",
+      "payloadSHA256": "748286a4986a7324c8305719733c85b05d86c5573c0be4e0bfb958c19ac34bf7"
+    },
+    {
+      "address": "0x5130ec",
+      "type": "AnsiString",
+      "text": "Thermoelectric",
+      "payloadSHA256": "d2f8225039b7c3bc6be89deff6989aa31b460cd81504e853e786f36d7f1eb99d"
+    },
+    {
+      "address": "0x514fc0",
+      "type": "AnsiString",
+      "text": "IR Camera Parameters",
+      "payloadSHA256": "0103a49f9005985bf843b83bde597022cb94ceb82f8999fd2ee9e8ccab141747"
+    },
+    {
+      "address": "0x514fd8",
+      "type": "ShortString",
+      "text": "Detector: ",
+      "payloadSHA256": "c097a53388e5f2b9c62309c32ffd0b810625c91ae8afebfb6d83098906d7c3b4"
+    },
+    {
+      "address": "0x514fec",
+      "type": "AnsiString",
+      "text": "Image Size (pixels): ",
+      "payloadSHA256": "08f711d104d744c766ad42af6c751d78e02f5e5f03d9ceccb4a35e51c422f378"
+    },
+    {
+      "address": "0x51500c",
+      "type": "AnsiString",
+      "text": " x ",
+      "payloadSHA256": "fc191eafd9c50bef4eed244d249529de9980ffa2404607c0f98eac44c8da7728"
+    },
+    {
+      "address": "0x515018",
+      "type": "AnsiString",
+      "text": "Pixel Size (microns): ",
+      "payloadSHA256": "92f7ab6a300b0bbf7d0ae490cbd8f56fb02280bdfbc7d8646f89dcbd996ff169"
+    },
+    {
+      "address": "0x515038",
+      "type": "AnsiString",
+      "text": "Read Noise (electrons/pixel): ",
+      "payloadSHA256": "9746e99bfbb06495030541e3ec67f32d444caed85c3b7850b5afc319096ddbcb"
+    },
+    {
+      "address": "0x515060",
+      "type": "AnsiString",
+      "text": "Dark Noise (electrons/pixel/sec): ",
+      "payloadSHA256": "6d8ffc0329347596f3cc5a9645c2c707fbcca2f31a30335e86852afbc0cfd28b"
+    },
+    {
+      "address": "0x51508c",
+      "type": "AnsiString",
+      "text": "Bias (electrons/pixel): ",
+      "payloadSHA256": "0f5bd237ec5e3d1871d900a4f82048a73d698846da975dbae3b0073de42702f4"
+    },
+    {
+      "address": "0x5150b0",
+      "type": "AnsiString",
+      "text": "AD Depth (bits): ",
+      "payloadSHA256": "a05d195b1c000d360eb64a30a73fac1716012a69328660e3e96157f3731990b1"
+    },
+    {
+      "address": "0x5150cc",
+      "type": "AnsiString",
+      "text": "Well Depth (electrons): ",
+      "payloadSHA256": "bb1aa798bd8961725d849722f78e629ff9a488ab674d59048008eb8de0e7e3c8"
+    },
+    {
+      "address": "0x5150f0",
+      "type": "AnsiString",
+      "text": "Cooling: ",
+      "payloadSHA256": "776eded8e0df6fdeba1a66fb9e7ed00f1f7f45fbc8eabec635c7f0ad85397079"
+    },
+    {
+      "address": "0x515104",
+      "type": "AnsiString",
+      "text": "Liquid Nitrogen",
+      "payloadSHA256": "748286a4986a7324c8305719733c85b05d86c5573c0be4e0bfb958c19ac34bf7"
+    },
+    {
+      "address": "0x51511c",
+      "type": "AnsiString",
+      "text": "Thermoelectric",
+      "payloadSHA256": "d2f8225039b7c3bc6be89deff6989aa31b460cd81504e853e786f36d7f1eb99d"
+    }
+  ],
+  "records": [
+    {
+      "kind": "ccd",
+      "detector": "Site CH350 003B Back-Illuminated",
+      "nameAddress": "0x5a313c",
+      "nameSHA256": "7475f76fff2dac4be9ed1a4f0cb1cfd1cee6ab6db1d2c900c84bfa8f0deddc69",
+      "fields": [
+        {
+          "name": "pixelWidthMicrons",
+          "offset": "0x29",
+          "type": "Single",
+          "address": "0x5a2b80",
+          "value": 24.0,
+          "instructionSHA256": "63c3343a1fec08f4b529f7402664127bc1ca97787214b2d55ef2000ec8fcd763"
+        },
+        {
+          "name": "pixelHeightMicrons",
+          "offset": "0x2d",
+          "type": "Single",
+          "address": "0x5a2b87",
+          "value": 24.0,
+          "instructionSHA256": "6f9fcb9a1e57d2b1ca785ab12ef1306b1b834189842479e38852406a1dcb94ee"
+        },
+        {
+          "name": "readNoiseElectronsPerPixel",
+          "offset": "0x31",
+          "type": "Single",
+          "address": "0x5a2b8e",
+          "value": 5.0,
+          "instructionSHA256": "3b7b3b7deb8d95e60a5b2d4cb1f6edf4201c3284249fc87683622d7cecb08822"
+        },
+        {
+          "name": "darkNoiseElectronsPerPixelSecond",
+          "offset": "0x35",
+          "type": "Single",
+          "address": "0x5a2b9c",
+          "value": 2.0,
+          "instructionSHA256": "b8b835faa7a80bd25b05c697192ce12a4465d33aa721209529da48a95d3b81c1"
+        },
+        {
+          "name": "biasElectronsPerPixel",
+          "offset": "0x45",
+          "type": "Int32",
+          "address": "0x5a2b95",
+          "value": 1000,
+          "instructionSHA256": "63c5570e7fdeeb7504afd2aaf77d6f35fac0e13beccc44f3594779f7d92f279a"
+        },
+        {
+          "name": "width",
+          "offset": "0x49",
+          "type": "Int32",
+          "address": "0x5a2ba3",
+          "value": 1024,
+          "instructionSHA256": "ed394af5e21c074032cfedb922ef1f97002b30ed187464eb869cbbc868cbf31b"
+        },
+        {
+          "name": "height",
+          "offset": "0x4d",
+          "type": "Int32",
+          "address": "0x5a2baa",
+          "value": 1024,
+          "instructionSHA256": "5a006d4f2b791409a314c6f9808831c480205a4df2e05458c6c3e11ff5ccdefb"
+        },
+        {
+          "name": "adBits",
+          "offset": "0x51",
+          "type": "Int32",
+          "address": "0x5a2bc6",
+          "value": 16,
+          "instructionSHA256": "608cf9b09486544f61663d4483e752de0df743a78edb16b659a3f05d73673d32"
+        },
+        {
+          "name": "wellDepthElectrons",
+          "offset": "0x55",
+          "type": "Int32",
+          "address": "0x5a2bcd",
+          "value": 320000,
+          "instructionSHA256": "29e797b5416eb0ee72ed0eda4188f2b73baecedecfa02f66c042684e9925090c"
+        },
+        {
+          "name": "coolingFlag",
+          "offset": "0x59",
+          "type": "Byte",
+          "address": "0x5a2bd4",
+          "value": 0,
+          "instructionSHA256": "45bc5cc7a2494942e32e884b9bf24f6b389cdcaca272fbb31fa0bb4d364e3f04"
+        }
+      ],
+      "pixelWidthMicrons": 24.0,
+      "pixelHeightMicrons": 24.0,
+      "readNoiseElectronsPerPixel": 5.0,
+      "darkNoiseElectronsPerPixelSecond": 2.0,
+      "biasElectronsPerPixel": 1000,
+      "width": 1024,
+      "height": 1024,
+      "adBits": 16,
+      "wellDepthElectrons": 320000,
+      "coolingFlag": 0,
+      "cooling": "thermoelectric"
+    },
+    {
+      "kind": "ir",
+      "detector": "CLEA_IR1",
+      "nameAddress": "0x5a3160",
+      "nameSHA256": "2e9191944b2952661d90e5b4abeb8eaf245db3bcb35af163848ab6e326fcd514",
+      "fields": [
+        {
+          "name": "pixelWidthMicrons",
+          "offset": "0x29",
+          "type": "Single",
+          "address": "0x5a2bf0",
+          "value": 40.0,
+          "instructionSHA256": "6e86449118b9f0ffcd22ef4c3a1d2341c973a3e5a03554c9e34816908c005309"
+        },
+        {
+          "name": "pixelHeightMicrons",
+          "offset": "0x2d",
+          "type": "Single",
+          "address": "0x5a2bf7",
+          "value": 40.0,
+          "instructionSHA256": "8482dd7b2efbb86b0fdacd7f5da655b967ade61288f08020216a4cf2fd9588e4"
+        },
+        {
+          "name": "readNoiseElectronsPerPixel",
+          "offset": "0x31",
+          "type": "Single",
+          "address": "0x5a2bfe",
+          "value": 53.0,
+          "instructionSHA256": "c39d9552d495a46c10f8a372581ad212c585ed43c1e345c73629a79bde72eb20"
+        },
+        {
+          "name": "darkNoiseElectronsPerPixelSecond",
+          "offset": "0x35",
+          "type": "Single",
+          "address": "0x5a2c0c",
+          "value": 0.699999988079071,
+          "instructionSHA256": "690038ede49b3c90e9322ebf0fc4d896fc9c87b2e520cbacb1a0015114c0c579"
+        },
+        {
+          "name": "biasElectronsPerPixel",
+          "offset": "0x45",
+          "type": "Int32",
+          "address": "0x5a2c05",
+          "value": 1000,
+          "instructionSHA256": "63c5570e7fdeeb7504afd2aaf77d6f35fac0e13beccc44f3594779f7d92f279a"
+        },
+        {
+          "name": "width",
+          "offset": "0x49",
+          "type": "Int32",
+          "address": "0x5a2c13",
+          "value": 512,
+          "instructionSHA256": "77068d03f1d94324c4e2fb0ac6d3ca57fbc88c6c4fe49f2c0bdeec34781df7eb"
+        },
+        {
+          "name": "height",
+          "offset": "0x4d",
+          "type": "Int32",
+          "address": "0x5a2c1a",
+          "value": 512,
+          "instructionSHA256": "d03fb2c2ea0c7daefd23fcf32b7c418cb0beb8e9dcee127c80267eb2e213be02"
+        },
+        {
+          "name": "adBits",
+          "offset": "0x51",
+          "type": "Int32",
+          "address": "0x5a2c36",
+          "value": 32,
+          "instructionSHA256": "48f76cccc274b85abc6c3920357479c409ed55836ed52e9ba5aef96692c62bbf"
+        },
+        {
+          "name": "wellDepthElectrons",
+          "offset": "0x55",
+          "type": "Int32",
+          "address": "0x5a2c3d",
+          "value": 250000,
+          "instructionSHA256": "fafb1a450a478769ab97a03b6fad6577bb448d86e34d6def7fc4f8a301450893"
+        },
+        {
+          "name": "coolingFlag",
+          "offset": "0x59",
+          "type": "Byte",
+          "address": "0x5a2c44",
+          "value": 1,
+          "instructionSHA256": "08f16dcee24c67f1c25c22c31063ccfec19793b99ab17d0e4cc1ec7fd6c1b6ab"
+        }
+      ],
+      "pixelWidthMicrons": 40.0,
+      "pixelHeightMicrons": 40.0,
+      "readNoiseElectronsPerPixel": 53.0,
+      "darkNoiseElectronsPerPixelSecond": 0.699999988079071,
+      "biasElectronsPerPixel": 1000,
+      "width": 512,
+      "height": 512,
+      "adBits": 32,
+      "wellDepthElectrons": 250000,
+      "coolingFlag": 1,
+      "cooling": "liquidNitrogen"
+    }
+  ],
+  "sourceBinding": "CCD Information reads option owner+0x2d99;IR reads+0x2df4. Both show record+0name,+0x49/+0x4ddimensions,+0x29/+0x2dpixelmicrons,+0x31read,+0x35dark,+0x45bias,+0x51ADbits,+0x55well,+0x59cooling. Truecoolingflag\u2192LiquidNitrogen,false\u2192Thermoelectric.",
+  "browserScope": "Read-only compiled fallback information,not options editing,applied host/instructor settings,loaded-file identity,acquisition or calibration. Decimal rendering is a declared web policy;no native formatter/x87 output oracle.",
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}

@@ -8,7 +8,7 @@ OpenVireo remains a suite migration. One completed package(P01) and usable bound
 - Calibrated bounded sky/star/three-galaxy spectroscopy,manual alignment/redshift,Hubble inputs/fit,retained counts/RNG and source-owned JSON/CSV/SSP continuity.
 - UBV aperture photometry across admitted profile/target/size domains,measured sky/manual transcription and color;reference HR datasets/manual model trials/comparisons/exclusions.
 - All25classification practices/eightatlases,manual source/feature tools,independent answers and notebook/persistence/Undo;owned DAT text/deletion/order/append/clear,lexical TXT/general CSV and checked string-save copies.
-- [Supplied saved-image inspection](FITS-IMAGE.md):bounded float32 FITS image,pixel selection/exact bits,display controls and original-byte retention. It introduces a partial D05 slice,with optional recovered shared CCD/IR palette preview/apply/cancel on explicitly web-normalized display levels and inspection of the recovered default1024×1024CCD size;CCD acquisition and astrometry are separate.
+- [Supplied saved-image inspection](FITS-IMAGE.md):bounded float32 FITS image,pixel selection/exact bits,display controls and original-byte retention. It introduces a partial D05 slice,with optional recovered shared CCD/IR palette preview/apply/cancel on explicitly web-normalized display levels and inspection of the recovered default1024×1024CCD size and a separate read-only [native camera Information](CAMERA-INFORMATION.md) reference;CCD acquisition and astrometry are separate.
 
 These are supported slices,not full original instrument/exercise or runtime equivalence. Historical earlier docs may describe a smaller delivered subset.
 

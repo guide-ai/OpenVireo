@@ -13,6 +13,8 @@
 
 The [recovered default CCD-size continuation](CAMERA-DEFAULT-SIZE.md) also admits the original compiled1024×1024shape. The earlier512×512limit was a browser bound,not a native camera maximum.
 
+For the independent original reference setup, open **Compiled camera defaults → CCD/IR camera information**. This [read-only Information flow](CAMERA-INFORMATION.md) does not identify or configure the imported image.
+
 ## Admission and evidence
 
 [Hashed native evidence](FITS-IMAGE-PROVENANCE.json),`NATIVE-FITS-SINGLE-PLANE-01`,pins8complete static functions. Native metadata initializer0x523a1a..0x523a24 sets SIMPLE true,BITPIX−32,NAXIS2. Plane writer0x523954..0x5239f8 traverses y outside/x inside,stores each returned value as Single,and0x52425c..0x5242da passes the four-byte word through0x520e8c's byte reversal. These identify the relevant saved-image representation. Native metadata/header writer and buffer/flush behavior are not reimplemented; no original writer-output/open witness exists.
