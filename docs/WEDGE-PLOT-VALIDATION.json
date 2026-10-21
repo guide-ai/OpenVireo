@@ -1,9 +1,9 @@
 {
   "sourceHashes": {
     "docs/WEDGE-PLOT-PROVENANCE.json": "a934ed34411fbc1fb4f46a9c90b2197679c18abcf5299ee35a8c8a6d59656784",
-    "docs/WEDGE-PLOT.md": "f9b72495960fe7596b754003e6dba51b52bed1842605d009002d2a7875dc0674",
+    "docs/WEDGE-PLOT.md": "b30d903dc31c8c459c3858765f02c6c65d57a58f7e4dae32b4aa7ea70134d227",
     "src/components/Wedge.css": "25c018bc042fe458889ab0ccbd04927d7ad59213846f833d1e1f3179af00327d",
-    "src/components/WedgeLab.tsx": "d78e4b9fc2f9d11ee6904c477d18c4280e5149802d15d593d229881b3aa9464a",
+    "src/components/WedgeLab.tsx": "1d7939674dc5181d95e5f3144e2b1bbceed4352a03977cedbe96c84967324037",
     "src/components/WedgeMessages.test.ts": "1b404eadb4f09b4dc3b1a9266d244d80756c4dc84d5eed78f80abc768c723f17",
     "src/components/WedgeMessages.ts": "215fa496ecdc5af140987fddf284dc18d0f40bf7acb77771495c411198df6297",
     "src/components/WedgeOptionsDialog.tsx": "a96ce6f5f09f23cec683621b96a3b2904113a103e8a2e486d393edf1239ae674",
@@ -22,42 +22,45 @@
     "src/core/wedgeWorkspace.ts": "4887bf3a8a5ee3f8fe5fb062e8f37d4a10ad433a69c47a7c52d179d42bd80f8d",
     "src/io/wedgeLssFile.ts": "3af1e98ca95cc87330ba2dbaf96aae60d6549429b56cfe789a443f5f0c1445ad",
     "tests/wedge-lss.spec.ts": "e184707c3162d49db607c7fddd3d0baa6a43217cd2fcc74ea48716ff7eb423a9",
-    "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed"
+    "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed",
+    "tests/wedge-focus.spec.ts": "1c33a4a6c4911628d47881f5415fb0c93e42cbd67e0a6fd2dd88938069fc2ac5"
   },
-  "productSourceStableAcrossValidationRuns": true,
-  "testReadinessCorrection": "Existing keyboard-Yes test now awaits actual promptfocus;initial31/32andtracepreserved,final32/32;no productchange/timeoutraise/assertionremoval",
+  "sourceStableDuringValidation": true,
   "unitTests": {
     "passed": 1798,
     "failed": 0,
     "files": 179
   },
   "e2e": {
-    "startTime": "2026-10-21T22:32:07.580Z",
-    "duration": 30293.259,
-    "expected": 32,
+    "startTime": "2026-10-21T23:05:20.144Z",
+    "duration": 34338.093,
+    "expected": 46,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   },
-  "independentUiReproductions": {
-    "startTime": "2026-10-21T22:31:30.024Z",
-    "duration": 4067.7610000000004,
-    "expected": 6,
+  "independentFocusReproductions": {
+    "startTime": "2026-10-21T23:06:15.270Z",
+    "duration": 5041.871,
+    "expected": 14,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   },
-  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-wedge-codex-corrections-2;exit0",
+  "preFixFocusEvidence": {
+    "startTime": "2026-10-21T23:03:04.094Z",
+    "duration": 27572.402000000002,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 5,
+    "flaky": 0
+  },
+  "scope": "Direct-read focus preserves deliberately chosen panel/host control;prompt/cancel focus intention differs;preventScroll;respect already-handled Escape. No numerical/parser/CSV changes. Same-turn read-stall hypothesis was not reproduced in Chromium and remains unconfirmed,not silently fixed.",
+  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-wedge-codex-corrections-3;exit0",
   "resources": "1279/1279 size/SHA256 match",
   "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3",
-  "preFixEvidence": [
-    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-review-triage/ui-report.json",
-    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-correction-triage/pre-report.json"
-  ],
-  "priorValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-1/receipt.json",
-  "scope": "UI focus after first read and Escape from active panel,one missing separator space,unit suffix contract;no parser/numerical/CSV/data schema changes",
-  "authorship": "Claude initial+first corrections;Codex final scoped UI correction after additional Claude author launch denied before execution,not retried",
-  "status": "Validated local candidate;separate final correction delta review and integration pending",
+  "previousValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-2/receipt.json",
+  "status": "Validated local candidate,pending separate review of new correction delta;previous ranges alreadyreviewed",
   "scientificLimits": [
     "No MJD numeric metadata constructed from historical hostcontext",
     "No live LSSacquisition/groupAutoPlot/nativewriter/printing",

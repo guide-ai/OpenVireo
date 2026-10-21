@@ -47,47 +47,48 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const[w,setW]=useState<WedgeWorkspace>(EMPTY_WEDGE_WORKSPACE);
  const[scheme,setScheme]=useState<WedgeColourScheme>(0);
  const token=useRef(0),abort=useRef<AbortController|null>(null),optionsButton=useRef<HTMLButtonElement>(null),promptButton=useRef<HTMLButtonElement>(null),fileInput=useRef<HTMLInputElement>(null),root=useRef<HTMLElement>(null);
- /** Set by a user's prompt answer or read cancel; consumed once the file input is enabled again. */
- const refocusFile=useRef(false);
+ /** Direct reads restore only lost focus; explicit prompt/read-cancel answers return to the input. */
+ const refocusFile=useRef<'read'|'answer'|null>(null);
  const plot=useMemo(()=>wedgePlot(w.records,w.options),[w.records,w.options]);
  const busy=disabled||w.reading!==null||w.pending!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.
- useLayoutEffect(()=>{if(disabled){refocusFile.current=false;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
+ useLayoutEffect(()=>{if(disabled){refocusFile.current=null;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
  useEffect(()=>()=>{abort.current?.abort();},[]);
  useEffect(()=>{if(w.pending)promptButton.current?.focus();},[w.pending]);
  // After the commit that re-enables the input (not synchronously in the handler, when it is
  // still disabled). Skipped if the input is hidden or focus has already moved out of the panel.
  useEffect(()=>{
-  if(!refocusFile.current||busy)return;refocusFile.current=false;
+  const intent=refocusFile.current;
+  if(!intent||busy)return;refocusFile.current=null;
   const f=fileInput.current,a=document.activeElement;
   if(!f||f.disabled||f.getClientRects().length===0)return;
-  if(a&&a!==document.body&&!root.current?.contains(a))return;
-  f.focus();
+  if(a&&a!==document.body&&a!==f&&(intent==='read'||!root.current?.contains(a)))return;
+  f.focus({preventScroll:true});
  },[busy]);
  /** Token-gated transitions (also used by async read completion). */
  const safe=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>setW(c=>{try{return f(c);}catch{return c;}});
  /** User actions: refused while the host has the panel disabled. */
  const act=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>{if(!disabled)safe(f);};
  /** Prompt answers (Yes/No/Cancel/Escape): focus returns to the file input when the prompt closes. */
- const answer=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>{if(disabled)return;refocusFile.current=true;safe(f);};
+ const answer=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>{if(disabled)return;refocusFile.current='answer';safe(f);};
  /** Escape is the non-destructive answer: Cancel at "Retain Current Data?", No at "Confirm Deletion!". */
- const promptKey=(e:KeyboardEvent)=>{if(e.key!=='Escape'||!w.pending)return;e.preventDefault();e.stopPropagation();answer(w.pending.stage==='retain'?cancelWedgePending:c=>confirmWedgeDelete(c,false));};
+ const promptKey=(e:KeyboardEvent)=>{if(e.defaultPrevented||e.key!=='Escape'||!w.pending)return;e.preventDefault();e.stopPropagation();answer(w.pending.stage==='retain'?cancelWedgePending:c=>confirmWedgeDelete(c,false));};
 
  async function onFile(e:ChangeEvent<HTMLInputElement>){
   const file=e.target.files?.[0];e.target.value='';if(!file||busy)return;
   let refused:WedgeWorkspace|null;try{refused=requestWedgeLoad(w,file.name);}catch{return;}
   if(refused){setW(refused);return;}
   const t=++token.current;abort.current?.abort();const ctrl=new AbortController();abort.current=ctrl;
-  // Return after a direct success or failure too, unless focus moved to the host.
-  refocusFile.current=true;
+  // Restore lost focus after a direct success/failure; keep any deliberate focus move.
+  refocusFile.current='read';
   safe(c=>beginWedgeRead(c,t,file.name));
   try{const read=await readWedgeLssFile(file,ctrl.signal);safe(c=>completeWedgeRead(c,t,read));}
   catch(err){if(err instanceof WedgeFileError&&err.code==='aborted')return;safe(c=>failWedgeRead(c,t,err instanceof WedgeFileError&&err.code==='size'?'size':'read'));}
   finally{if(abort.current===ctrl)abort.current=null;}
  }
- const cancelRead=()=>{abort.current?.abort();abort.current=null;refocusFile.current=true;setW(cancelWedgeRead);};
+ const cancelRead=()=>{abort.current?.abort();abort.current=null;refocusFile.current='answer';setW(cancelWedgeRead);};
  const closeOptions=(commit:boolean)=>{act(commit?commitWedgeOptions:cancelWedgeOptions);requestAnimationFrame(()=>optionsButton.current?.focus());};
  const select=(i:number|null)=>act(c=>selectWedgeRecord(c,i));
  const lines=w.notice?noticeLines(w.notice,m):[];
