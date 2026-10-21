@@ -31,3 +31,5 @@ Nine separate auditable scenario traces cover65events in Node and Chromium, with
 Run `node node_modules/vitest/vitest.mjs run src/core/cameraRequestGate.test.ts`. Scenario reproduction uses `controls.py`, `check.mjs` with Node's `--experimental-transform-types`, and `browser-check.mjs` with the existing loopback Vite URL in `OPENVIREO_GATE_URL`.
 
 The normal preview remains http://127.0.0.1:5173/#observatory. Open **CCD / IR preparation reference**, inspect/apply/cancel a telescope choice and save/restore the investigation; there is no new acquisition action. Successful catalog/parser/cache/projected-row authority, preceding random sequence, remaining CCD overlay, complete configuration/IR resource policies and image metadata/output still gate an actual exposure. The58functional package counts remain unchanged.
+
+The explicit web unsupported catalog verdict has its own latched request/terminal outcome and releases without prepare. This covers original-admitted but unimplemented response paths;it is neither a malformed-catalog verdict nor native preparation behavior.

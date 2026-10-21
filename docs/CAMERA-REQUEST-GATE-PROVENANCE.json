@@ -133,5 +133,11 @@
   "scope": "Purepost-validationcoordinatoreffects,noobservingUI/noacquisition/certification",
   "nativeExecution": false,
   "microemulation": false,
-  "originalModified": false
+  "originalModified": false,
+  "webUnsupportedExtension": {
+    "contract": "Known original-admitted but unimplemented catalog path is unsupported,latched and released distinctly from malformed catalog",
+    "sourceRoute": "GetData59c7d1..59c7f9 sexagesimal alternative",
+    "nativeFailureOrderingNotClaimed": true,
+    "serializationOrResourceChanges": false
+  }
 }

@@ -89,7 +89,8 @@
     "context": "Actual compiled-query reference required;source epoch/band passed to bounded reader;CCD I rejects",
     "error": "Bounded LF/ASCII/size/header rules;known native sexagesimal is unsupported,not malformed;error line location retained;missing bytes event rejected",
     "boundaries": "No transport authenticity,source population,cache admission,exposure,thread termination or release acknowledgement supplied;existing lifecycle gate remains separate",
-    "failureGate": "Error\u2192release-without-prepare is web safeguard;native wrapper52158e overwritesEAX521591 and continues bitmap creation despite field updater failure"
+    "failureGate": "Error\u2192release-without-prepare is web safeguard;native wrapper52158e overwritesEAX521591 and continues bitmap creation despite field updater failure",
+    "unsupportedLifecycle": "Original-admitted/unported sexagesimal keeps unsupported outcome through parser and lifecycle release;does not become malformed or usable"
   },
   "nativeExecution": false,
   "microemulation": false,
@@ -100,13 +101,18 @@
       "path": "native-camera-response/line-helper.asm",
       "start": "0x48672c",
       "endExclusive": "0x4867fa",
-      "listingSHA256": "6f6215d35591d6c32c92e144548e461363470a4b5671fcc3949ffddb924d7578"
+      "listingSHA256": "6f6215d35591d6c32c92e144548e461363470a4b5671fcc3949ffddb924d7578",
+      "bytesSHA256": "a7fb8b3be342a76dc3700ed361cf0f6a675abf7fba16201b9b286c39ac66002b",
+      "absolutePath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-response/line-helper.asm"
     },
     {
       "path": "native-camera-query-authority/shared-field-update.asm",
       "start": "0x522454",
       "endExclusive": "0x52255e",
-      "listingSHA256": "0844166fcd8b94a82de3bde7a4d13045fff2b3501125282653c5ee72fdf429de"
+      "listingSHA256": "0844166fcd8b94a82de3bde7a4d13045fff2b3501125282653c5ee72fdf429de",
+      "bytesSHA256": "b899581be4658b9ceec61efd4874cb8afd897555a8236945957f1b2ba848eba6",
+      "absolutePath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-query-authority/shared-field-update.asm"
     }
-  ]
+  ],
+  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3"
 }

@@ -1,7 +1,7 @@
 /** Bounded decimal-coordinate candidate reader,not a catalog/source certificate.
  * Complete source0x59c9d8/0x59d030 and tables: CAMERA-NOMAD-ROWS-PROVENANCE. */
 export class NativeNomadError extends Error {
- constructor(readonly code:'line'|'header'|'format'|'layout'|'row'|'number'|'context'|'identity',readonly field?:string){super(`NOMAD row contract: ${code}${field?` (${field})`:''}`);this.name='NativeNomadError';}
+ constructor(readonly code:'line'|'header'|'format'|'unsupported-units'|'layout'|'row'|'number'|'context'|'identity',readonly field?:string){super(`NOMAD row contract: ${code}${field?` (${field})`:''}`);this.name='NativeNomadError';}
 }
 export type NomadBand='B'|'V'|'R'|'J'|'H'|'K';
 export type NomadField='id'|'RA'|'DEC'|'MuRA'|'MuDEC'|'B'|'V'|'R'|'I'|'J'|'H'|'K';
@@ -29,8 +29,7 @@ const asciiLine=(v:unknown):v is string=>typeof v==='string'&&v.length>0&&v.leng
 /** Native fixed-column positions,not CSV tokenization. Only the recovered
  * decimal-hours/degrees descriptor is admitted in this bounded reader. */
 export function nativeNomadLayout(header:string,units:string):NomadLayout {
- if(!asciiLine(header)||!asciiLine(units))throw new NativeNomadError('line');
- if(!units.includes('hh.hhh')||!units.includes('dd.ddd'))throw new NativeNomadError('format');
+ if(!asciiLine(header))throw new NativeNomadError('line');
  if(!header.includes('RA'))throw new NativeNomadError('header');
  const columns=labels.map((raw,i)=>{
   // Actual table slots hold up to7bytes;the caller copies into ShortString[6].
@@ -44,6 +43,14 @@ export function nativeNomadLayout(header:string,units:string):NomadLayout {
   if(length<1)throw new NativeNomadError('header',fields[i]);
   return Object.freeze({field:fields[i],start,length});
  });
+ // Original GetData validates header before coordinate descriptor. Preserve
+ // that priority even when both inputs are unusable. Sexagesimal is admitted
+ // by the original but not implemented by this decimal row reader.
+ if(!asciiLine(units))throw new NativeNomadError('format');
+ if(!units.includes('hh.hhh')||!units.includes('dd.ddd')){
+  if(units.includes('hh mm ss')&&units.includes('dd mm ss'))throw new NativeNomadError('unsupported-units');
+  throw new NativeNomadError('format');
+ }
  return Object.freeze({[layoutBrand]:true as const,header,units,columns:Object.freeze(columns),requiredLength:Math.max(...columns.map(c=>c.start+c.length-1))});
 }
 function decimal(text:string,field:NomadField):number {

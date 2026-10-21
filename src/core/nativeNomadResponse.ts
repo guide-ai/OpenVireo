@@ -38,11 +38,8 @@ export function readNativeNomadResponse(bytes:Uint8Array,context:NomadRowContext
  if(markerIndex<0)throw new NativeNomadResponseError('marker');
  const marker=lines[markerIndex],header=lines[markerIndex+1],units=lines[markerIndex+2];
  if(!header||!units)throw new NativeNomadResponseError('header',marker.lineNumber+1);
- // GetData59c7d1..59c7f9 also admits sexagesimal descriptors. Their row path
- // is not ported;do not label an original-admitted format as malformed.
- if(!(units.text.includes('hh.hhh')&&units.text.includes('dd.ddd'))&&units.text.includes('hh mm ss')&&units.text.includes('dd mm ss'))throw new NativeNomadResponseError('unsupported-units',units.lineNumber);
  let layout:NomadLayout;
- try{layout=nativeNomadLayout(header.text,units.text);}catch(e){if(e instanceof NativeNomadError)throw new NativeNomadResponseError('header',e.code==='format'?units.lineNumber:header.lineNumber);throw e;}
+ try{layout=nativeNomadLayout(header.text,units.text);}catch(e){if(e instanceof NativeNomadError)throw new NativeNomadResponseError(e.code==='unsupported-units'?'unsupported-units':'header',e.code==='format'||e.code==='unsupported-units'?units.lineNumber:header.lineNumber);throw e;}
  const ownedContext=Object.freeze({band:context.band,epochOffsetYears:context.epochOffsetYears});
  const entries=lines.slice(markerIndex+3).map(line=>{
   if(line.text.startsWith('#'))return Object.freeze({line,result:Object.freeze({kind:'comment' as const})});

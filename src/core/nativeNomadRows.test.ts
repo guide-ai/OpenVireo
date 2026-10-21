@@ -66,7 +66,7 @@ describe('bounded NOMAD fixed-column decimal candidate reader;not source authori
  });
  it('rejects missing/ambiguous headers and unsupported coordinate descriptors without inventing columns',()=>{
   fails(()=>nativeNomadLayout(header().replace(' K|',' X|'),units),'header');fails(()=>nativeNomadLayout(header()+' B|',units),'header');fails(()=>nativeNomadLayout(header().replace(' id|',' ID|'),units),'header');
-  fails(()=>nativeNomadLayout(header(),'hh mm ss dd mm ss'),'format');fails(()=>nativeNomadLayout(header(),'hh.hhh'),'format');fails(()=>nativeNomadLayout(header(),'HH.HHH DD.DDD'),'format');
+  fails(()=>nativeNomadLayout(header(),'hh mm ss dd mm ss'),'unsupported-units');fails(()=>nativeNomadLayout(header(),'hh.hhh'),'format');fails(()=>nativeNomadLayout(header(),'HH.HHH DD.DDD'),'format');
  });
  it('rejects invalid numeric cells even in unselected bands,nonfinite motion and unsupported canonical input',()=>{
   for(const V of['','NaN','Infinity','13,5','1e400','0x10'])fails(()=>readNativeNomadRow(layout(),line({V}),context),'number');

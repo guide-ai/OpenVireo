@@ -92,12 +92,12 @@ describe('explicit composition with the independent release gate',()=>{
   let gate=cameraRequestTransition(createCameraRequestGate(),{type:'start',seconds:1}).state;
   const parser=begin(),ticket=gate.ticket!;
   const parsed=receiveCameraNomadReply(parser,{ticket:parser.ticket!,finished:true,transportSucceeded:kind!=='transport-error',bytes:bytes(kind==='catalog-error'?'missing marker':kind==='unsupported'?controls.bodies.unsupportedUnits:kind==='empty'?controls.bodies.zeroRows:controls.bodies.oneRow)});
-  gate=cameraRequestTransition(gate,{type:'request-result',ticket,finished:true,transportSucceeded:parsed.status!=='transport-error',catalog:parsed.status==='catalog-error'||parsed.status==='unsupported'?'invalid':'valid'}).state;
+  gate=cameraRequestTransition(gate,{type:'request-result',ticket,finished:true,transportSucceeded:parsed.status!=='transport-error',catalog:parsed.status==='unsupported'?'unsupported':parsed.status==='catalog-error'?'invalid':'valid'}).state;
   gate=cameraRequestTransition(gate,{type:'exposure-tick',ticket,instant:false}).state;
   const pulse=cameraRequestTransition(gate,{type:'request-tick',ticket});
   if(kind==='empty'||kind==='data'){
    expect(pulse.state.phase).toBe('preparing');expect(pulse.effects.map(e=>e.type)).toContain('prepare');expect(pulse.effects.map(e=>e.type)).not.toContain('accept-prepared');
-  }else{expect(pulse.state.phase).toBe('releasing');expect(pulse.state.terminal).toBe(kind==='unsupported'?'catalog-error':kind);expect(pulse.effects.map(e=>e.type)).toContain('release');}
+  }else{expect(pulse.state.phase).toBe('releasing');expect(pulse.state.terminal).toBe(kind);expect(pulse.effects.map(e=>e.type)).toContain('release');}
  });
  it('keeps reentry locked until release acknowledgement even though the parser owner can start a new ticket',()=>{
   let gate=cameraRequestTransition(createCameraRequestGate(),{type:'start',seconds:1}).state;

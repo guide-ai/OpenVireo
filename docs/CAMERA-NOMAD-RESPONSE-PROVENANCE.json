@@ -115,5 +115,12 @@
     "Otherlineencodingsandnativehostlocale/Extended",
     "Selectionbounds/projectedsourceownership/globalrandomprefix",
     "Completecameraoverlay/outputandadmittedobservinglifecycle"
-  ]
+  ],
+  "diagnosticExtension": {
+    "evidence": "NATIVE-CAMERA-FRESH-REPLY-OWNERSHIP-01",
+    "headerFirst": "GetData validates header at59c755/59c75e before units59c79c..59c7f9;layout preserves priority and physical line",
+    "sexagesimal": "Known original-admitted descriptors raise unsupported-units;row parsing remains unimplemented",
+    "historicalReceipts": "Original framing controls remain temporal;new diagnostic cases validated with fresh-request controls",
+    "serializationChanged": false
+  }
 }

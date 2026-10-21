@@ -7,8 +7,8 @@ export class CameraRequestGateError extends Error {
 const stateBrand:unique symbol=Symbol('camera-request-gate');
 const ticketBrand:unique symbol=Symbol('camera-request-ticket');
 export type CameraRequestTicket=Readonly<{[ticketBrand]:true}>;
-export type CameraRequestOutcome='pending'|'usable'|'transport-error'|'catalog-error';
-export type CameraGateOutcome='none'|'completed'|'cancelled'|'initialization-error'|'transport-error'|'catalog-error'|'preparation-error';
+export type CameraRequestOutcome='pending'|'usable'|'transport-error'|'catalog-error'|'unsupported';
+export type CameraGateOutcome='none'|'completed'|'cancelled'|'initialization-error'|'transport-error'|'catalog-error'|'unsupported'|'preparation-error';
 export const CAMERA_OBSERVE_INTERVAL_MS=1000;
 export type CameraRequestGate=Readonly<{
  [stateBrand]:true;
@@ -24,7 +24,7 @@ export type CameraGateEffect=Readonly<{
 export type CameraGateEvent=
  |Readonly<{type:'start';seconds:number}>
  |Readonly<{type:'exposure-tick';ticket:CameraRequestTicket;instant:boolean}>
- |Readonly<{type:'request-result';ticket:CameraRequestTicket;finished:boolean;transportSucceeded:boolean;catalog:'unchecked'|'valid'|'invalid'}>
+ |Readonly<{type:'request-result';ticket:CameraRequestTicket;finished:boolean;transportSucceeded:boolean;catalog:'unchecked'|'valid'|'invalid'|'unsupported'}>
  |Readonly<{type:'request-tick';ticket:CameraRequestTicket}>
  |Readonly<{type:'prepared';ticket:CameraRequestTicket;ok:boolean}>
  |Readonly<{type:'initialization-failed';ticket:CameraRequestTicket}>
@@ -74,8 +74,8 @@ export function cameraRequestTransition(s:CameraRequestGate,e:CameraGateEvent):C
   }
   case 'request-result': {
    if(!['exposing','waiting'].includes(s.phase)||s.request!=='pending')return unchanged();
-   if(typeof e.finished!=='boolean'||typeof e.transportSucceeded!=='boolean'||!['unchecked','valid','invalid'].includes(e.catalog))throw new CameraRequestGateError('event');
-   const request:CameraRequestOutcome=!e.finished?'pending':!e.transportSucceeded?'transport-error':e.catalog==='invalid'?'catalog-error':e.catalog==='valid'?'usable':'pending';
+   if(typeof e.finished!=='boolean'||typeof e.transportSucceeded!=='boolean'||!['unchecked','valid','invalid','unsupported'].includes(e.catalog))throw new CameraRequestGateError('event');
+   const request:CameraRequestOutcome=!e.finished?'pending':!e.transportSucceeded?'transport-error':e.catalog==='unsupported'?'unsupported':e.catalog==='invalid'?'catalog-error':e.catalog==='valid'?'usable':'pending';
    if(request===s.request)return unchanged();
    return transition(owned({...s,request}),[]);
   }

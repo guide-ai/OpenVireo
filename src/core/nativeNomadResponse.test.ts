@@ -31,6 +31,14 @@ describe('bounded NOMAD response framing,not actual response authority',()=>{
  it('does not interpret a body END as an end-of-data terminator',()=>{
   const r=readNativeNomadResponse(bytes(source([row(),'END','#END',row('12')])),context);expect(r.entries.map(e=>e.result.kind)).toEqual(['candidate','invalid','comment','candidate']);
  });
+ it('validates header before units and points diagnostics at the first failed stage',()=>{
+  for(const h of[header.replace(' K|',' X|'),'no columns',''])for(const u of['hh mm ss dd mm ss','foo','']){
+   try{readNativeNomadResponse(bytes(['# SYNTHETIC ONLY','END',h,u,row()].join('\n')),context);expect.fail('Expected header rejection');}
+   catch(e){expect(e).toBeInstanceOf(NativeNomadResponseError);expect((e as NativeNomadResponseError).code).toBe('header');expect((e as NativeNomadResponseError).lineNumber).toBe(3);}
+  }
+  try{readNativeNomadResponse(bytes(source([row()]).replace(units,'')),context);expect.fail('Expected descriptor rejection');}
+  catch(e){expect((e as NativeNomadResponseError).code).toBe('header');expect((e as NativeNomadResponseError).lineNumber).toBe(4);}
+ });
  it('admits zero rows without claiming a successful observing catalog',()=>{
   const r=readNativeNomadResponse(bytes(source([])),context);expect(r.entries).toEqual([]);expect(r).not.toHaveProperty('success');expect(r).not.toHaveProperty('request');expect(r).not.toHaveProperty('observation');
  });
