@@ -1,0 +1,160 @@
+{
+  "evidenceId": "NATIVE-CAMERA-SOURCE-CALIBRATION-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "source-initialize",
+      "start": "0x52455c",
+      "endExclusive": "0x5245c4",
+      "bytesSHA256": "17e7071ad2892ac143fe99250050298a8cb309545871ba78613eb0b7e28c541b",
+      "listingSHA256": "53383dcd3dd259b87ad0fd65f9b741d7949b27450275929a60a7dc775a136fe1"
+    },
+    {
+      "name": "point-add",
+      "start": "0x5245d0",
+      "endExclusive": "0x524a41",
+      "bytesSHA256": "03bdf749e18e0a4189ff39d3186133c129d459e0d3db15624aaf8c4b8f044231",
+      "listingSHA256": "9ee1d2193725c649d6dc97d59d11801abc43369cb3360364e28f8253c6b1d2a4"
+    },
+    {
+      "name": "extended-add",
+      "start": "0x524a6c",
+      "endExclusive": "0x525095",
+      "bytesSHA256": "5899f5515cfc39db8530e3934c9bd6fd01c56b099001f8f684f89059d8bd167f",
+      "listingSHA256": "53aca1d06c3e144323e09e54f88aeb2f2cdc6cd2735feb514d729d8600e35d7c"
+    },
+    {
+      "name": "ccd-prepare",
+      "start": "0x52154c",
+      "endExclusive": "0x521c65",
+      "bytesSHA256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+      "listingSHA256": "ff80a59dc3bd5de51a7c3f2b4a8638b2e33aa3b041631f7ee07efdccad6fe81f"
+    },
+    {
+      "name": "ir-prepare",
+      "start": "0x51e43c",
+      "endExclusive": "0x51e712",
+      "bytesSHA256": "95b7a6912bef366c3ab88b13a429163e3ce6a82353b10ac792ebbb2703220fc2",
+      "listingSHA256": "d1dc37be4f8c5cb141fe76866bf344817cb0e70b26062ade60ca0185fffe3369"
+    },
+    {
+      "name": "power-helper",
+      "start": "0x42703c",
+      "endExclusive": "0x4270be",
+      "bytesSHA256": "85094fa68cdaf411f9a96eb8aaf546f9b327f4956cc7f079e4322c799aa072bd",
+      "listingSHA256": "7e615ea43b1c8d56fc207e609865a09aef72dd970875ecd4708b6e2a70c47653"
+    },
+    {
+      "name": "compiled-defaults",
+      "start": "0x5a21d0",
+      "endExclusive": "0x5a2c92",
+      "bytesSHA256": "758da1fbccbb0eafc75ad7d518698464dfd62a04162fecb02b63e472688f223a",
+      "listingSHA256": "ff51ae02c8c29b5a8e485719f619d54d8fc44d28fe735a122b924727c47bb064"
+    }
+  ],
+  "constants": {
+    "pixelScaleArcsec": {
+      "address": "0x5245c4",
+      "type": "Extended",
+      "exactNumerator": "14862945222714398133",
+      "exactDenominator": "72057594037927936",
+      "exactDecimal": "206.26479999999999999371613768062161398120224475860595703125",
+      "numberPolicyValue": 206.2648,
+      "bytesSHA256": "a4b9a0e7abec5f4f1a1227479f11236c373287c87e1ab3954507d2dbc3f466b0"
+    },
+    "magnitudeDivisor": {
+      "address": "0x524a44",
+      "type": "Single",
+      "exactNumerator": "5",
+      "exactDenominator": "2",
+      "exactDecimal": "2.5",
+      "numberPolicyValue": 2.5,
+      "bytesSHA256": "072e3304b03423a4767d28c5fed09f81d5190ff60a3d078c6c1350eeb8bee28b"
+    },
+    "NFAdjustment": {
+      "address": "0x521c80",
+      "type": "Single",
+      "exactNumerator": "1",
+      "exactDenominator": "4",
+      "exactDecimal": "0.25",
+      "numberPolicyValue": 0.25,
+      "bytesSHA256": "75e253f50979177eba47b2d0805ad36038789108924514d2a761a70de057d16f"
+    }
+  },
+  "compiledCalibrationStores": [
+    {
+      "kind": "ccd",
+      "address": "0x5a2bb1",
+      "recordOffset": "0x39",
+      "type": "Single",
+      "value": 10.0,
+      "instructionSHA256": "5878d2a173ae38d3e155b9d4857a7d09619111b97c1a4668a1a2ff67dc43b00f",
+      "semanticName": "Base magnitude"
+    },
+    {
+      "kind": "ccd",
+      "address": "0x5a2bb8",
+      "recordOffset": "0x3d",
+      "type": "Integer",
+      "value": 1000,
+      "instructionSHA256": "ced244dfc5ce43cd131a7746b8ddda956970bd24f418470d945e7435399d9325",
+      "semanticName": "Base count (unit not supplied by this label)"
+    },
+    {
+      "kind": "ccd",
+      "address": "0x5a2bbf",
+      "recordOffset": "0x41",
+      "type": "Integer",
+      "value": 10,
+      "instructionSHA256": "469ed29a2e6d06412bdc118816bf1ff0ec40dfa4ef1c6e0bb87aa67f78c55284",
+      "semanticName": "Base exposure,seconds (DFM Hint)"
+    },
+    {
+      "kind": "ir",
+      "address": "0x5a2c21",
+      "recordOffset": "0x39",
+      "type": "Single",
+      "value": 10.0,
+      "instructionSHA256": "5878d2a173ae38d3e155b9d4857a7d09619111b97c1a4668a1a2ff67dc43b00f",
+      "semanticName": "Base magnitude"
+    },
+    {
+      "kind": "ir",
+      "address": "0x5a2c28",
+      "recordOffset": "0x3d",
+      "type": "Integer",
+      "value": 1000,
+      "instructionSHA256": "ced244dfc5ce43cd131a7746b8ddda956970bd24f418470d945e7435399d9325",
+      "semanticName": "Base count (unit not supplied by this label)"
+    },
+    {
+      "kind": "ir",
+      "address": "0x5a2c2f",
+      "recordOffset": "0x41",
+      "type": "Integer",
+      "value": 10,
+      "instructionSHA256": "469ed29a2e6d06412bdc118816bf1ff0ec40dfa4ef1c6e0bb87aa67f78c55284",
+      "semanticName": "Base exposure,seconds (DFM Hint)"
+    }
+  ],
+  "compiledCCD": {
+    "baseMagnitude": 10,
+    "baseCount": 1000,
+    "baseSeconds": 10
+  },
+  "opticalProfilesSHA256": "08685cc7d0d18abaa71deafbf515d66ec08aa1e7782ee6784b62b6238e941dfc",
+  "cameraInformationSHA256": "8e89fb20a37ad70ca83bf7e9702dfc3f71c0e7c1038fbf30e8fd2818c3f7ef4b",
+  "contract": {
+    "owners": "InitializeralwaysCCDrecordpixelsatroot+6b4+26e5;point/extendedcalibrationalwaysCCDrecordroot+2d99;opticalseeing/focal/magnitudeFactorfromexplicitselectedopticalindex&0x7f",
+    "sigma": "pixelScaleX=(Extended206.2648*CCDpixelWidthMicrons)/focalMM;YusesCCDpixelHeight;sigmaX/Y=opticalSeeingArcsec/pixelScaleX/Y;noFWHMconversion",
+    "magnitude": "CCDcallerNFposition0subtractsSingle.25fromstoredSinglemagnitudeintoExtended;otherCCDfilters/IRpassstoredSinglewithoutadjustment",
+    "peak": "delta=(CCDbaseMagnitude-effectiveSourceMagnitude)+opticalScopeMagnitudeFactor;referencePeak=CCDbaseCount/Power(10,-delta/Single2.5);notintegratedfluxnormalization",
+    "time": "Pointratio=integerSeconds/CCDbaseSeconds;extendedcallerfurtherdividesbygeometricScaleinternally;notdoublyscaledbythisreference",
+    "scope": "Compiledfallbackreferencepluspointparameteradapter;notliveoptions/calibration/catalog/request/observationauthority"
+  },
+  "numericalPolicy": "NumberprojectionofsourceExtendedpixelconstantandMathpow;sourceorderforsigmas/peak/pointduration;notnativeExtended/power/FPUparity",
+  "nativeExecution": false,
+  "microemulation": false,
+  "REAExecuted": false,
+  "originalModified": false
+}
