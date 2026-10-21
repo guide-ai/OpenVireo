@@ -100,7 +100,7 @@
     "scope": "Supplied LF/printableASCII decimalNOMADresponseonly;notrequest/cache/sourceauthority",
     "marker": "0x59c6fa..0x59c73d consumesLF-linesuntilPos(END)==1orPos(#END)==1;case-sensitiveprefix,notexact/trimmedmatch",
     "header": "Immediatelynextlinevirtual+1c;thenexactlynextunitsline;decimalhh.hhh/dd.dddbranchbeforesexagesimalalternative",
-    "body": "0x59ced4 consumesallremaininglinesuntilstringempty;firstbyte#skips;virtual+18falseomitscandidateandloopcontinues;noENDdataterminator/sort/dedup",
+    "body": "0x59ced4 consumesallremaininglinesuntilstringempty;firstbyte#skips;virtual+18falseomitscandidateandloopcontinues;noENDdataterminator/dedup;acceptedrowsenter0x492728sortedRA/DECcontainer,seesource-listfollowup",
     "line": "0x48672c splitsatfirstLF,keepsprecedingcharacters,anddeletesconsumedlength+1;missingLFreturnsentireremainder;trailingLFdoesnotfabricateemptyfinalline",
     "ownership": "Responseoriginaltext/linespansandoutcomeledgerimmutable;inputcopiedbeforeparsing;noexternalstate",
     "webBounds": "2MiB/10000lines/4096bytesperline;printableASCIIplusLFonly,noCRLF/BOM/controlrepair;rowadmissioninheritedfromCAMERA-NOMAD-ROWS",

@@ -1,7 +1,8 @@
-import {nativeNomadLayout,readNativeNomadRow,NativeNomadError,type NomadLayout,type NomadRowContext,type NomadRowResult} from './nativeNomadRows';
+import {nativeNomadLayout,readNativeNomadRow,NativeNomadError,type NomadLayout,type NomadRowContext,type NomadRowResult,nativeNomadCandidateInSelection,type NomadSelection} from './nativeNomadRows';
+import {orderNativeNomadEntries} from './nativeNomadOrder';
 
 export class NativeNomadResponseError extends Error {
- constructor(readonly code:'size'|'encoding'|'line-limit'|'marker'|'header'|'context',readonly lineNumber?:number){super(`NOMAD response contract: ${code}${lineNumber===undefined?'':` (line ${lineNumber})`}`);this.name='NativeNomadResponseError';}
+ constructor(readonly code:'size'|'encoding'|'line-limit'|'marker'|'header'|'context'|'ownership'|'selection',readonly lineNumber?:number){super(`NOMAD response contract: ${code}${lineNumber===undefined?'':` (line ${lineNumber})`}`);this.name='NativeNomadResponseError';}
 }
 export type NomadResponseLine=Readonly<{lineNumber:number;startByte:number;endByte:number;terminated:boolean;text:string}>;
 export type NomadResponseEntry=Readonly<{
@@ -13,6 +14,7 @@ export type NomadResponse=Readonly<{
  preamble:readonly NomadResponseLine[];marker:NomadResponseLine;header:NomadResponseLine;units:NomadResponseLine;
  entries:readonly NomadResponseEntry[];
 }>;
+const ownedResponses=new WeakSet<object>();
 /** Static framing0x59c620/0x59ced4 and LF helper0x48672c.
  * LF/printable ASCII only is an explicit web subset,not encoding repair.
  * A parsed response is not a request/cache/catalog/observing certificate. */
@@ -49,5 +51,21 @@ export function readNativeNomadResponse(bytes:Uint8Array,context:NomadRowContext
    return Object.freeze({line,result:Object.freeze({kind:'invalid' as const,code:e.code,...(e.field===undefined?{}:{field:e.field})})});
   }
  });
- return Object.freeze({originalText:parts.join(''),layout,context:ownedContext,preamble:Object.freeze(lines.slice(0,markerIndex)),marker,header,units,entries:Object.freeze(entries)});
+ const response=Object.freeze({originalText:parts.join(''),layout,context:ownedContext,preamble:Object.freeze(lines.slice(0,markerIndex)),marker,header,units,entries:Object.freeze(entries)});
+ ownedResponses.add(response);return response;
+}
+
+export type NomadCandidateEntry=Readonly<{line:NomadResponseLine;result:Extract<NomadRowResult,{kind:'candidate'}>}>;
+export type NomadSourceLists=Readonly<{response:NomadResponse;bounds:NomadSelection;catalogEntries:readonly NomadCandidateEntry[];selectedEntries:readonly NomadCandidateEntry[];nativeMinimumMagnitude:number;nativeMaximumMagnitude:number;hasSources:boolean}>;
+/** Native catalog insertion then0x59cc88 selection/insertion and extrema.
+ * Exact parsed-object ownership is a web guard,not real catalog authority. */
+export function nativeNomadSourceLists(response:NomadResponse,bounds:NomadSelection):NomadSourceLists {
+ if(!response||!ownedResponses.has(response))throw new NativeNomadResponseError('ownership');
+ if(!bounds||![bounds.minRAHours,bounds.maxRAHours,bounds.minDecDegrees,bounds.maxDecDegrees,bounds.magnitudeLimit].every(Number.isFinite)||!Object.is(bounds.magnitudeLimit,Math.fround(bounds.magnitudeLimit)))throw new NativeNomadResponseError('selection');
+ const ownedBounds=Object.freeze({minRAHours:bounds.minRAHours,maxRAHours:bounds.maxRAHours,minDecDegrees:bounds.minDecDegrees,maxDecDegrees:bounds.maxDecDegrees,magnitudeLimit:bounds.magnitudeLimit});
+ const catalogEntries=orderNativeNomadEntries(response.entries.filter((e):e is NomadCandidateEntry=>e.result.kind==='candidate'));
+ const selectedEntries=orderNativeNomadEntries(catalogEntries.filter(e=>nativeNomadCandidateInSelection(e.result.row,ownedBounds)));
+ let nativeMinimumMagnitude=25,nativeMaximumMagnitude=-2;
+ for(const e of selectedEntries){const m=e.result.row.selectedMagnitude;if(m<nativeMinimumMagnitude)nativeMinimumMagnitude=m;if(m>nativeMaximumMagnitude)nativeMaximumMagnitude=m;}
+ return Object.freeze({response,bounds:ownedBounds,catalogEntries,selectedEntries,nativeMinimumMagnitude,nativeMaximumMagnitude,hasSources:selectedEntries.length!==0});
 }

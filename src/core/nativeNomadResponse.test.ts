@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {readNativeNomadResponse,NativeNomadResponseError} from './nativeNomadResponse';
+import {readNativeNomadResponse,NativeNomadResponseError,nativeNomadSourceLists} from './nativeNomadResponse';
 import type {NomadRowContext} from './nativeNomadRows';
 const keys=['id','RA','DEC','MuRA','MuDEC','B','V','R','J','H','K'];
 const values=['SYNTHETIC-ONLY','12.25','-30.5','0','0','14','13.5','13','12','11','10'];
@@ -50,4 +50,29 @@ describe('bounded NOMAD response framing,not actual response authority',()=>{
   expect(readNativeNomadResponse(bytes('x'.repeat(4096)+'\n'+source([])),context).preamble[0].text).toHaveLength(4096);
  });
  it('requires explicit valid context even when the body is empty',()=>{for(const c of[{band:'I',epochOffsetYears:0},{band:'V',epochOffsetYears:NaN},{band:'V',epochOffsetYears:1001},null])fails(bytes(source([])),'context',c as NomadRowContext);});
+});
+
+const bounds={minRAHours:0,maxRAHours:24,minDecDegrees:-90,maxDecDegrees:90,magnitudeLimit:30};
+describe('owned parsed response to original ordered catalog/selection',()=>{
+ it('keeps physical ledger separate from both native insertions and preserves duplicates',()=>{
+  const r=readNativeNomadResponse(bytes(source([row('13','A'),row('14','B'),row('15','C')])),context),s=nativeNomadSourceLists(r,bounds);
+  expect(r.entries.map(e=>e.result.kind==='candidate'?e.result.row.nativeIdentifier.trim():null)).toEqual(['A','B','C']);
+  expect(s.catalogEntries.map(e=>e.result.row.nativeIdentifier.trim())).toEqual(['A','C','B']);expect(s.selectedEntries.map(e=>e.result.row.nativeIdentifier.trim())).toEqual(['A','B','C']);
+  expect(s.selectedEntries).toHaveLength(3);expect(s.hasSources).toBe(true);expect(s.nativeMinimumMagnitude).toBe(13);expect(s.nativeMaximumMagnitude).toBe(15);expect(s.response).toBe(r);
+ });
+ it('filters only valid candidates,retains source entries and applies the selected magnitude limit',()=>{
+  const r=readNativeNomadResponse(bytes(source(['# comment',row('0'),row('bad'),row('12','A'),row('16','B')])),context),s=nativeNomadSourceLists(r,{...bounds,magnitudeLimit:14});
+  expect(s.catalogEntries).toHaveLength(2);expect(s.selectedEntries).toHaveLength(1);expect(s.selectedEntries[0]).toBe(r.entries[3]);expect(s.nativeMinimumMagnitude).toBe(12);expect(s.nativeMaximumMagnitude).toBe(12);expect(r.entries).toHaveLength(5);
+ });
+ it('preserves native25/-2 sentinels rather than replacing them with mathematical infinities/extrema',()=>{
+  const high=nativeNomadSourceLists(readNativeNomadResponse(bytes(source([row('27')])),context),bounds);expect(high.nativeMinimumMagnitude).toBe(25);expect(high.nativeMaximumMagnitude).toBe(27);
+  const low=nativeNomadSourceLists(readNativeNomadResponse(bytes(source([row('-5')])),context),bounds);expect(low.nativeMinimumMagnitude).toBe(-5);expect(low.nativeMaximumMagnitude).toBe(-2);
+  const none=nativeNomadSourceLists(readNativeNomadResponse(bytes(source([])),context),bounds);expect(none.hasSources).toBe(false);expect(none.nativeMinimumMagnitude).toBe(25);expect(none.nativeMaximumMagnitude).toBe(-2);
+ });
+ it('owns selection bounds and rejects reconstructed/relabelled response objects',()=>{
+  const r=readNativeNomadResponse(bytes(source([row()])),context),b={...bounds},s=nativeNomadSourceLists(r,b);b.magnitudeLimit=0;expect(s.bounds.magnitudeLimit).toBe(30);
+  for(const o of[s,s.bounds,s.catalogEntries,s.selectedEntries])expect(Object.isFrozen(o)).toBe(true);
+  for(const forged of[JSON.parse(JSON.stringify(r)),{...r},{...r,entries:[]}])expect(()=>nativeNomadSourceLists(forged,bounds)).toThrow('ownership');
+  expect(()=>nativeNomadSourceLists(r,{...bounds,magnitudeLimit:13.1})).toThrow('selection');expect(()=>nativeNomadSourceLists(r,{...bounds,minRAHours:NaN})).toThrow('selection');
+ });
 });
