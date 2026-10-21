@@ -1957,6 +1957,8 @@ export interface MessageParameters {
   "cameraPrepare.width": never;
   "cameraPrepare.height": never;
   "cameraPrepare.filters": never;
+  "cameraPrepare.catalogs": never;
+  "cameraPrepare.catalogEntry": "band" | "catalog" | "filter";
   "cameraPrepare.gains": never;
   "cameraPrepare.limit": never;
   "cameraPrepare.focal": "value";

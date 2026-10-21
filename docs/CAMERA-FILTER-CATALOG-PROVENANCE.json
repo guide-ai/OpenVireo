@@ -1,0 +1,195 @@
+{
+  "evidenceId": "NATIVE-CAMERA-FILTER-CATALOG-AUTHORITY-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "ccd-select",
+      "start": "0x5222d4",
+      "endExclusive": "0x522450",
+      "bytesSHA256": "4ce4949cf2e6fee6e3fa396c8f285a328b83eb69c08d5ca5607f622a18447124",
+      "listingSHA256": "c4d05d4783ae13ffd161a7d04e16bf7d60dfb12b7f17c8e6cf352033b905cf7a"
+    },
+    {
+      "name": "ir-select",
+      "start": "0x51def0",
+      "endExclusive": "0x51e10a",
+      "bytesSHA256": "31340793dd3acfad8c8092bbb47f4c2ca5799144a9089295b256ff98b34bfd5a",
+      "listingSHA256": "4528ea0d7a77e46dabc107efaaed62c48400c8446b8587287f68ab5fcef0fe11"
+    },
+    {
+      "name": "catalog-initialize",
+      "start": "0x59c45c",
+      "endExclusive": "0x59c5de",
+      "bytesSHA256": "ca0a627dc65f5f3914593e38cb72bcac280693732dfb84a95af13032b16aaa2e",
+      "listingSHA256": "eb918f9ab3f01e69d28c198e1e75da5b3bfba20d88ac24412b9da8443da3612a"
+    }
+  ],
+  "ccdJumpTable": {
+    "address": "0x5223c8",
+    "bytesSHA256": "c69cc450386828db49821c01c8aeebb513444c4d99cfb4d7a0531d6164f1e807",
+    "branches": [
+      {
+        "position": 0,
+        "target": "0x5223f8",
+        "bytesSHA256": "9f357331d5de664255eee75ceaefb7c596c0d8fd37dd58ddcc023fdd9e09117f",
+        "listingSHA256": "e450cb2a14289f8bd823136ca2f75ab6082b2367666b4b65b8053f25b7b2ce07"
+      },
+      {
+        "position": 1,
+        "target": "0x5223dc",
+        "bytesSHA256": "33bbcf7cbe06432672f636eb284b2d2bdaac8e7ff022b781e12ec4541d3202fd",
+        "listingSHA256": "27f18a62100eaef11429d168e46e70de857d7fa3071cd18aadc774b06f6d1d84"
+      },
+      {
+        "position": 2,
+        "target": "0x5223e2",
+        "bytesSHA256": "c993d45485eaf1a6092a26256cf0bd019c0ecc400eab8da268dcae580d502c25",
+        "listingSHA256": "7eb7179b4b9b32dce914856d8e296158d6265a2fcb5bc17f72470f2d0b4c2221"
+      },
+      {
+        "position": 3,
+        "target": "0x5223e8",
+        "bytesSHA256": "e5450b9fa9016ee76adb611edfb1318bbd598b1080ed666b1c75bc8b64a371dc",
+        "listingSHA256": "a5c77d8e07bfd27e3f4da1a8002bf24e9ba17ea3f8fb29cee8df584788a11ed4"
+      },
+      {
+        "position": 4,
+        "target": "0x5223ee",
+        "bytesSHA256": "58e91c1c210d796256aa9a86a07f305c5c2ceee7e4567ffe20cbda9be81d00bb",
+        "listingSHA256": "c54bdd8700301572bbf6ea1fe432f72b3ac4a4a64f6ba1037b2bf2f175e0d07a"
+      }
+    ]
+  },
+  "strings": [
+    {
+      "address": "0x59c5e8",
+      "shortString": "NOMAD",
+      "bytesSHA256": "9bd3945a32a88690224404f225240c0ef2db39f542896085bc75a8a0670f3fe3"
+    },
+    {
+      "address": "0x59c5f0",
+      "shortString": "USNO-B1",
+      "bytesSHA256": "47d6636014dd24d527642aa99ae0233486ff82619955401a84f69662b14a2afc"
+    },
+    {
+      "address": "0x59c5f8",
+      "shortString": "B2",
+      "bytesSHA256": "c185ed1eaf663f830dd550dc013702719eebfe39614093514ae25ba0cbbb2873"
+    },
+    {
+      "address": "0x59c5fc",
+      "shortString": "R2",
+      "bytesSHA256": "15b49b44c965d1bca3a3423657ce3cc6b521faa6990ff6a113ed0d39d0f384b7"
+    },
+    {
+      "address": "0x59c600",
+      "shortString": "I2",
+      "bytesSHA256": "09725bd52f1fe781c5ba1ee5fbb077b1f78801cc7f215cee482e6201f80ccf2e"
+    },
+    {
+      "address": "0x59c604",
+      "shortString": "USNO-A2",
+      "bytesSHA256": "ed0d05839a947acda10c489c0e244791c1aba9cb00ef0e5d47b0086896b984ca"
+    }
+  ],
+  "compiledRows": [
+    {
+      "camera": "ccd",
+      "position": 0,
+      "filter": "NF",
+      "catalog": "NOMAD",
+      "mode": 0,
+      "selector": 2,
+      "selectedBand": "R",
+      "queryBand": "R",
+      "nomadReader": true
+    },
+    {
+      "camera": "ccd",
+      "position": 1,
+      "filter": "B",
+      "catalog": "NOMAD",
+      "mode": 0,
+      "selector": 0,
+      "selectedBand": "B",
+      "queryBand": "B",
+      "nomadReader": true
+    },
+    {
+      "camera": "ccd",
+      "position": 2,
+      "filter": "V",
+      "catalog": "NOMAD",
+      "mode": 0,
+      "selector": 1,
+      "selectedBand": "V",
+      "queryBand": "V",
+      "nomadReader": true
+    },
+    {
+      "camera": "ccd",
+      "position": 3,
+      "filter": "R",
+      "catalog": "NOMAD",
+      "mode": 0,
+      "selector": 2,
+      "selectedBand": "R",
+      "queryBand": "R",
+      "nomadReader": true
+    },
+    {
+      "camera": "ccd",
+      "position": 4,
+      "filter": "I",
+      "catalog": "USNO-B1",
+      "mode": 1,
+      "selector": 2,
+      "selectedBand": "I",
+      "queryBand": "I2",
+      "nomadReader": false
+    },
+    {
+      "camera": "ir",
+      "position": 0,
+      "filter": "J",
+      "catalog": "NOMAD",
+      "mode": 0,
+      "selector": 3,
+      "selectedBand": "J",
+      "queryBand": "J",
+      "nomadReader": true
+    },
+    {
+      "camera": "ir",
+      "position": 1,
+      "filter": "H",
+      "catalog": "NOMAD",
+      "mode": 0,
+      "selector": 4,
+      "selectedBand": "H",
+      "queryBand": "H",
+      "nomadReader": true
+    },
+    {
+      "camera": "ir",
+      "position": 2,
+      "filter": "K",
+      "catalog": "NOMAD",
+      "mode": 0,
+      "selector": 5,
+      "selectedBand": "K",
+      "queryBand": "K",
+      "nomadReader": true
+    }
+  ],
+  "contract": {
+    "ccd": "Initialmode0write0x5223a9isoverriddenonlyposition4at0x5223ee\u2192mode1,selector2;NFposition0takesRselector2",
+    "ir": "Initialmode0write0x51dfc8;positions0/1/2\u2192selectors3/4/5",
+    "query": "Mode1initializationlabelsB2/R2/I2;position2selectsI2;NOMADhasnoIcolumn",
+    "scope": "Read-onlycompiledfilterlookupandNOMAD-bandguard,notappliedfilter/query/response/calibration/exposure"
+  },
+  "nativeExecution": false,
+  "microemulation": false,
+  "REAExecuted": false,
+  "originalModified": false
+}

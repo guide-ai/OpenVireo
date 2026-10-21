@@ -1956,6 +1956,8 @@
   "cameraPrepare.width": "Nominal width (arcmin)",
   "cameraPrepare.height": "Nominal height (arcmin)",
   "cameraPrepare.filters": "Original filter positions",
+  "cameraPrepare.catalogs": "Catalog lookup bands by filter (reference)",
+  "cameraPrepare.catalogEntry": "{filter}: {catalog} {band}",
   "cameraPrepare.gains": "Original gains (electrons/ADU)",
   "cameraPrepare.limit": "These are preparation references and available control positions. They do not start an exposure, apply a filter or gain, calibrate pixels, or establish a supplied image’s field or camera.",
   "cameraPrepare.focal": "Applied focal length: {value} mm"
