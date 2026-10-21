@@ -1,0 +1,3553 @@
+{
+  "identity": "Authored synthetic scalar bit-pattern controls;not original/native frames or RNG state",
+  "policy": "Exact fractions,integer comparisons/shifts and independent nearest/even IEEE32 encoding;negative/signedzero preserved;no original instruction interpreter",
+  "generatorSHA256": "d7bbdac599ac28a7d18ea7816467265a0003625672b43ba2439358cd6656eac6",
+  "cases": [
+    {
+      "name": "CCDgain1",
+      "parameters": {
+        "well": 320000,
+        "gain": 1,
+        "adBits": 16
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x1"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000001"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x2"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000002"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x7fffff"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x807fffff"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x800000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80800000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xff7fffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xc0e00000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbf800000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3f000000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3f800000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x40400000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x44802000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x44806000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x477fff00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x477fffff"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x359a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xb048756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb42be655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xce18233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1e52d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x89965dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x2735d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xacad1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xbb4a58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb2b95018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x80e358cd"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe801e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdc98b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb25afe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xcc1a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa61634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x9539415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x39bf5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x381f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x1ae25989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa9912293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x94ef7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x26baf0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xce2b4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbcfbb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf7f24c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcc4d2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xee3f4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x9a3170"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe22e1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1d7b2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9614b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x36d93f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf3f626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xcb4407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x87cfeb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9d965c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd5b20117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xac7d181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb31244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3b51102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xcf5a3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xde912f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x45ab39a5"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xebce14bf"
+        }
+      ]
+    },
+    {
+      "name": "CCDgain2",
+      "parameters": {
+        "well": 320000,
+        "gain": 2,
+        "adBits": 16
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x1"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000001"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x400000"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x80400000"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x400000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80400000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xfeffffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xc0600000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbf000000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3e800000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3f000000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x3fc00000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x44002000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x44006000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x46ffff00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x47000000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x47000080"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x46ffffff"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x47000001"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x351a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xafc8756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb3abe655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xcd98233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1dd2d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x89165dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x1f35d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xac2d1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xbaca58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb2395018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x8071ac66"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe781e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdc18b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb1dafe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xc41a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa59634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x94b9415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x393f5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x379f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x1a625989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa9112293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x946f7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x263af0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xcdab4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbc7bb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf7724c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcbcd2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xedbf4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x4d18b8"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe1ae1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1cfb2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9594b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x36593f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf37626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xcac407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x874feb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9d165c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd5320117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xabfd181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb29244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3ad1102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xceda3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xde112f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x452b39a5"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xeb4e14bf"
+        }
+      ]
+    },
+    {
+      "name": "CCDgain5",
+      "parameters": {
+        "well": 320000,
+        "gain": 5,
+        "adBits": 16
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x199999"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x80199999"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x19999a"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x8019999a"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xfe4ccccc"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xbfb33333"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbe4ccccd"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3dcccccd"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3e4ccccd"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x3f19999a"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x434d0000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x434d6666"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x464ccc00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x464ccccd"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x464ccd9a"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x47435000"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x464ccccc"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x464cccce"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x47434fff"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x47435001"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x4779fffe"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x34770bb6"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xaf205df0"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb3098511"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xccf36b92"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1d28a6de"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x88709603"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x142b0e3"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xab8a7e32"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xba21e08d"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb1944013"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x802d7829"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe6cfd0ab"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdb745100"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb12f31d6"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xb9aea4e"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa4f054cb"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x94143448"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x38991790"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x36fef090"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x19b5146e"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa8683752"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x93bf9615"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x25958d4f"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xcd090478"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbbc95fc7"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf6c1d6a4"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcb241fa8"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xed190cc6"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x1ed6b0"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe10b45de"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1c48e86e"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x94edeb2e"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x35adcc58"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf2c4ebf2"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xca1cd327"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x86a655ee"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9c70937d"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd48e6746"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xab4a79af"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb1ea0773"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3a274024"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x477a0000"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xce2e9804"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xdd684bae"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x4488faea"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xeaa4dd66"
+        }
+      ]
+    },
+    {
+      "name": "IRgain1",
+      "parameters": {
+        "well": 250000,
+        "gain": 1,
+        "adBits": 32
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x1"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000001"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x2"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000002"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x7fffff"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x807fffff"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x800000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80800000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xff7fffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xc0e00000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbf800000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3f000000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3f800000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x40400000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x44802000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x44806000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x477fff00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x47800080"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x477fffff"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x47800001"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x487423ff"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x359a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xb048756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb42be655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xce18233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1e52d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x89965dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x2735d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xacad1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xbb4a58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb2b95018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x80e358cd"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe801e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdc98b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb25afe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xcc1a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa61634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x9539415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x39bf5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x381f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x1ae25989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa9912293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x94ef7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x26baf0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xce2b4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbcfbb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf7f24c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcc4d2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xee3f4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x9a3170"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe22e1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1d7b2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9614b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x36d93f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf3f626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xcb4407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x87cfeb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9d965c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd5b20117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xac7d181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb31244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3b51102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xcf5a3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xde912f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x45ab39a5"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xebce14bf"
+        }
+      ]
+    },
+    {
+      "name": "IRgain2",
+      "parameters": {
+        "well": 250000,
+        "gain": 2,
+        "adBits": 32
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x1"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000001"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x400000"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x80400000"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x400000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80400000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xfeffffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xc0600000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbf000000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3e800000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3f000000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x3fc00000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x44002000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x44006000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x46ffff00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x47000000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x47000080"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x46ffffff"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x47000001"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x47f423ff"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x351a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xafc8756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb3abe655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xcd98233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1dd2d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x89165dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x1f35d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xac2d1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xbaca58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb2395018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x8071ac66"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe781e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdc18b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb1dafe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xc41a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa59634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x94b9415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x393f5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x379f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x1a625989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa9112293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x946f7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x263af0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xcdab4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbc7bb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf7724c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcbcd2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xedbf4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x4d18b8"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe1ae1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1cfb2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9594b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x36593f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf37626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xcac407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x874feb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9d165c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd5320117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xabfd181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb29244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3ad1102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x47f42400"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xceda3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xde112f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x452b39a5"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xeb4e14bf"
+        }
+      ]
+    },
+    {
+      "name": "IRgain4",
+      "parameters": {
+        "well": 250000,
+        "gain": 4,
+        "adBits": 32
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x200000"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x80200000"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x200000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80200000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xfe7fffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xbfe00000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbe800000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3e000000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3e800000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x3f400000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x43802000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x43806000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x467fff00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x46800000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x46800080"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x467fffff"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x46800001"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x477423ff"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x349a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xaf48756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb32be655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xcd18233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1d52d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x88965dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x1735d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xabad1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xba4a58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb1b95018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x8038d633"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe701e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdb98b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb15afe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xbc1a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa51634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x9439415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x38bf5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x371f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x19e25989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa8912293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x93ef7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x25baf0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xcd2b4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbbfbb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf6f24c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcb4d2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xed3f4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x268c5c"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe12e1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1c7b2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9514b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x35d93f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf2f626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xca4407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x86cfeb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9c965c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd4b20117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xab7d181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb21244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3a51102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x47742400"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xce5a3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xdd912f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x44ab39a5"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xeace14bf"
+        }
+      ]
+    },
+    {
+      "name": "IRgain8",
+      "parameters": {
+        "well": 250000,
+        "gain": 8,
+        "adBits": 32
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x100000"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x80100000"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x100000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80100000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xfdffffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xbf600000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbe000000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3d800000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3e000000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x3ec00000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x43002000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x43006000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x45ffff00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x46000000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x46000080"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x45ffffff"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x46000001"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x46f423ff"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x341a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xaec8756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb2abe655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xcc98233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1cd2d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x88165dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0xf35d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xab2d1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xb9ca58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb1395018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x801c6b1a"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe681e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdb18b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb0dafe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xb41a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa49634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x93b9415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x383f5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x369f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x19625989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa8112293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x936f7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x253af0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xccab4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbb7bb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf6724c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcacd2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xecbf4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x13462e"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe0ae1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1bfb2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9494b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x35593f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf27626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xc9c407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x864feb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9c165c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd4320117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xaafd181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb19244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x39d1102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x46f42400"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xcdda3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xdd112f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x442b39a5"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xea4e14bf"
+        }
+      ]
+    },
+    {
+      "name": "Int32well-before-Single",
+      "parameters": {
+        "well": 2147483647,
+        "gain": 1,
+        "adBits": 32
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x1"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000001"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x2"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000002"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x7fffff"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x807fffff"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x800000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80800000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xff7fffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xc0e00000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbf800000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3f000000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3f800000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x40400000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x44802000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x44806000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x477fff00"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x47800000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x47800080"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x48742400"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x489c4000"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x491c4000"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x477fffff"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x47800001"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x487423ff"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x48742401"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x489c3fff"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x489c4001"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x359a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xb048756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb42be655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xce18233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1e52d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x89965dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x2735d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xacad1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xbb4a58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb2b95018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x80e358cd"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe801e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdc98b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb25afe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xcc1a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa61634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x9539415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x39bf5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x381f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x1ae25989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa9912293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x94ef7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x26baf0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x4cd1f666"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x4d5fd7aa"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x4ecc9079"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xce2b4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x4a234d83"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbcfbb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf7f24c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcc4d2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xee3f4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x9a3170"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe22e1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1d7b2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9614b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x36d93f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf3f626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xcb4407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x87cfeb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9d965c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd5b20117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x4f000000"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xac7d181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb31244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3b51102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x4d250532"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xcf5a3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xde912f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x45ab39a5"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xebce14bf"
+        }
+      ]
+    },
+    {
+      "name": "low-bit-control",
+      "parameters": {
+        "well": 10000,
+        "gain": 2,
+        "adBits": 1
+      },
+      "vectors": [
+        {
+          "rawBits": "0x0",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000000",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x1",
+          "finalBits": "0x0"
+        },
+        {
+          "rawBits": "0x80000001",
+          "finalBits": "0x80000000"
+        },
+        {
+          "rawBits": "0x2",
+          "finalBits": "0x1"
+        },
+        {
+          "rawBits": "0x80000002",
+          "finalBits": "0x80000001"
+        },
+        {
+          "rawBits": "0x7fffff",
+          "finalBits": "0x400000"
+        },
+        {
+          "rawBits": "0x807fffff",
+          "finalBits": "0x80400000"
+        },
+        {
+          "rawBits": "0x800000",
+          "finalBits": "0x400000"
+        },
+        {
+          "rawBits": "0x80800000",
+          "finalBits": "0x80400000"
+        },
+        {
+          "rawBits": "0x7f7fffff",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xff7fffff",
+          "finalBits": "0xfeffffff"
+        },
+        {
+          "rawBits": "0xc0e00000",
+          "finalBits": "0xc0600000"
+        },
+        {
+          "rawBits": "0xbf800000",
+          "finalBits": "0xbf000000"
+        },
+        {
+          "rawBits": "0x3f000000",
+          "finalBits": "0x3e800000"
+        },
+        {
+          "rawBits": "0x3f800000",
+          "finalBits": "0x3f000000"
+        },
+        {
+          "rawBits": "0x40400000",
+          "finalBits": "0x3fc00000"
+        },
+        {
+          "rawBits": "0x44802000",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x44806000",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x477fff00",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x47800000",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x47800080",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x48742400",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x489c4000",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x491c4000",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x4f000000",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x477fffff",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x47800001",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x487423ff",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x48742401",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x489c3fff",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x489c4001",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x359a6752",
+          "finalBits": "0x351a6752"
+        },
+        {
+          "rawBits": "0x6e741897",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xb048756c",
+          "finalBits": "0xafc8756c"
+        },
+        {
+          "rawBits": "0xb42be655",
+          "finalBits": "0xb3abe655"
+        },
+        {
+          "rawBits": "0xce18233b",
+          "finalBits": "0xcd98233b"
+        },
+        {
+          "rawBits": "0x1e52d095",
+          "finalBits": "0x1dd2d095"
+        },
+        {
+          "rawBits": "0x89965dc2",
+          "finalBits": "0x89165dc2"
+        },
+        {
+          "rawBits": "0x2735d1c",
+          "finalBits": "0x1f35d1c"
+        },
+        {
+          "rawBits": "0xacad1dbf",
+          "finalBits": "0xac2d1dbf"
+        },
+        {
+          "rawBits": "0x6ad798c9",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x63045ebd",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x66277d93",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x6df486ab",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x79242ae5",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xbb4a58b0",
+          "finalBits": "0xbaca58b0"
+        },
+        {
+          "rawBits": "0xb2b95018",
+          "finalBits": "0xb2395018"
+        },
+        {
+          "rawBits": "0x5d2e0c5b",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x80e358cd",
+          "finalBits": "0x8071ac66"
+        },
+        {
+          "rawBits": "0xe801e26b",
+          "finalBits": "0xe781e26b"
+        },
+        {
+          "rawBits": "0xdc98b2a0",
+          "finalBits": "0xdc18b2a0"
+        },
+        {
+          "rawBits": "0xb25afe4b",
+          "finalBits": "0xb1dafe4b"
+        },
+        {
+          "rawBits": "0xcc1a4e1",
+          "finalBits": "0xc41a4e1"
+        },
+        {
+          "rawBits": "0xa61634ff",
+          "finalBits": "0xa59634ff"
+        },
+        {
+          "rawBits": "0x9539415a",
+          "finalBits": "0x94b9415a"
+        },
+        {
+          "rawBits": "0x5622551b",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x39bf5d74",
+          "finalBits": "0x393f5d74"
+        },
+        {
+          "rawBits": "0x381f565a",
+          "finalBits": "0x379f565a"
+        },
+        {
+          "rawBits": "0x1ae25989",
+          "finalBits": "0x1a625989"
+        },
+        {
+          "rawBits": "0xa9912293",
+          "finalBits": "0xa9112293"
+        },
+        {
+          "rawBits": "0x94ef7b9a",
+          "finalBits": "0x946f7b9a"
+        },
+        {
+          "rawBits": "0x26baf0a3",
+          "finalBits": "0x263af0a3"
+        },
+        {
+          "rawBits": "0x4cd1f666",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x4d5fd7aa",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x4ecc9079",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xce2b4596",
+          "finalBits": "0xcdab4596"
+        },
+        {
+          "rawBits": "0x4a234d83",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xbcfbb7b9",
+          "finalBits": "0xbc7bb7b9"
+        },
+        {
+          "rawBits": "0xf7f24c4d",
+          "finalBits": "0xf7724c4d"
+        },
+        {
+          "rawBits": "0xcc4d2792",
+          "finalBits": "0xcbcd2792"
+        },
+        {
+          "rawBits": "0xee3f4ff8",
+          "finalBits": "0xedbf4ff8"
+        },
+        {
+          "rawBits": "0x9a3170",
+          "finalBits": "0x4d18b8"
+        },
+        {
+          "rawBits": "0xe22e1755",
+          "finalBits": "0xe1ae1755"
+        },
+        {
+          "rawBits": "0x67f9893a",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x1d7b2289",
+          "finalBits": "0x1cfb2289"
+        },
+        {
+          "rawBits": "0x60d85ab1",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x9614b2fd",
+          "finalBits": "0x9594b2fd"
+        },
+        {
+          "rawBits": "0x36d93f6e",
+          "finalBits": "0x36593f6e"
+        },
+        {
+          "rawBits": "0xf3f626ee",
+          "finalBits": "0xf37626ee"
+        },
+        {
+          "rawBits": "0xcb4407f1",
+          "finalBits": "0xcac407f1"
+        },
+        {
+          "rawBits": "0x87cfeb6a",
+          "finalBits": "0x874feb6a"
+        },
+        {
+          "rawBits": "0x5d63af8c",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x52692b75",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x9d965c2e",
+          "finalBits": "0x9d165c2e"
+        },
+        {
+          "rawBits": "0xd5b20117",
+          "finalBits": "0xd5320117"
+        },
+        {
+          "rawBits": "0x6b429c2a",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0x675c38bf",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xac7d181b",
+          "finalBits": "0xabfd181b"
+        },
+        {
+          "rawBits": "0xb31244a8",
+          "finalBits": "0xb29244a8"
+        },
+        {
+          "rawBits": "0x3b51102d",
+          "finalBits": "0x3ad1102d"
+        },
+        {
+          "rawBits": "0x4d250532",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xcf5a3e05",
+          "finalBits": "0xceda3e05"
+        },
+        {
+          "rawBits": "0xde912f4d",
+          "finalBits": "0xde112f4d"
+        },
+        {
+          "rawBits": "0x45ab39a5",
+          "finalBits": "0x40000000"
+        },
+        {
+          "rawBits": "0xebce14bf",
+          "finalBits": "0xeb4e14bf"
+        }
+      ]
+    }
+  ]
+}

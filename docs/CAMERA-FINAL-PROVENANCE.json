@@ -1,0 +1,94 @@
+{
+  "evidenceId": "NATIVE-CAMERA-FINAL-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "ccd-preparation",
+      "start": "0x52154c",
+      "endExclusive": "0x521c65",
+      "bytes": 1817,
+      "bytesSHA256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+      "listingSHA256": "ff80a59dc3bd5de51a7c3f2b4a8638b2e33aa3b041631f7ee07efdccad6fe81f"
+    },
+    {
+      "name": "ir-preparation",
+      "start": "0x51e43c",
+      "endExclusive": "0x51e712",
+      "bytes": 726,
+      "bytesSHA256": "95b7a6912bef366c3ab88b13a429163e3ce6a82353b10ac792ebbb2703220fc2",
+      "listingSHA256": "d1dc37be4f8c5cb141fe76866bf344817cb0e70b26062ade60ca0185fffe3369"
+    },
+    {
+      "name": "power-single",
+      "start": "0x4270c0",
+      "endExclusive": "0x427142",
+      "bytes": 130,
+      "bytesSHA256": "840cecec0ebe1b3a82ba4d127db610fd2186a11595778ebb830797d98bb1f2bc",
+      "listingSHA256": "073673e212954abb217edb22994385b81d000715f901eaa4838f37ae23466b99"
+    },
+    {
+      "name": "raw-get",
+      "start": "0x52449c",
+      "endExclusive": "0x5244c7",
+      "bytes": 43,
+      "bytesSHA256": "2b0b5cc115061643d2b4c38e966e49f5e8d56375e5667283658ddde928f16887",
+      "listingSHA256": "249090cb549690594627dab953cff1e649dd49f70184ade169ec9c538a6f6e60"
+    },
+    {
+      "name": "raw-set",
+      "start": "0x5244c8",
+      "endExclusive": "0x5244f0",
+      "bytes": 40,
+      "bytesSHA256": "aea29081ecf844b623dbc3fb3ab12bbaf34f70f9fc8a87de2c8fdd847d93c690",
+      "listingSHA256": "67b9809e5017e8c6a26beeca7aa9d42dab9a6de9b5059c9a30ae810d6944b6f9"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x521b4e",
+      "type": "Single",
+      "value": 2.0,
+      "bytesSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    {
+      "address": "0x51e61a",
+      "type": "Single",
+      "value": 2.0,
+      "bytesSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    {
+      "address": "0x5aec2c",
+      "type": "Double",
+      "value": 2147483647.0,
+      "bytesSHA256": "d31fd89040be33e989108350841a8f9f32d17dcb74dd708fa0303f4aaa5c1b5a"
+    }
+  ],
+  "paths": {
+    "CCD": {
+      "config": "root+0x2d99 at0x521b42",
+      "well": "record+0x55 at0x521ba9;pixel>well clamps",
+      "gain": "CCDform+0x406 at0x521bcb;divide at0x521bd4",
+      "ADC": "record+0x51\u2192Single;power(base2,exponent) at0x521b62;cap at0x521be6",
+      "store": "rawSingle setter0x5244c8 at0x521c0f"
+    },
+    "IR": {
+      "config": "root+0x2df4 at0x51e611",
+      "well": "record+0x55 at0x51e66c;pixel>well clamps",
+      "gain": "IRform+0x406 at0x51e68b;divide at0x51e694",
+      "ADC": "record+0x51\u2192Single;power(base2,exponent) at0x51e62b;cap at0x51e6a6",
+      "store": "rawSingle setter0x5244c8 at0x51e6cf"
+    }
+  },
+  "formula": "Single(min(min(rawSingle,Int32well)/Int32gain,2**Single(Int32adBits)));no lower clamp;no FISTP between raw read and final store",
+  "power": "4270c0usesintegerexponentiationbranchforSingleintegralexponentsunderDouble2147483647;accepted1..32andbase2areexact;thresholdis2**bits,not2**bits-1",
+  "numericalPolicy": "FiniteSingleinput,Numberdivision/powers2,Math.froundfinalstore;preservesfractions/negatives/signedzero. DeclarednearestSinglepolicy,not original FPU/exception/runtime oracle.",
+  "admission": {
+    "parameters": "positiveInt32well,gains1/2/4/5/8,integeradBits1..32;compiled factoryenforcesdistinctCCD/IRpositions",
+    "phase": "backgroundorpointonly;no suppliedFITSorsecondgainconversion admitted",
+    "ownership": "newimmutablepixels,paramscopy;originalpre-sourcehistogramretained;0localdraws",
+    "scope": "no liveconfiguration inference,NOMAD,observing lifecycle,FITSheader,date,seed or sessions"
+  },
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}
