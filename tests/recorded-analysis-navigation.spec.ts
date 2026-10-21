@@ -38,3 +38,36 @@ test('mobile browser back/forward preserves an unconfirmed record draft and rest
  await page.goBack();await page.goForward();await expect(page.getByTestId('pulsar-clear-cancel')).toBeFocused();await page.keyboard.press('Enter');await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:info.outputPath('integrated-radio-mobile.png'),fullPage:true});
 });
+
+
+// Synthetic saved LSS lines; no acquired observations or native writer witness.
+const LSS_HEADER='Object ID    MJD(Days)      RA           Dec     V(km/sec)  Comments';
+const lss=(name='route-lss.txt',id='ROUTE-A')=>({name,mimeType:'text/plain',buffer:Buffer.from(LSS_HEADER+'\r\n'+id.padEnd(11)+'  4321.5000 13h30m00.0s +29°30\'00" 6000.0 route synthetic\r\n','latin1')});
+const rows=(page:Page)=>page.locator('[data-testid^="wedge-row-"]');
+async function openWedge(page:Page){await page.goto('/#lss-wedge');await expect(page.getByRole('heading',{level:1,name:'Large-scale structure wedge'})).toBeVisible();await expect(page.getByTestId('wedge-lab')).toBeVisible();}
+
+test('actual LSS data route retains confirmed plot, options, row and source receipt across navigation; reload follows warning',async({page},info)=>{
+ await openWedge(page);await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);
+ await page.getByTestId('wedge-row-0').getByRole('button').click();await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-1').check();await page.getByTestId('wedge-size-3').check();await page.getByTestId('wedge-options-ok').click();
+ await expect(page.getByTestId('wedge-persistence')).toContainText('not included in Save investigation');await nav(page,'Radio data').click();await nav(page,'LSS data').click();
+ await expect(page.getByRole('heading',{level:1,name:'Large-scale structure wedge'})).toBeFocused();await expect(rows(page)).toHaveCount(1);await expect(page.getByTestId('wedge-details')).toContainText('ROUTE-A');await expect(page.getByTestId('wedge-point-0')).toHaveAttribute('r','3');
+ const download=page.waitForEvent('download');await page.getByTestId('wedge-export').click();const d=await download,csv=await readFile((await d.path())!,'utf8');expect(csv).toContain(createHash('sha256').update(lss().buffer).digest('hex'));expect(csv).toContain(',false,route,plotted,');await expect(page.getByTestId('wedge-details')).toContainText('route synthetic');
+ await page.screenshot({path:info.outputPath('integrated-lss-desktop.png'),fullPage:true});await page.reload();await expect(page.getByTestId('wedge-status')).toHaveText('No LSS data loaded.');
+});
+
+test('actual LSS navigation cancels late reads, import consent and option drafts without losing confirmed rows',async({page})=>{
+ await page.addInitScript(()=>{const original=Blob.prototype.arrayBuffer;const gate:{release?:()=>void}={};(window as unknown as{__routeLss:typeof gate}).__routeLss=gate;Blob.prototype.arrayBuffer=function(this:Blob){if(!(this instanceof File)||!this.name.includes('slow'))return original.call(this);const self=this;return new Promise<ArrayBuffer>(resolve=>{gate.release=()=>{void original.call(self).then(resolve);};});};});
+ await openWedge(page);await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);
+ await page.getByTestId('wedge-file').setInputFiles(lss('slow-route.txt','LATE'));await expect(page.getByTestId('wedge-cancel-read')).toBeVisible();await nav(page,'Observatory').click();
+ await page.evaluate(()=>(window as unknown as{__routeLss:{release?:()=>void}}).__routeLss.release?.());await nav(page,'LSS data').click();await expect(rows(page)).toHaveCount(1);await expect(page.getByTestId('wedge-row-0')).toContainText('ROUTE-A');await expect(page.getByTestId('wedge-prompt')).toHaveCount(0);
+ await page.getByTestId('wedge-file').setInputFiles(lss('second.txt','ROUTE-B'));await expect(page.getByTestId('wedge-prompt')).toBeVisible();await nav(page,'Observatory').click();await nav(page,'LSS data').click();await expect(page.getByTestId('wedge-prompt')).toHaveCount(0);await expect(rows(page)).toHaveCount(1);
+ await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-size-5').check();await page.evaluate(()=>{location.hash='observatory';});await expect(page.getByTestId('wedge-lab')).toBeHidden();await nav(page,'LSS data').click();await expect(page.getByTestId('wedge-options')).toHaveCount(0);await page.getByTestId('wedge-options-open').click();await expect(page.getByTestId('wedge-size-1')).toBeChecked();await page.keyboard.press('Escape');
+});
+
+test('mobile LSS history and keyboard options remain usable and cancel replacement preserves source data',async({page},info)=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await nav(page,'LSS data').click();await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);
+ await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-2').check();await page.getByTestId('wedge-options-ok').click();await page.getByTestId('wedge-options-open').click();await page.keyboard.press('Shift+Tab');await expect(page.getByTestId('wedge-options').locator(':focus')).toHaveCount(1);await page.keyboard.press('Escape');
+ await page.goBack();await expect(page.getByTestId('wedge-lab')).toBeHidden();await page.goForward();await expect(rows(page)).toHaveCount(1);
+ await page.getByTestId('wedge-file').setInputFiles(lss('replacement.txt','ROUTE-B'));await page.getByTestId('wedge-prompt-no').click();await expect(page.getByTestId('wedge-prompt')).toHaveAttribute('data-stage','confirm-delete');await page.keyboard.press('Escape');await expect(rows(page)).toHaveCount(1);await expect(page.getByTestId('wedge-file')).toBeFocused();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:info.outputPath('integrated-lss-mobile.png'),fullPage:true});
+});

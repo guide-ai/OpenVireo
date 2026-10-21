@@ -2127,5 +2127,9 @@
   "plr.nav": "Radio data",
   "plr.routeTitle": "Recorded pulsar analysis",
   "plr.routeScope": "Analyze a supplied recording with manual cursors. Radio acquisition is not available here.",
-  "plr.loading": "Loading recorded pulsar tools…"
+  "plr.loading": "Loading recorded pulsar tools…",
+  "wedge.nav": "LSS data",
+  "wedge.routeTitle": "Large-scale structure wedge",
+  "wedge.routeScope": "Plot supplied LSS text records and inspect their saved coordinates and redshifts. Galaxy acquisition is not available here.",
+  "wedge.loading": "Loading LSS plotting tools…"
 }

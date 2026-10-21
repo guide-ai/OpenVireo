@@ -2129,4 +2129,8 @@ export interface MessageParameters {
   "plr.routeTitle": never;
   "plr.routeScope": never;
   "plr.loading": never;
+  "wedge.nav": never;
+  "wedge.routeTitle": never;
+  "wedge.routeScope": never;
+  "wedge.loading": never;
 }
