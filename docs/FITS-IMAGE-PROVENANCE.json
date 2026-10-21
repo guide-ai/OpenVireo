@@ -1,0 +1,163 @@
+{
+  "evidenceId": "NATIVE-FITS-SINGLE-PLANE-01",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "swap16",
+      "start": "0x520e6c",
+      "endExclusive": "0x520e89",
+      "bytesSHA256": "c7a79c31240a94d415b283717a13d8a816ddaddbef39bc71e2ae9ccaa8ce7e28",
+      "listingSHA256": "8147ac4c6ce8433598e59fc427f6966986e131b8d27ef10cefac958b29cdcbfd",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    },
+    {
+      "name": "swap32",
+      "start": "0x520e8c",
+      "endExclusive": "0x520ebf",
+      "bytesSHA256": "a896be60b9c02ef1169a0f6060a6747857e41ca24ad480978bc6c2bd10363856",
+      "listingSHA256": "98d8fe4a5b62eb0a5842624e48afccc39bb454ba76ffa6258d4f3048dcfd7b52",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    },
+    {
+      "name": "header-writer",
+      "start": "0x523218",
+      "endExclusive": "0x523930",
+      "bytesSHA256": "1d2384dd282c990ac5b74726e09766b6abdce4695a66776f422ae1947b6e0d5a",
+      "listingSHA256": "0ef70a395175d6801bae7420f833a67244b59d51e2c6fbc6d04792d11341a1c0",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    },
+    {
+      "name": "plane-writer",
+      "start": "0x523954",
+      "endExclusive": "0x5239f8",
+      "bytesSHA256": "43406067c4c69df2ed362567890bef00c7137cc9faff17cf112d6a04f69f39cd",
+      "listingSHA256": "015c6de3a7b411a66fd0591dfe3a88519d624fe593867a4098c68ce6f12a6957",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    },
+    {
+      "name": "metadata-init",
+      "start": "0x5239f8",
+      "endExclusive": "0x523e9b",
+      "bytesSHA256": "c599e08edba7e3754cebc05d9ce13f7dd30b06ea0dc8f632a105fb0bc583456a",
+      "listingSHA256": "cf2ff0cb53a3aa2bb0f9e3b6297ed31920ab366827240f2107d9106637643ccf",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    },
+    {
+      "name": "header-card",
+      "start": "0x524124",
+      "endExclusive": "0x5241c6",
+      "bytesSHA256": "a540430c6ad18239c5dda55feb385f492f5ea146610f1f0d5548c5ed4a38558f",
+      "listingSHA256": "49d00568e0fce019ee8dd8bc20f46f6e31a82c4ff69980734813f8a3e3084214",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    },
+    {
+      "name": "header-finish",
+      "start": "0x5241c8",
+      "endExclusive": "0x52425b",
+      "bytesSHA256": "5422c91f234e5f6be2c1dc43af137764152be5c087cd6b88279756574f40eec1",
+      "listingSHA256": "e846fa2aaa0620ebc4d445157cfd966a3ffbcf0fb301d623f6e521534ca2fba3",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    },
+    {
+      "name": "pixel-word-writer",
+      "start": "0x52425c",
+      "endExclusive": "0x5242da",
+      "bytesSHA256": "9041a608273f19d8e468b0a0ac793f0787ce8387057e4dc68108e37149bb20c9",
+      "listingSHA256": "33a0c63adabbd7b136dd7d20ba0a918101bbb8dd42c3b8fd70697fa49ca8ebe4",
+      "boundary": "Complete function through return/SEH cleanup;no native execution"
+    }
+  ],
+  "keywordLiterals": [
+    {
+      "address": "0x5b3ff8",
+      "text": "SIMPLE  ",
+      "SHA256": "d472fa82f0d15bec67de47df3828e5cf72e3656199f4af3c8a79baf510ff2e8f"
+    },
+    {
+      "address": "0x5b4001",
+      "text": "EXTEND  ",
+      "SHA256": "2feb5be09b8a950ed0f63d327b6ee1c98d312fd2e81f9997bc9101b54797d437"
+    },
+    {
+      "address": "0x5b400a",
+      "text": "BITPIX  ",
+      "SHA256": "3cce6112a92b88c4c53e37cc121e5d27a9e7c3343e5ffb71e0ea0b970ce826de"
+    },
+    {
+      "address": "0x5b4013",
+      "text": "NAXIS   ",
+      "SHA256": "be9884fc4ab1402dcdd4030480b8b4f399cc741a3b4883eb71bed67b021d585c"
+    },
+    {
+      "address": "0x5b401c",
+      "text": "NAXIS1  ",
+      "SHA256": "f5c9a3454bad336a67d86f067f48a1659fa05618b0760efba180cbd4f813e222"
+    },
+    {
+      "address": "0x5b4025",
+      "text": "NAXIS2  ",
+      "SHA256": "a1ac1352391784275a97d3c6ee5ac5a1c5366c272dc559f50843e4255d6f8808"
+    },
+    {
+      "address": "0x5b402e",
+      "text": "NAXIS3  ",
+      "SHA256": "fa9f1c5a6fa0e92ccef3315ba046a8aa152ac2513a2e4f9252c3f419be7b7945"
+    },
+    {
+      "address": "0x5b4037",
+      "text": "DATE    ",
+      "SHA256": "dff8d9d26d16e879381029b36de98be567c44364b6c180b4b7fa070f70b76cb2"
+    },
+    {
+      "address": "0x5b4040",
+      "text": "BSCALE  ",
+      "SHA256": "fa12a16055e5dfede3b760b1309c836e941a2a8b8bab7fbdb32e87ac6c28d0c9"
+    },
+    {
+      "address": "0x5b4049",
+      "text": "BZERO   ",
+      "SHA256": "54b325f52ea0792fa55ef8b34e5f9f0c8368a5acacba28699dd217885b448268"
+    },
+    {
+      "address": "0x5b4052",
+      "text": "BLANK   ",
+      "SHA256": "1260de78243a52791524ce2291d6ee08202664895a3e9957af7370fd28366f8f"
+    },
+    {
+      "address": "0x5b405b",
+      "text": "ORIGIN  ",
+      "SHA256": "5667acfbf0730532ac984b504c2af6344846e68c9f5584f06e2e2c94d98fb188"
+    }
+  ],
+  "sourceFacts": {
+    "shape": "metadata-init523a1a sets SIMPLE true,BITPIX -32,NAXIS2;dimensions come from CCD/IR owning image",
+    "pixelWords": "plane-writer loops youter/xinner;getter return stored as Single at52398d..523993;pixelword52426f calls swap32520e8c then copies4bytes;swap32 combines two reversed16bitwords",
+    "tail": "plane-writer5239b9..5239e9 flushes only current counter bytes;no data-pad loop on this path. This supports an explicitly identified exact-array tail,not file conformance/origin",
+    "header": "80byte cards/2880counter in header-card;header finish has extra string/buffer operations not fully transcribed into a native writer;no output specimen",
+    "metadata": "Native clock/site/instrument/data ownership is not reconstructed;all supplied header cards remain claims",
+    "baseOffsets": "metadata-init rebases EBX=this+0x0c:relative+0SIMPLE,+2BITPIX,+6NAXIS,+0x0a/+0x0ewidth/height. Later CCD272e/2732 andIR2789/278d copies are dimensions,not BITPIX replacement;headerwriter uses unrebased this."
+  },
+  "browserContract": "New bounded supplied-input reader following standard FITS4.0,one primary2Dfloat32plane<=512x512,identity scaling;own originalbytes;allow standardzero-paddeddata or explicitly identified exact-length unpaddedtail. Webdisplay/picking/linearstretch only. Not a native reader port,CCD acquisition or native writer oracle.",
+  "standard": "https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf",
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false,
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "rights": "Source-specific rights and uncertainty remain;no original image,binary,installer or additional asset is included in this port."
+}
