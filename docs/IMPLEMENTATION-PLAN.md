@@ -567,3 +567,5 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 Owned-file deletion update: [selected DAT record deletion and exact Undo](NATIVE-OWNED-RECORD-DELETION.md) removes only one supplied144-byte chunk, preserves original/remaining bytes and adds confirmed cancellation/error/empty-file/reimport recovery. This is separate from creating native records from notebook metadata; numerical writer/reader/runtime and broader source-authority gates remain open.
 
 [DAT and Program List review corrections](DAT-AND-PROGRAM-REVIEW-FIXES.md) add field-specific consent for escaped raw text, cancel cross-dialog late reads and restore useful keyboard focus. Native numerical fields, converter/record formats, notebook persistence and scientific acceptance remain unchanged.
+
+[DAT modal and recovery follow-up](DAT-MODAL-RECOVERY.md) closes late-dialog imports,held-Enter cancellation and restored-row focus/selection feedback. Numerical byte/record/session contracts remain unchanged;native sorted-load/merge is separately recovered and not yet implemented.

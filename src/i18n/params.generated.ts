@@ -1757,4 +1757,6 @@ export interface MessageParameters {
   "nativeEdit.escapeWarning": never;
   "nativeEdit.replaceObject": never;
   "nativeEdit.replaceRemarks": never;
+  "nativeResults.dialogCancelled": never;
+  "nativeEdit.undoUnavailable": never;
 }

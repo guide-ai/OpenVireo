@@ -31,3 +31,5 @@ Six new browser regressions and three pure-core contracts cover opaque versus li
 Independent Python controls were repeated:5328field-write vectors plus1584record-deletion vectors,6912passed. The legacy checker placed5328vectors in one test and exceeded its default5second test limit under simultaneous validation; that failed log is retained. Vectors were split into individual tests with all assertions and timeout unchanged, then6912passed in10.73seconds. These controls establish the declared byte contract, not an original runtime oracle.
 
 Native new-row metadata/time authority, full numerical/velocity validation, native reader/writer interoperability oracle, append/merge routing and original formatted CSV/print paths remain pending. All64primary acceptance statuses remain unchanged; OpenVireo is not complete. No GitHub access, push or deployment in this increment.
+
+[DAT modal and recovery follow-up](DAT-MODAL-RECOVERY.md) closes late-dialog imports,held-Enter cancellation and restored-row focus/selection feedback. Numerical byte/record/session contracts remain unchanged;native sorted-load/merge is separately recovered and not yet implemented.

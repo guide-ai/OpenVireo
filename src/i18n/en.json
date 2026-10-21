@@ -1731,7 +1731,7 @@
   "nativeEdit.keep": "Keep current DAT file",
   "nativeEdit.revertConfirm": "Restore original DAT bytes now",
   "nativeEdit.replaceConfirm": "Replace inspected DAT file",
-  "nativeEdit.reverted": "Original DAT bytes restored. The original source file and its hash are unchanged.",
+  "nativeEdit.reverted": "Original DAT bytes restored. Record selection was reset.",
   "nativeEdit.replaced": "Verified input replaced the previous file after your explicit confirmation.",
   "nativeEdit.error.owner": "This edit does not belong to an owned imported file. The current file and work were kept.",
   "nativeEdit.error.stale": "The file, row or surrounding context changed. This pending edit cannot be applied; the current file and work were kept.",
@@ -1755,5 +1755,7 @@
   "nativeDelete.count": "Edited copy: {count} records.",
   "nativeEdit.escapeWarning": "This field contains stored non-printable bytes displayed as escapes such as \\x01. Editing the displayed text writes literal characters instead of those bytes. Leave the field locked to preserve its bytes, or explicitly enable full text replacement.",
   "nativeEdit.replaceObject": "Explicitly replace escaped DAT object bytes",
-  "nativeEdit.replaceRemarks": "Explicitly replace escaped DAT remarks bytes"
+  "nativeEdit.replaceRemarks": "Explicitly replace escaped DAT remarks bytes",
+  "nativeResults.dialogCancelled": "DAT import cancelled because another dialog is open. Existing data and Undo were kept.",
+  "nativeEdit.undoUnavailable": "No DAT Undo available"
 }
