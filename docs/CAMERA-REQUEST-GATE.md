@@ -1,0 +1,33 @@
+# Post-validation camera request coordinator
+
+`src/core/cameraRequestGate.ts` implements a pure coordinator for delivered exposure/poll callbacks, explicit request outcomes and ownership of cancellation/reentry. It emits commands for a future adapter; it opens no connection, generates no image, consumes no random value and starts no browser timer itself. It is not connected to a Start exposure control. The caller still needs actual validated source/configuration authority and the remaining image/output contracts before enabling acquisition.
+
+[NATIVE-CAMERA-REQUEST-GATE-01](CAMERA-REQUEST-GATE-PROVENANCE.json) pins11complete procedures and five imported Windows functions to executable SHA256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Source listings, typed import checks and authored scenario traces remain in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-request-gate/`. This follows the broader [lifecycle recovery](CAMERA-LIFECYCLE-RECOVERY.md), with original files/credits/rights unchanged.
+
+## Recovered callbacks
+
+The entry takes already validated positive Int32 seconds. It does not parse the original locale editor, resolve unsaved-image/quota prompts, manufacture coordinates/date, or admit camera options. Go's native ordering enables the1000ms observation timer before initializing the image/field; emitted `observe-on` then `initialize-request` preserve that order. Each explicit exposure pulse decrements one second, or sets remaining to0 from its explicitly supplied instant flag. It then stops observation timing and enables polling; preparation waits for a separate poll event even when the request returned early.
+
+`TNVORequest+0x51` means finished, including its caught-error branch. The catalog result path checks+`0x50` before using+`0x48` response text and subsequently checks the header/coordinate/parser route. The coordinator therefore distinguishes pending, transport error, catalog error and usable result. **The caller supplies the catalog-validation verdict**; this module does not certify a NOMAD response, source population, hash association or cache. A finished request with unsuccessful transport cannot pass even if a caller also supplies a valid-catalog flag. A returned but unchecked body stays pending. The first usable/error outcome is latched for that attempt.
+
+## Explicit web ownership rules
+
+The original TThread wait`0x425bb8..0x425c5a` distinguishes the main thread, invokes `MsgWaitForMultipleObjects`/`PeekMessageA` and a synchronized-callback helper, or uses `WaitForSingleObject`, then reads `GetExitCodeThread`. Complete capture and typed IAT binding establish that cancellation involves waiting/message processing, not an instant HTTP-abort promise. The port does not reproduce Windows threads, that wait loop, VCL reentry or native time precision.
+
+Instead each attempt has a fresh frozen identity ticket, unrelated to clock/RNG state. Foreign/previous-attempt callbacks have no effects. Repeated Go cannot create another request while busy. Repeated waiting pulses show the wait state once; usable data requests preparation once. Preparation success still cannot emit `accept-prepared` until the request/preparation lease's owner confirms release. That acceptance command carries the old attempt's ticket and is emitted once. No image payload or prior student work is stored or modified by the coordinator.
+
+Cancel stops the active timer/poll, hides waiting and requests release once. This includes before the first tick; the native partly-elapsed Stop test is stricter, so uniform early cancellation is deliberately labeled a web safeguard. Late request/preparation callbacks cannot reverse cancellation. Cancel while successful preparation awaits release suppresses acceptance without requesting duplicate destruction. Failed initialization/preparation uses the same close path. A failed or uncertain release holds `release-error`, without automatic retries or a newly enabled Go; only a later verified release acknowledgement can unlock it.
+
+The adapter must own its actual parsed result/prepared plane under the ticket, apply each emitted effect batch in order, and apply `accept-prepared` synchronously before admitting the next UI event. Release acknowledgement concerns the asynchronous request/preparation lease, not destruction of the already owned plane. It must retain the previous image/manual work until successful atomic acceptance. There is no claim that this unconnected coordinator alone proves an adapter's cleanup, image ownership or scientific authority. Initial unsaved-image consent, failed save and locale/quota behavior remain outside this post-validation boundary.
+
+All snapshots/effects/tickets are immutable. Running snapshots are deliberately not a session format: JSON loses the private ownership brand and cannot restore an active lease. Existing investigation, notebook, Undo, RNG and clock formats remain untouched. A future adapter needs its own stopped restore contract.
+
+## Validation and reproduction
+
+Twenty-three new contracts cover callback order, Int32 seconds/instant pulses, readiness versus success/validation, waiting, early/late cancel, release failure, initialization/preparation error, repeated Go, exactly-once acceptance and foreign callbacks after reentry. The initial unit run passed21scenarios; standalone typecheck detected a literal type incompatibility in the test's retained-image harness, which was corrected before validation. No product assertion or timeout was removed.
+
+Nine separate auditable scenario traces cover65events in Node and Chromium, with no mismatches and a byte-identical investigation export before/after. These are authored source-order/web-policy controls, not original execution or an independent native output oracle. Current aggregate1553unit contracts pass; relevant existing user flows/build/resource verification are recorded in the evidence receipt. Historical444broad E2E is a separate earlier run.
+
+Run `node node_modules/vitest/vitest.mjs run src/core/cameraRequestGate.test.ts`. Scenario reproduction uses `controls.py`, `check.mjs` with Node's `--experimental-transform-types`, and `browser-check.mjs` with the existing loopback Vite URL in `OPENVIREO_GATE_URL`.
+
+The normal preview remains http://127.0.0.1:5173/#observatory. Open **CCD / IR preparation reference**, inspect/apply/cancel a telescope choice and save/restore the investigation; there is no new acquisition action. Successful catalog/parser/cache/projected-row authority, preceding random sequence, remaining CCD overlay, complete configuration/IR resource policies and image metadata/output still gate an actual exposure. The58functional package counts remain unchanged.

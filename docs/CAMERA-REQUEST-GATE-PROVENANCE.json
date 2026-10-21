@@ -1,0 +1,137 @@
+{
+  "evidenceId": "NATIVE-CAMERA-REQUEST-GATE-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "thread-wait",
+      "start": "0x425bb8",
+      "endExclusive": "0x425c5a",
+      "bytesSHA256": "a0173df8eba313fc819e09ef63b5b4984fcfc6f8e6f0cd77daaa3dd90a1d2940",
+      "listingSHA256": "8914dc3d031e85ffd87e3f98c4bdc158c00fa215d5b5d3ceb29bd53a5d82b047"
+    },
+    {
+      "name": "request-execute",
+      "start": "0x59d644",
+      "endExclusive": "0x59d79c",
+      "bytesSHA256": "04772e62a8b05f5f4d9261524a24ccf613f4843adad9c95997f341848e0247a7",
+      "listingSHA256": "65a974c5d068d10afc828ba98d2bc0d983cb7352f691c7681b9545eb87ac3756"
+    },
+    {
+      "name": "catalog-result",
+      "start": "0x59c620",
+      "endExclusive": "0x59c88d",
+      "bytesSHA256": "b2055b3ddbcc67f4029dbfbb4c3d004597702ea9f44200f01abb0b715b159657",
+      "listingSHA256": "be4f9ab8a9900ba009db8776beaf05d310b7577fa1a05f67a146bc51b9e05fdb"
+    },
+    {
+      "name": "ccd-go",
+      "start": "0x51265c",
+      "endExclusive": "0x5127a2",
+      "bytesSHA256": "fd22bbe7bf632405cb6900fcbfa077d9c830e2f5a0a0b3c686ae3212105865d4",
+      "listingSHA256": "0e091e1284c05725d7fc45f38086fc3a53d48751596c1cd4996a9bb2c732fe81"
+    },
+    {
+      "name": "ccd-observe",
+      "start": "0x512b2c",
+      "endExclusive": "0x512bca",
+      "bytesSHA256": "720488d17b192e1f5896bbc63ccdb36591ba60ab65f5c0c7c5f5a12a2ca3900a",
+      "listingSHA256": "31d5eb8a2159257c7abe6904ba2d9f44138a4a9939afc09a5bc6c158340859e7"
+    },
+    {
+      "name": "ccd-poll",
+      "start": "0x51298c",
+      "endExclusive": "0x512acd",
+      "bytesSHA256": "71d5f0e8f2ffbf3dfe7a01c9d6d5b24441c376f7096d1e90a165e4b84f7c39b7",
+      "listingSHA256": "0caf05d7e9ae15a213571191a6287b6eb06129cf4e849f5ca6bc94378e77837f"
+    },
+    {
+      "name": "ccd-stop",
+      "start": "0x5127f8",
+      "endExclusive": "0x512914",
+      "bytesSHA256": "1e2e2f2f6463b665ef8635568f05618bd4df59b01e6610fc5583587d6f1e94b5",
+      "listingSHA256": "66a05ce59032da85957d4ab0180fc6704ff2f7bd96d39d7f4f6ffa2d294a3062"
+    },
+    {
+      "name": "ir-go",
+      "start": "0x514680",
+      "endExclusive": "0x5147d5",
+      "bytesSHA256": "e06714a27fd1ae23033abcd220cc6b0f855c1ed7f0033572ce48bc57e9a97800",
+      "listingSHA256": "4704bfa0371e492a592fc3a95599e30a0e246a336b81de52b5ad3f13fccd55eb"
+    },
+    {
+      "name": "ir-observe",
+      "start": "0x514b5c",
+      "endExclusive": "0x514bfa",
+      "bytesSHA256": "7c75fc686f32a7fca4db0da68706323a03e0c885517a1eb5654e0ab122886def",
+      "listingSHA256": "4bda7bb0bd8f517e4b6ce87bf4d63300187e08f6fe4d07b2374fe91452e7c02e"
+    },
+    {
+      "name": "ir-poll",
+      "start": "0x5149bc",
+      "endExclusive": "0x514afd",
+      "bytesSHA256": "4c060073ffec8e5b3efde09bbeb476210cc6f8a9a9ad3940f0792fa23073a3a1",
+      "listingSHA256": "4b4aea8425cd50c297fa7591eb91cf8188617db19536c7b112e05f5fbed1ca18"
+    },
+    {
+      "name": "ir-stop",
+      "start": "0x51482c",
+      "endExclusive": "0x514948",
+      "bytesSHA256": "a4e1e0518e8835fa21f8923cba75a0cade29d943c1aa05b120f7d68e32ee154a",
+      "listingSHA256": "4c31e63bf22b3e7eb58b48632e561215aae8e37f858264da8f94018ce2adfa2f"
+    }
+  ],
+  "imports": [
+    {
+      "stub": "0x4083a4",
+      "IAT": "0x620ff8",
+      "dll": "kernel32.dll",
+      "name": "GetCurrentThreadId",
+      "stubSHA256": "58f2067d83c9877b5cc4df0d0bd4fa26ba1ff9a6861349ca4b112aa744c8da09"
+    },
+    {
+      "stub": "0x408c74",
+      "IAT": "0x620b88",
+      "dll": "user32.dll",
+      "name": "PeekMessageA",
+      "stubSHA256": "bd2a45f40bde10eb55f721105620c3293bb6c2e09507efa43679132c80d77cce"
+    },
+    {
+      "stub": "0x408c54",
+      "IAT": "0x620b98",
+      "dll": "user32.dll",
+      "name": "MsgWaitForMultipleObjects",
+      "stubSHA256": "f51e7963ce623800fbf42b45a026d6319f5b1821e491ea29b35bf42b50d34b0b"
+    },
+    {
+      "stub": "0x40856c",
+      "IAT": "0x620f14",
+      "dll": "kernel32.dll",
+      "name": "WaitForSingleObject",
+      "stubSHA256": "57eb7346d4b5b0e629b6fab468e86743d4902fc7c652ec1c35a0deb053b8e7a2"
+    },
+    {
+      "stub": "0x4083cc",
+      "IAT": "0x620fe4",
+      "dll": "kernel32.dll",
+      "name": "GetExitCodeThread",
+      "stubSHA256": "0da3e7c73998c95357a2077930421f278b239ca55939187f704fe9d1715e21ce"
+    }
+  ],
+  "sourceContracts": [
+    "Goenables1000msobservetimerbeforeimage/fieldinitialization;positiveInt32secondsalreadyvalidatedelsewhere",
+    "Observetickdecrementsorzerosconfiguredinstantflag;zerostopsobserve/enablespoll;separatepollhandlesresult",
+    "TNVORequestfinished+51doesnotmeansuccess;B1resultchecks+50beforeusingresponse+48;thenheader/coordinatevalidation",
+    "Stopdisposesownedrequest;threadwaitcanprocessmessages/synchronizedcallbacks,notinstantabort"
+  ],
+  "webAdaptations": [
+    "Freshephemeralidentityticket;foreign/lateeventsignored;neverpersistasrunningstate",
+    "Uniformcancelincludingbeforefirsttick;previousownedimageunchangeduntilacceptanceeffect",
+    "ExplicitreleaseackbeforeGo/reentry/acceptance;releasefailureholdswithoutautomaticretry",
+    "Initialization/preparationfailureclosewithcleanup;errorreturnneveradmitsimage",
+    "Callerprovidesactualcatalogvalidation;thismoduledoesnotcreatecatalog/image/modelortransport"
+  ],
+  "scope": "Purepost-validationcoordinatoreffects,noobservingUI/noacquisition/certification",
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}
