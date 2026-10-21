@@ -1767,7 +1767,7 @@
   "nativeList.cancel": "Cancel DAT list transformation",
   "nativeList.confirm": "Confirm DAT list transformation",
   "nativeList.active": "Native results ordering active · display-refreshed tail cursor profile",
-  "nativeList.receipts": "Temporary append input receipts",
+  "nativeList.receipts": "Temporary DAT input receipts",
   "nativeList.receiptsPolicy": "Names, SHA-256 and input counts are temporary session receipts, not per-record provenance. They are not stored in DAT or investigation/notebook exports. Reload or raw replacement clears this history. Up to 1000 append operations are retained; download and reimport to start a new history.",
   "nativeList.empty": "Empty DAT input: current bytes, selection and Undo are unchanged.",
   "nativeList.saved": "DAT list transformation confirmed. Selection reset to the first record. Original input remains available.",
@@ -1777,5 +1777,9 @@
   "nativeList.error.key": "Cannot order this DAT: time or RA contains an encoding outside the admitted canonical normal/zero keys. Raw inspection and unchanged download remain available.",
   "nativeList.error.limit": "DAT merge exceeds the 1000-record or 1000-append browser bound. Current data and Undo are unchanged.",
   "nativeList.error.order": "The supplied revision does not preserve the established DAT ordering.",
-  "nativeList.error.format": "Append accepts DAT files only. CSV/TXT loading has a separate, unported native contract. A DAT extension does not authenticate its contents."
+  "nativeList.error.format": "DAT list loading accepts DAT files only. CSV/TXT loading has a separate, unported native contract. A DAT extension does not authenticate its contents.",
+  "nativeList.replaceOpen": "Load replacement DAT results list",
+  "nativeList.replaceWarning": "Replace the entire current working list with this supplied DAT, ordered from an empty list? This does not append. Confirming an empty input clears the working list. Cancel keeps all current records and prior Undo; after confirmation, one Undo can restore them.",
+  "nativeList.replaceTitle": "Confirm replacement DAT results list",
+  "nativeList.replaceConfirm": "Replace working DAT list now"
 }

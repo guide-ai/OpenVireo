@@ -1779,4 +1779,8 @@ export interface MessageParameters {
   "nativeList.error.limit": never;
   "nativeList.error.order": never;
   "nativeList.error.format": never;
+  "nativeList.replaceOpen": never;
+  "nativeList.replaceWarning": never;
+  "nativeList.replaceTitle": never;
+  "nativeList.replaceConfirm": never;
 }
