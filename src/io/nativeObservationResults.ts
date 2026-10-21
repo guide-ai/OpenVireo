@@ -1,3 +1,9 @@
-import{parseNativeObservationResults,NATIVE_RESULT_MAX_BYTES,NativeObservationError,type NativeObservationData}from'../core/nativeObservationResults';
+import{nativeObservationBytes,parseNativeObservationResults,NATIVE_RESULT_MAX_BYTES,NativeObservationError,type NativeObservationData}from'../core/nativeObservationResults';
 export type InspectedNativeObservation=Readonly<{name:string;sha256:string;data:NativeObservationData}>;
 export async function readNativeObservationFile(file:File):Promise<InspectedNativeObservation>{if(file.size>NATIVE_RESULT_MAX_BYTES)throw new NativeObservationError('size');const bytes=Uint8Array.from(new Uint8Array(await file.arrayBuffer()));if(bytes.byteLength>NATIVE_RESULT_MAX_BYTES)throw new NativeObservationError('size');const data=parseNativeObservationResults(bytes),digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),sha256=Array.from(digest,b=>b.toString(16).padStart(2,'0')).join('');return Object.freeze({name:file.name.slice(0,160),sha256,data});}
+
+/** Hash an explicit owned revision;no native numbers or missing metadata encoded. */
+export async function prepareNativeObservationRevision(base:InspectedNativeObservation,data:NativeObservationData):Promise<InspectedNativeObservation>{
+ const bytes=nativeObservationBytes(data),digest=new Uint8Array(await crypto.subtle.digest('SHA-256',Uint8Array.from(bytes).buffer));
+ return Object.freeze({name:base.name,sha256:Array.from(digest,b=>b.toString(16).padStart(2,'0')).join(''),data});
+}

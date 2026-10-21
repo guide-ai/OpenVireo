@@ -47,3 +47,5 @@ Local scripts/captures/receipts: `/home/dobleuber/Documents/Codex/2026-10-18/tas
 Publication receipt for981189a is retained separately. This recovery commit is local only;no additional push/deploy/original-resource upload. Claude/other external review remains on the explicit human hold,0new attempts. Historical star-activation timeout remains unreproduced/unattributed,not fixed by this work.
 
 Follow-up:the bounded [selected-row Edit→confirm→Undo flow](OBSERVATION-EDIT-UNDO.md) is now implemented with explicit web snapshot/persistence/Finish safeguards. Full native callback/index/runtime fidelity and the metadata/writer blockers above remain open. No writer or fallback metadata was added.
+
+Owned-input extension:[record field corrections](NATIVE-OWNED-RECORD-EDITS.md) can patch explicit text/type bytes of already supplied144-byte records while preserving every raw numerical field and unused tail. Its byte authority comes from the input,not missing notebook metadata. The blocked notebook→DAT constructor and full native numeric/locale/FPU acceptance remain separate;no default values or padding are invented.

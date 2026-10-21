@@ -1,0 +1,96 @@
+{
+  "binaryPath": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "name": "native-confirm",
+      "start": "0x54b02c",
+      "endExclusive": "0x54b22b",
+      "byteSHA256": "06d25fa7fe2e3aa1d762c4785bcf6b28b11d36a46f4999715b11533f62d986ae",
+      "listingSHA256": "af242f06230fd2d3936c7c613af1b9c49f3296f0df0982c9f6d955ad456da3cd",
+      "scope": "Complete handler including conditional velocity and nested/main cleanup,through return"
+    },
+    {
+      "name": "short-copy",
+      "start": "0x403c5c",
+      "endExclusive": "0x403c75",
+      "byteSHA256": "328a56cade21bfff6293d4c1af035ff3fbf0efd9175497707e84afdf6a4b0741",
+      "listingSHA256": "ec1810aff22103cd12a01e3b0c218eff47e9afbd476d8407507d131026224af9",
+      "scope": "Complete bounded ShortString copy"
+    },
+    {
+      "name": "native-file-writer",
+      "start": "0x547b0c",
+      "endExclusive": "0x547e62",
+      "byteSHA256": "33bf209eea45a359c129386330b6bf9af665c94b9bcafced26ea1f97a51c8c72",
+      "listingSHA256": "23ee3d7e62380c75367218c0c56b5e2dbdda7f9fedf753f1014e2cd06a6cfd29",
+      "scope": "Complete result file writer from previous pinned recovery"
+    },
+    {
+      "name": "native-record-writer",
+      "start": "0x4043b8",
+      "endExclusive": "0x404400",
+      "byteSHA256": "19f998787ab7ae396f8d196788ea09ead9ba98f936f783fe823d309f3e28a6ca",
+      "listingSHA256": "d678e3660ec5fd7f32bd50b1bcddf070207e164263ea5298887fe8eb603e18a8",
+      "scope": "Complete typed-record writer from previous pinned recovery"
+    },
+    {
+      "name": "runtime-move",
+      "start": "0x403344",
+      "endExclusive": "0x403441",
+      "byteSHA256": "0df6db87dfb52c6fe8fb4cdad8d85abcd3049f88a86fb941f840cb62e7e1b77f",
+      "listingSHA256": "387216349c4082841f00c4c236aafb3828384f63422694377d4c1bd587f767e1",
+      "scope": "Complete Move implementation including internal jump table and count-specific copy blocks;static byte-range analysis only,no x87 execution oracle"
+    }
+  ],
+  "method": "Local static PE reads/objdump only,no original execution/emulation",
+  "fieldWrites": [
+    {
+      "field": "object",
+      "offset": 0,
+      "maximumBytes": 15,
+      "nativeSites": [
+        "0x54b06c..0x54b0ab",
+        "0x403c5c..0x403c75"
+      ],
+      "webPolicy": "SparseexplicitprintableCP1252changes;lengthandusedbytesonly;originalunusedtailretained"
+    },
+    {
+      "field": "spectralCode",
+      "offset": 95,
+      "bytes": 4,
+      "storage": "littleendiansignedint32",
+      "nativeSites": [
+        "0x54b0e5..0x54b107",
+        "0x55d840..0x55dd09"
+      ],
+      "webPolicy": "Opt-inmanualtypeconverteronly;previewreparsecode;uncheckedkeepsunknownandnon-roundtrippingcodesexactly"
+    },
+    {
+      "field": "remarks",
+      "offset": 107,
+      "maximumBytes": 36,
+      "nativeSites": [
+        "0x54b0ab..0x54b0e5",
+        "0x403c5c..0x403c75"
+      ],
+      "webPolicy": "SparseexplicitprintableCP1252changes;nospace-trim/truncation;unusedtailretained"
+    }
+  ],
+  "untouchedRanges": [
+    {
+      "start": 16,
+      "endExclusive": 95,
+      "meaning": "Rawtime/RA/Dec/U/B/V/R/Iandkind"
+    },
+    {
+      "start": 99,
+      "endExclusive": 107,
+      "meaning": "Rawredshiftandvelocity"
+    }
+  ],
+  "ownership": "Existingprivatelyownedimported144bytemultiplerows;immutablebase+index+contextguard,neverconstructDATfromnotebook/canonicalcatalog metadata",
+  "unportedNativePath": "0x54b107..0x54b1f7 conditionalvelocityparse/C*z/relativeerror/FPUvalidationandnativeactivation-sideeffects notexecuted. Browserfieldpatchisexplicitboundedoperation,notfullnativeOKequivalence.",
+  "sourceCredits": "CLEA/VIREO;existingthirdpartysourcecredits/licenseuncertaintyretained.Nooriginalbinaryexecution,emulation,writerspecimenorpublicresourceupload."
+}
