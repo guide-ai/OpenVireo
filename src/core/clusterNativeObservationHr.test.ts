@@ -1,6 +1,6 @@
 import{describe,expect,it}from'vitest';
 import controls from'./clusterNativeObservationHr.controls.json';
-import{parseNativeObservationResults,NativeObservationError,type NativeObservationData}from'./nativeObservationResults';
+import{parseNativeObservationResults,nativeObservationBytes,NativeObservationError,type NativeObservationData}from'./nativeObservationResults';
 import{buildNativeResultList}from'./nativeResultList';
 import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrFrame,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,dyadicDecimal,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,fistpInt64,plotClusterNativeHrObservations,roundExtended,setClusterNativeHrTrial,ClusterNativeFpuGate,ClusterNativeHrStateError,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'./clusterNativeObservationHr';
 
@@ -52,6 +52,17 @@ describe('original observation HR plot 0x542990',()=>{
  it('an exception-path record aborts the whole plot and reports drawn predecessors',()=>{
   const plot=clusterNativeHrPlot(dat([record({time:1,v:decimalDyadic('12'),b:decimalDyadic('12.5')}),record({time:2,v:'nan',b:decimalDyadic('1')}),record({time:3,v:decimalDyadic('13'),b:decimalDyadic('13.5')})]));
   expect(plot).toEqual({status:'blocked',reason:'operand',recordIndex:2,field:'v',plottedBefore:1});
+ });
+ it('bounds exact decimal presentation for1000 distinct Extended subnormal results without changing pixels or bytes',()=>{
+  const data=dat(Array.from({length:1000},(_,i)=>record({time:i+1,v:{n:1n,e:-16445},b:{n:BigInt(i+2),e:-16445}})));
+  const before=nativeObservationBytes(data),plot=clusterNativeHrPlot(data);
+  expect(plot.status).toBe('plotted');if(plot.status!=='plotted')return;
+  expect(plot.count).toBe(1000);expect(plot.rows[0]!.bMinusV!.exact).toBe('1 × 2^-16445');
+  expect(new Set(plot.rows.map(r=>r.bMinusV!.exact)).size).toBe(1000);
+  for(const row of plot.rows){expect(row.bMinusV!.exact.length).toBeLessThan(40);expect(row.pixel).toEqual({x:140,y:-41});}
+  expect(nativeObservationBytes(data)).toEqual(before);
+  expect(dyadicDecimal({n:1n,e:257})).toBe('1 × 2^257');expect(dyadicDecimal({n:1n,e:-97})).toBe('1 × 2^-97');
+  expect(dyadicDecimal({n:1n,e:-96})).toMatch(/^0\./);expect(dyadicDecimal({n:-1n,e:-16445})).toBe('-1 × 2^-16445');
  });
  it('an empty list is a valid plot with zero stars(no emptiness check in0x542ed8)',()=>{expect(clusterNativeHrPlot(dat([]))).toMatchObject({status:'plotted',count:0,countLabel:'# of Stars: 0',rows:[]});});
  it('Extended rounding helpers keep nearest-even,overflow and Int64 gates',()=>{

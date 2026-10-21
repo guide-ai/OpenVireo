@@ -51,8 +51,8 @@ The pure core in `src/core/radioControl.ts` does not import React or i18n. Trans
 
 ## Integration notes for the coordinator
 
-1. Merge the `radio.*` keys from `src/components/RadioMessages.ts` into `src/i18n/en.json` (then regenerate parameter types), or pass a translator.
-2. `src/i18n/coverage.test.ts` pins the audited `.tsx` count at 43. This slice adds one `.tsx` with **zero** literal render sites, so that count must be reviewed and changed to 44.
+1. The `radio.*` keys are already integrated in `src/i18n/en.json`, with regenerated parameter types. The optional scoped catalog adapter reuses the shared translator.
+2. The reviewed UI coverage pin is45:43 prior files plus the radio and observation-HR panels. Both new panels use the shared presentation catalog.
 3. Mount `RadioControlPanel` in App/router. Supply the dome byte from the observatory state if it is the same `[+0x552]` concept; until then the panel accepts explicit inputs. No session schema is changed and no state is persisted.
 
 ## Demo and tests

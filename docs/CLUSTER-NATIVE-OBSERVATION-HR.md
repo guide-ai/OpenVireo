@@ -11,7 +11,7 @@ Evidence `VIREO-HR-OBSERVATION-PLOT-REPORT-STATIC-2026-10-21` ([provenance](CLUS
 | Original | Address | Port |
 |---|---|---|
 | `MeasuredData1Click` | 0x542ed8 | Sets observation mode (+0x40d=1, database +0x40c=0) and refreshes. It has no emptiness check, prompt or cancel branch. |
-| Redraw | 0x54235c | Frame, then the observation plot, then ZAMS/isochrone if their menu items are checked. |
+| Redraw | 0x54235c | Frame, then database plot when +0x40c≠0 or observation plot when +0x40c=0, then checked overlays. At0x542380 `mov al,1` overrides the earlier +0x40d test; +0x40d does not gate paint. The initial +0x40c is unrecovered. The explicit web Plot command selects observation mode; hiding records before selection is a web presentation choice. |
 | Screen geometry | 0x5423dc, 0x542480 | Fixed axes. V runs 2.0→18 at 28 px/mag (top 15, bottom 463). B−V runs −0.5→+2.5 at 120 px/mag (left 80, right 440). This is the only writer in the HR code range. The original screen plot has **no autoscale**. |
 | Frame labels | 0x542480, 0x486268 | `FloatToStrF(…, ffFixed, 18, 1)`. Positive colour labels get a `+`. `(B-V)` appears under +1.0 and `V` at (20, 22). The ported tick and label positions are an exact list. |
 | Observation plot | 0x542990 | Iterates the results list from head to tail (0x492628/0x492634/0x49271c). It reads V Extended at +0x40 and B Extended at +0x36. V is compared before B with Single 0.0, and either signed zero skips the record. B−V = B − V. y = Round((V−2)·28)+15 and x = Round((B−V+0.5)·120)+80 use only the low 32 bits. Each point is a 7-px ellipse with no clipping. `# of Stars: N` is drawn top right. **The photometry kind (+0x5e) is not tested.** |
@@ -61,12 +61,14 @@ The core functions are in `src/core/clusterNativeObservationHr.ts`:
 - `clusterNativeHrPlot`, `clusterNativeHrFrame`, `clusterNativeHrReport`;
 - the workspace transitions `begin/complete/fail/cancelClusterNativeHrRead`, `add/armReplace/confirmReplace/disarmReplace/cancelPending`, `plotClusterNativeHrObservations`, `setClusterNativeHrTrial` and `clearClusterNativeHrOverlays`.
 
-The Playwright spec reads `CLUSTER_NATIVE_HR_URL` and defaults to the proposed route `/#cluster-native-observation`.
+The Playwright spec reads `CLUSTER_NATIVE_HR_URL` and defaults to the integrated route `/#cluster-database`.
 
 ## Remaining limits
 
 The following are not recovered:
 - the paint-box extent, GDI colours and fonts;
+- initial database/observation mode byte +0x40c;
+- optional selected-star marker ownership/context:0x542b03–0x542b5e reads +0x480 and position +0x481/+0x485, with colour from +0x3d9. That branch is not implemented;no marker is synthesized;
 - the print path (0x542fc8);
 - the database-record name line for observation data;
 - the default of option +0x2e7c;
@@ -79,3 +81,5 @@ The candidate host retains the observation workspace across navigation and cance
 Independent integration validation passed 1,751 unit tests in 172 files, typecheck, build and all 1,279 resource preflight entries. The six HR application flows passed together, including byte preservation for DAT and investigation exports, manual answers and trial settings, and cancellation of late reads during navigation, collapse and restore. The broad E2E run passed 450 tests with three radio harness tests skipped; the isolated radio harness passed its three tests separately. Source files stayed unchanged during the broad run with four workers. Raw logs and receipts are in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/`. The separate Claude integration review is still required. These checks are not an original runtime oracle.
 
 The numerical policy refers to [the existing FPU context recovery](NATIVE-FPU-CONTEXT-PROVENANCE.json): the compiled word is 0x1332 at 0x5ae024, with its source hash recorded there. The historical registry exception mask and actual handler-entry word remain unverified. Evaluating the recovered formulas introduces no original Windows registry access, CPU instruction interpreter or original execution.
+
+Review corrections: exact decimal presentation is capped at96 fractional places (large integer expansions also bounded), retaining an exact coefficient × 2^exponent fallback without changing arithmetic. Blocked plots expose all raw object/B/V records in merged native order without partial computed points. Local transaction controls restore keyboard focus;DAT download errors retain the workspace. The1000ms object-URL cleanup follows the existing inspector;the review suggested a cross-browser hazard,but no Firefox/Safari failure was reproduced. The raw author evidence ledger is preserved;the redraw interpretation above corrects its earlier +0x40d claim. Separate post-correction review remains required.

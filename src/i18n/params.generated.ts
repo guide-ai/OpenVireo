@@ -2122,4 +2122,5 @@ export interface MessageParameters {
   "obsHr.workspaceSummary": never;
   "obsHr.persistence": never;
   "obsHr.loading": never;
+  "obsHr.blockedStatus": never;
 }

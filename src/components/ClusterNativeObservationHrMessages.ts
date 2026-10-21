@@ -17,6 +17,8 @@ export const CLUSTER_NATIVE_HR_MESSAGES={
  sources:t("obsHr.sources"),
  sourceAction:{"add":t("obsHr.sourceAction.add"),"replace":t("obsHr.sourceAction.replace")},
  download:t("obsHr.download"),
+ downloadError:t("obs.file.downloadError"),
+ blockedStatus:t("obsHr.blockedStatus"),
  downloadNote:t("obsHr.downloadNote"),
  errors:{"size":t("obsHr.errors.size"),"layout":t("obsHr.errors.layout"),"text":t("obsHr.errors.text"),"key":t("obsHr.errors.key"),"limit":t("obsHr.errors.limit"),"read":t("obsHr.errors.read")},
  dismiss:t("obsHr.dismiss"),

@@ -152,7 +152,7 @@ describe('inputs, captions and presentation catalog',()=>{
  });
  it('has a catalogued message for every outcome and validates alternate catalogs',()=>{
   const t=createRadioTranslator();for(const o of new Set(outcomes))expect(t(`radio.outcome.${o}` as keyof typeof RADIO_MESSAGES_EN)).toBe(RADIO_MESSAGES_EN[`radio.outcome.${o}` as keyof typeof RADIO_MESSAGES_EN]);
-  expect(t('radio.timer.random',{range:8000})).toContain('8000');expect(()=>t('radio.timer.random')).toThrow('Missing radio message parameter');
+  expect(t('radio.timer.random',{range:8000})).toContain('8000');expect(()=>t('radio.timer.random',{range:undefined as unknown as number})).toThrow();expect(()=>t('radio.timer.random',{range:{} as unknown as number})).toThrow();expect(()=>t('radio.timer.random')).toThrow('Missing message parameter');
   expect(()=>createRadioTranslator({...RADIO_MESSAGES_EN,'radio.timer.random':'{wrong}'})).toThrow();
   const marked=createRadioTranslator(Object.fromEntries(Object.entries(RADIO_MESSAGES_EN).map(([k,v])=>[k,'[x] '+v])) as typeof RADIO_MESSAGES_EN);
   expect(marked('radio.state.yes')).toBe('[x] yes');expect(marked('radio.menu.access',{caption:'<b>{caption}</b>'})).toBe('[x] Telescope access: <b>{caption}</b>');

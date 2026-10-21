@@ -42,10 +42,12 @@ export function fistpInt64(x:ClusterNativeDyadic):bigint{
  let q:bigint;if(x.e>=0)q=x.n<<BigInt(x.e);else{const negative=x.n<0n,m=negative?-x.n:x.n,shift=BigInt(-x.e),f=m>>shift,r=m-(f<<shift),half=1n<<(shift-1n),v=r>half||r===half&&(f&1n)===1n?f+1n:f;q=negative?-v:v;}
  if(q<-(1n<<63n)||q>(1n<<63n)-1n)throw new ClusterNativeFpuGate('int64');return q;
 }
-/** Exact bounded decimal of a dyadic(power-of-two denominators terminate). */
+/** Exact presentation only: cap decimal expansion like the DAT inspector.
+ * Longer exponents keep an exact binary expression; arithmetic is unchanged. */
 export function dyadicDecimal(x:ClusterNativeDyadic):string{
- if(x.n===0n)return'0';const negative=x.n<0n,m=negative?-x.n:x.n;let s:string;
- if(x.e>=0)s=(m<<BigInt(x.e)).toString();else{const places=-x.e,digits=(m*5n**BigInt(places)).toString().padStart(places+1,'0');s=(digits.slice(0,-places)+'.'+digits.slice(-places)).replace(/0+$/,'').replace(/\.$/,'');}
+ if(x.n===0n)return'0';const fallback=()=>x.n.toString()+' × 2^'+x.e;
+ if(x.e>256||x.e< -96)return fallback();const negative=x.n<0n,m=negative?-x.n:x.n;let s:string;
+ if(x.e>=0){s=(m<<BigInt(x.e)).toString();if(s.length>120)return fallback();}else{const places=-x.e,digits=(m*5n**BigInt(places)).toString().padStart(places+1,'0');s=(digits.slice(0,-places)+'.'+digits.slice(-places)).replace(/0+$/,'').replace(/\.$/,'');}
  return(negative?'-':'')+s;
 }
 export function dyadicNumber(x:ClusterNativeDyadic):number{if(x.n===0n)return 0;const m=x.n<0n?-x.n:x.n,extra=Math.max(0,bitLength(m)-60),v=Number(m>>BigInt(extra))*2**(x.e+extra);return x.n<0n?-v:v;}
@@ -119,7 +121,7 @@ export type ClusterNativeHrTrial=Readonly<{zamsShown:boolean;modulusTicks:number
 export const CLUSTER_NATIVE_HR_INITIAL_TRIAL:ClusterNativeHrTrial=Object.freeze({zamsShown:false,modulusTicks:0,ebvTicks:0,isochroneShown:false,modelIndex:4,ageIndex:0,offsetTicks:0,distanceOption:false});
 const intIn=(v:unknown,min:number,max:number):v is number=>typeof v==='number'&&Number.isInteger(v)&&v>=min&&v<=max;
 export function validClusterNativeHrTrial(t:ClusterNativeHrTrial):boolean{return typeof t.zamsShown==='boolean'&&typeof t.isochroneShown==='boolean'&&typeof t.distanceOption==='boolean'&&intIn(t.modulusTicks,0,1500)&&intIn(t.ebvTicks,0,250)&&intIn(t.modelIndex,0,5)&&intIn(t.ageIndex,0,49)&&intIn(t.offsetTicks,-100,100);}
-const hundredths=(ticks:number)=>(ticks<0?'-':'')+Math.floor(Math.abs(ticks)/100)+'.'+String(Math.abs(ticks)%100).padStart(2,'0');
+export const clusterNativeHrHundredths=(ticks:number)=>(ticks<0?'-':'')+Math.floor(Math.abs(ticks)/100)+'.'+String(Math.abs(ticks)%100).padStart(2,'0');
 export const clusterNativeHrLogAgeTicks=(ageIndex:number)=>780+5*ageIndex;
 /** Number/Math replaces the native Extended Power(0x42703c);FloatToStrF ffFixed0
  * decimal rounding is approximated by toFixed(0)(half-up for positive values). */
@@ -130,8 +132,8 @@ export function clusterNativeHrReport(t:ClusterNativeHrTrial):ClusterNativeHrRep
  if(!validClusterNativeHrTrial(t))throw new RangeError('trial');
  // Line1 copies the database-selection record(0x5b5c30);its observation-mode content is not recovered.
  const lines=['Cluster: '];
- if(t.zamsShown){lines.push('','From ZAMS fit:','  V-Mv = '+hundredths(t.modulusTicks),'  E(B-V) = '+hundredths(t.ebvTicks));if(t.distanceOption)lines.push('  Estimated Cluster Distance: '+clusterNativeHrDistance(t).toFixed(0)+' Parsecs');}
- if(t.isochroneShown)lines.push('','Isochrone Model Parameters:','  Metallicity: '+NATIVE_CLUSTER_MODELS[t.modelIndex]!.label,'  Log(Age/yrs): '+hundredths(clusterNativeHrLogAgeTicks(t.ageIndex)),'  Estimated Cluster Age: '+clusterNativeHrAgeMyr(t).toFixed(0)+' Million Years','  (B-V) Adjustment: '+hundredths(t.offsetTicks));
+ if(t.zamsShown){lines.push('','From ZAMS fit:','  V-Mv = '+clusterNativeHrHundredths(t.modulusTicks),'  E(B-V) = '+clusterNativeHrHundredths(t.ebvTicks));if(t.distanceOption)lines.push('  Estimated Cluster Distance: '+clusterNativeHrDistance(t).toFixed(0)+' Parsecs');}
+ if(t.isochroneShown)lines.push('','Isochrone Model Parameters:','  Metallicity: '+NATIVE_CLUSTER_MODELS[t.modelIndex]!.label,'  Log(Age/yrs): '+clusterNativeHrHundredths(clusterNativeHrLogAgeTicks(t.ageIndex)),'  Estimated Cluster Age: '+clusterNativeHrAgeMyr(t).toFixed(0)+' Million Years','  (B-V) Adjustment: '+clusterNativeHrHundredths(t.offsetTicks));
  return Object.freeze({caption:'Cluster Age/Distance Parameters',lines:Object.freeze(lines),clusterNameGap:true});
 }
 
@@ -169,7 +171,9 @@ export function armClusterNativeHrReplace(w:ClusterNativeHrWorkspace){if(!w.pend
 export function disarmClusterNativeHrReplace(w:ClusterNativeHrWorkspace){return w.replaceArmed?next(w,{replaceArmed:false}):w;}
 export function confirmClusterNativeHrReplace(w:ClusterNativeHrWorkspace){if(!w.pending||!w.replaceArmed)throw new ClusterNativeHrStateError('pending');return replaceNow(w,w.pending);}
 function replaceNow(w:ClusterNativeHrWorkspace,p:ClusterNativeHrPending){return next(w,{list:p.ordered,pending:null,replaceArmed:false,error:null,receipts:Object.freeze([Object.freeze({name:p.name,sha256:p.sha256,records:p.data.records.length,action:'replace' as const})])});}
-/** MeasuredData1Click0x542ed8:+0x40c←0,+0x40d←1,refresh. No emptiness check or prompt. */
+/** MeasuredData1Click0x542ed8:+0x40c←0,+0x40d←1,refresh. No emptiness check or prompt.
+ * Web preselection flag only: redraw0x54235c actually selects by +0x40c alone;
+ * unconditional AL=1 at0x542380 defeats the earlier +0x40d test. Initial +0x40c unknown. */
 export function plotClusterNativeHrObservations(w:ClusterNativeHrWorkspace){return w.observationsPlotted?w:next(w,{observationsPlotted:true});}
 export function setClusterNativeHrTrial(w:ClusterNativeHrWorkspace,change:Partial<ClusterNativeHrTrial>){const trial=Object.freeze({...w.trial,...change});if(!validClusterNativeHrTrial(trial))throw new ClusterNativeHrStateError('trial');return next(w,{trial});}
 /** Help topic "Remove ZAMS, Isochrone from Display":Tools>Clear removes both overlays. */

@@ -6,7 +6,7 @@ import{NATIVE_CLUSTER_MODELS}from'../core/nativeCluster';
 import{nativeIsochroneCurve,nativeZamsCurve,type NativeModelCurves}from'../core/nativeClusterCurves';
 import{loadNativeClusterModel}from'../io/nativeClusterModels';
 import{readNativeObservationFile}from'../io/nativeObservationResults';
-import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrFrame,clusterNativeHrLogAgeTicks,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,clusterNativeHrX,clusterNativeHrY,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,plotClusterNativeHrObservations,setClusterNativeHrTrial,CLUSTER_NATIVE_HR_GEOMETRY as G,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'../core/clusterNativeObservationHr';
+import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrFrame,clusterNativeHrHundredths as hundredths,clusterNativeHrLogAgeTicks,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,clusterNativeHrX,clusterNativeHrY,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,plotClusterNativeHrObservations,setClusterNativeHrTrial,CLUSTER_NATIVE_HR_GEOMETRY as G,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'../core/clusterNativeObservationHr';
 import{CLUSTER_NATIVE_HR_MESSAGES,type ClusterNativeHrMessages}from'./ClusterNativeObservationHrMessages';
 
 export type ClusterNativeObservationHrProps=Readonly<{
@@ -21,7 +21,6 @@ export type ClusterNativeObservationHrProps=Readonly<{
  /** Observe live workspace changes(session integration is the host's decision). */
  onWorkspaceChange?:(w:ClusterNativeHrWorkspace)=>void;
 }>;
-const hundredths=(t:number)=>(t<0?'-':'')+Math.floor(Math.abs(t)/100)+'.'+String(Math.abs(t)%100).padStart(2,'0');
 const show4=(v:number)=>Number.isFinite(v)?v.toFixed(4):String(v);
 const frame=clusterNativeHrFrame();
 const VIEW_W=470,VIEW_H=500;
@@ -30,6 +29,15 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
  const m=useMemo(()=>({...CLUSTER_NATIVE_HR_MESSAGES,...messages}),[messages]);
  const [w,setW]=useState<ClusterNativeHrWorkspace>(()=>initialList?Object.freeze({...EMPTY_CLUSTER_NATIVE_HR,list:initialList}):EMPTY_CLUSTER_NATIVE_HR);
  const token=useRef(0),input=useRef<HTMLInputElement>(null);
+ const addButton=useRef<HTMLButtonElement>(null),confirmButton=useRef<HTMLButtonElement>(null),cancelReadButton=useRef<HTMLButtonElement>(null);
+ const focusIntent=useRef<'input'|'add'|'confirm'|'cancelRead'|null>(null);
+ const [downloadError,setDownloadError]=useState(false);
+ // Explicit local actions own focus; host navigation/restore must not steal it.
+ useEffect(()=>{if(disabled){focusIntent.current=null;return;}const intent=focusIntent.current;if(!intent)return;focusIntent.current=null;
+  const target=intent==='confirm'?confirmButton.current:intent==='add'?addButton.current:intent==='cancelRead'?cancelReadButton.current:input.current;
+  if(target&&!target.disabled)target.focus();else if(input.current&&!input.current.disabled)input.current.focus();
+ },[w,disabled,downloadError]);
+ const change=(action:(c:ClusterNativeHrWorkspace)=>ClusterNativeHrWorkspace,target:'input'|'add'|'confirm')=>{focusIntent.current=target;setW(action);};
  // Navigation,collapsed workspace or host restore cancels only an in-flight
  // read. The current list,reviewed candidate and manual trial stay owned here.
  useEffect(()=>{if(disabled)setW(cancelClusterNativeHrRead);},[disabled]);
@@ -48,11 +56,13 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
 
  function choose(e:ChangeEvent<HTMLInputElement>){
   const file=e.currentTarget.files?.[0];e.currentTarget.value='';if(!file||busy||w.pending)return;const t=++token.current;
-  setW(c=>beginClusterNativeHrRead(c,t,file.name));
-  readNativeObservationFile(file).then(f=>setW(c=>completeClusterNativeHrRead(c,t,f)),error=>setW(c=>failClusterNativeHrRead(c,t,error)));
+  focusIntent.current='cancelRead';setW(c=>beginClusterNativeHrRead(c,t,file.name));
+  readNativeObservationFile(file).then(f=>setW(c=>{if(c.reading?.token===t)focusIntent.current='add';return completeClusterNativeHrRead(c,t,f);}),error=>setW(c=>{if(c.reading?.token===t)focusIntent.current='input';return failClusterNativeHrRead(c,t,error);}));
  }
  function download(){
-  if(!w.list)return;const url=URL.createObjectURL(new Blob([Uint8Array.from(nativeObservationBytes(w.list.data))],{type:'application/octet-stream'})),a=document.createElement('a');a.href=url;a.download='observation-results.dat';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);
+  if(!w.list)return;let url:string|undefined;setDownloadError(false);
+  try{url=URL.createObjectURL(new Blob([nativeObservationBytes(w.list.data).buffer as ArrayBuffer],{type:'application/octet-stream'}));const a=document.createElement('a');a.href=url;a.download='observation-results.dat';a.click();const started=url;setTimeout(()=>URL.revokeObjectURL(started),1000);}
+  catch{if(url)URL.revokeObjectURL(url);setDownloadError(true);}
  }
  const shownPlot=w.observationsPlotted&&plot.status==='plotted'?plot:null;
  const offAxes=shownPlot?shownPlot.rows.filter(r=>r.status==='plotted'&&!r.inFrame).length:0;
@@ -62,18 +72,19 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
 
   <section aria-labelledby={id('results')}><h3 id={id('results')}>{m.resultsHeading}</h3>
    <label htmlFor={id('file')}>{m.chooseFile}</label><input ref={input} id={id('file')} type="file" accept=".dat,.DAT,application/octet-stream" disabled={busy||w.pending!==null} onChange={choose}/><p className="cluster-native-hr-note">{m.fileHelp}</p>
-   {w.reading&&<p role="status">{m.reading(w.reading.name)} <button type="button" className="secondary-button" onClick={()=>setW(cancelClusterNativeHrRead)}>{m.cancelRead}</button></p>}
-   {w.error&&<div role="alert" className="cluster-native-hr-error"><p>{m.errors[w.error]}</p><button type="button" className="secondary-button" onClick={()=>setW(dismissClusterNativeHrError)}>{m.dismiss}</button></div>}
+   {w.reading&&<p role="status">{m.reading(w.reading.name)} <button type="button" className="secondary-button" ref={cancelReadButton} onClick={()=>change(cancelClusterNativeHrRead,'input')}>{m.cancelRead}</button></p>}
+   {w.error&&<div role="alert" className="cluster-native-hr-error"><p>{m.errors[w.error]}</p><button type="button" className="secondary-button" onClick={()=>change(dismissClusterNativeHrError,'input')}>{m.dismiss}</button></div>}
    {w.pending&&<div className="cluster-native-hr-review" role="group" aria-labelledby={id('review')}><h4 id={id('review')}>{m.reviewHeading}</h4><p data-testid="cnhr-pending">{m.reviewSummary(w.pending.name,w.pending.data.records.length)}</p><p className="cluster-native-hr-sha">{m.sha}: <code>{w.pending.sha256}</code></p>
-    {w.replaceArmed?<div><p>{m.replaceQuestion(records)}</p><div className="cnhr-actions"><button type="button" className="primary-button" disabled={disabled} onClick={()=>setW(confirmClusterNativeHrReplace)}>{m.confirmReplace}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>setW(disarmClusterNativeHrReplace)}>{m.keepCurrent}</button></div></div>
-    :<div className="cnhr-actions"><button type="button" className="primary-button" disabled={disabled} onClick={()=>setW(addClusterNativeHrPending)}>{m.addPending}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>setW(armClusterNativeHrReplace)}>{m.replacePending}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>setW(cancelClusterNativeHrPending)}>{m.cancelPending}</button></div>}
+    {w.replaceArmed?<div><p>{m.replaceQuestion(records)}</p><div className="cnhr-actions"><button type="button" className="primary-button" disabled={disabled} ref={confirmButton} onClick={()=>change(confirmClusterNativeHrReplace,'input')}>{m.confirmReplace}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>change(disarmClusterNativeHrReplace,'add')}>{m.keepCurrent}</button></div></div>
+    :<div className="cnhr-actions"><button type="button" className="primary-button" disabled={disabled} ref={addButton} onClick={()=>change(addClusterNativeHrPending,'input')}>{m.addPending}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>change(armClusterNativeHrReplace,records?'confirm':'input')}>{m.replacePending}</button><button type="button" className="secondary-button" disabled={disabled} onClick={()=>change(cancelClusterNativeHrPending,'input')}>{m.cancelPending}</button></div>}
    </div>}
+   {downloadError&&<p role="alert">{m.downloadError}</p>}
    <p data-testid="cnhr-current">{m.current(records)}</p>
    {w.receipts.length>0&&<details><summary>{m.sources}</summary><ul>{w.receipts.map((r,i)=><li key={i}>{r.name} · {r.records} · {m.sourceAction[r.action]} · <code>{r.sha256}</code></li>)}</ul></details>}
    {w.list&&<><button type="button" className="secondary-button" disabled={busy} onClick={download}>{m.download}</button><p className="cluster-native-hr-note">{m.downloadNote}</p></>}
   </section>
 
-  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} aria-pressed={w.observationsPlotted} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button><p className="cluster-native-hr-note">{m.plotHelp}</p>
+  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button><p className="cluster-native-hr-note">{m.plotHelp}</p>
    {!w.observationsPlotted&&<p>{m.notPlotted}</p>}
    {w.observationsPlotted&&plot.status==='blocked'&&<p role="alert" data-testid="cnhr-blocked">{m.blocked(plot.recordIndex,m.blockedField[plot.field])}</p>}
    {shownPlot&&shownPlot.plottedCountKind+shownPlot.plottedOtherKind>0&&<p role="note" className="cluster-native-hr-warning">{m.kindWarning(shownPlot.plottedCountKind,shownPlot.plottedOtherKind)}</p>}
@@ -112,8 +123,8 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
 
   <section aria-labelledby={id('report')}><h3 id={id('report')}>{m.reportHeading}</h3><figure className="cnhr-report"><figcaption>{report.caption}</figcaption><pre data-testid="cnhr-report">{report.lines.join('\n')}</pre></figure><p className="cluster-native-hr-note">{m.reportNote}</p></section>
 
-  {shownPlot&&shownPlot.rows.length>0&&<details className="cnhr-records"><summary>{m.recordsSummary}</summary><div className="photometer-table"><table><thead><tr><th scope="col">{m.colIndex}</th><th scope="col">{m.colObject}</th><th scope="col">{m.colKind}</th><th scope="col">{m.colB}</th><th scope="col">{m.colV}</th><th scope="col">{m.colBV}</th><th scope="col">{m.colPixel}</th><th scope="col">{m.colStatus}</th></tr></thead>
-   <tbody>{shownPlot.rows.map(r=><tr key={r.index} data-testid="cnhr-row"><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td>{r.b??'—'}</td><td>{r.v??'—'}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td></tr>)}</tbody></table></div></details>}
+  {((shownPlot&&shownPlot.rows.length>0)||(w.observationsPlotted&&plot.status==='blocked'&&records>0))&&<details className="cnhr-records"><summary>{m.recordsSummary}</summary><div className="photometer-table"><table><thead><tr><th scope="col">{m.colIndex}</th><th scope="col">{m.colObject}</th><th scope="col">{m.colKind}</th><th scope="col">{m.colB}</th><th scope="col">{m.colV}</th><th scope="col">{m.colBV}</th><th scope="col">{m.colPixel}</th><th scope="col">{m.colStatus}</th></tr></thead>
+   <tbody>{(shownPlot?.rows??w.list!.data.records.map(r=>({index:r.index,object:r.object,kind:r.kind,b:r.fields.find(f=>f.id==='b')!.value.decimal??r.fields.find(f=>f.id==='b')!.value.binary??r.fields.find(f=>f.id==='b')!.value.kind,v:r.fields.find(f=>f.id==='v')!.value.decimal??r.fields.find(f=>f.id==='v')!.value.binary??r.fields.find(f=>f.id==='v')!.value.kind,bMinusV:null,pixel:null,status:'blocked' as const,inFrame:false}))).map(r=><tr key={r.index} data-testid="cnhr-row"><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td>{r.b??'—'}</td><td>{r.v??'—'}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{r.status==='blocked'?m.blockedStatus:m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td></tr>)}</tbody></table></div></details>}
   <p className="cluster-native-hr-note">{m.limits}</p>
  </section>;
 }

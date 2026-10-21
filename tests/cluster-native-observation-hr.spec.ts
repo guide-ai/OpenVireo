@@ -48,6 +48,7 @@ test('invalid,late/cancelled and exception-path files keep current work and expl
  await choose(page,'nan-v.dat',dat([{time:9,object:'BAD',kind:1,v:NaN,b:1}]));await button(page,'Add to current results').click();
  await expect(page.getByTestId('cnhr-blocked')).toHaveText('Record 4 cannot be plotted under the compiled numerical policy (or its pixel position would wrap): V. Nothing is plotted. Correct or remove that record with the results tools and load the file again.');
  await expect(page.getByTestId('cnhr-point')).toHaveCount(0);await expect(page.getByTestId('cnhr-count')).toHaveCount(0);
+ await page.getByText('All records and how the original treats them',{exact:true}).click();await expect(page.getByTestId('cnhr-row')).toHaveCount(4);await expect(page.getByTestId('cnhr-row').last()).toContainText('4BADmagnitudes1nan');await expect(page.getByTestId('cnhr-row').last()).toContainText('Not evaluated: the whole plot is blocked.');
  await choose(page,'replace.dat',dat(A));await button(page,'Replace current results…').click();await button(page,'Confirm replacing current results').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');
 });
 
@@ -72,4 +73,24 @@ test('320px layout keeps the page within the viewport and the chart keyboard-scr
  await page.setViewportSize({width:320,height:800});await open(page);await choose(page,'night1.dat',dat(A));await button(page,'Add to current results').click();await button(page,'Plot data from observations').click();
  const region=page.getByRole('region',{name:'Scrollable observation HR diagram',exact:true});await region.focus();await region.press('ArrowRight');await expect.poll(()=>region.evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.locator('.cluster-native-hr').screenshot({path:info.outputPath('cnhr-mobile.png')});
+});
+
+
+test('local review transactions keep keyboard focus,including async completion,error and cancellation',async({page})=>{
+ await open(page);const input=page.getByLabel(L.file,{exact:true}),add=button(page,'Add to current results');
+ await choose(page,'first.dat',dat(A));await expect(add).toBeFocused();await add.press('Enter');await expect(input).toBeFocused();
+ await choose(page,'candidate.dat',dat(B));await expect(add).toBeFocused();await button(page,'Replace current results…').press('Enter');await expect(button(page,'Confirm replacing current results')).toBeFocused();
+ await button(page,'Keep current results').press('Enter');await expect(add).toBeFocused();await button(page,'Cancel and keep current results').press('Enter');await expect(input).toBeFocused();await expect(page.getByTestId('cnhr-current')).toContainText('3 records');
+ await choose(page,'replace.dat',dat(B));await button(page,'Replace current results…').press('Enter');await button(page,'Confirm replacing current results').press('Enter');await expect(input).toBeFocused();await expect(page.getByTestId('cnhr-current')).toContainText('1 record');
+ await choose(page,'partial.dat',Buffer.alloc(1));await expect(page.getByRole('alert')).toBeVisible();await expect(input).toBeFocused();await button(page,'Dismiss message').press('Enter');await expect(input).toBeFocused();
+ await page.evaluate(()=>{const original=File.prototype.arrayBuffer;File.prototype.arrayBuffer=function(){return new Promise(resolve=>{(window as unknown as{releaseRead:()=>void}).releaseRead=()=>{File.prototype.arrayBuffer=original;void original.call(this).then(resolve);};});};});
+ await choose(page,'slow.dat',dat(A));await expect(button(page,'Cancel file read')).toBeFocused();await button(page,'Cancel file read').press('Enter');await expect(input).toBeFocused();await page.evaluate(()=>(window as unknown as{releaseRead:()=>void}).releaseRead());await expect(page.getByTestId('cnhr-pending')).toHaveCount(0);await expect(input).toBeFocused();
+ await expect(button(page,'Plot data from observations')).not.toHaveAttribute('aria-pressed');
+});
+
+test('download failure is explained and a retry preserves the exact owned DAT bytes',async({page})=>{
+ await open(page);await choose(page,'owned.dat',dat(A));await button(page,'Add to current results').click();await button(page,'Plot data from observations').click();
+ await page.evaluate(()=>{const original=URL.createObjectURL;URL.createObjectURL=()=>{URL.createObjectURL=original;throw new Error('synthetic browser download failure');};});
+ await button(page,'Download current results (DAT)').click();await expect(page.getByRole('alert')).toHaveText('The browser could not start the download. Your current work was kept.');await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');await expect(page.getByTestId('cnhr-current')).toContainText('3 records');
+ const event=page.waitForEvent('download');await button(page,'Download current results (DAT)').click();const saved=await(await event).path();const bytes=await(await import('node:fs/promises')).readFile(saved!);expect(bytes.equals(dat([A[1]!,A[2]!,A[0]!]))).toBe(true);await expect(page.getByRole('alert')).toHaveCount(0);
 });
