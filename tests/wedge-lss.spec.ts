@@ -245,7 +245,7 @@ test('retain/delete prompts: Escape cancels without deleting and focus returns t
  await expect(prompt).toHaveAttribute('data-stage','confirm-delete');await expect(page.getByTestId('wedge-prompt-yes')).toBeFocused();
  await page.keyboard.press('Escape');await back(4);await expect(notice(page)).toHaveAttribute('data-cause','declined');
  // Yes (keyboard) adds; focus returns once React has re-enabled the input.
- await load(page,B);await page.keyboard.press('Enter');await back(6);await expect(notice(page)).toHaveAttribute('data-kind','loaded');
+ await load(page,B);await expect(page.getByTestId('wedge-prompt-yes')).toBeFocused();await page.keyboard.press('Enter');await back(6);await expect(notice(page)).toHaveAttribute('data-kind','loaded');
  // Cancel and No → No keep data.
  await load(page,B);await page.getByTestId('wedge-prompt-cancel').click();await back(6);
  await load(page,B);await page.getByTestId('wedge-prompt-no').click();await page.getByTestId('wedge-prompt-no').click();await back(6);
@@ -306,4 +306,21 @@ test('the SVG arc paths for every grid are unchanged by the pure-core move',asyn
  await commitOptions(page,1,1);expect(await paths()).toEqual(golden[1]);
  await commitOptions(page,2,1);expect(await paths()).toEqual(golden[2]);
  await commitOptions(page,0,1);expect(await paths()).toEqual(golden[0]);
+});
+
+
+for(const result of['success','header','transport']as const)test(`first ${result} read returns focus after its input is enabled`,async({page})=>{
+ await page.addInitScript(mode=>{const original=Blob.prototype.arrayBuffer;(window as unknown as{__firstRead?:()=>void}).__firstRead=undefined;Blob.prototype.arrayBuffer=function(this:Blob){const self=this;return new Promise<ArrayBuffer>((resolve,reject)=>{(window as unknown as{__firstRead:()=>void}).__firstRead=()=>{if(mode==='transport')reject(new Error('synthetic local read failure'));else void original.call(self).then(resolve,reject);};});};},result);
+ await open(page);const input=page.getByTestId('wedge-file');await input.focus();await load(page,result==='header'?txt('bad-first.txt','Not LSS'):A);await expect(input).toBeDisabled();
+ await page.evaluate(()=>(window as unknown as{__firstRead?:()=>void}).__firstRead?.());await expect(input).toBeEnabled();await expect(input).toBeFocused();
+ if(result==='success')await expect(page.locator('[data-testid^="wedge-row-"]')).toHaveCount(4);else{await expect(notice(page)).toHaveAttribute('data-kind','not-loaded');await expect(page.locator('[data-testid^="wedge-row-"]')).toHaveCount(0);}
+});
+
+test('Escape from enabled controls outside inline consent cancels each stage and preserves data',async({page})=>{
+ await open(page);await load(page,A);await expect(page.locator('[data-testid^="wedge-row-"]')).toHaveCount(4);
+ for(const stage of['retain','confirm-delete']){
+  await load(page,B);if(stage==='confirm-delete')await page.getByTestId('wedge-prompt-no').click();await expect(page.getByTestId('wedge-prompt')).toHaveAttribute('data-stage',stage);
+  await page.getByTestId('wedge-scheme').focus();await page.keyboard.press('Escape');await expect(page.getByTestId('wedge-prompt')).toHaveCount(0);await expect(page.getByTestId('wedge-file')).toBeFocused();await expect(page.locator('[data-testid^="wedge-row-"]')).toHaveCount(4);
+  await expect(page.getByTestId('wedge-row-0')).toContainText('SYN-001');
+ }
 });

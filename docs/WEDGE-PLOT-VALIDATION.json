@@ -1,11 +1,11 @@
 {
   "sourceHashes": {
     "docs/WEDGE-PLOT-PROVENANCE.json": "a934ed34411fbc1fb4f46a9c90b2197679c18abcf5299ee35a8c8a6d59656784",
-    "docs/WEDGE-PLOT.md": "e6ea04e265946acb6c886eb80fdf607fb425c931ef43d281e253bba89e637e35",
+    "docs/WEDGE-PLOT.md": "f9b72495960fe7596b754003e6dba51b52bed1842605d009002d2a7875dc0674",
     "src/components/Wedge.css": "25c018bc042fe458889ab0ccbd04927d7ad59213846f833d1e1f3179af00327d",
-    "src/components/WedgeLab.tsx": "1818344f93e92b016bc979f70329feb4b8fc861f81802f10221b4fd815be1237",
+    "src/components/WedgeLab.tsx": "d78e4b9fc2f9d11ee6904c477d18c4280e5149802d15d593d229881b3aa9464a",
     "src/components/WedgeMessages.test.ts": "1b404eadb4f09b4dc3b1a9266d244d80756c4dc84d5eed78f80abc768c723f17",
-    "src/components/WedgeMessages.ts": "b494d4e13322f9b48ec076938f5a18ef2879d40a012d2d340a805446914cacf9",
+    "src/components/WedgeMessages.ts": "215fa496ecdc5af140987fddf284dc18d0f40bf7acb77771495c411198df6297",
     "src/components/WedgeOptionsDialog.tsx": "a96ce6f5f09f23cec683621b96a3b2904113a103e8a2e486d393edf1239ae674",
     "src/components/WedgePlotSvg.tsx": "22b5a21d2bccacaa5d8d0dc0498883f1461738bff493fe8e0df33f8c7d26469f",
     "src/core/wedgeExport.ts": "2be4d39d052b0038bedd358d45e014ea4f84e39494f3c94bf2ded688eed3d43e",
@@ -21,36 +21,43 @@
     "src/core/wedgeWorkspace.test.ts": "abfcf8304cdbe5d7c5f779ba524615370a4759fbd31d9bce7fc193cc5b229fe7",
     "src/core/wedgeWorkspace.ts": "4887bf3a8a5ee3f8fe5fb062e8f37d4a10ad433a69c47a7c52d179d42bd80f8d",
     "src/io/wedgeLssFile.ts": "3af1e98ca95cc87330ba2dbaf96aae60d6549429b56cfe789a443f5f0c1445ad",
-    "tests/wedge-lss.spec.ts": "4467b7bd2cdc1703fc32bae32faf6aa3242218a4fd8497f07992dc9be2d42d62",
+    "tests/wedge-lss.spec.ts": "e184707c3162d49db607c7fddd3d0baa6a43217cd2fcc74ea48716ff7eb423a9",
     "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed"
   },
-  "sourceStableDuringValidation": true,
+  "productSourceStableAcrossValidationRuns": true,
+  "testReadinessCorrection": "Existing keyboard-Yes test now awaits actual promptfocus;initial31/32andtracepreserved,final32/32;no productchange/timeoutraise/assertionremoval",
   "unitTests": {
     "passed": 1798,
     "failed": 0,
     "files": 179
   },
   "e2e": {
-    "startTime": "2026-10-21T22:15:44.105Z",
-    "duration": 23994.013,
-    "expected": 24,
+    "startTime": "2026-10-21T22:32:07.580Z",
+    "duration": 30293.259,
+    "expected": 32,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   },
   "independentUiReproductions": {
-    "startTime": "2026-10-21T22:16:00.081Z",
-    "duration": 2403.833,
-    "expected": 4,
+    "startTime": "2026-10-21T22:31:30.024Z",
+    "duration": 4067.7610000000004,
+    "expected": 6,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   },
-  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-wedge-codex-corrections-1;exit0",
+  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-wedge-codex-corrections-2;exit0",
   "resources": "1279/1279 size/SHA256 match",
-  "independentControls": "3 tests,645 Decimal90 projection controls repeated;declared policy,not original FPU/GDI oracle",
-  "preFixEvidence": "wedge-review-triage/ui-report.json(4fail),pre-fix-facts.json and authorreview-fixes pre-fix runs retained",
-  "status": "Corrected candidate independently validated;separate correction delta review and integration pending",
+  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3",
+  "preFixEvidence": [
+    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-review-triage/ui-report.json",
+    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-correction-triage/pre-report.json"
+  ],
+  "priorValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-1/receipt.json",
+  "scope": "UI focus after first read and Escape from active panel,one missing separator space,unit suffix contract;no parser/numerical/CSV/data schema changes",
+  "authorship": "Claude initial+first corrections;Codex final scoped UI correction after additional Claude author launch denied before execution,not retried",
+  "status": "Validated local candidate;separate final correction delta review and integration pending",
   "scientificLimits": [
     "No MJD numeric metadata constructed from historical hostcontext",
     "No live LSSacquisition/groupAutoPlot/nativewriter/printing",
