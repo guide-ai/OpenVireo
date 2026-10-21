@@ -32,3 +32,7 @@ Complete additional captures now include camera preparation IR `0x51e43c..0x51e7
 4. Admit only recovered bounded domains,with independent numerical controls and explicit Number/x87 limits. Validate observing,cancellation,reentry,save/restore and manual-work conservation before enabling acquisition/calibration.
 
 These are concrete further recovery tasks in the available VIREO source,not a claim that all remaining work is permanently blocked. Historical session metadata and unmeasured native FPU/output witnesses remain separate limitations. The optional palette preserves these gates;it does not synthesize camera context from header text or treat its display as scientific calibration.
+
+## Subsequent source and configuration recovery
+
+[Camera pipeline authority](CAMERA-PIPELINE-AUTHORITY.md) now records24completeprocedures,typed virtual owners and table branches,the camera-selected NOMAD request/header route,6base calibration defaults and their options-form bindings,and the statistics-before-source/clipping order. It narrows the remaining source/configuration and numerical tests;it does not enable acquisition or replace mixed IR reads with inferred defaults. No source service call,original execution or microemulation was performed.

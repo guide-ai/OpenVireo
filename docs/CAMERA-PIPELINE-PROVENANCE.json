@@ -1,0 +1,590 @@
+{
+  "catalogOwner": {
+    "IRParentLink": {
+      "address": "0x51dc1c",
+      "value": "0x520d54",
+      "bytesSHA256": "a87bdaa582d2aa0387394b7d39d18ab3adad680b10da0a2ad4b230dcccb2ba72"
+    },
+    "classVariable": "0x594ef0",
+    "VMT": "0x594f3c",
+    "name": "B1CatObj",
+    "nameAddress": "0x594f6e",
+    "nameSHA256": "f1d5d7ac0215c33f9bd6e9fe4ee6636fbe52be251d91f59c8df1a967c5b27c69",
+    "constructor": "0x59bed8",
+    "fieldStorage": "CCDFieldObj+0x1a via0x522095;IRFieldObj inherits CCDFieldObj",
+    "virtual0": "0x59c45c",
+    "virtual4": "0x59c620",
+    "virtual8": "0x59cc88"
+  },
+  "evidenceId": "NATIVE-CAMERA-PIPELINE-OWNERS-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "ranges": [
+    {
+      "name": "b1-constructor",
+      "start": "0x59bed8",
+      "endExclusive": "0x59bf31",
+      "bytes": 89,
+      "bytesSHA256": "679bb1ee5de6ed6b6bd4289d69eff8bbc419b6afe18eb3747cd86f5111bdf649",
+      "listingSHA256": "e86a8082c89d4a88e7ab8fb4212a3f7a8436c23fc5e655964c7dc762b141de25",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "b1-query-text",
+      "start": "0x59bf6c",
+      "endExclusive": "0x59c3ac",
+      "bytes": 1088,
+      "bytesSHA256": "49e4777b4b95d04db2438d54f26e67a9032231805d0abe0ee57f8ecd3fe08242",
+      "listingSHA256": "0ac28e790e9a69d96f8799a9ff0c7edea7fa910ccf52d4f09136be8de02dfef9",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "b1-initialize",
+      "start": "0x59c45c",
+      "endExclusive": "0x59c5de",
+      "bytes": 386,
+      "bytesSHA256": "ca0a627dc65f5f3914593e38cb72bcac280693732dfb84a95af13032b16aaa2e",
+      "listingSHA256": "eb918f9ab3f01e69d28c198e1e75da5b3bfba20d88ac24412b9da8443da3612a",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "b1-download-header",
+      "start": "0x59c620",
+      "endExclusive": "0x59c88d",
+      "bytes": 621,
+      "bytesSHA256": "b2055b3ddbcc67f4029dbfbb4c3d004597702ea9f44200f01abb0b715b159657",
+      "listingSHA256": "be4f9ab8a9900ba009db8776beaf05d310b7577fa1a05f67a146bc51b9e05fdb",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "b1-header-fields",
+      "start": "0x59c9d8",
+      "endExclusive": "0x59cbad",
+      "bytes": 469,
+      "bytesSHA256": "4e8ad2dd36be40f52f4af3725896fc1e81a6562b48d4c7268c058251da6aa29b",
+      "listingSHA256": "852c34e3d94f07890fe567a87259c3295511f6e16732de6c9c6897757c2e12a9",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "b1-select",
+      "start": "0x59cc88",
+      "endExclusive": "0x59cea9",
+      "bytes": 545,
+      "bytesSHA256": "00f62046323adf9a080403286413d0edfd08545489d25e4df85fd7f398af150d",
+      "listingSHA256": "22a9826832dc389e778e6831898e4bb53a8cb8e5362584ef820c14eaff64e89a",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "options-activate",
+      "start": "0x5a56e0",
+      "endExclusive": "0x5a602b",
+      "bytes": 2379,
+      "bytesSHA256": "0330427466f9a1db5074a3ee6adeb396c01435b5dd2de0935ecfcd27fb2f1ba7",
+      "listingSHA256": "5bd57691c437c30d2c55b4bcb2cc5f59d369e4582a419dedb47914a8db07207f",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "options-save",
+      "start": "0x5a6068",
+      "endExclusive": "0x5a6b97",
+      "bytes": 2863,
+      "bytesSHA256": "503b8e708800618cdac6e6828a75f9452189f26048a9898ac44536ec140a4836",
+      "listingSHA256": "c58bd5e63e50b3b30dd34962f7a4a5683d3e4c1c49ad349c598e49e56b86fbd5",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "field-constructor",
+      "start": "0x52205c",
+      "endExclusive": "0x5220bc",
+      "bytes": 96,
+      "bytesSHA256": "54083c5f38141812b9604be21a8a911b80daad67839d826482b1e95b06780bc1",
+      "listingSHA256": "64a53f496391b92cdba9e5b1dbc248f3ec6c8bbc0f82251131627cecd3597d13",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "ccd-select",
+      "start": "0x5222d4",
+      "endExclusive": "0x522450",
+      "bytes": 380,
+      "bytesSHA256": "4ce4949cf2e6fee6e3fa396c8f285a328b83eb69c08d5ca5607f622a18447124",
+      "listingSHA256": "c4d05d4783ae13ffd161a7d04e16bf7d60dfb12b7f17c8e6cf352033b905cf7a",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "ir-select",
+      "start": "0x51def0",
+      "endExclusive": "0x51e10a",
+      "bytes": 538,
+      "bytesSHA256": "31340793dd3acfad8c8092bbb47f4c2ca5799144a9089295b256ff98b34bfd5a",
+      "listingSHA256": "4528ea0d7a77e46dabc107efaaed62c48400c8446b8587287f68ab5fcef0fe11",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "shared-field-update",
+      "start": "0x522454",
+      "endExclusive": "0x52255e",
+      "bytes": 266,
+      "bytesSHA256": "b899581be4658b9ceec61efd4874cb8afd897555a8236945957f1b2ba848eba6",
+      "listingSHA256": "0844166fcd8b94a82de3bde7a4d13045fff2b3501125282653c5ee72fdf429de",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "project-with-jitter",
+      "start": "0x522560",
+      "endExclusive": "0x522683",
+      "bytes": 291,
+      "bytesSHA256": "b29c272f56be0be249c2765c33a0a686974eb9f4915e58dbaa46de2e7211f415",
+      "listingSHA256": "2b8cf33b316508cebebfd49fe43c789cf9718022fb8ac9c58c8dda956efbd843",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "project-bounds",
+      "start": "0x522698",
+      "endExclusive": "0x522716",
+      "bytes": 126,
+      "bytesSHA256": "d80063e2549a0e867c834336c38b8e86ec3030352db32cc373cbca77b033d26f",
+      "listingSHA256": "42d30e982963585108e9031ccc6a4259d9ce21e12c5694fa3e5b2c13fc43c26a",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "ccd-extended-select",
+      "start": "0x522718",
+      "endExclusive": "0x5228b7",
+      "bytes": 415,
+      "bytesSHA256": "9647a5fc4515364cc6a5620a7e70090aab1f9106478a260a83eb1a4a68810d37",
+      "listingSHA256": "7e4ee9eda63a8e34c72e3dad2e5633a2669c13be86fa94a8aed8d54b4baa5a58",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "ccd-extended-update",
+      "start": "0x5228dc",
+      "endExclusive": "0x522a18",
+      "bytes": 316,
+      "bytesSHA256": "25e24389b58feaf5d902657673b30efc2427bf2519613187286657fde4a456ba",
+      "listingSHA256": "91dd33b177416de633dedc2cf71e3448b456e0f513ccedc450240bd2f05ebf83",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "ir-extended-select",
+      "start": "0x51e110",
+      "endExclusive": "0x51e2b4",
+      "bytes": 420,
+      "bytesSHA256": "91632aee0f488136756a247351d99982a0093f0327f25b56912acad90410e9fe",
+      "listingSHA256": "26da77c8cde969756f2ab01d8608dc67fa5aa3dda13be256861e58fd75c36628",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "source-initialize",
+      "start": "0x52455c",
+      "endExclusive": "0x5245c4",
+      "bytes": 104,
+      "bytesSHA256": "17e7071ad2892ac143fe99250050298a8cb309545871ba78613eb0b7e28c541b",
+      "listingSHA256": "53383dcd3dd259b87ad0fd65f9b741d7949b27450275929a60a7dc775a136fe1",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "point-add",
+      "start": "0x5245d0",
+      "endExclusive": "0x524a41",
+      "bytes": 1137,
+      "bytesSHA256": "03bdf749e18e0a4189ff39d3186133c129d459e0d3db15624aaf8c4b8f044231",
+      "listingSHA256": "9ee1d2193725c649d6dc97d59d11801abc43369cb3360364e28f8253c6b1d2a4",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "extended-add",
+      "start": "0x524a6c",
+      "endExclusive": "0x525095",
+      "bytes": 1577,
+      "bytesSHA256": "5899f5515cfc39db8530e3934c9bd6fd01c56b099001f8f684f89059d8bd167f",
+      "listingSHA256": "53aca1d06c3e144323e09e54f88aeb2f2cdc6cd2735feb514d729d8600e35d7c",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "extended-color-correction",
+      "start": "0x51ef38",
+      "endExclusive": "0x51f092",
+      "bytes": 346,
+      "bytesSHA256": "86c59212d28488367c653f12695f0aa911dc20ae856f0c7ff075ef841a0471da",
+      "listingSHA256": "3df7cad2bd9ddc2dea0e7f1230e1cc930898313b1335169a5f7aed90dd8d5d98",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "ccd-prepare",
+      "start": "0x52154c",
+      "endExclusive": "0x521c65",
+      "bytes": 1817,
+      "bytesSHA256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+      "listingSHA256": "ff80a59dc3bd5de51a7c3f2b4a8638b2e33aa3b041631f7ee07efdccad6fe81f",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "ir-prepare",
+      "start": "0x51e43c",
+      "endExclusive": "0x51e712",
+      "bytes": 726,
+      "bytesSHA256": "95b7a6912bef366c3ab88b13a429163e3ce6a82353b10ac792ebbb2703220fc2",
+      "listingSHA256": "d1dc37be4f8c5cb141fe76866bf344817cb0e70b26062ade60ca0185fffe3369",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    },
+    {
+      "name": "jitter",
+      "start": "0x520ec0",
+      "endExclusive": "0x520f0e",
+      "bytes": 78,
+      "bytesSHA256": "c382ef1a0c4e6cb5bfdbbdaba222be4f890c9dd1c461bb5337b7215ad19a2f50",
+      "listingSHA256": "1effe79c22a42f5d485c2cf4323424e902323ea576124e223abbd388318665da",
+      "boundary": "Complete entry through final return/SEH cleanup;embedded tables are data,branch-target captures separate"
+    }
+  ],
+  "virtualOwners": [
+    {
+      "kind": "ccd",
+      "address": "0x520da0",
+      "methods": [
+        "0x5220f4",
+        "0x5222d4",
+        "0x522454"
+      ],
+      "bytesSHA256": "07e44229c6e2a558af8150f4ea9eaa3a49c4945e4215e500099909c4e8ecd993"
+    },
+    {
+      "kind": "ir",
+      "address": "0x51dc40",
+      "methods": [
+        "0x51dd10",
+        "0x51def0",
+        "0x522454"
+      ],
+      "bytesSHA256": "169775e204416aea2b8c1e4c0341c5368bc5873098badd2e4774978eb19bd52f"
+    }
+  ],
+  "jumpTables": [
+    {
+      "name": "ccd-filter",
+      "address": "0x5223c8",
+      "targets": [
+        "0x5223f8",
+        "0x5223dc",
+        "0x5223e2",
+        "0x5223e8",
+        "0x5223ee"
+      ],
+      "bytesSHA256": "c69cc450386828db49821c01c8aeebb513444c4d99cfb4d7a0531d6164f1e807",
+      "branches": [
+        {
+          "start": "0x5223dc",
+          "endExclusive": "0x5223fc",
+          "listing": "ccd-filter-branch-0x5223dc.asm",
+          "listingSHA256": "27f18a62100eaef11429d168e46e70de857d7fa3071cd18aadc774b06f6d1d84"
+        },
+        {
+          "start": "0x5223e2",
+          "endExclusive": "0x5223fc",
+          "listing": "ccd-filter-branch-0x5223e2.asm",
+          "listingSHA256": "7eb7179b4b9b32dce914856d8e296158d6265a2fcb5bc17f72470f2d0b4c2221"
+        },
+        {
+          "start": "0x5223e8",
+          "endExclusive": "0x5223fc",
+          "listing": "ccd-filter-branch-0x5223e8.asm",
+          "listingSHA256": "a5c77d8e07bfd27e3f4da1a8002bf24e9ba17ea3f8fb29cee8df584788a11ed4"
+        },
+        {
+          "start": "0x5223ee",
+          "endExclusive": "0x5223fc",
+          "listing": "ccd-filter-branch-0x5223ee.asm",
+          "listingSHA256": "c54bdd8700301572bbf6ea1fe432f72b3ac4a4a64f6ba1037b2bf2f175e0d07a"
+        },
+        {
+          "start": "0x5223f8",
+          "endExclusive": "0x5223fc",
+          "listing": "ccd-filter-branch-0x5223f8.asm",
+          "listingSHA256": "e450cb2a14289f8bd823136ca2f75ab6082b2367666b4b65b8053f25b7b2ce07"
+        }
+      ]
+    },
+    {
+      "name": "color-correction",
+      "address": "0x51f00a",
+      "targets": [
+        "0x51f01e",
+        "0x51f039",
+        "0x51f02b",
+        "0x51f01e",
+        "0x51f044"
+      ],
+      "bytesSHA256": "8efabee783c764d2b548718fbe8f96ca2c2ed7e14740d874bbcdaf1fe7e39b14",
+      "branches": [
+        {
+          "start": "0x51f01e",
+          "endExclusive": "0x51f05d",
+          "listing": "color-correction-branch-0x51f01e.asm",
+          "listingSHA256": "6dbdd025b79349aba82e80bb8f18ed98156469cbb4815540223714bedb6fe470"
+        },
+        {
+          "start": "0x51f02b",
+          "endExclusive": "0x51f05d",
+          "listing": "color-correction-branch-0x51f02b.asm",
+          "listingSHA256": "a1a90878e7260dad8ccdc8ea0838c3f4fdaff38229a7e17245461b8229e736c5"
+        },
+        {
+          "start": "0x51f039",
+          "endExclusive": "0x51f05d",
+          "listing": "color-correction-branch-0x51f039.asm",
+          "listingSHA256": "4d5f3080a0f6a60e7695d235535cc9dd83b960bcd98bc3ebb43e440c766f9f0a"
+        },
+        {
+          "start": "0x51f044",
+          "endExclusive": "0x51f05d",
+          "listing": "color-correction-branch-0x51f044.asm",
+          "listingSHA256": "0c336764a61fadd2b391b98047c4e39ac9acb3fbde3713e8370b1d30ae12d85f"
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x5245c4",
+      "type": "Extended",
+      "exactNumerator": "14862945222714398133",
+      "exactDenominator": "72057594037927936",
+      "Number": 206.2648,
+      "bytesSHA256": "a4b9a0e7abec5f4f1a1227479f11236c373287c87e1ab3954507d2dbc3f466b0"
+    },
+    {
+      "address": "0x51e2b4",
+      "type": "Extended",
+      "exactNumerator": "10422410401645896663",
+      "exactDenominator": "9223372036854775808",
+      "Number": 1.13,
+      "bytesSHA256": "6b1390f1dd9a302771af663af1dc96925f10ea9e7f8953b3265b74beda276e23"
+    },
+    {
+      "address": "0x51e2c0",
+      "type": "Extended",
+      "exactNumerator": "10699111562751539937",
+      "exactDenominator": "36893488147419103232",
+      "Number": 0.29,
+      "bytesSHA256": "44f8d0040d4fb6671d1c1315e931f71d27dbef5eda0ba7f65f818f4dcfd498b9"
+    },
+    {
+      "address": "0x51e2cc",
+      "type": "Extended",
+      "exactNumerator": "10330176681277348905",
+      "exactDenominator": "147573952589676412928",
+      "Number": 0.07,
+      "bytesSHA256": "b52180fc6a15c5a7da8d46b0db5e9cca1e579fbb045aa503e4aa53b8bbf70bab"
+    }
+  ],
+  "sourceCalibrationStores": [
+    {
+      "kind": "ccd",
+      "address": "0x5a2bb1",
+      "recordOffset": "0x39",
+      "type": "Single",
+      "value": 10.0,
+      "instructionSHA256": "5878d2a173ae38d3e155b9d4857a7d09619111b97c1a4668a1a2ff67dc43b00f",
+      "semanticName": "Base magnitude"
+    },
+    {
+      "kind": "ccd",
+      "address": "0x5a2bb8",
+      "recordOffset": "0x3d",
+      "type": "Integer",
+      "value": 1000,
+      "instructionSHA256": "ced244dfc5ce43cd131a7746b8ddda956970bd24f418470d945e7435399d9325",
+      "semanticName": "Base count (unit not supplied by this label)"
+    },
+    {
+      "kind": "ccd",
+      "address": "0x5a2bbf",
+      "recordOffset": "0x41",
+      "type": "Integer",
+      "value": 10,
+      "instructionSHA256": "469ed29a2e6d06412bdc118816bf1ff0ec40dfa4ef1c6e0bb87aa67f78c55284",
+      "semanticName": "Base exposure,seconds (DFM Hint)"
+    },
+    {
+      "kind": "ir",
+      "address": "0x5a2c21",
+      "recordOffset": "0x39",
+      "type": "Single",
+      "value": 10.0,
+      "instructionSHA256": "5878d2a173ae38d3e155b9d4857a7d09619111b97c1a4668a1a2ff67dc43b00f",
+      "semanticName": "Base magnitude"
+    },
+    {
+      "kind": "ir",
+      "address": "0x5a2c28",
+      "recordOffset": "0x3d",
+      "type": "Integer",
+      "value": 1000,
+      "instructionSHA256": "ced244dfc5ce43cd131a7746b8ddda956970bd24f418470d945e7435399d9325",
+      "semanticName": "Base count (unit not supplied by this label)"
+    },
+    {
+      "kind": "ir",
+      "address": "0x5a2c2f",
+      "recordOffset": "0x41",
+      "type": "Integer",
+      "value": 10,
+      "instructionSHA256": "469ed29a2e6d06412bdc118816bf1ff0ec40dfa4ef1c6e0bb87aa67f78c55284",
+      "semanticName": "Base exposure,seconds (DFM Hint)"
+    }
+  ],
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false,
+  "admission": "Recovery only;no source/noise/exposure/statistics feature admitted by these captures",
+  "remaining": [
+    "Verify source service/cache options and response/catalog authority without remote calls;do not substitute a bright-star catalog for NOMAD",
+    "Complete projected jitter and per-pixel draw order/cache/lifecycle including historical RNG ownership",
+    "Independent point/extended calibration/output controls,all Single/Extended/FISTP/clipping boundaries",
+    "CCD optional raster overlay scaling and unit ownership",
+    "Native cancellation/save metadata and file-output witnesses;native execution remains prohibited"
+  ],
+  "optionsBinding": {
+    "form": "TOptionsDlg",
+    "sourceFileOffset": 2134672,
+    "resourceSHA256": "183d69820285e82447c912b112179435e23c1ed3866058f7c8d31988348f99cf",
+    "properties": [
+      {
+        "component": "CCDCountLbl",
+        "componentNameOffset": 12599,
+        "property": "Caption",
+        "propertyOffset": 12643,
+        "text": "Base Count",
+        "payloadSHA256": "21d144e5f3b05979c47624a8694182256d7b36b4dd89e1a7627252a36a9b2a38"
+      },
+      {
+        "component": "CCDMagLbl",
+        "componentNameOffset": 12524,
+        "property": "Caption",
+        "propertyOffset": 12566,
+        "text": "Base Magnitude",
+        "payloadSHA256": "ea75170fb3089d40f6aa88504f2bdd95c7e1c5ec6581744ab4d788d302fa05b6"
+      },
+      {
+        "component": "CCDTimeLbl",
+        "componentNameOffset": 12672,
+        "property": "Caption",
+        "propertyOffset": 12715,
+        "text": "Base Exposure",
+        "payloadSHA256": "a66a33081e32d433d74676807eeec7271bf3342e9b1cacb9637b92a489b72f07"
+      },
+      {
+        "component": "CCDTimeEd",
+        "componentNameOffset": 14802,
+        "property": "Hint",
+        "propertyOffset": 14844,
+        "text": "Exposure in seconds (for base mag and count)",
+        "payloadSHA256": "80fa83e6d70a5aa86c0e8ed63904693342f1161dcee555302b2b731458eb7b36"
+      },
+      {
+        "component": "CCDTimeEd2",
+        "componentNameOffset": 18636,
+        "property": "Hint",
+        "propertyOffset": 18679,
+        "text": "Exposure in seconds (for base mag and count)",
+        "payloadSHA256": "80fa83e6d70a5aa86c0e8ed63904693342f1161dcee555302b2b731458eb7b36"
+      }
+    ],
+    "RTTI": {
+      "class": "TOptionsDlg",
+      "VMT": "0x5a0a28",
+      "fieldTable": "0x5a0b3e",
+      "count": 144,
+      "bytesSHA256": "555b67f2d512fb47ebd6fa4c375d553d0907e3c3b26db5b3294d73473419968d",
+      "calibrationControls": [
+        {
+          "offset": "0x4a4",
+          "name": "CCDMagEd",
+          "typeIndex": 1
+        },
+        {
+          "offset": "0x4a8",
+          "name": "CCDCountEd",
+          "typeIndex": 1
+        },
+        {
+          "offset": "0x4ac",
+          "name": "CCDTimeEd",
+          "typeIndex": 1
+        },
+        {
+          "offset": "0x538",
+          "name": "CCDMagEd2",
+          "typeIndex": 1
+        },
+        {
+          "offset": "0x53c",
+          "name": "CCDCountEd2",
+          "typeIndex": 1
+        },
+        {
+          "offset": "0x540",
+          "name": "CCDTimeEd2",
+          "typeIndex": 1
+        }
+      ],
+      "nativeExecution": false
+    },
+    "activateReads": [
+      {
+        "camera": "ccd",
+        "recordOffset": "0x39",
+        "instruction": "0x5a5c8c",
+        "controlOffset": "0x4a4"
+      },
+      {
+        "camera": "ccd",
+        "recordOffset": "0x3d",
+        "instruction": "0x5a5cba",
+        "controlOffset": "0x4a8"
+      },
+      {
+        "camera": "ccd",
+        "recordOffset": "0x41",
+        "instruction": "0x5a5cd9",
+        "controlOffset": "0x4ac"
+      },
+      {
+        "camera": "ir",
+        "recordOffset": "0x39",
+        "instruction": "0x5a5ebc",
+        "controlOffset": "0x538"
+      },
+      {
+        "camera": "ir",
+        "recordOffset": "0x3d",
+        "instruction": "0x5a5eea",
+        "controlOffset": "0x53c"
+      },
+      {
+        "camera": "ir",
+        "recordOffset": "0x41",
+        "instruction": "0x5a5f09",
+        "controlOffset": "0x540"
+      }
+    ]
+  },
+  "catalogMode": {
+    "ccd": "0x5223a9 writes B1CatObj+0x39=0",
+    "ir": "0x51dfc8 writes B1CatObj+0x39=0",
+    "selectedInitialization": "mode0 selects NOMAD in0x59c4dc;otherbranches are USNO-B1 and USNO-A2",
+    "service": "0x59bfab reads root options+0x21cd URL prefix;queryCAT/RA/DEC/SR;0x59c591 assigns URL and opens request;0x59c6a3 waits,requires END/#END and coordinate-column header",
+    "networkCalled": false
+  },
+  "statisticsOrder": {
+    "ccd": "0x52165f stores Single background;0x52166c rereads;0x521678 divides by CCD gain;0x521680 FISTP;0x521689 inserts histogram before optional overlay and source loop0x521a79;0x521b92 final clipping/store occurs later",
+    "ir": "0x51e51a stores Single background;0x51e527 rereads;0x51e533 divides by IR gain;0x51e53b FISTP;0x51e544 inserts before source loop0x51e567 and final0x51e658 clipping/store",
+    "restriction": "No histogram inferred from all final imported pixels"
+  },
+  "mixedOwners": {
+    "commonSourceInitialization": "0x524571 selects CCDpixel record for both callers",
+    "pointAndExtended": "0x5245e7 and0x524ae9 selectCCDcalibration record for both cameras",
+    "IRBackground": "0x51e45f CCDread/dark/bias/cooling",
+    "IRFinalLimit": "0x51e611 IRADbits/well",
+    "noClaim": "Captures do not rule out upstream option mutation or prove a native bug;do not silently replace these owners withIRInformationdefaults"
+  }
+}
