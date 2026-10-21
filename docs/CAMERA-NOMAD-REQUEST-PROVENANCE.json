@@ -114,5 +114,25 @@
       "absolutePath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-query-authority/shared-field-update.asm"
     }
   ],
-  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3"
+  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3",
+  "unsupportedTraceReceipt": {
+    "scope": "Synthetic web guard trace,not original runtime oracle",
+    "stateCases": 108,
+    "unsupportedEvents": 7,
+    "transportPrecedenceBranch": true,
+    "artifacts": [
+      {
+        "absolutePath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-reply-ownership/evaluate.mjs",
+        "sha256": "926c3f7c8245999f9e0a8492b876b3d9f5bece8d2dacb7c4ab22fba73d469f99"
+      },
+      {
+        "absolutePath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-reply-ownership/independent-result.json",
+        "sha256": "98f5008cf22bf9bfb81307933ed958fc8012c80f22bff7b365f643b5e2304f51"
+      },
+      {
+        "absolutePath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-reply-ownership/browser-control.json",
+        "sha256": "f7580d9dddca89feebd7672940c83a800b947e0c703f577e63e3cbcf92043161"
+      }
+    ]
+  }
 }
