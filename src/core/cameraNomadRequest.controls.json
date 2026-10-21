@@ -1,0 +1,1528 @@
+{
+  "scope": "Synthetic independently authored state truth table,not original transport/cache/runtime oracle",
+  "bodies": {
+    "emptyBytes": "",
+    "badMarker": "missing marker",
+    "badUnits": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh mm ss dd mm ss",
+    "zeroRows": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd",
+    "commentsOnly": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd\n# synthetic comment",
+    "rejectedRows": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd\n            SYNTHETIC-A                      12                     -30                       0                       0                      14                      13                       0                      11                      10                       9 \n            SYNTHETIC-A                      12                     -30                       0                       0                      14                      13                      30                      11                      10                       9 ",
+    "invalidRows": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd\n            SYNTHETIC-A                      12                     -30                       0                       0                      14                      13                     bad                      11                      10                       9 ",
+    "oneRow": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd\n            SYNTHETIC-A                      12                     -30                       0                       0                      14                      13                      12                      11                      10                       9 ",
+    "mixed": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd\n                      A                      12                     -30                       0                       0                      14                      13                      12                      11                      10                       9 \n# comment\n                    BAD                      12                     -30                       0                       0                      14                      13                     bad                      11                      10                       9 \n                   ZERO                      12                     -30                       0                       0                      14                      13                       0                      11                      10                       9 \n                      B                      12                     -30                       0                       0                      14                      13                      12                      11                      10                       9 \n                      A                      12                     -30                       0                       0                      14                      13                      12                      11                      10                       9 "
+  },
+  "cases": [
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "badMarker",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "badUnits",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "zeroRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "invalidRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "oneRow",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "mixed",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "badMarker",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "badUnits",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "zeroRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "invalidRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "oneRow",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "mixed",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "badMarker",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "badUnits",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "zeroRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "invalidRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "oneRow",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "mixed",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "size",
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "badMarker",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "marker",
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "badUnits",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "header",
+        "previousCount": null,
+        "active": false
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "zeroRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": true
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": true
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": true
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "invalidRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 1,
+        "catalogError": null,
+        "previousCount": null,
+        "active": true
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "oneRow",
+      "expected": {
+        "status": "valid-data",
+        "acceptedRowCount": 1,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": null,
+        "active": true
+      }
+    },
+    {
+      "previous": "none",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "mixed",
+      "expected": {
+        "status": "valid-data",
+        "acceptedRowCount": 3,
+        "invalidRowCount": 1,
+        "catalogError": null,
+        "previousCount": null,
+        "active": true
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "badMarker",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "badUnits",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "zeroRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "invalidRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "oneRow",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "mixed",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "badMarker",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "badUnits",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "zeroRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "invalidRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "oneRow",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "mixed",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "badMarker",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "badUnits",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "zeroRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "invalidRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "oneRow",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "mixed",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "size",
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "badMarker",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "marker",
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "badUnits",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "header",
+        "previousCount": 1,
+        "active": false
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "zeroRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": true
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": true
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": true
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "invalidRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 1,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": true
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "oneRow",
+      "expected": {
+        "status": "valid-data",
+        "acceptedRowCount": 1,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": true
+      }
+    },
+    {
+      "previous": "data",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "mixed",
+      "expected": {
+        "status": "valid-data",
+        "acceptedRowCount": 3,
+        "invalidRowCount": 1,
+        "catalogError": null,
+        "previousCount": 1,
+        "active": true
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "badMarker",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "badUnits",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "zeroRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "invalidRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "oneRow",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": false,
+      "body": "mixed",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "badMarker",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "badUnits",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "zeroRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "invalidRows",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "oneRow",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": false,
+      "transportSucceeded": true,
+      "body": "mixed",
+      "expected": {
+        "status": "pending",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "badMarker",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "badUnits",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "zeroRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "invalidRows",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "oneRow",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": false,
+      "body": "mixed",
+      "expected": {
+        "status": "transport-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "emptyBytes",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "size",
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "badMarker",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "marker",
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "badUnits",
+      "expected": {
+        "status": "catalog-error",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": "header",
+        "previousCount": 0,
+        "active": false
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "zeroRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": true
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "commentsOnly",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": true
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "rejectedRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": true
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "invalidRows",
+      "expected": {
+        "status": "valid-empty",
+        "acceptedRowCount": 0,
+        "invalidRowCount": 1,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": true
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "oneRow",
+      "expected": {
+        "status": "valid-data",
+        "acceptedRowCount": 1,
+        "invalidRowCount": 0,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": true
+      }
+    },
+    {
+      "previous": "empty",
+      "finished": true,
+      "transportSucceeded": true,
+      "body": "mixed",
+      "expected": {
+        "status": "valid-data",
+        "acceptedRowCount": 3,
+        "invalidRowCount": 1,
+        "catalogError": null,
+        "previousCount": 0,
+        "active": true
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import {cameraCatalogReference,nomadBandForCameraFilter,type CameraCatalogRefere
 import {readNativeNomadResponse,type NomadResponse} from './nativeNomadResponse';
 import type {CameraKind} from './cameraInformation';
 import type {OpticalIndex} from './opticalTelescope';
+import type {NomadRowContext} from './nativeNomadRows';
 
 export class CameraQueryReferenceError extends Error {
  constructor(readonly code:'context'|'center'|'magnitude'|'time'|'ownership'){super(`Camera query reference: ${code}`);this.name='CameraQueryReferenceError';}
@@ -43,7 +44,12 @@ export function compiledCameraQueryReference(kind:unknown,index:unknown,filterPo
  * Actual factory identity is a web ownership guard. CCD I remains USNO-B1 I2
  * and rejects before any NOMAD row can be interpreted under another band. */
 export function readCameraNomadReferenceResponse(bytes:Uint8Array,reference:CameraQueryReference):NomadResponse {
+ return readNativeNomadResponse(bytes,cameraNomadReferenceContext(reference));
+}
+/** Validates actual reference identity before a future request is started.
+ * This bounded numeric context is not service/field/time authentication. */
+export function cameraNomadReferenceContext(reference:CameraQueryReference):NomadRowContext {
  if(!reference||!owned.has(reference))throw new CameraQueryReferenceError('ownership');
  const band=nomadBandForCameraFilter(reference.camera,reference.lookup.position);
- return readNativeNomadResponse(bytes,{band,epochOffsetYears:reference.epochOffsetYears});
+ return Object.freeze({band,epochOffsetYears:reference.epochOffsetYears});
 }

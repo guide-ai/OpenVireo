@@ -1,0 +1,96 @@
+{
+  "evidenceId": "NATIVE-CAMERA-FRESH-REPLY-OWNERSHIP-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "catalog-initialize",
+      "start": "0x59c45c",
+      "endExclusive": "0x59c5de",
+      "bytesSHA256": "ca0a627dc65f5f3914593e38cb72bcac280693732dfb84a95af13032b16aaa2e",
+      "listingSHA256": "eb918f9ab3f01e69d28c198e1e75da5b3bfba20d88ac24412b9da8443da3612a"
+    },
+    {
+      "name": "catalog-get-data",
+      "start": "0x59c620",
+      "endExclusive": "0x59c88d",
+      "bytesSHA256": "b2055b3ddbcc67f4029dbfbb4c3d004597702ea9f44200f01abb0b715b159657",
+      "listingSHA256": "be4f9ab8a9900ba009db8776beaf05d310b7577fa1a05f67a146bc51b9e05fdb"
+    },
+    {
+      "name": "catalog-body-parser",
+      "start": "0x59ced4",
+      "endExclusive": "0x59cf57",
+      "bytesSHA256": "b3d04e6cdbe7ea9e7b405dcffc21dbbc26ce34c2feb7622a582967111b811292",
+      "listingSHA256": "0ea1e860e24824baccc731797891c8b9436fcded473e3fd5e5db86b9526fb5ae"
+    },
+    {
+      "name": "catalog-selection",
+      "start": "0x59cc88",
+      "endExclusive": "0x59cea9",
+      "bytesSHA256": "00f62046323adf9a080403286413d0edfd08545489d25e4df85fd7f398af150d",
+      "listingSHA256": "22a9826832dc389e778e6831898e4bb53a8cb8e5362584ef820c14eaff64e89a"
+    },
+    {
+      "name": "ordered-insert",
+      "start": "0x492728",
+      "endExclusive": "0x4927fc",
+      "bytesSHA256": "134ceed0190bf07e09eab50152dea74700038380d28434a06e0a8da109677840",
+      "listingSHA256": "0481772c6c38fc23be9385cd4970b87cfe0a64749f6af6a0fbb6d20b7fd3630a"
+    },
+    {
+      "name": "request-worker",
+      "start": "0x59d644",
+      "endExclusive": "0x59d79c",
+      "bytesSHA256": "04772e62a8b05f5f4d9261524a24ccf613f4843adad9c95997f341848e0247a7",
+      "listingSHA256": "65a974c5d068d10afc828ba98d2bc0d983cb7352f691c7681b9545eb87ac3756"
+    },
+    {
+      "name": "ccd-request-timer",
+      "start": "0x51298c",
+      "endExclusive": "0x512acd",
+      "bytesSHA256": "71d5f0e8f2ffbf3dfe7a01c9d6d5b24441c376f7096d1e90a165e4b84f7c39b7",
+      "listingSHA256": "0caf05d7e9ae15a213571191a6287b6eb06129cf4e849f5ca6bc94378e77837f"
+    },
+    {
+      "name": "ir-request-timer",
+      "start": "0x5149bc",
+      "endExclusive": "0x514afd",
+      "bytesSHA256": "4c060073ffec8e5b3efde09bbeb476210cc6f8a9a9ad3940f0792fa23073a3a1",
+      "listingSHA256": "4b4aea8425cd50c297fa7591eb91cf8188617db19536c7b112e05f5fbed1ca18"
+    },
+    {
+      "name": "http-get-wrapper",
+      "start": "0x4b6bbc",
+      "endExclusive": "0x4b6c2b",
+      "bytesSHA256": "41dc57d5915e412494b4561fbd948c737b34fe58d129ce31aa9554058fe3361a",
+      "listingSHA256": "b9dafcf58e43fdefb80661b1e0ad9d83cff2de25684a211bedcca70b5ba0bbd0"
+    }
+  ],
+  "transportClass": {
+    "pointerAddress": "0x4b665c",
+    "VMT": "0x4b66a8",
+    "classNameSlot": "0x4b667c",
+    "nameAddress": "0x4b6754",
+    "name": "TIdHTTP",
+    "nameSHA256": "48de92642471b56e79ba1a427084aaefb1776f2e63bb2658fda1ff59e93fb476"
+  },
+  "nativeContracts": {
+    "newRequest": "59c485..59c4a6 clears/reinitializes candidate list+43 when nonempty;no automatic reuse on new request",
+    "transport": "request+51 finished is separate from +50 success;only success copies +48 body into catalog+3e",
+    "body": "59ced4 consumes catalog+3e through LF helper and inserts accepted rows into catalog+43;returnsBL1onexhaustion including empty/all-invalid/all-comment body;candidatecountdoesnotdecidebodyparserreturn",
+    "order": "Accepted candidates pass existing sorted insertion492728,not physical append;duplicates preserved",
+    "cameraRoute": "Both request timers passCL0;preparation forwards through shared field toGetDataDL0",
+    "bypass": "GetDataDLnonzero skips request/header checks and consumes any remaining body without clearing prior candidates;nocamera-safe cache key/reuse-validity policy established"
+  },
+  "webGuards": {
+    "previous": "Immutable previous catalog retained separately for diagnostics only;never used as active on new/failing/pending/cancelled request",
+    "tickets": "Fresh identity per begin;late/foreign/duplicate replies ignored;no worker I/O",
+    "context": "Actual compiled-query reference required;source epoch/band passed to bounded reader;CCD I rejects",
+    "error": "Strict LF/ASCII/size/header errors remain explicit web subset;all-invalid validly framed body remains valid-empty with diagnostic counts",
+    "boundaries": "No transport authenticity,source population,cache admission,exposure,thread termination or release acknowledgement supplied;existing lifecycle gate remains separate"
+  },
+  "nativeExecution": false,
+  "microemulation": false,
+  "REAExecuted": false,
+  "originalModified": false
+}
