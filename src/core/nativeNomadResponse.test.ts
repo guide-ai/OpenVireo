@@ -1,0 +1,53 @@
+import {describe,it,expect} from 'vitest';
+import {readNativeNomadResponse,NativeNomadResponseError} from './nativeNomadResponse';
+import type {NomadRowContext} from './nativeNomadRows';
+const keys=['id','RA','DEC','MuRA','MuDEC','B','V','R','J','H','K'];
+const values=['SYNTHETIC-ONLY','12.25','-30.5','0','0','14','13.5','13','12','11','10'];
+const header=keys.map(k=>(' '+k+'|').padStart(24,' ')).join(''),units='hh.hhh dd.ddd';
+const row=(v='13.5',id='SYNTHETIC-ONLY')=>values.map((s,i)=>(i===0?id:i===6?v:s).padStart(23,' ')+' ').join('');
+const context:NomadRowContext={band:'V',epochOffsetYears:0};
+const bytes=(s:string)=>new TextEncoder().encode(s);
+const source=(body:string[],marker='END')=>['# SYNTHETIC ONLY',marker,header,units,...body].join('\n');
+function fails(s:Uint8Array,code:NativeNomadResponseError['code'],c=context){try{readNativeNomadResponse(s,c);expect.fail('Expected response rejection');}catch(e){expect(e).toBeInstanceOf(NativeNomadResponseError);expect((e as NativeNomadResponseError).code).toBe(code);}}
+describe('bounded NOMAD response framing,not actual response authority',()=>{
+ it.each(['END','#END','END extra','#END extra','ENDING'])('finds source prefix %s then immediately consumes header/units',marker=>{
+  const s=source([row()],marker),r=readNativeNomadResponse(bytes(s),context);expect(r.originalText).toBe(s);expect(r.marker.text).toBe(marker);expect(r.preamble.map(l=>l.text)).toEqual(['# SYNTHETIC ONLY']);expect(r.header.text).toBe(header);expect(r.units.text).toBe(units);expect(r.entries[0].result.kind).toBe('candidate');
+ });
+ it('preserves physical order,duplicates and line spans,including final line without LF',()=>{
+  const s=source([row('13.5','A'),row('14','B'),row('13.5','A')]),r=readNativeNomadResponse(bytes(s),context);
+  expect(r.entries.map(e=>e.result.kind==='candidate'?e.result.row.nativeIdentifier.trim():null)).toEqual(['A','B','A']);
+  expect(r.entries.map(e=>e.line.lineNumber)).toEqual([5,6,7]);
+  for(const {line}of r.entries)expect(s.slice(line.startByte,line.endByte)).toBe(line.text);
+  expect(r.entries.map(e=>e.line.terminated)).toEqual([true,true,false]);
+ });
+ it('does not create a phantom row after trailing LF but retains real blank rows',()=>{
+  expect(readNativeNomadResponse(bytes(source([row()])+'\n'),context).entries).toHaveLength(1);
+  const r=readNativeNomadResponse(bytes(source([row(),'',''])+'\n'),context);expect(r.entries.map(e=>e.result.kind)).toEqual(['candidate','invalid','invalid']);expect(r.entries[1].line.text).toBe('');
+ });
+ it('skips only comments starting in the first byte and continues after bad or rejected rows',()=>{
+  const r=readNativeNomadResponse(bytes(source([row(),'# comment',' # not a comment','',row('0'),row('30'),row('bad'),row('12') ])),context);
+  expect(r.entries.map(e=>e.result.kind)).toEqual(['candidate','comment','invalid','invalid','rejected','rejected','invalid','candidate']);expect(r.entries[6].result).toEqual({kind:'invalid',code:'number',field:'V'});
+ });
+ it('does not interpret a body END as an end-of-data terminator',()=>{
+  const r=readNativeNomadResponse(bytes(source([row(),'END','#END',row('12')])),context);expect(r.entries.map(e=>e.result.kind)).toEqual(['candidate','invalid','comment','candidate']);
+ });
+ it('admits zero rows without claiming a successful observing catalog',()=>{
+  const r=readNativeNomadResponse(bytes(source([])),context);expect(r.entries).toEqual([]);expect(r).not.toHaveProperty('success');expect(r).not.toHaveProperty('request');expect(r).not.toHaveProperty('observation');
+ });
+ it('owns immutable text,context and ledger without mutating caller bytes',()=>{
+  const s=source([row()]),b=bytes(s),c={...context},r=readNativeNomadResponse(b,c);expect(new TextDecoder().decode(b)).toBe(s);b.fill(88);c.epochOffsetYears=40;expect(r.originalText).toBe(s);expect(r.context.epochOffsetYears).toBe(0);
+  for(const o of[r,r.context,r.preamble,r.marker,r.header,r.units,r.entries,r.entries[0],r.entries[0].line,r.entries[0].result])expect(Object.isFrozen(o)).toBe(true);
+ });
+ it.each(['end','#end',' END',' #END','XEND'])('rejects absent marker rather than matching %s',marker=>fails(bytes(source([row()],marker)),'marker'));
+ it.each(['END','END\n','END\n'+header])('rejects truncated header/units %s',s=>fails(bytes(s),'header'));
+ it('uses the first marker;does not search past a bad immediate header',()=>fails(bytes(['END','# not header','hh.hhh dd.ddd','END',header,units,row()].join('\n')),'header'));
+ it('rejects unsupported units and missing columns atomically',()=>{
+  fails(bytes(source([row()]).replace(units,'hh mm ss dd mm ss')),'header');fails(bytes(source([row()]).replace(' K|',' X|')),'header');
+ });
+ it.each(['\r','\t','\0','é','\uFEFF'])('rejects unsupported encoding/control %s without normalization',s=>fails(bytes(source([row()])+s),'encoding'));
+ it('bounds source size,line length and line count independently',()=>{
+  fails(new Uint8Array(),'size');fails(new Uint8Array(2*1024*1024+1),'size');fails(bytes('x'.repeat(4097)+'\n'+source([])),'line-limit');fails(bytes('\n'.repeat(10000)+source([])),'line-limit');
+  expect(readNativeNomadResponse(bytes('x'.repeat(4096)+'\n'+source([])),context).preamble[0].text).toHaveLength(4096);
+ });
+ it('requires explicit valid context even when the body is empty',()=>{for(const c of[{band:'I',epochOffsetYears:0},{band:'V',epochOffsetYears:NaN},{band:'V',epochOffsetYears:1001},null])fails(bytes(source([])),'context',c as NomadRowContext);});
+});

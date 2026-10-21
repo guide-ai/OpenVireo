@@ -1,0 +1,119 @@
+{
+  "evidenceId": "NATIVE-NOMAD-RESPONSE-FRAMING-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "response-wait",
+      "start": "0x59c620",
+      "endExclusive": "0x59c88d",
+      "bytesSHA256": "b2055b3ddbcc67f4029dbfbb4c3d004597702ea9f44200f01abb0b715b159657",
+      "listingSHA256": "be4f9ab8a9900ba009db8776beaf05d310b7577fa1a05f67a146bc51b9e05fdb"
+    },
+    {
+      "name": "line-helper",
+      "start": "0x48672c",
+      "endExclusive": "0x4867fa",
+      "bytesSHA256": "a7fb8b3be342a76dc3700ed361cf0f6a675abf7fba16201b9b286c39ac66002b",
+      "listingSHA256": "6f6215d35591d6c32c92e144548e461363470a4b5671fcc3949ffddb924d7578"
+    },
+    {
+      "name": "body-loop",
+      "start": "0x59ced4",
+      "endExclusive": "0x59cf57",
+      "bytesSHA256": "b3d04e6cdbe7ea9e7b405dcffc21dbbc26ce34c2feb7622a582967111b811292",
+      "listingSHA256": "0ea1e860e24824baccc731797891c8b9436fcded473e3fd5e5db86b9526fb5ae"
+    },
+    {
+      "name": "candidate-row",
+      "start": "0x59d030",
+      "endExclusive": "0x59d5ba",
+      "bytesSHA256": "e1b8261ee55bf974a8eb6029a96d80896fca178426ebecfb6bb6602ba83f4b0c",
+      "listingSHA256": "b8713c80199daf50804cbc45ab97cdcde6b51f32eaeedf248d4e06db0cf84a4c"
+    },
+    {
+      "name": "header-fields",
+      "start": "0x59c9d8",
+      "endExclusive": "0x59cbad",
+      "bytesSHA256": "4e8ad2dd36be40f52f4af3725896fc1e81a6562b48d4c7268c058251da6aa29b",
+      "listingSHA256": "852c34e3d94f07890fe567a87259c3295511f6e16732de6c9c6897757c2e12a9"
+    }
+  ],
+  "strings": [
+    {
+      "address": "0x59c8dc",
+      "length": 3,
+      "text": "END",
+      "bytesSHA256": "b891f9e2a69626266100a5fa3161423408bdf539816e578cc6464a315b138668"
+    },
+    {
+      "address": "0x59c8e8",
+      "length": 4,
+      "text": "#END",
+      "bytesSHA256": "26ed6fc3f823e9c48bedeaf7b0a5d91f6c47c6181c7050e74379181008a0b383"
+    },
+    {
+      "address": "0x59c8f8",
+      "length": 52,
+      "text": "Error in USNO File Header - \"END\" statement missing!",
+      "bytesSHA256": "5ec6d6abd9701fd7100807f3f7b2e63a3a7a06f1a999f7938b89293a9bfb484f"
+    },
+    {
+      "address": "0x59c938",
+      "length": 6,
+      "text": "hh.hhh",
+      "bytesSHA256": "180105a44f7a88d4414739098251e656671595f1f5fac038c9df02a9cee9224d"
+    },
+    {
+      "address": "0x59c948",
+      "length": 6,
+      "text": "dd.ddd",
+      "bytesSHA256": "01813bad67e047769d29b228074063a32cd356c96ebca07a690039bb48cb83ea"
+    },
+    {
+      "address": "0x59c958",
+      "length": 8,
+      "text": "hh mm ss",
+      "bytesSHA256": "092590792ed350c7efbaedc6fc15d1e57b057dbe87b8da8d5483bd7226288f54"
+    },
+    {
+      "address": "0x59c96c",
+      "length": 8,
+      "text": "dd mm ss",
+      "bytesSHA256": "5f8fb0884a94942e2204245e1bfe97ece2842ccee818a02127f5bdd3231af949"
+    }
+  ],
+  "typedVMT": {
+    "address": "0x594f3c",
+    "methods": {
+      "0x0": "0x59c45c",
+      "0x4": "0x59c620",
+      "0x8": "0x59cc88",
+      "0xc": "0x59c60c",
+      "0x10": "0x59ced4",
+      "0x14": "0x59cf58",
+      "0x18": "0x59d030",
+      "0x1c": "0x59c9d8"
+    },
+    "bytesSHA256": "4d8f43fae12f06520d0552900c87b25ee3a5da7fe7a4e163f8a12a186f89904f"
+  },
+  "contract": {
+    "scope": "Supplied LF/printableASCII decimalNOMADresponseonly;notrequest/cache/sourceauthority",
+    "marker": "0x59c6fa..0x59c73d consumesLF-linesuntilPos(END)==1orPos(#END)==1;case-sensitiveprefix,notexact/trimmedmatch",
+    "header": "Immediatelynextlinevirtual+1c;thenexactlynextunitsline;decimalhh.hhh/dd.dddbranchbeforesexagesimalalternative",
+    "body": "0x59ced4 consumesallremaininglinesuntilstringempty;firstbyte#skips;virtual+18falseomitscandidateandloopcontinues;noENDdataterminator/sort/dedup",
+    "line": "0x48672c splitsatfirstLF,keepsprecedingcharacters,anddeletesconsumedlength+1;missingLFreturnsentireremainder;trailingLFdoesnotfabricateemptyfinalline",
+    "ownership": "Responseoriginaltext/linespansandoutcomeledgerimmutable;inputcopiedbeforeparsing;noexternalstate",
+    "webBounds": "2MiB/10000lines/4096bytesperline;printableASCIIplusLFonly,noCRLF/BOM/controlrepair;rowadmissioninheritedfromCAMERA-NOMAD-ROWS",
+    "invalidRows": "Nativecaughtconversionpathreturnsfalse;webledgerexposesboundedinvalidreasonandsubsequentrows;noVCLdialogs/FPUexceptionparity"
+  },
+  "nativeExecution": false,
+  "microemulation": false,
+  "REAExecuted": false,
+  "originalModified": false,
+  "remaining": [
+    "Transportsuccess/bodybyteshash/request/options/cache/field-timeassociation",
+    "Otherlineencodingsandnativehostlocale/Extended",
+    "Selectionbounds/projectedsourceownership/globalrandomprefix",
+    "Completecameraoverlay/outputandadmittedobservinglifecycle"
+  ]
+}
