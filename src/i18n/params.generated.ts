@@ -1688,4 +1688,19 @@ export interface MessageParameters {
   "program.fullDraftError": never;
   "obs.rowActionsHelp": never;
   "obs.selectedContext": "comparison" | "object";
+  "programImport.open": never;
+  "programImport.original": never;
+  "programImport.input": never;
+  "programImport.policy": never;
+  "programImport.active": "file";
+  "programImport.preview": "file" | "total";
+  "programImport.parsing": never;
+  "programImport.size": never;
+  "programImport.encoding": never;
+  "programImport.source": "row";
+  "programImport.row": "row";
+  "programImport.readError": never;
+  "programImport.unbound": never;
+  "programImport.reset": never;
+  "programImport.digest": never;
 }

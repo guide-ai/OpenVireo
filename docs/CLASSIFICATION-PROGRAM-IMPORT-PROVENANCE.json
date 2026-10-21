@@ -1,0 +1,193 @@
+{
+  "binary": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "rangeConvention": "[start,endExclusive)",
+  "captures": [
+    {
+      "id": "VIREO-LST-01",
+      "start": "0x50c38c",
+      "endExclusive": "0x50c694",
+      "scope": "complete function including SEH cleanup",
+      "byteRangeSHA256": "0dad07ab983106e330a567b9887fb179ca65cba04ec89fcb33f639f6f16e3cea",
+      "listingSHA256": "b405118710d9d9a48826327b304427a3f5f385333537844a4d2db864b32c83f6",
+      "listing": "classification-list-loader.asm"
+    },
+    {
+      "id": "VIREO-LST-02",
+      "start": "0x50bd44",
+      "endExclusive": "0x50c04c",
+      "scope": "complete function including SEH cleanup",
+      "byteRangeSHA256": "280d892a00e8071241c7054913d1e6576c19bbefc23e5c69ffa1bef6cbf9dfb6",
+      "listingSHA256": "6570130fc734b68132fc39b6cbc30c71985564c3dc1beacd76a567a3cfb2c6de",
+      "listing": "base-list-loader.asm"
+    },
+    {
+      "id": "VIREO-LST-03",
+      "start": "0x4867fc",
+      "endExclusive": "0x48690b",
+      "scope": "complete function including SEH cleanup",
+      "byteRangeSHA256": "01fda7c683e26b7d6dbc2fe9b4c31e3e8ea6c74993c942c84ab7fd6c43fcb477",
+      "listingSHA256": "2bdd855beaf1a32a207728ec45dc460458e92ad2180905d468d146d2ee62e3aa",
+      "listing": "quoted-token.asm"
+    },
+    {
+      "id": "VIREO-LST-04",
+      "start": "0x50bd14",
+      "endExclusive": "0x50bd35",
+      "scope": "complete function",
+      "byteRangeSHA256": "55b29bd794a20bf95cded6096834a82a305ddf793e1223eb8e82c5c6e8e5f469",
+      "listingSHA256": "00704cc7713428d976b89f37e2cd26fe1860b61f0e58a8bb89726f9710b80e34",
+      "listing": "base-create.asm"
+    },
+    {
+      "id": "VIREO-LST-05",
+      "start": "0x50bd38",
+      "endExclusive": "0x50bd44",
+      "scope": "complete function",
+      "byteRangeSHA256": "05f5f801425fa3f97ed3a07bf800e64f3347f2e284288d1f1766e3fee446e52d",
+      "listingSHA256": "5a16d9df046f8fa6d83afb171df1eb7d175c13a227e10db68eaf804610878ec8",
+      "listing": "base-destroy.asm"
+    },
+    {
+      "id": "VIREO-LST-06",
+      "start": "0x50c360",
+      "endExclusive": "0x50c378",
+      "scope": "complete function",
+      "byteRangeSHA256": "f6ced74bb25d8d094e06ea8c7df8e33a2c61b09bcf636a20688c564bc8796e86",
+      "listingSHA256": "4db905cc429d09c91f7926092bb3cb6963c602f3a482ae2f8f226f398b43822e",
+      "listing": "classification-create.asm"
+    },
+    {
+      "id": "VIREO-LST-07",
+      "start": "0x50c09c",
+      "endExclusive": "0x50c1b1",
+      "scope": "complete function including SEH cleanup",
+      "byteRangeSHA256": "ba6eb5a32b8526707448c6f002d1e5fa9bb2f2df59b26dc71cd05e2dde5e1450",
+      "listingSHA256": "d9299ea4ba859f4473765b831b737a6ed285b40751e57297843c4d7041a3a6cb",
+      "listing": "select-row.asm"
+    },
+    {
+      "id": "VIREO-LST-08",
+      "start": "0x50b5a8",
+      "endExclusive": "0x50b6ba",
+      "scope": "complete function including SEH cleanup; recovered earlier",
+      "byteRangeSHA256": "f015f1b649dc7de470fa55575ca3e6a87f57fbe0e2a9881c8cd0f8ff541fa5ce",
+      "listingSHA256": "c0c869e6f26bff8014b5f7126c33adeecf35b407681f257ddf67cd9e33249d94",
+      "listing": "program-list.asm"
+    },
+    {
+      "id": "VIREO-LST-09",
+      "start": "0x50b6bc",
+      "endExclusive": "0x50b7d1",
+      "scope": "complete function including SEH cleanup; recovered earlier",
+      "byteRangeSHA256": "bb8a2d631304abeed1ab3a1845b4fee51609f0b9430dd82ad947fe3404951084",
+      "listingSHA256": "38c68cfca18191f355bdb747071d7f02bcfc12fbb045c4187e2f8fe667e2c1d2",
+      "listing": "next-on-list.asm"
+    },
+    {
+      "id": "VIREO-LST-10",
+      "start": "0x507699",
+      "endExclusive": "0x5076b5",
+      "scope": "instruction-bounded caller fragment; not a complete function",
+      "byteRangeSHA256": "b8759d0520f88ade01a97c5eea36220417d4e1e8c86c8658fece4ff8f2de3149",
+      "listingSHA256": "974ab5f52d26b4ef437ca97ca0e73a9b41baf8dcb120009029d39526dd735a4d",
+      "listing": "classification-instantiation.asm"
+    }
+  ],
+  "classes": [
+    {
+      "slot": "0x50b8d0",
+      "vmt": "0x50b91c",
+      "name": "TAtlasListForm",
+      "nameAddress": "0x50bb20",
+      "parentClassSlot": "0x4713d0",
+      "instanceBytes": 920,
+      "openerSlot": "0x104",
+      "opener": "0x50bd44",
+      "modal": "0x47a100",
+      "slotSHA256": "73baab7e0364c38efdadf4080446dae35003c71c93bfd0c5020415c1f4f8743e",
+      "vmtRangeStart": "0x50b8d0",
+      "vmtRangeEndExclusive": "0x50ba24",
+      "vmtRangeSHA256": "7764d902b6e947f61514d4e37d580e8da2975eb98a81fc4f6ee07553a69bb57e"
+    },
+    {
+      "slot": "0x50bb70",
+      "vmt": "0x50bbbc",
+      "name": "TClssfyListForm",
+      "nameAddress": "0x50bcd7",
+      "parentClassSlot": "0x50b8d0",
+      "instanceBytes": 920,
+      "openerSlot": "0x104",
+      "opener": "0x50c38c",
+      "modal": "0x47a100",
+      "slotSHA256": "96db3942ebc78f76df661e6f7ac78c548c76051b8d2fba9fba0cb659dc2aa8dc",
+      "vmtRangeStart": "0x50bb70",
+      "vmtRangeEndExclusive": "0x50bcc4",
+      "vmtRangeSHA256": "8f462a6382e92b3068592c8af2ee703c1a210675e9425aa1f19504a3d45917c0"
+    }
+  ],
+  "globalFormAddress": {
+    "importSlot": "0x5b5684",
+    "pointee": "0x5bc658",
+    "slotSHA256": "2b645d65a7460ab1d0f31aa58c2490daf7c353b31c436d138b59a335fc9babd4",
+    "instantiation": "0x5076a3 loads class slot0x50bb70;0x5076a8 constructs;0x5076b3 stores at pointee"
+  },
+  "resource": {
+    "file": "TAtlasListForm-form.json",
+    "offset": 1984188,
+    "bytes": 1061,
+    "sha256": "9e838e3f7d82f541e9d86a03fc6cb05b4365d7c76d7c121700f2fcd2d69b5c94",
+    "listbox": {
+      "class": "TListBox",
+      "name": "ListBox1",
+      "properties": {
+        "Left": 0,
+        "Top": 0,
+        "Width": 218,
+        "Height": 218,
+        "Align": "alClient",
+        "Font.Charset": "ANSI_CHARSET",
+        "Font.Color": "clWindowText",
+        "Font.Height": -13,
+        "Font.Name": "MS Sans Serif",
+        "Font.Style": [
+          "fsBold"
+        ],
+        "ItemHeight": 16,
+        "ParentFont": false,
+        "TabOrder": 0,
+        "OnDblClick": "ListBox1DblClick"
+      },
+      "children": []
+    },
+    "sortedProperty": "Absent in resource; constructor/default/runtime Sorted not fully traced. Append order and original25 control do not prove all runtime sorting options."
+  },
+  "method": "Read-only local PE data parsing and static objdump. No original execution,emulation,instruction interpreter,external review or network.",
+  "uncertainty": [
+    "Recovered addresses are analyst structural interpretations,not original source/debug symbols.",
+    "DFM parser is limited to observed value tags and one base resource;no separate subclass DFM signature located.",
+    "Native text-mode encoding/BOM/control-Z/line-ending and OS I/O error/runtime details are not fully recovered.",
+    "No binary,numerical,x87/GDI/pixel or complete native-event equivalence claimed."
+  ],
+  "sourceCredits": "CLEA/VIREO; source-specific credit/license uncertainty remains as recorded in existing project provenance. Original EXE/LST stay outside source;no extra resource publication.",
+  "implementation": {
+    "scope": "Temporary browser-local original-style LST sequences referencing only25existing admitted practices",
+    "parser": "src/core/classificationProgramImport.ts",
+    "io": "src/io/classificationProgramImport.ts",
+    "ui": "src/ClassificationProgramList.tsx",
+    "policies": [
+      "PrintableASCII,singlequotes,exactlytwofields,spaces,CRLF/LF,nonemptyrows,labelandadmittedbasename;64KiB/1000rowwebbounds",
+      "Aliasesandduplicateskeeporderedrowordinals;canonicalsourceidentityandhashesunchanged",
+      "Atomiccandidate\u2192verifiedselection;cancel/stale/errorleavesactiveconfigurationandhistoricalwork",
+      "HistoricalJSON/CSVunchanged;reloadorsuccessfulstellar/fullrestoreexplicitlyresettemporaryconfigurationtothefixedlist",
+      "DirectpracticeIDchangeinvalidatesimportedcursor;Nextrequiresrowselectionagain"
+    ],
+    "notNativeParity": [
+      "Strictadmission,bounds,atomicfailure/cancelandcontenthasharewebpolicies",
+      "Noarbitraryconfiguredpaths,TextFileencodingorfullsorting/VCLruntimeparity",
+      "Nonumerical/integrator/metadata/grade/persistentformatchange"
+    ]
+  }
+}

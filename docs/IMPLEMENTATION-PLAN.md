@@ -555,3 +555,7 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Selected observation row ownership — 21 October2026
 
 [Row-owned edit/delete](OBSERVATION-ROW-OWNERSHIP.md) extends the recovered selected-record pointer flow across admitted practice comparison contexts. Row identity/order,manual comparison/width/history,old formats andshared persistedUndo remain. Separate ephemeral comparison context rejects stale changes;generic current-object reuse/append andunsupported source authority stay bounded. No native numeric/DAT/FPU values or complete runtime claims;all64statuses unchanged,projectpartial.
+
+## Bounded original-style LST import —21October2026
+
+[Local program-list import](CLASSIFICATION-PROGRAM-IMPORT.md) adds candidate preview,verified selection by ordinal including repeated practice spectra,Next/end without wrap,and transactional return to the fixed list. It admits only existing25practice source hashes and preserves manual responses,records/notebook/Undo and historical JSON/CSV. Strict printableASCII/singlequoted grammar,bounds,atomic cancel/errors and temporary configuration with explicit restore reset are web policies. Classification-specific virtual loader/token/index evidence is pinned;native arbitrary paths/text-mode/sorting/partial failure/VCL/FPU behavior remains open. All64primary statuses remain unchanged,N02/E03partial. No original execution,remote access,push,Claude invocation or deployment in this increment. See[validation](CLASSIFICATION-PROGRAM-IMPORT-VALIDATION.md).
