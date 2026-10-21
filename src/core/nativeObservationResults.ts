@@ -77,3 +77,10 @@ export function deleteNativeRecord(current:NativeObservationData,edit:NativeReco
  const source=nativeObservationBytes(current),at=edit.index*NATIVE_RESULT_BYTES,bytes=new Uint8Array(source.length-NATIVE_RESULT_BYTES);
  bytes.set(source.subarray(0,at));bytes.set(source.subarray(at+NATIVE_RESULT_BYTES),at);return parseNativeObservationResults(bytes);
 }
+
+/** Identify display escapes from the owned bytes,not from literal \x text.
+ * Replacement requires separate UI consent;unchanged fields remain byte-exact. */
+export function nativeRecordTextHasEscapes(data:NativeObservationData,index:number,field:'object'|'remarks'):boolean{
+ const bytes=ownedBytes.get(data);if(!bytes)throw new NativeRecordEditError('owner');if(!Number.isInteger(index)||index<0||index>=data.records.length)throw new NativeRecordEditError('index');if(field!=='object'&&field!=='remarks')throw new NativeRecordEditError('fields');
+ const at=index*NATIVE_RESULT_BYTES+(field==='object'?0:107),count=bytes[at];for(let i=1;i<=count;i++){const n=bytes[at+i];if(n<32||n===127||[129,141,143,144,157].includes(n))return true;}return false;
+}

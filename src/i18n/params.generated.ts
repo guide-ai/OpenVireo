@@ -1754,4 +1754,7 @@ export interface MessageParameters {
   "nativeDelete.undone": never;
   "nativeDelete.undo": never;
   "nativeDelete.count": "count";
+  "nativeEdit.escapeWarning": never;
+  "nativeEdit.replaceObject": never;
+  "nativeEdit.replaceRemarks": never;
 }

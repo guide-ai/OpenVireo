@@ -1752,5 +1752,8 @@
   "nativeDelete.saved": "The selected record was removed from the edited copy. Original bytes remain available; one Undo restores this deletion.",
   "nativeDelete.undone": "The deleted record and its prior position were restored exactly.",
   "nativeDelete.undo": "Undo last DAT deletion",
-  "nativeDelete.count": "Edited copy: {count} records."
+  "nativeDelete.count": "Edited copy: {count} records.",
+  "nativeEdit.escapeWarning": "This field contains stored non-printable bytes displayed as escapes such as \\x01. Editing the displayed text writes literal characters instead of those bytes. Leave the field locked to preserve its bytes, or explicitly enable full text replacement.",
+  "nativeEdit.replaceObject": "Explicitly replace escaped DAT object bytes",
+  "nativeEdit.replaceRemarks": "Explicitly replace escaped DAT remarks bytes"
 }
