@@ -1,9 +1,14 @@
 {
+  "authorship": {
+    "initial": "Claude Code",
+    "correction4": "Codex coordinator;no simultaneous writer",
+    "claudeReview": "Separate native /review of1c8550e..0c3d7b0 completed;current delta pending its own review"
+  },
   "sourceHashes": {
     "docs/WEDGE-PLOT-PROVENANCE.json": "a934ed34411fbc1fb4f46a9c90b2197679c18abcf5299ee35a8c8a6d59656784",
-    "docs/WEDGE-PLOT.md": "b30d903dc31c8c459c3858765f02c6c65d57a58f7e4dae32b4aa7ea70134d227",
+    "docs/WEDGE-PLOT.md": "582c529468fdcbfef87c97431291429b57ee8b923009ebdf9d7ead8dca6c837b",
     "src/components/Wedge.css": "25c018bc042fe458889ab0ccbd04927d7ad59213846f833d1e1f3179af00327d",
-    "src/components/WedgeLab.tsx": "1d7939674dc5181d95e5f3144e2b1bbceed4352a03977cedbe96c84967324037",
+    "src/components/WedgeLab.tsx": "79ad03a6935007d7fdda60196728ad080c53ac3c5eee0b8b82a73984de9b3318",
     "src/components/WedgeMessages.test.ts": "1b404eadb4f09b4dc3b1a9266d244d80756c4dc84d5eed78f80abc768c723f17",
     "src/components/WedgeMessages.ts": "215fa496ecdc5af140987fddf284dc18d0f40bf7acb77771495c411198df6297",
     "src/components/WedgeOptionsDialog.tsx": "a96ce6f5f09f23cec683621b96a3b2904113a103e8a2e486d393edf1239ae674",
@@ -23,48 +28,61 @@
     "src/io/wedgeLssFile.ts": "3af1e98ca95cc87330ba2dbaf96aae60d6549429b56cfe789a443f5f0c1445ad",
     "tests/wedge-lss.spec.ts": "e184707c3162d49db607c7fddd3d0baa6a43217cd2fcc74ea48716ff7eb423a9",
     "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed",
-    "tests/wedge-focus.spec.ts": "1c33a4a6c4911628d47881f5415fb0c93e42cbd67e0a6fd2dd88938069fc2ac5"
+    "tests/wedge-focus.spec.ts": "1c33a4a6c4911628d47881f5415fb0c93e42cbd67e0a6fd2dd88938069fc2ac5",
+    "tests/wedge-prompt-focus.spec.ts": "fa5afc51a76cfb1f46b11655b96e406f399904bf4b5c2064eae859602e15b75a"
   },
-  "sourceStableDuringValidation": true,
   "unitTests": {
     "passed": 1798,
     "failed": 0,
-    "files": 179
+    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-4/unit-report.json"
   },
   "e2e": {
-    "startTime": "2026-10-21T23:05:20.144Z",
-    "duration": 34338.093,
-    "expected": 46,
-    "skipped": 0,
-    "unexpected": 0,
-    "flaky": 0
+    "passed": 54,
+    "failed": 0,
+    "flaky": 0,
+    "desktop": 27,
+    "mobile": 27,
+    "log": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-4/browser-final.log",
+    "earlierFailedRun": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-4/browser-report.json",
+    "baselineControl": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-4/baseline-mobile.log",
+    "baselineControlResult": "Prior component0c3d7b0 passes both mobile-layout cases;first correction regressed them;final correction restores both without assertion/timeouts removal"
   },
-  "independentFocusReproductions": {
-    "startTime": "2026-10-21T23:06:15.270Z",
-    "duration": 5041.871,
-    "expected": 14,
-    "skipped": 0,
-    "unexpected": 0,
-    "flaky": 0
+  "independentPromptFocus": {
+    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-prompt-focus-triage/after-report.json",
+    "stats": {
+      "startTime": "2026-10-21T23:31:13.149Z",
+      "duration": 3581.465,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "beforeReport": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-prompt-focus-triage/pre-report.json",
+    "before": "6fail/2pass;scroll controls already passed,not newly fixed",
+    "after": "8pass"
   },
-  "preFixFocusEvidence": {
-    "startTime": "2026-10-21T23:03:04.094Z",
-    "duration": 27572.402000000002,
-    "expected": 9,
-    "skipped": 0,
-    "unexpected": 5,
-    "flaky": 0
+  "previousValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-4/previous-validation.json",
+  "previousFocusReproductions": {
+    "before": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-focus-triage/pre-report.json",
+    "after": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-focus-triage/after-report.json",
+    "previousReceipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-3/receipt.json"
   },
-  "scope": "Direct-read focus preserves deliberately chosen panel/host control;prompt/cancel focus intention differs;preventScroll;respect already-handled Escape. No numerical/parser/CSV changes. Same-turn read-stall hypothesis was not reproduced in Chromium and remains unconfirmed,not silently fixed.",
-  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-wedge-codex-corrections-3;exit0",
-  "resources": "1279/1279 size/SHA256 match",
-  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3",
-  "previousValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-2/receipt.json",
-  "status": "Validated local candidate,pending separate review of new correction delta;previous ranges alreadyreviewed",
+  "scope": "Second-load focus preserves deliberate panel/host focus. Normal load reveals consent;viewport moved during read is preserved. Closing real Options with pending consent focuses enabled default;handled Escape does not also cancel consent. No numerical/parser/CSV changes.",
+  "buildTypecheck": {
+    "result": "exit0",
+    "log": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-4/build-final.log",
+    "resources": "1279/1279 size/SHA256 match"
+  },
+  "status": "Locally validated candidate;mandatory separate Claude review of this new delta pending quota availability;not delivered/promoted",
   "scientificLimits": [
     "No MJD numeric metadata constructed from historical hostcontext",
     "No live LSSacquisition/groupAutoPlot/nativewriter/printing",
     "Number trigonometry and declaredbinary32/Extendedpolicy are not runtime FPU/GDIequivalence",
     "Window-local workspace not Saveinvestigation;raw data rows and SHAreceipt retained,not a byte-identical original-file writer"
+  ],
+  "unverified": [
+    "Firefox/native-select Escape consumption",
+    "Same-turn duplicate-read stall not reproduced",
+    "No native Windows focus parity"
   ]
 }

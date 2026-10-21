@@ -49,6 +49,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const token=useRef(0),abort=useRef<AbortController|null>(null),optionsButton=useRef<HTMLButtonElement>(null),promptButton=useRef<HTMLButtonElement>(null),fileInput=useRef<HTMLInputElement>(null),root=useRef<HTMLElement>(null);
  /** Direct reads restore only lost focus; explicit prompt/read-cancel answers return to the input. */
  const refocusFile=useRef<'read'|'answer'|null>(null);
+ const readViewport=useRef({x:0,y:0});
  const plot=useMemo(()=>wedgePlot(w.records,w.options),[w.records,w.options]);
  const busy=disabled||w.reading!==null||w.pending!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
@@ -56,9 +57,19 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.
  useLayoutEffect(()=>{if(disabled){refocusFile.current=null;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
  useEffect(()=>()=>{abort.current?.abort();},[]);
- useEffect(()=>{if(w.pending)promptButton.current?.focus();},[w.pending]);
+ // A new inline question announces completion without overriding a deliberate focus move.
+ // An explicit retain→confirm action can move focus between the prompt's own buttons.
+ useEffect(()=>{
+  const button=promptButton.current,a=document.activeElement;
+  if(!w.pending||disabled||!button||button.getClientRects().length===0)return;
+  const prompt=button.closest('[role="alertdialog"]');
+  if(a&&a!==document.body&&a!==fileInput.current&&!prompt?.contains(a))return;
+  // Reveal a normal completed question, but preserve a viewport deliberately moved during the read.
+  const moved=window.scrollX!==readViewport.current.x||window.scrollY!==readViewport.current.y;
+  button.focus({preventScroll:refocusFile.current!=='read'||moved});
+ },[w.pending,disabled]);
  // After the commit that re-enables the input (not synchronously in the handler, when it is
- // still disabled). Skipped if the input is hidden or focus has already moved out of the panel.
+ // still disabled). A direct read preserves any deliberate focus; explicit answers preserve host focus.
  useEffect(()=>{
   const intent=refocusFile.current;
   if(!intent||busy)return;refocusFile.current=null;
@@ -82,14 +93,21 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   if(refused){setW(refused);return;}
   const t=++token.current;abort.current?.abort();const ctrl=new AbortController();abort.current=ctrl;
   // Restore lost focus after a direct success/failure; keep any deliberate focus move.
-  refocusFile.current='read';
+  refocusFile.current='read';readViewport.current={x:window.scrollX,y:window.scrollY};
   safe(c=>beginWedgeRead(c,t,file.name));
   try{const read=await readWedgeLssFile(file,ctrl.signal);safe(c=>completeWedgeRead(c,t,read));}
   catch(err){if(err instanceof WedgeFileError&&err.code==='aborted')return;safe(c=>failWedgeRead(c,t,err instanceof WedgeFileError&&err.code==='size'?'size':'read'));}
   finally{if(abort.current===ctrl)abort.current=null;}
  }
  const cancelRead=()=>{abort.current?.abort();abort.current=null;refocusFile.current='answer';setW(cancelWedgeRead);};
- const closeOptions=(commit:boolean)=>{act(commit?commitWedgeOptions:cancelWedgeOptions);requestAnimationFrame(()=>optionsButton.current?.focus());};
+ const closeOptions=(commit:boolean)=>{
+  act(commit?commitWedgeOptions:cancelWedgeOptions);
+  requestAnimationFrame(()=>{
+   if(document.activeElement!==document.body)return;
+   const target=promptButton.current??optionsButton.current;
+   if(target&&!target.disabled&&target.isConnected&&target.getClientRects().length>0)target.focus({preventScroll:true});
+  });
+ };
  const select=(i:number|null)=>act(c=>selectWedgeRecord(c,i));
  const lines=w.notice?noticeLines(w.notice,m):[];
  const sel=w.selected!==null?w.records[w.selected]:null,selPoint:WedgePoint|null=w.selected!==null?plot.points[w.selected]??null:null;

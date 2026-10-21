@@ -37,7 +37,7 @@ Reference `CLEA_VEO.exe`, SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9
 
 ## Try it (tested manual steps)
 
-The panel `src/components/WedgeLab.tsx` is not mounted in `App` yet; Codex owns that integration. Until then, use the scoped harness, which serves only on loopback:
+This feature branch provides `src/components/WedgeLab.tsx`; Codex owns its separate App integration and route validation. Test the panel directly with the scoped loopback harness:
 
 1. From the worktree, run `node node_modules/vite/bin/vite.js --config /home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-wedge-analysis/harness/vite.config.mjs`. It serves http://127.0.0.1:5186/__wedge-harness/ with strict port 5186.
 2. Click **Plot Data**. The notice reads "LSS Wedge Plot No data to plot".
@@ -100,7 +100,7 @@ The Vitest suites are `src/core/wedgeNumeric|wedgeLssText|wedgePlot|wedgeWorkspa
 - zero authored render literals in the Wedge components;
 - agreement between the provenance record and the code constants.
 
-The Playwright file `tests/wedge-lss.spec.ts` runs only when `OPENVIREO_WEDGE_HARNESS_URL` is set. It covers:
+The standalone Playwright files `tests/wedge-lss.spec.ts`, `tests/wedge-focus.spec.ts` and `tests/wedge-prompt-focus.spec.ts` run only when `OPENVIREO_WEDGE_HARNESS_URL` is set. It covers:
 
 - the complete desktop flow, including the persistence warning;
 - the refusals;
@@ -139,3 +139,7 @@ All vectors are synthetic, not CLEA observations, and the tests check this contr
 ### Final keyboard correction after separate review
 
 After any direct read succeeds or fails, the file input regains focus once React has enabled it only if focus was lost to the document body or is already on that input. Focus deliberately moved to another panel or host control is retained. Explicit prompt answers and read cancellation return to the file input unless focus moved to the host. These returns use preventScroll, so they do not move the viewport. An Escape already handled by an inner control does not also answer inline import consent. Escape from any enabled control within the panel answers a pending inline import consent non-destructively; it does not act outside the panel or when no consent is pending. These are web accessibility rules, not recovered Windows focus behavior. `detail.degrees` is an attached unit suffix: a word unit includes its desired leading space (for example ` grad`); `detail.hours` is joined with an explicit space. Safari/macOS keyboard preferences were not exercised; browser receipts cover Chromium desktop and mobile.
+
+The same no-focus-theft rule applies when a completed later read opens inline import consent: a deliberate focus on another panel or host control is retained. With focus lost to the body, a normal completed load focuses and reveals the prompt’s default button. If the viewport moved during that read, focus does not scroll it back; an explicit retain→confirm action also preserves scroll. A retain→confirm action can move focus between that prompt’s own buttons. Closing Options while consent is pending returns to that enabled prompt button; otherwise it returns to Options, and neither path overrides a focus already deliberately moved elsewhere. An already-script-handled (`defaultPrevented`) Escape is respected; native select-popup Escape behaviour outside the tested Chromium is not established.
+
+The owned standalone suite includes `tests/wedge-lss.spec.ts`, `tests/wedge-focus.spec.ts` and `tests/wedge-prompt-focus.spec.ts`; all require `OPENVIREO_WEDGE_HARNESS_URL`. The coordinator separately validates actual App navigation in its integration checkout. The standalone feature receipt alone does not establish delivery of an App route.
