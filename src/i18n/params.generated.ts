@@ -1703,4 +1703,5 @@ export interface MessageParameters {
   "programImport.unbound": never;
   "programImport.reset": never;
   "programImport.digest": never;
+  "programImport.currentPreview": "file" | "total";
 }

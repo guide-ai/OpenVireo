@@ -1701,5 +1701,6 @@
   "programImport.readError": "The list could not be read. The active list and work were kept.",
   "programImport.unbound": "Select a row explicitly in Program List before using Next. Another practice selection does not determine a position among repeated entries.",
   "programImport.reset": "Temporary program-list configuration reset to the original 25-entry list after session restore. Saved responses, observations and recovery were kept.",
-  "programImport.digest": "List SHA-256:"
+  "programImport.digest": "List SHA-256:",
+  "programImport.currentPreview": "Current list: {file} · {total} rows. This list is already active. Choose a row explicitly to verify and load it."
 }
