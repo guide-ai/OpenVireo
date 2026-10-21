@@ -1,0 +1,120 @@
+{
+  "evidenceId": "NATIVE-CAMERA-PROJECTION-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "ccd-initialize",
+      "start": "0x5220f4",
+      "endExclusive": "0x522294",
+      "bytesSHA256": "817d3569ec2ee981e15224e05f576fbdbc9c71e3bd29782faf0d1f400bcf6d2a",
+      "listingSHA256": "71f92624de054322c4c20db6947d51992876b88168f03ba5ec53bf1cb5714fcc"
+    },
+    {
+      "name": "ir-initialize",
+      "start": "0x51dd10",
+      "endExclusive": "0x51deb0",
+      "bytesSHA256": "1434d4216e3e2425ec0ec8563bf43fe165a6a12fe9e122676068ff4e31f34e9c",
+      "listingSHA256": "f2a4aa51068559d7aab3133ddd5029ad136dd5ae27ec6c549b272c3966b4b4b0"
+    },
+    {
+      "name": "project-jitter",
+      "start": "0x522560",
+      "endExclusive": "0x522683",
+      "bytesSHA256": "b29c272f56be0be249c2765c33a0a686974eb9f4915e58dbaa46de2e7211f415",
+      "listingSHA256": "2b8cf33b316508cebebfd49fe43c789cf9718022fb8ac9c58c8dda956efbd843"
+    },
+    {
+      "name": "project-bounds",
+      "start": "0x522698",
+      "endExclusive": "0x522716",
+      "bytesSHA256": "d80063e2549a0e867c834336c38b8e86ec3030352db32cc373cbca77b033d26f",
+      "listingSHA256": "42d30e982963585108e9031ccc6a4259d9ce21e12c5694fa3e5b2c13fc43c26a"
+    },
+    {
+      "name": "cos-helper",
+      "start": "0x4036ac",
+      "endExclusive": "0x4036b9",
+      "bytesSHA256": "b19ec2f0b6c9d0173d60a01855ac7bbc3370bb0d1f627a6329ffc716c1d7244b",
+      "listingSHA256": "8bbd233192fb732d0679e53baf2f1d7909fcf06f7b1756afb93311c04d474346"
+    },
+    {
+      "name": "sin-helper",
+      "start": "0x4036bc",
+      "endExclusive": "0x4036c9",
+      "bytesSHA256": "f419d67b70c3ad05e1256647adc2fb40343b31e3efc42b832cb8ebc6fa22e70f",
+      "listingSHA256": "37d2922f6ce2472308705389e5b0973f9207f2933e5c7b99aaf2a842cc967776"
+    }
+  ],
+  "constants": {
+    "hoursToDegrees": {
+      "address": "0x522684",
+      "type": "Single",
+      "exactDecimal": "15",
+      "numberPolicyValue": 15.0,
+      "bytesSHA256": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e"
+    },
+    "radiansPerDegree": {
+      "address": "0x522688",
+      "type": "Extended",
+      "exactDecimal": "0.017453292519943295769139146242365789873929315945133566856384277343750",
+      "numberPolicyValue": 0.017453292519943295,
+      "bytesSHA256": "59768c6f56cf8adedf2c47aa7dc875017768fbf4b6816536f38660ee93f8595d"
+    },
+    "halfUniform": {
+      "address": "0x522694",
+      "type": "Single",
+      "exactDecimal": "0.5",
+      "numberPolicyValue": 0.5,
+      "bytesSHA256": "d99e58435243d9fef9c88273b8d553b4fba4d0baf8009d29eae74fa99e0d9f57"
+    },
+    "seeingNumerator": {
+      "address": "0x5222a8",
+      "type": "Extended",
+      "exactDecimal": "0.1000000000000000000013552527156068805425093160010874271392822265625",
+      "numberPolicyValue": 0.1,
+      "bytesSHA256": "9e3186f308caf4ab481f125fe2749d0563c07ebe773040b2a5433cf916bc06a2"
+    },
+    "seeingDenominator": {
+      "address": "0x5222b4",
+      "type": "Extended",
+      "exactDecimal": "206264.7999999999999971578290569595992565155029296875",
+      "numberPolicyValue": 206264.8,
+      "bytesSHA256": "f2d0b2ce17e9630e26035bf5edd33eb18383ee2f5243aab31e4c6b6bbcca26f6"
+    },
+    "micronsToMM": {
+      "address": "0x5222c0",
+      "type": "Extended",
+      "exactDecimal": "0.0009999999999999999999584953855845392833856521974666975438594818115234375",
+      "numberPolicyValue": 0.001,
+      "bytesSHA256": "b4b442ccf1e7225e0718ef7e8d10984bc37295f4b7bcc727211dbe84d1936425"
+    },
+    "two": {
+      "address": "0x5222cc",
+      "type": "Single",
+      "exactDecimal": "2",
+      "numberPolicyValue": 2.0,
+      "bytesSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    "negativeTwo": {
+      "address": "0x5222d0",
+      "type": "Single",
+      "exactDecimal": "-2",
+      "numberPolicyValue": -2.0,
+      "bytesSHA256": "e4767380eb5e2fc046bce28b8b2a30c81c733be1a56203cd9499066086617f6c"
+    }
+  },
+  "contract": {
+    "owners": "CCDandIRinitializersuseowncompiledcamera dimensions/pixels/seeingflagandselectedopticalfocal/seeing;notsharedCCDsourcecalibration",
+    "context": "RAhours*Single15*ExtdegreesToRadians,DECdegrees*sameconstant;storecosDEC0/sinDEC0",
+    "geometry": "halfX=(width*pixelWidthMicrons*ExtmicronsToMM)/(Single2*focalLengthMM);sameheight;originX=-halfX,originY=halfY,stepX=(-halfX*-2)/width,stepY=(halfY*-2)/height",
+    "jitter": "Alwaysconsume2draws,RAfirstthenDEC;each(U-Single.5)*seeingWidthRadians;seeingWidth=enabled?Ext.1*opticalseeingArcseconds/Ext206264.8:0",
+    "projection": "D=cosDEC0*cosDEC*cosDeltaRA+sinDEC0*sinDEC;X=-cosDEC*sinDeltaRA/D;Y=-(sinDEC0*cosDEC*cosDeltaRA-cosDEC0*sinDEC)/D",
+    "bounds": "Inclusive\u00b1halfX/\u00b1halfY;noD>0hemispherepredicate;pixelDoubletransformonlyforinside",
+    "scope": "Compiledreferencecontext,explicituniformpair/coordinates;noactualRNGprefix/response/observationauthority"
+  },
+  "numericalPolicy": "NumberprojectionsfromtypedExtendedconstants;Mathsin/cosandsourceoperationorder;notx87Extended/FPUexception/nativeargumentreductionparity",
+  "nativeExecution": false,
+  "microemulation": false,
+  "REAExecuted": false,
+  "originalModified": false
+}

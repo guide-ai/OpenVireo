@@ -1,0 +1,7944 @@
+{
+  "syntheticOnly": true,
+  "control": "IndependentDecimal85directionvectors/west/northdotproducts;typedsourceconstants,notnativeFPU/originaloutputoracle",
+  "cases": [
+    {
+      "name": "ccd-0-c0-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 5.454154077671573e-07,
+        "planeY": 5.454154077672385e-07,
+        "denominator": 0.9999999999997026,
+        "inside": true,
+        "pixelX": 512.1051629083101,
+        "pixelY": 511.89483709168985,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 506.9521805528444,
+        "pixelY": 478.3478700067511,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 506.9521805528444,
+        "pixelY": 478.3478700067511,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 506.9521805528444,
+        "pixelY": 478.3478700067511,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.5634523377762904e-05,
+        "planeY": 0.00017507834245358318,
+        "denominator": 0.999999984345223,
+        "inside": true,
+        "pixelX": 507.0573434612251,
+        "pixelY": 478.2427070956685,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 517.0478194471556,
+        "pixelY": 545.6521299932489,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 517.0478194471556,
+        "pixelY": 545.6521299932489,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 517.0478194471556,
+        "pixelY": 545.6521299932489,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.672535419404486e-05,
+        "planeY": -0.00017398751160943056,
+        "denominator": 0.999999984507051,
+        "inside": true,
+        "pixelX": 517.1529823555393,
+        "pixelY": 545.5469670821933,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c0-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.026185375779794257,
+        "planeY": 0.0017464748896493143,
+        "denominator": 0.9996558157361578,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 3.856667230470665e-07,
+        "planeY": 5.454154821366491e-07,
+        "denominator": 0.9999999999997768,
+        "inside": true,
+        "pixelX": 512.0743613650375,
+        "pixelY": 511.89483707735053,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 508.4312756079732,
+        "pixelY": 478.3478369803902,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 508.4312756079732,
+        "pixelY": 478.3478369803902,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 508.4312756079732,
+        "pixelY": 478.3478369803902,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.8123171779389178e-05,
+        "planeY": 0.00017507850667821605,
+        "denominator": 0.999999984509534,
+        "inside": true,
+        "pixelX": 508.5056259412865,
+        "pixelY": 478.2426754311065,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 515.5699703293114,
+        "pixelY": 545.6520969438097,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 515.5699703293114,
+        "pixelY": 545.6520969438097,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 515.5699703293114,
+        "pixelY": 545.6520969438097,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.8900967136978503e-05,
+        "planeY": -0.0001739873329861273,
+        "denominator": 0.999999984685581,
+        "inside": true,
+        "pixelX": 515.6443427260987,
+        "pixelY": 545.5469326413877,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c1-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848035752201568,
+        "planeY": 0.0019172356004408485,
+        "denominator": 0.9998274449698911,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 4.4677831688551134e-07,
+        "planeY": 5.454153378827225e-07,
+        "denominator": 0.9999999999997514,
+        "inside": true,
+        "pixelX": 512.0861444442245,
+        "pixelY": 511.89483710516447,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 507.86456305415714,
+        "pixelY": 478.3479010598167,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 507.86456305415714,
+        "pixelY": 478.3479010598167,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 507.86456305415714,
+        "pixelY": 478.3479010598167,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.1001146466594398e-05,
+        "planeY": 0.00017507818804093483,
+        "denominator": 0.9999999844532903,
+        "inside": true,
+        "pixelX": 507.9507164469098,
+        "pixelY": 478.24273686835727,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 516.134426291884,
+        "pixelY": 545.6521610311249,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 516.134426291884,
+        "pixelY": 545.6521610311249,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 516.134426291884,
+        "pixelY": 545.6521610311249,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.188946145939786e-05,
+        "planeY": -0.0001739876793610921,
+        "denominator": 0.9999999846245698,
+        "inside": true,
+        "pixelX": 516.2205617876401,
+        "pixelY": 545.5469994268105,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-c2-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021473610414378196,
+        "planeY": 0.0015850466308218267,
+        "denominator": 0.9997682664170506,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ccd-0-antipode",
+      "camera": "ccd",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.7597059653660707e-20,
+        "planeY": -0.0,
+        "denominator": -1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 3.272492359911292e-07,
+        "planeY": 3.272492359911467e-07,
+        "denominator": 0.9999999999998929,
+        "inside": true,
+        "pixelX": 512.1246819589127,
+        "pixelY": 511.8753180410874,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 502.0254433225736,
+        "pixelY": 445.5029548010226,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 502.0254433225736,
+        "pixelY": 445.5029548010226,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 502.0254433225736,
+        "pixelY": 445.5029548010226,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.5852689549683475e-05,
+        "planeY": 0.0001748601762760386,
+        "denominator": 0.9999999843777789,
+        "inside": true,
+        "pixelX": 502.1501252815706,
+        "pixelY": 445.3782728388293,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 521.9745566774264,
+        "pixelY": 578.4970451989774,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 521.9745566774264,
+        "pixelY": 578.4970451989774,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 521.9745566774264,
+        "pixelY": 578.4970451989774,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.650718802211432e-05,
+        "planeY": -0.00017420567778688543,
+        "denominator": 0.9999999844748758,
+        "inside": true,
+        "pixelX": 522.0992386364255,
+        "pixelY": 578.3723632368034,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c0-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618559409555813,
+        "planeY": 0.0017462566580057884,
+        "denominator": 0.9996558104060733,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.3140007818191447e-07,
+        "planeY": 3.2724926276414484e-07,
+        "denominator": 0.9999999999999197,
+        "inside": true,
+        "pixelX": 512.0881634297873,
+        "pixelY": 511.8753180308869,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 504.94815432940186,
+        "pixelY": 445.5028895405052,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 504.94815432940186,
+        "pixelY": 445.5028895405052,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 504.94815432940186,
+        "pixelY": 445.5028895405052,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.827741553834227e-05,
+        "planeY": 0.00017486034330795305,
+        "denominator": 0.9999999845448986,
+        "inside": true,
+        "pixelX": 505.0363046798916,
+        "pixelY": 445.37820919966987,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 519.0543076588275,
+        "pixelY": 578.4969798928572,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 519.0543076588275,
+        "pixelY": 578.4969798928572,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 519.0543076588275,
+        "pixelY": 578.4969798928572,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.8746677606148427e-05,
+        "planeY": -0.00017420550206790074,
+        "denominator": 0.9999999846505029,
+        "inside": true,
+        "pixelX": 519.1424841679426,
+        "pixelY": 578.3722962878702,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c1-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.018480515585292418,
+        "planeY": 0.0019170202901241092,
+        "denominator": 0.9998274424628883,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.68066942079623e-07,
+        "planeY": 3.2724921083272996e-07,
+        "denominator": 0.9999999999999105,
+        "inside": true,
+        "pixelX": 512.1021335049323,
+        "pixelY": 511.8753180506727,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 503.82832297508656,
+        "pixelY": 445.5030161622829,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 503.82832297508656,
+        "pixelY": 445.5030161622829,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 503.82832297508656,
+        "pixelY": 445.5030161622829,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.11798764056077e-05,
+        "planeY": 0.00017486001922395396,
+        "denominator": 0.9999999844876937,
+        "inside": true,
+        "pixelX": 503.9304670894635,
+        "pixelY": 445.37833267567356,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 520.1696799595866,
+        "pixelY": 578.4971065302229,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 520.1696799595866,
+        "pixelY": 578.4971065302229,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 520.1696799595866,
+        "pixelY": 578.4971065302229,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.17107686486753e-05,
+        "planeY": -0.00017420584281087193,
+        "denominator": 0.9999999845904838,
+        "inside": true,
+        "pixelX": 520.2718028551453,
+        "pixelY": 578.3724261109422,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-c2-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021473786129266172,
+        "planeY": 0.0015848257572651898,
+        "denominator": 0.9997682629962519,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-1-antipode",
+      "camera": "ccd",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.7597059653660707e-20,
+        "planeY": -0.0,
+        "denominator": -1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 3.272492359911292e-07,
+        "planeY": 3.272492359911467e-07,
+        "denominator": 0.9999999999998929,
+        "inside": true,
+        "pixelX": 512.1402672037767,
+        "pixelY": 511.8597327962233,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 500.77862373789526,
+        "pixelY": 437.1908241511504,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 500.77862373789526,
+        "pixelY": 437.1908241511504,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 500.77862373789526,
+        "pixelY": 437.1908241511504,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.5852689549683475e-05,
+        "planeY": 0.0001748601762760386,
+        "denominator": 0.9999999843777789,
+        "inside": true,
+        "pixelX": 500.9188909417669,
+        "pixelY": 437.050556943683,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 523.2213762621047,
+        "pixelY": 586.8091758488496,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 523.2213762621047,
+        "pixelY": 586.8091758488496,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 523.2213762621047,
+        "pixelY": 586.8091758488496,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.650718802211432e-05,
+        "planeY": -0.00017420567778688543,
+        "denominator": 0.9999999844748758,
+        "inside": true,
+        "pixelX": 523.3616434659788,
+        "pixelY": 586.6689086414037,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c0-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618559409555813,
+        "planeY": 0.0017462566580057884,
+        "denominator": 0.9996558104060733,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.3140007818191447e-07,
+        "planeY": 3.2724926276414484e-07,
+        "denominator": 0.9999999999999197,
+        "inside": true,
+        "pixelX": 512.0991838585107,
+        "pixelY": 511.85973278474773,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 504.0666736205771,
+        "pixelY": 437.19075073306834,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 504.0666736205771,
+        "pixelY": 437.19075073306834,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 504.0666736205771,
+        "pixelY": 437.19075073306834,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.827741553834227e-05,
+        "planeY": 0.00017486034330795305,
+        "denominator": 0.9999999845448986,
+        "inside": true,
+        "pixelX": 504.16584276487805,
+        "pixelY": 437.0504853496286,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 519.9360961161809,
+        "pixelY": 586.8091023794643,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 519.9360961161809,
+        "pixelY": 586.8091023794643,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 519.9360961161809,
+        "pixelY": 586.8091023794643,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.8746677606148427e-05,
+        "planeY": -0.00017420550206790074,
+        "denominator": 0.9999999846505029,
+        "inside": true,
+        "pixelX": 520.0352946889353,
+        "pixelY": 586.668833323854,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c1-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.018480515585292418,
+        "planeY": 0.0019170202901241092,
+        "denominator": 0.9998274424628883,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset0-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset0-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset0-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset0-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.68066942079623e-07,
+        "planeY": 3.2724921083272996e-07,
+        "denominator": 0.9999999999999105,
+        "inside": true,
+        "pixelX": 512.1149001930489,
+        "pixelY": 511.8597328070068,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset1-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 502.80686334697236,
+        "pixelY": 437.1908931825683,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset1-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 502.80686334697236,
+        "pixelY": 437.1908931825683,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset1-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 502.80686334697236,
+        "pixelY": 437.1908931825683,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset1-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.11798764056077e-05,
+        "planeY": 0.00017486001922395396,
+        "denominator": 0.9999999844876937,
+        "inside": true,
+        "pixelX": 502.92177547564637,
+        "pixelY": 437.05062426013274,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset2-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 521.1908899545349,
+        "pixelY": 586.8092448465009,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset2-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 521.1908899545349,
+        "pixelY": 586.8092448465009,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset2-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 521.1908899545349,
+        "pixelY": 586.8092448465009,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset2-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.17107686486753e-05,
+        "planeY": -0.00017420584281087193,
+        "denominator": 0.9999999845904838,
+        "inside": true,
+        "pixelX": 521.3057782120385,
+        "pixelY": 586.66897937481,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset3-seeingFalse-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset3-seeingFalse-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset3-seeingTrue-u0",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-c2-offset3-seeingTrue-u1",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021473786129266172,
+        "planeY": 0.0015848257572651898,
+        "denominator": 0.9997682629962519,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ccd-2-antipode",
+      "camera": "ccd",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.7597059653660707e-20,
+        "planeY": -0.0,
+        "denominator": -1.0,
+        "inside": true,
+        "pixelX": 512.0,
+        "pixelY": 512.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c0-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 5.454154077671573e-07,
+        "planeY": 5.454154077672385e-07,
+        "denominator": 0.9999999999997026,
+        "inside": true,
+        "pixelX": 256.06309774498607,
+        "pixelY": 255.93690225501393,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c0-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 252.97130833170664,
+        "pixelY": 235.80872200405065,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 252.97130833170664,
+        "pixelY": 235.80872200405065,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 252.97130833170664,
+        "pixelY": 235.80872200405065,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c0-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.5634523377762904e-05,
+        "planeY": 0.00017507834245358318,
+        "denominator": 0.999999984345223,
+        "inside": true,
+        "pixelX": 253.03440607673505,
+        "pixelY": 235.7456242574011,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c0-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 259.02869166829333,
+        "pixelY": 276.19127799594935,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 259.02869166829333,
+        "pixelY": 276.19127799594935,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 259.02869166829333,
+        "pixelY": 276.19127799594935,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c0-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.672535419404486e-05,
+        "planeY": -0.00017398751160943056,
+        "denominator": 0.999999984507051,
+        "inside": true,
+        "pixelX": 259.09178941332357,
+        "pixelY": 276.128180249316,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c0-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c0-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c0-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.026185375779794257,
+        "planeY": 0.0017464748896493143,
+        "denominator": 0.9996558157361578,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 3.856667230470665e-07,
+        "planeY": 5.454154821366491e-07,
+        "denominator": 0.9999999999997768,
+        "inside": true,
+        "pixelX": 256.0446168190225,
+        "pixelY": 255.9369022464103,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 253.85876536478392,
+        "pixelY": 235.80870218823412,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 253.85876536478392,
+        "pixelY": 235.80870218823412,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 253.85876536478392,
+        "pixelY": 235.80870218823412,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.8123171779389178e-05,
+        "planeY": 0.00017507850667821605,
+        "denominator": 0.999999984509534,
+        "inside": true,
+        "pixelX": 253.90337556477192,
+        "pixelY": 235.7456052586639,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 258.14198219758686,
+        "pixelY": 276.1912581662859,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 258.14198219758686,
+        "pixelY": 276.1912581662859,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 258.14198219758686,
+        "pixelY": 276.1912581662859,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.8900967136978503e-05,
+        "planeY": -0.0001739873329861273,
+        "denominator": 0.999999984685581,
+        "inside": true,
+        "pixelX": 258.1866056356592,
+        "pixelY": 276.1281595848326,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c1-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c1-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848035752201568,
+        "planeY": 0.0019172356004408485,
+        "denominator": 0.9998274449698911,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 4.4677831688551134e-07,
+        "planeY": 5.454153378827225e-07,
+        "denominator": 0.9999999999997514,
+        "inside": true,
+        "pixelX": 256.0516866665347,
+        "pixelY": 255.9369022630987,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 253.51873783249428,
+        "pixelY": 235.80874063589005,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 253.51873783249428,
+        "pixelY": 235.80874063589005,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 253.51873783249428,
+        "pixelY": 235.80874063589005,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.1001146466594398e-05,
+        "planeY": 0.00017507818804093483,
+        "denominator": 0.9999999844532903,
+        "inside": true,
+        "pixelX": 253.57042986814585,
+        "pixelY": 235.74564212101436,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 258.4806557751304,
+        "pixelY": 276.191296618675,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 258.4806557751304,
+        "pixelY": 276.191296618675,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 258.4806557751304,
+        "pixelY": 276.191296618675,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.188946145939786e-05,
+        "planeY": -0.0001739876793610921,
+        "denominator": 0.9999999846245698,
+        "inside": true,
+        "pixelX": 258.5323370725841,
+        "pixelY": 276.12819965608634,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-0-c2-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-c2-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021473610414378196,
+        "planeY": 0.0015850466308218267,
+        "denominator": 0.9997682664170506,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 1.454441087378942e-06
+      }
+    },
+    {
+      "name": "ir-0-antipode",
+      "camera": "ir",
+      "index": 0,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.7597059653660707e-20,
+        "planeY": -0.0,
+        "denominator": -1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c0-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 3.272492359911292e-07,
+        "planeY": 3.272492359911467e-07,
+        "denominator": 0.9999999999998929,
+        "inside": true,
+        "pixelX": 256.0748091753476,
+        "pixelY": 255.92519082465242,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c0-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 250.01526599354415,
+        "pixelY": 216.10177288061354,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 250.01526599354415,
+        "pixelY": 216.10177288061354,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 250.01526599354415,
+        "pixelY": 216.10177288061354,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c0-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.5852689549683475e-05,
+        "planeY": 0.0001748601762760386,
+        "denominator": 0.9999999843777789,
+        "inside": true,
+        "pixelX": 250.09007516894235,
+        "pixelY": 216.02696370329758,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c0-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 261.9847340064558,
+        "pixelY": 295.89822711938643,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 261.9847340064558,
+        "pixelY": 295.89822711938643,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 261.9847340064558,
+        "pixelY": 295.89822711938643,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c0-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.650718802211432e-05,
+        "planeY": -0.00017420567778688543,
+        "denominator": 0.9999999844748758,
+        "inside": true,
+        "pixelX": 262.05954318185536,
+        "pixelY": 295.823417942082,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c0-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c0-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c0-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618559409555813,
+        "planeY": 0.0017462566580057884,
+        "denominator": 0.9996558104060733,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.3140007818191447e-07,
+        "planeY": 3.2724926276414484e-07,
+        "denominator": 0.9999999999999197,
+        "inside": true,
+        "pixelX": 256.05289805787237,
+        "pixelY": 255.92519081853212,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 251.7688925976411,
+        "pixelY": 216.10173372430313,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 251.7688925976411,
+        "pixelY": 216.10173372430313,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 251.7688925976411,
+        "pixelY": 216.10173372430313,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.827741553834227e-05,
+        "planeY": 0.00017486034330795305,
+        "denominator": 0.9999999845448986,
+        "inside": true,
+        "pixelX": 251.82178280793497,
+        "pixelY": 216.02692551980192,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 260.2325845952965,
+        "pixelY": 295.8981879357143,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 260.2325845952965,
+        "pixelY": 295.8981879357143,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 260.2325845952965,
+        "pixelY": 295.8981879357143,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.8746677606148427e-05,
+        "planeY": -0.00017420550206790074,
+        "denominator": 0.9999999846505029,
+        "inside": true,
+        "pixelX": 260.28549050076555,
+        "pixelY": 295.8233777727221,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c1-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c1-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.018480515585292418,
+        "planeY": 0.0019170202901241092,
+        "denominator": 0.9998274424628883,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.68066942079623e-07,
+        "planeY": 3.2724921083272996e-07,
+        "denominator": 0.9999999999999105,
+        "inside": true,
+        "pixelX": 256.0612801029594,
+        "pixelY": 255.92519083040364,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 251.09699378505192,
+        "pixelY": 216.10180969736976,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 251.09699378505192,
+        "pixelY": 216.10180969736976,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 251.09699378505192,
+        "pixelY": 216.10180969736976,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.11798764056077e-05,
+        "planeY": 0.00017486001922395396,
+        "denominator": 0.9999999844876937,
+        "inside": true,
+        "pixelX": 251.15828025367807,
+        "pixelY": 216.02699960540411,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 260.901807975752,
+        "pixelY": 295.89826391813375,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 260.901807975752,
+        "pixelY": 295.89826391813375,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 260.901807975752,
+        "pixelY": 295.89826391813375,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.17107686486753e-05,
+        "planeY": -0.00017420584281087193,
+        "denominator": 0.9999999845904838,
+        "inside": true,
+        "pixelX": 260.96308171308715,
+        "pixelY": 295.82345566656534,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-1-c2-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-c2-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021473786129266172,
+        "planeY": 0.0015848257572651898,
+        "denominator": 0.9997682629962519,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-1-antipode",
+      "camera": "ir",
+      "index": 1,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.7597059653660707e-20,
+        "planeY": -0.0,
+        "denominator": -1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c0-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 3.272492359911292e-07,
+        "planeY": 3.272492359911467e-07,
+        "denominator": 0.9999999999998929,
+        "inside": true,
+        "pixelX": 256.08416032226603,
+        "pixelY": 255.91583967773397,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c0-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 249.26717424273718,
+        "pixelY": 211.11449449069025,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 249.26717424273718,
+        "pixelY": 211.11449449069025,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.6179938785896095e-05,
+        "planeY": 0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 249.26717424273718,
+        "pixelY": 211.11449449069025,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c0-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.0001,
+        "decDegrees": 0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.5852689549683475e-05,
+        "planeY": 0.0001748601762760386,
+        "denominator": 0.9999999843777789,
+        "inside": true,
+        "pixelX": 249.35133456506014,
+        "pixelY": 211.03033416620977,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c0-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 262.73282575726284,
+        "pixelY": 300.8855055093098,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 262.73282575726284,
+        "pixelY": 300.8855055093098,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.6179938785896095e-05,
+        "planeY": -0.00017453292703143678,
+        "denominator": 0.9999999844264345,
+        "inside": true,
+        "pixelX": 262.73282575726284,
+        "pixelY": 300.8855055093098,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c0-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": -0.0001,
+        "decDegrees": -0.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.650718802211432e-05,
+        "planeY": -0.00017420567778688543,
+        "denominator": 0.9999999844748758,
+        "inside": true,
+        "pixelX": 262.81698607958725,
+        "pixelY": 300.80134518484226,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c0-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c0-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.02618592156918693,
+        "planeY": 0.001745929310557971,
+        "denominator": 0.9996558024107688,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c0-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 0.1,
+        "decDegrees": 0.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.02618559409555813,
+        "planeY": 0.0017462566580057884,
+        "denominator": 0.9996558104060733,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 1e-85,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.3140007818191447e-07,
+        "planeY": 3.2724926276414484e-07,
+        "denominator": 0.9999999999999197,
+        "inside": true,
+        "pixelX": 256.0595103151064,
+        "pixelY": 255.91583967084864,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 251.24000417234626,
+        "pixelY": 211.11445043984102,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 251.24000417234626,
+        "pixelY": 211.11445043984102,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -1.850878128765919e-05,
+        "planeY": 0.000174533098318884,
+        "denominator": 0.9999999845978117,
+        "inside": true,
+        "pixelX": 251.24000417234626,
+        "pixelY": 211.11445043984102,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.0001,
+        "decDegrees": 45.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -1.827741553834227e-05,
+        "planeY": 0.00017486034330795305,
+        "denominator": 0.9999999845448986,
+        "inside": true,
+        "pixelX": 251.29950565892682,
+        "pixelY": 211.03029120977718,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 260.76165766970854,
+        "pixelY": 300.8854614276786,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 260.76165766970854,
+        "pixelY": 300.8854614276786,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.851524319902223e-05,
+        "planeY": -0.00017453275562429713,
+        "denominator": 0.9999999845977519,
+        "inside": true,
+        "pixelX": 260.76165766970854,
+        "pixelY": 300.8854614276786,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 11.9999,
+        "decDegrees": 44.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 1.8746677606148427e-05,
+        "planeY": -0.00017420550206790074,
+        "denominator": 0.9999999846505029,
+        "inside": true,
+        "pixelX": 260.8211768133612,
+        "pixelY": 300.8012999943124,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c1-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.01848075268031894,
+        "planeY": 0.0019166973247153316,
+        "denominator": 0.9998274387022484,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c1-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 12.0,
+        "decDegrees": 45.0
+      },
+      "source": {
+        "raHours": 12.1,
+        "decDegrees": 45.1
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.018480515585292418,
+        "planeY": 0.0019170202901241092,
+        "denominator": 0.9998274424628883,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset0-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset0-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset0-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 0.0,
+        "planeY": 0.0,
+        "denominator": 1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset0-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.68066942079623e-07,
+        "planeY": 3.2724921083272996e-07,
+        "denominator": 0.9999999999999105,
+        "inside": true,
+        "pixelX": 256.0689401158293,
+        "pixelY": 255.9158396842041,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset1-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 250.48411800818343,
+        "pixelY": 211.11453590954096,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset1-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 250.48411800818343,
+        "pixelY": 211.11453590954096,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset1-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -2.144797119399854e-05,
+        "planeY": 0.00017453276597826007,
+        "denominator": 0.9999999845391494,
+        "inside": true,
+        "pixelX": 250.48411800818343,
+        "pixelY": 211.11453590954096,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset1-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9991,
+        "decDegrees": -34.99
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -2.11798764056077e-05,
+        "planeY": 0.00017486001922395396,
+        "denominator": 0.9999999844876937,
+        "inside": true,
+        "pixelX": 250.55306528538785,
+        "pixelY": 211.03037455607964,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset2-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 261.514533972721,
+        "pixelY": 300.8855469079005,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset2-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 261.514533972721,
+        "pixelY": 300.8855469079005,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset2-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 2.144272955272077e-05,
+        "planeY": -0.00017453308800583454,
+        "denominator": 0.9999999845392056,
+        "inside": true,
+        "pixelX": 261.514533972721,
+        "pixelY": 300.8855469079005,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset2-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 23.9989,
+        "decDegrees": -35.01
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": 2.17107686486753e-05,
+        "planeY": -0.00017420584281087193,
+        "denominator": 0.9999999845904838,
+        "inside": true,
+        "pixelX": 261.58346692722307,
+        "pixelY": 300.801387624886,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset3-seeingFalse-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset3-seeingFalse-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 0.0
+      }
+    },
+    {
+      "name": "ir-2-c2-offset3-seeingTrue-u0",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": -0.021474049701480147,
+        "planeY": 0.00158449444690899,
+        "denominator": 0.9997682578649072,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-c2-offset3-seeingTrue-u1",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 23.999,
+        "decDegrees": -35.0
+      },
+      "source": {
+        "raHours": 24.099,
+        "decDegrees": -34.9
+      },
+      "seeingEnabled": true,
+      "uniforms": [
+        0.125,
+        0.875
+      ],
+      "expected": {
+        "planeX": -0.021473786129266172,
+        "planeY": 0.0015848257572651898,
+        "denominator": 0.9997682629962519,
+        "inside": false,
+        "pixelX": null,
+        "pixelY": null,
+        "seeingWidthRadians": 8.726646293096467e-07
+      }
+    },
+    {
+      "name": "ir-2-antipode",
+      "camera": "ir",
+      "index": 2,
+      "center": {
+        "raHours": 0.0,
+        "decDegrees": 0.0
+      },
+      "source": {
+        "raHours": 12.0,
+        "decDegrees": 0.0
+      },
+      "seeingEnabled": false,
+      "uniforms": [
+        0.5,
+        0.5
+      ],
+      "expected": {
+        "planeX": 1.7597059653660707e-20,
+        "planeY": -0.0,
+        "denominator": -1.0,
+        "inside": true,
+        "pixelX": 256.0,
+        "pixelY": 256.0,
+        "seeingWidthRadians": 0.0
+      }
+    }
+  ]
+}
