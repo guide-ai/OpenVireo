@@ -1,0 +1,19 @@
+# Bounded general native CSV inspection
+
+**Inspect native results CSV file** extends the existing saved-text panel with the canonical general3/5-filter native CSV layouts. The original file/order/repeated rows/comment tail/SHA remain exact. The inspector shows the recovered native fixed-column text projection and its field slices,with the original CSV row separately available. No native floating-point values,date,scientific metadata,notebook observations or DAT records are constructed.
+
+At http://127.0.0.1:5173/#classification choose the CSV command in **Inspect native saved text results**. Inspect a candidate row and **Original native CSV row**;**Download unchanged native CSV bytes** returns the supplied file exactly. The explicit decimal-separator control only reinterprets numeric-looking projected text;it does not alter source bytes or change the inferred header/precision layout. Loading a supported TXT uses the separate TXT command. Neither file type is added to investigation/notebook backups;reload clears temporary candidates. Cancel/errors/late results preserve prior confirmed data.
+
+## Demonstrated scope
+
+[Provenance](NATIVE-CSV-RESULTS-PROVENANCE.json),evidence `NATIVE-CSV-PROJECTION-01`,pins complete writer5472e0..547954,formatter5486a8..548ba4,CSVprojection548ea4..5495a8 andreader549e18..54a3af to sourceSHA256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Native writer literals give exact headers `Object ID,MJD(Days),RA,,,Dec,,,U,B,V,[R,I,]Z,Spectrum,Comments`. Its canonical formatter uses1decimal forcounts and3formagnitudes;the reader probes the firstU field. The browser admits only these exact headers and unquoted ASCII/dot rows with firstU present,consistent nonblank photometry precision,known token/field widths,1000rows/512KiB/1024bytes per row. Header filter count identifies the admitted shape;it does not establish actual native exercise/configuration or source authority.
+
+Coordinate zero-padding,unit characters and field spacing are the recovered textual projection,not original CSV byte offsets. Projected fields may have different padding from source;the original CSV row/download remains unchanged. Commas in the remaining comment tail are retained as literal source text. This is not a general RFC4180 importer. Quoted fields,decimal-comma CSV,unknown headers,header-only/blank-first-U,ambiguous/mixed precision and overflowing fields remain rejected. Explicit comma analysis after admission does not admit a comma-decimal source CSV.
+
+## Alignment limits retained
+
+The CSV helper pads RAseconds only to a minimum length2,while the record parser later copies4characters. A shorthand source`4.5`therefore projects`4.5s`,which is not an admitted decimal spelling. The bounded route now requires the four-character source spelling`04.5`;it rejects shorthand rather than inventing a pad-to4 correction. Four initial unit failures exposed that admission gap;the raw evidence and corrected regression remain.
+
+Exercise-code4CSV stays disabled. A source-described witness with object/time padded12each,an extra space andV`12.50`padded to7projects`   12.`into the parser's Vcolumn25/length6. This is a static alignment hazard requiring further source/runtime-output evidence,not a proven runtime numeric result or permission to repair the original. Its TXTlayout remains separately inspectable as raw supplied fields.
+
+The [native time prefix/bias and locale/FPU gates](NATIVE-TEXT-RESULTS.md) remain. The original`MJD(Days)`field is unresolved without importing-session context;no current browser clock,UTC/standardMJD,default zero,catalog value or student answer is substituted. All64primary acceptance statuses unchanged;projectpartial. No originalexecution/emulation,Claudeattempt,remote,push or deployment.

@@ -7,7 +7,7 @@ export type NativeTextDecimal=Readonly<{kind:'decimal';negative:boolean;coeffici
 export type NativeTextField=Readonly<{id:string;start:number;width:number;raw:string;decimal:NativeTextDecimal|null}>;
 export type NativeTextRow=Readonly<{index:number;object:string;raw:string;fields:readonly NativeTextField[]}>;
 export type NativeTextData=Readonly<{header:string;profile:NativeTextProfile;separator:'.'|',';rows:readonly NativeTextRow[]}>;
-export class NativeTextError extends Error{constructor(readonly code:'size'|'encoding'|'header'|'row'|'owner'|'separator',readonly row=0){super('Native text '+code);this.name='NativeTextError';}}
+export class NativeTextError extends Error{constructor(readonly code:'size'|'encoding'|'header'|'row'|'owner'|'separator'|'csv'|'csvProfile',readonly row=0){super('Native text '+code);this.name='NativeTextError';}}
 const owned=new WeakMap<NativeTextData,readonly number[]>();
 const prefix='Object ID    MJD(Days) ',coordinate='     RA           Dec    ',suffix='     Z      Spectrum     Comments';
 export function nativeTextHeader(profile:NativeTextProfile):string{if(profile==='exercise4')return prefix+'  V(Mag)   '+'    Z       Vel(km/s)   Comments';if(!['counts3','counts5','magnitudes3','magnitudes5'].includes(profile))throw new NativeTextError('header');const count=profile.endsWith('5')?5:3,mag=profile.startsWith('magnitudes');return prefix+coordinate+['U','B','V','R','I'].slice(0,count).map(f=>mag?'  '+f+'    ':'     '+f+'    ').join('')+suffix;}

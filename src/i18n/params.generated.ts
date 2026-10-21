@@ -1841,4 +1841,16 @@ export interface MessageParameters {
   "nativeText.field.r": never;
   "nativeText.field.i": never;
   "nativeText.field.type": never;
+  "nativeText.error.csv": never;
+  "nativeText.error.csvProfile": never;
+  "nativeCsv.open": never;
+  "nativeCsv.fileLabel": never;
+  "nativeCsv.download": never;
+  "nativeCsv.separator": never;
+  "nativeCsv.select": never;
+  "nativeCsv.projection": never;
+  "nativeCsv.slice": "start" | "width";
+  "nativeCsv.rawRow": never;
+  "nativeCsv.textClaim": never;
+  "nativeText.error.download": never;
 }
