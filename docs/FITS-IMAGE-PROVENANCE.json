@@ -137,7 +137,7 @@
     "metadata": "Native clock/site/instrument/data ownership is not reconstructed;all supplied header cards remain claims",
     "baseOffsets": "metadata-init rebases EBX=this+0x0c:relative+0SIMPLE,+2BITPIX,+6NAXIS,+0x0a/+0x0ewidth/height. Later CCD272e/2732 andIR2789/278d copies are dimensions,not BITPIX replacement;headerwriter uses unrebased this."
   },
-  "browserContract": "New bounded supplied-input reader following standard FITS4.0,one primary2Dfloat32plane<=512x512,identity scaling;own originalbytes;allow standardzero-paddeddata or explicitly identified exact-length unpaddedtail. Webdisplay/picking/linearstretch only. Not a native reader port,CCD acquisition or native writer oracle.",
+  "browserContract": "New bounded supplied-input reader following standard FITS4.0,one primary2Dfloat32plane<=1024x1024,file<=5MiB,identity scaling;own originalbytes;allow standardzero-paddeddata or explicitly identified exact-length unpaddedtail. Webdisplay/picking/linearstretch only. Not a native reader port,CCD acquisition or native writer oracle.",
   "standard": "https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf",
   "nativeExecution": false,
   "microemulation": false,
@@ -159,5 +159,6 @@
       "bytes": 32096
     }
   ],
-  "rights": "Source-specific rights and uncertainty remain;no original image,binary,installer or additional asset is included in this port."
+  "rights": "Source-specific rights and uncertainty remain;no original image,binary,installer or additional asset is included in this port.",
+  "cameraDimensionFollowup": "CAMERA-DEFAULT-SIZE-PROVENANCE.json;compiledCCD1024x1024 andIR512x512;does not identify supplied-file origin or establish acquisition"
 }

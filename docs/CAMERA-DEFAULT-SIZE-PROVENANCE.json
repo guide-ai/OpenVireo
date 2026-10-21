@@ -1,0 +1,96 @@
+{
+  "evidenceId": "NATIVE-CAMERA-DEFAULT-DIMENSIONS-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "ranges": [
+    {
+      "name": "options-defaults",
+      "start": "0x5a21d0",
+      "endExclusive": "0x5a2c92",
+      "bytes": 2754,
+      "bytesSHA256": "758da1fbccbb0eafc75ad7d518698464dfd62a04162fecb02b63e472688f223a",
+      "listingSHA256": "6132a497c78470ac8b608be5a48ec6df08fd20ef3f973080719efb76e8efb1fa",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ccd-display",
+      "start": "0x521cc8",
+      "endExclusive": "0x521fc4",
+      "bytes": 764,
+      "bytesSHA256": "976636c7cc7ffdb2c6e370fff5161ace90210e278266086896dd0ccc73ff90aa",
+      "listingSHA256": "363b05bbfbf879e87c814c6fc813a0ddc07b6105d64a7a580726aee596177f40",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    },
+    {
+      "name": "ir-display",
+      "start": "0x51e720",
+      "endExclusive": "0x51ea1b",
+      "bytes": 763,
+      "bytesSHA256": "7e84d7e2db6a68a3b24723c3ee781b67c2d2c10a9a0a47e6f04e6ef9f75ce531",
+      "listingSHA256": "d95123e9bd9d5cf07fddb03d9a53633ab119ab794122a0d949555426123e7e2a",
+      "boundary": "Complete procedure through final return/SEH cleanup;static only"
+    }
+  ],
+  "records": [
+    {
+      "camera": "CCD",
+      "labelAddress": "0x5a313c",
+      "label": "Site CH350 003B Back-Illuminated",
+      "labelSHA256": "7475f76fff2dac4be9ed1a4f0cb1cfd1cee6ab6db1d2c900c84bfa8f0deddc69",
+      "dimensions": [
+        {
+          "axis": "width",
+          "storeAddress": "0x5a2ba3",
+          "recordOffset": "0x49",
+          "value": 1024,
+          "instructionSHA256": "ed394af5e21c074032cfedb922ef1f97002b30ed187464eb869cbbc868cbf31b"
+        },
+        {
+          "axis": "height",
+          "storeAddress": "0x5a2baa",
+          "recordOffset": "0x4d",
+          "value": 1024,
+          "instructionSHA256": "5a006d4f2b791409a314c6f9808831c480205a4df2e05458c6c3e11ff5ccdefb"
+        }
+      ]
+    },
+    {
+      "camera": "IR",
+      "labelAddress": "0x5a3160",
+      "label": "CLEA_IR1",
+      "labelSHA256": "2e9191944b2952661d90e5b4abeb8eaf245db3bcb35af163848ab6e326fcd514",
+      "dimensions": [
+        {
+          "axis": "width",
+          "storeAddress": "0x5a2c13",
+          "recordOffset": "0x49",
+          "value": 512,
+          "instructionSHA256": "77068d03f1d94324c4e2fb0ac6d3ca57fbc88c6c4fe49f2c0bdeec34781df7eb"
+        },
+        {
+          "axis": "height",
+          "storeAddress": "0x5a2c1a",
+          "recordOffset": "0x4d",
+          "value": 512,
+          "instructionSHA256": "d03fb2c2ea0c7daefd23fcf32b7c418cb0beb8e9dcee127c80267eb2e213be02"
+        }
+      ]
+    }
+  ],
+  "fieldBinding": {
+    "CCD": "0x521d12/0x521d1b read optionbase+0x272e/+0x2732 into metadata+0x7a/+0x7e;CCD record optionbase+0x26e5 plus0x49/+0x4d",
+    "IR": "0x51e769/0x51e772 read optionbase+0x2789/+0x278d into metadata+0x7a/+0x7e;IR record optionbase+0x2740 plus0x49/+0x4d"
+  },
+  "webAdmission": {
+    "maximumAxis": 1024,
+    "maximumBytes": 5242880,
+    "maximumHeaderBlocks": 20,
+    "representation": "One primary2D BITPIX-32 identity-scaled plane;no extra axes/extensions",
+    "ownership": "Supplied file bytes/privatecopy/SHA,pixels and claims retained;shape does not identify camera"
+  },
+  "limits": [
+    "Compiled fallback configuration,not an imported VEO_OPTS.INI or origin witness for a supplied file",
+    "5MiB/20headerblocks are explicit browser resource limits,not recovered native limits",
+    "No original execution/emulation/native writer-output witness",
+    "No camera acquisition/calibration/physicalunits/date/WCS inferred"
+  ]
+}

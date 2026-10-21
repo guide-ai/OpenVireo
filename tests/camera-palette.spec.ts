@@ -2,7 +2,7 @@ import{test,expect,type Page}from'@playwright/test';
 import{readFile}from'node:fs/promises';
 import{syntheticFits}from'./fixtures/fits';
 test.use({hasTouch:true});
-const button=(p:Page,n:string)=>p.getByRole('button',{name:n,exact:true}),file=(p:Page)=>p.getByLabel('Open float32 FITS image (up to 2 MiB)',{exact:true}),dialog=(p:Page)=>p.getByRole('dialog',{name:'CCD / IR display palette',exact:true}),low=(p:Page)=>p.getByLabel('Black level (0–254)',{exact:true}),high=(p:Page)=>p.getByLabel('White level (1–255)',{exact:true});
+const button=(p:Page,n:string)=>p.getByRole('button',{name:n,exact:true}),file=(p:Page)=>p.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}),dialog=(p:Page)=>p.getByRole('dialog',{name:'CCD / IR display palette',exact:true}),low=(p:Page)=>p.getByLabel('Black level (0–254)',{exact:true}),high=(p:Page)=>p.getByLabel('White level (1–255)',{exact:true});
 const words=Array.from({length:32},(_,i)=>{const b=Buffer.alloc(4);b.writeFloatBE(i);return b.readUInt32BE();}),image=()=>syntheticFits({width:8,height:4,words});
 async function start(p:Page){await p.goto('/#images');await expect(button(p,'Open saved FITS image')).toBeEnabled();await load(p);}
 async function load(p:Page,b=image(),name='synthetic.fit'){await file(p).setInputFiles({name,mimeType:'application/octet-stream',buffer:b});await expect(button(p,'Cancel FITS read')).not.toBeVisible();}

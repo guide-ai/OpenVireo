@@ -1,2 +1,5 @@
 /** Authored image bytes;not an original CCD observation. */
 export function syntheticFits({width=3,height=2,words=[0x3f800000,0x80000000,0x7fc01234,0xc0000000,0x00000001,0x7f800000],padded=true,extra=[]as string[]}={}){const card=(k:string,v:string)=>(k.padEnd(8)+'= '+v.padStart(20)).padEnd(80),header=[card('SIMPLE','T'),card('BITPIX','-32'),card('NAXIS','2'),card('NAXIS1',String(width)),card('NAXIS2',String(height)),...extra,'END'.padEnd(80)].join('').padEnd(2880,' '),end=2880+width*height*4,b=Buffer.alloc(padded?Math.ceil(end/2880)*2880:end);b.write(header,'ascii');words.slice(0,width*height).forEach((word,i)=>b.writeUInt32BE(word,2880+i*4));return b;}
+
+/** Authored full default camera-sized gradient;not native output or observation. */
+export function syntheticCameraFits(axis:512|1024=1024){const bytes=syntheticFits({width:axis,height:axis,words:[]});for(let i=0;i<axis*axis;i++)bytes.writeFloatBE(i%axis-axis/2,2880+i*4);bytes.writeUInt32BE(0x80000000,2880);bytes.writeUInt32BE(0x7fc01234,2880+(axis*axis-1)*4);return bytes;}

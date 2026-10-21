@@ -2,7 +2,7 @@ import{cameraPaletteBytes,type CameraPalette}from'./cameraPalette';
 /** Supplied single-plane float32 FITS. Native writer5239f8/523954/52425c
  * establishes the relevant image shape/word order,not a native reader or CCD
  * model. Standard header admission and display mapping are explicit web policy. */
-export const FITS_MAX_BYTES=2*1024*1024,FITS_MAX_AXIS=512,FITS_MAX_HEADER=20*2880;
+export const FITS_MAX_BYTES=5*1024*1024,FITS_MAX_AXIS=1024,FITS_MAX_HEADER=20*2880;
 export class FitsError extends Error{constructor(readonly code:'size'|'header'|'profile'|'data'|'pixel'|'owner'){super('FITS '+code);this.name='FitsError';}}
 export type FitsImage=Readonly<{width:number;height:number;cards:readonly string[];dataOffset:number;unpadded:boolean;finiteCount:number;minimum:number|null;maximum:number|null}>;
 export type FitsPixel=Readonly<{x:number;y:number;bits:string;kind:'normal'|'subnormal'|'zero'|'negativeZero'|'positiveInfinity'|'negativeInfinity'|'nan';value:number|null}>;
@@ -25,5 +25,5 @@ export function fitsPixel(image:FitsImage,x:number,y:number):FitsPixel{
 }
 /** Display-only web linear base with optional recovered palette;no calibration,centroid,physical counts or sky orientation. */
 export function fitsRaster(image:FitsImage,inverted=false,palette:CameraPalette|null=null):Uint8ClampedArray{
- const {view}=storage(image),table=palette?cameraPaletteBytes(palette):null,rgba=new Uint8ClampedArray(image.width*image.height*4);for(let i=0;i<image.width*image.height;i++){const v=view.getFloat32(image.dataOffset+i*4,false);let color:readonly number[];if(!Number.isFinite(v))color=[190,20,120];else{const normalized=image.maximum===image.minimum?128:Math.round(255*(v-image.minimum!)/(image.maximum!-image.minimum!)),mapped=table?table[normalized*4]:normalized,level=inverted?255-mapped:mapped;color=[level,level,level];}rgba.set([...color,255],i*4);}return rgba;
+ const {view}=storage(image),table=palette?cameraPaletteBytes(palette):null,rgba=new Uint8ClampedArray(image.width*image.height*4);for(let i=0;i<image.width*image.height;i++){const v=view.getFloat32(image.dataOffset+i*4,false),at=i*4;if(!Number.isFinite(v)){rgba[at]=190;rgba[at+1]=20;rgba[at+2]=120;}else{const normalized=image.maximum===image.minimum?128:Math.round(255*(v-image.minimum!)/(image.maximum!-image.minimum!)),mapped=table?table[normalized*4]:normalized,level=inverted?255-mapped:mapped;rgba[at]=rgba[at+1]=rgba[at+2]=level;}rgba[at+3]=255;}return rgba;
 }
