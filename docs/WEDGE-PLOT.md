@@ -135,3 +135,7 @@ All vectors are synthetic, not CLEA observations, and the tests check this contr
   - GDI and font pixel equivalence;
   - the historical host FPU control word and DecimalSeparator;
   - the MJD date prefix. The raw text is kept and no value is constructed.
+
+### Final keyboard correction after separate review
+
+The file input regains focus after a direct first read succeeds or fails, once React has enabled it. Focus already moved to the host is retained. Escape from any enabled control within the panel answers a pending inline import consent non-destructively; it does not act outside the panel or when no consent is pending. These are web accessibility rules, not recovered Windows focus behavior. `detail.degrees` is an attached unit suffix: a word unit includes its desired leading space (for example ` grad`); `detail.hours` is joined with an explicit space. Safari/macOS keyboard preferences were not exercised; browser receipts cover Chromium desktop and mobile.

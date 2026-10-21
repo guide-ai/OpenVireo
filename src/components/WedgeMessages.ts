@@ -21,6 +21,8 @@ export type WedgeNativeCaptions=Readonly<{
 }>;
 type UnsupportedCode=Extract<WedgeParseFailure,{kind:'unsupported'}>['code'];
 type ColumnKey='index'|'object'|'mjd'|'ra'|'dec'|'velocity'|'z'|'comment'|'status';
+/** `degrees` is an attached unit suffix; include a leading space for a word unit (e.g. ' grad').
+ * `hours` is joined with an explicit space by the table/details renderer. */
 type DetailKey='redshift'|'kmPerS'|'raw'|'line'|'source'|'ra'|'dec'|'velocity'|'z'|'derived'|'theta'|'radius'|'pixel'|'hours'|'degrees'|'px';
 export type WedgeMessageCatalog=Readonly<{
  native:WedgeNativeCaptions;

@@ -73,13 +73,15 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  /** Prompt answers (Yes/No/Cancel/Escape): focus returns to the file input when the prompt closes. */
  const answer=(f:(c:WedgeWorkspace)=>WedgeWorkspace)=>{if(disabled)return;refocusFile.current=true;safe(f);};
  /** Escape is the non-destructive answer: Cancel at "Retain Current Data?", No at "Confirm Deletion!". */
- const promptKey=(e:KeyboardEvent)=>{if(e.key!=='Escape'||!w.pending)return;e.preventDefault();answer(w.pending.stage==='retain'?cancelWedgePending:c=>confirmWedgeDelete(c,false));};
+ const promptKey=(e:KeyboardEvent)=>{if(e.key!=='Escape'||!w.pending)return;e.preventDefault();e.stopPropagation();answer(w.pending.stage==='retain'?cancelWedgePending:c=>confirmWedgeDelete(c,false));};
 
  async function onFile(e:ChangeEvent<HTMLInputElement>){
   const file=e.target.files?.[0];e.target.value='';if(!file||busy)return;
   let refused:WedgeWorkspace|null;try{refused=requestWedgeLoad(w,file.name);}catch{return;}
   if(refused){setW(refused);return;}
   const t=++token.current;abort.current?.abort();const ctrl=new AbortController();abort.current=ctrl;
+  // Return after a direct success or failure too, unless focus moved to the host.
+  refocusFile.current=true;
   safe(c=>beginWedgeRead(c,t,file.name));
   try{const read=await readWedgeLssFile(file,ctrl.signal);safe(c=>completeWedgeRead(c,t,read));}
   catch(err){if(err instanceof WedgeFileError&&err.code==='aborted')return;safe(c=>failWedgeRead(c,t,err instanceof WedgeFileError&&err.code==='size'?'size':'read'));}
@@ -92,7 +94,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const sel=w.selected!==null?w.records[w.selected]:null,selPoint:WedgePoint|null=w.selected!==null?plot.points[w.selected]??null:null;
  const id=(s:string)=>idPrefix+s;
 
- return <section ref={root} className="wedge-lab" aria-labelledby={id('title')} aria-disabled={disabled||undefined} data-testid="wedge-lab">
+ return <section ref={root} className="wedge-lab" aria-labelledby={id('title')} aria-disabled={disabled||undefined} data-testid="wedge-lab" onKeyDown={promptKey}>
   <h2 id={id('title')}>{C.windowCaption}</h2>
   <p>{m.intro}</p>
   <p className="wedge-persistence" role="note" data-testid="wedge-persistence">{m.persistenceNote}</p>
@@ -124,7 +126,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   <p id={id('export-note')} className="wedge-note">{m.exportNote}</p>
   <p role="status" aria-live="polite" className="wedge-status" data-testid="wedge-status">{w.reading?m.reading(w.reading.name):w.records.length||w.receipts.length?m.statusLoaded(w.records.length,w.receipts.length):m.statusEmpty}</p>
   {w.reading&&!disabled?<button type="button" onClick={cancelRead} data-testid="wedge-cancel-read">{m.cancelRead}</button>:null}
-  {w.pending&&!disabled?<div className="wedge-prompt" role="alertdialog" aria-labelledby={id('prompt-title')} aria-describedby={id('prompt-text')} onKeyDown={promptKey} data-testid="wedge-prompt" data-stage={w.pending.stage}>
+  {w.pending&&!disabled?<div className="wedge-prompt" role="alertdialog" aria-labelledby={id('prompt-title')} aria-describedby={id('prompt-text')} data-testid="wedge-prompt" data-stage={w.pending.stage}>
    <h3 id={id('prompt-title')}>{w.pending.stage==='retain'?C.retainCaption:C.deleteCaption}</h3>
    <p id={id('prompt-text')} className="wedge-pre">{w.pending.stage==='retain'?C.retainText:C.deleteText}</p>
    <p className="wedge-note"><code>{w.pending.name}</code> · {m.sha256} <code>{w.pending.sha256}</code> · {m.rowCount(w.pending.file.rows.length)}</p>
@@ -183,7 +185,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   </div>
   <details className="wedge-details-block">
    <summary>{m.sourcesHeading} ({w.receipts.length})</summary>
-   <ul data-testid="wedge-sources">{w.receipts.map((s,i)=><li key={i}><code>{s.name}</code> · {m.rowCount(s.rows)} ·{m.sourceAction[s.action]} · {s.hasZ?m.sourceColumn.z:m.sourceColumn.velocity} · “{s.separator}” · {m.sha256} <code>{s.sha256}</code></li>)}</ul>
+   <ul data-testid="wedge-sources">{w.receipts.map((s,i)=><li key={i}><code>{s.name}</code> · {m.rowCount(s.rows)} · {m.sourceAction[s.action]} · {s.hasZ?m.sourceColumn.z:m.sourceColumn.velocity} · “{s.separator}” · {m.sha256} <code>{s.sha256}</code></li>)}</ul>
   </details>
   <details className="wedge-details-block">
    <summary>{m.aboutHeading}</summary>
