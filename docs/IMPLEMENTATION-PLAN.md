@@ -547,3 +547,7 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Original program-list navigation — 20 October2026
 
 [Program List and Next on List](CLASSIFICATION-PROGRAM-LIST.md) close a bounded25-practice selection/advance/end flow using recovered original order and complete static handlers. Explicit cancel,verified atomic loading,stale-context rejection and an authored unconfirmed-response guard preserve manual work,records,notebook/recovery and historical formats. No arbitrary LST loader,metadata,DAT writer,answer key or grade. Full native index/failure/VCL/FPU/paint behavior remains open;all64primary statuses unchanged,N02/E03partial. See[validation](CLASSIFICATION-PROGRAM-LIST-VALIDATION.md). No deployment/external review attempt;publication of this complete validated increment separately authorized.
+
+## Classification navigation review corrections — 21 October2026
+
+[Navigation safety](CLASSIFICATION-NAVIGATION-SAFETY.md) extends the manual-response guard to the legacy practice selector,preserves Next/modal initiating focus,explains the existing100record cap without discarding drafts and retains practice position while busy. Original scientific/numeric/format/resource contracts remain unchanged. The authorized read-only review and independent dispositions are recorded separately;post-report fixes have no second external sign-off. All64statuses unchanged,projectpartial.

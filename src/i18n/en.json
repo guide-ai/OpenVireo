@@ -1683,5 +1683,6 @@
   "program.end": "No More Spectra. You are at the end of the spectra list. The last object and your work are unchanged; the list does not wrap.",
   "program.draftError": "Your current manual type or reasoning is not confirmed in a matching classification record. Use Review classification and Save classification before changing objects. The current spectrum and draft were kept.",
   "program.selectionError": "This is not an admitted original program-list selection. The current spectrum and work were kept.",
-  "program.loadError": "The selected practice could not be verified or its context changed. The previous source, position, draft and confirmed work were kept. Retry the selection or cancel."
+  "program.loadError": "The selected practice could not be verified or its context changed. The previous source, position, draft and confirmed work were kept. Retry the selection or cancel.",
+  "program.fullDraftError": "The classification log has reached 100 records. Your current manual response was kept. Save classification session or Save complete investigation to export the draft, then explicitly clear both response fields before changing objects. Review classification cannot add another record while this log is full."
 }

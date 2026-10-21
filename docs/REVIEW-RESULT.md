@@ -326,3 +326,10 @@ Native read-only `/code-review` has completed. The single source for its current
 ## Current project naming correction
 
 [Project naming validation](PROJECT-NAMING-VALIDATION.md) records the completed full-project native code review, all ten independently resolved observations, exact suite outcomes and the separate denied security fallback. No external sign-off on post-report fixes or security assessment is claimed. Raw artifacts remain unchanged outside source.
+
+
+## 21 October2026 — accumulated classification review through19bb57c
+
+One authorized native `/review` completed with the existing account,effectiveOpus5.5,configuredhigh effort and exit0. The CLI internally labels its task `/code-review`;no alternate command was requested. Observed55Read/10Grep/8Glob,0tool errors/forbidden requests,1887tracked files unchanged. Current-code inspection covered selected accumulated classification/manual geometry/sampling/results/Undo/Program List paths;no Git/diff,tests,full investigation codec,most tests or original-runtime/research oracle was reviewed. Raw report/audit/dispositions remain outside source at `claude-accumulated-19bb57c/` in the local task evidence.
+
+Five independent browser checks confirmed an inheritedP2unsaved-selector risk,three newP3focus/capacity/busy-message defects and a qualified local-alert recommendation whose global verification warning remains visible. [Navigation safety](CLASSIFICATION-NAVIGATION-SAFETY.md) documents the separately authorized corrections and their tests. Raw report stays unchanged;no claim that the later corrections have been externally re-reviewed. The local registry records target/range/coverage to avoid duplicate unchanged-code reviews. No native execution,push or deployment occurred in the review task.

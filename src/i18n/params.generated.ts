@@ -1685,4 +1685,5 @@ export interface MessageParameters {
   "program.draftError": never;
   "program.selectionError": never;
   "program.loadError": never;
+  "program.fullDraftError": never;
 }
