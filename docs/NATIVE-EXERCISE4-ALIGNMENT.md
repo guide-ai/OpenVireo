@@ -1,0 +1,11 @@
+# Exercise4 CSV alignment decision
+
+The special results CSV route remains disabled for numeric/native-list admission. Further source recovery establishes a loss of information in the captured text windows; changing browser padding would invent a correction.
+
+Source EXE SHA256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`; complete functions and original byte/listing hashes remain in [existing provenance](NATIVE-CSV-RESULTS-PROVENANCE.json). Reader0x54a2c8 calls CSV projection0x548ea4,then0x54a2e6 calls the same0x547fd0 parser. Exercise option+0x383f equals4 in both; there is no intervening different parser repairing the V window on this captured route.
+
+The helper concatenates object/time padded to12 each,an extra space,V padded left to7,two spaces,Z padded to10,two spaces,velocity padded to10,one space,and remaining comments. Parser V is column25/length6,Z34/11,velocity46/11,remarks60/36. Supplied V strings `12.345` and `12.399` both project into the identical V window `  12.3`. An inverse using that window cannot preserve both supplied values. The formatter's exercise4 branch0x5487bd..0x54882c uses its three-fractional-digit scalar formatter,trailing space and minimum width9; its first six V bytes give the same collision for these source tokens. The earlier `12.50` witness alone did not match that known three-digit formatter; the new witnesses remove that particular objection.
+
+Bare helper comments start at58 while the parser starts at60. Two original-writer-retained leading spaces in the comment tail therefore matter; an arbitrary CSV with bare comments loses leading characters in that projected slice. General3/5-filter CSV remains a separate admitted route.
+
+This is static string noninjectivity backed by complete captured callers,not a native execution,FPU/output specimen or proof of every user-visible native failure. It does not authorize silent shifts,truncation,numeric defaults or a repaired native writer. A future raw-token viewer could preserve source claims under a distinct browser contract; it would not close native interchange. Reproduction script and six witnesses: `/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-exercise4-alignment/check.py` and `result.json`. Original downloads/captures are unchanged.
