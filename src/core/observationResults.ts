@@ -46,22 +46,25 @@ export type ObservationRecord=Readonly<{id:number;source:ObservationSource;spect
 export type ObservationNotebook=Readonly<{records:readonly ObservationRecord[]}>;
 export const EMPTY_OBSERVATIONS:ObservationNotebook=Object.freeze({records:Object.freeze([])}),MAX_OBSERVATIONS=100;
 export type ObservationMode='reuse'|'append';
-export type ObservationEdit=Readonly<{base:ObservationNotebook;source:ObservationSource;mode:ObservationMode;target:ObservationRecord|null;typeText:string;remarks:string}>;
+export type ObservationEdit=Readonly<{base:ObservationNotebook;contextSource:ObservationSource;source:ObservationSource;mode:ObservationMode;target:ObservationRecord|null;typeText:string;remarks:string}>;
 /** Native54a73c reuses exact object ID when option+0x2e8c=0;otherwise
  * creates another0x90record. Browser defers creation until confirmation and
- * binds retained source identity,not a truncated/untrusted imported name. */
+ * binds retained source identity,not a truncated/untrusted imported name.
+ * Selected Edit549690/selected Delete54981bresolve the chosen row;activation
+ *54a93dloads its record pointer. Comparison context and row owner stay distinct.
+ * Evidence:docs/OBSERVATION-ROW-OWNERSHIP-PROVENANCE.json. */
 export function openObservation(book:ObservationNotebook,id:string,mode:ObservationMode,recordId?:number):ObservationEdit{
- const source=observationSource(id);if(mode!=='reuse'&&mode!=='append')throw new ObservationResultError('record');
- const target=recordId===undefined?mode==='reuse'?book.records.find(r=>r.source===source)??null:null:book.records.find(r=>r.id===recordId&&r.source===source)??null;
- if(recordId!==undefined&&!target)throw new ObservationResultError('record');if(!target&&book.records.length>=MAX_OBSERVATIONS)throw new ObservationResultError('limit');
- return Object.freeze({base:book,source,mode,target,typeText:target?formatObservationType(target.spectralCode):'',remarks:target?.remarks??''});
+ const contextSource=observationSource(id);if(mode!=='reuse'&&mode!=='append')throw new ObservationResultError('record');
+ const target=recordId===undefined?mode==='reuse'?book.records.find(r=>r.source===contextSource)??null:null:book.records.find(r=>r.id===recordId)??null;
+ if(recordId!==undefined&&!target)throw new ObservationResultError('record');const source=target?.source??contextSource;if(source!==observationSource(source.id))throw new ObservationResultError('source');if(!target&&book.records.length>=MAX_OBSERVATIONS)throw new ObservationResultError('limit');
+ return Object.freeze({base:book,contextSource,source,mode,target,typeText:target?formatObservationType(target.spectralCode):'',remarks:target?.remarks??''});
 }
 /** NativeOK writes ID[15],remarks[36],packed type+0x5f before optional
  * velocity validation. This bounded classification port leaves unavailable
  * numerical fields/unsafe velocity path unimplemented. Atomic commit and
  * stale source/ledger checks are explicit web transaction policies. */
 export function confirmObservation(book:ObservationNotebook,edit:ObservationEdit,id:string,mode:ObservationMode,input:Readonly<{typeText:string;remarks:string}>):ObservationNotebook{
- if(book!==edit.base||edit.source!==observationSource(id)||mode!==edit.mode||edit.target&&!book.records.includes(edit.target))throw new ObservationResultError('stale');
+ if(book!==edit.base||edit.contextSource!==observationSource(id)||mode!==edit.mode||edit.source!==observationSource(edit.source.id)||(edit.target?!book.records.includes(edit.target)||edit.target.source!==edit.source:edit.source!==edit.contextSource))throw new ObservationResultError('stale');
  const spectralCode=parseObservationType(input.typeText),remarks=observationText(input.remarks,36);if(!edit.target&&(book.records.length>=MAX_OBSERVATIONS||(book.records.at(-1)?.id??0)>=Number.MAX_SAFE_INTEGER-1))throw new ObservationResultError('limit');
  const record:ObservationRecord=Object.freeze({id:edit.target?.id??(book.records.at(-1)?.id??0)+1,source:edit.source,spectralCode,remarks});
  return Object.freeze({records:Object.freeze(edit.target?book.records.map(r=>r===edit.target?record:r):[...book.records,record])});

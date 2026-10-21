@@ -1,0 +1,108 @@
+{
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "evidenceId": "VIREO-OBS-EDITUNDO-01",
+      "start": "0x549620",
+      "endExclusive": "0x549760",
+      "byteRangeSHA256": "85f20d2353fb9cf7a34e0eee60fbce7530e876d99ad7a201a884948b0c7d7b5a",
+      "listingSHA256": "4f7428977fb7e5291f67d31dbf1d3472423de16279ea2dbf42e733006277ce8d",
+      "localListing": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observation-edit-undo-recovery/selected-edit.asm",
+      "boundary": "Complete function including SEH cleanup/return;following data excluded.",
+      "priorDocument": "docs/OBSERVATION-EDIT-UNDO-PROVENANCE.json"
+    },
+    {
+      "evidenceId": "VIREO-OBS-EDITUNDO-02",
+      "start": "0x54978c",
+      "endExclusive": "0x5498d5",
+      "byteRangeSHA256": "214e68185f57c4dd63cdd8b9b42a27e832166d77126b2439eed9ea9abd9018cc",
+      "listingSHA256": "404f616e8f6bc92f87e9f8cc54ecb6a62bc2374d91cde95310854162dd5c02ba",
+      "localListing": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/observation-edit-undo-recovery/selected-delete.asm",
+      "boundary": "Complete function including SEH cleanup/return;following data excluded.",
+      "priorDocument": "docs/OBSERVATION-EDIT-UNDO-PROVENANCE.json"
+    },
+    {
+      "evidenceId": "VIREO-OBS-05",
+      "start": "0x54a91c",
+      "endExclusive": "0x54afd4",
+      "byteRangeSHA256": "4d8bcb9e79e5201e8b9c57d583e5e658fc57775a4910deec8602c39d5a4d9aec",
+      "listingSHA256": "25e1e909ea54a59c11480c712d7a71f72edd9fec00827c0cf1a207676ae16c5c",
+      "localListing": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-results-recovery/form-activate.asm",
+      "priorDocument": "docs/OBSERVATION-RESULTS-PROVENANCE.json"
+    },
+    {
+      "evidenceId": "VIREO-OBS-06",
+      "start": "0x54b02c",
+      "endExclusive": "0x54b1b1",
+      "byteRangeSHA256": "ccf067392a190d233b0f386ac994c23a3f20573d08fc7c3f250392607a16d01d",
+      "listingSHA256": "2adb81d48f870f1d742d740204eac2b3fd77d63cd3c281fda45d8fa226b420a4",
+      "localListing": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-results-recovery/form-confirm-main.asm",
+      "priorDocument": "docs/OBSERVATION-RESULTS-PROVENANCE.json"
+    }
+  ],
+  "selection": "Edit549690..54969e resolves selected display index-1 from list atself+480and stores that row pointer in5bcafc;copies144bytebefore-state before modal. Delete549815..549829 uses same row resolution and pointer beforebackup/removal. No current-spectrum object/source equality branch appears in these complete handlers.",
+  "activation": "54a93dloads5bcafc;readonlyIDfromselectedrecord at54a943..54a956;type+5fformat54ae40;remarks+6bat54af34. Current comparison object is not the source for these admitted manual fields.",
+  "confirm": "Complete54b02c..54b1b1 writes manual fields into current selected record;numeric/velocity branch remains unported and is not invoked by the browser subset.",
+  "boundedFeature": "Allow selected original-practice notebook rows to edit/delete from another admitted practice comparison. Keep row ID/canonicalsource/order and currentplot/manualresponse/width separate;retain current-context cancellation,globalUndo/recovery/metadata limitations and originalformats. GenericOpenobservationresults stillusescurrentobject/reuse/append.",
+  "uncertainty": [
+    "Complete menu/caller/index/VCL/runtime lifecycle remains open;no assertion that every native context offers the same controls.",
+    "No native record bytes reconstructed,acquired/imported source authority,time/coordinates/photometry/velocity/grade/ACP/FPU values invented.",
+    "Web atomic drafts/stable IDs/persisted recovery differ from nativeearlyUndo invalidation/activation writes."
+  ],
+  "originalExecution": false,
+  "newOriginalAssets": 0,
+  "sourceCredits": [
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+      "bytes": 2288128
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task/spectrum-buffer-validation-night/class-identity-inventory.json",
+      "sha256": "aff9963bd60ba882862258ec3b11bd2e675ecb3f6b2b83ac9e8d1fbbc6dda96f",
+      "bytes": 134862
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/Documentation/Vireo Manual.pdf",
+      "sha256": "72e6ed38efdc6cd566649385d47da3e366c56771295ef8b9dc339ccce964ea11",
+      "bytes": 2996327
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLASSHLP.TXT",
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7",
+      "bytes": 11919
+    },
+    {
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/License.rtf",
+      "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af",
+      "bytes": 32096
+    }
+  ],
+  "methodBindings": [
+    {
+      "method": "EditSelectedLine1Click",
+      "entryVA": "0x546980",
+      "handlerVA": "0x549620",
+      "bytes": 29,
+      "entrySHA256": "3133f2d38d296ae5faaae3556e9c676ef1592bb3793d3ea935b510fc1c998f65"
+    },
+    {
+      "method": "DeleteSelectedLine1Click",
+      "entryVA": "0x54699d",
+      "handlerVA": "0x54978c",
+      "bytes": 31,
+      "entrySHA256": "af133c09573bd072deb1944c2d626523947f25b7b092993cd8f60897c6f4dcf2"
+    }
+  ],
+  "rights": "Original CLEA/VIREO source-specific credits/license uncertainties and1279resource manifest remain unchanged. No new original material upload or native executable is added.",
+  "webBoundary": [
+    "Current comparison must remain an admitted original-practice context;the selected row must retain its canonical admitted practice owner. Acquired/imported comparison authority is not expanded.",
+    "Ephemeral contextSource captures the comparison at dialog open independently from the row source. It is not a persisted field/native record member;no notebook/recovery/investigation/CSV version or storage key changes.",
+    "Explicit selected-row Edit/Delete use row identity. Generic Open observation results still finds the first row of the current object in reuse mode or creates another in append mode.",
+    "Current comparison/manual response/width/classification histories remain untouched by notebook operations. Atomic browser confirmation/stable IDs/stale-context checks/shared persisted recovery/Undo/Finish are retained safety adaptations.",
+    "Cancel/invalid text/cross-tab/stale-source cases do not reassign a row to the currently compared star. Unavailable numerical metadata/native writer remain unimplemented."
+  ],
+  "independentControl": "1404synthetic Python-controlled cases,see OBSERVATION-ROW-OWNERSHIP-VALIDATION.md;not original runtime/FPU evidence.",
+  "externalReview": "Last completed external review19bb57c.4097195corrections and this subsequent feature are independently tested,not externally re-reviewed in this increment;registry avoids unchanged-target duplicates.",
+  "publication": "Local implementation/validation only;GitHub identity/remote preflight for the preceding fixes was denied before execution,no retry,no push/force/deploy/authentication change."
+}

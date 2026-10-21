@@ -1686,4 +1686,6 @@ export interface MessageParameters {
   "program.selectionError": never;
   "program.loadError": never;
   "program.fullDraftError": never;
+  "obs.rowActionsHelp": never;
+  "obs.selectedContext": "comparison" | "object";
 }

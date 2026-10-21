@@ -551,3 +551,7 @@ PINNED-NATIVE-FIELD.md and the updated ACQUISITION-READINESS.md.
 ## Classification navigation review corrections — 21 October2026
 
 [Navigation safety](CLASSIFICATION-NAVIGATION-SAFETY.md) extends the manual-response guard to the legacy practice selector,preserves Next/modal initiating focus,explains the existing100record cap without discarding drafts and retains practice position while busy. Original scientific/numeric/format/resource contracts remain unchanged. The authorized read-only review and independent dispositions are recorded separately;post-report fixes have no second external sign-off. All64statuses unchanged,projectpartial.
+
+## Selected observation row ownership — 21 October2026
+
+[Row-owned edit/delete](OBSERVATION-ROW-OWNERSHIP.md) extends the recovered selected-record pointer flow across admitted practice comparison contexts. Row identity/order,manual comparison/width/history,old formats andshared persistedUndo remain. Separate ephemeral comparison context rejects stale changes;generic current-object reuse/append andunsupported source authority stay bounded. No native numeric/DAT/FPU values or complete runtime claims;all64statuses unchanged,projectpartial.
