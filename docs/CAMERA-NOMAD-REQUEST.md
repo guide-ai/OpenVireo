@@ -45,3 +45,7 @@ After independently triaging the10 review candidates, the corrected core passes1
 Post-review regression also passes the14 affected E2E flows (40.4s). No checks establish native runtime or fault parity.
 
 Header/column validation precedes coordinate-unit validation, including when both lines are invalid. The lifecycle composition retains unsupported as a distinct release terminal; it does not relabel known unimplemented formats as malformed. Three code-level fixes from the first review and header-priority corrections from the fixes review remain documented independently of the original runtime limitations.
+
+Snapshot9c27ceb passed1,690 unit tests/170files,typecheck/build1279resourcepreflight and108Node/Chromium state cases with byte-identical investigation. The14UIE2E run atccc13df remains a distinct earlier receipt. A subsequent review identified the valid-header/missing-units diagnostic,now covered alongside the distinct unsupported release acknowledgement. Duplicate-header rejection remains a stricter web admission guard:the original uses first Pos match.
+
+The missing-units follow-up passes1,691unit tests/170files andtypecheck,108Node/Chromium cases plus a7event unsupported-release web-policy trace and transport-precedence branch. Valid header plus missing/trailing-LF descriptor points to its expected units line;invalid header still fails at its own line. These are declared web diagnostics,not native dialog/exception equivalence.

@@ -39,6 +39,14 @@ describe('camera request ownership gate;no transport/catalog/image implementatio
   expect(send(wait.state,{type:'request-tick'}).state).toBe(wait.state);
   const valid=usable(wait.state),prepare=send(valid.state,{type:'request-tick'});expect(names(prepare)).toEqual(['poll-off','hide-wait','prepare']);expect(prepare.state.waitShown).toBe(false);
  });
+ it('keeps unsupported distinct through readiness,transport precedence,latching and release acknowledgement',()=>{
+  const s=waiting();expect(send(s,{type:'request-result',finished:false,transportSucceeded:true,catalog:'unsupported'}).state.request).toBe('pending');
+  expect(send(s,{type:'request-result',finished:true,transportSucceeded:false,catalog:'unsupported'}).state.request).toBe('transport-error');
+  const unsupported=send(s,{type:'request-result',finished:true,transportSucceeded:true,catalog:'unsupported'}).state;
+  expect(usable(unsupported).state).toBe(unsupported);
+  const release=send(unsupported,{type:'request-tick'});expect(release.state.terminal).toBe('unsupported');expect(names(release)).toEqual(['poll-off','release']);
+  const ack=send(release.state,{type:'released',ok:true});expect(ack.state.phase).toBe('idle');expect(ack.state.terminal).toBe('unsupported');expect(ack.effects).toEqual([]);
+ });
  it.each(['transport-error','catalog-error']as const)('releases %s without requesting or accepting an image',cause=>{
   const s=send(waiting(),{type:'request-tick'}).state,error=send(s,{type:'request-result',finished:true,transportSucceeded:cause==='catalog-error',catalog:'invalid'}).state,r=send(error,{type:'request-tick'});
   expect(r.state.phase).toBe('releasing');expect(r.state.terminal).toBe(cause);expect(names(r)).toEqual(['poll-off','hide-wait','release']);

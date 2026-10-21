@@ -233,5 +233,12 @@
   },
   "nativeExecution": false,
   "microemulation": false,
-  "originalModified": false
+  "originalModified": false,
+  "diagnosticExtension": {
+    "ownerEvidence": "NATIVE-CAMERA-FRESH-REPLY-OWNERSHIP-01",
+    "headerBeforeUnits": "GetData59c755/59c75e precedes59c79c..59c7f9;headerlayoutfirst",
+    "sexagesimal": "Explicitunsupported-units;nodecimalconversionofmissingnativepath",
+    "nonprintableUnits": "Publiclineerrorretained;optionalfieldunitslocatesresponsefailure",
+    "stricterGuard": "Duplicate-labelrejectioniswebadmission;nativePosselectsfirstmatch;notoriginalequivalence"
+  }
 }

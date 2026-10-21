@@ -1,0 +1,28 @@
+.radio-control{padding:24px;margin-bottom:24px;max-width:1100px}
+.radio-control h2{margin:0 0 8px;font-size:18px}
+.radio-control h3{margin:12px 0 6px;font-size:14px}
+.radio-control p{line-height:1.6}
+.radio-control-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.radio-control-block{border:1px solid #e1e7e5;border-radius:8px;padding:12px 14px;margin-top:12px;min-width:0}
+.radio-control-menu{display:flex;flex-wrap:wrap;gap:8px}
+.radio-control .secondary-button{width:auto;min-height:40px;font-size:12px;margin-top:0}
+.radio-control .primary-button{width:auto;flex:0 0 auto;min-height:40px}
+.radio-control .button-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.radio-control button:disabled{opacity:.55;cursor:not-allowed}
+.radio-control button:focus-visible,.radio-control select:focus-visible,.radio-control input:focus-visible,.radio-control summary:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.radio-control-native{font-family:"MS Sans Serif",Tahoma,ui-sans-serif,sans-serif;font-weight:600}
+.radio-control-note{font-size:12px;color:#53686f}
+.radio-switch-row{display:flex;align-items:center;gap:12px}
+.radio-switch{display:inline-flex;align-items:center;gap:8px;min-width:88px;min-height:40px;padding:6px 12px;border:2px solid #6b7780;border-radius:6px;background:#eef1f0;color:#162b38;font-size:13px;font-weight:600}
+.radio-switch-led{width:12px;height:12px;border-radius:50%;background:#7a8a87;border:1px solid #445}
+.radio-switch[aria-checked="true"] .radio-switch-led{background:#2fb35a}
+.radio-control-id{display:inline-block;border:2px inset #c9d1cf;padding:6px 12px;min-width:min(100%,260px);background:#f7f9f8;overflow-wrap:anywhere}
+.radio-panel-window{border:2px solid #265f4c;border-radius:8px;padding:12px 14px;margin-top:16px;background:#f6fbf9}
+.radio-control-status{min-height:1.6em;font-weight:550}
+.radio-control-env{display:grid;gap:6px}
+.radio-control-env legend{font-weight:600}
+.radio-control-env input[type="text"],.radio-control-env select{max-width:16rem;min-height:36px}
+.radio-control-check{display:flex;align-items:center;gap:8px}
+.radio-control-state{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:8px 0 0}
+.radio-control-state dd{margin:0;font-variant-numeric:tabular-nums}
+@media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}}

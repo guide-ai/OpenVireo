@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "evidenceId": "VIREO-HR-OBSERVATION-PLOT-REPORT-STATIC-2026-10-21",
+  "nature": "Synthetic controls derived by hand from the recovered formulas y=Round((V-2.0)*28)+15, x=Round((B-V-(-0.5))*120)+80 with each x87 result rounded to a 64-bit significand (nearest-even) and FISTP nearest-even. They are not observations, not original-writer output and not an original runtime oracle.",
+  "valueEncoding": "Each operand is {kind:'decimal',value} for exactly representable decimals, {kind:'dyadic',coefficient,power} for coefficient*2^power, or {kind:'special',value:'+0'|'-0'|'nan'|'+inf'}.",
+  "plots": [
+    {"id": "ordinary", "v": {"kind": "decimal", "value": "12"}, "b": {"kind": "decimal", "value": "12.5"}, "expect": {"status": "plotted", "bMinusV": "0.5", "x": 200, "y": 295}, "derivation": "(12-2)*28=280;(0.5+0.5)*120=120"},
+    {"id": "v-tie-rounds-up-to-even", "v": {"kind": "decimal", "value": "2.125"}, "b": {"kind": "decimal", "value": "2.625"}, "expect": {"status": "plotted", "bMinusV": "0.5", "x": 200, "y": 19}, "derivation": "0.125*28=3.5 exactly -> 4"},
+    {"id": "v-tie-rounds-down-to-even", "v": {"kind": "decimal", "value": "2.375"}, "b": {"kind": "decimal", "value": "2.875"}, "expect": {"status": "plotted", "bMinusV": "0.5", "x": 200, "y": 25}, "derivation": "0.375*28=10.5 exactly -> 10 (Math.round would give 11)"},
+    {"id": "colour-tie-rounds-up-to-even", "v": {"kind": "decimal", "value": "10"}, "b": {"kind": "decimal", "value": "9.5625"}, "expect": {"status": "plotted", "bMinusV": "-0.4375", "x": 88, "y": 239}, "derivation": "(-0.4375+0.5)*120=7.5 -> 8"},
+    {"id": "colour-tie-rounds-down-to-even", "v": {"kind": "decimal", "value": "10"}, "b": {"kind": "decimal", "value": "9.6875"}, "expect": {"status": "plotted", "bMinusV": "-0.3125", "x": 102, "y": 239}, "derivation": "(-0.3125+0.5)*120=22.5 -> 22"},
+    {"id": "extended-just-below-tie", "v": {"kind": "dyadic", "coefficient": "9799832789158199295", "power": -62}, "b": {"kind": "decimal", "value": "3"}, "expect": {"status": "plotted", "x": 245, "y": 18}, "derivation": "V=2.125-2^-62 (coefficient 17*2^59-1, 64 significant bits). V-2 exact; *28=3.5-7*2^-60 exact in 64 bits -> Round 3. A binary64 port rounds V to 2.125 and draws y=19. B-V=0.875+2^-62; +0.5 exact; *120 rounds to 165+2^-55 -> 165."},
+    {"id": "extended-product-rounds-onto-tie", "v": {"kind": "dyadic", "coefficient": "9563072123033578935", "power": -59}, "b": {"kind": "dyadic-plus-half-of-v", "note": "B=V+0.5 exactly"}, "expect": {"status": "plotted", "bMinusV": "0.5", "x": 200, "y": 423}, "derivation": "7*coefficient=929*2^56+1. V-2 exact (lsb2^-59,msb2^3). 28*(V-2)=408.5+2^-57; 64-bit significand in [256,512) has ulp2^-55 so the product rounds to 408.5, then FISTP nearest-even gives 408 (exact real rounding would give 409)."},
+    {"id": "v-zero-skips-before-b-is-tested", "v": {"kind": "special", "value": "+0"}, "b": {"kind": "special", "value": "nan"}, "expect": {"status": "skipped-v-zero"}, "derivation": "je0x542af4 after V fcomp precedes the B load"},
+    {"id": "negative-zero-v-skips", "v": {"kind": "special", "value": "-0"}, "b": {"kind": "decimal", "value": "12"}, "expect": {"status": "skipped-v-zero"}, "derivation": "-0 compares equal to Single0.0"},
+    {"id": "b-negative-zero-skips", "v": {"kind": "decimal", "value": "12"}, "b": {"kind": "special", "value": "-0"}, "expect": {"status": "skipped-b-zero"}, "derivation": "second fcomp"},
+    {"id": "infinite-v-with-zero-b-skips", "v": {"kind": "special", "value": "+inf"}, "b": {"kind": "special", "value": "+0"}, "expect": {"status": "skipped-b-zero"}, "derivation": "+inf compares ordered/not-equal; B zero skips before arithmetic"},
+    {"id": "nan-v-blocks", "v": {"kind": "special", "value": "nan"}, "b": {"kind": "decimal", "value": "12"}, "expect": {"status": "blocked", "reason": "operand", "field": "v"}, "derivation": "fcomp NaN raises IA, unmasked by compiled0x1332"},
+    {"id": "infinite-b-blocks", "v": {"kind": "decimal", "value": "12"}, "b": {"kind": "special", "value": "+inf"}, "expect": {"status": "blocked", "reason": "operand", "field": "b"}, "derivation": "B-V=-inf, x Round(+inf) raises IA"},
+    {"id": "int64-overflow-blocks", "v": {"kind": "dyadic", "coefficient": "1", "power": 70}, "b": {"kind": "decimal", "value": "1"}, "expect": {"status": "blocked", "reason": "int64", "field": "v"}, "derivation": "(2^70-2)*28 exceeds Int64 -> FISTP IA"},
+    {"id": "pixel-wrap-blocks", "v": {"kind": "dyadic", "coefficient": "1", "power": 40}, "b": {"kind": "decimal", "value": "1"}, "expect": {"status": "blocked", "reason": "pixel-range", "field": "v"}, "derivation": "fits Int64 but the low32 EAX use would wrap"},
+    {"id": "smallest-subnormal-v", "v": {"kind": "dyadic", "coefficient": "1", "power": -16445}, "b": {"kind": "decimal", "value": "1"}, "expect": {"status": "plotted", "bMinusV": "1", "x": 260, "y": -41}, "derivation": "V!=0; V-2 rounds to -2; *28=-56 -> y=-41 (outside frame, still drawn natively); B-V rounds to 1 -> 180 -> x=260"}
+  ],
+  "frame": {
+    "tickCount": 95,
+    "textCount": 25,
+    "texts": [
+      {"x": 20, "y": 22, "text": "V"},
+      {"x": 45, "y": 10, "text": "2.0"},
+      {"x": 45, "y": 430, "text": "17.0"},
+      {"x": 65, "y": 468, "text": "-0.5"},
+      {"x": 131, "y": 468, "text": "0.0"},
+      {"x": 185, "y": 468, "text": "+0.5"},
+      {"x": 245, "y": 468, "text": "+1.0"},
+      {"x": 246, "y": 483, "text": "(B-V)"},
+      {"x": 305, "y": 468, "text": "+1.5"},
+      {"x": 365, "y": 468, "text": "+2.0"},
+      {"x": 425, "y": 468, "text": "+2.5"}
+    ],
+    "axis": [[80, 15], [80, 463], [440, 463]]
+  },
+  "reports": [
+    {"id": "nothing-shown", "trial": {"zamsShown": false, "modulusTicks": 0, "ebvTicks": 0, "isochroneShown": false, "modelIndex": 4, "ageIndex": 0, "offsetTicks": 0, "distanceOption": true}, "lines": ["Cluster: "]},
+    {"id": "zams-without-distance-option", "trial": {"zamsShown": true, "modulusTicks": 550, "ebvTicks": 4, "isochroneShown": false, "modelIndex": 4, "ageIndex": 0, "offsetTicks": 0, "distanceOption": false}, "lines": ["Cluster: ", "", "From ZAMS fit:", "  V-Mv = 5.50", "  E(B-V) = 0.04"]},
+    {"id": "zams-with-distance-option", "trial": {"zamsShown": true, "modulusTicks": 550, "ebvTicks": 4, "isochroneShown": false, "modelIndex": 4, "ageIndex": 0, "offsetTicks": 0, "distanceOption": true}, "lines": ["Cluster: ", "", "From ZAMS fit:", "  V-Mv = 5.50", "  E(B-V) = 0.04", "  Estimated Cluster Distance: 119 Parsecs"], "derivation": "10^((5.5+5-0.12)/5)=119.1242..."},
+    {"id": "upper-slider-limits", "trial": {"zamsShown": true, "modulusTicks": 1500, "ebvTicks": 250, "isochroneShown": true, "modelIndex": 0, "ageIndex": 49, "offsetTicks": -25, "distanceOption": true}, "lines": ["Cluster: ", "", "From ZAMS fit:", "  V-Mv = 15.00", "  E(B-V) = 2.50", "  Estimated Cluster Distance: 316 Parsecs", "", "Isochrone Model Parameters:", "  Metallicity: [Z=0.0004, Y=0.230]", "  Log(Age/yrs): 10.25", "  Estimated Cluster Age: 17783 Million Years", "  (B-V) Adjustment: -0.25"], "derivation": "10^2.5=316.2277...; 10^4.25=17782.794..."},
+    {"id": "solar-isochrone-only", "trial": {"zamsShown": false, "modulusTicks": 0, "ebvTicks": 0, "isochroneShown": true, "modelIndex": 4, "ageIndex": 4, "offsetTicks": 0, "distanceOption": false}, "lines": ["Cluster: ", "", "Isochrone Model Parameters:", "  Metallicity: [Z=0.019, Y=0.273] (Solar Values)", "  Log(Age/yrs): 8.00", "  Estimated Cluster Age: 100 Million Years", "  (B-V) Adjustment: 0.00"]}
+  ]
+}

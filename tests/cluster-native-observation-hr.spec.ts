@@ -1,0 +1,75 @@
+import{test,expect,type Page}from'@playwright/test';
+// Synthetic 144-byte records(format vectors only;not observations or original-writer output).
+const URL_PATH=process.env.CLUSTER_NATIVE_HR_URL??'/#cluster-database';
+type Row=Readonly<{time:number;object:string;kind:number;v:number;b:number}>;
+function extended(value:number):Buffer{
+ const out=Buffer.alloc(10);if(Number.isNaN(value)){out.writeBigUInt64LE(0xc000000000000000n,0);out.writeUInt16LE(0x7fff,8);return out;}if(value===0)return out;
+ const d=Buffer.alloc(8);d.writeDoubleLE(value,0);const bits=d.readBigUInt64LE(0),sign=Number(bits>>63n),exp=Number(bits>>52n&0x7ffn),frac=bits&((1n<<52n)-1n);
+ out.writeBigUInt64LE(1n<<63n|frac<<11n,0);out.writeUInt16LE(exp-1023+16383|sign<<15,8);return out;
+}
+function record(r:Row):Buffer{const b=Buffer.alloc(144);b[0]=r.object.length;b.write(r.object,1,'latin1');b.writeDoubleLE(r.time,16);extended(r.b).copy(b,54);extended(r.v).copy(b,64);b[94]=r.kind;return b;}
+const dat=(rows:readonly Row[])=>Buffer.concat(rows.map(record));
+const A=[{time:3,object:'HD 3',kind:0,v:12,b:12.25},{time:1,object:'HD 1',kind:1,v:10,b:10.5},{time:2,object:'HD 2',kind:1,v:0,b:11}],B=[{time:1.5,object:'HD 4',kind:1,v:8,b:9}];
+const L={file:'Load saved observation results (DAT)',modulus:'V − Mv',ebv:'E(B−V)',age:'log(age/yr)',offset:'(B−V) adjustment',zams:'Show zero-age main sequence (Tools › Zero Age Main Sequence)',iso:'Show isochrone (Tools › Isochrones…)',distance:'Instructor option: include the distance line (original option; its default is not established)'};
+async function open(page:Page){await page.goto(URL_PATH);const summary=page.getByText('HR diagram from saved observations',{exact:true});if(await summary.count())await summary.click();await expect(page.getByRole('heading',{name:'HR diagram from your observation results',exact:true})).toBeVisible();}
+async function choose(page:Page,name:string,bytes:Buffer){await page.getByLabel(L.file,{exact:true}).setInputFiles({name,mimeType:'application/octet-stream',buffer:bytes});}
+const button=(page:Page,name:string)=>page.getByRole('button',{name,exact:true});
+
+test('saved DAT → review/cancel → add/merge → Data from Observations on fixed axes → table and download',async({page},info)=>{
+ await open(page);await expect(page.getByTestId('cnhr-current')).toHaveText('Current results: 0 records in the original time/RA order.');
+ await expect(page.getByText('Observation data are not plotted yet. The empty frame shows the original fixed axes.',{exact:true})).toBeVisible();
+ await choose(page,'night1.dat',dat(A));await expect(page.getByTestId('cnhr-pending')).toHaveText('night1.dat: 3 records');await expect(page.getByLabel(L.file,{exact:true})).toBeDisabled();
+ await button(page,'Cancel and keep current results').click();await expect(page.getByTestId('cnhr-pending')).toHaveCount(0);await expect(page.getByTestId('cnhr-current')).toContainText('0 records');
+ await choose(page,'night1.dat',dat(A));await button(page,'Add to current results').click();await expect(page.getByTestId('cnhr-current')).toContainText('3 records');
+ await button(page,'Plot data from observations').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');await expect(page.getByTestId('cnhr-point')).toHaveCount(2);
+ const p1=page.locator('[data-testid=cnhr-point][data-record="1"]');await expect(p1).toHaveAttribute('cx','200');await expect(p1).toHaveAttribute('cy','239');
+ const p3=page.locator('[data-testid=cnhr-point][data-record="3"]');await expect(p3).toHaveAttribute('cx','170');await expect(p3).toHaveAttribute('cy','295');
+ await expect(page.getByText('1 plotted record is marked as mean counts. The original plots their stored numbers unchanged; they are not magnitudes.',{exact:true})).toBeVisible();
+ await choose(page,'night2.dat',dat(B));await button(page,'Add to current results').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 3');
+ await page.getByText('All records and how the original treats them',{exact:true}).click();
+ await expect(page.getByTestId('cnhr-row')).toHaveText([/^1HD 1magnitudes10\.510.*200, 239plotted$/,/^2HD 4magnitudes98.*260, 183plotted$/,/^3HD 2magnitudes110—.*not plotted: V is zero$/,/^4HD 3mean counts12\.2512.*170, 295plotted$/]);
+ const download=page.waitForEvent('download');await button(page,'Download current results (DAT)').click();const saved=await(await download).path();
+ const bytes=Buffer.from(await (await import('node:fs/promises')).readFile(saved!));expect(bytes.equals(Buffer.concat([A[1]!,B[0]!,A[2]!,A[0]!].map(record)))).toBe(true);
+ await page.locator('.cluster-native-hr').screenshot({path:info.outputPath('cnhr-desktop.png')});
+ // Reopen:the downloaded original-format records replace the list after the second confirmation.
+ await choose(page,'reopen.dat',bytes);await button(page,'Replace current results…').click();await expect(page.getByText('Replace all 4 current records? The original asks for this second confirmation before clearing.',{exact:true})).toBeVisible();
+ await button(page,'Keep current results').click();await expect(page.getByTestId('cnhr-pending')).toHaveText('reopen.dat: 4 records');await button(page,'Replace current results…').click();await button(page,'Confirm replacing current results').click();
+ await expect(page.getByTestId('cnhr-current')).toContainText('4 records');await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 3');
+});
+
+test('invalid,late/cancelled and exception-path files keep current work and explain the block',async({page})=>{
+ await open(page);await choose(page,'good.dat',dat(A));await button(page,'Add to current results').click();await button(page,'Plot data from observations').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');
+ await choose(page,'partial.dat',Buffer.concat([dat(A),Buffer.alloc(1)]));await expect(page.getByRole('alert')).toHaveText(/not a whole number of 144-byte observation records/);await expect(page.getByTestId('cnhr-current')).toContainText('3 records');
+ await button(page,'Dismiss message').click();await expect(page.getByRole('alert')).toHaveCount(0);
+ const nanTime=record(A[1]!);nanTime.writeDoubleLE(NaN,16);await choose(page,'nan-time.dat',nanTime);await expect(page.getByRole('alert')).toHaveText(/time or RA value that cannot be ordered/);await button(page,'Dismiss message').click();
+ await page.evaluate(()=>{const original=File.prototype.arrayBuffer;File.prototype.arrayBuffer=function(){return new Promise(resolve=>{(window as unknown as{releaseRead:()=>void}).releaseRead=()=>{File.prototype.arrayBuffer=original;void original.call(this).then(resolve);};});};});
+ await choose(page,'slow.dat',dat(B));await expect(page.getByText('Reading slow.dat…')).toBeVisible();await button(page,'Cancel file read').click();await page.evaluate(()=>(window as unknown as{releaseRead:()=>void}).releaseRead());
+ await expect(page.getByTestId('cnhr-pending')).toHaveCount(0);await expect(page.getByTestId('cnhr-current')).toContainText('3 records');
+ await choose(page,'nan-v.dat',dat([{time:9,object:'BAD',kind:1,v:NaN,b:1}]));await button(page,'Add to current results').click();
+ await expect(page.getByTestId('cnhr-blocked')).toHaveText('Record 4 cannot be plotted under the compiled numerical policy (or its pixel position would wrap): V. Nothing is plotted. Correct or remove that record with the results tools and load the file again.');
+ await expect(page.getByTestId('cnhr-point')).toHaveCount(0);await expect(page.getByTestId('cnhr-count')).toHaveCount(0);
+ await choose(page,'replace.dat',dat(A));await button(page,'Replace current results…').click();await button(page,'Confirm replacing current results').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 2');
+});
+
+test('manual ZAMS/isochrone overlays,Tools›Clear and the View/Print Parameters text',async({page})=>{
+ const fetched:string[]=[];page.on('request',r=>{if(r.url().includes('native-isochrones-')&&r.resourceType()==='fetch')fetched.push(r.url());});
+ await open(page);await expect(page.getByTestId('cnhr-report')).toHaveText('Cluster: ');expect(fetched).toEqual([]);
+ await page.getByLabel(L.zams,{exact:true}).check();await expect(page.getByTestId('cnhr-zams')).toHaveCount(1);
+ await page.getByLabel(L.modulus).fill('550');await page.getByLabel(L.ebv).fill('4');await expect(page.getByTestId('cnhr-modulus')).toHaveText('5.50');
+ await expect(page.getByTestId('cnhr-report')).toHaveText('Cluster: \n\nFrom ZAMS fit:\n  V-Mv = 5.50\n  E(B-V) = 0.04');
+ await page.getByLabel(L.distance,{exact:true}).check();await expect(page.getByTestId('cnhr-report')).toContainText('  Estimated Cluster Distance: 119 Parsecs');
+ await page.getByLabel(L.ebv).focus();await page.keyboard.press('ArrowRight');await expect(page.getByTestId('cnhr-ebv')).toHaveText('0.05');
+ await page.route(/native-isochrones-019/,route=>route.abort());await page.getByLabel(L.iso,{exact:true}).check();await expect(page.getByText('The selected model could not load. Your observations and settings are unchanged.',{exact:true})).toBeVisible();await expect(page.getByTestId('cnhr-isochrone')).toHaveCount(0);
+ await page.unroute(/native-isochrones-019/);await button(page,'Retry selected model').click();await expect(page.getByTestId('cnhr-isochrone')).toHaveCount(1);expect(fetched.every(u=>/native-isochrones-019/.test(u))).toBe(true);expect(fetched).toHaveLength(2);
+ await page.getByLabel(L.age).fill('4');await expect(page.getByTestId('cnhr-logage')).toHaveText('8.00');
+ await expect(page.getByTestId('cnhr-report')).toHaveText('Cluster: \n\nFrom ZAMS fit:\n  V-Mv = 5.50\n  E(B-V) = 0.05\n  Estimated Cluster Distance: 117 Parsecs\n\nIsochrone Model Parameters:\n  Metallicity: [Z=0.019, Y=0.273] (Solar Values)\n  Log(Age/yrs): 8.00\n  Estimated Cluster Age: 100 Million Years\n  (B-V) Adjustment: 0.00');
+ const before=await page.getByTestId('cnhr-isochrone').getAttribute('points'),zams=await page.getByTestId('cnhr-zams').getAttribute('points');
+ await page.getByLabel(L.offset).fill('25');const after=await page.getByTestId('cnhr-isochrone').getAttribute('points');expect(Number(after!.split(' ')[0]!.split(',')[0])-Number(before!.split(' ')[0]!.split(',')[0])).toBeCloseTo(30,9);expect(await page.getByTestId('cnhr-zams').getAttribute('points')).toBe(zams);
+ await button(page,'Tools › Clear (remove ZAMS and isochrone)').click();await expect(page.getByTestId('cnhr-zams')).toHaveCount(0);await expect(page.getByTestId('cnhr-isochrone')).toHaveCount(0);await expect(page.getByTestId('cnhr-report')).toHaveText('Cluster: ');
+});
+
+test('320px layout keeps the page within the viewport and the chart keyboard-scrollable',async({page},info)=>{
+ await page.setViewportSize({width:320,height:800});await open(page);await choose(page,'night1.dat',dat(A));await button(page,'Add to current results').click();await button(page,'Plot data from observations').click();
+ const region=page.getByRole('region',{name:'Scrollable observation HR diagram',exact:true});await region.focus();await region.press('ArrowRight');await expect.poll(()=>region.evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.locator('.cluster-native-hr').screenshot({path:info.outputPath('cnhr-mobile.png')});
+});

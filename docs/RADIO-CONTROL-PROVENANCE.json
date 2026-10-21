@@ -1,0 +1,110 @@
+{
+  "policy": "OpenVireo-radio-control-switch-v1",
+  "scope": "I06 subflow only: TEnvironment1 radio control switch (RadCntrlSw), radio scope access (id 3), deferred ScopeTimer completion and radio control-panel window visibility. TRadioLab antenna/pointing/beam/receiver behavior is not recovered.",
+  "artifact": {
+    "name": "CLEA_VEO.exe (VIREO 1.504)",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bytes": 2288128,
+    "note": "Original not opened in this slice. All addresses are read from existing derived evidence below."
+  },
+  "derivedEvidence": [
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm",
+      "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db",
+      "kind": "Existing GNU objdump Intel-syntax linear-sweep listing of the whole .text section (no raw bytes). Read as text. Linear sweep desynchronizes at some entries (0x58ca70, 0x58b804); those are noted per contract."
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/observatory/TEnvironment1.json",
+      "sha256": "c7299e692d11fe40d3abbbd0c76454649a704982123b553968a9237ed931ccbc",
+      "kind": "Existing decoded DFM of RCDATA TENVIRONMENT1 (payload SHA-256 3a7a6a6118e6b5a81afabf67032f9b15a2cf92ab70e125f081e15cab7a44e6b3, file offset 2013064, 11384 bytes)."
+    },
+    {
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/observatory/method-map.json",
+      "sha256": "9ca6b1690460c499207497fd16b6111b4731bfab225dcbab83633438700b1309",
+      "kind": "Existing decoded published-method table of TEnvironment1 (VMT 0x58688c)."
+    }
+  ],
+  "reaStatus": "No REA Evidence ID exists for this slice. The REA static session (inspect_pe_resources, open_binary ghidra, analyze_function on the radio handlers) required approval in this session and was not executed; it was not retried.",
+  "contracts": [
+    {
+      "id": "RC-01",
+      "title": "Initial state",
+      "ranges": ["FormCreate 0x587c3b..0x587c49 ([+0x3818],[+0x3819],[+0x381a] := 4)", "0x587a7d ([+0x552] := 0)", "first-paint branch 0x5899fd..0x589a59 (guard [+0x54d]; calls 0x58d108)"],
+      "dfm": ["RadCntrlSw TiSwitchLed Caption 'Off'", "IDPnl Caption 'No Telescope Accessed' Visible=False", "Window1 Enabled=False; seven children Visible=False", "CntrlSwPnl Visible=False"],
+      "inference": "The 0x5899fd branch lies in the FormPaint procedure range starting 0x589894 and runs once per [+0x54d]; it leaves RadCntrlSw disabled because [+0x3819]=4."
+    },
+    {
+      "id": "RC-02",
+      "title": "RadioPulsars1Click exercise entry",
+      "ranges": ["0x58ab9c..0x58acd2"],
+      "observed": "TMenuItem.SetVisible on 15 items incl. +0x454 := True and +0x430 := True; TControl.SetVisible +0x444 := False, +0x3ec (OptCntrlSw) := False, +0x448 := False, +0x440 (RadCntrlSw) := True; [+0x383f] := 6; [+0x54c] := 2; title literals 0x58acdc/0x58ad10; calls 0x5aaaac, 0x58b098, 0x45e524.",
+      "modelled": "OptCntrlSw hidden, RadCntrlSw visible, item +0x454 visible, exerciseEntered flag.",
+      "notModelled": "Other menu visibility writes, [+0x383f]/[+0x54c], window title, 0x58b098, 0x45e524."
+    },
+    {
+      "id": "RC-03",
+      "title": "Radio1Click",
+      "ranges": ["0x58b804..0x58b827"],
+      "observed": "If [+0x3819] = 3 return; else item +0x430 SetChecked(True) (0x454858) and call 0x58b528(Self, 3).",
+      "uncertainty": "Listing desynchronized at 0x58b801..0x58b80c; the entry compare was realigned from the instruction stream. Browser gate: the command is offered only after RC-02 (Radio1 reachability in other exercises is not traced)."
+    },
+    {
+      "id": "RC-04",
+      "title": "Scope access 0x58b528, id 3, immediate branch",
+      "ranges": ["0x58b554..0x58b5f7"],
+      "observed": "If byte env+0x2e84 <> 0 and [+0x552] = 1: item +0x408 SetEnabled(True); [+0x5f1] := 3; [+0x381a] := 3; [+0x3819] := 3; +0x3f4 caption := IntToStr(int env+0x37ab) + literal 0x58b7a8; 0x58d0ac; virtual +0x84; if RadCntrlSw Active then radio form Show (0x47a010).",
+      "inference": "+0x3f4 is IDPnl (only DFM control with telescope-identity caption). 0x40ac14 IntToStr, 0x4060fc string append, 0x45df54 SetText by calling convention. env+0x2e84 control name unresolved."
+    },
+    {
+      "id": "RC-05",
+      "title": "Scope access 0x58b528, id 3, deferred branch",
+      "ranges": ["0x58b6ed..0x58b766", "0x58c31c..0x58c3c8", "0x58d108..0x58d150"],
+      "observed": "Item +0x408 SetEnabled(False); [+0x5f1] := 3; id = 3 skips the optical part; 0x58d108 (OptLbl/OptCntrlSw disabled, RadLbl/RadCntrlSw Enabled := [+0x3819] <> 4); 0x58c31c sets IDPnl caption by [+0x5f1] (radio literal 0x58c440), Screen cursor -11, timer +0x3b0 interval := 1 if env+0x2e84 <> 0 else Random(8000), timer enabled.",
+      "notPorted": "Random(8000) interval and Delphi RNG; the 0x58c440 literal text is not decoded in this slice."
+    },
+    {
+      "id": "RC-06",
+      "title": "ScopeTimerTimer",
+      "ranges": ["0x58b838..0x58ba23"],
+      "observed": "If [+0x552] = 3 do nothing (timer stays enabled). Else timer disabled; item +0x408 SetEnabled(True); [+0x5f1] = 3 → [+0x3819] := 3; [+0x381a] := 3; 0x58d0ac; IDPnl caption := IntToStr(env+0x37ab) + literal 0x58ba2c; Screen cursor 0; virtual +0x84; 0x408c44(0x40).",
+      "notModelled": "0x408c44(0x40) (likely a beep thunk; inference). Radio form is not shown by this path even if RadCntrlSw were active."
+    },
+    {
+      "id": "RC-07",
+      "title": "RadCntrlSwClick / RadCntrlSwKeyPress",
+      "ranges": ["0x58ca70..0x58ca89", "0x58e6c4..0x58e6e2"],
+      "observed": "KeyPress: if Key = #13, RadCntrlSw.Active := not Active (byte +0x342, setter 0x4e6b58). Click: same toggle tail (mov edx,ecx; call 0x4e6b58).",
+      "uncertainty": "Click entry 0x58ca70 is desynchronized in the linear listing; the shared tail and the OptCntrlSwClick twin support the toggle reading. Whether TiSwitchLed also toggles internally on click is not established. Space is not recovered; the browser ignores it."
+    },
+    {
+      "id": "RC-08",
+      "title": "RadCntrlSwChange",
+      "ranges": ["0x58ca8c..0x58cbb2"],
+      "observed": "RadCntrlSw Enabled := False (virtual +0x68); if [+0x381a] <> 3: IDPnl caption := IntToStr(env+0x37ab) + ' Meter Radio Telescope' (literal 0x58cbbc), [+0x381a] := [+0x3819], virtual +0x84. If Active: caption 'On' (0x58cbdc), item +0x454 SetEnabled(False), RadioWin (+0x4c0) SetVisible(True), Window1 (+0x4b8) SetEnabled(True), radio form Show. Else: caption 'Off' (0x58cbe8), RadioWin SetVisible(False), 0x58e7f8 (Window1 Enabled := any of seven Window1 children Visible), item +0x454 SetEnabled(True), radio form Hide (0x47a008). RadCntrlSw Enabled := True. SEH frame 0x58cba7 only finalizes the temporary string.",
+      "inference": "0x4548ac = TMenuItem.SetEnabled and 0x4549c8 = TMenuItem.SetVisible, +0x3e = visible byte, +0x4b8 = Window1, +0x4bc = OpticalWin, +0x4c0 = RadioWin: the seven checked fields in 0x58e7f8 match the seven Visible=False Window1 children in the DFM. 0x47a010 Show / 0x47a008 Hide from paired use."
+    },
+    {
+      "id": "RC-09",
+      "title": "RadioWinClick",
+      "ranges": ["0x58e700..0x58e71a"],
+      "observed": "Radio form (global 0x5b59a0) 0x476f40(form, 0) then Show (0x47a010).",
+      "inference": "0x476f40 with 0 = WindowState := wsNormal. Global 0x5b59a0 is created at 0x5ad4b9 from class ref 0x5639bc (TRadioLab, VMT 0x563a08)."
+    },
+    {
+      "id": "RC-10",
+      "title": "Closing the radio panel window (browser adaptation)",
+      "ranges": [],
+      "observed": "None. TRadioLab OnClose/OnCloseQuery are not recovered.",
+      "modelled": "Hide the panel only; switch stays On and RadioWin stays visible so RC-09 reopens it."
+    }
+  ],
+  "unresolved": [
+    "TRadioLab (VMT 0x563a08, instance size 0x65c): DFM, published fields and method names not decoded; all antenna, coordinate, beam, receiver, timing and signal behavior.",
+    "Source and default of env+0x37ab (dish diameter) and env+0x2e84 (access option byte).",
+    "Names of menu items at +0x408 and +0x454 and the five other Window1 children's individual offsets.",
+    "CntrlSwPnl and IDPnl visibility transitions.",
+    "Radio scope access from other exercises, optical/radio interplay beyond the shared fields, cursor/beep presentation."
+  ],
+  "numericPolicy": "Only the Int32 diameter is numeric. Input is strict decimal text, range -2147483648..2147483647, formatted like Delphi IntToStr (String(n), negative zero normalised to 0). No floating point is involved.",
+  "validation": "src/core/radioControl.test.ts tests the chosen implementation contract against these ranges. They are not an oracle for the original runtime and no original execution was used."
+}
