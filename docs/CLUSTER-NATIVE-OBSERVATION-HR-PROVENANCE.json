@@ -1,16 +1,75 @@
 {
   "schema": 1,
   "evidenceId": "VIREO-HR-OBSERVATION-PLOT-REPORT-STATIC-2026-10-21",
-  "executable": {"path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe", "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c", "bytes": 2288128},
-  "help": {"path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/HRAnalHlp.TXT", "sha256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b"},
+  "executable": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bytes": 2288128
+  },
+  "help": {
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/HRAnalHlp.TXT",
+    "sha256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b"
+  },
   "rea": [
-    {"evidenceId": "ev_61f426f3d7b436d5a1b186c2066abe3e072c9cce6f63d4f93b4aebcfa48094ff", "operation": "inspect_pe_resources", "provider": "rea-pe-resources v1", "artifactSha256": "3ffe39c13a2af3be1e38dadf0ce45e7c33eb0f11103f646d5d820a75483905cf", "used": "THRDISPLAYFORM1 offset2065104 bytes2994 sha256 ca537f7743627df4b5e1dd8ca5c69f5a6ac2fd905fd79d45e1b7e8dd68e05c9d"},
-    {"evidenceId": "ev_f6d7c186cc5e920928a70936f425de373ac9b312838b200fcc5d46b1179329e8", "operation": "inspect_with_objdump disassemble", "provider": "gnu.objdump", "artifactSha256": "938d21f06450c194709a3831e32452e2584411299ac55ff60278c0712022fcde", "completion": "partial: SIGKILL/output cap at 0x4e0d26", "used": "Round0x403700 fistp qword; FloatToStrF wrapper0x486268 (ffFixed,18,AL); list Reset/Next/AtEnd0x492628/0x492634/0x49271c"}
+    {
+      "evidenceId": "ev_61f426f3d7b436d5a1b186c2066abe3e072c9cce6f63d4f93b4aebcfa48094ff",
+      "operation": "inspect_pe_resources",
+      "provider": "rea-pe-resources v1",
+      "artifactSha256": "3ffe39c13a2af3be1e38dadf0ce45e7c33eb0f11103f646d5d820a75483905cf",
+      "used": "THRDISPLAYFORM1 offset2065104 bytes2994 sha256 ca537f7743627df4b5e1dd8ca5c69f5a6ac2fd905fd79d45e1b7e8dd68e05c9d"
+    },
+    {
+      "evidenceId": "ev_f6d7c186cc5e920928a70936f425de373ac9b312838b200fcc5d46b1179329e8",
+      "operation": "inspect_with_objdump disassemble",
+      "provider": "gnu.objdump",
+      "artifactSha256": "938d21f06450c194709a3831e32452e2584411299ac55ff60278c0712022fcde",
+      "completion": "partial: SIGKILL/output cap at 0x4e0d26",
+      "used": "Round0x403700 fistp qword; FloatToStrF wrapper0x486268 (ffFixed,18,AL); list Reset/Next/AtEnd0x492628/0x492634/0x49271c"
+    }
   ],
-  "derivedListing": {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm", "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db", "lines": {"redraw+geometry+frame": "474808-475251", "observationPlot": "475252-475439", "selectCluster/measuredData/displayPrint": "475623-475696", "parametersReport": "476795-477251"}, "crossCheck": "instruction boundaries agree with REA ev_f6d7 at 0x485d6c and 0x48692f"},
-  "procedures": {"MeasuredData1Click": "0x542ed8", "redraw": "0x54235c", "geometry": "0x5423dc", "frame": "0x542480", "observationPlot": "0x542990", "parametersReport": "0x543d90", "zeroConstant": "Single0.0@0x542bd8", "distanceCoefficient": "Single3.0@0x544208", "ageOffset": "Single6.0@0x54424c", "sliderDivisor": "Single100.0@0x542240"},
+  "derivedListing": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm",
+    "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db",
+    "lines": {
+      "redraw+geometry+frame": "474808-475251",
+      "observationPlot": "475252-475439",
+      "selectCluster/measuredData/displayPrint": "475623-475696",
+      "parametersReport": "476795-477251"
+    },
+    "crossCheck": "instruction boundaries agree with REA ev_f6d7 at 0x485d6c and 0x48692f"
+  },
+  "procedures": {
+    "MeasuredData1Click": "0x542ed8",
+    "redraw": "0x54235c",
+    "geometry": "0x5423dc",
+    "frame": "0x542480",
+    "observationPlot": "0x542990",
+    "parametersReport": "0x543d90",
+    "zeroConstant": "Single0.0@0x542bd8",
+    "distanceCoefficient": "Single3.0@0x544208",
+    "ageOffset": "Single6.0@0x54424c",
+    "sliderDivisor": "Single100.0@0x542240"
+  },
   "fullLedger": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-parallel-approved/hr/hr-observation-evidence.json",
   "controls": "src/core/clusterNativeObservationHr.controls.json (hand-derived synthetic vectors; not observations or an original oracle)",
-  "uncertainty": ["static only; no original execution/emulation", "host x87 control word unverified (compiled0x1332 assumed)", "exception paths blocked rather than reproduced", "FloatToStrF decimal path and DecimalSeparator approximated", "paint box extent/colours/fonts/print path unrecovered", "Cluster: line content for observation mode unrecovered", "option+0x2e7c default unknown", "iso+0x58f = displayed metallicity label is an inference"],
-  "rights": "Original executable/help remain unmodified outside web source; no original bytes are included."
+  "uncertainty": [
+    "static only; no original execution/emulation",
+    "host x87 control word unverified (compiled0x1332 assumed)",
+    "exception paths blocked rather than reproduced",
+    "FloatToStrF decimal path and DecimalSeparator approximated",
+    "paint box extent/colours/fonts/print path unrecovered",
+    "Cluster: line content for observation mode unrecovered",
+    "option+0x2e7c default unknown",
+    "iso+0x58f = displayed metallicity label is an inference"
+  ],
+  "rights": "Original executable/help remain unmodified outside web source; no original bytes are included.",
+  "compiledNumericalPolicyReference": {
+    "path": "NATIVE-FPU-CONTEXT-PROVENANCE.json",
+    "sha256": "b31684ea63bc8992ef752eef915667338e1e6a7d4886ae614099a1d026ebbd8e",
+    "evidenceId": "NATIVE-FPU-HOST-MASK-01",
+    "compiledWordAddress": "0x5ae024",
+    "compiledWord": "0x1332",
+    "compiledWordBytesSHA256": "6974302178736cc62cf6178ecea52e82ce5fc22b06d91e62b5e6efe843a3c77a",
+    "scope": "Chosen bounded arithmetic policy from compiled default;historicalregistryexceptionmaskandactualhandlerentrycontrolwordremainunverified;notnativeexecutionorbytecodeinterpreter"
+  }
 }

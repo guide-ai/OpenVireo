@@ -2,7 +2,7 @@
 
 This panel implements the original VIREO route described in `HRAnalHlp.TXT` ("Load Data from Observations" and "Display/Print Cluster Age/Distance Parameters"). It runs as follows. Load observation results you saved earlier. Plot them with **File › Load/Plot › Data from Observations**. Compare the ZAMS and isochrones by eye. Read the **View/Print Parameters** text. Nothing is fitted, filled in, graded or assigned membership. It reuses the existing DAT reader, the native results ordering, the six original model grids and the ZAMS. Their files and behavior are unchanged.
 
-Status: integrated in the local candidate under Cluster reference database → HR diagram from saved observations. Separate Claude review and full integration validation remain pending. It adds no investigation session fields;Save investigation does not include this independent HR workspace. Download DAT before reload;manual overlays reset on reload.
+Status: integrated in the local candidate under Cluster database → HR diagram from saved observations. Separate Claude review and full integration validation remain pending. It adds no investigation session fields;Save investigation does not include this independent HR workspace. Download DAT before reload;manual overlays reset on reload.
 
 ## Recovered contract
 
@@ -75,3 +75,7 @@ The following are not recovered:
 No runtime witness exists. Tests check this implementation's contract and are not an original oracle. N04/E05 remain partial: optional CCD, uncertainty, classroom validation and original runtime fidelity are open. No original execution, emulation, network or new dependency is used.
 
 The candidate host retains the observation workspace across navigation and cancels in-flight file reads on collapse, navigation or investigation save/restore. Previous results and pending reviewed files remain separate from global investigation data. Presentation text uses the shared catalog;source report strings and scientific values retain their original identity. The dyadic policy is a bounded arithmetic model under the compiled default,not demonstrated historical x87/FPU/GDI execution equivalence.
+
+Independent integration validation:1,751unit tests/172files,typecheck,build and1279resourcepreflight passed. The6HR appflows passed together,includingrawDAT/investigationbytepreservation,manualanswerandtrialretention,navigation/collapse/restorelate-readcancellation. WideE2E passed450with3radioharness-onlyskips (theisolatedradioharnesspassed3testsseparately). Sourcewasfrozenduringthewide4worker run. Rawlogs/receipts are under `/home/dobleuber/Documents/Codex/2026-10-18/task-3/fronts-integration/`. SeparateClaudeintegrationreviewisstillrequired;thesenumbersarenotoriginal-runtimeoracles.
+
+The compiled numerical policy is traced to [the existing FPU context recovery](NATIVE-FPU-CONTEXT-PROVENANCE.json):word0x1332at0x5ae024,typedsourceSHArecordedintheref.The historicalregistrylowexceptionmaskandactualhandler-entrywordremainunverified. NooriginalWindowsregistryaccess,CPUinstructioninterpreterorexecutionisintroducedbythepureformulaevaluation.
