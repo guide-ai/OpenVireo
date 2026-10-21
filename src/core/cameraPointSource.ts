@@ -1,5 +1,6 @@
 import {cameraScalarJitter,type CameraBackgroundStage} from './cameraBackground';
 import {roundNearestEven} from './numericPolicy';
+import type {CameraExtendedStage} from './cameraExtendedSource';
 /** Source0x5245d0..0x524a41: mathematical point stage only,with explicit peak,
  * geometry and local draws. No catalog/source/time/seed authority is inferred. */
 export class CameraPointError extends Error {
@@ -12,7 +13,7 @@ export type CameraPointPlan=Readonly<{
  gaussianVisits:number;indices:readonly number[];means:readonly number[];
 }>;
 export type CameraPointStage=Readonly<Omit<CameraBackgroundStage,'phase'>&{phase:'point-sources-before-clipping'}>;
-type CameraPlane=CameraBackgroundStage|CameraPointStage;
+type CameraPlane=CameraBackgroundStage|CameraPointStage|CameraExtendedStage;
 export const CAMERA_POINT_VISIT_LIMIT=65_536;
 /** Bounded admission protects loops and unsupported zero-radius divisions.
  * nearest/even geometry and Number exp/constants are explicit web policies. */
@@ -55,7 +56,7 @@ export function cameraPointPlan(p:CameraPointParameters):CameraPointPlan {
  * Single after EACH addition. Original pre-source histogram remains owned. */
 export function addCameraPointSource(stage:CameraPlane,plan:CameraPointPlan,uniforms:readonly number[]):CameraPointStage {
  if(!plan||plan[planBrand]!==true)throw new CameraPointError('geometry');
- if(!stage||(stage.phase!=='background-before-sources'&&stage.phase!=='point-sources-before-clipping')||stage.width!==plan.width||stage.height!==plan.height||
+ if(!stage||!['background-before-sources','point-sources-before-clipping','extended-sources-before-clipping'].includes(stage.phase)||stage.width!==plan.width||stage.height!==plan.height||
   !Array.isArray(stage.pixels)||stage.pixels.length!==plan.width*plan.height||!stage.histogram||stage.histogram.binWidth!==256||!Array.isArray(stage.histogram.bins)||stage.histogram.bins.length!==256||stage.histogram.count!==plan.width*plan.height)throw new CameraPointError('plane');
  const original=Array.from(stage.pixels);if(original.some(p=>!Number.isFinite(p)||!Object.is(Math.fround(p),p)))throw new CameraPointError('plane');
  if(!Array.isArray(uniforms)||uniforms.length!==plan.indices.length)throw new CameraPointError('uniforms');

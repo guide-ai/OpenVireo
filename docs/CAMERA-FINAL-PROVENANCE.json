@@ -84,7 +84,7 @@
   "numericalPolicy": "FiniteSingleinput,Numberdivision/powers2,Math.froundfinalstore;preservesfractions/negatives/signedzero. DeclarednearestSinglepolicy,not original FPU/exception/runtime oracle.",
   "admission": {
     "parameters": "positiveInt32well,gains1/2/4/5/8,integeradBits1..32;compiled factoryenforcesdistinctCCD/IRpositions",
-    "phase": "backgroundorpointonly;no suppliedFITSorsecondgainconversion admitted",
+    "phase": "background,pointorextendedsourceonly;no suppliedFITSorsecondgainconversion admitted",
     "ownership": "newimmutablepixels,paramscopy;originalpre-sourcehistogramretained;0localdraws",
     "scope": "no liveconfiguration inference,NOMAD,observing lifecycle,FITSheader,date,seed or sessions"
   },

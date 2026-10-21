@@ -1,0 +1,137 @@
+{
+  "evidenceId": "NATIVE-CAMERA-EXTENDED-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "extended-add",
+      "start": "0x524a6c",
+      "endExclusive": "0x525095",
+      "bytes": 1577,
+      "bytesSHA256": "5899f5515cfc39db8530e3934c9bd6fd01c56b099001f8f684f89059d8bd167f",
+      "listingSHA256": "53aca1d06c3e144323e09e54f88aeb2f2cdc6cd2735feb514d729d8600e35d7c"
+    },
+    {
+      "name": "sqrt",
+      "start": "0x4036f0",
+      "endExclusive": "0x4036fd",
+      "bytes": 13,
+      "bytesSHA256": "32acf2ea0996c5e1059ecd00e14f3c4f645ed521cd5b5f63c0e5e2f4b1e70e8c",
+      "listingSHA256": "7377ce4897d1858375a88fab05c9180ab677305497b4fb69ca668eb0441e79ef"
+    },
+    {
+      "name": "iterator-reset",
+      "start": "0x492628",
+      "endExclusive": "0x492634",
+      "bytes": 12,
+      "bytesSHA256": "61777ce40c26a34c94c6d3f9027984b51a137bd305e07142aa952fecd3d032b4",
+      "listingSHA256": "12c54d404062d2ee3de4bc413cadb8a6bd2959778551836a802ab820d8c0ecc2"
+    },
+    {
+      "name": "iterator-next",
+      "start": "0x492634",
+      "endExclusive": "0x492666",
+      "bytes": 50,
+      "bytesSHA256": "a6f9cb52098d051ed3f4da5afc63682c0ce0490bf5d788ad8159a76fd8fe04ea",
+      "listingSHA256": "305fd1adcd9b85104072be79f77b2e53bcfdd4657ab072ab0ca9fa6bfb2c6911"
+    },
+    {
+      "name": "iterator-at-tail",
+      "start": "0x49271c",
+      "endExclusive": "0x492726",
+      "bytes": 10,
+      "bytesSHA256": "0c1ca7556829163505a731554696d87676ba95a1c7a6a7d9027ec0804d80f968",
+      "listingSHA256": "42c0952f6d457d6a1805eefca6c442cc2423a70dd5cb24089f40b58cc2ac4f7d"
+    },
+    {
+      "name": "ccd-preparation",
+      "start": "0x52154c",
+      "endExclusive": "0x521c65",
+      "bytes": 1817,
+      "bytesSHA256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+      "listingSHA256": "ff80a59dc3bd5de51a7c3f2b4a8638b2e33aa3b041631f7ee07efdccad6fe81f"
+    },
+    {
+      "name": "ir-preparation",
+      "start": "0x51e43c",
+      "endExclusive": "0x51e712",
+      "bytes": 726,
+      "bytesSHA256": "95b7a6912bef366c3ab88b13a429163e3ce6a82353b10ac792ebbb2703220fc2",
+      "listingSHA256": "d1dc37be4f8c5cb141fe76866bf344817cb0e70b26062ade60ca0185fffe3369"
+    }
+  ],
+  "constants": [
+    {
+      "name": "supportLimit",
+      "address": "0x525098",
+      "type": "Single",
+      "exactNumerator": "1",
+      "exactDenominator": "1",
+      "Number": 1.0,
+      "bytesSHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"
+    },
+    {
+      "name": "magDivisor",
+      "address": "0x52509c",
+      "type": "Single",
+      "exactNumerator": "5",
+      "exactDenominator": "2",
+      "Number": 2.5,
+      "bytesSHA256": "072e3304b03423a4767d28c5fed09f81d5190ff60a3d078c6c1350eeb8bee28b"
+    },
+    {
+      "name": "two",
+      "address": "0x5250a0",
+      "type": "Single",
+      "exactNumerator": "2",
+      "exactDenominator": "1",
+      "Number": 2.0,
+      "bytesSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    {
+      "name": "zero",
+      "address": "0x5250a4",
+      "type": "Single",
+      "exactNumerator": "0",
+      "exactDenominator": "1",
+      "Number": 0.0,
+      "bytesSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+    },
+    {
+      "name": "spikeAmplitude",
+      "address": "0x5250a8",
+      "type": "Extended",
+      "exactNumerator": "5902958103587056517",
+      "exactDenominator": "590295810358705651712",
+      "Number": 0.01,
+      "bytesSHA256": "a7d3e5df3aa9fdd98d5ad7f69719d6511e1a10975528de6c6691cdf50eb7ccf1"
+    },
+    {
+      "name": "spikeScaleCut",
+      "address": "0x5250b4",
+      "type": "Single",
+      "exactNumerator": "5",
+      "exactDenominator": "4",
+      "Number": 1.25,
+      "bytesSHA256": "6a8e259d5cfb5822c30440a36c344da8f749269d606006aecf7e0bbd2188015c"
+    },
+    {
+      "name": "crossMultiplier",
+      "address": "0x5250b8",
+      "type": "Extended",
+      "exactNumerator": "12912720851596686131",
+      "exactDenominator": "9223372036854775808",
+      "Number": 1.4,
+      "bytesSHA256": "c82cf00c61019fce9b4449b971c9efa505e1c8c04a2ad4b5d602420bf4696b5d"
+    }
+  ],
+  "endpointOrder": "first record stack+2cX/+20Y;second record stack+14X/+08Y;kind+3d==2 calls iterator-next again,thenat-tail;no second object synthesis",
+  "geometry": "d=sqrt(((x2-x1)/sigmaX)^2+((y2-y1)/sigmaY)^2);scale=sqrt(sqrt(d+1));mid=first+(second-first)/2;roundNearestEven(mid);radii=roundNearestEven(abs(halfdifference)+support*sigma);support starts3,exp(-r\u00b2/2)*referencePeak>1 increments",
+  "profile": "A=distance\u00b2 tofirst;B=distance\u00b2 tosecond;t=(d\u00b2+B-A)/(2*d);if t<0,rho\u00b2=B;else if t>d,rho\u00b2=A;else rho\u00b2=B-t\u00b2. Retainsourceexpression/cancellation,no nonnegative repair;mean=exp(-rho\u00b2/2)*(exposureScale/scale*referencePeak)",
+  "spikes": "only scale<Single1.25;4radii midpoint cross;overwrite asymmetry matches point;mean=exp(-ratio)^2*((exposureScale/scale)*(Extended.01*((exposureScale/scale)*referencePeak)))",
+  "ownership": "extended sourceusesCCDcalibrationrecord2d99,includingIRcaller;explicit numericalinputs do not authenticate catalog/options",
+  "numericalPolicy": "Number sqrt/exp,nearest/even geometry,Single eachaddition;not Extended/x87/runtime oracle",
+  "admission": "Boundedfiniteexplicit pairedpositions/scales/peak/time/uniforms;coincident/nonfinite/overflowgeometry rejected;no inferred data identity,catalog,date,PRNGprefix or sourcekindpopulation",
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}
