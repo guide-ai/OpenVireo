@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type RefObject, type SyntheticEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import './PulsarAnalysis.css';
 import { resourceSha256 } from '../io/boundedResource';
@@ -7,7 +7,7 @@ import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord,
   pulsarCancelRecord, pulsarConfirmRecord, pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer,
   pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom,
-  type PulsarAnalysisState, type PulsarPanel, type PulsarPointer, type PulsarTransition,
+  type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
@@ -19,8 +19,11 @@ import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } f
  */
 export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
-const SILENT = new Set(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft']);
-const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
+const SILENT = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft']);
+/** Refusal statuses say the measurement is unchanged, so a later accepted placement must replace them. */
+const REFUSALS = new Set<PulsarOutcome | null>(['number-unsupported', 'display-unsupported']);
+/** The record and clear dialogs contain only buttons and one text input. */
+const TABBABLE = 'button:not(:disabled), input:not(:disabled)';
 // Native GDI colors (TColor $00BBGGRR) used by 0x56bacc, 0x56c028, 0x56c448 and 0x56c6dc.
 const COLOR = { background: '#000080', axis: '#ffff00', trace: '#ffffff', vertical: '#00ffff', reference: '#00ff00', horizontal: '#ff00ff' };
 const ticks = PULSAR_PANELS.map(ch => pulsarAxisTicks(ch));
@@ -42,11 +45,16 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const propertiesButton = useRef<HTMLButtonElement>(null), propertiesClose = useRef<HTMLButtonElement>(null);
   const commentInput = useRef<HTMLInputElement>(null), clearDefault = useRef<HTMLButtonElement>(null), clearButton = useRef<HTMLButtonElement>(null), recordButton = useRef<HTMLButtonElement>(null);
 
+  // The outcome that wrote the current status, or null for a file or read status.
+  const statusOutcome = useRef<PulsarOutcome | null>(null);
+  const say = (text: string, outcome: PulsarOutcome | null = null) => { statusOutcome.current = outcome; setStatus(text); };
   // Transitions run on the latest committed state, so rapid pointer events are never applied to a stale copy.
   const act: Act = fn => {
-    const tr = fn(current.current);
+    const before = current.current, tr = fn(before);
     if (tr.changed) { current.current = tr.state; setS(tr.state); }
-    if (!SILENT.has(tr.outcome)) setStatus(t(`pulsar.outcome.${tr.outcome}` as PulsarMessageKey));
+    if (!SILENT.has(tr.outcome)) say(t(`pulsar.outcome.${tr.outcome}` as PulsarMessageKey), tr.outcome);
+    // A cursor move is silent, but once it changes the measurement an earlier refusal status would be false.
+    else if (tr.outcome === 'cursor' && tr.state.measurement !== before.measurement && REFUSALS.has(statusOutcome.current)) say(t('pulsar.outcome.cursor'), 'cursor');
     return tr;
   };
   const actRef = useRef(act);
@@ -76,17 +84,20 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const [panHold] = useState(() => createPulsarPanHold<number>(
     { every: (ms, fn) => window.setInterval(fn, ms), cancel: handle => window.clearInterval(handle) },
     () => activeRef.current && actRef.current(pulsarPanTick).outcome === 'panned'));
+  // Activation keys currently held on a pan button. A held Enter repeats keydown, and each one would click.
+  // Their keyup can be lost while the window, page or panel is not receiving keys, so every stop forgets them.
+  const panKeys = useRef(new Set<string>());
   useEffect(() => {
-    const stop = () => panHold.release();
+    const stop = () => { panHold.release(); panKeys.current.clear(); };
     const hidden = () => { if (document.visibilityState === 'hidden') stop(); };
     window.addEventListener('blur', stop); document.addEventListener('visibilitychange', hidden);
     return () => { window.removeEventListener('blur', stop); document.removeEventListener('visibilitychange', hidden); stop(); };
   }, [panHold]);
-  useEffect(() => { panHold.release(); }, [panHold, rec, modal]);
+  useEffect(() => { panHold.release(); panKeys.current.clear(); }, [panHold, rec, modal]);
   // A pointer press already stepped once, so the click that follows it must not step again.
   const pointerPress = useRef(false);
-  // Activation keys currently held on a pan button. A held Enter repeats keydown, and each one would click.
-  const panKeys = useRef(new Set<string>());
+  // WEB pointer ownership: the pointer whose press set a drag latch. See Panel.
+  const pointerOwner = useRef<number | null>(null);
   const panButton = (direction: 'left' | 'right') => ({
     onPointerDown: (e: ReactPointerEvent<HTMLButtonElement>) => {
       if (e.button !== 0) return; // native MouseDown acts on mbLeft only
@@ -114,10 +125,10 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   async function onFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
-    if (!file) { setStatus(t('pulsar.status.pickerCancelled')); return; }
+    if (!file) { say(t('pulsar.status.pickerCancelled')); return; }
     const token = ++epoch.current;
     setReading(file.name); setRejection(null);
-    const late = () => { setStatus(t('pulsar.status.lateDiscarded')); };
+    const late = () => { say(t('pulsar.status.lateDiscarded')); };
     const fail = (text: string) => { setReading(null); setRejection(`${t('pulsar.reject.title', { name: file.name })} ${text}`); };
     try {
       if (file.size > PLR_MAX_BYTES) { fail(t('pulsar.reject.size')); return; }
@@ -144,31 +155,61 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (token === epoch.current) fail(t('pulsar.reject.read'));
     }
   }
-  const cancelRead = () => { epoch.current++; setReading(null); setStatus(t('pulsar.status.readCancelled')); };
+  const cancelRead = () => { epoch.current++; setReading(null); say(t('pulsar.status.readCancelled')); };
   // Deactivation runs in the commit, before any later timer tick or read continuation.
   useLayoutEffect(() => {
     activeRef.current = active;
     if (active) return;
     panHold.release();
+    panKeys.current.clear();
+    pointerOwner.current = null;
     if (current.current.leftDrag || current.current.rightDrag) act(pulsarPointerRelease);
     if (reading !== null) cancelRead();
   });
-  // WEB modal containment: while a record or clear dialog is open, Tab and Shift+Tab cycle inside it,
-  // so focus cannot reach host controls outside this panel. The panel's own content is already inert.
-  const modalBox = useRef<HTMLElement>(null);
+  // WEB modal dialogs: the record and clear prompts are native <dialog> elements opened with showModal(),
+  // so the browser top layer makes the rest of the page inert and keeps focus inside. A dialog opens only
+  // while the panel is active and rendered and no other dialog is open, so an existing host modal stays
+  // topmost; ours opens when that one closes. An inactive panel closes its dialog but keeps the record
+  // session or clear prompt, draft included, and reopens it when it is active again. No VCL parity is claimed.
+  const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null);
+  const ownClose = useRef(new WeakSet<HTMLDialogElement>());
+  const [syncModal] = useState(() => () => {
+    const el = recordDialog.current ?? clearDialog.current;
+    if (!el) return;
+    if (!activeRef.current) { if (el.open) { ownClose.current.add(el); el.close(); } return; }
+    if (el.open) return;
+    const panel = root.current;
+    if (!panel || panel.getClientRects().length === 0 || panel.parentElement?.closest('[inert]')) return;
+    if ([...document.querySelectorAll('dialog[open]')].some(d => d !== el)) return;
+    try { el.showModal(); } catch { return; }
+    (el === recordDialog.current ? commentInput.current : clearDefault.current)?.focus();
+  });
+  useLayoutEffect(() => { syncModal(); });
   useEffect(() => {
-    if (!modal || !active) return;
-    const onKey = (e: globalThis.KeyboardEvent) => {
-      const box = modalBox.current;
-      if (e.key !== 'Tab' || e.defaultPrevented || !box) return;
-      const items = [...box.querySelectorAll<HTMLElement>(FOCUSABLE)];
-      const at = document.activeElement, first = items[0], last = items[items.length - 1];
-      if (!first) { e.preventDefault(); return; }
-      if (!box.contains(at) || at === (e.shiftKey ? first : last)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
-    };
-    document.addEventListener('keydown', onKey, true);
-    return () => document.removeEventListener('keydown', onKey, true);
-  }, [modal, active]);
+    // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
+    const closed = (e: Event) => { if (e.target !== recordDialog.current && e.target !== clearDialog.current) syncModal(); };
+    document.addEventListener('close', closed, true);
+    return () => document.removeEventListener('close', closed, true);
+  }, [syncModal]);
+  /**
+   * Escape is handled on keydown. A close request the page cannot cancel closes the dialog, which counts as Cancel/No.
+   * Tab and Shift+Tab wrap between this dialog's first and last controls (the top layer alone would let Tab leave to
+   * the browser UI). The handler is on the dialog element, so keys in any other dialog never reach it.
+   */
+  const dialogEvents = (cancel: () => void) => ({
+    onKeyDown: (e: KeyboardEvent<HTMLDialogElement>) => {
+      if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
+      if (e.key !== 'Tab') return;
+      const items = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)], first = items[0], last = items[items.length - 1];
+      if (first && document.activeElement === (e.shiftKey ? first : last)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+    },
+    onCancel: (e: SyntheticEvent<HTMLDialogElement>) => { if (e.cancelable) { e.preventDefault(); cancel(); } },
+    onClose: (e: SyntheticEvent<HTMLDialogElement>) => {
+      const el = e.currentTarget;
+      if (ownClose.current.delete(el) || el.open || !activeRef.current) return;
+      cancel();
+    },
+  });
   function download() {
     if (!rec) return;
     try {
@@ -176,7 +217,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       const a = document.createElement('a');
       a.href = url; a.download = rec.fileName; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch { setStatus(t('pulsar.status.downloadError')); }
+    } catch { say(t('pulsar.status.downloadError')); }
   }
   const closeProperties = () => { act(st => pulsarProperties(st, false)); propertiesButton.current?.focus(); };
   const openProperties = () => { if (act(st => pulsarProperties(st, true)).changed) focusProperties.current = null; else propertiesClose.current?.focus(); };
@@ -185,7 +226,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const answerClear = (a: 'discard' | 'yes' | 'no' | 'cancel') => { const tr = act(st => pulsarAnswerClear(st, a)); if (tr.state.clearPrompt === null) focusAfterModal.current = clearButton.current; };
 
   return (
-    <section className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis">
+    <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis">
       <div className="plr-main" inert={modal}>
         <h2 id={`${idPrefix}title`}>{t('pulsar.title')}</h2>
         <p className="plr-scope">{t('pulsar.scope')}</p>
@@ -258,7 +299,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
             </section>
 
             <div className="plr-panels">
-              {PULSAR_PANELS.map(ch => <Panel key={ch} ch={ch} s={s} t={t} act={act} idPrefix={idPrefix} primaryAs={primaryAs} />)}
+              {PULSAR_PANELS.map(ch => <Panel key={ch} ch={ch} s={s} t={t} act={act} idPrefix={idPrefix} primaryAs={primaryAs} owner={pointerOwner} />)}
             </div>
             <p className="plr-reference">{t('pulsar.reference')} <output data-testid="pulsar-reference">{readouts.reference}</output></p>
 
@@ -281,54 +322,50 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       </div>
 
       {dialog && (
-        <div className="plr-overlay">
-          <section ref={modalBox} role="dialog" aria-modal="true" aria-labelledby={`${idPrefix}record`} className="plr-modal" data-testid="pulsar-record-dialog"
-            onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); finishRecord(act(st => pulsarCancelRecord(st))); } }}>
-            <h3 id={`${idPrefix}record`}>{t('pulsar.record.heading', { object: dialog.object, n: dialog.panel + 1 })}</h3>
-            <dl>
-              {(['start', 'frequency', 'gain', 'reference', 'vertical', 'horizontal'] as const).map(k => <div key={k}><dt>{t(`pulsar.record.${k}`)}</dt><dd><output data-testid={`pulsar-record-${k}`}>{dialog[k]}</output></dd></div>)}
-            </dl>
-            <label>{t('pulsar.record.comment')}
-              <input ref={commentInput} value={dialog.draft} maxLength={256} aria-invalid={!dialog.draftValid} aria-describedby={`${idPrefix}comment-help`}
-                onChange={e => act(st => pulsarRecordDraft(st, e.target.value))}
-                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); finishRecord(act(st => pulsarConfirmRecord(st))); } }} data-testid="pulsar-comment" />
-            </label>
-            <p className="plr-help" id={`${idPrefix}comment-help`}>{t('pulsar.record.commentHelp')}</p>
-            {dialog.remaining > 0 && <p>{t('pulsar.record.remaining', { count: dialog.remaining })}</p>}
-            <div className="plr-row">
-              <button type="button" onClick={() => finishRecord(act(st => pulsarConfirmRecord(st)))} data-testid="pulsar-record-ok">{t('pulsar.record.ok')}</button>
-              <button type="button" onClick={() => finishRecord(act(st => pulsarCancelRecord(st)))} data-testid="pulsar-record-cancel">{t('pulsar.record.cancel')}</button>
-            </div>
-            <p role="status" className="plr-status">{status}</p>
-          </section>
-        </div>
+        <dialog ref={recordDialog} aria-labelledby={`${idPrefix}record`} className="plr-modal" data-testid="pulsar-record-dialog"
+          {...dialogEvents(() => finishRecord(act(st => pulsarCancelRecord(st))))}>
+          <h3 id={`${idPrefix}record`}>{t('pulsar.record.heading', { object: dialog.object, n: dialog.panel + 1 })}</h3>
+          <dl>
+            {(['start', 'frequency', 'gain', 'reference', 'vertical', 'horizontal'] as const).map(k => <div key={k}><dt>{t(`pulsar.record.${k}`)}</dt><dd><output data-testid={`pulsar-record-${k}`}>{dialog[k]}</output></dd></div>)}
+          </dl>
+          <label>{t('pulsar.record.comment')}
+            <input ref={commentInput} value={dialog.draft} maxLength={256} aria-invalid={!dialog.draftValid} aria-describedby={`${idPrefix}comment-help`}
+              onChange={e => act(st => pulsarRecordDraft(st, e.target.value))}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); finishRecord(act(st => pulsarConfirmRecord(st))); } }} data-testid="pulsar-comment" />
+          </label>
+          <p className="plr-help" id={`${idPrefix}comment-help`}>{t('pulsar.record.commentHelp')}</p>
+          {dialog.remaining > 0 && <p>{t('pulsar.record.remaining', { count: dialog.remaining })}</p>}
+          <div className="plr-row">
+            <button type="button" onClick={() => finishRecord(act(st => pulsarConfirmRecord(st)))} data-testid="pulsar-record-ok">{t('pulsar.record.ok')}</button>
+            <button type="button" onClick={() => finishRecord(act(st => pulsarCancelRecord(st)))} data-testid="pulsar-record-cancel">{t('pulsar.record.cancel')}</button>
+          </div>
+          <p role="status" className="plr-status">{status}</p>
+        </dialog>
       )}
       {s.clearPrompt && (
-        <div className="plr-overlay">
-          <section ref={modalBox} role="alertdialog" aria-modal="true" aria-labelledby={`${idPrefix}clear`} className="plr-modal" data-testid="pulsar-clear-dialog"
-            onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); answerClear('cancel'); } }}>
-            {s.clearPrompt === 'unsaved' ? (<>
-              <p id={`${idPrefix}clear`}>{t('pulsar.clear.unsaved')}</p>
-              <div className="plr-row">
-                <button type="button" onClick={() => answerClear('discard')} data-testid="pulsar-clear-discard">{t('pulsar.clear.discard')}</button>
-                <button type="button" ref={clearDefault} onClick={() => answerClear('cancel')} data-testid="pulsar-clear-cancel">{t('pulsar.clear.cancel')}</button>
-              </div>
-            </>) : (<>
-              <p id={`${idPrefix}clear`}>{t('pulsar.clear.confirm')}</p>
-              <div className="plr-row">
-                <button type="button" onClick={() => answerClear('yes')} data-testid="pulsar-clear-yes">{t('pulsar.clear.yes')}</button>
-                <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{t('pulsar.clear.no')}</button>
-              </div>
-            </>)}
-          </section>
-        </div>
+        <dialog ref={clearDialog} role="alertdialog" aria-labelledby={`${idPrefix}clear`} className="plr-modal" data-testid="pulsar-clear-dialog"
+          {...dialogEvents(() => answerClear('cancel'))}>
+          {s.clearPrompt === 'unsaved' ? (<>
+            <p id={`${idPrefix}clear`}>{t('pulsar.clear.unsaved')}</p>
+            <div className="plr-row">
+              <button type="button" onClick={() => answerClear('discard')} data-testid="pulsar-clear-discard">{t('pulsar.clear.discard')}</button>
+              <button type="button" ref={clearDefault} onClick={() => answerClear('cancel')} data-testid="pulsar-clear-cancel">{t('pulsar.clear.cancel')}</button>
+            </div>
+          </>) : (<>
+            <p id={`${idPrefix}clear`}>{t('pulsar.clear.confirm')}</p>
+            <div className="plr-row">
+              <button type="button" onClick={() => answerClear('yes')} data-testid="pulsar-clear-yes">{t('pulsar.clear.yes')}</button>
+              <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{t('pulsar.clear.no')}</button>
+            </div>
+          </>)}
+        </dialog>
       )}
     </section>
   );
 }
 
-type PanelProps = Readonly<{ ch: PulsarPanel; s: PulsarAnalysisState; t: PulsarTranslate; act: Act; idPrefix: string; primaryAs: 'left' | 'right' }>;
-function Panel({ ch, s, t, act, idPrefix, primaryAs }: PanelProps) {
+type PanelProps = Readonly<{ ch: PulsarPanel; s: PulsarAnalysisState; t: PulsarTranslate; act: Act; idPrefix: string; primaryAs: 'left' | 'right'; owner: RefObject<number | null> }>;
+function Panel({ ch, s, t, act, idPrefix, primaryAs, owner }: PanelProps) {
   const rec = s.recording as PlrRecording;
   const svg = useRef<SVGSVGElement>(null);
   const c = s.cursors[ch], n = ch + 1, recordable = pulsarPanelRecordable(rec, ch);
@@ -354,22 +391,28 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs }: PanelProps) {
     act(st => pulsarPointer(st, ch, { ...p, phase: 'down', button }));
     act(st => pulsarPointer(st, ch, { ...p, phase: 'up', button }));
   };
-  // WEB keyboard access: each key press acts like one click at the next pixel, starting from the drawn line
-  // (a hidden line's stored pixel no longer shows its value, so the key starts from the edge instead).
+  // Lines follow the model's visibility; the stored pixel alone can belong to an earlier window or factor.
+  // A vertical or reference line is drawn only on a client pixel 0 ≤ x < 400 (a larger x lies outside the box).
+  const drawX = (visible: boolean, x: number) => visible && x >= 0 && x < width;
+  // WEB keyboard access: each key press acts like one click at the next pixel from the line drawn in the client.
+  // When that line is not drawn (none yet, hidden by a redraw, or off the client), the press uses a fixed web
+  // edge origin instead: pixel 0 for the vertical and reference cursors, row base − 1 for the horizontal cursor.
   const onKey = (e: KeyboardEvent<SVGSVGElement>) => {
     const step = e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : 0;
     if (!step) return;
     const horizontalKey = e.key === 'ArrowUp' || e.key === 'ArrowDown';
-    if (e.shiftKey && !horizontalKey) click('right', clampInt((c.referenceVisible ? c.referenceX : -step) + step, 0, width - 1), 0);
-    else if (!horizontalKey && s.modes[ch] === 'vertical') click('left', clampInt((c.verticalVisible ? c.verticalX : -step) + step, 0, width - 1), 0);
-    else if (horizontalKey && s.modes[ch] === 'horizontal') click('left', 0, clampInt((c.horizontalVisible ? c.horizontalY : base) + step, 0, base - 1));
+    const nextX = (visible: boolean, x: number) => drawX(visible, x) ? clampInt(x + step, 0, width - 1) : 0;
+    if (e.shiftKey && !horizontalKey) click('right', nextX(c.referenceVisible, c.referenceX), 0);
+    else if (!horizontalKey && s.modes[ch] === 'vertical') click('left', nextX(c.verticalVisible, c.verticalX), 0);
+    else if (horizontalKey && s.modes[ch] === 'horizontal') click('left', 0, c.horizontalVisible ? clampInt(c.horizontalY + step, 0, base - 1) : base - 1);
     else return;
     e.preventDefault();
   };
-  // Lines follow the model's visibility; the stored pixel alone can belong to an earlier window or factor.
-  const drawX = (visible: boolean, x: number) => visible && x >= 0 && x <= width;
-  // WEB boundary: a cancelled gesture or lost capture clears the drag latches without a native MouseUp.
-  const release = () => act(pulsarPointerRelease);
+  // WEB pointer ownership: the drag latches are shared by all panels (one native mouse), so only the primary
+  // pointer that pressed first drives them. Other pointers, and their cancellation, are ignored; the owner's
+  // cancel or lost capture clears the latches without a native MouseUp. No multi-touch behavior is modelled.
+  const owns = (e: ReactPointerEvent<SVGSVGElement>) => e.isPrimary && (owner.current === null || owner.current === e.pointerId);
+  const release = (e: ReactPointerEvent<SVGSVGElement>) => { if (owner.current !== e.pointerId) return; owner.current = null; act(pulsarPointerRelease); };
   return (
     <section className="plr-panel" aria-labelledby={`${idPrefix}panel-${n}`} data-testid={`pulsar-panel-${n}`}>
       <h4 id={`${idPrefix}panel-${n}`}>{t('pulsar.panel.label', { n })}: {t('pulsar.panel.receiver', { n, freq: rec.frequencies[ch].lexeme })}</h4>
@@ -377,9 +420,16 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs }: PanelProps) {
       <div className="plr-panel-body">
         <svg ref={svg} className="plr-plot" viewBox={`-0.5 -0.5 ${width} ${height}`} style={{ aspectRatio: `${width} / ${height}` }} role="img" tabIndex={0}
           aria-label={t('pulsar.panel.plot', { n })} data-testid={`pulsar-plot-${n}`} data-base={base}
-          onPointerDown={e => { if (e.button === 0 || e.button === 2) { e.currentTarget.setPointerCapture(e.pointerId); e.preventDefault(); } send('down', e); }}
-          onPointerMove={e => { if (e.buttons !== 0) send('move', e); }}
-          onPointerUp={e => send('up', e)}
+          onPointerDown={e => {
+            if (!owns(e)) return;
+            if (e.button === 0 || e.button === 2) {
+              try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* inactive pointer id */ }
+              e.preventDefault(); owner.current = e.pointerId;
+            }
+            send('down', e);
+          }}
+          onPointerMove={e => { if (e.buttons !== 0 && owns(e)) send('move', e); }}
+          onPointerUp={e => { if (!owns(e)) return; if (owner.current === e.pointerId) owner.current = null; send('up', e); }}
           onPointerCancel={release} onLostPointerCapture={release}
           onContextMenu={e => e.preventDefault()} onKeyDown={onKey}>
           <rect x={-0.5} y={-0.5} width={width} height={height} fill={COLOR.background} />

@@ -143,8 +143,11 @@ export function admitPlrRecording(input: Uint8Array, fileName: string): PlrAdmis
   if (isRejection(split)) return split;
   const { lines } = split;
   if (lines.length === 0) return reject('empty', null);
-  // 0x56a2ed. A first line that does not start with an apostrophe, including a blank one, takes the headerless
-  // route: it resets the file and reads rows, but leaves the metadata untouched.
+  // 0x56a2ed compares the first character of line 1 with an apostrophe. A non-empty first line without one
+  // takes the headerless route: it resets the file and reads rows, but leaves the metadata untouched.
+  // WEB: a blank first line is rejected on its own. The listing dereferences the line's first character, and
+  // what the original does with an empty line there is not established (no runtime witness), so no native
+  // route is claimed for it. This admission requires the apostrophe header on line 1.
   if (lines[0].length === 0) return reject('blank-first-line', 1);
   if (lines[0][0] !== "'") return reject('headerless', 1);
   if (lines.length < 4) return reject('truncated-header', lines.length + 1);

@@ -75,25 +75,31 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
 
 - **Strict admission** (`src/core/pulsarRecording.ts`). Every rejection leaves the current analysis unchanged, unlike the native reader's partial mutation.
   - Printable ASCII with CRLF or LF; at most 2 MiB, 65536 rows and 512 characters per line.
-  - Headerless files are rejected: the native route keeps whatever metadata was loaded earlier. A blank first line also takes that route; it is reported as such, and only a zero-byte file is called empty.
+  - Headerless files are rejected: the native route keeps whatever metadata was loaded earlier.
+  - A blank first line is rejected separately (`blank-first-line`), because this admission requires the apostrophe header on line 1. What the original does with a blank first line is not established: the listing dereferences its first character, and there is no runtime witness, so no native route is claimed. Only a zero-byte file is called empty.
   - Names longer than 40 characters are rejected (no truncation), and so is the native placeholder name `No Data` (it overwrites the interval natively).
   - Decimal integers only; aperture 0–65535; highest index 0–2.
   - Bounded finite decimals; interval > 0; no blank lines or trailing content.
 - **Numbers** are parsed with `Number()` and formatted with `toFixed`/`toExponential` (half away from zero, `'.'` separator, rounded zero without `-`). Round uses the shared `roundNearestEven`. Nothing here is x87 Extended parity.
   - Number overflows earlier than Extended. For example, an admitted gain of 1e-320 makes every horizontal value on that panel ±Infinity. Such a placement, or a record entry with a non-finite field, is refused with a visible status. The previous measurement and the loaded bytes are kept. No zero is substituted, no lower gain limit is invented and no arithmetic is reordered.
+  - A MouseUp whose own placement is refused is not taken: the panel's pending flag and Record keep their previous state, so no blank entry can be recorded for it. A y that `0x56c6dc` rejects as out of range is the native rule and still marks the panel pending.
+  - A later accepted placement replaces the "Not taken" status, so the status never says the measurement is unchanged after it changed. File rejections stay in their own alert.
+  - A finite stored value can still overflow the redraw product. With gain 1e-309, y = 123 on panel 2 stores 1e307, and the redraw computes 1e307·100 before gain and factor bring it back to y = 123. That is not the native out-of-range rejection, so the zoom, pan, pan tick or factor change is refused as a whole with a visible status. The display, cursors and measurements stay as they were, with no partial re-quantization.
 - **Rendering limits.** The recovered geometry is drawn as SVG, with each viewBox 400 × Height native pixels and pixel centres on integer coordinates. GDI pen and LineTo end-pixel rules, anti-aliasing, fonts and label positions are not reproduced, and no runtime pixel parity is claimed. Pointer input is clamped to integer client pixels [0,399] × [0,Height−1].
 - **Pan lifecycle.**
   - The browser interval is 100 ms. Its cadence is not claimed equal to Windows WM_TIMER resolution or coalescing.
   - A hold also stops on pointer cancel, pointer-capture loss, window blur, a hidden page, an inactive host, a committed load, an opened modal and unmount.
   - The click event that follows a pointer press does not step again.
   - Enter/Space on a pan button steps once per physical press. Holding the key does not repeat (auto-repeated keydowns are ignored), and no timer starts. This is an accessibility adaptation: the native buttons have no OnClick, so the original cannot pan from the keyboard.
+  - Held keys are forgotten on window blur, a hidden page, an inactive host, a load and a modal, because their keyup may never reach the button.
 - **Input adaptations.**
   - The primary button or touch can be switched to the reference cursor.
-  - Arrow keys act as one click per press, starting from the drawn line; Shift+←/→ moves the reference cursor.
+  - Arrow keys act as one click per press, starting from a line drawn on a client pixel (0 ≤ x < 400). A vertical or reference line that is not drawn there (none yet, hidden by a redraw, or off the client after a zoom) uses a fixed web edge origin: pixel 0. A hidden horizontal line uses row base − 1. Shift+←/→ moves the reference cursor.
   - Pointer cancel, lost pointer capture and an inactive host clear the drag latches, so a later move needs a new press. This is a web boundary, not a native MouseUp: it places no cursor, marks no panel pending, and keeps the cursors, the measurement and the confirmed list.
+  - Pointer ownership: only the primary pointer whose press set a drag latch drives it. A non-primary touch, and the cancellation or capture loss of any pointer other than the owner, is ignored, so cancelling a second finger does not end the first finger's drag. Native left/right mouse handling is unchanged; no multi-touch behavior is modelled.
   - No beep.
-- **Modal dialogs.** While a record or clear dialog is open, the panel's content is inert, and Tab/Shift+Tab cycle inside the dialog. This holds even when the panel is embedded in a page with its own controls. Escape cancels, the default button is Cancel/No, an unconfirmed comment draft stays in the open dialog, and focus returns to Record or Clear.
-- **Host activity.** `active={false}` makes the panel inert. It cancels an in-flight read, so a late read is discarded, and it stops a held pan. The loaded bytes and confirmed measurements are kept.
+- **Modal dialogs.** The record and clear prompts are native `<dialog>` elements opened with `showModal()`. The browser top layer makes the rest of the page inert and keeps focus inside, with no page-level key trap. Tab and Shift+Tab wrap between the dialog's first and last controls through a handler on the dialog element itself, so keys in any other dialog never reach it. A host modal opened on top stays topmost and keyboard-navigable. Escape cancels, the default button is Cancel/No, an unconfirmed comment draft stays in the open dialog, and focus returns to Record or Clear. A dialog opens only while the panel is active and rendered and no other dialog is open; it opens as soon as that dialog closes. This is web behavior, not VCL modal parity.
+- **Host activity.** `active={false}` makes the panel inert. It cancels an in-flight read, so a late read is discarded, and it stops a held pan. It closes an open record or clear dialog but keeps the record session, its draft and the clear stage, which reopen when the panel is active again. The loaded bytes and confirmed measurements are kept.
 - **Measurement storage.** Measurements live in this window's state only. A visible note says they are not part of Save investigation and that refreshing or closing the page discards them. No session schema or notebook changes.
 - **Gated features.**
   - The native **CSV save** is gated: its header stamps the host date and time plus login names, browser-clock defaults are forbidden, and its header literals are not decoded.
@@ -106,6 +112,7 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
 
 The following were resolved by independent static extraction; they are static evidence only:
 - the requested literals, the Single constants 0, 400, 8, 0.125, 100 and 1000, and the `.data` aliases;
+- the redraw threshold Single `0x56c440` = 0.0, by a direct source-hash-bound static data decode (`COORDINATOR-correction-triage/static-data-decode.json`). This narrows that one constant only; it is not runtime FPU parity;
 - the `THdrDisp` class, its methods and fields, and the DFM captions;
 - the binding of the analysis-form methods;
 - the DispBox heights and baselines;
@@ -137,3 +144,5 @@ The panel is self-contained and not mounted in App. `idPrefix` prefixes every el
 - Browser tests: `node node_modules/@playwright/test/cli.js test -c <evidence>/harness/playwright.pulsar.config.mjs` serves the harness on loopback `127.0.0.1:5185` (strict port) at `/__pulsar-harness/` and runs `tests/pulsar-analysis.spec.ts`. The spec skips without `OPENVIREO_PULSAR_HARNESS_URL`.
 - `<evidence>/harness/playwright.pulsar.mobile.config.mjs` runs the same spec at a 390 × 844 touch viewport.
 - `<evidence>` = `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis`.
+
+The compiled `TMEASFORM` comment control has `MaxLength=80`; the `shortstring[81]` copy capacity is not the manual entry limit. OpenVireo validates the 80-character boundary while preserving an invalid editable draft and earlier confirmed rows; it does not claim identical VCL text-entry behavior. The decoded resource hash and field binding are in `COORDINATOR-correction-triage/manual-comment-dfm.json`.
