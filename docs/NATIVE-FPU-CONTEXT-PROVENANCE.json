@@ -1,0 +1,134 @@
+{
+  "evidenceId": "NATIVE-FPU-HOST-MASK-01",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "control-setter",
+      "start": "0x403618",
+      "endExclusive": "0x403627",
+      "bytesSHA256": "95a1104a280191a38a655f6f3d01bc8e7854bdad3b19a8dad0a62d9c01a2ff82",
+      "listingSHA256": "bf2937917f7a94e1e2f760e7b8bd55c8707e896d5927f72a15f3db2bd85193c3",
+      "boundary": "Complete function through return;registry/number parser include local SEH/helper paths"
+    },
+    {
+      "name": "control-getter",
+      "start": "0x403628",
+      "endExclusive": "0x40362f",
+      "bytesSHA256": "6949fbf53a4f6dbea9b0445423465e2726cd8dbd38dbe9b4774071f526b91ced",
+      "listingSHA256": "ec7d156918a58c00d39db9cdb7ca723c3f6016938a8085267756cf95419c478a",
+      "boundary": "Complete function through return;registry/number parser include local SEH/helper paths"
+    },
+    {
+      "name": "registry-mask",
+      "start": "0x404d08",
+      "endExclusive": "0x404da0",
+      "bytesSHA256": "364a1512950e55262e16a3f39f7303e16c5d103efe621c1b931919c17c26a749",
+      "listingSHA256": "95922f1d0e87a4437c6a0874cdf78cf556bbf94d1df7706dd15bac12f0ed3486",
+      "boundary": "Complete function through return;registry/number parser include local SEH/helper paths"
+    },
+    {
+      "name": "control-reset",
+      "start": "0x404dcc",
+      "endExclusive": "0x404dd6",
+      "bytesSHA256": "1c7101f75633fb4d9b3e935814ffe0a25a04aee5d619d0defc289fe4a1dbbe4a",
+      "listingSHA256": "6a0f357fc0509a02cf588a988fb438e8f607a310c8f5514932996d251c3ae836",
+      "boundary": "Complete function through return;registry/number parser include local SEH/helper paths"
+    },
+    {
+      "name": "window-wrapper",
+      "start": "0x408e2c",
+      "endExclusive": "0x408e83",
+      "bytesSHA256": "e721faa86cb49c8c118c0a5d7dfd20d05ce5fb852d1f0eaae63cd7e7d22de89b",
+      "listingSHA256": "3d6d4fa000da10016e78077f9569920c1f9c187fa69ad39c7b04d02ab14d30e8",
+      "boundary": "Complete function through return;registry/number parser include local SEH/helper paths"
+    },
+    {
+      "name": "number-parse",
+      "start": "0x40cdb4",
+      "endExclusive": "0x40cec8",
+      "bytesSHA256": "0e6bc02c00ad5e0cb2062215e82f20aa2cdc1106638e8e15d27310a54a7e8e47",
+      "listingSHA256": "5839422fe4f2a941cf98f1b66fd2e29989c8743ea4c59818fb0a4db06fb29905",
+      "boundary": "Complete function through return;registry/number parser include local SEH/helper paths"
+    }
+  ],
+  "importStubs": [
+    {
+      "stub": "0x4013e8",
+      "IAT": "0x6209d4",
+      "import": {
+        "dll": "advapi32.dll",
+        "name": "RegCloseKey"
+      },
+      "bytesSHA256": "37f43e8573d16bf7d14addb3d4c2137397baa0467dd7f460c4f9dcc9d3c11154"
+    },
+    {
+      "stub": "0x4013f0",
+      "IAT": "0x6209d0",
+      "import": {
+        "dll": "advapi32.dll",
+        "name": "RegOpenKeyExA"
+      },
+      "bytesSHA256": "e10ecc927045aa35b4995a8949c9b72007f070bc14b04f7b4b81069c56046fc7"
+    },
+    {
+      "stub": "0x4013f8",
+      "IAT": "0x6209cc",
+      "import": {
+        "dll": "advapi32.dll",
+        "name": "RegQueryValueExA"
+      },
+      "bytesSHA256": "552c4e25aa4b6518b9c7df3cc0b4ace8b7fd4f0d246669fec679216002406e4e"
+    },
+    {
+      "stub": "0x408e24",
+      "IAT": "0x620abc",
+      "import": {
+        "dll": "user32.dll",
+        "name": "CreateWindowExA"
+      },
+      "bytesSHA256": "b2ef3cd5f6542f3da47f628c24ba62906b5929dd22898f5dd267f36d336a9ef8"
+    }
+  ],
+  "literals": [
+    {
+      "start": "0x5ae024",
+      "bytes": 2,
+      "SHA256": "6974302178736cc62cf6178ecea52e82ce5fc22b06d91e62b5e6efe843a3c77a",
+      "role": "compiled default0x1332",
+      "value": "0x1332"
+    },
+    {
+      "start": "0x5ae8dc",
+      "bytes": 2,
+      "SHA256": "fc08dcf84d5f6b3c0f2333d2a46166fff925004057650df8aca86cea7801218b",
+      "role": "numeric-parser temporary0x133f",
+      "value": "0x133f"
+    },
+    {
+      "start": "0x404da0",
+      "bytes": 28,
+      "SHA256": "6fcd2fc1c6a34afed654ad12adc6e66c55947ae33ddc68663870b67c836ce947",
+      "role": "registry path withNUL",
+      "value": "SOFTWARE\\Borland\\Delphi\\RTL"
+    },
+    {
+      "start": "0x404dbc",
+      "bytes": 13,
+      "SHA256": "6656d7f1f13e52c62a1ea83f9aca74c8e7466508c387fa87c5c5eed566af28e0",
+      "role": "registry value withNUL",
+      "value": "FPUMaskValue"
+    }
+  ],
+  "observedSource": "Registry helper404d08 attempts predefined root0x80000002,pathSOFTWARE\\Borland\\Delphi\\RTL,valueFPUMaskValue,4-byte query into initial-local-default. It combines only low6bits with globalDefaultWord upperbits;no registry values are captured here. Getter/setter/reset and CreateWindowExA wrapper save/restore control are pinned. Numeric parser savescallercontrol,clearsexceptions,loads133f,computes/checksstatus then restorescallercontrol.",
+  "narrowing": "Compiled defaults and exception-mask source are now recovered;do not call all precision/control state unknowable. Historical host registry contents and the actual handler-entry word/exception/rounding outcomes are not supplied by TXT/CSV/DAT or these static captures.",
+  "independentMaskChecks": 64,
+  "claimsExcluded": [
+    "No historical Windows registry read",
+    "No native execution/emulation",
+    "No original floating output oracle",
+    "No new numerical admission/validation/grade or record metadata",
+    "Raw-reference scans do not rule out indirect code/DLL effects"
+  ],
+  "productModified": false,
+  "sourceCreditsReference": "NATIVE-RESULT-METADATA-AUTHORITY-PROVENANCE.json#sourceCredits"
+}

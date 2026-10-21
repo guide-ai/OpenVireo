@@ -1,0 +1,15 @@
+# Native numeric control defaults and external mask configuration
+
+This recovery narrows the FPU gate. Compiled control defaults and a concrete host configuration dependency are known;the absence of a runtime witness is not a claim that no more static work is possible. No product numerical behavior is changed.
+
+[Provenance](NATIVE-FPU-CONTEXT-PROVENANCE.json),evidence `NATIVE-FPU-HOST-MASK-01`,pins6complete functions,4actual PE import bindings and4literal ranges to EXE SHA256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`.
+
+- Stored default word0x5ae024 is `0x1332`. Setter0x403618 stores AX there,clears exceptions and loads it. Getter0x403628 reads the active hardware word;reset0x404dcc initializes then loads the stored default.
+- Helper0x404d08..0x404da0 opens predefined root0x80000002 with path `SOFTWARE\Borland\Delphi\RTL`,then queries `FPUMaskValue` into a4-byte local initialized from the default. It retains the stored default's upper bits and replaces only bits0..5 using `(default & 0xffc0) | (candidate & 0x3f)`. All64possible low-mask cases were checked independently as integer relations. These are mask checks,not floating/native output comparisons.
+- The stubs bind to `RegOpenKeyExA`,`RegQueryValueExA` and `RegCloseKey`,rather than an inferred generic options loader. No original registry key/value was read;the code and literals alone establish the dependency.
+- Complete0x408e2c..0x408e83 saves the active word,wraps the imported `CreateWindowExA`,then restores it through the setter. This confirms a real save/restore route;the raw direct-call scan alone is not proof about every indirect call or external DLL effect.
+- The already recovered numeric parser0x40cdb4 saves the caller word,clears exceptions,loads fixed `0x133f`,performs its grammar/arithmetic/status checks and restores the saved word. Subsequent Single/Double stores and the velocity-confirmation arithmetic are outside that temporary parse control.
+
+The host's actual historical mask value and active confirmation-entry control word are not encoded in TXT/CSV/DAT. The source also does not provide original floating-point boundary/exception outcomes. Do not substitute current Linux/browser state,declare every path to use133f,or claim byte/runtime equality from ordinary Number operations. The date importer independently still needs its importing-session current-JD prefix and selected bias context. These dependencies prevent automatic native numeric/result admission as currently specified;lexical/raw-bit inspection and the separately bounded supported numerical engines remain useful.
+
+Reproduce locally with `python3 /home/dobleuber/Documents/Codex/2026-10-18/task-3/native-fpu-state-recovery/capture.py`. It only reads original bytes,disassembles complete ranges and verifies hashes/imports/literals/integer mask relations. No Windows/native execution,microemulation,registry access,new numerical defaults,student answer or grade is introduced. Original files and hashes remain unchanged.
