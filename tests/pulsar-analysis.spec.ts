@@ -17,11 +17,27 @@ const status = (page: Page) => page.getByTestId('pulsar-status');
 const pausedClock = async (page: Page) => { await page.clock.install(); await page.clock.pauseAt(Date.now() + 60_000); };
 /** DFM DispBox{1,2,3} client heights; every panel is 400 native pixels wide. */
 const HEIGHT: Record<number, number> = { 1: 120, 2: 125, 3: 140 };
-/** Clicks native pixel (x, y) of a panel; the plot viewBox is 400 × HEIGHT[panel] native pixels. */
-async function at(page: Page, panel: number, x: number, y: number, button: 'left' | 'right' = 'left') {
-  const box = (await page.getByTestId(`pulsar-plot-${panel}`).boundingBox())!;
-  await page.mouse.click(box.x + (x + 0.5) * box.width / 400, box.y + (y + 0.5) * box.height / HEIGHT[panel], { button });
+/** Client point of native pixel (x, y) of a panel, scrolled into view; the plot viewBox is 400 × HEIGHT[panel] native pixels. */
+async function pixel(page: Page, panel: number, x: number, y: number) {
+  const plot = page.getByTestId(`pulsar-plot-${panel}`);
+  await plot.scrollIntoViewIfNeeded();
+  const box = (await plot.boundingBox())!;
+  return { x: box.x + (x + 0.5) * box.width / 400, y: box.y + (y + 0.5) * box.height / HEIGHT[panel] };
 }
+/** Clicks native pixel (x, y) of a panel. */
+async function at(page: Page, panel: number, x: number, y: number, button: 'left' | 'right' = 'left') {
+  const p = await pixel(page, panel, x, y);
+  await page.mouse.click(p.x, p.y, { button });
+}
+/** Adds focusable host controls before and after the panel, as an embedding page would have. */
+const hostControls = (page: Page) => page.evaluate(() => {
+  const root = document.getElementById('root')!;
+  for (const [where, id] of [['before', 'host-before'], ['after', 'host-after']] as const) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = id; b.dataset.testid = id;
+    root[where](b);
+  }
+});
 
 test('complete analysis path: properties, display controls, manual cursors, record, review, clear', async ({ page }) => {
   // Paused fake page clock: the 100 ms pan hold timer cannot fire between the press and release of a click.
@@ -357,4 +373,168 @@ test('mobile layout keeps the analysis reachable without horizontal overflow; to
   await expect(page.getByTestId('pulsar-reference')).toHaveText('3.000000');
   await expect(page.getByTestId('pulsar-vertical-value-2')).toHaveText('');
   await page.screenshot({ path: test.info().outputPath('mobile-analysis.png'), fullPage: true });
+});
+
+test('record and clear dialogs keep Tab and Shift+Tab inside, with host controls outside the panel', async ({ page }) => {
+  await open(page);
+  await hostControls(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  await page.getByTestId('pulsar-plot-1').focus();
+  await page.keyboard.press('ArrowRight');
+  await page.getByTestId('pulsar-record').click();
+  const comment = page.getByTestId('pulsar-comment'), ok = page.getByTestId('pulsar-record-ok'), cancel = page.getByTestId('pulsar-record-cancel');
+  await expect(comment).toBeFocused();
+  await comment.fill('pending draft');
+  for (const next of [ok, cancel, comment, ok]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [comment, cancel, ok]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
+  // Focus that left the dialog (for example by clicking its text) is brought back by the next Tab.
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.keyboard.press('Tab');
+  await expect(comment).toBeFocused();
+  await expect(comment).toHaveValue('pending draft');
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('pulsar-record-dialog')).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-record')).toBeFocused();
+
+  await page.getByTestId('pulsar-clear').click();
+  const discard = page.getByTestId('pulsar-clear-discard'), keep = page.getByTestId('pulsar-clear-cancel');
+  await expect(keep).toBeFocused(); // default cancel
+  for (const next of [discard, keep]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [discard, keep]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('pulsar-clear-dialog')).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-clear')).toBeFocused();
+  // Without a modal, focus can reach the host controls again.
+  await page.getByTestId('host-after').focus();
+  await expect(page.getByTestId('host-after')).toBeFocused();
+});
+
+test('holding Enter or Space on a pan button steps once per physical press', async ({ page }) => {
+  await pausedClock(page);
+  await open(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  await page.getByTestId('pulsar-rate-1').check();
+  const start = page.getByTestId('pulsar-window-start');
+  await page.getByTestId('pulsar-pan-right').focus();
+  await page.keyboard.down('Enter');
+  await page.keyboard.down('Enter'); // auto-repeat keydowns while the key stays down
+  await page.keyboard.down('Enter');
+  await page.clock.runFor(500);
+  await page.keyboard.up('Enter');
+  await expect(start).toHaveText('0.010');
+  await page.keyboard.press('Enter');
+  await expect(start).toHaveText('0.020');
+  await page.keyboard.down(' ');
+  await page.keyboard.down(' ');
+  await page.keyboard.up(' ');
+  await expect(start).toHaveText('0.030');
+  await page.clock.runFor(500);
+  await expect(start).toHaveText('0.030');
+});
+
+test('a cancelled or lost pointer capture clears the drag without confirming a measurement', async ({ page }) => {
+  await open(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  const plot = page.getByTestId('pulsar-plot-1'), value = page.getByTestId('pulsar-vertical-value-1');
+  const move = async (x: number) => {
+    const p = await pixel(page, 1, x, 10);
+    await plot.dispatchEvent('pointermove', { pointerId: 1, pointerType: 'mouse', isPrimary: true, button: -1, buttons: 1, clientX: p.x, clientY: p.y });
+  };
+  for (const event of ['pointercancel', 'lostpointercapture']) {
+    // The real mouse.up below still reaches the plot (a real cancel would not send one) and marks the panel pending.
+    await page.getByTestId('pulsar-reset').click();
+    const p = await pixel(page, 1, 50, 10);
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.down();
+    await expect(value).toHaveText('0.500000');
+    await move(60);
+    await expect(value).toHaveText('0.600000'); // a held drag still moves the cursor
+    await plot.dispatchEvent(event, { pointerId: 1, pointerType: 'mouse', isPrimary: true });
+    await expect(page.getByTestId('pulsar-pending-1')).toHaveCount(0); // no MouseUp was invented
+    await move(80);
+    await expect(value).toHaveText('0.600000');
+    await page.mouse.up();
+    await expect(value).toHaveText('0.600000');
+  }
+});
+
+test('redraw hides cursor lines whose time or pixel is no longer valid and keeps their readouts', async ({ page }) => {
+  await open(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  await page.getByTestId('pulsar-zoom-out').click(); // window [−2, 6]
+  await at(page, 1, 50, 10);
+  await expect(page.getByTestId('pulsar-vertical-value-1')).toHaveText('-1.000000');
+  await expect(page.getByTestId('pulsar-vline-1')).toHaveAttribute('x1', '50'); // drawn right after the click
+  await page.getByTestId('pulsar-zoom-in').click(); // window [0, 4]: pixel 50 would read 0.5
+  await expect(page.getByTestId('pulsar-vline-1')).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-vertical-value-1')).toHaveText('-1.000000');
+  await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
+
+  await page.getByTestId('pulsar-horizontal-1').click();
+  await at(page, 1, 10, 19);
+  await expect(page.getByTestId('pulsar-horizontal-value-1')).toHaveText('1.0000E+00');
+  await expect(page.getByTestId('pulsar-hline-1')).toHaveAttribute('y1', '19');
+  await page.getByTestId('pulsar-factor-up-1').click(); // projected y = −81
+  await expect(page.getByTestId('pulsar-hline-1')).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-horizontal-value-1')).toHaveText('1.0000E+00');
+  await page.getByTestId('pulsar-factor-down-1').click();
+  await expect(page.getByTestId('pulsar-hline-1')).toHaveAttribute('y1', '19');
+  await page.screenshot({ path: test.info().outputPath('redraw-visibility.png'), fullPage: true });
+});
+
+test('an unrepresentable value is refused visibly and a blank first line is not called empty', async ({ page }) => {
+  await open(page);
+  // SYNTHETIC: receiver 1 gain 1e-320 is admitted (nonzero); every horizontal value on it overflows Number.
+  const TINY = SYNTH.replace('1.000,0.000,1.000', '1e-320,0.000,1.000');
+  await load(page, 'tiny-gain.plr', TINY);
+  await page.getByTestId('pulsar-properties-close').click();
+  await page.getByTestId('pulsar-horizontal-1').click();
+  await at(page, 1, 10, 50);
+  await expect(status(page)).toContainText('Not taken');
+  await expect(page.getByTestId('pulsar-horizontal-value-1')).toHaveText('');
+  await expect(page.getByTestId('pulsar-hline-1')).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(TINY));
+
+  await load(page, 'blank-first.plr', '\r\n' + SYNTH);
+  await expect(page.getByTestId('pulsar-rejection')).toContainText('first line is blank');
+  await expect(page.getByTestId('pulsar-rejection')).not.toContainText('empty');
+  await expect(page.getByTestId('pulsar-file-name')).toHaveText('tiny-gain.plr');
+});
+
+test('two panels with different id prefixes keep unique ids, including Review', async ({ page }) => {
+  await open(page);
+  await page.evaluate(async () => {
+    (window as unknown as { __pulsarHarness: { unmount: () => void } }).__pulsarHarness.unmount();
+    const url = '/src/components/PulsarAnalysis.tsx';
+    const m = await import(/* @vite-ignore */ url) as { mountPulsarWorkbench: (e: HTMLElement, p: { idPrefix: string }) => unknown };
+    for (const prefix of ['a-', 'b-']) {
+      const host = document.createElement('div');
+      host.id = `host-${prefix}`;
+      document.body.append(host);
+      m.mountPulsarWorkbench(host, { idPrefix: prefix });
+    }
+  });
+  for (const prefix of ['a-', 'b-']) {
+    const host = page.locator(`#host-${prefix}`);
+    await host.getByTestId('pulsar-file').setInputFiles(file(`${prefix}rec.plr`, SYNTH));
+    await host.getByTestId('pulsar-properties-close').click();
+    await host.getByTestId('pulsar-plot-1').focus();
+    await page.keyboard.press('ArrowRight');
+    await host.getByTestId('pulsar-record').click();
+    await host.getByTestId('pulsar-record-ok').click();
+    await host.getByTestId('pulsar-review').click();
+    const list = host.getByTestId('pulsar-review-list');
+    await expect(list).toHaveAttribute('aria-labelledby', `${prefix}review-heading`);
+    await expect(list.locator(`#${prefix}review-heading`)).toHaveText('Recorded measurements');
+    await expect(list.getByRole('cell', { name: `${prefix}rec.plr` })).toBeVisible();
+  }
+  const duplicates = await page.evaluate(() => {
+    const ids = [...document.querySelectorAll('[id]')].map(e => e.id);
+    return ids.filter((id, i) => ids.indexOf(id) !== i);
+  });
+  expect(duplicates).toEqual([]);
 });

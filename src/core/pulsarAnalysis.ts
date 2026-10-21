@@ -30,11 +30,15 @@ const ZOOM_IN_SHIFT = 100, ZOOM_OUT_SHIFT = 200; // f32 0x56ba68 / 0x56ba70
 const WEB_MAX_WINDOW = 1e12;
 
 export type PulsarCursorMode = 'vertical' | 'horizontal';
-/** Per-panel cursor record at form+0x4aa+0x46·ch. Native sentinels are pixel −1 and time/value −1.0 (0x56cfbf..0x56d003). */
+/**
+ * Per-panel cursor record at form+0x4aa+0x46·ch. Native sentinels are pixel −1 and time/value −1.0 (0x56cfbf..0x56d003).
+ * The *Visible flags model what the last paint drew. They are separate because a redraw repaints the panel
+ * and then skips a negative time/value or an out-of-range y without rewriting the stored pixel (PLR-REDRAW-01).
+ */
 export type PulsarPanelCursor = Readonly<{
-  verticalX: number; verticalTime: number; verticalText: string;
-  referenceX: number; referenceTime: number;
-  horizontalY: number; horizontalValue: number; horizontalText: string;
+  verticalX: number; verticalTime: number; verticalText: string; verticalVisible: boolean;
+  referenceX: number; referenceTime: number; referenceVisible: boolean;
+  horizontalY: number; horizontalValue: number; horizontalText: string; horizontalVisible: boolean;
 }>;
 /** Shared measurement record (.bss 0x5bccb0; .data alias 0x5b5ab8 → 0x5bccb0 decoded). 0.0 means no measurement; 0x56fe6c clears to 0. */
 export type PulsarMeasurement = Readonly<{
@@ -49,9 +53,12 @@ export type PulsarEntryFields = Readonly<{
   start: string; comment: string; points: string; intervalMs: string; aperture: string; file: string;
 }>;
 /**
- * One appended measurement line (0x570b3c). `nativeLineCandidate` uses the decoded delimiter literals
- * 0x570f28 '"', 0x570f2c ',', 0x570f38 ',', 0x570f48 '"",', 0x570f54 '"'. It is still not a file-writer
- * contract: CSV save 0x56feac is gated and number text is not x87 parity.
+ * One appended measurement line (0x570b3c). `fields` is the structured record that Review shows.
+ * `nativeLineCandidate` is an opaque internal candidate built from the decoded delimiter literals
+ * 0x570f28 '"', 0x570f2c ',', 0x570f38 ',', 0x570f48 '"",', 0x570f54 '"'. It is not a validatable or
+ * exportable native CSV: names are wrapped in '"' without escaping, as the literals suggest, so an admitted
+ * object or file name containing '"' or ',' makes its field boundaries ambiguous. Nothing reads it: CSV
+ * save 0x56feac is gated, and number text is not x87 parity.
  */
 export type PulsarMeasurementEntry = Readonly<{ sequence: number; panel: PulsarPanel; fields: PulsarEntryFields; nativeLineCandidate: string }>;
 export type PulsarRecordSession = Readonly<{ queue: readonly PulsarPanel[]; position: number; draft: string }>;
@@ -85,13 +92,17 @@ export type PulsarOutcome =
   | 'loaded' | 'no-recording' | 'blocked-modal' | 'properties-opened' | 'properties-closed'
   | 'zoomed-in' | 'zoomed-out' | 'zoom-limit' | 'zoom-disabled' | 'reset'
   | 'factor-changed' | 'factor-limit' | 'panned' | 'pan-bound' | 'pan-rate'
-  | 'mode-changed' | 'cursor' | 'pointer-ignored' | 'invalid-input'
+  | 'mode-changed' | 'cursor' | 'pointer-ignored' | 'pointer-released' | 'number-unsupported' | 'invalid-input'
   | 'record-disabled' | 'record-opened' | 'record-draft' | 'record-confirmed' | 'record-skipped' | 'record-finished' | 'comment-invalid'
   | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared';
 
 export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; evidence: readonly string[] }>;
 
-const EMPTY_CURSOR: PulsarPanelCursor = Object.freeze({ verticalX: -1, verticalTime: -1, verticalText: '', referenceX: -1, referenceTime: -1, horizontalY: -1, horizontalValue: -1, horizontalText: '' });
+const EMPTY_CURSOR: PulsarPanelCursor = Object.freeze({
+  verticalX: -1, verticalTime: -1, verticalText: '', verticalVisible: false,
+  referenceX: -1, referenceTime: -1, referenceVisible: false,
+  horizontalY: -1, horizontalValue: -1, horizontalText: '', horizontalVisible: false,
+});
 const EMPTY_MEASUREMENT: PulsarMeasurement = Object.freeze({ reference: 0, vertical: Object.freeze([0, 0, 0] as const), horizontal: Object.freeze([0, 0, 0] as const), comments: Object.freeze(['', '', ''] as const) });
 type Triple<T> = readonly [T, T, T];
 const triple = <T>(f: (ch: PulsarPanel) => T): Triple<T> => Object.freeze([f(0), f(1), f(2)] as const);
@@ -124,29 +135,44 @@ export const pulsarTimeAt = (s: PulsarAnalysisState, x: number) => s.windowStart
 const pixelOfTime = (s: PulsarAnalysisState, t: number) => roundNearestEven((t - s.windowStart) * s.zoom / dt(s));
 const gainOf = (s: PulsarAnalysisState, ch: PulsarPanel) => (s.recording as PlrRecording).gains[ch].effective;
 
-function placeVertical(s: PulsarAnalysisState, ch: PulsarPanel, x: number): PulsarAnalysisState {
+// WEB: each placement returns null when Number cannot represent the result (±Infinity or NaN). Native x87
+// Extended has a wider range, so such a value is refused here rather than stored, formatted or recorded.
+/** 0x56c448 (dl=0): stores x, t and the readout; the line is drawn only when x ≥ 0. */
+function placeVertical(s: PulsarAnalysisState, ch: PulsarPanel, x: number): PulsarAnalysisState | null {
   const t = pulsarTimeAt(s, x);
-  return { ...s, cursors: with3(s.cursors, ch, Object.freeze({ ...s.cursors[ch], verticalX: x, verticalTime: t, verticalText: formatFixed(t, 6) })), measurement: Object.freeze({ ...s.measurement, vertical: with3(s.measurement.vertical, ch, t) }) };
+  if (!Number.isFinite(t)) return null;
+  return { ...s, cursors: with3(s.cursors, ch, Object.freeze({ ...s.cursors[ch], verticalX: x, verticalTime: t, verticalText: formatFixed(t, 6), verticalVisible: x >= 0 })), measurement: Object.freeze({ ...s.measurement, vertical: with3(s.measurement.vertical, ch, t) }) };
 }
-function placeReference(s: PulsarAnalysisState, ch: PulsarPanel, x: number): PulsarAnalysisState {
+/** 0x56c448 (dl=1): the reference cursor of panel ch, with the shared readout and measurement. */
+function placeReference(s: PulsarAnalysisState, ch: PulsarPanel, x: number): PulsarAnalysisState | null {
   const t = pulsarTimeAt(s, x);
-  return { ...s, referenceText: formatFixed(t, 6), cursors: with3(s.cursors, ch, Object.freeze({ ...s.cursors[ch], referenceX: x, referenceTime: t })), measurement: Object.freeze({ ...s.measurement, reference: t }) };
+  if (!Number.isFinite(t)) return null;
+  return { ...s, referenceText: formatFixed(t, 6), cursors: with3(s.cursors, ch, Object.freeze({ ...s.cursors[ch], referenceX: x, referenceTime: t, referenceVisible: x >= 0 })), measurement: Object.freeze({ ...s.measurement, reference: t }) };
 }
-/** 0x56c6dc: only y with 0 ≤ y < base[ch] is accepted. When computing, value = (base[ch] − y)/(gain·100·factor). */
-function placeHorizontal(s: PulsarAnalysisState, ch: PulsarPanel, y: number, compute: boolean): PulsarAnalysisState {
+/** 0x56c6dc: only y with 0 ≤ y < base[ch] is accepted ('outside' changes nothing). When computing, value = (base[ch] − y)/(gain·100·factor). */
+function placeHorizontal(s: PulsarAnalysisState, ch: PulsarPanel, y: number, compute: boolean): PulsarAnalysisState | 'outside' | null {
   const base = PULSAR_BASES[ch];
-  if (y < 0 || y >= base) return s;
+  if (!(Number.isInteger(y) && y >= 0 && y < base)) return 'outside';
   const c = s.cursors[ch];
   const value = compute ? (base - y) / (gainOf(s, ch) * HORIZONTAL_SCALE * s.factors[ch]) : c.horizontalValue;
-  return { ...s, cursors: with3(s.cursors, ch, Object.freeze({ ...c, horizontalY: y, horizontalValue: value, horizontalText: formatExponent(value, 5, 2) })), measurement: Object.freeze({ ...s.measurement, horizontal: with3(s.measurement.horizontal, ch, value) }) };
+  if (!Number.isFinite(value)) return null;
+  return { ...s, cursors: with3(s.cursors, ch, Object.freeze({ ...c, horizontalY: y, horizontalValue: value, horizontalText: formatExponent(value, 5, 2), horizontalVisible: true })), measurement: Object.freeze({ ...s.measurement, horizontal: with3(s.measurement.horizontal, ch, value) }) };
 }
-/** 0x56c34c: recompute pixels from stored time/value. Vertical and reference times are re-quantized to the pixel grid. Negative entries are skipped. */
+type CursorLine = 'verticalVisible' | 'referenceVisible' | 'horizontalVisible';
+const hide = (s: PulsarAnalysisState, ch: PulsarPanel, line: CursorLine): PulsarAnalysisState =>
+  s.cursors[ch][line] ? { ...s, cursors: with3(s.cursors, ch, Object.freeze({ ...s.cursors[ch], [line]: false })) } : s;
+/**
+ * 0x56c34c, called after the panel is repainted: recompute pixels from the stored time/value. Vertical and
+ * reference times are re-quantized to the pixel grid. A time or value below Single 0x56c440 (0.0) is skipped
+ * (0x56c374, 0x56c3b7, 0x56c3fa), and 0x56c6dc rejects an out-of-range y. Either way the repaint has erased
+ * the old line, so it is hidden here; the stored pixel, time/value, readout and measurement are kept.
+ */
 function redraw(s: PulsarAnalysisState, ch: PulsarPanel): PulsarAnalysisState {
   const c = s.cursors[ch];
-  if (c.verticalTime >= 0) s = placeVertical(s, ch, pixelOfTime(s, c.verticalTime));
-  if (c.referenceTime >= 0) s = placeReference(s, ch, pixelOfTime(s, c.referenceTime));
-  if (c.horizontalValue >= 0) s = placeHorizontal(s, ch, roundNearestEven(PULSAR_BASES[ch] - c.horizontalValue * HORIZONTAL_SCALE * gainOf(s, ch) * s.factors[ch]), false);
-  return s;
+  s = (c.verticalTime >= 0 && placeVertical(s, ch, pixelOfTime(s, c.verticalTime))) || hide(s, ch, 'verticalVisible');
+  s = (c.referenceTime >= 0 && placeReference(s, ch, pixelOfTime(s, c.referenceTime))) || hide(s, ch, 'referenceVisible');
+  const h = c.horizontalValue >= 0 ? placeHorizontal(s, ch, roundNearestEven(PULSAR_BASES[ch] - c.horizontalValue * HORIZONTAL_SCALE * gainOf(s, ch) * s.factors[ch]), false) : 'outside';
+  return typeof h === 'object' && h !== null ? h : hide(s, ch, 'horizontalVisible');
 }
 const redrawAll = (s: PulsarAnalysisState) => redraw(redraw(redraw(s, 0), 1), 2);
 
@@ -182,6 +208,11 @@ export function pulsarProperties(s: PulsarAnalysisState, open: boolean): PulsarT
 }
 
 // ---------------------------------------------------------------- zoom, display factor, pan
+/**
+ * ZmInBtnClick 0x56cd28 / ZmOutBtnClick 0x56ce24. A click applies only while z < 8 (z > 0.125). The bound is
+ * checked again after the update (0x56cd89..0x56cda5 / 0x56ce85..0x56cea1): the click that reaches it disables
+ * that button and beeps at once. The other button is enabled and all three panels are repainted and redrawn.
+ */
 export function pulsarZoom(s: PulsarAnalysisState, direction: 'in' | 'out'): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');
   if (modal(s)) return keep(s, 'blocked-modal');
@@ -217,8 +248,8 @@ function panTick(s: PulsarAnalysisState, step: number): PulsarTransition {
 /**
  * PanLftBtnMouseDown 0x56d24c / PanRtBtnMouseDown 0x56d2b0 (left button only): step := ∓rate·dt, then
  * one immediate tick. The caller then enables the 100 ms hold timer (src/core/pulsarPanHold.ts), whose
- * ticks are pulsarPanTick. WEB: a keyboard activation also calls this once; the native buttons have
- * no OnClick, so the original does not pan from the keyboard.
+ * ticks are pulsarPanTick. WEB: a keyboard activation also calls this once per physical key press (key
+ * auto-repeat is ignored); the native buttons have no OnClick, so the original does not pan from the keyboard.
  */
 export function pulsarPan(s: PulsarAnalysisState, direction: 'left' | 'right'): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');
@@ -248,14 +279,25 @@ const intIn = (v: number, lo: number, hi: number) => Number.isInteger(v) && v >=
  * DispBox{1..3}Mouse{Down,Move,Up} (0x56d310..0x56d843). Left: own cursor, by mode. Right: reference
  * cursor on all three panels. Up: pending := recordable. WEB: x and y are integer client pixels of the
  * 400 × Height[ch] paint box, clamped by the caller to [0,399] × [0,Height[ch]−1]. A native drag can
- * report captured coordinates outside the panel.
+ * report captured coordinates outside the panel. A placement whose value Number cannot represent is
+ * refused with 'number-unsupported': the previous cursor and measurement stay, and the drag latches
+ * and pending flags follow the same rules as for any other press, move or release.
  */
 export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: PulsarPointer): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');
   if (modal(s)) return keep(s, 'blocked-modal');
   if (!intIn(p.x, 0, PULSAR_PLOT_WIDTH - 1) || !intIn(p.y, 0, PULSAR_PANEL_HEIGHTS[ch] - 1)) return keep(s, 'invalid-input');
-  const own = (st: PulsarAnalysisState) => st.modes[ch] === 'vertical' ? placeVertical(st, ch, p.x) : placeHorizontal(st, ch, p.y, true);
-  const refAll = (st: PulsarAnalysisState) => placeReference(placeReference(placeReference(st, 0, p.x), 1, p.x), 2, p.x);
+  let refused = false;
+  const take = (st: PulsarAnalysisState, placed: PulsarAnalysisState | 'outside' | null) => {
+    if (placed === null) { refused = true; return st; }
+    return placed === 'outside' ? st : placed;
+  };
+  const own = (st: PulsarAnalysisState) => take(st, st.modes[ch] === 'vertical' ? placeVertical(st, ch, p.x) : placeHorizontal(st, ch, p.y, true));
+  const refAll = (st: PulsarAnalysisState) => {
+    let r: PulsarAnalysisState | null = st;
+    for (const k of PULSAR_PANELS) r = r && placeReference(r, k, p.x);
+    return take(st, r);
+  };
   let n: PulsarAnalysisState = s;
   if (p.phase === 'down') {
     if (p.button === 'left') n = own({ ...n, leftDrag: true });
@@ -271,7 +313,17 @@ export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: Pulsar
     const pend = pulsarPanelRecordable(n.recording, ch);
     n = { ...n, pending: with3(n.pending, ch, pend), recordEnabled: n.recordEnabled || pend };
   }
-  return done(n, 'cursor', ['PLR-MOUSE-01', p.button === 'left' && s.modes[ch] === 'horizontal' ? 'PLR-CURSOR-H-01' : 'PLR-CURSOR-V-01']);
+  if (refused && n === s) return keep(s, 'number-unsupported');
+  return done(n, refused ? 'number-unsupported' : 'cursor', ['PLR-MOUSE-01', p.button === 'left' && s.modes[ch] === 'horizontal' ? 'PLR-CURSOR-H-01' : 'PLR-CURSOR-V-01']);
+}
+/**
+ * WEB boundary for pointer cancel, lost pointer capture and host deactivation: clears the drag latches
+ * 0x5dd/0x5dc so a later move without a new press changes nothing. It is not a native MouseUp: no cursor
+ * is placed, no panel becomes pending, and the cursors, measurement and confirmed list are kept.
+ */
+export function pulsarPointerRelease(s: PulsarAnalysisState): PulsarTransition {
+  if (!s.leftDrag && !s.rightDrag) return keep(s, 'pointer-ignored');
+  return done({ ...s, leftDrag: false, rightDrag: false }, 'pointer-released', ['PLR-MOUSE-01']);
 }
 
 // ---------------------------------------------------------------- record / clear
@@ -326,14 +378,22 @@ export function pulsarRecordDialog(s: PulsarAnalysisState): PulsarRecordDialog |
     draft: session.draft, draftValid: pulsarCommentValid(session.draft), remaining: session.queue.length - session.position - 1,
   });
 }
+/** Opaque candidate (see PulsarMeasurementEntry): names are not escaped, so it is not parsed, validated or exported. */
 const lineCandidate = (f: PulsarEntryFields) =>
   `"${f.object}",${f.frequency},${f.gain},` + [f.reference, f.vertical, f.horizontal].map(v => v === null ? '"",' : v + ',').join('') +
   `${f.start},"${f.comment}",${f.points},${f.intervalMs},${f.aperture},"${f.file}"`;
 
+/** WEB: every number the entry formats must be finite, so no field is silently blank or an unrepresentable value is recorded. */
+function entryNumbersFinite(s: PulsarAnalysisState, ch: PulsarPanel): boolean {
+  const rec = s.recording as PlrRecording, m = s.measurement;
+  return [rec.frequencies[ch].value, rec.gains[ch].effective, rec.start.value, rec.interval.value * 1000, m.reference, m.vertical[ch], m.horizontal[ch]].every(Number.isFinite);
+}
+/** OK 0x570b3c. A refused comment or number keeps the dialog open with its draft. */
 export function pulsarConfirmRecord(s: PulsarAnalysisState): PulsarTransition {
   const session = s.recordSession, ch = pulsarRecordPanel(s);
   if (!session || ch === null) return keep(s, 'invalid-input');
   if (!pulsarCommentValid(session.draft)) return keep(s, 'comment-invalid');
+  if (!entryNumbersFinite(s, ch)) return keep(s, 'number-unsupported');
   const fields = pulsarEntryFields(s, ch, session.draft) as PulsarEntryFields;
   const entry: PulsarMeasurementEntry = Object.freeze({ sequence: s.nextSequence, panel: ch, fields, nativeLineCandidate: lineCandidate(fields) });
   const n: PulsarAnalysisState = {
