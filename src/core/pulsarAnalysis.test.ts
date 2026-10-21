@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { admitPlrRecording, type PlrRecording } from './pulsarRecording';
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANEL_HEIGHTS, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord,
-  pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarProperties, pulsarReadouts, pulsarRecordDialog,
+  pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog,
   pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom, type PulsarAnalysisState, type PulsarPointer, type PulsarTransition,
 } from './pulsarAnalysis';
 
@@ -101,9 +101,12 @@ describe('zoom, display factor and pan (PLR-ZOOM-01, PLR-GAIN-01, PLR-PAN-01)', 
     expect(last.state.windowEnd - last.state.windowStart).toBeCloseTo(0.5, 12);
     expect(pulsarZoom(last.state, 'in').changed).toBe(false);
   });
-  it('zoom out stops at 0.125', () => {
+  it('zoom out stops at 0.125; the click that reaches the bound disables the button (0x56ce85..0x56cea1)', () => {
     let s = loaded();
-    for (let i = 0; i < 3; i++) s = st(pulsarZoom(s, 'out'));
+    for (let i = 0; i < 2; i++) s = st(pulsarZoom(s, 'out'));
+    const last = pulsarZoom(s, 'out');
+    expect(last.outcome).toBe('zoom-limit');
+    s = last.state;
     expect([s.zoom, s.zoomOutEnabled, s.zoomInEnabled]).toEqual([0.125, false, true]);
     expect(s.windowEnd - s.windowStart).toBeCloseTo(32, 12);
   });
@@ -191,6 +194,63 @@ describe('cursors (PLR-MOUSE-01, PLR-CURSOR-V-01, PLR-CURSOR-H-01, PLR-REDRAW-01
     s = st(pulsarZoom(s, 'out'));                   // start −100, zoom 0.5: x = Round(101.5) = 102 → t = 2
     expect([s.cursors[0].verticalX, s.measurement.vertical[0], s.cursors[0].verticalText]).toEqual([102, 2, '2.000000']);
   });
+  it('a negative time is drawn right after the click, then hidden by a redraw that skips it; the measurement is kept', () => {
+    let s = st(pulsarZoom(loaded(), 'out'));            // window [−2, 6], zoom 0.5
+    s = click(s, 0, 50);                                // t = −2 + 50·0.01/0.5 = −1
+    expect(s.cursors[0]).toMatchObject({ verticalX: 50, verticalTime: -1, verticalText: '-1.000000', verticalVisible: true });
+    s = st(pulsarZoom(s, 'in'));                        // window [0, 4]: pixel 50 now means t = 0.5
+    expect(s.cursors[0]).toMatchObject({ verticalX: 50, verticalTime: -1, verticalText: '-1.000000', verticalVisible: false });
+    expect([s.measurement.vertical[0], s.pending[0]]).toEqual([-1, true]);
+    s = st(pulsarPan(s, 'right'));                      // every later redraw skips it too
+    expect(s.cursors[0].verticalVisible).toBe(false);
+    s = st(pulsarConfirmRecord(st(pulsarBeginRecord(s))));
+    expect(s.list[0].fields.vertical).toBe('-1.000000');
+  });
+  it('a negative reference time is hidden on every panel after a redraw, with its readout kept', () => {
+    let s = st(pulsarZoom(loaded(), 'out'));
+    s = click(s, 1, 20, 100, 'right');                  // t = −2 + 20·0.01/0.5 = −1.6
+    expect(s.cursors.map(c => c.referenceVisible)).toEqual([true, true, true]);
+    s = st(pulsarZoom(s, 'in'));
+    expect(s.cursors.map(c => [c.referenceX, c.referenceVisible])).toEqual([[20, false], [20, false], [20, false]]);
+    expect([s.referenceText, s.measurement.reference]).toEqual(['-1.600000', -1.6]);
+  });
+  it('a time before the window start is hidden and shows again once the window moves back over it', () => {
+    let s = click(loaded(), 0, 10);                     // t = 0.1
+    s = st(pulsarPan(st(pulsarPanRate(s, 100)), 'right')); // window [1, 5]: x = −90
+    expect([s.cursors[0].verticalX, s.cursors[0].verticalVisible]).toEqual([-90, false]);
+    s = st(pulsarPan(s, 'left'));
+    expect([s.cursors[0].verticalX, s.cursors[0].verticalVisible, s.cursors[0].verticalText]).toEqual([10, true, '0.100000']);
+  });
+  it('an out-of-range horizontal projection is hidden after a factor redraw and drawn again when valid', () => {
+    let s = click(st(pulsarMode(loaded(), 0, 'horizontal')), 0, 0, 19); // (119 − 19)/(1·100·1) = 1
+    expect(s.cursors[0]).toMatchObject({ horizontalY: 19, horizontalValue: 1, horizontalVisible: true });
+    s = st(pulsarFactor(s, 0, 'up'));                   // Round(119 − 1·100·1·2) = −81 is rejected by 0x56c6dc
+    expect(s.cursors[0]).toMatchObject({ horizontalY: 19, horizontalValue: 1, horizontalText: '1.0000E+00', horizontalVisible: false });
+    expect(s.measurement.horizontal[0]).toBe(1);
+    s = st(pulsarFactor(s, 0, 'down'));
+    expect(s.cursors[0]).toMatchObject({ horizontalY: 19, horizontalValue: 1, horizontalVisible: true });
+  });
+  it('a negative horizontal value (negative gain) is drawn after the click and hidden by the next redraw of its panel', () => {
+    let s = click(st(pulsarMode(loaded(synthetic(1000, 1, '-2.0')), 1, 'horizontal')), 1, 0, 74);
+    expect(s.cursors[1]).toMatchObject({ horizontalY: 74, horizontalValue: -0.25, horizontalVisible: true });
+    s = st(pulsarFactor(s, 0, 'up'));                   // only panel 1 is redrawn
+    expect(s.cursors[1].horizontalVisible).toBe(true);
+    s = st(pulsarFactor(s, 1, 'up'));
+    expect(s.cursors[1]).toMatchObject({ horizontalY: 74, horizontalValue: -0.25, horizontalText: '-2.5000E-01', horizontalVisible: false });
+    expect(s.measurement.horizontal[1]).toBe(-0.25);
+  });
+  it('pointer cancel clears the drag latches without a MouseUp: no pending flag, and a later move needs a new press', () => {
+    let s = st(pulsarConfirmRecord(st(pulsarBeginRecord(click(loaded(), 0, 30)))));
+    s = st(pulsarPointer(s, 0, ptr('down', 'left', 50)));
+    expect([s.leftDrag, s.cursors[0].verticalText, s.pending[0]]).toEqual([true, '0.500000', false]);
+    const r = pulsarPointerRelease(s);
+    expect([r.outcome, r.state.leftDrag, r.state.rightDrag, r.state.pending[0], r.state.cursors[0].verticalText, r.state.list.length]).toEqual(['pointer-released', false, false, false, '0.500000', 1]);
+    expect(pulsarPointer(r.state, 0, ptr('move', 'other', 80, 100, { leftHeld: true, rightHeld: false })).outcome).toBe('pointer-ignored');
+    const right = pulsarPointerRelease(st(pulsarPointer(r.state, 2, ptr('down', 'right', 60))));
+    expect(right.state.rightDrag).toBe(false);
+    expect(pulsarPointer(right.state, 2, ptr('move', 'other', 90, 100, { leftHeld: false, rightHeld: true })).outcome).toBe('pointer-ignored');
+    expect(pulsarPointerRelease(right.state)).toMatchObject({ outcome: 'pointer-ignored', changed: false });
+  });
   it('panel 3 is never pending when the highest recorded index is 1', () => {
     expect(click(loaded(), 2, 30).pending).toEqual([false, false, false]);
   });
@@ -255,6 +315,47 @@ describe('record and clear (PLR-RECORD-01, PLR-CLEAR-01)', () => {
     expect(st(pulsarAnswerClear(s, 'no')).list).toHaveLength(1);
     s = st(pulsarAnswerClear(s, 'yes'));
     expect([s.list.length, s.clearPrompt, s.recordEnabled, s.reviewEnabled, s.saveEnabled]).toEqual([0, null, false, false, false]);
+  });
+  it('an admitted tiny gain cannot store Infinity: the click is refused and the bytes and prior state are kept', () => {
+    // Gain 1e-320 is a nonzero admitted lexeme; (124 − y)/(1e-320·100·factor) overflows Number for every y.
+    const rec = synthetic(1000, 1, '1e-320');
+    let s = st(pulsarMode(loaded(rec), 1, 'horizontal'));
+    for (let i = 0; i < 3; i++) s = st(pulsarFactor(s, 1, 'down'));
+    const down = pulsarPointer(s, 1, ptr('down', 'left', 5, 0));
+    expect(down.outcome).toBe('number-unsupported');
+    expect([down.state.leftDrag, down.state.cursors[1].horizontalValue, down.state.cursors[1].horizontalText, down.state.cursors[1].horizontalVisible, down.state.measurement.horizontal[1]]).toEqual([true, -1, '', false, 0]);
+    expect(pulsarPointer(down.state, 1, ptr('move', 'other', 5, 3, { leftHeld: true, rightHeld: false }))).toMatchObject({ outcome: 'number-unsupported', changed: false });
+    const up = pulsarPointer(down.state, 1, ptr('up', 'left', 5, 0));
+    expect([up.outcome, up.state.leftDrag, up.state.pending[1]]).toEqual(['number-unsupported', false, true]);
+    expect(up.state.recording).toBe(rec);
+    expect(up.state.measurement.horizontal.every(Number.isFinite)).toBe(true);
+  });
+  it('a refused nonfinite click keeps the previous valid horizontal measurement and readout', () => {
+    // Gain 1e-308: y = 123 at factor 1 gives a finite 1/(1e-306); y = 0 at factor 0.125 overflows.
+    let s = click(st(pulsarMode(loaded(synthetic(1000, 1, '1e-308')), 1, 'horizontal')), 1, 0, 123);
+    const prior = s.cursors[1];
+    expect(Number.isFinite(prior.horizontalValue) && prior.horizontalValue > 1e305).toBe(true);
+    for (let i = 0; i < 3; i++) s = st(pulsarFactor(s, 1, 'down'));
+    const r = pulsarPointer(s, 1, ptr('down', 'left', 5, 0));
+    expect(r.outcome).toBe('number-unsupported');
+    expect([r.state.cursors[1].horizontalValue, r.state.cursors[1].horizontalText, r.state.measurement.horizontal[1]]).toEqual([prior.horizontalValue, prior.horizontalText, prior.horizontalValue]);
+  });
+  it('record validation refuses a nonfinite number and keeps the dialog and its draft', () => {
+    let s = st(pulsarRecordDraft(st(pulsarBeginRecord(click(loaded(), 0, 20))), 'kept'));
+    s = { ...s, measurement: { ...s.measurement, horizontal: [Infinity, 0, 0] } };
+    const r = pulsarConfirmRecord(s);
+    expect([r.outcome, r.changed, r.state.list.length, r.state.recordSession?.draft]).toEqual(['number-unsupported', false, 0, 'kept']);
+  });
+  it('object and file names with quotes and commas are kept verbatim; the native line candidate stays opaque', () => {
+    const text = [`'AB"C,D',25,1`, '430,0,0', '1,1,1', '50000,0.01', '1,2,3'].join('\r\n') + '\r\n';
+    const a = admitPlrRecording(new TextEncoder().encode(text), 'quote"file,a.plr');
+    if (a.status !== 'admitted') throw new Error(a.reason);
+    const s = st(pulsarConfirmRecord(st(pulsarBeginRecord(click(loaded(a.recording), 0, 5)))));
+    expect([s.list[0].fields.object, s.list[0].fields.file]).toEqual(['AB"C,D', 'quote"file,a.plr']);
+    // Unescaped, as the decoded literals suggest: a naive split no longer yields the 12 fields, so the
+    // candidate is not a parseable or exportable CSV line (CSV save is gated and nothing reads it).
+    expect(s.list[0].nativeLineCandidate).toBe('"AB"C,D",430.00,1.000,"",0.050000,"",50000.00000000,"",1,10.00,25,"quote"file,a.plr"');
+    expect(s.list[0].nativeLineCandidate.split(',')).not.toHaveLength(12);
   });
   it('transitions do not mutate the previous state', () => {
     const s = loaded(), copy = JSON.stringify({ ...s, recording: null });

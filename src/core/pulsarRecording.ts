@@ -31,7 +31,7 @@ export const PLR_MAX_NAME_CHARS = 40;
 export const PLR_RESERVED_NAME = 'No Data';
 
 export type PlrRejectReason =
-  | 'size' | 'empty' | 'byte' | 'line-ending' | 'line-length' | 'headerless'
+  | 'size' | 'empty' | 'byte' | 'line-ending' | 'line-length' | 'headerless' | 'blank-first-line'
   | 'name-unterminated' | 'name-length' | 'name-reserved' | 'header-layout'
   | 'integer' | 'aperture-range' | 'highest-range' | 'number' | 'number-range'
   | 'interval-range' | 'truncated-header' | 'data-tokens' | 'trailing-content' | 'rows';
@@ -142,8 +142,10 @@ export function admitPlrRecording(input: Uint8Array, fileName: string): PlrAdmis
   const split = splitLines(bytes);
   if (isRejection(split)) return split;
   const { lines } = split;
-  if (lines.length === 0 || lines[0].length === 0) return reject('empty', 1);
-  // 0x56a2ed. The headerless route resets the file and reads rows, but leaves the metadata untouched.
+  if (lines.length === 0) return reject('empty', null);
+  // 0x56a2ed. A first line that does not start with an apostrophe, including a blank one, takes the headerless
+  // route: it resets the file and reads rows, but leaves the metadata untouched.
+  if (lines[0].length === 0) return reject('blank-first-line', 1);
   if (lines[0][0] !== "'") return reject('headerless', 1);
   if (lines.length < 4) return reject('truncated-header', lines.length + 1);
 

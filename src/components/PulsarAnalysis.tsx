@@ -6,7 +6,7 @@ import { admitPlrRecording, plrProperties, PLR_MAX_BYTES, type PlrRecording } fr
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord,
   pulsarCancelRecord, pulsarConfirmRecord, pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer,
-  pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom,
+  pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
@@ -19,7 +19,8 @@ import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } f
  */
 export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
-const SILENT = new Set(['cursor', 'pointer-ignored', 'record-draft']);
+const SILENT = new Set(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft']);
+const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
 // Native GDI colors (TColor $00BBGGRR) used by 0x56bacc, 0x56c028, 0x56c448 and 0x56c6dc.
 const COLOR = { background: '#000080', axis: '#ffff00', trace: '#ffffff', vertical: '#00ffff', reference: '#00ff00', horizontal: '#ff00ff' };
 const ticks = PULSAR_PANELS.map(ch => pulsarAxisTicks(ch));
@@ -84,6 +85,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   useEffect(() => { panHold.release(); }, [panHold, rec, modal]);
   // A pointer press already stepped once, so the click that follows it must not step again.
   const pointerPress = useRef(false);
+  // Activation keys currently held on a pan button. A held Enter repeats keydown, and each one would click.
+  const panKeys = useRef(new Set<string>());
   const panButton = (direction: 'left' | 'right') => ({
     onPointerDown: (e: ReactPointerEvent<HTMLButtonElement>) => {
       if (e.button !== 0) return; // native MouseDown acts on mbLeft only
@@ -94,8 +97,16 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     onPointerUp: (e: ReactPointerEvent<HTMLButtonElement>) => { if (e.button === 0) panHold.release(); },
     onPointerCancel: () => panHold.release(),
     onLostPointerCapture: () => panHold.release(),
-    onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => { if (e.key === 'Enter' || e.key === ' ') pointerPress.current = false; },
-    // WEB: keyboard or assistive activation steps once (the native buttons have no OnClick).
+    onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      // An auto-repeated Enter would activate the button again. Space activates on keyup, once per press.
+      if (e.repeat || panKeys.current.has(e.key)) { if (e.key === 'Enter') e.preventDefault(); return; }
+      panKeys.current.add(e.key);
+      pointerPress.current = false;
+    },
+    onKeyUp: (e: KeyboardEvent<HTMLButtonElement>) => { panKeys.current.delete(e.key); },
+    onBlur: () => panKeys.current.clear(),
+    // WEB: keyboard or assistive activation steps once per physical press (the native buttons have no OnClick).
     onClick: () => { if (pointerPress.current) { pointerPress.current = false; return; } act(st => pulsarPan(st, direction)); },
     onContextMenu: (e: ReactMouseEvent<HTMLButtonElement>) => e.preventDefault(),
   });
@@ -139,8 +150,25 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     activeRef.current = active;
     if (active) return;
     panHold.release();
+    if (current.current.leftDrag || current.current.rightDrag) act(pulsarPointerRelease);
     if (reading !== null) cancelRead();
   });
+  // WEB modal containment: while a record or clear dialog is open, Tab and Shift+Tab cycle inside it,
+  // so focus cannot reach host controls outside this panel. The panel's own content is already inert.
+  const modalBox = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!modal || !active) return;
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      const box = modalBox.current;
+      if (e.key !== 'Tab' || e.defaultPrevented || !box) return;
+      const items = [...box.querySelectorAll<HTMLElement>(FOCUSABLE)];
+      const at = document.activeElement, first = items[0], last = items[items.length - 1];
+      if (!first) { e.preventDefault(); return; }
+      if (!box.contains(at) || at === (e.shiftKey ? first : last)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [modal, active]);
   function download() {
     if (!rec) return;
     try {
@@ -245,7 +273,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
               <p className="plr-help" id={`${idPrefix}save-gated`}>{t('pulsar.results.saveGated')}</p>
               <p className="plr-warning" data-testid="pulsar-persistence">{t('pulsar.results.persistence')}</p>
               <p data-testid="pulsar-count">{t('pulsar.results.count', { count: s.list.length })}</p>
-              {review && <Review s={s} t={t} />}
+              {review && <Review s={s} t={t} idPrefix={idPrefix} />}
             </section>
           </>
         )}
@@ -254,7 +282,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
 
       {dialog && (
         <div className="plr-overlay">
-          <section role="dialog" aria-modal="true" aria-labelledby={`${idPrefix}record`} className="plr-modal" data-testid="pulsar-record-dialog"
+          <section ref={modalBox} role="dialog" aria-modal="true" aria-labelledby={`${idPrefix}record`} className="plr-modal" data-testid="pulsar-record-dialog"
             onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); finishRecord(act(st => pulsarCancelRecord(st))); } }}>
             <h3 id={`${idPrefix}record`}>{t('pulsar.record.heading', { object: dialog.object, n: dialog.panel + 1 })}</h3>
             <dl>
@@ -277,7 +305,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       )}
       {s.clearPrompt && (
         <div className="plr-overlay">
-          <section role="alertdialog" aria-modal="true" aria-labelledby={`${idPrefix}clear`} className="plr-modal" data-testid="pulsar-clear-dialog"
+          <section ref={modalBox} role="alertdialog" aria-modal="true" aria-labelledby={`${idPrefix}clear`} className="plr-modal" data-testid="pulsar-clear-dialog"
             onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); answerClear('cancel'); } }}>
             {s.clearPrompt === 'unsaved' ? (<>
               <p id={`${idPrefix}clear`}>{t('pulsar.clear.unsaved')}</p>
@@ -326,18 +354,22 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs }: PanelProps) {
     act(st => pulsarPointer(st, ch, { ...p, phase: 'down', button }));
     act(st => pulsarPointer(st, ch, { ...p, phase: 'up', button }));
   };
-  // WEB keyboard access: each key press acts like one click at the next pixel.
+  // WEB keyboard access: each key press acts like one click at the next pixel, starting from the drawn line
+  // (a hidden line's stored pixel no longer shows its value, so the key starts from the edge instead).
   const onKey = (e: KeyboardEvent<SVGSVGElement>) => {
     const step = e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : 0;
     if (!step) return;
     const horizontalKey = e.key === 'ArrowUp' || e.key === 'ArrowDown';
-    if (e.shiftKey && !horizontalKey) click('right', clampInt((c.referenceX >= 0 ? c.referenceX : -step) + step, 0, width - 1), 0);
-    else if (!horizontalKey && s.modes[ch] === 'vertical') click('left', clampInt((c.verticalX >= 0 ? c.verticalX : -step) + step, 0, width - 1), 0);
-    else if (horizontalKey && s.modes[ch] === 'horizontal') click('left', 0, clampInt((c.horizontalY >= 0 ? c.horizontalY : base) + step, 0, base - 1));
+    if (e.shiftKey && !horizontalKey) click('right', clampInt((c.referenceVisible ? c.referenceX : -step) + step, 0, width - 1), 0);
+    else if (!horizontalKey && s.modes[ch] === 'vertical') click('left', clampInt((c.verticalVisible ? c.verticalX : -step) + step, 0, width - 1), 0);
+    else if (horizontalKey && s.modes[ch] === 'horizontal') click('left', 0, clampInt((c.horizontalVisible ? c.horizontalY : base) + step, 0, base - 1));
     else return;
     e.preventDefault();
   };
-  const drawX = (x: number) => x >= 0 && x <= width;
+  // Lines follow the model's visibility; the stored pixel alone can belong to an earlier window or factor.
+  const drawX = (visible: boolean, x: number) => visible && x >= 0 && x <= width;
+  // WEB boundary: a cancelled gesture or lost capture clears the drag latches without a native MouseUp.
+  const release = () => act(pulsarPointerRelease);
   return (
     <section className="plr-panel" aria-labelledby={`${idPrefix}panel-${n}`} data-testid={`pulsar-panel-${n}`}>
       <h4 id={`${idPrefix}panel-${n}`}>{t('pulsar.panel.label', { n })}: {t('pulsar.panel.receiver', { n, freq: rec.frequencies[ch].lexeme })}</h4>
@@ -348,6 +380,7 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs }: PanelProps) {
           onPointerDown={e => { if (e.button === 0 || e.button === 2) { e.currentTarget.setPointerCapture(e.pointerId); e.preventDefault(); } send('down', e); }}
           onPointerMove={e => { if (e.buttons !== 0) send('move', e); }}
           onPointerUp={e => send('up', e)}
+          onPointerCancel={release} onLostPointerCapture={release}
           onContextMenu={e => e.preventDefault()} onKeyDown={onKey}>
           <rect x={-0.5} y={-0.5} width={width} height={height} fill={COLOR.background} />
           <g stroke={COLOR.axis} strokeWidth={1} vectorEffect="non-scaling-stroke" data-testid={`pulsar-axis-${n}`}>
@@ -358,9 +391,9 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs }: PanelProps) {
           {ch === 0 && <text x={5} y={14} fill={COLOR.trace} fontSize={11}>{rec.name}</text>}
           <text x={310} y={26} fill={COLOR.trace} fontSize={11}>{t('pulsar.panel.freqLabel', { freq: rec.frequencies[ch].lexeme })}</text>
           <polyline points={points} fill="none" stroke={COLOR.trace} strokeWidth={1} vectorEffect="non-scaling-stroke" data-testid={`pulsar-trace-${n}`} />
-          {drawX(c.verticalX) && <line x1={c.verticalX} y1={0} x2={c.verticalX} y2={base} stroke={COLOR.vertical} vectorEffect="non-scaling-stroke" data-testid={`pulsar-vline-${n}`} />}
-          {drawX(c.referenceX) && <line x1={c.referenceX} y1={0} x2={c.referenceX} y2={base} stroke={COLOR.reference} vectorEffect="non-scaling-stroke" data-testid={`pulsar-rline-${n}`} />}
-          {c.horizontalY >= 0 && <line x1={1} y1={c.horizontalY} x2={width} y2={c.horizontalY} stroke={COLOR.horizontal} vectorEffect="non-scaling-stroke" data-testid={`pulsar-hline-${n}`} />}
+          {drawX(c.verticalVisible, c.verticalX) && <line x1={c.verticalX} y1={0} x2={c.verticalX} y2={base} stroke={COLOR.vertical} vectorEffect="non-scaling-stroke" data-testid={`pulsar-vline-${n}`} />}
+          {drawX(c.referenceVisible, c.referenceX) && <line x1={c.referenceX} y1={0} x2={c.referenceX} y2={base} stroke={COLOR.reference} vectorEffect="non-scaling-stroke" data-testid={`pulsar-rline-${n}`} />}
+          {c.horizontalVisible && <line x1={1} y1={c.horizontalY} x2={width} y2={c.horizontalY} stroke={COLOR.horizontal} vectorEffect="non-scaling-stroke" data-testid={`pulsar-hline-${n}`} />}
         </svg>
         <div className="plr-readouts">
           <button type="button" className="plr-readout plr-readout-v" aria-pressed={s.modes[ch] === 'vertical'} aria-label={`${t('pulsar.panel.useVertical')}: ${c.verticalText}`}
@@ -384,11 +417,11 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs }: PanelProps) {
   );
 }
 
-function Review({ s, t }: Readonly<{ s: PulsarAnalysisState; t: PulsarTranslate }>) {
+function Review({ s, t, idPrefix }: Readonly<{ s: PulsarAnalysisState; t: PulsarTranslate; idPrefix: string }>) {
   const blank = (v: string | null) => v ?? t('pulsar.review.blank');
   return (
-    <section aria-labelledby="plr-review-heading" data-testid="pulsar-review-list">
-      <h4 id="plr-review-heading">{t('pulsar.review.heading')}</h4>
+    <section aria-labelledby={`${idPrefix}review-heading`} data-testid="pulsar-review-list">
+      <h4 id={`${idPrefix}review-heading`}>{t('pulsar.review.heading')}</h4>
       <p className="plr-help">{t('pulsar.review.note')}</p>
       {s.list.length === 0 ? <p>{t('pulsar.review.empty')}</p> : (
         <div className="plr-scroll" tabIndex={0}>

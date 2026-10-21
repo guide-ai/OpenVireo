@@ -23,6 +23,7 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
   - the self-verified classes `TPlsrAnalysisForm1` (VMT `0x5697b0`, 49 methods), `THdrDisp` (VMT `0x57149c`) and `TMeasListDlg` (`0x5631f8`);
   - the complete DFMs, including the DispBox geometry and `PanTimer`.
 - `0x56cf20` is `ZmRSetBtnClick` (display Reset). `Properties1Click` (`0x56d848`) only calls `Show` on the `THdrDisp` form in slot `0x5b59d4`.
+- **Review triage captures** (coordinator, bounded GNU objdump): zoom in `0x56cd28`, zoom out `0x56ce24` and redraw `0x56c34c`. They are listed with hashes in the provenance file.
 - Help: `PULSRANL.TXT` (SHA-256 `9d1cb3ff…1bf4`), including the "Controls" topic.
 - No original program was executed or emulated. Nothing here is a runtime witness.
 
@@ -48,7 +49,8 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
   - At zoom ≥ 1 there are Round(zoom) pixels per sample. At zoom < 1, Round(1/zoom) samples are averaged per pixel, and the first point keeps the native unnormalized sum.
   - The drawn height is `base[ch] − Round(v·gain·factor)`. A missing row draws the baseline.
   - The y-axis runs from base − 100 to base, with ticks every 10 and 50 pixels.
-- **Zoom** keeps the window centre. Zoom in changes each edge by ±100·dt/z; zoom out by ±200·dt/z. The range is 0.125 to 8, and the button at the limit is disabled.
+- **Zoom** keeps the window centre. Zoom in changes each edge by ±100·dt/z; zoom out by ±200·dt/z. The range is 0.125 to 8.
+  - The native handlers check the bound again after the update (`0x56cd89..0x56cda5`, `0x56ce85..0x56cea1`). So the click that reaches 8 (or 0.125) disables that button at once; no extra click at the bound is needed.
 - **Display factor** is halved or doubled within 0.125 to 8. It redraws only its own panel.
 - **Pan (PLR-PAN-01).**
   - A left-button press on a pan arrow stores the step ∓rate·dt (rate 1, 10 or 100), runs one tick at once and enables `PanTimer`.
@@ -59,6 +61,10 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
   - The pure tick is `pulsarPanTick`. The hold lifecycle is `src/core/pulsarPanHold.ts`, which takes an injected scheduler.
 - **Cursors.** Left button: the panel's vertical cursor `t = start + x·dt/zoom` (6 decimals), or the horizontal cursor `(base − y)/(100·gain·factor)` shown as `ffExponent(5,2)`, depending on the mode chosen by clicking a readout. Right button: one reference cursor on all panels.
   - A redraw after zoom or pan re-quantizes cursor times to the pixel grid (ties go to even).
+  - The redraw (`0x56c34c`) runs after the panel is repainted. It skips a time or value below 0, and `0x56c6dc` rejects a y outside 0 ≤ y < base. Such a line is gone from the repainted panel, but its stored pixel, value and readout are left as they were. The web models this with per-line visibility:
+    - A negative time or value is drawn right after a valid manual click.
+    - The next redraw of that panel hides it. The readout and the measurement stay.
+    - A projection that becomes valid again is drawn again.
   - MouseUp marks the panel as having an unrecorded measurement, but only when rows exist and the panel is at or below the highest recorded index.
 - **Reset** (`ZmRSetBtnClick`) restores the window, zoom, factors, modes, cursors and the measurement record.
 - **Load** runs that reset and then opens Properties. The measurement list is kept, but Review and Save are disabled until the next record.
@@ -69,26 +75,30 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
 
 - **Strict admission** (`src/core/pulsarRecording.ts`). Every rejection leaves the current analysis unchanged, unlike the native reader's partial mutation.
   - Printable ASCII with CRLF or LF; at most 2 MiB, 65536 rows and 512 characters per line.
-  - Headerless files are rejected: the native route keeps whatever metadata was loaded earlier.
+  - Headerless files are rejected: the native route keeps whatever metadata was loaded earlier. A blank first line also takes that route; it is reported as such, and only a zero-byte file is called empty.
   - Names longer than 40 characters are rejected (no truncation), and so is the native placeholder name `No Data` (it overwrites the interval natively).
   - Decimal integers only; aperture 0–65535; highest index 0–2.
   - Bounded finite decimals; interval > 0; no blank lines or trailing content.
 - **Numbers** are parsed with `Number()` and formatted with `toFixed`/`toExponential` (half away from zero, `'.'` separator, rounded zero without `-`). Round uses the shared `roundNearestEven`. Nothing here is x87 Extended parity.
+  - Number overflows earlier than Extended. For example, an admitted gain of 1e-320 makes every horizontal value on that panel ±Infinity. Such a placement, or a record entry with a non-finite field, is refused with a visible status. The previous measurement and the loaded bytes are kept. No zero is substituted, no lower gain limit is invented and no arithmetic is reordered.
 - **Rendering limits.** The recovered geometry is drawn as SVG, with each viewBox 400 × Height native pixels and pixel centres on integer coordinates. GDI pen and LineTo end-pixel rules, anti-aliasing, fonts and label positions are not reproduced, and no runtime pixel parity is claimed. Pointer input is clamped to integer client pixels [0,399] × [0,Height−1].
 - **Pan lifecycle.**
   - The browser interval is 100 ms. Its cadence is not claimed equal to Windows WM_TIMER resolution or coalescing.
   - A hold also stops on pointer cancel, pointer-capture loss, window blur, a hidden page, an inactive host, a committed load, an opened modal and unmount.
   - The click event that follows a pointer press does not step again.
-  - Enter/Space on a pan button steps once, with no repeat. This is an accessibility adaptation: the native buttons have no OnClick, so the original cannot pan from the keyboard.
+  - Enter/Space on a pan button steps once per physical press. Holding the key does not repeat (auto-repeated keydowns are ignored), and no timer starts. This is an accessibility adaptation: the native buttons have no OnClick, so the original cannot pan from the keyboard.
 - **Input adaptations.**
   - The primary button or touch can be switched to the reference cursor.
-  - Arrow keys act as one click per press; Shift+←/→ moves the reference cursor.
+  - Arrow keys act as one click per press, starting from the drawn line; Shift+←/→ moves the reference cursor.
+  - Pointer cancel, lost pointer capture and an inactive host clear the drag latches, so a later move needs a new press. This is a web boundary, not a native MouseUp: it places no cursor, marks no panel pending, and keeps the cursors, the measurement and the confirmed list.
   - No beep.
+- **Modal dialogs.** While a record or clear dialog is open, the panel's content is inert, and Tab/Shift+Tab cycle inside the dialog. This holds even when the panel is embedded in a page with its own controls. Escape cancels, the default button is Cancel/No, an unconfirmed comment draft stays in the open dialog, and focus returns to Record or Clear.
 - **Host activity.** `active={false}` makes the panel inert. It cancels an in-flight read, so a late read is discarded, and it stops a held pan. The loaded bytes and confirmed measurements are kept.
 - **Measurement storage.** Measurements live in this window's state only. A visible note says they are not part of Save investigation and that refreshing or closing the page discards them. No session schema or notebook changes.
 - **Gated features.**
   - The native **CSV save** is gated: its header stamps the host date and time plus login names, browser-clock defaults are forbidden, and its header literals are not decoded.
   - **Review** is read-only: the original `TMeasListDlg` has Find/Edit/Delete handlers, but their semantics are not recovered.
+  - Each entry keeps an internal `nativeLineCandidate` built from the decoded record-line literals. It is opaque. It is **not** a validatable or exportable native CSV line: names are wrapped in `"` without escaping, so an admitted object or file name containing `"` or `,` makes its fields ambiguous. Nothing reads it. Review shows the structured fields, which keep such names verbatim, and valid names are not rejected to make the candidate parseable.
   - The Clear prompt therefore offers "continue without saving" or Cancel, with no Save.
 - **Download** returns the exact loaded bytes. It is not the native PLR writer (`0x56a518`), and no header is ever synthesized.
 
@@ -119,10 +129,11 @@ import PulsarAnalysis,{mountPulsarWorkbench} from './components/PulsarAnalysis';
 const workbench = mountPulsarWorkbench(element); workbench.render({ active: false }); workbench.unmount();
 ```
 
-The panel is self-contained and not mounted in App. `PulsarMessages.ts` holds the `pulsar.*` English catalog. The core imports neither React nor i18n.
+The panel is self-contained and not mounted in App. `idPrefix` prefixes every element id, Review included, so several panels can share a page. `PulsarMessages.ts` holds the `pulsar.*` English catalog. The core imports neither React nor i18n.
 
 ## Tests and harness
 
 - Unit tests: `node node_modules/vitest/vitest.mjs run --config <evidence>/harness/vitest.config.mjs` runs `src/core/pulsar*.test.ts`.
 - Browser tests: `node node_modules/@playwright/test/cli.js test -c <evidence>/harness/playwright.pulsar.config.mjs` serves the harness on loopback `127.0.0.1:5185` (strict port) at `/__pulsar-harness/` and runs `tests/pulsar-analysis.spec.ts`. The spec skips without `OPENVIREO_PULSAR_HARNESS_URL`.
+- `<evidence>/harness/playwright.pulsar.mobile.config.mjs` runs the same spec at a 390 × 844 touch viewport.
 - `<evidence>` = `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis`.
