@@ -32,3 +32,5 @@ The saved-image and palette increments do not implement a new CCD photon model. 
 Claude availability/review remains separately denied by auto-review and subject to the parent's explicit do-not-retry instruction. That action has not run and is not being used as a reason to block independent local work. No remote/push/deployment.
 
 The internal [initial camera background stage](CAMERA-BACKGROUND.md) is independently controlled with explicit synthetic uniforms and compiled ownership. It is numerical groundwork,not a new usable camera exposure or an acceptance-count change. NOMAD response/cache/context,source addition and full observing/output contracts still gate acquisition.
+
+The [point-source numerical stage](CAMERA-POINT-STAGE.md) composes with that background under explicit synthetic controls and retains initial statistics. It is still internal scientific groundwork;no real source/catalog or complete camera observation has been admitted.

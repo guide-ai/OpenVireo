@@ -1,0 +1,149 @@
+{
+  "evidenceId": "NATIVE-CAMERA-POINT-STAGE-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "source-initialize",
+      "start": "0x52455c",
+      "endExclusive": "0x5245c4",
+      "bytes": 104,
+      "bytesSHA256": "17e7071ad2892ac143fe99250050298a8cb309545871ba78613eb0b7e28c541b",
+      "listingSHA256": "53383dcd3dd259b87ad0fd65f9b741d7949b27450275929a60a7dc775a136fe1"
+    },
+    {
+      "name": "point-add",
+      "start": "0x5245d0",
+      "endExclusive": "0x524a41",
+      "bytes": 1137,
+      "bytesSHA256": "03bdf749e18e0a4189ff39d3186133c129d459e0d3db15624aaf8c4b8f044231",
+      "listingSHA256": "9ee1d2193725c649d6dc97d59d11801abc43369cb3360364e28f8253c6b1d2a4"
+    },
+    {
+      "name": "exp-extended",
+      "start": "0x40368c",
+      "endExclusive": "0x4036ac",
+      "bytes": 32,
+      "bytesSHA256": "8a13af7f3def388eeb2d322aeb293c4bf01510da201bb2b396f9ba9b681f4815",
+      "listingSHA256": "49e171d737229cd7695eb7db1438bd69356bfa430da2aa8200f57fcc0d445755"
+    },
+    {
+      "name": "jitter",
+      "start": "0x520ec0",
+      "endExclusive": "0x520f0e",
+      "bytes": 78,
+      "bytesSHA256": "c382ef1a0c4e6cb5bfdbbdaba222be4f890c9dd1c461bb5337b7215ad19a2f50",
+      "listingSHA256": "1effe79c22a42f5d485c2cf4323424e902323ea576124e223abbd388318665da"
+    },
+    {
+      "name": "raw-get",
+      "start": "0x52449c",
+      "endExclusive": "0x5244c7",
+      "bytes": 43,
+      "bytesSHA256": "2b0b5cc115061643d2b4c38e966e49f5e8d56375e5667283658ddde928f16887",
+      "listingSHA256": "249090cb549690594627dab953cff1e649dd49f70184ade169ec9c538a6f6e60"
+    },
+    {
+      "name": "raw-set",
+      "start": "0x5244c8",
+      "endExclusive": "0x5244f0",
+      "bytes": 40,
+      "bytesSHA256": "aea29081ecf844b623dbc3fb3ab12bbaf34f70f9fc8a87de2c8fdd847d93c690",
+      "listingSHA256": "67b9809e5017e8c6a26beeca7aa9d42dab9a6de9b5059c9a30ae810d6944b6f9"
+    },
+    {
+      "name": "fistp",
+      "start": "0x403700",
+      "endExclusive": "0x40370a",
+      "bytes": 10,
+      "bytesSHA256": "8c144f1eac0c96ef3bd0218cfba1361deb4e41de9ab485b113a00fa178f5568f",
+      "listingSHA256": "e3dfea5730183f4e98a1b18a7811069f805faba50c49d3613289864116ce3316"
+    }
+  ],
+  "constants": [
+    {
+      "name": "magDivisor",
+      "address": "0x524a44",
+      "type": "Single",
+      "exactNumerator": "5",
+      "exactDenominator": "2",
+      "Number": 2.5,
+      "bytesSHA256": "072e3304b03423a4767d28c5fed09f81d5190ff60a3d078c6c1350eeb8bee28b"
+    },
+    {
+      "name": "gaussianDivisor",
+      "address": "0x524a48",
+      "type": "Single",
+      "exactNumerator": "2",
+      "exactDenominator": "1",
+      "Number": 2.0,
+      "bytesSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    {
+      "name": "supportLimit",
+      "address": "0x524a4c",
+      "type": "Single",
+      "exactNumerator": "1",
+      "exactDenominator": "1",
+      "Number": 1.0,
+      "bytesSHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"
+    },
+    {
+      "name": "spikeAmplitude",
+      "address": "0x524a50",
+      "type": "Extended",
+      "exactNumerator": "5902958103587056517",
+      "exactDenominator": "590295810358705651712",
+      "Number": 0.01,
+      "bytesSHA256": "a7d3e5df3aa9fdd98d5ad7f69719d6511e1a10975528de6c6691cdf50eb7ccf1"
+    },
+    {
+      "name": "crossMultiplier1",
+      "address": "0x524a5c",
+      "type": "Extended",
+      "exactNumerator": "12912720851596686131",
+      "exactDenominator": "9223372036854775808",
+      "Number": 1.4,
+      "bytesSHA256": "c82cf00c61019fce9b4449b971c9efa505e1c8c04a2ad4b5d602420bf4696b5d"
+    },
+    {
+      "name": "spikeRatioCut",
+      "address": "0x524a68",
+      "type": "Single",
+      "exactNumerator": "0",
+      "exactDenominator": "1",
+      "Number": 0.0,
+      "bytesSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+    },
+    {
+      "name": "NFCallerAdjustment",
+      "address": "0x521c80",
+      "type": "Single",
+      "exactNumerator": "1",
+      "exactDenominator": "4",
+      "Number": 0.25,
+      "bytesSHA256": "75e253f50979177eba47b2d0805ad36038789108924514d2a761a70de057d16f"
+    }
+  ],
+  "parameters": {
+    "referencePeak": "local-0x30;CCDbaseCount/pow(10,-(CCDbaseMag-sourceMag+selectedOpticalFactor)/2.5);upstream metadata not supplied by this kernel",
+    "exposureScale": "local-0x40;integer duration/CCDbaseExposure",
+    "sigmaX": "owner+0x18;seeingArcsec/(Extended206.2648*CCDpixelWidthMicrons/focalMM)",
+    "sigmaY": "owner+0x22;correspondingCCDpixelHeight,alsofromIRcaller",
+    "sourcePosition": "stack+0x14X,+0x08Y;caller Double positions promoted,not rounded before Gaussian distance",
+    "roundedCenters": "owner+0x36/0x3a viaFISTP;support radii+0x3e/0x42 viaFISTP"
+  },
+  "gaussian": "r starts3;exp(-r\u00b2/2)*referencePeak>1 increments;rx/ry=FISTP(r*sigmaX/Y);visited bounds in row-major order;mean=exp(-rho\u00b2/2)*(exposureScale*referencePeak)",
+  "spikes": "4rx/4ry extent,absdx<=3 OR absdy<=3;first ratio=absdy*[1,1.4,2,4][absdx]/ry whenabsdx<=3;then OVERWRITE ratio=absdx*[1,1.4,2,4][absdy]/rx whenabsdy<=3;ratio<=0 skipswithoutdraw;mean=exp(-ratio)^2*(exposureScale*(Extended0.01*(exposureScale*referencePeak)))",
+  "stores": "Each visited addition reads priorSingle,promotes,adds sharedjitter(mean),storesSingle. Gaussian pass precedes thin-cross pass. Owned initial histogram is not updated here.",
+  "numericalPolicy": "Number constants/exp/expression order,nearest/even geometry,Single after each addition;no normalized flux or symmetry repair. Independent Decimal control checks only admitted synthetic cases;no native x87/exp/FPU output witness.",
+  "admission": {
+    "geometry": "width,height1..1024;finite|x|,|y|<=1e6;sigma0..1024exclusive0;nonzeroradii",
+    "scalar": "referencePeak0..1e12,exposureScale0..1e6;both explicit,not catalog-derived/fabricated",
+    "budget": "65536visits;whole plan rejected before any plane mutation when exceeded",
+    "random": "Exactly one supplied finite0<=u<1 per visit;zero mean Gaussian and positive-ratio spikes stillconsume;no hidden/global RNG state",
+    "lineage": "Only mathematical background/point phase wrapper;preserves initial histogram;not an authenticated catalog,file or acquired image"
+  },
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}
