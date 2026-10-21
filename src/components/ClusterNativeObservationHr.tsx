@@ -38,7 +38,7 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
  useLayoutEffect(()=>{if(disabled){focusIntent.current=null;asyncFocus.current=null;activeRead.current=null;return;}const intent=focusIntent.current,origin=asyncFocus.current;if(!intent)return;focusIntent.current=null;asyncFocus.current=null;
   if(origin){const active=document.activeElement;if(origin.version!==interactionVersion.current||!(active===origin.owner||(active===document.body&&(!origin.owner.isConnected||(origin.owner===input.current&&input.current.disabled)))))return;}
   const target=intent==='confirm'?confirmButton.current:intent==='add'?addButton.current:intent==='cancelRead'?cancelReadButton.current:input.current;
-  if(target&&!target.disabled)target.focus({preventScroll:true});else if(addButton.current&&!addButton.current.disabled)addButton.current.focus({preventScroll:true});else if(input.current&&!input.current.disabled)input.current.focus({preventScroll:true});
+  if(target&&!target.disabled)target.focus({preventScroll:origin!==null});else if(addButton.current&&!addButton.current.disabled)addButton.current.focus({preventScroll:origin!==null});else if(input.current&&!input.current.disabled)input.current.focus({preventScroll:origin!==null});
  },[w,disabled]);
  const change=(action:(c:ClusterNativeHrWorkspace)=>ClusterNativeHrWorkspace,target:'input'|'add'|'confirm')=>{asyncFocus.current=null;focusIntent.current=target;setW(action);};
  // Navigation,collapsed workspace or host restore cancels only an in-flight

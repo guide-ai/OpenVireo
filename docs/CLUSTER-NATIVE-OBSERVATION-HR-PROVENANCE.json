@@ -91,7 +91,9 @@
       "listingLines": "474830-474835",
       "contract": "Calls 0x4548ac with DL=1 on +0x38c/+0x388 every redraw. Its TMenuItem.SetEnabled mapping is an analyst inference from the common call pattern; the menu identities remain unmapped. Disabling web Clear without overlays is a UI choice.",
       "crossReference": "RADIO-CONTROL-PROVENANCE.json RC-08 inference, not a runtime or class-identity witness",
-      "confidence": "analyst inference"
+      "confidence": "analyst inference",
+      "basis": "RC-08 correlates seven visible-byte checks at0x58e7f8 with seven Visible=False Window1 DFM children;the same callee0x4548ac occurs in this same executable. This supports an analyst inference,not a runtime/class-identity witness.",
+      "crossReferenceSHA256": "4cac33720ef39273977d7042ec1e7dfdf74ec304f8646d0218ef4610d661d2aa"
     }
   ]
 }
