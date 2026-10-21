@@ -43,3 +43,7 @@ The later raw matrix includes additions that were not inserted into that initial
 3. Admit a complete bounded observation lifecycle with cancel,reentry,late completion,original-byte output and stopped restoration tests,while preserving manual answers/notebooks. Do not infer absent historical metadata or promise x87/GDI equivalence.
 
 Reproduce the static captures with `python /home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-pipeline/capture.py`. It checks source SHA,complete return boundaries,typed virtual/jump tables,calibration stores and bound read instruction bytes;it does not run or microemulate CLEA. This recovery changes no product code or data formats. The preceding functional increment's1470unit/444E2E results remain separate from this static evidence.
+
+## Follow-up numerical stage
+
+[Initial background implementation](CAMERA-BACKGROUND.md) now ports the explicit-uniform scalar/Single/gain/histogram phase with independent synthetic controls. It does not enable acquisition or infer final-image statistics. The newly checked date-bias pointer is shared with the native date setter/getter;zero-offset cancellation means a new explicit observing JD is not intrinsically absent historical file time. Complete NOMAD response/cache/source and global RNG context remain separate.

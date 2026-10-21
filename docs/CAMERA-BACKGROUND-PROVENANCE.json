@@ -1,0 +1,204 @@
+{
+  "contextCaptures": [
+    {
+      "name": "ccd-request-timer",
+      "start": "0x51298c",
+      "endExclusive": "0x512acd",
+      "bytesSHA256": "71d5f0e8f2ffbf3dfe7a01c9d6d5b24441c376f7096d1e90a165e4b84f7c39b7",
+      "listingSHA256": "0caf05d7e9ae15a213571191a6287b6eb06129cf4e849f5ca6bc94378e77837f",
+      "admission": "Context recovery only,not a ported camera controller or date conversion"
+    },
+    {
+      "name": "ir-request-timer",
+      "start": "0x5149bc",
+      "endExclusive": "0x514afd",
+      "bytesSHA256": "4c060073ffec8e5b3efde09bbeb476210cc6f8a9a9ad3940f0792fa23073a3a1",
+      "listingSHA256": "4b4aea8425cd50c297fa7591eb91cf8188617db19536c7b112e05f5fbed1ca18",
+      "admission": "Context recovery only,not a ported camera controller or date conversion"
+    },
+    {
+      "name": "ccd-observe-timer",
+      "start": "0x512b2c",
+      "endExclusive": "0x512bca",
+      "bytesSHA256": "720488d17b192e1f5896bbc63ccdb36591ba60ab65f5c0c7c5f5a12a2ca3900a",
+      "listingSHA256": "31d5eb8a2159257c7abe6904ba2d9f44138a4a9939afc09a5bc6c158340859e7",
+      "admission": "Context recovery only,not a ported camera controller or date conversion"
+    },
+    {
+      "name": "ir-observe-timer",
+      "start": "0x514b5c",
+      "endExclusive": "0x514bfa",
+      "bytesSHA256": "7c75fc686f32a7fca4db0da68706323a03e0c885517a1eb5654e0ab122886def",
+      "listingSHA256": "4bda7bb0bd8f517e4b6ce87bf4d63300187e08f6fe4d07b2374fe91452e7c02e",
+      "admission": "Context recovery only,not a ported camera controller or date conversion"
+    },
+    {
+      "name": "camera-date-get",
+      "start": "0x487bcc",
+      "endExclusive": "0x487be8",
+      "bytesSHA256": "cd28c4aa92ac7b923d2929b14a45a99c9131d29e558fcc01e0655fee75d3972b",
+      "listingSHA256": "553e07004bd84a90b8a42d8ea76cdf0b9760ad514eb32b017ba97b839c8d8f35",
+      "admission": "Context recovery only,not a ported camera controller or date conversion"
+    },
+    {
+      "name": "camera-date-set",
+      "start": "0x487be8",
+      "endExclusive": "0x487c0b",
+      "bytesSHA256": "f9f6eed8c58cc6e83044f9a4a978deb6a7bafeeaeabfb2c844e21868b73d2f6a",
+      "listingSHA256": "abd1b846d301ce6d455e1a9e32c77828e46999e0a048bbe65df06f809278e076",
+      "admission": "Context recovery only,not a ported camera controller or date conversion"
+    }
+  ],
+  "timeContext": {
+    "biasPointer": {
+      "address": "0x5b58f0",
+      "pointsTo": "0x5bad48",
+      "bytesSHA256": "fc067379ba0110574dbb06420892573c52bd0347b00ab3c9531414238dfa5d0f"
+    },
+    "expression": "B1CatObj+0x0c = Extended((runtimeBias + fieldDateDouble - Single2451545)/Single365.25)",
+    "binding": "Field constructor0x522098 initializes date owner+0x1e with0offset;CCD/IR selection487be8writes suppliedJD minus offset minus SAMEruntimeBias to Doublefield+0x24;then catalog initialize receives that Double.",
+    "limit": "Explicit new observing JD is not intrinsically missing historical file time. Bias cancels algebraically at zerooffset,but source Double store/Extended intermediate precision must still be checked. No date is inferred from supplied frames or fixture.",
+    "controller": "Both request timers wait for request+0x51 then call preparation withCL=0;observing countdown timers enable request timer. Initial field selection/Randomize/projection consume context outside the explicit background segment."
+  },
+  "evidenceId": "NATIVE-CAMERA-BACKGROUND-01",
+  "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "captures": [
+    {
+      "name": "jitter",
+      "start": "0x520ec0",
+      "endExclusive": "0x520f0e",
+      "bytes": 78,
+      "bytesSHA256": "c382ef1a0c4e6cb5bfdbbdaba222be4f890c9dd1c461bb5337b7215ad19a2f50",
+      "listingSHA256": "1effe79c22a42f5d485c2cf4323424e902323ea576124e223abbd388318665da"
+    },
+    {
+      "name": "ccd-preparation",
+      "start": "0x52154c",
+      "endExclusive": "0x521c65",
+      "bytes": 1817,
+      "bytesSHA256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+      "listingSHA256": "ff80a59dc3bd5de51a7c3f2b4a8638b2e33aa3b041631f7ee07efdccad6fe81f"
+    },
+    {
+      "name": "ir-preparation",
+      "start": "0x51e43c",
+      "endExclusive": "0x51e712",
+      "bytes": 726,
+      "bytesSHA256": "95b7a6912bef366c3ab88b13a429163e3ce6a82353b10ac792ebbb2703220fc2",
+      "listingSHA256": "d1dc37be4f8c5cb141fe76866bf344817cb0e70b26062ade60ca0185fffe3369"
+    },
+    {
+      "name": "raw-single-get",
+      "start": "0x52449c",
+      "endExclusive": "0x5244c7",
+      "bytes": 43,
+      "bytesSHA256": "2b0b5cc115061643d2b4c38e966e49f5e8d56375e5667283658ddde928f16887",
+      "listingSHA256": "249090cb549690594627dab953cff1e649dd49f70184ade169ec9c538a6f6e60"
+    },
+    {
+      "name": "raw-single-set",
+      "start": "0x5244c8",
+      "endExclusive": "0x5244f0",
+      "bytes": 40,
+      "bytesSHA256": "aea29081ecf844b623dbc3fb3ab12bbaf34f70f9fc8a87de2c8fdd847d93c690",
+      "listingSHA256": "67b9809e5017e8c6a26beeca7aa9d42dab9a6de9b5059c9a30ae810d6944b6f9"
+    },
+    {
+      "name": "histogram-construct",
+      "start": "0x55fa68",
+      "endExclusive": "0x55fae0",
+      "bytes": 120,
+      "bytesSHA256": "c0273f537675309dd1d4966bc785a27270df64e7936fa68182d093c6e6c3febe",
+      "listingSHA256": "9bcd92fe8f3a54b83a430370e3ee78cf0a3a3adcae3f23c67571331853344fbe"
+    },
+    {
+      "name": "histogram-clear",
+      "start": "0x55fb10",
+      "endExclusive": "0x55fb48",
+      "bytes": 56,
+      "bytesSHA256": "7c68c994b35efe9fcf503de34c365375ae59bab3da0ecf7b4a1f48ff5a7fe5f1",
+      "listingSHA256": "9e911a1b931a90e8bd58539144ce3c0d4c27cbe0bdaa55d9bcbd493753c3d5a7"
+    },
+    {
+      "name": "histogram-insert",
+      "start": "0x55fb48",
+      "endExclusive": "0x55fbcc",
+      "bytes": 132,
+      "bytesSHA256": "83f583580b2dfa85c06c87a7ce724e9a8c29098a0332a534870147503fa236ed",
+      "listingSHA256": "3d774c1ec6636dbc0877aaf24de1700b7eaa5c0acdba8b6e89cad1bc0219f2a1"
+    },
+    {
+      "name": "ccd-insert",
+      "start": "0x521c90",
+      "endExclusive": "0x521cc7",
+      "bytes": 55,
+      "bytesSHA256": "fb5f2f37146cf97887915a22da54da7f626ed63e30a2734508ba026fded53ac0",
+      "listingSHA256": "9cfe3411b9a5ad77cb1587935d0f4707284401639e0d5245a1a152cfd5e3e972"
+    },
+    {
+      "name": "ir-insert",
+      "start": "0x51eab0",
+      "endExclusive": "0x51eae7",
+      "bytes": 55,
+      "bytesSHA256": "dae44faa4cd18a581764f605a738d228c3c9515ea2320f36a366d34fdfd4357e",
+      "listingSHA256": "ab295d71a2cc5ca3bb10f43f93cb613773ddf22e14940a42ed68128778c65200"
+    },
+    {
+      "name": "truncate",
+      "start": "0x403630",
+      "endExclusive": "0x403659",
+      "bytes": 41,
+      "bytesSHA256": "2990582efd632e706b58d7a4d1a78968e432c1808e9aae67cdc44c9e85fce300",
+      "listingSHA256": "a7a29477b9da8b9d8141d208e46d688665a5464107717e5a19ce4a6dd074b711"
+    },
+    {
+      "name": "fistp64",
+      "start": "0x403700",
+      "endExclusive": "0x40370a",
+      "bytes": 10,
+      "bytesSHA256": "8c144f1eac0c96ef3bd0218cfba1361deb4e41de9ab485b113a00fa178f5568f",
+      "listingSHA256": "e3dfea5730183f4e98a1b18a7811069f805faba50c49d3613289864116ce3316"
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x520f10",
+      "type": "Single",
+      "value": 3,
+      "bytesSHA256": "ea2845900b5856c9bf354b1aa9761b5aa6888e5ed61738fe9579ca42bc0f6054"
+    },
+    {
+      "address": "0x520f14",
+      "type": "Single",
+      "value": 2,
+      "bytesSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+    },
+    {
+      "address": "0x59c5e0",
+      "type": "Single",
+      "value": 2451545,
+      "bytesSHA256": "d43d25a6ac2ecb5fa1c837c23cac467296c92aed0b3bfae0bc2bb4328829e16e",
+      "admission": "Catalog epoch context only"
+    },
+    {
+      "address": "0x59c5e4",
+      "type": "Single",
+      "value": 365.25,
+      "bytesSHA256": "56df7ee6642595333f7419533d40d86e2f44933beae2567b31d2622a9add6897",
+      "admission": "Catalog epoch context only"
+    }
+  ],
+  "formula": "jitter=(b-3*sqrt(b)/2)+u*(3*sqrt(b));raw=Single(jitter+bias);integerADU=FISTP64(raw/gain) lowInt32;v=max(0,integerADU);bin=min(255,trunc(v/256));sum+=v;sumSquares+=v*v",
+  "sourceOrder": "Field/catalog update and projected jitter precede this phase;initialbackground then optionalCCDoverlay and sourceaddition then well/gain/ADCclipping. This port only takes the explicit background segment.",
+  "numericalPolicy": "Number sqrt and source expression order;Math.fround raw store;nearest/even integer conversion is a declared web policy. Integer moments must remain exactly representable Number safe integers;otherwise reject. No Extended/FPU/output witness.",
+  "compiledOwner": "Both CCD/IR background read CCD record root+0x2d99 (+0x31read,+0x35dark,+0x45bias,+0x59cooling);IR dimensions and form gain remain separate. See CAMERA-INFORMATION and CAMERA-PIPELINE provenance.",
+  "admission": {
+    "widthHeight": "Integer1..1024 each,fixture subframes are mathematical controls,not original camera configurations",
+    "draws": "Exactly width*height explicit finite uniforms0<=u<1;no default seed,clock,Math.random or historical stream",
+    "range": "Finite rawSingle and signedInt32 ADU;integer moments safe;unsupported overflow/precision reject atomically",
+    "output": "Immutable background pixels and pre-source histogram/moments only;not acquired image,post-source statistics or camera session"
+  },
+  "nativeExecution": false,
+  "microemulation": false,
+  "originalModified": false
+}
