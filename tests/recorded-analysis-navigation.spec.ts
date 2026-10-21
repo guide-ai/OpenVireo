@@ -71,3 +71,14 @@ test('mobile LSS history and keyboard options remain usable and cancel replaceme
  await page.getByTestId('wedge-file').setInputFiles(lss('replacement.txt','ROUTE-B'));await page.getByTestId('wedge-prompt-no').click();await expect(page.getByTestId('wedge-prompt')).toHaveAttribute('data-stage','confirm-delete');await page.keyboard.press('Escape');await expect(rows(page)).toHaveCount(1);await expect(page.getByTestId('wedge-file')).toBeFocused();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:info.outputPath('integrated-lss-mobile.png'),fullPage:true});
 });
+
+
+test('all tools remain reachable without document overflow across the navigation breakpoints',async({page},info)=>{
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ for(const width of[1440,1251,1250,780,600,521,520,360,320]){
+  await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  for(const name of['Observatory','Radio data','LSS data','Hubble lab guide'])await expect(nav(page,name)).toBeInViewport();
+ }
+ await expect(page.getByText('Back up spectrum analysis, classification work and pending edits, photometry and current exposure segments. Radio data and LSS plotting workspaces stay only in this open window. Save/restore stops observing activity; restored tools require explicit activation.',{exact:true})).toBeVisible();
+ await page.screenshot({path:info.outputPath('integrated-navigation-320.png'),fullPage:true});
+});
