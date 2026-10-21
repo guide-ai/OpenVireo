@@ -13,10 +13,11 @@ export type CameraNomadCatalog=Readonly<{
 }>;
 export type CameraNomadRequest=Readonly<{
  [stateBrand]:true;
- status:'idle'|'pending'|'valid-empty'|'valid-data'|'transport-error'|'catalog-error'|'cancelled';
+ status:'idle'|'pending'|'valid-empty'|'valid-data'|'transport-error'|'catalog-error'|'unsupported'|'cancelled';
  ticket:CameraNomadTicket|null;reference:CameraQueryReference|null;
  activeCatalog:CameraNomadCatalog|null;previousCatalog:CameraNomadCatalog|null;
  acceptedRowCount:number;invalidRowCount:number;catalogError:NativeNomadResponseError['code']|null;
+ catalogErrorLineNumber:number|null;
 }>;
 const owned=new WeakSet<object>();
 function state(fields:Omit<CameraNomadRequest,typeof stateBrand>):CameraNomadRequest {
@@ -26,17 +27,19 @@ function requireState(value:CameraNomadRequest):void {
  if(!value||!owned.has(value))throw new CameraNomadRequestError('state');
 }
 export function createCameraNomadRequest():CameraNomadRequest {
- return state({status:'idle',ticket:null,reference:null,activeCatalog:null,previousCatalog:null,acceptedRowCount:0,invalidRowCount:0,catalogError:null});
+ return state({status:'idle',ticket:null,reference:null,activeCatalog:null,previousCatalog:null,acceptedRowCount:0,invalidRowCount:0,catalogError:null,catalogErrorLineNumber:null});
 }
 /** New-request catalog clearing59c485 and compiled query/date reference.
  * Previous response retention and immutable tickets are explicit web guards.
  * No transport/exposure/cleanup is performed;the camera lifecycle still owns it. */
 export function beginCameraNomadRequest(current:CameraNomadRequest,reference:CameraQueryReference):CameraNomadRequest {
  requireState(current);
+ // Reentry is deliberately ignored,including its unused inputs. The returned
+ // object's reference is authoritative;this is not a queue or a switch to B.
  if(current.status==='pending')return current;
  cameraNomadReferenceContext(reference);
  const previousCatalog=current.activeCatalog??current.previousCatalog;
- return state({status:'pending',ticket:Object.freeze({[ticketBrand]:true as const}),reference,activeCatalog:null,previousCatalog,acceptedRowCount:0,invalidRowCount:0,catalogError:null});
+ return state({status:'pending',ticket:Object.freeze({[ticketBrand]:true as const}),reference,activeCatalog:null,previousCatalog,acceptedRowCount:0,invalidRowCount:0,catalogError:null,catalogErrorLineNumber:null});
 }
 export type CameraNomadReply=Readonly<{ticket:CameraNomadTicket;finished:boolean;transportSucceeded:boolean;bytes?:Uint8Array}>;
 /** The fresh DL0 path only. Finished and transport success remain distinct;
@@ -49,11 +52,13 @@ export function receiveCameraNomadReply(current:CameraNomadRequest,reply:CameraN
  if(typeof reply.finished!=='boolean'||typeof reply.transportSucceeded!=='boolean')throw new CameraNomadRequestError('event');
  if(!reply.finished)return current;
  if(!reply.transportSucceeded)return state({...current,status:'transport-error'});
+ const bytes=reply.bytes;
+ if(!(bytes instanceof Uint8Array))throw new CameraNomadRequestError('event');
  let response:NomadResponse;
- try{response=readCameraNomadReferenceResponse(reply.bytes as Uint8Array,current.reference!);}
+ try{response=readCameraNomadReferenceResponse(bytes,current.reference!);}
  catch(error){
   if(!(error instanceof NativeNomadResponseError))throw error;
-  return state({...current,status:'catalog-error',catalogError:error.code});
+  return state({...current,status:error.code==='unsupported-units'?'unsupported':'catalog-error',catalogError:error.code,catalogErrorLineNumber:error.lineNumber??null});
  }
  const entries=orderNativeNomadEntries(response.entries.filter((entry):entry is NomadCandidateEntry=>entry.result.kind==='candidate'));
  const invalidRowCount=response.entries.filter(entry=>entry.result.kind==='invalid').length,acceptedRowCount=entries.length;

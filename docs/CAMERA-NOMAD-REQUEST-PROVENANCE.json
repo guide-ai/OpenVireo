@@ -77,20 +77,36 @@
   "nativeContracts": {
     "newRequest": "59c485..59c4a6 clears/reinitializes candidate list+43 when nonempty;no automatic reuse on new request",
     "transport": "request+51 finished is separate from +50 success;only success copies +48 body into catalog+3e",
-    "body": "59ced4 consumes catalog+3e through LF helper and inserts accepted rows into catalog+43;returnsBL1onexhaustion including empty/all-invalid/all-comment body;candidatecountdoesnotdecidebodyparserreturn",
+    "body": "59ced4 returnsBL1 on normal exhaustion including zero rows and nonempty invalid/comment rows;blank-segment pointer dereference59cf00..59cf03 has unresolved native fault behavior;web blank-row invalid ledger is adaptation",
     "order": "Accepted candidates pass existing sorted insertion492728,not physical append;duplicates preserved",
     "cameraRoute": "Both request timers passCL0;preparation forwards through shared field toGetDataDL0",
-    "bypass": "GetDataDLnonzero skips request/header checks and consumes any remaining body without clearing prior candidates;nocamera-safe cache key/reuse-validity policy established"
+    "bypass": "GetDataDLnonzero skips request/header checks and consumes any remaining body without clearing prior candidates;nocamera-safe cache key/reuse-validity policy established",
+    "sexagesimal": "59c7d1..59c7f9 admits hh mm ss/dd mm ss and stores+42;row path unimplemented,explicit unsupported result"
   },
   "webGuards": {
     "previous": "Immutable previous catalog retained separately for diagnostics only;never used as active on new/failing/pending/cancelled request",
     "tickets": "Fresh identity per begin;late/foreign/duplicate replies ignored;no worker I/O",
     "context": "Actual compiled-query reference required;source epoch/band passed to bounded reader;CCD I rejects",
-    "error": "Strict LF/ASCII/size/header errors remain explicit web subset;all-invalid validly framed body remains valid-empty with diagnostic counts",
-    "boundaries": "No transport authenticity,source population,cache admission,exposure,thread termination or release acknowledgement supplied;existing lifecycle gate remains separate"
+    "error": "Bounded LF/ASCII/size/header rules;known native sexagesimal is unsupported,not malformed;error line location retained;missing bytes event rejected",
+    "boundaries": "No transport authenticity,source population,cache admission,exposure,thread termination or release acknowledgement supplied;existing lifecycle gate remains separate",
+    "failureGate": "Error\u2192release-without-prepare is web safeguard;native wrapper52158e overwritesEAX521591 and continues bitmap creation despite field updater failure"
   },
   "nativeExecution": false,
   "microemulation": false,
   "REAExecuted": false,
-  "originalModified": false
+  "originalModified": false,
+  "supportingDerivedEvidence": [
+    {
+      "path": "native-camera-response/line-helper.asm",
+      "start": "0x48672c",
+      "endExclusive": "0x4867fa",
+      "listingSHA256": "6f6215d35591d6c32c92e144548e461363470a4b5671fcc3949ffddb924d7578"
+    },
+    {
+      "path": "native-camera-query-authority/shared-field-update.asm",
+      "start": "0x522454",
+      "endExclusive": "0x52255e",
+      "listingSHA256": "0844166fcd8b94a82de3bde7a4d13045fff2b3501125282653c5ee72fdf429de"
+    }
+  ]
 }

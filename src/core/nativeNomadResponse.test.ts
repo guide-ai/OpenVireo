@@ -42,7 +42,7 @@ describe('bounded NOMAD response framing,not actual response authority',()=>{
  it.each(['END','END\n','END\n'+header])('rejects truncated header/units %s',s=>fails(bytes(s),'header'));
  it('uses the first marker;does not search past a bad immediate header',()=>fails(bytes(['END','# not header','hh.hhh dd.ddd','END',header,units,row()].join('\n')),'header'));
  it('rejects unsupported units and missing columns atomically',()=>{
-  fails(bytes(source([row()]).replace(units,'hh mm ss dd mm ss')),'header');fails(bytes(source([row()]).replace(' K|',' X|')),'header');
+  fails(bytes(source([row()]).replace(units,'hh mm ss dd mm ss')),'unsupported-units');fails(bytes(source([row()]).replace(' K|',' X|')),'header');
  });
  it.each(['\r','\t','\0','é','\uFEFF'])('rejects unsupported encoding/control %s without normalization',s=>fails(bytes(source([row()])+s),'encoding'));
  it('bounds source size,line length and line count independently',()=>{

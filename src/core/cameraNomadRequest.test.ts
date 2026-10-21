@@ -63,21 +63,41 @@ describe('fresh camera NOMAD reply ownership;not transport or cache authority',(
   for(const copy of[{...reference()},JSON.parse(JSON.stringify(reference())),null])expect(()=>beginCameraNomadRequest(createCameraNomadRequest(),copy as CameraQueryReference)).toThrow('ownership');
   expect(()=>beginCameraNomadRequest(createCameraNomadRequest(),reference(4))).toThrow('USNO-B1');
   for(const event of[null,{ticket:s.ticket,finished:1,transportSucceeded:true},{ticket:s.ticket,finished:true,transportSucceeded:1}])expect(()=>receiveCameraNomadReply(s,event as unknown as CameraNomadReply)).toThrow(CameraNomadRequestError);
-  expect(receiveCameraNomadReply(s,{ticket:s.ticket!,finished:true,transportSucceeded:true}).catalogError).toBe('size');
+  expect(()=>receiveCameraNomadReply(s,{ticket:s.ticket!,finished:true,transportSucceeded:true})).toThrow(CameraNomadRequestError);
+ });
+ it('reports native sexagesimal support as unimplemented rather than malformed and retains failed line location',()=>{
+  const s=begin(),r=complete(s,controls.bodies.unsupportedUnits);
+  expect(r.status).toBe('unsupported');expect(r.catalogError).toBe('unsupported-units');expect(r.catalogErrorLineNumber).toBe(4);expect(r.activeCatalog).toBeNull();
+  const bad=complete(s,controls.bodies.zeroRows+'\r');expect(bad.status).toBe('catalog-error');expect(bad.catalogError).toBe('encoding');expect(bad.catalogErrorLineNumber).toBe(4);
+ });
+ it('uses every IR band without inventing context and preserves an earlier snapshot through failure and cancellation',()=>{
+  for(const[position,band,mag]of[[0,'J',11],[1,'H',10],[2,'K',9]]as const){
+   const ref=compiledCameraQueryReference('ir',0,position,{centerRAHours:12,centerDecDegrees:-30,selectionMagnitudeLimit:15,suppliedDateDouble:2451545,dateBias:0});
+   const done=complete(beginCameraNomadRequest(createCameraNomadRequest(),ref));expect(done.activeCatalog!.response.context).toEqual({band,epochOffsetYears:0});expect(done.activeCatalog!.entries[0].result.row.selectedMagnitude).toBe(mag);
+   const failed=complete(beginCameraNomadRequest(done,ref),'missing marker'),cancel=beginCameraNomadRequest(failed,ref),cancelled=cancelCameraNomadRequest(cancel,cancel.ticket!);
+   expect(failed.previousCatalog).toBe(done.activeCatalog);expect(cancelled.previousCatalog).toBe(done.activeCatalog);expect(beginCameraNomadRequest(cancelled,ref).previousCatalog).toBe(done.activeCatalog);
+  }
+ });
+ it('keeps blank rows as an explicit safe web ledger behavior without claiming native blank-line fault parity',()=>{
+  const r=complete(begin(),controls.bodies.oneRow+'\n\n');expect(r.status).toBe('valid-data');expect(r.acceptedRowCount).toBe(1);expect(r.invalidRowCount).toBe(1);
+ });
+ it('ignores reentry inputs before validation and never changes the pending reference',()=>{
+  const s=begin();for(const ref of[reference(4),{...reference()},null])expect(beginCameraNomadRequest(s,ref as CameraQueryReference)).toBe(s);
+  expect(s.reference!.lookup.position).toBe(0);
  });
 });
 
 describe('explicit composition with the independent release gate',()=>{
- it.each(['empty','data','transport-error','catalog-error'])('maps %s to preparation/release commands without producing an exposure',kind=>{
+ it.each(['empty','data','transport-error','catalog-error','unsupported'])('maps %s to preparation/release commands without producing an exposure',kind=>{
   let gate=cameraRequestTransition(createCameraRequestGate(),{type:'start',seconds:1}).state;
   const parser=begin(),ticket=gate.ticket!;
-  const parsed=receiveCameraNomadReply(parser,{ticket:parser.ticket!,finished:true,transportSucceeded:kind!=='transport-error',bytes:bytes(kind==='catalog-error'?'missing marker':kind==='empty'?controls.bodies.zeroRows:controls.bodies.oneRow)});
-  gate=cameraRequestTransition(gate,{type:'request-result',ticket,finished:true,transportSucceeded:parsed.status!=='transport-error',catalog:parsed.status==='catalog-error'?'invalid':'valid'}).state;
+  const parsed=receiveCameraNomadReply(parser,{ticket:parser.ticket!,finished:true,transportSucceeded:kind!=='transport-error',bytes:bytes(kind==='catalog-error'?'missing marker':kind==='unsupported'?controls.bodies.unsupportedUnits:kind==='empty'?controls.bodies.zeroRows:controls.bodies.oneRow)});
+  gate=cameraRequestTransition(gate,{type:'request-result',ticket,finished:true,transportSucceeded:parsed.status!=='transport-error',catalog:parsed.status==='catalog-error'||parsed.status==='unsupported'?'invalid':'valid'}).state;
   gate=cameraRequestTransition(gate,{type:'exposure-tick',ticket,instant:false}).state;
   const pulse=cameraRequestTransition(gate,{type:'request-tick',ticket});
   if(kind==='empty'||kind==='data'){
    expect(pulse.state.phase).toBe('preparing');expect(pulse.effects.map(e=>e.type)).toContain('prepare');expect(pulse.effects.map(e=>e.type)).not.toContain('accept-prepared');
-  }else{expect(pulse.state.phase).toBe('releasing');expect(pulse.state.terminal).toBe(kind);expect(pulse.effects.map(e=>e.type)).toContain('release');}
+  }else{expect(pulse.state.phase).toBe('releasing');expect(pulse.state.terminal).toBe(kind==='unsupported'?'catalog-error':kind);expect(pulse.effects.map(e=>e.type)).toContain('release');}
  });
  it('keeps reentry locked until release acknowledgement even though the parser owner can start a new ticket',()=>{
   let gate=cameraRequestTransition(createCameraRequestGate(),{type:'start',seconds:1}).state;

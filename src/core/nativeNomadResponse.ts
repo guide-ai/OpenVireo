@@ -2,7 +2,7 @@ import {nativeNomadLayout,readNativeNomadRow,NativeNomadError,type NomadLayout,t
 import {orderNativeNomadEntries} from './nativeNomadOrder';
 
 export class NativeNomadResponseError extends Error {
- constructor(readonly code:'size'|'encoding'|'line-limit'|'marker'|'header'|'context'|'ownership'|'selection',readonly lineNumber?:number){super(`NOMAD response contract: ${code}${lineNumber===undefined?'':` (line ${lineNumber})`}`);this.name='NativeNomadResponseError';}
+ constructor(readonly code:'size'|'encoding'|'line-limit'|'marker'|'header'|'unsupported-units'|'context'|'ownership'|'selection',readonly lineNumber?:number){super(`NOMAD response contract: ${code}${lineNumber===undefined?'':` (line ${lineNumber})`}`);this.name='NativeNomadResponseError';}
 }
 export type NomadResponseLine=Readonly<{lineNumber:number;startByte:number;endByte:number;terminated:boolean;text:string}>;
 export type NomadResponseEntry=Readonly<{
@@ -38,6 +38,9 @@ export function readNativeNomadResponse(bytes:Uint8Array,context:NomadRowContext
  if(markerIndex<0)throw new NativeNomadResponseError('marker');
  const marker=lines[markerIndex],header=lines[markerIndex+1],units=lines[markerIndex+2];
  if(!header||!units)throw new NativeNomadResponseError('header',marker.lineNumber+1);
+ // GetData59c7d1..59c7f9 also admits sexagesimal descriptors. Their row path
+ // is not ported;do not label an original-admitted format as malformed.
+ if(!(units.text.includes('hh.hhh')&&units.text.includes('dd.ddd'))&&units.text.includes('hh mm ss')&&units.text.includes('dd mm ss'))throw new NativeNomadResponseError('unsupported-units',units.lineNumber);
  let layout:NomadLayout;
  try{layout=nativeNomadLayout(header.text,units.text);}catch(e){if(e instanceof NativeNomadError)throw new NativeNomadResponseError('header',e.code==='format'?units.lineNumber:header.lineNumber);throw e;}
  const ownedContext=Object.freeze({band:context.band,epochOffsetYears:context.epochOffsetYears});

@@ -3,7 +3,7 @@
   "bodies": {
     "emptyBytes": "",
     "badMarker": "missing marker",
-    "badUnits": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh mm ss dd mm ss",
+    "unsupportedUnits": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh mm ss dd mm ss",
     "zeroRows": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd",
     "commentsOnly": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd\n# synthetic comment",
     "rejectedRows": "# SYNTHETIC ONLY\nEND\n                     id|                     RA|                    DEC|                   MuRA|                  MuDEC|                      B|                      V|                      R|                      J|                      H|                      K|\nhh.hhh dd.ddd\n            SYNTHETIC-A                      12                     -30                       0                       0                      14                      13                       0                      11                      10                       9 \n            SYNTHETIC-A                      12                     -30                       0                       0                      14                      13                      30                      11                      10                       9 ",
@@ -44,7 +44,7 @@
       "previous": "none",
       "finished": false,
       "transportSucceeded": false,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "pending",
         "acceptedRowCount": 0,
@@ -170,7 +170,7 @@
       "previous": "none",
       "finished": false,
       "transportSucceeded": true,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "pending",
         "acceptedRowCount": 0,
@@ -296,7 +296,7 @@
       "previous": "none",
       "finished": true,
       "transportSucceeded": false,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "transport-error",
         "acceptedRowCount": 0,
@@ -422,12 +422,12 @@
       "previous": "none",
       "finished": true,
       "transportSucceeded": true,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
-        "status": "catalog-error",
+        "status": "unsupported",
         "acceptedRowCount": 0,
         "invalidRowCount": 0,
-        "catalogError": "header",
+        "catalogError": "unsupported-units",
         "previousCount": null,
         "active": false
       }
@@ -548,7 +548,7 @@
       "previous": "data",
       "finished": false,
       "transportSucceeded": false,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "pending",
         "acceptedRowCount": 0,
@@ -674,7 +674,7 @@
       "previous": "data",
       "finished": false,
       "transportSucceeded": true,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "pending",
         "acceptedRowCount": 0,
@@ -800,7 +800,7 @@
       "previous": "data",
       "finished": true,
       "transportSucceeded": false,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "transport-error",
         "acceptedRowCount": 0,
@@ -926,12 +926,12 @@
       "previous": "data",
       "finished": true,
       "transportSucceeded": true,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
-        "status": "catalog-error",
+        "status": "unsupported",
         "acceptedRowCount": 0,
         "invalidRowCount": 0,
-        "catalogError": "header",
+        "catalogError": "unsupported-units",
         "previousCount": 1,
         "active": false
       }
@@ -1052,7 +1052,7 @@
       "previous": "empty",
       "finished": false,
       "transportSucceeded": false,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "pending",
         "acceptedRowCount": 0,
@@ -1178,7 +1178,7 @@
       "previous": "empty",
       "finished": false,
       "transportSucceeded": true,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "pending",
         "acceptedRowCount": 0,
@@ -1304,7 +1304,7 @@
       "previous": "empty",
       "finished": true,
       "transportSucceeded": false,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
         "status": "transport-error",
         "acceptedRowCount": 0,
@@ -1430,12 +1430,12 @@
       "previous": "empty",
       "finished": true,
       "transportSucceeded": true,
-      "body": "badUnits",
+      "body": "unsupportedUnits",
       "expected": {
-        "status": "catalog-error",
+        "status": "unsupported",
         "acceptedRowCount": 0,
         "invalidRowCount": 0,
-        "catalogError": "header",
+        "catalogError": "unsupported-units",
         "previousCount": 0,
         "active": false
       }
