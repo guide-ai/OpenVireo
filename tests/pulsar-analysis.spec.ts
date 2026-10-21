@@ -721,12 +721,12 @@ test('arrow keys start from a line drawn inside the client, else from the docume
   await expect(page.getByTestId('pulsar-vline-1')).toHaveAttribute('x1', '1');
 });
 
-test('cancelling a secondary pointer does not end the primary drag; the owner pointer cancel still does', async ({ page }) => {
+test('cancelling a secondary pointer does not end the primary drag; the owner\'s own cancel or lost capture does, and a new press restarts', async ({ page }) => {
   await open(page);
   await load(page);
   await page.getByTestId('pulsar-properties-close').click();
   const plot1 = page.getByTestId('pulsar-plot-1'), plot2 = page.getByTestId('pulsar-plot-2'), value = page.getByTestId('pulsar-vertical-value-1');
-  const b = await pixel(page, 2, 200, 10), a = await pixel(page, 1, 50, 10), c = await pixel(page, 1, 70, 10);
+  const b = await pixel(page, 2, 200, 10), a = await pixel(page, 1, 50, 10), c = await pixel(page, 1, 70, 10), d = await pixel(page, 1, 90, 10);
   await page.mouse.move(a.x, a.y);
   await page.mouse.down();
   await expect(value).toHaveText('0.500000');
@@ -743,6 +743,31 @@ test('cancelling a secondary pointer does not end the primary drag; the owner po
   await expect(value).toHaveText('0.700000');
   await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
   await expect(page.getByTestId('pulsar-pending-2')).toHaveCount(0);
+
+  // The owner (the mouse, pointer id 1 in Chromium) ends its own gesture by cancel, then by lost capture. A moved
+  // cursor stays, nothing new is confirmed, and the next press is a new gesture of a free owner.
+  for (const event of ['pointercancel', 'lostpointercapture']) {
+    await page.getByTestId('pulsar-reset').click();
+    await expect(page.getByTestId('pulsar-pending-1')).toHaveCount(0);
+    // Reset's click scrolls the mobile viewport; coordinates belong to the current client box.
+    const a = await pixel(page, 1, 50, 10), c = await pixel(page, 1, 70, 10), d = await pixel(page, 1, 90, 10);
+    await page.mouse.move(a.x, a.y);
+    await page.mouse.down();
+    await page.mouse.move(c.x, c.y);
+    await expect(value).toHaveText('0.700000');
+    await plot1.dispatchEvent(event, { pointerId: 1, pointerType: 'mouse', isPrimary: true });
+    await page.mouse.move(d.x, d.y); // still physically held, but the latch is gone
+    await expect(value).toHaveText('0.700000');
+    await expect(page.getByTestId('pulsar-pending-1')).toHaveCount(0);
+    await page.mouse.up();
+    await page.mouse.move(a.x, a.y);
+    await page.mouse.down(); // restart: the freed ownership accepts a new press
+    await expect(value).toHaveText('0.500000');
+    await page.mouse.move(d.x, d.y);
+    await expect(value).toHaveText('0.900000');
+    await page.mouse.up();
+    await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
+  }
 });
 
 test('a pan key whose keyup is lost while the host is inactive does not swallow the next press', async ({ page }) => {
@@ -763,4 +788,173 @@ test('a pan key whose keyup is lost while the host is inactive does not swallow 
   await right.focus();
   await page.keyboard.press('Enter');
   await expect(start).toHaveText('0.020');
+});
+
+// ---- Review closure (native /review at 166afb3, findings 1, 2, 3, 5; finding 6 is the owner test above) ----
+type Workbench = { render: (p: { idPrefix: string; active: boolean }) => void };
+/** Replaces the harness panel by two panels with prefixes a- and b-, kept on window.__multi. */
+const twoPanels = (page: Page) => page.evaluate(async () => {
+  (window as unknown as { __pulsarHarness: { unmount: () => void } }).__pulsarHarness.unmount();
+  const url = '/src/components/PulsarAnalysis.tsx';
+  const m = await import(/* @vite-ignore */ url) as { mountPulsarWorkbench: (e: HTMLElement, p: { idPrefix: string }) => Workbench };
+  const handles: Record<string, Workbench> = {};
+  for (const name of ['a', 'b']) {
+    const e = document.createElement('div');
+    e.id = `host-${name}`;
+    document.body.append(e);
+    handles[name] = m.mountPulsarWorkbench(e, { idPrefix: `${name}-` });
+  }
+  (window as unknown as { __multi: typeof handles }).__multi = handles;
+});
+const renderPanel = (page: Page, name: 'a' | 'b', active: boolean) =>
+  page.evaluate(([n, a]) => (window as unknown as { __multi: Record<string, Workbench> }).__multi[n as string].render({ idPrefix: `${n}-`, active: a as boolean }), [name, active] as const);
+
+test('a queued sibling panel opens its record dialog when the first panel\'s dialog is unmounted without a close event', async ({ page }) => {
+  await open(page);
+  await twoPanels(page);
+  const a = page.locator('#host-a'), b = page.locator('#host-b');
+  for (const host of [b, a]) {
+    await host.getByTestId('pulsar-file').setInputFiles(file('queued.plr', SYNTH));
+    await host.getByTestId('pulsar-properties-close').click();
+  }
+  await b.getByTestId('pulsar-plot-1').focus();
+  await page.keyboard.press('ArrowRight');
+  await b.getByTestId('pulsar-record').click();
+  await b.getByTestId('pulsar-comment').fill('queued draft');
+  await renderPanel(page, 'b', false);
+  await expect(b.getByTestId('pulsar-record-dialog')).toHaveJSProperty('open', false);
+  await a.getByTestId('pulsar-plot-1').focus();
+  await page.keyboard.press('ArrowRight');
+  await a.getByTestId('pulsar-record').click();
+  await expect(a.getByTestId('pulsar-record-dialog')).toHaveJSProperty('open', true);
+  await renderPanel(page, 'b', true);
+  await expect(b.getByTestId('pulsar-analysis')).toHaveAttribute('data-active', 'true');
+  await expect(b.getByTestId('pulsar-record-dialog')).toHaveJSProperty('open', false); // A is topmost
+  await expect(a.getByTestId('pulsar-comment')).toBeFocused();
+  // A's answer unmounts its open <dialog>; the browser fires no close event for that removal.
+  await a.getByTestId('pulsar-record-cancel').click();
+  await expect(a.getByTestId('pulsar-record-dialog')).toHaveCount(0);
+  await expect(b.getByTestId('pulsar-record-dialog')).toHaveJSProperty('open', true);
+  await expect(b.getByTestId('pulsar-comment')).toBeFocused();
+  await expect(b.getByTestId('pulsar-comment')).toHaveValue('queued draft');
+  await page.screenshot({ path: test.info().outputPath('queued-sibling-dialog.png') });
+  await page.keyboard.press('Enter');
+  await expect(b.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
+  await expect(a.getByTestId('pulsar-count')).toHaveText('0 recorded measurements');
+  await expect(a.getByTestId('pulsar-pending-1')).toBeVisible();
+});
+
+test('a host native modal removed from the DOM without close() releases a waiting PLR dialog with its draft', async ({ page }) => {
+  await open(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  await recordDraft(page, 'kept draft');
+  const dialog = page.getByTestId('pulsar-record-dialog'), comment = page.getByTestId('pulsar-comment');
+  await host(page, false);
+  await hostModal(page);
+  await host(page, true);
+  await expect(dialog).toHaveJSProperty('open', false);
+  await expect(page.locator('#host-one')).toBeFocused(); // the host modal keeps focus
+  await page.evaluate(() => document.getElementById('host-native')!.remove()); // conditional host rendering: no close()
+  await expect(dialog).toHaveJSProperty('open', true);
+  await expect(comment).toHaveValue('kept draft');
+  await expect(comment).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-record')).toBeFocused();
+});
+
+test('persistent nonmodal host dialogs do not block the PLR record or clear dialogs', async ({ page }) => {
+  await open(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  await page.evaluate(() => {
+    const banner = (id: string) => {
+      const d = document.createElement('dialog');
+      d.id = id; d.textContent = `Nonmodal ${id}`;
+      d.style.cssText = 'position:fixed;top:0;left:0;margin:0;pointer-events:none';
+      document.body.append(d);
+      return d;
+    };
+    banner('host-shown').show();
+    banner('host-attribute').setAttribute('open', '');
+  });
+  await recordDraft(page, 'over a banner');
+  await expect(page.getByTestId('pulsar-record-dialog')).toHaveJSProperty('open', true);
+  await expect(page.getByTestId('pulsar-comment')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('pulsar-record-dialog')).toHaveCount(0);
+  await page.getByTestId('pulsar-clear').click();
+  await expect(page.getByTestId('pulsar-clear-dialog')).toHaveJSProperty('open', true);
+  await expect(page.getByTestId('pulsar-clear-cancel')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('pulsar-clear-dialog')).toHaveCount(0);
+  for (const id of ['host-shown', 'host-attribute']) expect(await page.evaluate(i => (document.getElementById(i) as HTMLDialogElement).open, id)).toBe(true);
+});
+
+test('an accepted drag value stays recordable when only the release position is unsupported', async ({ page }) => {
+  await open(page);
+  await load(page, 'gain-1e-308.plr', withGain2('1e-308'));
+  await page.getByTestId('pulsar-properties-close').click();
+  await page.getByTestId('pulsar-horizontal-2').click();
+  for (let i = 0; i < 3; i++) await page.getByTestId('pulsar-factor-down-2').click();
+  const value = page.getByTestId('pulsar-horizontal-value-2'), pending = page.getByTestId('pulsar-pending-2');
+  const accepted = await pixel(page, 2, 10, 123), refused = await pixel(page, 2, 10, 0);
+  await page.mouse.move(accepted.x, accepted.y);
+  await page.mouse.down();
+  await expect(value).toHaveText(/^8\.0000E\+306$/); // 1/(1e-308·100·0.125)
+  const shown = await value.textContent();
+  await expect(pending).toHaveCount(0);
+  await page.mouse.move(refused.x, refused.y);
+  await page.mouse.up(); // 124/(1e-308·100·0.125) overflows Number
+  await expect(status(page)).toContainText('Not taken');
+  await expect(status(page)).toContainText('previous measurement');
+  await expect(value).toHaveText(shown!);
+  await expect(pending).toBeVisible();
+  await expect(page.getByTestId('pulsar-record')).toBeEnabled();
+  await page.getByTestId('pulsar-record').click();
+  await expect(page.getByTestId('pulsar-record-horizontal')).toHaveText(shown!);
+  await page.screenshot({ path: test.info().outputPath('accepted-drag-record.png') });
+  await page.getByTestId('pulsar-record-ok').click();
+  await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
+  // Control: a new, completely refused click on the recorded panel creates no new pending entry.
+  await at(page, 2, 10, 0);
+  await expect(status(page)).toContainText('Not taken');
+  await expect(pending).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-record')).toBeDisabled();
+  await page.getByTestId('pulsar-review').click();
+  await expect(page.getByTestId('pulsar-entry-1')).toContainText(shown!);
+});
+
+test('Tab from dialog text below the controls and Shift+Tab from the heading stay inside the dialog', async ({ page }) => {
+  await open(page);
+  await hostControls(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  await recordDraft(page, 'pending draft');
+  const dialog = page.getByTestId('pulsar-record-dialog'), comment = page.getByTestId('pulsar-comment'), cancel = page.getByTestId('pulsar-record-cancel');
+  await dialog.locator('h3').click();
+  await page.keyboard.press('Shift+Tab');
+  await expect(cancel).toBeFocused();
+  await dialog.locator('p[role="status"]').click();
+  await page.keyboard.press('Tab');
+  await expect(comment).toBeFocused();
+  await dialog.locator('p[role="status"]').click();
+  await page.keyboard.press('Shift+Tab'); // native order from below the controls: the last one
+  await expect(cancel).toBeFocused();
+  await dialog.locator('h3').click();
+  await page.keyboard.press('Tab'); // native order from the heading: the first one
+  await expect(comment).toBeFocused();
+  await expect(comment).toHaveValue('pending draft');
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+
+  await page.getByTestId('pulsar-clear').click();
+  const clear = page.getByTestId('pulsar-clear-dialog');
+  await expect(page.getByTestId('pulsar-clear-cancel')).toBeFocused();
+  await clear.locator('p').first().click();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.getByTestId('pulsar-clear-cancel')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(clear).toHaveCount(0);
 });

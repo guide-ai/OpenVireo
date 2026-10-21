@@ -57,7 +57,8 @@ export type PulsarEntryFields = Readonly<{
  * `nativeLineCandidate` is an opaque internal candidate built from the decoded delimiter literals
  * 0x570f28 '"', 0x570f2c ',', 0x570f38 ',', 0x570f48 '"",', 0x570f54 '"'. It is not a validatable or
  * exportable native CSV: names are wrapped in '"' without escaping, as the literals suggest, so an admitted
- * object or file name containing '"' or ',' makes its field boundaries ambiguous. Nothing reads it: CSV
+ * object or file name containing an unescaped '"' can make its field boundaries ambiguous;
+ * a comma inside a fully quoted field alone is not evidence of ambiguity. Nothing reads it: CSV
  * save 0x56feac is gated, and number text is not x87 parity.
  */
 export type PulsarMeasurementEntry = Readonly<{ sequence: number; panel: PulsarPanel; fields: PulsarEntryFields; nativeLineCandidate: string }>;
@@ -79,6 +80,12 @@ export type PulsarAnalysisState = Readonly<{
   /** Panel has an unrecorded measurement. This is the inverse of form byte 0x57f+ch. */
   pending: readonly [boolean, boolean, boolean];
   leftDrag: boolean; rightDrag: boolean;             // 0x5dd / 0x5dc
+  /**
+   * WEB: a press or move of the current gesture (since the press that set a drag latch) stored an accepted
+   * placement on panel ch. It decides whether a MouseUp whose own placement is refused still marks ch pending.
+   * Cleared when no latch remains after a MouseUp, by pointer release, load and reset. No native counterpart.
+   */
+  gesturePlaced: readonly [boolean, boolean, boolean];
   recordEnabled: boolean; reviewEnabled: boolean; saveEnabled: boolean; // +0x464 / +0x388 / +0x38c (bindings inferred)
   list: readonly PulsarMeasurementEntry[];
   /** Form byte 0x5db. Zero after object creation, and FormCreate does not set it. */
@@ -96,7 +103,8 @@ export type PulsarOutcome =
   | 'record-disabled' | 'record-opened' | 'record-draft' | 'record-confirmed' | 'record-skipped' | 'record-finished' | 'comment-invalid'
   | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared';
 
-export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; evidence: readonly string[] }>;
+/** `placed`: this transition stored an accepted cursor placement. The stored value can equal the previous one. */
+export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; placed: boolean; evidence: readonly string[] }>;
 
 const EMPTY_CURSOR: PulsarPanelCursor = Object.freeze({
   verticalX: -1, verticalTime: -1, verticalText: '', verticalVisible: false,
@@ -112,13 +120,14 @@ export const INITIAL_PULSAR_ANALYSIS: PulsarAnalysisState = Object.freeze({
   recording: null, propertiesOpen: false,
   zoom: 1, windowStart: 0, windowEnd: 0, panRate: 10, panStep: 0, zoomInEnabled: true, zoomOutEnabled: true,
   factors: triple(() => 1), modes: triple((): PulsarCursorMode => 'vertical'), cursors: triple(() => EMPTY_CURSOR), referenceText: '',
-  measurement: EMPTY_MEASUREMENT, pending: triple(() => false), leftDrag: false, rightDrag: false,
+  measurement: EMPTY_MEASUREMENT, pending: triple(() => false), leftDrag: false, rightDrag: false, gesturePlaced: triple(() => false),
   recordEnabled: false, reviewEnabled: false, saveEnabled: false,
   list: Object.freeze([]), listSaved: false, recordSession: null, clearPrompt: null, nextSequence: 1,
 });
+const NO_GESTURE_PLACEMENT = INITIAL_PULSAR_ANALYSIS.gesturePlaced;
 
-const done = (state: PulsarAnalysisState, outcome: PulsarOutcome, evidence: readonly string[], changed = true): PulsarTransition =>
-  Object.freeze({ state: changed ? Object.freeze(state) : state, outcome, changed, evidence: Object.freeze([...evidence]) });
+const done = (state: PulsarAnalysisState, outcome: PulsarOutcome, evidence: readonly string[], changed = true, placed = false): PulsarTransition =>
+  Object.freeze({ state: changed ? Object.freeze(state) : state, outcome, changed, placed, evidence: Object.freeze([...evidence]) });
 const keep = (s: PulsarAnalysisState, outcome: PulsarOutcome, evidence: readonly string[] = []) => done(s, outcome, evidence, false);
 const modal = (s: PulsarAnalysisState) => s.recordSession !== null || s.clearPrompt !== null;
 const dt = (s: PulsarAnalysisState) => (s.recording as PlrRecording).interval.value;
@@ -201,7 +210,7 @@ function zoomReset(s: PulsarAnalysisState): PulsarAnalysisState {
   return {
     ...rangeReset(s), zoomInEnabled: true, zoomOutEnabled: true,
     factors: triple(() => 1), modes: triple((): PulsarCursorMode => 'vertical'), cursors: triple(() => EMPTY_CURSOR), referenceText: '',
-    pending: triple(() => false), measurement: EMPTY_MEASUREMENT, recordEnabled: false,
+    pending: triple(() => false), measurement: EMPTY_MEASUREMENT, recordEnabled: false, gesturePlaced: NO_GESTURE_PLACEMENT,
   };
 }
 
@@ -296,20 +305,24 @@ const intIn = (v: number, lo: number, hi: number) => Number.isInteger(v) && v >=
  * 400 × Height[ch] paint box, clamped by the caller to [0,399] × [0,Height[ch]−1]. A native drag can
  * report captured coordinates outside the panel. A placement whose value Number cannot represent is
  * refused with 'number-unsupported': the previous cursor and measurement stay, and the drag latches
- * follow the same rules as for any other press, move or release. A MouseUp whose own placement is
- * refused is not taken: the panel's pending flag and Record keep their previous values (natively the
- * Extended value would have been stored, so the native pending rule has no Number counterpart here).
- * A placement that 0x56c6dc rejects as outside 0 ≤ y < base is a native rule, not a refusal, and
- * still marks the panel pending.
+ * follow the same rules as for any other press, move or release.
+ * WEB pending policy for a refused MouseUp (Number domain, not VCL/x87 parity; natively the Extended value
+ * would have been stored): the up still marks the panel pending when an earlier press or move of the same
+ * gesture stored an accepted placement on it, so the last accepted value stays recordable. Otherwise the
+ * up is not taken and the panel's pending flag and Record keep their previous values, so a completely
+ * refused gesture creates no blank entry. A placement that 0x56c6dc rejects as outside 0 ≤ y < base is
+ * a native rule, not a refusal, and still marks the panel pending.
  */
 export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: PulsarPointer): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');
   if (modal(s)) return keep(s, 'blocked-modal');
   if (!intIn(p.x, 0, PULSAR_PLOT_WIDTH - 1) || !intIn(p.y, 0, PULSAR_PANEL_HEIGHTS[ch] - 1)) return keep(s, 'invalid-input');
-  let refused = false;
-  const take = (st: PulsarAnalysisState, placed: PulsarAnalysisState | 'outside' | null) => {
-    if (placed === null) { refused = true; return st; }
-    return placed === 'outside' ? st : placed;
+  let refused = false, placed = false;
+  const take = (st: PulsarAnalysisState, result: PulsarAnalysisState | 'outside' | null) => {
+    if (result === null) { refused = true; return st; }
+    if (result === 'outside') return st;
+    placed = true;
+    return result;
   };
   const own = (st: PulsarAnalysisState) => take(st, st.modes[ch] === 'vertical' ? placeVertical(st, ch, p.x) : placeHorizontal(st, ch, p.y, true));
   const refAll = (st: PulsarAnalysisState) => {
@@ -319,9 +332,10 @@ export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: Pulsar
   };
   let n: PulsarAnalysisState = s;
   if (p.phase === 'down') {
-    if (p.button === 'left') n = own({ ...n, leftDrag: true });
-    else if (p.button === 'right') n = refAll({ ...n, rightDrag: true });
-    else return keep(s, 'pointer-ignored');
+    if (p.button !== 'left' && p.button !== 'right') return keep(s, 'pointer-ignored');
+    // A press that sets the first latch starts a new gesture.
+    if (!n.leftDrag && !n.rightDrag && n.gesturePlaced.some(Boolean)) n = { ...n, gesturePlaced: NO_GESTURE_PLACEMENT };
+    n = p.button === 'left' ? own({ ...n, leftDrag: true }) : refAll({ ...n, rightDrag: true });
   } else if (p.phase === 'move') {
     if (n.leftDrag && p.leftHeld) n = own(n);
     else if (n.rightDrag && p.rightHeld) n = refAll(n);
@@ -329,22 +343,43 @@ export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: Pulsar
   } else {
     if (n.leftDrag && p.button === 'left') n = own({ ...n, leftDrag: false });
     else if (n.rightDrag && p.button === 'right') n = { ...refAll(n), rightDrag: false };
-    if (!refused) {
+  }
+  if (placed && !n.gesturePlaced[ch]) n = { ...n, gesturePlaced: with3(n.gesturePlaced, ch, true) };
+  if (p.phase === 'up') {
+    if (!refused || n.gesturePlaced[ch]) {
       const pend = pulsarPanelRecordable(n.recording, ch);
       n = { ...n, pending: with3(n.pending, ch, pend), recordEnabled: n.recordEnabled || pend };
     }
+    if (!n.leftDrag && !n.rightDrag && n.gesturePlaced.some(Boolean)) n = { ...n, gesturePlaced: NO_GESTURE_PLACEMENT };
   }
   if (refused && n === s) return keep(s, 'number-unsupported');
-  return done(n, refused ? 'number-unsupported' : 'cursor', ['PLR-MOUSE-01', p.button === 'left' && s.modes[ch] === 'horizontal' ? 'PLR-CURSOR-H-01' : 'PLR-CURSOR-V-01']);
+  return done(n, refused ? 'number-unsupported' : 'cursor', ['PLR-MOUSE-01', p.button === 'left' && s.modes[ch] === 'horizontal' ? 'PLR-CURSOR-H-01' : 'PLR-CURSOR-V-01'], true, placed);
 }
 /**
  * WEB boundary for pointer cancel, lost pointer capture and host deactivation: clears the drag latches
- * 0x5dd/0x5dc so a later move without a new press changes nothing. It is not a native MouseUp: no cursor
- * is placed, no panel becomes pending, and the cursors, measurement and confirmed list are kept.
+ * 0x5dd/0x5dc so a later move without a new press changes nothing, and forgets the gesture's accepted
+ * placements. It is not a native MouseUp: no cursor is placed, no panel becomes pending, and the cursors,
+ * measurement and confirmed list are kept.
  */
 export function pulsarPointerRelease(s: PulsarAnalysisState): PulsarTransition {
   if (!s.leftDrag && !s.rightDrag) return keep(s, 'pointer-ignored');
-  return done({ ...s, leftDrag: false, rightDrag: false }, 'pointer-released', ['PLR-MOUSE-01']);
+  return done({ ...s, leftDrag: false, rightDrag: false, gesturePlaced: NO_GESTURE_PLACEMENT }, 'pointer-released', ['PLR-MOUSE-01']);
+}
+
+/** Outcomes that write no status of their own. */
+export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft']);
+/** Refusal statuses say the latest input was not taken and the last accepted state is kept. */
+const REFUSAL_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['number-unsupported', 'display-unsupported']);
+/**
+ * WEB status policy. `shown` is the outcome that wrote the current status, or null for a file or read status.
+ * Returns the outcome to announce, or null to keep the current status. Every non-silent outcome is announced.
+ * A silent one keeps the status, except that a transition that stored an accepted placement replaces a refusal
+ * status (even when the stored value equals the previous one), because that status would no longer describe
+ * the latest input. File and read statuses are never replaced this way.
+ */
+export function pulsarAnnouncement(shown: PulsarOutcome | null, tr: PulsarTransition): PulsarOutcome | null {
+  if (!PULSAR_SILENT_OUTCOMES.has(tr.outcome)) return tr.outcome;
+  return tr.placed && shown !== null && REFUSAL_OUTCOMES.has(shown) ? tr.outcome : null;
 }
 
 // ---------------------------------------------------------------- record / clear

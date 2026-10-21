@@ -1,67 +1,74 @@
 {
   "sourceHashes": {
-    "docs/PULSAR-ANALYSIS-PROVENANCE.json": "18719007507c7059908d88e316d1c687a604158199da858795963b62b9430a71",
-    "docs/PULSAR-ANALYSIS.md": "ce19c2a0d2054923a3939bbfeb1afc3d5435fd28e8ac254cc7ad33a8e5181253",
+    "docs/PULSAR-ANALYSIS-PROVENANCE.json": "63f5b059913128aca5c719a2a36b3713b67945635572091b581fbd47ff1fdb5b",
+    "docs/PULSAR-ANALYSIS.md": "f450840324aa7f18b006786c7a49ed39ed0040401ac325df0cf67ca232e7ca48",
     "src/components/PulsarAnalysis.css": "e0307343301ec4c2f1812e3a1a1eed433894cfa41b6265eb09c16e4d363c53fc",
-    "src/components/PulsarAnalysis.tsx": "24c325006d42b3a7953b97efb479a6a524b7b15a29ec42dc2f5244865c7419bf",
+    "src/components/PulsarAnalysis.tsx": "1ac9413fedd4d5d2c726bb215130ef4f02741a7d488133db3c6caf81be224267",
     "src/components/PulsarMessages.ts": "7cd0d7197fb0ae297b4de192f7b5e19cffdc1a75862312bf85d5a52d003e9e97",
-    "src/core/pulsarAnalysis.test.ts": "892fa8899214566af93dcff60f92b8ad5ea30603109f87c56e5e595410e1b920",
-    "src/core/pulsarAnalysis.ts": "5526af934502d0a47bdc3e211ef6c944124c944b10e22f40104cc2403ec10dfb",
+    "src/core/pulsarAnalysis.test.ts": "e40f6c2841f18a6122e77ddd5c7b6ccf18c5e0a15ceaff0054ce97cdffa7bf85",
+    "src/core/pulsarAnalysis.ts": "a9c1e6303598db0f6c43bc2af9dd4209d503a24f5f20e78bff3e9f838ef211f3",
     "src/core/pulsarPanHold.test.ts": "709037b93ae087d997f0129974dfd62a32491e13a2f58756653dede97e2582c8",
     "src/core/pulsarPanHold.ts": "b883c7d4f224270b88ef36c8b80ffdff4a371890b0fc2d77adaeb0a23da87f62",
     "src/core/pulsarProvenance.test.ts": "95667cd3e2dd45c9e7b21ded51f7b2ddd82578bde114f19198a76d8ee273814a",
     "src/core/pulsarRecording.test.ts": "1b40d8af8b37941a05118903ac09eed0cb6d9b36b0aa1e5ed17a65cca1d6d74b",
     "src/core/pulsarRecording.ts": "2210b729d40490717ad6f8e93a0fc8ae14440db2403fbffa6eccee3c4f5ca142",
     "src/core/pulsarUiAudit.test.ts": "de3387bba5a1b9ed87e20f5ee9a3cb538455305ffbfedf04fdc9db08f495ccb4",
-    "tests/pulsar-analysis.spec.ts": "1e541edfca2f13886cc7341519f37f1110b2b71c43eeed75f40041cf1b8d6e9a",
+    "tests/pulsar-analysis.spec.ts": "a801d63bb908c4901d12ef38512c908688827a5b727d9cc79c4b45bfaab15575",
     "src/i18n/coverage.test.ts": "dbdd3218cacace50cfd9261dd00878e0c56cb3e0285674b3bc23b3a59f371260"
   },
-  "sourceStableDuringValidation": true,
   "unitTests": {
-    "passed": 1848,
+    "passed": 1858,
     "failed": 0,
-    "files": 177
+    "files": 177,
+    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/codex-unit-final-report.json"
   },
   "e2e": {
-    "startTime": "2026-10-21T22:45:28.495Z",
-    "duration": 19694.549,
-    "expected": 22,
-    "skipped": 0,
-    "unexpected": 0,
-    "flaky": 0
-  },
-  "mobileE2e": {
-    "startTime": "2026-10-21T22:46:13.954Z",
-    "duration": 15484.289999999999,
-    "expected": 22,
-    "skipped": 0,
-    "unexpected": 0,
-    "flaky": 0
+    "passed": 54,
+    "failed": 0,
+    "desktop": 27,
+    "mobile": 27,
+    "log": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/codex-browser-final.log",
+    "rawFirstRun": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/codex-browser-report.json",
+    "firstRun": "50pass/4fail;two invalid expected status phrases,stale mobile coordinates afterReset,existing lost-key test race;not hidden"
   },
   "independentUiReproductions": {
-    "startTime": "2026-10-21T22:46:57.077Z",
-    "duration": 2576.22,
-    "expected": 4,
-    "skipped": 0,
-    "unexpected": 0,
-    "flaky": 0
+    "passed": 4,
+    "failed": 0,
+    "log": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-modal-triage/after-final.log",
+    "beforeReport": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-modal-triage/pre-recovered-report.json",
+    "selectorPrecision": "Footer text uses p[role=status] because output elements also have implicit status;all behavioral assertions kept"
   },
-  "independentControls": "7 synthetic parser/trace/cursor/record/clear/timer controls repeated;manual80limitpretestfailed,postpassed;not native runtime oracle",
-  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-pulsar-codex-corrections-2;exit0",
-  "resources": "1279/1279 size/SHA256 match",
-  "authorship": "Claude frozen correction-followup;Codex source-backed compiled manual comment limit80 correction,distinct from native storage81",
-  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3",
-  "preFixEvidence": [
-    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-correction-triage/pre-report.json",
-    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-independent/corrections-2/comment-limit-pre-report.json"
-  ],
-  "previousValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-independent/corrections-1/receipt.json",
-  "status": "Independently validated local candidate;mandatory separate final delta and integration review pending under recorded automatic-approval denial,no retry",
+  "baselineControl": {
+    "source": "166afb3 component/core under identical configuration",
+    "before": "6fail/4pass across5desktop+5mobile repetitions",
+    "beforeLog": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/baseline-lost-key.log",
+    "after": "10pass/0fail,same baseline with only observable data-active waits added",
+    "afterLog": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/baseline-lost-key-corrected-test.log",
+    "separateTestCommit": "c967e8c",
+    "noTimeoutIncreaseOrAssertionRemoval": true
+  },
+  "buildTypecheck": {
+    "result": "exit0",
+    "log": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/codex-build.log",
+    "resources": "1279/1279 size/SHA256 match"
+  },
+  "authorship": {
+    "initialFeature": "Claude Code",
+    "closure": "Claude authored pure transition/announcement policy and regression cases;quota429 stopped before modal completion;Codex independently completed native-modal sync/text focus and corrected test defects",
+    "partialClaudeSourceHashes": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/partial-author-hashes.json",
+    "originalClaudeExit": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/exit.json",
+    "quotaError": "usage_limit_reached HTTP429;no account/permission change"
+  },
+  "previousValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-closure-fixes/previous-validation.json",
+  "scope": "Queued modal resumes after native conditional removal;nonmodal banners do not block;local Tab from text stays in dialog;last accepted in-gesture value stays recordable after Number-refused release;all-refused/cancel do not manufacture entries;status decision is pure TypeScript. Original native MouseUp contract not redefined for ownerless late browser release.",
+  "status": "Independently validated local candidate;mandatory separate review of new delta pending Claude quota;no main promotion or publication",
   "scientificLimits": [
     "No radioacquisition/catalog/noise/period/DM",
     "Number/nearest-even/format policy is not measuredx87/GDI/WM_TIMERparity",
     "Originalbytesdownload isnot nativePLRwriter; nooriginalPLRwriterwitness",
     "NativeCSV hostdate/login/formattingauthority gated",
     "Window-localmeasurements explicitly not inSaveinvestigation;navigation inactivity preserves confirmedrecords"
-  ]
+  ],
+  "nextOriginalContract": "Static Review working-copy Cancel/OK and confirmed deletion/ordinalrepair recovered;not implemented here;Find/safecommentroundtrip/nativewriter remain open",
+  "browserVisualInspection": "Coordinator inspected mobile queued-draft modal and desktop accepted-value Record screenshot;Chromium only,not nativeGDIoracle"
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { admitPlrRecording, type PlrRecording } from './pulsarRecording';
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANEL_HEIGHTS, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord,
-  pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog,
+  pulsarAnnouncement, pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog,
   pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom, type PulsarAnalysisState, type PulsarPointer, type PulsarTransition,
 } from './pulsarAnalysis';
 
@@ -435,5 +435,103 @@ describe('record and clear (PLR-RECORD-01, PLR-CLEAR-01)', () => {
     const s = loaded(), copy = JSON.stringify({ ...s, recording: null });
     click(s, 0, 10); pulsarZoom(s, 'in'); pulsarFactor(s, 0, 'up');
     expect(JSON.stringify({ ...s, recording: null })).toBe(copy);
+  });
+});
+
+describe('WEB Number refusal inside one pointer gesture (PLR-MOUSE-01, PLR-CURSOR-H-01)', () => {
+  // SYNTHETIC: gain 1e-308 on panel 2 at factor 0.125. y = 123 stores 1/(1e-308·100·0.125), about 8e306; y = 0 overflows Number.
+  const tiny = (rec = synthetic(1000, 1, '1e-308')) => { let s = st(pulsarMode(loaded(rec), 1, 'horizontal')); for (let i = 0; i < 3; i++) s = st(pulsarFactor(s, 1, 'down')); return s; };
+  const held = { leftHeld: true, rightHeld: false };
+  it('an accepted press, then a refused move and MouseUp, keeps the last accepted value and marks the panel pending', () => {
+    const down = pulsarPointer(tiny(), 1, ptr('down', 'left', 5, 123));
+    expect([down.outcome, down.placed, down.state.pending[1], down.state.recordEnabled]).toEqual(['cursor', true, false, false]);
+    const accepted = down.state.measurement.horizontal[1], text = down.state.cursors[1].horizontalText;
+    expect(Number.isFinite(accepted) && accepted > 7e306).toBe(true);
+    expect(text).toMatch(/^8\.0000E\+306$/);
+    const move = pulsarPointer(down.state, 1, ptr('move', 'other', 5, 0, held));
+    expect([move.outcome, move.changed, move.placed]).toEqual(['number-unsupported', false, false]);
+    const up = pulsarPointer(move.state, 1, ptr('up', 'left', 5, 0));
+    expect([up.outcome, up.placed, up.state.leftDrag, up.state.pending, up.state.recordEnabled]).toEqual(['number-unsupported', false, false, [false, true, false], true]);
+    expect([up.state.measurement.horizontal[1], up.state.cursors[1].horizontalText, up.state.cursors[1].horizontalY]).toEqual([accepted, text, 123]);
+    const recorded = st(pulsarConfirmRecord(st(pulsarBeginRecord(up.state))));
+    expect([recorded.list.length, recorded.list[0].panel, recorded.list[0].fields.horizontal, recorded.pending]).toEqual([1, 1, text, [false, false, false]]);
+  });
+  it('a refused press followed by an accepted move also leaves the accepted value recordable after a refused MouseUp', () => {
+    const down = pulsarPointer(tiny(), 1, ptr('down', 'left', 5, 0));
+    expect([down.outcome, down.placed, down.state.leftDrag]).toEqual(['number-unsupported', false, true]);
+    const move = pulsarPointer(down.state, 1, ptr('move', 'other', 5, 123, held));
+    expect([move.outcome, move.placed]).toEqual(['cursor', true]);
+    const up = pulsarPointer(move.state, 1, ptr('up', 'left', 5, 0));
+    expect([up.outcome, up.state.pending[1], up.state.recordEnabled, up.state.measurement.horizontal[1]]).toEqual(['number-unsupported', true, true, move.state.measurement.horizontal[1]]);
+  });
+  it('control: a completely refused click creates no pending or recordable blank entry', () => {
+    const s = tiny();
+    const up = pulsarPointer(st(pulsarPointer(s, 1, ptr('down', 'left', 5, 0))), 1, ptr('up', 'left', 5, 0));
+    expect([up.outcome, up.state.pending, up.state.recordEnabled, up.state.measurement.horizontal[1], up.state.cursors[1].horizontalText]).toEqual(['number-unsupported', [false, false, false], false, 0, '']);
+    expect(pulsarBeginRecord(up.state)).toMatchObject({ outcome: 'record-disabled', changed: false });
+  });
+  it('control: an already recorded value does not become pending again through a new refused click', () => {
+    const recorded = st(pulsarConfirmRecord(st(pulsarBeginRecord(click(tiny(), 1, 5, 123)))));
+    expect([recorded.list.length, recorded.pending[1], recorded.recordEnabled]).toEqual([1, false, false]);
+    const up = pulsarPointer(st(pulsarPointer(recorded, 1, ptr('down', 'left', 5, 0))), 1, ptr('up', 'left', 5, 0));
+    expect([up.outcome, up.state.pending[1], up.state.recordEnabled, up.state.list]).toEqual(['number-unsupported', false, false, recorded.list]);
+    expect(up.state.measurement).toBe(recorded.measurement);
+  });
+  it('control: a valid pending measurement on another panel is kept through refused gestures on panel 2', () => {
+    const s = click(tiny(), 0, 40);
+    expect([s.pending, s.recordEnabled]).toEqual([[true, false, false], true]);
+    const fresh = pulsarPointer(st(pulsarPointer(s, 1, ptr('down', 'left', 5, 0))), 1, ptr('up', 'left', 5, 0));
+    expect([fresh.state.pending, fresh.state.recordEnabled]).toEqual([[true, false, false], true]);
+    const dragged = pulsarPointer(st(pulsarPointer(s, 1, ptr('down', 'left', 5, 123))), 1, ptr('up', 'left', 5, 0));
+    expect([dragged.state.pending, dragged.state.recordEnabled, dragged.state.measurement.vertical[0]]).toEqual([[true, true, false], true, s.measurement.vertical[0]]);
+  });
+  it('control: pointer cancel commits nothing and forgets the gesture, so the next fully refused gesture is not taken', () => {
+    const down = st(pulsarPointer(tiny(), 1, ptr('down', 'left', 5, 123)));
+    const released = pulsarPointerRelease(down);
+    expect([released.outcome, released.placed, released.state.leftDrag, released.state.pending[1], released.state.recordEnabled]).toEqual(['pointer-released', false, false, false, false]);
+    expect(released.state.measurement.horizontal[1]).toBe(down.measurement.horizontal[1]);
+    // The component filters an owner's late MouseUp after cancel. The core's native MouseUp
+    // handler is not redefined here: check a new complete, fully refused gesture instead.
+    const stray = pulsarPointer(st(pulsarPointer(released.state, 1, ptr('down', 'left', 5, 0))), 1, ptr('up', 'left', 5, 0));
+    expect([stray.outcome, stray.state.pending[1], stray.state.recordEnabled]).toEqual(['number-unsupported', false, false]);
+  });
+  it('control: a reset or load during the gesture forgets its accepted placement, so a refused MouseUp records no blank entry', () => {
+    const down = st(pulsarPointer(tiny(), 1, ptr('down', 'left', 5, 123)));
+    const reset = st(pulsarReset(down));
+    expect([reset.leftDrag, reset.measurement.horizontal[1], reset.gesturePlaced]).toEqual([true, 0, [false, false, false]]);
+    // Reset restores factor 1 and vertical mode; back to horizontal at factor 0.125, y = 0 is refused again.
+    let s = st(pulsarMode(reset, 1, 'horizontal'));
+    for (let i = 0; i < 3; i++) s = st(pulsarFactor(s, 1, 'down'));
+    const up = pulsarPointer(s, 1, ptr('up', 'left', 5, 0));
+    expect([up.outcome, up.state.pending[1], up.state.recordEnabled, up.state.measurement.horizontal[1]]).toEqual(['number-unsupported', false, false, 0]);
+    expect(st(pulsarLoad(down, synthetic())).gesturePlaced).toEqual([false, false, false]);
+  });
+});
+
+describe('status policy: pulsarAnnouncement', () => {
+  const tiny = () => { let s = st(pulsarMode(loaded(synthetic(1000, 1, '1e-308')), 1, 'horizontal')); for (let i = 0; i < 3; i++) s = st(pulsarFactor(s, 1, 'down')); return s; };
+  it('announces every non-silent outcome, and a silent one keeps the shown status', () => {
+    const s = loaded();
+    expect(pulsarAnnouncement(null, pulsarZoom(s, 'in'))).toBe('zoomed-in');
+    expect(pulsarAnnouncement('cursor', pulsarPointer(tiny(), 1, ptr('down', 'left', 5, 0)))).toBe('number-unsupported');
+    expect(pulsarAnnouncement('zoomed-in', pulsarPointer(s, 0, ptr('down', 'left', 5)))).toBeNull();
+    expect(pulsarAnnouncement('number-unsupported', pulsarPointer(s, 0, ptr('move', 'other', 5)))).toBeNull(); // pointer-ignored
+  });
+  it('an accepted placement replaces a refusal status, also when it stores the same value as before', () => {
+    const before = click(tiny(), 1, 5, 123);
+    const refused = pulsarPointer(before, 1, ptr('down', 'left', 5, 0));
+    expect(pulsarAnnouncement('cursor', refused)).toBe('number-unsupported');
+    const same = pulsarPointer(st(pulsarPointer(refused.state, 1, ptr('up', 'left', 5, 0))), 1, ptr('down', 'left', 5, 123));
+    expect([same.outcome, same.placed, same.state.measurement.horizontal[1]]).toEqual(['cursor', true, before.measurement.horizontal[1]]);
+    expect(pulsarAnnouncement('number-unsupported', same)).toBe('cursor');
+    expect(pulsarAnnouncement('display-unsupported', pulsarPointer(loaded(), 0, ptr('down', 'right', 5)))).toBe('cursor');
+  });
+  it('a transition that stores no placement keeps a refusal status; file and read statuses are never replaced by a placement', () => {
+    const outside = pulsarPointer(st(pulsarMode(loaded(), 1, 'horizontal')), 1, ptr('down', 'left', 5, 124)); // native 0x56c6dc rejection
+    expect([outside.outcome, outside.changed, outside.placed]).toEqual(['cursor', true, false]);
+    expect(pulsarAnnouncement('number-unsupported', outside)).toBeNull();
+    const latched = st(pulsarPointer(loaded(), 0, ptr('down', 'left', 5)));
+    expect(pulsarAnnouncement('number-unsupported', pulsarPointerRelease(latched))).toBeNull();
+    expect(pulsarAnnouncement(null, pulsarPointer(loaded(), 0, ptr('down', 'left', 5)))).toBeNull();
   });
 });

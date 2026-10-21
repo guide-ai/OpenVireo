@@ -4,7 +4,7 @@ import './PulsarAnalysis.css';
 import { resourceSha256 } from '../io/boundedResource';
 import { admitPlrRecording, plrProperties, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
 import {
-  INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord,
+  INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarAnnouncement, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord,
   pulsarCancelRecord, pulsarConfirmRecord, pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer,
   pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
@@ -14,14 +14,14 @@ import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } f
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
- * panel is inert, an in-flight read is cancelled and a held pan stops. The loaded bytes and the
- * confirmed measurement list are kept.
+ * panel is inert, an in-flight read is cancelled, a held pan stops and an open record or clear dialog
+ * closes (its session is kept). The loaded bytes and the confirmed measurement list are kept.
+ * A host that hides the panel (CSS, an `inert` ancestor or similar) must pass `active={false}` for as long
+ * as it is hidden: the panel does not observe ancestor styles or attributes, so reads, pan timers and
+ * dialogs follow `active`, not visibility.
  */
 export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
-const SILENT = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft']);
-/** Refusal statuses say the measurement is unchanged, so a later accepted placement must replace them. */
-const REFUSALS = new Set<PulsarOutcome | null>(['number-unsupported', 'display-unsupported']);
 /** The record and clear dialogs contain only buttons and one text input. */
 const TABBABLE = 'button:not(:disabled), input:not(:disabled)';
 // Native GDI colors (TColor $00BBGGRR) used by 0x56bacc, 0x56c028, 0x56c448 and 0x56c6dc.
@@ -49,12 +49,12 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const statusOutcome = useRef<PulsarOutcome | null>(null);
   const say = (text: string, outcome: PulsarOutcome | null = null) => { statusOutcome.current = outcome; setStatus(text); };
   // Transitions run on the latest committed state, so rapid pointer events are never applied to a stale copy.
+  // Which outcome writes the status is the core's pulsarAnnouncement policy.
   const act: Act = fn => {
-    const before = current.current, tr = fn(before);
+    const tr = fn(current.current);
     if (tr.changed) { current.current = tr.state; setS(tr.state); }
-    if (!SILENT.has(tr.outcome)) say(t(`pulsar.outcome.${tr.outcome}` as PulsarMessageKey), tr.outcome);
-    // A cursor move is silent, but once it changes the measurement an earlier refusal status would be false.
-    else if (tr.outcome === 'cursor' && tr.state.measurement !== before.measurement && REFUSALS.has(statusOutcome.current)) say(t('pulsar.outcome.cursor'), 'cursor');
+    const announced = pulsarAnnouncement(statusOutcome.current, tr);
+    if (announced) say(t(`pulsar.outcome.${announced}` as PulsarMessageKey), announced);
     return tr;
   };
   const actRef = useRef(act);
@@ -168,7 +168,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   });
   // WEB modal dialogs: the record and clear prompts are native <dialog> elements opened with showModal(),
   // so the browser top layer makes the rest of the page inert and keeps focus inside. A dialog opens only
-  // while the panel is active and rendered and no other dialog is open, so an existing host modal stays
+  // while the panel is active and rendered and no other modal dialog is open, so an existing host modal stays
   // topmost; ours opens when that one closes. An inactive panel closes its dialog but keeps the record
   // session or clear prompt, draft included, and reopens it when it is active again. No VCL parity is claimed.
   const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null);
@@ -180,7 +180,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (el.open) return;
     const panel = root.current;
     if (!panel || panel.getClientRects().length === 0 || panel.parentElement?.closest('[inert]')) return;
-    if ([...document.querySelectorAll('dialog[open]')].some(d => d !== el)) return;
+    if ([...document.querySelectorAll('dialog:modal')].some(d => d !== el)) return;
     try { el.showModal(); } catch { return; }
     (el === recordDialog.current ? commentInput.current : clearDefault.current)?.focus();
   });
@@ -188,9 +188,16 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   useEffect(() => {
     // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
     const closed = (e: Event) => { if (e.target !== recordDialog.current && e.target !== clearDialog.current) syncModal(); };
+    if (!modal || !active) return;
     document.addEventListener('close', closed, true);
-    return () => document.removeEventListener('close', closed, true);
-  }, [syncModal]);
+    // Conditional rendering can remove an open modal without a close event. Observe only
+    // DOM removal/insertion and the native open attribute while this panel has a pending
+    // modal session. Host CSS/inert changes still use the explicit active protocol above.
+    const observer = new MutationObserver(syncModal);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['open'] });
+    syncModal();
+    return () => { observer.disconnect(); document.removeEventListener('close', closed, true); };
+  }, [syncModal, modal, active]);
   /**
    * Escape is handled on keydown. A close request the page cannot cancel closes the dialog, which counts as Cancel/No.
    * Tab and Shift+Tab wrap between this dialog's first and last controls (the top layer alone would let Tab leave to
@@ -201,7 +208,12 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
       if (e.key !== 'Tab') return;
       const items = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)], first = items[0], last = items[items.length - 1];
-      if (first && document.activeElement === (e.shiftKey ? first : last)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+      const focused = document.activeElement;
+      // Clicking non-focusable dialog text resets Chromium's sequential focus origin.
+      // Wrap locally from that text as well; events in host dialogs never reach us.
+      if (first && (!items.includes(focused as HTMLElement) || focused === (e.shiftKey ? first : last))) {
+        e.preventDefault(); (e.shiftKey ? last : first).focus();
+      }
     },
     onCancel: (e: SyntheticEvent<HTMLDialogElement>) => { if (e.cancelable) { e.preventDefault(); cancel(); } },
     onClose: (e: SyntheticEvent<HTMLDialogElement>) => {
