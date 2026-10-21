@@ -33,3 +33,7 @@ Run `node node_modules/vitest/vitest.mjs run src/core/cameraRequestGate.test.ts`
 The normal preview remains http://127.0.0.1:5173/#observatory. Open **CCD / IR preparation reference**, inspect/apply/cancel a telescope choice and save/restore the investigation; there is no new acquisition action. Successful catalog/parser/cache/projected-row authority, preceding random sequence, remaining CCD overlay, complete configuration/IR resource policies and image metadata/output still gate an actual exposure. The58functional package counts remain unchanged.
 
 The explicit web unsupported catalog verdict has its own latched request/terminal outcome and releases without prepare. This covers original-admitted but unimplemented response paths;it is neither a malformed-catalog verdict nor native preparation behavior.
+
+The earlier nine scenario traces/65 events are historical coverage of the earlier outcome set. The unsupported extension adds a direct unit sequence covering readiness/transport precedence,latching,release acknowledgement and no image acceptance;it is not claimed to be included in that older Node/Chromium trace receipt.
+
+Current fresh-reply evidence also checks a separately authored7event unsupported trace plus transport-precedence branch in Node and Chromium. Readiness remains pending,unsupported latches,later valid is ignored,release keeps unsupported through acknowledgement and emits no acceptance. This new web-policy trace is separate from the historical native-order controls.

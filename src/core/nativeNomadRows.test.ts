@@ -75,7 +75,7 @@ describe('bounded NOMAD fixed-column decimal candidate reader;not source authori
  });
  it('rejects malformed lines/contexts and JSON layouts atomically instead of inferring epoch,band or data',()=>{
   const l=layout(),before=JSON.stringify(l);for(const raw of['','x','x'.repeat(4097),line()+'\n',line().replace('13.5','١٣.٥')])fails(()=>readNativeNomadRow(l,raw,context),'row');
-  fails(()=>nativeNomadLayout(header()+'\t',units),'line');fails(()=>readNativeNomadRow(JSON.parse(JSON.stringify(l)),line(),context),'layout');
+  fails(()=>nativeNomadLayout(header()+'\t',units),'line');fails(()=>nativeNomadLayout(header(),units+'\t'),'line');fails(()=>readNativeNomadRow(JSON.parse(JSON.stringify(l)),line(),context),'layout');
   for(const band of['I','NF','__proto__','constructor'])fails(()=>readNativeNomadRow(l,line(),{band:band as NomadBand,epochOffsetYears:0}),'context');
   for(const epochOffsetYears of[NaN,Infinity,1001])fails(()=>readNativeNomadRow(l,line(),{band:'V',epochOffsetYears}),'context');fails(()=>readNativeNomadRow(l,line(),null as unknown as NomadRowContext),'context');
   expect(JSON.stringify(l)).toBe(before);

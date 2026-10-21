@@ -38,6 +38,10 @@ describe('bounded NOMAD response framing,not actual response authority',()=>{
   }
   try{readNativeNomadResponse(bytes(source([row()]).replace(units,'')),context);expect.fail('Expected descriptor rejection');}
   catch(e){expect((e as NativeNomadResponseError).code).toBe('header');expect((e as NativeNomadResponseError).lineNumber).toBe(4);}
+  for(const suffix of['','\n'])for(const h of[header,'no columns']){
+   try{readNativeNomadResponse(bytes('END\n'+h+suffix),context);expect.fail('Expected missing-descriptor rejection');}
+   catch(e){expect((e as NativeNomadResponseError).code).toBe('header');expect((e as NativeNomadResponseError).lineNumber).toBe(h===header?3:2);}
+  }
  });
  it('admits zero rows without claiming a successful observing catalog',()=>{
   const r=readNativeNomadResponse(bytes(source([])),context);expect(r.entries).toEqual([]);expect(r).not.toHaveProperty('success');expect(r).not.toHaveProperty('request');expect(r).not.toHaveProperty('observation');

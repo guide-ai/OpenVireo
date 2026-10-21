@@ -46,7 +46,7 @@ export function nativeNomadLayout(header:string,units:string):NomadLayout {
  // Original GetData validates header before coordinate descriptor. Preserve
  // that priority even when both inputs are unusable. Sexagesimal is admitted
  // by the original but not implemented by this decimal row reader.
- if(!asciiLine(units))throw new NativeNomadError('format');
+ if(!asciiLine(units))throw new NativeNomadError('line','units');
  if(!units.includes('hh.hhh')||!units.includes('dd.ddd')){
   if(units.includes('hh mm ss')&&units.includes('dd mm ss'))throw new NativeNomadError('unsupported-units');
   throw new NativeNomadError('format');

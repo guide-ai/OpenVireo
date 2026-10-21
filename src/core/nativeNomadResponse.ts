@@ -37,9 +37,10 @@ export function readNativeNomadResponse(bytes:Uint8Array,context:NomadRowContext
  const markerIndex=lines.findIndex(l=>l.text.startsWith('END')||l.text.startsWith('#END'));
  if(markerIndex<0)throw new NativeNomadResponseError('marker');
  const marker=lines[markerIndex],header=lines[markerIndex+1],units=lines[markerIndex+2];
- if(!header||!units)throw new NativeNomadResponseError('header',marker.lineNumber+1);
+ if(!header)throw new NativeNomadResponseError('header',marker.lineNumber+1);
  let layout:NomadLayout;
- try{layout=nativeNomadLayout(header.text,units.text);}catch(e){if(e instanceof NativeNomadError)throw new NativeNomadResponseError(e.code==='unsupported-units'?'unsupported-units':'header',e.code==='format'||e.code==='unsupported-units'?units.lineNumber:header.lineNumber);throw e;}
+ try{layout=nativeNomadLayout(header.text,units?.text??'');}catch(e){if(e instanceof NativeNomadError)throw new NativeNomadResponseError(e.code==='unsupported-units'?'unsupported-units':'header',e.code==='format'||e.code==='unsupported-units'||e.field==='units'?header.lineNumber+1:header.lineNumber);throw e;}
+ if(!units)throw new NativeNomadResponseError('header',header.lineNumber+1);
  const ownedContext=Object.freeze({band:context.band,epochOffsetYears:context.epochOffsetYears});
  const entries=lines.slice(markerIndex+3).map(line=>{
   if(line.text.startsWith('#'))return Object.freeze({line,result:Object.freeze({kind:'comment' as const})});
