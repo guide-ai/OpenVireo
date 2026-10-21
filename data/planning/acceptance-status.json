@@ -1,12 +1,12 @@
 {
-  "date": "2026-10-21",
+  "date": "2026-10-19",
   "definition": "Full baseline packages, not tests, functions or implemented subcontracts. Primary status is mutually exclusive; witness/license overlays overlap and are not additive. blocked-contract means no implementation of this full remaining scientific package can yet be accepted, not a denied tool action.",
   "functionalCount": 58,
   "qualityCount": 6,
   "complete": 1,
   "counts": {
-    "partial": 38,
-    "blocked-contract": 23,
+    "partial": 37,
+    "blocked-contract": 24,
     "complete": 1,
     "not-started": 1,
     "blocked-license": 1
@@ -200,15 +200,12 @@
       "id": "D05",
       "title": "FITS image/header support",
       "baselineState": "N",
-      "status": "partial",
-      "remaining": "Bounded supplied primary2Dfloat32 image inspection is implemented with raw header/bytes/SHA and pixel selection. Other BITPIX,scaling,axes/extensions,selected-edition/native output/padding witnesses,CCD acquisition and scientific calibration/astrometry workflows remain open.",
+      "status": "blocked-contract",
+      "remaining": "Required BITPIX, axes, scaling, endian and metadata conventions identified and validated per edition.",
       "evidence": [
-        "docs/FITS-IMAGE.md",
-        "docs/FITS-IMAGE-PROVENANCE.json",
-        "docs/FITS-IMAGE-VALIDATION.md",
         "docs/IMPLEMENTATION-PLAN.md"
       ],
-      "gateReason": "A supplied-input representation/viewer exists;unchanged full-package criterion and original runtime/scientific workflow acceptance remain open.",
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
       "originalWitnessPending": false,
       "licenseGate": false
     },

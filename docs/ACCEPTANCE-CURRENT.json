@@ -1,0 +1,964 @@
+{
+  "date": "2026-10-21",
+  "definition": "Full baseline packages, not tests, functions or implemented subcontracts. Primary status is mutually exclusive; witness/license overlays overlap and are not additive. blocked-contract means no implementation of this full remaining scientific package can yet be accepted, not a denied tool action.",
+  "functionalCount": 58,
+  "qualityCount": 6,
+  "complete": 1,
+  "counts": {
+    "partial": 38,
+    "blocked-contract": 23,
+    "complete": 1,
+    "not-started": 1,
+    "blocked-license": 1
+  },
+  "originalWitnessOverlay": [
+    "A02",
+    "A03",
+    "I01",
+    "I02",
+    "I09",
+    "I10",
+    "N01",
+    "N02",
+    "N03",
+    "N04",
+    "N05",
+    "E01",
+    "E03",
+    "E04",
+    "E05",
+    "Q01"
+  ],
+  "rightsOverlay": [
+    "Q05",
+    "X02"
+  ],
+  "packages": [
+    {
+      "id": "A01",
+      "title": "Observatory entry, telescope choice and dome lifecycle",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Compiled telescope selection/inspection, explicit draft cancellation and stopped dome-closing web transition are implemented with retained observations. Original restricted request workflow, native dome/timer lifecycle and coordinate reinitialization still require complete integration and verification.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/OPTICAL-TELESCOPE.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "A02",
+      "title": "Original sky catalogs and field rendering",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Full selected-edition catalog policy, identifiers, filtering and renderer behavior traced and checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "A03",
+      "title": "Finder/telescope field selection and instrument overlays",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Original scale/options, aperture/slit/CCD overlay geometry, rounding and clipping checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "A04",
+      "title": "Coordinate and target pointing",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Original validation, wrap, J2000/B1950 and target-selection behavior; no silent coordinate substitution.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "A05",
+      "title": "Site, observing time, sidereal time, tracking and horizon",
+      "baselineState": "R",
+      "status": "partial",
+      "remaining": "Current-pointing geometric horizon readout now uses the recovered optional formula and54 independent Decimal100 cases; compiled horizon enforcement remains off. Recovered selected-site sidereal calculation and normal-speed bounded observatory clock now support explicit stationary tracking hold or original24h/day RA drift, stopped atomic continuity and independent mathematical/browser scenarios. Native host-clock jumps/global scheduler, moving/slew states, horizon/site overrides, refraction/precession/DST and original runtime/classroom acceptance remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/SITE-CLOCK.md",
+        "docs/RUNNING-CLOCK.md",
+        "docs/HORIZON-READOUT.md"
+      ],
+      "gateReason": "Bounded site-clock slice implemented; complete live site/time/tracking/horizon package remains open.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "A06",
+      "title": "Directional motion and programmed slew",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Bounded compiled-default N/E/S/W holds and timed programmed slew are implemented with native per-callback increments, view scales, wrap/arrival rules, shared clock, interruption and stopped preferences. Full native options, queued VCL/host timing, moving acquisition/reentry, original runtime/x87/GDI/audio, UI pole scope beyond85degrees and classroom acceptance remain open;A06 is not complete.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "A07",
+      "title": "Hot lists, search, bookmarks and target information",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Read/edit/save original lists, object matching, duplicates and unknown targets handled with evidence.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "A08",
+      "title": "Instrument access and context-preserving navigation",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Existing stationary spectral access now also excludes actual active motor/programmed motion. Movement releases retained acquisitions;no moving-source means or photons are admitted. Complete native focus/modal/cache/reentry, other instrument access and option policies remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/INSTRUMENT-CONTROL.md",
+        "docs/STAR-DRIFT-INSPECTION.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D01",
+      "title": "Edition/source inventory and provenance manifests",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Every selected scientific executable and shipped asset has verified origin, version, hash, container and rights status.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D02",
+      "title": "GSC, finder and naked-eye catalog readers",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Full schemas and per-mode semantics, not divisibility alone; malformed/truncated/edge records tested.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D03",
+      "title": "Galaxy, QSO, variable-star, cluster and orbit catalogs",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Native record layouts and associations recovered; current explicit image/hot-list data are only a subset.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D04",
+      "title": "SP/SSP/library spectra, line lists and template readers",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Every required legacy variant, header, unit, grid, interpolation and source association tested.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D05",
+      "title": "FITS image/header support",
+      "baselineState": "N",
+      "status": "partial",
+      "remaining": "Bounded supplied primary2Dfloat32 image inspection is implemented with raw header/bytes/SHA and pixel selection. Other BITPIX,scaling,axes/extensions,selected-edition/native output/padding witnesses,CCD acquisition and scientific calibration/astrometry workflows remain open.",
+      "evidence": [
+        "docs/FITS-IMAGE.md",
+        "docs/FITS-IMAGE-PROVENANCE.json",
+        "docs/FITS-IMAGE-VALIDATION.md",
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "A supplied-input representation/viewer exists;unchanged full-package criterion and original runtime/scientific workflow acceptance remain open.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D06",
+      "title": "BMP/PNG, overlays and historical media",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Lossless conversion or faithful rendering, provenance and permissions; invalid assets remain visible limitations.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D07",
+      "title": "Legacy options, observation and result files",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Round trips preserve documented fields, types, precision and exercise-specific variants.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "D08",
+      "title": "Stable interchange, export and print output",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Versioned data contracts, formula-safe text cells, units, numeric policy and supported legacy compatibility checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "I01",
+      "title": "Aperture photometer and filters",
+      "baselineState": "R",
+      "status": "partial",
+      "remaining": "Fixed original-list UBV photometry is implemented for16/14/10 targets through0.4m/0.9m/Mayall with native sizes5/10/15,timing choices,measured sky,manual entries/colors and raw1-10 continuity. General pointing/fields,real blends,missing-color/variable associations,RI,seeing overrides,transformations,native result/modal/report files,uncertainty and full exercise/classroom/native-runtime acceptance remain open. Six Mayall exclusions retain the documented port mean/all-settings policy over the real native actual-count ceiling.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/PHOTOMETER-FIELD.md",
+        "docs/PHOTOMETER-VISUAL.md",
+        "data/photometry/visual-provenance.json",
+        "docs/PHOTOMETER-UBV.md",
+        "data/photometry/ubv-contract.json",
+        "docs/PHOTOMETER-TARGETS.md",
+        "docs/PHOTOMETER-INTEGRATION.md",
+        "docs/PLEIADES-SAMPLE.md"
+      ],
+      "gateReason": "The16-target UBV/telescope0 observing slice is implemented;full package and original execution fidelity remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "I02",
+      "title": "Single-slit spectrometer",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Three-profile pinned sky acquisition now has independent calibrated counts/RNG banks, strict raw/CSV and full18 continuity. Native focus/modal/cache/global-RNG ordering remains open. Read-only supported-star cached drift inspection now connects actual pointing, cached viewport, nearest object and3×19/slit output for all three profiles; no photons or exposure means are refreshed. Native focus/mean preparation and buffer/RNG lifecycle remain open. The fixed star and three galaxies now acquire through all three original compiled telescopes, with native calibration/raster contracts, both recovered Poisson branches, manual analysis, raw replay and SSP. Broader targets/options, original global lifecycle/precision witnesses and scientific acceptance remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/KPNO09-STAR.md",
+        "docs/KPNO09-GALAXIES.md",
+        "docs/MAYALL-ACQUISITION.md",
+        "docs/STAR-DRIFT-INSPECTION.md",
+        "docs/SKY-TELESCOPE-PROFILES.md",
+        "docs/SPECTRAL-REENTRY-AUDIT.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "I03",
+      "title": "Multi-aperture/multi-object spectrometer",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Object/fiber association, concurrent spectra, selection and persistence checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "I04",
+      "title": "CCD camera",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Chip, exposure, saturation, counts, bias/dark/read noise and image output contracts checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "I05",
+      "title": "Infrared camera and IR resources",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Supported bands, source data, noise and image formation identified and tested.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "I06",
+      "title": "Radio telescope pointing and beam response",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Original antenna behavior, coordinates and observing modes checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "I07",
+      "title": "Receiver, channels and pulsar signal acquisition",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Sampling, timing, dispersion/frequency channels and receiver controls traced.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "I08",
+      "title": "Telescope optical/site parameters and access policies",
+      "baselineState": "R",
+      "status": "partial",
+      "remaining": "All three compiled optical/site profiles support verified bounded star/three-galaxy/sky and UBV photometer domains;native compiled motion-rate defaults and current-view scale are admitted separately by A06. Instructor overrides,restricted requests,other instruments and complete native site/switch/lifecycle policies remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/OPTICAL-TELESCOPE.md",
+        "data/observatory/optical-provenance.json",
+        "docs/KPNO09-STAR.md",
+        "docs/KPNO09-GALAXIES.md",
+        "docs/MAYALL-ACQUISITION.md",
+        "docs/SKY-TELESCOPE-PROFILES.md",
+        "docs/SPECTRAL-REENTRY-AUDIT.md"
+      ],
+      "gateReason": "Bounded compiled-profile flow is implemented; full optical/site/access and scientific effects remain unaccepted.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "I09",
+      "title": "Photon/source synthesis, PRNG and noise engine",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Seeds, state, draw consumption, source/sky accumulation and conversion policy verified before producing observations.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "I10",
+      "title": "Observation clocks, timer/event ordering and acquisition lifecycle",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Supported stationary spectral acquisition shares the normal-speed observatory clock;bounded aperture photometry retains its separate integration model. A06 motor/programmed coordinate callbacks now run on a declared monotonic browser schedule and release safely on Stop/navigation/hidden/save/restore. Native global VCL/message/modal ordering,host-clock changes,RNG interleavings and moving-source photon preparation remain unproved. No native wall-time or bit equality is claimed.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/RUNNING-CLOCK.md",
+        "docs/INSTRUMENT-CONTROL.md",
+        "docs/HORIZON-READOUT.md",
+        "docs/STAR-DRIFT-INSPECTION.md",
+        "docs/SKY-TELESCOPE-PROFILES.md",
+        "docs/SPECTRAL-REENTRY-AUDIT.md",
+        "docs/PHOTOMETER-INTEGRATION.md",
+        "docs/PLEIADES-SAMPLE.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "N01",
+      "title": "Spectral line alignment, redshift and measurement record",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Cursor/zoom/text rendering and remaining RecordZ branches; acquisition-derived calibration and x87 numerical policy checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "N02",
+      "title": "Stellar spectral classification",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "All 25 practices/eight original atlases and supported-star continuity implemented; bounded manual width for practice unknowns implemented; bounded SP/SSP visual imports implemented; broader import profiles, full cursor/photo/feature tools and native result/grade contracts remain pending.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/CLASSIFICATION-ACCEPTANCE.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "N03",
+      "title": "Photometry reduction, colors and magnitude calibration",
+      "baselineState": "R",
+      "status": "partial",
+      "remaining": "Bounded acquired UBV reduction through all three profiles and sizes5/10/15,area-scaled measured sky,original count/time units,explicit manual B-V and retained reading provenance are implemented. Wider sources/fields,missing colors,RI,transforms/extinction/aperture-loss corrections,uncertainty,exact native precision/global lifecycle and full scientific acceptance remain open.",
+      "evidence": [
+        "docs/PHOTOMETRY-REDUCTION.md",
+        "data/photometry/reduction-provenance.json",
+        "docs/PHOTOMETER-CONTEXT-RECOVERY.md",
+        "docs/PHOTOMETER-SOURCE.md",
+        "docs/PHOTOMETER-FIELD.md",
+        "data/photometry/field-provenance.json",
+        "docs/PHOTOMETER-VISUAL.md",
+        "docs/PHOTOMETER-UBV.md",
+        "data/photometry/ubv-contract.json",
+        "docs/PHOTOMETER-TARGETS.md",
+        "docs/PHOTOMETER-INTEGRATION.md",
+        "docs/PLEIADES-SAMPLE.md"
+      ],
+      "gateReason": "The16-target UBV/telescope0 observing slice is implemented;full package and original execution fidelity remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "N04",
+      "title": "HR/color-magnitude diagrams and isochrone fitting",
+      "baselineState": "R",
+      "status": "partial",
+      "remaining": "All16 reference datasets/2873known-color points support manual native ZAMS/isochrone trials,explicit presets,interpretation,comparison and reversible exclusions through full21. Actual general standard-photometer HRobserving,optional CCD,native import/autoscaling,uncertainty,classroom,pixel picking and original runtime/x87 fidelity remain open. Reference data are not acquired measurements.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/PLEIADES-ANALYSIS.md",
+        "data/photometry/pleiades-manual-analysis.json",
+        "docs/PLEIADES-NATIVE-MODELS.md",
+        "data/photometry/native-cluster-contract.json",
+        "docs/CLUSTER-DATABASE.md",
+        "docs/CLUSTER-COMPARISON.md",
+        "data/photometry/cluster-comparison-contract.json",
+        "docs/CLUSTER-EXCLUSIONS.md",
+        "data/photometry/cluster-exclusion-contract.json"
+      ],
+      "gateReason": "All16reference-data manual-analysis notebooks implemented;actual standard observing/optionalCCD,uncertainty/classroom andoriginalruntime fidelity remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "N05",
+      "title": "Velocity, distance and Hubble analysis",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Bounded Single velocity, sourced V-distance recipes and manual origin fit implemented; remaining original branches, instructor options, native regression/runtime validation and historical-edition differences remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "N06",
+      "title": "Large-scale-structure wedge plots and surveys",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Selection, positions, distances, projection and survey masks checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "N07",
+      "title": "Pulsar timing/profile/dispersion analysis",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Period and dispersion workflows, filtering and recorded outputs checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "N08",
+      "title": "Image inspection, blinking, centroiding and astrometry",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Pixel/world coordinates, reference matching, plate solution and uncertainty behavior checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "P01",
+      "title": "English UI/help with translation-ready catalogs",
+      "baselineState": "P",
+      "status": "complete",
+      "remaining": "None under the original P01 criterion for the current authored English UI/help. Additional translations and a language selector remain optional/deferred as originally specified.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/P01-ACCEPTANCE.md",
+        "src/i18n/coverage.test.ts",
+        "src/i18n/scienceBoundary.test.ts",
+        "tests/p01.spec.ts"
+      ],
+      "gateReason": "Accepted against every original P01 criterion with full authored text/data-flow audit, typed/runtime interpolation, independent presentation instances, scientific byte regressions and real desktop/mobile/error flows. Scientific, classroom and release acceptance belong to their existing packages.",
+      "originalWitnessPending": false,
+      "licenseGate": false,
+      "acceptanceCriterion": "All authored user text keyed, interpolation tested, locale/scientific formatting separated; later locales remain optional."
+    },
+    {
+      "id": "P02",
+      "title": "Session/project state, save and restore",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Represented scientific state and nonmodal drafts retain raw1-10 and existing full1-21 scopes. Optional outer22 saves the explicitly used manual motion multiplier over a validated earlier base;actual pointing/clock retain their existing owners and restore stopped with no saved running motor orautomatic resume. Earlier files retain current unrepresented motion preferences. Full-suite integration awaits the additional instrument/edition/option contracts. Autosave,window placement andnative file formats are not new P02 gates.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/INVESTIGATION-PHOTOMETRY.md",
+        "docs/OBSERVING-WORKSPACE.md",
+        "docs/P02-ACCEPTANCE.md",
+        "docs/EDITING-WORKSPACE.md",
+        "docs/OPTICAL-TELESCOPE.md",
+        "docs/KPNO09-STAR.md",
+        "docs/KPNO09-GALAXIES.md",
+        "docs/MAYALL-ACQUISITION.md",
+        "docs/SITE-CLOCK.md",
+        "docs/RUNNING-CLOCK.md",
+        "docs/INSTRUMENT-CONTROL.md",
+        "docs/SKY-TELESCOPE-PROFILES.md",
+        "docs/SPECTRAL-REENTRY-AUDIT.md",
+        "docs/PHOTOMETER-INTEGRATION.md",
+        "docs/PLEIADES-SAMPLE.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "P03",
+      "title": "Beginner guidance and exercise instructions",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Full first-observation and exercise paths understandable without hidden technical prerequisites.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "P04",
+      "title": "Instructor preferences, exercise modes and restrictions",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Original switches affecting science and access recorded; classroom defaults reviewed.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "P05",
+      "title": "Observation log, result editing and audit trail",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Original record branches, corrections, annotations, undo and exports checked.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "P06",
+      "title": "Local/offline resource access and catalog delivery",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Current local static server works; deliberate offline packaging, loading budgets and cache policy required.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "P07",
+      "title": "Classroom handoff, assignment presets and reproducible lab packages",
+      "baselineState": "N",
+      "status": "not-started",
+      "remaining": "Portable settings/data/answers handoff; accounts or cloud services are not assumed.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "New browser/classroom workflow requires a scoped design and classroom acceptance; no native scientific formula is required.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E01",
+      "title": "The Hubble Redshift–Distance Relation",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Three pinned galaxy acquisitions, manual measurements, sourced distances, origin fit, SSP/JSON/CSV and guidance locally integrated; broader fields, options, historical editions and educator/native acceptance remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "E02",
+      "title": "Large-Scale Structure of the Universe",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "E01, I03, N06; survey fields and completeness.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E03",
+      "title": "Classification of Stellar Spectra",
+      "baselineState": "P",
+      "status": "partial",
+      "remaining": "Original main-sequence practice and one supported acquired-star flow are usable; broader exercise configurations, full feature-tool coverage beyond the bounded practice-width path, native/standalone differences and educator acceptance remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/CLASSIFICATION-ACCEPTANCE.md"
+      ],
+      "gateReason": "Full package acceptance remains open; implemented bounded slices do not imply original equivalence.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "E04",
+      "title": "Photoelectric Photometry of the Pleiades",
+      "baselineState": "R",
+      "status": "partial",
+      "remaining": "Bounded original-list UBV observing,measured sky,manual notebooks/colors,printed-manual diagram/distance and six-family native model trials are implemented across16/14/10 profile domains and sizes5/10/15. General fields/associations,RI,transformations,native result/modal formats,uncertainty,classroom and original-runtime/x87/VCL fidelity remain open. List association does not establish physical membership orclassification.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/PHOTOMETER-VISUAL.md",
+        "data/photometry/visual-provenance.json",
+        "docs/PHOTOMETER-UBV.md",
+        "data/photometry/ubv-contract.json",
+        "docs/PHOTOMETER-TARGETS.md",
+        "docs/PHOTOMETER-INTEGRATION.md",
+        "docs/PLEIADES-SAMPLE.md",
+        "docs/PLEIADES-ANALYSIS.md",
+        "docs/PLEIADES-NATIVE-MODELS.md"
+      ],
+      "gateReason": "The16-target UBV/telescope0 observing slice is implemented;full package and original execution fidelity remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "E05",
+      "title": "HR Diagrams of Star Clusters",
+      "baselineState": "R",
+      "status": "partial",
+      "remaining": "All16 original reference datasets support independent manual comparison,trials,presets and reversible exclusions. Standard HR observing through general original fields,optional CCD,native import/autoscaling,uncertainty,classroom and original runtime/x87/pixel fidelity remain open. Reference catalog inclusion is not a membership determination.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/CLUSTER-DATABASE.md",
+        "data/photometry/cluster-dataset-contract.json",
+        "docs/CLUSTER-COMPARISON.md",
+        "data/photometry/cluster-comparison-contract.json",
+        "docs/CLUSTER-EXCLUSIONS.md",
+        "data/photometry/cluster-exclusion-contract.json"
+      ],
+      "gateReason": "All16reference-data manual-analysis notebooks implemented;actual standard observing/optionalCCD,uncertainty/classroom andoriginalruntime fidelity remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "E06",
+      "title": "Radio Astronomy of Pulsars",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "I06/I07/I09/I10, N07; compare independent and VIREO editions.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E07",
+      "title": "Astrometry of Asteroids",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "D05, I04, N08; original images and reference catalogs.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E08",
+      "title": "The Quest for Object X",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Cross-instrument/time-dependent workflow, original unknown/orbit assignments; independent edition still inventoried separately.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E09",
+      "title": "The Rotation of the Sun",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "FITS/time series, disk geometry, original image sets and measurements.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E10",
+      "title": "Transits of Venus and Mercury",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "FITS/time series, geometry and contact measurements; same exercise family, distinct transit datasets.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E11",
+      "title": "The Revolution of the Moons of Jupiter",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Shared Jupiter package, temporal orbital observations and analysis.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E12",
+      "title": "The Speed of Light: Roemer's Method",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Jupiter package plus light-time/geometry; not a duplicate of E11.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E13",
+      "title": "The Rotation of Mercury",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Legacy radar/signal contracts and numerical routines.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E14",
+      "title": "The Flow of Energy Out of the Sun",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Legacy instrument and physical model, calibration and outputs.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "E15",
+      "title": "Dying Stars and the Birth of the Elements",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "XMM/associated data and models; verify actual installed scientific executable before assuming a shared architecture.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "X01",
+      "title": "Astrometry Toolkit",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Standalone general astrometry workflow and supported formats, in addition to E07 content.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "X02",
+      "title": "Height of Lunar Mountains",
+      "baselineState": "R",
+      "status": "blocked-contract",
+      "remaining": "Separate associated DOS/IMDISP/ICE components, lunar geometry, data and permissions.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md"
+      ],
+      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
+      "originalWitnessPending": false,
+      "licenseGate": true
+    },
+    {
+      "id": "Q01",
+      "title": "Scientific verification",
+      "status": "partial",
+      "remaining": "Static provenance and independent bounded checks exist; original runtime/x87 and full-edition evidence remain absent.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "PROVENANCE.json"
+      ],
+      "originalWitnessPending": true,
+      "licenseGate": false
+    },
+    {
+      "id": "Q02",
+      "title": "Accessibility and pedagogy",
+      "status": "partial",
+      "remaining": "Keyboard/responsive paths covered locally; systematic screen-reader and educator/learner acceptance remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "PROVENANCE.json"
+      ],
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "Q03",
+      "title": "Robustness and security",
+      "status": "partial",
+      "remaining": "Bounded readers/error/reimport/atomic restore exist; full future formats and release audit remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "PROVENANCE.json"
+      ],
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "Q04",
+      "title": "Performance and determinism",
+      "status": "partial",
+      "remaining": "Tiled catalog budgets and explicit replay exist; whole-suite instrument/time budgets remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "PROVENANCE.json"
+      ],
+      "originalWitnessPending": false,
+      "licenseGate": false
+    },
+    {
+      "id": "Q05",
+      "title": "Rights and attribution",
+      "status": "blocked-license",
+      "remaining": "Local manifests exist; redistribution/derivative/public-release rights are not established. This blocks release, not authorized local research.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "PROVENANCE.json"
+      ],
+      "originalWitnessPending": false,
+      "licenseGate": true
+    },
+    {
+      "id": "Q06",
+      "title": "Packaging, documentation and release",
+      "status": "partial",
+      "remaining": "Loopback preview/build and versioned documentation exist; offline installer, compatibility matrix and release acceptance remain open.",
+      "evidence": [
+        "docs/IMPLEMENTATION-PLAN.md",
+        "PROVENANCE.json"
+      ],
+      "originalWitnessPending": false,
+      "licenseGate": false
+    }
+  ],
+  "baselineSnapshot": {
+    "path": "data/planning/acceptance-status.json",
+    "SHA256": "383490fbb4802789d938613fbfaa9226dd5b69df9fc3486e20f57e5610e1f026",
+    "role": "Immutable19October assessment shipped in resource manifest;preservedbyte-for-byte. Current status is maintained separately here without altering original criteria."
+  }
+}

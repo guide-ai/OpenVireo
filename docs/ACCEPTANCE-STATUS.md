@@ -1,5 +1,7 @@
 # Full-plan acceptance status — 21 October 2026
 
+The [19October snapshot](../data/planning/acceptance-status.json) is an immutable manifested resource;its bytes/hash are preserved. Current changes are recorded in [ACCEPTANCE-CURRENT.json](ACCEPTANCE-CURRENT.json),with its baseline SHA and unchanged criteria.
+
 Current image follow-up: [supplied float32 FITS image inspection](FITS-IMAGE.md) introduces a bounded D05 implementation:one primary2Dfloat32 plane,original header/bytes/SHA,pixel selection and web rendering. D05 is now partial; other BITPIX/scaling/axes/extensions and edition/native output/calibration workflows remain open. It does not accept CCD acquisition or N08 astrometry. Full-package criteria remain unchanged;P01 remains the only complete package. Current counts:1complete/38partial/23contract-gated/1not-started/1rights-gated. Earlier dated counts below are historical.
 
 
@@ -26,7 +28,7 @@ A06 follow-up: [bounded motor and programmed slew](TELESCOPE-MOTION.md) adds coo
 
 D05 now supports the bounded supplied-image contract linked above;it remains incomplete against its unchanged full criterion. D07 and the other23contract-gated packages still need their own scientific/data/edition contracts. P07 remains a new classroom-handoff workflow not yet designed. A partial implementation is not native equivalence or full package acceptance.
 
-The six quality workstreams remain5partial and1rights gate. Across64packages:1complete,38partial,23unimplemented contract/data gates,1rights gate and1not-started. The functional58total is1complete/33partial/23contract-gated/1not-started. See the machine-readable [row-level assessment](../data/planning/acceptance-status.json). Overlays are not additive.
+The six quality workstreams remain5partial and1rights gate. Across64packages:1complete,38partial,23unimplemented contract/data gates,1rights gate and1not-started. The functional58total is1complete/33partial/23contract-gated/1not-started. See the machine-readable [current row-level assessment](ACCEPTANCE-CURRENT.json). Overlays are not additive.
 
 Original-runtime witnesses are absent for16 explicitly tracked fidelity/verification packages(A02,A03,I01,I02,I09,I10,N01,N02,N03,N04,N05,E01,E03,E04,E05,Q01). This is an overlapping acceptance gate, not16 additional packages or a prohibition on bounded static implementations. No original execution is proposed or authorized. Rights remain a cross-cutting release gate(Q05); separate component rights also remain unresolved for X02. These two overlay flags are not additive to totals. Lack of a public license does not block the authorized local work.
 

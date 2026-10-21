@@ -1,6 +1,6 @@
 # Scope reconciliation after saved-image work
 
-OpenVireo remains a suite migration. One completed package(P01) and usable bounded workflows do not mean the project is finished. [Original full criteria](IMPLEMENTATION-PLAN.md) and [row inventory](../data/planning/acceptance-status.json) remain authoritative;no acceptance percentage is inferred from test counts.
+OpenVireo remains a suite migration. One completed package(P01) and usable bounded workflows do not mean the project is finished. [Original full criteria](IMPLEMENTATION-PLAN.md) and [current row inventory](ACCEPTANCE-CURRENT.json) remain authoritative;no acceptance percentage is inferred from test counts.
 
 ## Delivered usable subflows
 
