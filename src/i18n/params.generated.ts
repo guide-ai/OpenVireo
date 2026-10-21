@@ -2125,4 +2125,8 @@ export interface MessageParameters {
   "obsHr.beforeBlock": never;
   "obsHr.afterBlock": never;
   "obsHr.blockingRecord": "field";
+  "plr.nav": never;
+  "plr.routeTitle": never;
+  "plr.routeScope": never;
+  "plr.loading": never;
 }

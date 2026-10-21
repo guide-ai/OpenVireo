@@ -2123,5 +2123,9 @@
   "obsHr.loading": "Loading observation HR tools…",
   "obsHr.beforeBlock": "Before blocking record: web plot withheld.",
   "obsHr.afterBlock": "After blocking record: no web calculation.",
-  "obsHr.blockingRecord": "Blocking record: {field}. Web plot withheld."
+  "obsHr.blockingRecord": "Blocking record: {field}. Web plot withheld.",
+  "plr.nav": "Radio data",
+  "plr.routeTitle": "Recorded pulsar analysis",
+  "plr.routeScope": "Analyze a supplied recording with manual cursors. Radio acquisition is not available here.",
+  "plr.loading": "Loading recorded pulsar tools…"
 }
