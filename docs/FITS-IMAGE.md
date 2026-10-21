@@ -6,9 +6,10 @@
 
 1. Open http://127.0.0.1:5173/#images or **Saved images**. Use **Open saved FITS image** with `/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-fits-recovery/SYNTHETIC-IMAGE.fit`. This authored step gradient is not an observation or native-output specimen.
 2. Click/tap the image or focus **Image pixel selector** and use arrows,Home/End. **Pixel column/Pixel row → Select image pixel** gives exact file coordinates. Invalid/out-of-range input retains the previous selection. File row1 is at the top and axis1 varies fastest; no sky orientation is asserted.
-3. Try Fit,2×/4× and Invert. These affect only display. The raw binary32 bits and value readout remain unchanged. Nonfinite pixels use magenta; flat finite planes use middle gray. The contrast range comes only from finite stored pixels.
-4. Download **unchanged FITS bytes** and reopen them; the SHA and complete bytes agree. Inspect original header cards as literal text. Header dates,WCS,units and checksum cards remain unverified claims.
-5. Cancel a read,try an invalid file,leave the tool during a delayed read,or close the inspected image. Confirmed notebook/investigation state stays independent. Reload clears temporary image inspection;download before leaving if needed. Existing JSON/CSV do not silently gain image payloads.
+3. Try Fit,2×/4× and Invert. These affect only display. The raw binary32 bits and value readout remain unchanged. Nonfinite pixels use magenta; flat finite planes start at web level128. The contrast range comes only from finite stored pixels.
+4. **Preview camera palette** opens a draft using the recovered CCD/IR initialization64/127 (or the last applied interval). Adjust black/white whole levels,try invalid/reversed/equal values,and Cancel/Escape. Only **Apply display palette** changes the picture. **Full display range** drafts0/255;**Use linear display** removes the palette. The raw value,bits and file stay unchanged. [Source and limits](CAMERA-PALETTE.md).
+5. Download **unchanged FITS bytes** and reopen them; the SHA and complete bytes agree. Inspect original header cards as literal text. Header dates,WCS,units and checksum cards remain unverified claims.
+6. Cancel a read,try an invalid file,leave the tool during a delayed read,or close the inspected image. Confirmed notebook/investigation state stays independent. Reload clears temporary image inspection;download before leaving if needed. Existing JSON/CSV do not silently gain image payloads.
 
 ## Admission and evidence
 

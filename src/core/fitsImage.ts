@@ -1,3 +1,4 @@
+import{cameraPaletteBytes,type CameraPalette}from'./cameraPalette';
 /** Supplied single-plane float32 FITS. Native writer5239f8/523954/52425c
  * establishes the relevant image shape/word order,not a native reader or CCD
  * model. Standard header admission and display mapping are explicit web policy. */
@@ -22,7 +23,7 @@ export function fitsImageBytes(image:FitsImage):Uint8Array{return Uint8Array.fro
 export function fitsPixel(image:FitsImage,x:number,y:number):FitsPixel{
  const {view}=storage(image);if(!Number.isInteger(x)||!Number.isInteger(y)||x<1||y<1||x>image.width||y>image.height)throw new FitsError('pixel');const at=image.dataOffset+4*((y-1)*image.width+x-1),bits=view.getUint32(at,false),exponent=(bits>>>23)&255,fraction=bits&0x7fffff,negative=!!(bits>>>31),kind=exponent===255?fraction?'nan':negative?'negativeInfinity':'positiveInfinity':exponent===0?fraction?'subnormal':negative?'negativeZero':'zero':'normal';return Object.freeze({x,y,bits:bits.toString(16).padStart(8,'0'),kind,value:exponent===255?null:view.getFloat32(at,false)});
 }
-/** Display-only linear stretch;no calibration,centroid,physical counts or sky orientation. */
-export function fitsRaster(image:FitsImage,inverted=false):Uint8ClampedArray{
- const {view}=storage(image),rgba=new Uint8ClampedArray(image.width*image.height*4);for(let i=0;i<image.width*image.height;i++){const v=view.getFloat32(image.dataOffset+i*4,false);let color:readonly number[];if(!Number.isFinite(v))color=[190,20,120];else{const normalized=image.maximum===image.minimum?128:Math.round(255*(v-image.minimum!)/(image.maximum!-image.minimum!)),level=inverted?255-normalized:normalized;color=[level,level,level];}rgba.set([...color,255],i*4);}return rgba;
+/** Display-only web linear base with optional recovered palette;no calibration,centroid,physical counts or sky orientation. */
+export function fitsRaster(image:FitsImage,inverted=false,palette:CameraPalette|null=null):Uint8ClampedArray{
+ const {view}=storage(image),table=palette?cameraPaletteBytes(palette):null,rgba=new Uint8ClampedArray(image.width*image.height*4);for(let i=0;i<image.width*image.height;i++){const v=view.getFloat32(image.dataOffset+i*4,false);let color:readonly number[];if(!Number.isFinite(v))color=[190,20,120];else{const normalized=image.maximum===image.minimum?128:Math.round(255*(v-image.minimum!)/(image.maximum!-image.minimum!)),mapped=table?table[normalized*4]:normalized,level=inverted?255-mapped:mapped;color=[level,level,level];}rgba.set([...color,255],i*4);}return rgba;
 }

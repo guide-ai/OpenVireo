@@ -1,0 +1,251 @@
+{
+  "initialization": {
+    "IR": {
+      "black": "0x51e80f:64",
+      "white": "0x51e828:127"
+    },
+    "CCD": {
+      "black": "0x521db8:64",
+      "white": "0x521dd1:127"
+    }
+  },
+  "executableSha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "source": "CLEA_VEO.exe, preserved local original; not executed",
+  "ranges": [
+    {
+      "id": "shared-palette",
+      "start": "0x520f18",
+      "endExclusive": "0x520f92",
+      "bytes": 122,
+      "byteSha256": "e76c67abbfd106b2285b2c0cf8cf6e995c968a750bff618949d03076d5cc378b",
+      "listing": "shared-palette.asm",
+      "listingSha256": "a29c3a5221c14f0c945cd20414cc5ecf3affa479485f9d8ffd15d4cd0e0718e7"
+    },
+    {
+      "id": "sqrt-extended",
+      "start": "0x4036f0",
+      "endExclusive": "0x4036fd",
+      "bytes": 13,
+      "byteSha256": "32acf2ea0996c5e1059ecd00e14f3c4f645ed521cd5b5f63c0e5e2f4b1e70e8c",
+      "listing": "sqrt-extended.asm",
+      "listingSha256": "8d73a828bff96dd079606aabce017097a59977aa5c952f99e8d67533230f129f"
+    },
+    {
+      "id": "fistp-qword",
+      "start": "0x403700",
+      "endExclusive": "0x40370a",
+      "bytes": 10,
+      "byteSha256": "8c144f1eac0c96ef3bd0218cfba1361deb4e41de9ab485b113a00fa178f5568f",
+      "listing": "fistp-qword.asm",
+      "listingSha256": "b250dbb839bf3dea6359d486fba309468abce9f5e7bab29b5fcf853134896e98"
+    },
+    {
+      "id": "ir-display",
+      "start": "0x51e720",
+      "endExclusive": "0x51ea1b",
+      "bytes": 763,
+      "byteSha256": "7e84d7e2db6a68a3b24723c3ee781b67c2d2c10a9a0a47e6f04e6ef9f75ce531",
+      "listing": "ir-display.asm",
+      "listingSha256": "d95123e9bd9d5cf07fddb03d9a53633ab119ab794122a0d949555426123e7e2a"
+    },
+    {
+      "id": "ccd-display",
+      "start": "0x521cc8",
+      "endExclusive": "0x521fc4",
+      "bytes": 764,
+      "byteSha256": "976636c7cc7ffdb2c6e370fff5161ace90210e278266086896dd0ccc73ff90aa",
+      "listing": "ccd-display.asm",
+      "listingSha256": "363b05bbfbf879e87c814c6fc813a0ddc07b6105d64a7a580726aee596177f40"
+    },
+    {
+      "id": "raw-single-getter",
+      "start": "0x52449c",
+      "endExclusive": "0x5244c7",
+      "bytes": 43,
+      "byteSha256": "2b0b5cc115061643d2b4c38e966e49f5e8d56375e5667283658ddde928f16887",
+      "listing": "raw-single-getter.asm",
+      "listingSha256": "a3121b0534f0d130b117b4aa647fee6c6282e89cb476fc4d13ff6dbaa484255c"
+    },
+    {
+      "id": "raw-single-setter",
+      "start": "0x5244c8",
+      "endExclusive": "0x5244f0",
+      "bytes": 40,
+      "byteSha256": "aea29081ecf844b623dbc3fb3ab12bbaf34f70f9fc8a87de2c8fdd847d93c690",
+      "listing": "raw-single-setter.asm",
+      "listingSha256": "9ccb7613a2ffdd74763a844c8912e0460a9a8a2e97cb2524c31a96181238972e"
+    },
+    {
+      "id": "raw-index",
+      "start": "0x5244f0",
+      "endExclusive": "0x5244f9",
+      "bytes": 9,
+      "byteSha256": "047bc180e816d09e68b1f9f09267629dc30d2996ee0a8abc470ab9709c84b61e",
+      "listing": "raw-index.asm",
+      "listingSha256": "b205b7a618382187b5281fe3bb136f2ab69000a6c05a69247a66430e9fa40a18"
+    },
+    {
+      "id": "ir-raw-level",
+      "start": "0x51ea40",
+      "endExclusive": "0x51eaaa",
+      "bytes": 106,
+      "byteSha256": "30a51b3ebfc4de4ef00044804e66423e5210bbc9e079cb24f6e3361a333d2960",
+      "listing": "ir-raw-level.asm",
+      "listingSha256": "f989a7a466073ba31e24401a656e0eaf6393bc960f07cd52fa0d7f8d5b1bb03a"
+    },
+    {
+      "id": "ccd-raw-level",
+      "start": "0x521fec",
+      "endExclusive": "0x522056",
+      "bytes": 106,
+      "byteSha256": "bc5e5e01eecab6481790d9e884ab2bc3ebc293de87f89d9e2e6b49b16411ce2a",
+      "listing": "ccd-raw-level.asm",
+      "listingSha256": "8786aab129f7e024c02b727ce70c1731d671d2399dccac496451168f79640c3c"
+    },
+    {
+      "id": "dib-prepare",
+      "start": "0x521014",
+      "endExclusive": "0x5212a8",
+      "bytes": 660,
+      "byteSha256": "007ae6b397b198521c487b2b09604ac6314b343ee5a9d47659990f3743be84bd",
+      "listing": "dib-prepare.asm",
+      "listingSha256": "e2499142b28a5805d36472a012eb59f5f91a46653cfc9cfe499bbef6341d2588"
+    },
+    {
+      "id": "histogram-add",
+      "start": "0x55fb48",
+      "endExclusive": "0x55fbcc",
+      "bytes": 132,
+      "byteSha256": "83f583580b2dfa85c06c87a7ce724e9a8c29098a0332a534870147503fa236ed",
+      "listing": "histogram-add.asm",
+      "listingSha256": "53a336d7f9c6e769b764fd89cf108d62e27b81b2381b2a357588eca117e137a4"
+    },
+    {
+      "id": "histogram-mode",
+      "start": "0x55fbd0",
+      "endExclusive": "0x55fc05",
+      "bytes": 53,
+      "byteSha256": "dfaa0e53dfe0d2866f60f677f5ff0d701aa424161af2ab0fb871ad280f3f30e7",
+      "listing": "histogram-mode.asm",
+      "listingSha256": "8efbcb76c0dafc01a988d61f19c090d34dbf8c09b08b69344f652047b6e7a1a9"
+    },
+    {
+      "id": "histogram-right-zero",
+      "start": "0x55fc08",
+      "endExclusive": "0x55fc27",
+      "bytes": 31,
+      "byteSha256": "bb5cbd0576ab52183f0f9a835a737cbb218f2ef3e432a710faab0403f2c85cab",
+      "listing": "histogram-right-zero.asm",
+      "listingSha256": "016e083846cb73324871c6691b6dd0a33fe8efff5d02b12b185eb448d96a67b1"
+    },
+    {
+      "id": "histogram-mean",
+      "start": "0x55fc28",
+      "endExclusive": "0x55fc3e",
+      "bytes": 22,
+      "byteSha256": "dd8e00d460ad11f28d8acc1fdd54d961c8b1294ccc2497324f086f7b0cb75f41",
+      "listing": "histogram-mean.asm",
+      "listingSha256": "4163522d946d568230c077f876290c181646272d2ed5d38ac9b6a50ee705db1a"
+    },
+    {
+      "id": "histogram-sample-sigma",
+      "start": "0x55fc40",
+      "endExclusive": "0x55fc97",
+      "bytes": 87,
+      "byteSha256": "95696149cace6dd563d9a82a47af722d21a5ff269c5849745b79309a5631c963",
+      "listing": "histogram-sample-sigma.asm",
+      "listingSha256": "d9f4d4c6d71915eab6841e40c537c62c5f198aa5a18dc5507ea95cfc5b516242"
+    },
+    {
+      "id": "histogram-constructor",
+      "start": "0x55fa68",
+      "endExclusive": "0x55fae0",
+      "bytes": 120,
+      "byteSha256": "c0273f537675309dd1d4966bc785a27270df64e7936fa68182d093c6e6c3febe",
+      "listing": "histogram-constructor.asm",
+      "listingSha256": "b7c9f5213bbe70fa5a0b7a74cd73de8d387ab7d02f69a7b46ba2989922955396"
+    },
+    {
+      "id": "ir-preparation",
+      "start": "0x51e43c",
+      "endExclusive": "0x51e712",
+      "bytes": 726,
+      "byteSha256": "95b7a6912bef366c3ab88b13a429163e3ce6a82353b10ac792ebbb2703220fc2",
+      "listing": "ir-preparation.asm",
+      "listingSha256": "47492ae1a69ded15e50d3b11db69934470de44a6cd5d71852c1edafce4e6b38b"
+    },
+    {
+      "id": "ccd-preparation",
+      "start": "0x52154c",
+      "endExclusive": "0x521c65",
+      "bytes": 1817,
+      "byteSha256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+      "listing": "ccd-preparation.asm",
+      "listingSha256": "3b837888afdb56f99e753b4ff3b99ea3d8dd23c703531964e326f128396c4b6f"
+    },
+    {
+      "id": "ir-statistics-insert",
+      "start": "0x51eab0",
+      "endExclusive": "0x51eae7",
+      "bytes": 55,
+      "byteSha256": "dae44faa4cd18a581764f605a738d228c3c9515ea2320f36a366d34fdfd4357e",
+      "listing": "ir-statistics-insert.asm",
+      "listingSha256": "45bc6f98a6b4a70354d8cde4268f5e22fd61f16b1c4f95afd5136116954a6dd4"
+    },
+    {
+      "id": "ccd-statistics-insert",
+      "start": "0x521c90",
+      "endExclusive": "0x521cc7",
+      "bytes": 55,
+      "byteSha256": "fb5f2f37146cf97887915a22da54da7f626ed63e30a2734508ba026fded53ac0",
+      "listing": "ccd-statistics-insert.asm",
+      "listingSha256": "c253e6f24d04dadf9eafd46766a27ef6d96457919ff3a1fa327357a4acba7b7e"
+    },
+    {
+      "id": "shared-scalar-jitter",
+      "start": "0x520ec0",
+      "endExclusive": "0x520f0e",
+      "bytes": 78,
+      "byteSha256": "c382ef1a0c4e6cb5bfdbbdaba222be4f890c9dd1c461bb5337b7215ad19a2f50",
+      "listing": "shared-scalar-jitter.asm",
+      "listingSha256": "a509400adc863ec7a739810b558103e9ebeea6c2fe6c2fbd59a57501d1951299"
+    }
+  ],
+  "constant": {
+    "address": "0x520f94",
+    "type": "Single",
+    "value": 255
+  },
+  "calls": {
+    "IR": "0x51e920",
+    "CCD": "0x521ec9"
+  },
+  "ownership": {
+    "rawSingleMatrix": "owner+4",
+    "displayBitmap": "owner+0x1c",
+    "parameters": "owner+0x18; low +8, high +0x0c",
+    "paletteDestination": "[displayBitmap+4]+0x28"
+  },
+  "limits": [
+    "Source-static recovery, no native execution or output witness",
+    "Active FPU control word and Extended intermediate outcomes are not measured",
+    "Whole-image Float32 to DIB conversion and acquisition/calibration remain outside this port",
+    "Web requires 0<=low<high<=255; this is admission policy, not native invalid-input exception equivalence"
+  ],
+  "evidenceId": "NATIVE-CCD-IR-PALETTE-01",
+  "independentControl": {
+    "intervals": 32640,
+    "levels": 8355840,
+    "declaredBinary64PolicyMismatches": 0,
+    "idealExactRealMismatches": 0,
+    "maxIdealDifference": 0,
+    "exactHalfLevels": 10480,
+    "examplesIdeal": [],
+    "bytesSha256": "c5cac0364218f6f3ce401902e4494eb505dba4f88790e2cd0be707330fd18b30",
+    "limitations": [
+      "Independent integer-square comparison describes ideal real-number sqrt with nearest/even rounding; Python math.sqrt checks declared binary64 policy. Neither executes or emulates CLEA or provides a native x87 oracle.",
+      "All32640integer low<high intervals and256source levels tested;0ideal-real or declared binary64 discrepancies observed. This does not constrain unmeasured original Extended/FISTP outcomes."
+    ]
+  },
+  "preparationAdmission": "Additional preparation/statistics/jitter captures support further recovery only;no camera acquisition or native raw-to-DIB pipeline is enabled."
+}

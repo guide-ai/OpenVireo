@@ -1912,4 +1912,20 @@ export interface MessageParameters {
   "fits.error.dialog": never;
   "fits.error.read": never;
   "fits.error.download": never;
+  "palette.open": never;
+  "palette.title": never;
+  "palette.policy": never;
+  "palette.owner": "name";
+  "palette.low": never;
+  "palette.high": never;
+  "palette.preview": never;
+  "palette.invalid": never;
+  "palette.pending": never;
+  "palette.apply": never;
+  "palette.full": never;
+  "palette.linear": never;
+  "palette.cancel": never;
+  "palette.applied": "high" | "low";
+  "palette.base": never;
+  "palette.initial": never;
 }
