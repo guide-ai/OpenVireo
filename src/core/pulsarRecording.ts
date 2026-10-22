@@ -230,9 +230,10 @@ export type PlrReceiverProperty = Readonly<{ receiver: PlrReceiverIndex; recorde
 export type PlrProperties = Readonly<{ fields: Readonly<Record<PlrPropertyKey, string>>; receivers: readonly PlrReceiverProperty[] }>;
 
 /**
- * Read-only properties text as formatted by 0x571748. File name: the native code shows obj+0x9a,
- * the reader FileName text (possibly including a directory path), not supplied by the PLR header.
- * This window retains the supplied browser File.name instead; no native path equivalence is claimed.
+ * Read-only properties text as formatted by 0x571748. File name: the native code shows obj+0x9a when +0x97 is set
+ * (0x571931). Known stores of +0x9a are the reader's FileName argument and the PLR writer 0x56a518's own file-name
+ * argument (fileNameField in the provenance); its native content (possibly a directory path) is unknown and is not
+ * supplied by the PLR header. This window retains the supplied browser File.name instead; no native equivalence is claimed.
  */
 export function plrProperties(rec: PlrRecording): PlrProperties {
   const h = rec.highestIndex.value;

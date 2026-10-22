@@ -184,7 +184,7 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.review.delete': 'Delete',
   'pulsar.review.ok': 'Ok',
   'pulsar.review.cancel': 'Cancel',
-  'pulsar.review.gated': 'Find is not available: the original searches each stored line, which includes the native file name text of the loaded file (possibly with its folder path) and native number text, and this window does not have either.',
+  'pulsar.review.gated': 'Find is not available: the original searches each stored line, which includes native file name text (possibly with a folder path) and native number text, and this window does not have either.',
   'pulsar.review.noSelectionCaption': 'No Item Selected!',
   'pulsar.review.noSelectionText': 'Select Item for Deletion.',
   'pulsar.review.editNoSelectionText': 'Select Item for Edit.',

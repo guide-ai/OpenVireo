@@ -25,8 +25,8 @@
  * (pulsarAnalysis.ts), so it is not an independent model: agreement with it only guards that the candidate still has
  * the web writer's layout, and fails closed ('layout') if the two copies diverge. Only the literal parse/rebuild is
  * traced to the editor captures, and its agreement with a web-built candidate is self-consistency, not a native
- * Record-writer witness (x87 number text and writer caps stay unbound, and the native file field is the exact open-dialog
- * FileName text, PLR-REVIEW-FIND-STATIC-01; the tail check uses the browser file name, so it never certified that a
+ * Record-writer witness (x87 number text and writer caps stay unbound, and the native file field is +0x9a text of
+ * unknown content, PLR-REVIEW-FIND-STATIC-01; the tail check uses the browser file name, so it never certified that a
  * native tail fits the parser's 100-byte tail): NativeLineCandidate stays an internal opaque candidate.
  *
  * WEB: the editor is one inline layer of the Review dialog. It keeps the working copy and the ordinal captured

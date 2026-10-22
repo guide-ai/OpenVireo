@@ -1176,7 +1176,7 @@ test('Review UI-R06: Ok without edits keeps every field and enables no save writ
   expect(await rowCells(page)).toEqual(before);
   await expect(page.getByTestId('pulsar-review-find')).toBeDisabled();
   // Find is recovered but not enabled (PLR-REVIEW-FIND-STATIC-01): the searched line holds native file name and number text.
-  await expect(page.getByTestId('pulsar-review-find')).toHaveAccessibleDescription(/^Find is not available: .*native file name text of the loaded file \(possibly with its folder path\) and native number text/);
+  await expect(page.getByTestId('pulsar-review-find')).toHaveAccessibleDescription(/^Find is not available: .*native file name text \(possibly with a folder path\) and native number text/);
   // Superseded by the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01): Edit is enabled; Find stays disabled.
   await expect(page.getByTestId('pulsar-review-edit')).toBeEnabled();
   await page.getByTestId('pulsar-review-cancel').click();

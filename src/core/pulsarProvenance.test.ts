@@ -62,20 +62,21 @@ describe('pulsar provenance', () => {
   it('records the recovered Find contract and the row-text blocker that keeps Find disabled', () => {
     const find = provenance.contracts.find(c => c.id === 'PLR-REVIEW-FIND-STATIC-01') as Record<string, string> | undefined;
     expect(find).toBeDefined();
-    expect(find!.range).toBe('0x5634c8..0x5636de, 0x492a8c..0x492c6d, 0x5ad3c2..0x5ad3d0, 0x570e77..0x570ec0, 0x56a49d..0x56a4b2, 0x56b07d..0x56b093, 0x44d988..0x44d9e0, 0x486ae0..0x486b13, 0x4062d4..0x406325');
+    expect(find!.range.split(', ')).toEqual(['0x5634c8..0x5636de', '0x492a8c..0x492c6d', '0x5ad3c2..0x5ad3d0', '0x570e77..0x570ec0', '0x56a49d..0x56a4be', '0x56a848..0x56a85d',
+      '0x56afbc..0x56afce', '0x56b07d..0x56b093', '0x44d988..0x44d9e0', '0x486ae0..0x486b13', '0x4062d4..0x406325']);
     expect('status' in find!).toBe(false);
-    for (const anchor of ['StrLower(+0x380) (0x40bb04)', 'LowerCase(Items[i]) (0x40a4a0', 'Pos(query, row) (0x40640c', "'String Not Found'", 'never read by this caller', '0x56a49d..0x56a4b2', '0x570e77..0x570ec0',
-      'Items.Count <= start (0x5635b4..0x5635ba) no row is read', 'does not replace the stored Items strings', 'alias slot 0x5b5d00, which is the address of the instance variable 0x5bad7c',
-      'the byte at [[0x5b5930]]', 'the address of that variable (not its value', 'flags 0x40', 'may OR 0x100000'])
+    // Address anchors bind the observed text to the captures; the wording around them is not an oracle.
+    for (const anchor of ['0x40bb04', '0x40a4a0', '0x40640c', "'String Not Found'", '0x5635b4..0x5635ba', '0x5635d6..0x5635df', '[[0x5b5930]]', '0x408ae4', '0x408cec',
+      '0x4062da..0x4062de', '0x47e171..0x47e17a', '0x56a49d..0x56a4be', '0x56a848..0x56a85d', '0x56afbc..0x56afce', '0x570e77..0x570ec0', '0x571931'])
       expect(find!.observed, anchor).toContain(anchor);
-    expect(find!.observed).not.toMatch(/shared with Help|into global 0x5b5d00|MessageBoxA\(text/);
-    expect(find!.blocker).toMatch(/^Not enabled\. The complete native search surface cannot be certified from the current opaque web candidates\./);
+    expect(find!.observed).toMatch(/body of 0x47dd40 is not captured.*inference/);
+    expect(find!.observed).toMatch(/two call targets are not bound/);
+    expect(find!.blocker).toMatch(/^Not enabled\. /);
     expect(find!.blocker).toMatch(/no-scan path: when Items\.Count <= start/);
     expect(find!.blocker).toMatch(/13 prepared handwritten vectors .* were not executed/);
-    expect(find!.blocker).not.toMatch(/never be reported|any query could match/);
     expect(find!.uncertainty).toMatch(/inference from that caption/);
     expect(find!.uncertainty).toMatch(/Only if no other path updated the persisted mode \+0x3d2 or the query/);
-    expect(find!.uncertainty).not.toMatch(/comes from the Win32 CDM_GETFILEPATH contract/);
+    expect(find!.uncertainty).toMatch(/0x56b36c .* reaches the writer 0x56a518 are not bound/);
     expect(String((provenance.contracts.find(c => c.id === 'PLR-REVIEW-EDIT-STATIC-01') as { uncertainty?: string }).uncertainty)).toMatch(/never certified native tail equivalence/);
     const reviewStatus = String((provenance.contracts.find(c => c.id === 'PLR-REVIEW-01') as { status?: string }).status);
     expect(reviewStatus).toContain('PLR-REVIEW-FIND-STATIC-01');
@@ -91,7 +92,35 @@ describe('pulsar provenance', () => {
     expect(listing.get('FIND-COORDINATOR-MESSAGE-HELPER')!.kind).toMatch(/not REA provider results.*kept as history only, not as complete-function evidence/);
     const docs = readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8');
     expect(docs).not.toMatch(/Find remains unbound|its behavior is not implemented|shared with Help|could never be reported|any text could match|Each row line is also lowercased/);
-    expect(readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')).toMatch(/'pulsar\.review\.gated': 'Find is not available: [^']*native file name text of the loaded file \(possibly with its folder path\) and native number text/);
+  });
+  it('records the known +0x9a file-name stores and their separate gates, without a sole-producer or native-content claim', () => {
+    const field = provenance.fileNameField;
+    const listing = new Map(provenance.listings.map(l => [l.id, l as { sha256?: string; range?: string }]));
+    expect(field.text).toEqual({ offset: '+0x9a', type: 'ShortString', cap: 255, conversion: '0x4060cc with ecx 0xff' });
+    expect(field.knownStores.map(s => [s.routine, s.range, s.flags])).toEqual([
+      ['0x56a260', '0x56a49d..0x56a4be', { '+0x96': 1, '+0x97': 1, '+0x98': 0 }],
+      ['0x56a518', '0x56a848..0x56a85d', { '+0x97': 1 }],
+    ]);
+    expect(field.knownStores[1].untouched).toEqual(['+0x96']);
+    for (const store of field.knownStores) expect(listing.get(store.listing)?.sha256, store.routine).toContain(`${store.capture} `);
+    expect(listing.get('PLR-FILENAME-STORES')!.sha256).toBe('signal-write.asm 55069a74c53d6daa29657dbef7768a2b5322a5c6145c8624802dbe303eebef7d; analysis-load.asm f8b01891d0084425025de1a0ae2d73dfb73df3a4c7d354b915fbefac410c255b');
+    // Record appends the tail on +0x96; Properties shows the text on +0x97, which the writer also sets.
+    expect(field.gates.map(g => [g.consumer, g.range, g.byte])).toEqual([
+      ['Record writer tail', '0x570e77..0x570ec0', '+0x96'],
+      ['Properties FileNmEd', '0x571931..0x57194b', '+0x97'],
+    ]);
+    expect(listing.get('GNU-571748')!.range).toBe('0x571748..0x5719a4');
+    expect(field.readerArgumentPreseed.range).toBe('0x56afbc..0x56afce');
+    expect(field.notBound.some(n => n.includes('0x56b36c') && n.includes('0x56a518'))).toBe(true);
+    expect(field.nativeContent).toMatch(/^unknown/);
+    expect(field.web).toMatch(/not native file-name content authority/);
+    const byId = new Map(provenance.contracts.map(c => [c.id, JSON.stringify(c)]));
+    for (const id of ['PLR-PROP-01', 'PLR-RECORD-01', 'PLR-REVIEW-01', 'PLR-REVIEW-FIND-STATIC-01', 'PLR-REVIEW-EDIT-STATIC-01']) expect(byId.get(id), id).toMatch(/fileNameField/);
+    // Stale claim class: a sole reader/open-dialog source, an established native full path, or a negated native result.
+    const texts = [JSON.stringify(provenance), ...['../../docs/PULSAR-ANALYSIS.md', './pulsarRecording.ts', './pulsarReview.ts', './pulsarReviewEdit.ts', '../components/PulsarMessages.ts']
+      .map(f => readFileSync(new URL(f, import.meta.url), 'utf8'))];
+    for (const text of texts) expect(text).not.toMatch(/exact (native )?`?(open-dialog |OpenDialog\.)`?\s*\*?\s*FileName|native full path|full path given to the reader|shows the full path|reader FileName text|the reader received|is not a native non-match|of the loaded file \(possibly/);
+    expect(readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')).toMatch(/'pulsar\.review\.gated': 'Find is not available: [^']*native file name text \(possibly with a folder path\) and native number text/);
   });
   it('records the artifact hash, the REA evidence and the gated contracts', () => {
     expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');
