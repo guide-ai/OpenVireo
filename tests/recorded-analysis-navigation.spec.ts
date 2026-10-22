@@ -20,6 +20,7 @@ test('actual Radio data route retains manual records across navigation and copie
  await nav(page,'Radio data').click();await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis'})).toBeFocused();
  await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
  await page.getByTestId('pulsar-review').click();await expect(page.getByTestId('pulsar-entry-1')).toContainText('kept across navigation');await expect(page.getByTestId('pulsar-entry-1')).toContainText('0.500000');
+ await page.getByTestId('pulsar-review-cancel').click();await expect(page.getByTestId('pulsar-review-dialog')).toHaveCount(0);
  const download=page.waitForEvent('download');await page.getByTestId('pulsar-download').click();const d=await download;expect(await readFile((await d.path())!)).toEqual(Buffer.from(TEXT,'ascii'));
  await page.screenshot({path:info.outputPath('integrated-radio-desktop.png'),fullPage:true});await page.reload();await expect(page.getByTestId('pulsar-none')).toBeVisible();
 });
@@ -228,4 +229,16 @@ test('toolbar backup caveat and temporary lab examples match visible persistence
  await nav(page,'LSS data').click();await expect(page.getByTestId('wedge-persistence')).toContainText('not included in Save investigation');
  await page.setViewportSize({width:390,height:844});await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await toolbar(page).screenshot({path:info.outputPath('toolbar-scope-mobile.png')});
+});
+
+test('actual mobile Radio Review preserves staged deletion and inner question across history; Cancel restores confirmed bytes and rows',async({page},info)=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await nav(page,'Radio data').click();await load(page);await record(page,'kept after staged deletion');
+ await page.getByTestId('pulsar-review').click();await page.getByTestId('pulsar-review-delete').click();await page.getByTestId('pulsar-review-yes').click();await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();
+ await page.goBack();await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await expect(page.locator('dialog:modal')).toHaveCount(0);
+ await page.goForward();await expect(page.getByTestId('pulsar-review-dialog')).toBeVisible();await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();await expect(page.getByTestId('pulsar-review-cancel')).toBeFocused();await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis',includeHidden:true})).not.toBeFocused();
+ await page.getByTestId('pulsar-review-cancel').click();await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
+ await page.getByTestId('pulsar-review').click();await expect(page.getByTestId('pulsar-entry-1')).toContainText('kept after staged deletion');await expect(page.getByTestId('pulsar-review-select-1')).toBeChecked();await page.getByTestId('pulsar-review-delete').click();
+ await page.goBack();await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await page.goForward();await expect(page.getByTestId('pulsar-review-confirm')).toBeVisible();await expect(page.getByTestId('pulsar-review-no')).toBeFocused();await expect(page.locator('dialog:modal')).toHaveCount(1);
+ await page.keyboard.press('Escape');await expect(page.getByTestId('pulsar-review-confirm')).toHaveCount(0);await expect(page.getByTestId('pulsar-review-dialog')).toBeVisible();await expect(page.getByTestId('pulsar-entry-1')).toContainText('0.500000');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:info.outputPath('integrated-review-history-mobile.png'),fullPage:true});
+ await page.getByTestId('pulsar-review-cancel').click();await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');const download=page.waitForEvent('download');await page.getByTestId('pulsar-download').click();expect(await readFile((await(await download).path())!)).toEqual(Buffer.from(TEXT,'ascii'));
 });

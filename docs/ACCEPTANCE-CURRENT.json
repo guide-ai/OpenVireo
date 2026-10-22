@@ -538,13 +538,14 @@
         "docs/PULSAR-ANALYSIS.md",
         "docs/PULSAR-ANALYSIS-VALIDATION.json",
         "docs/RECORDED-ANALYSIS-DELIVERY.md",
-        "tests/recorded-analysis-navigation.spec.ts"
+        "tests/recorded-analysis-navigation.spec.ts",
+        "docs/PULSAR-REVIEW-VALIDATION.json"
       ],
-      "gateReason": "Bounded supplied-data analysis delivered;Period/dispersion/filtering,editable Review,complete native result writer and runtime timing remain open.",
+      "gateReason": "Bounded supplied-data analysis and Review handlers delivered;Period/dispersion/filtering,Find/comment editing and serialized-row contracts,complete native result writer and runtime/activation timing remain open.",
       "originalWitnessPending": true,
       "licenseGate": false,
-      "deliveredSlice": "Supplied PLR reading/properties,manual panel/reference cursors,zoom/pan,record/cancel and read-only results,exact original-byte copy.",
-      "currentGaps": "Period/dispersion/filtering,editable Review,complete native result writer and runtime timing remain open."
+      "deliveredSlice": "Supplied PLR reading/properties,manual panel/reference cursors,zoom/pan,record/cancel,working-copy Review with confirmed Delete and outer Cancel/Ok,exact original-byte copy.",
+      "currentGaps": "Period/dispersion/filtering,Find/comment editing and serialized-row contracts,complete native result writer and runtime/activation timing remain open."
     },
     {
       "id": "N08",

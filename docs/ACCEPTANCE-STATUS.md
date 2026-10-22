@@ -50,7 +50,7 @@ Original-runtime witnesses are absent for20 explicitly tracked fidelity/verifica
 
 ## Continuation map
 
-The bounded recorded-data delivery and its remaining gates are described in [the delivery scope](RECORDED-ANALYSIS-DELIVERY.md). The next recovered subflow is transactional PLR Review (working copy,confirmed Delete,outer Cancel/OK). Camera/catalog authority,live radio acquisition,period/dispersion and broader exercise work remain open;see [full continuation](FULL-SCOPE-CONTINUATION.md). Current row counts are in [ACCEPTANCE-CURRENT.json](ACCEPTANCE-CURRENT.json).
+The bounded recorded-data delivery and its remaining gates are described in [the delivery scope](RECORDED-ANALYSIS-DELIVERY.md). Transactional PLR Review now supports a working copy,confirmed Delete and outer Cancel/Ok;Find/comment editing,serialized-row authority and native activation timing remain open. Camera/catalog authority,live radio acquisition,period/dispersion and broader exercise work remain open;see [full continuation](FULL-SCOPE-CONTINUATION.md). Current row counts are in [ACCEPTANCE-CURRENT.json](ACCEPTANCE-CURRENT.json).
 
 ### Earlier optical milestone (historical)
 
