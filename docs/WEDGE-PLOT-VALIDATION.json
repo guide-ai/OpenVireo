@@ -1,14 +1,10 @@
 {
-  "authorship": {
-    "correction": "Claude Opus5.5;delivered frozenanduncommitted",
-    "independentValidation": "Codex fullunit60E2E6controls/typecheck/build/hashstability/visualdesktopmobile",
-    "authorDelivery": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-wedge-analysis/final-a11y-correction/CHECKPOINT.md"
-  },
+  "base": "86c1029",
   "sourceHashes": {
-    "docs/WEDGE-PLOT-PROVENANCE.json": "021bd895c4dcd6a4e110da2a5c4717ed106f1d61777f3601483ddd86a9ac907d",
-    "docs/WEDGE-PLOT.md": "dfa8fc0b2be0a1a32106ba82b5b6c11496a856eaf2af68bec4a09f3b0df90a5f",
+    "docs/WEDGE-PLOT-PROVENANCE.json": "cbc3d8ed6f4348e5fb3e46a6c9c617d04bc59d428f79b67e37ab14d91a508595",
+    "docs/WEDGE-PLOT.md": "56ea586bfe4ffa80a1877fa194fa2af5389c4c45ba76c4f9ed49ca2610fb24e4",
     "src/components/Wedge.css": "25c018bc042fe458889ab0ccbd04927d7ad59213846f833d1e1f3179af00327d",
-    "src/components/WedgeLab.tsx": "9e9bbeeb7d3917a4c080d703629f66cd76da9294490491969ef7811a1aa1e73c",
+    "src/components/WedgeLab.tsx": "8f440c2313afdf27901115ae5f97e346faaf204abb6795739302684a4ae36d51",
     "src/components/WedgeMessages.test.ts": "9556235af38275c696a4ab8bcfd7cb55374e0e5326a242de0d5f5bda3f3a1243",
     "src/components/WedgeMessages.ts": "619d8564244b1fe714b38bbd41141545f45fb4a04c751e373c95b987218c9d07",
     "src/components/WedgeOptionsDialog.tsx": "a96ce6f5f09f23cec683621b96a3b2904113a103e8a2e486d393edf1239ae674",
@@ -29,58 +25,61 @@
     "tests/wedge-lss.spec.ts": "8064f2d470ccead8750b9eb45cb3056c0880ebcef6f547b5afa4cbbdba16ca12",
     "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed",
     "tests/wedge-focus.spec.ts": "1c33a4a6c4911628d47881f5415fb0c93e42cbd67e0a6fd2dd88938069fc2ac5",
-    "tests/wedge-prompt-focus.spec.ts": "c30ead65ee2e704cbee1d28147201c4b228f5334e266aba475fcdf3c375a5459"
+    "tests/wedge-prompt-focus.spec.ts": "0a1621624802760d525dccacce9119812ad6a4e03f61ea886765e5bccb0074a6"
   },
   "sourceStableDuringIndependentValidation": true,
-  "sourceStabilityEvidence": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/source-before.json",
   "unitTests": {
     "passed": 1799,
     "failed": 0,
     "files": 179,
-    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/unit-report.json"
+    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/host-focus/unit-report.json"
   },
   "e2e": {
-    "passed": 60,
+    "passed": 64,
     "failed": 0,
     "stats": {
-      "startTime": "2026-10-22T00:36:00.839Z",
-      "duration": 35475.369,
-      "expected": 60,
+      "startTime": "2026-10-22T01:15:08.864Z",
+      "duration": 31491.222,
+      "expected": 64,
       "skipped": 0,
       "unexpected": 0,
       "flaky": 0
     },
-    "desktop": 30,
-    "mobile": 30,
-    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/browser-report.json"
+    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/host-focus/browser-report.json"
   },
   "independentPromptFocus": {
-    "passed": 6,
+    "passed": 4,
     "failed": 0,
-    "stats": {
-      "startTime": "2026-10-22T00:37:48.744Z",
-      "duration": 3036.6569999999997,
-      "expected": 6,
+    "scope": "4boundarycases included in full64;notadditionalruns",
+    "baseline": {
+      "startTime": "2026-10-22T01:13:57.237Z",
+      "duration": 13420.223,
+      "expected": 2,
       "skipped": 0,
-      "unexpected": 0,
+      "unexpected": 2,
       "flaky": 0
     },
-    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-final-a11y-triage/after-report.json",
-    "beforeReport": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-final-a11y-triage/pre-report.json",
-    "before": "4fail/2pass on4ec;strongscrollcasealso independentlyfailsbothviewportswhenmovedremoved,source restored",
-    "scrollMutationLog": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-final-a11y-triage/scroll-mutant.log"
+    "baselineControl": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/host-focus/baseline-receipt.json"
   },
-  "typecheck": {
-    "command": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
-    "result": "exit0",
-    "log": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/typecheck.log"
-  },
-  "buildTypecheck": {
-    "result": "exit0",
-    "log": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/build.log",
-    "resources": "1279/1279 size/SHA256 match"
-  },
-  "unchangedScientificSources": [
+  "checks": [
+    {
+      "check": "unit",
+      "exitCode": 0
+    },
+    {
+      "check": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "check": "build",
+      "exitCode": 0
+    },
+    {
+      "check": "browser",
+      "exitCode": 0
+    }
+  ],
+  "scientificSourcesUnchanged": [
     "src/core/wedgeExport.ts",
     "src/core/wedgeLssText.test.ts",
     "src/core/wedgeLssText.ts",
@@ -95,34 +94,18 @@
     "src/core/wedgeWorkspace.ts",
     "src/io/wedgeLssFile.ts"
   ],
-  "earlierUnitCoverageGap": {
-    "description": "Previous1798report preceded4ec finalviewportUIedit;not silentlyclaimedcoverage. Rerunatfrozen4ec1798passed;newcodehasindependent1799runabove.",
-    "frozen4ecReport": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-final-a11y-triage/frozen-4ec-unit-report.json",
-    "previousAuthorReceipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/author-validation.json"
-  },
-  "focusDiagnostic": {
-    "initial": "Author59/60;3/6repeat",
-    "after": "Author20/20repeat;rootcurrent60/60pass",
-    "cause": "FocusedOptionsbuttondisabledbynewreadmaynotyetblur;disabledcontroldoesnotcountasdeliberatefocus",
-    "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-wedge-analysis/final-a11y-correction",
-    "baseline4ec": "Not measured for thisrace;not claimed introduced/fixed relative tobaseline"
-  },
-  "scope": "Livewaitingquestionannouncementwithoutfocussteal;Optionsbackgroundinert/inputdisabled/handlerguard;refuseimportunderOptionswhilepreservingdraft/rows/cancellation;strongoffscreenwindow-scrollcontrol;no core/numeric/parser/CSV/format edits.",
-  "supersededRegression": "FormerprogrammaticOptions+pendingconsentcase now assertsmodalbackgroundimportrefusal;data/draft/Escapeguardsretained,normalreadafterclose stillworks.",
-  "status": "Independently validated local candidate;mandatory newseparateClaudeReviewpending;not promoted",
-  "previousValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/author-validation.json",
-  "scientificLimits": [
-    "No MJD numeric metadata constructed from historical hostcontext",
-    "No live LSSacquisition/groupAutoPlot/nativewriter/printing",
-    "Number trigonometry and declaredbinary32/Extendedpolicy are not runtime FPU/GDIequivalence",
-    "Window-local workspace not Saveinvestigation;raw data rows and SHAreceipt retained,not a byte-identical original-file writer",
-    "Options modality and the status announcement are web accessibility boundaries; the coordinator reports the native options form as modal, no ShowModal address is cited, no runtime parity claimed"
-  ],
-  "unverified": [
-    "Firefox/native-select Escape consumption",
-    "Real screen readers (NVDA/VoiceOver): only DOM focus and live-region text were inspected in Chromium",
-    "Host scroll containers and scroll clamping for the moved-viewport rule",
-    "No native Windows focus parity"
-  ],
-  "visualInspection": "Codex inspectedtranslatedpartialcatalogstatus/consentandmobileOptionsdisabledinput/inertbackground;no realNVDA/VoiceOver claim"
+  "review": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-wedge-analysis/review-host-focus-readonly-completed/receipt.json",
+  "documentationCorrection": "Codex clarified90fullfilepre vs80boundarypairpost populations;no source/test changes after completedreview",
+  "visualInspection": "Codex inspected newrun desktop velocity wedge/rowdetails and mobile Options with disabled backgroundinput;DOM layout only,noAT/nativepixelparity",
+  "scope": "localcandidate not promoted;integrationreview and broadregression required",
+  "reviewScope": "All code/tests reviewed in completed immutable patch99794586...;Codex documentation population clarification is reserved for integrationreview",
+  "resources": "Build confirmed1279/1279 size andSHA256",
+  "authorDelivery": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-wedge-analysis/correction-host-focus-resume/DELIVERY.md",
+  "priorValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/receipt.json",
+  "scienceLimits": [
+    "No liveacquisition/nativewriter/calendar reconstructed",
+    "DeclaredNumber/Single/Extended policy is notnativeFPUwitness",
+    "OnlyChromiumDOM/manualsupplieddata controls;noAT/GDI/Windowsparity",
+    "Windowlocalworkspaces excludedfromSaveinvestigation"
+  ]
 }

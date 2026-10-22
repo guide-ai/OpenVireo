@@ -67,9 +67,10 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   const button=promptButton.current,a=document.activeElement;
   if(!w.pending||disabled||!button||button.getClientRects().length===0)return;
   const prompt=button.closest('[role="alertdialog"]');
-  // A control the read itself disabled (e.g. Options after OK) is not a deliberate focus,
-  // even if the browser has not blurred it yet when a fast read completes.
-  if(a&&a!==document.body&&a!==fileInput.current&&!prompt?.contains(a)&&!a.matches(':disabled'))return;
+  // A panel control the read itself disabled (e.g. Options after OK) is not a deliberate focus,
+  // even if the browser has not blurred it yet when a fast read completes. A host control
+  // stays deliberate even when disabled: focus is never pulled into the panel from outside.
+  if(a&&a!==document.body&&a!==fileInput.current&&!prompt?.contains(a)&&!(root.current?.contains(a)&&a.matches(':disabled')))return;
   // Reveal a normal completed question, but preserve a viewport deliberately moved during the read.
   const moved=window.scrollX!==readViewport.current.x||window.scrollY!==readViewport.current.y;
   button.focus({preventScroll:refocusFile.current!=='read'||moved});
