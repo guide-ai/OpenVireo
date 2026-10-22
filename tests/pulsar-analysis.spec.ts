@@ -1175,7 +1175,8 @@ test('Review UI-R06: Ok without edits keeps every field and enables no save writ
   await openReview(page);
   expect(await rowCells(page)).toEqual(before);
   await expect(page.getByTestId('pulsar-review-find')).toBeDisabled();
-  await expect(page.getByTestId('pulsar-review-find')).toHaveAccessibleDescription(/Find is not available/);
+  // Find is recovered but not enabled (PLR-REVIEW-FIND-STATIC-01): the searched line holds the loaded file's host path.
+  await expect(page.getByTestId('pulsar-review-find')).toHaveAccessibleDescription(/^Find is not available: .*full path of the loaded file/);
   // Superseded by the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01): Edit is enabled; Find stays disabled.
   await expect(page.getByTestId('pulsar-review-edit')).toBeEnabled();
   await page.getByTestId('pulsar-review-cancel').click();
