@@ -1,0 +1,102 @@
+{
+  "scope": "Bounded comment-only PLR Review editor;not full N07/E06 acceptance or native-runtime equivalence",
+  "sourceCommit": "171b980d03b4453ab08eea879b48650bf3f88df0",
+  "baseCommit": "42d983b7beebe0519839c5b47b880f8526d70bec",
+  "sourceHashes": {
+    "docs/PULSAR-ANALYSIS-PROVENANCE.json": "e9a4a92f72caef649a281a09a0a5b3125d66beee718f2d67ca5b7f6cec0d7bad",
+    "docs/PULSAR-ANALYSIS.md": "ed5cf2ed30d906e0584dd40aa63190660d21d2f6df42dbb01703a7281a5e6b65",
+    "src/components/PulsarAnalysis.css": "84572b5bee477963f6c62f160e0af67c28fe99a54e725fb07c3d00d78f025f15",
+    "src/components/PulsarAnalysis.tsx": "a17ffd27d7572e425c2f2ae742749517f09272ecb181e90a423c8f02afc0d8b3",
+    "src/components/PulsarMessages.ts": "32dbbe6203527701ffda2043033d5756c6f1a0a6f76d2e365983c9be593b2169",
+    "src/core/pulsarAnalysis.ts": "375e5a22fbd812d49c4013fb1160ff3b2641013a9aecdc0cc3fee29b51742c88",
+    "src/core/pulsarProvenance.test.ts": "898b17379976d5f72265c35ad2a54859a1b0cd05c23c232dc01bfc707099ddd0",
+    "src/core/pulsarReview.ts": "b2b725f0e6323fee807946f339adca219c963d51e8ac256c10938eaef2171213",
+    "src/core/pulsarReviewEdit.test.ts": "3a50fa3b8ff2efad670f4372c65b1b272bb7547c36894524fc6d2bc32c0ebd51",
+    "src/core/pulsarReviewEdit.ts": "5dc7efa18e25d4b36d4dfd321bb7719a25a44792a5c84ad79fc6979643b5dc7e",
+    "tests/pulsar-analysis.spec.ts": "744926ae699d2f1913945490d45b112d46cb6004f3602e1a321ad20cf0377af4"
+  },
+  "receiptSelfExcluded": "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
+  "metadataPolicy": "Written after validation/committing source;self excluded andmetadataonly followupcommit;sourceHashes match tested runtime/docs/tests exactly",
+  "independentValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/receipt.json",
+  "checks": [
+    {
+      "check": "unit",
+      "exitCode": 0
+    },
+    {
+      "check": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "check": "build",
+      "exitCode": 0
+    },
+    {
+      "check": "corecontrols",
+      "exitCode": 0
+    },
+    {
+      "check": "browser",
+      "exitCode": 0
+    },
+    {
+      "check": "uicontrols",
+      "exitCode": 0
+    }
+  ],
+  "unit": {
+    "passed": 1908,
+    "failed": 0,
+    "files": 179
+  },
+  "coreControls": {
+    "passed": 31,
+    "failed": 0
+  },
+  "standaloneBrowser": {
+    "startTime": "2026-10-22T05:27:50.739Z",
+    "duration": 97708.881,
+    "expected": 92,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "independentUI": {
+    "startTime": "2026-10-22T05:29:28.821Z",
+    "duration": 10474.445,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "resourcesVerified": 1279,
+  "beforeControl": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/baseline-receipt.json",
+  "beforeControlMeaning": "Twoexpectedfeatureabsence failures atdisabledEditafterverifiedmanualpreconditions;not productregressions",
+  "interimMutationControl": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/interim-core/receipt.json",
+  "interimMutationLimit": "Frozenearlieridenticalpure-core snapshot,notnativeoracle;31pass/4expectedmutantfails;setup count32/31errorpreserved",
+  "author": {
+    "exitCode": 0,
+    "durationMs": 1477380,
+    "effectiveModel": "claude-opus-5-5",
+    "configuredEffort": "high",
+    "result": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-comment-edit-author/result-summary.json",
+    "actualPermissionDenialCount": 12,
+    "sourceHashesMatched": true
+  },
+  "originalScientificSourcesUnchangedFromBase": {
+    "src/core/pulsarRecording.ts": "330e97088c9298b4156b4bc5cc89d4839d1da446",
+    "src/core/numericPolicy.ts": "d724b29220c0dd80cc056edc77bfe60f2856c5a2",
+    "docs/LOCAL-RESOURCES.json": "8e370b5815b0527080444e28596d64dc50a0c428"
+  },
+  "separateNativeReviewPendingAtReceipt": true,
+  "AppIntegrationPendingAtReceipt": true,
+  "noPushDeploy": true,
+  "limits": [
+    "Literalbyte/stringmodelsandexactcurrentcandidate roundtrip provechosenportcontract,notnativeRecordwriter,x87,locale/GDI orVCL runtimeequivalence",
+    "OnlyprintableASCII/exactfieldcaps/losslessrowtemplates admittedforEdit;unsupportedrowsremainrecordedandunchanged",
+    "Commasinquotedobject/commentandquotesinopaquefilenametail arepreserved;noinventedescaping",
+    "Selectedordinal/workingcopykeptbyexplicitWEBinlineeditorpolicy;nativeOnActivate/re-readselection/windowX remainunwitnessed",
+    "No Find/Undo/nativewriter/acquisition/periodDM/schema/persistenceaddition;manualnumbersneverfilled",
+    "TemporaryworkspaceexcludedfromSaveinvestigationanddiscardedonreload"
+  ]
+}
