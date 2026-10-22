@@ -262,12 +262,19 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const windowCaption=menuCaptionText(NATIVE_CAPTIONS.window);
  const setCoordinatesRef=useRef<HTMLButtonElement>(null),radioSwitchRef=useRef<HTMLButtonElement>(null);
  // WEB focus return: closing the panel removes Set Coordinates and its close button, so the live main-window switch
- // is the fallback after that window or its arrival box closes. A hidden/busy route or a foreign modal never yields focus.
+ // is the fallback after that window or its arrival box closes. Only a closure edge of this panel's own surfaces counts:
+ // a presented dialog/box closing with no other one left, or the panel window closing. Route entry and the end of a
+ // project operation are not closures (the host focuses its h1, or focus stays where it is). The prior values are taken
+ // on every run, also hidden/busy ones, so an edge is consumed where it happens and never fires later. A hidden/busy
+ // route, a foreign modal, a valid existing focus or a disabled/absent/inert target never yields focus.
+ const closurePrior=useRef({presented,panelShown:state.radioPanelShown});
  useEffect(()=>{
-  if(antennaModal||!active||hostBusy||nativeModalOpen()||document.activeElement&&document.activeElement!==document.body)return;
+  const prior=closurePrior.current;closurePrior.current={presented,panelShown:state.radioPanelShown};
+  const closed=prior.presented&&!antennaModal||prior.panelShown&&!state.radioPanelShown;
+  if(!closed||antennaModal||!active||hostBusy||nativeModalOpen()||document.activeElement&&document.activeElement!==document.body)return;
   const target=[setCoordinatesRef.current,radioSwitchRef.current].find(button=>button&&!button.disabled&&button.getClientRects().length>0&&!button.closest('[inert]'));
   target?.focus();
- },[antennaModal,active,hostBusy,state.radioPanelShown]);
+ },[presented,antennaModal,active,hostBusy,state.radioPanelShown]);
  const panelRoot=useRef<HTMLElement>(null);
  return <section ref={panelRoot} className="card radio-control" aria-labelledby={`${id}-title`} data-testid="radio-control" data-modal-pending={modalPending} data-modal-presented={presented}>
   <h2 id={`${id}-title`}>{t('radio.title')}</h2>

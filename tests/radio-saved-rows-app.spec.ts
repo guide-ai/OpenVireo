@@ -198,6 +198,9 @@ async function startSlew(page:Page,values:readonly [string,string,string,string,
  await id(page,'antenna-set-coordinates').click();await enterCoordinates(page,values);await id(page,'antenna-dialog-ok').click();
  await expect(notice(page)).toHaveAttribute('data-kind','confirm-slew');await id(page,'antenna-notice-yes').click();await expect(notice(page)).toHaveCount(0);
 }
+/** Test-only focusin log, installed once per page (H1:text, data-testid, else TAG:text). It observes the App and changes nothing. */
+const recordFocus=(page:Page)=>page.evaluate(()=>{const w=window as unknown as{__radioFocusEvents:string[]};w.__radioFocusEvents=[];document.addEventListener('focusin',event=>{const el=event.target;if(el instanceof HTMLElement&&w.__radioFocusEvents.length<50)w.__radioFocusEvents.push(el.tagName==='H1'?`H1:${el.textContent}`:el.getAttribute('data-testid')??`${el.tagName}:${el.textContent?.trim()}`);});});
+const focusEvents=(page:Page)=>page.evaluate(()=>(window as unknown as{__radioFocusEvents:string[]}).__radioFocusEvents);
 async function hostReleased(page:Page){await expect(header(page)).not.toHaveAttribute('inert');await expect(toolbar(page)).not.toHaveAttribute('inert');await expect(presented(page)).toHaveAttribute('data-modal-presented','false');}
 async function hostHeld(page:Page){await expect(header(page)).toHaveAttribute('inert','');await expect(toolbar(page)).toHaveAttribute('inert','');await expect(presented(page)).toHaveAttribute('data-modal-presented','true');}
 
@@ -303,7 +306,9 @@ test('project operations keep both temporary workspaces and the old formats: Sav
  await restore(page,'held-restore.json',before.toString('utf8'));await held(page,'held-restore.json');
  await expect(page.locator('[data-testid="radio-route"]').locator('xpath=ancestor::div[@inert]')).toHaveCount(1);
  const paused=await id(page,'antenna-ticks').textContent();
- await page.clock.runFor(600);await flushTasks(page);// six periods while busy must deliver no callbacks
+ // 630 ms busy is not a multiple of the 100 ms period (the paused clock registered the interval when busy began): an
+ // interval kept with its callbacks skipped would fire 70 ms after Cancel, a fresh registration only after 100 ms.
+ await page.clock.runFor(630);await flushTasks(page);// no callback while busy
  await expect(id(page,'antenna-ticks')).toHaveText(paused!);
  await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();await flushTasks(page);
  const count=(text:string|null)=>Number(/(\d+)$/.exec(text??'')?.[1]);const start=count(paused);
@@ -336,14 +341,47 @@ test('review regression: a hidden-panel arrival returns switch focus without a h
  await page.keyboard.up('Enter');await page.keyboard.press('Enter');await expect(id(page,'radio-switch')).toHaveAttribute('aria-checked','true');await expect(id(page,'radio-panel-window')).toBeVisible();
 });
 
+test('review regression: a closed-panel arrival reached on a hidden route returns focus from outside the panel to the live switch',async({page},info)=>{
+ await openRadio(page,info);await setupRadio(page,info);await startSlew(page,['1','0','0','30','0','0']);
+ await press(info,id(page,'radio-panel-close'));await expect(id(page,'radio-panel-window')).toHaveCount(0);await expect(id(page,'radio-switch')).toBeFocused();
+ await press(info,nav(page,'Observatory'));await expect(heading(page,'Start with the sky.')).toBeFocused();
+ // The readout is unmounted with the panel window; the mounted status line names the actual background arrival.
+ await expect(id(page,'antenna-status')).toHaveText('Slew complete.');await expect(notice(page)).toHaveCount(0);await hostReleased(page);
+ await expect(heading(page,'Start with the sky.')).toBeFocused();
+ await press(info,nav(page,'Radio telescope'));await expect(id(page,'antenna-notice-ok')).toBeFocused();await hostHeld(page);// box opened with focus outside the panel
+ await recordFocus(page);await press(info,id(page,'antenna-notice-ok'));await expect(notice(page)).toHaveCount(0);
+ await expect(id(page,'radio-switch')).toBeFocused();await hostReleased(page);expect(await focusEvents(page)).toEqual(['radio-switch']);
+ await expect(id(page,'radio-switch')).toHaveAttribute('aria-checked','false');await expect(id(page,'radio-panel-window')).toHaveCount(0);
+});
+
+test('review regression: Cancel of a held restore on the radio route focuses no radio control',async({page},info)=>{
+ await holdReads(page);await openRadio(page,info);await setupRadio(page,info);
+ await restore(page,'held-cancel-focus.json','{}');await held(page,'held-cancel-focus.json');
+ const route=page.locator('[data-testid="radio-route"]').locator('xpath=ancestor::div[@inert]');await expect(route).toHaveCount(1);
+ const cancel=page.getByRole('button',{name:'Cancel pending save/restore',exact:true});await expect(cancel).toBeVisible();
+ await recordFocus(page);await press(info,cancel);
+ await expect(toolbar(page).getByText('Pending investigation operation cancelled. Confirmed work in every tool was kept.')).toBeVisible();
+ await expect(route).toHaveCount(0);await settle(page);// busy ended and its passive effects ran: no box or window closed
+ expect((await focusEvents(page)).filter(event=>event!=='BUTTON:Cancel pending save/restore')).toEqual([]);
+ await expect(id(page,'antenna-set-coordinates')).not.toBeFocused();await expect(id(page,'radio-switch')).not.toBeFocused();
+ await release(page,'held-cancel-focus.json');await flushTasks(page);await expect(toolbar(page).locator('[role="alert"]')).toHaveCount(0);
+});
+
+test('review regression: Back into the radio route with body focus focuses exactly its h1, with no intermediate radio focus',async({page},info)=>{
+ await openRadio(page,info);await setupRadio(page,info);await expect(id(page,'antenna-set-coordinates')).toBeEnabled();
+ await press(info,nav(page,'Observatory'));await expect(heading(page,'Start with the sky.')).toBeFocused();
+ await page.evaluate(()=>(document.activeElement as HTMLElement|null)?.blur());expect(await page.evaluate(()=>document.activeElement===document.body)).toBe(true);
+ await recordFocus(page);await page.goBack();await expect(heading(page,'Radio telescope control')).toBeFocused();await settle(page);
+ expect(await focusEvents(page)).toEqual(['H1:Radio telescope control']);await hostReleased(page);
+});
+
 test('review regression: Find to pending arrival yields focus directly to the box and retains the Find draft',async({page},info)=>{
  await openRadio(page,info);await setupRadio(page,info);await startSlew(page,['1','0','0','30','0','0']);
  await press(info,nav(page,'Radio data'));await toggleDisclosure(page);await useFile(page);await id(page,'saved-rows-find').click();await id(page,'saved-rows-query').fill('kept across arrival');
  await expect.poll(()=>id(page,'antenna-ra').textContent()).toBe('1 Hrs 0 Mins 0.00 Secs');
- await page.evaluate(()=>{const w=window as unknown as{__radioFocusEvents:string[]};w.__radioFocusEvents=[];document.addEventListener('focusin',event=>{const el=event.target;if(el instanceof HTMLElement&&w.__radioFocusEvents.length<50)w.__radioFocusEvents.push(el.tagName==='H1'?`H1:${el.textContent}`:el.getAttribute('data-testid')??el.tagName);});});
+ await recordFocus(page);
  await page.goBack();await expect(notice(page)).toHaveAttribute('data-kind','slew-complete');await expect(id(page,'antenna-notice-ok')).toBeFocused();
- const events=await page.evaluate(()=>(window as unknown as{__radioFocusEvents:string[]}).__radioFocusEvents);
- expect(events).not.toContain('H1:Radio telescope control');await id(page,'antenna-notice-ok').click();
+ expect(await focusEvents(page)).toEqual(['antenna-notice-ok']);await id(page,'antenna-notice-ok').click();
  await press(info,nav(page,'Radio data'));await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('kept across arrival');await page.keyboard.press('Escape');
 });
 
