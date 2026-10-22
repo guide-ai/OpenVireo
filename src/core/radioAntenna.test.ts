@@ -3,8 +3,9 @@ import provenance from '../../docs/RADIO-ANTENNA-PROVENANCE.json';
 import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
- isRadioLabOptions,nearestBinary64,normalizeRaHours,openSetCoordinates,parseDelphiFloat,parseExactDecimal,parseSkyCoords,roundHalfEven,selectSkyCoordsEpoch,
- skyCoordsFieldsFor,slewRateFor,slewTimerTick,splitSexagesimal,toggleTracking,SKY_COORDS_WEB_DOMAIN,
+ isRadioLabOptions,isSupportedRadioLabProfile,nearestBinary64,normalizeRaHours,openSetCoordinates,parseDelphiFloat,parseExactDecimal,parseSkyCoords,
+ radioLabProfileIssues,roundHalfEven,selectSkyCoordsEpoch,skyCoordsFieldsFor,slewRateFor,slewTimerTick,splitSexagesimal,toggleTracking,
+ RADIO_WEB_OPTION_PROFILE,SKY_COORDS_WEB_DOMAIN,
  type RadioLabOptions,type RadioLabOutcome,type RadioLabState,type RadioLabTransition,type SkyCoordsFields,
 } from './radioAntenna';
 import {INITIAL_RADIO_CONTROL,clickRadioSwitch,enterRadioPulsarsExercise,radioIdCaptionLabel,scopeTimerTick,selectRadioAccess} from './radioControl';
@@ -401,6 +402,95 @@ describe('RA-07 stop, resume, late callbacks and Tracking during a slew',()=>{
  });
 });
 
+describe('WEB-OPT-01 supported web option profile (browser limit, not original options validation)',()=>{
+ const issues=(over:Partial<RadioLabOptions>)=>radioLabProfileIssues(opts(over));
+ const raStep=(rate:number)=>rate*RADIO_LAB_CONSTANTS.raStepPerRate/RADIO_LAB_CONSTANTS.raStepDivisor;
+ it('keeps the compiled defaults and the transit/instant/limits scenarios supported',()=>{
+  for(const o of [O,opts({transitTelescope:true}),opts({instantSlew:true}),opts({limitsEnabled:true})])expect(radioLabProfileIssues(o)).toEqual([]);
+  expect(RADIO_WEB_OPTION_PROFILE.raStepLimitHours).toBe(RADIO_LAB_CONSTANTS.halfTurnHours/2);
+ });
+ it('root option controls: shape-valid zero, negative, oversized-step, out-of-sky and overflowing values are refused with a reason',()=>{
+  // radio-antenna-independent/lifecycle-review-controls/option-results.json: each was accepted by the shape check alone.
+  for(const bad of [{rateBase:0},{rateBase:-50},{maxRateIndex:8},{latitudeRadians:100},{latitudeRadians:Number.MAX_VALUE}])expect(isRadioLabOptions(opts(bad))).toBe(true);
+  expect(issues({rateBase:0})).toEqual([{kind:'rate-not-advancing',index:1}]);
+  expect(issues({rateBase:-50})).toEqual([{kind:'rate-not-advancing',index:1}]);
+  const big=issues({maxRateIndex:8});expect(big).toEqual([{kind:'ra-step',index:7,raStepHours:raStep(500_000)}]);expect((big[0] as {raStepHours:number}).raStepHours).toBeCloseTo(9.259,3);
+  expect(issues({latitudeRadians:100})).toEqual([{kind:'initial-declination',declination:100*RADIO_LAB_CONSTANTS.radiansToDegrees}]);
+  expect(issues({latitudeRadians:Number.MAX_VALUE})).toEqual([{kind:'initial-declination',declination:Infinity}]);
+  expect(issues({latitudeRadians:-100,rateBase:0}).map(i=>i.kind)).toEqual(['initial-declination','rate-not-advancing']);
+  expect(()=>radioLabProfileIssues({...O,rateBase:1.5})).toThrow('Invalid radio lab options');
+ });
+ it('derives the RA bound from the reachable indices and the rate base, not from a fixed maximum index',()=>{
+  expect(issues({maxRateIndex:6})).toEqual([]);// base 50: index 6 gives 0.93 h
+  expect(issues({maxRateIndex:7})).toMatchObject([{kind:'ra-step',index:7}]);// 9.26 h
+  expect(issues({maxRateIndex:5,rateBase:3239})).toEqual([]);expect(issues({maxRateIndex:5,rateBase:3241})).toMatchObject([{kind:'ra-step',index:5}]);
+  // Startup index 4 is reachable even when the options maximum is lower: FormActivate sets it and RateSpin cannot go up.
+  for(const maxRateIndex of [0,1,2,3,4]){
+   expect(issues({maxRateIndex,rateBase:32399})).toEqual([]);
+   expect(issues({maxRateIndex,rateBase:32401})).toMatchObject([{kind:'ra-step',index:4}]);
+  }
+  // At the boundary the verdict follows the binary64 RA step computed as in SlewTimer2 (rate × operand / 15).
+  const verdicts=new Set<boolean>();
+  for(let base=32395;base<=32405;base++){const ok=raStep(10*base)<6;verdicts.add(ok);expect(isSupportedRadioLabProfile(opts({maxRateIndex:0,rateBase:base})),String(base)).toBe(ok);}
+  expect([...verdicts].sort()).toEqual([false,true]);
+  expect(isSupportedRadioLabProfile(opts({maxRateIndex:255,rateBase:1}))).toBe(false);
+ });
+ it('admits a latitude only when its starting Declination is finite and inside −90°…+90°',()=>{
+  const k=RADIO_LAB_CONSTANTS;
+  for(const lat of [0,-0.5,1.5,-1.5,Math.PI/2,-Math.PI/2,90/k.radiansToDegrees,1.6,-1.6]){
+   const dec=lat*k.radiansToDegrees;expect(isSupportedRadioLabProfile(opts({latitudeRadians:lat})),String(lat)).toBe(dec>=-90&&dec<=90);
+  }
+  expect(issues({latitudeRadians:-1.6})).toMatchObject([{kind:'initial-declination'}]);expect(issues({latitudeRadians:1.5})).toEqual([]);
+ });
+ it('refuses activation and every slewing action without changing anything; cancel, decline and the stop question still work',()=>{
+  const bad=opts({rateBase:0});
+  const off=track(activateRadioLab(INITIAL_RADIO_LAB,bad));expect(off).toMatchObject({outcome:'options-unsupported',changed:false,steps:[]});expect(off.state).toBe(INITIAL_RADIO_LAB);
+  const s=tracking();
+  for(const t of [toggleTracking(s,bad),changeSlewRate(s,bad,'down'),openSetCoordinates(s,bad)])expect(track(t)).toMatchObject({outcome:'options-unsupported',changed:false,state:s});
+  const open=enter(s,fields('3','0','0','20','0','0'));
+  expect(track(confirmSkyCoords(open,bad))).toMatchObject({outcome:'options-unsupported',state:open});
+  expect(track(editSkyCoordsField(open,'raHours','4')).outcome).toBe('field-edited');expect(track(cancelSkyCoords(open)).outcome).toBe('dialog-cancelled');
+  const ask=track(confirmSkyCoords(open,O)).state;
+  expect(track(answerNotice(ask,bad,'confirm-slew','yes'))).toMatchObject({outcome:'options-unsupported',state:ask});
+  expect(track(answerNotice(ask,bad,'confirm-slew','no')).outcome).toBe('slew-declined');
+  let run=track(answerNotice(ask,O,'confirm-slew','yes')).state;run=track(slewTimerTick(run,O,run.slewRun)).state;
+  expect(track(slewTimerTick(run,bad,run.slewRun))).toMatchObject({outcome:'options-unsupported',state:run});
+  const stop=track(openSetCoordinates(run,bad));expect(stop.outcome).toBe('stop-requested');
+  expect(track(answerNotice(stop.state,bad,'stop-slew','no')).outcome).toBe('slew-resumed');
+  expect(track(answerNotice(stop.state,bad,'stop-slew','yes')).state).toMatchObject({slewing:false,pointing:run.pointing,target:run.target});
+ });
+ it('a host option change mid-run holds the slew without losing progress; the valid profile resumes to the same result',()=>{
+  const start=slewTo(at(1,10),fields('3','0','0','20','0','0')),reference=runSlew(start);
+  let s=start;for(let i=0;i<5;i++)s=track(slewTimerTick(s,O,s.slewRun)).state;
+  for(const bad of [opts({rateBase:0}),opts({maxRateIndex:8}),opts({latitudeRadians:100}),opts({rateBase:-50})])expect(track(slewTimerTick(s,bad,s.slewRun)).state).toBe(s);
+  const resumed=runSlew(s);
+  expect(resumed.state.pointing).toEqual(reference.state.pointing);expect(resumed.state.slewTicks).toBe(reference.state.slewTicks);expect(resumed.outcomes.length+5).toBe(reference.outcomes.length);
+ });
+ it('refuses a callback whose stored rate is outside the profile even under supported options',()=>{
+  const s:RadioLabState={...slewTo(at(1,10),fields('3','0','0','20','0','0')),rate:5_000_000,rateIndex:8};
+  expect(track(slewTimerTick(s,O,s.slewRun))).toMatchObject({outcome:'options-unsupported',state:s});
+  expect(track(slewTimerTick({...s,rate:0},O,s.slewRun)).outcome).toBe('options-unsupported');
+ });
+ it('supported profiles reach the target within a bounded number of callbacks, including RA steps just below 6 h',()=>{
+  const finish=(o:RadioLabOptions,from:RadioPointingLike,to:SkyCoordsFields)=>{
+   const rate=slewRateFor(Math.max(o.maxRateIndex,4),o),limit=Math.ceil(180/(rate*RADIO_LAB_CONSTANTS.decStepPerRate))+Math.ceil(12/raStep(rate))+6;
+   const r=runSlew(slewTo({...tracking(o),pointing:from},to,o),o,limit+1);
+   expect(r.outcomes.length,`${o.rateBase} ${JSON.stringify(from)} ${JSON.stringify(to)}`).toBeLessThanOrEqual(limit);
+   expect(r.state.notice).toEqual({kind:'slew-complete'});return r.state;
+  };
+  const edge=opts({rateBase:3239});expect(raStep(slewRateFor(5,edge))).toBeGreaterThan(5.99);
+  for(const [ra,h] of [[0,'24'],[23.99,'0'],[0,'12'],[12,'0'],[6,'18'],[18,'6'],[0.001,'23.999'],[23.999,'0.001']] as const)
+   expect(finish(edge,{ra,dec:0},fields(h,'0','0','1','0','0')).pointing).toEqual({ra:normalizeRaHours(Number(h)),dec:1});
+  const next=lcg(606);
+  for(let i=0;i<300;i++){
+   const o=opts({rateBase:next(50,3239)}),from={ra:next(0,2399)/100,dec:next(-900,900)/10},raC=next(0,2400),decT=next(-900,900);
+   const end=finish(o,from,fields(fixedText(raC,2),'0','0',fixedText(decT,1),'0','0'));
+   expect(end.pointing).toEqual({ra:normalizeRaHours(raC/100),dec:decT/10});// stored values are the nearest binary64 of the decimals
+  }
+ });
+});
+type RadioPointingLike={ra:number;dec:number};
+
 describe('captions, catalog and provenance',()=>{
  it('keeps the original DFM captions',()=>{
   expect(RADIO_LAB_CAPTIONS).toMatchObject({form:'VIREO Radio Telescope Control Panel',setCoordinates:'Set Coordinates...',tracking:'Tracking',slewRate:'Slew Rate'});
@@ -408,7 +498,7 @@ describe('captions, catalog and provenance',()=>{
   expect(NOTICE_BUTTONS['confirm-slew']).toEqual(['yes','no']);expect(NOTICE_BUTTONS['transit-dec-only']).toEqual(['ok','cancel']);
  });
  it('has an English message for every outcome and notice, and validates replacement catalogs',()=>{
-  const every:Record<RadioLabOutcome,true>={'activated':true,'already-activated':true,'not-activated':true,'modal-open':true,'tracking-on':true,'tracking-off':true,'tracking-unavailable':true,'rate-up':true,'rate-down':true,'rate-at-limit':true,'rate-disabled':true,'menu-disabled':true,'dialog-opened':true,'stop-requested':true,'field-edited':true,'field-too-long':true,'epoch-selected':true,'epoch-disabled':true,'dialog-closed':true,'dialog-cancelled':true,'ra-invalid':true,'dec-invalid':true,'ra-unsupported':true,'dec-unsupported':true,'b1950-gated':true,'no-slew-needed':true,'transit-notice':true,'limits-require-clock':true,'slew-confirm-requested':true,'notice-dismissed':true,'notice-stale':true,'invalid-answer':true,'transit-cancelled':true,'slew-declined':true,'slew-started':true,'slew-instant':true,'slew-stopped':true,'slew-resumed':true,'slew-timer-idle':true,'slew-tick':true,'slew-axis-ra':true,'slew-complete':true};
+  const every:Record<RadioLabOutcome,true>={'activated':true,'already-activated':true,'not-activated':true,'modal-open':true,'options-unsupported':true,'tracking-on':true,'tracking-off':true,'tracking-unavailable':true,'rate-up':true,'rate-down':true,'rate-at-limit':true,'rate-disabled':true,'menu-disabled':true,'dialog-opened':true,'stop-requested':true,'field-edited':true,'field-too-long':true,'epoch-selected':true,'epoch-disabled':true,'dialog-closed':true,'dialog-cancelled':true,'ra-invalid':true,'dec-invalid':true,'ra-unsupported':true,'dec-unsupported':true,'b1950-gated':true,'no-slew-needed':true,'transit-notice':true,'limits-require-clock':true,'slew-confirm-requested':true,'notice-dismissed':true,'notice-stale':true,'invalid-answer':true,'transit-cancelled':true,'slew-declined':true,'slew-started':true,'slew-instant':true,'slew-stopped':true,'slew-resumed':true,'slew-timer-idle':true,'slew-tick':true,'slew-axis-ra':true,'slew-complete':true};
   const ta=createRadioAntennaTranslator();
   for(const o of Object.keys(every))expect(Object.hasOwn(RADIO_ANTENNA_MESSAGES_EN,`antenna.outcome.${o}`)).toBe(true);
   for(const k of Object.keys(NOTICE_BUTTONS))for(const key of k.endsWith('-unsupported')?[`antenna.notice.${k}.cancellation`,`antenna.notice.${k}.precision`]:[`antenna.notice.${k}`])

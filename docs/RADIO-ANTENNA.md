@@ -88,13 +88,14 @@ import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS} from './core/radioAntenna';
   state={radioControlState} environment={env} onTransition={t=>setState(t.state)}
   antenna={radioLabState}                      // start from INITIAL_RADIO_LAB; activates on first show
   onAntennaTransition={t=>setAntenna(t.state)} // called only when t.changed
-  antennaOptions={RADIO_COMPILED_OPTIONS}      // typed options; host may supply instructor values
+  antennaOptions={RADIO_COMPILED_OPTIONS}      // host values must also satisfy the supported WEB option profile
   antennaTranslate={createRadioAntennaTranslator(catalog)} // optional scoped catalog
-  autoSlewTimer                                // default true: one SlewTimer2 callback per 100 ms
+  autoScopeTimer                               // default true: nominal 1 ms callbacks when fast access is enabled
+  autoSlewTimer                                // default true: nominal 100 ms browser registration
 />
 ```
 
-Transitions return `{state,outcome,changed,steps}`, where `steps` are RA/RC contract IDs. While the dialog or a message box is open, every other action returns `modal-open`. Each message answer names the kind of box it answers (`answerNotice(state,options,kind,answer)`), so an answer aimed at another kind of box, or at no open box, changes nothing. Same-kind boxes are not told apart; see "Held keys" above. Each tick carries the run token (`slewTimerTick(state,options,run)`), so late callbacks from an earlier slew change nothing.
+Transitions return `{state,outcome,changed,steps}`, where `steps` are RA/RC contract IDs. While the dialog or a message box is open, other user actions return `modal-open`. ScopeTimer callbacks are separate from user actions and can complete access while the antenna dialog remains open. Each message answer names the kind of box it answers (`answerNotice(state,options,kind,answer)`), so an answer aimed at another kind of box, or at no open box, changes nothing. Same-kind boxes are not told apart; see "Held keys" above. Each tick carries the run token (`slewTimerTick(state,options,run)`), so late callbacks from an earlier slew change nothing.
 
 The English strings are in `src/components/RadioAntennaMessages.ts`. It is a scoped catalog with the same rules as the shared ones (complete keys, identical placeholders, values inserted as text). The shared `en.json` is not modified.
 
@@ -121,3 +122,11 @@ The English strings are in `src/components/RadioAntennaMessages.ts`. It is a sco
 Tests check the implementation contract chosen here. They are not an oracle for the original runtime.
 
 The browser repeat guard also covers the Set Coordinates button that receives focus when a message closes. Independently reproduced before that extension: holding the Yes confirmation opened a stop question and paused the slew without a new press. A fresh press still opens the stop question. This is a browser input policy, not a native Windows timing claim.
+
+## Browser timer ownership and option profile
+
+These are explicit web policies, not recovered Windows timing or native options validation. `radioTimer.ts` owns a periodic registration, reads the latest committed input on delivery, suppresses duplicate delivery from the same uncommitted input, and ignores callbacks after cancellation. Tracking/rate changes do not restart its cadence. Pause, completion, unmount, or unsupported host options end the registration; hiding the panel leaves it running. The component additionally checks the latest enabled/run ownership before handling a callback, including the gap between a React commit and passive-effect cleanup, so an ending timer cannot overwrite its completion result. Browser scheduling can coalesce deliveries; this is not one guaranteed native tick per elapsed 100 ms.
+
+`radioLabProfileIssues` separately checks a shape-valid host option record: initial latitude must produce finite Dec within [-90, 90] degrees, and reachable rate indices 1 through max(4, configured maximum) must yield finite positive advancing Dec/RA steps with RA step < 6 hours. The browser refuses unsupported options without clamping or replacing state. A changed unsupported profile suspends motion; restoring a supported profile resumes it. Stop/Cancel remains available. The original INI/dialog validation and current classroom options are not established. These controls do not authorize acquisitions or supply the observation clock.
+
+Independent Chromium controls did not reproduce the review's suggested Enter cascade after arrival: actual focus was BODY, and held Enter did not change Tracking or the radio switch. That hypothesis is not a confirmed fixed defect; regressions preserve the observed behavior without forcing a new focus target. The coordinator did reproduce timer starvation on Tracking changes and late callbacks replacing the final status; before/after reports remain outside source in `radio-antenna-independent/quota-preservation/`.

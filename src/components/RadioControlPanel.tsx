@@ -1,4 +1,4 @@
-import {StrictMode,useEffect,useId,useMemo,useRef,useState,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
+import {StrictMode,useEffect,useId,useLayoutEffect,useMemo,useRef,useState,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
 import {createRoot} from 'react-dom/client';
 import {
  INITIAL_RADIO_CONTROL,NATIVE_CAPTIONS,RANDOM_ACCESS_RANGE_MS,clickRadioSwitch,closeRadioPanel,enterRadioPulsarsExercise,menuCaptionText,
@@ -6,12 +6,13 @@ import {
  type DomeByte,type RadioControlState,type RadioEnvironment,type RadioOutcome,type RadioTransition,
 } from '../core/radioControl';
 import {
- INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,SKY_COORDS_CAPTIONS,
+ INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,RADIO_WEB_OPTION_PROFILE,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,SKY_COORDS_WEB_DOMAIN,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
- isRadioLabModal,openSetCoordinates,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
- type NoticeAnswer,type RadioLabNotice,type RadioLabNoticeKind,type RadioLabOptions,type RadioLabOutcome,type RadioLabState,type RadioLabTransition,
- type SkyCoordsDialog,type SkyCoordsField,
+ isRadioLabModal,isRadioLabOptions,openSetCoordinates,radioLabProfileIssues,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
+ type NoticeAnswer,type RadioLabNotice,type RadioLabNoticeKind,type RadioLabOptions,type RadioLabOutcome,type RadioLabProfileIssue,type RadioLabState,
+ type RadioLabTransition,type SkyCoordsDialog,type SkyCoordsField,
 } from '../core/radioAntenna';
+import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
 import {createRadioTranslator,type RadioMessageKey,type RadioTranslate} from './RadioMessages';
 import {createRadioAntennaTranslator,type RadioAntennaMessageKey,type RadioAntennaTranslate} from './RadioAntennaMessages';
 import './RadioControlPanel.css';
@@ -25,17 +26,22 @@ export type RadioControlPanelProps=Readonly<{
  /** When given, the panel shows explicit scenario-input controls. Omit when the host owns them. */
  onEnvironmentChange?:(environment:RadioEnvironment)=>void;
  translate?:RadioTranslate;
- /** Deliver the recovered 1 ms ScopeTimer ticks automatically (default true). */
+ /** Deliver the recovered 1 ms ScopeTimer ticks automatically (default true). Timer callbacks are not user actions:
+  * they also run while an antenna dialog or message box is open. */
  autoScopeTimer?:boolean;
  /** Controlled TRadioLab antenna state (start from INITIAL_RADIO_LAB). Without it the panel window shows no antenna controls. */
  antenna?:RadioLabState;
  onAntennaTransition?:(transition:RadioLabTransition)=>void;
- /** Telescope options; default RADIO_COMPILED_OPTIONS (compiled defaults, no options file). */
+ /** Telescope options; default RADIO_COMPILED_OPTIONS (compiled defaults, no options file). Values outside the
+  * supported web profile (radioLabProfileIssues, WEB-OPT-01) are shown as a browser limit and suspend the antenna. */
  antennaOptions?:RadioLabOptions;
  antennaTranslate?:RadioAntennaTranslate;
- /** Deliver SlewTimer2 callbacks every 100 ms (default true); otherwise a manual tick button is shown. */
+ /** Deliver SlewTimer2 callbacks on a nominal 100 ms browser interval (default true); otherwise a manual tick button is shown. */
  autoSlewTimer?:boolean;
 }>;
+
+/** Browser interval host for the timer registrations (WEB-TIMER-01). */
+const BROWSER_TIMER:RadioTimerHost={setInterval:(callback,ms)=>window.setInterval(callback,ms),clearInterval:handle=>window.clearInterval(handle as number)};
 
 const DOME_BYTES:readonly DomeByte[]=[0,1,2,3];
 const englishRadio=createRadioTranslator(),englishAntenna=createRadioAntennaTranslator();
@@ -69,6 +75,11 @@ function noticeText(n:RadioLabNotice,ta:RadioAntennaTranslate):string{
  if(n.kind==='ra-unsupported'||n.kind==='dec-unsupported')return ta(`antenna.notice.${n.kind}.${n.reason}`,{limit:SKY_COORDS_WEB_DOMAIN.magnitudeLimit});
  return ta(`antenna.notice.${n.kind}` as RadioAntennaMessageKey);
 }
+function profileIssueText(issue:RadioLabProfileIssue,options:RadioLabOptions,ta:RadioAntennaTranslate):string{
+ if(issue.kind==='initial-declination')return ta('antenna.profile.initial-declination',{latitude:String(options.latitudeRadians)});
+ if(issue.kind==='rate-not-advancing')return ta('antenna.profile.rate-not-advancing',{base:options.rateBase,index:issue.index});
+ return ta('antenna.profile.ra-step',{index:issue.index,hours:issue.raStepHours.toPrecision(4),limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours});
+}
 const FOCUSABLE='button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 /** Keeps Tab inside an application-modal surface. */
 function trapTab(e:KeyboardEvent<HTMLElement>,root:HTMLElement|null){
@@ -87,36 +98,59 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const [draft,setDraft]=useState(environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters)),[draftInvalid,setDraftInvalid]=useState(false);
  useEffect(()=>{setDraft(environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters));setDraftInvalid(false);},[environment.dishDiameterMeters]);
  const antennaModal=antenna?isRadioLabModal(antenna):false;
- const run=(step:()=>RadioTransition)=>{
-  // ShowModal and MessageBox disable every other window of the application.
-  if(antennaModal){setAntennaOutcome('modal-open');return;}
-  let transition:RadioTransition|null=null;
-  try{transition=step();}catch{transition=null;}
+ // Shape-invalid options keep surfacing as the generic error from the transitions themselves.
+ const profileIssues=useMemo(()=>isRadioLabOptions(antennaOptions)?radioLabProfileIssues(antennaOptions):[],[antennaOptions]);
+ const profileSupported=profileIssues.length===0;
+ const applyControl=(transition:RadioTransition|null,handler:(transition:RadioTransition)=>void)=>{
   if(!transition){setEnvError(true);return;}
-  setEnvError(false);setOutcome(transition.outcome);if(transition.changed)onTransition(transition);
+  setEnvError(false);setOutcome(transition.outcome);if(transition.changed)handler(transition);
  };
- const runAntenna=(step:()=>RadioLabTransition)=>{
-  if(!onAntennaTransition)return;
-  let transition:RadioLabTransition|null=null;
-  try{transition=step();}catch{transition=null;}
+ const applyAntenna=(transition:RadioLabTransition|null,handler:(transition:RadioLabTransition)=>void)=>{
   if(!transition){setAntennaError(true);return;}
-  setAntennaError(false);if(!QUIET_OUTCOMES.has(transition.outcome))setAntennaOutcome(transition.outcome);if(transition.changed)onAntennaTransition(transition);
+  setAntennaError(false);if(!QUIET_OUTCOMES.has(transition.outcome))setAntennaOutcome(transition.outcome);if(transition.changed)handler(transition);
  };
+ const attempt=<T,>(step:()=>T):T|null=>{try{return step();}catch{return null;}};
+ /** User actions. ShowModal and MessageBox disable every other window of the application. */
+ const run=(step:()=>RadioTransition)=>{
+  if(antennaModal){setAntennaOutcome('modal-open');return;}
+  applyControl(attempt(step),onTransition);
+ };
+ const runAntenna=(step:()=>RadioLabTransition)=>{if(onAntennaTransition)applyAntenna(attempt(step),onAntennaTransition);};
+ // Timer callbacks are not user actions: they read the latest committed inputs and handlers when they fire.
+ const scopeInput=useMemo(()=>({state,environment}),[state,environment]);
+ const hasAntennaHost=antenna!==undefined&&onAntennaTransition!==undefined;
+ const scopeActive=autoScopeTimer&&state.scopeTimerEnabled&&state.scopeTimerIntervalMs===1&&environment.domeByte!==3;
+ const slewActive=hasAntennaHost&&autoSlewTimer&&antenna.slewTimerEnabled&&profileSupported;
+ const slewRun=antenna?.slewRun??0;
+ const latest=useRef({scopeInput,onTransition,antenna,antennaOptions,onAntennaTransition,scopeActive,slewActive,slewRun});
+ useLayoutEffect(()=>{latest.current={scopeInput,onTransition,antenna,antennaOptions,onAntennaTransition,scopeActive,slewActive,slewRun};});
+ // RC-06: the 1 ms ScopeTimer is delivered while it is enabled, admitted (option byte) and not held by dome byte 3,
+ // also while an antenna dialog or box is open. The Random(8000) interval stays a manual stand-in.
  useEffect(()=>{
-  if(!autoScopeTimer||!state.scopeTimerEnabled||state.scopeTimerIntervalMs!==1||environment.domeByte===3)return;
-  const timer=setTimeout(()=>run(()=>scopeTimerTick(state,environment)),1);
-  return ()=>clearTimeout(timer);
- },[autoScopeTimer,state,environment]);// run is recreated each render; state/environment are the real inputs.
- // RA-04: the first Show activates the form once.
+  if(!scopeActive)return;
+  return startRadioTimer(BROWSER_TIMER,1,()=>latest.current.scopeInput,input=>{
+   // A commit can disable the timer before this passive effect has cleaned up its interval. Such a queued callback
+   // has lost ownership and must not replace the completion message with an idle-timer result.
+   if(!latest.current.scopeActive)return;
+   applyControl(attempt(()=>scopeTimerTick(input.state,input.environment)),t=>latest.current.onTransition(t));
+  }).cancel;
+ },[scopeActive]);// apply*/attempt only call stable state setters and the latest handler
+ // RA-04: the first Show activates the form once (refused while the options are outside the web profile).
  useEffect(()=>{
   if(state.radioPanelShown&&antenna&&!antenna.activated)runAntenna(()=>activateRadioLab(antenna,antennaOptions));
  },[state.radioPanelShown,antenna,antennaOptions]);
- // RA-11: one SlewTimer2 callback per committed state. A TTimer keeps running while the form is hidden.
+ // RA-11: one SlewTimer2 registration per enabled run, on a nominal 100 ms interval. Unrelated antenna changes do not
+ // restart it; pause (stop question), completion, a new run, unsupported options or unmount cancel it. A TTimer keeps
+ // running while the form is hidden, so closing the panel window does not.
  useEffect(()=>{
-  if(!antenna||!autoSlewTimer||!antenna.slewTimerEnabled)return;
-  const slewRun=antenna.slewRun,timer=setTimeout(()=>runAntenna(()=>slewTimerTick(antenna,antennaOptions,slewRun)),RADIO_LAB_CONSTANTS.slewTimerIntervalMs);
-  return ()=>clearTimeout(timer);
- },[antenna,antennaOptions,autoSlewTimer]);
+  if(!slewActive)return;
+  return startRadioTimer(BROWSER_TIMER,RADIO_LAB_CONSTANTS.slewTimerIntervalMs,()=>latest.current.antenna,lab=>{
+   const current=latest.current;
+   if(!current.slewActive||current.slewRun!==slewRun)return;
+   const {antennaOptions:options,onAntennaTransition:handler}=current;
+   if(lab&&handler)applyAntenna(attempt(()=>slewTimerTick(lab,options,slewRun)),handler);
+  }).cancel;
+ },[slewActive,slewRun]);
  const onSwitchKey=(e:KeyboardEvent<HTMLButtonElement>)=>{
   // OnKeyPress receives characters only; Enter arrives as #13.
   if(e.key==='Enter'){e.preventDefault();run(()=>pressRadioSwitchKey(state,environment,'\r'));}
@@ -170,8 +204,13 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <p className="radio-control-native" data-testid="antenna-form-caption">{RADIO_LAB_CAPTIONS.form}</p>
    {antenna&&onAntennaTransition&&antenna.activated
     ?<AntennaControls antenna={antenna} options={antennaOptions} ta={ta} run={runAntenna} autoSlewTimer={autoSlewTimer} setCoordinatesRef={setCoordinatesRef}/>
-    :<p className="radio-control-note">{ta('antenna.notActivated')}</p>}
+    :<p className="radio-control-note">{ta(profileSupported?'antenna.notActivated':'antenna.profile.notActivated')}</p>}
    <button type="button" className="secondary-button" data-testid="radio-panel-close" onClick={()=>run(()=>closeRadioPanel(state,environment))}>{t('radio.panel.close')}</button>
+  </section>}
+  {antenna&&!profileSupported&&<section className="radio-control-block antenna-profile" aria-labelledby={`${id}-profile`} aria-live="polite" data-testid="antenna-profile">
+   <h3 id={`${id}-profile`}>{ta('antenna.profile.heading')}</h3>
+   <p className="radio-control-note">{ta('antenna.profile.help')}</p>
+   <ul>{profileIssues.map(issue=><li key={issue.kind} data-testid={`antenna-profile-${issue.kind}`}>{profileIssueText(issue,antennaOptions,ta)}</li>)}</ul>
   </section>}
   <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-status">{envError?t('radio.error.environment'):outcome?outcomeText(outcome,t,ta):''}</p>
   {antenna&&<p className="radio-control-status" role="status" aria-live="polite" data-testid="antenna-status">{antennaError?t('radio.error.environment'):antennaOutcome?antennaOutcomeText(antennaOutcome,ta):''}</p>}
@@ -318,7 +357,8 @@ function SkyCoordsDialogView({dialog,blocked,ta,onEdit,onEpoch,onOk,onCancel,ret
 function NoticeView({notice,ta,onAnswer}:Readonly<{notice:RadioLabNotice;ta:RadioAntennaTranslate;onAnswer:(answer:NoticeAnswer)=>void}>){
  const id=useId(),root=useRef<HTMLDivElement>(null),defaultButton=useRef<HTMLButtonElement>(null);
  const meta=NOTICE_META[notice.kind],buttons=NOTICE_BUTTONS[notice.kind];
- useEffect(()=>{const previous=document.activeElement as HTMLElement|null;defaultButton.current?.focus();return ()=>{if(previous?.isConnected)previous.focus();};},[notice]);
+ // Keyed on the box kind, not the notice object: a transition committed while the same box stays open must not move focus.
+ useEffect(()=>{const previous=document.activeElement as HTMLElement|null;defaultButton.current?.focus();return ()=>{if(previous?.isConnected)previous.focus();};},[notice.kind]);
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{
   if(ignoreHeldKey(e))return;
   if(e.key==='Escape'){e.preventDefault();const answer=escapeAnswer(notice.kind);if(answer)onAnswer(answer);return;}

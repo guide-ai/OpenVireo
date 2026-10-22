@@ -1,7 +1,7 @@
 /** I06 subflow: TEnvironment1 radio control switch (RadCntrlSw), radio scope
  * access and radio control-panel visibility, recovered statically from VIREO
  * 1.504 (CLEA_VEO.exe SHA-256 781bc970…c54c). See docs/RADIO-CONTROL.md and
- * docs/RADIO-CONTROL-PROVENANCE.json for contract IDs RC-01…RC-10.
+ * docs/RADIO-CONTROL-PROVENANCE.json for contract IDs RC-01…RC-11 (RC-10 is superseded).
  *
  * Scope: control/state transitions only. The radio control panel contents
  * (TRadioLab, VMT 0x563a08) live in radioAntenna.ts; no beam, receiver,

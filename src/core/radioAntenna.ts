@@ -151,7 +151,7 @@ export type RadioLabState=Readonly<{
 }>;
 
 export type RadioLabOutcome=
- |'activated'|'already-activated'|'not-activated'|'modal-open'
+ |'activated'|'already-activated'|'not-activated'|'modal-open'|'options-unsupported'
  |'tracking-on'|'tracking-off'|'tracking-unavailable'
  |'rate-up'|'rate-down'|'rate-at-limit'|'rate-disabled'
  |'menu-disabled'|'dialog-opened'|'stop-requested'
@@ -173,11 +173,51 @@ export const INITIAL_RADIO_LAB:RadioLabState=Object.freeze({
 
 const isByte=(v:unknown)=>typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=255;
 const isInt32=(v:unknown)=>typeof v==='number'&&Number.isInteger(v)&&v>=-2147483648&&v<=2147483647;
+/** Shape only: the native field widths (byte maximum index, Integer rate base, finite latitude). It does not mean
+ * the browser can run the antenna with these values; see radioLabProfileIssues. */
 export function isRadioLabOptions(o:unknown):o is RadioLabOptions{
  if(!o||typeof o!=='object')return false;const v=o as RadioLabOptions;
  return typeof v.transitTelescope==='boolean'&&typeof v.limitsEnabled==='boolean'&&typeof v.instantSlew==='boolean'&&isByte(v.maxRateIndex)&&isInt32(v.rateBase)&&typeof v.latitudeRadians==='number'&&Number.isFinite(v.latitudeRadians);
 }
 function checkOptions(o:RadioLabOptions){if(!isRadioLabOptions(o))throw new Error('Invalid radio lab options');}
+
+/** OpenVireo web option profile (WEB-OPT-01; a browser limit, not an original options check: the options file loader
+ * and TRadioOptsDlg are not recovered). A shape-valid option record is supported when the first FormActivate points
+ * inside the sky and, at every slew-rate index the panel can reach, the Dec and RA steps are finite, advance every
+ * in-range coordinate, and the RA step is below raStepLimitHours. Reachable indices are 1 (RateSpinDownClick floor)
+ * up to max(4, maximum): the first FormActivate sets index 4 even when the options maximum is lower, and a programmed
+ * slew raises the index to the maximum. Unsupported values are refused, never clamped. */
+export const RADIO_WEB_OPTION_PROFILE=Object.freeze({
+ /** Half the [0, 12) h SlewTimer2 crossing window. Below it, a step that carries RA past 0/24 h lands in the window on
+  * the next callback, so every RA phase ends; at 6 h a slew from 0 h to a 24 h target cycles 18, 12, 6, 0 h forever. */
+ raStepLimitHours:RADIO_LAB_CONSTANTS.halfTurnHours/2,
+});
+export type RadioLabProfileIssue=Readonly<
+ |{kind:'initial-declination';declination:number}
+ |{kind:'rate-not-advancing';index:number}
+ |{kind:'ra-step';index:number;raStepHours:number}
+>;
+/** RA step of SlewTimer2 for a rate, as computed at 0x5674ff..0x56750f (magnitude). */
+const raStepFor=(rate:number)=>rate*RADIO_LAB_CONSTANTS.raStepPerRate/RADIO_LAB_CONSTANTS.raStepDivisor;
+function rateIssue(rate:number,index:number):RadioLabProfileIssue|null{
+ const k=RADIO_LAB_CONSTANTS,dec=rate*k.decStepPerRate,ra=raStepFor(rate);
+ // Adding the step to the largest coordinate magnitude must change it: then it changes every in-range coordinate.
+ const advancing=Number.isFinite(rate)&&rate>0&&Number.isFinite(dec)&&Number.isFinite(ra)&&k.decMaxDegrees+dec>k.decMaxDegrees&&k.raMaxHours+ra>k.raMaxHours;
+ if(!advancing)return Object.freeze({kind:'rate-not-advancing',index});
+ return ra<RADIO_WEB_OPTION_PROFILE.raStepLimitHours?null:Object.freeze({kind:'ra-step',index,raStepHours:ra});
+}
+/** Every reason the browser does not run the antenna with these options (empty = supported). Throws on a bad shape. */
+export function radioLabProfileIssues(options:RadioLabOptions):readonly RadioLabProfileIssue[]{
+ checkOptions(options);
+ const k=RADIO_LAB_CONSTANTS,issues:RadioLabProfileIssue[]=[];
+ const declination=options.latitudeRadians*k.radiansToDegrees;
+ if(!Number.isFinite(declination)||declination<k.decMinDegrees||declination>k.decMaxDegrees)issues.push(Object.freeze({kind:'initial-declination',declination}));
+ for(let index=k.minRateIndex,top=Math.max(k.initialRateIndex,options.maxRateIndex);index<=top;index++){
+  const issue=rateIssue(slewRateFor(index,options),index);if(issue){issues.push(issue);break;}// the lowest failing index
+ }
+ return Object.freeze(issues);
+}
+export function isSupportedRadioLabProfile(options:RadioLabOptions):boolean{return radioLabProfileIssues(options).length===0;}
 
 const freezeState=(s:RadioLabState):RadioLabState=>Object.freeze({...s,pointing:Object.freeze({...s.pointing}),target:Object.freeze({...s.target}),
  dialog:s.dialog&&Object.freeze({...s.dialog,fields:Object.freeze({...s.dialog.fields})}),notice:s.notice&&Object.freeze({...s.notice})});
@@ -185,6 +225,8 @@ const freezeState=(s:RadioLabState):RadioLabState=>Object.freeze({...s,pointing:
 const done=(_previous:RadioLabState,next:RadioLabState,outcome:RadioLabOutcome,steps:string[]):RadioLabTransition=>Object.freeze({state:freezeState(next),outcome,changed:true,steps:Object.freeze(steps)});
 const same=(s:RadioLabState,outcome:RadioLabOutcome,steps:string[]=[]):RadioLabTransition=>Object.freeze({state:s,outcome,changed:false,steps:Object.freeze(steps)});
 const modal=(s:RadioLabState)=>s.dialog!==null||s.notice!==null;
+/** WEB-OPT-01 refusal: nothing changes (state, pointing, target, dialog draft and open box are kept). */
+const unsupported=(s:RadioLabState)=>same(s,'options-unsupported');
 
 // ----------------------------------------------------------------- numeric helpers
 /** Sign(Double) 0x4272d4: −1, 0 or 1 (−0 gives 0). */
@@ -307,10 +349,12 @@ export function slewRateFor(index:number,options:RadioLabOptions):number{
 /** RA-04 first TRadioLab.FormActivate 0x5643fc (block guarded by +0x4d5): 0x565140 disables N/S/E/W, RateSpin,
  * labels and Receiver and sets Slew1.Enabled := transit; unless transit, DriveBtn/ClockLbl/ClockBvl/E/W become
  * visible; tracking/slewing bytes 0; rate index 4; RA := 0; Dec := latitude × 180/π; HA := 0. Catalog, hot-list,
- * sound and file loading in the same block are outside this slice. */
+ * sound and file loading in the same block are outside this slice. WEB-OPT-01: options outside the supported web
+ * profile leave the form unactivated (no out-of-sky or non-finite Dec is ever stored). */
 export function activateRadioLab(s:RadioLabState,options:RadioLabOptions):RadioLabTransition{
  checkOptions(options);
  if(s.activated)return same(s,'already-activated');
+ if(!isSupportedRadioLabProfile(options))return unsupported(s);
  const index=RADIO_LAB_CONSTANTS.initialRateIndex;
  return done(s,{...s,activated:true,tracking:false,slewing:false,slewTimerEnabled:false,slewTicks:0,phase:0,axisDone:false,step:0,
   rateIndex:index,rate:slewRateFor(index,options),slewMenuEnabled:options.transitTelescope,manualButtonsEnabled:false,rateSpinEnabled:false,
@@ -325,6 +369,7 @@ export function toggleTracking(s:RadioLabState,options:RadioLabOptions):RadioLab
  checkOptions(options);
  if(!s.activated)return same(s,'not-activated');
  if(modal(s))return same(s,'modal-open');
+ if(!isSupportedRadioLabProfile(options))return unsupported(s);
  if(!s.trackingVisible)return same(s,'tracking-unavailable');
  const tracking=!s.tracking;
  const next=tracking
@@ -338,6 +383,7 @@ export function changeSlewRate(s:RadioLabState,options:RadioLabOptions,direction
  checkOptions(options);
  if(!s.activated)return same(s,'not-activated');
  if(modal(s))return same(s,'modal-open');
+ if(!isSupportedRadioLabProfile(options))return unsupported(s);
  if(!s.rateSpinEnabled)return same(s,'rate-disabled');
  const allowed=direction==='up'?options.maxRateIndex>s.rateIndex:s.rateIndex>RADIO_LAB_CONSTANTS.minRateIndex;
  if(!allowed)return same(s,'rate-at-limit',['RA-06']);
@@ -347,13 +393,15 @@ export function changeSlewRate(s:RadioLabState,options:RadioLabOptions,direction
 
 /** RA-07 CoordBtnClick 0x566a3c (Slew ▸ Set Coordinates…). During a slew: SlewTimer2 off, then the Yes/No stop
  * question. Otherwise: when both stored coordinates equal Single 0.0 (0x566bc0) they are seeded from the current
- * pointing, EpochGrp is enabled and the dialog is shown modally with RA-08 prefill. */
+ * pointing, EpochGrp is enabled and the dialog is shown modally with RA-08 prefill. WEB-OPT-01: under unsupported
+ * options the stop question stays available, but no dialog opens (the stored coordinates are not seeded). */
 export function openSetCoordinates(s:RadioLabState,options:RadioLabOptions):RadioLabTransition{
  checkOptions(options);
  if(!s.activated)return same(s,'not-activated');
  if(modal(s))return same(s,'modal-open');
  if(!s.slewMenuEnabled)return same(s,'menu-disabled');
  if(s.slewing)return done(s,{...s,slewTimerEnabled:false,notice:{kind:'stop-slew'}},'stop-requested',['RA-07']);
+ if(!isSupportedRadioLabProfile(options))return unsupported(s);
  const target=s.target.ra===0&&s.target.dec===0?s.pointing:s.target;
  return done(s,{...s,target,dialog:{fields:skyCoordsFieldsFor(target),epochIndex:0,epochEnabled:true}},'dialog-opened',['RA-07','RA-08']);
 }
@@ -394,11 +442,13 @@ function confirmOrGate(s:RadioLabState,options:RadioLabOptions,steps:string[]):R
 
 /** RA-09 OKBtnClick 0x4f33f4. A parse/range failure keeps the dialog (ModalResult := 0) under an OK message box;
  * an entry outside the web domain does the same with a browser box. B1950 is a browser gate. On success the
- * J2000 values are stored and CoordBtnClick continues with RA-10. */
+ * J2000 values are stored and CoordBtnClick continues with RA-10. WEB-OPT-01: under unsupported options OK stores
+ * nothing and the dialog stays open (Cancel still closes it). */
 export function confirmSkyCoords(s:RadioLabState,options:RadioLabOptions):RadioLabTransition{
  checkOptions(options);
  if(!s.dialog)return same(s,'dialog-closed');
  if(s.notice)return same(s,'modal-open');
+ if(!isSupportedRadioLabProfile(options))return unsupported(s);
  const parsed=parseSkyCoords(s.dialog.fields);
  if(parsed.status!=='ok'){
   const notice:RadioLabNotice=parsed.status==='ra-unsupported'||parsed.status==='dec-unsupported'?{kind:parsed.status,reason:parsed.reason}:{kind:parsed.status};
@@ -429,7 +479,9 @@ function startSlew(s:RadioLabState,options:RadioLabOptions):RadioLabTransition{
 /** Answers the current message box. `kind` must name the box being answered: an answer aimed at a box of another
  * kind, or arriving when no box is open, changes nothing. Two successive boxes of the same kind are not told apart,
  * so this alone cannot reject a late answer meant for an earlier same-kind box. The panel passes the kind of the box
- * it renders and ignores auto-repeated Enter/Escape, which otherwise ran through several boxes (see the held-key specs). */
+ * it renders and ignores auto-repeated Enter/Escape, which otherwise ran through several boxes (see the held-key specs).
+ * WEB-OPT-01: under unsupported options Yes on the slew confirmation is refused and the box stays open; every other
+ * answer (No, Cancel, OK, and both answers to the stop question) works as usual. */
 export function answerNotice(s:RadioLabState,options:RadioLabOptions,kind:RadioLabNoticeKind,answer:NoticeAnswer):RadioLabTransition{
  checkOptions(options);
  const notice=s.notice;
@@ -438,7 +490,9 @@ export function answerNotice(s:RadioLabState,options:RadioLabOptions,kind:RadioL
  const cleared={...s,notice:null};
  switch(notice.kind){
   case 'transit-dec-only':return answer==='ok'?confirmOrGate(cleared,options,['RA-10']):done(s,cleared,'transit-cancelled',['RA-10']);
-  case 'confirm-slew':return answer==='yes'?startSlew(s,options):done(s,cleared,'slew-declined',['RA-10']);
+  case 'confirm-slew':
+   if(answer==='yes'&&!isSupportedRadioLabProfile(options))return unsupported(s);
+   return answer==='yes'?startSlew(s,options):done(s,cleared,'slew-declined',['RA-10']);
   case 'stop-slew':
    // 0x566a79..0x566ad5 (Yes) / 0x566adf (No).
    return answer==='yes'
@@ -448,10 +502,13 @@ export function answerNotice(s:RadioLabState,options:RadioLabOptions,kind:RadioL
  }
 }
 
-/** RA-11 SlewTimer2Timer 0x567430..0x5678c4, one callback. `run` must equal the current slewRun. */
+/** RA-11 SlewTimer2Timer 0x567430..0x5678c4, one callback. `run` must equal the current slewRun. WEB-OPT-01: the
+ * callback changes nothing while the options or the state's own rate are outside the supported web profile (the
+ * host may change options mid-run; the stored rate is kept, as the original only recomputes it in RateSpin). */
 export function slewTimerTick(s:RadioLabState,options:RadioLabOptions,run:number):RadioLabTransition{
  checkOptions(options);
  if(!s.slewTimerEnabled||run!==s.slewRun)return same(s,'slew-timer-idle');
+ if(!isSupportedRadioLabProfile(options)||rateIssue(s.rate,s.rateIndex))return unsupported(s);
  const k=RADIO_LAB_CONSTANTS,t=s.target;
  let {phase,axisDone,step,status}=s,{ra,dec}=s.pointing,outcome:RadioLabOutcome='slew-tick';
  if((phase===0||phase===1)&&axisDone){
