@@ -284,8 +284,8 @@ function panTick(s: PulsarAnalysisState, step: number): PulsarTransition {
 /**
  * PanLftBtnMouseDown 0x56d24c / PanRtBtnMouseDown 0x56d2b0 (left button only): step := ∓rate·dt, then
  * one immediate tick. The caller then enables the 100 ms hold timer (src/core/pulsarPanHold.ts), whose
- * ticks are pulsarPanTick. WEB: a pan button click that does not follow a pointer press (keyboard or other
- * activation) also calls this once, with no hold timer; the component keeps repeat-flagged and latched Enter
+ * ticks are pulsarPanTick. WEB: a pan button click permitted by the component's pointerPress guard
+ * also calls this once, with no hold timer; the component keeps repeat-flagged and latched Enter
  * keydowns from clicking. The native buttons have no OnClick, so the original does not pan from the keyboard.
  */
 export function pulsarPan(s: PulsarAnalysisState, direction: 'left' | 'right'): PulsarTransition {

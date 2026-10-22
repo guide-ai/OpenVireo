@@ -76,8 +76,9 @@ describe('pulsar provenance', () => {
   it('describes keyboard panning by click and latch, without a per-physical-press or assistive-technology promise', () => {
     const pan = provenance.contracts.find(c => c.id === 'PLR-PAN-01')!;
     const texts = [JSON.stringify(pan), readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8'),
+      readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8'),
       readFileSync(new URL('./pulsarAnalysis.ts', import.meta.url), 'utf8'), readFileSync(new URL('../components/PulsarAnalysis.tsx', import.meta.url), 'utf8')];
-    for (const text of texts) expect(text).not.toMatch(/(steps|once) per physical (key )?press|assistive activation steps|steps on a keydown that is not marked/i);
+    for (const text of texts) expect(text).not.toMatch(/(steps|once) per physical (key )?press|assistive activation steps|steps on a keydown that is not marked|moves one step per press/i);
     expect(pan.web).toMatch(/native click event/);
     expect(pan.web).toMatch(/latched, also for a keydown with repeat=false/);
   });

@@ -115,7 +115,7 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.toolbar.panLeft': 'Pan left',
   'pulsar.toolbar.panRight': 'Pan right',
   'pulsar.toolbar.panRate': 'Pan rate (samples per step)',
-  'pulsar.toolbar.panNote': 'Pressing a pan button moves one step, and holding it repeats a step every 100 ms (the original PanTimer interval) until you release it. Enter or Space moves one step per press; holding the key does not repeat.',
+  'pulsar.toolbar.panNote': 'Pressing a pan button moves one step, and holding it repeats a step every 100 ms (the original PanTimer interval) until you release it. Use Enter or Space to pan one step. Release the key before using it again.',
   'pulsar.input.primary': 'Primary button or touch sets',
   'pulsar.input.panel': 'the panel cursor (left button)',
   'pulsar.input.reference': 'the reference cursor (right button)',

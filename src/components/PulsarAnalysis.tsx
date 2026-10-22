@@ -178,8 +178,9 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     },
     onKeyUp: (e: KeyboardEvent<HTMLButtonElement>) => { panKeys.current.delete(e.key); },
     onBlur: () => panKeys.current.clear(),
-    // WEB: each click that does not follow a pointer press steps once, whatever activated it (the native buttons have no
-    // OnClick). Which key events click is the browser's; the keydown guards above, not this handler, limit held keys.
+    // WEB: onClick consumes a stored pointerPress flag; otherwise it steps once (the native buttons have no OnClick).
+    // Pointer cancel/lost capture release the hold but leave this flag, so a later non-keyboard click may be swallowed.
+    // A fresh unlatched keydown clears it above. This is existing web state, not native/assistive-input parity.
     onClick: () => { if (pointerPress.current) { pointerPress.current = false; return; } act(st => pulsarPan(st, direction)); },
     onContextMenu: (e: ReactMouseEvent<HTMLButtonElement>) => e.preventDefault(),
   });
