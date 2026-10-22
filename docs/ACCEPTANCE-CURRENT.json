@@ -539,13 +539,16 @@
         "docs/PULSAR-ANALYSIS-VALIDATION.json",
         "docs/RECORDED-ANALYSIS-DELIVERY.md",
         "tests/recorded-analysis-navigation.spec.ts",
-        "docs/PULSAR-REVIEW-VALIDATION.json"
+        "docs/PULSAR-REVIEW-VALIDATION.json",
+        "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
+        "src/core/pulsarReviewEdit.test.ts",
+        "tests/pulsar-analysis.spec.ts"
       ],
-      "gateReason": "Bounded supplied-data analysis and Review handlers delivered;Period/dispersion/filtering,Find/comment editing and serialized-row contracts,complete native result writer and runtime/activation timing remain open.",
+      "gateReason": "Bounded supplied-data analysis and Review with comment editing for supported rows are delivered. Period, dispersion and filtering; Find; authority for native serialized rows and result writing; and runtime activation timing remain open.",
       "originalWitnessPending": true,
       "licenseGate": false,
-      "deliveredSlice": "Supplied PLR reading/properties,manual panel/reference cursors,zoom/pan,record/cancel,working-copy Review with confirmed Delete and outer Cancel/Ok,exact original-byte copy.",
-      "currentGaps": "Period/dispersion/filtering,Find/comment editing and serialized-row contracts,complete native result writer and runtime/activation timing remain open."
+      "deliveredSlice": "Supplied PLR reading/properties,manual panel/reference cursors,zoom/pan,record/cancel,working-copy Review with confirmed Delete and bounded comment-only Edit,inner/outer Cancel/OK,exact original-byte copy.",
+      "currentGaps": "Period, dispersion and filtering; Find; authority for native serialized rows and result writing; and runtime activation timing remain open."
     },
     {
       "id": "N08",
@@ -771,12 +774,15 @@
         "docs/PULSAR-ANALYSIS.md",
         "docs/RECORDED-ANALYSIS-DELIVERY.md",
         "tests/recorded-analysis-navigation.spec.ts",
-        "docs/PULSAR-ANALYSIS-VALIDATION.json"
+        "docs/PULSAR-ANALYSIS-VALIDATION.json",
+        "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
+        "src/core/pulsarReviewEdit.test.ts",
+        "tests/pulsar-analysis.spec.ts"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;Antenna/receiver acquisition,I06/I07/I09/I10,period/dispersion and independent-edition comparison remain open.",
       "originalWitnessPending": true,
       "licenseGate": false,
-      "deliveredSlice": "Recorded supplied pulsar data have a manual analysis and measurement subflow in Radio data.",
+      "deliveredSlice": "Recorded supplied pulsar data have manual analysis,measurement and working-copy Review/Delete/comment-only Edit subflows in Radio data;the broader acquisition and exercise remain partial.",
       "currentGaps": "Antenna/receiver acquisition,I06/I07/I09/I10,period/dispersion and independent-edition comparison remain open."
     },
     {
