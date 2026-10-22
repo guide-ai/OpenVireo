@@ -25,4 +25,33 @@
 .radio-control-check{display:flex;align-items:center;gap:8px}
 .radio-control-state{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:8px 0 0}
 .radio-control-state dd{margin:0;font-variant-numeric:tabular-nums}
-@media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}}
+.antenna-controls{display:grid;gap:8px;margin:8px 0}
+.antenna-controls h4{margin:0 0 6px;font-size:13px}
+.antenna-menu{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.antenna-menu p{margin:0;flex-basis:100%}
+.antenna-readout{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:0;font-variant-numeric:tabular-nums}
+.antenna-readout dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.antenna-label{font-weight:600}
+.radio-control .antenna-spin{min-width:44px;font-size:16px}
+.antenna-backdrop{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(18,32,38,.35);overflow:auto}
+.antenna-backdrop-top{z-index:41}
+.antenna-dialog{width:min(100%,30rem);max-height:calc(100vh - 24px);overflow:auto;background:#fff;border:2px solid #265f4c;border-radius:8px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.antenna-dialog h3{margin:0 0 6px;font-size:15px}
+.antenna-group{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #c9d1cf;border-radius:6px;padding:8px 10px;margin:8px 0}
+.antenna-group legend{padding:0 4px}
+.antenna-field{display:flex;flex-direction:column;gap:2px;flex:1 1 5.5rem;min-width:0}
+.antenna-field input{min-height:36px;width:100%;box-sizing:border-box;font-variant-numeric:tabular-nums}
+.antenna-epoch{flex-direction:column;align-items:flex-start}
+.antenna-notice p{line-height:1.5}
+.radio-control .antenna-dialog .button-row{align-items:stretch}
+.radio-control .antenna-dialog .primary-button,.radio-control .antenna-dialog .secondary-button{min-width:88px;min-height:40px;margin:0;padding:8px 16px;font-size:13px;line-height:1.2}
+.antenna-dialog button:focus-visible,.antenna-dialog input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.antenna-profile{border-color:#b5651d;border-left-width:4px;background:#fff8f0}
+.antenna-profile ul{margin:6px 0 0;padding-left:1.2em}
+.antenna-profile li{line-height:1.5;overflow-wrap:anywhere}
+.antenna-modal-limit>div{margin:8px 0;padding:6px 10px;border:1px solid #b5651d;border-left-width:4px;border-radius:6px;background:#fff8f0;font-size:13px}
+.antenna-modal-limit p{margin:0}
+.antenna-modal-limit ul{margin:6px 0 0;padding-left:1.2em}
+.antenna-modal-limit li{line-height:1.5;overflow-wrap:anywhere}
+.radio-control .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}.antenna-readout{grid-template-columns:1fr}}

@@ -1,8 +1,10 @@
 # I06 subflow: radio control switch, radio access and panel window
 
-This slice covers one independent part of I06: the original main-window **Radio** control switch (`RadCntrlSw`), how radio telescope access (scope id 3) is granted, and how the radio control-panel window opens, closes and reopens. It does **not** cover the panel's contents. I06 is still open: antenna pointing, coordinates, beam response and observing modes live in `TRadioLab` (VMT `0x563a08`), which has not been recovered. I07 (receiver/pulsar signal) and N07 are untouched.
+This slice covers one independent part of I06: the original main-window **Radio** control switch (`RadCntrlSw`), how radio telescope access (scope id 3) is granted, and how the radio control-panel window opens, closes and reopens. The panel's Tracking, Slew Rate and Set Coordinates/programmed-slew flow is in [RADIO-ANTENNA.md](RADIO-ANTENNA.md). Beam, receiver and observing modes are still open. I07 (receiver/pulsar signal) and N07 are untouched.
 
-Contracts RC-01…RC-10, with address ranges, observations, inferences and gaps, are in [RADIO-CONTROL-PROVENANCE.json](RADIO-CONTROL-PROVENANCE.json). Artifact: VIREO 1.504 `CLEA_VEO.exe`, SHA-256 `781bc970…c54c`.
+Contracts RC-01…RC-11, with address ranges, observations, inferences and gaps, are in [RADIO-CONTROL-PROVENANCE.json](RADIO-CONTROL-PROVENANCE.json). RC-10 is superseded by RC-11. Artifact: VIREO 1.504 `CLEA_VEO.exe`, SHA-256 `781bc970…c54c`.
+
+> **Update (antenna slice):** the evidence-route notes below are historical for RC-01…RC-10. `TRadioLab`'s DFM and method table have since been decoded (see RADIO-ANTENNA-PROVENANCE.json). The diameter and access-option defaults (100 and 0) are recovered as compiled defaults, but the host still supplies them explicitly.
 
 ## Evidence route and its limits
 
@@ -20,7 +22,7 @@ Contracts RC-01…RC-10, with address ranges, observations, inferences and gaps,
 | Timer | `ScopeTimerTimer` does nothing while dome byte = 3. Otherwise it completes access the same way, except it never shows the panel. | `scopeTimerTick` |
 | Switch | Click toggles. In the key handler, only `#13` (Enter) toggles. The switch is disabled for the duration of the change handler. **On:** caption `On`, item `+0x454` disabled, RadioWin visible, Window1 enabled, panel shown. **Off:** caption `Off`, RadioWin hidden, Window1 enabled only if another Window item is visible, item `+0x454` enabled, panel hidden. | `clickRadioSwitch`, `pressRadioSwitchKey` |
 | Reentry | `RadioWinClick` sets `WindowState := wsNormal`, then calls `Show`. | `reopenRadioPanel` |
-| Cancel | Closing the panel window. `TRadioLab` OnClose is **unrecovered**; the browser only hides the window and the switch stays on (RC-10 adaptation). | `closeRadioPanel` |
+| Cancel | Closing the panel window runs `TRadioLab.FormCloseQuery` `0x5650c0`. Because env+0x3817 is 0 during normal operation, CanClose is False: item `+0x408` is enabled, `RadCntrlSw.SetActive(False)` runs (the OnChange Off branch is inferred), and the form is hidden, not destroyed. This replaces the earlier RC-10 adaptation, which kept the switch on. | `closeRadioPanel(state, env)` (RC-11) |
 
 A missing diameter rejects any transition that must form the caption, and the state stays unchanged (browser atomicity). The original always formats whatever integer it holds.
 
@@ -65,8 +67,10 @@ The pure core in `src/core/radioControl.ts` does not import React or i18n. Trans
   3. Choose **Telescope access: Radio**. With the defaults, access is deferred.
   4. Choose **Deliver scope timer tick now**.
   5. Focus the switch and press Enter; the panel window opens.
-  6. Close the panel and reopen it from **Window: Radio Telescope Control Panel**.
-  7. Click the switch off.
+  6. Choose **Window: Radio Telescope Control Panel** (the window is shown again), then close the panel: the switch turns Off and the Window item disappears.
+  7. Click the switch on to reopen the panel, then off again.
+
+The current harness is the antenna harness on 127.0.0.1:5266 (see RADIO-ANTENNA.md); the 5181 harness above is historical.
 
 Tests check the implementation contract chosen here. They are not an oracle for the original runtime.
 

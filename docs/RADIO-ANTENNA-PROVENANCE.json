@@ -1,0 +1,442 @@
+{
+  "policy": "OpenVireo-radio-antenna-v1",
+  "scope": "I06 antenna/control-panel subflow: TRadioLab Tracking, Slew Rate, Slew > Set Coordinates (TSkyCoordsDlg entry and validation), programmed slew (SlewTimer2) with confirmation, arrival and stop/resume, plus the compiled option defaults these read. Receivers, pulsar signals, beam (+0x5f3 object 0x561e88), hot list, manual N/S/E/W slewing, ClockTimer drift, altitude limits, B1950 precession and options-file/dialog owners are not implemented.",
+  "artifact": {
+    "name": "CLEA_VEO.exe (VIREO 1.504)",
+    "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "note": "Never executed or emulated. Raw bytes were read only inside the existing read-only decoder process and by GNU objdump; no byte dump entered the analysis."
+  },
+  "rea": {
+    "reusedRecord": {
+      "evidenceId": "ev_61f426f3d7b436d5a1b186c2066abe3e072c9cce6f63d4f93b4aebcfa48094ff",
+      "operation": "inspect_pe_resources (provider rea-pe-resources v1)",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-parallel-approved/rea-probe-evidence.json",
+      "use": "Binds the artifact SHA-256 and RCDATA TRADIOLAB (resource 149, file offset 2195716, 12882 bytes, SHA-256 b87302b15835a576b19ccbb63f4e6578824a004965d00a2c9a07f8cf1fb28288) and TRADIOPTSDLG (resource 150, SHA-256 911c0d2c784928c2b3872b517447b3db935ae18c987902ecd77e77065e3141a1). Reused, not re-run. The decoder's TRADIOLAB dfm_source offset/length/SHA-256 match it exactly."
+    },
+    "reusedGhidraInventory": {
+      "evidenceId": "ev_32b7791d3b82958fc389f90afbca57bef2963863b3b57a141ea0f53c5bfede55",
+      "operation": "list_procedures",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/rea-ghidra-results/vireo-procedures.json",
+      "use": "Corroborates procedure entries 0x5668e0, 0x566bc4, 0x566784, 0x566838, 0x486bc0, 0x486268, 0x4b9f44, 0x4b9f64. Published handlers reached only through RTTI (0x566a3c, 0x567430, 0x4f33f4) are absent from it, as expected."
+    },
+    "freshExecution": {
+      "command": "node \u2026/rea-agents/scripts/rea.mjs inspect-with-objdump <CLEA_VEO.exe> section_headers --format json",
+      "output": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/rea-objdump-section-headers.json",
+      "outputSha256": "eaa73098875b3a3a2ac5a0bce06c6f6e36f2fa162e354f8e3d388f5775e26695",
+      "evidenceId": "ev_be75d7d377a56116d3e0f735a646c38191fd95073d89c054e348b2bd46c558ef",
+      "result": "exit 0, completion complete, artifact_sha256_after = artifact SHA-256, artifact_changed false. The content-addressed ID equals the one already cited by the earlier find-literal recovery, i.e. this run reproduced that record. Sections: .text VMA 0x401000 size 0x1aac78; .data 0x5ae000 size 0x7f60; .bss 0x5b6000.",
+      "use": "Places the SkyCoords globals 0x5bc1c0/0x5bc1cc in .bss (zero-initialized) and the indirection cells 0x5b5e20/0x5b5604/0x5b5e0c in .data."
+    },
+    "notUsed": "No Ghidra/IDA open_binary, analyze_function or provider diagnostics. REA inspect_with_objdump has no address-bounded operation, so bounded disassembly used direct GNU objdump (not REA provider results)."
+  },
+  "derivedEvidence": [
+    {
+      "id": "LISTING",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm",
+      "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db",
+      "kind": "Existing linear-sweep objdump listing of .text read as text. It desynchronizes after literals and at exception tables (0x4f34e6, 0x4f3656, 0x567430); those ranges use the bounded captures below."
+    },
+    {
+      "id": "DFM-RADIOLAB",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/tradiolab-metadata.json",
+      "sha256": "c3719a554d931abee5da1c1c2f4af48fc00432ff29801eb367e1ccd96f3e45a6",
+      "kind": "Output of the existing read-only decoder decode_radio_metadata.py (SHA-256 830c9b47b1880ac2769d66baa389156fe823c3a6a6c6ca0b78c4820207c00bf8) for VMT 0x563a08: class TRadioLab, parent TForm, instance size 1628, 43 published methods, 79 published fields, complete DFM tree (binary properties as length+SHA-256 only)."
+    },
+    {
+      "id": "DFM-SKYCOORDS",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/coord-dialog-metadata.json",
+      "sha256": "3951fec543f58ccc128a260ce349107f317742450a01a575e6dc3b79d0955e5c",
+      "kind": "Same decoder for VMT 0x4f2e88: TSkyCoordsDlg, instance size 968, methods FormCreate 0x4f3100, FormActivate 0x4f3134, OKBtnClick 0x4f33f4; RCDATA TSKYCOORDSDLG file offset 2246468, 2206 bytes, SHA-256 d22f2098d1efe1c17da2bc59dcbb6c71a59439f32cecd6da7c9ed3bfd9d376d0."
+    },
+    {
+      "id": "VMT-ECONVERT",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/except-class-metadata.json",
+      "sha256": "6e166b4e0f9b0a45cfc8056f375f903f7937b518be35e9af5ecf18084ff694d6",
+      "kind": "Same decoder for VMT 0x409cac (class-ref cell 0x409c60 of both OKBtnClick except tables): EConvertError."
+    },
+    {
+      "id": "GNU-OK-RA",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/skycoords-ok-ra-handler.asm",
+      "sha256": "d8e331ffa3edd35d0aab1376e1a76f582c1d2f713088ab2cf90062c5394f90d0",
+      "kind": "objdump -d -Mintel --no-show-raw-insn --start-address=0x4f34f7 --stop-address=0x4f352a"
+    },
+    {
+      "id": "GNU-OK-DEC",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/skycoords-ok-dec-handler.asm",
+      "sha256": "5fbf25aa55c8d3bc01fa704d7d6e3ffffff70b92b33464a018653e50a7949769",
+      "kind": "objdump bounded 0x4f3667..0x4f369a"
+    },
+    {
+      "id": "GNU-SLEWTIMER2",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/radiolab-slewtimer2.asm",
+      "sha256": "0cb83bfc2c558e04871853f644d199d642403d4a28f44d87b383da5d69431ac0",
+      "kind": "objdump bounded 0x567430..0x567958 (code ends at 0x5678c4; the remainder is literal/constant data rendered as instructions)"
+    },
+    {
+      "id": "GNU-486BC0",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/dms-split-486bc0.asm",
+      "sha256": "5ddce35bf8832d175cbc860e4af4afc3516d8aea4900be6d735b71580f4fb6dd",
+      "kind": "objdump bounded 0x486bc0..0x486c40"
+    },
+    {
+      "id": "GNU-486B20",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-radio-antenna/dms-raw-split-486b20.asm",
+      "sha256": "893625e1b12e66c2e30bb5c087b062a2932b01bd59e50227b1ac6562663fb35c",
+      "kind": "objdump bounded 0x486b20..0x486bc0"
+    },
+    {
+      "id": "HELP",
+      "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/PULSRHLP.TXT",
+      "sha256": "3a6b8e727be8340095a284ad8dbe4e075613b2d081d83e93537a901a6c8377fc",
+      "kind": "Original help text (SHA-256 from radio-help-followup/help-contract-inventory.json). Topics Radio Telescope Controls, Set Coordinates, Remarks on Slewing the Telescope: tracking starts off; transit hides Tracking/E/W and Set Coordinates moves Declination only; instructor-configurable horizon/zenith/transit restrictions. Corroboration of meaning only, not an algorithm source."
+    },
+    {
+      "id": "PHOTO-PRECEDENT",
+      "path": "docs/PHOTOMETER-CONTEXT-RECOVERY.md",
+      "kind": "Existing repository finding that options record A starts at environment+0x6b4, its defaults routine writes record+0x279f at 0x5a2a88, and the supplied distribution contains no VEO_OPTS.INI."
+    },
+    {
+      "id": "COORD-NUMERIC-OPERANDS",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-antenna-independent/constant-authority.json",
+      "sha256": "8d0aad073f5c70ed01b68e76b78b1ae51ec4c1885aa065ab5c974954766a0e46",
+      "kind": "Coordinator read-only static numeric audit of13 specified cells via existing PE mapper830c9b47\u20260bf8; original artifact before/after unchanged. Initial comparison recorded11matched and2analyst transcription errors; failed audit deliberately retained, corrected actual operands in constants above. No native execution or emulation."
+    }
+  ],
+  "contracts": [
+    {
+      "id": "RA-01",
+      "title": "TRadioLab form inventory and initial DFM state",
+      "ranges": [
+        "VMT 0x563a08 (class-ref cell 0x5639bc = VMT-76, CreateForm 0x5ad4b9 into global 0x5b59a0)"
+      ],
+      "observed": "Caption 'VIREO Radio Telescope Control Panel'. Controls in TabOrder: DriveBtn 'Tracking' (Visible False, OnClick DriveBtnClick 0x565dec), NBtn/SBtn, EBtn/WBtn (Visible False), RateSpin (OnUpClick 0x566784, OnDownClick 0x566838), Rcvr1Btn 'Receiver' (0x567958). Labels RALbl 'Right Ascension', DecLbl 'Declination', Hrs/Mins/Secs/Degs, SpinLbl 'Slew Rate', RateLbl '10', ClockLbl ' Off ' (Visible False). Menu: File (Save Recorded Data... disabled, Pulsar List... hidden, Exit), Slew ('&Slew': \"&Hot List\" submenu, Set Coordinates... -> CoordBtnClick 0x566a3c), Window (Return1 '&Observatory (Main) Control Panel'), Help. Timers clocktimer (disabled), SlewTimer (disabled, 100 ms), SlewTimer2 (disabled, 100 ms). AddCurrentItemtoList1 Enabled False.",
+      "evidence": [
+        "DFM-RADIOLAB"
+      ],
+      "modelled": "INITIAL_RADIO_LAB and RADIO_LAB_CAPTIONS; the slice renders Set Coordinates, Tracking, RateSpin and read-only enabled-state text for N/S/E/W and Receiver."
+    },
+    {
+      "id": "RA-02",
+      "title": "TSkyCoordsDlg form",
+      "ranges": [
+        "VMT 0x4f2e88 (class-ref cell 0x4f2e3c, CreateForm 0x5ad3d5 into global cell 0x5b5e0c)"
+      ],
+      "observed": "bsDialog, poScreenCenter, caption ' Enter Sky Coordinates for Slew', ActiveControl RAHrEd. RAGrp 'Right Ascension' with RAHrEd/RAMinEd/RASecEd labelled Hours/Mins/Secs; DecGrp 'Declination' with DecDegEd/DecMinEd/DecSecEd labelled Degs, \"' \", '\" '; EpochGrp 'Epoch of Input Coordinates' items J2000.0, B1950.0, ItemIndex 0; OKBtn '&OK' Kind bkOK (OnClick 0x4f33f4); CancelBtn '&Cancel' Kind bkCancel. TEdits have no MaxLength.",
+      "evidence": [
+        "DFM-SKYCOORDS"
+      ],
+      "inference": "bkOK/bkCancel imply ModalResult mrOk/mrCancel with Default/Cancel True (VCL behavior, not recovered from this binary)."
+    },
+    {
+      "id": "RA-03",
+      "title": "Radio option record and compiled defaults",
+      "ranges": [
+        "0x587a20..0x587a36",
+        "0x5a802c..0x5a8277",
+        "0x5a8ec4..0x5a90ba",
+        "0x5a2a74..0x5a2b0b"
+      ],
+      "observed": "TEnvironment1.FormCreate creates the settings object (class-ref 0x5a7bd8) and calls 0x5a802c, then copies 0x250 dwords + 1 word from object+4 to env+0x2e95. 0x5a802c tries loader 0x5a829c on two composed paths and calls defaults 0x5a8ec4 only if both fail. Defaults (record offset = env offset - 0x2e95): +0x8f4 Extended {0x7905f5c4,0xb25e34f1,0xbfff} (env+0x3789), +0x8fe Extended {0xea5afff7,0xabb4f69d,0x3ffe} (env+0x3793, latitude), +0x908 Single 0x44510000, +0x90c Extended {0x3a243ada,0xb2b8c257,0x3ffc} (env+0x37a1, minimum altitude), +0x916 Integer 100 (env+0x37ab, dish diameter), +0x91a Integer 50 (env+0x37af, rate base), +0x938 0 (env+0x37cd transit), +0x939 1, +0x93a 0 (env+0x37cf limits), +0x93b 5 (env+0x37d0 maximum rate index), +0x93c 0, +0x93d 0, +0x93e 0, +0x93f 1, +0x940 0 (env+0x37d5 instant slew), +0x941 0. Options record A (env+0x6b4 + r) defaults include r+0x27d0 := 0 at 0x5a2afd, i.e. env+0x2e84 (radio access option byte) = 0.",
+      "evidence": [
+        "LISTING",
+        "PHOTO-PRECEDENT"
+      ],
+      "modelled": "RADIO_COMPILED_OPTIONS {transit false, limits false, maxRateIndex 5, rateBase 50, instant false, latitude Extended above} and RADIO_COMPILED_ENVIRONMENT {diameter 100, access option 0}.",
+      "uncertainty": "Defaults hold only when no options file loads; the supplied distribution contains no VEO_OPTS.INI (precedent), but a classroom file or TRadioOptsDlg (RCDATA SHA-256 911c0d2c\u2026) can change every value. Loader 0x5a829c, the INI key names, record A's fallback control flow (relied on via the photometer precedent) and the TRadioOptsDlg VMT/handlers are not recovered. Values are therefore typed inputs with these defaults, not hidden authority. Interpreting record+0x8f4 as longitude and +0x908 as elevation is inference and unused."
+    },
+    {
+      "id": "RA-04",
+      "title": "First TRadioLab.FormActivate (antenna part)",
+      "ranges": [
+        "0x56441f..0x564426",
+        "0x56450e (call 0x565140)",
+        "0x565140..0x5651c8",
+        "0x564988..0x5649c7",
+        "0x5649d2..0x564ad7",
+        "0x564bb9"
+      ],
+      "observed": "Guarded by +0x4d5 = 0 (FormCreate 0x564352), set to 1 at 0x564bb9. 0x565140: N/S/E/W SetEnabled False (virtual +0x68), Slew1 SetEnabled(env+0x37cd = 1), RateSpin/SpinLbl/RateLbl/Rcvr1Btn disabled. If env+0x37cd <> 1: DriveBtn, ClockLbl, ClockBvl, EBtn, WBtn SetVisible True (0x45de44). +0x5d1..+0x5d4 := 0; rate index +0x539 := 4; rate +0x52f := Power(10, 4-3) x Integer record+0x91a; RateLbl := ShortString table 0x5b4a80[index]; RA +0x5df := 0; Dec +0x5e9 := latitude record+0x8fe x Extended 0x564d60; HA +0x5d5 := 0.",
+      "evidence": [
+        "LISTING"
+      ],
+      "modelled": "activateRadioLab, run once when the panel window is first shown.",
+      "notModelled": "Catalog, hot-list, sound and file loading in the same block; the non-first FormActivate path; RateLbl table text."
+    },
+    {
+      "id": "RA-05",
+      "title": "DriveBtnClick (Tracking)",
+      "ranges": [
+        "0x565dec..0x565e3c",
+        "0x5651cc..0x565276",
+        "0x565140..0x5651c8"
+      ],
+      "observed": "If manual-press latch +0x5d2 = 0: +0x5d1 := not +0x5d1. On: 0x5651cc (N/S/E/W Enabled := +0x5d1, Slew1 Enabled := +0x5d1 or transit, RateSpin/SpinLbl/RateLbl/Rcvr1Btn enabled), ClockLbl caption literal 0x565e48. Off: 0x565140, ClockLbl literal 0x565e54.",
+      "evidence": [
+        "LISTING"
+      ],
+      "modelled": "toggleTracking. Set Coordinates therefore needs Tracking on unless transit.",
+      "notModelled": "Sidereal tracking itself (ClockTimerTimer); +0x5d2 is always 0 because manual N/S/E/W are not implemented; ClockLbl literals not decoded."
+    },
+    {
+      "id": "RA-06",
+      "title": "RateSpinUpClick / RateSpinDownClick",
+      "ranges": [
+        "0x566784..0x566836",
+        "0x566838..0x5668dd"
+      ],
+      "observed": "Up: if byte env+0x37d0 > index: index+1. Down: if index > 1: index-1. Then rate := Power(Single 10.0 (push 0x41200000), Single(index-3)) (0x4270c0) x Integer env+0x37af, stored Extended +0x52f; RateLbl := table 0x5b4a80[index] (LStrFromString 0x406094, SetText 0x45df54).",
+      "evidence": [
+        "LISTING"
+      ],
+      "modelled": "changeSlewRate with Number 10**(index-3) x rateBase."
+    },
+    {
+      "id": "RA-07",
+      "title": "CoordBtnClick (Slew > Set Coordinates...)",
+      "ranges": [
+        "0x566a3c..0x566b95"
+      ],
+      "observed": "If slewing +0x5d3: SlewTimer2 SetEnabled False (0x448ff4), MessageBox(text 0x566ba8, caption 0x566b98, flags 0x24); IDYES (6): +0x5d3 := 0, N/S/E/W/RateSpin enabled, status string +0x5f3+0x28 cleared, 0x562134; otherwise SlewTimer2 enabled again. Not slewing: if stored RA [cell 0x5b5e20] and Dec [cell 0x5b5604] both equal Single 0x566bc0 (0.0), copy current +0x5df/+0x5e9 into them; EpochGrp (dialog +0x3a0) SetEnabled True; ShowModal (virtual +0xfc); if ModalResult (+0x294) = 1 call 0x566bc4.",
+      "evidence": [
+        "LISTING",
+        "DFM-SKYCOORDS"
+      ],
+      "modelled": "openSetCoordinates, cancelSkyCoords, answerNotice stop-slew Yes/No.",
+      "inference": "Cells 0x5b5e20/0x5b5604 point to the dialog-unit globals 0x5bc1c0/0x5bc1cc (consistent seeding and prefill); the .data dwords themselves were not read."
+    },
+    {
+      "id": "RA-08",
+      "title": "TSkyCoordsDlg.FormCreate / FormActivate prefill",
+      "ranges": [
+        "0x4f3100..0x4f3131",
+        "0x4f3134..0x4f33d6",
+        "0x486bc0..0x486c3d",
+        "0x486b20..0x486bb9"
+      ],
+      "observed": "FormCreate zeroes Extended globals 0x5bc1c0 (RA) and 0x5bc1cc (Dec) and flag +0x3c5. FormActivate: if +0x3c5 precess J2000->B1950 (0x4b9f44/0x4b9f64, JD 2451545.0 and Extended {0xa9fbe76d,0x948409b1,0x4014}). RA: 0x486bc0(record, 2, RA): Sign (0x4272d4) byte, |Trunc|, minutes Trunc(|Frac| x 60), seconds Frac(.) x 60 (Single 0x486bbc), then if Round(Power(10,d) x s) = 60 x Round(Power(10,d)) carry s->m->whole. RAHrEd := IntToStr(h), RAMinEd := IntToStr(m), RASecEd := 0x486268(s, 2). Dec: DecDegEd := IntToStr(sign x deg), DecMinEd := IntToStr(m), DecSecEd := 0x486268(s, 1). EpochGrp ItemIndex := +0x3c5 ? 1 : 0; 0x477df4(RAHrEd); 0x43c6bc(RAHrEd).",
+      "evidence": [
+        "LISTING",
+        "GNU-486BC0",
+        "GNU-486B20"
+      ],
+      "modelled": "splitSexagesimal, skyCoordsFieldsFor, formatFixed. A Dec in (-1, 0) degrees shows degree text '0' without '-'; OKBtnClick then reads it as positive (RA-09). This original behavior is kept.",
+      "inference": "0x477df4 = ActiveControl assignment and 0x43c6bc = SelectAll (call shape); Round 0x403700 under compiled control word 0x1332 rounds to even."
+    },
+    {
+      "id": "RA-09",
+      "title": "TSkyCoordsDlg.OKBtnClick validation",
+      "ranges": [
+        "0x4f33f4..0x4f3801",
+        "0x4f34f7..0x4f352a",
+        "0x4f3667..0x4f369a"
+      ],
+      "observed": "try: RA := (StrToFloat(RAHrEd) + StrToFloat(RAMinEd)/Single 60) + StrToFloat(RASecEd)/Single 3600; bad := RA < 0.0 or RA > 24.0 (Singles 0x4f380c/0x4f3810); except EConvertError (class cell 0x409c60) bad := True. If bad: ModalResult := 0, MessageBox(0x4f3824, caption 0x4f3814, 0x10), exit. Dec: d := StrToFloat(DecDegEd); sign := Sign(d) if d <> 0.0 else (Pos('-' AnsiString 0x4f3848, DecDegEd.Text) <> 0 ? -1 : 1); Dec := (d + (StrToFloat(DecMinEd) x sign)/60) + (StrToFloat(DecSecEd) x sign)/3600; bad := Dec < -90 or Dec > 90 (Singles 0x4f384c/0x4f3850); same except/message path with text 0x4f3854. Then +0x3c5 := EpochGrp.ItemIndex = 1; if set, precession B1950->J2000; RA/Dec stored to 0x5bc1c0/0x5bc1cc.",
+      "evidence": [
+        "LISTING",
+        "GNU-OK-RA",
+        "GNU-OK-DEC",
+        "VMT-ECONVERT"
+      ],
+      "modelled": "parseSkyCoords and confirmSkyCoords: ordered RA then Dec errors as OK boxes over the open dialog; B1950 is a browser gate (nothing stored); J2000 success stores and continues with RA-10. The two sums are evaluated exactly from the field decimals and admitted through the web numeric domain (webPolicies.WEB-NUM-01); entries outside it get a browser box (ra-unsupported/dec-unsupported) with the same no-commit behavior. The Dec zero test (fcomp with Single 0x4f380c, je at 0x4f3568) and Pos('-') sign rule (0x4f3598..0x4f35ab) are kept on the exact degree value.",
+      "uncertainty": "StrToFloat is modelled by a strict grammar (blanks, sign, digits, optional '.', exponent of at most two digits) with '.' as decimal separator; the native routine accepts more spellings, uses the host DecimalSeparator and accumulates in Extended. Native Extended results are not reproduced: inside the web domain any evaluation with at least 53-bit faithful roundings agrees with the exact value within 2^-50 x S, but whether native StrToFloat is that faithful is assumed, not verified. Exactly in-range entries are admitted even where native rounding could land just outside a bound. Whether OnActivate re-runs after the error box (re-filling fields) is not established; the browser keeps the user's edits."
+    },
+    {
+      "id": "RA-10",
+      "title": "Slew start 0x566bc4",
+      "ranges": [
+        "0x566bc4..0x5671b5"
+      ],
+      "observed": "If stored RA = +0x5df and stored Dec = +0x5e9 exactly: MessageBox(0x5671c0, 0x5671e4, 0x30), exit. If env+0x37cd <> 1: LST 0x4881ac(env+0x37de, env+0x3789), HA := LST - RA, 0x5668e0(Dec, HA); False -> MessageBox(0x10) exit; True -> confirmation text 0x5672c0 + RA/Dec via 0x486ca0 (+ 0x5672f8 note when +0x3c5). If transit: MessageBox(0x567334, 0x56735c, 0x41), IDCANCEL exits; then LST/HA/0x5668e0 with Dec-only texts 0x567380/0x5673bc. Confirmation MessageBox(.., 0x5673ec, 0x24); not IDYES exits. Then RateSpinUpClick while env+0x37d0 > index; step +0x525 := rate x Extended 0x5673fc. If env+0x37d5: Dec := target, unless transit RA := 0x4bad9c(target RA), HA stored, displays and 0x561e88 updated. Else: phase +0x53d := 1 with step negated when current Dec > target Dec, else 0; SlewTimer2 enabled; +0x5d3 := 1; +0x53e := 0; AddCurrentItemtoList1 disabled; N/S/E/W/RateSpin disabled; status := literal 0x567410; 0x562134.",
+      "evidence": [
+        "LISTING"
+      ],
+      "modelled": "requestSlew/confirmOrGate/startSlew via confirmSkyCoords and answerNotice. With limits off, 0x5668e0 returns True before using HA, so the unmodelled LST does not change the outcome; with limits on the slice stops at an explicit gate.",
+      "notModelled": "LST/HA values, +0x5d5, LED repaint 0x565bd4/0x56588c, beam update 0x561e88, status literal text, message literal texts and the 0x486ca0 coordinate formatting."
+    },
+    {
+      "id": "RA-11",
+      "title": "SlewTimer2Timer",
+      "ranges": [
+        "0x567430..0x5678c4"
+      ],
+      "observed": "If phase in {0,1} and +0x53e: transit -> phase 3; else d := target RA - RA, negated when |d| > Single 12; phase := d > 0 ? 2 : 3; +0x53e := Extended 0x5678d0 (~1e-5) >= |d|; step := Sign(d) x rate x Extended 0x5678dc / Single 15; status literal 0x5678f4. Then if phase in {2,3} and +0x53e: SlewTimer2 off, +0x5d3 := 0, N/S/E/W/RateSpin enabled, status cleared, MessageBox(0x567928, 0x567918, 0x40), exit. Else per phase: 0 Dec += step, snap to target unless target > Dec; 1 Dec += step, snap unless target < Dec; 2 RA += step, snap when 0 <= RA - target < 12; 3 RA += step, snap when 0 <= target - RA < 12; HA -= delta RA in phases 2/3. Finally RA := 0x4bad9c(RA), LED repaint, 0x561e88.",
+      "evidence": [
+        "GNU-SLEWTIMER2"
+      ],
+      "modelled": "slewTimerTick with binary64 comparisons as written; a browser run token rejects late callbacks of an earlier slew.",
+      "uncertainty": "Number rounding can move an arrival by one callback relative to Extended; no tolerance or snap is added. Timer delivery (100 ms nominal) is a browser schedule, not Windows WM_TIMER."
+    },
+    {
+      "id": "RA-12",
+      "title": "Altitude limit predicate 0x5668e0 (gated)",
+      "ranges": [
+        "0x5668e0..0x566a16"
+      ],
+      "observed": "If env+0x37cf = 0 return True. Else HA x Extended 0x566a1c (2 pi) / Single 24 and Dec x Extended 0x566a2c (pi/180); alt := ArcSin(sin(dec) sin(lat) + cos(ha) cos(dec) cos(lat)) with lat env+0x3793; False when env+0x37a1 >= alt, else True only if |current Dec| <= Single 90.",
+      "evidence": [
+        "LISTING"
+      ],
+      "modelled": "Only the limits-off early return. limitsEnabled = true produces outcome limits-require-clock and no motion, because HA needs the observation clock (LST 0x4881ac from env+0x37de)."
+    },
+    {
+      "id": "RA-13",
+      "title": "ClockTimerTimer relation (not modelled)",
+      "ranges": [
+        "0x5654a8..0x5657ee"
+      ],
+      "observed": "Each tick computes LST; if tracking or manual press or slewing: HA := LST - RA; otherwise RA := 0x4bad9c(LST - HA). With tracking on and limits on, a failing 0x5668e0 turns tracking off with a message.",
+      "evidence": [
+        "LISTING"
+      ],
+      "gate": "Without the shared observation clock the slice keeps RA fixed while idle. After FormActivate (HA 0) the original RA becomes LST at the first clock tick; the browser shows RA 0 until a coordinator supplies clock integration. Slew progression is unaffected because SlewTimer2 alone moves RA/Dec while +0x5d3 is set."
+    },
+    {
+      "id": "RA-14",
+      "title": "Panel close and timers while hidden",
+      "ranges": [
+        "0x5650c0..0x56513f",
+        "0x565080..0x5650bd"
+      ],
+      "observed": "FormCloseQuery normally refuses the close and hides the form after switching RadCntrlSw off (RC-11). FormClose 0x565080 (frees +0x5f3, +0x53f, +0x657) therefore does not run in that path.",
+      "evidence": [
+        "LISTING"
+      ],
+      "modelled": "Antenna state is kept while the panel is hidden; SlewTimer2 callbacks continue and the arrival box can appear without the panel window (VCL TTimer and Application.MessageBox do not depend on form visibility)."
+    }
+  ],
+  "constants": [
+    {
+      "address": "0x4f3804 / 0x4f3808",
+      "value": "Single 60 / 3600",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x4f380c / 0x4f3810",
+      "value": "Single 0 / 24",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x4f384c / 0x4f3850",
+      "value": "Single -90 / 90",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x4f3848",
+      "value": "AnsiString '-' (refcount -1, length 1)",
+      "route": "same"
+    },
+    {
+      "address": "0x566bc0",
+      "value": "Single 0.0",
+      "route": "same; next byte begins 0x566bc4 push ebp"
+    },
+    {
+      "address": "0x5673fc",
+      "value": "Extended significand 0x91a2b3c4d5e6f809, exponent 0x3ff3 (~1/3600)",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x5678c8 / 0x5678cc",
+      "value": "Single 12 / 0",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x5678d0",
+      "value": "Extended significand 0xa7c5ac471b478423, exponent 0x3fee (~1.0e-5)",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x5678dc",
+      "value": "Extended significand 0x91a2b3c4d5e6f809, exponent 0x3ff3 (~1/3600)",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x5678e8",
+      "value": "Single 15",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x564d60",
+      "value": "Extended significand 0xe52ee0d31e0fbdc3, exponent 0x4004 (~180/pi)",
+      "route": "COORD-NUMERIC-OPERANDS: independently decoded numeric cells and region hashes; other prior route retained in historical author delivery"
+    },
+    {
+      "address": "0x486bbc",
+      "value": "Single 60",
+      "route": "GNU-486B20 data tail, analyst decode"
+    },
+    {
+      "address": "0x566a1c / 0x566a28 / 0x566a2c / 0x566a38",
+      "value": "Extended 2 pi / Single 24 / Extended pi/180 / Single 90 (RA-12, unused)",
+      "route": "derived listing, analyst decode"
+    },
+    {
+      "address": "0x5667bc, 0x5649f9",
+      "value": "push 0x41200000 = Single 10",
+      "route": "instruction immediate"
+    },
+    {
+      "address": "0x5a8f8a..0x5a90ad",
+      "value": "option defaults (RA-03)",
+      "route": "instruction immediates"
+    }
+  ],
+  "binary64Note": "Independent static operand audit found identical significands 0x91a2b3c4d5e6f809/exponent0x3ff3 at0x5673fc and0x5678dc. The actual0x5678d0 significand is0xa7c5ac471b478423/exponent0x3fee, rounded once to Number1e-5. The initial analyst transcription ended80b/4423 respectively; the latter produced an eight-ULP lower binary64 tolerance and a different axis-completion decision at the rounded boundary. Earlier failed checks are retained privately; no x87/runtime parity is claimed.",
+  "constantVerification": "Author static_probe.py execution was denied and was not retried. Subsequently the coordinator independently decoded13 numeric cells using the established read-only PE address mapper, outputting only derived numeric values, offsets and per-region SHA256 (no original payload dump or native execution). Source SHA256 before/after781bc970\u2026c54c. Evidence COORD-NUMERIC-OPERANDS records the initial11matched/2transcription errors; corrected source uses those actual operands. Other literals/constants still have only their original listed authority; do not generalize13-cell coverage.",
+  "literalsNotDecoded": [
+    "0x566b98/0x566ba8 stop question",
+    "0x5671c0/0x5671e4 no-slew warning",
+    "0x5671fc..0x5672c0 and 0x5672f8 confirmation and limit texts",
+    "0x567334/0x56735c transit note",
+    "0x567380/0x5673bc Dec-only texts",
+    "0x5673ec confirmation caption",
+    "0x567410 and 0x5678f4 status texts",
+    "0x567918/0x567928 arrival box",
+    "0x4f3814/0x4f3824/0x4f3854 input-error boxes",
+    "0x565e48/0x565e54 ClockLbl",
+    "0x5b4a80 RateLbl table"
+  ],
+  "webPolicies": [
+    {
+      "id": "WEB-NUM-01",
+      "kind": "OpenVireo web domain (new behavior, not recovered)",
+      "title": "Exact admission of TSkyCoordsDlg sums",
+      "rule": "S = |a| + |b|/60 + |c|/3600 and R = a + sign(b/60 + c/3600) over exact field decimals. R outside the range by more than 2^-50 x S -> original range error box. Else S > 1e6 (hours/degrees) -> unsupported 'cancellation'. Else R outside the range -> unsupported 'precision'. Else store the nearest binary64 of R (ties to even); never clamped.",
+      "rationale": "Independent exact-algebra controls (/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-antenna-independent/ra-adversarial-results.json) showed the earlier binary64 accumulation admitting 1 h for an exact 2 h entry, rejecting an exact 0 h entry as a range error and admitting 24.000000000000001 h as 24. The bound 2^-50 exceeds gamma_4 for binary64 (four roundings per term), so out-of-range verdicts outside it hold for every faithful >=53-bit evaluation; S <= 1e6 bounds that disagreement by ~8.9e-10 h or degrees.",
+      "differsFromNative": "Native has no limit on S and decides near-bound entries by its own Extended rounding. The browser refuses those cases instead of guessing, and admits every exactly in-range entry.",
+      "code": "src/core/radioAntenna.ts SKY_COORDS_WEB_DOMAIN, parseExactDecimal, nearestBinary64, admitCoordinate, parseSkyCoords"
+    },
+    {
+      "id": "WEB-KEY-01",
+      "kind": "OpenVireo browser input policy (new behavior, not recovered)",
+      "title": "Auto-repeated Enter/Escape ignored in the coordinate dialog and message boxes and their Set Coordinates return-focus trigger",
+      "rationale": "Reproduced on the unchanged panel with Playwright: a held Enter ran OK -> Yes (slew started) -> stop question -> Yes -> reopened dialog; a held Escape closed an error box and then cancelled the dialog. Native Windows key-repeat handling for these dialogs is not established and not claimed. Coordinator later reproduced a remaining cascade after a fresh held Yes: focus returned to Set Coordinates and repeat opened stop-slew. The same repeat guard now covers that return-focus trigger. Other main-window key behavior is unchanged.",
+      "code": "src/components/RadioControlPanel.tsx ignoreHeldKey"
+    }
+  ],
+  "numericPolicy": "binary64 throughout, except coordinate entry, which is evaluated exactly (BigInt rationals) and admitted per WEB-NUM-01. Extended operands are rounded once to binary64. Single operands (60, 3600, 0, 24, \u00b190, 12, 15, 10) are exact. Power(10, index-3) is evaluated as Number exponentiation. No x87 control-word or Extended rounding emulation. RA normalization follows the 0x4bad9c port policy of A06 (signed fractional turn, +24, rounded 24 -> 0). Display seconds use Number.toFixed (half away from zero on the exact binary value) for FloatToStrF ffFixed.",
+  "permissionDenials": [
+    "ls -la over the task-3 evidence directories (compound command) - denied; Glob used instead",
+    "python3 -I -c summary of rea-probe-evidence.json - denied; Grep used instead",
+    "python3 -I scripts/static_probe.py (owned literal/constant probe) - denied; not retried, constants decoded from listing text instead",
+    "node rea.mjs --help - denied; package sources read instead",
+    "Grep over /home/dobleuber/Documents/Codex/2026-10-17/task-2 and /tmp/clea-static-research roots - denied; narrower allowed paths used",
+    "grep -n \u2026 | head pipelines - denied; Grep tool used",
+    "Numeric-admission correction session: python3 -I -c summary of DELIVERY.json, mkdir of the correction evidence folder, env-prefixed/compound Playwright command, node -e arithmetic probe, grep -n over the test file - each needed approval and was not retried in that form (Read/Write/Grep tools, per-run configs and Vitest assertions used instead)"
+  ],
+  "validation": "src/core/radioAntenna.test.ts and tests/radio-antenna.spec.ts test the chosen implementation contract against these ranges. They are not an oracle for the original runtime; no original execution, emulation or microemulation was used.",
+  "webTimerOwnership": {
+    "id": "WEB-TIMER-01",
+    "nativeBasis": "RA-11 100 ms SlewTimer2 and RC-06 1 ms branch; native message scheduling not reproduced",
+    "policy": "One periodic browser registration reads latest committed input, delivers at most once per input, and is cancelled on disable/pause/unmount/owner run change. Component checks latest enabled/run ownership before delivery, including commit-to-passive-cleanup gap. Other antenna state changes do not postpone cadence. Hidden panel does not stop the timer.",
+    "evidence": "radio-antenna-independent/quota-preservation/before-gap-report.json and after-gap-report.json; native runtime not executed"
+  },
+  "webOptionProfile": {
+    "id": "WEB-OPT-01",
+    "policy": "Shape-valid host options are supported only if initial Dec is finite within [-90,90] degrees and all reachable rate indices 1..max(4,maxRateIndex) produce finite positive advancing Dec/RA steps, with RA step < 6 h. Refuse without clamping. Not native options validation.",
+    "stateContext": "radioLabRateIssues checks a rate only where a step that moves the telescope comes from it, with the live options deciding the branch and the coordinates deciding whether an RA step is taken. After the first FormActivate (0x5649f3, index 4 from the options then current) the rate is recomputed only by RateSpin (0x566784/0x566838) and by the start loop (0x566f6b, also run before the instantSlew branch, so an instant start can recompute and store index/rate/step without using them to move), which only raises the index to the options maximum, so an index above max(4,maxRateIndex) set under earlier options or by a restored host state is kept. Consumers (RA-10/RA-11 listings): start Dec step 0x566f8a; stored rate read once at the non-transit Dec->RA switch 0x5674ff..0x56750f, where +0x53e := Extended 0x5678d0 >= |d| and, when set, the same callback completes without adding the computed RA step (RA not snapped); Dec/RA phases add the fixed step +0x525; transit goes to phase 3; instantSlew 0x566fb3 writes the pointing. The gates share the switch separation/tolerance helpers with slewTimerTick (same arithmetic and order, no new tolerance). 'stored' (Dec phase of a non-transit slew, running or paused, whose switch takes the RA step) refuses only the switch callback with rate-unsupported (radioLabTickRefusal; the panel registers no interval from then on and Motion names the cause); RA-phase, transit and within-tolerance switches report nothing. 'start' refuses OK and Yes for the pending coordinates (valid J2000 dialog draft whose OK reaches the confirmation, else the committed confirmation target, else none chosen): Dec step only for transit or a within-tolerance switch, full criteria otherwise, none for instantSlew. OK applies it after the parse/web-domain/B1950 results and only when OK reaches the confirmation (no-slew warning and limits gate store the target first, as in the original); the option-record check stays before parsing. 'down'/'up' refuses a RateSpin press in that Dec phase and is not listed while a modal is open. Other presses keep the native arithmetic and are applied. Reasons are shown in a panel note and inside the open dialog/confirmation, with close-first recovery while a modal covers the buttons and live-option alternatives on a panel whose Tracking button was hidden at first FormActivate. Nothing is clamped or recomputed.",
+    "stateContextEvidence": "Coordinator reproductions radio-antenna-independent/review-lifecycle-findings/cross-options.json (A maxRateIndex 6/base 50, B 4/3241, index 5 rate 324100, RA step 6.00185185 h), radio-antenna-independent/phase-context-findings/observations.json (phase-2 fixed step 0.9259259259259259 over-refused; transit and instant starts refused on an inapplicable RA step) and radio-antenna-independent/tolerance-feedback-findings/observations.json (same-RA, RA 3h0m0.018s and exact no-motion entries refused at OK; live transit off at a within-tolerance switch, deltaRa 0.000004999999999810711 <= 0.00001, refused); regressions in src/core/radioAntenna.test.ts and tests/radio-antenna-lifecycle.spec.ts. Consumer locations are the existing derived listings; no fresh REA or native run. Implementation contract only; native runtime not executed.",
+    "missingAuthority": "INI loader, instructor options and TRadioOptsDlg validation; shared clock, drift and altitude limits remain gated. Caller-state assumption: a host-restored antenna state carries a step written by the start; the fixed step +0x525 is not re-checked (conditional review finding 2 from source reading, a synthetic patchAntenna state only; no supported UI/import ingress demonstrated, no native step validation invented)."
+  }
+}

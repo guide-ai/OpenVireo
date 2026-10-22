@@ -6,6 +6,7 @@ import {
  selectRadioAccess,type RadioControlState,type RadioEnvironment,type RadioOutcome,type RadioTransition,
 } from './radioControl';
 import {RADIO_MESSAGES_EN,createRadioTranslator} from '../components/RadioMessages';
+import {createRadioAntennaTranslator} from '../components/RadioAntennaMessages';
 
 const env=(over:Partial<RadioEnvironment>={}):RadioEnvironment=>({domeByte:1,accessOptionByte:true,dishDiameterMeters:40,otherWindowItemsVisible:false,...over});
 const entered=()=>enterRadioPulsarsExercise(INITIAL_RADIO_CONTROL).state;
@@ -119,21 +120,35 @@ describe('RC-07/RC-08 switch toggle and change handler',()=>{
  });
 });
 
-describe('RC-09/RC-10 panel window cancel and reentry',()=>{
- it('closes the panel window keeping the switch On, and reopens it from RadioWin',()=>{
-  const on=clickRadioSwitch(accessed(),env()).state,closed=track(closeRadioPanel(on));
-  expect(closed.outcome).toBe('panel-closed');expect(closed.state.radioPanelShown).toBe(false);expect(closed.state.radioSwitchActive).toBe(true);expect(closed.state.radioWinVisible).toBe(true);
-  expect(track(closeRadioPanel(closed.state)).outcome).toBe('panel-not-shown');
-  const back=track(reopenRadioPanel(closed.state));expect(back.outcome).toBe('panel-reopened');expect(back.state.radioPanelShown).toBe(true);
+describe('RC-09/RC-11 panel window close query and reentry',()=>{
+ it('closing the window runs FormCloseQuery: CanClose False, switch Off, RadioWin hidden, item +0x408 enabled',()=>{
+  const on=clickRadioSwitch(accessed(),env()).state;
+  for(const other of [false,true]){
+   const closed=track(closeRadioPanel(on,env({otherWindowItemsVisible:other})));
+   expect(closed.outcome).toBe('panel-hidden-switch-off');expect(closed.steps).toEqual(['RC-11','RC-08']);
+   expect(closed.state.radioPanelShown).toBe(false);expect(closed.state.radioSwitchActive).toBe(false);expect(closed.state.radioSwitchCaption).toBe('Off');
+   expect(closed.state.radioWinVisible).toBe(false);expect(closed.state.windowMenuEnabled).toBe(other);expect(closed.state.item454Enabled).toBe(true);
+   expect(closed.state.item408Enabled).toBe(true);expect(closed.state.radioSwitchEnabled).toBe(true);expect(closed.state.radioScopeByte).toBe(3);
+   expect(track(closeRadioPanel(closed.state,env())).outcome).toBe('panel-not-shown');
+   expect(track(reopenRadioPanel(closed.state)).outcome).toBe('menu-item-hidden');
+  }
  });
- it('cannot reopen from a hidden RadioWin item',()=>{
-  const off=clickRadioSwitch(clickRadioSwitch(accessed(),env()).state,env()).state;
+ it('validates the environment and keeps the state when the caption cannot be formed',()=>{
+  const on=clickRadioSwitch(accessed(),env()).state;
+  expect(()=>closeRadioPanel(on,{...env(),domeByte:9} as unknown as RadioEnvironment)).toThrow('Invalid radio environment');
+  const odd={...on,currentScopeByte:0} as RadioControlState,t=track(closeRadioPanel(odd,env({dishDiameterMeters:null})));
+  expect(t.outcome).toBe('diameter-required');expect(t.state).toBe(odd);
+ });
+ it('reopens from RadioWin while the switch stays On, and cannot reopen from a hidden item',()=>{
+  const on=clickRadioSwitch(accessed(),env()).state,hidden={...on,radioPanelShown:false};
+  const back=track(reopenRadioPanel(hidden));expect(back.outcome).toBe('panel-reopened');expect(back.state.radioPanelShown).toBe(true);
+  const off=clickRadioSwitch(on,env()).state;
   expect(track(reopenRadioPanel(off)).outcome).toBe('menu-item-hidden');expect(track(reopenRadioPanel(INITIAL_RADIO_CONTROL)).state).toBe(INITIAL_RADIO_CONTROL);
  });
- it('runs a complete off → on → close → reopen → off → on cycle with one access',()=>{
+ it('runs a complete off → on → close → on → off → on cycle with one access',()=>{
   let s=accessed();const seq:RadioOutcome[]=[];
-  for(const step of [()=>clickRadioSwitch(s,env()),()=>closeRadioPanel(s),()=>reopenRadioPanel(s),()=>clickRadioSwitch(s,env()),()=>clickRadioSwitch(s,env())]){const t=step();seq.push(t.outcome);s=t.state;}
-  expect(seq).toEqual(['switched-on','panel-closed','panel-reopened','switched-off','switched-on']);expect(s.radioPanelShown).toBe(true);expect(s.radioScopeByte).toBe(3);
+  for(const step of [()=>clickRadioSwitch(s,env()),()=>closeRadioPanel(s,env()),()=>clickRadioSwitch(s,env()),()=>clickRadioSwitch(s,env()),()=>clickRadioSwitch(s,env())]){const t=step();seq.push(t.outcome);s=t.state;}
+  expect(seq).toEqual(['switched-on','panel-hidden-switch-off','switched-on','switched-off','switched-on']);expect(s.radioPanelShown).toBe(true);expect(s.radioScopeByte).toBe(3);
  });
 });
 
@@ -151,7 +166,12 @@ describe('inputs, captions and presentation catalog',()=>{
   expect(menuCaptionText(NATIVE_CAPTIONS.exercise)).toBe('Radio Astronomy of Pulsars');expect(menuCaptionText(NATIVE_CAPTIONS.window)).toBe('Radio Telescope Control Panel');expect(menuCaptionText('A&&B')).toBe('A&B');
  });
  it('has a catalogued message for every outcome and validates alternate catalogs',()=>{
-  const t=createRadioTranslator();for(const o of new Set(outcomes))expect(t(`radio.outcome.${o}` as keyof typeof RADIO_MESSAGES_EN)).toBe(RADIO_MESSAGES_EN[`radio.outcome.${o}` as keyof typeof RADIO_MESSAGES_EN]);
+  // RC-11's outcome is worded in the scoped antenna catalog (the shared en.json is outside this slice).
+  const t=createRadioTranslator(),ta=createRadioAntennaTranslator();
+  for(const o of new Set(outcomes)){
+   if(o==='panel-hidden-switch-off'){expect(ta('antenna.outcome.panel-hidden-switch-off')).toContain('switch turned off');continue;}
+   expect(t(`radio.outcome.${o}` as keyof typeof RADIO_MESSAGES_EN)).toBe(RADIO_MESSAGES_EN[`radio.outcome.${o}` as keyof typeof RADIO_MESSAGES_EN]);
+  }
   expect(t('radio.timer.random',{range:8000})).toContain('8000');expect(()=>t('radio.timer.random',{range:undefined as unknown as number})).toThrow();expect(()=>t('radio.timer.random',{range:{} as unknown as number})).toThrow();expect(()=>t('radio.timer.random')).toThrow('Missing message parameter');
   expect(()=>createRadioTranslator({...RADIO_MESSAGES_EN,'radio.timer.random':'{wrong}'})).toThrow();
   const marked=createRadioTranslator(Object.fromEntries(Object.entries(RADIO_MESSAGES_EN).map(([k,v])=>[k,'[x] '+v])) as typeof RADIO_MESSAGES_EN);
@@ -159,7 +179,8 @@ describe('inputs, captions and presentation catalog',()=>{
  });
  it('lists every contract emitted by the transitions in the provenance packet with ranges or an explicit adaptation note',()=>{
   expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');
-  expect(provenance.contracts.map(c=>c.id)).toEqual(['RC-01','RC-02','RC-03','RC-04','RC-05','RC-06','RC-07','RC-08','RC-09','RC-10']);
+  expect(provenance.contracts.map(c=>c.id)).toEqual(['RC-01','RC-02','RC-03','RC-04','RC-05','RC-06','RC-07','RC-08','RC-09','RC-10','RC-11']);
   for(const c of provenance.contracts)expect(c.ranges.length>0||c.id==='RC-10').toBe(true);
+  expect(provenance.contracts.find(c=>c.id==='RC-10')).toMatchObject({status:'superseded by RC-11'});
  });
 });
