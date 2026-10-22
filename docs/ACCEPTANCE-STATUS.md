@@ -1,6 +1,8 @@
-# Full-plan acceptance status — 21 October 2026
+# Full-plan acceptance status — 22 October 2026
 
 The [19October snapshot](../data/planning/acceptance-status.json) is an immutable manifested resource;its bytes/hash are preserved. Current changes are recorded in [ACCEPTANCE-CURRENT.json](ACCEPTANCE-CURRENT.json),with its baseline SHA and unchanged criteria.
+
+22 October 2026 recorded-data follow-up: [Radio data and LSS data](RECORDED-ANALYSIS-DELIVERY.md) deliver bounded supplied-file analysis subflows. N06/N07/E02/E06 advance from contract-gated to partial;none is complete. Of the original **58 functional capabilities:1 complete,37 partial,19 contract-gated,1 not started**. The6quality capabilities remain separate (5partial,1rights-gated). All64 primary rows therefore count1complete/42partial/19contract-gated/1not-started/1rights-gated. Original criteria and the immutable19October manifested snapshot are unchanged. Radio acquisition,period/dispersion and full survey/exercise workflows remain open.
 
 Current image follow-up: [supplied float32 FITS image inspection](FITS-IMAGE.md) introduces a bounded D05 implementation:one primary2Dfloat32 plane,original header/bytes/SHA,pixel selection and web rendering. D05 is now partial; other BITPIX/scaling/axes/extensions and edition/native output/calibration workflows remain open. It does not accept CCD acquisition or N08 astrometry. Full-package criteria remain unchanged;P01 remains the only complete package. Current counts:1complete/38partial/23contract-gated/1not-started/1rights-gated. Earlier dated counts below are historical.
 

@@ -1,12 +1,12 @@
 {
-  "date": "2026-10-21",
+  "date": "2026-10-22",
   "definition": "Full baseline packages, not tests, functions or implemented subcontracts. Primary status is mutually exclusive; witness/license overlays overlap and are not additive. blocked-contract means no implementation of this full remaining scientific package can yet be accepted, not a denied tool action.",
   "functionalCount": 58,
   "qualityCount": 6,
   "complete": 1,
   "counts": {
-    "partial": 38,
-    "blocked-contract": 23,
+    "partial": 42,
+    "blocked-contract": 19,
     "complete": 1,
     "not-started": 1,
     "blocked-license": 1
@@ -27,7 +27,11 @@
     "E03",
     "E04",
     "E05",
-    "Q01"
+    "Q01",
+    "N06",
+    "N07",
+    "E02",
+    "E06"
   ],
   "rightsOverlay": [
     "Q05",
@@ -508,27 +512,35 @@
       "id": "N06",
       "title": "Large-scale-structure wedge plots and surveys",
       "baselineState": "R",
-      "status": "blocked-contract",
+      "status": "partial",
       "remaining": "Selection, positions, distances, projection and survey masks checked.",
       "evidence": [
-        "docs/IMPLEMENTATION-PLAN.md"
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/WEDGE-PLOT.md",
+        "docs/WEDGE-PLOT-VALIDATION.json"
       ],
-      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
-      "originalWitnessPending": false,
-      "licenseGate": false
+      "gateReason": "Bounded supplied-data analysis delivered;General survey selection/completeness/masks,live acquisition,GroupAutoPlot and native writer/print/runtime fidelity remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false,
+      "deliveredSlice": "Supplied original LSS text reader,source receipts and raw lines,wedge projection/options,manual row inspection,add/replace/cancel and own CSV export.",
+      "currentGaps": "General survey selection/completeness/masks,live acquisition,GroupAutoPlot and native writer/print/runtime fidelity remain open."
     },
     {
       "id": "N07",
       "title": "Pulsar timing/profile/dispersion analysis",
       "baselineState": "R",
-      "status": "blocked-contract",
+      "status": "partial",
       "remaining": "Period and dispersion workflows, filtering and recorded outputs checked.",
       "evidence": [
-        "docs/IMPLEMENTATION-PLAN.md"
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/PULSAR-ANALYSIS.md",
+        "docs/PULSAR-ANALYSIS-VALIDATION.json"
       ],
-      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
-      "originalWitnessPending": false,
-      "licenseGate": false
+      "gateReason": "Bounded supplied-data analysis delivered;Period/dispersion/filtering,editable Review,complete native result writer and runtime timing remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false,
+      "deliveredSlice": "Supplied PLR reading/properties,manual panel/reference cursors,zoom/pan,record/cancel and read-only results,exact original-byte copy.",
+      "currentGaps": "Period/dispersion/filtering,editable Review,complete native result writer and runtime timing remain open."
     },
     {
       "id": "N08",
@@ -671,14 +683,17 @@
       "id": "E02",
       "title": "Large-Scale Structure of the Universe",
       "baselineState": "R",
-      "status": "blocked-contract",
+      "status": "partial",
       "remaining": "E01, I03, N06; survey fields and completeness.",
       "evidence": [
-        "docs/IMPLEMENTATION-PLAN.md"
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/WEDGE-PLOT.md"
       ],
-      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
-      "originalWitnessPending": false,
-      "licenseGate": false
+      "gateReason": "Bounded supplied-data analysis delivered;Full E01/I03 observing chain,survey fields/completeness and exercise-wide assessment remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false,
+      "deliveredSlice": "Saved LSS observations can be plotted and inspected in the dedicated LSS data route without fabricating missing measurements.",
+      "currentGaps": "Full E01/I03 observing chain,survey fields/completeness and exercise-wide assessment remain open."
     },
     {
       "id": "E03",
@@ -741,14 +756,17 @@
       "id": "E06",
       "title": "Radio Astronomy of Pulsars",
       "baselineState": "R",
-      "status": "blocked-contract",
+      "status": "partial",
       "remaining": "I06/I07/I09/I10, N07; compare independent and VIREO editions.",
       "evidence": [
-        "docs/IMPLEMENTATION-PLAN.md"
+        "docs/IMPLEMENTATION-PLAN.md",
+        "docs/PULSAR-ANALYSIS.md"
       ],
-      "gateReason": "Remaining behavior/data/edition contracts need static recovery; resources alone are insufficient.",
-      "originalWitnessPending": false,
-      "licenseGate": false
+      "gateReason": "Bounded supplied-data analysis delivered;Antenna/receiver acquisition,I06/I07/I09/I10,period/dispersion and independent-edition comparison remain open.",
+      "originalWitnessPending": true,
+      "licenseGate": false,
+      "deliveredSlice": "Recorded supplied pulsar data have a manual analysis and measurement subflow in Radio data.",
+      "currentGaps": "Antenna/receiver acquisition,I06/I07/I09/I10,period/dispersion and independent-edition comparison remain open."
     },
     {
       "id": "E07",
