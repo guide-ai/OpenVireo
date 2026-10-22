@@ -1,5 +1,5 @@
 {
-  "scope": "Initial standalone Review validation at0e5f492(historical);subsequent keyboard/readpending corrections recorded separately under correctionValidation. No complete radioexercise/native runtime equivalence.",
+  "scope": "Historicalinitial0e5Reviewand350keyboard/readcorrectionreceipts;latest sharedRecord/Review/Clearpending-read validation is modalReadValidation. No completeradioexercise/native runtime equivalence.",
   "baseCommit": "3fbde952a9a1ed22fda0cd9a2f8b41cdb8a0374e",
   "sourceHashes": {
     "docs/PULSAR-ANALYSIS-PROVENANCE.json": "9967c006b6acca8a88d51d82b2e3abd19b897785d6d0c2d649a0e267faf9b3a3",
@@ -148,5 +148,65 @@
     "resourcesVerified": 1279,
     "scope": "Focusable horizontal Review scroller/Tabtrap;linear radio grouping;Review gated duringpendingreads;existing transactions/fields/formats unchanged",
     "notClaimed": "Originalscientific/nativeeventruntimeequivalence;newReviewand integration reviewresults kept separately bycoordinator"
+  },
+  "modalReadValidation": {
+    "sourceCommit": "85e36f22d68047c7de5bcc43721e5c19774b1e6d",
+    "sourceHashes": {
+      "docs/PULSAR-ANALYSIS.md": "462145e853cd7c154d7be2c670696b958559ea6db3e88c0ea0ffd02891e74a2e",
+      "src/components/PulsarAnalysis.tsx": "b3a47c1c26d41888a7729ddfd7fed3f30b570836a226c6bfaed7de20ee069719",
+      "tests/pulsar-analysis.spec.ts": "0442fee5bc9e9a493ccb23666adee7c19fe653b13e4aa513a0437388eb9054fb"
+    },
+    "sourceStableDuringIndependentValidation": true,
+    "receiptSelfExcluded": true,
+    "receiptWrittenAfterValidation": true,
+    "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-review-independent/read-completion/receipt.json",
+    "authorInterrupted": true,
+    "authorFinalOutcome": "unknown;sourcefrozenbysupervisoraftertransportloss,notauthor-successreceipt",
+    "unit": {
+      "passed": 1884,
+      "failed": 0,
+      "files": 178
+    },
+    "coreControls": {
+      "passed": 4,
+      "failed": 0
+    },
+    "browser": {
+      "startTime": "2026-10-22T04:27:32.117Z",
+      "duration": 75998.897,
+      "expected": 80,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "manualUIControls": {
+      "startTime": "2026-10-22T04:28:48.456Z",
+      "duration": 4652.6140000000005,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "originalReviewReproductions": {
+      "startTime": "2026-10-22T04:28:53.450Z",
+      "duration": 4296.155,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "recordClearReproductions": {
+      "startTime": "2026-10-22T04:28:58.091Z",
+      "duration": 3798.716,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "typecheckExitCode": 0,
+    "buildExitCode": 0,
+    "resourcesVerified": 1279,
+    "scope": "Sharedwebpending-readgatefor3currentmodalopeners;success/cancel/errorpreserveoriginalcoreflagsandconfirmedwork",
+    "notClaimed": "Nativeevent/AT/GDI/FPUparity;acquisition/nativewriter;wholeprojectcompletion;separatereviewandintegrationrecordedbycoordinator"
   }
 }
