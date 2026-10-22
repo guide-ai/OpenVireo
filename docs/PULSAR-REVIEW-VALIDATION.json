@@ -1,5 +1,5 @@
 {
-  "scope": "Standalone supplied-PLR Review working-copy/Delete-confirmation/Cancel-OK slice;not complete radioexercise or native runtime equivalence",
+  "scope": "Initial standalone Review validation at0e5f492(historical);subsequent keyboard/readpending corrections recorded separately under correctionValidation. No complete radioexercise/native runtime equivalence.",
   "baseCommit": "3fbde952a9a1ed22fda0cd9a2f8b41cdb8a0374e",
   "sourceHashes": {
     "docs/PULSAR-ANALYSIS-PROVENANCE.json": "9967c006b6acca8a88d51d82b2e3abd19b897785d6d0c2d649a0e267faf9b3a3",
@@ -80,5 +80,73 @@
     "No newwriter/Find/commenteditor/acquisition/periodDM/clockmetadata",
     "Chromiumdesktop/mobileonly;noAT/GDI/x87equivalence",
     "EarlierPULSAR-ANALYSIS-VALIDATION.json is historical;itsoldsourcehashesarenotclaimsaboutthisnewReviewcode"
-  ]
+  ],
+  "sourceCommit": "0e5f49291658af62ad641933fcb59125bd262842",
+  "baselinePLREquivalence": {
+    "status": "Verified immutableGitblob equality;not equivalence ofwhole App/host",
+    "baseCommit": "3fbde952a9a1ed22fda0cd9a2f8b41cdb8a0374e",
+    "actualPreviewBaseline": "b846dca75583446762f393e48cdd4aef42667030",
+    "identicalPLRSourceSHA256": {
+      "src/components/PulsarAnalysis.tsx": "09853adedf117f0ef3ae895aed3657e2893119a8eba5a8621cbad61d1bd107f8",
+      "src/components/PulsarAnalysis.css": "e0307343301ec4c2f1812e3a1a1eed433894cfa41b6265eb09c16e4d363c53fc",
+      "src/components/PulsarMessages.ts": "7cd0d7197fb0ae297b4de192f7b5e19cffdc1a75862312bf85d5a52d003e9e97",
+      "src/core/pulsarAnalysis.ts": "50f89971203439f7c9f678d54d5750365436fa6e560ae7ec4570af4861185885",
+      "src/core/pulsarRecording.ts": "2210b729d40490717ad6f8e93a0fc8ae14440db2403fbffa6eccee3c4f5ca142",
+      "src/core/pulsarPanHold.ts": "b883c7d4f224270b88ef36c8b80ffdff4a371890b0fc2d77adaeb0a23da87f62",
+      "src/core/numericPolicy.ts": "c22ed7bbf23e8aa03952a3695ce05806b762eea4354582c6d0fa9e72474b93b1"
+    },
+    "scope": "MissingReviewtransactionmodal negativecontrol after3manualrecords;Apppassesactive=true onshownRadio route;notnativebehaviororacle",
+    "originalBaselineReceipt": "baseline-ui-control-receipt.json"
+  },
+  "correctionValidation": {
+    "sourceCommit": "350ac1a7ba585e7b23c2969b8e0cc79eb29df574",
+    "sourceHashes": {
+      "docs/PULSAR-ANALYSIS.md": "622d1d8fb1479e7d565973da92d96006cbe030dce9a7587c021a9eff53c49e59",
+      "src/components/PulsarAnalysis.css": "39a1214ebde263b6e4e0a374e81c4ea1be445600ccc41cad60a5b34a1640d578",
+      "src/components/PulsarAnalysis.tsx": "03498cc4ed5a6dbd90c2c2c3a849ed179ce2fd2dbfa9dd0754b4e19ed99bcb8d",
+      "tests/pulsar-analysis.spec.ts": "f0c9dc7a20efdb422e9732b38af9d8bef3290cdc4adfcb4f3410479fb914644d"
+    },
+    "sourceStableDuringIndependentValidation": true,
+    "receiptSelfExcluded": true,
+    "receiptWrittenAfterValidation": true,
+    "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-review-independent/corrections/receipt.json",
+    "unit": {
+      "passed": 1884,
+      "failed": 0,
+      "files": 178
+    },
+    "coreControls": {
+      "passed": 4,
+      "failed": 0
+    },
+    "browser": {
+      "startTime": "2026-10-22T04:05:59.968Z",
+      "duration": 71242.368,
+      "expected": 78,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "additionalManualUIControls": {
+      "startTime": "2026-10-22T04:07:11.556Z",
+      "duration": 4760.054,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "literalBeforeAfterReproductions": {
+      "startTime": "2026-10-22T04:07:16.646Z",
+      "duration": 4195.472,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "typecheckExitCode": 0,
+    "buildExitCode": 0,
+    "resourcesVerified": 1279,
+    "scope": "Focusable horizontal Review scroller/Tabtrap;linear radio grouping;Review gated duringpendingreads;existing transactions/fields/formats unchanged",
+    "notClaimed": "Originalscientific/nativeeventruntimeequivalence;newReviewand integration reviewresults kept separately bycoordinator"
+  }
 }
