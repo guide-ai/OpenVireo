@@ -726,7 +726,7 @@ test('cancelling a secondary pointer does not end the primary drag; the owner\'s
   await load(page);
   await page.getByTestId('pulsar-properties-close').click();
   const plot1 = page.getByTestId('pulsar-plot-1'), plot2 = page.getByTestId('pulsar-plot-2'), value = page.getByTestId('pulsar-vertical-value-1');
-  const b = await pixel(page, 2, 200, 10), a = await pixel(page, 1, 50, 10), c = await pixel(page, 1, 70, 10), d = await pixel(page, 1, 90, 10);
+  const b = await pixel(page, 2, 200, 10), a = await pixel(page, 1, 50, 10), c = await pixel(page, 1, 70, 10);
   await page.mouse.move(a.x, a.y);
   await page.mouse.down();
   await expect(value).toHaveText('0.500000');
@@ -957,4 +957,31 @@ test('Tab from dialog text below the controls and Shift+Tab from the heading sta
   await expect(page.getByTestId('pulsar-clear-cancel')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(clear).toHaveCount(0);
+});
+
+test('Tab from dialog text between the comment and OK keeps the native relative order; text outside the controls still wraps', async ({ page }) => {
+  await open(page);
+  await hostControls(page);
+  await load(page);
+  await page.getByTestId('pulsar-properties-close').click();
+  for (const n of [1, 2]) { await page.getByTestId(`pulsar-plot-${n}`).focus(); await page.keyboard.press('ArrowRight'); }
+  await page.getByTestId('pulsar-record').click();
+  const dialog = page.getByTestId('pulsar-record-dialog'), comment = page.getByTestId('pulsar-comment'), ok = page.getByTestId('pulsar-record-ok'), cancel = page.getByTestId('pulsar-record-cancel');
+  const heading = dialog.locator('h3'), help = dialog.locator('.plr-help'), remaining = dialog.getByText('Panels remaining after this one: 1.'), footer = dialog.locator('p[role="status"]');
+  await expect(heading).toContainText('(receiver 1)');
+  await comment.fill('first draft');
+  // Help and remaining text sit between the comment and OK; the heading is above and the status below every control.
+  const cases = [[help, 'Tab', ok], [help, 'Shift+Tab', comment], [remaining, 'Tab', ok], [remaining, 'Shift+Tab', comment],
+    [heading, 'Tab', comment], [heading, 'Shift+Tab', cancel], [footer, 'Tab', comment], [footer, 'Shift+Tab', cancel]] as const;
+  for (const [text, key, next] of cases) { await text.click(); await page.keyboard.press(key); await expect(next).toBeFocused(); }
+  await expect(comment).toHaveValue('first draft');
+  await expect(page.getByTestId('pulsar-count')).toHaveText('0 recorded measurements');
+  await ok.click();
+  // The second panel's dialog has no remaining text; its help text still leads to its neighbours.
+  await expect(heading).toContainText('(receiver 2)');
+  await expect(dialog.getByText(/Panels remaining/)).toHaveCount(0);
+  for (const [key, next] of [['Shift+Tab', comment], ['Tab', ok]] as const) { await help.click(); await page.keyboard.press(key); await expect(next).toBeFocused(); }
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
 });

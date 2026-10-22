@@ -83,7 +83,9 @@ export type PulsarAnalysisState = Readonly<{
   /**
    * WEB: a press or move of the current gesture (since the press that set a drag latch) stored an accepted
    * placement on panel ch. It decides whether a MouseUp whose own placement is refused still marks ch pending.
-   * Cleared when no latch remains after a MouseUp, by pointer release, load and reset. No native counterpart.
+   * Cleared when no latch remains after a MouseUp, by pointer release, load and reset. Confirming a record for
+   * ch clears ch only: the entry holds every placement accepted so far, and a latch can outlive the dialog.
+   * No native counterpart.
    */
   gesturePlaced: readonly [boolean, boolean, boolean];
   recordEnabled: boolean; reviewEnabled: boolean; saveEnabled: boolean; // +0x464 / +0x388 / +0x38c (bindings inferred)
@@ -444,7 +446,11 @@ function entryNumbersFinite(s: PulsarAnalysisState, ch: PulsarPanel): boolean {
   const rec = s.recording as PlrRecording, m = s.measurement;
   return [rec.frequencies[ch].value, rec.gains[ch].effective, rec.start.value, rec.interval.value * 1000, m.reference, m.vertical[ch], m.horizontal[ch]].every(Number.isFinite);
 }
-/** OK 0x570b3c. A refused comment or number keeps the dialog open with its draft. */
+/**
+ * OK 0x570b3c. A refused comment or number keeps the dialog open with its draft.
+ * WEB: also forgets panel ch's accepted placement of a gesture whose latch is still held, so a later refused
+ * MouseUp does not make the value just recorded pending again. The drag latches themselves are kept.
+ */
 export function pulsarConfirmRecord(s: PulsarAnalysisState): PulsarTransition {
   const session = s.recordSession, ch = pulsarRecordPanel(s);
   if (!session || ch === null) return keep(s, 'invalid-input');
@@ -455,7 +461,7 @@ export function pulsarConfirmRecord(s: PulsarAnalysisState): PulsarTransition {
   const n: PulsarAnalysisState = {
     ...s, list: Object.freeze([...s.list, entry]), nextSequence: s.nextSequence + 1, listSaved: false,
     measurement: Object.freeze({ ...s.measurement, comments: with3(s.measurement.comments, ch, session.draft) }),
-    pending: with3(s.pending, ch, false), reviewEnabled: true, saveEnabled: true,
+    pending: with3(s.pending, ch, false), gesturePlaced: with3(s.gesturePlaced, ch, false), reviewEnabled: true, saveEnabled: true,
   };
   const a = advance(n, session);
   return done(a, a.recordSession ? 'record-confirmed' : 'record-finished', ['PLR-RECORD-01']);

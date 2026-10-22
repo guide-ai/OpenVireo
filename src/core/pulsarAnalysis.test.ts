@@ -477,6 +477,33 @@ describe('WEB Number refusal inside one pointer gesture (PLR-MOUSE-01, PLR-CURSO
     expect([up.outcome, up.state.pending[1], up.state.recordEnabled, up.state.list]).toEqual(['number-unsupported', false, false, recorded.list]);
     expect(up.state.measurement).toBe(recorded.measurement);
   });
+  it('a confirmed value is not made pending again by a refused click while the other drag latch is still held', () => {
+    // y = 102 stores about 1.76e308 on panel 2; y = 101 overflows Number.
+    const right = st(pulsarPointer(tiny(), 1, ptr('down', 'right', 5, 102)));
+    const placed = click(right, 1, 5, 102);
+    expect([placed.rightDrag, placed.leftDrag, placed.pending[1], placed.gesturePlaced[1]]).toEqual([true, false, true, true]);
+    const recorded = st(pulsarConfirmRecord(st(pulsarBeginRecord(placed))));
+    expect([recorded.list.length, recorded.pending[1], recorded.recordEnabled, recorded.rightDrag, recorded.gesturePlaced]).toEqual([1, false, false, true, [false, false, false]]);
+    const refused = pulsarPointer(st(pulsarPointer(recorded, 1, ptr('down', 'left', 5, 101))), 1, ptr('up', 'left', 5, 101));
+    expect([refused.outcome, refused.state.pending[1], refused.state.recordEnabled, refused.state.rightDrag, refused.state.list]).toEqual(['number-unsupported', false, false, true, recorded.list]);
+    expect(refused.state.measurement).toBe(recorded.measurement);
+    expect(pulsarBeginRecord(refused.state)).toMatchObject({ outcome: 'record-disabled', changed: false });
+    // A new accepted press during the same held latch is recordable again through a refused MouseUp.
+    const again = pulsarPointer(st(pulsarPointer(refused.state, 1, ptr('down', 'left', 5, 102))), 1, ptr('up', 'left', 5, 101));
+    expect([again.outcome, again.state.pending[1], again.state.recordEnabled, again.state.rightDrag]).toEqual(['number-unsupported', true, true, true]);
+  });
+  it('control: cancel keeps the held gesture recordable, and confirming one panel keeps another panel\'s placement', () => {
+    const right = st(pulsarPointer(tiny(), 1, ptr('down', 'right', 5, 102)));
+    const cancelled = st(pulsarCancelRecord(st(pulsarBeginRecord(click(right, 1, 5, 102)))));
+    expect([cancelled.list.length, cancelled.pending[1], cancelled.gesturePlaced[1]]).toEqual([0, true, true]);
+    const refused = pulsarPointer(st(pulsarPointer(cancelled, 1, ptr('down', 'left', 5, 101))), 1, ptr('up', 'left', 5, 101));
+    expect([refused.state.pending[1], refused.state.recordEnabled]).toEqual([true, true]);
+    // Panel 1 is confirmed alone; the reference placed on panel 2 by the held right press is not recorded for panel 2.
+    const panel1 = st(pulsarConfirmRecord(st(pulsarBeginRecord(click(right, 0, 40)))));
+    expect([panel1.list.map(e => e.panel), panel1.gesturePlaced, panel1.pending]).toEqual([[0], [false, true, false], [false, false, false]]);
+    const other = pulsarPointer(st(pulsarPointer(panel1, 1, ptr('down', 'left', 5, 101))), 1, ptr('up', 'left', 5, 101));
+    expect([other.outcome, other.state.pending, other.state.recordEnabled]).toEqual(['number-unsupported', [false, true, false], true]);
+  });
   it('control: a valid pending measurement on another panel is kept through refused gestures on panel 2', () => {
     const s = click(tiny(), 0, 40);
     expect([s.pending, s.recordEnabled]).toEqual([[true, false, false], true]);

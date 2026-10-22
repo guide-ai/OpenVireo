@@ -198,6 +198,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     syncModal();
     return () => { observer.disconnect(); document.removeEventListener('close', closed, true); };
   }, [syncModal, modal, active]);
+  // Where the last press inside the open dialog landed, while it left focus off the controls.
+  const textOrigin = useRef<Node | null>(null);
   /**
    * Escape is handled on keydown. A close request the page cannot cancel closes the dialog, which counts as Cancel/No.
    * Tab and Shift+Tab wrap between this dialog's first and last controls (the top layer alone would let Tab leave to
@@ -208,13 +210,25 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
       if (e.key !== 'Tab') return;
       const items = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)], first = items[0], last = items[items.length - 1];
-      const focused = document.activeElement;
-      // Clicking non-focusable dialog text resets Chromium's sequential focus origin.
-      // Wrap locally from that text as well; events in host dialogs never reach us.
-      if (first && (!items.includes(focused as HTMLElement) || focused === (e.shiftKey ? first : last))) {
-        e.preventDefault(); (e.shiftKey ? last : first).focus();
+      if (!first) return;
+      const focused = document.activeElement as HTMLElement | null;
+      let next: HTMLElement | undefined;
+      if (focused && items.includes(focused)) {
+        if (focused === (e.shiftKey ? first : last)) next = e.shiftKey ? last : first;
+      } else {
+        // Clicking non-focusable dialog text focuses the dialog and moves Chromium's sequential focus origin there.
+        // Keep the native relative order from that text: the next or previous control in document order, and wrap
+        // only from text before the first or after the last control. Events in host dialogs never reach us.
+        const origin = textOrigin.current, inside = origin !== null && e.currentTarget.contains(origin);
+        const before = inside ? items.filter(el => origin.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING) : [];
+        const after = inside ? items.filter(el => origin.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) : [];
+        next = (e.shiftKey ? before[before.length - 1] : after[0]) ?? (e.shiftKey ? last : first);
       }
+      if (next) { e.preventDefault(); next.focus(); }
     },
+    onPointerDown: (e: ReactPointerEvent<HTMLDialogElement>) => { textOrigin.current = e.target as Node; },
+    // Focus on a control replaces the clicked text as the origin.
+    onFocus: (e: SyntheticEvent<HTMLDialogElement>) => { if (e.target !== e.currentTarget) textOrigin.current = null; },
     onCancel: (e: SyntheticEvent<HTMLDialogElement>) => { if (e.cancelable) { e.preventDefault(); cancel(); } },
     onClose: (e: SyntheticEvent<HTMLDialogElement>) => {
       const el = e.currentTarget;
