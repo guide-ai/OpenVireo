@@ -1,6 +1,6 @@
 # App integration: supplied saved-row viewer and radio telescope control
 
-**Status:** a bounded local integration on top of `7c40432` (saved rows `35c757e`, antenna `4cbe843`). It is pending independent validation, a separate review and local preview promotion. It does not complete any instrument or the project. The original 58-capability inventory and its partial statuses are unchanged.
+**Author handoff record:** a bounded local integration on top of `7c40432` (saved rows `35c757e`, antenna `4cbe843`), preserved in local checkpoint `cbf2758` before the follow-up below. Validation, separate reviews and local preview promotion are recorded separately by the coordinator; this document is not an acceptance receipt. It does not complete any instrument or the project. The original 58-capability inventory and its partial statuses are unchanged.
 
 Everything described here as host behavior is a **WEB adaptation**: route visibility, project-busy suspension, presentation ownership, focus and persistence wording. No new native behavior is claimed and no fresh REA probe or native run was made. The recovered contracts are reused as they are: RA-01…RA-14 ([RADIO-ANTENNA-PROVENANCE.json](RADIO-ANTENNA-PROVENANCE.json)), RC-01…RC-11 ([RADIO-CONTROL-PROVENANCE.json](RADIO-CONTROL-PROVENANCE.json)) and PLR-SAVED-ROWS-01 with SAVED-FRAMING-01, SAVED-ROW-01 and SAVED-FIND-01 ([PULSAR-SAVED-ROWS-PROVENANCE.json](PULSAR-SAVED-ROWS-PROVENANCE.json)). The REA record `ev_61f426…` binds the artifact and its resources only; it is not evidence for any behavior here.
 
@@ -36,8 +36,8 @@ Everything described here as host behavior is a **WEB adaptation**: route visibi
 | A native modal `<dialog>` of the page is open (About, Hubble lab guide, PLR dialog) | Find waits | dialog/box waits (`useSyncExternalStore` over `dialog:modal`, observed only while a radio dialog or box is pending) and is presented when it closes |
 | Radio dialog or box presented | — | App header and investigation toolbar inert (only while **presented**, not while latent); LSS Options' own host inertness is unchanged |
 
-- **Route heading focus.** After a route change the host focuses the route's `h1` unless a native modal dialog is open or a radio dialog/box is presented. Pending radio surfaces of a hidden route are not rendered, so they do not count.
-- **Focus on presentation.** The coordinate dialog focuses its first field, and a box focuses its default button. A dialog presented under a pending box takes focus when the box closes (the path used after an OK error box). A box returns focus only to a control of the panel, never when it was removed by a suppression; otherwise Set Coordinates takes focus as after any last box. Held-key guards, Escape answers and Tab traps are unchanged.
+- **Route heading focus.** After a route change the host focuses the route's `h1` unless a native modal dialog is open or a radio dialog/box is presented. On the active, non-busy radio route, a pending surface also suppresses the intermediate heading focus while another tool's native dialog closes and the radio box becomes presented. A hidden/inactive radio route advertises no such pending ownership, so it cannot suppress another tool's heading.
+- **Focus on presentation.** The coordinate dialog focuses its first field, and a box focuses its default button. A dialog presented under a pending box takes focus when the box closes (the path used after an OK error box). A box returns focus only to a control of the panel, never when it was removed by a suppression; otherwise Set Coordinates takes focus as after any last box. If the panel window is closed and that control is absent, the live Radio switch is the fallback. A hidden/busy route or a foreign native modal never yields focus to that fallback. Held-key guards, Escape answers and Tab traps are unchanged.
 - **Callbacks.** `onModalPresentedChange(presented)` reports presentation, not the logical session: it is called only on change, the latest callback receives it, and an unmount while presenting reports `false`. It is StrictMode-safe. The saved-row `onModalChange` keeps its logical-session semantics.
 - **No product debug API** was added. The App flows use only the rendered App, browser history and test-only file-read holds.
 
@@ -64,7 +64,17 @@ In [PULSAR-ANALYSIS.md](PULSAR-ANALYSIS.md), the properties table now says "list
 
 The sidereal clock (RA-13) and altitude limits (RA-12) need a shared clock. B1950 precession (`0x4b9f44`/`0x4b9f64`) is not recovered. Also not covered: manual N/S/E/W slewing, Receiver, the beam and hot list, the options loader and `TRadioOptsDlg`, the access-option dialog control, decoded message-box and status literals, the RateLbl table, and an original reload command for the saved-row layout. Whether the observatory dome is the `[+0x552]` byte is not established.
 
-## 8. Tests
+## 8. Post-review web follow-up
+
+A separate Claude source review of the host integration identified two focus observations. Coordinator App probes reproduced both on desktop and touch 375: leaving saved-row Find for an arrived radio box briefly focused the route heading before OK, and OK after a hidden-panel arrival left focus on the document body. The coordinator implemented the bounded web corrections above after the assigned Claude correction author stopped with HTTP 429 before making edits. This authorship record does not replace a separate final Claude review.
+
+The same follow-up puts the complete saved-row summary/session composition (including separator and order) in the catalog and names project save/restore read cancellation and candidate replacement in the disclosure help. Native-modal observation runs only when radio presentation can be active, avoiding a body-wide subscription for a hidden/busy pending box. Numerical cores, formats and original resources do not change.
+
+The no-catch-up test uses a controlled browser clock after lazy tools have loaded: six periods while busy deliver zero ticks; cancellation starts a fresh interval, with zero ticks at 99 ms and exactly one at 100 ms. Other flows retain real-clock coverage. Actual App regressions cover both focus cases, held radio Enter/Escape and the hidden-busy 1 ms access callback. These are browser lifecycle checks, not original Windows timing or native focus equivalence. An additional coordinator probe found that returning focus to the main Radio switch let a held Enter from the arrival box toggle it. The switch now uses the same WEB repeated-key guard as the dialog and Set Coordinates return trigger; the underlying single-character control core is unchanged. The regression asserts after each repeated key, then releases it and verifies a fresh Enter still toggles. Paired repeats checked only at their end could hide two toggles. This is a browser safety policy, not a recovered native auto-repeat rule.
+
+Optional catalog cleanup, a general modal registry and future options-loader wording are not part of this follow-up.
+
+## 9. Tests
 
 - Unit (Vitest): the predictor and tolerance regressions are in `src/core/radioAntenna.test.ts`. The audited TSX count is 51 (`RadioTelescopeRoute.tsx` adds no direct render literals).
 - Actual App (Playwright, desktop 1440 × 1050 and touch 375 × 812): `tests/radio-saved-rows-app.spec.ts`. The navigation reachability list in `tests/recorded-analysis-navigation.spec.ts` includes the new header button.
@@ -72,7 +82,7 @@ The sidereal clock (RA-13) and altitude limits (RA-12) need a shared clock. B195
 
 Tests check the chosen web contract; they are not an oracle for the original program.
 
-## 9. Manual steps (local preview, after promotion)
+## 10. Manual steps (local preview, after promotion)
 
 1. Open **Radio data**. Load a `.plr` recording, place a cursor and record a measurement with a comment.
 2. Open **Saved measurement file viewer (supplied file)**. Choose a saved measurement file, check its identity and choose **Use this file**.

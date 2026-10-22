@@ -2131,6 +2131,7 @@ export interface MessageParameters {
   "plr.loading": never;
   "plr.savedRows.summary": never;
   "plr.savedRows.findSession": never;
+  "plr.savedRows.summaryWithSession": "session" | "summary";
   "plr.savedRows.help": never;
   "plr.savedRows.loading": never;
   "radioRoute.nav": never;

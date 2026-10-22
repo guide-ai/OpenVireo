@@ -6,7 +6,8 @@ import {CONTROL,PLR,ROW_A,ROW_C} from './fixtures/pulsar-saved-rows-controls';
 // #pulsar-analysis disclosure and the #radio-control route, with the host's route, project-busy and modal ownership.
 // No harness and no product debug hook: only the rendered App, browser history and test-only file-read holds installed
 // by addInitScript. Fixtures are synthetic UI controls, not observations, not CLEA output and not a writer oracle.
-// Timing uses the real browser scheduler (nominal 100 ms slew ticks); that is the web contract, not Windows timing.
+// Flows use the real browser scheduler except explicit controlled-clock lifecycle checks after lazy tools load.
+// Nominal 100 ms ticks are the chosen web contract, not Windows timing.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
@@ -14,6 +15,8 @@ const header=(page:Page)=>page.locator('.portal-header'),toolbar=(page:Page)=>pa
 const file=(name:string,text:string,mimeType='text/plain')=>({name,mimeType,buffer:Buffer.from(text,'latin1')});
 const sha=(text:string)=>createHash('sha256').update(Buffer.from(text,'latin1')).digest('hex');
 const settle=(page:Page)=>page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,100))));
+/** Let React commit without advancing the controlled page clock; close test ports after each task. */
+async function flushTasks(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 /** Tap on the touch project, click on desktop: the same App controls through both input paths. */
 const press=(info:TestInfo,target:Locator)=>info.project.name==='touch-375'?target.tap():target.click();
@@ -151,7 +154,7 @@ test('saved-row host ownership: disclosure close, route change and project busy 
  await expect(id(page,'saved-rows')).toHaveAttribute('data-active','true');await unchanged();await expect(toolbar(page).locator('[role="alert"]')).toHaveCount(0);
  // Find draft across browser history: the session is kept while hidden and presented again on return, with focus.
  await expect(id(page,'saved-rows-session')).toHaveCount(0);
- await id(page,'saved-rows-find').click();await id(page,'saved-rows-query').fill('B1919');await expect(id(page,'saved-rows-session')).toHaveText(' · Find session open');
+ await id(page,'saved-rows-find').click();await id(page,'saved-rows-query').fill('B1919');await expect(id(page,'saved-rows-session')).toHaveText('Saved measurement file viewer (supplied file) · Find session open');
  await page.goBack();await expect(id(page,'saved-rows')).toBeHidden();await expect(page.locator('dialog:modal')).toHaveCount(0);await expect(heading(page,'Start with the sky.')).toBeFocused();
  await page.goForward();await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('B1919');await expect(id(page,'saved-rows-query')).toBeFocused();
  await expect(page.locator('dialog:modal')).toHaveCount(1);await expect(heading(page,'Recorded pulsar analysis')).not.toBeFocused();
@@ -289,7 +292,10 @@ test('project operations keep both temporary workspaces and the old formats: Sav
  await holdReads(page);
  await page.goto('/#observatory');const before=await save(page);
  await press(info,nav(page,'Radio data'));await loadPlr(page);await recordManual(page,'manual across tools');await toggleDisclosure(page);await useFile(page);
- await press(info,nav(page,'Radio telescope'));await setupRadio(page,info);await startSlew(page,['4','0','0','0','0','0']);
+ await press(info,nav(page,'Radio telescope'));await setupRadio(page,info);
+ // Every tool used below is loaded before installing the clock: freezing React's lazy load would test the scheduler instead.
+ await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);
+ await startSlew(page,['4','0','0','0','0','0']);await flushTasks(page);
  // Save investigation: the same bytes as before any radio or saved-row work (no new fields in the investigation format).
  expect((await save(page)).equals(before)).toBe(true);await expect(toolbar(page).getByText('Investigation saved.',{exact:false})).toBeVisible();
  // Busy (a held restore): slew ticks pause and are not caught up after Cancel.
@@ -297,15 +303,16 @@ test('project operations keep both temporary workspaces and the old formats: Sav
  await restore(page,'held-restore.json',before.toString('utf8'));await held(page,'held-restore.json');
  await expect(page.locator('[data-testid="radio-route"]').locator('xpath=ancestor::div[@inert]')).toHaveCount(1);
  const paused=await id(page,'antenna-ticks').textContent();
- await page.waitForTimeout(600);// absence check: a 100 ms registration would have delivered about six callbacks
+ await page.clock.runFor(600);await flushTasks(page);// six periods while busy must deliver no callbacks
  await expect(id(page,'antenna-ticks')).toHaveText(paused!);
- await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();
+ await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();await flushTasks(page);
  const count=(text:string|null)=>Number(/(\d+)$/.exec(text??'')?.[1]);const start=count(paused);
- await expect.poll(async()=>count(await id(page,'antenna-ticks').textContent())).toBeGreaterThan(start);
- expect(count(await id(page,'antenna-ticks').textContent())-start).toBeLessThanOrEqual(3);// a fresh registration, no catch-up
- await release(page,'held-restore.json');await settle(page);await expect(toolbar(page).locator('[role="alert"]')).toHaveCount(0);
+ await page.clock.runFor(99);await flushTasks(page);expect(count(await id(page,'antenna-ticks').textContent())).toBe(start);
+ await page.clock.runFor(1);await flushTasks(page);expect(count(await id(page,'antenna-ticks').textContent())).toBe(start+1);// a fresh 100 ms registration, exactly one tick and no catch-up
+ await release(page,'held-restore.json');await flushTasks(page);await expect(toolbar(page).locator('[role="alert"]')).toHaveCount(0);
  // Restore error, then a real restore of the earlier file: both keep the radio state and the saved rows.
  await id(page,'antenna-set-coordinates').click();await id(page,'antenna-notice-yes').click();await expect(id(page,'antenna-motion')).toHaveText('Telescope stopped.');
+ await page.clock.resume();// later restore/reload checks use the real scheduler, including lazy tools after reload
  const ra=await id(page,'antenna-ra').textContent(),dec=await id(page,'antenna-dec').textContent();
  await restore(page,'broken.json','not an investigation');await expect(toolbar(page).getByRole('alert')).toHaveText('The investigation could not be restored. Confirmed work in every tool was kept.');
  await restore(page,'same-investigation.json',before.toString('utf8'));await expect(toolbar(page).getByText('Investigation restored.',{exact:false})).toBeVisible();
@@ -316,4 +323,48 @@ test('project operations keep both temporary workspaces and the old formats: Sav
  await page.reload();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
  await expect(id(page,'saved-rows')).toHaveCount(0);await toggleDisclosure(page);await expect(id(page,'saved-rows-none')).toBeVisible();
  await nav(page,'Radio telescope').click();await expect(id(page,'radio-switch')).toBeDisabled();await expect(id(page,'antenna-controls')).toHaveCount(0);
+});
+
+
+test('review regression: a hidden-panel arrival returns switch focus without a held Enter toggling it',async({page},info)=>{
+ await openRadio(page,info);await setupRadio(page,info);await startSlew(page,['1','0','0','30','0','0']);
+ await press(info,id(page,'radio-panel-close'));await expect(id(page,'radio-panel-window')).toHaveCount(0);
+ await expect(notice(page)).toHaveAttribute('data-kind','slew-complete');await expect(id(page,'antenna-notice-ok')).toBeFocused();
+ await page.keyboard.down('Enter');await expect(notice(page)).toHaveCount(0);await expect(id(page,'radio-switch')).toBeFocused();await hostReleased(page);
+ // Check EACH repeat: two unchecked toggles can return to the original value and hide a cascade.
+ for(let i=0;i<2;i++){await page.keyboard.down('Enter');await expect(id(page,'radio-switch')).toHaveAttribute('aria-checked','false');await expect(id(page,'radio-panel-window')).toHaveCount(0);}
+ await page.keyboard.up('Enter');await page.keyboard.press('Enter');await expect(id(page,'radio-switch')).toHaveAttribute('aria-checked','true');await expect(id(page,'radio-panel-window')).toBeVisible();
+});
+
+test('review regression: Find to pending arrival yields focus directly to the box and retains the Find draft',async({page},info)=>{
+ await openRadio(page,info);await setupRadio(page,info);await startSlew(page,['1','0','0','30','0','0']);
+ await press(info,nav(page,'Radio data'));await toggleDisclosure(page);await useFile(page);await id(page,'saved-rows-find').click();await id(page,'saved-rows-query').fill('kept across arrival');
+ await expect.poll(()=>id(page,'antenna-ra').textContent()).toBe('1 Hrs 0 Mins 0.00 Secs');
+ await page.evaluate(()=>{const w=window as unknown as{__radioFocusEvents:string[]};w.__radioFocusEvents=[];document.addEventListener('focusin',event=>{const el=event.target;if(el instanceof HTMLElement&&w.__radioFocusEvents.length<50)w.__radioFocusEvents.push(el.tagName==='H1'?`H1:${el.textContent}`:el.getAttribute('data-testid')??el.tagName);});});
+ await page.goBack();await expect(notice(page)).toHaveAttribute('data-kind','slew-complete');await expect(id(page,'antenna-notice-ok')).toBeFocused();
+ const events=await page.evaluate(()=>(window as unknown as{__radioFocusEvents:string[]}).__radioFocusEvents);
+ expect(events).not.toContain('H1:Radio telescope control');await id(page,'antenna-notice-ok').click();
+ await press(info,nav(page,'Radio data'));await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('kept across arrival');await page.keyboard.press('Escape');
+});
+
+test('actual App radio held Enter and Escape act on one surface at a time',async({page},info)=>{
+ await openRadio(page,info);await setupRadio(page,info);await id(page,'antenna-set-coordinates').click();await id(page,'antenna-field-raHours').fill('25');
+ await page.keyboard.down('Enter');await expect(notice(page)).toHaveAttribute('data-kind','ra-invalid');await expect(id(page,'antenna-notice-ok')).toBeFocused();
+ await page.keyboard.down('Enter');await expect(notice(page)).toHaveAttribute('data-kind','ra-invalid');await page.keyboard.up('Enter');
+ await page.keyboard.down('Escape');await expect(notice(page)).toHaveCount(0);await expect(id(page,'antenna-dialog')).toBeVisible();
+ await page.keyboard.down('Escape');await expect(id(page,'antenna-dialog')).toBeVisible();await page.keyboard.up('Escape');
+ await page.keyboard.press('Escape');await expect(id(page,'antenna-dialog')).toHaveCount(0);await expect(id(page,'antenna-set-coordinates')).toBeFocused();await hostReleased(page);
+});
+
+test('actual App hidden busy route pauses the admitted 1 ms access callback and resumes it once',async({page},info)=>{
+ await holdReads(page);await page.goto('/#pulsar-analysis');await expect(id(page,'pulsar-file')).toBeVisible();const before=await save(page);
+ await press(info,nav(page,'Radio telescope'));await expect(id(page,'radio-control')).toBeVisible();await press(info,id(page,'radio-exercise'));await press(info,id(page,'radio-env-compiled'));await id(page,'radio-env-option').check();
+ // Loaded routes first: controlled browser timing tests registration ownership, not Windows timer delivery.
+ await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);await press(info,id(page,'radio-access'));await flushTasks(page);
+ await expect(id(page,'radio-timer')).toHaveCount(1);const waiting=await id(page,'radio-id-caption').textContent();await press(info,nav(page,'Radio data'));
+ await restore(page,'held-hidden-access.json',before.toString('utf8'));await held(page,'held-hidden-access.json');await flushTasks(page);
+ await page.clock.runFor(25);await flushTasks(page);await expect(id(page,'radio-id-caption')).toHaveText(waiting!);await expect(id(page,'radio-timer')).toHaveCount(1);
+ await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();await flushTasks(page);await page.clock.runFor(1);await flushTasks(page);
+ await expect(id(page,'radio-timer')).toHaveCount(0);await expect(id(page,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');
+ await release(page,'held-hidden-access.json');await flushTasks(page);await page.clock.resume();await press(info,nav(page,'Radio telescope'));await expect(id(page,'radio-switch')).toBeEnabled();await expect(id(page,'radio-switch')).toHaveAttribute('aria-checked','false');
 });

@@ -56,7 +56,8 @@ export type RadioControlPanelProps=Readonly<{
 const BROWSER_TIMER:RadioTimerHost={setInterval:(callback,ms)=>window.setInterval(callback,ms),clearInterval:handle=>window.clearInterval(handle as number)};
 /** WEB presentation ownership: a native modal <dialog> of the page (About, Hubble lab guide, another tool's dialog) is in the
  * top layer and stays topmost. This panel renders no <dialog>, so any open one is foreign. Observed only while a dialog
- * or box of this panel is pending; showModal()/close() toggle the open attribute and conditional rendering removes nodes. */
+ * or box can be presented on the active, non-busy route; showModal()/close() toggle the open attribute and conditional
+ * rendering removes nodes. Reactivation reads the current snapshot before presenting anything. */
 const nativeModalOpen=()=>document.querySelector('dialog:modal')!==null;
 const noNativeModal=()=>false;
 function observeNativeModals(onChange:()=>void){
@@ -88,7 +89,7 @@ const NOTICE_META:Readonly<Record<RadioLabNoticeKind,{title:RadioAntennaMessageK
 const BUTTON_KEYS:Readonly<Record<NoticeAnswer,RadioAntennaMessageKey>>={ok:'antenna.button.ok',cancel:'antenna.button.cancel',yes:'antenna.button.yes',no:'antenna.button.no'};
 /** Windows MessageBox convention (inference): Escape answers OK on an OK box and Cancel on OK/Cancel; Yes/No boxes ignore it. */
 const escapeAnswer=(kind:RadioLabNoticeKind):NoticeAnswer|null=>{const b=NOTICE_BUTTONS[kind];return b.includes('cancel')?'cancel':b.length===1?'ok':null;};
-/** Browser policy (not recovered behavior): auto-repeated Enter/Escape do nothing inside the dialog, a message box or their Set Coordinates return-focus trigger,
+/** Browser policy (not recovered behavior): auto-repeated Enter/Escape do nothing inside the dialog, a message box or their return-focus triggers (Set Coordinates and the main Radio switch),
  * so a held key cannot choose OK, answer the box that opens next and keep going (reproduced before this guard). */
 const ignoreHeldKey=(e:KeyboardEvent<HTMLElement>)=>{if(e.repeat&&(e.key==='Enter'||e.key==='Escape')){e.preventDefault();return true;}return false;};
 
@@ -167,7 +168,8 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const antennaModal=antenna?isRadioLabModal(antenna):false;
  // WEB presentation ownership: the pending dialog or box (logical state, kept in `antenna`) is rendered only while the
  // host shows the panel, no project operation runs and no native modal dialog of the page is open.
- const foreignModal=useSyncExternalStore(antennaModal?observeNativeModals:observeNothing,antennaModal?nativeModalOpen:noNativeModal,noNativeModal);
+ const modalPending=antennaModal&&active&&!hostBusy;
+ const foreignModal=useSyncExternalStore(modalPending?observeNativeModals:observeNothing,modalPending?nativeModalOpen:noNativeModal,noNativeModal);
  const presented=antennaModal&&active&&!hostBusy&&!foreignModal;
  // A dialog or box removed because presentation was suppressed must not move focus (to a hidden or inert control); it
  // takes focus again when it is presented. Read by the views' cleanups, which run after this commit's layout effects.
@@ -244,6 +246,9 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   }).cancel;
  },[slewActive,slewRun]);
  const onSwitchKey=(e:KeyboardEvent<HTMLButtonElement>)=>{
+  // The main switch is also the return target of an arrival box when the panel window is closed.
+  // A held Enter answering that box must not toggle this newly focused control on the next repeat.
+  if(ignoreHeldKey(e))return;
   // OnKeyPress receives characters only; Enter arrives as #13.
   if(e.key==='Enter'){e.preventDefault();run(()=>pressRadioSwitchKey(state,environment,'\r'));}
   else if(e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();run(()=>pressRadioSwitchKey(state,environment,e.key));}
@@ -255,11 +260,16 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const changeEnv=(patch:Partial<RadioEnvironment>)=>onEnvironmentChange?.({...environment,...patch});
  const applyDraft=()=>{try{changeEnv({dishDiameterMeters:parseDishDiameter(draft)});setDraftInvalid(false);}catch{setDraftInvalid(true);}};
  const windowCaption=menuCaptionText(NATIVE_CAPTIONS.window);
- const setCoordinatesRef=useRef<HTMLButtonElement>(null);
- // After the last modal surface closes, focus that fell to <body> returns to Set Coordinates (a hidden route ignores it).
- useEffect(()=>{if(!antennaModal&&(document.activeElement===null||document.activeElement===document.body))setCoordinatesRef.current?.focus();},[antennaModal]);
+ const setCoordinatesRef=useRef<HTMLButtonElement>(null),radioSwitchRef=useRef<HTMLButtonElement>(null);
+ // WEB focus return: closing the panel removes Set Coordinates and its close button, so the live main-window switch
+ // is the fallback after that window or its arrival box closes. A hidden/busy route or a foreign modal never yields focus.
+ useEffect(()=>{
+  if(antennaModal||!active||hostBusy||nativeModalOpen()||document.activeElement&&document.activeElement!==document.body)return;
+  const target=[setCoordinatesRef.current,radioSwitchRef.current].find(button=>button&&!button.disabled&&button.getClientRects().length>0&&!button.closest('[inert]'));
+  target?.focus();
+ },[antennaModal,active,hostBusy,state.radioPanelShown]);
  const panelRoot=useRef<HTMLElement>(null);
- return <section ref={panelRoot} className="card radio-control" aria-labelledby={`${id}-title`} data-testid="radio-control" data-modal-presented={presented}>
+ return <section ref={panelRoot} className="card radio-control" aria-labelledby={`${id}-title`} data-testid="radio-control" data-modal-pending={modalPending} data-modal-presented={presented}>
   <h2 id={`${id}-title`}>{t('radio.title')}</h2>
   <p>{ta('antenna.scope')}</p>
   <div className="radio-control-grid" inert={antennaModal||undefined}>
@@ -277,7 +287,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
     <p className="radio-control-native" data-testid="radio-switch-panel-caption">{NATIVE_CAPTIONS.switchPanel}</p>
     {state.radioSwitchVisible&&<div className="radio-switch-row">
      <span id={`${id}-radlbl`} className="radio-control-native">{NATIVE_CAPTIONS.switchLabel}</span>
-     <button type="button" role="switch" className="radio-switch" data-testid="radio-switch" aria-checked={state.radioSwitchActive} aria-labelledby={`${id}-radlbl ${id}-swcap`} aria-describedby={`${id}-swhint`} disabled={!state.radioSwitchEnabled} onClick={()=>run(()=>clickRadioSwitch(state,environment))} onKeyDown={onSwitchKey} onKeyUp={e=>{if(e.key===' ')e.preventDefault();}}>
+     <button ref={radioSwitchRef} type="button" role="switch" className="radio-switch" data-testid="radio-switch" aria-checked={state.radioSwitchActive} aria-labelledby={`${id}-radlbl ${id}-swcap`} aria-describedby={`${id}-swhint`} disabled={!state.radioSwitchEnabled} onClick={()=>run(()=>clickRadioSwitch(state,environment))} onKeyDown={onSwitchKey} onKeyUp={e=>{if(e.key===' ')e.preventDefault();}}>
       <span className="radio-switch-led" aria-hidden="true"/><span id={`${id}-swcap`} data-testid="radio-switch-caption">{state.radioSwitchCaption}</span>
      </button>
     </div>}
