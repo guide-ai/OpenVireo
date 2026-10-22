@@ -212,5 +212,139 @@
     "separateNativeReviewPendingAtReceipt": true,
     "AppIntegrationPendingAtReceipt": true,
     "noPushDeploy": true
+  },
+  "keyboardCompletionValidation": {
+    "sourceCommit": "fe332643c33a061a191aacea3fd4fcf84e3a8d0e",
+    "baseCommit": "3349f688e7c263cdc135dcd739cdfaa5d5f99337",
+    "sourceAuthor": "Codex coordinator",
+    "sourceHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "efb0611cb777a4d92866c6dd46d8ece7a055b383aa6ff61dbb602116271c00f3",
+      "docs/PULSAR-ANALYSIS.md": "d187df4678b5d83c19ac37dca6379dd06406f9419477e01a36d09d2eef34ee88",
+      "src/components/PulsarAnalysis.css": "84572b5bee477963f6c62f160e0af67c28fe99a54e725fb07c3d00d78f025f15",
+      "src/components/PulsarAnalysis.tsx": "aafb2250feeedd2330f1c8a30733e9c7936eb0272b74454ce5e03db0f8dec272",
+      "src/components/PulsarMessages.ts": "97e863e8b1afea338b1994d40e87592e7bf587d41627ae3c2f847e467d6ea481",
+      "src/core/pulsarAnalysis.test.ts": "3a2a6edad1d45b8f7627baf6f7001bff3df143bb2252a1f8012537af7ece7465",
+      "src/core/pulsarAnalysis.ts": "2fbc24d263d158b43c367169c09533228bbc39a8a2f48b7c1f025c1f21fde05e",
+      "src/core/pulsarProvenance.test.ts": "367761a5395f9bd079e9068d99443ac511549ef03de98733b84ad913a7395ee5",
+      "src/core/pulsarReview.ts": "b2b725f0e6323fee807946f339adca219c963d51e8ac256c10938eaef2171213",
+      "src/core/pulsarReviewEdit.test.ts": "c0f45a229614b2eb3e1ef02ad17130c8253dcb2507a66674045ec3be46132ab0",
+      "src/core/pulsarReviewEdit.ts": "7bd2a757320a3f7bb2950f4bc666d5a1cea53a5a9398798df6a3ace8eb3cf09d",
+      "tests/pulsar-analysis.spec.ts": "c1c35baa8f998c02f3919fe8e2e583df9c1e81341b4b078819564c46fe7f330d"
+    },
+    "phaseChangedHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "efb0611cb777a4d92866c6dd46d8ece7a055b383aa6ff61dbb602116271c00f3",
+      "docs/PULSAR-ANALYSIS.md": "d187df4678b5d83c19ac37dca6379dd06406f9419477e01a36d09d2eef34ee88",
+      "src/components/PulsarAnalysis.tsx": "aafb2250feeedd2330f1c8a30733e9c7936eb0272b74454ce5e03db0f8dec272",
+      "src/core/pulsarAnalysis.test.ts": "3a2a6edad1d45b8f7627baf6f7001bff3df143bb2252a1f8012537af7ece7465",
+      "src/core/pulsarProvenance.test.ts": "367761a5395f9bd079e9068d99443ac511549ef03de98733b84ad913a7395ee5",
+      "src/core/pulsarReviewEdit.test.ts": "c0f45a229614b2eb3e1ef02ad17130c8253dcb2507a66674045ec3be46132ab0",
+      "tests/pulsar-analysis.spec.ts": "c1c35baa8f998c02f3919fe8e2e583df9c1e81341b4b078819564c46fe7f330d"
+    },
+    "receiptSelfExcluded": "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
+    "metadataPolicy": "Initial editor and first correction snapshots remain historical; this additive snapshot pins the final component correction before metadata-only followup",
+    "independentValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/keyboard-completion/receipt.json",
+    "checks": [
+      {
+        "check": "unit",
+        "exitCode": 0
+      },
+      {
+        "check": "typecheck",
+        "exitCode": 0
+      },
+      {
+        "check": "build",
+        "exitCode": 0
+      },
+      {
+        "check": "corecontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "browser",
+        "exitCode": 0
+      },
+      {
+        "check": "uicontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "held",
+        "exitCode": 0
+      },
+      {
+        "check": "record",
+        "exitCode": 0
+      },
+      {
+        "check": "family",
+        "exitCode": 0
+      }
+    ],
+    "unit": {
+      "passed": 1909,
+      "failed": 0,
+      "files": 179
+    },
+    "coreControls": {
+      "passed": 31,
+      "failed": 0
+    },
+    "standaloneBrowser": {
+      "startTime": "2026-10-22T06:17:26.841Z",
+      "duration": 104047.988,
+      "expected": 98,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "independentUI": {
+      "startTime": "2026-10-22T06:19:11.270Z",
+      "duration": 10552.881,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "heldEnterControls": {
+      "startTime": "2026-10-22T06:19:22.172Z",
+      "duration": 2636.377,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "recordEnterControls": {
+      "startTime": "2026-10-22T06:19:25.164Z",
+      "duration": 2563.189,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "handoffEnterControls": {
+      "startTime": "2026-10-22T06:19:28.075Z",
+      "duration": 3429.514,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "resourcesVerified": 1279,
+    "secondReview": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-comment-edit-corrections-final/dispositions.json",
+    "beforeEvidence": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/broad-enter-triage/before-receipt.json",
+    "corrections": [
+      "Component-owned capture prevents Enter keydown events marked repeat from reaching custom handlers or native button activation after focus changes",
+      "Preexisting Record held-Enter issue reproduced on both candidate and stable main before correction; one fresh command now records one panel",
+      "Empty-selection notices and dialog opener/close/confirmation handoffs retain their state across repeat=true keydowns",
+      "Fresh presses, Space, pointer/touch remain independent commands; input layers emitting fresh repeat=false pairs are not classified as held keys",
+      "Stale test comments and physical-press wording corrected; no claim of native, remote-input or assistive-technology parity"
+    ],
+    "noScientificFormulaOrFormatChange": true,
+    "noWindowKeyboardListenerOrLatch": true,
+    "VCLReactivationStillUnwitnessed": true,
+    "separateNativeReviewPendingAtReceipt": true,
+    "AppIntegrationPendingAtReceipt": true,
+    "noPushDeploy": true
   }
 }
