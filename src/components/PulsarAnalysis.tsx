@@ -5,25 +5,42 @@ import { resourceSha256 } from '../io/boundedResource';
 import { admitPlrRecording, plrProperties, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarAnnouncement, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord,
-  pulsarCancelRecord, pulsarConfirmRecord, pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer,
+  pulsarCancelRecord, pulsarConfirmRecord, pulsarFactor, pulsarLoad, pulsarModalOpen, pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer,
   pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
+import {
+  pulsarReviewAnswerDelete, pulsarReviewCancel, pulsarReviewConfirm, pulsarReviewDismissNotice, pulsarReviewEscape, pulsarReviewOpen, pulsarReviewRequestDelete, pulsarReviewSelect,
+  type PulsarReviewSession,
+} from '../core/pulsarReview';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
- * panel is inert, an in-flight read is cancelled, a held pan stops and an open record or clear dialog
- * closes (its session is kept). The loaded bytes and the confirmed measurement list are kept.
+ * panel is inert, an in-flight read is cancelled, a held pan stops and an open record, clear or Review
+ * dialog closes (its session, including Review's staged working copy, is kept). The loaded bytes and the
+ * confirmed measurement list are kept.
  * A host that hides the panel (CSS, an `inert` ancestor or similar) must pass `active={false}` for as long
  * as it is hidden: the panel does not observe ancestor styles or attributes, so reads, pan timers and
  * dialogs follow `active`, not visibility.
  */
 export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
-/** The record and clear dialogs contain only buttons and one text input. */
-const TABBABLE = 'button:not(:disabled), input:not(:disabled)';
+/**
+ * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, one
+ * text input and Review's row radios. Controls under an `inert` wrapper (Review while its question is open)
+ * are skipped, and a radio group contributes only its checked radio (or its first one), as the browser does.
+ */
+function tabbables(dialog: HTMLElement): HTMLElement[] {
+  const all = [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled)')].filter(el => !el.closest('[inert]'));
+  const radio = (el: HTMLElement): el is HTMLInputElement => el instanceof HTMLInputElement && el.type === 'radio' && el.name !== '';
+  return all.filter(el => {
+    if (!radio(el)) return true;
+    const group = all.filter((o): o is HTMLInputElement => radio(o) && o.name === el.name);
+    return el === (group.find(o => o.checked) ?? group[0]);
+  });
+}
 // Native GDI colors (TColor $00BBGGRR) used by 0x56bacc, 0x56c028, 0x56c448 and 0x56c6dc.
 const COLOR = { background: '#000080', axis: '#ffff00', trace: '#ffffff', vertical: '#00ffff', reference: '#00ff00', horizontal: '#ff00ff' };
 const ticks = PULSAR_PANELS.map(ch => pulsarAxisTicks(ch));
@@ -39,11 +56,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const [reading, setReading] = useState<string | null>(null);
   const [rejection, setRejection] = useState<string | null>(null);
   const [status, setStatus] = useState('');
-  const [review, setReview] = useState(false);
   const [primaryAs, setPrimaryAs] = useState<'left' | 'right'>('left');
   const epoch = useRef(0);
   const propertiesButton = useRef<HTMLButtonElement>(null), propertiesClose = useRef<HTMLButtonElement>(null);
   const commentInput = useRef<HTMLInputElement>(null), clearDefault = useRef<HTMLButtonElement>(null), clearButton = useRef<HTMLButtonElement>(null), recordButton = useRef<HTMLButtonElement>(null);
+  const reviewButton = useRef<HTMLButtonElement>(null), reviewDelete = useRef<HTMLButtonElement>(null), reviewCancel = useRef<HTMLButtonElement>(null), reviewPromptDefault = useRef<HTMLButtonElement>(null);
 
   // The outcome that wrote the current status, or null for a file or read status.
   const statusOutcome = useRef<PulsarOutcome | null>(null);
@@ -59,12 +76,21 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   };
   const actRef = useRef(act);
   useLayoutEffect(() => { actRef.current = act; });
-  const rec = s.recording, modal = s.recordSession !== null || s.clearPrompt !== null;
+  const rec = s.recording, modal = pulsarModalOpen(s);
   const dialog = pulsarRecordDialog(s), readouts = pulsarReadouts(s), props = rec ? plrProperties(rec) : null;
   const recordPanel = dialog?.panel ?? null;
 
   useEffect(() => { if (recordPanel !== null) commentInput.current?.focus(); }, [recordPanel, s.recordSession?.position]);
   useEffect(() => { if (s.clearPrompt) clearDefault.current?.focus(); }, [s.clearPrompt]);
+  // Review's inner question takes focus on its default button. When it closes, focus returns to Delete,
+  // the control that opened it, in the commit that removes `inert` from the list and buttons.
+  const reviewPrompt = s.reviewSession?.prompt ?? null, lastReviewPrompt = useRef(reviewPrompt);
+  useLayoutEffect(() => {
+    const was = lastReviewPrompt.current;
+    lastReviewPrompt.current = reviewPrompt;
+    if (reviewPrompt) reviewPromptDefault.current?.focus();
+    else if (was && current.current.reviewSession) reviewDelete.current?.focus();
+  }, [reviewPrompt]);
   // Returning focus waits for the commit that removes `inert` from the main region.
   const focusAfterModal = useRef<HTMLElement | null>(null);
   useLayoutEffect(() => { if (!modal && focusAfterModal.current) { const target = focusAfterModal.current; focusAfterModal.current = null; target.focus(); } });
@@ -147,7 +173,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       panHold.release();
       const tr = act(st => pulsarLoad(st, admission.recording));
       if (tr.changed) {
-        setDigest(Object.freeze({ recording: admission.recording, sha256 })); setReview(false);
+        setDigest(Object.freeze({ recording: admission.recording, sha256 }));
         // Properties open automatically after a load. Focus moves there only if the learner has not moved focus elsewhere meanwhile.
         if (owner === document.body || owner === e.target || owner === null) focusProperties.current = owner;
       }
@@ -166,15 +192,17 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (current.current.leftDrag || current.current.rightDrag) act(pulsarPointerRelease);
     if (reading !== null) cancelRead();
   });
-  // WEB modal dialogs: the record and clear prompts are native <dialog> elements opened with showModal(),
+  // WEB modal dialogs: the record, clear and Review dialogs are native <dialog> elements opened with showModal(),
   // so the browser top layer makes the rest of the page inert and keeps focus inside. A dialog opens only
   // while the panel is active and rendered and no other modal dialog is open, so an existing host modal stays
   // topmost; ours opens when that one closes. An inactive panel closes its dialog but keeps the record
-  // session or clear prompt, draft included, and reopens it when it is active again. No VCL parity is claimed.
-  const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null);
+  // session, clear prompt or Review session (draft, selection and inner question included) and reopens it when
+  // it is active again. Review's inner question is a section of the same dialog, with the list and buttons
+  // inert while it is open. No VCL parity is claimed.
+  const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null), reviewDialog = useRef<HTMLDialogElement>(null);
   const ownClose = useRef(new WeakSet<HTMLDialogElement>());
   const [syncModal] = useState(() => () => {
-    const el = recordDialog.current ?? clearDialog.current;
+    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current;
     if (!el) return;
     if (!activeRef.current) { if (el.open) { ownClose.current.add(el); el.close(); } return; }
     if (el.open) return;
@@ -182,12 +210,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (!panel || panel.getClientRects().length === 0 || panel.parentElement?.closest('[inert]')) return;
     if ([...document.querySelectorAll('dialog:modal')].some(d => d !== el)) return;
     try { el.showModal(); } catch { return; }
-    (el === recordDialog.current ? commentInput.current : clearDefault.current)?.focus();
+    // Review: the open question's default button, else the selected row, else Cancel (an empty working copy).
+    const review = () => reviewPromptDefault.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
+    (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : review())?.focus();
   });
   useLayoutEffect(() => { syncModal(); });
   useEffect(() => {
     // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
-    const closed = (e: Event) => { if (e.target !== recordDialog.current && e.target !== clearDialog.current) syncModal(); };
+    const closed = (e: Event) => { if (e.target !== recordDialog.current && e.target !== clearDialog.current && e.target !== reviewDialog.current) syncModal(); };
     if (!modal || !active) return;
     document.addEventListener('close', closed, true);
     // Conditional rendering can remove an open modal without a close event. Observe only
@@ -209,7 +239,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     onKeyDown: (e: KeyboardEvent<HTMLDialogElement>) => {
       if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
       if (e.key !== 'Tab') return;
-      const items = [...e.currentTarget.querySelectorAll<HTMLElement>(TABBABLE)], first = items[0], last = items[items.length - 1];
+      const items = tabbables(e.currentTarget), first = items[0], last = items[items.length - 1];
       if (!first) return;
       const focused = document.activeElement as HTMLElement | null;
       let next: HTMLElement | undefined;
@@ -250,6 +280,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // After the last record dialog, focus returns to Record if it is still enabled, otherwise to Clear.
   const finishRecord = (tr: PulsarTransition) => { if (tr.state.recordSession === null) focusAfterModal.current = tr.state.recordEnabled ? recordButton.current : clearButton.current; };
   const answerClear = (a: 'discard' | 'yes' | 'no' | 'cancel') => { const tr = act(st => pulsarAnswerClear(st, a)); if (tr.state.clearPrompt === null) focusAfterModal.current = clearButton.current; };
+  // Ok, Cancel or Escape that closes Review returns focus to the Review button, which stays enabled.
+  const finishReview = (tr: PulsarTransition) => { if (tr.changed && tr.state.reviewSession === null) focusAfterModal.current = reviewButton.current; };
 
   return (
     <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis">
@@ -333,14 +365,13 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
               <h3 id={`${idPrefix}results`}>{t('pulsar.results.heading')}</h3>
               <div className="plr-row">
                 <button type="button" ref={recordButton} onClick={() => act(st => pulsarBeginRecord(st))} disabled={!s.recordEnabled} data-testid="pulsar-record">{t('pulsar.results.record')}</button>
-                <button type="button" onClick={() => setReview(v => !v)} disabled={!s.reviewEnabled && !review} aria-expanded={review} data-testid="pulsar-review">{review ? t('pulsar.results.hideReview') : t('pulsar.results.review')}</button>
+                <button type="button" ref={reviewButton} onClick={() => act(pulsarReviewOpen)} disabled={!s.reviewEnabled} aria-haspopup="dialog" data-testid="pulsar-review">{t('pulsar.results.review')}</button>
                 <button type="button" ref={clearButton} onClick={() => act(st => pulsarRequestClear(st))} data-testid="pulsar-clear">{t('pulsar.results.clear')}</button>
                 <button type="button" disabled aria-describedby={`${idPrefix}save-gated`} data-testid="pulsar-save">{t('pulsar.results.save')}</button>
               </div>
               <p className="plr-help" id={`${idPrefix}save-gated`}>{t('pulsar.results.saveGated')}</p>
               <p className="plr-warning" data-testid="pulsar-persistence">{t('pulsar.results.persistence')}</p>
               <p data-testid="pulsar-count">{t('pulsar.results.count', { count: s.list.length })}</p>
-              {review && <Review s={s} t={t} idPrefix={idPrefix} />}
             </section>
           </>
         )}
@@ -384,6 +415,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
               <button type="button" ref={clearDefault} onClick={() => answerClear('no')} data-testid="pulsar-clear-no">{t('pulsar.clear.no')}</button>
             </div>
           </>)}
+        </dialog>
+      )}
+      {s.reviewSession && (
+        <dialog ref={reviewDialog} aria-labelledby={`${idPrefix}review-heading`} className="plr-modal plr-review" data-testid="pulsar-review-dialog"
+          {...dialogEvents(() => finishReview(act(pulsarReviewEscape)))}>
+          <Review session={s.reviewSession} t={t} idPrefix={idPrefix} act={act} finish={finishReview}
+            refs={{ remove: reviewDelete, cancel: reviewCancel, promptDefault: reviewPromptDefault }} />
+          <p role="status" className="plr-status">{status}</p>
         </dialog>
       )}
     </section>
@@ -493,27 +532,73 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs, owner }: PanelProps) {
   );
 }
 
-function Review({ s, t, idPrefix }: Readonly<{ s: PulsarAnalysisState; t: PulsarTranslate; idPrefix: string }>) {
+type ReviewProps = Readonly<{
+  session: PulsarReviewSession; t: PulsarTranslate; idPrefix: string; act: Act; finish: (tr: PulsarTransition) => void;
+  refs: Readonly<{ remove: RefObject<HTMLButtonElement | null>; cancel: RefObject<HTMLButtonElement | null>; promptDefault: RefObject<HTMLButtonElement | null> }>;
+}>;
+/**
+ * Contents of the Review dialog (TMEASLISTDLG). Rows are the working copy's structured fields, keyed by the
+ * stable sequence; the opaque nativeLineCandidate is never shown or read. One radio per row is the ListBox
+ * selection (WEB: arrow keys follow the browser radio group). Find and Edit keep their DFM places but are
+ * disabled. While the question or notice is open, the list and buttons are inert.
+ */
+function Review({ session, t, idPrefix, act, finish, refs }: ReviewProps) {
   const blank = (v: string | null) => v ?? t('pulsar.review.blank');
+  const { draft, selected, prompt } = session;
+  const select = (i: number) => act(st => pulsarReviewSelect(st, i));
   return (
-    <section aria-labelledby={`${idPrefix}review-heading`} data-testid="pulsar-review-list">
-      <h4 id={`${idPrefix}review-heading`}>{t('pulsar.review.heading')}</h4>
-      <p className="plr-help">{t('pulsar.review.note')}</p>
-      {s.list.length === 0 ? <p>{t('pulsar.review.empty')}</p> : (
-        <div className="plr-scroll" tabIndex={0}>
-          <table className="plr-table">
-            <thead><tr>{(['seq', 'panel', 'object', 'frequency', 'gain', 'reference', 'vertical', 'horizontal', 'start', 'comment', 'points', 'interval', 'aperture', 'file'] as const).map(k => <th key={k} scope="col">{t(`pulsar.review.${k}`)}</th>)}</tr></thead>
-            <tbody>{s.list.map(e => (
-              <tr key={e.sequence} data-testid={`pulsar-entry-${e.sequence}`}>
-                <td>{e.sequence}</td><td>{e.panel + 1}</td><td>{e.fields.object}</td><td>{e.fields.frequency}</td><td>{e.fields.gain}</td>
-                <td>{blank(e.fields.reference)}</td><td>{blank(e.fields.vertical)}</td><td>{blank(e.fields.horizontal)}</td><td>{e.fields.start}</td>
-                <td>{e.fields.comment}</td><td>{e.fields.points}</td><td>{e.fields.intervalMs}</td><td>{e.fields.aperture}</td><td>{e.fields.file}</td>
-              </tr>
-            ))}</tbody>
-          </table>
+    <>
+      <div className="plr-review-body" inert={prompt !== null} data-testid="pulsar-review-list">
+        <h3 id={`${idPrefix}review-heading`}>{t('pulsar.review.heading')}</h3>
+        <p className="plr-help">{t('pulsar.review.note')}</p>
+        {draft.length === 0 ? <p data-testid="pulsar-review-empty">{t('pulsar.review.empty')}</p> : (
+          <div className="plr-scroll" role="group" aria-label={t('pulsar.review.list')}>
+            <table className="plr-table">
+              <thead><tr><th scope="col">{t('pulsar.review.select')}</th>{(['seq', 'panel', 'object', 'frequency', 'gain', 'reference', 'vertical', 'horizontal', 'start', 'comment', 'points', 'interval', 'aperture', 'file'] as const).map(k => <th key={k} scope="col">{t(`pulsar.review.${k}`)}</th>)}</tr></thead>
+              <tbody>{draft.map((e, i) => (
+                <tr key={e.sequence} className={selected === i ? 'plr-selected' : undefined} data-selected={selected === i} onClick={() => select(i)} data-testid={`pulsar-entry-${e.sequence}`}>
+                  <td><input type="radio" name={`${idPrefix}review-row`} checked={selected === i} onChange={() => select(i)} aria-label={t('pulsar.review.selectRow', { seq: e.sequence })} data-testid={`pulsar-review-select-${e.sequence}`} /></td>
+                  <td>{e.sequence}</td><td>{e.panel + 1}</td><td>{e.fields.object}</td><td>{e.fields.frequency}</td><td>{e.fields.gain}</td>
+                  <td>{blank(e.fields.reference)}</td><td>{blank(e.fields.vertical)}</td><td>{blank(e.fields.horizontal)}</td><td>{e.fields.start}</td>
+                  <td>{e.fields.comment}</td><td>{e.fields.points}</td><td>{e.fields.intervalMs}</td><td>{e.fields.aperture}</td><td>{e.fields.file}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        )}
+        <div className="plr-row plr-review-buttons">
+          <span className="plr-row">
+            <button type="button" disabled aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-find">{t('pulsar.review.find')}</button>
+            <button type="button" disabled aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
+            <button type="button" ref={refs.remove} onClick={() => act(pulsarReviewRequestDelete)} data-testid="pulsar-review-delete">{t('pulsar.review.delete')}</button>
+          </span>
+          <span className="plr-row">
+            <button type="button" onClick={() => finish(act(pulsarReviewConfirm))} data-testid="pulsar-review-ok">{t('pulsar.review.ok')}</button>
+            <button type="button" ref={refs.cancel} onClick={() => finish(act(pulsarReviewCancel))} data-testid="pulsar-review-cancel">{t('pulsar.review.cancel')}</button>
+          </span>
         </div>
+        <p className="plr-help" id={`${idPrefix}review-gated`}>{t('pulsar.review.gated')}</p>
+      </div>
+      {prompt === 'confirm-delete' && (
+        <section className="plr-review-prompt" role="alertdialog" aria-labelledby={`${idPrefix}review-prompt`} aria-describedby={`${idPrefix}review-prompt-text`} data-testid="pulsar-review-confirm">
+          <h4 id={`${idPrefix}review-prompt`}>{t('pulsar.review.confirmCaption')}</h4>
+          <p id={`${idPrefix}review-prompt-text`}>{t('pulsar.review.confirmText')}</p>
+          <div className="plr-row">
+            <button type="button" onClick={() => act(st => pulsarReviewAnswerDelete(st, 'yes'))} data-testid="pulsar-review-yes">{t('pulsar.review.yes')}</button>
+            <button type="button" ref={refs.promptDefault} onClick={() => act(st => pulsarReviewAnswerDelete(st, 'no'))} data-testid="pulsar-review-no">{t('pulsar.review.no')}</button>
+          </div>
+        </section>
       )}
-    </section>
+      {prompt === 'no-selection' && (
+        <section className="plr-review-prompt" role="alertdialog" aria-labelledby={`${idPrefix}review-prompt`} aria-describedby={`${idPrefix}review-prompt-text`} data-testid="pulsar-review-notice">
+          <h4 id={`${idPrefix}review-prompt`}>{t('pulsar.review.noSelectionCaption')}</h4>
+          <p id={`${idPrefix}review-prompt-text`}>{t('pulsar.review.noSelectionText')}</p>
+          <div className="plr-row">
+            <button type="button" ref={refs.promptDefault} onClick={() => act(pulsarReviewDismissNotice)} data-testid="pulsar-review-notice-ok">{t('pulsar.review.noticeOk')}</button>
+          </div>
+        </section>
+      )}
+    </>
   );
 }
 

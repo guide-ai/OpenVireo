@@ -8,10 +8,24 @@ describe('pulsar provenance', () => {
   it('every evidence ID cited by the core is documented, with an address range', () => {
     const documented = new Map(provenance.contracts.map(c => [c.id, c]));
     const cited = new Set<string>();
-    for (const file of ['pulsarAnalysis.ts', 'pulsarRecording.ts'])
+    for (const file of ['pulsarAnalysis.ts', 'pulsarRecording.ts', 'pulsarReview.ts'])
       for (const m of readFileSync(new URL(`./${file}`, import.meta.url), 'utf8').matchAll(/'(PLR-[A-Z-]+-\d\d)'/g)) cited.add(m[1]);
     expect(cited.size).toBeGreaterThan(10);
     for (const id of cited) { expect(documented.has(id), id).toBe(true); expect(documented.get(id)!.range).toMatch(/^0x[0-9a-f]+/); }
+  });
+  it('binds the Review transaction and Delete to their source captures, keeping Find and Edit gated', () => {
+    const byId = new Map(provenance.contracts.map(c => [c.id, c]));
+    const listing = new Map(provenance.listings.map(l => [l.id, l]));
+    expect(byId.get('PLR-REVIEW-TRANSACTION-STATIC-01')!.range).toBe('0x563464..0x5634c6');
+    expect(byId.get('PLR-REVIEW-DELETE-STATIC-01')!.range).toBe('0x56388c..0x563955');
+    expect(byId.get('PLR-REVIEW-CALLER-STATIC-01')!.range).toBe('0x56f74c..0x56f7ab');
+    expect(listing.get('GNU-REVIEW-METHODS')!.sha256).toBe('428c12258ff8b7a1059150e999f645f0d9b472a3a9054e2b99c26b095b28ef48');
+    expect(listing.get('GNU-REVIEW-DELETE')!.sha256).toBe('f4d97cbd6b601baa9bfa203a231884acaedf62f692c1671d9f16ab02fc33e44b');
+    expect(listing.get('REVIEW-DFM')!.sha256).toBe('3fb3dceffd06a20dffb1b00e0fbc476b3e6c82063f291fd260bf753cb103f531');
+    const gated = String((byId.get('PLR-REVIEW-01') as { status?: string }).status);
+    expect(gated).toMatch(/^GATED for Find .* and Edit /);
+    expect(gated).not.toMatch(/read-only list/);
+    expect(JSON.stringify(byId.get('PLR-REVIEW-TRANSACTION-STATIC-01'))).toMatch(/OnActivate.*not recovered|VCL runtime question/);
   });
   it('records the artifact hash, the REA evidence and the gated contracts', () => {
     expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');

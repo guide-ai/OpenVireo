@@ -1,0 +1,84 @@
+{
+  "scope": "Standalone supplied-PLR Review working-copy/Delete-confirmation/Cancel-OK slice;not complete radioexercise or native runtime equivalence",
+  "baseCommit": "3fbde952a9a1ed22fda0cd9a2f8b41cdb8a0374e",
+  "sourceHashes": {
+    "docs/PULSAR-ANALYSIS-PROVENANCE.json": "9967c006b6acca8a88d51d82b2e3abd19b897785d6d0c2d649a0e267faf9b3a3",
+    "docs/PULSAR-ANALYSIS.md": "959b365d8dc83d78690fc73b9c0b8dcf321c473539a7a97e4fdf6e718e72dd34",
+    "src/components/PulsarAnalysis.css": "225901439e22a827ed63c8d7b0e83c31048749cf76275783eaa9efcff08a967e",
+    "src/components/PulsarAnalysis.tsx": "a5005170342d8398940c9e95f7db9c463109bdad9c582716434df36d57df1518",
+    "src/components/PulsarMessages.ts": "52ad709e3ed2d1e67048a6e3f22d92dde68183e9be0c022b38cd8a88916dbbdd",
+    "src/core/pulsarAnalysis.ts": "6f87faa6f731d780e8cc1df29d2b963ffb562df0b72ede7b7d99675f5b92d303",
+    "src/core/pulsarProvenance.test.ts": "1ed9c5932751a17d77f16780789a22e2ca123247cf5707616a066c3b8ed2f8c0",
+    "src/core/pulsarReview.test.ts": "9a7797b84e4ecaa2b800737c9852576e84d06aaa7b7b9e3c6a0f55f1ae06323d",
+    "src/core/pulsarReview.ts": "bf827744b9ee06c9126200dca4d151bbac8dde20956d86b3fd7c5a86ea84347f",
+    "tests/pulsar-analysis.spec.ts": "eae1f23db2b41f33c4b4fbdfd1cebdca1b11c1628745b38a0b622b025149fe00"
+  },
+  "sourceStableDuringIndependentValidation": true,
+  "receiptSelfExcluded": true,
+  "receiptWrittenAfterValidation": true,
+  "author": {
+    "model": "claude-opus-5-5",
+    "effortConfigured": "high",
+    "delivery": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-transaction-author/DELIVERY.md",
+    "unitPassed": 1884,
+    "browserDesktop": 37,
+    "browserTouchMobile": 37,
+    "reviewSeparateFromAuthoring": true
+  },
+  "codexIndependent": {
+    "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-review-independent/receipt.json",
+    "unitPassed": 1884,
+    "unitFiles": 178,
+    "typecheckExitCode": 0,
+    "buildExitCode": 0,
+    "resourcesVerified": 1279,
+    "coreControlsPassed": 4,
+    "browserCases": 74,
+    "browserUnexpected": 0,
+    "browserSkipped": 0,
+    "browserFlaky": 0,
+    "additionalRealManualUIControls": 2,
+    "additionalUIUnexpected": 0,
+    "visualInspection": [
+      "independent-review-mobile.png",
+      "review-confirm-1440.png"
+    ]
+  },
+  "negativeControls": {
+    "inMemoryNoGuardRemoved": {
+      "expectedFailures": 2,
+      "positivePassed": 4,
+      "sourceUnchanged": true,
+      "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-review-independent/interim-core/receipt.json"
+    },
+    "actualOldPreview": {
+      "head": "b846dca",
+      "expectedFailures": 2,
+      "boundary": "After3admittedmanualrecords,newReviewdialogmissing",
+      "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-review-independent/baseline-ui-control-receipt.json"
+    },
+    "initialFixtureMistake": {
+      "reason": "Doublequotedcommentwasproperlyrefusedbyoldadmissionpolicy;notcountedasfeaturefailure",
+      "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-review-independent/initial-fixture-failure.json"
+    }
+  },
+  "review": {
+    "mandatory": true,
+    "effectiveNativeCommand": "/review",
+    "resultRecordedSeparatelyByCoordinator": true,
+    "notIncludedInThisValidationReceipt": true
+  },
+  "preserved": [
+    "Opaque retained entries/fields/nativeLineCandidate",
+    "Recordingbytes/SHA/manualvalues/pendingflags/nextSequence",
+    "PreviousJSON/CSV/session/notebook/Undoformats",
+    "Original1279resourcebytes/hashes"
+  ],
+  "limits": [
+    "No nativeactivationorderingwitness:OnActivateafterMessageBoxmayaffectoriginalListBoxcopy;webkeepsstagedcopyasdeclared",
+    "No nativeemptyListBoxgetter/windowX/keyboard/defaultfocusparity;webrulesdocumented",
+    "No newwriter/Find/commenteditor/acquisition/periodDM/clockmetadata",
+    "Chromiumdesktop/mobileonly;noAT/GDI/x87equivalence",
+    "EarlierPULSAR-ANALYSIS-VALIDATION.json is historical;itsoldsourcehashesarenotclaimsaboutthisnewReviewcode"
+  ]
+}

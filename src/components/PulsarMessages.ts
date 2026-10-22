@@ -1,8 +1,10 @@
 /**
  * English presentation catalog for the recorded-pulsar analysis panel (keys `pulsar.*`).
  * It is kept out of the shared en.json until the coordinator integrates it. The panel
- * accepts a complete replacement catalog through createPulsarTranslator. Native DFM
- * captions are not decoded, so every label here is authored web text. Pure
+ * accepts a complete replacement catalog through createPulsarTranslator. Labels are
+ * authored web text, except the Review dialog caption, its button captions (TMEASLISTDLG
+ * TPF0, without the '&' accelerators) and its two MessageBox captions and texts, which are
+ * the decoded literals (PULSAR_REVIEW_LITERALS in src/core/pulsarReview.ts). Pure
  * presentation data: no React and no scientific state.
  */
 export const PULSAR_MESSAGES_EN = Object.freeze({
@@ -82,6 +84,16 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.outcome.clear-confirm': 'Confirm clearing the measurement list.',
   'pulsar.outcome.clear-cancelled': 'The measurement list was kept.',
   'pulsar.outcome.cleared': 'The measurement list was cleared.',
+  'pulsar.outcome.review-disabled': 'Review is available after a measurement has been recorded for this recording.',
+  'pulsar.outcome.review-opened': 'Reviewing a working copy of the recorded measurements. Cancel discards its changes.',
+  'pulsar.outcome.review-selected': '',
+  'pulsar.outcome.review-no-selection': 'No measurement is selected.',
+  'pulsar.outcome.review-notice-closed': 'Notice closed. Nothing was deleted.',
+  'pulsar.outcome.review-delete-confirm': 'Confirm the deletion of the selected measurement.',
+  'pulsar.outcome.review-delete-declined': 'The measurement was kept.',
+  'pulsar.outcome.review-deleted': 'Measurement removed from the working copy. Ok keeps the change; Cancel discards it.',
+  'pulsar.outcome.review-cancelled': 'Review cancelled. The recorded measurements are unchanged.',
+  'pulsar.outcome.review-confirmed': 'Review applied. The measurement list is marked as not saved.',
   'pulsar.toolbar.heading': 'Display controls',
   'pulsar.toolbar.properties': 'Properties…',
   'pulsar.toolbar.reset': 'Reset',
@@ -98,8 +110,7 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.input.reference': 'the reference cursor (right button)',
   'pulsar.results.heading': 'Results',
   'pulsar.results.record': 'Record current measurements…',
-  'pulsar.results.review': 'Review recorded measurements',
-  'pulsar.results.hideReview': 'Hide review',
+  'pulsar.results.review': 'Review recorded measurements…',
   'pulsar.results.clear': 'Clear the measurement list…',
   'pulsar.results.save': 'Save recorded measurements (.CSV)',
   'pulsar.results.saveGated': 'Not available: the original save writes the host date, time and login into its header, and that writer is not recovered.',
@@ -151,9 +162,25 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.clear.yes': 'Yes, clear',
   'pulsar.clear.no': 'No',
   'pulsar.clear.cancel': 'Cancel',
-  'pulsar.review.heading': 'Recorded measurements',
-  'pulsar.review.note': 'Read-only list. The original review dialog may allow edits, but its behavior is not recovered.',
-  'pulsar.review.empty': 'No measurements recorded.',
+  'pulsar.review.heading': 'Select Measurement Record',
+  'pulsar.review.note': 'Changes apply to a working copy. Ok replaces the recorded list with it; Cancel or Escape discards it. Escape is a web shortcut.',
+  'pulsar.review.empty': 'No measurements in the list.',
+  'pulsar.review.list': 'Measurements',
+  'pulsar.review.select': 'Select',
+  'pulsar.review.selectRow': 'Select measurement {seq}',
+  'pulsar.review.find': 'Find…',
+  'pulsar.review.edit': 'Edit…',
+  'pulsar.review.delete': 'Delete',
+  'pulsar.review.ok': 'Ok',
+  'pulsar.review.cancel': 'Cancel',
+  'pulsar.review.gated': 'Find and Edit are not available: their behavior is not implemented in this window.',
+  'pulsar.review.noSelectionCaption': 'No Item Selected!',
+  'pulsar.review.noSelectionText': 'Select Item for Deletion.',
+  'pulsar.review.noticeOk': 'OK',
+  'pulsar.review.confirmCaption': 'Confirm Deletion',
+  'pulsar.review.confirmText': 'Delete Selected Item from List?',
+  'pulsar.review.yes': 'Yes',
+  'pulsar.review.no': 'No',
   'pulsar.review.seq': '#',
   'pulsar.review.panel': 'Panel',
   'pulsar.review.object': 'Object',
