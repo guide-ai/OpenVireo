@@ -9,6 +9,7 @@
  */
 import { roundNearestEven } from './numericPolicy';
 import { formatExponent, formatFixed, plrSample, type PlrReceiverIndex, type PlrRecording } from './pulsarRecording';
+import type { PulsarReviewSession } from './pulsarReview';
 
 export type PulsarPanel = PlrReceiverIndex;
 export const PULSAR_PANELS: readonly PulsarPanel[] = Object.freeze([0, 1, 2]);
@@ -94,6 +95,8 @@ export type PulsarAnalysisState = Readonly<{
   listSaved: boolean;
   recordSession: PulsarRecordSession | null;
   clearPrompt: PulsarClearPrompt;
+  /** Open Review dialog (src/core/pulsarReview.ts): its working copy, selection and inner MessageBox. */
+  reviewSession: PulsarReviewSession | null;
   nextSequence: number;
 }>;
 
@@ -103,7 +106,9 @@ export type PulsarOutcome =
   | 'factor-changed' | 'factor-limit' | 'panned' | 'pan-bound' | 'pan-rate'
   | 'mode-changed' | 'cursor' | 'pointer-ignored' | 'pointer-released' | 'number-unsupported' | 'display-unsupported' | 'invalid-input'
   | 'record-disabled' | 'record-opened' | 'record-draft' | 'record-confirmed' | 'record-skipped' | 'record-finished' | 'comment-invalid'
-  | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared';
+  | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared'
+  | 'review-disabled' | 'review-opened' | 'review-selected' | 'review-no-selection' | 'review-notice-closed'
+  | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed';
 
 /** `placed`: this transition stored an accepted cursor placement. The stored value can equal the previous one. */
 export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; placed: boolean; evidence: readonly string[] }>;
@@ -124,14 +129,16 @@ export const INITIAL_PULSAR_ANALYSIS: PulsarAnalysisState = Object.freeze({
   factors: triple(() => 1), modes: triple((): PulsarCursorMode => 'vertical'), cursors: triple(() => EMPTY_CURSOR), referenceText: '',
   measurement: EMPTY_MEASUREMENT, pending: triple(() => false), leftDrag: false, rightDrag: false, gesturePlaced: triple(() => false),
   recordEnabled: false, reviewEnabled: false, saveEnabled: false,
-  list: Object.freeze([]), listSaved: false, recordSession: null, clearPrompt: null, nextSequence: 1,
+  list: Object.freeze([]), listSaved: false, recordSession: null, clearPrompt: null, reviewSession: null, nextSequence: 1,
 });
 const NO_GESTURE_PLACEMENT = INITIAL_PULSAR_ANALYSIS.gesturePlaced;
 
 const done = (state: PulsarAnalysisState, outcome: PulsarOutcome, evidence: readonly string[], changed = true, placed = false): PulsarTransition =>
   Object.freeze({ state: changed ? Object.freeze(state) : state, outcome, changed, placed, evidence: Object.freeze([...evidence]) });
 const keep = (s: PulsarAnalysisState, outcome: PulsarOutcome, evidence: readonly string[] = []) => done(s, outcome, evidence, false);
-const modal = (s: PulsarAnalysisState) => s.recordSession !== null || s.clearPrompt !== null;
+/** A record, clear or Review dialog is open. Each is modal natively (ShowModal / MessageDlg), so everything else waits. */
+export const pulsarModalOpen = (s: PulsarAnalysisState) => s.recordSession !== null || s.clearPrompt !== null || s.reviewSession !== null;
+const modal = pulsarModalOpen;
 const dt = (s: PulsarAnalysisState) => (s.recording as PlrRecording).interval.value;
 
 /** Panel ch can hold a pending measurement: rows exist and ch ≤ highest recorded index (0x56d48f, 0x56d63f, 0x56d803). */
@@ -369,7 +376,7 @@ export function pulsarPointerRelease(s: PulsarAnalysisState): PulsarTransition {
 }
 
 /** Outcomes that write no status of their own. */
-export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft']);
+export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft', 'review-selected']);
 /** Refusal statuses say the latest input was not taken and the last accepted state is kept. */
 const REFUSAL_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['number-unsupported', 'display-unsupported']);
 /**

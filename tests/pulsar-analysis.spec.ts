@@ -132,6 +132,9 @@ test('complete analysis path: properties, display controls, manual cursors, reco
   for (const v of ['SYNTHETIC E2E', '430.00', '1.000', '2.500000', '1.500000', '49999.12345678', 'first pulse', '1000', '10.00', '40', 'synthetic-e2e.plr']) await expect(first).toContainText(v);
   await expect(page.getByTestId('pulsar-entry-2')).toContainText('5.0000E-01');
   await expect(page.getByTestId('pulsar-save')).toBeDisabled();
+  // Review is modal now (TMeasListDlg ShowModal); Cancel closes it without changes before Clear.
+  await page.getByTestId('pulsar-review-cancel').click();
+  await expect(page.getByTestId('pulsar-review-dialog')).toHaveCount(0);
 
   await page.getByTestId('pulsar-clear').click();
   await expect(page.getByTestId('pulsar-clear-cancel')).toBeFocused();
@@ -532,10 +535,12 @@ test('two panels with different id prefixes keep unique ids, including Review', 
     await host.getByTestId('pulsar-record').click();
     await host.getByTestId('pulsar-record-ok').click();
     await host.getByTestId('pulsar-review').click();
-    const list = host.getByTestId('pulsar-review-list');
+    const list = host.getByTestId('pulsar-review-dialog');
     await expect(list).toHaveAttribute('aria-labelledby', `${prefix}review-heading`);
-    await expect(list.locator(`#${prefix}review-heading`)).toHaveText('Recorded measurements');
+    await expect(list.locator(`#${prefix}review-heading`)).toHaveText('Select Measurement Record');
     await expect(list.getByRole('cell', { name: `${prefix}rec.plr` })).toBeVisible();
+    // Review is modal, so a-'s is cancelled before b- is used; b-'s stays open for the id check below.
+    if (prefix === 'a-') { await list.getByTestId('pulsar-review-cancel').click(); await expect(list).toHaveCount(0); }
   }
   const duplicates = await page.evaluate(() => {
     const ids = [...document.querySelectorAll('[id]')].map(e => e.id);
@@ -984,4 +989,575 @@ test('Tab from dialog text between the comment and OK keeps the native relative 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
+});
+
+// ---- Original Review transaction and confirmed Delete (contract/browser-plan.json UI-R01..UI-R09) ----
+// SYNTHETIC: the allowed ASCII object and file names carry commas and double quotes; they must be shown verbatim.
+const QUOTED = SYNTH.replace("'SYNTHETIC E2E'", `'Obj, "Q" E2E'`);
+const QUOTED_FILE = 'review, "quoted".plr';
+const review = (page: Page) => page.getByTestId('pulsar-review-dialog');
+const confirmQ = (page: Page) => page.getByTestId('pulsar-review-confirm');
+const count = (page: Page) => page.getByTestId('pulsar-count');
+/** data-testid of the working-copy rows, in order. */
+const rowIds = (page: Page) => review(page).locator('tbody tr').evaluateAll(rows => rows.map(r => r.getAttribute('data-testid')));
+/** Cell texts of each row after the selection radio: sequence, panel, then the structured fields. */
+const rowCells = (page: Page) => review(page).locator('tbody tr').evaluateAll(rows => rows.map(r => [...r.querySelectorAll('td')].slice(1).map(c => c.textContent)));
+const selectedRow = (page: Page) => review(page).locator('tbody tr[data-selected="true"]');
+/**
+ * Precondition of every flow: three confirmed entries through the manual UI. #1 at pixel 20 with a comment
+ * containing a comma, #2 and #3 at pixel 40 with identical text, so only their sequence differs.
+ */
+async function threeEntries(page: Page, text = QUOTED, name = QUOTED_FILE, comment = 'first, kept') {
+  await open(page);
+  await load(page, name, text);
+  await page.getByTestId('pulsar-properties-close').click();
+  for (const [x, c] of [[20, comment], [40, 'same'], [40, 'same']] as const) {
+    await at(page, 1, x, 10);
+    await page.getByTestId('pulsar-record').click();
+    await page.getByTestId('pulsar-comment').fill(c);
+    await page.getByTestId('pulsar-record-ok').click();
+    await expect(page.getByTestId('pulsar-record-dialog')).toHaveCount(0);
+  }
+  await expect(count(page)).toHaveText('3 recorded measurements');
+}
+async function openReview(page: Page) {
+  await page.getByTestId('pulsar-review').click();
+  await expect(review(page)).toHaveJSProperty('open', true);
+}
+/** Selects row #seq, requests Delete and answers Yes. */
+async function stageDelete(page: Page, seq: number) {
+  await page.getByTestId(`pulsar-review-select-${seq}`).click();
+  await page.getByTestId('pulsar-review-delete').click();
+  await expect(confirmQ(page)).toContainText('Delete Selected Item from List?');
+  await page.getByTestId('pulsar-review-yes').click();
+  await expect(confirmQ(page)).toHaveCount(0);
+}
+
+test('Review UI-R01: outer Cancel discards a staged middle deletion and reopening selects the first row', async ({ page }) => {
+  await threeEntries(page);
+  await openReview(page);
+  await expect(review(page).locator('h3')).toHaveText('Select Measurement Record');
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-1');
+  await expect(page.getByTestId('pulsar-review-select-1')).toBeFocused();
+  const before = await rowCells(page);
+  expect(before[0]).toContain('Obj, "Q" E2E');
+  expect(before[0]).toContain(QUOTED_FILE);
+  await stageDelete(page, 2);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3']);
+  await expect(count(page)).toHaveText('3 recorded measurements'); // the confirmed list is untouched until Ok
+  await page.getByTestId('pulsar-review-cancel').click();
+  await expect(review(page)).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-review')).toBeFocused();
+  await openReview(page);
+  expect(await rowCells(page)).toEqual(before);
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-1');
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(QUOTED));
+  await page.getByTestId('pulsar-review-cancel').click();
+});
+
+test('Review UI-R02: outer Ok removes only the selected identity of two identical rows and does not renumber', async ({ page }) => {
+  await threeEntries(page);
+  await openReview(page);
+  const before = await rowCells(page);
+  expect(before[1].slice(1)).toEqual(before[2].slice(1)); // #2 and #3: identical text apart from the sequence
+  await stageDelete(page, 2);
+  await page.getByTestId('pulsar-review-ok').click();
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('2 recorded measurements');
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3']);
+  expect(await rowCells(page)).toEqual([before[0], before[2]]);
+  await page.getByTestId('pulsar-review-cancel').click();
+  // The next record continues the sequence: #4, not a renumbered #3.
+  await at(page, 1, 60, 10);
+  await page.getByTestId('pulsar-record').click();
+  await page.getByTestId('pulsar-record-ok').click();
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3', 'pulsar-entry-4']);
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(QUOTED));
+});
+
+test('Review UI-R03: Yes on first, middle, last and only rows keeps Review open and repairs the selection by ordinal', async ({ page }) => {
+  await threeEntries(page);
+  await openReview(page);
+  await stageDelete(page, 1); // first: ordinal 0 stays valid
+  expect(await rowIds(page)).toEqual(['pulsar-entry-2', 'pulsar-entry-3']);
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
+  await page.getByTestId('pulsar-review-cancel').click();
+  await openReview(page);
+  await stageDelete(page, 2); // middle: ordinal 1 stays valid
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3']);
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-3');
+  await stageDelete(page, 3); // last: the previous row becomes the new last
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1']);
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-1');
+  await stageDelete(page, 1); // only row
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();
+  await expect(review(page).locator('input[type="radio"]')).toHaveCount(0);
+  // With nothing selected, Delete shows the source notice and deletes nothing.
+  await page.getByTestId('pulsar-review-delete').click();
+  const notice = page.getByTestId('pulsar-review-notice');
+  await expect(notice.locator('h4')).toHaveText('No Item Selected!');
+  await expect(notice.locator('p')).toHaveText('Select Item for Deletion.');
+  await expect(page.getByTestId('pulsar-review-notice-ok')).toBeFocused();
+  await page.getByTestId('pulsar-review-notice-ok').click();
+  await expect(notice).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(page.getByTestId('pulsar-review-delete')).toBeFocused();
+  await page.getByTestId('pulsar-review-cancel').click();
+  await expect(count(page)).toHaveText('3 recorded measurements');
+});
+
+test('Review UI-R04: No and Escape on the delete question remove nothing and return focus to Delete', async ({ page }) => {
+  await threeEntries(page);
+  await openReview(page);
+  await page.getByTestId('pulsar-review-select-2').click();
+  await page.getByTestId('pulsar-review-delete').click();
+  await expect(confirmQ(page).locator('h4')).toHaveText('Confirm Deletion');
+  await expect(page.getByTestId('pulsar-review-no')).toBeFocused(); // web default: No
+  await expect(review(page).getByTestId('pulsar-review-list')).toHaveAttribute('inert', '');
+  await page.getByTestId('pulsar-review-no').click();
+  await expect(confirmQ(page)).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-review-delete')).toBeFocused();
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+  await page.getByTestId('pulsar-review-delete').click();
+  await expect(confirmQ(page)).toBeVisible();
+  await page.keyboard.press('Escape'); // closes only the question
+  await expect(confirmQ(page)).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(page.getByTestId('pulsar-review-delete')).toBeFocused();
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
+  await page.getByTestId('pulsar-review-cancel').click();
+});
+
+test('Review UI-R05: Ok on an emptied list is not Clear; the pending measurement and Record stay', async ({ page }) => {
+  await threeEntries(page);
+  await at(page, 1, 60, 10);
+  await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
+  await expect(page.getByTestId('pulsar-vertical-value-1')).toHaveText('0.600000');
+  await openReview(page);
+  for (const seq of [1, 2, 3]) await stageDelete(page, seq);
+  await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();
+  await page.getByTestId('pulsar-review-ok').click();
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('0 recorded measurements');
+  await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
+  await expect(page.getByTestId('pulsar-vertical-value-1')).toHaveText('0.600000');
+  await expect(page.getByTestId('pulsar-record')).toBeEnabled();
+  await expect(page.getByTestId('pulsar-review')).toBeEnabled(); // Clear would disable Review and Record
+  await expect(page.getByTestId('pulsar-save')).toBeDisabled(); // native CSV stays gated
+  await openReview(page);
+  await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();
+  await expect(page.getByTestId('pulsar-review-cancel')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(review(page)).toHaveCount(0);
+  await page.getByTestId('pulsar-record').click();
+  await expect(page.getByTestId('pulsar-record-vertical')).toHaveText('0.600000');
+  await page.getByTestId('pulsar-record-cancel').click();
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(QUOTED));
+});
+
+test('Review UI-R06: Ok without edits keeps every field and enables no save writer', async ({ page }) => {
+  await threeEntries(page);
+  await openReview(page);
+  const before = await rowCells(page);
+  await page.getByTestId('pulsar-review-ok').click();
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await expect(page.getByTestId('pulsar-save')).toBeDisabled();
+  await expect(page.getByTestId('pulsar-save')).toHaveAccessibleDescription(/not recovered/);
+  // listSaved is false after Ok (the caller clears 0x5db): Clear asks about unsaved measurements first.
+  await page.getByTestId('pulsar-clear').click();
+  await expect(page.getByTestId('pulsar-clear-dialog')).toContainText('have not been saved');
+  await page.keyboard.press('Escape');
+  await openReview(page);
+  expect(await rowCells(page)).toEqual(before);
+  await expect(page.getByTestId('pulsar-review-find')).toBeDisabled();
+  await expect(page.getByTestId('pulsar-review-edit')).toBeDisabled();
+  await page.getByTestId('pulsar-review-cancel').click();
+});
+
+test('Review UI-R07: keyboard-only Review keeps Tab inside the active layer, Enter deletes once and Escape discards', async ({ page }) => {
+  await threeEntries(page);
+  await hostControls(page);
+  await page.getByTestId('pulsar-review').focus();
+  await page.keyboard.press('Enter');
+  await expect(review(page)).toHaveJSProperty('open', true);
+  const sel2 = page.getByTestId('pulsar-review-select-2'), del = page.getByTestId('pulsar-review-delete');
+  const ok = page.getByTestId('pulsar-review-ok'), cancel = page.getByTestId('pulsar-review-cancel');
+  await expect(page.getByTestId('pulsar-review-select-1')).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(sel2).toBeFocused();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
+  // The scroll region (review correction 1) is the first stop, before the row radios it contains.
+  const scroll = page.getByTestId('pulsar-review-scroll');
+  for (const next of [del, ok, cancel, scroll, sel2]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  await page.keyboard.press('Shift+Tab');
+  await expect(scroll).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Shift+Tab');
+  await expect(del).toBeFocused();
+  await page.keyboard.press('Enter');
+  const yes = page.getByTestId('pulsar-review-yes'), no = page.getByTestId('pulsar-review-no');
+  await expect(no).toBeFocused();
+  for (const next of [yes, no, yes]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  await page.keyboard.press('Shift+Tab');
+  await expect(no).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(confirmQ(page)).toHaveCount(0);
+  await expect(del).toBeFocused();
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Shift+Tab');
+  await expect(yes).toBeFocused();
+  await page.keyboard.press('Enter'); // one press, one deletion: focus lands on Delete, whose Enter keyup does nothing
+  await expect(confirmQ(page)).toHaveCount(0);
+  await expect(del).toBeFocused();
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3']);
+  // A host top-layer modal over Review owns Tab and Escape; the staged copy is not confirmed by focus movement.
+  await hostModal(page);
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#host-two')).toBeFocused();
+  await page.keyboard.press('Escape');
+  expect(await hostModalOpen(page)).toBe(false);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3']);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await del.focus();
+  await page.keyboard.press('Escape'); // outer Cancel
+  await expect(review(page)).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-review')).toBeFocused();
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await page.keyboard.press('Enter');
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+  await page.keyboard.press('Escape');
+});
+
+test('Review UI-R08: an inactive host closes Review but keeps the staged copy and an open question; Cancel restores', async ({ page }) => {
+  await threeEntries(page);
+  await hostControls(page);
+  await openReview(page);
+  await stageDelete(page, 2);
+  await host(page, false);
+  await expect(review(page)).toHaveJSProperty('open', false);
+  await expect(review(page)).toBeHidden();
+  await page.getByTestId('host-after').focus();
+  await expect(page.getByTestId('host-after')).toBeFocused();
+  await host(page, true);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3']);
+  await expect(page.getByTestId('pulsar-review-select-3')).toBeFocused(); // a visible control, never a hidden one
+  await page.getByTestId('pulsar-review-delete').click();
+  await host(page, false);
+  await host(page, true);
+  await expect(confirmQ(page)).toBeVisible();
+  await expect(page.getByTestId('pulsar-review-no')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await page.getByTestId('pulsar-review-cancel').click();
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+  await page.getByTestId('pulsar-review-cancel').click();
+});
+
+test('Review UI-R09: at 390 px and desktop the transaction is reachable without page overflow and long names stay verbatim', async ({ page }) => {
+  const name = 'Long, "quoted" object name for Review 40', file = 'a-very-long, "quoted" recording file name for the review dialog.plr';
+  const comment = 'long, comment ' + 'y'.repeat(66);
+  const text = SYNTH.replace("'SYNTHETIC E2E'", `'${name}'`);
+  for (const [w, h] of [[1440, 1050], [390, 844]] as const) {
+    await page.setViewportSize({ width: w, height: h });
+    await threeEntries(page, text, file, comment);
+    await openReview(page);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    const box = (await review(page).boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(w);
+    const cells = await rowCells(page);
+    for (const v of [name, file, comment]) expect(cells[0]).toContain(v);
+    await page.screenshot({ path: test.info().outputPath(`review-${w}.png`) });
+    await page.getByTestId('pulsar-review-select-2').scrollIntoViewIfNeeded();
+    await page.getByTestId('pulsar-review-select-2').click();
+    await page.getByTestId('pulsar-review-delete').scrollIntoViewIfNeeded();
+    await page.getByTestId('pulsar-review-delete').click();
+    await expect(page.getByTestId('pulsar-review-yes')).toBeVisible();
+    await page.screenshot({ path: test.info().outputPath(`review-confirm-${w}.png`) });
+    await page.getByTestId('pulsar-review-yes').click();
+    for (const id of ['pulsar-review-ok', 'pulsar-review-cancel']) { await page.getByTestId(id).scrollIntoViewIfNeeded(); await expect(page.getByTestId(id)).toBeVisible(); }
+    await page.getByTestId('pulsar-review-ok').click();
+    await expect(count(page)).toHaveText('2 recorded measurements');
+    await openReview(page);
+    expect(await rowCells(page)).toEqual([cells[0], cells[2]]);
+    await page.getByTestId('pulsar-review-cancel').click();
+    await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(text));
+  }
+});
+
+// ---- Review transaction correction (Codex triage of the native /review at 0e5f492, confirmed findings 1 and 2) ----
+test('Review correction 1: the named scroll region is a Tab stop inside the trap; arrow keys scroll it without changing the selection', async ({ page }) => {
+  const file = 'a-very-long recording file name that makes the review table wider than its dialog.plr';
+  await threeEntries(page, QUOTED, file, 'long comment ' + 'z'.repeat(60));
+  await hostControls(page);
+  await page.getByTestId('pulsar-review').focus();
+  await page.keyboard.press('Enter');
+  await expect(review(page)).toHaveJSProperty('open', true);
+  const scroll = page.getByTestId('pulsar-review-scroll');
+  const sel1 = page.getByTestId('pulsar-review-select-1'), sel2 = page.getByTestId('pulsar-review-select-2');
+  const del = page.getByTestId('pulsar-review-delete'), ok = page.getByTestId('pulsar-review-ok'), cancel = page.getByTestId('pulsar-review-cancel');
+  await expect(scroll).toHaveAttribute('role', 'region');
+  await expect(scroll).toHaveAccessibleName('Measurements');
+  expect(await scroll.evaluate(e => e.scrollWidth > e.clientWidth)).toBe(true); // precondition: the columns overflow sideways
+  await expect(sel1).toBeFocused();
+  // Shift+Tab from the selected row reaches the region; ArrowRight scrolls the columns and keeps row #1 selected.
+  await page.keyboard.press('Shift+Tab');
+  await expect(scroll).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(() => scroll.evaluate(e => e.scrollLeft)).toBeGreaterThan(0);
+  await expect(scroll).toBeFocused();
+  await expect(sel1).toBeChecked();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-1');
+  // Full cycle in both directions: one stop for the radio group, never a host control outside the dialog.
+  for (const next of [sel1, del, ok, cancel, scroll, sel1]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [scroll, cancel, ok, del, sel1]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
+  // The group's stop follows the checked radio.
+  await page.keyboard.press('ArrowDown');
+  await expect(sel2).toBeChecked();
+  await page.keyboard.press('Shift+Tab');
+  await expect(scroll).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Tab');
+  await expect(sel2).toBeFocused();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
+  // While the question is open the region is inert and out of the Tab order; Delete removes the row selected before scrolling.
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('ArrowRight');
+  await del.focus();
+  await page.keyboard.press('Enter');
+  const yes = page.getByTestId('pulsar-review-yes'), no = page.getByTestId('pulsar-review-no');
+  await expect(no).toBeFocused();
+  for (const next of [yes, no, yes]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  await page.keyboard.press('Enter');
+  await expect(confirmQ(page)).toHaveCount(0);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-3']);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await page.keyboard.press('Escape');
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await page.screenshot({ path: test.info().outputPath('review-closed.png') });
+  await openReview(page);
+  await page.keyboard.press('Shift+Tab');
+  await expect(scroll).toBeFocused();
+  await page.screenshot({ path: test.info().outputPath('review-scroll-focus.png') });
+  await page.keyboard.press('Escape');
+});
+
+/**
+ * Test-only holds, installed after the page is ready: arrayBuffer() of a file named held-* and, while armed,
+ * crypto.subtle.digest wait for an explicit release or failure. The test waits for the hold to be registered
+ * (acknowledged) before acting, instead of sleeping. Product code is unchanged.
+ */
+const holdReads = (page: Page) => page.evaluate(() => {
+  type Hold = { release: () => void; fail: () => void };
+  const w = window as unknown as { __held: Map<string, Hold>; __holdDigest: boolean };
+  w.__held = new Map(); w.__holdDigest = false;
+  const read = Blob.prototype.arrayBuffer;
+  Blob.prototype.arrayBuffer = function (this: Blob) {
+    if (!(this instanceof File && this.name.startsWith('held-'))) return read.call(this);
+    const name = this.name;
+    return new Promise<ArrayBuffer>((resolve, reject) => w.__held.set(name, { release: () => { read.call(this).then(resolve, reject); }, fail: () => reject(new DOMException('held', 'NotReadableError')) }));
+  };
+  const digest = crypto.subtle.digest.bind(crypto.subtle);
+  crypto.subtle.digest = ((algorithm: AlgorithmIdentifier, data: BufferSource) => {
+    if (!w.__holdDigest) return digest(algorithm, data);
+    return new Promise<ArrayBuffer>((resolve, reject) => w.__held.set('digest', { release: () => { digest(algorithm, data).then(resolve, reject); }, fail: () => reject(new DOMException('held', 'OperationError')) }));
+  }) as typeof crypto.subtle.digest;
+});
+const held = (page: Page, key: string) => expect.poll(() => page.evaluate(k => (window as unknown as { __held: Map<string, unknown> }).__held.has(k), key)).toBe(true);
+const settle = (page: Page, key: string, how: 'release' | 'fail') => page.evaluate(([k, h]) => {
+  const map = (window as unknown as { __held: Map<string, { release: () => void; fail: () => void }> }).__held;
+  const hold = map.get(k)!; map.delete(k); hold[h]();
+}, [key, how] as const);
+
+test('Review correction 2: Review is unavailable while a chosen file is read; the read completes, or Cancel or a read error makes Review usable again', async ({ page }) => {
+  await threeEntries(page);
+  await holdReads(page);
+  const reviewButton = page.getByTestId('pulsar-review'), reading = page.getByTestId('pulsar-reading');
+  const replacement = QUOTED.replace('Obj, "Q" E2E', 'REPLACEMENT');
+  /** Review cannot be opened: disabled, and a forced pointer click opens nothing. */
+  const unavailable = async () => {
+    await expect(reviewButton).toBeDisabled();
+    await reviewButton.click({ force: true });
+    await expect(review(page)).toHaveCount(0);
+    await expect(reading).toBeVisible();
+  };
+  const usable = async () => {
+    await expect(reviewButton).toBeEnabled();
+    await openReview(page);
+    expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+    await page.getByTestId('pulsar-review-cancel').click();
+    await expect(review(page)).toHaveCount(0);
+  };
+  // Explicit Cancel reading: Review is usable again, and the held read finishing later is ignored.
+  await load(page, 'held-cancel.plr', replacement);
+  await held(page, 'held-cancel.plr');
+  await unavailable();
+  await page.getByTestId('pulsar-cancel-read').click();
+  await expect(status(page)).toHaveText('Reading cancelled. The current analysis is unchanged.');
+  await usable();
+  await settle(page, 'held-cancel.plr', 'release');
+  await expect(status(page)).toHaveText(/ignored/);
+  await expect(page.getByTestId('pulsar-file-name')).toHaveText(QUOTED_FILE);
+  // A read error: the rejection is shown and Review is usable again.
+  await load(page, 'held-error.plr', replacement);
+  await held(page, 'held-error.plr');
+  await unavailable();
+  await settle(page, 'held-error.plr', 'fail');
+  await expect(page.getByTestId('pulsar-rejection')).toContainText('The file could not be read.');
+  await expect(reading).toHaveCount(0);
+  await usable();
+  await expect(page.getByTestId('pulsar-file-name')).toHaveText(QUOTED_FILE);
+  // The SHA-256 phase is still reading: Review stays unavailable until the load commits.
+  await page.evaluate(() => { (window as unknown as { __holdDigest: boolean }).__holdDigest = true; });
+  await load(page, 'sha-held.plr', replacement);
+  await held(page, 'digest');
+  await unavailable();
+  await page.evaluate(() => { (window as unknown as { __holdDigest: boolean }).__holdDigest = false; });
+  await settle(page, 'digest', 'release');
+  await expect(reading).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-file-name')).toHaveText('sha-held.plr');
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(replacement));
+  await expect(status(page)).toHaveText('Recording loaded. The data properties are shown.');
+  // The confirmed list is kept across the load; Review stays disabled by the load until the next record (PLR-LOAD-01).
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await expect(reviewButton).toBeDisabled();
+  await page.getByTestId('pulsar-properties-close').click();
+  // A held arrayBuffer that is released completes the chosen file; nothing is dropped.
+  await load(page, 'held-ok.plr', replacement.replace('REPLACEMENT', 'HELD OK'));
+  await held(page, 'held-ok.plr');
+  await expect(reviewButton).toBeDisabled();
+  await settle(page, 'held-ok.plr', 'release');
+  await expect(reading).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-file-name')).toHaveText('held-ok.plr');
+  await expect(page.getByTestId('pulsar-prop-object')).toHaveText('HELD OK');
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(replacement.replace('REPLACEMENT', 'HELD OK')));
+  await expect(status(page)).toHaveText('Recording loaded. The data properties are shown.');
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await page.getByTestId('pulsar-properties-close').click();
+  // After the next record, Review opens on the kept list plus the new entry.
+  await at(page, 1, 30, 10);
+  await page.getByTestId('pulsar-record').click();
+  await page.getByTestId('pulsar-record-ok').click();
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3', 'pulsar-entry-4']);
+  await page.getByTestId('pulsar-review-cancel').click();
+});
+
+// ---- Shared pending-read gate (Codex triage at 1ec3615: the same file loss through Record and Clear) ----
+test('Pending-read gate: Record, Review and Clear open no modal while a chosen file is read; the file loads, and Cancel or a read error restores each button', async ({ page }) => {
+  await threeEntries(page);
+  await at(page, 1, 60, 10); // a pending placement, so the core enables Record
+  const record = page.getByTestId('pulsar-record'), reviewButton = page.getByTestId('pulsar-review'), clear = page.getByTestId('pulsar-clear');
+  const reading = page.getByTestId('pulsar-reading'), fileName = page.getByTestId('pulsar-file-name');
+  const dialogs = ['pulsar-record-dialog', 'pulsar-review-dialog', 'pulsar-clear-dialog'].map(id => page.getByTestId(id));
+  await holdReads(page);
+  const replacement = QUOTED.replace('Obj, "Q" E2E', 'GATED');
+  /** No opener is available: each is disabled and a forced pointer click opens nothing; the read can still be cancelled. */
+  const gated = async () => {
+    for (const b of [record, reviewButton, clear]) { await expect(b).toBeDisabled(); await b.click({ force: true }); }
+    for (const d of dialogs) await expect(d).toHaveCount(0);
+    await expect(reading).toBeVisible();
+    await expect(page.getByTestId('pulsar-cancel-read')).toBeEnabled();
+  };
+  /** The gate is lifted and each opener is back to its own state; the loaded file, list and pending placement are kept. */
+  const restored = async () => {
+    for (const b of [record, reviewButton, clear]) await expect(b).toBeEnabled();
+    await expect(fileName).toHaveText(QUOTED_FILE);
+    await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(QUOTED));
+    await expect(count(page)).toHaveText('3 recorded measurements');
+    await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
+  };
+  await expect(record).toBeEnabled();
+
+  // Explicit Cancel reading; the held read finishing later is ignored.
+  await load(page, 'held-gate-cancel.plr', replacement);
+  await held(page, 'held-gate-cancel.plr');
+  await gated();
+  await page.screenshot({ path: test.info().outputPath('read-gated.png'), fullPage: true });
+  await page.getByTestId('pulsar-cancel-read').click();
+  await expect(status(page)).toHaveText('Reading cancelled. The current analysis is unchanged.');
+  await restored();
+  await settle(page, 'held-gate-cancel.plr', 'release');
+  await expect(status(page)).toHaveText(/ignored/);
+  await restored();
+  // Clear and Record open their dialogs again; cancelling them keeps the list and the pending placement.
+  await clear.click();
+  await expect(page.getByTestId('pulsar-clear-dialog')).toHaveJSProperty('open', true);
+  await page.getByTestId('pulsar-clear-cancel').click();
+  await expect(page.getByTestId('pulsar-clear-dialog')).toHaveCount(0);
+  await record.click();
+  await expect(page.getByTestId('pulsar-record-dialog')).toHaveJSProperty('open', true);
+  await page.getByTestId('pulsar-record-cancel').click();
+  await expect(page.getByTestId('pulsar-record-dialog')).toHaveCount(0);
+  await restored();
+
+  // A read error: the rejection is shown and the openers are restored.
+  await load(page, 'held-gate-error.plr', replacement);
+  await held(page, 'held-gate-error.plr');
+  await gated();
+  await settle(page, 'held-gate-error.plr', 'fail');
+  await expect(page.getByTestId('pulsar-rejection')).toContainText('The file could not be read.');
+  await expect(reading).toHaveCount(0);
+  await restored();
+  await page.getByTestId('pulsar-rejection').getByRole('button').click();
+
+  // The SHA-256 phase is still reading: the openers stay gated until the load commits.
+  await page.evaluate(() => { (window as unknown as { __holdDigest: boolean }).__holdDigest = true; });
+  await load(page, 'gate-sha.plr', replacement);
+  await held(page, 'digest');
+  await gated();
+  await page.evaluate(() => { (window as unknown as { __holdDigest: boolean }).__holdDigest = false; });
+  await settle(page, 'digest', 'release');
+  await expect(reading).toHaveCount(0);
+  await expect(fileName).toHaveText('gate-sha.plr');
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(replacement));
+  await expect(status(page)).toHaveText('Recording loaded. The data properties are shown.');
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  // The gate forces nothing on: the load itself disables Record and Review until the next placement or record (PLR-LOAD-01).
+  await expect(record).toBeDisabled();
+  await expect(reviewButton).toBeDisabled();
+  await expect(clear).toBeEnabled();
+  await page.getByTestId('pulsar-properties-close').click();
+
+  // A held arrayBuffer released with Record enabled by a new placement: the chosen file loads with its SHA-256.
+  const heldOk = replacement.replace('GATED', 'GATED OK');
+  await at(page, 1, 80, 10);
+  await expect(record).toBeEnabled();
+  await load(page, 'held-gate-ok.plr', heldOk);
+  await held(page, 'held-gate-ok.plr');
+  await gated();
+  await settle(page, 'held-gate-ok.plr', 'release');
+  await expect(reading).toHaveCount(0);
+  for (const d of dialogs) await expect(d).toHaveCount(0);
+  await expect(fileName).toHaveText('held-gate-ok.plr');
+  await expect(page.getByTestId('pulsar-prop-object')).toHaveText('GATED OK');
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(heldOk));
+  await expect(status(page)).toHaveText('Recording loaded. The data properties are shown.');
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await page.screenshot({ path: test.info().outputPath('read-loaded.png'), fullPage: true });
+  await expect(record).toBeDisabled();
+  await expect(reviewButton).toBeDisabled();
+  await expect(clear).toBeEnabled();
+  await page.getByTestId('pulsar-properties-close').click();
+  // The confirmed entries were kept: the next record appends #4 and Review lists all four.
+  await at(page, 1, 30, 10);
+  await record.click();
+  await page.getByTestId('pulsar-record-ok').click();
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3', 'pulsar-entry-4']);
+  await page.getByTestId('pulsar-review-cancel').click();
 });

@@ -7,10 +7,10 @@ This slice ports the original **Radio Pulsar Data Analysis** window (`TPlsrAnaly
 3. Draw the three recorded-channel panels.
 4. Move manual per-panel vertical/horizontal cursors and a common reference cursor.
 5. Use the source-backed display controls: zoom, display factor, pan, reset.
-6. Record measurements into an in-app list, review them, and clear the list.
+6. Record measurements into an in-app list, review them in the original working-copy transaction with confirmed Delete, and clear the list.
 7. Download the original recording bytes and import them again.
 
-It does **not** receive signals, model receivers or noise, use the pulsar catalog, or compute period, PDot or dispersion. It also does not claim I06, I07, N07 or E06 acceptance. All 64 primary acceptance statuses stay unchanged.
+It does **not** receive signals, model receivers or noise, use the pulsar catalog, or compute period, PDot or dispersion. It also does not claim I06, I07, N07 or E06 acceptance. All 64 primary acceptance statuses (the 58 functional packages plus the 6 quality items) stay unchanged.
 
 Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and gates, are in [PULSAR-ANALYSIS-PROVENANCE.json](PULSAR-ANALYSIS-PROVENANCE.json). Artifact: VIREO 1.504 `CLEA_VEO.exe`, SHA-256 `781bc970…c54c`.
 
@@ -24,6 +24,7 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
   - the complete DFMs, including the DispBox geometry and `PanTimer`.
 - `0x56cf20` is `ZmRSetBtnClick` (display Reset). `Properties1Click` (`0x56d848`) only calls `Show` on the `THdrDisp` form in slot `0x5b59d4`.
 - **Review triage captures** (coordinator, bounded GNU objdump): zoom in `0x56cd28`, zoom out `0x56ce24` and redraw `0x56c34c`. They are listed with hashes in the provenance file.
+- **Review dialog captures** (coordinator, bounded GNU objdump plus Delphi VMT/TPF0 decode): the `TMeasListDlg` methods `0x563464..0x5639ff`, `DelBtnClick` from its own entry `0x56388c..0x563955`, the class/method table and the complete `TMEASLISTDLG` DFM. The prepared contract, its 17 synthetic semantic vectors and its browser plan are under `claude-pulsar-analysis/review-transaction-author/contract/`. The REA evidence above is reused for the image section layout and source SHA-256 only; it is not evidence of Review behavior, and no new REA operation was needed.
 - Help: `PULSRANL.TXT` (SHA-256 `9d1cb3ff…1bf4`), including the "Controls" topic.
 - No original program was executed or emulated. Nothing here is a runtime witness.
 
@@ -70,6 +71,13 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
 - **Load** runs that reset and then opens Properties. The measurement list is kept, but Review and Save are disabled until the next record.
 - **Record.** One modal per pending panel. OK appends an entry; a value equal to 0.0 is blank. Cancel skips the panel. Record stays enabled while any panel is pending.
 - **Clear.** If the list is unsaved, a prompt appears first, then a Yes/No confirmation.
+- **Review (`src/core/pulsarReview.ts`).** The dialog "Select Measurement Record" is modal (`ShowModal` from `0x56f74c`).
+  - Activation (`0x563464`) assigns the confirmed list into the dialog's list box and selects the first row. The web keeps that copy as a frozen working copy of the same entry objects.
+  - **Delete** (`0x56388c`) with no selection shows "No Item Selected!" / "Select Item for Deletion." and deletes nothing. Otherwise it asks "Confirm Deletion" / "Delete Selected Item from List?" and deletes only on Yes. The selection then stays at the same ordinal if it is still valid, otherwise it moves to the new last row. Review stays open.
+  - **Cancel** (`0x563494`) discards the working copy. Nothing else changes.
+  - **Ok** (`0x5634a0`) replaces the confirmed list with the working copy. The caller then marks the list as not saved and enables Save, for any result other than Cancel, even when nothing changed or every row was deleted. This is not Clear: Record, Review, the pending measurements, cursors and readouts are untouched, and an emptied list can still be reviewed.
+  - Entries keep their stable sequence numbers and the next record continues the sequence. Duplicate rows keep the identity of the row actually selected. No field or `nativeLineCandidate` is parsed, reformatted, escaped or renumbered.
+  - Find and Edit are shown disabled in their DFM places; their behavior is not implemented. There is no Undo.
 
 ## Web boundaries (explicit, not native)
 
@@ -99,11 +107,27 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
   - Pointer ownership: only the primary pointer whose press set a drag latch drives it. A non-primary touch, and the cancellation or capture loss of any pointer other than the owner, is ignored, so cancelling a second finger does not end the first finger's drag. Native left/right mouse handling is unchanged; no multi-touch behavior is modelled.
   - No beep.
 - **Modal dialogs.** The record and clear prompts are native `<dialog>` elements opened with `showModal()`. The browser top layer makes the rest of the page inert and keeps focus inside, with no page-level key trap. Tab and Shift+Tab wrap between the dialog's first and last controls through a handler on the dialog element itself, so keys in any other dialog never reach it. A host modal opened on top stays topmost and keyboard-navigable. Escape cancels, the default button is Cancel/No, an unconfirmed comment draft stays in the open dialog, and focus returns to Record or Clear. A dialog opens only while the panel is active and rendered and no other native modal is open. Nonmodal `dialog.show()` banners do not block it. A bounded observer while a modal session is pending detects conditional DOM removal as well as native close/open changes, so queued dialogs can resume even when a host removes a modal without calling `close()`. Tab from non-focusable dialog text keeps the native relative order: text between controls (the comment help and remaining-panels text) leads forward to the next control and backward to the previous one, and only text before the first or after the last control wraps. This is web behavior, not VCL modal parity.
-- **Host activity.** `active={false}` makes the panel inert. Hosts that hide the panel with CSS or an inert ancestor must pass `active={false}` for that whole interval; arbitrary ancestor styles are not observed. It cancels an in-flight read, so a late read is discarded, and it stops a held pan. It closes an open record or clear dialog but keeps the record session, its draft and the clear stage, which reopen when the panel is active again. The loaded bytes and confirmed measurements are kept.
+- **Pending-read gate (web policy).** The browser reads a chosen file asynchronously: first its contents, then its SHA-256. The native Load reads synchronously, so no event-order parity is claimed.
+  - While a read is pending, Record, Review and Clear are disabled, so no modal can open. The core refuses a load while a modal is open, and that refusal would drop the chosen file.
+  - The gate only ever disables. Each button otherwise keeps its own enabled state, and a successful load still disables Record and Review until the next placement or record (PLR-LOAD-01).
+  - The read completes and loads the chosen file, keeping the confirmed list. Cancel reading or a read error lifts the gate and leaves the current analysis unchanged.
+  - The epoch, active and late-read guards are unchanged. Nothing is queued or retried.
+  - The file input is disabled while a modal is open, so no read can start behind one. The core's `blocked-modal` refusal of a load remains as a fallback; no current control reaches it during a read.
+- **Review dialog (web rules, not native parity).**
+  - Review uses the same native `<dialog>`/`showModal()` protocol as the record and clear prompts. Its two MessageBoxes are an inline alert section of the same dialog; the list and buttons are inert while one is open, and Tab stays within the open layer.
+  - An empty working copy has selection "none" (`null`). For a non-empty list the first row is selected, as the source does.
+  - Escape and a close request act one layer at a time: No on the delete question, dismiss on the notice, otherwise outer Cancel. Natively `CnclBtn` has no Cancel property, a Yes/No MessageBox has no Escape answer, and the window close button is not modelled.
+  - The delete question focuses No. The native flags `0x24` make Yes the default button; the web asks for an explicit Yes instead. Focus returns to Delete when the question or notice closes, and to the Review button when Review closes.
+  - Initial focus is the selected row, or Cancel when the list is empty. Rows are a radio group (browser arrow keys, which wrap). Tab follows the document order (the "Measurements" scroll region, the selected row, Delete, Ok, Cancel), not the native TabOrder, and the `&` accelerators are not implemented. The scroll region is a named Tab stop inside the dialog's Tab wrap, so arrow keys there scroll the wide table without changing the selected row; it leaves the Tab order while the inner question or notice is open.
+  - The scroll container is a named `region` inside the dialog, replacing an earlier `group`. The row radios share one `name` and have no separate group container. This is a web adaptation: no assistive-technology testing or parity is claimed. The region stays a Tab stop even when the table fits without horizontal overflow, which adds one stop per Tab cycle; this is the documented keyboard policy and does not depend on overflow.
+  - Review follows the pending-read gate above.
+  - Whether the original re-runs its OnActivate handler (re-assigning the confirmed list over a staged deletion) when the dialog is reactivated after the delete MessageBox is a VCL runtime question these captures do not answer. The web keeps the staged copy.
+  - Download of the original recording bytes stays outside the dialog and is unchanged.
+- **Host activity.** `active={false}` makes the panel inert. Hosts that hide the panel with CSS or an inert ancestor must pass `active={false}` for that whole interval; arbitrary ancestor styles are not observed. It cancels an in-flight read, so a late read is discarded, and it stops a held pan. It closes an open record, clear or Review dialog but keeps the record session, its draft, the clear stage and the Review working copy, selection and inner question, which reopen when the panel is active again. The loaded bytes and confirmed measurements are kept.
 - **Measurement storage.** Measurements live in this window's state only. A visible note says they are not part of Save investigation and that refreshing or closing the page discards them. No session schema or notebook changes.
 - **Gated features.**
   - The native **CSV save** is gated: its header stamps the host date and time plus login names, browser-clock defaults are forbidden, and its header literals are not decoded.
-  - **Review** is read-only: the original `TMeasListDlg` has Find/Edit/Delete handlers. Static recovery now establishes the outer working-copy/Cancel/OK transaction and confirmed deletion/selection order, but these actions are not implemented in this slice. Comment-editor and quoted-line details require a safe round-trip subset; Find remains unbound.
+  - **Review Find and Edit** are disabled. Comment-editor and quoted-line details require a safe round-trip subset; Find remains unbound. There is no Undo.
   - Each entry keeps an internal `nativeLineCandidate` built from the decoded record-line literals. It is opaque. It is **not** a validatable or exportable native CSV line: names are wrapped in `"` without escaping, so an admitted object or file name containing an unescaped `"` can make its fields ambiguous. A comma inside a fully quoted field alone is not evidence of ambiguity; no native CSV reader or writer is enabled by this precision. Nothing reads it. Review shows the structured fields, which keep such names verbatim, and valid names are not rejected to make the candidate parseable.
   - The Clear prompt therefore offers "continue without saving" or Cancel, with no Save.
 - **Download** returns the exact loaded bytes. It is not the native PLR writer (`0x56a518`), and no header is ever synthesized.
@@ -121,7 +145,7 @@ The following were resolved by independent static extraction; they are static ev
 
 ## Open gates (exact missing evidence)
 
-1. Implement the statically recovered working-copy Review transaction and confirmed deletion (`0x563464`, `0x563494`, `0x5634a0`, `0x56388c..0x563955`). Bind Find/search context and safe comment-line round trip before enabling those actions; no Undo rule is invented. The coordinator map is `radio-help-followup/plr-static/NEXT-REVIEW-WORKFLOW.json` under the evidence root, with source/capture hashes and limits.
+1. Review Find and Edit: bind the Find/search context and a safe comment-line round trip before enabling those actions; no Undo rule is invented. The coordinator map is `radio-help-followup/plr-static/NEXT-REVIEW-WORKFLOW.json` under the evidence root, with source/capture hashes and limits. Whether OnActivate re-fires after the delete MessageBox needs VCL runtime evidence.
 2. The CSV writer `0x56feac`: its header literals and the host date/time and login authority.
 3. Delphi ReadLn/Eof edge cases, and the StrToFloat language and locale.
 4. A native PLR writer witness, or an independent original PLR file. All fixtures are synthetic, so the tests check this implementation contract and are not an oracle for the original.
