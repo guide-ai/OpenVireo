@@ -73,6 +73,14 @@ describe('pulsar provenance', () => {
     const docs = JSON.stringify(provenance) + readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8');
     expect(docs).not.toMatch(/TRadioFlDlg|base = 200|base is 200|interval is not recovered|timer interval is not recovered/);
   });
+  it('describes keyboard panning by click and latch, without a per-physical-press or assistive-technology promise', () => {
+    const pan = provenance.contracts.find(c => c.id === 'PLR-PAN-01')!;
+    const texts = [JSON.stringify(pan), readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8'),
+      readFileSync(new URL('./pulsarAnalysis.ts', import.meta.url), 'utf8'), readFileSync(new URL('../components/PulsarAnalysis.tsx', import.meta.url), 'utf8')];
+    for (const text of texts) expect(text).not.toMatch(/(steps|once) per physical (key )?press|assistive activation steps|steps on a keydown that is not marked/i);
+    expect(pan.web).toMatch(/native click event/);
+    expect(pan.web).toMatch(/latched, also for a keydown with repeat=false/);
+  });
   it('does not assert a native route for a blank first line, and keeps it distinct from an empty file', () => {
     const read = provenance.contracts.find(c => c.id === 'PLR-READ-01')!;
     const texts = [JSON.stringify(read), readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8'),

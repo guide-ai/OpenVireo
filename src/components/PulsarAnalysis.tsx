@@ -143,7 +143,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const [panHold] = useState(() => createPulsarPanHold<number>(
     { every: (ms, fn) => window.setInterval(fn, ms), cancel: handle => window.clearInterval(handle) },
     () => activeRef.current && actRef.current(pulsarPanTick).outcome === 'panned'));
-  // Activation keys currently held on a pan button. A held Enter repeats keydown, and each one would click.
+  // Activation keys latched as held on a pan button: added on a keydown, removed on the keyup the button sees.
   // Their keyup can be lost while the window, page or panel is not receiving keys, so every stop forgets them.
   const panKeys = useRef(new Set<string>());
   useEffect(() => {
@@ -169,14 +169,17 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     onLostPointerCapture: () => panHold.release(),
     onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
-      // An auto-repeated Enter would activate the button again. Space activates on keyup, once per press.
+      // Enter usually clicks on keydown, Space on keyup. Repeat-flagged Enter keydowns are already stopped by the
+      // section capture; this branch still prevents Enter's click on a fresh (repeat=false) keydown while Enter is
+      // latched, and leaves a repeated or latched Space keydown without effect (its click comes from the keyup).
       if (e.repeat || panKeys.current.has(e.key)) { if (e.key === 'Enter') e.preventDefault(); return; }
       panKeys.current.add(e.key);
       pointerPress.current = false;
     },
     onKeyUp: (e: KeyboardEvent<HTMLButtonElement>) => { panKeys.current.delete(e.key); },
     onBlur: () => panKeys.current.clear(),
-    // WEB: keyboard or assistive activation steps once per physical press (the native buttons have no OnClick).
+    // WEB: each click that does not follow a pointer press steps once, whatever activated it (the native buttons have no
+    // OnClick). Which key events click is the browser's; the keydown guards above, not this handler, limit held keys.
     onClick: () => { if (pointerPress.current) { pointerPress.current = false; return; } act(st => pulsarPan(st, direction)); },
     onContextMenu: (e: ReactMouseEvent<HTMLButtonElement>) => e.preventDefault(),
   });
@@ -265,12 +268,15 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const textOrigin = useRef<Node | null>(null);
   /**
    * Escape is handled on keydown. A close request the page cannot cancel closes the dialog, which counts as Cancel/No.
+   * WEB keyboard policy: an Escape keydown marked as a repeat is prevented and does nothing, so one held Escape closes
+   * one layer (Review's editor, question or notice) and not the Review dialog under it. A fresh Escape closes the next
+   * layer. Stateless (KeyboardEvent.repeat only), no window listener or latch, and the event still propagates.
    * Tab and Shift+Tab wrap between this dialog's first and last controls (the top layer alone would let Tab leave to
    * the browser UI). The handler is on the dialog element, so keys in any other dialog never reach it.
    */
   const dialogEvents = (cancel: () => void) => ({
     onKeyDown: (e: KeyboardEvent<HTMLDialogElement>) => {
-      if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
+      if (e.key === 'Escape') { e.preventDefault(); if (!e.repeat) cancel(); return; }
       if (e.key !== 'Tab') return;
       const items = tabbables(e.currentTarget), first = items[0], last = items[items.length - 1];
       if (!first) return;
