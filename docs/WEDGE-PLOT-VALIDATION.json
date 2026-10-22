@@ -29,8 +29,8 @@
   },
   "sourceHashesScope": "Standalone LSS feature snapshot validated by the unitTests/e2e runs below (coverage pin 48). These hashes are preserved as recorded; they are not hashes of the integrated App candidate.",
   "integratedOverride": {
-    "candidate": "0066e30cc0113de4d5061e882b71a67cf436242a plus the coordinator integration-corrections delta",
-    "scope": "Only the files listed here differ from sourceHashes in the integrated tree; every other listed source matched when rehashed. coverage.test.ts is unchanged since 0066e30; the WEDGE-PLOT.md hash is the corrections-delta version.",
+    "candidate": "a1859491b9c8176ed62cd2e734b11205478b3ac5",
+    "scope": "Point-in-time validated source commit a1859491b9c8176ed62cd2e734b11205478b3ac5. This receipt update follows in a metadata-only commit and is excluded from its own source identity. Runtime TS/TSX matches reviewed a48013d;only text/docs/test preparation changed in this followup. Listed overrides preserve the prior standalone hash population.",
     "files": {
       "src/i18n/coverage.test.ts": {
         "standaloneSha256": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed",
@@ -48,13 +48,15 @@
       }
     },
     "validation": {
-      "check": "unit",
-      "head": "0066e30cc0113de4d5061e882b71a67cf436242a",
+      "head": "a1859491b9c8176ed62cd2e734b11205478b3ac5",
+      "check": "independent unit/typecheck/build and24route/comparison cases",
       "numTotalTests": 1905,
       "numPassedTests": 1905,
       "numFailedTests": 0,
-      "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/workbench-integration/accepted-fronts-regression/unit-report.json",
-      "by": "coordinator aggregate run (accepted-fronts-regression/checks.json)"
+      "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/workbench-integration/text-independent/unit-report.json",
+      "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/workbench-integration/text-independent/receipt.json",
+      "by": "Codex independent checks;source hashes match committed tree",
+      "receiptSelfExcluded": true
     },
     "notClaimed": "The 1799-unit and 64-E2E independent runs above validated the 48 snapshot only; they do not validate the 49 pin or the integrated App."
   },
