@@ -4,7 +4,7 @@ import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
  isRadioLabOptions,isSupportedRadioLabProfile,nearestBinary64,normalizeRaHours,openSetCoordinates,parseDelphiFloat,parseExactDecimal,parseSkyCoords,
- radioLabProfileIssues,roundHalfEven,selectSkyCoordsEpoch,skyCoordsFieldsFor,slewRateFor,slewTimerTick,splitSexagesimal,toggleTracking,
+ radioLabProfileIssues,radioLabRateIssues,roundHalfEven,selectSkyCoordsEpoch,skyCoordsFieldsFor,slewRateFor,slewTimerTick,splitSexagesimal,toggleTracking,
  RADIO_WEB_OPTION_PROFILE,SKY_COORDS_WEB_DOMAIN,
  type RadioLabOptions,type RadioLabOutcome,type RadioLabState,type RadioLabTransition,type SkyCoordsFields,
 } from './radioAntenna';
@@ -468,8 +468,10 @@ describe('WEB-OPT-01 supported web option profile (browser limit, not original o
  });
  it('refuses a callback whose stored rate is outside the profile even under supported options',()=>{
   const s:RadioLabState={...slewTo(at(1,10),fields('3','0','0','20','0','0')),rate:5_000_000,rateIndex:8};
-  expect(track(slewTimerTick(s,O,s.slewRun))).toMatchObject({outcome:'options-unsupported',state:s});
-  expect(track(slewTimerTick({...s,rate:0},O,s.slewRun)).outcome).toBe('options-unsupported');
+  // The options are supported, so the refusal names the rate (radioLabRateIssues 'stored'), not the options.
+  expect(track(slewTimerTick(s,O,s.slewRun))).toMatchObject({outcome:'rate-unsupported',changed:false,state:s});
+  expect(track(slewTimerTick({...s,rate:0},O,s.slewRun)).outcome).toBe('rate-unsupported');
+  expect(track(slewTimerTick(s,opts({rateBase:0}),s.slewRun)).outcome).toBe('options-unsupported');// the record is checked first
  });
  it('supported profiles reach the target within a bounded number of callbacks, including RA steps just below 6 h',()=>{
   const finish=(o:RadioLabOptions,from:RadioPointingLike,to:SkyCoordsFields)=>{
@@ -491,6 +493,120 @@ describe('WEB-OPT-01 supported web option profile (browser limit, not original o
 });
 type RadioPointingLike={ra:number;dec:number};
 
+describe('WEB-OPT-01 state context: rates kept from earlier host options (browser limit, not original validation)',()=>{
+ // Coordinator reproduction radio-antenna-independent/review-lifecycle-findings/cross-options.json (pure TS and browser):
+ // A and B are each supported, but an index raised under A is kept under B.
+ const raStep=(rate:number)=>rate*RADIO_LAB_CONSTANTS.raStepPerRate/RADIO_LAB_CONSTANTS.raStepDivisor;
+ const A=opts({maxRateIndex:6}),B=opts({maxRateIndex:4,rateBase:3241});
+ const target=fields('3','0','0','20','0','0');
+ /** A programmed slew under A raises the index to 6 and keeps it after arrival. */
+ function afterA():RadioLabState{
+  const r=runSlew(slewTo(at(1,10,A),target,A),A);
+  expect(r.state).toMatchObject({rateIndex:6,rate:50000,rateSpinEnabled:true,slewing:false,pointing:{ra:3,dec:20}});
+  return track(answerNotice(r.state,A,'slew-complete','ok')).state;
+ }
+ /** The native RateDown under B from index 6: index 5, Power(10, 2) × 3241. */
+ function downUnderB():RadioLabState{
+  const t=track(changeSlewRate(afterA(),B,'down'));
+  expect(t).toMatchObject({outcome:'rate-down',changed:true,steps:['RA-06'],state:{rateIndex:5,rate:324100}});
+  return t.state;
+ }
+ const advances=(t:RadioLabTransition)=>['slew-tick','slew-axis-ra','slew-complete'].includes(t.outcome);
+ it('both records are supported; the kept index 6 keeps its 50000 rate, and RateDown applies the native 324100',()=>{
+  expect(isSupportedRadioLabProfile(A)).toBe(true);expect(isSupportedRadioLabProfile(B)).toBe(true);
+  expect(radioLabRateIssues(afterA(),B)).toEqual([]);// a slew now keeps 6/50000 (0.926 h RA steps)
+  const s=downUnderB();
+  expect(raStep(324100)).toBeCloseTo(6.00185185185,10);
+  expect(radioLabRateIssues(s,B)).toEqual([{context:'start',rate:324100,issue:{kind:'ra-step',index:5,raStepHours:raStep(324100)}}]);
+  expect(radioLabRateIssues(s,A)).toEqual([]);// under A a start raises the index to 6 again
+ });
+ it('OK is refused before an impossible slew: dialog draft, target and pointing kept; Cancel works',()=>{
+  const s=downUnderB(),open=enter(s,fields('2','0','0','25','0','0'),B);
+  const ok=track(confirmSkyCoords(open,B));
+  expect(ok).toMatchObject({outcome:'rate-unsupported',changed:false,steps:[]});expect(ok.state).toBe(open);
+  expect(ok.state.dialog!.fields).toEqual(fields('2','0','0','25','0','0'));expect(ok.state.target).toEqual(s.target);expect(ok.state.pointing).toEqual({ra:3,dec:20});
+  const c=track(cancelSkyCoords(ok.state));expect(c.outcome).toBe('dialog-cancelled');expect(c.state).toMatchObject({slewing:false,slewTimerEnabled:false,target:s.target,pointing:{ra:3,dec:20}});
+ });
+ it('Yes is refused when the host switches A → B while the confirmation is open; No still declines; A starts with the raised index',()=>{
+  const s=downUnderB(),ask=track(confirmSkyCoords(enter(s,fields('2','0','0','25','0','0'),A),A));
+  expect(ask.outcome).toBe('slew-confirm-requested');
+  const yes=track(answerNotice(ask.state,B,'confirm-slew','yes'));
+  expect(yes).toMatchObject({outcome:'rate-unsupported',changed:false});expect(yes.state).toBe(ask.state);expect(yes.state.notice!.kind).toBe('confirm-slew');
+  expect(track(answerNotice(ask.state,B,'confirm-slew','no'))).toMatchObject({outcome:'slew-declined',state:{slewing:false,target:{ra:2,dec:25}}});
+  const started=track(answerNotice(ask.state,A,'confirm-slew','yes'));
+  expect(started).toMatchObject({outcome:'slew-started',state:{rateIndex:6,rate:50000}});
+ });
+ it('recovery: a second RateDown under B gives index 4 (32410) and the slew reaches its target',()=>{
+  const s=track(changeSlewRate(downUnderB(),B,'down')).state;
+  expect(s).toMatchObject({rateIndex:4,rate:32410});expect(radioLabRateIssues(s,B)).toEqual([]);
+  const r=runSlew(slewTo(s,fields('2','0','0','25','0','0'),B),B);
+  expect(r.state).toMatchObject({notice:{kind:'slew-complete'},pointing:{ra:2,dec:25},rateIndex:4,rate:32410});
+ });
+ it('during a slew, a press that would give the running slew an unsupported rate is refused; the slew completes',()=>{
+  const running=slewTo(afterA(),fields('5','0','0','10','0','0'),B);
+  expect(running).toMatchObject({slewing:true,rateIndex:6,rate:50000});// 4 > 6 is false: the start keeps the stored rate
+  const on=track(toggleTracking(track(toggleTracking(running,B)).state,B)).state;// Tracking on re-enables RateSpin (original quirk)
+  expect(on.rateSpinEnabled).toBe(true);
+  expect(radioLabRateIssues(on,B)).toEqual([{context:'down',rate:324100,issue:{kind:'ra-step',index:5,raStepHours:raStep(324100)}}]);
+  const down=track(changeSlewRate(on,B,'down'));expect(down).toMatchObject({outcome:'rate-unsupported',changed:false});expect(down.state).toBe(on);
+  expect(track(changeSlewRate(on,B,'up')).outcome).toBe('rate-at-limit');
+  const r=runSlew(on,B);expect(r.outcomes.every(o=>o!=='rate-unsupported'&&o!=='options-unsupported')).toBe(true);
+  expect(r.state).toMatchObject({pointing:{ra:5,dec:10},notice:{kind:'slew-complete'}});
+ });
+ it('a malformed or restored stored rate: ticks are refused and explained, Stop works, RateSpin presses recover it',()=>{
+  const restored:RadioLabState={...slewTo(at(1,10),target),rate:5_000_000,rateIndex:8};
+  expect(radioLabRateIssues(restored,O)).toEqual([{context:'stored',rate:5_000_000,issue:{kind:'ra-step',index:8,raStepHours:raStep(5_000_000)}}]);
+  expect(radioLabRateIssues({...restored,rate:Number.NaN},O)).toEqual([{context:'stored',rate:Number.NaN,issue:{kind:'rate-not-advancing',index:8}}]);
+  expect(track(slewTimerTick({...restored,rate:Number.NaN},O,restored.slewRun)).outcome).toBe('rate-unsupported');
+  const ask=track(openSetCoordinates(restored,O));expect(ask.outcome).toBe('stop-requested');
+  expect(radioLabRateIssues(ask.state,O).map(i=>i.context)).toEqual(['stored']);// paused: the same slew still holds the rate
+  const resumed=track(answerNotice(ask.state,O,'stop-slew','no')).state;
+  expect(track(slewTimerTick(resumed,O,resumed.slewRun))).toMatchObject({outcome:'rate-unsupported',state:resumed});
+  const stopped=track(answerNotice(track(openSetCoordinates(resumed,O)).state,O,'stop-slew','yes')).state;
+  expect(stopped).toMatchObject({slewing:false,rateSpinEnabled:true,pointing:restored.pointing,target:restored.target});
+  expect(radioLabRateIssues(stopped,O).map(i=>i.context)).toEqual(['start']);// 5 > 8 is false: a start would keep 5e6
+  expect(track(confirmSkyCoords(enter(stopped,fields('5','0','0','10','0','0')),O)).outcome).toBe('rate-unsupported');
+  // Idle presses are applied as in the original, even through index 7 (500000, also unsupported) to index 6.
+  const seven=track(changeSlewRate(stopped,O,'down')).state;expect(seven).toMatchObject({rateIndex:7,rate:500_000});
+  expect(radioLabRateIssues(seven,O).map(i=>i.context)).toEqual(['start']);
+  const six=track(changeSlewRate(seven,O,'down')).state;expect(six).toMatchObject({rateIndex:6,rate:50_000});expect(radioLabRateIssues(six,O)).toEqual([]);
+  expect(runSlew(slewTo(six,fields('5','0','0','10','0','0'))).state).toMatchObject({pointing:{ra:5,dec:10},notice:{kind:'slew-complete'}});
+ });
+ it('compatible supported option changes keep the native behavior unchanged',()=>{
+  const s=afterA();
+  for(const [o,rate] of [[O,5000],[opts({maxRateIndex:4,rateBase:300}),30000],[opts({maxRateIndex:7,rateBase:5}),500]] as const){
+   expect(radioLabRateIssues(s,o)).toEqual([]);
+   expect(track(changeSlewRate(s,o,'down')).state).toMatchObject({rateIndex:5,rate});
+  }
+  const r=runSlew(slewTo(s,fields('5','0','0','10','0','0'),O));// compiled maximum 5 < 6: the kept 6/50000 drives the slew
+  expect(r.state).toMatchObject({pointing:{ra:5,dec:10},rateIndex:6,rate:50000,notice:{kind:'slew-complete'}});
+ });
+ it('across option pairs, every accepted start and every accepted press during a slew gives callbacks that advance',()=>{
+  const records:RadioLabOptions[]=[];
+  for(const maxRateIndex of [0,2,4,5,6,7])for(const rateBase of [1,50,300,3241,32399]){const o=opts({maxRateIndex,rateBase});if(isSupportedRadioLabProfile(o))records.push(o);}
+  let started=0,refused=0,pressRefused=0;
+  for(const P of records)for(let index=1;index<=Math.max(4,P.maxRateIndex);index++){
+   const base:RadioLabState={...at(1,10,P),rateIndex:index,rate:slewRateFor(index,P)};// a state reachable under P
+   for(const Q of records)for(const press of [null,'down','up'] as const){
+    const s=press?changeSlewRate(base,Q,press).state:base;// idle presses are applied natively
+    const ok=confirmSkyCoords(enter(s,target,Q),Q);
+    const start=ok.outcome==='slew-confirm-requested'?answerNotice(ok.state,Q,'confirm-slew','yes'):ok;
+    if(start.outcome!=='slew-started'){
+     expect(start.outcome).toBe('rate-unsupported');expect(radioLabRateIssues(s,Q).map(i=>i.context)).toEqual(['start']);refused++;continue;
+    }
+    started++;expect(advances(slewTimerTick(start.state,Q,start.state.slewRun))).toBe(true);
+    const on=toggleTracking(toggleTracking(start.state,Q).state,Q).state;
+    for(const d of ['down','up'] as const){
+     const t=changeSlewRate(on,Q,d);
+     if(t.changed)expect(advances(slewTimerTick(t.state,Q,t.state.slewRun))).toBe(true);
+     else{expect(['rate-unsupported','rate-at-limit']).toContain(t.outcome);if(t.outcome==='rate-unsupported')pressRefused++;}
+    }
+   }
+  }
+  expect(started).toBeGreaterThan(1000);expect(refused).toBeGreaterThan(10);expect(pressRefused).toBeGreaterThan(10);
+ });
+});
+
 describe('captions, catalog and provenance',()=>{
  it('keeps the original DFM captions',()=>{
   expect(RADIO_LAB_CAPTIONS).toMatchObject({form:'VIREO Radio Telescope Control Panel',setCoordinates:'Set Coordinates...',tracking:'Tracking',slewRate:'Slew Rate'});
@@ -498,7 +614,7 @@ describe('captions, catalog and provenance',()=>{
   expect(NOTICE_BUTTONS['confirm-slew']).toEqual(['yes','no']);expect(NOTICE_BUTTONS['transit-dec-only']).toEqual(['ok','cancel']);
  });
  it('has an English message for every outcome and notice, and validates replacement catalogs',()=>{
-  const every:Record<RadioLabOutcome,true>={'activated':true,'already-activated':true,'not-activated':true,'modal-open':true,'options-unsupported':true,'tracking-on':true,'tracking-off':true,'tracking-unavailable':true,'rate-up':true,'rate-down':true,'rate-at-limit':true,'rate-disabled':true,'menu-disabled':true,'dialog-opened':true,'stop-requested':true,'field-edited':true,'field-too-long':true,'epoch-selected':true,'epoch-disabled':true,'dialog-closed':true,'dialog-cancelled':true,'ra-invalid':true,'dec-invalid':true,'ra-unsupported':true,'dec-unsupported':true,'b1950-gated':true,'no-slew-needed':true,'transit-notice':true,'limits-require-clock':true,'slew-confirm-requested':true,'notice-dismissed':true,'notice-stale':true,'invalid-answer':true,'transit-cancelled':true,'slew-declined':true,'slew-started':true,'slew-instant':true,'slew-stopped':true,'slew-resumed':true,'slew-timer-idle':true,'slew-tick':true,'slew-axis-ra':true,'slew-complete':true};
+  const every:Record<RadioLabOutcome,true>={'activated':true,'already-activated':true,'not-activated':true,'modal-open':true,'options-unsupported':true,'rate-unsupported':true,'tracking-on':true,'tracking-off':true,'tracking-unavailable':true,'rate-up':true,'rate-down':true,'rate-at-limit':true,'rate-disabled':true,'menu-disabled':true,'dialog-opened':true,'stop-requested':true,'field-edited':true,'field-too-long':true,'epoch-selected':true,'epoch-disabled':true,'dialog-closed':true,'dialog-cancelled':true,'ra-invalid':true,'dec-invalid':true,'ra-unsupported':true,'dec-unsupported':true,'b1950-gated':true,'no-slew-needed':true,'transit-notice':true,'limits-require-clock':true,'slew-confirm-requested':true,'notice-dismissed':true,'notice-stale':true,'invalid-answer':true,'transit-cancelled':true,'slew-declined':true,'slew-started':true,'slew-instant':true,'slew-stopped':true,'slew-resumed':true,'slew-timer-idle':true,'slew-tick':true,'slew-axis-ra':true,'slew-complete':true};
   const ta=createRadioAntennaTranslator();
   for(const o of Object.keys(every))expect(Object.hasOwn(RADIO_ANTENNA_MESSAGES_EN,`antenna.outcome.${o}`)).toBe(true);
   for(const k of Object.keys(NOTICE_BUTTONS))for(const key of k.endsWith('-unsupported')?[`antenna.notice.${k}.cancellation`,`antenna.notice.${k}.precision`]:[`antenna.notice.${k}`])

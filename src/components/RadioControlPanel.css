@@ -49,5 +49,9 @@
 .antenna-profile{border-color:#b5651d;border-left-width:4px;background:#fff8f0}
 .antenna-profile ul{margin:6px 0 0;padding-left:1.2em}
 .antenna-profile li{line-height:1.5;overflow-wrap:anywhere}
+.antenna-modal-limit>div{margin:8px 0;padding:6px 10px;border:1px solid #b5651d;border-left-width:4px;border-radius:6px;background:#fff8f0;font-size:13px}
+.antenna-modal-limit p{margin:0}
+.antenna-modal-limit ul{margin:6px 0 0;padding-left:1.2em}
+.antenna-modal-limit li{line-height:1.5;overflow-wrap:anywhere}
 .radio-control .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}.antenna-readout{grid-template-columns:1fr}}

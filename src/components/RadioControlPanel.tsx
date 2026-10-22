@@ -8,9 +8,9 @@ import {
 import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,RADIO_WEB_OPTION_PROFILE,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,SKY_COORDS_WEB_DOMAIN,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
- isRadioLabModal,isRadioLabOptions,openSetCoordinates,radioLabProfileIssues,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
- type NoticeAnswer,type RadioLabNotice,type RadioLabNoticeKind,type RadioLabOptions,type RadioLabOutcome,type RadioLabProfileIssue,type RadioLabState,
- type RadioLabTransition,type SkyCoordsDialog,type SkyCoordsField,
+ isRadioLabModal,isRadioLabOptions,openSetCoordinates,radioLabProfileIssues,radioLabRateIssues,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
+ type NoticeAnswer,type RadioLabNotice,type RadioLabNoticeKind,type RadioLabOptions,type RadioLabOutcome,type RadioLabProfileIssue,type RadioLabRateIssue,
+ type RadioLabState,type RadioLabTransition,type SkyCoordsDialog,type SkyCoordsField,
 } from '../core/radioAntenna';
 import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
 import {createRadioTranslator,type RadioMessageKey,type RadioTranslate} from './RadioMessages';
@@ -80,6 +80,16 @@ function profileIssueText(issue:RadioLabProfileIssue,options:RadioLabOptions,ta:
  if(issue.kind==='rate-not-advancing')return ta('antenna.profile.rate-not-advancing',{base:options.rateBase,index:issue.index});
  return ta('antenna.profile.ra-step',{index:issue.index,hours:issue.raStepHours.toPrecision(4),limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours});
 }
+function rateIssueText({context,rate,issue}:RadioLabRateIssue,ta:RadioAntennaTranslate):string{
+ const cause=issue.kind==='ra-step'?ta('antenna.rateLimit.cause.ra-step',{hours:issue.raStepHours.toPrecision(4),limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours}):ta('antenna.rateLimit.cause.rate-not-advancing');
+ return ta(`antenna.rateLimit.${context}`,{index:issue.index,rate:String(rate),cause});
+}
+/** Browser-limit reasons shown inside the open dialog or confirmation box (WEB-OPT-01), next to the refused OK/Yes. */
+function ModalLimit({lead,reasons,testId}:Readonly<{lead:string;reasons:readonly string[];testId:string}>){
+ return <div className="antenna-modal-limit" aria-live="polite">
+  {reasons.length>0&&<div data-testid={testId}><p>{lead}</p><ul>{reasons.map(text=><li key={text}>{text}</li>)}</ul></div>}
+ </div>;
+}
 const FOCUSABLE='button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 /** Keeps Tab inside an application-modal surface. */
 function trapTab(e:KeyboardEvent<HTMLElement>,root:HTMLElement|null){
@@ -101,6 +111,12 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  // Shape-invalid options keep surfacing as the generic error from the transitions themselves.
  const profileIssues=useMemo(()=>isRadioLabOptions(antennaOptions)?radioLabProfileIssues(antennaOptions):[],[antennaOptions]);
  const profileSupported=profileIssues.length===0;
+ // State-context rate limits (radioLabRateIssues) only matter once the option record itself is supported.
+ const rateIssues=useMemo(()=>antenna&&profileSupported&&isRadioLabOptions(antennaOptions)?radioLabRateIssues(antenna,antennaOptions):[],[antenna,antennaOptions,profileSupported]);
+ // The same gates slewTimerTick applies: no registration while every callback would be refused.
+ const slewSuspended=!profileSupported||rateIssues.some(i=>i.context==='stored');
+ // Reasons OK and Yes are refused, rendered inside the modal surface that holds those buttons.
+ const startRefusal=[...profileIssues.map(issue=>profileIssueText(issue,antennaOptions,ta)),...rateIssues.filter(i=>i.context==='start').map(i=>rateIssueText(i,ta))];
  const applyControl=(transition:RadioTransition|null,handler:(transition:RadioTransition)=>void)=>{
   if(!transition){setEnvError(true);return;}
   setEnvError(false);setOutcome(transition.outcome);if(transition.changed)handler(transition);
@@ -120,7 +136,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const scopeInput=useMemo(()=>({state,environment}),[state,environment]);
  const hasAntennaHost=antenna!==undefined&&onAntennaTransition!==undefined;
  const scopeActive=autoScopeTimer&&state.scopeTimerEnabled&&state.scopeTimerIntervalMs===1&&environment.domeByte!==3;
- const slewActive=hasAntennaHost&&autoSlewTimer&&antenna.slewTimerEnabled&&profileSupported;
+ const slewActive=hasAntennaHost&&autoSlewTimer&&antenna.slewTimerEnabled&&!slewSuspended;
  const slewRun=antenna?.slewRun??0;
  const latest=useRef({scopeInput,onTransition,antenna,antennaOptions,onAntennaTransition,scopeActive,slewActive,slewRun});
  useLayoutEffect(()=>{latest.current={scopeInput,onTransition,antenna,antennaOptions,onAntennaTransition,scopeActive,slewActive,slewRun};});
@@ -140,7 +156,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   if(state.radioPanelShown&&antenna&&!antenna.activated)runAntenna(()=>activateRadioLab(antenna,antennaOptions));
  },[state.radioPanelShown,antenna,antennaOptions]);
  // RA-11: one SlewTimer2 registration per enabled run, on a nominal 100 ms interval. Unrelated antenna changes do not
- // restart it; pause (stop question), completion, a new run, unsupported options or unmount cancel it. A TTimer keeps
+ // restart it; pause (stop question), completion, a new run, unsupported options or stored rate, or unmount cancel it. A TTimer keeps
  // running while the form is hidden, so closing the panel window does not.
  useEffect(()=>{
   if(!slewActive)return;
@@ -203,7 +219,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <h3 id={`${id}-panel`}>{t('radio.panel.heading')}</h3>
    <p className="radio-control-native" data-testid="antenna-form-caption">{RADIO_LAB_CAPTIONS.form}</p>
    {antenna&&onAntennaTransition&&antenna.activated
-    ?<AntennaControls antenna={antenna} options={antennaOptions} ta={ta} run={runAntenna} autoSlewTimer={autoSlewTimer} setCoordinatesRef={setCoordinatesRef}/>
+    ?<AntennaControls antenna={antenna} options={antennaOptions} ta={ta} run={runAntenna} autoSlewTimer={autoSlewTimer} suspended={slewSuspended} setCoordinatesRef={setCoordinatesRef}/>
     :<p className="radio-control-note">{ta(profileSupported?'antenna.notActivated':'antenna.profile.notActivated')}</p>}
    <button type="button" className="secondary-button" data-testid="radio-panel-close" onClick={()=>run(()=>closeRadioPanel(state,environment))}>{t('radio.panel.close')}</button>
   </section>}
@@ -211,6 +227,11 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <h3 id={`${id}-profile`}>{ta('antenna.profile.heading')}</h3>
    <p className="radio-control-note">{ta('antenna.profile.help')}</p>
    <ul>{profileIssues.map(issue=><li key={issue.kind} data-testid={`antenna-profile-${issue.kind}`}>{profileIssueText(issue,antennaOptions,ta)}</li>)}</ul>
+  </section>}
+  {rateIssues.length>0&&<section className="radio-control-block antenna-profile" aria-labelledby={`${id}-rate-limit`} aria-live="polite" data-testid="antenna-rate-limit">
+   <h3 id={`${id}-rate-limit`}>{ta('antenna.rateLimit.heading')}</h3>
+   <p className="radio-control-note">{ta('antenna.rateLimit.help',{limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours})}</p>
+   <ul>{rateIssues.map(issue=><li key={issue.context} data-testid={`antenna-rate-limit-${issue.context}`}>{rateIssueText(issue,ta)}</li>)}</ul>
   </section>}
   <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-status">{envError?t('radio.error.environment'):outcome?outcomeText(outcome,t,ta):''}</p>
   {antenna&&<p className="radio-control-status" role="status" aria-live="polite" data-testid="antenna-status">{antennaError?t('radio.error.environment'):antennaOutcome?antennaOutcomeText(antennaOutcome,ta):''}</p>}
@@ -249,16 +270,16 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
     <dt>{t('radio.state.item454')}</dt><dd>{yesNo(state.item454Enabled)}</dd>
    </dl>
   </details>
-  {antenna?.dialog&&<SkyCoordsDialogView dialog={antenna.dialog} blocked={antenna.notice!==null} ta={ta}
+  {antenna?.dialog&&<SkyCoordsDialogView dialog={antenna.dialog} blocked={antenna.notice!==null} ta={ta} limitReasons={startRefusal}
    onEdit={(field,text)=>runAntenna(()=>editSkyCoordsField(antenna,field,text))} onEpoch={i=>runAntenna(()=>selectSkyCoordsEpoch(antenna,i))}
    onOk={()=>runAntenna(()=>confirmSkyCoords(antenna,antennaOptions))} onCancel={()=>runAntenna(()=>cancelSkyCoords(antenna))} returnFocus={setCoordinatesRef}/>}
-  {antenna?.notice&&<NoticeView notice={antenna.notice} ta={ta} onAnswer={answer=>runAntenna(()=>answerNotice(antenna,antennaOptions,antenna.notice!.kind,answer))}/>}
+  {antenna?.notice&&<NoticeView notice={antenna.notice} ta={ta} limitReasons={antenna.notice.kind==='confirm-slew'?startRefusal:[]} onAnswer={answer=>runAntenna(()=>answerNotice(antenna,antennaOptions,antenna.notice!.kind,answer))}/>}
  </section>;
 }
 
-type AntennaControlsProps=Readonly<{antenna:RadioLabState;options:RadioLabOptions;ta:RadioAntennaTranslate;run:(step:()=>RadioLabTransition)=>void;autoSlewTimer:boolean;setCoordinatesRef:RefObject<HTMLButtonElement|null>}>;
+type AntennaControlsProps=Readonly<{antenna:RadioLabState;options:RadioLabOptions;ta:RadioAntennaTranslate;run:(step:()=>RadioLabTransition)=>void;autoSlewTimer:boolean;suspended:boolean;setCoordinatesRef:RefObject<HTMLButtonElement|null>}>;
 /** TRadioLab controls in DFM order (TabOrder: DriveBtn 0, N 1, S 2, E 3, W 4, RateSpin 5, Receiver 6). */
-function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,setCoordinatesRef}:AntennaControlsProps){
+function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCoordinatesRef}:AntennaControlsProps){
  const id=useId(),onOff=(v:boolean)=>ta(v?'antenna.state.enabled':'antenna.state.disabled'),yes=(v:boolean)=>ta(v?'antenna.options.yes':'antenna.options.no');
  const ra=splitSexagesimal(a.pointing.ra,2),dec=splitSexagesimal(a.pointing.dec,1);
  const storedEntered=!(a.target.ra===0&&a.target.dec===0);
@@ -304,6 +325,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,setCoordinatesR
     <h4 id={`${id}-motion`}>{ta('antenna.status.heading')}</h4>
     <p data-testid="antenna-motion">{ta(a.status==='slewing'?'antenna.status.slewing':a.status==='slewing-ra'?'antenna.status.slewingRa':'antenna.status.none')}</p>
     {a.slewing&&<p className="radio-control-note" data-testid="antenna-ticks">{ta('antenna.status.ticks',{ticks:a.slewTicks})}</p>}
+    {a.slewTimerEnabled&&suspended&&<p className="radio-control-note" data-testid="antenna-suspended">{ta('antenna.status.suspended')}</p>}
     {!autoSlewTimer&&a.slewTimerEnabled&&<button type="button" className="secondary-button" data-testid="antenna-tick" onClick={()=>run(()=>slewTimerTick(a,options,a.slewRun))}>{ta('antenna.timer.deliver')}</button>}
    </section>
   </div>
@@ -311,9 +333,9 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,setCoordinatesR
  </div>;
 }
 
-type SkyCoordsDialogProps=Readonly<{dialog:SkyCoordsDialog;blocked:boolean;ta:RadioAntennaTranslate;onEdit:(field:SkyCoordsField,text:string)=>void;onEpoch:(index:0|1)=>void;onOk:()=>void;onCancel:()=>void;returnFocus:RefObject<HTMLButtonElement|null>}>;
+type SkyCoordsDialogProps=Readonly<{dialog:SkyCoordsDialog;blocked:boolean;ta:RadioAntennaTranslate;limitReasons:readonly string[];onEdit:(field:SkyCoordsField,text:string)=>void;onEpoch:(index:0|1)=>void;onOk:()=>void;onCancel:()=>void;returnFocus:RefObject<HTMLButtonElement|null>}>;
 /** TSkyCoordsDlg (bsDialog, poScreenCenter): ActiveControl RAHrEd with its text selected; OK is the Default (bkOK) and Cancel the Cancel (bkCancel) button. */
-function SkyCoordsDialogView({dialog,blocked,ta,onEdit,onEpoch,onOk,onCancel,returnFocus}:SkyCoordsDialogProps){
+function SkyCoordsDialogView({dialog,blocked,ta,limitReasons,onEdit,onEpoch,onOk,onCancel,returnFocus}:SkyCoordsDialogProps){
  const id=useId(),root=useRef<HTMLDivElement>(null),first=useRef<HTMLInputElement>(null),lastFocus=useRef<HTMLElement|null>(null);
  useEffect(()=>{first.current?.focus();first.current?.select();const back=returnFocus.current;return ()=>{back?.focus();};},[returnFocus]);
  // OKBtnClick has no SetFocus: after an error box, focus returns to the control that chose OK.
@@ -345,6 +367,7 @@ function SkyCoordsDialogView({dialog,blocked,ta,onEdit,onEpoch,onOk,onCancel,ret
     {SKY_COORDS_CAPTIONS.epochs.map((caption,index)=><label key={caption} className="radio-control-check"><input type="radio" name={`${id}-epoch`} data-testid={`antenna-epoch-${index}`} checked={dialog.epochIndex===index} onChange={()=>onEpoch(index as 0|1)}/>{caption}</label>)}
    </fieldset>
    {dialog.epochIndex===1&&<p className="radio-control-note" data-testid="antenna-b1950-gap">{ta('antenna.dialog.b1950Gap')}</p>}
+   <ModalLimit lead={ta('antenna.modalLimit.dialog')} reasons={limitReasons} testId="antenna-dialog-limit"/>
    <div className="button-row">
     <button type="button" className="primary-button" data-testid="antenna-dialog-ok" onClick={ok}>{menuCaptionText(SKY_COORDS_CAPTIONS.ok)}</button>
     <button type="button" className="secondary-button" data-testid="antenna-dialog-cancel" onClick={onCancel}>{menuCaptionText(SKY_COORDS_CAPTIONS.cancel)}</button>
@@ -354,7 +377,7 @@ function SkyCoordsDialogView({dialog,blocked,ta,onEdit,onEpoch,onOk,onCancel,ret
 }
 
 /** Application.MessageBox stand-in: application-modal, default button first, Escape per escapeAnswer. */
-function NoticeView({notice,ta,onAnswer}:Readonly<{notice:RadioLabNotice;ta:RadioAntennaTranslate;onAnswer:(answer:NoticeAnswer)=>void}>){
+function NoticeView({notice,ta,limitReasons,onAnswer}:Readonly<{notice:RadioLabNotice;ta:RadioAntennaTranslate;limitReasons:readonly string[];onAnswer:(answer:NoticeAnswer)=>void}>){
  const id=useId(),root=useRef<HTMLDivElement>(null),defaultButton=useRef<HTMLButtonElement>(null);
  const meta=NOTICE_META[notice.kind],buttons=NOTICE_BUTTONS[notice.kind];
  // Keyed on the box kind, not the notice object: a transition committed while the same box stays open must not move focus.
@@ -369,6 +392,7 @@ function NoticeView({notice,ta,onAnswer}:Readonly<{notice:RadioLabNotice;ta:Radi
    <h3 id={`${id}-title`}>{ta(meta.title)}</h3>
    <p id={`${id}-body`} data-testid="antenna-notice-text">{noticeText(notice,ta)}</p>
    <p className="radio-control-note" data-testid="antenna-notice-note">{meta.flags?ta('antenna.notice.native',{flags:meta.flags}):ta(meta.note??'antenna.notice.gate')}</p>
+   <ModalLimit lead={ta('antenna.modalLimit.confirm')} reasons={limitReasons} testId="antenna-notice-limit"/>
    <div className="button-row">
     {buttons.map((answer,index)=><button key={answer} ref={index===0?defaultButton:undefined} type="button" className={index===0?'primary-button':'secondary-button'} data-testid={`antenna-notice-${answer}`} onClick={()=>onAnswer(answer)}>{ta(BUTTON_KEYS[answer])}</button>)}
    </div>

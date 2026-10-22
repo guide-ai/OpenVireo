@@ -435,6 +435,8 @@
   "webOptionProfile": {
     "id": "WEB-OPT-01",
     "policy": "Shape-valid host options are supported only if initial Dec is finite within [-90,90] degrees and all reachable rate indices 1..max(4,maxRateIndex) produce finite positive advancing Dec/RA steps, with RA step < 6 h. Refuse without clamping. Not native options validation.",
+    "stateContext": "radioLabRateIssues applies the same rate criteria to the rate each next step would use, because RateSpin (0x566784/0x566838) is the only recompute and the start loop (0x566f6b) only raises the index to the options maximum, so an index above max(4,maxRateIndex) set under earlier options or by a restored host state is kept. 'stored' (running or paused slew) refuses SlewTimer2 callbacks with outcome rate-unsupported and the panel registers no interval; 'start' (rate after the raise loop) refuses OK and Yes; 'down'/'up' refuses a RateSpin press during a slew. Idle RateSpin presses keep the native arithmetic and are applied, so stepping through an unsupported index stays possible. Reasons are shown in a panel note and inside the open dialog/confirmation. Nothing is clamped or recomputed.",
+    "stateContextEvidence": "Coordinator reproduction radio-antenna-independent/review-lifecycle-findings/cross-options.json (A maxRateIndex 6/base 50, B 4/3241, index 5 rate 324100, RA step 6.00185185 h); regressions in src/core/radioAntenna.test.ts and tests/radio-antenna-lifecycle.spec.ts. Implementation contract only; native runtime not executed.",
     "missingAuthority": "INI loader, instructor options and TRadioOptsDlg validation; shared clock, drift and altitude limits remain gated."
   }
 }
