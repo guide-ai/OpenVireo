@@ -56,9 +56,27 @@
       "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/workbench-integration/text-independent/unit-report.json",
       "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/workbench-integration/text-independent/receipt.json",
       "by": "Codex independent checks;source hashes match committed tree",
-      "receiptSelfExcluded": true
+      "receiptSelfExcluded": true,
+      "exitCodes": {
+        "unit": 0,
+        "typecheck": 0,
+        "build": 0
+      },
+      "browserCases": {
+        "expected": 24,
+        "unexpected": 0,
+        "skipped": 0,
+        "flaky": 0
+      }
     },
-    "notClaimed": "The 1799-unit and 64-E2E independent runs above validated the 48 snapshot only; they do not validate the 49 pin or the integrated App."
+    "notClaimed": "The 1799-unit and 64-E2E independent runs above validated the 48 snapshot only; they do not validate the 49 pin or the integrated App.",
+    "hashPopulationVerification": {
+      "sourceCommit": "a1859491b9c8176ed62cd2e734b11205478b3ac5",
+      "wedgeRecordedFilesChecked": 25,
+      "matchStandaloneHashes": 23,
+      "matchIntegratedOverrides": 2,
+      "separateDeltaReceiptPopulation": "text-independent/source-before.json describes six followup files,not the25Wedge source entries"
+    }
   },
   "sourceStableDuringIndependentValidation": true,
   "unitTests": {
