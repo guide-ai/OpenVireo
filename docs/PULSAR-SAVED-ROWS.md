@@ -84,7 +84,7 @@ All of the following are refused with a visible reason. Nothing is repaired or s
 2. **Use or Discard.** The file in use changes only on Use this file. A rejection, read error, Cancel reading, a discarded candidate, or a cancelled or superseded late read leaves the file in use, its selection, the Find memory and the download bytes unchanged. The latest read owns the result.
 3. **Read-only display.** Header lines are shown verbatim and not interpreted. Rows are shown as raw field text in a scrollable table, followed by the exact text of the selected row. There are no edit, delete, record or save actions.
 4. **Download.** The download is the exact supplied bytes (`savedRowsBytes`), not regenerated CSV.
-5. **Lifetime.** Nothing is stored. The workspace exists only in the tab.
+5. **Lifetime.** Nothing is stored. The workspace exists only in the tab: Save investigation does not include it, an investigation restore does not change it, and reloading the page empties it.
 
 ## Host API
 
@@ -95,7 +95,8 @@ mountPulsarSavedRows(element, { active?, onModalChange?, translate?, idPrefix? }
 - **`active={false}`** makes the viewer inert. It also cancels a running read and closes an open dialog. The status then says that reading the file was cancelled because the viewer was made inactive, and the read's late result is ignored. The file in use, the selection, the Find memory, the Find session and its draft are kept, and the dialog reopens when the viewer becomes active again.
 - **Host modals stay on top.** A dialog opens only when no other modal dialog is open.
 - **`onModalChange(open)`** reports when the viewer's modal session (open or waiting) starts and ends. It is called only when the value changes: `false` once at mount, then `true`/`false` per session. If the viewer unmounts during a session, it reports `false` as it unmounts. Deactivation keeps the session and reports nothing, and a new callback identity alone reports nothing.
-- **Integration is not done here.** Mounting the viewer in `App` and adding the catalog to `en.json` are left to the coordinator.
+- **App integration.** The App mounts the viewer lazily in a separate disclosure under `#pulsar-analysis`, below the PLR analysis panel ([RADIO-SAVED-ROWS-INTEGRATION.md](RADIO-SAVED-ROWS-INTEGRATION.md)). It passes `active={false}` while the route is hidden, a project operation runs or the disclosure is closed, and shows the logical Find session reported by `onModalChange` in the disclosure summary. It never passes `active={false}` to the PLR panel because a Find session waits. The viewer catalog stays scoped; the disclosure's own texts are `plr.savedRows.*` in `en.json`.
+- **Cancel wording.** Starting a read replaces an unconfirmed candidate (`savedRowsBeginRead`), so a cancelled read does not say "Nothing changed": it says that the file in use, its selection and the Find text are unchanged and that a checked file waiting for Use when the read started is not restored.
 
 ## Shared UI audit pins
 
@@ -123,6 +124,9 @@ The recorded full suite for that snapshot is 2,032 tests, all passing. The curre
   - The `?strict=1` variant renders the viewer inside React `StrictMode`.
   - The corrections harness also exposes `__mount()`, so a test can remount the viewer after `unmount()`.
   - Tests run at desktop 1440 × 1050 and touch 375 × 812. The row-reveal test also resizes to 768 × 1024 and 320 × 568.
+  - The App integration pass used an owned harness under `<task>/claude-radio-saved-rows-app-integration/harness/` (loopback 127.0.0.1:5279, strict port) with the same host API, and added a distinct-sink test: a replaced `onModalChange` callback receives every later change, including a waiting session and the unmount report, and the replaced one receives nothing more.
+- **Actual App flows:** `tests/radio-saved-rows-app.spec.ts` (no harness). The control files are shared through `tests/fixtures/pulsar-saved-rows-controls.ts`.
+- **App style note:** the App's global `th` style (capitals, 8 px) is overridden for this table, so the recovered column names keep their case ("Freq (MHz)", not "FREQ (MHZ)").
 
 ## Web allocation bound
 

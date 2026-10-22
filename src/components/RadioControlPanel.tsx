@@ -1,4 +1,4 @@
-import {StrictMode,useEffect,useId,useLayoutEffect,useMemo,useRef,useState,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
+import {StrictMode,useEffect,useId,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
 import {createRoot} from 'react-dom/client';
 import {
  INITIAL_RADIO_CONTROL,NATIVE_CAPTIONS,RANDOM_ACCESS_RANGE_MS,clickRadioSwitch,closeRadioPanel,enterRadioPulsarsExercise,menuCaptionText,
@@ -8,7 +8,7 @@ import {
 import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,RADIO_WEB_OPTION_PROFILE,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,SKY_COORDS_WEB_DOMAIN,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
- isRadioLabModal,isRadioLabOptions,openSetCoordinates,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
+ isRadioLabModal,isRadioLabOptions,isSupportedRadioLabProfile,openSetCoordinates,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
  type NoticeAnswer,type RadioLabNotice,type RadioLabNoticeKind,type RadioLabOptions,type RadioLabOutcome,type RadioLabProfileIssue,type RadioLabRateIssue,
  type RadioLabState,type RadioLabTransition,type SkyCoordsDialog,type SkyCoordsField,
 } from '../core/radioAntenna';
@@ -38,10 +38,34 @@ export type RadioControlPanelProps=Readonly<{
  antennaTranslate?:RadioAntennaTranslate;
  /** Deliver SlewTimer2 callbacks on a nominal 100 ms browser interval (default true); otherwise a manual tick button is shown. */
  autoSlewTimer?:boolean;
+ /** WEB host adapter (default true). Pass false while the host hides the panel (for example an inactive route): the
+  * coordinate dialog and message boxes are then not presented and take no focus, while their state (draft, open box) is
+  * kept and presented again when the panel is active. Timers are not affected: a TTimer keeps running while its form is
+  * hidden, so a slew continues and can arrive in the background. */
+ active?:boolean;
+ /** WEB safety policy (default false), for a host project operation: no dialog or box is presented and the ScopeTimer and
+  * SlewTimer2 registrations are cancelled. When it ends a fresh registration starts; elapsed time is not caught up. */
+ hostBusy?:boolean;
+ /** Reports whether a coordinate dialog or message box is actually presented: active, not host-busy and no native modal
+  * <dialog> of the page open (those stay topmost; ours waits for them to close). Called only when the value changes,
+  * false once at mount, and false when the panel unmounts while presenting. The latest callback receives each change. */
+ onModalPresentedChange?:(presented:boolean)=>void;
 }>;
 
 /** Browser interval host for the timer registrations (WEB-TIMER-01). */
 const BROWSER_TIMER:RadioTimerHost={setInterval:(callback,ms)=>window.setInterval(callback,ms),clearInterval:handle=>window.clearInterval(handle as number)};
+/** WEB presentation ownership: a native modal <dialog> of the page (About, Hubble lab guide, another tool's dialog) is in the
+ * top layer and stays topmost. This panel renders no <dialog>, so any open one is foreign. Observed only while a dialog
+ * or box of this panel is pending; showModal()/close() toggle the open attribute and conditional rendering removes nodes. */
+const nativeModalOpen=()=>document.querySelector('dialog:modal')!==null;
+const noNativeModal=()=>false;
+function observeNativeModals(onChange:()=>void){
+ const observer=new MutationObserver(onChange);
+ observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open']});
+ document.addEventListener('close',onChange,true);
+ return ()=>{observer.disconnect();document.removeEventListener('close',onChange,true);};
+}
+const observeNothing=()=>()=>{};
 
 const DOME_BYTES:readonly DomeByte[]=[0,1,2,3];
 const englishRadio=createRadioTranslator(),englishAntenna=createRadioAntennaTranslator();
@@ -89,14 +113,24 @@ type StartRateIssue=Extract<RadioLabRateIssue,{context:'start'}>;
 function startRecovery(i:StartRateIssue,lab:RadioLabState,ta:RadioAntennaTranslate):string{
  if(lab.rateSpinEnabled||lab.trackingVisible){
   const recovery=ta(lab.rateSpinEnabled?'antenna.rateLimit.recovery.enabled':'antenna.rateLimit.recovery.tracking');
-  const first=lab.dialog?'antenna.rateLimit.recovery.firstDialog':lab.notice?.kind==='confirm-slew'?'antenna.rateLimit.recovery.firstConfirm':lab.notice?'antenna.rateLimit.recovery.firstNotice':null;
+  // The transit note's OK leads on to the slew confirmation, so only its Cancel releases the buttons at once.
+  const kind=lab.notice?.kind;
+  const first=lab.dialog?'antenna.rateLimit.recovery.firstDialog':kind==='confirm-slew'?'antenna.rateLimit.recovery.firstConfirm':kind==='transit-dec-only'?'antenna.rateLimit.recovery.firstTransit':kind?'antenna.rateLimit.recovery.firstNotice':null;
   return first?ta('antenna.rateLimit.recovery.afterModal',{first:ta(first),recovery}):recovery;
  }
- const items=[ta('antenna.rateLimit.alternative.maximum',{index:lab.rateIndex}),ta('antenna.rateLimit.alternative.instant')];
+ const raise=maximumRaisePossible(lab.rateIndex);
+ const items=[...(raise?[ta('antenna.rateLimit.alternative.maximum',{index:lab.rateIndex})]:[]),ta('antenna.rateLimit.alternative.instant')];
  // raStepOnly: live options are non-transit and only the RA step fails, so transit on or a Dec-only target also start.
  if(i.raStepOnly)items.push(ta('antenna.rateLimit.alternative.transit'),ta('antenna.rateLimit.alternative.coordinates',TOLERANCE_TEXT));
- const alternatives=ta('antenna.rateLimit.alternative.last',{items:items.slice(0,-1).join(ta('antenna.rateLimit.alternative.separator')),last:items[items.length-1]});
- return ta('antenna.rateLimit.recovery.hidden',{alternatives});
+ const alternatives=items.length===1?items[0]:ta('antenna.rateLimit.alternative.last',{items:items.slice(0,-1).join(ta('antenna.rateLimit.alternative.separator')),last:items[items.length-1]});
+ return raise?ta('antenna.rateLimit.recovery.hidden',{alternatives}):ta('antenna.rateLimit.recovery.hiddenNoMaximum',{alternatives,index:lab.rateIndex});
+}
+/** Whether some option record inside the supported web profile has a maximum index above `index`, so that the start loop
+ * would raise a kept index. Rate base 1 (the smallest positive Integer) gives the smallest Dec and RA steps at every index,
+ * so when it is outside the profile at maximum index + 1 every rate base is. Under WEB-OPT-01 this is false from index 8
+ * on (index 9 would need an RA step of about 18.5 h). Presentation only: no option or rate is changed. */
+function maximumRaisePossible(index:number):boolean{
+ return Number.isInteger(index)&&index>=0&&index<255&&isSupportedRadioLabProfile({...RADIO_COMPILED_OPTIONS,transitTelescope:false,instantSlew:false,limitsEnabled:false,rateBase:1,maxRateIndex:index+1});
 }
 function rateIssueText(i:RadioLabRateIssue,lab:RadioLabState,ta:RadioAntennaTranslate):string{
  const {rate,issue}=i,cause=issue.kind==='ra-step'?ta('antenna.rateLimit.cause.ra-step',{hours:issue.raStepHours.toPrecision(4),limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours}):ta('antenna.rateLimit.cause.rate-not-advancing');
@@ -124,13 +158,27 @@ function trapTab(e:KeyboardEvent<HTMLElement>,root:HTMLElement|null){
 }
 
 export default function RadioControlPanel({state,environment,onTransition,onEnvironmentChange,translate=englishRadio,autoScopeTimer=true,
- antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true}:RadioControlPanelProps){
+ antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange}:RadioControlPanelProps){
  const t=translate,ta=antennaTranslate,id=useId();
  const [outcome,setOutcome]=useState<RadioOutcome|null>(null),[envError,setEnvError]=useState(false);
  const [antennaOutcome,setAntennaOutcome]=useState<RadioLabOutcome|null>(null),[antennaError,setAntennaError]=useState(false);
  const [draft,setDraft]=useState(environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters)),[draftInvalid,setDraftInvalid]=useState(false);
  useEffect(()=>{setDraft(environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters));setDraftInvalid(false);},[environment.dishDiameterMeters]);
  const antennaModal=antenna?isRadioLabModal(antenna):false;
+ // WEB presentation ownership: the pending dialog or box (logical state, kept in `antenna`) is rendered only while the
+ // host shows the panel, no project operation runs and no native modal dialog of the page is open.
+ const foreignModal=useSyncExternalStore(antennaModal?observeNativeModals:observeNothing,antennaModal?nativeModalOpen:noNativeModal,noNativeModal);
+ const presented=antennaModal&&active&&!hostBusy&&!foreignModal;
+ // A dialog or box removed because presentation was suppressed must not move focus (to a hidden or inert control); it
+ // takes focus again when it is presented. Read by the views' cleanups, which run after this commit's layout effects.
+ const suppressed=useRef(false);
+ useLayoutEffect(()=>{suppressed.current=antennaModal&&!presented;});
+ // The latest host callback receives each change; a new callback identity alone reports nothing. Reported in the layout
+ // phase so the host can make its own controls inert before paint; an unmount while presenting reports false.
+ const reportTo=useRef(onModalPresentedChange),reported=useRef<boolean|null>(null);
+ useLayoutEffect(()=>{reportTo.current=onModalPresentedChange;});
+ const [reportPresented]=useState(()=>(value:boolean)=>{if(reported.current!==value){reported.current=value;reportTo.current?.(value);}});
+ useLayoutEffect(()=>{reportPresented(presented);if(presented)return ()=>reportPresented(false);},[reportPresented,presented]);
  // Shape-invalid options keep surfacing as the generic error from the transitions themselves.
  const profileIssues=useMemo(()=>isRadioLabOptions(antennaOptions)?radioLabProfileIssues(antennaOptions):[],[antennaOptions]);
  const profileSupported=profileIssues.length===0;
@@ -161,8 +209,9 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  // Timer callbacks are not user actions: they read the latest committed inputs and handlers when they fire.
  const scopeInput=useMemo(()=>({state,environment}),[state,environment]);
  const hasAntennaHost=antenna!==undefined&&onAntennaTransition!==undefined;
- const scopeActive=autoScopeTimer&&state.scopeTimerEnabled&&state.scopeTimerIntervalMs===1&&environment.domeByte!==3;
- const slewActive=hasAntennaHost&&autoSlewTimer&&antenna.slewTimerEnabled&&!slewSuspended;
+ // hostBusy cancels both registrations (WEB safety policy); hiding the panel (active=false) does not.
+ const scopeActive=autoScopeTimer&&!hostBusy&&state.scopeTimerEnabled&&state.scopeTimerIntervalMs===1&&environment.domeByte!==3;
+ const slewActive=hasAntennaHost&&autoSlewTimer&&!hostBusy&&antenna.slewTimerEnabled&&!slewSuspended;
  const slewRun=antenna?.slewRun??0;
  const latest=useRef({scopeInput,onTransition,antenna,antennaOptions,onAntennaTransition,scopeActive,slewActive,slewRun});
  useLayoutEffect(()=>{latest.current={scopeInput,onTransition,antenna,antennaOptions,onAntennaTransition,scopeActive,slewActive,slewRun};});
@@ -207,9 +256,10 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const applyDraft=()=>{try{changeEnv({dishDiameterMeters:parseDishDiameter(draft)});setDraftInvalid(false);}catch{setDraftInvalid(true);}};
  const windowCaption=menuCaptionText(NATIVE_CAPTIONS.window);
  const setCoordinatesRef=useRef<HTMLButtonElement>(null);
- // After the last modal surface closes, focus that fell to <body> returns to Set Coordinates.
+ // After the last modal surface closes, focus that fell to <body> returns to Set Coordinates (a hidden route ignores it).
  useEffect(()=>{if(!antennaModal&&(document.activeElement===null||document.activeElement===document.body))setCoordinatesRef.current?.focus();},[antennaModal]);
- return <section className="card radio-control" aria-labelledby={`${id}-title`} data-testid="radio-control">
+ const panelRoot=useRef<HTMLElement>(null);
+ return <section ref={panelRoot} className="card radio-control" aria-labelledby={`${id}-title`} data-testid="radio-control" data-modal-presented={presented}>
   <h2 id={`${id}-title`}>{t('radio.title')}</h2>
   <p>{ta('antenna.scope')}</p>
   <div className="radio-control-grid" inert={antennaModal||undefined}>
@@ -297,10 +347,11 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
     <dt>{t('radio.state.item454')}</dt><dd>{yesNo(state.item454Enabled)}</dd>
    </dl>
   </details>
-  {antenna?.dialog&&<SkyCoordsDialogView dialog={antenna.dialog} blocked={antenna.notice!==null} ta={ta} limitReasons={startRefusal}
+  {presented&&antenna?.dialog&&<SkyCoordsDialogView dialog={antenna.dialog} blocked={antenna.notice!==null} ta={ta} limitReasons={startRefusal}
    onEdit={(field,text)=>runAntenna(()=>editSkyCoordsField(antenna,field,text))} onEpoch={i=>runAntenna(()=>selectSkyCoordsEpoch(antenna,i))}
-   onOk={()=>runAntenna(()=>confirmSkyCoords(antenna,antennaOptions))} onCancel={()=>runAntenna(()=>cancelSkyCoords(antenna))} returnFocus={setCoordinatesRef}/>}
-  {antenna?.notice&&<NoticeView notice={antenna.notice} ta={ta} limitReasons={antenna.notice.kind==='confirm-slew'?startRefusal:[]} onAnswer={answer=>runAntenna(()=>answerNotice(antenna,antennaOptions,antenna.notice!.kind,answer))}/>}
+   onOk={()=>runAntenna(()=>confirmSkyCoords(antenna,antennaOptions))} onCancel={()=>runAntenna(()=>cancelSkyCoords(antenna))} returnFocus={setCoordinatesRef} suppressed={suppressed}/>}
+  {presented&&antenna?.notice&&<NoticeView notice={antenna.notice} ta={ta} limitReasons={antenna.notice.kind==='confirm-slew'?startRefusal:[]} onAnswer={answer=>runAntenna(()=>answerNotice(antenna,antennaOptions,antenna.notice!.kind,answer))}
+   panel={panelRoot} suppressed={suppressed}/>}
  </section>;
 }
 
@@ -361,11 +412,15 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
  </div>;
 }
 
-type SkyCoordsDialogProps=Readonly<{dialog:SkyCoordsDialog;blocked:boolean;ta:RadioAntennaTranslate;limitReasons:readonly string[];onEdit:(field:SkyCoordsField,text:string)=>void;onEpoch:(index:0|1)=>void;onOk:()=>void;onCancel:()=>void;returnFocus:RefObject<HTMLButtonElement|null>}>;
-/** TSkyCoordsDlg (bsDialog, poScreenCenter): ActiveControl RAHrEd with its text selected; OK is the Default (bkOK) and Cancel the Cancel (bkCancel) button. */
-function SkyCoordsDialogView({dialog,blocked,ta,limitReasons,onEdit,onEpoch,onOk,onCancel,returnFocus}:SkyCoordsDialogProps){
+type SkyCoordsDialogProps=Readonly<{dialog:SkyCoordsDialog;blocked:boolean;ta:RadioAntennaTranslate;limitReasons:readonly string[];onEdit:(field:SkyCoordsField,text:string)=>void;onEpoch:(index:0|1)=>void;onOk:()=>void;onCancel:()=>void;returnFocus:RefObject<HTMLButtonElement|null>;suppressed:RefObject<boolean>}>;
+/** TSkyCoordsDlg (bsDialog, poScreenCenter): ActiveControl RAHrEd with its text selected; OK is the Default (bkOK) and Cancel the Cancel (bkCancel) button.
+ * WEB: presented again after a suppression (hidden route, project operation, native modal), it takes focus the same way; the draft is kept in the state. */
+function SkyCoordsDialogView({dialog,blocked,ta,limitReasons,onEdit,onEpoch,onOk,onCancel,returnFocus,suppressed}:SkyCoordsDialogProps){
  const id=useId(),root=useRef<HTMLDivElement>(null),first=useRef<HTMLInputElement>(null),lastFocus=useRef<HTMLElement|null>(null);
- useEffect(()=>{first.current?.focus();first.current?.select();const back=returnFocus.current;return ()=>{back?.focus();};},[returnFocus]);
+ // Presented again under a pending message box (blocked at mount), the dialog is inert and cannot take focus yet: its
+ // first field then receives focus when the box closes, through the same path as after an OK error box below.
+ useEffect(()=>{if(blocked)lastFocus.current=first.current;else{first.current?.focus();first.current?.select();}
+  const back=returnFocus.current;return ()=>{if(!suppressed.current)back?.focus();};},[returnFocus,suppressed]);// mount-time `blocked` only
  // OKBtnClick has no SetFocus: after an error box, focus returns to the control that chose OK.
  useEffect(()=>{if(blocked)return;const el=lastFocus.current;lastFocus.current=null;if(el&&root.current?.contains(el))el.focus();},[blocked]);
  const ok=()=>{lastFocus.current=document.activeElement as HTMLElement|null;onOk();};
@@ -405,11 +460,16 @@ function SkyCoordsDialogView({dialog,blocked,ta,limitReasons,onEdit,onEpoch,onOk
 }
 
 /** Application.MessageBox stand-in: application-modal, default button first, Escape per escapeAnswer. */
-function NoticeView({notice,ta,limitReasons,onAnswer}:Readonly<{notice:RadioLabNotice;ta:RadioAntennaTranslate;limitReasons:readonly string[];onAnswer:(answer:NoticeAnswer)=>void}>){
+function NoticeView({notice,ta,limitReasons,onAnswer,panel,suppressed}:Readonly<{notice:RadioLabNotice;ta:RadioAntennaTranslate;limitReasons:readonly string[];onAnswer:(answer:NoticeAnswer)=>void;
+ panel:RefObject<HTMLElement|null>;suppressed:RefObject<boolean>}>){
  const id=useId(),root=useRef<HTMLDivElement>(null),defaultButton=useRef<HTMLButtonElement>(null);
  const meta=NOTICE_META[notice.kind],buttons=NOTICE_BUTTONS[notice.kind];
  // Keyed on the box kind, not the notice object: a transition committed while the same box stays open must not move focus.
- useEffect(()=>{const previous=document.activeElement as HTMLElement|null;defaultButton.current?.focus();return ()=>{if(previous?.isConnected)previous.focus();};},[notice.kind]);
+ // WEB: focus goes back only to a control of this panel, and not when the box was removed by a suppression. A box
+ // presented again (for example an arrival reached while the route was hidden) may have found focus in the App header;
+ // it does not send focus there, and Set Coordinates takes it as after any last box.
+ useEffect(()=>{const previous=document.activeElement as HTMLElement|null;defaultButton.current?.focus();
+  return ()=>{if(!suppressed.current&&previous?.isConnected&&panel.current?.contains(previous))previous.focus();};},[notice.kind,panel,suppressed]);
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{
   if(ignoreHeldKey(e))return;
   if(e.key==='Escape'){e.preventDefault();const answer=escapeAnswer(notice.kind);if(answer)onAnswer(answer);return;}

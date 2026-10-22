@@ -1,9 +1,9 @@
 import {test,expect,type Page} from '@playwright/test';
-// Scoped I06 radio control flows. Until the coordinator mounts RadioControlPanel
-// in App, these run against an owned harness (see docs/RADIO-CONTROL.md and
-// docs/RADIO-ANTENNA.md) via OPENVIREO_RADIO_HARNESS_URL and skip otherwise.
+// Scoped I06 radio control flows, standalone panel contract. These run against an owned harness
+// (see docs/RADIO-CONTROL.md and docs/RADIO-ANTENNA.md) via OPENVIREO_RADIO_HARNESS_URL and skip
+// otherwise; the App route #radio-control is covered by tests/radio-saved-rows-app.spec.ts.
 const harness=process.env.OPENVIREO_RADIO_HARNESS_URL;
-test.skip(!harness,'OPENVIREO_RADIO_HARNESS_URL is not set; radio panel is not mounted in App yet.');
+test.skip(!harness,'OPENVIREO_RADIO_HARNESS_URL is not set; App flows are covered by tests/radio-saved-rows-app.spec.ts.');
 const open=async(page:Page)=>{await page.goto(harness!);await expect(page.getByTestId('radio-control')).toBeVisible();};
 const status=(page:Page)=>page.getByTestId('radio-status');
 

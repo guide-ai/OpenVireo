@@ -1,7 +1,7 @@
 import { SAVED_FIND_LITERALS } from '../core/pulsarSavedRows';
 /**
- * English presentation catalog for the supplied saved-rows viewer (keys `savedRows.*`). It is kept out of the shared
- * en.json until the coordinator integrates it; a complete replacement catalog is accepted by createSavedRowsTranslator.
+ * English presentation catalog for the supplied saved-rows viewer (keys `savedRows.*`). It stays a scoped catalog; the App
+ * host's own disclosure texts are `plr.savedRows.*` in en.json. A complete replacement catalog is accepted by createSavedRowsTranslator.
  * Labels are authored web text, except the Find dialog caption, its DFM captions and the not-found caption, which
  * are the decoded literals (SAVED_FIND_LITERALS in src/core/pulsarSavedRows.ts). The not-found body is built by the
  * pure core from the literals and is shown as text. Pure presentation data: no React and no scientific state.
@@ -9,7 +9,7 @@ import { SAVED_FIND_LITERALS } from '../core/pulsarSavedRows';
 export const SAVED_ROWS_MESSAGES_EN = Object.freeze({
   'savedRows.title': 'Saved pulsar measurements (supplied file)',
   'savedRows.scope': 'Opens a supplied measurement file in the layout recovered from the pulsar analysis Save writer and applies the recovered Review search to its exact rows. This viewer is a web addition; no original reload command for this layout has been established.',
-  'savedRows.separate': 'This is a separate, temporary workspace. It does not change the current recording, its cursors, the measurements waiting to be recorded or the recorded measurement list, and its rows cannot be edited, recorded or saved. They are kept only in this browser tab.',
+  'savedRows.separate': 'This is a separate, temporary workspace. It does not change the current recording, its cursors, the measurements waiting to be recorded or the recorded measurement list, and its rows cannot be edited, recorded or saved. They are kept only in this browser tab: Save investigation does not include them, and reloading the page empties this viewer.',
   'savedRows.authenticity': 'A file that passes these checks has the expected layout. That does not show that CLEA wrote it.',
   'savedRows.file.heading': 'Measurement file',
   'savedRows.file.choose': 'Choose saved measurement file',
@@ -91,11 +91,11 @@ export const SAVED_ROWS_MESSAGES_EN = Object.freeze({
   'savedRows.status.empty': 'The search text is empty: nothing was searched and the selection is unchanged.',
   'savedRows.status.cancelled': 'Find cancelled.',
   'savedRows.status.pickerCancelled': 'No file chosen. Nothing changed.',
-  'savedRows.status.readCancelled': 'Reading cancelled. Nothing changed.',
-  'savedRows.status.readCancelledInactive': 'Reading {name} was cancelled because the viewer was made inactive. Nothing changed.',
+  'savedRows.status.readCancelled': 'Reading cancelled. The file in use, its selection and the Find text are unchanged. A checked file that was waiting for Use when this read started was replaced by it and is not restored.',
+  'savedRows.status.readCancelledInactive': 'Reading {name} was cancelled because the viewer was made inactive. The file in use, its selection and the Find text are unchanged. A checked file that was waiting for Use when this read started was replaced by it and is not restored.',
   'savedRows.status.candidate': '{name} is ready to check.',
   'savedRows.status.accepted': 'Now using {name}.',
-  'savedRows.status.discarded': 'Checked file discarded. Nothing changed.',
+  'savedRows.status.discarded': 'Checked file discarded. The file in use is unchanged.',
   'savedRows.status.downloadError': 'The download could not be started.',
   'savedRows.lineEnding.CRLF': 'CR LF',
   'savedRows.lineEnding.LF': 'LF',

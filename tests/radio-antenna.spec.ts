@@ -1,11 +1,14 @@
 import {test,expect,type Page} from '@playwright/test';
 // I06 radio antenna flows (TRadioLab Tracking/Slew Rate/Set Coordinates, TSkyCoordsDlg,
-// SlewTimer2 slew, stop/resume, close/reopen). Until the coordinator mounts the panel in
-// App these run against the owned harness via OPENVIREO_RADIO_HARNESS_URL and skip otherwise.
-// They check the chosen implementation contract, not original runtime behavior.
+// SlewTimer2 slew, stop/resume, close/reopen), standalone panel contract. These run against an owned
+// harness via OPENVIREO_RADIO_HARNESS_URL and skip otherwise; the panel's actual App route (#radio-control)
+// is covered by tests/radio-saved-rows-app.spec.ts. They check the chosen implementation contract, not
+// original runtime behavior.
 const harness=process.env.OPENVIREO_RADIO_HARNESS_URL;
-test.skip(!harness,'OPENVIREO_RADIO_HARNESS_URL is not set; radio panel is not mounted in App yet.');
+test.skip(!harness,'OPENVIREO_RADIO_HARNESS_URL is not set; App flows are covered by tests/radio-saved-rows-app.spec.ts.');
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
+/** WEB wording: a start raises the index to the options maximum only where it is lower (a kept higher index stays). */
+const SLEW_STARTED='Slew started at the rate shown under Slew Rate: the start raised the index to the options maximum where the index was lower, and kept a higher index unchanged.';
 const notice=(page:Page)=>id(page,'antenna-notice');
 
 /** Main window: exercise, compiled defaults (diameter 100, access option 0), access, scope timer tick, switch On. */
@@ -47,7 +50,7 @@ test('Tracking → Set Coordinates → validation → confirmation → programme
  await expect(notice(page)).toHaveAttribute('data-kind','confirm-slew');await expect(id(page,'antenna-notice-text')).toHaveText('Slew the telescope to RA 1h 0m 0.00s, Dec +30° 0′ 0.0″?');
  await expect(id(page,'antenna-notice-yes')).toBeFocused();await page.keyboard.press('Escape');await expect(notice(page)).toBeVisible();// Yes/No ignores Escape
  await page.keyboard.press('Enter');
- await expect(id(page,'antenna-status')).toHaveText('Slew started at the maximum rate.');
+ await expect(id(page,'antenna-status')).toHaveText(SLEW_STARTED);
  await expect(id(page,'antenna-rate')).toHaveText('Index 5: 5000 arcsec per slew-timer tick');await expect(id(page,'antenna-rate-down')).toBeDisabled();
  await expect(id(page,'antenna-manual')).toContainText('disabled');
  await expect(notice(page)).toHaveAttribute('data-kind','slew-complete',{timeout:15_000});
@@ -189,7 +192,7 @@ test('held Enter in a coordinate field chooses OK once; auto-repeat never answer
  await expect(id(page,'antenna-motion')).toHaveText('Telescope stopped.');await expect(id(page,'antenna-tick')).toHaveCount(0);
  await expect(id(page,'antenna-status')).toHaveText('Coordinates stored; confirm the slew.');
  await page.keyboard.press('Enter');// a fresh press answers the default button
- await expect(id(page,'antenna-status')).toHaveText('Slew started at the maximum rate.');
+ await expect(id(page,'antenna-status')).toHaveText(SLEW_STARTED);
 });
 
 test('held Enter on an invalid entry opens one error box; held Escape closes only that box',async({page})=>{

@@ -55,7 +55,7 @@ The pure core in `src/core/radioControl.ts` does not import React or i18n. Trans
 
 1. The `radio.*` keys are already integrated in `src/i18n/en.json`, with regenerated parameter types. The optional scoped catalog adapter reuses the shared translator.
 2. The reviewed UI coverage pin is45:43 prior files plus the radio and observation-HR panels. Both new panels use the shared presentation catalog.
-3. Mount `RadioControlPanel` in App/router. Supply the dome byte from the observatory state if it is the same `[+0x552]` concept; until then the panel accepts explicit inputs. No session schema is changed and no state is persisted.
+3. `RadioControlPanel` is mounted in the App under the `#radio-control` route (see [RADIO-SAVED-ROWS-INTEGRATION.md](RADIO-SAVED-ROWS-INTEGRATION.md)). The dome byte is **not** taken from the observatory dome: whether the observatory state is the same `[+0x552]` concept is not established, so the route keeps the explicit scenario inputs, starting from the FormCreate value 0. No session schema is changed and no state is persisted.
 
 ## Demo and tests
 
@@ -74,4 +74,4 @@ The current harness is the antenna harness on 127.0.0.1:5266 (see RADIO-ANTENNA.
 
 Tests check the implementation contract chosen here. They are not an oracle for the original runtime.
 
-Integration candidate note: authored messages are now in the shared English catalog and the presentation adapter is under src/components/RadioMessages.ts. The numerical/state core has no presentation imports. The control workbench remains unmounted in the student application while antenna/source contracts and separate review are pending.
+Integration note: authored messages are in the shared English catalog and the presentation adapter is under src/components/RadioMessages.ts. The numerical/state core has no presentation imports. The panel is mounted in the App route `#radio-control` by the bounded host integration (local, pending separate review and promotion); the standalone specs above still run against an owned harness, and the App flows are in `tests/radio-saved-rows-app.spec.ts`.

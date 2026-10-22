@@ -27,6 +27,8 @@
 .psr-table caption{text-align:left;font-size:.9rem;padding:.25rem .45rem}
 .psr-table th,.psr-table td{border:1px solid #888;padding:.2rem .45rem;text-align:left;white-space:pre}
 .psr-table thead th{position:sticky;top:0;background:Canvas;color:CanvasText}
+/* Mounted in the App: the global th style would show the recovered column names in capitals ("FREQ (MHZ)"). */
+.psr-table th{text-transform:none;letter-spacing:normal;font-size:inherit;font-weight:600}
 .psr-table tbody tr{cursor:pointer}
 .psr-table input[type="radio"]{width:1.25rem;height:1.25rem;margin:0;cursor:pointer}
 .psr-selected{background:Highlight;color:HighlightText}

@@ -1,21 +1,16 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-// Supplied saved PLR measurement rows viewer (docs/PULSAR-SAVED-ROWS.md). The viewer is not mounted in App yet, so
-// these flows run against an owned loopback harness through OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL and skip otherwise.
+import { CONTROL, HEADER, OTHER, PLR, ROW_A, ROW_B, ROW_C } from './fixtures/pulsar-saved-rows-controls';
+// Supplied saved PLR measurement rows viewer (docs/PULSAR-SAVED-ROWS.md), standalone contract. These flows run against an
+// owned loopback harness through OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL and skip otherwise. The viewer is mounted in the
+// App under #pulsar-analysis; those actual App flows are in tests/radio-saved-rows-app.spec.ts and need no harness.
 const harness = process.env.OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL;
-test.skip(!harness, 'OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL is not set; the saved-rows viewer is not mounted in App yet.');
+test.skip(!harness, 'OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL is not set; App flows are covered by tests/radio-saved-rows-app.spec.ts.');
 
-// HAND-WRITTEN CONTROL FILES in the recovered writer layout. Not CLEA output, not observations, not a writer oracle.
-const HEADER = '"Object","Freq (MHz)","Gain (Rel)","Ref (Secs)","Vert (Secs)","Horz (Rel)","Start (JD)","Comments","Data Pts","Del T (msec)","Aperture (M)","File Name"';
-const ROW_A = '"PSR B0329+54",408.00,1.000,0.123456,"",5.0000E-01,49999.12345678,"first, pulse",1000,10.00,26,"C:\\CLEA\\PULSARS\\B0329.PLR"';
-const ROW_B = '"PSR B0531+21",1420.00,2.500,"",0.033000,"",50000.50000000,"",2000,1.00,300';
-const ROW_C = '"PSR B1919+21",430.00,0.500,1.337000,0.250000,-1.2345E+02,49000.00000000,"Crab? no, B1919",500,33.33,40,"D:\\data\\b1919+21.plr"';
-const CONTROL = ['"10/22/2026","9:41:07 AM"', '"Table Number: 3"', '', '"Ada Student"', '"Ben Student"', '', HEADER, ROW_A, ROW_A, ROW_B, ROW_C].map(l => l + '\r\n').join('');
-const OTHER = ['"2026-10-22","21:41"', '"Table Number: "', '', '', HEADER, ROW_B, '"<b>Markup</b>",1.00,1.000,"","","",1.00000000,"<img src=x onerror=alert(1)>",1,1.00,1,"x.plr"'].map(l => l + '\n').join('');
-// SYNTHETIC .PLR recording for the existing analysis panel (same form as tests/pulsar-analysis.spec.ts).
-const PLR = ["'SYNTHETIC E2E',40,1", '430.00,1420.00,0', '1.000,0.000,1.000', '49999.12345678,0.01', ...Array.from({ length: 1000 }, (_, i) => `${(i % 50) / 10},10,0`)].join('\r\n') + '\r\n';
-
+// A started read replaces an unconfirmed candidate, so a cancel names what is kept instead of "Nothing changed".
+const CANCEL_KEPT = 'The file in use, its selection and the Find text are unchanged. A checked file that was waiting for Use when this read started was replaced by it and is not restored.';
+const READ_CANCELLED = `Reading cancelled. ${CANCEL_KEPT}`;
 const file = (name: string, text: string | Buffer) => ({ name, mimeType: 'text/plain', buffer: typeof text === 'string' ? Buffer.from(text, 'latin1') : text });
 const sha = (text: string) => createHash('sha256').update(Buffer.from(text, 'latin1')).digest('hex');
 const open = async (page: Page, query = '') => {
@@ -239,7 +234,7 @@ test('rejected, unreadable, discarded, cancelled and late reads leave the file i
   await held(page, 'held-one.csv');
   await expect(page.getByTestId('saved-rows-reading')).toContainText('Reading held-one.csv…');
   await page.getByTestId('saved-rows-cancel-read').click();
-  await expect(page.getByTestId('saved-rows-status')).toHaveText('Reading cancelled. Nothing changed.');
+  await expect(page.getByTestId('saved-rows-status')).toHaveText(READ_CANCELLED);
   await release(page, 'held-one.csv');
   await expect(page.getByTestId('saved-rows-reading')).toHaveCount(0);
   await unchanged();
@@ -294,7 +289,7 @@ test('host ownership: inactive viewer closes and keeps the Find session, waits b
   await expect.poll(() => page.evaluate(() => (window as unknown as { __modalLog: boolean[] }).__modalLog)).toEqual([false, true, false]);
   // Deactivation cancels a running read and the status says so; its late result is ignored.
   const status = page.getByTestId('saved-rows-status');
-  const inactiveCancel = 'Reading held-late.csv was cancelled because the viewer was made inactive. Nothing changed.';
+  const inactiveCancel = `Reading held-late.csv was cancelled because the viewer was made inactive. ${CANCEL_KEPT}`;
   await choose(page, 'held-late.csv', OTHER);
   await held(page, 'held-late.csv');
   await expect(status).toHaveText('Reading held-late.csv…');
@@ -321,7 +316,7 @@ test('host ownership: inactive viewer closes and keeps the Find session, waits b
   await choose(page, 'held-again.csv', OTHER);
   await held(page, 'held-again.csv');
   await page.getByTestId('saved-rows-cancel-read').click();
-  await expect(status).toHaveText('Reading cancelled. Nothing changed.');
+  await expect(status).toHaveText(READ_CANCELLED);
 });
 
 test('keyboard: Tab wraps in the Find dialog, a held Enter acts once, Escape cancels one layer, arrow keys move the row selection', async ({ page }) => {
@@ -497,6 +492,43 @@ for (const variant of [{ name: 'plain', query: '' }, { name: 'StrictMode', query
     await logged(true, false);
     await unmount(page);
     await logged();
+  });
+}
+
+for (const variant of [{ name: 'plain', query: '' }, { name: 'StrictMode', query: '?strict=1' }]) {
+  test(`host ownership (${variant.name}): a replaced onModalChange callback gets every later change and the unmount report; the old sink gets nothing more`, async ({ page }) => {
+    await open(page, variant.query);
+    // Two distinct sinks (the harness default writes a third, __modalLog). Each install replaces the callback prop.
+    const install = (name: '__sinkA' | '__sinkB') => page.evaluate(n => {
+      const w = window as unknown as Record<string, unknown> & { __savedRows: { render: (p: unknown) => void } };
+      const sink = (w[n] ??= []) as boolean[];
+      w.__savedRows.render({ onModalChange: (open: boolean) => sink.push(open) });
+    }, name);
+    const sinks = async () => { await settle(page); return page.evaluate(() => { const w = window as unknown as { __sinkA?: boolean[]; __sinkB?: boolean[]; __modalLog: boolean[] }; return { a: [...(w.__sinkA ?? [])], b: [...(w.__sinkB ?? [])], log: [...w.__modalLog] }; }); };
+    expect(await sinks()).toEqual({ a: [], b: [], log: [false] });
+    await install('__sinkA');
+    expect(await sinks()).toEqual({ a: [], b: [], log: [false] });// a new identity alone reports nothing
+    await useFile(page);
+    await page.getByTestId('saved-rows-find').click();
+    await page.getByTestId('saved-rows-query').fill('B1919');
+    expect(await sinks()).toEqual({ a: [true], b: [], log: [false] });
+    await install('__sinkB');
+    expect(await sinks()).toEqual({ a: [true], b: [], log: [false] });
+    await page.getByTestId('saved-rows-from-top').click();
+    await expect(selectedRow(page)).toHaveAttribute('data-testid', 'saved-rows-row-3');
+    expect(await sinks()).toEqual({ a: [true], b: [false], log: [false] });
+    // A waiting session (behind a host modal) still reports to the latest sink, and so does its end at unmount.
+    await openHostModal(page);
+    await page.getByTestId('saved-rows-find').dispatchEvent('click');
+    await expect(findDialog(page)).toHaveCount(1);
+    await expect(findDialog(page)).not.toBeVisible();
+    expect(await sinks()).toEqual({ a: [true], b: [false, true], log: [false] });
+    await install('__sinkA');
+    await unmount(page);
+    expect(await sinks()).toEqual({ a: [true, false], b: [false, true], log: [false] });
+    await closeHostModal(page);
+    expect(await sinks()).toEqual({ a: [true, false], b: [false, true], log: [false] });
+    await expect(page.locator('dialog')).toHaveCount(0);
   });
 }
 

@@ -5,7 +5,7 @@ import {test,expect,type Locator,type Page} from '@playwright/test';
 // step, so tick counts follow the nominal 100 ms browser schedule. That is the chosen web contract, not a
 // claim about Windows TTimer/WM_TIMER timing. window.__radioHarness is the harness host (lifted states).
 const harness=process.env.OPENVIREO_RADIO_HARNESS_URL;
-test.skip(!harness,'OPENVIREO_RADIO_HARNESS_URL is not set; radio panel is not mounted in App yet.');
+test.skip(!harness,'OPENVIREO_RADIO_HARNESS_URL is not set; App flows are covered by tests/radio-saved-rows-app.spec.ts.');
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const notice=(page:Page)=>id(page,'antenna-notice');
 const ticks=(page:Page)=>id(page,'antenna-ticks');
@@ -457,6 +457,50 @@ test.describe('RA tolerance and modal feedback (the RA step is checked only wher
   await id(page,'antenna-notice-no').click();await flush(page);
   await id(page,'antenna-rate-down').click();await flush(page);await expect(id(page,'antenna-rate')).toHaveText('Index 4: 32410 arcsec per slew-timer tick');
   await expect(id(page,'antenna-rate-limit')).toHaveCount(0);await expect(id(page,'antenna-target')).toContainText('2h 0m 0.00s');
+ });
+ test('transit note open over a start limit: the recovery says Cancel on the transit note first, because its OK opens the confirmation @mobile',async({page})=>{
+  await openPanel(page,'?transit=1&maxRateIndex=6');await requirePatchHook(page);
+  const transitNote=async(dec:string)=>{
+   await id(page,'antenna-set-coordinates').click();await enterCoordinates(page,['2','0','0',dec,'0','0']);await id(page,'antenna-dialog-ok').click();await flush(page);
+   await expect(notice(page)).toHaveAttribute('data-kind','transit-dec-only');
+  };
+  // A first transit slew ends; that enables the Slew Rate buttons of this transit-initialized panel.
+  await transitNote('20');await id(page,'antenna-notice-ok').click();await flush(page);await id(page,'antenna-notice-yes').click();await flush(page);
+  await runToArrival(page);await id(page,'antenna-notice-ok').click();await flush(page);await expect(id(page,'antenna-rate-down')).toBeEnabled();
+  await transitNote('10');
+  await host(page,api=>api.patchAntenna!({rate:0}));await flush(page);// restored host state: a kept rate whose Dec step does not advance
+  const start=id(page,'antenna-rate-limit-start');
+  await expect(start).toContainText('Choose Cancel on the transit note first: its OK opens the slew confirmation instead (where No then closes it)');
+  await expect(start).not.toContainText('Close the open message');await check375(page,start);
+  // Its OK indeed leads to the confirmation, where Yes is refused and the recovery says No first.
+  await id(page,'antenna-notice-ok').click();await flush(page);await expect(notice(page)).toHaveAttribute('data-kind','confirm-slew');
+  await expect(start).toContainText('Answer No on the slew confirmation first');
+  await id(page,'antenna-notice-yes').click();await flush(page);await expect(notice(page)).toHaveAttribute('data-kind','confirm-slew');await expect(id(page,'antenna-status')).toHaveText(RATE_REFUSED);
+  await id(page,'antenna-notice-no').click();await flush(page);await expect(notice(page)).toHaveCount(0);
+  await expect(start).toContainText('Choose another rate with the Slew Rate buttons');await expect(start).not.toContainText('confirmation first');
+  // A press recovers; then Cancel on the note releases the buttons at once.
+  await id(page,'antenna-rate-down').click();await flush(page);await expect(id(page,'antenna-rate')).toHaveText('Index 5: 5000 arcsec per slew-timer tick');await expect(id(page,'antenna-rate-limit')).toHaveCount(0);
+  // (At index 5 the start loop would recompute the rate up to the maximum 6, so the restored state keeps index 6.)
+  await transitNote('10');await host(page,api=>api.patchAntenna!({rateIndex:6,rate:0}));await flush(page);await expect(start).toContainText('Choose Cancel on the transit note first');
+  await page.keyboard.press('Escape');await flush(page);await expect(notice(page)).toHaveCount(0);await expect(id(page,'antenna-status')).toHaveText('Slew cancelled; the coordinates stay stored.');
+  await id(page,'antenna-rate-down').click();await flush(page);await expect(id(page,'antenna-rate')).toHaveText('Index 5: 5000 arcsec per slew-timer tick');await expect(id(page,'antenna-rate-limit')).toHaveCount(0);
+ });
+ test('a kept index of 8 or more: the recovery omits the impossible options-maximum route and says why @mobile',async({page})=>{
+  await openPanel(page,'?transit=1');await requirePatchHook(page);
+  await host(page,api=>api.patchAntenna!({rateIndex:8,rate:0}));await flush(page);// restored host state, not reachable through the UI
+  const start=id(page,'antenna-rate-limit-start');
+  await expect(start).toContainText('no Tracking button');await expect(start).toContainText('Until then a start can proceed with instant slew');
+  await expect(start).not.toContainText('whose maximum index exceeds the kept index');
+  await expect(start).toContainText('Raising the options maximum cannot help here: no option record in the supported web profile has a maximum index above the kept index 8.');
+  await check375(page,start);
+  // Index 7 keeps the route: a supported record with maximum 8 exists (rate base 1).
+  await host(page,api=>api.patchAntenna!({rateIndex:7,rate:0}));await flush(page);
+  await expect(start).toContainText('telescope options whose maximum index exceeds the kept index 7');await expect(start).not.toContainText('Raising the options maximum cannot help');
+ });
+ test('the tolerance wording states the plain-hour comparison: 0 h and 24 h are 24 h apart',async({page})=>{
+  await keptUnderB(page);
+  await expect(id(page,'antenna-rate-limit-start')).toContainText('The difference uses the plain hour values without wrapping at 24 h, so 0 h and 24 h are 24 h apart.');
+  await expect(id(page,'antenna-rate-limit')).toContainText('without wrapping at 24 h, so a pointing at 0 h and a target at 24 h are 24 h apart here.');
  });
  test('live non-transit options on a transit-initialized panel: the recovery names the live alternatives and a Dec-only slew proceeds @mobile',async({page})=>{
   await openPanel(page,'?transit=1');await requirePatchHook(page);

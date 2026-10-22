@@ -493,6 +493,34 @@ describe('WEB-OPT-01 supported web option profile (browser limit, not original o
   expect(track(slewTimerTick(boundary,opts({rateBase:0}),s.slewRun)).outcome).toBe('options-unsupported');// the record is checked first
   expect(radioLabTickRefusal(s,opts({rateBase:0}))).toBe('options-unsupported');
  });
+ it('the RA tolerance compares the plain hour values: 0 h and 24 h are 24 h apart (no wrap), as the panel wording now states',()=>{
+  const B=opts({maxRateIndex:4,rateBase:3241}),kept:RadioLabState={...at(0,10,B),rateIndex:5,rate:324100};
+  const wrapTarget=enter(kept,fields('24','0','0','10','0','0'),B);
+  expect(radioLabRateIssues(wrapTarget,B)).toMatchObject([{context:'start',target:{ra:24,dec:10},raStepOnly:true,issue:{kind:'ra-step',index:5}}]);
+  expect(track(confirmSkyCoords(wrapTarget,B))).toMatchObject({outcome:'rate-unsupported',changed:false});
+  const decOnly=enter(kept,fields('0','0','0','20','0','0'),B);
+  expect(radioLabRateIssues(decOnly,B)).toEqual([]);expect(track(confirmSkyCoords(decOnly,B)).outcome).toBe('slew-confirm-requested');
+ });
+ it('the predictor reports no refusal while SlewTimer2 is disabled (idle or paused), as slewTimerTick answers idle first; the shape is still checked',()=>{
+  const bad=opts({rateBase:0});
+  // Idle: never started, and after a completed slew. Before: options-unsupported for a callback that cannot arrive.
+  for(const idle of [INITIAL_RADIO_LAB,activated(),runSlew(slewTo(at(1,10),fields('1','0','0','11','0','0'))).state]){
+   expect(idle.slewTimerEnabled).toBe(false);expect(radioLabTickRefusal(idle,bad)).toBeNull();
+   expect(track(slewTimerTick(idle,bad,idle.slewRun))).toMatchObject({outcome:'slew-timer-idle',changed:false});
+  }
+  // Paused at the stop question exactly at the Dec→RA switch with an unsupported stored rate. Before: rate-unsupported.
+  const boundary:RadioLabState={...slewTo(at(1,10),fields('3','0','0','20','0','0')),rate:5_000_000,rateIndex:8,pointing:{ra:1,dec:20},axisDone:true};
+  const paused=track(openSetCoordinates(boundary,O)).state;
+  expect(paused).toMatchObject({slewTimerEnabled:false,slewing:true,notice:{kind:'stop-slew'}});
+  expect(radioLabTickRefusal(paused,O)).toBeNull();expect(radioLabTickRefusal(paused,bad)).toBeNull();
+  expect(track(slewTimerTick(paused,O,paused.slewRun))).toMatchObject({outcome:'slew-timer-idle',changed:false});
+  // No resumes the same run: the refusal is reported again for the callback that is now pending.
+  const resumed=track(answerNotice(paused,O,'stop-slew','no')).state;
+  expect(radioLabTickRefusal(resumed,O)).toBe('rate-unsupported');expect(radioLabTickRefusal(resumed,bad)).toBe('options-unsupported');
+  // The option shape check is kept for idle states too.
+  for(const malformed of [{...O,maxRateIndex:256},{...O,rateBase:1.5},{...O,latitudeRadians:Number.NaN},null])
+   expect(()=>radioLabTickRefusal(INITIAL_RADIO_LAB,malformed as unknown as RadioLabOptions)).toThrow('Invalid radio lab options');
+ });
  it('supported profiles reach the target within a bounded number of callbacks, including RA steps just below 6 h',()=>{
   const finish=(o:RadioLabOptions,from:RadioPointingLike,to:SkyCoordsFields)=>{
    const rate=slewRateFor(Math.max(o.maxRateIndex,4),o),limit=Math.ceil(180/(rate*RADIO_LAB_CONSTANTS.decStepPerRate))+Math.ceil(12/raStep(rate))+6;

@@ -46,8 +46,8 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
 | 3× Extended +0x2c | float tokens | Freq1..3Ed ("Frequency (MHz):") | ffFixed 2; blank above highest | Frequency (MHz) |
 | 3× Extended +0x4a | float tokens, 0 → 1 | Gain1..3Ed ("Relative Gain:") | ffFixed 3; blank above highest | Relative gain |
 | byte +0x2b | integer token | — | gates receivers 2 and 3 | Highest recorded receiver index |
-| list last index +1 | rows | PointsEd ("# of Data Points:") | IntToStr | Number of data points |
-| filename (object-base +0x9a; gate at object-base +0x97, unlike the +4-relative rows above) | known file-name stores; see `fileNameField` | FileNmEd ("File:") | text, or "Data Not Written to File" | File name (web: the browser-supplied name; native: the `+0x9a` text, shown when `+0x97` is set and known stores include a successful read and the PLR writer `0x56a518`; its content, possibly a path, is unknown) |
+| list last index at object-base +0x84, then +1 | rows | PointsEd ("# of Data Points:") | IntToStr | Number of data points |
+| filename (object-base +0x9a; gate at object-base +0x97) | known file-name stores; see `fileNameField` | FileNmEd ("File:") | text, or "Data Not Written to File" | File name (web: the browser-supplied name; native: the `+0x9a` text, shown when `+0x97` is set and known stores include a successful read and the PLR writer `0x56a518`; its content, possibly a path, is unknown) |
 
 ## Recovered behavior (implemented in `src/core/pulsarAnalysis.ts`)
 

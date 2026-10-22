@@ -335,10 +335,13 @@ export function radioLabRateIssues(s:RadioLabState,options:RadioLabOptions):read
  }
  return Object.freeze(issues);
 }
-/** The refusal slewTimerTick gives a callback of the current run (null: it is applied). The panel registers the
- * SlewTimer2 interval only while this is null, so it suspends exactly the callbacks the core would refuse. */
+/** The refusal slewTimerTick gives a callback of the current run (null: none). The panel registers the SlewTimer2
+ * interval only while this is null, so it suspends exactly the callbacks the core would refuse. While SlewTimer2 is
+ * disabled (no slew, or a slew paused at the stop question) no callback is pending: slewTimerTick answers
+ * slew-timer-idle before any profile or rate check, so this also reports null there (the option shape is still checked). */
 export function radioLabTickRefusal(s:RadioLabState,options:RadioLabOptions):'options-unsupported'|'rate-unsupported'|null{
  checkOptions(options);
+ if(!s.slewTimerEnabled)return null;
  if(!isSupportedRadioLabProfile(options))return 'options-unsupported';
  // Only the Dec→RA switch callback (axis done in phase 0/1, non-transit) uses s.rate, and only outside the tolerance.
  return raStepPending(s,options)&&s.axisDone&&rateIssue(s.rate,s.rateIndex)?'rate-unsupported':null;
