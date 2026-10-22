@@ -1175,7 +1175,9 @@ test('Review UI-R06: Ok without edits keeps every field and enables no save writ
   await openReview(page);
   expect(await rowCells(page)).toEqual(before);
   await expect(page.getByTestId('pulsar-review-find')).toBeDisabled();
-  await expect(page.getByTestId('pulsar-review-edit')).toBeDisabled();
+  await expect(page.getByTestId('pulsar-review-find')).toHaveAccessibleDescription(/Find is not available/);
+  // Superseded by the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01): Edit is enabled; Find stays disabled.
+  await expect(page.getByTestId('pulsar-review-edit')).toBeEnabled();
   await page.getByTestId('pulsar-review-cancel').click();
 });
 
@@ -1185,15 +1187,16 @@ test('Review UI-R07: keyboard-only Review keeps Tab inside the active layer, Ent
   await page.getByTestId('pulsar-review').focus();
   await page.keyboard.press('Enter');
   await expect(review(page)).toHaveJSProperty('open', true);
-  const sel2 = page.getByTestId('pulsar-review-select-2'), del = page.getByTestId('pulsar-review-delete');
+  const sel2 = page.getByTestId('pulsar-review-select-2'), del = page.getByTestId('pulsar-review-delete'), edit = page.getByTestId('pulsar-review-edit');
   const ok = page.getByTestId('pulsar-review-ok'), cancel = page.getByTestId('pulsar-review-cancel');
   await expect(page.getByTestId('pulsar-review-select-1')).toBeFocused();
   await page.keyboard.press('ArrowDown');
   await expect(sel2).toBeFocused();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
   // The scroll region (review correction 1) is the first stop, before the row radios it contains.
+  // Edit is a Tab stop since the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01); Find stays disabled.
   const scroll = page.getByTestId('pulsar-review-scroll');
-  for (const next of [del, ok, cancel, scroll, sel2]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [edit, del, ok, cancel, scroll, sel2]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
   await page.keyboard.press('Shift+Tab');
   await expect(scroll).toBeFocused();
   await page.keyboard.press('Shift+Tab');
@@ -1309,6 +1312,7 @@ test('Review correction 1: the named scroll region is a Tab stop inside the trap
   const scroll = page.getByTestId('pulsar-review-scroll');
   const sel1 = page.getByTestId('pulsar-review-select-1'), sel2 = page.getByTestId('pulsar-review-select-2');
   const del = page.getByTestId('pulsar-review-delete'), ok = page.getByTestId('pulsar-review-ok'), cancel = page.getByTestId('pulsar-review-cancel');
+  const edit = page.getByTestId('pulsar-review-edit'); // a Tab stop since PLR-REVIEW-EDIT-STATIC-01
   await expect(scroll).toHaveAttribute('role', 'region');
   await expect(scroll).toHaveAccessibleName('Measurements');
   expect(await scroll.evaluate(e => e.scrollWidth > e.clientWidth)).toBe(true); // precondition: the columns overflow sideways
@@ -1322,8 +1326,8 @@ test('Review correction 1: the named scroll region is a Tab stop inside the trap
   await expect(sel1).toBeChecked();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-1');
   // Full cycle in both directions: one stop for the radio group, never a host control outside the dialog.
-  for (const next of [sel1, del, ok, cancel, scroll, sel1]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
-  for (const next of [scroll, cancel, ok, del, sel1]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
+  for (const next of [sel1, edit, del, ok, cancel, scroll, sel1]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [scroll, cancel, ok, del, edit, sel1]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
   // The group's stop follows the checked radio.
   await page.keyboard.press('ArrowDown');
   await expect(sel2).toBeChecked();
@@ -1560,4 +1564,257 @@ test('Pending-read gate: Record, Review and Clear open no modal while a chosen f
   await openReview(page);
   expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3', 'pulsar-entry-4']);
   await page.getByTestId('pulsar-review-cancel').click();
+});
+
+// ---- Review → Edit, comment only (PLR-REVIEW-EDIT-STATIC-01; WEB inline editor over the working copy) ----
+// SYNTHETIC: a comma in the object, and a comma and a double quote in the file name, which stays in the opaque tail.
+const EDITABLE = SYNTH.replace("'SYNTHETIC E2E'", "'PSR, B'");
+const EDITABLE_FILE = 'b0329, "x".plr';
+const editor = (page: Page) => page.getByTestId('pulsar-review-editor');
+const editComment = (page: Page) => page.getByTestId('pulsar-review-edit-comment');
+const reviewStatus = (page: Page) => review(page).locator('.plr-status');
+/** Comment cell (index 9 after the radio: seq, panel, object, freq, gain, ref, vert, horiz, start, comment) of each row. */
+const rowComments = async (page: Page) => (await rowCells(page)).map(c => c[9]);
+
+test('Review Edit E1: inner OK changes only the selected working-copy row; outer Cancel restores and outer Ok commits', async ({ page }) => {
+  await threeEntries(page, EDITABLE, EDITABLE_FILE);
+  await openReview(page);
+  const before = await rowCells(page);
+  await page.getByTestId('pulsar-review-select-3').click();
+  await page.getByTestId('pulsar-review-edit').click();
+  await expect(editor(page)).toBeVisible();
+  await expect(editor(page).locator('h4')).toHaveText('Measurement Data');
+  await expect(page.getByTestId('pulsar-review-edit-object')).toHaveText('PSR, B');
+  for (const [k, v] of [['start', '49999.12345678'], ['frequency', '430.00'], ['gain', '1.000']]) await expect(page.getByTestId(`pulsar-review-edit-${k}`)).toHaveText(v);
+  for (const [k, v] of [['reference', ''], ['vertical', '0.400000'], ['horizontal', '']]) {
+    const field = page.getByTestId(`pulsar-review-edit-${k}`);
+    await expect(field).toHaveValue(v);
+    await expect(field).toHaveAttribute('readonly', '');
+    await expect(field).toHaveAttribute('tabindex', '-1');
+  }
+  await expect(editComment(page)).toBeFocused();
+  await expect(editComment(page)).toHaveValue('same');
+  await expect(review(page).getByTestId('pulsar-review-list')).toHaveAttribute('inert', '');
+  await page.screenshot({ path: test.info().outputPath('review-edit-open.png') });
+  // An invalid comment stays visible and uncommitted.
+  await editComment(page).fill('bad "quote"');
+  await page.getByTestId('pulsar-review-edit-ok').click();
+  await expect(reviewStatus(page)).toHaveText(/without double quotes/);
+  await expect(editor(page)).toBeVisible();
+  await expect(editComment(page)).toHaveValue('bad "quote"');
+  await expect(editComment(page)).toHaveAttribute('aria-invalid', 'true');
+  await editComment(page).fill('third, edited');
+  await page.keyboard.press('Enter'); // Enter in the comment is OK (DFM OkBtn Default)
+  await expect(editor(page)).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-review-edit')).toBeFocused();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-3');
+  const edited = await rowCells(page);
+  expect(edited.map(c => c[9])).toEqual(['first, kept', 'same', 'third, edited']);
+  expect(edited.slice(0, 2)).toEqual(before.slice(0, 2));
+  expect(edited[2]).toEqual([...before[2].slice(0, 9), 'third, edited', ...before[2].slice(10)]);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  // Outer Cancel discards the edit.
+  await page.getByTestId('pulsar-review-cancel').click();
+  await expect(review(page)).toHaveCount(0);
+  await openReview(page);
+  expect(await rowCells(page)).toEqual(before);
+  // Edit again; outer Ok commits with the same caller semantics, without renumbering.
+  await page.getByTestId('pulsar-review-select-3').click();
+  await page.getByTestId('pulsar-review-edit').click();
+  await editComment(page).fill('third, edited');
+  await page.getByTestId('pulsar-review-edit-ok').click();
+  await page.getByTestId('pulsar-review-ok').click();
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+  expect(await rowCells(page)).toEqual(edited);
+  await page.getByTestId('pulsar-review-cancel').click();
+  await page.getByTestId('pulsar-clear').click();
+  await expect(page.getByTestId('pulsar-clear-dialog')).toContainText('have not been saved');
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('pulsar-save')).toBeDisabled();
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(EDITABLE));
+});
+
+test('Review Edit E2: inner Cancel and one-layer Escape change nothing; an empty list shows the Edit notice', async ({ page }) => {
+  await threeEntries(page, EDITABLE, EDITABLE_FILE);
+  await openReview(page);
+  const before = await rowCells(page), edit = page.getByTestId('pulsar-review-edit');
+  await edit.click();
+  await expect(editComment(page)).toHaveValue('first, kept');
+  await editComment(page).fill('discarded by Cancel');
+  await page.getByTestId('pulsar-review-edit-cancel').click();
+  await expect(editor(page)).toHaveCount(0);
+  await expect(edit).toBeFocused();
+  expect(await rowCells(page)).toEqual(before);
+  await page.keyboard.press('Enter'); // Edit from the keyboard reopens with the working-copy comment
+  await expect(editComment(page)).toBeFocused();
+  await expect(editComment(page)).toHaveValue('first, kept');
+  await editComment(page).fill('discarded by Escape');
+  await page.keyboard.press('Escape'); // inner Cancel only
+  await expect(editor(page)).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(edit).toBeFocused();
+  expect(await rowCells(page)).toEqual(before);
+  await page.keyboard.press('Escape'); // then outer Cancel
+  await expect(review(page)).toHaveCount(0);
+  await expect(page.getByTestId('pulsar-review')).toBeFocused();
+  await openReview(page);
+  for (const seq of [1, 2, 3]) await stageDelete(page, seq);
+  await edit.click();
+  const notice = page.getByTestId('pulsar-review-notice');
+  await expect(notice.locator('h4')).toHaveText('No Item Selected!');
+  await expect(notice.locator('p')).toHaveText('Select Item for Edit.');
+  await expect(page.getByTestId('pulsar-review-notice-ok')).toBeFocused();
+  await expect(editor(page)).toHaveCount(0);
+  await page.getByTestId('pulsar-review-notice-ok').click();
+  await expect(notice).toHaveCount(0);
+  await expect(edit).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(notice).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(notice).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(edit).toBeFocused();
+  await page.getByTestId('pulsar-review-cancel').click();
+  await expect(count(page)).toHaveText('3 recorded measurements');
+});
+
+test('Review Edit E3: keyboard-only edit keeps Tab inside the editor, skips the read-only readings and survives a host modal', async ({ page }) => {
+  await threeEntries(page, EDITABLE, EDITABLE_FILE);
+  await hostControls(page);
+  await page.getByTestId('pulsar-review').focus();
+  await page.keyboard.press('Enter');
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await page.keyboard.press('ArrowDown');
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
+  const edit = page.getByTestId('pulsar-review-edit'), comment = editComment(page);
+  const ok = page.getByTestId('pulsar-review-edit-ok'), cancel = page.getByTestId('pulsar-review-edit-cancel');
+  await page.keyboard.press('Tab');
+  await expect(edit).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(comment).toBeFocused();
+  await expect(comment).toHaveValue('same');
+  for (const next of [ok, cancel, comment, ok]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [comment, cancel, ok]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
+  await comment.focus();
+  await page.keyboard.press('End');
+  await page.keyboard.type(', second');
+  await page.keyboard.press('Enter');
+  await expect(editor(page)).toHaveCount(0);
+  await expect(edit).toBeFocused();
+  expect(await rowComments(page)).toEqual(['first, kept', 'same, second', 'same']);
+  // Space on Edit opens once; Enter on the editor's Cancel closes it without a change.
+  await page.keyboard.press(' ');
+  await expect(comment).toHaveValue('same, second');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(editor(page)).toHaveCount(0);
+  await expect(edit).toBeFocused();
+  // A host top-layer modal over the editor owns Tab and Escape; the editor keeps its draft.
+  await page.keyboard.press('Enter');
+  await comment.fill('kept under a host modal');
+  await hostModal(page);
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#host-two')).toBeFocused();
+  await page.keyboard.press('Escape');
+  expect(await hostModalOpen(page)).toBe(false);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(comment).toHaveValue('kept under a host modal');
+  await comment.focus();
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await openReview(page);
+  expect(await rowComments(page)).toEqual(['first, kept', 'same', 'same']);
+  await page.keyboard.press('Escape');
+});
+
+test('Review Edit E4: rows outside the round-trip subset are refused with a reason and stay unchanged; Load and Record still admit them', async ({ page }) => {
+  const refused = async (message: string | RegExp) => {
+    await openReview(page);
+    const before = await rowCells(page);
+    await page.getByTestId('pulsar-review-edit').click();
+    await expect(reviewStatus(page)).toHaveText(message);
+    await expect(editor(page)).toHaveCount(0);
+    await expect(page.getByTestId('pulsar-review-edit')).toBeFocused();
+    expect(await rowCells(page)).toEqual(before);
+    await page.getByTestId('pulsar-review-ok').click();
+    await openReview(page);
+    expect(await rowCells(page)).toEqual(before);
+    await page.getByTestId('pulsar-review-cancel').click();
+  };
+  await threeEntries(page); // object 'Obj, "Q" E2E'
+  await refused(/object name contains a double quote/);
+  // 86-character file name: the tail is 102 bytes, beyond the editor's 100.
+  await threeEntries(page, EDITABLE, 'n'.repeat(82) + '.plr');
+  await refused('Edit is not available for this measurement: a stored field is longer than the original editor keeps, so it would be cut. Nothing was changed. The stored points, interval, aperture and file text has 102 characters; the original editor keeps at most 100.');
+  await threeEntries(page, EDITABLE, 'pulsé.plr');
+  await refused(/outside printable ASCII/);
+  await expect(page.getByTestId('pulsar-file-name')).toHaveText('pulsé.plr');
+});
+
+test('Review Edit E5: an inactive host closes Review with the editor open and keeps its draft; then Delete and outer Ok', async ({ page }) => {
+  await threeEntries(page, EDITABLE, EDITABLE_FILE);
+  await hostControls(page);
+  await openReview(page);
+  await page.getByTestId('pulsar-review-select-2').click();
+  await page.getByTestId('pulsar-review-edit').click();
+  await editComment(page).fill('draft across hide');
+  await host(page, false);
+  await expect(review(page)).toHaveJSProperty('open', false);
+  await expect(review(page)).toBeHidden();
+  await page.getByTestId('host-after').focus();
+  await expect(page.getByTestId('host-after')).toBeFocused();
+  await host(page, true);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(editComment(page)).toBeFocused();
+  await expect(editComment(page)).toHaveValue('draft across hide');
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await page.getByTestId('pulsar-review-edit-ok').click();
+  await stageDelete(page, 3);
+  expect(await rowComments(page)).toEqual(['first, kept', 'draft across hide']);
+  await page.getByTestId('pulsar-review-ok').click();
+  await expect(count(page)).toHaveText('2 recorded measurements');
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2']);
+  expect(await rowComments(page)).toEqual(['first, kept', 'draft across hide']);
+  await page.getByTestId('pulsar-review-cancel').click();
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(EDITABLE));
+});
+
+test('Review Edit E6: at 360 px, 390 px and desktop the editor fits without page overflow and long values stay verbatim', async ({ page }) => {
+  const touch = !!test.info().project.use.hasTouch;
+  const press = (testId: string) => (touch ? page.getByTestId(testId).tap() : page.getByTestId(testId).click());
+  const name = 'Long, object name for the comment editor', file = 'long, "quoted" file for the editor.plr', comment = 'long, comment ' + 'y'.repeat(66);
+  const text = EDITABLE.replace("'PSR, B'", `'${name}'`);
+  for (const [w, h] of [[360, 740], [390, 844], [1440, 1050]] as const) {
+    await page.setViewportSize({ width: w, height: h });
+    await threeEntries(page, text, file, comment);
+    await openReview(page);
+    await press('pulsar-review-edit');
+    await expect(editComment(page)).toHaveValue(comment);
+    await expect(page.getByTestId('pulsar-review-edit-object')).toHaveText(name);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    const box = (await review(page).boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(w);
+    for (const id of ['pulsar-review-edit-ok', 'pulsar-review-edit-cancel']) { await page.getByTestId(id).scrollIntoViewIfNeeded(); await expect(page.getByTestId(id)).toBeVisible(); }
+    await page.screenshot({ path: test.info().outputPath(`review-edit-${w}.png`) });
+    await editComment(page).fill('z'.repeat(80));
+    await press('pulsar-review-edit-ok');
+    await expect(editor(page)).toHaveCount(0);
+    expect((await rowComments(page))[0]).toBe('z'.repeat(80));
+    await press('pulsar-review-ok');
+    await openReview(page);
+    const cells = await rowCells(page);
+    expect(cells[0][9]).toBe('z'.repeat(80));
+    for (const v of [name, file]) expect(cells[0]).toContain(v);
+    await press('pulsar-review-cancel');
+  }
 });

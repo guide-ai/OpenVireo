@@ -59,8 +59,9 @@ export type PulsarEntryFields = Readonly<{
  * 0x570f28 '"', 0x570f2c ',', 0x570f38 ',', 0x570f48 '"",', 0x570f54 '"'. It is not a validatable or
  * exportable native CSV: names are wrapped in '"' without escaping, as the literals suggest, so an admitted
  * object or file name containing an unescaped '"' can make its field boundaries ambiguous;
- * a comma inside a fully quoted field alone is not evidence of ambiguity. Nothing reads it: CSV
- * save 0x56feac is gated, and number text is not x87 parity.
+ * a comma inside a fully quoted field alone is not evidence of ambiguity. Only the Review comment editor
+ * reads it, through the bounded round-trip predicate of pulsarReviewEdit.ts; CSV save 0x56feac is gated,
+ * and number text is not x87 parity.
  */
 export type PulsarMeasurementEntry = Readonly<{ sequence: number; panel: PulsarPanel; fields: PulsarEntryFields; nativeLineCandidate: string }>;
 export type PulsarRecordSession = Readonly<{ queue: readonly PulsarPanel[]; position: number; draft: string }>;
@@ -108,7 +109,9 @@ export type PulsarOutcome =
   | 'record-disabled' | 'record-opened' | 'record-draft' | 'record-confirmed' | 'record-skipped' | 'record-finished' | 'comment-invalid'
   | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared'
   | 'review-disabled' | 'review-opened' | 'review-selected' | 'review-no-selection' | 'review-notice-closed'
-  | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed';
+  | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed'
+  | 'review-edit-no-selection' | 'review-edit-notice-closed' | 'review-edit-opened' | 'review-edit-draft' | 'review-edited' | 'review-edit-cancelled'
+  | 'review-edit-unsupported-text' | 'review-edit-unsupported-quote' | 'review-edit-unsupported-length' | 'review-edit-unsupported-layout';
 
 /** `placed`: this transition stored an accepted cursor placement. The stored value can equal the previous one. */
 export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; placed: boolean; evidence: readonly string[] }>;
@@ -376,7 +379,7 @@ export function pulsarPointerRelease(s: PulsarAnalysisState): PulsarTransition {
 }
 
 /** Outcomes that write no status of their own. */
-export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft', 'review-selected']);
+export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft', 'review-selected', 'review-edit-draft']);
 /** Refusal statuses say the latest input was not taken and the last accepted state is kept. */
 const REFUSAL_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['number-unsupported', 'display-unsupported']);
 /**
