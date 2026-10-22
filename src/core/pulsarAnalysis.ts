@@ -59,8 +59,9 @@ export type PulsarEntryFields = Readonly<{
  * 0x570f28 '"', 0x570f2c ',', 0x570f38 ',', 0x570f48 '"",', 0x570f54 '"'. It is not a validatable or
  * exportable native CSV: names are wrapped in '"' without escaping, as the literals suggest, so an admitted
  * object or file name containing an unescaped '"' can make its field boundaries ambiguous;
- * a comma inside a fully quoted field alone is not evidence of ambiguity. Nothing reads it: CSV
- * save 0x56feac is gated, and number text is not x87 parity.
+ * a comma inside a fully quoted field alone is not evidence of ambiguity. Only the Review comment editor
+ * reads it, through the bounded round-trip predicate of pulsarReviewEdit.ts; CSV save 0x56feac is gated,
+ * and number text is not x87 parity.
  */
 export type PulsarMeasurementEntry = Readonly<{ sequence: number; panel: PulsarPanel; fields: PulsarEntryFields; nativeLineCandidate: string }>;
 export type PulsarRecordSession = Readonly<{ queue: readonly PulsarPanel[]; position: number; draft: string }>;
@@ -108,7 +109,9 @@ export type PulsarOutcome =
   | 'record-disabled' | 'record-opened' | 'record-draft' | 'record-confirmed' | 'record-skipped' | 'record-finished' | 'comment-invalid'
   | 'clear-unsaved' | 'clear-confirm' | 'clear-cancelled' | 'cleared'
   | 'review-disabled' | 'review-opened' | 'review-selected' | 'review-no-selection' | 'review-notice-closed'
-  | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed';
+  | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed'
+  | 'review-edit-no-selection' | 'review-edit-notice-closed' | 'review-edit-opened' | 'review-edit-draft' | 'review-edited' | 'review-edit-cancelled'
+  | 'review-edit-unsupported-text' | 'review-edit-unsupported-quote' | 'review-edit-unsupported-length' | 'review-edit-unsupported-layout';
 
 /** `placed`: this transition stored an accepted cursor placement. The stored value can equal the previous one. */
 export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; placed: boolean; evidence: readonly string[] }>;
@@ -281,8 +284,9 @@ function panTick(s: PulsarAnalysisState, step: number): PulsarTransition {
 /**
  * PanLftBtnMouseDown 0x56d24c / PanRtBtnMouseDown 0x56d2b0 (left button only): step := ∓rate·dt, then
  * one immediate tick. The caller then enables the 100 ms hold timer (src/core/pulsarPanHold.ts), whose
- * ticks are pulsarPanTick. WEB: a keyboard activation also calls this once per physical key press (key
- * auto-repeat is ignored); the native buttons have no OnClick, so the original does not pan from the keyboard.
+ * ticks are pulsarPanTick. WEB: a pan button click permitted by the component's pointerPress guard
+ * also calls this once, with no hold timer; the component keeps repeat-flagged and latched Enter
+ * keydowns from clicking. The native buttons have no OnClick, so the original does not pan from the keyboard.
  */
 export function pulsarPan(s: PulsarAnalysisState, direction: 'left' | 'right'): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');
@@ -376,7 +380,7 @@ export function pulsarPointerRelease(s: PulsarAnalysisState): PulsarTransition {
 }
 
 /** Outcomes that write no status of their own. */
-export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft', 'review-selected']);
+export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft', 'review-selected', 'review-edit-draft']);
 /** Refusal statuses say the latest input was not taken and the last accepted state is kept. */
 const REFUSAL_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['number-unsupported', 'display-unsupported']);
 /**
@@ -443,7 +447,11 @@ export function pulsarRecordDialog(s: PulsarAnalysisState): PulsarRecordDialog |
     draft: session.draft, draftValid: pulsarCommentValid(session.draft), remaining: session.queue.length - session.position - 1,
   });
 }
-/** Opaque candidate (see PulsarMeasurementEntry): names are not escaped, so it is not parsed, validated or exported. */
+/**
+ * Opaque candidate (see PulsarMeasurementEntry): names are not escaped, so it is not a validatable or exportable CSV
+ * line. Only the Review comment editor parses it, through the bounded round-trip predicate of pulsarReviewEdit.ts,
+ * which keeps a duplicate of this template as a self-consistency guard. No native CSV writer or export uses it.
+ */
 const lineCandidate = (f: PulsarEntryFields) =>
   `"${f.object}",${f.frequency},${f.gain},` + [f.reference, f.vertical, f.horizontal].map(v => v === null ? '"",' : v + ',').join('') +
   `${f.start},"${f.comment}",${f.points},${f.intervalMs},${f.aperture},"${f.file}"`;

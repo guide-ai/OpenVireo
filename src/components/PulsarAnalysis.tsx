@@ -14,6 +14,10 @@ import {
   pulsarReviewAnswerDelete, pulsarReviewCancel, pulsarReviewConfirm, pulsarReviewDismissNotice, pulsarReviewEscape, pulsarReviewOpen, pulsarReviewRequestDelete, pulsarReviewSelect,
   type PulsarReviewSession,
 } from '../core/pulsarReview';
+import {
+  pulsarReviewEditCancel, pulsarReviewEditConfirm, pulsarReviewEditDraft, pulsarReviewEditSupport, pulsarReviewEditView, pulsarReviewRequestEdit,
+  type PulsarEditorField, type PulsarReviewEditView,
+} from '../core/pulsarReviewEdit';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
 
 /**
@@ -28,13 +32,13 @@ import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } f
 export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
 /**
- * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, one
- * text input, Review's row radios and Review's `tabIndex={0}` scroll region. Controls under an `inert`
- * wrapper (Review while its question is open) are skipped, and a radio group contributes only its checked
- * radio (or its first one), as the browser does.
+ * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, text
+ * inputs, Review's row radios and Review's `tabIndex={0}` scroll region. Controls under an `inert` wrapper
+ * (Review while its question or editor is open) and the editor's `tabIndex={-1}` read-only fields are
+ * skipped, and a radio group contributes only its checked radio (or its first one), as the browser does.
  */
 function tabbables(dialog: HTMLElement): HTMLElement[] {
-  const all = [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])')].filter(el => !el.closest('[inert]'));
+  const all = [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])')].filter(el => el.tabIndex >= 0 && !el.closest('[inert]'));
   const radio = (el: HTMLElement): el is HTMLInputElement => el instanceof HTMLInputElement && el.type === 'radio' && el.name !== '';
   // One pass: each group's stop is its first checked radio, else its first radio.
   const stop = new Map<string, HTMLInputElement>();
@@ -44,7 +48,22 @@ function tabbables(dialog: HTMLElement): HTMLElement[] {
 // Native GDI colors (TColor $00BBGGRR) used by 0x56bacc, 0x56c028, 0x56c448 and 0x56c6dc.
 const COLOR = { background: '#000080', axis: '#ffff00', trace: '#ffffff', vertical: '#00ffff', reference: '#00ff00', horizontal: '#ff00ff' };
 const ticks = PULSAR_PANELS.map(ch => pulsarAxisTicks(ch));
+/** Review column label used to name the field of an Edit length refusal. */
+const EDIT_FIELD_LABEL: Readonly<Record<PulsarEditorField, PulsarMessageKey>> = {
+  object: 'pulsar.review.object', frequency: 'pulsar.review.frequency', gain: 'pulsar.review.gain', reference: 'pulsar.review.reference', vertical: 'pulsar.review.vertical',
+  horizontal: 'pulsar.review.horizontal', start: 'pulsar.review.start', comment: 'pulsar.review.comment', tail: 'pulsar.reviewEdit.tail',
+};
 const clampInt = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(v)));
+/**
+ * WEB keyboard policy, scoped to this component and its descendant dialogs: ignore Enter keydowns marked
+ * as repeats before a child handler or a native button can act. This prevents one held key from confirming
+ * the next pending Record panel or activating a new control after focus moves. No window listener or latch;
+ * fresh keydowns, keyup, Space, arrows and pointer/touch input are unchanged. Input layers that send new
+ * keyup/keydown pairs with repeat=false are treated as fresh commands; no native/remote-input parity claim.
+ */
+const captureRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => {
+  if (e.key === 'Enter' && e.repeat) { e.preventDefault(); e.stopPropagation(); }
+};
 /** Client pixel index of a position in a box of n native pixels. */
 const pixelIndex = (offset: number, size: number, n: number) => Math.min(n - 1, Math.max(0, Math.floor(offset / size * n)));
 
@@ -61,6 +80,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const propertiesButton = useRef<HTMLButtonElement>(null), propertiesClose = useRef<HTMLButtonElement>(null);
   const commentInput = useRef<HTMLInputElement>(null), clearDefault = useRef<HTMLButtonElement>(null), clearButton = useRef<HTMLButtonElement>(null), recordButton = useRef<HTMLButtonElement>(null);
   const reviewButton = useRef<HTMLButtonElement>(null), reviewDelete = useRef<HTMLButtonElement>(null), reviewCancel = useRef<HTMLButtonElement>(null), reviewPromptDefault = useRef<HTMLButtonElement>(null);
+  const reviewEdit = useRef<HTMLButtonElement>(null), reviewEditComment = useRef<HTMLInputElement>(null);
 
   // The outcome that wrote the current status, or null for a file or read status.
   const statusOutcome = useRef<PulsarOutcome | null>(null);
@@ -87,15 +107,23 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
 
   useEffect(() => { if (recordPanel !== null) commentInput.current?.focus(); }, [recordPanel, s.recordSession?.position]);
   useEffect(() => { if (s.clearPrompt) clearDefault.current?.focus(); }, [s.clearPrompt]);
-  // Review's inner question takes focus on its default button. When it closes, focus returns to Delete,
-  // the control that opened it, in the commit that removes `inert` from the list and buttons.
+  // Review's inner question takes focus on its default button. When it closes, focus returns to the control
+  // that opened it (Delete, or Edit for Edit's notice), in the commit that removes `inert` from the list and buttons.
   const reviewPrompt = s.reviewSession?.prompt ?? null, lastReviewPrompt = useRef(reviewPrompt);
   useLayoutEffect(() => {
     const was = lastReviewPrompt.current;
     lastReviewPrompt.current = reviewPrompt;
     if (reviewPrompt) reviewPromptDefault.current?.focus();
-    else if (was && current.current.reviewSession) reviewDelete.current?.focus();
+    else if (was && current.current.reviewSession) (was === 'edit-no-selection' ? reviewEdit : reviewDelete).current?.focus();
   }, [reviewPrompt]);
+  // The comment editor takes focus on its comment when it opens; OK or Cancel returns focus to Edit.
+  const reviewEditing = !!s.reviewSession?.edit, lastReviewEditing = useRef(reviewEditing);
+  useLayoutEffect(() => {
+    const was = lastReviewEditing.current;
+    lastReviewEditing.current = reviewEditing;
+    if (reviewEditing) reviewEditComment.current?.focus();
+    else if (was && current.current.reviewSession) reviewEdit.current?.focus();
+  }, [reviewEditing]);
   // Returning focus waits for the commit that removes `inert` from the main region.
   const focusAfterModal = useRef<HTMLElement | null>(null);
   useLayoutEffect(() => { if (!modal && focusAfterModal.current) { const target = focusAfterModal.current; focusAfterModal.current = null; target.focus(); } });
@@ -115,7 +143,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const [panHold] = useState(() => createPulsarPanHold<number>(
     { every: (ms, fn) => window.setInterval(fn, ms), cancel: handle => window.clearInterval(handle) },
     () => activeRef.current && actRef.current(pulsarPanTick).outcome === 'panned'));
-  // Activation keys currently held on a pan button. A held Enter repeats keydown, and each one would click.
+  // Activation keys latched as held on a pan button: added on a keydown, removed on the keyup the button sees.
   // Their keyup can be lost while the window, page or panel is not receiving keys, so every stop forgets them.
   const panKeys = useRef(new Set<string>());
   useEffect(() => {
@@ -141,14 +169,18 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     onLostPointerCapture: () => panHold.release(),
     onKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => {
       if (e.key !== 'Enter' && e.key !== ' ') return;
-      // An auto-repeated Enter would activate the button again. Space activates on keyup, once per press.
+      // Enter usually clicks on keydown, Space on keyup. Repeat-flagged Enter keydowns are already stopped by the
+      // section capture; this branch still prevents Enter's click on a fresh (repeat=false) keydown while Enter is
+      // latched, and leaves a repeated or latched Space keydown without effect (its click comes from the keyup).
       if (e.repeat || panKeys.current.has(e.key)) { if (e.key === 'Enter') e.preventDefault(); return; }
       panKeys.current.add(e.key);
       pointerPress.current = false;
     },
     onKeyUp: (e: KeyboardEvent<HTMLButtonElement>) => { panKeys.current.delete(e.key); },
     onBlur: () => panKeys.current.clear(),
-    // WEB: keyboard or assistive activation steps once per physical press (the native buttons have no OnClick).
+    // WEB: onClick consumes a stored pointerPress flag; otherwise it steps once (the native buttons have no OnClick).
+    // Pointer cancel/lost capture release the hold but leave this flag, so a later non-keyboard click may be swallowed.
+    // A fresh unlatched keydown clears it above. This is existing web state, not native/assistive-input parity.
     onClick: () => { if (pointerPress.current) { pointerPress.current = false; return; } act(st => pulsarPan(st, direction)); },
     onContextMenu: (e: ReactMouseEvent<HTMLButtonElement>) => e.preventDefault(),
   });
@@ -215,8 +247,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (!panel || panel.getClientRects().length === 0 || panel.parentElement?.closest('[inert]')) return;
     if ([...document.querySelectorAll('dialog:modal')].some(d => d !== el)) return;
     try { el.showModal(); } catch { return; }
-    // Review: the open question's default button, else the selected row, else Cancel (an empty working copy).
-    const review = () => reviewPromptDefault.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
+    // Review: the open question's default button, else the editor's comment, else the selected row, else Cancel (an empty working copy).
+    const review = () => reviewPromptDefault.current ?? reviewEditComment.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
     (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : review())?.focus();
   });
   useLayoutEffect(() => { syncModal(); });
@@ -237,12 +269,15 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const textOrigin = useRef<Node | null>(null);
   /**
    * Escape is handled on keydown. A close request the page cannot cancel closes the dialog, which counts as Cancel/No.
+   * WEB keyboard policy: an Escape keydown marked as a repeat is prevented and does nothing, so one held Escape closes
+   * one layer (Review's editor, question or notice) and not the Review dialog under it. A fresh Escape closes the next
+   * layer. Stateless (KeyboardEvent.repeat only), no window listener or latch, and the event still propagates.
    * Tab and Shift+Tab wrap between this dialog's first and last controls (the top layer alone would let Tab leave to
    * the browser UI). The handler is on the dialog element, so keys in any other dialog never reach it.
    */
   const dialogEvents = (cancel: () => void) => ({
     onKeyDown: (e: KeyboardEvent<HTMLDialogElement>) => {
-      if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
+      if (e.key === 'Escape') { e.preventDefault(); if (!e.repeat) cancel(); return; }
       if (e.key !== 'Tab') return;
       const items = tabbables(e.currentTarget), first = items[0], last = items[items.length - 1];
       if (!first) return;
@@ -287,9 +322,17 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const answerClear = (a: 'discard' | 'yes' | 'no' | 'cancel') => { const tr = act(st => pulsarAnswerClear(st, a)); if (tr.state.clearPrompt === null) focusAfterModal.current = clearButton.current; };
   // Ok, Cancel or Escape that closes Review returns focus to the Review button, which stays enabled.
   const finishReview = (tr: PulsarTransition) => { if (tr.changed && tr.state.reviewSession === null) focusAfterModal.current = reviewButton.current; };
+  // Review Edit. A length refusal also names the field, its stored length and the editor's capacity (pure support result).
+  const requestEdit = () => {
+    const tr = act(pulsarReviewRequestEdit), r = tr.state.reviewSession;
+    if (tr.outcome !== 'review-edit-unsupported-length' || !r || r.selected === null) return;
+    const support = pulsarReviewEditSupport(r.draft[r.selected]);
+    if (!support.supported && support.field)
+      say(`${t('pulsar.outcome.review-edit-unsupported-length')} ${t('pulsar.reviewEdit.lengthDetail', { field: t(EDIT_FIELD_LABEL[support.field]), length: support.length ?? '', capacity: support.capacity ?? '' })}`, tr.outcome);
+  };
 
   return (
-    <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis">
+    <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis" onKeyDownCapture={captureRepeatedEnter}>
       <div className="plr-main" inert={modal}>
         <h2 id={`${idPrefix}title`}>{t('pulsar.title')}</h2>
         <p className="plr-scope">{t('pulsar.scope')}</p>
@@ -426,8 +469,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       {s.reviewSession && (
         <dialog ref={reviewDialog} aria-labelledby={`${idPrefix}review-heading`} className="plr-modal plr-review" data-testid="pulsar-review-dialog"
           {...dialogEvents(() => finishReview(act(pulsarReviewEscape)))}>
-          <Review session={s.reviewSession} t={t} idPrefix={idPrefix} act={act} finish={finishReview}
-            refs={{ remove: reviewDelete, cancel: reviewCancel, promptDefault: reviewPromptDefault }} />
+          <Review session={s.reviewSession} editor={pulsarReviewEditView(s)} t={t} idPrefix={idPrefix} act={act} finish={finishReview} requestEdit={requestEdit}
+            refs={{ edit: reviewEdit, remove: reviewDelete, cancel: reviewCancel, promptDefault: reviewPromptDefault, editComment: reviewEditComment }} />
           <p role="status" className="plr-status">{status}</p>
         </dialog>
       )}
@@ -539,22 +582,26 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs, owner }: PanelProps) {
 }
 
 type ReviewProps = Readonly<{
-  session: PulsarReviewSession; t: PulsarTranslate; idPrefix: string; act: Act; finish: (tr: PulsarTransition) => void;
-  refs: Readonly<{ remove: RefObject<HTMLButtonElement | null>; cancel: RefObject<HTMLButtonElement | null>; promptDefault: RefObject<HTMLButtonElement | null> }>;
+  session: PulsarReviewSession; editor: PulsarReviewEditView | null; t: PulsarTranslate; idPrefix: string; act: Act; finish: (tr: PulsarTransition) => void; requestEdit: () => void;
+  refs: Readonly<{
+    edit: RefObject<HTMLButtonElement | null>; remove: RefObject<HTMLButtonElement | null>; cancel: RefObject<HTMLButtonElement | null>;
+    promptDefault: RefObject<HTMLButtonElement | null>; editComment: RefObject<HTMLInputElement | null>;
+  }>;
 }>;
 /**
  * Contents of the Review dialog (TMEASLISTDLG). Rows are the working copy's structured fields, keyed by the
- * stable sequence; the opaque nativeLineCandidate is never shown or read. One radio per row is the ListBox
- * selection (WEB: arrow keys follow the browser radio group). Find and Edit keep their DFM places but are
- * disabled. While the question or notice is open, the list and buttons are inert.
+ * stable sequence; the opaque nativeLineCandidate is never shown. One radio per row is the ListBox selection
+ * (WEB: arrow keys follow the browser radio group). Find keeps its DFM place but is disabled. Edit opens the
+ * comment editor (TMeasForm2) as an inline layer. While the question, notice or editor is open, the list and
+ * buttons are inert.
  */
-function Review({ session, t, idPrefix, act, finish, refs }: ReviewProps) {
+function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }: ReviewProps) {
   const blank = (v: string | null) => v ?? t('pulsar.review.blank');
   const { draft, selected, prompt } = session;
   const select = (i: number) => act(st => pulsarReviewSelect(st, i));
   return (
     <>
-      <div className="plr-review-body" inert={prompt !== null} data-testid="pulsar-review-list">
+      <div className="plr-review-body" inert={prompt !== null || editor !== null} data-testid="pulsar-review-list">
         <h3 id={`${idPrefix}review-heading`}>{t('pulsar.review.heading')}</h3>
         <p className="plr-help">{t('pulsar.review.note')}</p>
         {draft.length === 0 ? <p data-testid="pulsar-review-empty">{t('pulsar.review.empty')}</p> : (
@@ -576,7 +623,7 @@ function Review({ session, t, idPrefix, act, finish, refs }: ReviewProps) {
         <div className="plr-row plr-review-buttons">
           <span className="plr-row">
             <button type="button" disabled aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-find">{t('pulsar.review.find')}</button>
-            <button type="button" disabled aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
+            <button type="button" ref={refs.edit} onClick={requestEdit} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
             <button type="button" ref={refs.remove} onClick={() => act(pulsarReviewRequestDelete)} data-testid="pulsar-review-delete">{t('pulsar.review.delete')}</button>
           </span>
           <span className="plr-row">
@@ -596,16 +643,59 @@ function Review({ session, t, idPrefix, act, finish, refs }: ReviewProps) {
           </div>
         </section>
       )}
-      {prompt === 'no-selection' && (
+      {(prompt === 'no-selection' || prompt === 'edit-no-selection') && (
         <section className="plr-review-prompt" role="alertdialog" aria-labelledby={`${idPrefix}review-prompt`} aria-describedby={`${idPrefix}review-prompt-text`} data-testid="pulsar-review-notice">
           <h4 id={`${idPrefix}review-prompt`}>{t('pulsar.review.noSelectionCaption')}</h4>
-          <p id={`${idPrefix}review-prompt-text`}>{t('pulsar.review.noSelectionText')}</p>
+          <p id={`${idPrefix}review-prompt-text`}>{t(prompt === 'no-selection' ? 'pulsar.review.noSelectionText' : 'pulsar.review.editNoSelectionText')}</p>
           <div className="plr-row">
             <button type="button" ref={refs.promptDefault} onClick={() => act(pulsarReviewDismissNotice)} data-testid="pulsar-review-notice-ok">{t('pulsar.review.noticeOk')}</button>
           </div>
         </section>
       )}
+      {editor && <ReviewEditor view={editor} t={t} idPrefix={idPrefix} act={act} comment={refs.editComment} />}
     </>
+  );
+}
+
+type ReviewEditorProps = Readonly<{ view: PulsarReviewEditView; t: PulsarTranslate; idPrefix: string; act: Act; comment: RefObject<HTMLInputElement | null> }>;
+/**
+ * TMeasForm2 as an inline layer of the Review dialog (WEB). The group caption is the object; JD, frequency and
+ * gain are text; the three cursor readings are read-only and out of the Tab order (DFM ReadOnly, TabStop false);
+ * only the comment is editable. Enter in the comment is OK (DFM OkBtn Default), once per press (WEB: auto-repeats are
+ * ignored by the component capture handler); Escape is Cancel (WEB). The
+ * comment input accepts up to 256 characters so an invalid draft stays visible; OK refuses it.
+ */
+function ReviewEditor({ view, t, idPrefix, act, comment }: ReviewEditorProps) {
+  const ok = () => act(pulsarReviewEditConfirm);
+  return (
+    <section className="plr-review-prompt plr-review-edit" role="dialog" aria-labelledby={`${idPrefix}review-edit`} data-testid="pulsar-review-editor">
+      <h4 id={`${idPrefix}review-edit`}>{t('pulsar.reviewEdit.heading')}</h4>
+      <p className="plr-help">{t('pulsar.reviewEdit.note')}</p>
+      <fieldset className="plr-review-edit-group">
+        <legend data-testid="pulsar-review-edit-object">{view.object}</legend>
+        <dl>
+          <div><dt>{t('pulsar.reviewEdit.julianDate')}</dt><dd><output data-testid="pulsar-review-edit-start">{view.start}</output></dd></div>
+          <div><dt>{t('pulsar.reviewEdit.frequency')}</dt><dd><output data-testid="pulsar-review-edit-frequency">{view.frequency}</output></dd></div>
+          <div><dt>{t('pulsar.reviewEdit.gain')}</dt><dd><output data-testid="pulsar-review-edit-gain">{view.gain}</output></dd></div>
+        </dl>
+        <p className="plr-review-edit-readings-label">{t('pulsar.reviewEdit.readings')}</p>
+        <div className="plr-review-edit-readings">
+          {(['reference', 'vertical', 'horizontal'] as const).map(k => (
+            <label key={k}>{t(`pulsar.reviewEdit.${k}`)}<input readOnly tabIndex={-1} value={view[k]} data-testid={`pulsar-review-edit-${k}`} /></label>
+          ))}
+        </div>
+        <label>{t('pulsar.reviewEdit.comment')}
+          <input ref={comment} value={view.draft} maxLength={256} aria-invalid={!view.draftValid} aria-describedby={`${idPrefix}review-edit-help`}
+            onChange={e => act(st => pulsarReviewEditDraft(st, e.target.value))}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); ok(); } }} data-testid="pulsar-review-edit-comment" />
+        </label>
+        <p className="plr-help" id={`${idPrefix}review-edit-help`}>{t('pulsar.reviewEdit.commentHelp')}</p>
+      </fieldset>
+      <div className="plr-row">
+        <button type="button" onClick={ok} data-testid="pulsar-review-edit-ok">{t('pulsar.reviewEdit.ok')}</button>
+        <button type="button" onClick={() => act(pulsarReviewEditCancel)} data-testid="pulsar-review-edit-cancel">{t('pulsar.reviewEdit.cancel')}</button>
+      </div>
+    </section>
   );
 }
 

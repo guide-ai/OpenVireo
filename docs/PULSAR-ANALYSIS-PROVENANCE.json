@@ -1,6 +1,9 @@
 {
-  "feature": "Recorded pulsar (.PLR) data analysis window: load, read-only properties, three recorded-channel panels, manual cursors, display controls with held pan, in-app measurement record, Review working-copy transaction with confirmed Delete, clear, original-byte download/reimport",
-  "originalFeatureIds": ["N07 (partial)", "E06 (partial)"],
+  "feature": "Recorded pulsar (.PLR) data analysis window: load, read-only properties, three recorded-channel panels, manual cursors, display controls with held pan, in-app measurement record, Review working-copy transaction with confirmed Delete and comment-only Edit on a proven round-trip subset, clear, original-byte download/reimport",
+  "originalFeatureIds": [
+    "N07 (partial)",
+    "E06 (partial)"
+  ],
   "acceptanceClaim": "none; I06/I07/N07/E06 remain open",
   "artifact": {
     "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
@@ -37,66 +40,411 @@
       "Class THdrDisp (VMT 0x57149c self-verified, 960 bytes): FormActivate 0x571748, OkBtnClick 0x5719c0, published fields IDEd +0x364 … FileNmEd +0x3b8",
       "Class TPlsrAnalysisForm1 (VMT 0x5697b0, 49 methods, 71 published fields): every DFM handler bound, including PanTimerTimer 0x56d1e4, PanLft/RtBtnMouseDown/Up, DispBox{n}Paint/Mouse*",
       "TPF0 DispBox1/2/3 Width 400, Height 120/125/140; PanTimer Enabled false, Interval 100; PanLftBtn/PanRtBtn bind OnMouseDown/OnMouseUp only",
-      "Review dialog class 0x5631f8 = TMeasListDlg (VMT 0x563244) with FormActivate/CnclBtnClick/OkBtnClick/FndBtnClick/EditBtnClick/DelBtnClick. The class metadata alone recovers no semantics; the transaction and Delete semantics come from the bounded captures GNU-REVIEW-METHODS and GNU-REVIEW-DELETE (contracts PLR-REVIEW-*-STATIC-01). Find and Edit stay unrecovered for this slice",
+      "Review dialog class 0x5631f8 = TMeasListDlg (VMT 0x563244) with FormActivate/CnclBtnClick/OkBtnClick/FndBtnClick/EditBtnClick/DelBtnClick. The class metadata alone recovers no semantics; the transaction and Delete semantics come from the bounded captures GNU-REVIEW-METHODS and GNU-REVIEW-DELETE (contracts PLR-REVIEW-*-STATIC-01). Find stays unrecovered; the comment-only Edit was later bound from the bounded captures under PLR-REVIEW-EDIT-STATIC-01",
       "Single 0x56c440 = 0.0 by a direct, source-hash-bound static data decode (static-data-decode.json, source SHA-256 781bc970…c54c; noRuntimeOracle). It narrows that one constant gate only; it is not runtime FPU parity"
     ]
   },
-  "coordinatorReviewWorkflow": {"path":"/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-help-followup/plr-static/NEXT-REVIEW-WORKFLOW.json","sha256":"60c768aa0badc93ccc6c96873c451f0a9bb3fb597664afa3dd1eb554c8ce28e9","status":"Static evidence only. The transaction and confirmed Delete are implemented in src/core/pulsarReview.ts from the contracts PLR-REVIEW-TRANSACTION-STATIC-01, PLR-REVIEW-DELETE-STATIC-01 and PLR-REVIEW-CALLER-STATIC-01; Find, Edit and Undo are not enabled","entries":["0x563464","0x563494","0x5634a0","0x56388c..0x563955"],"sourceSHA256":"781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"},
+  "coordinatorReviewWorkflow": {
+    "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-help-followup/plr-static/NEXT-REVIEW-WORKFLOW.json",
+    "sha256": "60c768aa0badc93ccc6c96873c451f0a9bb3fb597664afa3dd1eb554c8ce28e9",
+    "status": "Static evidence only. The transaction and confirmed Delete are implemented in src/core/pulsarReview.ts from the contracts PLR-REVIEW-TRANSACTION-STATIC-01, PLR-REVIEW-DELETE-STATIC-01 and PLR-REVIEW-CALLER-STATIC-01; the comment-only Edit on a proven round-trip subset is in src/core/pulsarReviewEdit.ts (PLR-REVIEW-EDIT-STATIC-01); Find and Undo are not enabled",
+    "entries": [
+      "0x563464",
+      "0x563494",
+      "0x5634a0",
+      "0x56388c..0x563955"
+    ],
+    "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
   "listings": [
-    { "id": "TARGET-ASM", "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm", "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db", "kind": "existing derived whole-image linear listing, read as text; misses entries after inline data" },
-    { "id": "PLR-STATIC", "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-help-followup/plr-static/", "kind": "existing reader/writer/clear/load/seeded-0x56cf20 listings, method-record candidates and coordinator-verified class/DFM data" },
-    { "id": "GNU-571748", "path": "claude-pulsar-analysis/properties-activate-571748.asm", "range": "0x571748..0x5719a4", "sha256": "5806126875e7bfef85b4270cf70a6163f82b3e6c9a7e468f4445318b6890d96a", "kind": "direct bounded GNU objdump (not an REA provider result)" },
-    { "id": "GNU-56EF14", "path": "claude-pulsar-analysis/record1click-56ef14.asm", "range": "0x56ef14..0x56ef60", "sha256": "d55a16d2f4fc53d22c8e5db142735f4bba7805b30fcc74bed83e99b998afb82a", "kind": "direct bounded GNU objdump" },
-    { "id": "GNU-56F74C", "path": "claude-pulsar-analysis/review-clear-56f74c.asm", "range": "0x56f74c..0x56f990", "sha256": "497ee931f958fd9d3550ea8485edd1afc9906604183918e1e870d63ad15f5cc8", "kind": "direct bounded GNU objdump" },
-    { "id": "GNU-486268", "path": "claude-pulsar-analysis/formatters-486268-4863a0.asm", "range": "0x486268..0x4863a0", "sha256": "50db2de323900f062c37a4e8abd5907c0821c738ef815d202e0587b3bb700db5", "kind": "direct bounded GNU objdump" },
-    { "id": "TRIAGE-ZOOM-IN", "path": "claude-pulsar-analysis/COORDINATOR-review-triage/zoom-in.asm", "range": "0x56cd28..0x56ce20", "sha256": "243aea49b2969d2bedfc6bf2c72141346e73f3b89128969b3384aaf033c44a52", "kind": "coordinator bounded GNU objdump for the native /review triage (static-receipts.json)" },
-    { "id": "TRIAGE-ZOOM-OUT", "path": "claude-pulsar-analysis/COORDINATOR-review-triage/zoom-out.asm", "range": "0x56ce24..0x56cf1c", "sha256": "a0caf62963bf03f0fb315662fb2aa93d9e4c119798a271f72b44eb09606aa051", "kind": "coordinator bounded GNU objdump for the native /review triage" },
-    { "id": "TRIAGE-REDRAW", "path": "claude-pulsar-analysis/COORDINATOR-review-triage/redraw.asm", "range": "0x56c34c..0x56c440", "sha256": "09a080965a6501a0f939a99984519271d7f43538b70f54af720e404cb1aba4f9", "kind": "coordinator bounded GNU objdump for the native /review triage" },
-    { "id": "GNU-REVIEW-METHODS", "path": "radio-help-followup/plr-static/review-dialog-methods.asm", "range": "0x563464..0x5639ff", "sha256": "428c12258ff8b7a1059150e999f645f0d9b472a3a9054e2b99c26b095b28ef48", "kind": "coordinator bounded GNU objdump of the TMeasListDlg methods (FormActivate, CnclBtnClick, OkBtnClick, FndBtnClick, EditBtnClick, DelBtnClick) and their inline literals" },
-    { "id": "GNU-REVIEW-DELETE", "path": "radio-help-followup/plr-static/review-dialog-delete-entry.asm", "range": "0x56388c..0x563955", "sha256": "f4d97cbd6b601baa9bfa203a231884acaedf62f692c1671d9f16ab02fc33e44b", "kind": "coordinator bounded GNU objdump of DelBtnClick from its own entry" },
-    { "id": "REVIEW-CLASS", "path": "radio-help-followup/plr-static/review-dialog-class.json", "sha256": "b41c5579e269d9b8045894cade78125a9029b00376f8b6a3974f0c69510a4685", "kind": "coordinator self-verified Delphi VMT/method table (method table SHA-256 dfbbe024…fa8a)" },
-    { "id": "REVIEW-DFM", "path": "radio-help-followup/plr-static/review-dialog-dfm.json", "sha256": "3fb3dceffd06a20dffb1b00e0fbc476b3e6c82063f291fd260bf753cb103f531", "kind": "coordinator complete TPF0 decode of RT_RCDATA TMEASLISTDLG (payload SHA-256 4a65cda66480a7515b03d80a8f100f958ffbecf2eb0a2cff0d1953a948b986d2)" },
-    { "id": "REVIEW-CONTRACT", "path": "claude-pulsar-analysis/review-transaction-author/contract/", "sha256": "native-contract.json accb33594f193456c014429dc4e41733f8b6ed6f8ebc8095932a5d0e69533c80; acceptance-cases.json e70939ede8f06c9b8cfe445835f78412c6da7cec6abb3bfaf41f74d53d8fda41; browser-plan.json d027414caef705635e9162a1d2b7d725b4856a027c7dc800f3fb9c89f4b3cbe9", "kind": "coordinator-prepared contract, synthetic semantic vectors and browser plan; specifications, not an oracle" }
+    {
+      "id": "TARGET-ASM",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm",
+      "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db",
+      "kind": "existing derived whole-image linear listing, read as text; misses entries after inline data"
+    },
+    {
+      "id": "PLR-STATIC",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-help-followup/plr-static/",
+      "kind": "existing reader/writer/clear/load/seeded-0x56cf20 listings, method-record candidates and coordinator-verified class/DFM data"
+    },
+    {
+      "id": "GNU-571748",
+      "path": "claude-pulsar-analysis/properties-activate-571748.asm",
+      "range": "0x571748..0x5719a4",
+      "sha256": "5806126875e7bfef85b4270cf70a6163f82b3e6c9a7e468f4445318b6890d96a",
+      "kind": "direct bounded GNU objdump (not an REA provider result)"
+    },
+    {
+      "id": "GNU-56EF14",
+      "path": "claude-pulsar-analysis/record1click-56ef14.asm",
+      "range": "0x56ef14..0x56ef60",
+      "sha256": "d55a16d2f4fc53d22c8e5db142735f4bba7805b30fcc74bed83e99b998afb82a",
+      "kind": "direct bounded GNU objdump"
+    },
+    {
+      "id": "GNU-56F74C",
+      "path": "claude-pulsar-analysis/review-clear-56f74c.asm",
+      "range": "0x56f74c..0x56f990",
+      "sha256": "497ee931f958fd9d3550ea8485edd1afc9906604183918e1e870d63ad15f5cc8",
+      "kind": "direct bounded GNU objdump"
+    },
+    {
+      "id": "GNU-486268",
+      "path": "claude-pulsar-analysis/formatters-486268-4863a0.asm",
+      "range": "0x486268..0x4863a0",
+      "sha256": "50db2de323900f062c37a4e8abd5907c0821c738ef815d202e0587b3bb700db5",
+      "kind": "direct bounded GNU objdump"
+    },
+    {
+      "id": "TRIAGE-ZOOM-IN",
+      "path": "claude-pulsar-analysis/COORDINATOR-review-triage/zoom-in.asm",
+      "range": "0x56cd28..0x56ce20",
+      "sha256": "243aea49b2969d2bedfc6bf2c72141346e73f3b89128969b3384aaf033c44a52",
+      "kind": "coordinator bounded GNU objdump for the native /review triage (static-receipts.json)"
+    },
+    {
+      "id": "TRIAGE-ZOOM-OUT",
+      "path": "claude-pulsar-analysis/COORDINATOR-review-triage/zoom-out.asm",
+      "range": "0x56ce24..0x56cf1c",
+      "sha256": "a0caf62963bf03f0fb315662fb2aa93d9e4c119798a271f72b44eb09606aa051",
+      "kind": "coordinator bounded GNU objdump for the native /review triage"
+    },
+    {
+      "id": "TRIAGE-REDRAW",
+      "path": "claude-pulsar-analysis/COORDINATOR-review-triage/redraw.asm",
+      "range": "0x56c34c..0x56c440",
+      "sha256": "09a080965a6501a0f939a99984519271d7f43538b70f54af720e404cb1aba4f9",
+      "kind": "coordinator bounded GNU objdump for the native /review triage"
+    },
+    {
+      "id": "GNU-REVIEW-METHODS",
+      "path": "radio-help-followup/plr-static/review-dialog-methods.asm",
+      "range": "0x563464..0x5639ff",
+      "sha256": "428c12258ff8b7a1059150e999f645f0d9b472a3a9054e2b99c26b095b28ef48",
+      "kind": "coordinator bounded GNU objdump of the TMeasListDlg methods (FormActivate, CnclBtnClick, OkBtnClick, FndBtnClick, EditBtnClick, DelBtnClick) and their inline literals"
+    },
+    {
+      "id": "GNU-REVIEW-DELETE",
+      "path": "radio-help-followup/plr-static/review-dialog-delete-entry.asm",
+      "range": "0x56388c..0x563955",
+      "sha256": "f4d97cbd6b601baa9bfa203a231884acaedf62f692c1671d9f16ab02fc33e44b",
+      "kind": "coordinator bounded GNU objdump of DelBtnClick from its own entry"
+    },
+    {
+      "id": "REVIEW-CLASS",
+      "path": "radio-help-followup/plr-static/review-dialog-class.json",
+      "sha256": "b41c5579e269d9b8045894cade78125a9029b00376f8b6a3974f0c69510a4685",
+      "kind": "coordinator self-verified Delphi VMT/method table (method table SHA-256 dfbbe024…fa8a)"
+    },
+    {
+      "id": "REVIEW-DFM",
+      "path": "radio-help-followup/plr-static/review-dialog-dfm.json",
+      "sha256": "3fb3dceffd06a20dffb1b00e0fbc476b3e6c82063f291fd260bf753cb103f531",
+      "kind": "coordinator complete TPF0 decode of RT_RCDATA TMEASLISTDLG (payload SHA-256 4a65cda66480a7515b03d80a8f100f958ffbecf2eb0a2cff0d1953a948b986d2)"
+    },
+    {
+      "id": "REVIEW-CONTRACT",
+      "path": "claude-pulsar-analysis/review-transaction-author/contract/",
+      "sha256": "native-contract.json accb33594f193456c014429dc4e41733f8b6ed6f8ebc8095932a5d0e69533c80; acceptance-cases.json e70939ede8f06c9b8cfe445835f78412c6da7cec6abb3bfaf41f74d53d8fda41; browser-plan.json d027414caef705635e9162a1d2b7d725b4856a027c7dc800f3fb9c89f4b3cbe9",
+      "kind": "coordinator-prepared contract, synthetic semantic vectors and browser plan; specifications, not an oracle"
+    },
+    {
+      "id": "GNU-EDIT-OK",
+      "path": "radio-help-followup/plr-static/review-entry-editor-ok.asm",
+      "range": "0x5710d0..0x5713f2",
+      "sha256": "646f14ae683c1d9417c7f214da4f9f5975aeaefb428abba433b2c7eebd783d30",
+      "kind": "coordinator bounded GNU objdump of TMeasForm2.OkBtnClick with its inline literals 0x5713f4..0x57141c"
+    },
+    {
+      "id": "GNU-EDIT-METHODS",
+      "path": "radio-help-followup/plr-static/review-entry-editor-methods.asm",
+      "range": "0x570f5c..0x57135e",
+      "sha256": "f47a91376ba9366a04235cb11c4792b841ea2ece33d202e90be4a59f92cb2059",
+      "kind": "coordinator bounded GNU objdump of TMeasForm2.FormCreate/FormActivate and the start of OkBtnClick"
+    },
+    {
+      "id": "GNU-EDIT-PARSER",
+      "path": "radio-help-followup/plr-static/review-line-parser-complete.asm",
+      "range": "0x570498..0x570898",
+      "sha256": "a6d927bc6de21291930d91a1de64a654d31d0d6d4cc56e55f98f49b6ebcb2ccf",
+      "kind": "coordinator bounded GNU objdump of the record-line parser, normal and SEH returns (receipt review-line-parser-complete.receipt.json b1407f67fbb33bdb486e4b463594a97e6ba1cb0701f10fb2e3746f2777822134)"
+    },
+    {
+      "id": "GNU-EDIT-CANCEL",
+      "path": "review-edit-preparation/rtl-binding/cancel-entry-complete.asm",
+      "range": "0x570b30..0x570b3c",
+      "sha256": "1c7e06e87fc2aff98a4031914da2723cb54a1022dea693213d2c2ee0153fc2f1",
+      "kind": "coordinator direct entry capture of inherited TMeasForm.CnclBtnClick (mov [eax+0x294],2; ret). target.asm is misaligned at 0x570b31 and is not used for this entry"
+    },
+    {
+      "id": "GNU-EDIT-RTL",
+      "path": "review-edit-preparation/rtl-binding/",
+      "sha256": "short-copy.asm f7e54506b29b674f969c6c09a2859a46ce4fd940a2f056205f35fceaeb77b1ca; short-copy-complete.asm 7d7d5ab3d3b72785975c07134433d817ac5fa190b3a0bf457167728c6b54577d; short-append.asm 94f097bf0c1c5ea49eab59715303afff3df29358ee146c58a8b400dd87e28429; short-compare-complete.asm 4c05e876a22f28de02578790a75128e16c84d1154fbf54b6efa1de3cd9f9c519; ansi-to-short.asm ca4f8f95b6a4e667f418c35845622cf1513bd4fa8e0b2fd4c1666a6995dd5114; short-to-ansi.asm 4eb7bf8b30310b712eeb18b2e00881524fcb15a90f513e8d093948f7072da807; ansi-copy.asm 5c8fbcbff8edd757bb2d6ed65a30eb3d31e35ca88aa9e3d87235737b77eac720; ansi-delete.asm c7760e83434cede6af76ca240ce16101e78447b9f7f7eaeb8d4d4c15e5210298; ansi-pos.asm ce09f64ca82c3de875755ea84139d6bff3eb7f628d5baade9d78177fbbf45e7d; ansi-append.asm c04fb6b83ad4fd26355d1530ce1e3ff91bae92daa4dbbce71d674fb56af59339; control-text-getter.asm 9f40d73d461d7564f17786bb35e2d1b978dbd626b9d31f7815f11098742ce6fd; receipt.json 9d5c44a4209f0bfc250ed895a824cde9af8b10dacbe810203abe4f3372ceedef; additional-bindings.json dc15593e62c2f314fdc0ff03e73b411dcc5e1669d61454fe37063b4976d80c95",
+      "kind": "coordinator bounded GNU objdump of the RTL string helpers 0x403c20..0x403d6a, 0x4060cc, 0x406094, 0x4060fc, 0x406328, 0x406368, 0x40640c and control getter 0x45df24, with receipts (source TARGET-ASM and direct captures)"
+    },
+    {
+      "id": "GNU-EDIT-CONCAT",
+      "path": "radio-help-followup/plr-static/find-literal-recovery/concat-helper.asm",
+      "range": "0x4061c4..0x406254",
+      "sha256": "6763acb664081ff733940b6936c912fefba9419c8b465e9677484063b22b9f10",
+      "kind": "coordinator bounded GNU objdump of AnsiString CatN (left-to-right push order); caption setter 0x45df54 in caption-setter.asm 6e5e5a69a856c547757b13534f4235da919edac57f127331401251824a8ab277"
+    },
+    {
+      "id": "EDIT-TYPED-LITERALS",
+      "path": "review-edit-preparation/rtl-binding/typed-callsite-literals.json",
+      "sha256": "fddbf077ed55dd9b23312c5328febba99821c11f534330938604fb8245a5e80f",
+      "kind": "typed parser/editor punctuation literals bound to caller and helper (AnsiString 0x570884/0x570890/0x571404/0x571410/0x57141c, ShortString 0x5713f4/0x5713f8)"
+    },
+    {
+      "id": "EDIT-REMAINING-GAPS",
+      "path": "review-edit-preparation/rtl-binding/remaining-static-gaps.json",
+      "sha256": "462a447769427931c652361e41651a7448412399746810ff8b4005cf54095d09",
+      "kind": "coordinator capture receipt: inherited Cancel entry, ShortString compare 0x403cfc, control getter 0x45df24, ShortString 0x570894 '\"\"' and AnsiString 0x5710bc 'Measurement Data'"
+    },
+    {
+      "id": "EDIT-NO-SELECTION-LITERALS",
+      "path": "review-edit-preparation/rtl-binding/edit-no-selection-literals.json",
+      "sha256": "7a015a4e85d32b94502fa56f2125fd18201a5da90766f7f76668f767234dc648",
+      "kind": "PChar 0x563860 'No Item Selected!' and 0x563874 'Select Item for Edit.' bound to EditBtnClick 0x563768/0x56376d"
+    },
+    {
+      "id": "EDIT-CLASS",
+      "path": "radio-help-followup/plr-static/review-entry-editor-class.json",
+      "sha256": "e683a250ac5a913c9d7c2579e374837f666297fa8ee7e5f27f0bdf145f9ee030",
+      "kind": "coordinator self-verified TMeasForm2 VMT 0x56fcf0 (1224 bytes; FormCreate 0x570f5c, FormActivate 0x570f6c, OkBtnClick 0x5710d0); parent TMeasForm and DFM in review-editor-inheritance.json 33957fa4ed0b2cb24ac19c0b9bcd3adcee376233d830c8505fbe944489cdaf74"
+    },
+    {
+      "id": "EDIT-PREPARATION",
+      "path": "review-edit-preparation/claude-feasibility/",
+      "sha256": "report.txt bc1676687cb52da36901a072822e22d451c4e88a5072c7026d397324bed39081; dispositions.json 8adacc5f797bca2b1dfc614d468fcc8c748eef29542e95e65f9ea2c02cfabe84",
+      "kind": "earlier Claude feasibility analysis and coordinator triage; analysis, not authority"
+    }
   ],
   "help": {
     "source": "PULSRANL.TXT read directly (whole file) plus radio-help-followup/selected-help-topics.json excerpts",
     "PULSRANL.TXT": "9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4",
-    "topics": { "View Data Properties": "cdf5b1f06092d259fe60892d035479019d4be4215a9d10f3c4d5fb7079e9f347", "Make Measurements": "818cc75a56799927f5b54794026d76ef6dd7f88f620c59770fdec4974821dd73", "Record Measurements": "6b86887dc5fe0de5f3576b21ae64c8442a2aae7be2908b5944f9c0ad084cf55c", "Load Recorded Pulsar Data": "625ee551bb97965872208c54e40ca64b19f0c5dba49a660b77bd6c052b00a24e", "Save Recorded Measurements": "93647b4a1ca85f593ed32eddc079a99f26dd7e3a5e0bfc908f83908beb65565a" },
+    "topics": {
+      "View Data Properties": "cdf5b1f06092d259fe60892d035479019d4be4215a9d10f3c4d5fb7079e9f347",
+      "Make Measurements": "818cc75a56799927f5b54794026d76ef6dd7f88f620c59770fdec4974821dd73",
+      "Record Measurements": "6b86887dc5fe0de5f3576b21ae64c8442a2aae7be2908b5944f9c0ad084cf55c",
+      "Load Recorded Pulsar Data": "625ee551bb97965872208c54e40ca64b19f0c5dba49a660b77bd6c052b00a24e",
+      "Save Recorded Measurements": "93647b4a1ca85f593ed32eddc079a99f26dd7e3a5e0bfc908f83908beb65565a"
+    },
     "controls": "Lines 39-68 ('Controls'): vertical scale 0.125..8 by factors of 2; pan arrows vary the displayed range; 'The pan rate control alters the speed of horizontal panning'; zoom 0.125..8; Reset sets scale 1, zoom 1 and 'pan rate to 2' (spin position 2 = rate 10, PRateSpin 0x56d1b0). The help does not state the hold interval; that comes from the DFM."
   },
   "contracts": [
-    { "id": "PLR-READ-01", "range": "0x56a260..0x56a512", "source": "PLR-STATIC signal-read.asm", "observed": "First line starts with 0x27 → header route: quoted token 0x4867fc → shortstring[40] obj+4; 0x486a00 → word +0x29, byte +0x2b; line 2: 3×0x48690c → Extended +0x2c; line 3: 3×0x48690c → Extended +0x4a, a value equal to Single 0.0 (0x56a514, decoded) becomes Extended 1.0; line 4: 2×0x48690c → +0x68, +0x72; remaining lines until Eof: 3×0x48690c → Double, appended via 0x492574. Otherwise Reset and data route only. Success sets +0x96=1, +0x97=1, +0x98=0 and filename +0x9a. An exception leaves the list cleared and the metadata partially written.", "web": "Strict admission: printable ASCII + CRLF/LF; all-or-nothing; a non-empty first line without the apostrophe is rejected as 'headerless'; a blank first line is rejected as 'blank-first-line' because this admission requires the apostrophe header on line 1 (how the original handles a blank first line is not established: the listing dereferences its first character and there is no runtime witness, so no native route or crash is claimed); a zero-byte file is 'empty'; name ≤40 (no truncation); integers decimal only; aperture 0..65535; highest 0..2; finite bounded numbers; interval > 0; no blank or trailing content; ≤65536 rows; ≤2 MiB. Number() parse, not Extended." },
-    { "id": "PLR-TOKEN-01", "range": "0x4867fc..0x48690b, 0x48690c..0x4869fd, 0x486a00..", "source": "TARGET-ASM lines 207040-207289", "observed": "Each helper deletes leading ' ' and delimiter characters. Quoted: first char is the quote; token runs to the next quote (or end); then deletes token+2. Float/int: token runs to the first delimiter; StrToFloat 0x40cf60 / StrToInt 0x40ad50; deletes token+1." },
-    { "id": "PLR-LIST-01", "range": "0x4924d4..0x4926dc", "source": "TARGET-ASM lines 225145-225382", "observed": "List init index/last := -1; insert after current or at head; +4 last index incremented per insert; IsEmpty 0x492708 = head nil; AtTail 0x49271c; Item(i) 0x492688 is nil for i<0 or i>last. obj+0x84 = N−1." },
-    { "id": "PLR-PROP-01", "range": "0x571748..0x571997", "source": "GNU-571748; COORDINATOR-properties-binding.json; COORDINATOR-properties-data.json; COORDINATOR-form-properties.json (THDRDISP)", "observed": "THdrDisp.FormActivate: IDEd +0x364 name; JDEd +0x36c ffFixed(+0x68,8); AprEd +0x370 IntToStr(word +0x29); DelTED +0x3ac ffFixed(+0x72 × Single 1000 @0x571998,2); Freq1Ed +0x378 / Gain1Ed +0x394 receiver 0 frequency(2)/gain(3); Freq2/Gain2 (+0x380/+0x398) and Freq3/Gain3 (+0x384/+0x39c) only when byte +0x2b > 0 / > 1, otherwise blank; PointsEd +0x3a4 IntToStr(obj+0x84 + 1); FileNmEd +0x3b8 filename if +0x97 else literal 0x5719a4 'Data Not Written to File'.", "binding": "Properties1Click 0x56d848 → Show form slot 0x5b59d4 (→ 0x5bcdf0), created at 0x5ad4ae from class ref 0x571450 → VMT 0x57149c, class THdrDisp (self-verified). FormActivate reads [[0x5b5be8]] = [0x5bcca0], the reader's data object. DFM captions: 'Object:', 'Data Start:', 'Aperture:', 'Frequency (MHz):', 'Receiver 1/2/3', 'Relative Gain:', '# of Data Points:', 'Delta T (MSecs):', 'File:'.", "web": "File shows File.name (the browser base name), never the native full path; the no-file literal cannot occur because only file loads exist" },
-    { "id": "PLR-GEOM-01", "range": "0x56a9f8..0x56aa24", "source": "TARGET-ASM lines 529213-529224; COORDINATOR-form-properties.json (TPLSRANALYSISFORM1 DispBox1..3)", "observed": "FormCreate stores base[ch] at form+0x480+4·ch: DispBox1.Height(+0x4c) − 1, DispBox2.Height − 1, DispBox3.Height − 16. DFM DispBox1/2/3: Width 400, Height 120/125/140, so base = 119/124/124 (Scaled=false, PixelsPerInch 96). Every base use indexes form+0x480+4·ch: axis 0x56bbda..0x56bc45, paint 0x56c19f..0x56c32a, redraw 0x56c41c, vertical/reference line end 0x56c58b, horizontal accept 0x56c750 and line 0x56c7db.", "web": "Each SVG viewBox is 400 × Height native pixels with pixel centres on integer coordinates; pointer input is integer client pixels [0,399] × [0,Height−1]. SVG/Number rendering is not GDI: anti-aliasing, LineTo end-pixel exclusion, pen width and font metrics are not reproduced; no runtime pixel parity is claimed. Trace points far off scale are pinned 10 px outside the box." },
-    { "id": "PLR-RANGE-01", "range": "0x56b7ac..0x56b9ba", "source": "TARGET-ASM lines 530342-530465", "observed": "If name equals literal 0x56b9bc 'No Data' (decoded), writes interval 0.01 s into the data object and window [0,4]. Otherwise window start 0, end dt × Single 400 (0x56b9c4, decoded), zoom := 1, pan rate := 10, tick params (2,50,5,10). With dl=1 it also resets factors and cursor records.", "web": "The placeholder name is rejected at admission, so the overwrite cannot occur" },
-    { "id": "PLR-PAINT-01", "range": "0x56bacc..0x56bd4a, 0x56c028..0x56c345", "source": "TARGET-ASM lines 530555-531187", "observed": "Axis: baseline at y=base[ch] from 0 to DispBox.Width, vertical axis base−100..base, minor ticks every 10 px (length 8), major every 50 px (length 15). Trace: zoom ≥ 1 (f32 1.0 @0x56c348): k = Round(zoom) px per sample from row Round(start/dt), y = base[ch] − Round(v·gain·factor), a nil row draws the baseline; zoom < 1: s = Round(1/zoom) samples summed and averaged per pixel, nil adds 0; the first point is the unnormalized sum; loop ends at x = 0x190. Colors: background 0x800000, axis 0x00ffff, trace white (TColor BGR).", "web": "Per-panel base from PLR-GEOM-01; SVG presentation (see PLR-GEOM-01 limits)", "inference": "f32 1.0 @0x56c348 still read from listing encodings" },
-    { "id": "PLR-ZOOM-01", "range": "0x56b9c8..0x56ba66, 0x56cd28..0x56cf1f", "source": "TARGET-ASM lines 530472-532158; TRIAGE-ZOOM-IN; TRIAGE-ZOOM-OUT", "observed": "In: start += dt·100/z, end −= dt·100/z, z·=2; Out: start −= dt·200/z, end += dt·200/z, z/=2. ZmInBtnClick 0x56cd28 applies only if z < Single 8 (0x56ce20, decoded) on entry. After the update and the zoom readout it compares the new z with 8 again (0x56cd89..0x56cda5): when equal, the same click disables ZmIn (virtual +0x68 with dl=0) and calls MessageBeep (0x408c44). It then enables ZmOut and repaints and redraws all three panels (0x56bacc, 0x56bd4c for ch 0..2). ZmOutBtnClick 0x56ce24 is symmetric with Single 0.125 (0x56cf1c, decoded; post-update check 0x56ce85..0x56cea1). A click with z already at the bound does nothing.", "web": "pulsarZoom disables the button in the click that reaches the bound and reports 'zoom-limit'; no beep", "inference": "Shift constants 100, 200 and factor 2 (0x56ba68/6c/70) still read from listing encodings" },
-    { "id": "PLR-GAIN-01", "range": "0x56c900..0x56cd1c", "source": "TARGET-ASM lines 531659-531995", "observed": "DispGain{n}Down: factor > 0.125 → factor/2 else MessageBeep; Up: factor < 8 → ×2 else beep; readout ffFixed 2; only panel n is redrawn.", "inference": "Per-panel limit constants 0x56c9a4/a8, 0x56ca50/54 (and copies) still read from listing encodings; the help 'Controls' topic states the same 0.125..8 range" },
-    { "id": "PLR-PAN-01", "range": "0x56d1b0..0x56d30d, 0x448f68..0x449001", "source": "TARGET-ASM lines 532320-532448 and 113094-113153; COORDINATOR-form-properties.json (PanTimer, PanLftBtn, PanRtBtn)", "observed": "PRateSpin values 1/2/3 → rate byte form+0x58c 1/10/100. PanLft/RtBtnMouseDown (Button = mbLeft only, cl = 0): step form+0x58d+0x2e := ∓rate·Extended[[0x5bcca0]+0x76] (dt), one PanTimerTimer 0x56d1e4 tick (start += step, end += step, redraw all three panels), then TTimer.SetEnabled(PanTimer @form+0x3e0, True). PanLft/RtBtnMouseUp (mbLeft only): SetEnabled(False). SetEnabled 0x448ff4 returns when the value is unchanged; otherwise UpdateTimer 0x448f68 does KillTimer and, if Interval ≠ 0, Enabled and OnTimer assigned, SetTimer(Interval). DFM PanTimer: Enabled false, Interval 100. Both pan buttons share the one timer. The buttons have no OnClick. No bounds.", "web": "src/core/pulsarPanHold.ts: press = one immediate tick, then a 100 ms browser interval of pulsarPanTick using the stored step; a press while held keeps the single running timer. WEB lifecycle: stops on primary pointer up, pointer cancel, capture loss, window blur, page hidden, inactive host, committed load, modal open (tick refused) and unmount; the click that follows a pointer press does not step again. Keyboard/assistive activation (Enter/Space) steps once per physical press: auto-repeated keydowns are ignored and no timer starts; held keys are forgotten on window blur, a hidden page, an inactive host, a load and a modal, because their keyup may never reach the button; the native buttons cannot be keyboard-panned. A tick whose redraw Number cannot represent is refused ('display-unsupported'), which stops the hold. Browser interval cadence vs Windows WM_TIMER resolution/coalescing is not claimed equal. |window| ≤ 1e12 s." },
-    { "id": "PLR-CURSOR-V-01", "range": "0x56c448..0x56c6d6", "source": "TARGET-ASM lines 531276-531484", "observed": "Vertical (dl=0) or reference (dl=1) cursor at pixel x: t = start + x·dt/zoom → FloatToStrF(ffFixed,18,6). Line from y=0 to base[ch]. Own: per-panel record +0xc and global +0x20+8ch, readout +0x410/+0x420/+0x424 (cyan 0xffff00). Reference: global +0, per-panel +0x16, single readout +0x428 (green). Drawn only if x ≥ 0." },
-    { "id": "PLR-CURSOR-H-01", "range": "0x56c6dc..0x56c8f7", "source": "TARGET-ASM lines 531486-531655", "observed": "Accepted only if 0 ≤ y < base[ch]. When computing: value = (base[ch] − y)/(gain[ch] · Single 100 (0x56c8fc, decoded) · factor[ch]); stored per panel +0x20 and global +8+8ch (record 0x5bccb0); readout FloatToStrF(ffExponent,5,2) via 0x48634c; magenta 0xff00ff line from x=1.", "web": "Number, not x87 Extended: an admitted tiny nonzero gain (for example 1e-320) can make the quotient overflow to ±Infinity where Extended stays finite. Such a placement is refused with a visible 'number-unsupported' status; the previous cursor, readout and measurement and the loaded bytes are kept, and a fully refused gesture creates no pending entry;an accepted earlier placement in that gesture stays recordable after a refused MouseUp (WEB Number-domain policy). A later accepted placement replaces the refusal status. No zero substitution, no lower gain limit and no reordered arithmetic is introduced." },
-    { "id": "PLR-REDRAW-01", "range": "0x56c34c..0x56c43f", "source": "TARGET-ASM lines 531189-531270; TRIAGE-REDRAW", "observed": "Called after the panel's axis/trace repaint. For each stored time not below Single 0x56c440 (vertical +0xc, reference +0x16; jb skips at 0x56c374/0x56c3b7): x = Round((t − start)·zoom/dt), then 0x56c448 recomputes t from x (re-quantization) and draws only when x ≥ 0. Horizontal value +0x20 not below 0x56c440 (jb 0x56c3fa): y = Round(base[ch] − v·100·gain·factor), then 0x56c6dc without recomputing the value; it draws and stores only for 0 ≤ y < base[ch]. A skipped or rejected cursor is not drawn on the repainted panel, and its stored pixel, value and readout are not rewritten.", "staticData": "Single 0x56c440 decodes directly to 0.0 (coordinator static data decode, COORDINATOR-correction-triage/static-data-decode.json). Static evidence only: it does not establish runtime FPU comparison or rounding parity", "web": "Each panel cursor carries verticalVisible/referenceVisible/horizontalVisible. A placement sets it (x ≥ 0, or an accepted y), so a negative time or value is drawn right after a manual click. A redraw that skips the entry or rejects its y clears it, keeping the stored pixel, time/value, readout and measurement; a later redraw with a valid projection draws it again. A vertical or reference line is drawn only on a client pixel 0 ≤ x < 400. Keyboard arrows step from a line drawn there; otherwise they use a fixed web edge origin (pixel 0, or row base − 1 for the horizontal cursor). WEB Number boundary: a projection that is not finite in Number (for example v·100 overflowing before gain and factor bring it back, where Extended would not overflow) is not attributed to the native out-of-range rejection. The whole zoom, pan, pan tick or factor change is refused with 'display-unsupported' and changes nothing: no partial re-quantization, no hidden line, the same display, cursors and measurement. The arithmetic order is kept; no gain floor or zero is introduced, and no x87 equivalence is claimed." },
-    { "id": "PLR-MOUSE-01", "range": "0x56d310..0x56d843", "source": "TARGET-ASM lines 532449-532968; COORDINATOR-analysis-vmt-verified.json (DispBox{n}Mouse* bindings)", "observed": "MouseDown: left sets drag flag 0x5dd and places the own cursor by mode 0x57c+ch (0 vertical, 1 horizontal); right sets 0x5dc and places the reference cursor on all three panels. MouseMove acts only with ssLeft (0x08) / ssRight (0x10) while the matching flag is set. MouseUp: clears the flag after the final placement, then 0x57f+ch := IsEmpty || highest < ch; when that is false, Record (+0x464) is enabled.", "web": "x,y are clamped to integer client pixels [0,399]×[0,Height[ch]−1]; the native code can receive captured coordinates outside the panel. A WEB toggle maps the primary button/touch to the reference cursor; keyboard arrows act as one click per press. WEB boundary: pointer cancel, lost pointer capture and host deactivation clear both drag latches (pulsarPointerRelease). This is not a native MouseUp: no cursor is placed and no panel becomes pending; cursors, measurement and confirmed list are kept. WEB pointer ownership: only the primary pointer whose press set a latch drives the shared latches; non-primary pointers and other pointers' cancel or capture loss are ignored, so a secondary cancellation does not end the primary drag. Native left/right handling is unchanged and no multi-touch behavior is modelled. WEB Number boundary: a MouseUp whose own placement is refused ('number-unsupported') marks the panel pending only if the same gesture previously stored an accepted placement;otherwise it preserves pending/Record and creates no blank entry. Confirming a record for panel ch forgets ch's accepted placement while the drag latches stay held, so a later refused MouseUp does not make the recorded value pending again. This extra gesture bookkeeping is WEB,not native x87; a y rejected by 0x56c6dc is the native rule and still marks the panel pending" },
-    { "id": "PLR-MODE-01", "range": "0x56d858..0x56d9d5", "source": "TARGET-ASM lines 532975-533075", "observed": "Horz{n}EdClick mode := 1, Crsr{n}EdClick mode := 0, readout font colors swap, the panel gets focus; no redraw." },
-    { "id": "PLR-RESET-01", "range": "0x56cf20..0x56d1ae", "source": "PLR-STATIC properties-call-seeded.asm; ZmRSetBtnClick binding verified in COORDINATOR-analysis-vmt-verified.json", "observed": "0x56b7ac(dl=0); zoom readout; both zoom buttons enabled; for each panel: factor 1, mode 0, cursor records −1, 0x57f := 1, axis/trace redraw; 0x56fe6c clears the measurement record (all values 0.0, comments ''); Record disabled; readouts cleared." },
-    { "id": "PLR-LOAD-01", "range": "0x56af38..0x56b1c7", "source": "PLR-STATIC analysis-load.asm", "observed": "If the list is non-empty and +0x97 = 0, Yes/No/Cancel save prompt; OpenDialog; reader 0x56a260; menus +0x464/+0x38c/+0x388 disabled; 0x57f[0..2] := 1; caption; 0x56b7ac(dl=1); ZmRSet 0x56cf20; Show Properties 0x5b59d4. The measurement list 0x5bcde0 (alias 0x5b5720, decoded) is not cleared.", "web": "Only admitted files load, so the native unsaved-RAM prompt never applies (no acquisition handoff). Focus moves to Properties Close in the commit that opens it, only if focus is still on body or the file input after the read" },
-    { "id": "PLR-RECORD-01", "range": "0x56ef14..0x56ef5f, 0x56edfc..0x56eee3, 0x570898..0x570ae3, 0x570b3c..0x570f25", "source": "GNU-56EF14, TARGET-ASM lines 534836-534907, 537151-537599; COORDINATOR-requested-literals.json; COORDINATOR-correction-triage/manual-comment-dfm.json (TMEASFORM resource SHA256 6e25ed8701c8a245d077b9f86d334c2b0fa3aadd1b501d4b5c4a1fc8a58e14c9, Cmnt1Ed.MaxLength80)", "observed": "For each panel with 0x57f = 0, a modal dialog (class 0x56f9d0) with channel byte 0x5bcdde. Activation shows name + receiver literal, start (8), frequency (2), gain (3), reference (6), vertical (6), horizontal (exp 5/2), comment. OK stores the comment (shortstring[81]) and appends a line to TStringList 0x5bcde0: name, freq, gain, then reference/vertical/horizontal or literal 0x570f48 '\"\",' when equal to 0.0, start, comment, IntToStr(N), interval ms, aperture, filename when +0x96. Delimiters 0x570f28 '\"', 0x570f2c ',', 0x570f38 ',', 0x570f54 '\"' are decoded. A non-Cancel result marks the panel recorded, clears 0x5db and enables +0x38c/+0x388. Record stays enabled while any panel is pending.", "inference": "nativeLineCandidate follows the decoded literals but is not a file-writer contract: the CSV writer is gated and number text is not x87 parity. It is an opaque internal candidate, not a validatable or exportable CSV: the object and file names are wrapped in '\"' without escaping, so an admitted name containing an unescaped '\"' can make field boundaries ambiguous; a comma within a fully quoted field alone is not evidence of ambiguity. Nothing reads it; Review shows the structured fields, which keep the names verbatim. Native escaping is unknown and is not invented", "web": "Comments: printable ASCII without '\"', ≤ 80 characters (compiled Cmnt1Ed.MaxLength; the native shortstring storage capacity81 is distinct). The list lives only in this tab; a visible note says it is not part of Save investigation and is discarded on refresh/close. The record and clear prompts are native <dialog> elements opened with showModal() (browser top layer: inert page, contained focus, topmost modal wins); Tab/Shift+Tab wrap via a keydown handler on the dialog element only, never a page-level trap. Escape is Cancel/No, the default button is Cancel/No and focus returns to Record or Clear. A dialog opens only while the panel is active and rendered and no other native modal is open (nonmodal show/open banners do not block it); a bounded observer while a modal session is pending detects conditional DOM removal without close, and local Tab wrapping covers clicks on dialog text; an inactive panel closes it and keeps the record session (draft included) or clear stage for reentry. This is web behavior, not VCL modal parity" },
-    { "id": "PLR-REVIEW-01", "range": "0x56f74c..0x56f7ab", "source": "GNU-56F74C; COORDINATOR-review-dialog-class.json", "observed": "List dialog class 0x5631f8 = TMeasListDlg (VMT 0x563244, methods FormActivate 0x563464, CnclBtnClick 0x563494, OkBtnClick 0x5634a0, FndBtnClick 0x5634c8, EditBtnClick 0x56373c, DelBtnClick 0x56388c); a non-Cancel result clears 0x5db and enables +0x38c.", "status": "GATED for Find (FndBtnClick 0x5634c8) and Edit (EditBtnClick 0x56373c): both buttons are shown disabled in their DFM places. Find context and a safe comment-line round trip remain open; no Undo semantics are claimed. The working-copy transaction and confirmed Delete are implemented under PLR-REVIEW-TRANSACTION-STATIC-01, PLR-REVIEW-DELETE-STATIC-01 and PLR-REVIEW-CALLER-STATIC-01" },
-    { "id": "PLR-REVIEW-TRANSACTION-STATIC-01", "range": "0x563464..0x5634c6", "source": "GNU-REVIEW-METHODS; REVIEW-CLASS; REVIEW-DFM; REVIEW-CONTRACT", "observed": "FormActivate 0x563464 (DFM OnActivate): ListBox1.Items (+0x378 → +0x260) Assign from the shared TStringList [[0x5b5720]] (vmt+8), then ListBox1.ItemIndex := 0 (vmt+0xe0). CnclBtnClick 0x563494: ModalResult (+0x294) := 2, no copy back. OkBtnClick 0x5634a0: shared list Assign(ListBox1.Items), then ModalResult := 1. DFM TMEASLISTDLG: Caption 'Select Measurement Record', BorderStyle bsDialog; buttons FndBtn '&Find...' (TabOrder 0), EditBtn '&Edit...' (1), DelBtn '&Delete' (2), OkBtn '&Ok' (3), CnclBtn '&Cancel' (4); ScrollBox1 (5) holding ListBox1 (Width 2000, ItemHeight 16). No button has a Default or Cancel property.", "web": "pulsarReviewOpen copies the confirmed entry objects into a frozen working copy and selects ordinal 0; Cancel drops it; Ok replaces the confirmed list with it. Selection is an ordinal, never a sequence ID. WEB: an empty working copy has selection null (natively ItemIndex := 0 on an empty list box is expected to read back −1, but that getter result is not recovered here). Rows show the structured fields keyed by the stable sequence; the opaque nativeLineCandidate is not shown, parsed, escaped or rewritten. One radio per row stands for the ListBox selection (browser radio-group arrow keys, which wrap; native ListBox keys are not modelled). Find and Edit are disabled. Tab order follows the document (rows, Delete, Ok, Cancel), not the native TabOrder (buttons before the list), and '&' accelerators are not implemented. WEB initial focus: the selected row, else Cancel. The dialog is a native <dialog> opened with showModal() under the existing PLR modal protocol; Escape and a close request are outer Cancel (no native Cancel property exists). Host inactivity closes the dialog and keeps the session (working copy, selection and inner question) for reentry.", "uncertainty": "FormActivate is an OnActivate handler. Whether VCL re-fires it, re-assigning the shared list over a staged deletion, when the form is reactivated after the delete MessageBox (or after the Edit dialog) is a VCL runtime question that this image capture does not answer. The web keeps the staged working copy across the inner question, as native-contract.json specifies; no native parity is claimed for that re-entry." },
-    { "id": "PLR-REVIEW-DELETE-STATIC-01", "range": "0x56388c..0x563955", "source": "GNU-REVIEW-DELETE; GNU-REVIEW-METHODS (inline literals)", "observed": "ItemIndex (vmt+0xdc) < 0 → Application.MessageBox(text 0x56396c 'Select Item for Deletion.', caption 0x563958 'No Item Selected!', flags 0x30 = MB_OK|MB_ICONEXCLAMATION) and nothing else. Otherwise MessageBox(text 0x56399c 'Delete Selected Item from List?', caption 0x563988 'Confirm Deletion', flags 0x24 = MB_YESNO|MB_ICONQUESTION); only result 6 (IDYES) continues: i := ItemIndex; Items.Delete(i) (vmt+0x48); if Count > 0 then ItemIndex := i when i < Count, else Count − 1. Every path ends with ModalResult := 0 (0x56394c), so Review stays open.", "web": "pulsarReviewRequestDelete/pulsarReviewAnswerDelete/pulsarReviewDismissNotice. The two MessageBoxes are an inline alertdialog section of the Review dialog with the list and buttons inert while it is open. WEB: the question's initial focus is No (flags 0x24 carry no MB_DEFBUTTON bits, so the native default button is Yes); a deletion needs an explicit Yes. Escape answers No on the question and dismisses the notice; a Win32 Yes/No MessageBox has no Escape answer, so this is not parity. Focus returns to Delete when the question or notice closes. Deleting the only row leaves selection null." },
-    { "id": "PLR-REVIEW-CALLER-STATIC-01", "range": "0x56f74c..0x56f7ab", "source": "GNU-56F74C", "observed": "Creates TMeasListDlg (class ref 0x5631f8) into slot 0x5b5eb8, ShowModal (vmt+0xfc), then reads the dialog's ModalResult field (+0x294): when it is not 2, form byte 0x5db := 0 (list not saved) and +0x38c.Enabled := True (Save); then Free. There is no count check and no other flag, list or display change.", "web": "pulsarReviewConfirm sets listSaved false and saveEnabled true even when nothing changed or every row was deleted. It is not Clear (0x56f7ac): Record, Review, pending flags, cursors, readouts, the measurement record, nextSequence and the loaded bytes are untouched, and an emptied list keeps Review enabled. The native CSV writer stays gated (PLR-CSV-01), so saveEnabled enables no web control. Cancel changes nothing. The Review control (+0x388) stays gated by Load and Record as before." },
-    { "id": "PLR-CLEAR-01", "range": "0x56f7ac..0x56f884", "source": "GNU-56F74C", "observed": "If 0x5db = 0: Yes/No/Cancel (Yes → Save 0x56ef60, abort if still unsaved; Cancel → abort); then MessageDlg confirmation; mrYes → list.Clear and disable +0x464/+0x388/+0x38c.", "web": "The Save answer is not offered because PLR-CSV-01 is gated" },
-    { "id": "PLR-CSV-01", "range": "0x56ef60.., 0x56feac..0x57033x", "source": "TARGET-ASM lines 536423-536694", "status": "GATED", "observed": "Header lines use Now() (0x40d47c) with the ShortDate/Time format globals and login names (0x5b5990), then every list line, then 0x56fe6c.", "reason": "Browser-clock defaults are forbidden; there is no host date/login authority; the CSV header literals are not decoded" },
-    { "id": "PLR-FMT-01", "range": "0x486268..0x486291, 0x48634c..0x486373", "source": "GNU-486268", "observed": "0x486268 = FloatToStrF(x, ffFixed(2), 18, AL); 0x48634c = FloatToStrF(x, ffExponent(1), AL, 2).", "web": "Number.toFixed/toExponential on the binary double, rounding half away from zero; a rounded zero prints without '-'; '.' separator; not x87 Extended parity" }
+    {
+      "id": "PLR-READ-01",
+      "range": "0x56a260..0x56a512",
+      "source": "PLR-STATIC signal-read.asm",
+      "observed": "First line starts with 0x27 → header route: quoted token 0x4867fc → shortstring[40] obj+4; 0x486a00 → word +0x29, byte +0x2b; line 2: 3×0x48690c → Extended +0x2c; line 3: 3×0x48690c → Extended +0x4a, a value equal to Single 0.0 (0x56a514, decoded) becomes Extended 1.0; line 4: 2×0x48690c → +0x68, +0x72; remaining lines until Eof: 3×0x48690c → Double, appended via 0x492574. Otherwise Reset and data route only. Success sets +0x96=1, +0x97=1, +0x98=0 and filename +0x9a. An exception leaves the list cleared and the metadata partially written.",
+      "web": "Strict admission: printable ASCII + CRLF/LF; all-or-nothing; a non-empty first line without the apostrophe is rejected as 'headerless'; a blank first line is rejected as 'blank-first-line' because this admission requires the apostrophe header on line 1 (how the original handles a blank first line is not established: the listing dereferences its first character and there is no runtime witness, so no native route or crash is claimed); a zero-byte file is 'empty'; name ≤40 (no truncation); integers decimal only; aperture 0..65535; highest 0..2; finite bounded numbers; interval > 0; no blank or trailing content; ≤65536 rows; ≤2 MiB. Number() parse, not Extended."
+    },
+    {
+      "id": "PLR-TOKEN-01",
+      "range": "0x4867fc..0x48690b, 0x48690c..0x4869fd, 0x486a00..",
+      "source": "TARGET-ASM lines 207040-207289",
+      "observed": "Each helper deletes leading ' ' and delimiter characters. Quoted: first char is the quote; token runs to the next quote (or end); then deletes token+2. Float/int: token runs to the first delimiter; StrToFloat 0x40cf60 / StrToInt 0x40ad50; deletes token+1."
+    },
+    {
+      "id": "PLR-LIST-01",
+      "range": "0x4924d4..0x4926dc",
+      "source": "TARGET-ASM lines 225145-225382",
+      "observed": "List init index/last := -1; insert after current or at head; +4 last index incremented per insert; IsEmpty 0x492708 = head nil; AtTail 0x49271c; Item(i) 0x492688 is nil for i<0 or i>last. obj+0x84 = N−1."
+    },
+    {
+      "id": "PLR-PROP-01",
+      "range": "0x571748..0x571997",
+      "source": "GNU-571748; COORDINATOR-properties-binding.json; COORDINATOR-properties-data.json; COORDINATOR-form-properties.json (THDRDISP)",
+      "observed": "THdrDisp.FormActivate: IDEd +0x364 name; JDEd +0x36c ffFixed(+0x68,8); AprEd +0x370 IntToStr(word +0x29); DelTED +0x3ac ffFixed(+0x72 × Single 1000 @0x571998,2); Freq1Ed +0x378 / Gain1Ed +0x394 receiver 0 frequency(2)/gain(3); Freq2/Gain2 (+0x380/+0x398) and Freq3/Gain3 (+0x384/+0x39c) only when byte +0x2b > 0 / > 1, otherwise blank; PointsEd +0x3a4 IntToStr(obj+0x84 + 1); FileNmEd +0x3b8 filename if +0x97 else literal 0x5719a4 'Data Not Written to File'.",
+      "binding": "Properties1Click 0x56d848 → Show form slot 0x5b59d4 (→ 0x5bcdf0), created at 0x5ad4ae from class ref 0x571450 → VMT 0x57149c, class THdrDisp (self-verified). FormActivate reads [[0x5b5be8]] = [0x5bcca0], the reader's data object. DFM captions: 'Object:', 'Data Start:', 'Aperture:', 'Frequency (MHz):', 'Receiver 1/2/3', 'Relative Gain:', '# of Data Points:', 'Delta T (MSecs):', 'File:'.",
+      "web": "File shows File.name (the browser base name), never the native full path; the no-file literal cannot occur because only file loads exist"
+    },
+    {
+      "id": "PLR-GEOM-01",
+      "range": "0x56a9f8..0x56aa24",
+      "source": "TARGET-ASM lines 529213-529224; COORDINATOR-form-properties.json (TPLSRANALYSISFORM1 DispBox1..3)",
+      "observed": "FormCreate stores base[ch] at form+0x480+4·ch: DispBox1.Height(+0x4c) − 1, DispBox2.Height − 1, DispBox3.Height − 16. DFM DispBox1/2/3: Width 400, Height 120/125/140, so base = 119/124/124 (Scaled=false, PixelsPerInch 96). Every base use indexes form+0x480+4·ch: axis 0x56bbda..0x56bc45, paint 0x56c19f..0x56c32a, redraw 0x56c41c, vertical/reference line end 0x56c58b, horizontal accept 0x56c750 and line 0x56c7db.",
+      "web": "Each SVG viewBox is 400 × Height native pixels with pixel centres on integer coordinates; pointer input is integer client pixels [0,399] × [0,Height−1]. SVG/Number rendering is not GDI: anti-aliasing, LineTo end-pixel exclusion, pen width and font metrics are not reproduced; no runtime pixel parity is claimed. Trace points far off scale are pinned 10 px outside the box."
+    },
+    {
+      "id": "PLR-RANGE-01",
+      "range": "0x56b7ac..0x56b9ba",
+      "source": "TARGET-ASM lines 530342-530465",
+      "observed": "If name equals literal 0x56b9bc 'No Data' (decoded), writes interval 0.01 s into the data object and window [0,4]. Otherwise window start 0, end dt × Single 400 (0x56b9c4, decoded), zoom := 1, pan rate := 10, tick params (2,50,5,10). With dl=1 it also resets factors and cursor records.",
+      "web": "The placeholder name is rejected at admission, so the overwrite cannot occur"
+    },
+    {
+      "id": "PLR-PAINT-01",
+      "range": "0x56bacc..0x56bd4a, 0x56c028..0x56c345",
+      "source": "TARGET-ASM lines 530555-531187",
+      "observed": "Axis: baseline at y=base[ch] from 0 to DispBox.Width, vertical axis base−100..base, minor ticks every 10 px (length 8), major every 50 px (length 15). Trace: zoom ≥ 1 (f32 1.0 @0x56c348): k = Round(zoom) px per sample from row Round(start/dt), y = base[ch] − Round(v·gain·factor), a nil row draws the baseline; zoom < 1: s = Round(1/zoom) samples summed and averaged per pixel, nil adds 0; the first point is the unnormalized sum; loop ends at x = 0x190. Colors: background 0x800000, axis 0x00ffff, trace white (TColor BGR).",
+      "web": "Per-panel base from PLR-GEOM-01; SVG presentation (see PLR-GEOM-01 limits)",
+      "inference": "f32 1.0 @0x56c348 still read from listing encodings"
+    },
+    {
+      "id": "PLR-ZOOM-01",
+      "range": "0x56b9c8..0x56ba66, 0x56cd28..0x56cf1f",
+      "source": "TARGET-ASM lines 530472-532158; TRIAGE-ZOOM-IN; TRIAGE-ZOOM-OUT",
+      "observed": "In: start += dt·100/z, end −= dt·100/z, z·=2; Out: start −= dt·200/z, end += dt·200/z, z/=2. ZmInBtnClick 0x56cd28 applies only if z < Single 8 (0x56ce20, decoded) on entry. After the update and the zoom readout it compares the new z with 8 again (0x56cd89..0x56cda5): when equal, the same click disables ZmIn (virtual +0x68 with dl=0) and calls MessageBeep (0x408c44). It then enables ZmOut and repaints and redraws all three panels (0x56bacc, 0x56bd4c for ch 0..2). ZmOutBtnClick 0x56ce24 is symmetric with Single 0.125 (0x56cf1c, decoded; post-update check 0x56ce85..0x56cea1). A click with z already at the bound does nothing.",
+      "web": "pulsarZoom disables the button in the click that reaches the bound and reports 'zoom-limit'; no beep",
+      "inference": "Shift constants 100, 200 and factor 2 (0x56ba68/6c/70) still read from listing encodings"
+    },
+    {
+      "id": "PLR-GAIN-01",
+      "range": "0x56c900..0x56cd1c",
+      "source": "TARGET-ASM lines 531659-531995",
+      "observed": "DispGain{n}Down: factor > 0.125 → factor/2 else MessageBeep; Up: factor < 8 → ×2 else beep; readout ffFixed 2; only panel n is redrawn.",
+      "inference": "Per-panel limit constants 0x56c9a4/a8, 0x56ca50/54 (and copies) still read from listing encodings; the help 'Controls' topic states the same 0.125..8 range"
+    },
+    {
+      "id": "PLR-PAN-01",
+      "range": "0x56d1b0..0x56d30d, 0x448f68..0x449001",
+      "source": "TARGET-ASM lines 532320-532448 and 113094-113153; COORDINATOR-form-properties.json (PanTimer, PanLftBtn, PanRtBtn)",
+      "observed": "PRateSpin values 1/2/3 → rate byte form+0x58c 1/10/100. PanLft/RtBtnMouseDown (Button = mbLeft only, cl = 0): step form+0x58d+0x2e := ∓rate·Extended[[0x5bcca0]+0x76] (dt), one PanTimerTimer 0x56d1e4 tick (start += step, end += step, redraw all three panels), then TTimer.SetEnabled(PanTimer @form+0x3e0, True). PanLft/RtBtnMouseUp (mbLeft only): SetEnabled(False). SetEnabled 0x448ff4 returns when the value is unchanged; otherwise UpdateTimer 0x448f68 does KillTimer and, if Interval ≠ 0, Enabled and OnTimer assigned, SetTimer(Interval). DFM PanTimer: Enabled false, Interval 100. Both pan buttons share the one timer. The buttons have no OnClick. No bounds.",
+      "web": "src/core/pulsarPanHold.ts: press = one immediate tick, then a 100 ms browser interval of pulsarPanTick using the stored step; a press while held keeps the single running timer. WEB lifecycle: stops on primary pointer up, pointer cancel, capture loss, window blur, page hidden, inactive host, committed load, modal open (tick refused) and unmount; the click that follows a pointer press does not step again. WEB keyboard adaptation (the native buttons have no OnClick, so they cannot be keyboard-panned): a step runs on the button's native click event when its stored pointerPress suppression flag is clear, and no timer starts; Enter usually clicks on keydown and Space on keyup. Enter keydowns with KeyboardEvent.repeat=true are stopped by the PLR capture policy before the button; the button latches Enter/Space from keydown to the keyup it receives and prevents Enter's click while Enter is latched, also for a keydown with repeat=false; a repeated or latched Space keydown is ignored and Space still clicks on keyup. Latched keys are forgotten on keyup, button blur, window blur, a hidden page, an inactive host, a load and a modal, because their keyup may never reach the button. No one-step-per-physical-press, remote-input or assistive-technology guarantee is claimed; a click steps only when the stored pointerPress suppression flag is clear. A tick whose redraw Number cannot represent is refused ('display-unsupported'), which stops the hold. Browser interval cadence vs Windows WM_TIMER resolution/coalescing is not claimed equal. |window| ≤ 1e12 s. Pointer cancel/lost capture release the hold but leave pointerPress set; the next non-keyboard click can be swallowed. This is a preexisting web limitation, not native pointer or assistive-input parity."
+    },
+    {
+      "id": "PLR-CURSOR-V-01",
+      "range": "0x56c448..0x56c6d6",
+      "source": "TARGET-ASM lines 531276-531484",
+      "observed": "Vertical (dl=0) or reference (dl=1) cursor at pixel x: t = start + x·dt/zoom → FloatToStrF(ffFixed,18,6). Line from y=0 to base[ch]. Own: per-panel record +0xc and global +0x20+8ch, readout +0x410/+0x420/+0x424 (cyan 0xffff00). Reference: global +0, per-panel +0x16, single readout +0x428 (green). Drawn only if x ≥ 0."
+    },
+    {
+      "id": "PLR-CURSOR-H-01",
+      "range": "0x56c6dc..0x56c8f7",
+      "source": "TARGET-ASM lines 531486-531655",
+      "observed": "Accepted only if 0 ≤ y < base[ch]. When computing: value = (base[ch] − y)/(gain[ch] · Single 100 (0x56c8fc, decoded) · factor[ch]); stored per panel +0x20 and global +8+8ch (record 0x5bccb0); readout FloatToStrF(ffExponent,5,2) via 0x48634c; magenta 0xff00ff line from x=1.",
+      "web": "Number, not x87 Extended: an admitted tiny nonzero gain (for example 1e-320) can make the quotient overflow to ±Infinity where Extended stays finite. Such a placement is refused with a visible 'number-unsupported' status; the previous cursor, readout and measurement and the loaded bytes are kept, and a fully refused gesture creates no pending entry;an accepted earlier placement in that gesture stays recordable after a refused MouseUp (WEB Number-domain policy). A later accepted placement replaces the refusal status. No zero substitution, no lower gain limit and no reordered arithmetic is introduced."
+    },
+    {
+      "id": "PLR-REDRAW-01",
+      "range": "0x56c34c..0x56c43f",
+      "source": "TARGET-ASM lines 531189-531270; TRIAGE-REDRAW",
+      "observed": "Called after the panel's axis/trace repaint. For each stored time not below Single 0x56c440 (vertical +0xc, reference +0x16; jb skips at 0x56c374/0x56c3b7): x = Round((t − start)·zoom/dt), then 0x56c448 recomputes t from x (re-quantization) and draws only when x ≥ 0. Horizontal value +0x20 not below 0x56c440 (jb 0x56c3fa): y = Round(base[ch] − v·100·gain·factor), then 0x56c6dc without recomputing the value; it draws and stores only for 0 ≤ y < base[ch]. A skipped or rejected cursor is not drawn on the repainted panel, and its stored pixel, value and readout are not rewritten.",
+      "staticData": "Single 0x56c440 decodes directly to 0.0 (coordinator static data decode, COORDINATOR-correction-triage/static-data-decode.json). Static evidence only: it does not establish runtime FPU comparison or rounding parity",
+      "web": "Each panel cursor carries verticalVisible/referenceVisible/horizontalVisible. A placement sets it (x ≥ 0, or an accepted y), so a negative time or value is drawn right after a manual click. A redraw that skips the entry or rejects its y clears it, keeping the stored pixel, time/value, readout and measurement; a later redraw with a valid projection draws it again. A vertical or reference line is drawn only on a client pixel 0 ≤ x < 400. Keyboard arrows step from a line drawn there; otherwise they use a fixed web edge origin (pixel 0, or row base − 1 for the horizontal cursor). WEB Number boundary: a projection that is not finite in Number (for example v·100 overflowing before gain and factor bring it back, where Extended would not overflow) is not attributed to the native out-of-range rejection. The whole zoom, pan, pan tick or factor change is refused with 'display-unsupported' and changes nothing: no partial re-quantization, no hidden line, the same display, cursors and measurement. The arithmetic order is kept; no gain floor or zero is introduced, and no x87 equivalence is claimed."
+    },
+    {
+      "id": "PLR-MOUSE-01",
+      "range": "0x56d310..0x56d843",
+      "source": "TARGET-ASM lines 532449-532968; COORDINATOR-analysis-vmt-verified.json (DispBox{n}Mouse* bindings)",
+      "observed": "MouseDown: left sets drag flag 0x5dd and places the own cursor by mode 0x57c+ch (0 vertical, 1 horizontal); right sets 0x5dc and places the reference cursor on all three panels. MouseMove acts only with ssLeft (0x08) / ssRight (0x10) while the matching flag is set. MouseUp: clears the flag after the final placement, then 0x57f+ch := IsEmpty || highest < ch; when that is false, Record (+0x464) is enabled.",
+      "web": "x,y are clamped to integer client pixels [0,399]×[0,Height[ch]−1]; the native code can receive captured coordinates outside the panel. A WEB toggle maps the primary button/touch to the reference cursor; keyboard arrows act as one click per press. WEB boundary: pointer cancel, lost pointer capture and host deactivation clear both drag latches (pulsarPointerRelease). This is not a native MouseUp: no cursor is placed and no panel becomes pending; cursors, measurement and confirmed list are kept. WEB pointer ownership: only the primary pointer whose press set a latch drives the shared latches; non-primary pointers and other pointers' cancel or capture loss are ignored, so a secondary cancellation does not end the primary drag. Native left/right handling is unchanged and no multi-touch behavior is modelled. WEB Number boundary: a MouseUp whose own placement is refused ('number-unsupported') marks the panel pending only if the same gesture previously stored an accepted placement;otherwise it preserves pending/Record and creates no blank entry. Confirming a record for panel ch forgets ch's accepted placement while the drag latches stay held, so a later refused MouseUp does not make the recorded value pending again. This extra gesture bookkeeping is WEB,not native x87; a y rejected by 0x56c6dc is the native rule and still marks the panel pending"
+    },
+    {
+      "id": "PLR-MODE-01",
+      "range": "0x56d858..0x56d9d5",
+      "source": "TARGET-ASM lines 532975-533075",
+      "observed": "Horz{n}EdClick mode := 1, Crsr{n}EdClick mode := 0, readout font colors swap, the panel gets focus; no redraw."
+    },
+    {
+      "id": "PLR-RESET-01",
+      "range": "0x56cf20..0x56d1ae",
+      "source": "PLR-STATIC properties-call-seeded.asm; ZmRSetBtnClick binding verified in COORDINATOR-analysis-vmt-verified.json",
+      "observed": "0x56b7ac(dl=0); zoom readout; both zoom buttons enabled; for each panel: factor 1, mode 0, cursor records −1, 0x57f := 1, axis/trace redraw; 0x56fe6c clears the measurement record (all values 0.0, comments ''); Record disabled; readouts cleared."
+    },
+    {
+      "id": "PLR-LOAD-01",
+      "range": "0x56af38..0x56b1c7",
+      "source": "PLR-STATIC analysis-load.asm",
+      "observed": "If the list is non-empty and +0x97 = 0, Yes/No/Cancel save prompt; OpenDialog; reader 0x56a260; menus +0x464/+0x38c/+0x388 disabled; 0x57f[0..2] := 1; caption; 0x56b7ac(dl=1); ZmRSet 0x56cf20; Show Properties 0x5b59d4. The measurement list 0x5bcde0 (alias 0x5b5720, decoded) is not cleared.",
+      "web": "Only admitted files load, so the native unsaved-RAM prompt never applies (no acquisition handoff). Focus moves to Properties Close in the commit that opens it, only if focus is still on body or the file input after the read"
+    },
+    {
+      "id": "PLR-RECORD-01",
+      "range": "0x56ef14..0x56ef5f, 0x56edfc..0x56eee3, 0x570898..0x570ae3, 0x570b3c..0x570f25",
+      "source": "GNU-56EF14, TARGET-ASM lines 534836-534907, 537151-537599; COORDINATOR-requested-literals.json; COORDINATOR-correction-triage/manual-comment-dfm.json (TMEASFORM resource SHA256 6e25ed8701c8a245d077b9f86d334c2b0fa3aadd1b501d4b5c4a1fc8a58e14c9, Cmnt1Ed.MaxLength80)",
+      "observed": "For each panel with 0x57f = 0, a modal dialog (class 0x56f9d0) with channel byte 0x5bcdde. Activation shows name + receiver literal, start (8), frequency (2), gain (3), reference (6), vertical (6), horizontal (exp 5/2), comment. OK stores the comment (shortstring[81]) and appends a line to TStringList 0x5bcde0: name, freq, gain, then reference/vertical/horizontal or literal 0x570f48 '\"\",' when equal to 0.0, start, comment, IntToStr(N), interval ms, aperture, filename when +0x96. Delimiters 0x570f28 '\"', 0x570f2c ',', 0x570f38 ',', 0x570f54 '\"' are decoded. A non-Cancel result marks the panel recorded, clears 0x5db and enables +0x38c/+0x388. Record stays enabled while any panel is pending.",
+      "inference": "nativeLineCandidate follows the decoded literals but is not a file-writer contract: the CSV writer is gated and number text is not x87 parity. It is an opaque internal candidate, not a validatable or exportable CSV: the object and file names are wrapped in '\"' without escaping, so an admitted name containing an unescaped '\"' can make field boundaries ambiguous; a comma within a fully quoted field alone is not evidence of ambiguity. Only the comment-only Review editor (PLR-REVIEW-EDIT-STATIC-01) reads it: its bounded round-trip predicate parses and checks it and OK may splice a new comment into it; no native CSV reader, writer or export uses it. Review shows the structured fields, which keep the names verbatim. Native escaping is unknown and is not invented",
+      "web": "Comments: printable ASCII without '\"', ≤ 80 characters (compiled Cmnt1Ed.MaxLength; the native shortstring storage capacity81 is distinct). The list lives only in this tab; a visible note says it is not part of Save investigation and is discarded on refresh/close. The record and clear prompts are native <dialog> elements opened with showModal() (browser top layer: inert page, contained focus, topmost modal wins); Tab/Shift+Tab wrap via a keydown handler on the dialog element only, never a page-level trap. Escape is Cancel/No, the default button is Cancel/No and focus returns to Record or Clear. A dialog opens only while the panel is active and rendered and no other native modal is open (nonmodal show/open banners do not block it); a bounded observer while a modal session is pending detects conditional DOM removal without close, and local Tab wrapping covers clicks on dialog text; an inactive panel closes it and keeps the record session (draft included) or clear stage for reentry. This is web behavior, not VCL modal parity WEB keyboard policy: Enter keydowns with KeyboardEvent.repeat=true are prevented and stopped during capture on the PLR component, before child handlers or native button activation. Its native dialogs remain descendants of that scope. This prevents repeat-driven Record queue acceptance and focus-handoff activations across Review, notices, Clear and the editor. No global window listener or latch is added; fresh keydowns/keyups, Space, arrows and pointer/touch behavior are unchanged. New keyup/keydown pairs marked repeat=false remain fresh commands; no native/remote-input/AT event parity is claimed. The shared dialog keydown handler prevents repeat=true Escape without cancelling again, in Record and Clear as well as Review. One held Escape skips only the current pending Record panel; a fresh Escape can skip the next. No global latch or Escape stopPropagation is added; fresh repeat=false pairs remain fresh commands, with no native/input-device parity claim."
+    },
+    {
+      "id": "PLR-REVIEW-01",
+      "range": "0x56f74c..0x56f7ab",
+      "source": "GNU-56F74C; COORDINATOR-review-dialog-class.json",
+      "observed": "List dialog class 0x5631f8 = TMeasListDlg (VMT 0x563244, methods FormActivate 0x563464, CnclBtnClick 0x563494, OkBtnClick 0x5634a0, FndBtnClick 0x5634c8, EditBtnClick 0x56373c, DelBtnClick 0x56388c); a non-Cancel result clears 0x5db and enables +0x38c.",
+      "status": "GATED for Find (FndBtnClick 0x5634c8): the button is shown disabled in its DFM place and the Find context remains open; no Undo semantics are claimed. The working-copy transaction and confirmed Delete are implemented under PLR-REVIEW-TRANSACTION-STATIC-01, PLR-REVIEW-DELETE-STATIC-01 and PLR-REVIEW-CALLER-STATIC-01; EditBtnClick 0x56373c is implemented for the comment only, on a proven round-trip subset, under PLR-REVIEW-EDIT-STATIC-01"
+    },
+    {
+      "id": "PLR-REVIEW-EDIT-STATIC-01",
+      "range": "0x56373c..0x56385c, 0x570f6c..0x5710b3, 0x5710d0..0x5713f2, 0x570498..0x570879, 0x570b30..0x570b3a",
+      "source": "GNU-REVIEW-METHODS (EditBtnClick); GNU-EDIT-METHODS; GNU-EDIT-OK; GNU-EDIT-PARSER; GNU-EDIT-CANCEL; GNU-EDIT-RTL; GNU-EDIT-CONCAT; EDIT-TYPED-LITERALS; EDIT-REMAINING-GAPS; EDIT-NO-SELECTION-LITERALS; EDIT-CLASS; EDIT-PREPARATION",
+      "observed": "EditBtnClick 0x56373c: ItemIndex (vmt+0xdc) < 0 → Application.MessageBox(PChar 0x563874 'Select Item for Edit.', caption PChar 0x563860 'No Item Selected!', flags 0x30) and nothing else. Otherwise TMeasForm2 (class ref 0x56fca4, VMT 0x56fcf0, parent TMeasForm, Owner Application) is created per click into slot 0x5b5ebc; the selected Items string is LStrAsg'ed into the instance's AnsiString +0x4c4 (0x5637ce); ShowModal (vmt+0xfc); the caller reads the editor's ModalResult +0x294 and, only when it is not 2, re-reads ItemIndex and Puts +0x4c4 at that ordinal (vmt+0x20, 0x563819); the instance is freed (0x56382d) and Review's ModalResult := 0 (0x563834), so Review stays open. FormActivate 0x570f6c: Caption := AnsiString 0x5710bc 'Measurement Data'; when +0x4c4 is non-empty, parser 0x570498 fills the record +0x3a8 and Rcvr1Grp := object, JD1Cptn := start, Freq1Cptn := frequency, Gain1Cptn := gain, Ref1Ed/Vert1Ed/Horz1Ed := reference/vertical/horizontal, Cmnt1Ed := comment. Parser 0x570498: Delete(1,1) unchecked; object to the next AnsiString '\"' 0x570884 then Delete(p+1); frequency, gain, reference, vertical, horizontal to the next ',' 0x570890 with Delete(p); start to ',' with Delete(p+1); comment to the next '\"' with Delete(p+1); tail = remainder. Each field Copy → 0x4060cc (cap 255) → 0x403c5c with caps 40/7/5/9/9/10/14/81/100. Reference/vertical/horizontal equal to ShortString 0x570894 '\"\"' (0x403cfc over length+1 bytes) are cleared. OkBtnClick 0x5710d0: an empty +0x4c4 gives ModalResult 2; otherwise only Cmnt1Ed.Text ([ebx+0x394], getter 0x45df24) is read, capped 255 then stored in comment[81] (0x571164); the line is rebuilt as ShortString '\"' (0x5713f4) + object, '\"', ',' (0x5713f8), frequency, ',', gain, ',' with append caps 0x29/0x2a/0x2b/0x32/0x33/0x38/0x39, then AnsiString reference/vertical/horizontal + ',' (0x571404) or '\"\",' (0x571410) when the length byte is 0, then CatN of start, ',', '\"' (0x57141c), comment, '\"', ',', tail (left-to-right push order 0x4061c4); ModalResult := 1. Nothing is escaped; numeric controls are never read. Inherited TMeasForm.CnclBtnClick 0x570b30: ModalResult := 2; ret. TMEASFORM DFM: Cmnt1Ed MaxLength 80; Ref1Ed/Vert1Ed/Horz1Ed ReadOnly true, TabStop false; OkBtn Default true; CnclBtn without a Cancel property.",
+      "web": "src/core/pulsarReviewEdit.ts. pulsarEditorParse/pulsarEditorRebuild are literal models of 0x570498/0x5710d0 over ports of the bound RTL helpers on byte strings. pulsarReviewEditSupport admits an entry only when its nativeLineCandidate and structured fields are printable ASCII 0x20..0x7e (one byte per character), the object has no '\"', every structured field and the computed tail fit their ShortString capacities by actual byte length, the candidate equals the structured-field template (a duplicate of the web Record writer's lineCandidate, so this is a self-consistency guard that fails closed if the copies diverge, not an independent model or native witness), the literal parse yields every structured field (a cleared field ↔ null) and the literal rebuild of the parse is byte-identical to the candidate. Other rows are refused with a reason ('text', 'object-quote', 'length' with field/length/capacity, 'layout') and nothing changes; Load and Record admission are unchanged. Commas in the quoted object or comment and quotes or commas inside the file name (opaque tail) are allowed. OK splices the new comment between the raw prefix and suffix and uses the result only when it equals both the literal rebuild and the template; it replaces only the captured working-copy ordinal with a new frozen entry (same sequence, panel and other field strings); other rows keep their identity; an unchanged comment keeps the entry object. The comment is validated by pulsarCommentValid (≤ 80 printable ASCII, no '\"'); an invalid draft stays visible in the editor. The confirmed list, measurement comments, pending flags, cursors, readouts, nextSequence, listSaved and saveEnabled change only through the existing outer Ok. The no-selection notice is an inline alertdialog; the editor is an inline layer of the same Review dialog (caption 'Measurement Data', group = object, JD/frequency/gain text, read-only readings out of the Tab order, comment input, OK/Cancel); Enter in the comment is OK; the shared PLR capture policy ignores Enter keydowns marked repeat=true before any child handler or native button can act, including the editor OK button and notices (WEB policy, no native input-event parity); Escape cancels one layer at a time (editor, then Review), and Escape keydowns with KeyboardEvent.repeat=true are prevented and ignored by the dialog's keydown handler, so a held Escape closes the editor without cancelling Review (WEB policy, no native Escape model); focus moves to the comment on open and back to Edit on close; every other Review action is refused while the editor or a notice is open; host inactivity keeps the editor and its draft. WEB keyboard policy: Enter keydowns with KeyboardEvent.repeat=true are prevented and stopped during capture on the PLR component, before child handlers or native button activation. Its native dialogs remain descendants of that scope. This prevents repeat-driven Record queue acceptance and focus-handoff activations across Review, notices, Clear and the editor. No global window listener or latch is added; fresh keydowns/keyups, Space, arrows and pointer/touch behavior are unchanged. New keyup/keydown pairs marked repeat=false remain fresh commands; no native/remote-input/AT event parity is claimed.",
+      "uncertainty": "Static evidence only, not original-equivalent. TMeasForm2 has no own TPF0 resource; inheriting the TMEASFORM DFM and binding OnActivate/OkBtnClick by name to the TMeasForm2 methods and CnclBtnClick to 0x570b30 is the Delphi streaming expectation, not a runtime witness. Review's OnActivate 0x563464 (Items.Assign from the shared list, ItemIndex := 0) may re-run when the nested VCL form closes, before the caller re-reads ItemIndex and Puts; then the original would drop staged deletions and edits and overwrite row 0. The web keeps the working copy and the ordinal captured when the editor opened, and models no native window close button, other ModalResult value, form reactivation (which would re-run TMeasForm2.FormActivate and reset the comment) or selection after Put. The supported subset proves only self-consistency: the literal parse/rebuild and a duplicate of the web Record writer's template agree with a candidate that the web Record writer built; synthetic test vectors, including independently authored ones, are not a native oracle either. nativeLineCandidate stays an internal candidate, not a native Record writer or CSV witness (x87 number text, +0x96 file condition and writer caps remain unbound). VCL TEdit/GDI/ANSI code-page behavior and malformed-input RTL paths outside the subset are not claimed."
+    },
+    {
+      "id": "PLR-REVIEW-TRANSACTION-STATIC-01",
+      "range": "0x563464..0x5634c6",
+      "source": "GNU-REVIEW-METHODS; REVIEW-CLASS; REVIEW-DFM; REVIEW-CONTRACT",
+      "observed": "FormActivate 0x563464 (DFM OnActivate): ListBox1.Items (+0x378 → +0x260) Assign from the shared TStringList [[0x5b5720]] (vmt+8), then ListBox1.ItemIndex := 0 (vmt+0xe0). CnclBtnClick 0x563494: ModalResult (+0x294) := 2, no copy back. OkBtnClick 0x5634a0: shared list Assign(ListBox1.Items), then ModalResult := 1. DFM TMEASLISTDLG: Caption 'Select Measurement Record', BorderStyle bsDialog; buttons FndBtn '&Find...' (TabOrder 0), EditBtn '&Edit...' (1), DelBtn '&Delete' (2), OkBtn '&Ok' (3), CnclBtn '&Cancel' (4); ScrollBox1 (5) holding ListBox1 (Width 2000, ItemHeight 16). No button has a Default or Cancel property.",
+      "web": "pulsarReviewOpen copies the confirmed entry objects into a frozen working copy and selects ordinal 0; Cancel drops it; Ok replaces the confirmed list with it. Selection is an ordinal, never a sequence ID. WEB: an empty working copy has selection null (natively ItemIndex := 0 on an empty list box is expected to read back −1, but that getter result is not recovered here). Rows show the structured fields keyed by the stable sequence; the opaque nativeLineCandidate is not shown or escaped; only the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01) parses it and splices a new comment into it. One radio per row stands for the ListBox selection (browser radio-group arrow keys, which wrap; native ListBox keys are not modelled). Find is disabled; Edit opens the comment editor under PLR-REVIEW-EDIT-STATIC-01. Tab order follows the document (the named scroll region, the selected row, Edit, Delete, Ok, Cancel; the list and its buttons are inert and leave it while the inner question, notice or comment editor is open), not the native TabOrder (buttons before the list), and '&' accelerators are not implemented. WEB initial focus: the selected row, else Cancel. The dialog is a native <dialog> opened with showModal() under the existing PLR modal protocol; Escape and a close request are outer Cancel (no native Cancel property exists); an Escape keydown with KeyboardEvent.repeat=true is prevented and ignored by the dialog's own keydown handler (no window listener or latch, propagation not stopped), so a held Escape that closed an inner layer does not also cancel Review and discard the working copy; a fresh Escape after release does. Host inactivity closes the dialog and keeps the session (working copy, selection and inner question) for reentry. WEB keyboard policy: Enter keydowns with KeyboardEvent.repeat=true are prevented and stopped during capture on the PLR component, before child handlers or native button activation. Its native dialogs remain descendants of that scope. This prevents repeat-driven Record queue acceptance and focus-handoff activations across Review, notices, Clear and the editor. No global window listener or latch is added; fresh keydowns/keyups, Space, arrows and pointer/touch behavior are unchanged. New keyup/keydown pairs marked repeat=false remain fresh commands; no native/remote-input/AT event parity is claimed.",
+      "uncertainty": "FormActivate is an OnActivate handler. Whether VCL re-fires it, re-assigning the shared list over a staged deletion, when the form is reactivated after the delete MessageBox (or after the Edit dialog) is a VCL runtime question that this image capture does not answer. The web keeps the staged working copy across the inner question, as native-contract.json specifies; no native parity is claimed for that re-entry."
+    },
+    {
+      "id": "PLR-REVIEW-DELETE-STATIC-01",
+      "range": "0x56388c..0x563955",
+      "source": "GNU-REVIEW-DELETE; GNU-REVIEW-METHODS (inline literals)",
+      "observed": "ItemIndex (vmt+0xdc) < 0 → Application.MessageBox(text 0x56396c 'Select Item for Deletion.', caption 0x563958 'No Item Selected!', flags 0x30 = MB_OK|MB_ICONEXCLAMATION) and nothing else. Otherwise MessageBox(text 0x56399c 'Delete Selected Item from List?', caption 0x563988 'Confirm Deletion', flags 0x24 = MB_YESNO|MB_ICONQUESTION); only result 6 (IDYES) continues: i := ItemIndex; Items.Delete(i) (vmt+0x48); if Count > 0 then ItemIndex := i when i < Count, else Count − 1. Every path ends with ModalResult := 0 (0x56394c), so Review stays open.",
+      "web": "pulsarReviewRequestDelete/pulsarReviewAnswerDelete/pulsarReviewDismissNotice. The two MessageBoxes are an inline alertdialog section of the Review dialog with the list and buttons inert while it is open. WEB: the question's initial focus is No (flags 0x24 carry no MB_DEFBUTTON bits, so the native default button is Yes); a deletion needs an explicit Yes. Escape answers No on the question and dismisses the notice; a Win32 Yes/No MessageBox has no Escape answer, so this is not parity. Repeat-flagged Escape keydowns are ignored (PLR-REVIEW-TRANSACTION-STATIC-01 web), so holding Escape answers No once and keeps Review open. Focus returns to Delete when the question or notice closes. Deleting the only row leaves selection null."
+    },
+    {
+      "id": "PLR-REVIEW-CALLER-STATIC-01",
+      "range": "0x56f74c..0x56f7ab",
+      "source": "GNU-56F74C",
+      "observed": "Creates TMeasListDlg (class ref 0x5631f8) into slot 0x5b5eb8, ShowModal (vmt+0xfc), then reads the dialog's ModalResult field (+0x294): when it is not 2, form byte 0x5db := 0 (list not saved) and +0x38c.Enabled := True (Save); then Free. There is no count check and no other flag, list or display change.",
+      "web": "pulsarReviewConfirm sets listSaved false and saveEnabled true even when nothing changed or every row was deleted. It is not Clear (0x56f7ac): Record, Review, pending flags, cursors, readouts, the measurement record, nextSequence and the loaded bytes are untouched, and an emptied list keeps Review enabled. The native CSV writer stays gated (PLR-CSV-01), so saveEnabled enables no web control. Cancel changes nothing. The Review control (+0x388) stays gated by Load and Record as before."
+    },
+    {
+      "id": "PLR-CLEAR-01",
+      "range": "0x56f7ac..0x56f884",
+      "source": "GNU-56F74C",
+      "observed": "If 0x5db = 0: Yes/No/Cancel (Yes → Save 0x56ef60, abort if still unsaved; Cancel → abort); then MessageDlg confirmation; mrYes → list.Clear and disable +0x464/+0x388/+0x38c.",
+      "web": "The Save answer is not offered because PLR-CSV-01 is gated"
+    },
+    {
+      "id": "PLR-CSV-01",
+      "range": "0x56ef60.., 0x56feac..0x57033x",
+      "source": "TARGET-ASM lines 536423-536694",
+      "status": "GATED",
+      "observed": "Header lines use Now() (0x40d47c) with the ShortDate/Time format globals and login names (0x5b5990), then every list line, then 0x56fe6c.",
+      "reason": "Browser-clock defaults are forbidden; there is no host date/login authority; the CSV header literals are not decoded"
+    },
+    {
+      "id": "PLR-FMT-01",
+      "range": "0x486268..0x486291, 0x48634c..0x486373",
+      "source": "GNU-486268",
+      "observed": "0x486268 = FloatToStrF(x, ffFixed(2), 18, AL); 0x48634c = FloatToStrF(x, ffExponent(1), AL, 2).",
+      "web": "Number.toFixed/toExponential on the binary double, rounding half away from zero; a rounded zero prints without '-'; '.' separator; not x87 Extended parity"
+    }
   ],
   "numericPolicy": "Metadata and samples are IEEE doubles from Number(lexeme). Native metadata is x87 Extended and samples are Double after an Extended parse. Round() = roundNearestEven (src/core/numericPolicy.ts), not a measured x87 control word. No x87 parity is claimed. A cursor value or record field that is not finite in Number is refused ('number-unsupported'), never stored, formatted as blank or recorded, and a fully refused gesture marks nothing pending. A refused MouseUp preserves recordability of an earlier accepted placement within that same gesture (explicit WEB Number-domain policy). A redraw projection that is not finite in Number refuses the whole display change ('display-unsupported') instead of hiding the line. Operation order is never rearranged to avoid an overflow.",
-  "units": { "time": "seconds from the start of the data; sample i is at i·dt", "interval": "stored seconds, shown in msec (×1000)", "start": "JD − 2,400,000 as written (no calendar conversion)", "aperture": "m", "frequency": "MHz", "gain": "relative, unitless", "horizontal": "relative strength = pixel height/(100·gain·factor), unitless" },
-  "excluded": ["acquisition and receiver models", "noise models", "pulsar catalog, period, PDot/PEpoch and DM/distance formulas", "random state", "browser clock", "in-RAM recording handoff from the receiver", "native PLR writer 0x56a518 (the download is a raw byte copy)", "native measurement CSV writer", "review-dialog Find, Edit (comment editor) and Undo"],
+  "units": {
+    "time": "seconds from the start of the data; sample i is at i·dt",
+    "interval": "stored seconds, shown in msec (×1000)",
+    "start": "JD − 2,400,000 as written (no calendar conversion)",
+    "aperture": "m",
+    "frequency": "MHz",
+    "gain": "relative, unitless",
+    "horizontal": "relative strength = pixel height/(100·gain·factor), unitless"
+  },
+  "excluded": [
+    "acquisition and receiver models",
+    "noise models",
+    "pulsar catalog, period, PDot/PEpoch and DM/distance formulas",
+    "random state",
+    "browser clock",
+    "in-RAM recording handoff from the receiver",
+    "native PLR writer 0x56a518 (the download is a raw byte copy)",
+    "native measurement CSV writer",
+    "review-dialog Find and Undo",
+    "Edit of any field other than the comment, and Edit of rows outside the proven round-trip subset"
+  ],
   "fixtures": "All tests use synthetic text written for these contracts. No original PLR file or writer output witness exists, so the tests check the chosen implementation contract and are not an oracle for the original runtime.",
   "gates": [
-    "Review dialog TMeasListDlg (0x5631f8): Find context, safe comment-line round trip and Undo evidence open; whether OnActivate re-fires after the delete MessageBox is a VCL runtime question",
+    "Review dialog TMeasListDlg (0x5631f8): Find context and Undo evidence open; whether OnActivate re-fires after the delete MessageBox or the nested Edit form is a VCL runtime question; Edit is limited to the comment on the proven round-trip subset",
     "CSV writer 0x56feac: header literals, host date/time and login authority",
     "Delphi ReadLn/Eof line-ending and ^Z behavior; StrToFloat accepted language and DecimalSeparator",
     "Native PLR writer witness or an independent original PLR fixture",

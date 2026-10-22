@@ -59,8 +59,14 @@
 .plr-review-body[inert]{opacity:.6}
 .plr-review-prompt{border:2px solid currentColor;border-radius:.25rem;padding:.75rem;margin:.75rem 0}
 .plr-review-prompt h4{margin-top:0}
+.plr-review-edit-group{border:1px solid #888;border-radius:.25rem;padding:.5rem .75rem;margin:.5rem 0;min-width:0}
+.plr-review-edit-group legend{font-weight:700;overflow-wrap:anywhere}
+.plr-review-edit-readings-label{margin:.5rem 0 0}
+.plr-review-edit-readings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
+.plr-review-edit-readings label{margin:0}
+.plr-review-edit-readings input[readonly]{background:transparent;border:1px solid #888}
 @media (max-width:720px){
  .plr{padding:.5rem}
  .plr-panel-body{grid-template-columns:minmax(0,1fr)}
- .plr-props dl>div,.plr-modal dl>div{grid-template-columns:minmax(0,1fr)}
+ .plr-props dl>div,.plr-modal dl>div,.plr-review-edit-readings{grid-template-columns:minmax(0,1fr)}
 }

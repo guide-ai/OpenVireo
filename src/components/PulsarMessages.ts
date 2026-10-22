@@ -3,9 +3,10 @@
  * It is kept out of the shared en.json until the coordinator integrates it. The panel
  * accepts a complete replacement catalog through createPulsarTranslator. Labels are
  * authored web text, except the Review dialog caption, its button captions (TMEASLISTDLG
- * TPF0, without the '&' accelerators) and its two MessageBox captions and texts, which are
- * the decoded literals (PULSAR_REVIEW_LITERALS in src/core/pulsarReview.ts). Pure
- * presentation data: no React and no scientific state.
+ * TPF0, without the '&' accelerators) and its MessageBox captions and texts, which are
+ * the decoded literals (PULSAR_REVIEW_LITERALS in src/core/pulsarReview.ts), and the comment
+ * editor's caption, labels and buttons (PULSAR_REVIEW_EDIT_LITERALS / PULSAR_REVIEW_EDIT_DFM in
+ * src/core/pulsarReviewEdit.ts). Pure presentation data: no React and no scientific state.
  */
 export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.title': 'Radio pulsar data analysis (recorded data)',
@@ -94,6 +95,16 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.outcome.review-deleted': 'Measurement removed from the working copy. Ok keeps the change; Cancel discards it.',
   'pulsar.outcome.review-cancelled': 'Review cancelled. The recorded measurements are unchanged.',
   'pulsar.outcome.review-confirmed': 'Review applied. The measurement list is marked as not saved.',
+  'pulsar.outcome.review-edit-no-selection': 'No measurement is selected for Edit.',
+  'pulsar.outcome.review-edit-notice-closed': 'Notice closed. Nothing was changed.',
+  'pulsar.outcome.review-edit-opened': 'Editing the comment of the selected measurement in the working copy.',
+  'pulsar.outcome.review-edit-draft': '',
+  'pulsar.outcome.review-edited': 'Comment accepted in the working copy. Ok in Review keeps the working copy; Cancel discards its changes.',
+  'pulsar.outcome.review-edit-cancelled': 'Edit cancelled. The working copy is unchanged.',
+  'pulsar.outcome.review-edit-unsupported-text': 'Edit is not available for this measurement: its stored text has characters outside printable ASCII (for example in the file name), so its bytes in the original editor are not established. Nothing was changed.',
+  'pulsar.outcome.review-edit-unsupported-quote': 'Edit is not available for this measurement: its object name contains a double quote, where the original editor would end the name. Nothing was changed.',
+  'pulsar.outcome.review-edit-unsupported-length': 'Edit is not available for this measurement: a stored field is longer than the original editor keeps, so it would be cut. Nothing was changed.',
+  'pulsar.outcome.review-edit-unsupported-layout': 'Edit is not available for this measurement: the original editor would not rebuild its stored line byte for byte. Nothing was changed.',
   'pulsar.toolbar.heading': 'Display controls',
   'pulsar.toolbar.properties': 'Properties…',
   'pulsar.toolbar.reset': 'Reset',
@@ -104,7 +115,7 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.toolbar.panLeft': 'Pan left',
   'pulsar.toolbar.panRight': 'Pan right',
   'pulsar.toolbar.panRate': 'Pan rate (samples per step)',
-  'pulsar.toolbar.panNote': 'Pressing a pan button moves one step, and holding it repeats a step every 100 ms (the original PanTimer interval) until you release it. Enter or Space moves one step per press; holding the key does not repeat.',
+  'pulsar.toolbar.panNote': 'Pressing a pan button moves one step, and holding it repeats a step every 100 ms (the original PanTimer interval) until you release it. Use Enter or Space to pan one step. Release the key before using it again.',
   'pulsar.input.primary': 'Primary button or touch sets',
   'pulsar.input.panel': 'the panel cursor (left button)',
   'pulsar.input.reference': 'the reference cursor (right button)',
@@ -173,9 +184,10 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.review.delete': 'Delete',
   'pulsar.review.ok': 'Ok',
   'pulsar.review.cancel': 'Cancel',
-  'pulsar.review.gated': 'Find and Edit are not available: their behavior is not implemented in this window.',
+  'pulsar.review.gated': 'Find is not available: its behavior is not implemented in this window.',
   'pulsar.review.noSelectionCaption': 'No Item Selected!',
   'pulsar.review.noSelectionText': 'Select Item for Deletion.',
+  'pulsar.review.editNoSelectionText': 'Select Item for Edit.',
   'pulsar.review.noticeOk': 'OK',
   'pulsar.review.confirmCaption': 'Confirm Deletion',
   'pulsar.review.confirmText': 'Delete Selected Item from List?',
@@ -196,6 +208,21 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.review.aperture': 'Aperture (m)',
   'pulsar.review.file': 'File',
   'pulsar.review.blank': '—',
+  'pulsar.reviewEdit.heading': 'Measurement Data',
+  'pulsar.reviewEdit.note': 'Only the comment can be changed. OK changes the working copy; the recorded list changes only with Ok in Review. Enter is OK; Escape is a web shortcut for Cancel.',
+  'pulsar.reviewEdit.julianDate': 'Julian Date (-2,400,000):',
+  'pulsar.reviewEdit.frequency': 'Frequency (MHz):',
+  'pulsar.reviewEdit.gain': 'Gain:',
+  'pulsar.reviewEdit.readings': 'Cursor Readings:',
+  'pulsar.reviewEdit.reference': 'Reference (Sec)',
+  'pulsar.reviewEdit.vertical': 'Vertical (Sec)',
+  'pulsar.reviewEdit.horizontal': 'Horizontal (Rel)',
+  'pulsar.reviewEdit.comment': 'Comment:',
+  'pulsar.reviewEdit.commentHelp': 'Up to 80 printable ASCII characters, without double quotes.',
+  'pulsar.reviewEdit.ok': 'OK',
+  'pulsar.reviewEdit.cancel': 'Cancel',
+  'pulsar.reviewEdit.lengthDetail': 'The stored {field} text has {length} characters; the original editor keeps at most {capacity}.',
+  'pulsar.reviewEdit.tail': 'points, interval, aperture and file',
 } as const);
 
 export type PulsarMessageKey = keyof typeof PULSAR_MESSAGES_EN;
