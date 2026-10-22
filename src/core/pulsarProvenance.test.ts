@@ -67,16 +67,18 @@ describe('pulsar provenance', () => {
     expect('status' in find!).toBe(false);
     // Address anchors bind the observed text to the captures; the wording around them is not an oracle.
     for (const anchor of ['0x40bb04', '0x40a4a0', '0x40640c', "'String Not Found'", '0x5635b4..0x5635ba', '0x5635d6..0x5635df', '[[0x5b5930]]', '0x408ae4', '0x408cec',
-      '0x4062da..0x4062de', '0x47e171..0x47e17a', '0x56a49d..0x56a4be', '0x56a848..0x56a85d', '0x56afbc..0x56afce', '0x570e77..0x570ec0', '0x571931'])
+      '0x4062da..0x4062de', '0x47e171..0x47e17a', '0x56a49d..0x56a4be', '0x56afbc..0x56afce', '0x570e77..0x570ec0', '0x571931'])
       expect(find!.observed, anchor).toContain(anchor);
     expect(find!.observed).toMatch(/body of 0x47dd40 is not captured.*inference/);
     expect(find!.observed).toMatch(/two call targets are not bound/);
+    expect(find!.observed).toContain('flags 0x40');expect(find!.observed).toContain('may OR 0x100000');
+    expect(find!.observed).toContain('does not replace the stored Items strings');
     expect(find!.blocker).toMatch(/^Not enabled\. /);
     expect(find!.blocker).toMatch(/no-scan path: when Items\.Count <= start/);
     expect(find!.blocker).toMatch(/13 prepared handwritten vectors .* were not executed/);
     expect(find!.uncertainty).toMatch(/inference from that caption/);
     expect(find!.uncertainty).toMatch(/Only if no other path updated the persisted mode \+0x3d2 or the query/);
-    expect(find!.uncertainty).toMatch(/0x56b36c .* reaches the writer 0x56a518 are not bound/);
+    expect(find!.uncertainty).toMatch(/actual execution.*0x56b36c/);
     expect(String((provenance.contracts.find(c => c.id === 'PLR-REVIEW-EDIT-STATIC-01') as { uncertainty?: string }).uncertainty)).toMatch(/never certified native tail equivalence/);
     const reviewStatus = String((provenance.contracts.find(c => c.id === 'PLR-REVIEW-01') as { status?: string }).status);
     expect(reviewStatus).toContain('PLR-REVIEW-FIND-STATIC-01');
@@ -101,7 +103,11 @@ describe('pulsar provenance', () => {
       ['0x56a260', '0x56a49d..0x56a4be', { '+0x96': 1, '+0x97': 1, '+0x98': 0 }],
       ['0x56a518', '0x56a848..0x56a85d', { '+0x97': 1 }],
     ]);
-    expect(field.knownStores[1].untouched).toEqual(['+0x96']);
+    expect(field.knownStores[1].directlyUnwrittenInCapture).toEqual(['+0x96']);
+    expect(field.knownStores[1].conditionalObjectBinding!.eax).toBe('[0x5bcca0]');
+    expect(listing.get('PLR-WRITER-OBJECT-CALLER')!.range).toBe('0x56b36c..0x56b678');
+    expect(listing.get('PLR-WRITER-OBJECT-CALLER')!.sha256).toBe('b56926da8ce354c26b671d94031d3b6656ca378703f716b5cffa2a115640f5be');
+    expect(field.knownStores[1].conditionalObjectBinding!.ranges).toEqual(['0x56b5c6..0x56b5ce','0x56b5e3..0x56b5eb']);
     for (const store of field.knownStores) expect(listing.get(store.listing)?.sha256, store.routine).toContain(`${store.capture} `);
     expect(listing.get('PLR-FILENAME-STORES')!.sha256).toBe('signal-write.asm 55069a74c53d6daa29657dbef7768a2b5322a5c6145c8624802dbe303eebef7d; analysis-load.asm f8b01891d0084425025de1a0ae2d73dfb73df3a4c7d354b915fbefac410c255b');
     // Record appends the tail on +0x96; Properties shows the text on +0x97, which the writer also sets.
@@ -111,7 +117,7 @@ describe('pulsar provenance', () => {
     ]);
     expect(listing.get('GNU-571748')!.range).toBe('0x571748..0x5719a4');
     expect(field.readerArgumentPreseed.range).toBe('0x56afbc..0x56afce');
-    expect(field.notBound.some(n => n.includes('0x56b36c') && n.includes('0x56a518'))).toBe(true);
+    expect(field.notBound.some(n => n.includes('actual execution/history'))).toBe(true);
     expect(field.nativeContent).toMatch(/^unknown/);
     expect(field.web).toMatch(/not native file-name content authority/);
     const byId = new Map(provenance.contracts.map(c => [c.id, JSON.stringify(c)]));
@@ -120,7 +126,7 @@ describe('pulsar provenance', () => {
     const texts = [JSON.stringify(provenance), ...['../../docs/PULSAR-ANALYSIS.md', './pulsarRecording.ts', './pulsarReview.ts', './pulsarReviewEdit.ts', '../components/PulsarMessages.ts']
       .map(f => readFileSync(new URL(f, import.meta.url), 'utf8'))];
     for (const text of texts) expect(text).not.toMatch(/exact (native )?`?(open-dialog |OpenDialog\.)`?\s*\*?\s*FileName|native full path|full path given to the reader|shows the full path|reader FileName text|the reader received|is not a native non-match|of the loaded file \(possibly/);
-    expect(readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')).toMatch(/'pulsar\.review\.gated': 'Find is not available: [^']*native file name text \(possibly with a folder path\) and native number text/);
+    expect(readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')).toMatch(/'pulsar\.review\.gated': 'Find is not available: [^']*whole stored lines\. Their native number text and, when present, file name text/);
   });
   it('records the artifact hash, the REA evidence and the gated contracts', () => {
     expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');
