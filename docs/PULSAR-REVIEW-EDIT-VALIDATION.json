@@ -98,5 +98,119 @@
     "Selectedordinal/workingcopykeptbyexplicitWEBinlineeditorpolicy;nativeOnActivate/re-readselection/windowX remainunwitnessed",
     "No Find/Undo/nativewriter/acquisition/periodDM/schema/persistenceaddition;manualnumbersneverfilled",
     "TemporaryworkspaceexcludedfromSaveinvestigationanddiscardedonreload"
-  ]
+  ],
+  "correctionValidation": {
+    "sourceCommit": "3e8734788ad73f7dd08bfe4ff530dc90fa8fcf81",
+    "baseCommit": "ea7830dbd85fe2c837af3a2cf5ef30c4d6005b95",
+    "sourceHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "56c77380d468b7a59d9b10cf333201ab599ed9c5e2c9d63d34c9e3e6cfcff0e0",
+      "docs/PULSAR-ANALYSIS.md": "29c2d3920531db0d34226f2d2f9a9cbfa7f33ea766c9b5fe419b7dfafdf8cde7",
+      "src/components/PulsarAnalysis.css": "84572b5bee477963f6c62f160e0af67c28fe99a54e725fb07c3d00d78f025f15",
+      "src/components/PulsarAnalysis.tsx": "688cddd020594c479899d4df11275f21eaa8377cba56fa5d79a66201b3a658e7",
+      "src/components/PulsarMessages.ts": "97e863e8b1afea338b1994d40e87592e7bf587d41627ae3c2f847e467d6ea481",
+      "src/core/pulsarAnalysis.ts": "2fbc24d263d158b43c367169c09533228bbc39a8a2f48b7c1f025c1f21fde05e",
+      "src/core/pulsarProvenance.test.ts": "1cd272de1516ad1962441f3c9037162a5d225889f56a75143b763af0cb3ae50d",
+      "src/core/pulsarReview.ts": "b2b725f0e6323fee807946f339adca219c963d51e8ac256c10938eaef2171213",
+      "src/core/pulsarReviewEdit.test.ts": "3a50fa3b8ff2efad670f4372c65b1b272bb7547c36894524fc6d2bc32c0ebd51",
+      "src/core/pulsarReviewEdit.ts": "7bd2a757320a3f7bb2950f4bc666d5a1cea53a5a9398798df6a3ace8eb3cf09d",
+      "tests/pulsar-analysis.spec.ts": "d73e77942e2e612436f8987e113abfc15814a52d82628f4b8a09a3e40e1c80c7"
+    },
+    "phaseChangedHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "56c77380d468b7a59d9b10cf333201ab599ed9c5e2c9d63d34c9e3e6cfcff0e0",
+      "docs/PULSAR-ANALYSIS.md": "29c2d3920531db0d34226f2d2f9a9cbfa7f33ea766c9b5fe419b7dfafdf8cde7",
+      "src/components/PulsarAnalysis.tsx": "688cddd020594c479899d4df11275f21eaa8377cba56fa5d79a66201b3a658e7",
+      "src/components/PulsarMessages.ts": "97e863e8b1afea338b1994d40e87592e7bf587d41627ae3c2f847e467d6ea481",
+      "src/core/pulsarAnalysis.ts": "2fbc24d263d158b43c367169c09533228bbc39a8a2f48b7c1f025c1f21fde05e",
+      "src/core/pulsarProvenance.test.ts": "1cd272de1516ad1962441f3c9037162a5d225889f56a75143b763af0cb3ae50d",
+      "src/core/pulsarReviewEdit.ts": "7bd2a757320a3f7bb2950f4bc666d5a1cea53a5a9398798df6a3ace8eb3cf09d",
+      "tests/pulsar-analysis.spec.ts": "d73e77942e2e612436f8987e113abfc15814a52d82628f4b8a09a3e40e1c80c7"
+    },
+    "receiptSelfExcluded": "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
+    "metadataPolicy": "Original171b validation/hashes remain historical;this additive correction snapshot pins tested code before metadata-only followup",
+    "independentValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/corrections/receipt.json",
+    "checks": [
+      {
+        "check": "unit",
+        "exitCode": 0
+      },
+      {
+        "check": "typecheck",
+        "exitCode": 0
+      },
+      {
+        "check": "build",
+        "exitCode": 0
+      },
+      {
+        "check": "corecontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "browser",
+        "exitCode": 0
+      },
+      {
+        "check": "uicontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "held",
+        "exitCode": 0
+      }
+    ],
+    "unit": {
+      "passed": 1909,
+      "failed": 0,
+      "files": 179
+    },
+    "coreControls": {
+      "passed": 31,
+      "failed": 0
+    },
+    "standaloneBrowser": {
+      "startTime": "2026-10-22T05:55:50.396Z",
+      "duration": 101784.16200000001,
+      "expected": 94,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "independentUI": {
+      "startTime": "2026-10-22T05:57:32.644Z",
+      "duration": 10704.564999999999,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "heldEnterControls": {
+      "startTime": "2026-10-22T05:57:43.704Z",
+      "duration": 2776.9049999999997,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "resourcesVerified": 1279,
+    "initialReview": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-comment-edit-final/dispositions.json",
+    "beforeHeldEnter": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/review-triage/before-report.json",
+    "corrections": [
+      "One physical Enter press confirms or opens editor once; repeat events do not cycle; release and fresh press remain usable",
+      "Stale Find/Edit gate,Tab/inert scope and candidate-reading descriptions corrected",
+      "Agreement of recovered literal parsing and duplicated web record template is a self-consistency safeguard,not independent native-writer evidence"
+    ],
+    "noScientificFormulaOrFormatChange": true,
+    "VCLReactivationStillUnwitnessed": true,
+    "author": {
+      "exitCode": 0,
+      "effectiveModel": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "durationMs": 772434,
+      "actualPermissionDenialCount": 2,
+      "result": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-comment-edit-corrections/result-summary.json"
+    },
+    "separateNativeReviewPendingAtReceipt": true,
+    "AppIntegrationPendingAtReceipt": true,
+    "noPushDeploy": true
+  }
 }
