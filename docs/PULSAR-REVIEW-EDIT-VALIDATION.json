@@ -498,5 +498,177 @@
     "separateNativeReviewPendingAtReceipt": true,
     "AppIntegrationPendingAtReceipt": true,
     "noPushDeploy": true
+  },
+  "boundaryCompletionValidation": {
+    "sourceCommit": "b2dac5215929e6e74445a6feb4c12be609394ab4",
+    "baseCommit": "18d833ad3c971be6bfdfaeb79912fe4cbb3bc919",
+    "sourceAuthor": "Codex coordinator",
+    "sourceHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "0de6180a933e91e38cd16a7ff43d49e3c20e4f400df24498f2e38b8c2ac1b9fa",
+      "docs/PULSAR-ANALYSIS.md": "823d78b6df4adc1717f3a7625f6f39be9025fcb0241ffb58996dd8fb14cd99c4",
+      "src/components/PulsarAnalysis.css": "84572b5bee477963f6c62f160e0af67c28fe99a54e725fb07c3d00d78f025f15",
+      "src/components/PulsarAnalysis.tsx": "adcd6b90be439a8b6c93767b334ce6a3bb552cf8b7bfdef43a218cfd2815a8c3",
+      "src/components/PulsarMessages.ts": "803752206b5efcccb6cf90afcaf5f4e3148edae15c65a977138cabe10eb96516",
+      "src/core/pulsarAnalysis.test.ts": "3a2a6edad1d45b8f7627baf6f7001bff3df143bb2252a1f8012537af7ece7465",
+      "src/core/pulsarAnalysis.ts": "f70dca8a519e6b5592a15fedd092455c157fe116719ee105398f77b41fec152d",
+      "src/core/pulsarProvenance.test.ts": "eff5051cd1a95ad62d8d5f9dc4fbcb60061b5d48d477927bb529510ab76dc2d0",
+      "src/core/pulsarReview.ts": "b2b725f0e6323fee807946f339adca219c963d51e8ac256c10938eaef2171213",
+      "src/core/pulsarReviewEdit.test.ts": "c0f45a229614b2eb3e1ef02ad17130c8253dcb2507a66674045ec3be46132ab0",
+      "src/core/pulsarReviewEdit.ts": "7bd2a757320a3f7bb2950f4bc666d5a1cea53a5a9398798df6a3ace8eb3cf09d",
+      "tests/pulsar-analysis.spec.ts": "5f173a19c14fcfd5bdf4a0d84e924fb07288b8b63b90320396cce6e8076c4239"
+    },
+    "phaseChangedHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "0de6180a933e91e38cd16a7ff43d49e3c20e4f400df24498f2e38b8c2ac1b9fa",
+      "docs/PULSAR-ANALYSIS.md": "823d78b6df4adc1717f3a7625f6f39be9025fcb0241ffb58996dd8fb14cd99c4",
+      "src/components/PulsarAnalysis.tsx": "adcd6b90be439a8b6c93767b334ce6a3bb552cf8b7bfdef43a218cfd2815a8c3",
+      "src/components/PulsarMessages.ts": "803752206b5efcccb6cf90afcaf5f4e3148edae15c65a977138cabe10eb96516",
+      "src/core/pulsarAnalysis.ts": "f70dca8a519e6b5592a15fedd092455c157fe116719ee105398f77b41fec152d",
+      "src/core/pulsarProvenance.test.ts": "eff5051cd1a95ad62d8d5f9dc4fbcb60061b5d48d477927bb529510ab76dc2d0",
+      "tests/pulsar-analysis.spec.ts": "5f173a19c14fcfd5bdf4a0d84e924fb07288b8b63b90320396cce6e8076c4239"
+    },
+    "receiptSelfExcluded": "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
+    "metadataPolicy": "Earlier snapshots remain historical; additive snapshot pins new documentation/tests before metadata-only followup",
+    "independentValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/boundary-completion/receipt.json",
+    "checks": [
+      {
+        "check": "unit",
+        "exitCode": 0
+      },
+      {
+        "check": "typecheck",
+        "exitCode": 0
+      },
+      {
+        "check": "build",
+        "exitCode": 0
+      },
+      {
+        "check": "corecontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "browser",
+        "exitCode": 0
+      },
+      {
+        "check": "uicontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "held",
+        "exitCode": 0
+      },
+      {
+        "check": "record",
+        "exitCode": 0
+      },
+      {
+        "check": "family",
+        "exitCode": 0
+      },
+      {
+        "check": "followup",
+        "exitCode": 0
+      },
+      {
+        "check": "boundary",
+        "exitCode": 0
+      }
+    ],
+    "unit": {
+      "passed": 1910,
+      "failed": 0,
+      "files": 179
+    },
+    "coreControls": {
+      "passed": 31,
+      "failed": 0
+    },
+    "standaloneBrowser": {
+      "startTime": "2026-10-22T07:06:45.170Z",
+      "duration": 125584.214,
+      "expected": 118,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "independentUI": {
+      "startTime": "2026-10-22T07:08:51.166Z",
+      "duration": 10608.441,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "heldEnterControls": {
+      "startTime": "2026-10-22T07:09:02.157Z",
+      "duration": 2636.7219999999998,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "recordEnterControls": {
+      "startTime": "2026-10-22T07:09:05.165Z",
+      "duration": 2502.331,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "handoffEnterControls": {
+      "startTime": "2026-10-22T07:09:08.029Z",
+      "duration": 3287.129,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "independentFollowupControls": {
+      "startTime": "2026-10-22T07:09:11.667Z",
+      "duration": 9804.714,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "boundaryControls": {
+      "startTime": "2026-10-22T07:09:21.832Z",
+      "duration": 5852.444,
+      "expected": 6,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "resourcesVerified": 1279,
+    "previousReview": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-comment-edit-followup-final/dispositions.json",
+    "beforeBoundaryControls": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/boundary-completion/baseline-receipt.json",
+    "corrections": [
+      "Visible pan help says release key before using again, without physical-input promise",
+      "Pan docs describe pointerPress suppression and preexisting cancellation/captureloss limitation; no runtime pan change",
+      "Shared Escape guard documented for Record/Clear and Review; Record queue and both empty notices tested",
+      "CDP-only latch case restricted to Chromium; no Firefox/WebKit coverage claim"
+    ],
+    "previousValidationExecutionNotes": {
+      "receipt": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/followup/receipt.json",
+      "setupFailure": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/followup/validation-setup-failure.json",
+      "passedChecksReusedWithoutRerun": [
+        "unit",
+        "typecheck",
+        "build"
+      ],
+      "reason": "Frozen source unchanged; missing external control files copied byte-identically after zero-test discovery failure; historical failure/logs retained"
+    },
+    "noRuntimeLogicChange": true,
+    "UIHelpTextChanged": true,
+    "currentAggregationCorrection": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/boundary-completion/aggregation-failure.json",
+    "aggregationReranNoTests": true,
+    "keyboardPolicyScope": "No new global window keyboard listener or command-key latch; existing panKeys remains",
+    "noScientificFormulaOrFormatChange": true,
+    "noWindowKeyboardListenerOrLatch": true,
+    "VCLReactivationStillUnwitnessed": true,
+    "separateNativeReviewPendingAtReceipt": true,
+    "AppIntegrationPendingAtReceipt": true,
+    "noPushDeploy": true
   }
 }
