@@ -1,0 +1,134 @@
+{
+  "id": "PLR-SAVED-ROWS-01",
+  "status": "WEB interoperability reader of the recovered saved-measurement layout plus recovered Review Find over the owned rows. Not an original Load command, not a native writer, not a runtime witness. Coordinator integration and independent review pending.",
+  "artifact": {
+    "name": "VIREO 1.504 CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "executed": false,
+    "emulated": false,
+    "bytesEmitted": false
+  },
+  "researchRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3",
+  "evidence": [
+    {
+      "id": "SRC-SCOPE",
+      "path": "pulsar-find-independent/NEXT-OWNED-ROWS-SCOPE.json",
+      "sha256": "cad119e8e6c6305fd009435a47a10bccc2f2fca2d20529176e41fa8e3683cfdb",
+      "kind": "coordinator scope (summary, not source)"
+    },
+    {
+      "id": "SRC-WRITER",
+      "path": "pulsar-save-recovery/result-writer.asm",
+      "range": "0x56feac..0x570340",
+      "sha256": "412aa0a2fa91600e0781a5b8ad3d79bdc9a89a8d83c5d69ceb03914419a093f0",
+      "receipt": "pulsar-save-recovery/writer-receipt.json f194545654edf89494f99de7a7df3ad9103f1976ac760972c96634718c478621",
+      "kind": "coordinator bounded GNU objdump (static)"
+    },
+    {
+      "id": "SRC-LITERALS",
+      "path": "pulsar-save-recovery/typed-writer-literals.json",
+      "sha256": "0d90c8e490bb1df8f0275d0ee7166676960af9a3d8fd99215c502607c0bbcf80",
+      "kind": "typed literals 0x5703d4 '\"', 0x5703e0 ',', 0x570400 header (151), ShortString 0x5703e4 '\"Table Number: ' (15), 0x5703f4 '\"'"
+    },
+    {
+      "id": "SRC-WRITER-SCOPE",
+      "path": "pulsar-save-recovery/NEXT-WRITER-SCOPE.json",
+      "sha256": "f51b0f9393ab7f494a113c445f1863c0c4806b40fc9483ac2c45053e04cba365",
+      "kind": "coordinator triage (read as analysis)"
+    },
+    {
+      "id": "SRC-SAVE2",
+      "path": "pulsar-save-recovery/save2-method.asm",
+      "range": "0x56ef60..0x56f74c",
+      "sha256": "96d7dff6231b625d9b5550212218f923c1f15ee07bc48df671227534b5f157a7",
+      "kind": "Save2Click capture; used only for the caller and append byte context"
+    },
+    {
+      "id": "SRC-ALIASES",
+      "path": "pulsar-save-recovery/data-aliases.json",
+      "sha256": "1038c7979a2cd2ad647b2702f1703601355efd5f0dc53ead95a88350c1ceafbc",
+      "kind": "static .data alias values 0x5b5720->0x5bcde0, 0x5b5990->0x5bcca8, 0x5b57e4->0x5b8814, 0x5b5aec->0x5b882c"
+    },
+    {
+      "id": "SRC-TEXTIO",
+      "path": "pulsar-save-recovery/textio-framing/receipt.json",
+      "sha256": "4e5b6ec54abf0b9c0e64cd7c70d4fd9e371e56aeee7ff19d0d3e9d5e0c8516a8",
+      "kind": "six derived ranges selected from the existing target.asm (not new REA)",
+      "captures": {
+        "assign-text-flags.asm 0x403a20": "26507c165c0b50a0ad99130830e2f8f712999967bb2fa179c36baa342245bd9b",
+        "write-raw-length.asm 0x4065e0": "82bc6e6c6efe1780d7733e58019fa5404c477f7ab15980c3b29c4a7713ab854d",
+        "write-shortstring.asm 0x404598": "20c7ad0bac02e5e25402b47bdc2748ff6ef96cd3d8d06fc16709ad56abfa2a95",
+        "buffer-copy.asm 0x404444": "16d12eaa5e4288060cd9c5a75e478f3254506f1769e18f74b8016dba8e7fa280",
+        "newline-conditional.asm 0x40460c": "cdca5b60f3ad3a5508866d05dc31c0d688d5c6ffb9ed9885b13053e3add2627c",
+        "open-mode-dispatch.asm 0x40374c": "7481c105008c74f61fbadfa9bff9653c3edf943ef9dddb4520396a42f2acfdac"
+      }
+    },
+    {
+      "id": "SRC-RECORD",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm",
+      "range": "0x570b3c..0x570f25 (lines 537359-537599)",
+      "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db",
+      "kind": "existing linear listing, read directly (Record OK writer, the producer of each list string)"
+    },
+    {
+      "id": "SRC-FIND",
+      "path": "radio-help-followup/plr-static/find-contract/",
+      "sha256": "CONTRACT.json 25ccb4bfd83df42db6ff9d68bddfdc081cab74ad434b296f3b024cb3f65abae7; review-find-caller.asm 8e3b9a15eef0d7090611e598c3fb3baa40ff3669c5a898dcebce9e57325fbd14; find-dialog-handlers-complete.asm a8f4286253162def672570e8f2938704247dec729538b0922d2d98ce2db6ea0e; receipt.json 5a798ec068aa53e0cc2d028be3972a5a89309390345fcd3d7c7a0871f72cb75d; find-dialog-metadata.json fff2d38385751c416f4e4c6e91f6509ad21417cd6e17abf6d3b1affc8db522ff",
+      "kind": "coordinator bounded GNU objdump and TPF0 decode"
+    },
+    {
+      "id": "SRC-FIND-LITERALS",
+      "path": "radio-help-followup/plr-static/find-literal-recovery/",
+      "sha256": "literals.json fdbbebc796ee798aa2df0af842cab3c0f5ee5f7b1efe15ffd6cf786a9d3580c2; literal-call-contract.json d148ee97dc38b3b3822f271b69698d2ba010c961456b2af91fabe7c9cc4773bb",
+      "kind": "typed Find literals; reuses REA ev_be75d7d377a56116d3e0f735a646c38191fd95073d89c054e348b2bd46c558ef"
+    },
+    {
+      "id": "SRC-REPO-FIND",
+      "path": "docs/PULSAR-ANALYSIS-PROVENANCE.json#PLR-REVIEW-FIND-STATIC-01, #PLR-RECORD-01, #PLR-REVIEW-EDIT-STATIC-01, #fileNameField, GNU-EDIT-RTL (rtlShortAppend port 0x403c20 in src/core/pulsarReviewEdit.ts)",
+      "kind": "existing reviewed repository contracts, read only and unchanged"
+    },
+    {
+      "id": "SRC-REA",
+      "path": "claude-pulsar-analysis/review-find-author/DELIVERY.json",
+      "sha256": "d8ca58d6e569c9ff977d1910639dace8aeaba8c59804598e0b5f1618283aaf43",
+      "kind": "existing REA records consumed, no new REA run: complete section evidence ev_be75d7d3\u2026c558ef; PARTIAL disassemble ev_f6d7c186cc5e920928a70936f425de373ac9b312838b200fcc5d46b1179329e8 (provider SIGKILL, output truncated at 0x4e0d27, completion unknown; not counted as complete, used upstream only for the class-reference slot 0x492800)"
+    }
+  ],
+  "contracts": [
+    {
+      "id": "SAVED-FRAMING-01",
+      "source": "SRC-WRITER, SRC-LITERALS, SRC-ALIASES, SRC-TEXTIO",
+      "observed": "0x56fee4: list count via [0x5bcde0] vmt+0x14; zero -> MessageBox, no file. 0x56ff1f Assign. Append byte (bl) set: Append 0x4037bc (mode 0xd7b3); IOResult 0 -> jump 0x5702ab (rows only). Otherwise Rewrite 0x4037b0 (0xd7b2); IOResult nonzero -> error MessageBox. Fresh file: line 1 = LStrCatN(7) '\"' A '\"' ',' '\"' B '\"' where A/B are 0x40e07c(0x40d47c QWORD) with format owners [0x5b57e4]/[0x5b5aec] (0x56ffcd..0x570045); line 2 = ShortString '\"Table Number: ' + [[0x5b5990]]+0xa4 appended with total cap 19, then '\"' cap 20 (0x57004f..0x5700bd); blank (0x5700c2); for offsets 0, 0x29, 0x52, 0x7b of [[0x5b5990]]: if length byte > 0, '\"' + text (cap 41) + '\"' (cap 42) via ShortString write 0x404598 (0x5700d9..0x57026a); blank (0x57026f); header 0x570400 (0x570286..0x5702a6); then for i = 0..count-1 TStrings.Get(i) written (0x5702ab..0x5702e8); Close; 0x56fe6c. Every line: payload copied by exact length (0x4065e0/0x404598 -> 0x404444, no escaping) and WriteLn 0x40460c: CR LF when TextRec+6 bit 0 else LF; that word is copied from global byte 0x5ae034 at Assign (0x403a20).",
+      "web": "admitSavedRows: printable ASCII 0x20..0x7E only; one terminator kind for the whole file (CRLF or LF); every line terminated; line 1 /^\"[^\"]*\",\"[^\"]*\"$/ (each value <= 64 bytes, WEB); line 2 prefix + 0..4 bytes + '\"'; line 3 blank; 0..4 lines '\"' + 1..40 bytes + '\"'; blank; exact header; >= 1 row. Metadata text is kept verbatim and never interpreted. WEB conservative limit: a '\"' inside table/identity text is refused ('metadata-quote'). Bytes are copied at admission and only copies leave the module (savedRowsBytes); savedRowsReassemble rebuilds the identical bytes from the line texts.",
+      "notClaimed": "Which newline branch any host used (global 0x5ae034 not bound); date/time functions, formats or values; table/identity meaning or owner state; that an admitted file was written by CLEA. A file appended to by later saves has more rows after the same header and is admitted as one list in file order. A truncation that ends exactly at a line boundary cannot be detected."
+    },
+    {
+      "id": "SAVED-ROW-01",
+      "source": "SRC-RECORD, SRC-REPO-FIND (PLR-RECORD-01, fileNameField)",
+      "observed": "Record OK 0x570b3c builds ShortString '\"' + object (cap 41) + '\"' + ',' then LStrCatN: frequency 0x486268(2), ',', gain 0x486268(3), ','; reference/vertical: 0x486268(6) + ',' or AnsiString 0x570f48 '\"\",' when the value equals Single 0.0; horizontal 0x48634c(5) + ',' or '\"\",'; then CatN(12): start 0x486268(8), ',', '\"', comment (ShortString[81] at 0x5bcce8+0x52*ch), '\"', ',', IntToStr([obj+0x84]+1), ',', 0x486268(2) of interval*Single 0x570f58, ',', IntToStr(word +0x29). If byte [obj]+0x96 != 0 (0x570e7e): CatN(5) ',' '\"' ShortString(+0x9a) '\"'. TStrings.Add 0x41d8a0. 11 columns without the file field, 12 with it.",
+      "web": "Each row is split at commas outside quotes; a quoted field ends at the next '\"', which must be followed by ',' or the row end; any other '\"' is refused ('row-quote'). Column classes: object quoted <= 40; frequency/gain/start/interval /^-?[0-9]+(\\.[0-9]*)?$/; reference/vertical same or '\"\"'; horizontal /^-?[0-9](\\.[0-9]+)?E[+-][0-9]+$/ or '\"\"'; comment quoted <= 81; points /^-?[0-9]+$/; aperture /^[0-9]+$/; file quoted <= 255; each bare token <= 40 bytes; row <= 1024 bytes; <= 2000 rows (WEB). Field spellings and spans are kept verbatim; nothing becomes a Number. Dot-decimal only: a comma decimal separator splits fields and fails the column layout.",
+      "notClaimed": "x87/FloatToStrF digit authenticity, DecimalSeparator, INF/NAN or large-value general-format spellings (refused), the +0x9a text content or path form, runtime occurrence of the 11-column branch (statically present at 0x570e85), the native comment editor's truncated rebuilds (PLR-REVIEW-EDIT-STATIC-01 caps can yield spellings outside these classes; such rows are refused, not repaired)."
+    },
+    {
+      "id": "SAVED-FIND-01",
+      "source": "SRC-FIND, SRC-FIND-LITERALS, SRC-REPO-FIND (PLR-REVIEW-FIND-STATIC-01)",
+      "observed": "FormCreate 0x492a8c: query '' , mode 2, case 0. FormActivate 0x492aa4 restores query/case. SrchTop 0x492b24 / SrchNext 0x492bc0: StrPCopy query, case := CaseCheck, StrLen > 0 -> mode 0/1 else mode 2. SrchCancel 0x492c5c: mode 2 only. Caller 0x5634c8 reads mode: 2 returns; 0 start 0; 1 start ItemIndex+1; StrLower query in place (0x40bb04); Count <= start -> miss without reading a row (0x5635b4..0x5635ba); else per row LowerCase copy (0x40a4a0) and Pos (0x40640c); first hit ItemIndex := i; no wrap; miss: '\"' + query + '\" Not Found.' with caption 'String Not Found' (flags 0x40). Case byte never read. SrchStr1 MaxLength 80. DFM captions: 'Search String:', 'Case Dependent', 'Begin Search:', 'From &Top' (Default), '&From Cursor', '&Cancel' (Kind bkCancel).",
+      "web": "savedFindRun over the exact row strings (SavedRow.text). WEB: query limited to printable ASCII <= 80 (refusal changes nothing); selection after confirmation starts at row 0 (mirrors Review FormActivate ItemIndex := 0); no selection counts as -1; Enter in the text is From Top; Escape and a page close request are Cancel; repeat-flagged Enter/Escape are ignored; the miss MessageBox is an inline alertdialog; one Find memory per viewer instance (the native dialog is an application singleton shared with other callers).",
+      "notClaimed": "Code page/locale/bytes >= 0x80, the window close button path, OnActivate re-entry, ListBox vmt+0x8c refresh, VCL/Win32 key routing, pixel/GDI/font parity, sharing of the query with Help or the PLR Review dialog."
+    }
+  ],
+  "unchanged": [
+    "src/core/pulsarAnalysis.ts recording, cursors, pending flags, measurement list and nativeLineCandidate",
+    "PLR Review Find over web-generated candidates stays disabled (PLR-REVIEW-01 gate)",
+    "No native CSV writer, no edited export, no persistence or session schema change"
+  ],
+  "fixtures": "All control files in src/core/pulsarSavedRows.test.ts and tests/pulsar-saved-rows.spec.ts are hand-written text in the recovered layout: controls of the chosen contract, not CLEA output, not observations and not a writer oracle.",
+  "noOriginalExecutionOrEmulation": true,
+  "noRawPeBytesEmitted": true,
+  "webAllocationBound": {
+    "maxPhysicalLines": 2009,
+    "derivation": "5 fixed header lines + 4 identity slots + 2000 measurement rows",
+    "policy": "WEB only; refuse before retaining an additional line and its spans. This bound can precede later framing errors; no new native validation claim.",
+    "independentEvidence": "pulsar-saved-rows-independent/line-budget-before.json and line-budget-after.json, stored outside source"
+  }
+}
