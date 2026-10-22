@@ -4,7 +4,7 @@ The [19October snapshot](../data/planning/acceptance-status.json) is an immutabl
 
 22 October 2026 recorded-data follow-up: [Radio data and LSS data](RECORDED-ANALYSIS-DELIVERY.md) deliver bounded supplied-file analysis subflows. N06/N07/E02/E06 advance from contract-gated to partial;none is complete. Of the original **58 functional capabilities:1 complete,37 partial,19 contract-gated,1 not started**. The6quality capabilities remain separate (5partial,1rights-gated). All64 primary rows therefore count1complete/42partial/19contract-gated/1not-started/1rights-gated. Original criteria and the immutable19October manifested snapshot are unchanged. Radio acquisition,period/dispersion and full survey/exercise workflows remain open.
 
-Current image follow-up: [supplied float32 FITS image inspection](FITS-IMAGE.md) introduces a bounded D05 implementation:one primary2Dfloat32 plane,original header/bytes/SHA,pixel selection and web rendering. D05 is now partial; other BITPIX/scaling/axes/extensions and edition/native output/calibration workflows remain open. It does not accept CCD acquisition or N08 astrometry. Full-package criteria remain unchanged;P01 remains the only complete package. Current counts:1complete/38partial/23contract-gated/1not-started/1rights-gated. Earlier dated counts below are historical.
+Earlier image follow-up: [supplied float32 FITS image inspection](FITS-IMAGE.md) introduces a bounded D05 implementation:one primary2Dfloat32 plane,original header/bytes/SHA,pixel selection and web rendering. D05 is partial; other BITPIX/scaling/axes/extensions and edition/native output/calibration workflows remain open. It does not accept CCD acquisition or N08 astrometry. Full-package criteria remain unchanged;P01 remains the only complete package. Historical counts at that increment (before the 22 October recorded-data follow-up above):1complete/38partial/23contract-gated/1not-started/1rights-gated. The current counts are those in the 22 October paragraph and the table below; earlier dated counts in this page are historical.
 
 
 19 October2026 drift-chain follow-up: [Read-only stellar cache inspection](STAR-DRIFT-INSPECTION.md) connects actual current pointing to the recovered cache-hit crop, native nearest-source query and3×19/slit readout for all three profiles, contrasted with57 independent trajectories. It generates no photons and does not refresh exposure means. The native Go branch only prepares means in source mode at zero accumulated time; focus/reinitialization and retained/discarded buffer ordering remain open. A08/I02/I10/P02 stay partial; original criteria/counts unchanged.
@@ -17,22 +17,24 @@ A06 follow-up: [bounded motor and programmed slew](TELESCOPE-MOTION.md) adds coo
 
 ## Functional scope: 58 packages
 
+Current as of the 22 October recorded-data follow-up; each row matches the primary statuses in [ACCEPTANCE-CURRENT.json](ACCEPTANCE-CURRENT.json).
+
 | Category | Complete | Partial | Unimplemented: missing contract/data | Not started | Total |
 |---|---:|---:|---:|---:|---:|
 | Observatory A | 0 | 8 | 0 | 0 | 8 |
 | Data D | 0 | 7 | 1 | 0 | 8 |
 | Instruments I | 0 | 5 | 5 | 0 | 10 |
-| Analysis N | 0 | 5 | 3 | 0 | 8 |
+| Analysis N | 0 | 7 | 1 | 0 | 8 |
 | Product P | 1 | 4 | 1 | 1 | 7 |
-| Historical exercises E | 0 | 4 | 11 | 0 | 15 |
+| Historical exercises E | 0 | 6 | 9 | 0 | 15 |
 | Associated X | 0 | 0 | 2 | 0 | 2 |
-| **Functional total** | **1** | **33** | **23** | **1** | **58** |
+| **Functional total** | **1** | **37** | **19** | **1** | **58** |
 
-D05 now supports the bounded supplied-image contract linked above;it remains incomplete against its unchanged full criterion. D07 and the other23contract-gated packages still need their own scientific/data/edition contracts. P07 remains a new classroom-handoff workflow not yet designed. A partial implementation is not native equivalence or full package acceptance.
+D05 now supports the bounded supplied-image contract linked above;it remains incomplete against its unchanged full criterion. N06/N07/E02/E06 support only the bounded supplied-file subflows of the 22 October follow-up;their full criteria are unchanged. D07 and the other18 contract-gated packages still need their own scientific/data/edition contracts. P07 remains a new classroom-handoff workflow not yet designed. A partial implementation is not native equivalence or full package acceptance.
 
-The six quality workstreams remain5partial and1rights gate. Across64packages:1complete,38partial,23unimplemented contract/data gates,1rights gate and1not-started. The functional58total is1complete/33partial/23contract-gated/1not-started. See the machine-readable [current row-level assessment](ACCEPTANCE-CURRENT.json). Overlays are not additive.
+The six quality workstreams remain5partial and1rights gate. Across64packages:1complete,42partial,19unimplemented contract/data gates,1rights gate and1not-started. The functional58total is1complete/37partial/19contract-gated/1not-started. See the machine-readable [current row-level assessment](ACCEPTANCE-CURRENT.json). Overlays are not additive.
 
-Original-runtime witnesses are absent for16 explicitly tracked fidelity/verification packages(A02,A03,I01,I02,I09,I10,N01,N02,N03,N04,N05,E01,E03,E04,E05,Q01). This is an overlapping acceptance gate, not16 additional packages or a prohibition on bounded static implementations. No original execution is proposed or authorized. Rights remain a cross-cutting release gate(Q05); separate component rights also remain unresolved for X02. These two overlay flags are not additive to totals. Lack of a public license does not block the authorized local work.
+Original-runtime witnesses are absent for20 explicitly tracked fidelity/verification packages(A02,A03,I01,I02,I09,I10,N01,N02,N03,N04,N05,N06,N07,E01,E02,E03,E04,E05,E06,Q01). This is an overlapping acceptance gate, not20 additional packages or a prohibition on bounded static implementations. No original execution is proposed or authorized. Rights remain a cross-cutting release gate(Q05); separate component rights also remain unresolved for X02. These two overlay flags are not additive to totals. Lack of a public license does not block the authorized local work.
 
 ## Classification acceptance
 

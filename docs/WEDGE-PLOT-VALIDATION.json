@@ -27,6 +27,37 @@
     "tests/wedge-focus.spec.ts": "1c33a4a6c4911628d47881f5415fb0c93e42cbd67e0a6fd2dd88938069fc2ac5",
     "tests/wedge-prompt-focus.spec.ts": "0a1621624802760d525dccacce9119812ad6a4e03f61ea886765e5bccb0074a6"
   },
+  "sourceHashesScope": "Standalone LSS feature snapshot validated by the unitTests/e2e runs below (coverage pin 48). These hashes are preserved as recorded; they are not hashes of the integrated App candidate.",
+  "integratedOverride": {
+    "candidate": "0066e30cc0113de4d5061e882b71a67cf436242a plus the coordinator integration-corrections delta",
+    "scope": "Only the files listed here differ from sourceHashes in the integrated tree; every other listed source matched when rehashed. coverage.test.ts is unchanged since 0066e30; the WEDGE-PLOT.md hash is the corrections-delta version.",
+    "files": {
+      "src/i18n/coverage.test.ts": {
+        "standaloneSha256": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed",
+        "integratedSha256": "5c35758e61a1fbb65cd65018ac21e19835f6901709e3b01f61b76b3e4a669c62",
+        "auditedTsxFiles": {
+          "standalone": 48,
+          "integrated": 49
+        },
+        "reason": "Coordinator resolution for the combined tree: 45 audited + 3 Wedge + 1 PulsarAnalysis .tsx."
+      },
+      "docs/WEDGE-PLOT.md": {
+        "standaloneSha256": "56ea586bfe4ffa80a1877fa194fa2af5389c4c45ba76c4f9ed49ca2610fb24e4",
+        "integratedSha256": "7274c4027471e1afd142c585883e909d39d56fa602f6846a2082c3ade3cf7f67",
+        "reason": "Documentation-only clarification of the 48 standalone vs 49 combined count; no code or test change."
+      }
+    },
+    "validation": {
+      "check": "unit",
+      "head": "0066e30cc0113de4d5061e882b71a67cf436242a",
+      "numTotalTests": 1905,
+      "numPassedTests": 1905,
+      "numFailedTests": 0,
+      "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/workbench-integration/accepted-fronts-regression/unit-report.json",
+      "by": "coordinator aggregate run (accepted-fronts-regression/checks.json)"
+    },
+    "notClaimed": "The 1799-unit and 64-E2E independent runs above validated the 48 snapshot only; they do not validate the 49 pin or the integrated App."
+  },
   "sourceStableDuringIndependentValidation": true,
   "unitTests": {
     "passed": 1799,

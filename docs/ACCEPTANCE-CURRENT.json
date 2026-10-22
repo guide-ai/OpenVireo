@@ -687,7 +687,9 @@
       "remaining": "E01, I03, N06; survey fields and completeness.",
       "evidence": [
         "docs/IMPLEMENTATION-PLAN.md",
-        "docs/WEDGE-PLOT.md"
+        "docs/WEDGE-PLOT.md",
+        "docs/RECORDED-ANALYSIS-DELIVERY.md",
+        "tests/recorded-analysis-navigation.spec.ts"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;Full E01/I03 observing chain,survey fields/completeness and exercise-wide assessment remain open.",
       "originalWitnessPending": true,
@@ -760,7 +762,9 @@
       "remaining": "I06/I07/I09/I10, N07; compare independent and VIREO editions.",
       "evidence": [
         "docs/IMPLEMENTATION-PLAN.md",
-        "docs/PULSAR-ANALYSIS.md"
+        "docs/PULSAR-ANALYSIS.md",
+        "docs/RECORDED-ANALYSIS-DELIVERY.md",
+        "tests/recorded-analysis-navigation.spec.ts"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;Antenna/receiver acquisition,I06/I07/I09/I10,period/dispersion and independent-edition comparison remain open.",
       "originalWitnessPending": true,

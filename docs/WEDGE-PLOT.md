@@ -134,7 +134,7 @@ All vectors are synthetic, not CLEA observations, and the tests check this contr
   - The text drawn inside the figure ("RA (Hours)", ring labels, "V(km/sec)", "Z(=V/C)", "Points Plotted: ") is recovered drawing geometry and stays native.
   - `WEDGE_MESSAGES` and `WEDGE_NATIVE_CAPTIONS` can move into the shared catalog. This pass does not edit shared i18n files.
   - `awaitingAnswer(caption)` is a translatable formatter for the live-status suffix described under "Consent announcement and Options modality".
-- `src/i18n/coverage.test.ts` hard-codes 45 audited `.tsx` files. The three Wedge components add **no** render sites (guarded by `wedgeUiAudit.test.ts`). The count must become 48; this pass adds no `.tsx` file.
+- `src/i18n/coverage.test.ts` hard-codes 45 audited `.tsx` files. The three Wedge components add **no** render sites (guarded by `wedgeUiAudit.test.ts`). In the standalone LSS snapshot the count became 48; this pass adds no `.tsx` file. The combined App candidate (0066e30) also contains `PulsarAnalysis.tsx`, so the coordinator pins 49 (45 + 3 Wedge + 1 Pulsar). The receipt's `sourceHashes` and its 1799-unit run describe the 48 snapshot only; the 49 pin is recorded separately in its `integratedOverride`.
 - **Resolved by the coordinator's independent extractions:**
   - the exact colour dwords;
   - the aliases 0x5b5c98 → 0x5bced4 and 0x5b5504 → 0x5bcec8;
