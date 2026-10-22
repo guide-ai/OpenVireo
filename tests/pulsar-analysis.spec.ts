@@ -1456,3 +1456,108 @@ test('Review correction 2: Review is unavailable while a chosen file is read; th
   expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3', 'pulsar-entry-4']);
   await page.getByTestId('pulsar-review-cancel').click();
 });
+
+// ---- Shared pending-read gate (Codex triage at 1ec3615: the same file loss through Record and Clear) ----
+test('Pending-read gate: Record, Review and Clear open no modal while a chosen file is read; the file loads, and Cancel or a read error restores each button', async ({ page }) => {
+  await threeEntries(page);
+  await at(page, 1, 60, 10); // a pending placement, so the core enables Record
+  const record = page.getByTestId('pulsar-record'), reviewButton = page.getByTestId('pulsar-review'), clear = page.getByTestId('pulsar-clear');
+  const reading = page.getByTestId('pulsar-reading'), fileName = page.getByTestId('pulsar-file-name');
+  const dialogs = ['pulsar-record-dialog', 'pulsar-review-dialog', 'pulsar-clear-dialog'].map(id => page.getByTestId(id));
+  await holdReads(page);
+  const replacement = QUOTED.replace('Obj, "Q" E2E', 'GATED');
+  /** No opener is available: each is disabled and a forced pointer click opens nothing; the read can still be cancelled. */
+  const gated = async () => {
+    for (const b of [record, reviewButton, clear]) { await expect(b).toBeDisabled(); await b.click({ force: true }); }
+    for (const d of dialogs) await expect(d).toHaveCount(0);
+    await expect(reading).toBeVisible();
+    await expect(page.getByTestId('pulsar-cancel-read')).toBeEnabled();
+  };
+  /** The gate is lifted and each opener is back to its own state; the loaded file, list and pending placement are kept. */
+  const restored = async () => {
+    for (const b of [record, reviewButton, clear]) await expect(b).toBeEnabled();
+    await expect(fileName).toHaveText(QUOTED_FILE);
+    await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(QUOTED));
+    await expect(count(page)).toHaveText('3 recorded measurements');
+    await expect(page.getByTestId('pulsar-pending-1')).toBeVisible();
+  };
+  await expect(record).toBeEnabled();
+
+  // Explicit Cancel reading; the held read finishing later is ignored.
+  await load(page, 'held-gate-cancel.plr', replacement);
+  await held(page, 'held-gate-cancel.plr');
+  await gated();
+  await page.screenshot({ path: test.info().outputPath('read-gated.png'), fullPage: true });
+  await page.getByTestId('pulsar-cancel-read').click();
+  await expect(status(page)).toHaveText('Reading cancelled. The current analysis is unchanged.');
+  await restored();
+  await settle(page, 'held-gate-cancel.plr', 'release');
+  await expect(status(page)).toHaveText(/ignored/);
+  await restored();
+  // Clear and Record open their dialogs again; cancelling them keeps the list and the pending placement.
+  await clear.click();
+  await expect(page.getByTestId('pulsar-clear-dialog')).toHaveJSProperty('open', true);
+  await page.getByTestId('pulsar-clear-cancel').click();
+  await expect(page.getByTestId('pulsar-clear-dialog')).toHaveCount(0);
+  await record.click();
+  await expect(page.getByTestId('pulsar-record-dialog')).toHaveJSProperty('open', true);
+  await page.getByTestId('pulsar-record-cancel').click();
+  await expect(page.getByTestId('pulsar-record-dialog')).toHaveCount(0);
+  await restored();
+
+  // A read error: the rejection is shown and the openers are restored.
+  await load(page, 'held-gate-error.plr', replacement);
+  await held(page, 'held-gate-error.plr');
+  await gated();
+  await settle(page, 'held-gate-error.plr', 'fail');
+  await expect(page.getByTestId('pulsar-rejection')).toContainText('The file could not be read.');
+  await expect(reading).toHaveCount(0);
+  await restored();
+  await page.getByTestId('pulsar-rejection').getByRole('button').click();
+
+  // The SHA-256 phase is still reading: the openers stay gated until the load commits.
+  await page.evaluate(() => { (window as unknown as { __holdDigest: boolean }).__holdDigest = true; });
+  await load(page, 'gate-sha.plr', replacement);
+  await held(page, 'digest');
+  await gated();
+  await page.evaluate(() => { (window as unknown as { __holdDigest: boolean }).__holdDigest = false; });
+  await settle(page, 'digest', 'release');
+  await expect(reading).toHaveCount(0);
+  await expect(fileName).toHaveText('gate-sha.plr');
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(replacement));
+  await expect(status(page)).toHaveText('Recording loaded. The data properties are shown.');
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  // The gate forces nothing on: the load itself disables Record and Review until the next placement or record (PLR-LOAD-01).
+  await expect(record).toBeDisabled();
+  await expect(reviewButton).toBeDisabled();
+  await expect(clear).toBeEnabled();
+  await page.getByTestId('pulsar-properties-close').click();
+
+  // A held arrayBuffer released with Record enabled by a new placement: the chosen file loads with its SHA-256.
+  const heldOk = replacement.replace('GATED', 'GATED OK');
+  await at(page, 1, 80, 10);
+  await expect(record).toBeEnabled();
+  await load(page, 'held-gate-ok.plr', heldOk);
+  await held(page, 'held-gate-ok.plr');
+  await gated();
+  await settle(page, 'held-gate-ok.plr', 'release');
+  await expect(reading).toHaveCount(0);
+  for (const d of dialogs) await expect(d).toHaveCount(0);
+  await expect(fileName).toHaveText('held-gate-ok.plr');
+  await expect(page.getByTestId('pulsar-prop-object')).toHaveText('GATED OK');
+  await expect(page.getByTestId('pulsar-sha')).toHaveText(sha(heldOk));
+  await expect(status(page)).toHaveText('Recording loaded. The data properties are shown.');
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await page.screenshot({ path: test.info().outputPath('read-loaded.png'), fullPage: true });
+  await expect(record).toBeDisabled();
+  await expect(reviewButton).toBeDisabled();
+  await expect(clear).toBeEnabled();
+  await page.getByTestId('pulsar-properties-close').click();
+  // The confirmed entries were kept: the next record appends #4 and Review lists all four.
+  await at(page, 1, 30, 10);
+  await record.click();
+  await page.getByTestId('pulsar-record-ok').click();
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3', 'pulsar-entry-4']);
+  await page.getByTestId('pulsar-review-cancel').click();
+});

@@ -77,6 +77,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const actRef = useRef(act);
   useLayoutEffect(() => { actRef.current = act; });
   const rec = s.recording, modal = pulsarModalOpen(s);
+  // WEB pending-read gate (the native load is synchronous): while a chosen file is being read, its contents or
+  // its SHA-256, no control opens a modal (Record, Review, Clear). A modal makes the finished read's load be refused,
+  // which would drop the chosen file. The read completes, or the learner cancels it; a cancel or read error lifts the gate.
+  // Each opener otherwise keeps its own enabled state.
+  const readPending = reading !== null;
   const dialog = pulsarRecordDialog(s), readouts = pulsarReadouts(s), props = rec ? plrProperties(rec) : null;
   const recordPanel = dialog?.panel ?? null;
 
@@ -364,11 +369,10 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
             <section className="plr-results" aria-labelledby={`${idPrefix}results`}>
               <h3 id={`${idPrefix}results`}>{t('pulsar.results.heading')}</h3>
               <div className="plr-row">
-                <button type="button" ref={recordButton} onClick={() => act(st => pulsarBeginRecord(st))} disabled={!s.recordEnabled} data-testid="pulsar-record">{t('pulsar.results.record')}</button>
-                {/* WEB: Review is modal and a modal blocks the load, so it stays unavailable while a chosen file is being
-                    read; the read completes or the learner cancels it. */}
-                <button type="button" ref={reviewButton} onClick={() => act(pulsarReviewOpen)} disabled={!s.reviewEnabled || reading !== null} aria-haspopup="dialog" data-testid="pulsar-review">{t('pulsar.results.review')}</button>
-                <button type="button" ref={clearButton} onClick={() => act(st => pulsarRequestClear(st))} data-testid="pulsar-clear">{t('pulsar.results.clear')}</button>
+                {/* The three modal openers share the pending-read gate. */}
+                <button type="button" ref={recordButton} onClick={() => act(st => pulsarBeginRecord(st))} disabled={!s.recordEnabled || readPending} data-testid="pulsar-record">{t('pulsar.results.record')}</button>
+                <button type="button" ref={reviewButton} onClick={() => act(pulsarReviewOpen)} disabled={!s.reviewEnabled || readPending} aria-haspopup="dialog" data-testid="pulsar-review">{t('pulsar.results.review')}</button>
+                <button type="button" ref={clearButton} onClick={() => act(st => pulsarRequestClear(st))} disabled={readPending} data-testid="pulsar-clear">{t('pulsar.results.clear')}</button>
                 <button type="button" disabled aria-describedby={`${idPrefix}save-gated`} data-testid="pulsar-save">{t('pulsar.results.save')}</button>
               </div>
               <p className="plr-help" id={`${idPrefix}save-gated`}>{t('pulsar.results.saveGated')}</p>
