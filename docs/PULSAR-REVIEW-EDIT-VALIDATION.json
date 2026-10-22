@@ -346,5 +346,157 @@
     "separateNativeReviewPendingAtReceipt": true,
     "AppIntegrationPendingAtReceipt": true,
     "noPushDeploy": true
+  },
+  "followupValidation": {
+    "sourceCommit": "375d201c15f022390d384086d16d9de9ed6b6d16",
+    "baseCommit": "b2c5cf20093578587e651ce15a221b57bc794822",
+    "sourceAuthor": "Claude Code",
+    "sourceHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "8c6ceb9453bcc41929ae73455d77de4b8a5d11c7509b00a875aed0373527a8fd",
+      "docs/PULSAR-ANALYSIS.md": "5d1b7135a11ab66a13bd711a49b7eb02a8a9879709b56cb315b1cdb509b63523",
+      "src/components/PulsarAnalysis.css": "84572b5bee477963f6c62f160e0af67c28fe99a54e725fb07c3d00d78f025f15",
+      "src/components/PulsarAnalysis.tsx": "22696e2f59d8e986c523e9a5b66d6e766ca523a3322a1d6184b2b3c4bbb06b6e",
+      "src/components/PulsarMessages.ts": "97e863e8b1afea338b1994d40e87592e7bf587d41627ae3c2f847e467d6ea481",
+      "src/core/pulsarAnalysis.test.ts": "3a2a6edad1d45b8f7627baf6f7001bff3df143bb2252a1f8012537af7ece7465",
+      "src/core/pulsarAnalysis.ts": "411638bd1a61406cc2d944e78d39aa445726236e6a80e1ceb6993408f8ecfb69",
+      "src/core/pulsarProvenance.test.ts": "2178c3e27384efeb94466c08a4bc26d205c0ea6c97777b2e1dfa19beedc36482",
+      "src/core/pulsarReview.ts": "b2b725f0e6323fee807946f339adca219c963d51e8ac256c10938eaef2171213",
+      "src/core/pulsarReviewEdit.test.ts": "c0f45a229614b2eb3e1ef02ad17130c8253dcb2507a66674045ec3be46132ab0",
+      "src/core/pulsarReviewEdit.ts": "7bd2a757320a3f7bb2950f4bc666d5a1cea53a5a9398798df6a3ace8eb3cf09d",
+      "tests/pulsar-analysis.spec.ts": "b33ebe37c03a6184af70d275bb503922506f24e47fa6326b5709e0f33d075c46"
+    },
+    "phaseChangedHashes": {
+      "docs/PULSAR-ANALYSIS-PROVENANCE.json": "8c6ceb9453bcc41929ae73455d77de4b8a5d11c7509b00a875aed0373527a8fd",
+      "docs/PULSAR-ANALYSIS.md": "5d1b7135a11ab66a13bd711a49b7eb02a8a9879709b56cb315b1cdb509b63523",
+      "src/components/PulsarAnalysis.tsx": "22696e2f59d8e986c523e9a5b66d6e766ca523a3322a1d6184b2b3c4bbb06b6e",
+      "src/core/pulsarAnalysis.ts": "411638bd1a61406cc2d944e78d39aa445726236e6a80e1ceb6993408f8ecfb69",
+      "src/core/pulsarProvenance.test.ts": "2178c3e27384efeb94466c08a4bc26d205c0ea6c97777b2e1dfa19beedc36482",
+      "tests/pulsar-analysis.spec.ts": "b33ebe37c03a6184af70d275bb503922506f24e47fa6326b5709e0f33d075c46"
+    },
+    "receiptSelfExcluded": "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
+    "metadataPolicy": "Initial editor, correction and keyboard-completion snapshots remain historical; this additive followup snapshot pins newly tested code before metadata-only followup",
+    "independentValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/followup/receipt.json",
+    "checks": [
+      {
+        "check": "unit",
+        "exitCode": 0
+      },
+      {
+        "check": "typecheck",
+        "exitCode": 0
+      },
+      {
+        "check": "build",
+        "exitCode": 0
+      },
+      {
+        "check": "corecontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "browser",
+        "exitCode": 0
+      },
+      {
+        "check": "uicontrols",
+        "exitCode": 0
+      },
+      {
+        "check": "held",
+        "exitCode": 0
+      },
+      {
+        "check": "record",
+        "exitCode": 0
+      },
+      {
+        "check": "family",
+        "exitCode": 0
+      },
+      {
+        "check": "followup",
+        "exitCode": 0
+      }
+    ],
+    "unit": {
+      "passed": 1910,
+      "failed": 0,
+      "files": 179
+    },
+    "coreControls": {
+      "passed": 31,
+      "failed": 0
+    },
+    "standaloneBrowser": {
+      "startTime": "2026-10-22T06:53:22.603Z",
+      "duration": 119505.90000000001,
+      "expected": 112,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "independentUI": {
+      "startTime": "2026-10-22T06:55:22.508Z",
+      "duration": 10673.501,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "heldEnterControls": {
+      "startTime": "2026-10-22T06:55:33.550Z",
+      "duration": 2831.4629999999997,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "recordEnterControls": {
+      "startTime": "2026-10-22T06:55:36.741Z",
+      "duration": 2610.598,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "handoffEnterControls": {
+      "startTime": "2026-10-22T06:55:39.706Z",
+      "duration": 3490.335,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "independentFollowupControls": {
+      "startTime": "2026-10-22T06:55:43.565Z",
+      "duration": 10031.978,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "resourcesVerified": 1279,
+    "previousReview": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-comment-edit-keyboard-final/dispositions.json",
+    "beforeEscapeEvidence": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/followup/baseline-receipt.json",
+    "oldEnterNegativeControl": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-comment-edit-independent/followup/old-enter-receipt.json",
+    "corrections": [
+      "Accurate pan keyboard/click/latch documentation without physical-input or assistive-technology parity claims",
+      "Independent empty confirmed-list Enter opener/cancel and full Record panel2/panel3 fresh-confirmation controls",
+      "Escape repeat issue reproduced before correction on frozen b2c5cf2: editor and delete-No repeat cancels outer working copy; four expected desktop/mobile failures retained",
+      "Component-owned repeat policy preserves one fresh Escape per layer, Enter queue/focus ownership and staged delete/comment under held flagged events"
+    ],
+    "author": {
+      "effectiveModel": "claude-opus-5-5",
+      "configuredEffort": "high",
+      "exitCode": 0,
+      "durationMs": 770767,
+      "actualPermissionDenialCount": 4,
+      "result": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/review-comment-edit-followup/result-summary.json"
+    },
+    "noScientificFormulaOrFormatChange": true,
+    "VCLReactivationStillUnwitnessed": true,
+    "separateNativeReviewPendingAtReceipt": true,
+    "AppIntegrationPendingAtReceipt": true,
+    "noPushDeploy": true
   }
 }
