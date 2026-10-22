@@ -446,7 +446,11 @@ export function pulsarRecordDialog(s: PulsarAnalysisState): PulsarRecordDialog |
     draft: session.draft, draftValid: pulsarCommentValid(session.draft), remaining: session.queue.length - session.position - 1,
   });
 }
-/** Opaque candidate (see PulsarMeasurementEntry): names are not escaped, so it is not parsed, validated or exported. */
+/**
+ * Opaque candidate (see PulsarMeasurementEntry): names are not escaped, so it is not a validatable or exportable CSV
+ * line. Only the Review comment editor parses it, through the bounded round-trip predicate of pulsarReviewEdit.ts,
+ * which keeps a duplicate of this template as a self-consistency guard. No native CSV writer or export uses it.
+ */
 const lineCandidate = (f: PulsarEntryFields) =>
   `"${f.object}",${f.frequency},${f.gain},` + [f.reference, f.vertical, f.horizontal].map(v => v === null ? '"",' : v + ',').join('') +
   `${f.start},"${f.comment}",${f.points},${f.intervalMs},${f.aperture},"${f.file}"`;

@@ -17,11 +17,16 @@
  *
  * The web port: pulsarEditorParse/pulsarEditorRebuild are literal models of 0x570498/0x5710d0 over the bound RTL
  * helpers (byte strings; caps count bytes). pulsarReviewEditSupport admits an entry only when its candidate is
- * printable ASCII (one byte per character), every structured field fits its ShortString capacity, and two
- * independent models (the literal parse/rebuild and the structured-field template) both reproduce the candidate
- * exactly. Only then does OK keep the raw prefix and suffix and splice the new comment, after checking that the
- * splice equals both models. Everything else is refused with a reason and nothing changes. This proves agreement
- * of the chosen models, not native equivalence: NativeLineCandidate stays an internal opaque candidate.
+ * printable ASCII (one byte per character), every structured field fits its ShortString capacity, the candidate
+ * equals the structured-field template, and the literal parse/rebuild reproduces the candidate exactly with every
+ * parsed field equal to its structured field. Only then does OK keep the raw prefix and suffix and splice the new
+ * comment, after checking that the splice equals both the literal rebuild and the template. Everything else is
+ * refused with a reason and nothing changes. The template duplicates the web Record writer's lineCandidate
+ * (pulsarAnalysis.ts), so it is not an independent model: agreement with it only guards that the candidate still has
+ * the web writer's layout, and fails closed ('layout') if the two copies diverge. Only the literal parse/rebuild is
+ * traced to the editor captures, and its agreement with a web-built candidate is self-consistency, not a native
+ * Record-writer witness (x87 number text, the +0x96 file condition and writer caps stay unbound): NativeLineCandidate
+ * stays an internal opaque candidate.
  *
  * WEB: the editor is one inline layer of the Review dialog. It keeps the working copy and the ordinal captured
  * when it opened (all other Review actions are refused while it is open). Natively Review's OnActivate may re-run
@@ -142,7 +147,10 @@ export function pulsarEditorRebuild(record: PulsarEditorRecord, controlText: str
 // ---------------------------------------------------------------- supported subset
 /** The opaque tail of a record line: points, interval (ms), aperture and the quoted file name, as Record appends them. */
 export const pulsarEntryTail = (f: PulsarEntryFields) => `${f.points},${f.intervalMs},${f.aperture},"${f.file}"`;
-/** Second, independent model: the record-line template of the structured fields with comment c. */
+/**
+ * The record-line template of the structured fields with comment c. A duplicate of the web Record writer's
+ * lineCandidate (pulsarAnalysis.ts), kept as a self-consistency guard; not an independent model or a native witness.
+ */
 const template = (f: PulsarEntryFields, c: string) =>
   `"${f.object}",${f.frequency},${f.gain},` + [f.reference, f.vertical, f.horizontal].map(v => (v === null ? '"",' : `${v},`)).join('') + `${f.start},"${c}",${pulsarEntryTail(f)}`;
 /** WEB supported byte domain: printable ASCII 0x20..0x7e, so each character is exactly one byte under any ANSI code page. */

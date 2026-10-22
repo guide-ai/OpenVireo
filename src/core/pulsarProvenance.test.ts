@@ -46,6 +46,19 @@ describe('pulsar provenance', () => {
       ['EDIT-NO-SELECTION-LITERALS', '7a015a4e85d32b94502fa56f2125fd18201a5da90766f7f76668f767234dc648'],
     ] as const) expect(listing.get(id)?.sha256, id).toBe(sha);
   });
+  it('describes the enabled Edit, its parsing of the candidate and its template check without stale or overstated claims', () => {
+    const byId = new Map(provenance.contracts.map(c => [c.id, c as Partial<Record<string, string>>]));
+    const record = byId.get('PLR-RECORD-01')!, transaction = byId.get('PLR-REVIEW-TRANSACTION-STATIC-01')!, edit = byId.get('PLR-REVIEW-EDIT-STATIC-01')!;
+    expect(record.inference).not.toMatch(/Nothing reads it/);
+    expect(record.inference).toMatch(/Only the comment-only Review editor \(PLR-REVIEW-EDIT-STATIC-01\) reads it/);
+    expect(transaction.web).not.toMatch(/Find and Edit are disabled|\(rows, Delete, Ok, Cancel\)|not shown, parsed/);
+    expect(transaction.web).toMatch(/the named scroll region, the selected row, Edit, Delete, Ok, Cancel/);
+    expect(edit.web).toMatch(/self-consistency guard/);
+    expect(edit.uncertainty).toMatch(/proves only self-consistency/);
+    const text = JSON.stringify(provenance) + ['../../docs/PULSAR-ANALYSIS.md', './pulsarReviewEdit.ts', './pulsarAnalysis.ts'].map(f => readFileSync(new URL(f, import.meta.url), 'utf8')).join('');
+    expect(text).not.toMatch(/two (chosen |independent )?models|Second, independent model|not parsed, validated or exported/);
+    expect(readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8')).toMatch(/while the inner question, notice or comment editor is open/);
+  });
   it('records the artifact hash, the REA evidence and the gated contracts', () => {
     expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');
     expect(provenance.rea.evidenceId).toMatch(/^ev_[0-9a-f]{64}$/);

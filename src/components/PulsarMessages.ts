@@ -99,7 +99,7 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.outcome.review-edit-notice-closed': 'Notice closed. Nothing was changed.',
   'pulsar.outcome.review-edit-opened': 'Editing the comment of the selected measurement in the working copy.',
   'pulsar.outcome.review-edit-draft': '',
-  'pulsar.outcome.review-edited': 'Comment applied to the working copy. Ok keeps the change; Cancel discards it.',
+  'pulsar.outcome.review-edited': 'Comment accepted in the working copy. Ok in Review keeps the working copy; Cancel discards its changes.',
   'pulsar.outcome.review-edit-cancelled': 'Edit cancelled. The working copy is unchanged.',
   'pulsar.outcome.review-edit-unsupported-text': 'Edit is not available for this measurement: its stored text has characters outside printable ASCII (for example in the file name), so its bytes in the original editor are not established. Nothing was changed.',
   'pulsar.outcome.review-edit-unsupported-quote': 'Edit is not available for this measurement: its object name contains a double quote, where the original editor would end the name. Nothing was changed.',

@@ -1818,3 +1818,90 @@ test('Review Edit E6: at 360 px, 390 px and desktop the editor fits without page
     await press('pulsar-review-cancel');
   }
 });
+
+/**
+ * Starts (or resets) a page trace of every Enter keydown (repeat flag and target) and of each distinct text the
+ * comment cell of row #1 shows, so a held key can be checked for one working-copy update.
+ */
+const traceEnter = (page: Page) => page.evaluate(() => {
+  const w = window as unknown as { __enter?: { repeat: boolean; target: string | null }[]; __comments: (string | null)[] };
+  const cell = () => document.querySelector('[data-testid="pulsar-entry-1"] td:nth-child(11)')?.textContent ?? null;
+  if (!w.__enter) {
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') w.__enter!.push({ repeat: e.repeat, target: (e.target as HTMLElement).getAttribute('data-testid') }); }, true);
+    new MutationObserver(() => { const c = cell(); if (c !== null && c !== w.__comments[w.__comments.length - 1]) w.__comments.push(c); })
+      .observe(document.body, { subtree: true, childList: true, characterData: true });
+  }
+  w.__enter = []; w.__comments = [cell()];
+});
+const traced = (page: Page) => page.evaluate(() => {
+  const w = window as unknown as { __enter: { repeat: boolean; target: string | null }[]; __comments: (string | null)[] };
+  return { keys: w.__enter, comments: w.__comments };
+});
+/** One physical press held for `n` keydowns (the first, then auto-repeats), with the editor count and focus after each. */
+async function holdEnter(page: Page, n = 5) {
+  const states: { editor: number; focus: string | null }[] = [];
+  try {
+    for (let i = 0; i < n; i++) {
+      await page.keyboard.down('Enter');
+      states.push(await page.evaluate(() => ({ editor: document.querySelectorAll('[data-testid="pulsar-review-editor"]').length, focus: document.activeElement?.getAttribute('data-testid') ?? null })));
+    }
+  } finally { await page.keyboard.up('Enter'); }
+  return states;
+}
+
+test('Review Edit E7: a held Enter confirms or opens the editor once; after release a fresh press acts again', async ({ page }) => {
+  await threeEntries(page, EDITABLE, EDITABLE_FILE);
+  await openReview(page);
+  const before = await rowCells(page), edit = page.getByTestId('pulsar-review-edit');
+  // Held from the comment: the first keydown is OK and focus returns to Edit. The auto-repeats then land on Edit,
+  // which must not reopen the editor, so the comment is not confirmed again either.
+  await edit.click();
+  await editComment(page).fill('held, once');
+  await traceEnter(page);
+  expect(await holdEnter(page)).toEqual(Array(5).fill({ editor: 0, focus: 'pulsar-review-edit' }));
+  let trace = await traced(page);
+  expect(trace.keys).toEqual([{ repeat: false, target: 'pulsar-review-edit-comment' }, ...Array(4).fill({ repeat: true, target: 'pulsar-review-edit' })]);
+  expect(trace.comments).toEqual(['first, kept', 'held, once']); // one working-copy update
+  expect(await rowComments(page)).toEqual(['held, once', 'same', 'same']);
+  await expect(reviewStatus(page)).toHaveText(/^Comment accepted in the working copy/);
+  // The confirmed list is unchanged until outer Ok: outer Cancel discards the held edit.
+  await page.getByTestId('pulsar-review-cancel').click();
+  await openReview(page);
+  expect(await rowCells(page)).toEqual(before);
+  // Held from Edit: the first keydown opens the editor and focuses the comment. The auto-repeats land on the
+  // comment and must not confirm it.
+  await edit.focus();
+  await traceEnter(page);
+  expect(await holdEnter(page)).toEqual(Array(5).fill({ editor: 1, focus: 'pulsar-review-edit-comment' }));
+  trace = await traced(page);
+  expect(trace.keys).toEqual([{ repeat: false, target: 'pulsar-review-edit' }, ...Array(4).fill({ repeat: true, target: 'pulsar-review-edit-comment' })]);
+  expect(trace.comments).toEqual(['first, kept']);
+  await expect(editComment(page)).toHaveValue('first, kept');
+  await expect(reviewStatus(page)).toHaveText('Editing the comment of the selected measurement in the working copy.');
+  // After the release, a fresh Enter in the comment is OK once and a fresh Enter on Edit opens it again.
+  await editComment(page).fill('fresh press');
+  await page.keyboard.press('Enter');
+  await expect(editor(page)).toHaveCount(0);
+  await expect(edit).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(editComment(page)).toBeFocused();
+  await expect(editComment(page)).toHaveValue('fresh press');
+  await page.keyboard.press('Escape');
+  await expect(edit).toBeFocused();
+  // Space on Edit still opens it once.
+  await page.keyboard.press(' ');
+  await expect(editComment(page)).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(editor(page)).toHaveCount(0);
+  expect((await traced(page)).comments).toEqual(['first, kept', 'fresh press']);
+  // Outer Ok commits exactly that working copy: only row #1's comment changes, nothing is renumbered.
+  await page.getByTestId('pulsar-review-ok').click();
+  await expect(review(page)).toHaveCount(0);
+  await expect(count(page)).toHaveText('3 recorded measurements');
+  await openReview(page);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2', 'pulsar-entry-3']);
+  const after = await rowCells(page);
+  expect(after.slice(1)).toEqual(before.slice(1));
+  expect(after[0]).toEqual([...before[0].slice(0, 9), 'fresh press', ...before[0].slice(10)]);
+  await page.getByTestId('pulsar-review-cancel').click();
+});
