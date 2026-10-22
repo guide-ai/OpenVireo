@@ -12,7 +12,12 @@
 - Test meaningful edge cases and user flows. Build/typecheck must pass; browser must be inspected. Record failures and remaining gaps.
 
 ## Claude review workflow
-Use local Claude with model claude-opus-5-5 and --effort high; verify effective model in initialization/assistant output and record configured effort honestly. Give direct read access to this complete project and both research directories, without snippets or filtered copies. Do not expose credentials or original binary bytes to the model. Keep raw reports separately from resolved findings.
+Each programming task uses three separate local Claude launches with model claude-opus-5-5, through `analysis/claude_phase.py` under the research root (never `claude_independent_review.py`, which stays as historical evidence):
+1. `plan` — --effort high, read-only. Produces the implementation plan.
+2. `implement` — --effort medium, edits this project from the approved plan; only build/test/read-only git commands, no commit/push, no writes to research directories. Codex does not edit the same files while it runs.
+3. `review` — --effort high, read-only, over the implemented increment.
+
+Do not raise the implementation phase to high by default; high is reserved for the plan and review phases. Verify effective model in initialization/assistant output and record configured effort per phase honestly. Give direct read access to this complete project and both research directories, without snippets or filtered copies. Do not expose credentials or original binary bytes to the model. Keep raw reports separately from resolved findings.
 
 Run the native /review command directly on this complete repository, as explicitly requested by the user. Do not use /code-review, PR-only workflows, publication or a custom diff-based substitute. The current user instruction supersedes earlier command preferences. Give direct read access to the actual project and safe derived research evidence while excluding credentials and original binary bytes. Keep the original-runtime and scientific criteria above. Earlier empty /security-review attempts or denied fallback operations are historical, not approvals; do not retry them as an alternative.
 
