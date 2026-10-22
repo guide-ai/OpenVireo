@@ -1,7 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 // Scoped I06 radio control flows. Until the coordinator mounts RadioControlPanel
-// in App, these run against the owned harness (see docs/RADIO-CONTROL.md) via
-// OPENVIREO_RADIO_HARNESS_URL and skip otherwise.
+// in App, these run against an owned harness (see docs/RADIO-CONTROL.md and
+// docs/RADIO-ANTENNA.md) via OPENVIREO_RADIO_HARNESS_URL and skip otherwise.
 const harness=process.env.OPENVIREO_RADIO_HARNESS_URL;
 test.skip(!harness,'OPENVIREO_RADIO_HARNESS_URL is not set; radio panel is not mounted in App yet.');
 const open=async(page:Page)=>{await page.goto(harness!);await expect(page.getByTestId('radio-control')).toBeVisible();};
@@ -35,9 +35,12 @@ test('deferred access, timer completion, keyboard switch, panel close/reopen and
  await sw.focus();await page.keyboard.press('a');await expect(status(page)).toContainText('Only Enter toggles');await expect(sw).toHaveAttribute('aria-checked','false');
  await page.keyboard.press(' ');await expect(sw).toHaveAttribute('aria-checked','false');
  await page.keyboard.press('Enter');await expect(sw).toHaveAttribute('aria-checked','true');await expect(page.getByTestId('radio-switch-caption')).toHaveText('On');
- await expect(page.getByTestId('radio-panel-window')).toBeVisible();await expect(page.getByTestId('radio-panel-window')).toContainText('not recovered');
- await page.getByTestId('radio-panel-close').click();await expect(page.getByTestId('radio-panel-window')).toHaveCount(0);await expect(sw).toHaveAttribute('aria-checked','true');
+ await expect(page.getByTestId('radio-panel-window')).toBeVisible();await expect(page.getByTestId('antenna-form-caption')).toHaveText('VIREO Radio Telescope Control Panel');
  await page.getByTestId('radio-window').click();await expect(page.getByTestId('radio-panel-window')).toBeVisible();await expect(status(page)).toContainText('shown again');
+ // RC-11: the original close query refuses to close, switches the radio switch Off and hides the window.
+ await page.getByTestId('radio-panel-close').click();await expect(page.getByTestId('radio-panel-window')).toHaveCount(0);
+ await expect(sw).toHaveAttribute('aria-checked','false');await expect(page.getByTestId('radio-window')).toHaveCount(0);await expect(status(page)).toContainText('switch turned off');
+ await sw.click();await expect(page.getByTestId('radio-panel-window')).toBeVisible();await expect(page.getByTestId('radio-switch-caption')).toHaveText('On');
  await sw.click();await expect(page.getByTestId('radio-switch-caption')).toHaveText('Off');
  await expect(page.getByTestId('radio-panel-window')).toHaveCount(0);await expect(page.getByTestId('radio-window')).toHaveCount(0);
  await page.getByTestId('radio-state').locator('summary').click();

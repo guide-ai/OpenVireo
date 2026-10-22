@@ -24,7 +24,7 @@
       "kind": "Existing decoded published-method table of TEnvironment1 (VMT 0x58688c)."
     }
   ],
-  "reaStatus": "No REA Evidence ID exists for this slice. The REA static session (inspect_pe_resources, open_binary ghidra, analyze_function on the radio handlers) required approval in this session and was not executed; it was not retried.",
+  "reaStatus": "Historical for RC-01..RC-10: no REA Evidence ID existed when they were recovered. RC-11 and the antenna slice cite reused REA record ev_61f426f3… (inspect_pe_resources) and a fresh REA inspect_with_objdump section_headers run; see docs/RADIO-ANTENNA-PROVENANCE.json.",
   "contracts": [
     {
       "id": "RC-01",
@@ -92,15 +92,25 @@
     },
     {
       "id": "RC-10",
-      "title": "Closing the radio panel window (browser adaptation)",
+      "status": "superseded by RC-11",
+      "title": "Closing the radio panel window (former browser adaptation)",
       "ranges": [],
-      "observed": "None. TRadioLab OnClose/OnCloseQuery are not recovered.",
-      "modelled": "Hide the panel only; switch stays On and RadioWin stays visible so RC-09 reopens it."
+      "observed": "None at the time. TRadioLab OnClose/OnCloseQuery were not recovered.",
+      "modelled": "Formerly: hide the panel only, switch stays On. Replaced by RC-11 after FormCloseQuery was recovered."
+    },
+    {
+      "id": "RC-11",
+      "title": "TRadioLab.FormCloseQuery (window close / File > Exit)",
+      "ranges": ["0x5650c0..0x56513f", "0x565064..0x56507d", "0x587c1f", "0x588bd1..0x588ca9"],
+      "observed": "FormCloseQuery 0x5650c0: CanClose := byte env+0x3817; env item +0x408 SetEnabled(True) (0x4548ac); if not CanClose: RadCntrlSw (env+0x440) SetActive(False) via 0x4e6b58, self Hide (0x47a008), env 0x587d54. Exit1Click 0x565064 calls virtual +0xf4 then Close only when it returns True. env+0x3817 is 0 from FormCreate 0x587c1f and is written only by TEnvironment1's exit confirmation (0x588ca3).",
+      "modelled": "During normal operation CanClose is False: item +0x408 enabled, switch Active False with the RC-08 Off branch (caption Off, RadioWin hidden, Window1 recomputed, item +0x454 enabled, panel hidden). The TRadioLab form is not destroyed, so radioAntenna.ts state and its SlewTimer2 keep running while hidden.",
+      "inference": "That TiSwitchLed.SetActive(False) delivers OnChange (RC-08) is inferred from component behavior, not recovered. 0x587d54 and the application-exit path (env+0x3817 = 1) are not modelled.",
+      "evidence": "Derived listing target.asm lines 521753..521816 (method addresses from the TRadioLab VMT decode, claude-radio-antenna/tradiolab-metadata.json)."
     }
   ],
   "unresolved": [
-    "TRadioLab (VMT 0x563a08, instance size 0x65c): DFM, published fields and method names not decoded; all antenna, coordinate, beam, receiver, timing and signal behavior.",
-    "Source and default of env+0x37ab (dish diameter) and env+0x2e84 (access option byte).",
+    "TRadioLab antenna controls are now in docs/RADIO-ANTENNA-PROVENANCE.json (RA-01..RA-14); beam, receiver, timing and signal behavior remain unrecovered.",
+    "env+0x37ab (dish diameter) and env+0x2e84 (access option byte): compiled defaults 100 and 0 are recovered (RA-03); options-file and options-dialog owners remain unrecovered, so the host still supplies them explicitly.",
     "Names of menu items at +0x408 and +0x454 and the five other Window1 children's individual offsets.",
     "CntrlSwPnl and IDPnl visibility transitions.",
     "Radio scope access from other exercises, optical/radio interplay beyond the shared fields, cursor/beep presentation."

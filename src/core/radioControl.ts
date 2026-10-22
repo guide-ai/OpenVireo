@@ -3,9 +3,9 @@
  * 1.504 (CLEA_VEO.exe SHA-256 781bc970…c54c). See docs/RADIO-CONTROL.md and
  * docs/RADIO-CONTROL-PROVENANCE.json for contract IDs RC-01…RC-10.
  *
- * Scope: control/state transitions only. The radio control panel itself
- * (TRadioLab, VMT 0x563a08) is NOT recovered: no antenna pointing, beam,
- * receiver, signal, timing or calibration behavior is modelled here.
+ * Scope: control/state transitions only. The radio control panel contents
+ * (TRadioLab, VMT 0x563a08) live in radioAntenna.ts; no beam, receiver,
+ * signal, clock or calibration behavior is modelled here.
  * Field names marked "unresolved" are identified only by instance offset. */
 
 /** Scope identity bytes [+0x3818]/[+0x3819]/[+0x381a]/[+0x5f1]. 4 = none (FormCreate 0x587c3b..0x587c49). */
@@ -31,9 +31,11 @@ export type RadioEnvironment=Readonly<{
  /** [+0x552]; 0 at FormCreate, 1 required for immediate access, 3 defers ScopeTimer completion. */
  domeByte:DomeByte;
  /** Byte env+0x2e84 (options record +0x27d0). Its dialog control is unresolved
-  * ("Fast Scope Change" is an inference). Nonzero admits immediate access and a 1 ms timer. */
+  * ("Fast Scope Change" is an inference). Nonzero admits immediate access and a 1 ms timer.
+  * Compiled default 0 (RA-03, radioAntenna.ts RADIO_COMPILED_ENVIRONMENT); an options file may change it. */
  accessOptionByte:boolean;
- /** Integer env+0x37ab (env+0x2e95+0x916), formatted by IntToStr. Source/default unrecovered; null = not supplied. */
+ /** Integer env+0x37ab (env+0x2e95+0x916), formatted by IntToStr. Compiled default 100 (RA-03) applies only
+  * without an options file; the host supplies it explicitly. null = not supplied. */
  dishDiameterMeters:number|null;
  /** Whether any of the six other Window1 children (OpticalWin, SpectWin, …) is Visible; host-owned. */
  otherWindowItemsVisible:boolean;
@@ -71,7 +73,7 @@ export type RadioOutcome=
  |'already-accessed'|'accessed'|'access-requested'|'access-rerequested'
  |'timer-idle'|'timer-waiting-dome'|'accessed-by-timer'
  |'switch-unavailable'|'key-ignored'|'switched-on'|'switched-off'
- |'panel-reopened'|'menu-item-hidden'|'panel-closed'|'panel-not-shown'
+ |'panel-reopened'|'menu-item-hidden'|'panel-hidden-switch-off'|'panel-not-shown'
  |'diameter-required';
 export type RadioTransition=Readonly<{state:RadioControlState;outcome:RadioOutcome;changed:boolean;steps:readonly string[]}>;
 
@@ -183,12 +185,19 @@ export function reopenRadioPanel(s:RadioControlState):RadioTransition{
  if(!s.radioWinVisible)return same(s,'menu-item-hidden');
  return done({...s,radioPanelShown:true},'panel-reopened',['RC-09'],s);
 }
-/** RC-10 browser adaptation: the user closes the panel window. TRadioLab
- * OnClose/OnCloseQuery are unrecovered; this only hides the panel and keeps
- * the switch On and RadioWin visible so RC-09 can reopen it. */
-export function closeRadioPanel(s:RadioControlState):RadioTransition{
+/** RC-11 (supersedes the RC-10 adaptation): closing the TRadioLab window (system close or
+ * File ▸ Exit 0x565064) runs FormCloseQuery 0x5650c0. During normal operation env+0x3817 is 0
+ * (FormCreate 0x587c1f; only the main window's own exit confirmation 0x588ca3 sets it), so
+ * CanClose := False, item +0x408 SetEnabled(True), RadCntrlSw.SetActive(False) (0x4e6b58) and
+ * Hide (0x47a008). That SetActive delivers the RC-08 Off branch is an inference about the
+ * TiSwitchLed component; 0x587d54 and the application-exit path are not modelled. The TRadioLab
+ * form is not destroyed, so its antenna state and timers survive; reopen by switching On. */
+export function closeRadioPanel(s:RadioControlState,env:RadioEnvironment):RadioTransition{
+ validEnvironment(env);
  if(!s.radioPanelShown)return same(s,'panel-not-shown');
- return done({...s,radioPanelShown:false},'panel-closed',['RC-10'],s);
+ const off=radioSwitchChange(s,{...s,radioSwitchActive:false,item408Enabled:true},env,['RC-11','RC-08']);
+ if(!off.changed)return off;
+ return done({...off.state,radioPanelShown:false},'panel-hidden-switch-off',['RC-11','RC-08'],s);
 }
 
 export function radioIdCaptionLabel(s:RadioControlState):string|null{return idCaptionText(s.idCaption);}
