@@ -2,8 +2,9 @@
  * Review transaction of the recorded-measurement list (TMeasListDlg, class ref 0x5631f8, VMT 0x563244).
  * Pure TypeScript, with no React or i18n. The outer working-copy transaction and the confirmed Delete are
  * implemented here; the comment-only Edit (0x56373c) on a proven round-trip subset is in pulsarReviewEdit.ts.
- * Find (0x5634c8) is recovered (PLR-REVIEW-FIND-STATIC-01) but not ported: the row text it searches ends with the
- * open-dialog FileName of the loaded file, which the web does not have. Undo and every native writer stay gated.
+ * Find (0x5634c8) is recovered (PLR-REVIEW-FIND-STATIC-01) but not ported: the row text it searches holds native number
+ * text and the exact open-dialog FileName text of the loaded file, which the web does not have. Undo and every native
+ * writer stay gated.
  *
  * Evidence IDs are the contract IDs of contract/native-contract.json, documented in
  * docs/PULSAR-ANALYSIS-PROVENANCE.json. Behavior comes from bounded GNU disassembly and the Delphi

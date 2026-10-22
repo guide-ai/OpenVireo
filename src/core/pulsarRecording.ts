@@ -231,7 +231,8 @@ export type PlrProperties = Readonly<{ fields: Readonly<Record<PlrPropertyKey, s
 
 /**
  * Read-only properties text as formatted by 0x571748. File name: the native code shows obj+0x9a,
- * the full path given to the reader. A browser only exposes File.name, so the web shows the base name.
+ * the reader FileName text (possibly including a directory path), not supplied by the PLR header.
+ * This window retains the supplied browser File.name instead; no native path equivalence is claimed.
  */
 export function plrProperties(rec: PlrRecording): PlrProperties {
   const h = rec.highestIndex.value;

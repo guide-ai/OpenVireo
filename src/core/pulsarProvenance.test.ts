@@ -62,22 +62,36 @@ describe('pulsar provenance', () => {
   it('records the recovered Find contract and the row-text blocker that keeps Find disabled', () => {
     const find = provenance.contracts.find(c => c.id === 'PLR-REVIEW-FIND-STATIC-01') as Record<string, string> | undefined;
     expect(find).toBeDefined();
-    expect(find!.range).toBe('0x5634c8..0x5636de, 0x492a8c..0x492c6d, 0x5ad3c2..0x5ad3d0');
+    expect(find!.range).toBe('0x5634c8..0x5636de, 0x492a8c..0x492c6d, 0x5ad3c2..0x5ad3d0, 0x570e77..0x570ec0, 0x56a49d..0x56a4b2, 0x56b07d..0x56b093, 0x44d988..0x44d9e0, 0x486ae0..0x486b13, 0x4062d4..0x406325');
     expect('status' in find!).toBe(false);
-    for (const anchor of ['StrLower(+0x380) (0x40bb04)', 'LowerCase(Items[i]) (0x40a4a0', 'Pos(query, row) (0x40640c', "'String Not Found'", 'never read by this caller', '0x56a49d..0x56a4b2', '0x570e77..0x570ec0'])
+    for (const anchor of ['StrLower(+0x380) (0x40bb04)', 'LowerCase(Items[i]) (0x40a4a0', 'Pos(query, row) (0x40640c', "'String Not Found'", 'never read by this caller', '0x56a49d..0x56a4b2', '0x570e77..0x570ec0',
+      'Items.Count <= start (0x5635b4..0x5635ba) no row is read', 'does not replace the stored Items strings', 'alias slot 0x5b5d00, which is the address of the instance variable 0x5bad7c',
+      'the byte at [[0x5b5930]]', 'the address of that variable (not its value', 'flags 0x40', 'may OR 0x100000'])
       expect(find!.observed, anchor).toContain(anchor);
-    expect(find!.blocker).toMatch(/^Not enabled\. The searched row contains the open-dialog FileName/);
-    expect(find!.blocker).toMatch(/'String Not Found' can never be reported truthfully/);
-    expect(String((provenance.contracts.find(c => c.id === 'PLR-REVIEW-01') as { status?: string }).status)).toContain('PLR-REVIEW-FIND-STATIC-01');
+    expect(find!.observed).not.toMatch(/shared with Help|into global 0x5b5d00|MessageBoxA\(text/);
+    expect(find!.blocker).toMatch(/^Not enabled\. The complete native search surface cannot be certified from the current opaque web candidates\./);
+    expect(find!.blocker).toMatch(/no-scan path: when Items\.Count <= start/);
+    expect(find!.blocker).toMatch(/13 prepared handwritten vectors .* were not executed/);
+    expect(find!.blocker).not.toMatch(/never be reported|any query could match/);
+    expect(find!.uncertainty).toMatch(/inference from that caption/);
+    expect(find!.uncertainty).toMatch(/Only if no other path updated the persisted mode \+0x3d2 or the query/);
+    expect(find!.uncertainty).not.toMatch(/comes from the Win32 CDM_GETFILEPATH contract/);
+    expect(String((provenance.contracts.find(c => c.id === 'PLR-REVIEW-EDIT-STATIC-01') as { uncertainty?: string }).uncertainty)).toMatch(/never certified native tail equivalence/);
+    const reviewStatus = String((provenance.contracts.find(c => c.id === 'PLR-REVIEW-01') as { status?: string }).status);
+    expect(reviewStatus).toContain('PLR-REVIEW-FIND-STATIC-01');
+    expect(reviewStatus).not.toMatch(/no web result can be shown/);
     const listing = new Map(provenance.listings.map(l => [l.id, l]));
     expect(listing.get('FIND-COORDINATOR')!.sha256).toContain('review-find-caller.asm 8e3b9a15eef0d7090611e598c3fb3baa40ff3669c5a898dcebce9e57325fbd14');
     for (const sha of ['e2a62f06da6efde975e968345e94cb087f37800a73bfa25c656db1e963ce4126', '456015b3c35c595ab4e4789190a34a72dc585dfede35e1a029a89c082217ef05',
       'dd70fc3ff0846e868e79ed2fd3efd2b4d15a455c8875508fc799abb886d3661e', '77a05c1845b8565b97e3f775f7fec750cfa7d8d94d7b7208b9750e703036ebf1', '15e5126d0dfe3f5a10ca4af635774e816b379272093353bb9aa38b56c25fc083'])
       expect(listing.get('FIND-AUTHOR-ROW-TAIL')!.sha256).toContain(sha);
     expect(listing.get('FIND-AUTHOR-REA')!.kind).toMatch(/output_truncated true/);
+    for (const sha of ['180825205c4286c9f408a16fbce3ab403c17bb11494a81bebb5d9ac67a0127e8', '920dbcd1e6103202d22fc8583e903e42b408012dfaff7bfb382986e05bc8702d', '4706994d6b4debc7b3a291423b837da7e764515669c8f5fa3bc43b12c0324264'])
+      expect(listing.get('FIND-COORDINATOR-MESSAGE-HELPER')!.sha256).toContain(sha);
+    expect(listing.get('FIND-COORDINATOR-MESSAGE-HELPER')!.kind).toMatch(/not REA provider results.*kept as history only, not as complete-function evidence/);
     const docs = readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8');
-    expect(docs).not.toMatch(/Find remains unbound|its behavior is not implemented/);
-    expect(readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')).toMatch(/'pulsar\.review\.gated': 'Find is not available: [^']*full path of the loaded file/);
+    expect(docs).not.toMatch(/Find remains unbound|its behavior is not implemented|shared with Help|could never be reported|any text could match|Each row line is also lowercased/);
+    expect(readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')).toMatch(/'pulsar\.review\.gated': 'Find is not available: [^']*native file name text of the loaded file \(possibly with its folder path\) and native number text/);
   });
   it('records the artifact hash, the REA evidence and the gated contracts', () => {
     expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');
