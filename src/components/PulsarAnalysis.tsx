@@ -55,12 +55,15 @@ const EDIT_FIELD_LABEL: Readonly<Record<PulsarEditorField, PulsarMessageKey>> = 
 };
 const clampInt = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(v)));
 /**
- * WEB: Review's Edit and the editor's comment act once per physical Enter press. Each one moves focus to the other
- * (OK returns to Edit, Edit opens the comment), so an auto-repeated Enter would otherwise reopen or confirm again.
- * On Edit, preventDefault on the repeated keydown cancels the browser's button activation. Space and pointers are
- * unaffected, and a fresh press after keyup is not a repeat. Same policy as the pan buttons' held Enter.
+ * WEB keyboard policy, scoped to this component and its descendant dialogs: ignore Enter keydowns marked
+ * as repeats before a child handler or a native button can act. This prevents one held key from confirming
+ * the next pending Record panel or activating a new control after focus moves. No window listener or latch;
+ * fresh keydowns, keyup, Space, arrows and pointer/touch input are unchanged. Input layers that send new
+ * keyup/keydown pairs with repeat=false are treated as fresh commands; no native/remote-input parity claim.
  */
-const ignoreRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => { if (e.key === 'Enter' && e.repeat) e.preventDefault(); };
+const captureRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => {
+  if (e.key === 'Enter' && e.repeat) { e.preventDefault(); e.stopPropagation(); }
+};
 /** Client pixel index of a position in a box of n native pixels. */
 const pixelIndex = (offset: number, size: number, n: number) => Math.min(n - 1, Math.max(0, Math.floor(offset / size * n)));
 
@@ -322,7 +325,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   };
 
   return (
-    <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis">
+    <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis" onKeyDownCapture={captureRepeatedEnter}>
       <div className="plr-main" inert={modal}>
         <h2 id={`${idPrefix}title`}>{t('pulsar.title')}</h2>
         <p className="plr-scope">{t('pulsar.scope')}</p>
@@ -613,7 +616,7 @@ function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }
         <div className="plr-row plr-review-buttons">
           <span className="plr-row">
             <button type="button" disabled aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-find">{t('pulsar.review.find')}</button>
-            <button type="button" ref={refs.edit} onClick={requestEdit} onKeyDown={ignoreRepeatedEnter} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
+            <button type="button" ref={refs.edit} onClick={requestEdit} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
             <button type="button" ref={refs.remove} onClick={() => act(pulsarReviewRequestDelete)} data-testid="pulsar-review-delete">{t('pulsar.review.delete')}</button>
           </span>
           <span className="plr-row">
@@ -652,7 +655,7 @@ type ReviewEditorProps = Readonly<{ view: PulsarReviewEditView; t: PulsarTransla
  * TMeasForm2 as an inline layer of the Review dialog (WEB). The group caption is the object; JD, frequency and
  * gain are text; the three cursor readings are read-only and out of the Tab order (DFM ReadOnly, TabStop false);
  * only the comment is editable. Enter in the comment is OK (DFM OkBtn Default), once per press (WEB: auto-repeats are
- * ignored, see ignoreRepeatedEnter); Escape is Cancel (WEB). The
+ * ignored by the component capture handler); Escape is Cancel (WEB). The
  * comment input accepts up to 256 characters so an invalid draft stays visible; OK refuses it.
  */
 function ReviewEditor({ view, t, idPrefix, act, comment }: ReviewEditorProps) {
@@ -677,7 +680,7 @@ function ReviewEditor({ view, t, idPrefix, act, comment }: ReviewEditorProps) {
         <label>{t('pulsar.reviewEdit.comment')}
           <input ref={comment} value={view.draft} maxLength={256} aria-invalid={!view.draftValid} aria-describedby={`${idPrefix}review-edit-help`}
             onChange={e => act(st => pulsarReviewEditDraft(st, e.target.value))}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!e.repeat) ok(); } }} data-testid="pulsar-review-edit-comment" />
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); ok(); } }} data-testid="pulsar-review-edit-comment" />
         </label>
         <p className="plr-help" id={`${idPrefix}review-edit-help`}>{t('pulsar.reviewEdit.commentHelp')}</p>
       </fieldset>

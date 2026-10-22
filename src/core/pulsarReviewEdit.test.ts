@@ -139,7 +139,7 @@ describe('supported round-trip subset (WEB predicate)', () => {
     expect(why(row({ horizontal: '-1.2345E+02' }))).toEqual(['length', 'horizontal', 11, 10]);
     expect(why(row({ start: '151234.56789012' }))).toEqual(['length', 'start', 15, 14]);
   });
-  it('refuses unsupported characters, a quoted object and any row the two models do not reproduce byte for byte', () => {
+  it('refuses unsupported characters, a quoted object and any row the template and literal reconstruction do not reproduce byte for byte', () => {
     expect(why(row({ file: 'pulsé.plr' }))).toEqual(['text', null, null, null]);
     expect(why(row({ file: 'tab\there.plr' }))).toEqual(['text', null, null, null]);
     expect(why(row({ comment: 'line\nbreak' }))).toEqual(['text', null, null, null]);

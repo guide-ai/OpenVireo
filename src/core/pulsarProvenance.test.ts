@@ -55,7 +55,7 @@ describe('pulsar provenance', () => {
     expect(transaction.web).toMatch(/the named scroll region, the selected row, Edit, Delete, Ok, Cancel/);
     expect(edit.web).toMatch(/self-consistency guard/);
     expect(edit.uncertainty).toMatch(/proves only self-consistency/);
-    const text = JSON.stringify(provenance) + ['../../docs/PULSAR-ANALYSIS.md', './pulsarReviewEdit.ts', './pulsarAnalysis.ts'].map(f => readFileSync(new URL(f, import.meta.url), 'utf8')).join('');
+    const text = JSON.stringify(provenance) + ['../../docs/PULSAR-ANALYSIS.md', './pulsarReviewEdit.ts', './pulsarAnalysis.ts', './pulsarAnalysis.test.ts', './pulsarReviewEdit.test.ts'].map(f => readFileSync(new URL(f, import.meta.url), 'utf8')).join('');
     expect(text).not.toMatch(/two (chosen |independent )?models|Second, independent model|not parsed, validated or exported/);
     expect(readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8')).toMatch(/while the inner question, notice or comment editor is open/);
   });
