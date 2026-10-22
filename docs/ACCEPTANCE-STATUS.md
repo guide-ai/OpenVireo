@@ -48,9 +48,13 @@ Original-runtime witnesses are absent for20 explicitly tracked fidelity/verifica
 
 [M67 reference laboratory](CLUSTER-DATABASE.md) advances E05 to partial without changing its full original acceptance criterion. The direct native compact-reader field yields506 known-color reference points;the pupil chooses the trial andinterpretation. All16reference fields are nowdelivered in the subsequent comparison increment. Acquisition,optionalCCD,uncertainty,classroom andoriginalexecution fidelity remain separate gates.
 
-## Current priority queue
+## Continuation map
 
-The earlier acquisition/HR queue below is a historical dependency record. Three-profile UBV with sizes5/10/15,native model trials,all16reference datasets and reversible exclusions are now delivered. A06 bounded motion is the current increment;general moving acquisition and native global/options/runtime behavior remain open. Port mean/all-settings admission debt must be assessed before broadening optical count domains. The64primary statuses/counts and original criteria are unchanged.
+The bounded recorded-data delivery and its remaining gates are described in [the delivery scope](RECORDED-ANALYSIS-DELIVERY.md). The next recovered subflow is transactional PLR Review (working copy,confirmed Delete,outer Cancel/OK). Camera/catalog authority,live radio acquisition,period/dispersion and broader exercise work remain open;see [full continuation](FULL-SCOPE-CONTINUATION.md). Current row counts are in [ACCEPTANCE-CURRENT.json](ACCEPTANCE-CURRENT.json).
+
+### Earlier optical milestone (historical)
+
+The earlier acquisition/HR queue below is a historical dependency record. Three-profile UBV with sizes5/10/15,native model trials,all16reference datasets and reversible exclusions are now delivered. At that earlier milestone,A06 bounded motion was the increment;general moving acquisition and native global/options/runtime behavior remain open. Port mean/all-settings admission debt must be assessed before broadening optical count domains. That milestone left the64primary statuses/counts and original criteria unchanged;it predates the22October recorded-data partial advances.
 
 ### Historical priority queue
 

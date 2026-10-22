@@ -517,7 +517,9 @@
       "evidence": [
         "docs/IMPLEMENTATION-PLAN.md",
         "docs/WEDGE-PLOT.md",
-        "docs/WEDGE-PLOT-VALIDATION.json"
+        "docs/WEDGE-PLOT-VALIDATION.json",
+        "docs/RECORDED-ANALYSIS-DELIVERY.md",
+        "tests/recorded-analysis-navigation.spec.ts"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;General survey selection/completeness/masks,live acquisition,GroupAutoPlot and native writer/print/runtime fidelity remain open.",
       "originalWitnessPending": true,
@@ -534,7 +536,9 @@
       "evidence": [
         "docs/IMPLEMENTATION-PLAN.md",
         "docs/PULSAR-ANALYSIS.md",
-        "docs/PULSAR-ANALYSIS-VALIDATION.json"
+        "docs/PULSAR-ANALYSIS-VALIDATION.json",
+        "docs/RECORDED-ANALYSIS-DELIVERY.md",
+        "tests/recorded-analysis-navigation.spec.ts"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;Period/dispersion/filtering,editable Review,complete native result writer and runtime timing remain open.",
       "originalWitnessPending": true,
@@ -689,7 +693,8 @@
         "docs/IMPLEMENTATION-PLAN.md",
         "docs/WEDGE-PLOT.md",
         "docs/RECORDED-ANALYSIS-DELIVERY.md",
-        "tests/recorded-analysis-navigation.spec.ts"
+        "tests/recorded-analysis-navigation.spec.ts",
+        "docs/WEDGE-PLOT-VALIDATION.json"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;Full E01/I03 observing chain,survey fields/completeness and exercise-wide assessment remain open.",
       "originalWitnessPending": true,
@@ -764,7 +769,8 @@
         "docs/IMPLEMENTATION-PLAN.md",
         "docs/PULSAR-ANALYSIS.md",
         "docs/RECORDED-ANALYSIS-DELIVERY.md",
-        "tests/recorded-analysis-navigation.spec.ts"
+        "tests/recorded-analysis-navigation.spec.ts",
+        "docs/PULSAR-ANALYSIS-VALIDATION.json"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;Antenna/receiver acquisition,I06/I07/I09/I10,period/dispersion and independent-edition comparison remain open.",
       "originalWitnessPending": true,

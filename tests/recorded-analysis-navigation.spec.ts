@@ -7,7 +7,7 @@ const file=(name='route-control.plr',text=TEXT)=>({name,mimeType:'application/oc
 const digest=createHash('sha256').update(TEXT,'ascii').digest('hex');
 const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const HEADER_TOOLS=['Observatory','Spectrometer','Spectrum analyzer','Sky exposure','Star exposure','Galaxy exposure','Stellar classification','Pleiades photometry','Cluster database','Radio data','LSS data','Saved images','Hubble lab guide'];
-const TOOLBAR_HELP='Back up spectrum and Hubble analysis, classification, photometry, pending edits, current exposure segments, cluster database, comparison and selection work, and the optical telescope and observatory context. Inspected FITS images, the observation HR workspace, Radio data and LSS data stay only in this open window. Save/restore stops observing activity; restored tools require explicit activation.';
+const TOOLBAR_HELP='Back up supported spectrum/Hubble and classification work, photometry, exposure segments, cluster database/comparison/selection, and optical/observatory context. This is not a backup of every tool or view setting. Imported program lists, other-source width results, saved-text inspection, native-list receipts, FITS images, observation HR, Radio and LSS remain separate; follow each tool\'s persistence and export notice. Save/restore stops observing activity; restored observing tools require activation.';
 const PLR_LATE='An earlier read finished after it was replaced or cancelled, and was ignored.';
 async function open(page:Page){await page.goto('/#pulsar-analysis');await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis'})).toBeVisible();await expect(page.getByTestId('pulsar-analysis')).toHaveAttribute('data-active','true');}
 async function load(page:Page){await page.getByTestId('pulsar-file').setInputFiles(file());await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await page.getByTestId('pulsar-properties-close').click();}
@@ -33,9 +33,17 @@ test('real route deactivation stops held pan and a late file read while keeping 
  await page.getByTestId('pulsar-file').setInputFiles(file('slow-route.plr',TEXT.replace('SYNTHETIC ROUTE','LATE ROUTE')));await expect(page.getByTestId('pulsar-reading')).toBeVisible();await nav(page,'Observatory').click();
  await expect(page.getByTestId('pulsar-status')).toHaveText('Reading cancelled. The current analysis is unchanged.');
  await page.clock.runFor(800);
- // Acknowledges that the released continuation actually ran and took the discard branch before data checks.
+ // Observes at least one of the two discard guards for a valid stale file; the separate invalid-file case isolates the earlier guard.
  await expect(page.getByTestId('pulsar-status')).toHaveText(PLR_LATE);await nav(page,'Radio data').click();
  await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-file-name')).toHaveText('route-control.plr');await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');await expect(page.getByTestId('pulsar-reading')).toHaveCount(0);await expect(page.getByTestId('pulsar-status')).toHaveText(PLR_LATE);
+});
+
+test('an invalid stale Radio file is discarded before admission can replace errors or confirmed work',async({page})=>{
+ await page.addInitScript(()=>{const original=Blob.prototype.arrayBuffer;Blob.prototype.arrayBuffer=function(this:Blob){return this instanceof File&&this.name==='invalid-slow.plr'?new Promise<ArrayBuffer>(resolve=>setTimeout(()=>resolve(original.call(this)),700)):original.call(this);};});
+ await open(page);await load(page);await record(page,'kept before invalid late input');await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);
+ await page.getByTestId('pulsar-file').setInputFiles(file('invalid-slow.plr','not a recording'));await expect(page.getByTestId('pulsar-reading')).toBeVisible();await nav(page,'Observatory').click();
+ await expect(page.getByTestId('pulsar-status')).toHaveText('Reading cancelled. The current analysis is unchanged.');await page.clock.runFor(800);await expect(page.getByTestId('pulsar-status')).toHaveText(PLR_LATE);
+ await nav(page,'Radio data').click();await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');await expect(page.getByTestId('pulsar-rejection')).toHaveCount(0);
 });
 
 test('mobile browser back/forward preserves an unconfirmed record draft and restores modal focus; cancel and clear remain reversible',async({page},info)=>{
@@ -211,10 +219,9 @@ test('all tools remain reachable without document overflow across the navigation
  await page.screenshot({path:info.outputPath('integrated-navigation-320.png'),fullPage:true});
 });
 
-test('toolbar backup scope names saved tools and matches each window-local panel warning',async({page},info)=>{
+test('toolbar backup caveat and temporary lab examples match visible persistence notices',async({page},info)=>{
  await page.goto('/#observatory');await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();
- for(const saved of['Hubble analysis','cluster database, comparison and selection work','optical telescope and observatory context'])expect(TOOLBAR_HELP).toContain(saved);
- // Every workspace the toolbar calls window-local carries its own exclusion warning in its panel.
+ // Four lab examples have their own visible notices. Other temporary scopes are covered by classification-program-import,classification-range,selected-source-width and native-text-results specs; this is not a serialization test.
  await nav(page,'Saved images').click();await expect(page.getByText('Investigation and notebook files do not include this temporary image.',{exact:false})).toBeVisible();
  await nav(page,'Cluster database').click();await page.getByText('HR diagram from saved observations').click();await expect(page.getByText('This observation HR workspace is separate from Save investigation.',{exact:false})).toBeVisible();
  await nav(page,'Radio data').click();await load(page);await expect(page.getByTestId('pulsar-persistence')).toContainText('not part of Save investigation');
