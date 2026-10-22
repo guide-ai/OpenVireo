@@ -777,7 +777,8 @@
         "docs/PULSAR-ANALYSIS-VALIDATION.json",
         "docs/PULSAR-REVIEW-EDIT-VALIDATION.json",
         "src/core/pulsarReviewEdit.test.ts",
-        "tests/pulsar-analysis.spec.ts"
+        "tests/pulsar-analysis.spec.ts",
+        "docs/PULSAR-REVIEW-VALIDATION.json"
       ],
       "gateReason": "Bounded supplied-data analysis delivered;Antenna/receiver acquisition,I06/I07/I09/I10,period/dispersion and independent-edition comparison remain open.",
       "originalWitnessPending": true,
