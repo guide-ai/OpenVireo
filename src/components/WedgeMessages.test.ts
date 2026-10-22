@@ -3,8 +3,9 @@ import{createElement}from'react';
 import{renderToStaticMarkup}from'react-dom/server';
 import{WEDGE_NATIVE_TEXT as N}from'../core/wedgeNativeText';
 import{WEDGE_DEFAULT_OPTIONS}from'../core/wedgePlot';
+import{EMPTY_WEDGE_WORKSPACE,addWedgePending,beginWedgeRead,clearWedgePending,completeWedgeRead}from'../core/wedgeWorkspace';
 import WedgeLab,{type WedgeLabProps}from'./WedgeLab';
-import{WEDGE_MESSAGES,WEDGE_NATIVE_CAPTIONS,wedgeMessages,type WedgeMessageOverrides}from'./WedgeMessages';
+import{WEDGE_MESSAGES,WEDGE_NATIVE_CAPTIONS,wedgeMessages,wedgeStatusText,type WedgeMessageOverrides}from'./WedgeMessages';
 import WedgeOptionsDialog from'./WedgeOptionsDialog';
 // Placeholder translations for the contract only (not a reviewed Spanish catalog).
 // The first two lines are the coordinator's TS2322 reproduction; `tsc` (typecheck and
@@ -67,5 +68,24 @@ describe('LSS wedge presentation catalog',()=>{
   const dialog=renderToStaticMarkup(createElement(WedgeOptionsDialog,{draft:WEDGE_DEFAULT_OPTIONS,idPrefix:'t-',captions:wedgeMessages(es).native,autoPlotNote:'-',onChange:()=>{},onOk:()=>{},onCancel:()=>{}}));
   for(const t of['Opciones del diagrama','Velocidad','Sin cuadrícula','Aceptar','Cancelar','Open'])expect(dialog).toContain(t);
   expect(dialog).not.toContain('Wedge Plot Options');
+ });
+ it('names a waiting import question at both stages in the live status, translated, and drops it once answered or while disabled',()=>{
+  // Synthetic header-plus-one-row vector, not a CLEA observation.
+  const bytes=Uint8Array.from('Object ID    MJD(Days)      RA           Dec     V(km/sec)  Comments\r\nSYN-1        4321.5000 13h30m00.0s +29\xb030\'00" 6000.0 x\r\n',ch=>ch.charCodeAt(0));
+  const read=(w:typeof EMPTY_WEDGE_WORKSPACE,t:number,name:string)=>completeWedgeRead(beginWedgeRead(w,t,name),t,{name,sha256:'0'.repeat(64),bytes});
+  const reading=beginWedgeRead(read(EMPTY_WEDGE_WORKSPACE,1,'a.txt'),2,'b.txt'),retain=read(read(EMPTY_WEDGE_WORKSPACE,1,'a.txt'),2,'b.txt'),del=clearWedgePending(retain);
+  expect(retain.pending?.stage).toBe('retain');expect(del.pending?.stage).toBe('confirm-delete');
+  const M=WEDGE_MESSAGES;
+  expect(wedgeStatusText(EMPTY_WEDGE_WORKSPACE,M)).toBe(M.statusEmpty);
+  expect(wedgeStatusText(reading,M)).toBe(M.reading('b.txt'));
+  expect(wedgeStatusText(retain,M)).toBe(M.statusLoaded(1,1)+' '+M.awaitingAnswer(N.retainCaption));
+  expect(wedgeStatusText(del,M)).toBe(M.statusLoaded(1,1)+' '+M.awaitingAnswer(N.deleteCaption));
+  expect(wedgeStatusText(retain,M)).toContain('Retain Current Data?');expect(wedgeStatusText(del,M)).toContain('Confirm Deletion!');
+  expect(wedgeStatusText(addWedgePending(retain),M)).toBe(M.statusLoaded(2,2));
+  expect(wedgeStatusText(retain,M,false)).toBe(M.statusLoaded(1,1));
+  // Translated formatter and translated native captions both reach the announcement.
+  const t=wedgeMessages({...es,awaitingAnswer:(c:string)=>`Pregunta pendiente: ${c}`});
+  expect(wedgeStatusText(retain,t)).toBe('1 registros de 1 archivos Pregunta pendiente: ¿Conservar los datos actuales?');
+  expect(wedgeStatusText(del,wedgeMessages({native:{deleteCaption:'¡Confirmar borrado!'}}))).toContain('¡Confirmar borrado!');
  });
 });

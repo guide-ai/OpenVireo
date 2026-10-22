@@ -192,11 +192,13 @@ test('translated presentation captions reach the native prompts and options dial
  await load(page,A);await load(page,B);
  const prompt=page.getByTestId('wedge-prompt');
  await expect(prompt.getByRole('heading')).toHaveText('¿Conservar los datos actuales?');
+ await expect(page.getByTestId('wedge-status')).toContainText('¿Conservar los datos actuales?');
  await expect(prompt.getByRole('button')).toHaveText(['Sí','No','Cancelar']);
  // Untranslated message bodies keep the verbatim original text.
  await expect(prompt).toContainText('Do you want to add the file data to your current data?');
  await page.screenshot({path:info.outputPath('translated-prompt.png'),fullPage:true});
  await page.getByTestId('wedge-prompt-no').click();await expect(prompt.getByRole('heading')).toHaveText('¡Confirmar borrado!');await expect(prompt.getByRole('button')).toHaveText(['Sí','No']);
+ await expect(page.getByTestId('wedge-status')).toContainText('¡Confirmar borrado!');
  await page.getByTestId('wedge-prompt-yes').click();await expect(page.locator('[data-testid^="wedge-row-"]')).toHaveCount(2);
  await page.getByTestId('wedge-options-open').click();
  await expect(page.getByTestId('wedge-options').getByRole('heading')).toHaveText('Opciones del diagrama');await expect(page.getByTestId('wedge-options-ok')).toHaveText('Aceptar');

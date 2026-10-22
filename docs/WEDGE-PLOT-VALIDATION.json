@@ -1,11 +1,12 @@
 {
+  "base": "86c1029",
   "sourceHashes": {
-    "docs/WEDGE-PLOT-PROVENANCE.json": "a934ed34411fbc1fb4f46a9c90b2197679c18abcf5299ee35a8c8a6d59656784",
-    "docs/WEDGE-PLOT.md": "f9b72495960fe7596b754003e6dba51b52bed1842605d009002d2a7875dc0674",
+    "docs/WEDGE-PLOT-PROVENANCE.json": "cbc3d8ed6f4348e5fb3e46a6c9c617d04bc59d428f79b67e37ab14d91a508595",
+    "docs/WEDGE-PLOT.md": "56ea586bfe4ffa80a1877fa194fa2af5389c4c45ba76c4f9ed49ca2610fb24e4",
     "src/components/Wedge.css": "25c018bc042fe458889ab0ccbd04927d7ad59213846f833d1e1f3179af00327d",
-    "src/components/WedgeLab.tsx": "d78e4b9fc2f9d11ee6904c477d18c4280e5149802d15d593d229881b3aa9464a",
-    "src/components/WedgeMessages.test.ts": "1b404eadb4f09b4dc3b1a9266d244d80756c4dc84d5eed78f80abc768c723f17",
-    "src/components/WedgeMessages.ts": "215fa496ecdc5af140987fddf284dc18d0f40bf7acb77771495c411198df6297",
+    "src/components/WedgeLab.tsx": "8f440c2313afdf27901115ae5f97e346faaf204abb6795739302684a4ae36d51",
+    "src/components/WedgeMessages.test.ts": "9556235af38275c696a4ab8bcfd7cb55374e0e5326a242de0d5f5bda3f3a1243",
+    "src/components/WedgeMessages.ts": "619d8564244b1fe714b38bbd41141545f45fb4a04c751e373c95b987218c9d07",
     "src/components/WedgeOptionsDialog.tsx": "a96ce6f5f09f23cec683621b96a3b2904113a103e8a2e486d393edf1239ae674",
     "src/components/WedgePlotSvg.tsx": "22b5a21d2bccacaa5d8d0dc0498883f1461738bff493fe8e0df33f8c7d26469f",
     "src/core/wedgeExport.ts": "2be4d39d052b0038bedd358d45e014ea4f84e39494f3c94bf2ded688eed3d43e",
@@ -21,47 +22,90 @@
     "src/core/wedgeWorkspace.test.ts": "abfcf8304cdbe5d7c5f779ba524615370a4759fbd31d9bce7fc193cc5b229fe7",
     "src/core/wedgeWorkspace.ts": "4887bf3a8a5ee3f8fe5fb062e8f37d4a10ad433a69c47a7c52d179d42bd80f8d",
     "src/io/wedgeLssFile.ts": "3af1e98ca95cc87330ba2dbaf96aae60d6549429b56cfe789a443f5f0c1445ad",
-    "tests/wedge-lss.spec.ts": "e184707c3162d49db607c7fddd3d0baa6a43217cd2fcc74ea48716ff7eb423a9",
-    "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed"
+    "tests/wedge-lss.spec.ts": "8064f2d470ccead8750b9eb45cb3056c0880ebcef6f547b5afa4cbbdba16ca12",
+    "src/i18n/coverage.test.ts": "0f9bca91bddacf8c01548c21b519f73b7c5dc7781f388ef805fd2246b412dfed",
+    "tests/wedge-focus.spec.ts": "1c33a4a6c4911628d47881f5415fb0c93e42cbd67e0a6fd2dd88938069fc2ac5",
+    "tests/wedge-prompt-focus.spec.ts": "0a1621624802760d525dccacce9119812ad6a4e03f61ea886765e5bccb0074a6"
   },
-  "productSourceStableAcrossValidationRuns": true,
-  "testReadinessCorrection": "Existing keyboard-Yes test now awaits actual promptfocus;initial31/32andtracepreserved,final32/32;no productchange/timeoutraise/assertionremoval",
+  "sourceStableDuringIndependentValidation": true,
   "unitTests": {
-    "passed": 1798,
+    "passed": 1799,
     "failed": 0,
-    "files": 179
+    "files": 179,
+    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/host-focus/unit-report.json"
   },
   "e2e": {
-    "startTime": "2026-10-21T22:32:07.580Z",
-    "duration": 30293.259,
-    "expected": 32,
-    "skipped": 0,
-    "unexpected": 0,
-    "flaky": 0
+    "passed": 64,
+    "failed": 0,
+    "stats": {
+      "startTime": "2026-10-22T01:15:08.864Z",
+      "duration": 31491.222,
+      "expected": 64,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "report": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/host-focus/browser-report.json"
   },
-  "independentUiReproductions": {
-    "startTime": "2026-10-21T22:31:30.024Z",
-    "duration": 4067.7610000000004,
-    "expected": 6,
-    "skipped": 0,
-    "unexpected": 0,
-    "flaky": 0
+  "independentPromptFocus": {
+    "passed": 4,
+    "failed": 0,
+    "scope": "4boundarycases included in full64;notadditionalruns",
+    "baseline": {
+      "startTime": "2026-10-22T01:13:57.237Z",
+      "duration": 13420.223,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 2,
+      "flaky": 0
+    },
+    "baselineControl": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/host-focus/baseline-receipt.json"
   },
-  "buildTypecheck": "npm run build -- --configLoader runner --outDir /tmp/openvireo-wedge-codex-corrections-2;exit0",
-  "resources": "1279/1279 size/SHA256 match",
-  "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3",
-  "preFixEvidence": [
-    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-review-triage/ui-report.json",
-    "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-correction-triage/pre-report.json"
+  "checks": [
+    {
+      "check": "unit",
+      "exitCode": 0
+    },
+    {
+      "check": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "check": "build",
+      "exitCode": 0
+    },
+    {
+      "check": "browser",
+      "exitCode": 0
+    }
   ],
-  "priorValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/corrections-1/receipt.json",
-  "scope": "UI focus after first read and Escape from active panel,one missing separator space,unit suffix contract;no parser/numerical/CSV/data schema changes",
-  "authorship": "Claude initial+first corrections;Codex final scoped UI correction after additional Claude author launch denied before execution,not retried",
-  "status": "Validated local candidate;separate final correction delta review and integration pending",
-  "scientificLimits": [
-    "No MJD numeric metadata constructed from historical hostcontext",
-    "No live LSSacquisition/groupAutoPlot/nativewriter/printing",
-    "Number trigonometry and declaredbinary32/Extendedpolicy are not runtime FPU/GDIequivalence",
-    "Window-local workspace not Saveinvestigation;raw data rows and SHAreceipt retained,not a byte-identical original-file writer"
+  "scientificSourcesUnchanged": [
+    "src/core/wedgeExport.ts",
+    "src/core/wedgeLssText.test.ts",
+    "src/core/wedgeLssText.ts",
+    "src/core/wedgeNativeText.ts",
+    "src/core/wedgeNumeric.test.ts",
+    "src/core/wedgeNumeric.ts",
+    "src/core/wedgePlot.test.ts",
+    "src/core/wedgePlot.ts",
+    "src/core/wedgeProvenance.test.ts",
+    "src/core/wedgeUiAudit.test.ts",
+    "src/core/wedgeWorkspace.test.ts",
+    "src/core/wedgeWorkspace.ts",
+    "src/io/wedgeLssFile.ts"
+  ],
+  "review": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-wedge-analysis/review-host-focus-readonly-completed/receipt.json",
+  "documentationCorrection": "Codex clarified90fullfilepre vs80boundarypairpost populations;no source/test changes after completedreview",
+  "visualInspection": "Codex inspected newrun desktop velocity wedge/rowdetails and mobile Options with disabled backgroundinput;DOM layout only,noAT/nativepixelparity",
+  "scope": "localcandidate not promoted;integrationreview and broadregression required",
+  "reviewScope": "All code/tests reviewed in completed immutable patch99794586...;Codex documentation population clarification is reserved for integrationreview",
+  "resources": "Build confirmed1279/1279 size andSHA256",
+  "authorDelivery": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-wedge-analysis/correction-host-focus-resume/DELIVERY.md",
+  "priorValidation": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/wedge-independent/final-a11y/receipt.json",
+  "scienceLimits": [
+    "No liveacquisition/nativewriter/calendar reconstructed",
+    "DeclaredNumber/Single/Extended policy is notnativeFPUwitness",
+    "OnlyChromiumDOM/manualsupplieddata controls;noAT/GDI/Windowsparity",
+    "Windowlocalworkspaces excludedfromSaveinvestigation"
   ]
 }
