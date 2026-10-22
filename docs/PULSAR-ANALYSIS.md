@@ -10,7 +10,7 @@ This slice ports the original **Radio Pulsar Data Analysis** window (`TPlsrAnaly
 6. Record measurements into an in-app list, review them in the original working-copy transaction with confirmed Delete, and clear the list.
 7. Download the original recording bytes and import them again.
 
-It does **not** receive signals, model receivers or noise, use the pulsar catalog, or compute period, PDot or dispersion. It also does not claim I06, I07, N07 or E06 acceptance. All 64 primary acceptance statuses stay unchanged.
+It does **not** receive signals, model receivers or noise, use the pulsar catalog, or compute period, PDot or dispersion. It also does not claim I06, I07, N07 or E06 acceptance. All 64 primary acceptance statuses (the 58 functional packages plus the 6 quality items) stay unchanged.
 
 Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and gates, are in [PULSAR-ANALYSIS-PROVENANCE.json](PULSAR-ANALYSIS-PROVENANCE.json). Artifact: VIREO 1.504 `CLEA_VEO.exe`, SHA-256 `781bc970…c54c`.
 
@@ -112,7 +112,8 @@ Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and ga
   - An empty working copy has selection "none" (`null`). For a non-empty list the first row is selected, as the source does.
   - Escape and a close request act one layer at a time: No on the delete question, dismiss on the notice, otherwise outer Cancel. Natively `CnclBtn` has no Cancel property, a Yes/No MessageBox has no Escape answer, and the window close button is not modelled.
   - The delete question focuses No. The native flags `0x24` make Yes the default button; the web asks for an explicit Yes instead. Focus returns to Delete when the question or notice closes, and to the Review button when Review closes.
-  - Initial focus is the selected row, or Cancel when the list is empty. Rows are a radio group (browser arrow keys, which wrap). Tab follows the document order (rows, Delete, Ok, Cancel), not the native TabOrder, and the `&` accelerators are not implemented.
+  - Initial focus is the selected row, or Cancel when the list is empty. Rows are a radio group (browser arrow keys, which wrap). Tab follows the document order (the "Measurements" scroll region, the selected row, Delete, Ok, Cancel), not the native TabOrder, and the `&` accelerators are not implemented. The scroll region is a named Tab stop inside the dialog's Tab wrap, so arrow keys there scroll the wide table without changing the selected row; it leaves the Tab order while the inner question or notice is open.
+  - Review is unavailable while a chosen file is being read (its contents or SHA-256). Opening the modal would make the finished read's load be refused, silently dropping the chosen file. The read completes, or the learner cancels it with Cancel reading; Review is usable again after a cancel or a read error.
   - Whether the original re-runs its OnActivate handler (re-assigning the confirmed list over a staged deletion) when the dialog is reactivated after the delete MessageBox is a VCL runtime question these captures do not answer. The web keeps the staged copy.
   - Download of the original recording bytes stays outside the dialog and is unchanged.
 - **Host activity.** `active={false}` makes the panel inert. Hosts that hide the panel with CSS or an inert ancestor must pass `active={false}` for that whole interval; arbitrary ancestor styles are not observed. It cancels an in-flight read, so a late read is discarded, and it stops a held pan. It closes an open record, clear or Review dialog but keeps the record session, its draft, the clear stage and the Review working copy, selection and inner question, which reopen when the panel is active again. The loaded bytes and confirmed measurements are kept.

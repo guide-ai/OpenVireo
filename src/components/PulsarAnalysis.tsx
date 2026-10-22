@@ -29,17 +29,17 @@ export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPref
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
 /**
  * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, one
- * text input and Review's row radios. Controls under an `inert` wrapper (Review while its question is open)
- * are skipped, and a radio group contributes only its checked radio (or its first one), as the browser does.
+ * text input, Review's row radios and Review's `tabIndex={0}` scroll region. Controls under an `inert`
+ * wrapper (Review while its question is open) are skipped, and a radio group contributes only its checked
+ * radio (or its first one), as the browser does.
  */
 function tabbables(dialog: HTMLElement): HTMLElement[] {
-  const all = [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled)')].filter(el => !el.closest('[inert]'));
+  const all = [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])')].filter(el => !el.closest('[inert]'));
   const radio = (el: HTMLElement): el is HTMLInputElement => el instanceof HTMLInputElement && el.type === 'radio' && el.name !== '';
-  return all.filter(el => {
-    if (!radio(el)) return true;
-    const group = all.filter((o): o is HTMLInputElement => radio(o) && o.name === el.name);
-    return el === (group.find(o => o.checked) ?? group[0]);
-  });
+  // One pass: each group's stop is its first checked radio, else its first radio.
+  const stop = new Map<string, HTMLInputElement>();
+  for (const el of all) if (radio(el)) { const at = stop.get(el.name); if (!at || (el.checked && !at.checked)) stop.set(el.name, el); }
+  return all.filter(el => !radio(el) || stop.get(el.name) === el);
 }
 // Native GDI colors (TColor $00BBGGRR) used by 0x56bacc, 0x56c028, 0x56c448 and 0x56c6dc.
 const COLOR = { background: '#000080', axis: '#ffff00', trace: '#ffffff', vertical: '#00ffff', reference: '#00ff00', horizontal: '#ff00ff' };
@@ -365,7 +365,9 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
               <h3 id={`${idPrefix}results`}>{t('pulsar.results.heading')}</h3>
               <div className="plr-row">
                 <button type="button" ref={recordButton} onClick={() => act(st => pulsarBeginRecord(st))} disabled={!s.recordEnabled} data-testid="pulsar-record">{t('pulsar.results.record')}</button>
-                <button type="button" ref={reviewButton} onClick={() => act(pulsarReviewOpen)} disabled={!s.reviewEnabled} aria-haspopup="dialog" data-testid="pulsar-review">{t('pulsar.results.review')}</button>
+                {/* WEB: Review is modal and a modal blocks the load, so it stays unavailable while a chosen file is being
+                    read; the read completes or the learner cancels it. */}
+                <button type="button" ref={reviewButton} onClick={() => act(pulsarReviewOpen)} disabled={!s.reviewEnabled || reading !== null} aria-haspopup="dialog" data-testid="pulsar-review">{t('pulsar.results.review')}</button>
                 <button type="button" ref={clearButton} onClick={() => act(st => pulsarRequestClear(st))} data-testid="pulsar-clear">{t('pulsar.results.clear')}</button>
                 <button type="button" disabled aria-describedby={`${idPrefix}save-gated`} data-testid="pulsar-save">{t('pulsar.results.save')}</button>
               </div>
@@ -552,7 +554,8 @@ function Review({ session, t, idPrefix, act, finish, refs }: ReviewProps) {
         <h3 id={`${idPrefix}review-heading`}>{t('pulsar.review.heading')}</h3>
         <p className="plr-help">{t('pulsar.review.note')}</p>
         {draft.length === 0 ? <p data-testid="pulsar-review-empty">{t('pulsar.review.empty')}</p> : (
-          <div className="plr-scroll" role="group" aria-label={t('pulsar.review.list')}>
+          // WEB: the scroll region is a Tab stop, so arrow keys can scroll the wide table without moving the row radios.
+          <div className="plr-scroll" role="region" tabIndex={0} aria-label={t('pulsar.review.list')} data-testid="pulsar-review-scroll">
             <table className="plr-table">
               <thead><tr><th scope="col">{t('pulsar.review.select')}</th>{(['seq', 'panel', 'object', 'frequency', 'gain', 'reference', 'vertical', 'horizontal', 'start', 'comment', 'points', 'interval', 'aperture', 'file'] as const).map(k => <th key={k} scope="col">{t(`pulsar.review.${k}`)}</th>)}</tr></thead>
               <tbody>{draft.map((e, i) => (

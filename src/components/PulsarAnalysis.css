@@ -49,6 +49,7 @@
 .plr-modal input{font:inherit;min-height:2.5rem;width:100%}
 .plr-review{width:min(72rem,calc(100% - 2rem))}
 .plr-review .plr-scroll{max-height:min(22rem,50vh);overflow:auto}
+.plr-review .plr-scroll:focus-visible{outline-offset:-3px}
 .plr-review .plr-table{margin:0}
 .plr-review tbody tr{cursor:pointer}
 .plr-review .plr-selected{background:Highlight;color:HighlightText}
