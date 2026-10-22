@@ -1,6 +1,7 @@
 import type{WedgeParseFailure}from'../core/wedgeLssText';
 import{WEDGE_NATIVE_TEXT as N}from'../core/wedgeNativeText';
 import type{WedgePlotStatus}from'../core/wedgePlot';
+import type{WedgeWorkspace}from'../core/wedgeWorkspace';
 /** Presentation catalog for the LSS wedge panel, keyed and pure so a later
  * coordinator merge can move it into the shared i18n catalog. Every value is typed
  * as a plain string/function/tuple (not the English literal), so translations
@@ -30,6 +31,8 @@ export type WedgeMessageCatalog=Readonly<{
  loadLabel:string;loadHelp:string;separatorLabel:string;separatorPoint:string;separatorComma:string;
  reading:(name:string)=>string;cancelRead:string;exportCsv:string;exportNote:string;dismiss:string;
  statusEmpty:string;statusLoaded:(records:number,files:number)=>string;
+ /** Appended to the live status while inline import consent waits; `caption` is the translated prompt caption. */
+ awaitingAnswer:(caption:string)=>string;
  figureLabel:string;notDrawn:(n:number)=>string;outside:(n:number)=>string;presentationNote:string;
  schemeLabel:string;schemes:readonly[string,string];schemeHelp:string;tableCaption:string;
  columns:Readonly<Record<ColumnKey,string>>;selectRow:(id:string,i:number)=>string;
@@ -69,6 +72,7 @@ export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  dismiss:'Dismiss',
  statusEmpty:'No LSS data loaded.',
  statusLoaded:(records:number,files:number)=>`${records} record${records===1?'':'s'} from ${files} file${files===1?'':'s'}.`,
+ awaitingAnswer:(caption:string)=>`Import question waiting for your answer: ${caption} Loading, plotting and options are unavailable until it is answered.`,
  figureLabel:'LSS wedge diagram: right ascension 12h to 16h, radius proportional to redshift',
  notDrawn:(n:number)=>`${n} record${n===1?' is':'s are'} not plotted because a field could not be read as the original would (see table).`,
  outside:(n:number)=>`${n} admitted point${n===1?' lies':'s lie'} outside the 550 × 550 drawing area.`,
@@ -136,4 +140,15 @@ export function wedgeMessages(overrides?:WedgeMessageOverrides):WedgeMessageCata
   }else if(sameShape(base,value))out[key]=value;
  }
  return Object.freeze(out)as WedgeMessageCatalog;
+}
+
+/** Text of the panel's polite live status. A visible inline import question is named here
+ * too: role=alertdialog is not a live region, and the question must not take focus a user
+ * deliberately placed elsewhere. `askPending` is false while the host disables the panel
+ * (the prompt is not shown then). Web accessibility wording, not an original string. */
+export function wedgeStatusText(w:Pick<WedgeWorkspace,'reading'|'pending'|'records'|'receipts'>,m:WedgeMessageCatalog,askPending=true):string{
+ if(w.reading)return m.reading(w.reading.name);
+ const base=w.records.length||w.receipts.length?m.statusLoaded(w.records.length,w.receipts.length):m.statusEmpty;
+ if(!w.pending||!askPending)return base;
+ return base+' '+m.awaitingAnswer(w.pending.stage==='retain'?m.native.retainCaption:m.native.deleteCaption);
 }

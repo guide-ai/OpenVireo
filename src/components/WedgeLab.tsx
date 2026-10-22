@@ -6,7 +6,7 @@ import{wedgeBitsHex,wedgeSingleExact}from'../core/wedgeNumeric';
 import{WEDGE_COLOUR_SCHEMES,wedgePlot,type WedgeColourScheme,type WedgePoint}from'../core/wedgePlot';
 import{EMPTY_WEDGE_WORKSPACE,addWedgePending,beginWedgeRead,cancelWedgeOptions,cancelWedgePending,cancelWedgeRead,clearWedgePending,commitWedgeOptions,completeWedgeRead,confirmWedgeDelete,dismissWedgeNotice,editWedgeOptions,failWedgeRead,openWedgeOptions,plotWedgeData,requestWedgeLoad,selectWedgeRecord,setWedgeSeparator,suspendWedgeWorkspace,type WedgeNotice,type WedgeWorkspace}from'../core/wedgeWorkspace';
 import{WedgeFileError,downloadWedgeText,readWedgeLssFile}from'../io/wedgeLssFile';
-import{wedgeMessages,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
+import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
 import WedgeOptionsDialog from'./WedgeOptionsDialog';
 import WedgePlotSvg from'./WedgePlotSvg';
 
@@ -52,18 +52,24 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const readViewport=useRef({x:0,y:0});
  const plot=useMemo(()=>wedgePlot(w.records,w.options),[w.records,w.options]);
  const busy=disabled||w.reading!==null||w.pending!==null;
+ /** The aria-modal Options dialog makes the rest of the panel inert and refuses new imports,
+  * so a read, and therefore import consent, can never start underneath it. */
+ const modal=w.optionsDraft!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.
  useLayoutEffect(()=>{if(disabled){refocusFile.current=null;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
  useEffect(()=>()=>{abort.current?.abort();},[]);
- // A new inline question announces completion without overriding a deliberate focus move.
+ // A new inline question is announced by the live status (wedgeStatusText) without
+ // overriding a deliberate focus move; with focus lost it also takes focus.
  // An explicit retain→confirm action can move focus between the prompt's own buttons.
  useEffect(()=>{
   const button=promptButton.current,a=document.activeElement;
   if(!w.pending||disabled||!button||button.getClientRects().length===0)return;
   const prompt=button.closest('[role="alertdialog"]');
-  if(a&&a!==document.body&&a!==fileInput.current&&!prompt?.contains(a))return;
+  // A control the read itself disabled (e.g. Options after OK) is not a deliberate focus,
+  // even if the browser has not blurred it yet when a fast read completes.
+  if(a&&a!==document.body&&a!==fileInput.current&&!prompt?.contains(a)&&!a.matches(':disabled'))return;
   // Reveal a normal completed question, but preserve a viewport deliberately moved during the read.
   const moved=window.scrollX!==readViewport.current.x||window.scrollY!==readViewport.current.y;
   button.focus({preventScroll:refocusFile.current!=='read'||moved});
@@ -88,7 +94,8 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const promptKey=(e:KeyboardEvent)=>{if(e.defaultPrevented||e.key!=='Escape'||!w.pending)return;e.preventDefault();e.stopPropagation();answer(w.pending.stage==='retain'?cancelWedgePending:c=>confirmWedgeDelete(c,false));};
 
  async function onFile(e:ChangeEvent<HTMLInputElement>){
-  const file=e.target.files?.[0];e.target.value='';if(!file||busy)return;
+  // A change event that still reaches the disabled input under Options (scripted) is dropped.
+  const file=e.target.files?.[0];e.target.value='';if(!file||busy||modal)return;
   let refused:WedgeWorkspace|null;try{refused=requestWedgeLoad(w,file.name);}catch{return;}
   if(refused){setW(refused);return;}
   const t=++token.current;abort.current?.abort();const ctrl=new AbortController();abort.current=ctrl;
@@ -100,11 +107,13 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   finally{if(abort.current===ctrl)abort.current=null;}
  }
  const cancelRead=()=>{abort.current?.abort();abort.current=null;refocusFile.current='answer';setW(cancelWedgeRead);};
+ // Options opens only when no read or consent is pending, and imports are refused while it is
+ // open, so closing it returns focus to Options (unless focus was deliberately moved).
  const closeOptions=(commit:boolean)=>{
   act(commit?commitWedgeOptions:cancelWedgeOptions);
   requestAnimationFrame(()=>{
    if(document.activeElement!==document.body)return;
-   const target=promptButton.current??optionsButton.current;
+   const target=optionsButton.current;
    if(target&&!target.disabled&&target.isConnected&&target.getClientRects().length>0)target.focus({preventScroll:true});
   });
  };
@@ -114,102 +123,104 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const id=(s:string)=>idPrefix+s;
 
  return <section ref={root} className="wedge-lab" aria-labelledby={id('title')} aria-disabled={disabled||undefined} data-testid="wedge-lab" onKeyDown={promptKey}>
-  <h2 id={id('title')}>{C.windowCaption}</h2>
-  <p>{m.intro}</p>
-  <p className="wedge-persistence" role="note" data-testid="wedge-persistence">{m.persistenceNote}</p>
-  <div className="wedge-toolbar">
-   <div className="wedge-field">
-    <label htmlFor={id('file')}>{m.loadLabel}</label>
-    <input ref={fileInput} id={id('file')} type="file" accept=".txt,.TXT,text/plain" disabled={busy} onChange={e=>{void onFile(e);}} aria-describedby={id('file-help')} data-testid="wedge-file"/>
-    <p id={id('file-help')} className="wedge-note">{m.loadHelp}</p>
+  <div inert={modal||undefined} data-testid="wedge-content">
+   <h2 id={id('title')}>{C.windowCaption}</h2>
+   <p>{m.intro}</p>
+   <p className="wedge-persistence" role="note" data-testid="wedge-persistence">{m.persistenceNote}</p>
+   <div className="wedge-toolbar">
+    <div className="wedge-field">
+     <label htmlFor={id('file')}>{m.loadLabel}</label>
+     <input ref={fileInput} id={id('file')} type="file" accept=".txt,.TXT,text/plain" disabled={busy||modal} onChange={e=>{void onFile(e);}} aria-describedby={id('file-help')} data-testid="wedge-file"/>
+     <p id={id('file-help')} className="wedge-note">{m.loadHelp}</p>
+    </div>
+    <div className="wedge-field">
+     <label htmlFor={id('sep')}>{m.separatorLabel}</label>
+     <select id={id('sep')} value={w.separator} disabled={busy} onChange={e=>safe(c=>setWedgeSeparator(c,e.target.value==='.'?'.':','))} data-testid="wedge-separator">
+      <option value=".">{m.separatorPoint}</option><option value=",">{m.separatorComma}</option>
+     </select>
+    </div>
+    <div className="wedge-field">
+     <label htmlFor={id('scheme')}>{m.schemeLabel}</label>
+     <select id={id('scheme')} value={scheme} disabled={disabled} onChange={e=>setScheme(e.target.value==='1'?1:0)} aria-describedby={id('scheme-help')} data-testid="wedge-scheme">
+      {m.schemes.map((label,i)=><option key={i} value={i}>{label}</option>)}
+     </select>
+     <p id={id('scheme-help')} className="wedge-note">{m.schemeHelp}</p>
+    </div>
+    <div className="wedge-actions">
+     <button type="button" className="primary-button" disabled={busy} onClick={()=>act(plotWedgeData)} data-testid="wedge-plot-data">{C.menuPlotData}</button>
+     <button ref={optionsButton} type="button" disabled={busy} onClick={()=>act(openWedgeOptions)} title={m.optionsButtonHelp} data-testid="wedge-options-open">{C.menuOptions}</button>
+     <button type="button" disabled={busy||w.records.length===0} onClick={()=>downloadWedgeText('openvireo-lss-wedge-points.csv',wedgeCsv(w.records,w.receipts,w.options))} aria-describedby={id('export-note')} data-testid="wedge-export">{m.exportCsv}</button>
+    </div>
    </div>
-   <div className="wedge-field">
-    <label htmlFor={id('sep')}>{m.separatorLabel}</label>
-    <select id={id('sep')} value={w.separator} disabled={busy} onChange={e=>safe(c=>setWedgeSeparator(c,e.target.value==='.'?'.':','))} data-testid="wedge-separator">
-     <option value=".">{m.separatorPoint}</option><option value=",">{m.separatorComma}</option>
-    </select>
+   <p id={id('export-note')} className="wedge-note">{m.exportNote}</p>
+   <p role="status" aria-live="polite" className="wedge-status" data-testid="wedge-status">{wedgeStatusText(w,m,!disabled)}</p>
+   {w.reading&&!disabled?<button type="button" onClick={cancelRead} data-testid="wedge-cancel-read">{m.cancelRead}</button>:null}
+   {w.pending&&!disabled?<div className="wedge-prompt" role="alertdialog" aria-labelledby={id('prompt-title')} aria-describedby={id('prompt-text')} data-testid="wedge-prompt" data-stage={w.pending.stage}>
+    <h3 id={id('prompt-title')}>{w.pending.stage==='retain'?C.retainCaption:C.deleteCaption}</h3>
+    <p id={id('prompt-text')} className="wedge-pre">{w.pending.stage==='retain'?C.retainText:C.deleteText}</p>
+    <p className="wedge-note"><code>{w.pending.name}</code> · {m.sha256} <code>{w.pending.sha256}</code> · {m.rowCount(w.pending.file.rows.length)}</p>
+    <div className="wedge-actions">{w.pending.stage==='retain'?<>
+      <button ref={promptButton} type="button" disabled={disabled} onClick={()=>answer(addWedgePending)} data-testid="wedge-prompt-yes">{C.yes}</button>
+      <button type="button" disabled={disabled} onClick={()=>answer(clearWedgePending)} data-testid="wedge-prompt-no">{C.no}</button>
+      <button type="button" disabled={disabled} onClick={()=>answer(cancelWedgePending)} data-testid="wedge-prompt-cancel">{C.cancel}</button></>:<>
+      <button ref={promptButton} type="button" disabled={disabled} onClick={()=>answer(c=>confirmWedgeDelete(c,true))} data-testid="wedge-prompt-yes">{C.yes}</button>
+      <button type="button" disabled={disabled} onClick={()=>answer(c=>confirmWedgeDelete(c,false))} data-testid="wedge-prompt-no">{C.no}</button></>}
+    </div>
+   </div>:null}
+   {lines.length?<div className={'wedge-notice'+(w.notice?.kind==='loaded'?' ok':'')} role={w.notice?.kind==='loaded'?'status':'alert'} data-testid="wedge-notice" data-kind={w.notice?.kind} data-cause={w.notice?.kind==='not-loaded'?w.notice.cause:undefined}>
+    {lines.map((l,i)=><p key={i}><strong>{l.caption}</strong> {l.text}</p>)}
+    <button type="button" className="wedge-small" disabled={disabled} onClick={()=>act(dismissWedgeNotice)} data-testid="wedge-notice-dismiss">{m.dismiss}</button>
+   </div>:null}
+   <div className="wedge-body">
+    <figure className="wedge-figure">
+     <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[scheme]} selected={w.selected} label={m.figureLabel} onSelect={i=>select(i)} idPrefix={idPrefix}/>
+     <figcaption className="wedge-note">
+      {plot.excluded?<span data-testid="wedge-excluded">{m.notDrawn(plot.excluded)} </span>:null}
+      {plot.admitted-plot.drawn?<span data-testid="wedge-outside">{m.outside(plot.admitted-plot.drawn)} </span>:null}
+      {m.presentationNote}
+     </figcaption>
+    </figure>
+    <div className="wedge-side">
+     <h3>{m.detailsHeading}</h3>
+     {sel?<dl className="wedge-details" data-testid="wedge-details">
+      <dt>{m.columns.object}</dt><dd>{sel.objectId||'—'}</dd>
+      <dt>{m.detail.raw}</dt><dd><code className="wedge-pre">{sel.raw}</code></dd>
+      <dt>{m.detail.source}</dt><dd>{w.receipts[sel.source]?.name} · {m.detail.line} {sel.line}</dd>
+      <dt>{m.detail.ra}</dt><dd>{sel.raRaw||'—'} → {raCell(sel,m)}</dd>
+      <dt>{m.detail.dec}</dt><dd>{sel.decRaw||'—'} → {decCell(sel,m)}{sel.dec.status==='value'&&sel.dec.signLost?<> <em>{m.signLost}</em></>:null}</dd>
+      {sel.redshift.status==='value'?<>
+       <dt>{m.detail.velocity}</dt><dd>{wedgeSingleExact(sel.redshift.velocity)} {m.detail.kmPerS} <code>{wedgeBitsHex(sel.redshift.velocity)}</code></dd>
+       <dt>{m.detail.z}</dt><dd>{wedgeSingleExact(sel.redshift.z)} <code>{wedgeBitsHex(sel.redshift.z)}</code></dd>
+       <dt>{m.detail.derived}</dt><dd>{m.derivedFrom[sel.redshift.source]}</dd></>:<><dt>{m.detail.redshift}</dt><dd>{sel.redshiftRaw||'—'} → {m.fieldStatus[sel.redshift.status]}</dd></>}
+      {selPoint&&selPoint.thetaDegrees!==null?<><dt>{m.detail.theta}</dt><dd>{fmt(selPoint.thetaDegrees,4)}{m.detail.degrees}</dd></>:null}
+      {selPoint&&selPoint.radiusPx!==null?<><dt>{m.detail.radius}</dt><dd>{fmt(selPoint.radiusPx,4)} {m.detail.px}</dd></>:null}
+      {selPoint&&selPoint.cx!==null?<><dt>{m.detail.pixel}</dt><dd data-testid="wedge-detail-pixel">{selPoint.cx}, {selPoint.cy}{selPoint.boundary?' · '+m.boundary:''}</dd></>:null}
+      <dt>{m.columns.status}</dt><dd>{selPoint?m.plotStatus[selPoint.status]:''}</dd>
+     </dl>:<p className="wedge-note">{m.detailsNone}</p>}
+    </div>
    </div>
-   <div className="wedge-field">
-    <label htmlFor={id('scheme')}>{m.schemeLabel}</label>
-    <select id={id('scheme')} value={scheme} disabled={disabled} onChange={e=>setScheme(e.target.value==='1'?1:0)} aria-describedby={id('scheme-help')} data-testid="wedge-scheme">
-     {m.schemes.map((label,i)=><option key={i} value={i}>{label}</option>)}
-    </select>
-    <p id={id('scheme-help')} className="wedge-note">{m.schemeHelp}</p>
+   <div className="wedge-table-wrap">
+    <table className="wedge-table" data-testid="wedge-table">
+     <caption>{m.tableCaption}</caption>
+     <thead><tr>{(['index','object','mjd','ra','dec','velocity','z','comment','status']as const).map(k=><th key={k} scope="col">{m.columns[k]}</th>)}</tr></thead>
+     <tbody>{w.records.map((r,i)=>{const p=plot.points[i];return <tr key={i} className={i===w.selected?'selected':undefined} data-testid={'wedge-row-'+i}>
+      <td><button type="button" className="wedge-small" disabled={disabled} aria-pressed={i===w.selected} aria-label={m.selectRow(r.objectId,i+1)} onClick={()=>select(i===w.selected?null:i)}>{i+1}</button></td>
+      <td>{r.objectId}</td><td>{r.mjdRaw}</td><td>{raCell(r,m)}</td><td>{decCell(r,m)}</td>
+      <td>{r.redshift.status==='value'?fmt(r.redshift.velocity.value,2):m.fieldStatus[r.redshift.status]}</td>
+      <td>{r.redshift.status==='value'?fmt(r.redshift.z.value,6):''}</td>
+      <td>{r.comment??''}</td><td data-status={p.status}>{m.plotStatus[p.status]}{p.boundary?' · '+m.boundary:''}</td>
+     </tr>;})}</tbody>
+    </table>
    </div>
-   <div className="wedge-actions">
-    <button type="button" className="primary-button" disabled={busy} onClick={()=>act(plotWedgeData)} data-testid="wedge-plot-data">{C.menuPlotData}</button>
-    <button ref={optionsButton} type="button" disabled={busy} onClick={()=>act(openWedgeOptions)} title={m.optionsButtonHelp} data-testid="wedge-options-open">{C.menuOptions}</button>
-    <button type="button" disabled={busy||w.records.length===0} onClick={()=>downloadWedgeText('openvireo-lss-wedge-points.csv',wedgeCsv(w.records,w.receipts,w.options))} aria-describedby={id('export-note')} data-testid="wedge-export">{m.exportCsv}</button>
-   </div>
+   <details className="wedge-details-block">
+    <summary>{m.sourcesHeading} ({w.receipts.length})</summary>
+    <ul data-testid="wedge-sources">{w.receipts.map((s,i)=><li key={i}><code>{s.name}</code> · {m.rowCount(s.rows)} · {m.sourceAction[s.action]} · {s.hasZ?m.sourceColumn.z:m.sourceColumn.velocity} · “{s.separator}” · {m.sha256} <code>{s.sha256}</code></li>)}</ul>
+   </details>
+   <details className="wedge-details-block">
+    <summary>{m.aboutHeading}</summary>
+    <ul>{m.about.map((t,i)=><li key={i}>{t}</li>)}</ul>
+   </details>
   </div>
-  <p id={id('export-note')} className="wedge-note">{m.exportNote}</p>
-  <p role="status" aria-live="polite" className="wedge-status" data-testid="wedge-status">{w.reading?m.reading(w.reading.name):w.records.length||w.receipts.length?m.statusLoaded(w.records.length,w.receipts.length):m.statusEmpty}</p>
-  {w.reading&&!disabled?<button type="button" onClick={cancelRead} data-testid="wedge-cancel-read">{m.cancelRead}</button>:null}
-  {w.pending&&!disabled?<div className="wedge-prompt" role="alertdialog" aria-labelledby={id('prompt-title')} aria-describedby={id('prompt-text')} data-testid="wedge-prompt" data-stage={w.pending.stage}>
-   <h3 id={id('prompt-title')}>{w.pending.stage==='retain'?C.retainCaption:C.deleteCaption}</h3>
-   <p id={id('prompt-text')} className="wedge-pre">{w.pending.stage==='retain'?C.retainText:C.deleteText}</p>
-   <p className="wedge-note"><code>{w.pending.name}</code> · {m.sha256} <code>{w.pending.sha256}</code> · {m.rowCount(w.pending.file.rows.length)}</p>
-   <div className="wedge-actions">{w.pending.stage==='retain'?<>
-     <button ref={promptButton} type="button" disabled={disabled} onClick={()=>answer(addWedgePending)} data-testid="wedge-prompt-yes">{C.yes}</button>
-     <button type="button" disabled={disabled} onClick={()=>answer(clearWedgePending)} data-testid="wedge-prompt-no">{C.no}</button>
-     <button type="button" disabled={disabled} onClick={()=>answer(cancelWedgePending)} data-testid="wedge-prompt-cancel">{C.cancel}</button></>:<>
-     <button ref={promptButton} type="button" disabled={disabled} onClick={()=>answer(c=>confirmWedgeDelete(c,true))} data-testid="wedge-prompt-yes">{C.yes}</button>
-     <button type="button" disabled={disabled} onClick={()=>answer(c=>confirmWedgeDelete(c,false))} data-testid="wedge-prompt-no">{C.no}</button></>}
-   </div>
-  </div>:null}
-  {lines.length?<div className={'wedge-notice'+(w.notice?.kind==='loaded'?' ok':'')} role={w.notice?.kind==='loaded'?'status':'alert'} data-testid="wedge-notice" data-kind={w.notice?.kind} data-cause={w.notice?.kind==='not-loaded'?w.notice.cause:undefined}>
-   {lines.map((l,i)=><p key={i}><strong>{l.caption}</strong> {l.text}</p>)}
-   <button type="button" className="wedge-small" disabled={disabled} onClick={()=>act(dismissWedgeNotice)} data-testid="wedge-notice-dismiss">{m.dismiss}</button>
-  </div>:null}
-  <div className="wedge-body">
-   <figure className="wedge-figure">
-    <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[scheme]} selected={w.selected} label={m.figureLabel} onSelect={i=>select(i)} idPrefix={idPrefix}/>
-    <figcaption className="wedge-note">
-     {plot.excluded?<span data-testid="wedge-excluded">{m.notDrawn(plot.excluded)} </span>:null}
-     {plot.admitted-plot.drawn?<span data-testid="wedge-outside">{m.outside(plot.admitted-plot.drawn)} </span>:null}
-     {m.presentationNote}
-    </figcaption>
-   </figure>
-   <div className="wedge-side">
-    <h3>{m.detailsHeading}</h3>
-    {sel?<dl className="wedge-details" data-testid="wedge-details">
-     <dt>{m.columns.object}</dt><dd>{sel.objectId||'—'}</dd>
-     <dt>{m.detail.raw}</dt><dd><code className="wedge-pre">{sel.raw}</code></dd>
-     <dt>{m.detail.source}</dt><dd>{w.receipts[sel.source]?.name} · {m.detail.line} {sel.line}</dd>
-     <dt>{m.detail.ra}</dt><dd>{sel.raRaw||'—'} → {raCell(sel,m)}</dd>
-     <dt>{m.detail.dec}</dt><dd>{sel.decRaw||'—'} → {decCell(sel,m)}{sel.dec.status==='value'&&sel.dec.signLost?<> <em>{m.signLost}</em></>:null}</dd>
-     {sel.redshift.status==='value'?<>
-      <dt>{m.detail.velocity}</dt><dd>{wedgeSingleExact(sel.redshift.velocity)} {m.detail.kmPerS} <code>{wedgeBitsHex(sel.redshift.velocity)}</code></dd>
-      <dt>{m.detail.z}</dt><dd>{wedgeSingleExact(sel.redshift.z)} <code>{wedgeBitsHex(sel.redshift.z)}</code></dd>
-      <dt>{m.detail.derived}</dt><dd>{m.derivedFrom[sel.redshift.source]}</dd></>:<><dt>{m.detail.redshift}</dt><dd>{sel.redshiftRaw||'—'} → {m.fieldStatus[sel.redshift.status]}</dd></>}
-     {selPoint&&selPoint.thetaDegrees!==null?<><dt>{m.detail.theta}</dt><dd>{fmt(selPoint.thetaDegrees,4)}{m.detail.degrees}</dd></>:null}
-     {selPoint&&selPoint.radiusPx!==null?<><dt>{m.detail.radius}</dt><dd>{fmt(selPoint.radiusPx,4)} {m.detail.px}</dd></>:null}
-     {selPoint&&selPoint.cx!==null?<><dt>{m.detail.pixel}</dt><dd data-testid="wedge-detail-pixel">{selPoint.cx}, {selPoint.cy}{selPoint.boundary?' · '+m.boundary:''}</dd></>:null}
-     <dt>{m.columns.status}</dt><dd>{selPoint?m.plotStatus[selPoint.status]:''}</dd>
-    </dl>:<p className="wedge-note">{m.detailsNone}</p>}
-   </div>
-  </div>
-  <div className="wedge-table-wrap">
-   <table className="wedge-table" data-testid="wedge-table">
-    <caption>{m.tableCaption}</caption>
-    <thead><tr>{(['index','object','mjd','ra','dec','velocity','z','comment','status']as const).map(k=><th key={k} scope="col">{m.columns[k]}</th>)}</tr></thead>
-    <tbody>{w.records.map((r,i)=>{const p=plot.points[i];return <tr key={i} className={i===w.selected?'selected':undefined} data-testid={'wedge-row-'+i}>
-     <td><button type="button" className="wedge-small" disabled={disabled} aria-pressed={i===w.selected} aria-label={m.selectRow(r.objectId,i+1)} onClick={()=>select(i===w.selected?null:i)}>{i+1}</button></td>
-     <td>{r.objectId}</td><td>{r.mjdRaw}</td><td>{raCell(r,m)}</td><td>{decCell(r,m)}</td>
-     <td>{r.redshift.status==='value'?fmt(r.redshift.velocity.value,2):m.fieldStatus[r.redshift.status]}</td>
-     <td>{r.redshift.status==='value'?fmt(r.redshift.z.value,6):''}</td>
-     <td>{r.comment??''}</td><td data-status={p.status}>{m.plotStatus[p.status]}{p.boundary?' · '+m.boundary:''}</td>
-    </tr>;})}</tbody>
-   </table>
-  </div>
-  <details className="wedge-details-block">
-   <summary>{m.sourcesHeading} ({w.receipts.length})</summary>
-   <ul data-testid="wedge-sources">{w.receipts.map((s,i)=><li key={i}><code>{s.name}</code> · {m.rowCount(s.rows)} · {m.sourceAction[s.action]} · {s.hasZ?m.sourceColumn.z:m.sourceColumn.velocity} · “{s.separator}” · {m.sha256} <code>{s.sha256}</code></li>)}</ul>
-  </details>
-  <details className="wedge-details-block">
-   <summary>{m.aboutHeading}</summary>
-   <ul>{m.about.map((t,i)=><li key={i}>{t}</li>)}</ul>
-  </details>
   {w.optionsDraft&&!disabled?<WedgeOptionsDialog draft={w.optionsDraft} idPrefix={idPrefix} captions={C} autoPlotNote={m.autoPlotUnavailable} onChange={c=>act(x=>editWedgeOptions(x,c))} onOk={()=>closeOptions(true)} onCancel={()=>closeOptions(false)}/>:null}
  </section>;
 }
