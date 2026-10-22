@@ -201,6 +201,12 @@ export type RadioLabProfileIssue=Readonly<
 /** RA step of SlewTimer2 for a rate, as computed at 0x5674ff..0x56750f (magnitude). */
 const raStepFor=(rate:number)=>rate*RADIO_LAB_CONSTANTS.raStepPerRate/RADIO_LAB_CONSTANTS.raStepDivisor;
 type RateIssue=Extract<RadioLabProfileIssue,{kind:'rate-not-advancing'|'ra-step'}>;
+/** Dec criterion only: the step the slew start writes (rate × 0x5673fc) is finite, positive and changes every in-range Dec. */
+function decRateIssue(rate:number,index:number):RateIssue|null{
+ const k=RADIO_LAB_CONSTANTS,dec=rate*k.decStepPerRate;
+ return Number.isFinite(rate)&&rate>0&&Number.isFinite(dec)&&k.decMaxDegrees+dec>k.decMaxDegrees?null:Object.freeze({kind:'rate-not-advancing',index});
+}
+/** Full criteria (Dec and RA): used by the option record check and wherever the RA step will be taken from the rate. */
 function rateIssue(rate:number,index:number):RateIssue|null{
  const k=RADIO_LAB_CONSTANTS,dec=rate*k.decStepPerRate,ra=raStepFor(rate);
  // Adding the step to the largest coordinate magnitude must change it: then it changes every in-range coordinate.
@@ -236,32 +242,107 @@ function startRate(s:RadioLabState,options:RadioLabOptions):{rateIndex:number;ra
  while(options.maxRateIndex>rateIndex){rateIndex+=1;rate=slewRateFor(rateIndex,options);}
  return {rateIndex,rate};
 }
-/** A slew is running or paused at the stop question: its callbacks use the stored rate. */
+/** A slew is running or paused at the stop question. */
 const slewHeld=(s:RadioLabState)=>s.slewing||s.slewTimerEnabled;
-/** Which rate a refused step would use: 'stored' drives the running (or paused) slew, 'start' is what OK/Yes would
- * start with, 'down'/'up' is what one Slew Rate press during that slew would store for it. */
+/** SlewTimer2 0x5674ff..0x56750f: the RA separation d the non-transit Dec→RA switch computes (target − pointing RA,
+ * negated when |d| > Single 12). */
+function raSwitchSeparation(pointingRa:number,targetRa:number):number{
+ let d=targetRa-pointingRa;if(Math.abs(d)>RADIO_LAB_CONSTANTS.halfTurnHours)d=-d;return d;
+}
+/** +0x53e := Extended 0x5678d0 ≥ |d|: the switch callback then completes at once, so the RA step it computes from the
+ * stored rate is stored in +0x525 but never added to the pointing (RA is not snapped either). */
+const raSwitchFinishes=(d:number)=>RADIO_LAB_CONSTANTS.initialRaToleranceHours>=Math.abs(d);
+/** The non-transit Dec→RA switch of a slew from this pointing RA to this target RA adds an RA step taken from the rate.
+ * The Dec phase leaves RA unchanged in this slice (manual N/S/E/W and the sidereal clock are not modelled), so the
+ * separation at the switch is the current one; the caller re-evaluates it from the latest state. */
+const switchTakesRaStep=(pointingRa:number,targetRa:number)=>!raSwitchFinishes(raSwitchSeparation(pointingRa,targetRa));
+/** SlewTimer2 will still take an RA step from the stored rate: Dec phase (0/1) of a slew whose Dec→RA switch takes the
+ * non-transit branch with the live options (a host change between phases moves this either way) and does not finish
+ * within the tolerance. The Dec and RA phases themselves add the fixed step +0x525. */
+const raStepPending=(s:RadioLabState,options:RadioLabOptions)=>(s.phase===0||s.phase===1)&&!options.transitTelescope&&switchTakesRaStep(s.pointing.ra,s.target.ra);
+/** Which criteria a programmed start from s with these live options applies to its rate, for the coordinates it would
+ * slew to (null: not chosen yet, so an RA step is assumed). instantSlew: none (the start loop still runs and stores
+ * index, rate and step, but 0x566fb3 writes the pointing without a step). Transit: the Dec step only. Otherwise the Dec
+ * step, plus the RA step the same rate gives at the switch unless that switch finishes within the tolerance. */
+function startIssueFor(s:RadioLabState,options:RadioLabOptions,target:RadioPointing|null):RateIssue|null{
+ if(options.instantSlew)return null;
+ const next=startRate(s,options);
+ if(options.transitTelescope||(target!==null&&!switchTakesRaStep(s.pointing.ra,target.ra)))return decRateIssue(next.rate,next.rateIndex);
+ return rateIssue(next.rate,next.rateIndex);
+}
+/** RA-10/RA-12: OK goes on to a slew confirmation (so a start can follow) only when the entered coordinates differ from
+ * the pointing (else the no-slew warning) and no altitude-limit gate stops it first (limits need the absent clock). */
+const okReachesConfirmation=(s:RadioLabState,target:RadioPointing,options:RadioLabOptions)=>
+ !(target.ra===s.pointing.ra&&target.dec===s.pointing.dec)&&!options.limitsEnabled;
+/** The coordinates the next programmed start from this state would use, as far as the state determines them:
+ * - open dialog: its draft, when it is a valid J2000 entry whose OK reaches the confirmation; otherwise OK gives its
+ *   own parse, web-domain, B1950, no-slew or limits result first, so no start follows ('none').
+ * - slew confirmation (or the transit note before it): the committed target.
+ * - otherwise no coordinates are chosen yet ('open'). */
+function pendingStartTarget(s:RadioLabState,options:RadioLabOptions):RadioPointing|'none'|'open'{
+ if(s.dialog){
+  const parsed=parseSkyCoords(s.dialog.fields);
+  if(parsed.status!=='ok'||s.dialog.epochIndex===1)return 'none';
+  const target={ra:parsed.ra,dec:parsed.dec};return okReachesConfirmation(s,target,options)?target:'none';
+ }
+ if(s.notice?.kind==='confirm-slew')return s.target;
+ if(s.notice?.kind==='transit-dec-only')return options.limitsEnabled?'none':s.target;
+ return 'open';
+}
+/** Which rate a refused step would read: 'stored' is read by the running (or paused) slew at its Dec→RA switch,
+ * 'start' is what OK/Yes would start with, 'down'/'up' is what one Slew Rate press during the Dec phase would store
+ * for that switch. */
 export type RadioLabRateContext='stored'|'start'|'down'|'up';
-export type RadioLabRateIssue=Readonly<{context:RadioLabRateContext;rate:number;issue:RateIssue}>;
+export type RadioLabRateIssue=Readonly<
+ |{context:Exclude<RadioLabRateContext,'start'>;rate:number;issue:RateIssue}
+ /** target: the coordinates of the pending start (pendingStartTarget), or null before any are chosen, when the issue
+  * applies to coordinates that need the RA step. raStepOnly: on a non-transit telescope the Dec step passes and only
+  * the RA step fails, so coordinates within the tolerance of the pointing RA are not refused. */
+ |{context:'start';rate:number;issue:RateIssue;target:RadioPointing|null;raStepOnly:boolean}
+>;
 /** WEB-OPT-01 in state context (browser limit, not an original check). Under a supported option record the panel can
- * still hold a rate the record check never sees: the original recomputes the rate only in RateSpin, and a programmed
- * slew raises the index only up to the options maximum, so an index above max(4, maximum) set under earlier options
- * (or a restored state) is kept. Each rate the next step would actually use is checked with the record criteria.
- * Ticks are refused for a 'stored' issue, OK and Yes for a 'start' issue, and the matching press for 'down'/'up'.
- * Without a slew a press is not refused: it stores the native result, so stepping through an unsupported index to a
- * supported one stays possible, and the 'start' issue then explains the refused OK/Yes. Nothing is clamped. */
+ * still hold a rate the record check never sees: after the first FormActivate (index 4, rate from the options then
+ * current) the original recomputes the rate only in RateSpin and in the start loop, which raises the index only up to
+ * the options maximum, so an index above max(4, maximum) set under earlier options (or a restored state) is kept.
+ * A rate is checked only where a step that moves the telescope uses it, with the live options deciding the branch:
+ * - 'stored': in the Dec phase of a non-transit slew whose switch takes the RA step (separation outside the
+ *   tolerance), the rate that step is computed from. Only the switch callback is refused (radioLabTickRefusal); Dec
+ *   callbacks add the fixed step and run on. RA-phase, transit and within-tolerance slews report nothing.
+ * - 'start': the rate after the start loop, with startIssueFor's criteria for the pending target (pendingStartTarget).
+ *   OK and Yes are refused for it.
+ * - 'down'/'up': a press during that same Dec phase, which would store the rate the switch uses. Not listed while a
+ *   dialog or box is open (every press returns modal-open there).
+ * Without a slew, or in a phase that no longer takes a step from the rate, a press stores the native result, so
+ * stepping through an unsupported index to a supported one stays possible. Nothing is clamped. */
 export function radioLabRateIssues(s:RadioLabState,options:RadioLabOptions):readonly RadioLabRateIssue[]{
  checkOptions(options);
  const issues:RadioLabRateIssue[]=[];
- const add=(context:RadioLabRateContext,next:{rateIndex:number;rate:number}|null)=>{
-  const issue=next&&rateIssue(next.rate,next.rateIndex);if(next&&issue)issues.push(Object.freeze({context,rate:next.rate,issue}));
+ const full=(next:{rateIndex:number;rate:number})=>rateIssue(next.rate,next.rateIndex);
+ const add=(context:Exclude<RadioLabRateContext,'start'>,next:{rateIndex:number;rate:number}|null)=>{
+  const issue=next&&full(next);if(next&&issue)issues.push(Object.freeze({context,rate:next.rate,issue}));
  };
  if(slewHeld(s)){
+  if(!raStepPending(s,options))return Object.freeze(issues);
   add('stored',s);
-  if(s.activated&&s.rateSpinEnabled)for(const direction of ['down','up'] as const)add(direction,rateStep(s,options,direction));
- }else if(s.activated)add('start',startRate(s,options));
+  if(s.activated&&s.rateSpinEnabled&&!modal(s))for(const direction of ['down','up'] as const)add(direction,rateStep(s,options,direction));
+ }else if(s.activated){
+  const pending=pendingStartTarget(s,options);if(pending==='none')return Object.freeze(issues);
+  const target=pending==='open'?null:pending,issue=startIssueFor(s,options,target);
+  if(issue){
+   const next=startRate(s,options),raStepOnly=!options.transitTelescope&&decRateIssue(next.rate,next.rateIndex)===null;
+   issues.push(Object.freeze({context:'start',rate:next.rate,issue,target:target&&Object.freeze({ra:target.ra,dec:target.dec}),raStepOnly}));
+  }
+ }
  return Object.freeze(issues);
 }
-const startRateIssue=(s:RadioLabState,options:RadioLabOptions)=>{const next=startRate(s,options);return rateIssue(next.rate,next.rateIndex);};
+/** The refusal slewTimerTick gives a callback of the current run (null: it is applied). The panel registers the
+ * SlewTimer2 interval only while this is null, so it suspends exactly the callbacks the core would refuse. */
+export function radioLabTickRefusal(s:RadioLabState,options:RadioLabOptions):'options-unsupported'|'rate-unsupported'|null{
+ checkOptions(options);
+ if(!isSupportedRadioLabProfile(options))return 'options-unsupported';
+ // Only the Dec→RA switch callback (axis done in phase 0/1, non-transit) uses s.rate, and only outside the tolerance.
+ return raStepPending(s,options)&&s.axisDone&&rateIssue(s.rate,s.rateIndex)?'rate-unsupported':null;
+}
 
 const freezeState=(s:RadioLabState):RadioLabState=>Object.freeze({...s,pointing:Object.freeze({...s.pointing}),target:Object.freeze({...s.target}),
  dialog:s.dialog&&Object.freeze({...s.dialog,fields:Object.freeze({...s.dialog.fields})}),notice:s.notice&&Object.freeze({...s.notice})});
@@ -386,7 +467,7 @@ export function parseSkyCoords(fields:SkyCoordsFields):SkyCoordsParse{
  if(dec.status==='unsupported')return Object.freeze({status:'dec-unsupported',reason:dec.reason});
  return Object.freeze({status:'ok',ra:ra.value,dec:dec.value});
 }
-/** RateSpin 0x566784/0x566838 and FormActivate 0x5649f3: Power(10, index − 3) × rate base. */
+/** RateSpin 0x566784/0x566838 (also called by the start loop 0x566f6b) and FormActivate 0x5649f3: Power(10, index − 3) × rate base. */
 export function slewRateFor(index:number,options:RadioLabOptions):number{
  return RADIO_LAB_CONSTANTS.rateBase10**(index-RADIO_LAB_CONSTANTS.rateIndexOffset)*options.rateBase;
 }
@@ -425,9 +506,11 @@ export function toggleTracking(s:RadioLabState,options:RadioLabOptions):RadioLab
 }
 
 /** RA-06 RateSpinUpClick 0x566784 (index < options maximum) and RateSpinDownClick 0x566838 (index > 1). WEB-OPT-01:
- * during a slew (RateSpin is enabled again by Tracking on), a press whose recomputed rate is outside the profile
- * (possible from an index kept above max(4, maximum)) is refused and the current index and rate are kept, because
- * the running slew would use it. Without a slew the press is applied as in the original; OK/Yes then gate the start. */
+ * in the Dec phase of a non-transit slew (RateSpin is enabled again by Tracking on), a press whose recomputed rate is
+ * outside the profile (possible from an index kept above max(4, maximum)) is refused and the current index and rate
+ * are kept, because the Dec→RA switch would take its RA step from it. When that switch finishes within the RA
+ * tolerance, in the RA phase, on a transit telescope and without a slew the press is applied as in the original (no
+ * step of the running slew is taken from the rate any more); OK/Yes then gate the next start. */
 export function changeSlewRate(s:RadioLabState,options:RadioLabOptions,direction:'up'|'down'):RadioLabTransition{
  checkOptions(options);
  if(!s.activated)return same(s,'not-activated');
@@ -436,7 +519,7 @@ export function changeSlewRate(s:RadioLabState,options:RadioLabOptions,direction
  if(!s.rateSpinEnabled)return same(s,'rate-disabled');
  const next=rateStep(s,options,direction);
  if(!next)return same(s,'rate-at-limit',['RA-06']);
- if(slewHeld(s)&&rateIssue(next.rate,next.rateIndex))return rateUnsupported(s);
+ if(slewHeld(s)&&raStepPending(s,options)&&rateIssue(next.rate,next.rateIndex))return rateUnsupported(s);
  return done(s,{...s,...next},direction==='up'?'rate-up':'rate-down',['RA-06']);
 }
 
@@ -491,21 +574,26 @@ function confirmOrGate(s:RadioLabState,options:RadioLabOptions,steps:string[]):R
 
 /** RA-09 OKBtnClick 0x4f33f4. A parse/range failure keeps the dialog (ModalResult := 0) under an OK message box;
  * an entry outside the web domain does the same with a browser box. B1950 is a browser gate. On success the
- * J2000 values are stored and CoordBtnClick continues with RA-10. WEB-OPT-01: under unsupported options, or when the
- * slew would start with an unsupported rate, OK stores nothing and the dialog stays open (Cancel still closes it). */
+ * J2000 values are stored and CoordBtnClick continues with RA-10. WEB-OPT-01: under unsupported options OK stores
+ * nothing and the dialog stays open (Cancel still closes it); this record check precedes parsing. The state-context
+ * rate check follows the parse, web-domain and B1950 results, and applies only when OK goes on to a confirmation
+ * (okReachesConfirmation): when a slew to the entered coordinates would take a step from an unsupported rate
+ * (startIssueFor), OK stores nothing and the dialog stays open. The no-slew warning and the limits gate still store
+ * the coordinates first, as in the original. Yes checks again with the options live at that answer. */
 export function confirmSkyCoords(s:RadioLabState,options:RadioLabOptions):RadioLabTransition{
  checkOptions(options);
  if(!s.dialog)return same(s,'dialog-closed');
  if(s.notice)return same(s,'modal-open');
  if(!isSupportedRadioLabProfile(options))return unsupported(s);
- if(startRateIssue(s,options))return rateUnsupported(s);
  const parsed=parseSkyCoords(s.dialog.fields);
  if(parsed.status!=='ok'){
   const notice:RadioLabNotice=parsed.status==='ra-unsupported'||parsed.status==='dec-unsupported'?{kind:parsed.status,reason:parsed.reason}:{kind:parsed.status};
   return done(s,{...s,notice},parsed.status,['RA-09']);
  }
  if(s.dialog.epochIndex===1)return done(s,{...s,notice:{kind:'b1950-gated'}},'b1950-gated',['RA-09']);
- return requestSlew({...s,dialog:null,target:{ra:parsed.ra,dec:parsed.dec}},options,['RA-09']);
+ const target={ra:parsed.ra,dec:parsed.dec};
+ if(okReachesConfirmation(s,target,options)&&startIssueFor(s,options,target))return rateUnsupported(s);
+ return requestSlew({...s,dialog:null,target},options,['RA-09']);
 }
 
 /** RA-10 Yes branch 0x566f74..0x567181. */
@@ -528,9 +616,10 @@ function startSlew(s:RadioLabState,options:RadioLabOptions):RadioLabTransition{
  * kind, or arriving when no box is open, changes nothing. Two successive boxes of the same kind are not told apart,
  * so this alone cannot reject a late answer meant for an earlier same-kind box. The panel passes the kind of the box
  * it renders and ignores auto-repeated Enter/Escape, which otherwise ran through several boxes (see the held-key specs).
- * WEB-OPT-01: under unsupported options, or when the slew would start with an unsupported rate, Yes on the slew
- * confirmation is refused and the box stays open; every other answer (No, Cancel, OK, and both answers to the stop
- * question) works as usual. */
+ * WEB-OPT-01: under unsupported options, or when the slew Yes would start with the live options to the committed target
+ * takes a step from an unsupported rate (startIssueFor: instant none, transit only the Dec step, a switch within the RA
+ * tolerance only the Dec step), Yes on the slew confirmation is refused and the box stays open; every other answer
+ * (No, Cancel, OK, and both answers to the stop question) works as usual. */
 export function answerNotice(s:RadioLabState,options:RadioLabOptions,kind:RadioLabNoticeKind,answer:NoticeAnswer):RadioLabTransition{
  checkOptions(options);
  const notice=s.notice;
@@ -542,7 +631,7 @@ export function answerNotice(s:RadioLabState,options:RadioLabOptions,kind:RadioL
   case 'confirm-slew':
    if(answer!=='yes')return done(s,cleared,'slew-declined',['RA-10']);
    if(!isSupportedRadioLabProfile(options))return unsupported(s);
-   return startRateIssue(s,options)?rateUnsupported(s):startSlew(s,options);
+   return startIssueFor(s,options,s.target)?rateUnsupported(s):startSlew(s,options);
   case 'stop-slew':
    // 0x566a79..0x566ad5 (Yes) / 0x566adf (No).
    return answer==='yes'
@@ -552,23 +641,26 @@ export function answerNotice(s:RadioLabState,options:RadioLabOptions,kind:RadioL
  }
 }
 
-/** RA-11 SlewTimer2Timer 0x567430..0x5678c4, one callback. `run` must equal the current slewRun. WEB-OPT-01: the
- * callback changes nothing while the options ('options-unsupported') or the state's own stored rate
- * ('rate-unsupported', radioLabRateIssues 'stored') are outside the supported web profile (the host may change
- * options mid-run; the stored rate is kept, as the original only recomputes it in RateSpin). */
+/** RA-11 SlewTimer2Timer 0x567430..0x5678c4, one callback. `run` must equal the current slewRun. WEB-OPT-01
+ * (radioLabTickRefusal): the callback changes nothing while the options are outside the supported web profile
+ * ('options-unsupported'; the host may change options mid-run), or when it is the Dec→RA switch of a non-transit
+ * slew that takes its RA step from a stored rate outside the profile ('rate-unsupported'; the rate is kept, as the
+ * original recomputes it only in RateSpin and the start loop). A switch within the RA tolerance completes without
+ * adding that step, and Dec and RA callbacks add the fixed step +0x525, so none of them is refused for the rate. */
 export function slewTimerTick(s:RadioLabState,options:RadioLabOptions,run:number):RadioLabTransition{
  checkOptions(options);
  if(!s.slewTimerEnabled||run!==s.slewRun)return same(s,'slew-timer-idle');
- if(!isSupportedRadioLabProfile(options))return unsupported(s);
- if(rateIssue(s.rate,s.rateIndex))return rateUnsupported(s);
+ const refusal=radioLabTickRefusal(s,options);
+ if(refusal==='options-unsupported')return unsupported(s);
+ if(refusal==='rate-unsupported')return rateUnsupported(s);
  const k=RADIO_LAB_CONSTANTS,t=s.target;
  let {phase,axisDone,step,status}=s,{ra,dec}=s.pointing,outcome:RadioLabOutcome='slew-tick';
  if((phase===0||phase===1)&&axisDone){
   if(options.transitTelescope)phase=3;
   else{
-   let d=t.ra-ra;if(Math.abs(d)>k.halfTurnHours)d=-d;
+   const d=raSwitchSeparation(ra,t.ra);// shared with the gates (raStepPending, startIssueFor)
    phase=d>k.arrivalWindowStartHours?2:3;
-   axisDone=k.initialRaToleranceHours>=Math.abs(d);
+   axisDone=raSwitchFinishes(d);
    step=valueSign(d)*s.rate*k.raStepPerRate/k.raStepDivisor;
    status='slewing-ra';outcome='slew-axis-ra';
   }

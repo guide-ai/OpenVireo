@@ -8,7 +8,7 @@ import {
 import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,RADIO_WEB_OPTION_PROFILE,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,SKY_COORDS_WEB_DOMAIN,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
- isRadioLabModal,isRadioLabOptions,openSetCoordinates,radioLabProfileIssues,radioLabRateIssues,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
+ isRadioLabModal,isRadioLabOptions,openSetCoordinates,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
  type NoticeAnswer,type RadioLabNotice,type RadioLabNoticeKind,type RadioLabOptions,type RadioLabOutcome,type RadioLabProfileIssue,type RadioLabRateIssue,
  type RadioLabState,type RadioLabTransition,type SkyCoordsDialog,type SkyCoordsField,
 } from '../core/radioAntenna';
@@ -80,9 +80,32 @@ function profileIssueText(issue:RadioLabProfileIssue,options:RadioLabOptions,ta:
  if(issue.kind==='rate-not-advancing')return ta('antenna.profile.rate-not-advancing',{base:options.rateBase,index:issue.index});
  return ta('antenna.profile.ra-step',{index:issue.index,hours:issue.raStepHours.toPrecision(4),limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours});
 }
-function rateIssueText({context,rate,issue}:RadioLabRateIssue,ta:RadioAntennaTranslate):string{
- const cause=issue.kind==='ra-step'?ta('antenna.rateLimit.cause.ra-step',{hours:issue.raStepHours.toPrecision(4),limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours}):ta('antenna.rateLimit.cause.rate-not-advancing');
- return ta(`antenna.rateLimit.${context}`,{index:issue.index,rate:String(rate),cause});
+/** SlewTimer2 Extended 0x5678d0 as shown in the notes: hours and the same value in seconds of time. */
+const TOLERANCE_TEXT={tolerance:String(RADIO_LAB_CONSTANTS.initialRaToleranceHours),seconds:(RADIO_LAB_CONSTANTS.initialRaToleranceHours*3600).toPrecision(2)};
+type StartRateIssue=Extract<RadioLabRateIssue,{context:'start'}>;
+/** The way back from a refused start, from the live panel controls: enabled Slew Rate buttons or a Tracking button that
+ * enables them (both behind an open dialog or box first need it closed, as every press returns modal-open there), or
+ * neither: trackingVisible is fixed at the first FormActivate, so the remaining routes are the live alternatives. */
+function startRecovery(i:StartRateIssue,lab:RadioLabState,ta:RadioAntennaTranslate):string{
+ if(lab.rateSpinEnabled||lab.trackingVisible){
+  const recovery=ta(lab.rateSpinEnabled?'antenna.rateLimit.recovery.enabled':'antenna.rateLimit.recovery.tracking');
+  const first=lab.dialog?'antenna.rateLimit.recovery.firstDialog':lab.notice?.kind==='confirm-slew'?'antenna.rateLimit.recovery.firstConfirm':lab.notice?'antenna.rateLimit.recovery.firstNotice':null;
+  return first?ta('antenna.rateLimit.recovery.afterModal',{first:ta(first),recovery}):recovery;
+ }
+ const items=[ta('antenna.rateLimit.alternative.maximum',{index:lab.rateIndex}),ta('antenna.rateLimit.alternative.instant')];
+ // raStepOnly: live options are non-transit and only the RA step fails, so transit on or a Dec-only target also start.
+ if(i.raStepOnly)items.push(ta('antenna.rateLimit.alternative.transit'),ta('antenna.rateLimit.alternative.coordinates',TOLERANCE_TEXT));
+ const alternatives=ta('antenna.rateLimit.alternative.last',{items:items.slice(0,-1).join(ta('antenna.rateLimit.alternative.separator')),last:items[items.length-1]});
+ return ta('antenna.rateLimit.recovery.hidden',{alternatives});
+}
+function rateIssueText(i:RadioLabRateIssue,lab:RadioLabState,ta:RadioAntennaTranslate):string{
+ const {rate,issue}=i,cause=issue.kind==='ra-step'?ta('antenna.rateLimit.cause.ra-step',{hours:issue.raStepHours.toPrecision(4),limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours}):ta('antenna.rateLimit.cause.rate-not-advancing');
+ const values={index:issue.index,rate:String(rate),cause,...TOLERANCE_TEXT};
+ if(i.context!=='start')return ta(`antenna.rateLimit.${i.context}`,values);
+ const start={...values,recovery:startRecovery(i,lab,ta)};
+ // A pending target (the valid draft or the committed confirmation target) is named; otherwise the note says which coordinates it covers.
+ if(i.target)return ta(i.raStepOnly?'antenna.rateLimit.startTargetRaStep':'antenna.rateLimit.startTarget',{...start,ra:raText(ta,i.target.ra),dec:decText(ta,i.target.dec)});
+ return ta(i.raStepOnly?'antenna.rateLimit.startRaStep':'antenna.rateLimit.start',start);
 }
 /** Browser-limit reasons shown inside the open dialog or confirmation box (WEB-OPT-01), next to the refused OK/Yes. */
 function ModalLimit({lead,reasons,testId}:Readonly<{lead:string;reasons:readonly string[];testId:string}>){
@@ -113,10 +136,13 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const profileSupported=profileIssues.length===0;
  // State-context rate limits (radioLabRateIssues) only matter once the option record itself is supported.
  const rateIssues=useMemo(()=>antenna&&profileSupported&&isRadioLabOptions(antennaOptions)?radioLabRateIssues(antenna,antennaOptions):[],[antenna,antennaOptions,profileSupported]);
- // The same gates slewTimerTick applies: no registration while every callback would be refused.
- const slewSuspended=!profileSupported||rateIssues.some(i=>i.context==='stored');
+ // The same pure gate slewTimerTick applies (radioLabTickRefusal): no registration while the next callback would be
+ // refused, and the refusal names the cause shown in Motion. A stored rate no step of the slew takes any more (RA
+ // phase, transit, a switch within the RA tolerance) or not yet (Dec callbacks) never suspends it.
+ const slewRefusal=useMemo(()=>!profileSupported?'options-unsupported':antenna!==undefined&&isRadioLabOptions(antennaOptions)?radioLabTickRefusal(antenna,antennaOptions):null,[antenna,antennaOptions,profileSupported]);
+ const slewSuspended=slewRefusal!==null;
  // Reasons OK and Yes are refused, rendered inside the modal surface that holds those buttons.
- const startRefusal=[...profileIssues.map(issue=>profileIssueText(issue,antennaOptions,ta)),...rateIssues.filter(i=>i.context==='start').map(i=>rateIssueText(i,ta))];
+ const startRefusal=[...profileIssues.map(issue=>profileIssueText(issue,antennaOptions,ta)),...(antenna?rateIssues.filter(i=>i.context==='start').map(i=>rateIssueText(i,antenna,ta)):[])];
  const applyControl=(transition:RadioTransition|null,handler:(transition:RadioTransition)=>void)=>{
   if(!transition){setEnvError(true);return;}
   setEnvError(false);setOutcome(transition.outcome);if(transition.changed)handler(transition);
@@ -156,8 +182,9 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   if(state.radioPanelShown&&antenna&&!antenna.activated)runAntenna(()=>activateRadioLab(antenna,antennaOptions));
  },[state.radioPanelShown,antenna,antennaOptions]);
  // RA-11: one SlewTimer2 registration per enabled run, on a nominal 100 ms interval. Unrelated antenna changes do not
- // restart it; pause (stop question), completion, a new run, unsupported options or stored rate, or unmount cancel it. A TTimer keeps
- // running while the form is hidden, so closing the panel window does not.
+ // restart it; pause (stop question), completion, a new run, unsupported options, a Dec→RA switch that would take its
+ // RA step from an unsupported stored rate (radioLabTickRefusal), or unmount cancel it. A TTimer keeps running while the form is
+ // hidden, so closing the panel window does not.
  useEffect(()=>{
   if(!slewActive)return;
   return startRadioTimer(BROWSER_TIMER,RADIO_LAB_CONSTANTS.slewTimerIntervalMs,()=>latest.current.antenna,lab=>{
@@ -219,7 +246,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <h3 id={`${id}-panel`}>{t('radio.panel.heading')}</h3>
    <p className="radio-control-native" data-testid="antenna-form-caption">{RADIO_LAB_CAPTIONS.form}</p>
    {antenna&&onAntennaTransition&&antenna.activated
-    ?<AntennaControls antenna={antenna} options={antennaOptions} ta={ta} run={runAntenna} autoSlewTimer={autoSlewTimer} suspended={slewSuspended} setCoordinatesRef={setCoordinatesRef}/>
+    ?<AntennaControls antenna={antenna} options={antennaOptions} ta={ta} run={runAntenna} autoSlewTimer={autoSlewTimer} suspended={slewRefusal} setCoordinatesRef={setCoordinatesRef}/>
     :<p className="radio-control-note">{ta(profileSupported?'antenna.notActivated':'antenna.profile.notActivated')}</p>}
    <button type="button" className="secondary-button" data-testid="radio-panel-close" onClick={()=>run(()=>closeRadioPanel(state,environment))}>{t('radio.panel.close')}</button>
   </section>}
@@ -228,10 +255,10 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <p className="radio-control-note">{ta('antenna.profile.help')}</p>
    <ul>{profileIssues.map(issue=><li key={issue.kind} data-testid={`antenna-profile-${issue.kind}`}>{profileIssueText(issue,antennaOptions,ta)}</li>)}</ul>
   </section>}
-  {rateIssues.length>0&&<section className="radio-control-block antenna-profile" aria-labelledby={`${id}-rate-limit`} aria-live="polite" data-testid="antenna-rate-limit">
+  {antenna&&rateIssues.length>0&&<section className="radio-control-block antenna-profile" aria-labelledby={`${id}-rate-limit`} aria-live="polite" data-testid="antenna-rate-limit">
    <h3 id={`${id}-rate-limit`}>{ta('antenna.rateLimit.heading')}</h3>
-   <p className="radio-control-note">{ta('antenna.rateLimit.help',{limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours})}</p>
-   <ul>{rateIssues.map(issue=><li key={issue.context} data-testid={`antenna-rate-limit-${issue.context}`}>{rateIssueText(issue,ta)}</li>)}</ul>
+   <p className="radio-control-note">{ta('antenna.rateLimit.help',{limit:RADIO_WEB_OPTION_PROFILE.raStepLimitHours,...TOLERANCE_TEXT})}</p>
+   <ul>{rateIssues.map(issue=><li key={issue.context} data-testid={`antenna-rate-limit-${issue.context}`}>{rateIssueText(issue,antenna,ta)}</li>)}</ul>
   </section>}
   <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-status">{envError?t('radio.error.environment'):outcome?outcomeText(outcome,t,ta):''}</p>
   {antenna&&<p className="radio-control-status" role="status" aria-live="polite" data-testid="antenna-status">{antennaError?t('radio.error.environment'):antennaOutcome?antennaOutcomeText(antennaOutcome,ta):''}</p>}
@@ -277,7 +304,8 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  </section>;
 }
 
-type AntennaControlsProps=Readonly<{antenna:RadioLabState;options:RadioLabOptions;ta:RadioAntennaTranslate;run:(step:()=>RadioLabTransition)=>void;autoSlewTimer:boolean;suspended:boolean;setCoordinatesRef:RefObject<HTMLButtonElement|null>}>;
+type AntennaControlsProps=Readonly<{antenna:RadioLabState;options:RadioLabOptions;ta:RadioAntennaTranslate;run:(step:()=>RadioLabTransition)=>void;autoSlewTimer:boolean;
+ suspended:'options-unsupported'|'rate-unsupported'|null;setCoordinatesRef:RefObject<HTMLButtonElement|null>}>;
 /** TRadioLab controls in DFM order (TabOrder: DriveBtn 0, N 1, S 2, E 3, W 4, RateSpin 5, Receiver 6). */
 function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCoordinatesRef}:AntennaControlsProps){
  const id=useId(),onOff=(v:boolean)=>ta(v?'antenna.state.enabled':'antenna.state.disabled'),yes=(v:boolean)=>ta(v?'antenna.options.yes':'antenna.options.no');
@@ -325,7 +353,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
     <h4 id={`${id}-motion`}>{ta('antenna.status.heading')}</h4>
     <p data-testid="antenna-motion">{ta(a.status==='slewing'?'antenna.status.slewing':a.status==='slewing-ra'?'antenna.status.slewingRa':'antenna.status.none')}</p>
     {a.slewing&&<p className="radio-control-note" data-testid="antenna-ticks">{ta('antenna.status.ticks',{ticks:a.slewTicks})}</p>}
-    {a.slewTimerEnabled&&suspended&&<p className="radio-control-note" data-testid="antenna-suspended">{ta('antenna.status.suspended')}</p>}
+    {a.slewTimerEnabled&&suspended&&<p className="radio-control-note" data-testid="antenna-suspended">{ta(suspended==='rate-unsupported'?'antenna.status.suspendedRate':'antenna.status.suspended')}</p>}
     {!autoSlewTimer&&a.slewTimerEnabled&&<button type="button" className="secondary-button" data-testid="antenna-tick" onClick={()=>run(()=>slewTimerTick(a,options,a.slewRun))}>{ta('antenna.timer.deliver')}</button>}
    </section>
   </div>

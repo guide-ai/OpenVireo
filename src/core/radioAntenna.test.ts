@@ -4,7 +4,7 @@ import {
  INITIAL_RADIO_LAB,NOTICE_BUTTONS,RADIO_COMPILED_ENVIRONMENT,RADIO_COMPILED_OPTIONS,RADIO_LAB_CAPTIONS,RADIO_LAB_CONSTANTS,SKY_COORDS_CAPTIONS,
  SKY_COORDS_FIELD_MAX_LENGTH,activateRadioLab,answerNotice,cancelSkyCoords,changeSlewRate,confirmSkyCoords,editSkyCoordsField,formatFixed,
  isRadioLabOptions,isSupportedRadioLabProfile,nearestBinary64,normalizeRaHours,openSetCoordinates,parseDelphiFloat,parseExactDecimal,parseSkyCoords,
- radioLabProfileIssues,radioLabRateIssues,roundHalfEven,selectSkyCoordsEpoch,skyCoordsFieldsFor,slewRateFor,slewTimerTick,splitSexagesimal,toggleTracking,
+ radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,roundHalfEven,selectSkyCoordsEpoch,skyCoordsFieldsFor,slewRateFor,slewTimerTick,splitSexagesimal,toggleTracking,valueSign,
  RADIO_WEB_OPTION_PROFILE,SKY_COORDS_WEB_DOMAIN,
  type RadioLabOptions,type RadioLabOutcome,type RadioLabState,type RadioLabTransition,type SkyCoordsFields,
 } from './radioAntenna';
@@ -52,11 +52,25 @@ function isNearest(v:number,n:bigint,d:bigint):boolean{
 function lcg(seed:number){let x=seed>>>0;return (lo:number,hi:number)=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return lo+Math.floor(x/2**32*(hi-lo+1));};}// high bits
 /** Decimal text of v × 10^-places built from the integer itself, without floating-point formatting. */
 const fixedText=(v:number,places:number)=>{const a=Math.abs(v).toString().padStart(places+1,'0');return (v<0?'-':'')+(places?`${a.slice(0,-places)}.${a.slice(-places)}`:a);};
+/** Delivers callbacks until the timer stops or one is refused (a refused callback changes nothing, so repeating it cannot help). */
 function runSlew(s:RadioLabState,o=O,limit=500){
- const outcomes:RadioLabOutcome[]=[];let n=s;
- while(n.slewTimerEnabled&&outcomes.length<limit){const t=track(slewTimerTick(n,o,n.slewRun));outcomes.push(t.outcome);n=t.state;}
- return {state:n,outcomes};
+ const outcomes:RadioLabOutcome[]=[],pointings:RadioLabState['pointing'][]=[];let n=s;
+ while(n.slewTimerEnabled&&outcomes.length<limit){const t=track(slewTimerTick(n,o,n.slewRun));outcomes.push(t.outcome);pointings.push(t.state.pointing);n=t.state;if(!t.changed)break;}
+ return {state:n,outcomes,pointings};
 }
+/** Enter, OK, the transit note's OK when it opens, and Yes, all under the live options o. Returns the last transition. */
+function startUnder(s:RadioLabState,f:SkyCoordsFields,o:RadioLabOptions):RadioLabTransition{
+ let t=track(confirmSkyCoords(enter(s,f,o),o));
+ if(t.outcome==='transit-notice')t=track(answerNotice(t.state,o,'transit-dec-only','ok'));
+ return t.outcome==='slew-confirm-requested'?track(answerNotice(t.state,o,'confirm-slew','yes')):t;
+}
+/** Callbacks until the Dec→RA switch has run (status 'slewing-ra'). */
+function toRaPhase(s:RadioLabState,o:RadioLabOptions):RadioLabState{
+ let n=s;for(let i=0;i<50&&n.status!=='slewing-ra';i++)n=track(slewTimerTick(n,o,n.slewRun)).state;
+ expect(n.status).toBe('slewing-ra');return n;
+}
+/** Tracking off then on during a slew: 0x5651cc enables RateSpin again (original quirk). */
+const retrack=(s:RadioLabState,o:RadioLabOptions)=>track(toggleTracking(track(toggleTracking(s,o)).state,o)).state;
 
 describe('RA-03 compiled options and Extended operands',()=>{
  it('rounds each Extended operand once to binary64 near its decoded meaning',()=>{
@@ -466,12 +480,18 @@ describe('WEB-OPT-01 supported web option profile (browser limit, not original o
   const resumed=runSlew(s);
   expect(resumed.state.pointing).toEqual(reference.state.pointing);expect(resumed.state.slewTicks).toBe(reference.state.slewTicks);expect(resumed.outcomes.length+5).toBe(reference.outcomes.length);
  });
- it('refuses a callback whose stored rate is outside the profile even under supported options',()=>{
+ it('refuses the callback that reads a stored rate outside the profile (the Dec→RA switch) even under supported options',()=>{
   const s:RadioLabState={...slewTo(at(1,10),fields('3','0','0','20','0','0')),rate:5_000_000,rateIndex:8};
+  // Dec callbacks add the step written at the start (5000 arcsec); they never read the stored rate.
+  expect(radioLabTickRefusal(s,O)).toBeNull();expect(track(slewTimerTick(s,O,s.slewRun)).outcome).toBe('slew-tick');
+  // The last Dec callback snaps Dec to the target and sets axisDone: the next one computes the RA step from s.rate.
+  const boundary:RadioLabState={...s,pointing:{ra:1,dec:20},axisDone:true};
   // The options are supported, so the refusal names the rate (radioLabRateIssues 'stored'), not the options.
-  expect(track(slewTimerTick(s,O,s.slewRun))).toMatchObject({outcome:'rate-unsupported',changed:false,state:s});
-  expect(track(slewTimerTick({...s,rate:0},O,s.slewRun)).outcome).toBe('rate-unsupported');
-  expect(track(slewTimerTick(s,opts({rateBase:0}),s.slewRun)).outcome).toBe('options-unsupported');// the record is checked first
+  expect(track(slewTimerTick(boundary,O,s.slewRun))).toMatchObject({outcome:'rate-unsupported',changed:false,state:boundary});
+  expect(radioLabTickRefusal(boundary,O)).toBe('rate-unsupported');
+  expect(track(slewTimerTick({...boundary,rate:0},O,s.slewRun)).outcome).toBe('rate-unsupported');
+  expect(track(slewTimerTick(boundary,opts({rateBase:0}),s.slewRun)).outcome).toBe('options-unsupported');// the record is checked first
+  expect(radioLabTickRefusal(s,opts({rateBase:0}))).toBe('options-unsupported');
  });
  it('supported profiles reach the target within a bounded number of callbacks, including RA steps just below 6 h',()=>{
   const finish=(o:RadioLabOptions,from:RadioPointingLike,to:SkyCoordsFields)=>{
@@ -511,13 +531,13 @@ describe('WEB-OPT-01 state context: rates kept from earlier host options (browse
   expect(t).toMatchObject({outcome:'rate-down',changed:true,steps:['RA-06'],state:{rateIndex:5,rate:324100}});
   return t.state;
  }
- const advances=(t:RadioLabTransition)=>['slew-tick','slew-axis-ra','slew-complete'].includes(t.outcome);
  it('both records are supported; the kept index 6 keeps its 50000 rate, and RateDown applies the native 324100',()=>{
   expect(isSupportedRadioLabProfile(A)).toBe(true);expect(isSupportedRadioLabProfile(B)).toBe(true);
   expect(radioLabRateIssues(afterA(),B)).toEqual([]);// a slew now keeps 6/50000 (0.926 h RA steps)
   const s=downUnderB();
   expect(raStep(324100)).toBeCloseTo(6.00185185185,10);
-  expect(radioLabRateIssues(s,B)).toEqual([{context:'start',rate:324100,issue:{kind:'ra-step',index:5,raStepHours:raStep(324100)}}]);
+  // No coordinates chosen yet: the refusal applies to coordinates that need the RA step (raStepOnly: the Dec step passes).
+  expect(radioLabRateIssues(s,B)).toEqual([{context:'start',rate:324100,issue:{kind:'ra-step',index:5,raStepHours:raStep(324100)},target:null,raStepOnly:true}]);
   expect(radioLabRateIssues(s,A)).toEqual([]);// under A a start raises the index to 6 again
  });
  it('OK is refused before an impossible slew: dialog draft, target and pointing kept; Cancel works',()=>{
@@ -553,17 +573,22 @@ describe('WEB-OPT-01 state context: rates kept from earlier host options (browse
   const r=runSlew(on,B);expect(r.outcomes.every(o=>o!=='rate-unsupported'&&o!=='options-unsupported')).toBe(true);
   expect(r.state).toMatchObject({pointing:{ra:5,dec:10},notice:{kind:'slew-complete'}});
  });
- it('a malformed or restored stored rate: ticks are refused and explained, Stop works, RateSpin presses recover it',()=>{
+ it('a malformed or restored stored rate: Dec runs, the Dec→RA switch is refused and explained, Stop works, RateSpin presses recover it',()=>{
   const restored:RadioLabState={...slewTo(at(1,10),target),rate:5_000_000,rateIndex:8};
+  // 'stored' is reported while the slew will still read the rate (pending Dec→RA switch on a non-transit telescope).
   expect(radioLabRateIssues(restored,O)).toEqual([{context:'stored',rate:5_000_000,issue:{kind:'ra-step',index:8,raStepHours:raStep(5_000_000)}}]);
   expect(radioLabRateIssues({...restored,rate:Number.NaN},O)).toEqual([{context:'stored',rate:Number.NaN,issue:{kind:'rate-not-advancing',index:8}}]);
-  expect(track(slewTimerTick({...restored,rate:Number.NaN},O,restored.slewRun)).outcome).toBe('rate-unsupported');
-  const ask=track(openSetCoordinates(restored,O));expect(ask.outcome).toBe('stop-requested');
+  // Dec 10° → 20° with the 5000-arcsec step written at the start: 8 callbacks, then the switch callback is refused.
+  const halted=runSlew(restored);
+  expect(halted.outcomes).toEqual([...Array(8).fill('slew-tick'),'rate-unsupported']);
+  expect(halted.state).toMatchObject({pointing:{ra:1,dec:20},axisDone:true,phase:0,status:'slewing',slewTimerEnabled:true});
+  expect(runSlew({...restored,rate:Number.NaN}).outcomes.at(-1)).toBe('rate-unsupported');
+  const ask=track(openSetCoordinates(halted.state,O));expect(ask.outcome).toBe('stop-requested');
   expect(radioLabRateIssues(ask.state,O).map(i=>i.context)).toEqual(['stored']);// paused: the same slew still holds the rate
   const resumed=track(answerNotice(ask.state,O,'stop-slew','no')).state;
   expect(track(slewTimerTick(resumed,O,resumed.slewRun))).toMatchObject({outcome:'rate-unsupported',state:resumed});
   const stopped=track(answerNotice(track(openSetCoordinates(resumed,O)).state,O,'stop-slew','yes')).state;
-  expect(stopped).toMatchObject({slewing:false,rateSpinEnabled:true,pointing:restored.pointing,target:restored.target});
+  expect(stopped).toMatchObject({slewing:false,rateSpinEnabled:true,pointing:halted.state.pointing,target:restored.target});
   expect(radioLabRateIssues(stopped,O).map(i=>i.context)).toEqual(['start']);// 5 > 8 is false: a start would keep 5e6
   expect(track(confirmSkyCoords(enter(stopped,fields('5','0','0','10','0','0')),O)).outcome).toBe('rate-unsupported');
   // Idle presses are applied as in the original, even through index 7 (500000, also unsupported) to index 6.
@@ -581,29 +606,320 @@ describe('WEB-OPT-01 state context: rates kept from earlier host options (browse
   const r=runSlew(slewTo(s,fields('5','0','0','10','0','0'),O));// compiled maximum 5 < 6: the kept 6/50000 drives the slew
   expect(r.state).toMatchObject({pointing:{ra:5,dec:10},rateIndex:6,rate:50000,notice:{kind:'slew-complete'}});
  });
- it('across option pairs, every accepted start and every accepted press during a slew gives callbacks that advance',()=>{
+ it('across option pairs and branches, every accepted start or press keeps each actual rate consumer advancing, through the Dec→RA switch',()=>{
+  // Bounded on purpose: one Dec callback, the switch callback from the state the last Dec callback writes (Dec snapped to
+  // the target, axisDone set; nothing else changes in between), presses in both phases, and complete runs only where the
+  // callback bound is small. No multi-million tiny-step loop is run.
   const records:RadioLabOptions[]=[];
   for(const maxRateIndex of [0,2,4,5,6,7])for(const rateBase of [1,50,300,3241,32399]){const o=opts({maxRateIndex,rateBase});if(isSupportedRadioLabProfile(o))records.push(o);}
-  let started=0,refused=0,pressRefused=0;
+  const k=RADIO_LAB_CONSTANTS,to={ra:3,dec:20};
+  const atSwitch=(s:RadioLabState):RadioLabState=>({...s,pointing:{ra:s.pointing.ra,dec:s.target.dec},axisDone:true});
+  // Untracked transitions in this hot loop: outcomes and states are asserted directly below; the focused tests run the
+  // same flows through track() (contract IDs, frozen states).
+  const begin=(s:RadioLabState,o:RadioLabOptions)=>{
+   let n0=openSetCoordinates(s,o).state;for(const [f,v] of Object.entries(target))n0=editSkyCoordsField(n0,f as keyof SkyCoordsFields,v).state;
+   let t=confirmSkyCoords(n0,o);if(t.outcome==='transit-notice')t=answerNotice(t.state,o,'transit-dec-only','ok');
+   return t.outcome==='slew-confirm-requested'?answerNotice(t.state,o,'confirm-slew','yes'):t;
+  };
+  const retrackRaw=(s:RadioLabState,o:RadioLabOptions)=>toggleTracking(toggleTracking(s,o).state,o).state;
+  const n={started:0,refused:0,pressRefused:0,unusedRaUnsafe:0,raPhasePresses:0,completed:0,instant:0,transit:0};
   for(const P of records)for(let index=1;index<=Math.max(4,P.maxRateIndex);index++){
    const base:RadioLabState={...at(1,10,P),rateIndex:index,rate:slewRateFor(index,P)};// a state reachable under P
-   for(const Q of records)for(const press of [null,'down','up'] as const){
-    const s=press?changeSlewRate(base,Q,press).state:base;// idle presses are applied natively
-    const ok=confirmSkyCoords(enter(s,target,Q),Q);
-    const start=ok.outcome==='slew-confirm-requested'?answerNotice(ok.state,Q,'confirm-slew','yes'):ok;
-    if(start.outcome!=='slew-started'){
-     expect(start.outcome).toBe('rate-unsupported');expect(radioLabRateIssues(s,Q).map(i=>i.context)).toEqual(['start']);refused++;continue;
-    }
-    started++;expect(advances(slewTimerTick(start.state,Q,start.state.slewRun))).toBe(true);
-    const on=toggleTracking(toggleTracking(start.state,Q).state,Q).state;
-    for(const d of ['down','up'] as const){
-     const t=changeSlewRate(on,Q,d);
-     if(t.changed)expect(advances(slewTimerTick(t.state,Q,t.state.slewRun))).toBe(true);
-     else{expect(['rate-unsupported','rate-at-limit']).toContain(t.outcome);if(t.outcome==='rate-unsupported')pressRefused++;}
+   for(const R of records)for(const branch of ['programmed','transit','instant'] as const){
+    const Q={...R,transitTelescope:branch==='transit',instantSlew:branch==='instant'};// the host may switch either flag
+    for(const press of [null,'down','up'] as const){
+     const s=press?changeSlewRate(base,Q,press).state:base;// idle presses are applied natively
+     // Independent re-derivation of the 0x566f6b raise loop: the rate the start keeps or recomputes.
+     let i=s.rateIndex,r=s.rate;while(Q.maxRateIndex>i){i++;r=slewRateFor(i,Q);}
+     const raOk=raStep(r)<6;// under supported records every kept or reachable rate is finite and positive
+     // Bounded: idle presses apply the same native step in every branch and the programmed branch covers them, so the
+     // transit/instant branches keep only the unpressed start and the presses that leave an RA-unsafe rate.
+     if(branch!=='programmed'&&press&&raOk)continue;
+     const start=begin(s,Q);
+     if(branch==='programmed'&&!raOk){
+      expect(start.outcome).toBe('rate-unsupported');expect(radioLabRateIssues(s,Q).map(x=>x.context)).toEqual(['start']);n.refused++;continue;
+     }
+     expect(radioLabRateIssues(s,Q)).toEqual([]);if(!raOk)n.unusedRaUnsafe++;
+     if(branch==='instant'){expect(start.outcome).toBe('slew-instant');expect(start.state).toMatchObject({pointing:to,slewTimerEnabled:false,rateIndex:i,rate:r});n.instant++;continue;}
+     expect(start.outcome).toBe('slew-started');expect(start.state).toMatchObject({rateIndex:i,rate:r,step:r*k.decStepPerRate});n.started++;
+     const run=start.state,first=slewTimerTick(run,Q,run.slewRun);
+     expect(first.outcome).toBe('slew-tick');expect(first.state.pointing.dec).toBeGreaterThan(10);
+     const sw=slewTimerTick(atSwitch(run),Q,run.slewRun);
+     if(branch==='transit'){expect(sw.outcome).toBe('slew-complete');n.transit++;continue;}// phase 3: the stored rate is never read
+     expect(sw.outcome).toBe('slew-axis-ra');expect(Math.abs(sw.state.step)).toBeLessThan(6);expect(24+Math.abs(sw.state.step)).toBeGreaterThan(24);
+     // Dec phase presses (RateSpin enabled again by Tracking): an accepted press's rate also passes at the switch.
+     const on=retrackRaw(run,Q);
+     for(const d of ['down','up'] as const){
+      const t=changeSlewRate(on,Q,d);
+      if(t.changed){const sw2=slewTimerTick(atSwitch(t.state),Q,run.slewRun);expect(sw2.outcome).toBe('slew-axis-ra');expect(Math.abs(sw2.state.step)).toBeLessThan(6);}
+      else{expect(['rate-unsupported','rate-at-limit']).toContain(t.outcome);if(t.outcome==='rate-unsupported')n.pressRefused++;}
+     }
+     // RA phase: the step is fixed, so presses are applied natively and never change it.
+     const raOn=retrackRaw(sw.state,Q);
+     for(const d of ['down','up'] as const){
+      const t=changeSlewRate(raOn,Q,d);expect(['rate-down','rate-up','rate-at-limit']).toContain(t.outcome);
+      if(t.changed){n.raPhasePresses++;expect(t.state.step).toBe(raOn.step);expect(radioLabRateIssues(t.state,Q)).toEqual([]);expect(radioLabTickRefusal(t.state,Q)).toBeNull();}
+     }
+     // Representative completion where the callback bound is small (larger rates); smaller rates stop at the switch above.
+     const bound=Math.ceil(10/(r*k.decStepPerRate))+Math.ceil(2/raStep(r))+3;
+     if(bound<=40){let m=run,ticks=0;while(m.slewTimerEnabled&&ticks<bound){m=slewTimerTick(m,Q,m.slewRun).state;ticks++;}expect(m).toMatchObject({pointing:to,notice:{kind:'slew-complete'}});n.completed++;}
     }
    }
   }
-  expect(started).toBeGreaterThan(1000);expect(refused).toBeGreaterThan(10);expect(pressRefused).toBeGreaterThan(10);
+  expect(n.started).toBeGreaterThan(1000);expect(n.refused).toBeGreaterThan(10);expect(n.pressRefused).toBeGreaterThan(10);
+  expect(n.unusedRaUnsafe).toBeGreaterThan(10);expect(n.raPhasePresses).toBeGreaterThan(100);expect(n.completed).toBeGreaterThan(50);
+  expect(n.instant).toBeGreaterThan(500);expect(n.transit).toBeGreaterThan(500);
+ });
+});
+
+describe('WEB-OPT-01 phase context: rates are checked only where SlewTimer2 or the start actually reads them',()=>{
+ // Coordinator observations radio-antenna-independent/phase-context-findings/observations.json (migrated TS, synthetic).
+ // Native consumers (derived listings, see RA-10/RA-11): the start writes the Dec step from the rate (0x566f8a); the
+ // callback reads the stored rate once, at the Dec→RA switch of a non-transit telescope (0x5674ff..0x56750f); the RA
+ // phase adds the fixed step; a transit telescope goes from Dec to phase 3; instantSlew writes the pointing (0x566fb3).
+ const raStep=(rate:number)=>rate*RADIO_LAB_CONSTANTS.raStepPerRate/RADIO_LAB_CONSTANTS.raStepDivisor;
+ const A=opts({maxRateIndex:6}),B=opts({maxRateIndex:4,rateBase:3241});
+ const AT={...A,transitTelescope:true},BT={...B,transitTelescope:true},BI={...B,instantSlew:true};
+ /** Under A a slew raises the index to 6 (50000) and keeps it after arrival at 3 h / +20°. */
+ function afterA():RadioLabState{
+  const r=runSlew(slewTo(at(1,10,A),fields('3','0','0','20','0','0'),A),A);
+  return track(answerNotice(r.state,A,'slew-complete','ok')).state;
+ }
+ /** Transit telescope: a slew under AT raises the index to 6; after arrival the host switches to BT and RateDown gives 5/324100. */
+ function transitAt5():RadioLabState{
+  const s={...activated(AT),pointing:{ra:4,dec:10}},r=runSlew(startUnder(s,fields('9','0','0','20','0','0'),AT).state,AT);
+  expect(r.state).toMatchObject({rateIndex:6,pointing:{ra:4,dec:20},trackingVisible:false,rateSpinEnabled:true});
+  const down=track(changeSlewRate(track(answerNotice(r.state,AT,'slew-complete','ok')).state,BT,'down'));
+  expect(down.state).toMatchObject({rateIndex:5,rate:324100});return down.state;
+ }
+ for(const [label,f,phase] of [['phase 2 (RA rising)',fields('7','0','0','10','0','0'),2],['phase 3 (RA falling)',fields('1','0','0','10','0','0'),3]] as const)
+  it(`${label}: the fixed RA step is unaffected by a RateSpin press under other options; the native press is applied`,()=>{
+   const ra=toRaPhase(slewTo(afterA(),f,A),A);
+   expect(ra).toMatchObject({phase,rateIndex:6,rate:50000});expect(Math.abs(ra.step)).toBe(0.9259259259259259);// observation: step 0.9259259259259259
+   const on=retrack(ra,B);
+   expect(radioLabRateIssues(on,B)).toEqual([]);// before: [{context:'down',…324100…}]
+   const down=track(changeSlewRate(on,B,'down'));
+   expect(down).toMatchObject({outcome:'rate-down',changed:true,state:{rateIndex:5,rate:324100,step:ra.step,phase}});// native RateSpinDownClick result
+   const reference=runSlew(on,B),pressed=runSlew(down.state,B);
+   expect(pressed.outcomes).toEqual(reference.outcomes);expect(pressed.pointings).toEqual(reference.pointings);
+   expect(pressed.state).toMatchObject({notice:{kind:'slew-complete'},pointing:reference.state.pointing,rateIndex:5,rate:324100});
+   expect(radioLabRateIssues(track(answerNotice(pressed.state,B,'slew-complete','ok')).state,B).map(i=>i.context)).toEqual(['start']);// the next start still gates it
+  });
+ it('a positive huge (or non-finite) stored rate during the RA phase is never read: callbacks continue unchanged',()=>{
+  const ra=toRaPhase(slewTo(afterA(),fields('7','0','0','10','0','0'),A),A),reference=runSlew(ra,A);
+  for(const rate of [5_000_000,Number.MAX_VALUE,Number.NaN]){
+   const restored:RadioLabState={...ra,rateIndex:8,rate};
+   expect(radioLabRateIssues(restored,A)).toEqual([]);expect(radioLabTickRefusal(restored,A)).toBeNull();
+   const r=runSlew(restored,A);expect(r.outcomes).toEqual(reference.outcomes);expect(r.pointings).toEqual(reference.pointings);
+  }
+ });
+ it('transit: Dec-only slews take no RA step, so an RA-unsafe kept rate starts and completes; a Dec-unsafe rate is still refused',()=>{
+  const s=transitAt5();
+  expect(radioLabRateIssues(s,BT)).toEqual([]);// before: [{context:'start',…ra-step 6.0018…}]
+  const started=startUnder(s,fields('9','0','0','-30','0','0'),BT);
+  expect(started).toMatchObject({outcome:'slew-started',state:{rateIndex:5,rate:324100,phase:1,step:-324100*RADIO_LAB_CONSTANTS.decStepPerRate}});
+  const r=runSlew(started.state,BT);
+  expect(r.outcomes).toEqual(['slew-tick','slew-complete']);expect(r.state).toMatchObject({pointing:{ra:4,dec:-30},phase:3,notice:{kind:'slew-complete'}});
+  // The Dec step itself is read: a non-advancing kept rate is refused at OK with the Dec reason.
+  for(const rate of [0,-5,Number.NaN,Number.POSITIVE_INFINITY,1e-300]){
+   const bad={...s,rateIndex:8,rate};
+   expect(radioLabRateIssues(bad,BT)).toEqual([{context:'start',rate,issue:{kind:'rate-not-advancing',index:8},target:null,raStepOnly:false}]);
+   expect(track(confirmSkyCoords(enter(bad,fields('9','0','0','-30','0','0'),BT),BT)).outcome).toBe('rate-unsupported');
+  }
+ });
+ it('transit option switched off mid-run: Dec continues, the switch callback that would read the RA-unsafe rate is refused; transit again completes; Stop works',()=>{
+  const run=startUnder(transitAt5(),fields('9','0','0','-30','0','0'),BT).state;
+  expect(radioLabRateIssues(run,B)).toEqual([{context:'stored',rate:324100,issue:{kind:'ra-step',index:5,raStepHours:raStep(324100)}}]);
+  expect(radioLabRateIssues(run,BT)).toEqual([]);
+  const decDone=track(slewTimerTick(run,B,run.slewRun));expect(decDone).toMatchObject({outcome:'slew-tick',state:{axisDone:true,pointing:{dec:-30}}});
+  expect(radioLabTickRefusal(decDone.state,B)).toBe('rate-unsupported');
+  expect(track(slewTimerTick(decDone.state,B,run.slewRun))).toMatchObject({outcome:'rate-unsupported',changed:false,state:decDone.state});
+  expect(track(changeSlewRate(decDone.state,B,'down')).outcome).toBe('rate-disabled');// no Tracking button: RateSpin stays disabled
+  expect(track(slewTimerTick(decDone.state,BT,run.slewRun)).outcome).toBe('slew-complete');
+  const ask=track(openSetCoordinates(decDone.state,B));expect(ask.outcome).toBe('stop-requested');
+  expect(radioLabRateIssues(ask.state,B).map(i=>i.context)).toEqual(['stored']);
+  const stopped=track(answerNotice(ask.state,B,'stop-slew','yes')).state;
+  expect(radioLabRateIssues(stopped,B).map(i=>i.context)).toEqual(['start']);expect(radioLabRateIssues(stopped,BT)).toEqual([]);
+ });
+ it('instantSlew writes the pointing at once: no rate is read, so a kept RA-unsafe or non-advancing rate does not refuse it',()=>{
+  const s=track(changeSlewRate(afterA(),B,'down')).state;expect(s).toMatchObject({rateIndex:5,rate:324100});
+  expect(radioLabRateIssues(s,BI)).toEqual([]);// before: [{context:'start',…}]
+  const jump=startUnder(s,fields('2','0','0','25','0','0'),BI);
+  expect(jump).toMatchObject({outcome:'slew-instant',state:{pointing:{ra:2,dec:25},rateIndex:5,rate:324100,slewTimerEnabled:false,slewing:false}});
+  const zero=startUnder({...s,rateIndex:8,rate:0},fields('2','0','0','25','0','0'),BI);expect(zero.outcome).toBe('slew-instant');
+  expect(track(confirmSkyCoords(enter(s,fields('2','0','0','25','0','0'),B),B)).outcome).toBe('rate-unsupported');// a programmed start still reads it
+ });
+ it('options switched between confirmations: each answer is checked against the branch it will actually take',()=>{
+  const s=track(changeSlewRate(afterA(),B,'down')).state,f=fields('2','0','0','25','0','0');
+  // OK under instant, then the host turns instant off while the confirmation is open.
+  const ask=track(confirmSkyCoords(enter(s,f,BI),BI));expect(ask.outcome).toBe('slew-confirm-requested');
+  expect(radioLabRateIssues(ask.state,B).map(i=>i.context)).toEqual(['start']);
+  expect(track(answerNotice(ask.state,B,'confirm-slew','yes'))).toMatchObject({outcome:'rate-unsupported',changed:false,state:ask.state});
+  expect(track(answerNotice(ask.state,B,'confirm-slew','no')).outcome).toBe('slew-declined');
+  expect(track(answerNotice(ask.state,BI,'confirm-slew','yes')).outcome).toBe('slew-instant');
+  // Transit note answered after the host turned transit off: the confirmation follows the live options; Yes is checked again.
+  const t=transitAt5(),note=track(confirmSkyCoords(enter(t,fields('9','0','0','-30','0','0'),BT),BT));expect(note.outcome).toBe('transit-notice');
+  expect(track(answerNotice(note.state,B,'transit-dec-only','cancel')).outcome).toBe('transit-cancelled');
+  const confirm=track(answerNotice(note.state,B,'transit-dec-only','ok'));expect(confirm.state.notice).toEqual({kind:'confirm-slew',target:{ra:9,dec:-30},transit:false});
+  expect(track(answerNotice(confirm.state,B,'confirm-slew','yes')).outcome).toBe('rate-unsupported');
+  expect(track(answerNotice(confirm.state,BT,'confirm-slew','yes')).outcome).toBe('slew-started');
+ });
+ it('pending Dec→RA use: a Dec-phase press to a supported rate recovers a restored rate before the switch; an unsupported one is refused',()=>{
+  const s:RadioLabState={...slewTo(at(1,10),fields('3','0','0','20','0','0')),rateIndex:7,rate:500_000};
+  const on=retrack(s,O);expect(radioLabRateIssues(on,O).map(i=>i.context)).toEqual(['stored']);
+  const six=track(changeSlewRate(on,O,'down'));expect(six).toMatchObject({outcome:'rate-down',state:{rateIndex:6,rate:50_000}});
+  expect(radioLabRateIssues(six.state,O)).toEqual([]);
+  expect(runSlew(six.state).state).toMatchObject({pointing:{ra:3,dec:20},notice:{kind:'slew-complete'}});
+  const eight=retrack({...s,rateIndex:9,rate:5_000_000},O);
+  expect(track(changeSlewRate(eight,O,'down'))).toMatchObject({outcome:'rate-unsupported',changed:false});// 8 → 5e6 would still be read at the switch
+ });
+ it('behind the modal stop question no press context is listed (every press returns modal-open); resume continues Dec',()=>{
+  const running=retrack(slewTo(afterA(),fields('5','0','0','10','0','0'),B),B);
+  expect(radioLabRateIssues(running,B).map(i=>i.context)).toEqual(['down']);
+  const ask=track(openSetCoordinates(running,B));expect(track(changeSlewRate(ask.state,B,'down')).outcome).toBe('modal-open');
+  expect(radioLabRateIssues(ask.state,B)).toEqual([]);// before: ['down'] although the press cannot happen
+  const resumed=track(answerNotice(ask.state,B,'stop-slew','no')).state;
+  expect(radioLabRateIssues(resumed,B).map(i=>i.context)).toEqual(['down']);
+  expect(runSlew(resumed,B).state).toMatchObject({pointing:{ra:5,dec:10},notice:{kind:'slew-complete'}});
+ });
+ it('reentry after a completed RA-phase press: the next start is gated by the branch it takes, and a stopped run delivers nothing late',()=>{
+  const ra=toRaPhase(slewTo(afterA(),fields('7','0','0','10','0','0'),A),A);
+  const pressed=track(changeSlewRate(retrack(ra,B),B,'down')).state;
+  const stopped=track(answerNotice(track(openSetCoordinates(pressed,B)).state,B,'stop-slew','yes')).state;
+  expect(stopped).toMatchObject({slewing:false,rateIndex:5,rate:324100});
+  expect(track(confirmSkyCoords(enter(stopped,fields('2','0','0','25','0','0'),B),B)).outcome).toBe('rate-unsupported');
+  const second=startUnder(stopped,fields('2','0','0','25','0','0'),BI);expect(second.outcome).toBe('slew-instant');
+  expect(track(slewTimerTick(second.state,BI,pressed.slewRun)).outcome).toBe('slew-timer-idle');
+ });
+});
+
+describe('WEB-OPT-01 RA tolerance: a stored rate is refused only where its RA step would move the telescope',()=>{
+ // Coordinator observations radio-antenna-independent/tolerance-feedback-findings/observations.json (migrated TS,
+ // synthetic). RA-11 (derived listing GNU-SLEWTIMER2): at the non-transit Dec→RA switch +0x53e := Extended 0x5678d0 ≥ |d|,
+ // and with +0x53e set the same callback completes, so the RA step it computes from the rate is never added.
+ const k=RADIO_LAB_CONSTANTS,tol=k.initialRaToleranceHours;
+ const raStep=(rate:number)=>rate*k.raStepPerRate/k.raStepDivisor;
+ const A=opts({maxRateIndex:6}),B=opts({maxRateIndex:4,rateBase:3241}),AT={...A,transitTelescope:true},BT={...B,transitTelescope:true};
+ const unsafe={kind:'ra-step',index:5,raStepHours:raStep(324100)} as const;
+ /** The reproduced flow: under A a slew raises the index to 6 and arrives at 3 h / +20°; RateDown under B gives 5/324100. */
+ function keptUnderB():RadioLabState{
+  const r=runSlew(slewTo(at(1,10,A),fields('3','0','0','20','0','0'),A),A);
+  const s=track(changeSlewRate(track(answerNotice(r.state,A,'slew-complete','ok')).state,B,'down')).state;
+  expect(s).toMatchObject({rateIndex:5,rate:324100,pointing:{ra:3,dec:20},target:{ra:3,dec:20},rateSpinEnabled:true,slewing:false});
+  return s;
+ }
+ const startIssues=(s:RadioLabState,o:RadioLabOptions)=>radioLabRateIssues(s,o).filter(i=>i.context==='start');
+ it('observations: same RA and an RA inside the tolerance start a Dec-only slew that completes without an RA step; exact no-motion warns',()=>{
+  const s=keptUnderB();
+  expect(radioLabRateIssues(s,B)).toEqual([{context:'start',rate:324100,issue:unsafe,target:null,raStepOnly:true}]);
+  for(const seconds of ['0','0.018']){
+   const open=enter(s,fields('3','0',seconds,'10','0','0'),B);
+   expect(radioLabRateIssues(open,B)).toEqual([]);// the valid draft takes no RA step
+   const ok=track(confirmSkyCoords(open,B));expect(ok.outcome).toBe('slew-confirm-requested');// before: rate-unsupported
+   const d=ok.state.target.ra-3;expect(Math.abs(d)).toBeLessThanOrEqual(tol);expect(d===0).toBe(seconds==='0');
+   const yes=track(answerNotice(ok.state,B,'confirm-slew','yes'));
+   expect(yes).toMatchObject({outcome:'slew-started',state:{rateIndex:5,rate:324100,phase:1,step:-324100*k.decStepPerRate}});
+   const r=runSlew(yes.state,B);
+   expect(r.outcomes).toEqual(['slew-tick','slew-complete']);// Dec snaps on the first callback; the switch completes at once
+   expect(r.state).toMatchObject({pointing:{ra:3,dec:10},phase:d>0?2:3,axisDone:true,notice:{kind:'slew-complete'},rateIndex:5,rate:324100});
+   // The switch still computes Sign(d) × rate × 0x5678dc / 15 into +0x525; that step is never added (RA not snapped either).
+   expect(r.state.step).toBe(valueSign(d)*324100*k.raStepPerRate/k.raStepDivisor);
+  }
+  const same=track(confirmSkyCoords(enter(s,fields('3','0','0','20','0','0'),B),B));// before: rate-unsupported
+  expect(same).toMatchObject({outcome:'no-slew-needed',state:{dialog:null,notice:{kind:'no-slew-needed'},target:{ra:3,dec:20},pointing:{ra:3,dec:20}}});
+ });
+ it('the existing tolerance is inclusive at its binary64 value; just outside it the RA step is taken, so start and switch are refused',()=>{
+  // Synthetic start position 0 h (as at() does) so that the parsed separation equals the binary64 tolerance exactly.
+  const s:RadioLabState={...keptUnderB(),pointing:{ra:0,dec:20}};
+  const atTol=enter(s,fields('0','0','0.036','10','0','0'),B);
+  expect((parseSkyCoords(atTol.dialog!.fields) as {ra:number}).ra-0).toBe(tol);
+  expect(radioLabRateIssues(atTol,B)).toEqual([]);
+  const run=track(answerNotice(track(confirmSkyCoords(atTol,B)).state,B,'confirm-slew','yes')).state;
+  const r=runSlew(run,B);expect(r.outcomes).toEqual(['slew-tick','slew-complete']);expect(r.state.pointing).toEqual({ra:0,dec:10});
+  const outside=enter(s,fields('0','0','0.037','10','0','0'),B),outsideRa=(parseSkyCoords(outside.dialog!.fields) as {ra:number}).ra;
+  expect(outsideRa).toBeGreaterThan(tol);
+  expect(radioLabRateIssues(outside,B)).toEqual([{context:'start',rate:324100,issue:unsafe,target:{ra:outsideRa,dec:10},raStepOnly:true}]);
+  const refused=track(confirmSkyCoords(outside,B));
+  expect(refused).toMatchObject({outcome:'rate-unsupported',changed:false,steps:[]});expect(refused.state).toBe(outside);
+  // Switch callback at the tolerance and at the next binary64 above it (synthetic target RA, same running slew).
+  const atSwitch=(ra:number):RadioLabState=>({...run,target:{ra,dec:10},pointing:{ra:0,dec:10},axisDone:true});
+  expect(radioLabTickRefusal(atSwitch(tol),B)).toBeNull();expect(track(slewTimerTick(atSwitch(tol),B,run.slewRun)).outcome).toBe('slew-complete');
+  const above=atSwitch(nextFloat(tol,true));
+  expect(radioLabRateIssues(above,B)).toEqual([{context:'stored',rate:324100,issue:unsafe}]);
+  expect(radioLabTickRefusal(above,B)).toBe('rate-unsupported');expect(track(slewTimerTick(above,B,run.slewRun))).toMatchObject({outcome:'rate-unsupported',changed:false,state:above});
+ });
+ it('Yes is checked against the committed target: a Dec-only confirmation starts under B, an RA one is still refused',()=>{
+  const s=keptUnderB();
+  const decOnly=track(confirmSkyCoords(enter(s,fields('3','0','0','-5','0','0'),A),A));expect(decOnly.outcome).toBe('slew-confirm-requested');
+  expect(startIssues(decOnly.state,B)).toEqual([]);
+  expect(track(answerNotice(decOnly.state,B,'confirm-slew','yes'))).toMatchObject({outcome:'slew-started',state:{rateIndex:5,rate:324100,target:{ra:3,dec:-5}}});
+  const withRa=track(confirmSkyCoords(enter(s,fields('4','0','0','-5','0','0'),A),A));
+  expect(startIssues(withRa.state,B)).toEqual([{context:'start',rate:324100,issue:unsafe,target:{ra:4,dec:-5},raStepOnly:true}]);
+  expect(track(answerNotice(withRa.state,B,'confirm-slew','yes'))).toMatchObject({outcome:'rate-unsupported',changed:false,state:withRa.state});
+ });
+ it('transit switched off mid-run at a within-tolerance switch: the callback completes; the observation vector completes too',()=>{
+  const t={...activated(AT),pointing:{ra:4,dec:10}};
+  const first=runSlew(startUnder(t,fields('9','0','0','20','0','0'),AT).state,AT).state;
+  const kept=track(changeSlewRate(track(answerNotice(first,AT,'slew-complete','ok')).state,BT,'down')).state;
+  expect(kept).toMatchObject({rateIndex:5,rate:324100,pointing:{ra:4,dec:20},trackingVisible:false});
+  const run=startUnder(kept,fields('4','0','0.018','-30','0','0'),BT);expect(run.outcome).toBe('slew-started');
+  expect(radioLabRateIssues(run.state,B)).toEqual([]);// live non-transit, but this switch ends within the tolerance
+  const decDone=track(slewTimerTick(run.state,B,run.state.slewRun));expect(decDone.state).toMatchObject({axisDone:true,pointing:{ra:4,dec:-30}});
+  expect(radioLabTickRefusal(decDone.state,B)).toBeNull();// before: 'rate-unsupported'
+  const end=track(slewTimerTick(decDone.state,B,run.state.slewRun));
+  expect(end).toMatchObject({outcome:'slew-complete',state:{pointing:{ra:4,dec:-30},phase:2,notice:{kind:'slew-complete'}}});
+  // observations.json "live transit off at within-tolerance Dec-to-RA switch" (synthetic state over the same run).
+  const vector:RadioLabState={...decDone.state,phase:1,axisDone:true,pointing:{ra:3,dec:10},target:{ra:3.000005,dec:10}};
+  expect(vector.target.ra-vector.pointing.ra).toBe(0.000004999999999810711);
+  expect(track(slewTimerTick(vector,B,vector.slewRun))).toMatchObject({outcome:'slew-complete',changed:true,state:{pointing:{ra:3,dec:10}}});
+ });
+ it('a Dec-phase press to an RA-unsafe rate is applied when the switch will end within the tolerance, refused when it takes the RA step',()=>{
+  const r=runSlew(slewTo(at(1,10,A),fields('3','0','0','20','0','0'),A),A),afterA=track(answerNotice(r.state,A,'slew-complete','ok')).state;
+  const decOnly=retrack(slewTo(afterA,fields('3','0','0','10','0','0'),B),B);
+  expect(decOnly).toMatchObject({slewing:true,phase:1,rateIndex:6,rate:50000,rateSpinEnabled:true});
+  expect(radioLabRateIssues(decOnly,B)).toEqual([]);
+  const down=track(changeSlewRate(decOnly,B,'down'));expect(down).toMatchObject({outcome:'rate-down',state:{rateIndex:5,rate:324100}});// before: rate-unsupported
+  const end=runSlew(down.state,B);expect(end.outcomes).toEqual(['slew-tick','slew-complete']);expect(end.state.pointing).toEqual({ra:3,dec:10});
+  const withRa=retrack(slewTo(afterA,fields('5','0','0','10','0','0'),B),B);
+  expect(radioLabRateIssues(withRa,B).map(i=>i.context)).toEqual(['down']);
+  expect(track(changeSlewRate(withRa,B,'down'))).toMatchObject({outcome:'rate-unsupported',changed:false,state:withRa});
+ });
+ it('inside the dialog the reason follows the valid J2000 draft; invalid text, entries outside the web domain and B1950 keep their own refusal; limits stay gated',()=>{
+  const s=keptUnderB(),open=track(openSetCoordinates(s,B)).state;
+  expect(open.dialog!.fields).toEqual(skyCoordsFieldsFor({ra:3,dec:20}));
+  expect(startIssues(open,B)).toEqual([]);// the prefill is the pointing: OK warns, it does not start
+  const edit=(n:RadioLabState,f:SkyCoordsFields)=>{for(const [key,v] of Object.entries(f))n=track(editSkyCoordsField(n,key as keyof SkyCoordsFields,v)).state;return n;};
+  const far=edit(open,fields('2','0','0','25','0','0'));
+  expect(startIssues(far,B)).toEqual([{context:'start',rate:324100,issue:unsafe,target:{ra:2,dec:25},raStepOnly:true}]);
+  expect(far.target).toEqual({ra:3,dec:20});// the stored target is not what the reason describes
+  for(const [f,outcome] of [[fields('x','0','0','25','0','0'),'ra-invalid'],[fields('2','0','0','91','0','0'),'dec-invalid'],
+   [fields('24.000000000000001','0','0','25','0','0'),'ra-unsupported']] as const){
+   const bad=edit(far,f);expect(startIssues(bad,B)).toEqual([]);
+   const t=track(confirmSkyCoords(bad,B));expect(t.outcome).toBe(outcome);// before: rate-unsupported
+   expect(t.state).toMatchObject({target:{ra:3,dec:20},dialog:bad.dialog});
+  }
+  const b1950=track(selectSkyCoordsEpoch(far,1)).state;expect(startIssues(b1950,B)).toEqual([]);
+  expect(track(confirmSkyCoords(b1950,B)).outcome).toBe('b1950-gated');// before: rate-unsupported
+  const limits={...B,limitsEnabled:true};expect(startIssues(far,limits)).toEqual([]);
+  expect(track(confirmSkyCoords(far,limits))).toMatchObject({outcome:'limits-require-clock',state:{dialog:null,notice:null,target:{ra:2,dec:25},pointing:{ra:3,dec:20},slewing:false}});
+ });
+ it('a refused OK keeps draft and stored target; Cancel, reopen, No and a Dec-only entry then confirm and complete',()=>{
+  const s=keptUnderB(),open=enter(s,fields('2','0','0','25','0','0'),B);
+  const refused=track(confirmSkyCoords(open,B));expect(refused.state).toBe(open);
+  const cancelled=track(cancelSkyCoords(refused.state)).state;expect(cancelled).toMatchObject({target:{ra:3,dec:20},dialog:null});
+  expect(track(openSetCoordinates(cancelled,B)).state.dialog!.fields).toEqual(skyCoordsFieldsFor({ra:3,dec:20}));
+  const ask=track(confirmSkyCoords(enter(cancelled,fields('3','0','0','5','0','0'),B),B));
+  expect(ask.state.notice).toEqual({kind:'confirm-slew',target:{ra:3,dec:5},transit:false});
+  const no=track(answerNotice(ask.state,B,'confirm-slew','no')).state;expect(no.target).toEqual({ra:3,dec:5});
+  const reopened=track(openSetCoordinates(no,B)).state;expect(reopened.dialog!.fields).toEqual(skyCoordsFieldsFor({ra:3,dec:5}));
+  const again=track(confirmSkyCoords(reopened,B));expect(again.outcome).toBe('slew-confirm-requested');
+  const end=runSlew(track(answerNotice(again.state,B,'confirm-slew','yes')).state,B);
+  expect(end.state).toMatchObject({pointing:{ra:3,dec:5},notice:{kind:'slew-complete'},rateIndex:5,rate:324100});
+ });
+ it('instant slew runs the start loop: it recomputes and stores index, rate and Dec step without using them to move',()=>{
+  const o=opts({maxRateIndex:6,instantSlew:true}),s={...at(1,10,o),rateIndex:2,rate:slewRateFor(2,o)};
+  expect(startUnder(s,fields('3','0','0','20','0','0'),o)).toMatchObject({outcome:'slew-instant',
+   state:{pointing:{ra:3,dec:20},rateIndex:6,rate:50000,step:50000*k.decStepPerRate,slewTimerEnabled:false,slewing:false,slewTicks:0}});
  });
 });
 
