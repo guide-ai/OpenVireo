@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 // Supplied saved PLR measurement rows viewer (docs/PULSAR-SAVED-ROWS.md). The viewer is not mounted in App yet, so
@@ -57,6 +57,18 @@ const held = (page: Page, key: string) => expect.poll(() => page.evaluate(k => (
 const release = (page: Page, key: string) => page.evaluate(k => { const m = (window as unknown as { __held: Map<string, { release: () => void }> }).__held; const h = m.get(k)!; m.delete(k); h.release(); }, key);
 const render = (page: Page, props: Record<string, unknown>) => page.evaluate(p => (window as unknown as { __savedRows: { render: (p: unknown) => void } }).__savedRows.render(p), props);
 const noPageOverflow = (page: Page) => expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+const modalLog = (page: Page) => page.evaluate(() => [...(window as unknown as { __modalLog: boolean[] }).__modalLog]);
+const unmount = (page: Page) => page.evaluate(() => (window as unknown as { __savedRows: { unmount: () => void } }).__savedRows.unmount());
+/** Remounts through the confirmed-corrections harness (`window.__mount`); an older harness without it fails here. */
+const remount = async (page: Page) => {
+  expect(await page.evaluate(() => typeof (window as unknown as { __mount?: unknown }).__mount), 'the harness must expose window.__mount').toBe('function');
+  await page.evaluate(() => (window as unknown as { __mount: () => void }).__mount());
+  await expect(page.getByTestId('saved-rows')).toBeVisible();
+};
+/** Lets pending effects, observers and timers run before asserting that nothing more happened. */
+const settle = (page: Page) => page.evaluate(() => new Promise(r => requestAnimationFrame(() => setTimeout(r, 50))));
+const openHostModal = (page: Page) => page.evaluate(() => { const d = document.createElement('dialog'); d.id = 'host-modal'; d.textContent = 'host'; document.body.append(d); d.showModal(); });
+const closeHostModal = (page: Page) => page.evaluate(() => document.getElementById('host-modal')!.remove());
 
 test('import, confirm, read-only rows and metadata, recovered Find (Top, Cursor, duplicates, miss, empty, Cancel, case quirk) and exact download', async ({ page }) => {
   await open(page);
@@ -280,15 +292,36 @@ test('host ownership: inactive viewer closes and keeps the Find session, waits b
   await page.getByTestId('saved-rows-from-top').click();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'saved-rows-row-3');
   await expect.poll(() => page.evaluate(() => (window as unknown as { __modalLog: boolean[] }).__modalLog)).toEqual([false, true, false]);
-  // Deactivation cancels a running read; its late result is ignored.
+  // Deactivation cancels a running read and the status says so; its late result is ignored.
+  const status = page.getByTestId('saved-rows-status');
+  const inactiveCancel = 'Reading held-late.csv was cancelled because the viewer was made inactive. Nothing changed.';
   await choose(page, 'held-late.csv', OTHER);
   await held(page, 'held-late.csv');
+  await expect(status).toHaveText('Reading held-late.csv…');
   await render(page, { active: false });
   await expect(page.getByTestId('saved-rows-reading')).toHaveCount(0);
+  await expect(status).toHaveText(inactiveCancel);
   await release(page, 'held-late.csv');
+  // Let the released read settle (several tasks) before checking that it changed nothing.
+  await page.evaluate(() => new Promise(r => setTimeout(r, 100)));
   await render(page, { active: true });
+  await expect(status).toHaveText(inactiveCancel);
+  await expect(status).not.toContainText('Reading held-late.csv…');
+  await expect(page.getByTestId('saved-rows-reading')).toHaveCount(0);
+  await expect(page.getByTestId('saved-rows-cancel-read')).toHaveCount(0);
   await expect(page.getByTestId('saved-rows-candidate')).toHaveCount(0);
+  await expect(page.getByTestId('saved-rows-rejection')).toHaveCount(0);
   await expect(page.getByTestId('saved-rows-identity-name')).toHaveText('control.csv');
+  await expect(page.getByTestId('saved-rows-identity-sha')).toHaveText(sha(CONTROL));
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'saved-rows-row-3');
+  await page.getByTestId('saved-rows-find').click();
+  await expect(page.getByTestId('saved-rows-query')).toHaveValue('b1919');
+  await page.getByTestId('saved-rows-find-cancel').click();
+  // A later explicit Cancel reading still reports its own message.
+  await choose(page, 'held-again.csv', OTHER);
+  await held(page, 'held-again.csv');
+  await page.getByTestId('saved-rows-cancel-read').click();
+  await expect(status).toHaveText('Reading cancelled. Nothing changed.');
 });
 
 test('keyboard: Tab wraps in the Find dialog, a held Enter acts once, Escape cancels one layer, arrow keys move the row selection', async ({ page }) => {
@@ -395,4 +428,177 @@ test('mobile and desktop layout: no page overflow, the row table scrolls in its 
   expect(d.x).toBeGreaterThanOrEqual(0);
   expect(d.x + d.width).toBeLessThanOrEqual(page.viewportSize()!.width + 0.5);
   await page.screenshot({ path: test.info().outputPath('find-layout.png') });
+});
+
+for (const variant of [{ name: 'plain', query: '' }, { name: 'StrictMode', query: '?strict=1' }]) {
+  test(`host ownership (${variant.name}): onModalChange reports false when the viewer unmounts during an open or waiting session, and nothing spurious`, async ({ page }) => {
+    await open(page, variant.query);
+    const expected: boolean[] = [];
+    const logged = async (...values: boolean[]) => { expected.push(...values); await settle(page); expect(await modalLog(page)).toEqual(expected); };
+    // One report of the initial state, also when StrictMode runs the mount effects twice.
+    await logged(false);
+    await useFile(page);
+    await logged();
+
+    // An open Find session: a new callback identity, deactivation and reactivation keep it and report nothing.
+    await page.getByTestId('saved-rows-find').click();
+    await page.getByTestId('saved-rows-query').fill('B1919');
+    await logged(true);
+    await page.evaluate(() => { const w = window as unknown as { __modalLog: boolean[]; __savedRows: { render: (p: unknown) => void } }; w.__savedRows.render({ onModalChange: (open: boolean) => w.__modalLog.push(open) }); });
+    await logged();
+    await render(page, { active: false });
+    await expect(findDialog(page)).not.toBeVisible();
+    await render(page, { active: true });
+    await expect(findDialog(page)).toBeVisible();
+    await expect(page.getByTestId('saved-rows-query')).toHaveValue('B1919');
+    await logged();
+    await unmount(page);
+    await expect(page.getByTestId('saved-rows')).toHaveCount(0);
+    await expect(page.locator('dialog')).toHaveCount(0);
+    await logged(false);
+
+    // Repeated lifecycle: a new viewer reports its own initial state. A Find session waiting behind a host modal
+    // (not open, still owned) ends on unmount; the host modal closing afterwards opens nothing.
+    await remount(page);
+    await logged(false);
+    await useFile(page);
+    await page.getByTestId('saved-rows-find').click();
+    await logged(true);
+    await render(page, { active: false });
+    await openHostModal(page);
+    await render(page, { active: true });
+    await expect(findDialog(page)).toHaveCount(1);
+    await expect(findDialog(page)).not.toBeVisible();
+    await logged();
+    await unmount(page);
+    await logged(false);
+    await closeHostModal(page);
+    await logged();
+    await expect(page.locator('dialog')).toHaveCount(0);
+
+    // A not-found notice waiting while the viewer is inactive ends on unmount.
+    await remount(page);
+    await logged(false);
+    await useFile(page);
+    await runFind(page, 'nowhere', 'saved-rows-from-top');
+    await expect(page.getByTestId('saved-rows-notice')).toBeVisible();
+    await logged(true);
+    await render(page, { active: false });
+    await expect(page.getByTestId('saved-rows-notice')).not.toBeVisible();
+    await logged();
+    await unmount(page);
+    await logged(false);
+
+    // A session that ended before the unmount reports nothing more.
+    await remount(page);
+    await logged(false);
+    await useFile(page);
+    await runFind(page, 'B1919', 'saved-rows-find-cancel');
+    await logged(true, false);
+    await unmount(page);
+    await logged();
+  });
+}
+
+test('Find reveals a row of a 2000-row file below the sticky column header, at several viewport sizes', async ({ page }) => {
+  // HAND-WRITTEN CONTROL: 2000 LF rows in the 11-column profile, numbered objects; rows 1990 and 1991 are identical.
+  const rows = Array.from({ length: 2000 }, (_, i) => ROW_B.replace('PSR B0531+21', i === 1990 || i === 1991 ? 'PSR DUP' : `PSR R${String(i).padStart(4, '0')}`));
+  const big = ['"10/22/2026","9:41:07 AM"', '"Table Number: 3"', '', '', HEADER, ...rows].map(l => l + '\n').join('');
+  await open(page);
+  await useFile(page, 'big.csv', big);
+  await expect(page.locator('[data-testid^="saved-rows-row-"]')).toHaveCount(2000);
+  const region = page.getByTestId('saved-rows-scroll');
+  const revealed = async (ordinal: number) => {
+    await expect(selectedRow(page)).toHaveAttribute('data-testid', `saved-rows-row-${ordinal}`);
+    await expect(page.getByTestId('saved-rows-selected-text')).toHaveText(rows[ordinal]);
+    const at = await page.evaluate(n => {
+      const box = document.querySelector<HTMLElement>('[data-testid="saved-rows-scroll"]')!;
+      const row = document.querySelector<HTMLElement>(`[data-testid="saved-rows-row-${n}"]`)!;
+      const head = box.querySelector('thead th')!.getBoundingClientRect(), r = row.getBoundingClientRect(), b = box.getBoundingClientRect();
+      const x = Math.max(r.left, b.left + box.clientLeft) + 6;
+      // What is drawn just inside the row's top and bottom edges: the row itself, not the sticky header.
+      const hit = (y: number) => row.contains(document.elementFromPoint(x, y));
+      return { headBottom: head.bottom, top: r.top, bottom: r.bottom, portBottom: b.top + box.clientTop + box.clientHeight, hitTop: hit(r.top + 2), hitBottom: hit(r.bottom - 2), viewport: innerHeight };
+    }, ordinal);
+    expect(at.top).toBeGreaterThanOrEqual(at.headBottom - 1);
+    expect(at.bottom).toBeLessThanOrEqual(at.portBottom + 1);
+    // Sub-pixel layout: a row aligned with the bottom edge can end a fraction of a pixel past it.
+    expect(at.top).toBeGreaterThanOrEqual(-1);
+    expect(at.bottom).toBeLessThanOrEqual(at.viewport + 1);
+    expect(at.hitTop).toBe(true);
+    expect(at.hitBottom).toBe(true);
+  };
+  const toBottom = async () => {
+    await region.evaluate(el => { el.scrollTop = el.scrollHeight; });
+    await expect.poll(() => region.evaluate(el => el.scrollTop)).toBeGreaterThan(10000);
+  };
+  for (const size of [null, { width: 768, height: 1024 }, { width: 320, height: 568 }]) {
+    if (size) await page.setViewportSize(size);
+    const label = size ? `${size.width}x${size.height}` : 'project';
+    // From the bottom of the table, From Top finds row 1: the table scrolls in its own region, the row clears the header.
+    await toBottom();
+    await runFind(page, 'R0000', 'saved-rows-from-top');
+    await revealed(0);
+    expect(await region.evaluate(el => el.scrollTop)).toBeLessThan(200);
+    await region.screenshot({ path: test.info().outputPath(`reveal-top-${label}.png`) });
+    // Duplicates are separate rows in file order: From Top finds the first, From Cursor the second.
+    await runFind(page, 'psr dup', 'saved-rows-from-top');
+    await revealed(1990);
+    await runFind(page, null, 'saved-rows-from-cursor');
+    await revealed(1991);
+    // Upwards from the bottom again, to a row that is not the first.
+    await toBottom();
+    await runFind(page, 'R0005', 'saved-rows-from-top');
+    await revealed(5);
+    await region.screenshot({ path: test.info().outputPath(`reveal-r5-${label}.png`) });
+    if (!size || size.width >= 375) await noPageOverflow(page);
+  }
+});
+
+test('keyboard: after a click on dialog text, Tab and Shift+Tab continue in document order from that text and still wrap', async ({ page }) => {
+  await open(page);
+  await useFile(page);
+  await page.getByTestId('saved-rows-find').click();
+  const dialog = findDialog(page);
+  await expect(page.getByTestId('saved-rows-query')).toBeFocused();
+  const fromText = async (text: Locator, key: 'Tab' | 'Shift+Tab', next: string) => {
+    await text.click();
+    // The press landed on text: no control of the dialog has focus.
+    expect(await page.evaluate(() => document.activeElement?.matches('button, input') ?? false)).toBe(false);
+    await page.keyboard.press(key);
+    await expect(page.getByTestId(next)).toBeFocused();
+  };
+  // Order: query, case, [keys note], [Begin Search:], From Top, From Cursor, Cancel.
+  const note = dialog.locator('#psr-find-keys'), begin = dialog.locator('#psr-begin'), caption = dialog.locator('h3');
+  await fromText(note, 'Tab', 'saved-rows-from-top');
+  await fromText(note, 'Shift+Tab', 'saved-rows-case');
+  await fromText(begin, 'Tab', 'saved-rows-from-top');
+  await fromText(begin, 'Shift+Tab', 'saved-rows-case');
+  // From text before the first control, Tab reaches the first control and Shift+Tab wraps to the last.
+  await fromText(caption, 'Tab', 'saved-rows-query');
+  await fromText(caption, 'Shift+Tab', 'saved-rows-find-cancel');
+  // Focus on a control replaces the clicked text as the origin: the wrap at the ends is unchanged.
+  await fromText(note, 'Tab', 'saved-rows-from-top');
+  for (const id of ['saved-rows-from-cursor', 'saved-rows-find-cancel', 'saved-rows-query']) { await page.keyboard.press('Tab'); await expect(page.getByTestId(id)).toBeFocused(); }
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.getByTestId('saved-rows-find-cancel')).toBeFocused();
+  // A refusal shown later is dialog text too.
+  await page.getByTestId('saved-rows-query').fill('pulsé');
+  await page.getByTestId('saved-rows-from-top').click();
+  const refusal = page.getByTestId('saved-rows-find-refusal');
+  await expect(refusal).toBeVisible();
+  await fromText(refusal, 'Tab', 'saved-rows-from-top');
+  await fromText(refusal, 'Shift+Tab', 'saved-rows-case');
+  // The notice: from its body text both keys reach its only control.
+  await page.getByTestId('saved-rows-query').fill('nowhere');
+  await page.getByTestId('saved-rows-from-top').click();
+  const body = page.getByTestId('saved-rows-notice-body');
+  await expect(body).toHaveText('"nowhere" Not Found.');
+  await fromText(body, 'Tab', 'saved-rows-notice-ok');
+  await fromText(body, 'Shift+Tab', 'saved-rows-notice-ok');
+  // Escape still closes one layer and the selection is unchanged.
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('saved-rows-notice')).toHaveCount(0);
+  await expect(page.getByTestId('saved-rows-find')).toBeFocused();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'saved-rows-row-0');
 });

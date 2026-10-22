@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type SyntheticEvent } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type SyntheticEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import './PulsarSavedRows.css';
 import { resourceSha256 } from '../io/boundedResource';
@@ -14,12 +14,14 @@ import { createSavedRowsTranslator, type SavedRowsMessageKey, type SavedRowsTran
  * and never reads or changes the PLR analysis panel's recording, cursors, pending readings or measurement list.
  *
  * Host API (App/router integration is the coordinator's decision):
- * - `active` (default true): while false the viewer is inert, a running read is cancelled and an open Find dialog or
- *   not-found notice closes; the Find session (draft included), the source, the selection and the Find memory are kept,
- *   and the dialog reopens when the viewer is active again. A host that hides the viewer must pass `active={false}`.
+ * - `active` (default true): while false the viewer is inert, a running read is cancelled (the status says so) and an
+ *   open Find dialog or not-found notice closes; the Find session (draft included), the source, the selection and the
+ *   Find memory are kept, and the dialog reopens when the viewer is active again. A host that hides the viewer must
+ *   pass `active={false}`.
  * - `onModalChange(open)`: called when the viewer starts or ends a modal session (Find dialog or notice, open or
- *   waiting). A dialog opens only while the viewer is active and rendered and no other modal dialog is open, so a host
- *   modal stays topmost; ours opens when that one closes.
+ *   waiting), and with false when the viewer unmounts during one. It is called only when the reported value changes.
+ *   A dialog opens only while the viewer is active and rendered and no other modal dialog is open, so a host modal
+ *   stays topmost; ours opens when that one closes.
  */
 export type PulsarSavedRowsProps = Readonly<{ translate?: SavedRowsTranslate; idPrefix?: string; active?: boolean; onModalChange?: (open: boolean) => void }>;
 
@@ -107,10 +109,11 @@ export default function PulsarSavedRows({ translate, idPrefix = 'psr-', active =
   };
   const closeNotice = () => { setNotice(null); focusFind.current = true; };
 
-  // Deactivation runs in the commit, before a later read continuation can act.
+  // Deactivation runs in the commit, before a later read continuation can act; that continuation is then ignored.
   useLayoutEffect(() => {
     activeRef.current = active;
-    if (!active && current.current.reading) apply(savedRowsCancelRead);
+    const reading = current.current.reading;
+    if (!active && reading) { apply(savedRowsCancelRead); setStatus(t('savedRows.status.readCancelledInactive', { name: reading.fileName })); }
   });
   // WEB modal dialogs: native <dialog> elements opened with showModal(), so the page is inert and focus stays inside.
   const [syncModal] = useState(() => () => {
@@ -134,24 +137,38 @@ export default function PulsarSavedRows({ translate, idPrefix = 'psr-', active =
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['open'] });
     return () => { observer.disconnect(); document.removeEventListener('close', closed, true); };
   }, [syncModal, modal, active]);
-  const report = useRef(onModalChange);
+  // The latest callback receives each change; a new callback identity alone reports nothing. A session that is still
+  // open or waiting when the viewer unmounts ends with false (the cleanup), so the host does not stay latched.
+  const report = useRef(onModalChange), reported = useRef<boolean | null>(null);
   report.current = onModalChange;
-  useEffect(() => { report.current?.(modal); }, [modal]);
+  const [reportModal] = useState(() => (open: boolean) => { if (reported.current !== open) { reported.current = open; report.current?.(open); } });
+  useEffect(() => {
+    reportModal(modal);
+    if (modal) return () => reportModal(false);
+  }, [reportModal, modal]);
   useEffect(() => {
     if (modal) return;
     if (focusFind.current) { focusFind.current = false; findButton.current?.focus(); }
     if (focusCandidate.current) { focusCandidate.current = false; useButton.current?.focus(); }
     if (revealSelection.current) {
       revealSelection.current = false;
-      tableScroll.current?.querySelector<HTMLElement>('tr[aria-selected="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      const region = tableScroll.current, row = region?.querySelector<HTMLElement>('tr[aria-selected="true"]');
+      if (region && row) {
+        // The sticky column header covers the top of the region: measure it so the revealed row stops below it.
+        region.style.scrollPaddingTop = `${Math.ceil(region.querySelector('thead')?.getBoundingClientRect().height ?? 0)}px`;
+        row.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
     }
   });
+  // Where the last press inside the open dialog landed, while it left focus off the controls.
+  const textOrigin = useRef<Node | null>(null);
 
   /**
    * Escape is Cancel (Find) or OK (notice); a repeat-flagged Escape does nothing, so one held key closes one layer.
    * A close request the page cannot cancel also counts as Cancel/OK. Tab and Shift+Tab wrap inside the dialog.
    * WEB adaptation: the DFM Kind bkCancel and the Win32 MessageBox key handling are not modelled; there is no window
-   * close button, and no rule for repeating a search from a closed window is invented.
+   * close button, and no rule for repeating a search from a closed window is invented. The Tab order from clicked
+   * dialog text follows the browser's document order (same policy as PulsarAnalysis); no Windows parity is claimed.
    */
   const dialogEvents = (cancel: () => void) => ({
     onKeyDown: (e: KeyboardEvent<HTMLDialogElement>) => {
@@ -160,9 +177,23 @@ export default function PulsarSavedRows({ translate, idPrefix = 'psr-', active =
       const items = tabbables(e.currentTarget), first = items[0], last = items[items.length - 1];
       if (!first) return;
       const focused = document.activeElement as HTMLElement | null;
-      if (!focused || !items.includes(focused)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
-      else if (focused === (e.shiftKey ? first : last)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+      let next: HTMLElement | undefined;
+      if (focused && items.includes(focused)) {
+        if (focused === (e.shiftKey ? first : last)) next = e.shiftKey ? last : first;
+      } else {
+        // Clicking non-focusable dialog text focuses the dialog and moves Chromium's sequential focus origin there.
+        // Keep the relative order from that text: the next or previous control in document order, and wrap only
+        // from text before the first or after the last control.
+        const origin = textOrigin.current, inside = origin !== null && e.currentTarget.contains(origin);
+        const before = inside ? items.filter(el => origin.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING) : [];
+        const after = inside ? items.filter(el => origin.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) : [];
+        next = (e.shiftKey ? before[before.length - 1] : after[0]) ?? (e.shiftKey ? last : first);
+      }
+      if (next) { e.preventDefault(); next.focus(); }
     },
+    onPointerDown: (e: ReactPointerEvent<HTMLDialogElement>) => { textOrigin.current = e.target as Node; },
+    // Focus on a control replaces the clicked text as the origin.
+    onFocus: (e: SyntheticEvent<HTMLDialogElement>) => { if (e.target !== e.currentTarget) textOrigin.current = null; },
     onCancel: (e: SyntheticEvent<HTMLDialogElement>) => { if (e.cancelable) { e.preventDefault(); cancel(); } },
     onClose: (e: SyntheticEvent<HTMLDialogElement>) => {
       const el = e.currentTarget;

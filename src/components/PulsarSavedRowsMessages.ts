@@ -92,6 +92,7 @@ export const SAVED_ROWS_MESSAGES_EN = Object.freeze({
   'savedRows.status.cancelled': 'Find cancelled.',
   'savedRows.status.pickerCancelled': 'No file chosen. Nothing changed.',
   'savedRows.status.readCancelled': 'Reading cancelled. Nothing changed.',
+  'savedRows.status.readCancelledInactive': 'Reading {name} was cancelled because the viewer was made inactive. Nothing changed.',
   'savedRows.status.candidate': '{name} is ready to check.',
   'savedRows.status.accepted': 'Now using {name}.',
   'savedRows.status.discarded': 'Checked file discarded. Nothing changed.',

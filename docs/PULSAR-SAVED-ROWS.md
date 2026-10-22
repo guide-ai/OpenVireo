@@ -45,13 +45,14 @@ An append save writes rows only, after the existing content. Rows from several s
 
 ## Refused input
 
-All of the following are refused with a visible reason, line number and byte offset. Nothing is repaired or skipped:
+All of the following are refused with a visible reason. Nothing is repaired or skipped. A line number and a byte offset are shown only when the failed check records them; none is invented:
 
-- a BOM, NUL, a byte ≥ 0x80 or another control character
-- a lone CR, mixed line endings or a missing final line ending
-- a header line out of place, or a `"` inside the table or name text
-- a row outside the profile
-- input beyond the WEB limits
+- a BOM (byte offset 0, no line), NUL, a byte ≥ 0x80 or another control character (line and byte offset)
+- a lone CR, mixed line endings or a missing final line ending (line and byte offset)
+- a header line out of place, or a `"` inside the table or name text (line)
+- a row outside the profile (line)
+- input beyond the WEB limits: too many lines (line); too many rows, or a file over the byte limit (no location)
+- an empty file or a read error (no location)
 
 **WEB limits** (these are not native limits): 1 MiB, 2000 rows, 1024 bytes per row, 40 bytes per numeric token and 64 bytes per date/time value.
 
@@ -71,7 +72,9 @@ All of the following are refused with a visible reason, line number and byte off
 - Enter in the search text is From Top, following the DFM `Default`.
 - Escape or a page close request is Cancel on the Find dialog and OK on the notice.
 - Held (repeat) Enter and Escape keys are ignored.
-- Tab wraps inside the dialogs. The rows are a radio group, so browser arrow keys move the selection.
+- Tab wraps inside the dialogs. After a click on dialog text that is not a control, Tab and Shift+Tab move to the next or previous control in document order from that text (the policy of the PLR analysis dialogs). This is browser order, not a claimed Windows order.
+- When Find reveals a row, the table scrolls within its own region so that the row stops below the sticky column header.
+- The rows are a radio group, so browser arrow keys move the selection.
 - Each viewer instance has its own Find memory. Natively, the dialog is one application-wide instance.
 - Not modelled: the window close button, `OnActivate` re-entry, VCL/Win32 key routing, code pages and GDI rendering.
 
@@ -89,24 +92,37 @@ All of the following are refused with a visible reason, line number and byte off
 mountPulsarSavedRows(element, { active?, onModalChange?, translate?, idPrefix? })
 ```
 
-- **`active={false}`** makes the viewer inert. It also cancels a running read and closes an open dialog. The Find session and its draft are kept, and the dialog reopens when the viewer becomes active again.
+- **`active={false}`** makes the viewer inert. It also cancels a running read and closes an open dialog. The status then says that reading the file was cancelled because the viewer was made inactive, and the read's late result is ignored. The file in use, the selection, the Find memory, the Find session and its draft are kept, and the dialog reopens when the viewer becomes active again.
 - **Host modals stay on top.** A dialog opens only when no other modal dialog is open.
-- **`onModalChange(open)`** reports when the viewer's modal session starts and ends.
+- **`onModalChange(open)`** reports when the viewer's modal session (open or waiting) starts and ends. It is called only when the value changes: `false` once at mount, then `true`/`false` per session. If the viewer unmounts during a session, it reports `false` as it unmounts. Deactivation keeps the session and reports nothing, and a new callback identity alone reports nothing.
 - **Integration is not done here.** Mounting the viewer in `App` and adding the catalog to `en.json` are left to the coordinator.
 
-## Expected integration dependency
+## Shared UI audit pins
 
-Adding `PulsarSavedRows.tsx` changes the shared UI audit:
+Adding `PulsarSavedRows.tsx` changes two shared UI audit pins.
 
-- `src/i18n/coverage.test.ts` expects 49 audited files; there are now 50.
-- `src/core/pulsarUiAudit.test.ts` expects `PulsarAnalysis.tsx` to be the only Pulsar TSX.
+**Historical author delivery (before commit `8498073`).** The author did not edit either pin. The full unit suite was 2,030 tests: 2,028 passed and these 2 failed:
 
-Both pins fail until the coordinator updates them during integration. They were neither edited nor skipped. An owned evidence-only check in the task directory confirms two things: the new file adds no direct render site, and every other site still matches `scientific-literals.json`.
+- `src/i18n/coverage.test.ts` expected 49 audited files; there were 50.
+- `src/core/pulsarUiAudit.test.ts` expected `PulsarAnalysis.tsx` to be the only Pulsar TSX.
+
+An owned evidence-only check in the task directory found that the new file adds no direct render site, and that every other site still matches `scientific-literals.json`.
+
+**Committed snapshot `8498073`.** The coordinator corrected both pins after an independent AST verification:
+
+- `coverage.test.ts` expects 50 files.
+- `pulsarUiAudit.test.ts` lists both Pulsar TSX files and adds a test of the saved-rows catalog's keys and placeholders.
+
+The recorded full suite for that snapshot is 2,032 tests, all passing. The current pass/fail state is whatever the latest validation run records; this document does not replace it.
 
 ## Tests and harness
 
 - **Unit tests:** `src/core/pulsarSavedRows.test.ts`, which the project Vitest include picks up.
-- **Browser tests:** the owned configs under `<task>/claude-pulsar-saved-rows/harness/` serve `/__saved-rows-harness/` on `127.0.0.1:5306` (strict port). The `?plr=1` variant also mounts the existing analysis workbench, to check that its data stays unchanged. Tests run at desktop 1440 × 1050 and touch 375 × 812.
+- **Browser tests:** owned configs outside the worktree serve `/__saved-rows-harness/` on `127.0.0.1:5306` (strict port). The first set is under `<task>/claude-pulsar-saved-rows/harness/`. The set used for the corrections is under `<task>/claude-pulsar-saved-rows/confirmed-corrections/harness/`.
+  - The `?plr=1` variant also mounts the existing analysis workbench, to check that its data stays unchanged.
+  - The `?strict=1` variant renders the viewer inside React `StrictMode`.
+  - The corrections harness also exposes `__mount()`, so a test can remount the viewer after `unmount()`.
+  - Tests run at desktop 1440 × 1050 and touch 375 × 812. The row-reveal test also resizes to 768 × 1024 and 320 × 568.
 
 ## Web allocation bound
 
