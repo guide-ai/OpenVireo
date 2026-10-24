@@ -1,6 +1,6 @@
 {
   "policy": "OpenVireo-radio-antenna-v1",
-  "scope": "I06 antenna/control-panel subflow: TRadioLab Tracking, Slew Rate, Slew > Set Coordinates (TSkyCoordsDlg entry and validation), programmed slew (SlewTimer2) with confirmation, arrival and stop/resume, plus the compiled option defaults these read. Receivers, pulsar signals, beam (+0x5f3 object 0x561e88), hot list, manual N/S/E/W slewing, ClockTimer drift, altitude limits, B1950 precession and options-file/dialog owners are not implemented.",
+  "scope": "I06 antenna/control-panel subflow: TRadioLab Tracking, Slew Rate, Slew > Set Coordinates (TSkyCoordsDlg entry and validation), programmed slew (SlewTimer2) with confirmation, arrival and stop/resume, the ClocktimerTimer hour-angle/RA bookkeeping driven by an explicit web UT scenario (RA-13, RA-15), manual N/S/E/W press-and-hold (RA-16..RA-18, WEB-MANUAL-01..04) and, in part, the RA-19 FormKeyDown/FormKeyUp keyboard table with its cross-key release (WEB-KEY-02/03; F4/F8 decoded but not used by the browser), the altitude-limit predicate 0x5668e0 at its three callers under a conditional browser admission policy (RA-12, WEB-ALT-01..03) with an explicit web radio-options scenario for the recovered Limit Slewing flag, plus the compiled option defaults these read, and Slew > Hot List View/Select and Load over the HTL list shared with the observatory editor (hotList: RA-HL-01..07, WEB-HL-01..07), and the Set Coordinates B1950.0/J2000.0 fixed-epoch conversion with its +0x3c5 flag lifecycle (epoch: RA-EP-01..04, WEB-EP-01..04). Receivers, pulsar signals, beam (+0x5f3 object 0x561e88), the hot list's Add Current Item and Save Updated List, the native result of +0xd4 on a disabled or hidden button, form-level key routing (KeyPreview, not verified), the pole sound/API call 0x408c44, the native date dialog/local-date labels, the INI loader and the full TRadiOptsDlg/instructor options workflow are not implemented. I06 remains incomplete.",
   "artifact": {
     "name": "CLEA_VEO.exe (VIREO 1.504)",
     "path": "/tmp/clea-static-research/extracted/CLEA_Vireo/program files/CLEA/VIREO/CLEA_VEO.exe",
@@ -27,6 +27,13 @@
       "evidenceId": "ev_be75d7d377a56116d3e0f735a646c38191fd95073d89c054e348b2bd46c558ef",
       "result": "exit 0, completion complete, artifact_sha256_after = artifact SHA-256, artifact_changed false. The content-addressed ID equals the one already cited by the earlier find-literal recovery, i.e. this run reproduced that record. Sections: .text VMA 0x401000 size 0x1aac78; .data 0x5ae000 size 0x7f60; .bss 0x5b6000.",
       "use": "Places the SkyCoords globals 0x5bc1c0/0x5bc1cc in .bss (zero-initialized) and the indirection cells 0x5b5e20/0x5b5604/0x5b5e0c in .data."
+    },
+    "manualSectionHeaders": {
+      "evidenceId": "ev_e38712cf9c7d43940da29cd5dc4bc40bf7f633a2c4d32642a40a0c87b1112228",
+      "operation": "inspect-with-objdump section_headers (REA 6.5.0)",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/rea-section-headers.json",
+      "captureFileSha256": "afdf06d22ce48339e4a117323350405923605d6bc7a14a500eb5bf05aaa81e69",
+      "use": "Coordinator-run REA record for the manual-slew preparation (artifact unchanged). Not re-run by the implementer; no new REA call and no runtime witness is claimed for RA-16..RA-19."
     },
     "notUsed": "No Ghidra/IDA open_binary, analyze_function or provider diagnostics. REA inspect_with_objdump has no address-bounded operation, so bounded disassembly used direct GNU objdump (not REA provider results)."
   },
@@ -101,6 +108,108 @@
       "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-antenna-independent/constant-authority.json",
       "sha256": "8d0aad073f5c70ed01b68e76b78b1ae51ec4c1885aa065ab5c974954766a0e46",
       "kind": "Coordinator read-only static numeric audit of13 specified cells via existing PE mapper830c9b47\u20260bf8; original artifact before/after unchanged. Initial comparison recorded11matched and2analyst transcription errors; failed audit deliberately retained, corrected actual operands in constants above. No native execution or emulation."
+    },
+    {
+      "id": "COORD-RA13-METADATA",
+      "path": "/tmp/clea-static-research/radio-ra13-clock-validation/native-metadata-verification.json",
+      "kind": "Coordinator read-only PE VA mapping and static typed field/RTTI decoding for RA-13/RA-15 (validator SHA-256 1cb2687aa3b29973a7e9cafa9da36b8706d32808b3589369eb0cdac33230ccc2, existing mapper 15c9199e918d637adf410f25e4f9149d34b3763e511e6017454b0aa8108741a2; artifact SHA-256 unchanged before/after). Singles 0x5ac794 = 100000, 0x5ac798 = 693594, 0x565808 = 24, 0x487a38/0x487a3c/0x487a40 = 24/1440/86400, 0x487b48 = 24; TRadioLab field table 0x563b0c (cell 0x5639d0), class table 0x5642d0 index 3, slot 0x5642de -> class-ref 0x445924 -> VMT 0x445970 TTimer (68 bytes, constructor 0x448e6c, store 0x448e8b Interval := 1000); RTTI 0x4459b4 (ExtCtrls: Enabled default 1, Interval default 1000 getter +0x30 setter 0x449004, OnTimer); compiled longitude words {0x7905f5c4,0xb25e34f1,0xbfff} = binary64 -1.393499963671317. No original code executed or emulated; no raw byte payload emitted.",
+      "approval": "/tmp/clea-static-research/radio-ra13-clock-validation/COORDINATOR-PLAN-APPROVAL.md (corrects the plan's RTTI start 0x4459a8 to 0x4459b4)"
+    },
+    {
+      "id": "RA13-PLAN",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-ra13-clock-20261022-plan/plan.txt",
+      "kind": "Approved static plan (text reading of LISTING and the restored preparation captures; no REA, objdump, PE mapper or CLEA run in that phase). Its byte decodes were verified by COORD-RA13-METADATA where listed there; the others remain analyst decodes."
+    },
+    {
+      "id": "MANUAL-PREP",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/preparation-manifest.json",
+      "sha256": "c24ffaec3caec43096da950e4680629982b10e0011e270849a9f88107cb7cc13",
+      "kind": "Coordinator preparation for I06 manual N/S/E/W (the sha256 above is of the manifest bytes, hashed independently by Codex; the SHA-256 of each child file is listed in the manifest itself):entry-aligned GNU objdump listings (no raw bytes) whose method entries are authenticated by DFM-RADIOLAB (c3719a55…), plus typed static values. The coordinator verified all 36 source evidence hashes before the plan was approved; the implementer re-read the files but did not recompute hashes. SCOPE-AND-EVIDENCE.md (04bb565472f4b77064dbb44658ae2923ad4b94d677ca067d32882feb5b937661) states that the overall LISTING is misaligned near 0x565e58, so these entry-aware files are the authority for RA-16..RA-19."
+    },
+    {
+      "id": "GNU-MANUAL-DOWN",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/{N,S,E,W}BtnMouseDown.asm",
+      "sha256": "N 1efce2090fa17a88fcc30519f2c6dbcabb467ef453f5a798594c5accfb0b5975, S c0ba3a4f344d0a1d71fba0652a22cacaba0136b389d6575dcfa7538dc3d04540, E a7854f7a8ccbd319c46cf93128fc4d58ddf14d49ac8df956ca9dc1a6d429f7d6, W 970918302b25a50093b85a7ed79fd8b51de7776dbfdd411a3098677944632859",
+      "kind": "Entry-aligned listings 0x5662a0, 0x5663c4, 0x5664e8, 0x566634."
+    },
+    {
+      "id": "GNU-MANUAL-UP",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/{N,S,E,W}BtnMouseUp.asm",
+      "sha256": "N 72a559b1419c194e5a2e2c3fc69fbc6aae8a2c361f35e7a9716a7b19c4ef2941, S babd53b4a1280bd3fe3071ea02bdfad48441e29653da858e1eb6177cf55e3172, E ff4efbfa4f2bba577b0cb9e5e937e6ad20660536ab65c3b3fa6fda9433cfbc74, W 5283b898c2266f69a370eda261a556e7a3a353432bc0a36a98486c1f8c1306c1",
+      "kind": "Entry-aligned listings 0x566338, 0x56645c, 0x56658c, 0x5666dc (E/W ClocktimerTimer calls at 0x566628/0x566778, confirmed by the coordinator)."
+    },
+    {
+      "id": "GNU-SLEWTIMER",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/SlewTimerTimer-code.asm",
+      "sha256": "191310c53537ddcd4e8c31f5e20ab70ff14135bb65bf747ecfbd4695c5bafd2e",
+      "kind": "Entry-aligned SlewTimerTimer 0x565e58..0x566210 (final RET 0x566210; SEH 0x566203/0x566208)."
+    },
+    {
+      "id": "GNU-MANUAL-CONTEXT",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/{tracking-manuallatch,initial-manual-fields,limit-short-circuit,coord-start-context}.asm and pole-flag-store-verification.json",
+      "sha256": "tracking-manuallatch 301472a1cad28ebc34f70d5818d9a5585ef857e9d0c50249da65e9f572e80250, initial-manual-fields 888e9301b0fbfe526a4e269c306222d7d1b6d73cdb44314390d7dfd18523576c, limit-short-circuit cf0035f221fd35940befd9c2f6d614d0f2968c96f29f4fdbe8d1beb66f13e076, coord-start-context 3ba20ea6a4b36f905b4d2e19985a845262c0809f89d9a59af58e0eeface0fea8, pole-flag-store-verification e244ef4a73c77bfc6748738e256a6a171a32a21da1b490f4a2e73cdd62f685e3",
+      "kind": "DriveBtnClick latch test 0x565def; first FormActivate pole-flag store 0x5649e7 (byte-verified; initial-manual-fields-initial-unverified.asm is not authority); limits-off return 0x5668f9; CoordBtnClick stop path."
+    },
+    {
+      "id": "GNU-MANUAL-KEYS",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/FormKeyDown-*.asm, FormKeyUp-*.asm, key-up-exact-tail.asm",
+      "sha256": "see MANUAL-PREP",
+      "kind": "FormKeyDown 0x5680c4 / FormKeyUp 0x5681dc prologues, lookup tables 0x568101/0x568213 and case blocks (KeyDown 0x568148/0x56816c/0x568190/0x5681b4/0x5681d6, KeyUp 0x56825a/0x56826c/0x56827e/0x568290/0x5682a0; bytes from 0x5682a4 are literal data). Authority for RA-19."
+    },
+    {
+      "id": "RA19-SUPPLEMENT",
+      "path": "/tmp/clea-static-research/radio-ra19-keyboard-20261023/{vmt-discovery.json,vmt-focus-slots.json,key-down-all-cases.asm,focus-api-thunk.asm,rea-symbols.json,button-focus-complete.asm,focus-method-authority.json,DOM-VK-STANDARDS.json}",
+      "sha256": "vmt-discovery 7f4f07c697564c197f5b49230c684f4dab5ee713ebf3a030c6f3eccc337fcc60, vmt-focus-slots c870adaf17d4e8af9cd377147470c21b46e4b43f3797664c3e3719d023a9612d, key-down-all-cases 3b43bae5752c226cfef67fbea040802928b828a5c8455c4a16eba0a5c57500be, focus-api-thunk 88ce61e9793f4778772ec443fd0efc92a2b10eab43bd5c1ba4e5e9d61d819259, rea-symbols 1ffeb2fb0cba1af6d21fca02728fe17b502bba9e8ee7aac8720f3f7c1a9ce615, button-focus-complete 73f2006fb23c54122cc38155af01960f8477c0f7fa422185082d1107c92acfdc, focus-method-authority 11590f33016bf7eb692692208f2c20f396216e7dfb0542b3dd43b521eea03982, DOM-VK-STANDARDS fd6134e9f19c7c2f6ebc410005a28210124fd6164a42cbd13797e78cc54c658b (as listed in STATIC-SUPPLEMENT-MANIFEST.json; not recomputed by the implementer)",
+      "kind": "Coordinator static supplement (typed metadata and bounded GNU objdump; artifact SHA-256 781bc970...c54c unchanged; no original execution or emulation; not the DFM-RADIOLAB file). TButton VMT 0x437fc8 and TWinControl VMT 0x4597cc; slots 0x43809c and 0x4598a0 (VMT+0xd4) both hold 0x46601c; method 0x46601c..0x466057 (complete RET; button-focus-complete.asm:12-28) has three paths: it calls 0x472e7c (dl = 1); a non-nil result goes to the form method 0x477f18; otherwise, if [Self+0x1c4] is non-zero, it calls 0x4660a0 and then the thunk 0x408d2c -> IAT 0x620b30 user32.SetFocus; otherwise (field 0) it calls 0x472e8c (dl = 1), whose identity and behavior are not established. Neither the 0x477f18 branch for a disabled or hidden button nor the 0x472e8c branch is closed. REA objdump symbols record ev_1484b3b3b9a7c7497eace548e6eefdbe0cdf00249992be3af4729c06f98a32e3 (exit 0, complete, untruncated, artifact unchanged) shows the image is stripped. All four KeyDown cases in one listing. Official VK/UI Events code/key definitions (Microsoft virtual-key codes; W3C uievents-code and uievents-key 2025-04-22 Recommendations) as platform definitions, not CLEA runtime witnesses."
+    },
+    {
+      "id": "RA19-CROSS-RELEASE",
+      "path": "/tmp/clea-static-research/radio-ra19-keyboard-20261023/{CROSS-RELEASE-EVIDENCE.json,NEGATIVE-BROWSER-CONTROL.json}",
+      "kind": "Coordinator deduction from the static Enable-writer sequence of GNU-MANUAL-DOWN/GNU-MANUAL-UP (not a runtime witness): after a hold of d released through r != d, r stays disabled; the ClocktimerTimer call follows the released key. Independent pre-implementation Chromium baseline: Space moved the pointing, each of the four letters produced no movement (script SHA-256 654d005ccd21b85b739fed497f60ade679336c2ae518f323587829e09e6d270a, exit 1, setup succeeded). File hashes not recomputed by the implementer."
+    },
+    {
+      "id": "RA19-PLAN",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-ra19-keyboard-20261023-plan/plan.txt",
+      "kind": "Approved static plan with binding coordinator amendments /tmp/clea-static-research/radio-ra19-keyboard-20261023/COORDINATOR-PLAN-APPROVAL.md (focus step on every accepted press, location-aware keypad mapping, physical-key release fallback, ra19Dispatch order and input contract, source-backed leftover button). G2 (TRadioLab root KeyPreview/OnKeyDown) not verified by the plan or implementer; no whole-program G3 writer proof."
+    },
+    {
+      "id": "MANUAL-STATIC-VALUES",
+      "path": "/tmp/clea-static-research/radio-manual-slew-preparation/manual-static-values.json",
+      "sha256": "9085930ef13107d132b8fa9da274be9b5ae7306382a6b94e92c731b07693dfb9",
+      "kind": "Typed operands via the existing mapper 15c9199e918d637adf410f25e4f9149d34b3763e511e6017454b0aa8108741a2: Singles 0x566214 90, 0x566218 0, 0x56621c 180, 0x566220 -180, 0x566224 12, 0x566588/0x5666d8 15; Extended 0x56632c/0x566450/0x56657c/0x5666cc one 10-byte value (SHA-256 af5db8382e0a53d811f971c5972dbcba23568b6339de1e6930e899c5f7bf041e) = 0.0002777777777777778; ANSI 0x566230 'S', 0x56623c 'N'; keyboard tables; DFM SlewTimer Interval 100 / Enabled False; N/S/E/W 25x25 TabStop False, E/W Visible False."
+    },
+    {
+      "id": "MANUAL-PLAN",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-manual-slew-20261023-plan/plan.txt",
+      "kind": "Approved static plan for this increment (no REA, objdump or CLEA run in that phase); coordinator clarifications recorded with the implement launch."
+    },
+    {
+      "id": "RA12-PREDICATE",
+      "path": "/tmp/clea-static-research/radio-ra12-altitude-20261023/altitude-predicate-complete.asm",
+      "sha256": "9cf4799d7f376d4e72c8871cb95576e16a1fdf261e9b4ddcf26c8f94b365f6c3",
+      "kind": "Coordinator entry-aligned GNU objdump 0x5668e0..0x566a19 (stopExclusive; ret 0x18 at 0x566a16), from SUPPLEMENTAL-CAPTURES.json. The earlier altitude-predicate.asm cut the ret operand and is not authority for the epilogue."
+    },
+    {
+      "id": "RA12-RTL",
+      "path": "/tmp/clea-static-research/radio-ra12-altitude-20261023/{rtl-sincos-complete,rtl-arcsin-complete}.asm",
+      "sha256": "rtl-sincos-complete 6b1d7695627e0d2af70b536ec6d402f88cbbf6fa5ebadf1514942d3e61531233, rtl-arcsin-complete 855c33138bfc652d8a29de768acd37c5eda0e47008491fa79a1aed4d06af9fa2",
+      "kind": "Entry-aligned RTL stubs 0x4036ac..0x4036c9 (fld; fcos / fld; fsin) and 0x426ff4..0x42700a (ArcSin: fld1; fld X; fst st(2); fmul; fsubp; fsqrt; fpatan)."
+    },
+    {
+      "id": "RA12-TYPED",
+      "path": "/tmp/clea-static-research/radio-ra12-altitude-20261023/{typed-values.json,typed-blocker-and-vmt.json,options-class-vmt.json,verified-field-roles.json}",
+      "kind": "Coordinator typed static decodes with the existing PE mapper (artifact SHA-256 unchanged; per-cell SHA-256 inside the files; file hashes not recomputed by the implementer): f80 0x566a1c (2pi), f32 0x566a28 = 24.0, f80 0x566a2c (pi/180), f32 0x566a38 = 90.0, the compiled threshold immediates (significand 0xb2b8c2573a243ada, exponent 0x3ffc = binary64 0.17453292519943295), Extended 0x5a93ec/0x5a9768 (radians/degrees conversions of TRadiOptsDlg), class TRadiOptsDlg VMT 0x5a7c84, the limit-path literals (shown nowhere: OpenVireo wording is used) and field 0x480 = AddCurrentItemtoList1."
+    },
+    {
+      "id": "RA12-OPTIONS",
+      "path": "/tmp/clea-static-research/radio-ra12-altitude-20261023/{native-options-metadata.json,native-options-show.asm,native-options-apply.asm,radio-options-cancel.asm,radio-options-launch.asm,environment-options-recopy.asm,radio-ini-loader.asm}",
+      "sha256": "radio-options-launch dc981853fb3ea991d0758415da655f7023aec04c56d6e9af7501d761f4242fca, radio-options-cancel 20cf4582cf25b1b212d1cc3ad57b0c1625b62e10abb7983cff4b24b022fdcdec, environment-options-recopy c557d53694e134839d955f3cd64f03e6eff24246f83ee75f1ce3159a26d3076b, radio-ini-loader d6de5b12753f0ef0e962aa021cd94e7c4b6a32def0c8675e1bd33ef8ecbc076c",
+      "kind": "TRadiOptsDlg published methods FormActivate 0x5a9138 (backs up the 0x942-byte record), OKBtnClick 0x5a9428 (SlewBox +0x3a8 -> record+0x93a; HorzEd +0x38c text x Extended 0x5a9768 -> record+0x90c), CancelBtnClick 0x5a9940 (restores the backup); DFM RCDATA 10/TRADIOPTSDLG/0 SHA-256 911c0d2c...41a1 (form 'Radio Simulation Options', SlewBox caption 'Limit Slewing', label 'Horizon Limit', HorzEd hint 'Limiting height above horizon (in degrees).'); ShowModal launch 0x5a6f58; settings+4 -> env+0x2e95 0x942-byte recopy after the parent options modal (0x588751..0x588767); INI loader 0x5a829c reads/writes the threshold and flag (not ported)."
+    },
+    {
+      "id": "RA12-PLAN",
+      "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-ra12-altitude-20261023-plan/plan.txt",
+      "kind": "Approved static plan (plan SHA-256 a920ffd958b6ebd3ddf0917e0692077abd605a74e58b390043c73fa968d77542), with binding coordinator corrections /tmp/clea-static-research/radio-ra12-altitude-20261023/COORDINATOR-PLAN-APPROVAL.md (bounded App options flow; WEB-ALT-01 labelled conditional/empirical; no automatic pass for thresholds <= -pi/2)."
     }
   ],
   "contracts": [
@@ -114,7 +223,7 @@
       "evidence": [
         "DFM-RADIOLAB"
       ],
-      "modelled": "INITIAL_RADIO_LAB and RADIO_LAB_CAPTIONS; the slice renders Set Coordinates, Tracking, RateSpin and read-only enabled-state text for N/S/E/W and Receiver."
+      "modelled": "INITIAL_RADIO_LAB and RADIO_LAB_CAPTIONS; the slice renders Set Coordinates, Tracking, RateSpin, the N/S/E/W hold pad (RA-16..RA-18) and read-only enabled-state text for N/S/E/W and Receiver."
     },
     {
       "id": "RA-02",
@@ -143,7 +252,8 @@
         "PHOTO-PRECEDENT"
       ],
       "modelled": "RADIO_COMPILED_OPTIONS {transit false, limits false, maxRateIndex 5, rateBase 50, instant false, latitude Extended above} and RADIO_COMPILED_ENVIRONMENT {diameter 100, access option 0}.",
-      "uncertainty": "Defaults hold only when no options file loads; the supplied distribution contains no VEO_OPTS.INI (precedent), but a classroom file or TRadioOptsDlg (RCDATA SHA-256 911c0d2c\u2026) can change every value. Loader 0x5a829c, the INI key names, record A's fallback control flow (relied on via the photometer precedent) and the TRadioOptsDlg VMT/handlers are not recovered. Values are therefore typed inputs with these defaults, not hidden authority. Interpreting record+0x8f4 as longitude and +0x908 as elevation is inference and unused."
+      "uncertainty": "Defaults hold only when no options file loads; the supplied distribution contains no VEO_OPTS.INI (precedent), but a classroom file or TRadioOptsDlg (RCDATA SHA-256 911c0d2c\u2026) can change every value. Loader 0x5a829c, the INI key names, record A's fallback control flow (relied on via the photometer precedent) and the TRadioOptsDlg VMT/handlers are not recovered. Values are therefore typed inputs with these defaults, not hidden authority. Interpreting +0x908 as elevation is inference and unused.",
+      "ra13Addition": "record+0x8f4 (env+0x3789) is the longitude argument of the LST call 0x4881ac in ClocktimerTimer (0x565562..0x56557f) and at 0x566c5b, 0x566e32, 0x564e6a (observed). Coordinator verified the typed words and the binary64 value -1.393499963671317 (-0x1.64bc69e2f20bfp+0, exact decimal -1.3934999636713169481223861811969300106284208595752716064453125; COORD-RA13-METADATA). East positive, west negative. Modelled as RADIO_CLOCK_CONSTANTS.compiledLongitudeRadians, applied only by an explicit user action. No site name (for example Green Bank) is claimed and the current classroom value is not known."
     },
     {
       "id": "RA-04",
@@ -160,7 +270,12 @@
       "evidence": [
         "LISTING"
       ],
-      "modelled": "activateRadioLab, run once when the panel window is first shown.",
+      "modelled": "activateRadioLab, run once when the panel window is first shown. RA-13 addition: hourAngle := 0 and clockTimerEnabled := true (clocktimer +0x394 SetEnabled True at 0x56481b, the only TRadioLab access to +0x394 found; 0x564831/0x564841 target +0x448/+0x45c).",
+      "ra13Ranges": [
+        "0x564812..0x564826",
+        "0x564acb",
+        "0x564bc0..0x564c3f (non-first path: no RA/HA/clock write in the span read)"
+      ],
       "notModelled": "Catalog, hot-list, sound and file loading in the same block; the non-first FormActivate path; RateLbl table text."
     },
     {
@@ -175,8 +290,8 @@
       "evidence": [
         "LISTING"
       ],
-      "modelled": "toggleTracking. Set Coordinates therefore needs Tracking on unless transit.",
-      "notModelled": "Sidereal tracking itself (ClockTimerTimer); +0x5d2 is always 0 because manual N/S/E/W are not implemented; ClockLbl literals not decoded."
+      "modelled": "toggleTracking. With Tracking off a non-transit telescope disables Set Coordinates; Tracking on enables it, and so does a manual release (RA-17 MouseUp enables Slew1 unconditionally, an original quirk), so it is not strictly tied to Tracking on. While the manual latch +0x5d2 is set (RA-16) it returns manual-latched and changes nothing (0x565def, GNU-MANUAL-CONTEXT).",
+      "notModelled": "ClockLbl literals not decoded."
     },
     {
       "id": "RA-06",
@@ -238,7 +353,7 @@
         "GNU-OK-DEC",
         "VMT-ECONVERT"
       ],
-      "modelled": "parseSkyCoords and confirmSkyCoords: ordered RA then Dec errors as OK boxes over the open dialog; B1950 is a browser gate (nothing stored); J2000 success stores and continues with RA-10. The two sums are evaluated exactly from the field decimals and admitted through the web numeric domain (webPolicies.WEB-NUM-01); entries outside it get a browser box (ra-unsupported/dec-unsupported) with the same no-commit behavior. The Dec zero test (fcomp with Single 0x4f380c, je at 0x4f3568) and Pos('-') sign rule (0x4f3598..0x4f35ab) are kept on the exact degree value.",
+      "modelled": "parseSkyCoords and confirmSkyCoords: ordered RA then Dec errors as OK boxes over the open dialog; success stores the J2000 values (a B1950.0 entry converted first, epoch.RA-EP-03) and continues with RA-10. Superseded: B1950 was a browser gate until the epoch contracts. The two sums are evaluated exactly from the field decimals and admitted through the web numeric domain (webPolicies.WEB-NUM-01); entries outside it get a browser box (ra-unsupported/dec-unsupported) with the same no-commit behavior. The Dec zero test (fcomp with Single 0x4f380c, je at 0x4f3568) and Pos('-') sign rule (0x4f3598..0x4f35ab) are kept on the exact degree value.",
       "uncertainty": "StrToFloat is modelled by a strict grammar (blanks, sign, digits, optional '.', exponent of at most two digits) with '.' as decimal separator; the native routine accepts more spellings, uses the host DecimalSeparator and accumulates in Extended. Native Extended results are not reproduced: inside the web domain any evaluation with at least 53-bit faithful roundings agrees with the exact value within 2^-50 x S, but whether native StrToFloat is that faithful is assumed, not verified. Exactly in-range entries are admitted even where native rounding could land just outside a bound. Whether OnActivate re-runs after the error box (re-filling fields) is not established; the browser keeps the user's edits."
     },
     {
@@ -247,12 +362,17 @@
       "ranges": [
         "0x566bc4..0x5671b5"
       ],
-      "observed": "If stored RA = +0x5df and stored Dec = +0x5e9 exactly: MessageBox(0x5671c0, 0x5671e4, 0x30), exit. If env+0x37cd <> 1: LST 0x4881ac(env+0x37de, env+0x3789), HA := LST - RA, 0x5668e0(Dec, HA); False -> MessageBox(0x10) exit; True -> confirmation text 0x5672c0 + RA/Dec via 0x486ca0 (+ 0x5672f8 note when +0x3c5). If transit: MessageBox(0x567334, 0x56735c, 0x41), IDCANCEL exits; then LST/HA/0x5668e0 with Dec-only texts 0x567380/0x5673bc. Confirmation MessageBox(.., 0x5673ec, 0x24); not IDYES exits. Then RateSpinUpClick while env+0x37d0 > index; step +0x525 := rate x Extended 0x5673fc. If env+0x37d5: Dec := target, unless transit RA := 0x4bad9c(target RA), HA stored, displays and 0x561e88 updated. Else: phase +0x53d := 1 with step negated when current Dec > target Dec, else 0; SlewTimer2 enabled; +0x5d3 := 1; +0x53e := 0; AddCurrentItemtoList1 disabled; N/S/E/W/RateSpin disabled; status := literal 0x567410; 0x562134.",
+      "observed": "If stored RA = +0x5df and stored Dec = +0x5e9 exactly: MessageBox(0x5671c0, 0x5671e4, 0x30), exit. If env+0x37cd <> 1: LST 0x4881ac(env+0x37de, env+0x3789), HA := LST - RA, 0x5668e0 (first-pushed argument HA [ebp-0x10], last-pushed argument stored target Dec, 0x566c8d..0x566ca9); False -> MessageBox(0x10) exit; True -> confirmation text 0x5672c0 + RA/Dec via 0x486ca0 (+ 0x5672f8 note when +0x3c5). If transit: MessageBox(0x567334, 0x56735c, 0x41), IDCANCEL exits; then LST/HA/0x5668e0 with Dec-only texts 0x567380/0x5673bc. Confirmation MessageBox(.., 0x5673ec, 0x24); not IDYES exits. Then RateSpinUpClick while env+0x37d0 > index; step +0x525 := rate x Extended 0x5673fc. If env+0x37d5: Dec := target, unless transit RA := 0x4bad9c(target RA), HA stored, displays and 0x561e88 updated. Else: phase +0x53d := 1 with step negated when current Dec > target Dec, else 0; SlewTimer2 enabled; +0x5d3 := 1; +0x53e := 0; AddCurrentItemtoList1 disabled; N/S/E/W/RateSpin disabled; status := literal 0x567410; 0x562134.",
       "evidence": [
         "LISTING"
       ],
-      "modelled": "requestSlew/confirmOrGate/startSlew via confirmSkyCoords and answerNotice. With limits off, 0x5668e0 returns True before using HA, so the unmodelled LST does not change the outcome; with limits on the slice stops at an explicit gate.",
-      "notModelled": "LST/HA values, +0x5d5, LED repaint 0x565bd4/0x56588c, beam update 0x561e88, status literal text, message literal texts and the 0x486ca0 coordinate formatting."
+      "modelled": "requestSlew/confirmOrGate/startSlew via confirmSkyCoords and answerNotice. With limits off, 0x5668e0 returns True before using HA. With limits on (RA-12): without a request-time reading the request stops at limits-require-clock (G2, target stored); otherwise the predicate runs with the same request-time HA (LST - target RA, or LST alone at the transit note's OK) and the stored target Dec: False -> altitude-limit-request box (flags 0x10, target stored, no motion), WEB-ALT-01 undecided -> altitude-undecided browser box (target stored), True -> the confirmation. Yes does not call the predicate again. RA-13 addition: the request-time local [ebp-0x10] is LST - stored target RA (0x566c7b..0x566c89) or LST only on the transit path (0x566e52..0x566e57, original quirk kept); no other write or address-taking of [ebp-0x10] in 0x566c00..0x56707f. confirmOrGate captures it from the radio clock reading passed at OK (or at the transit note's OK) into the confirm-slew notice (null without a reading). The instant branch stores it into HA +0x5d5 (0x567076..0x56708c) from the notice; a reading passed at Yes is not used for it.",
+      "ra13Ranges": [
+        "0x566c7b..0x566c89",
+        "0x566e52..0x566e57",
+        "0x567076..0x56708c"
+      ],
+      "notModelled": "LED repaint 0x565bd4/0x56588c, beam update 0x561e88, status literal text, message literal texts and the 0x486ca0 coordinate formatting."
     },
     {
       "id": "RA-11",
@@ -264,32 +384,53 @@
       "evidence": [
         "GNU-SLEWTIMER2"
       ],
-      "modelled": "slewTimerTick with binary64 comparisons as written; a browser run token rejects late callbacks of an earlier slew.",
+      "modelled": "slewTimerTick with binary64 comparisons as written; a browser run token rejects late callbacks of an earlier slew. RA-13 addition: in phases 2/3, snapped or not, HA := HA - (RA after step/snap - RA before), before the 0x4bad9c normalization (0x567753..0x56776c, 0x567802..0x56781b; fsubp then fsubrp). An unknown (null) HA stays unknown.",
       "uncertainty": "Number rounding can move an arrival by one callback relative to Extended; no tolerance or snap is added. Timer delivery (100 ms nominal) is a browser schedule, not Windows WM_TIMER."
     },
     {
       "id": "RA-12",
-      "title": "Altitude limit predicate 0x5668e0 (gated)",
+      "title": "Altitude limit predicate 0x5668e0 and its three callers",
       "ranges": [
-        "0x5668e0..0x566a16"
+        "0x5668e0..0x566a18 (ret 0x18 at 0x566a16; next VA 0x566a19)",
+        "0x4036ac..0x4036c8 (fld; fcos / fld; fsin), 0x426ff4..0x427009 (ArcSin)",
+        "0x5655f5..0x565660 (ClocktimerTimer caller and failure path)",
+        "0x565ff4..0x5660ed (SlewTimerTimer caller and failure path), 0x5651cc..0x565276",
+        "0x566c54..0x566cb0, 0x566e2b..0x566ed6 (slew request callers)",
+        "0x5a8fcb..0x5a8ffb (compiled threshold), 0x5a9138 / 0x5a9428 / 0x5a9940 (TRadiOptsDlg FormActivate / OK / Cancel)"
       ],
-      "observed": "If env+0x37cf = 0 return True. Else HA x Extended 0x566a1c (2 pi) / Single 24 and Dec x Extended 0x566a2c (pi/180); alt := ArcSin(sin(dec) sin(lat) + cos(ha) cos(dec) cos(lat)) with lat env+0x3793; False when env+0x37a1 >= alt, else True only if |current Dec| <= Single 90.",
+      "observed": "Self in eax (TRadioLab, copied to ebx). Two Extended stack arguments popped by ret 0x18: first pushed [ebp+0x14] = hour angle (hours), last pushed [ebp+0x8] = Dec (degrees). If byte env+0x37cf (record+0x93a) = 0 return True (0x5668e9..0x5668fb). Else h := (HA x Extended 0x566a1c) / Single 0x566a28 (24.0); d := Dec x Extended 0x566a2c; lat := Extended env+0x3793 raw; x := sin(lat) sin(d) + cos(lat) (cos(h) cos(d)) through 0x4036bc/0x4036ac, every intermediate stored as TBYTE; alt := 0x426ff4(x) = atan2(x, sqrt(1 - x^2)) without a domain guard; fcompp with threshold Extended env+0x37a1 (record+0x90c, radians): jae -> False when threshold >= alt; else fabs(Self+0x5e9, the stored current Dec, not the argument) compared with Single 0x566a38 (90.0): jbe -> True when <= 90, else False. Callers: ClocktimerTimer 0x565616 (HA d = LST - RA, Dec = current Dec; only with Tracking on and not slewing), SlewTimerTimer 0x56600c (proposed HA and Dec after the step/reflection; current Dec pre-tick), slew request 0x566ca9 (LST - target RA, target Dec) and transit 0x566e77 (LST alone, target Dec, after the 0x41 note). SlewTimer2Timer never calls it; Yes does not re-check. Every failure path writes its state before the MessageBox.",
       "evidence": [
+        "RA12-PREDICATE",
+        "RA12-RTL",
+        "RA12-TYPED",
+        "RA12-OPTIONS",
+        "GNU-SLEWTIMER",
         "LISTING"
       ],
-      "modelled": "Only the limits-off early return. limitsEnabled = true produces outcome limits-require-clock and no motion, because HA needs the observation clock (LST 0x4881ac from env+0x37de)."
+      "modelled": "radioAltitudeCheck (src/core/radioAltitude.ts) in source order in binary64 with WEB-ALT-01 admission; callers radioClockTick, manualSlewTick/radioLabManualTickRefusal and confirmOrGate (src/core/radioAntenna.ts). The threshold is RadioLabOptions.minimumAltitudeRadians (required, finite; compiled default from the 0x5a8fcb..0x5a8ffb immediates); the flag is limitsEnabled, which the App changes only through the WEB-ALT-03 radio options scenario. Clock failure: Tracking := false and the altitude-limit-tracking box (0x565140 not called, buttons untouched), then the native copy/drift continuation with the supplied reading; behind another open box the state change is applied and that box kept (clock-altitude-limit-behind-box, WEB-ALT-02); with an unknown HA only the drift write is skipped (WEB-HA-01). Manual failure: latch and SlewTimer cleared, 0x5651cc with the current Tracking, AddCurrentItemtoList1 disabled, the altitude-limit-manual box naming the held direction code +0x53d by its full name (North/South/East/West, as the native strings 0x566240..0x56627c), not the possibly swapped caption; RA/Dec/HA not written, pole flag and captions toggled before the call kept (the pole note says the orientation can change without motion). Request: see RA-10.",
+      "notModelled": "ClockLbl caption literal 0x565814, the original message texts (typed-decoded, OpenVireo wording shown instead), 0x408c44, the hot list behind AddCurrentItemtoList1, native EInvalidOp behavior for a computed |x| > 1 under control word 0x1332 (refused as domain instead), nested message boxes (WEB-ALT-02), the INI loader 0x5a829c and the rest of TRadiOptsDlg.",
+      "uncertainty": "Binary64 and browser Math, not x87 Extended: no native accuracy certificate. Verdicts are admitted only outside the WEB-ALT-01 empirical margin; intermediate Extended state carried from earlier native steps (RA-18 U5) is not represented. Whether the original control word leaves invalid operations unmasked at run time is inferred (RA-08), not observed."
     },
     {
       "id": "RA-13",
-      "title": "ClockTimerTimer relation (not modelled)",
+      "title": "ClocktimerTimer (hour angle / RA bookkeeping with an explicit web clock)",
       "ranges": [
-        "0x5654a8..0x5657ee"
+        "0x5654a8..0x5657fb (final RET 0x5657fb; SEH 0x5657ee/0x5657f3, epilogue 0x5657f5..0x5657fb frees [ebp-0x2c..-0x24] x3 and [ebp-4])",
+        "0x40d47c..0x40d4ca (SysUtils.Now: GetLocalTime thunk 0x4083f4 -> IAT 0x620fd0, EncodeDate 0x40d284 + EncodeTime 0x40d0e0)",
+        "0x487b64..0x487bca, 0x487bcc..0x487be7, 0x487b2c..0x487b42, 0x4879f8..0x487a35 (date object)",
+        "0x5ac748..0x5ac790 (TDateTime-zero JD)",
+        "0x587bed..0x587c11, 0x588457..0x588463, 0x58b2ec..0x58b441 (environment create, date dialog; not ported)",
+        "0x4881ac..0x4882eb (LST, reused SC-C01..C03)"
       ],
-      "observed": "Each tick computes LST; if tracking or manual press or slewing: HA := LST - RA; otherwise RA := 0x4bad9c(LST - HA). With tracking on and limits on, a failing 0x5668e0 turns tracking off with a message.",
+      "observed": "Per tick, in order: date := Now + env+0x382b (Double); labels +0x398 date, +0x3a4 local time, +0x3ac JD (ffFixed 6, 0x486268 al=6); LST := 0x4881ac(date object, env+0x3789) then LED +0x3bc; UT day fraction x Single 0x565808 (24) then LED +0x3e8; d := LST - RA +0x5df (0x5655d4..0x5655e2); if Tracking +0x5d1 and not slewing +0x5d3: 0x5668e0 (first-pushed argument d, last-pushed argument stored Dec), on False Tracking := 0, ClockLbl +0x42c caption 0x565814, MessageBox flags 0x10 (0x565820/0x565874; 0x565140 not called); if Tracking or manual press +0x5d2 or slewing: HA +0x5d5 := d (0x56567b..0x565698); otherwise RA := 0x4bad9c(LST - HA) and RA LED (0x56569a..0x5656dd); beam 0x561e88 unconditional (0x565710); receiver tail only if [0x5b5b44] <> nil (0x56571d). Date object: +0 year, +4/+5 month/day (DecodeDate 0x40d400), +6 Double TDateTime, +0x2a Extended = optical Single env+0x2ba8 / Single 24 (0x487b48); JD = +0x2a + +6 + Extended [0x5bad48] (2415018.5 on the Now < 100000 branch of 0x5ac748). The optical ClockTimerTimer shares the date object env+0x37de and offset env+0x382b with longitude env+0x2b86 (0x5384e3/0x5384f5).",
       "evidence": [
-        "LISTING"
+        "LISTING",
+        "COORD-RA13-METADATA",
+        "RA13-PLAN"
       ],
-      "gate": "Without the shared observation clock the slice keeps RA fixed while idle. After FormActivate (HA 0) the original RA becomes LST at the first clock tick; the browser shows RA 0 until a coordinator supplies clock integration. Slew progression is unaffected because SlewTimer2 alone moves RA/Dec while +0x5d3 is set."
+      "modelled": "radioClockTick (src/core/radioAntenna.ts) in native order with an explicit RadioClockReading (src/core/radioClock.ts): idle unless activated and clocktimer enabled; invalid readings, options outside WEB-OPT-01, an altitude verdict WEB-ALT-01 does not admit (clock-altitude-undecided) and a drift tick with unknown HA and no altitude failure are refused atomically (no partial clock diagnostic); an altitude failure (RA-12) sets Tracking off and opens the altitude-limit-tracking box (behind another open box the failure is applied and that box kept, clock-altitude-limit-behind-box, WEB-ALT-02), then continues in the native copy/drift branch (with an unknown HA the drift write alone is skipped, WEB-HA-01); copy branch HA := LST - RA; drift branch RA := normalizeRaHours(LST - HA); Dec never written; the last accepted reading is kept as web diagnostics. The tick applies while a dialog or box is open and while the panel or route is hidden (RA-14). manualPress is the RA-16 latch: during a manual hold the tick takes the copy branch (HA := LST - RA, RA held), and the E/W MouseUp call to 0x5654a8 with Tracking off is chained by releaseManualSlew (RA-17).",
+      "notModelled": "Host local time (Now), env+0x382b offset, optical time zone env+0x2ba8, local date/time labels, the date dialog 0x58b2ec and hook 0x565ab0, LED images, beam 0x561e88 (called on every native tick), receiver tail, the ClockLbl caption and message literals of the altitude-failure path (OpenVireo wording shown). The web radio clock is not linked to the observatory clock although natively both share one date object.",
+      "uncertainty": "The JD/LST path is binary64 (WEB-CLOCK-01), not x87 Extended; no certified error bound against the native result is claimed without a witness. Which branch of 0x5ac748 the host took is not established. Ticks continuing behind modal loops is a VCL inference (modal message loops dispatch WM_TIMER), not a native observation."
     },
     {
       "id": "RA-14",
@@ -302,7 +443,109 @@
       "evidence": [
         "LISTING"
       ],
-      "modelled": "Antenna state is kept while the panel is hidden; SlewTimer2 callbacks continue and the arrival box can appear without the panel window (VCL TTimer and Application.MessageBox do not depend on form visibility)."
+      "modelled": "Antenna state is kept while the panel is hidden; SlewTimer2 and clocktimer callbacks continue and the arrival box can appear without the panel window (VCL TTimer and Application.MessageBox do not depend on form visibility)."
+    },
+    {
+      "id": "RA-15",
+      "title": "clocktimer binding and compiled Interval",
+      "ranges": [
+        "0x4857fb..0x485838",
+        "class-ref 0x445924 -> VMT 0x445970 (name 0x445944 'TTimer', instance size 0x44, slot +0x2c 0x44599c -> constructor 0x448e6c)",
+        "0x448e8b (Interval +0x30 := 1000)",
+        "RTTI 0x4459b4 (ExtCtrls)",
+        "TRadioLab field table cell 0x5639d0 -> 0x563b0c, class table 0x5642d0 index 3, slot 0x5642de",
+        "0x56481b (SetEnabled True)"
+      ],
+      "observed": "Field Clocktimer (+0x394) resolves through the TRadioLab field class table to TTimer (COORD-RA13-METADATA). The constructor writes Interval := 1000 and the RTTI declares Enabled (setter 0x448ff4, default 1), Interval (getter +0x30, setter 0x449004, default 1000), OnTimer (getter +0x38, setter 0x449014). The plan's RTTI start 0x4459a8 is corrected to 0x4459b4. TRadioLab's only +0x394 access found is SetEnabled True at 0x56481b; no SetInterval on it.",
+      "evidence": [
+        "COORD-RA13-METADATA",
+        "LISTING"
+      ],
+      "modelled": "RADIO_CLOCK_CONSTANTS.nominalIntervalMs = 1000 for the browser registration (WEB-TIMER-02).",
+      "uncertainty": "Pins the compiled default only. No measured WM_TIMER equivalence and no exhaustive whole-program interval-writer proof (writes through the global 0x5b59a0 are not enumerated); the init-table entry calling 0x5ac748, other writers of [0x5b5b44] and the internals of 0x561e88 remain residuals."
+    },
+    {
+      "id": "RA-16",
+      "title": "N/S/E/W MouseDown (manual press) and the pole-flag initialization",
+      "ranges": [
+        "0x5662a0..0x566326 (NBtnMouseDown; RET 0xc)",
+        "0x5663c4..0x56644c (SBtnMouseDown)",
+        "0x5664e8..0x566578 (EBtnMouseDown)",
+        "0x566634..0x5666c6 (WBtnMouseDown)",
+        "0x5649e7 (first FormActivate: +0x5d4 := 0)",
+        "0x565def (DriveBtnClick latch test)"
+      ],
+      "observed": "Each handler requires cl = 0 (left button) and latch +0x5d2 = 0 (e.g. 0x5662aa), then writes +0x53d (N 0, S 1, E 2, W 3) and +0x525: N rate +0x52f x Extended 0x56632c; S (fchs rate) x Extended 0x566450; E rate x Extended 0x56657c / Single 0x566588; W (fchs rate) x Extended 0x5666cc / Single 0x5666d8. Then SlewTimer (+0x448) SetEnabled True (0x448ff4), latch := 1, the other three direction buttons, RateSpin (+0x454) disabled through virtual +0x68, Slew1 (+0x470) disabled (0x4548ac). No callback runs at the press. DriveBtnClick returns at once while the latch is set (0x565def/0x565df6). First FormActivate writes +0x5d4 := 0 at 0x5649e7 (byte-verified in pole-flag-store-verification.json) before rate index 4 at 0x5649ee.",
+      "evidence": [
+        "GNU-MANUAL-DOWN",
+        "GNU-MANUAL-CONTEXT",
+        "MANUAL-STATIC-VALUES",
+        "DFM-RADIOLAB"
+      ],
+      "modelled": "pressManualSlew (refusal order radioLabManualRefusal), manualStepFor, manualButtonEnabled, toggleTracking manual-latched, activateRadioLab poleReversed := false. manualPress stands for both the latch and SlewTimer.Enabled because every recovered writer changes them together. The panel delivers only primary-button pointer, touch and Space/Enter presses (WEB-MANUAL-01/02).",
+      "inference": "A disabled or hidden control receives no mouse message in VCL, so a press of a disabled button or of hidden E/W runs no handler (manual-unavailable). Not a recovered check.",
+      "webDeviations": "Refused in the browser although natively reachable: a press during a programmed slew (WEB-MANUAL-04), with limits on before an accepted radio clock reading or with an unknown HA (manual-limits-clock, WEB-ALT-03: the altitude check of every callback needs the sidereal time), under options outside WEB-OPT-01, and with a step outside WEB-MANUAL-03. Each refusal changes nothing.",
+      "uncertainty": "The Extended constant is the decoder's binary64 value 0.0002777777777777778 (MANUAL-STATIC-VALUES); a test asserts it equals decStepPerRate, byte identity with 0x5673fc is not claimed."
+    },
+    {
+      "id": "RA-17",
+      "title": "N/S/E/W MouseUp (manual release)",
+      "ranges": [
+        "0x566338..0x5663be (NBtnMouseUp; RET 0xc)",
+        "0x56645c..0x5664e2 (SBtnMouseUp)",
+        "0x56658c..0x566630 (EBtnMouseUp; ClocktimerTimer call 0x56661b..0x566628)",
+        "0x5666dc..0x566780 (WBtnMouseUp; ClocktimerTimer call 0x56676b..0x566778)"
+      ],
+      "observed": "Each handler requires latch +0x5d2 set, cl = 0, Width (+0x48) > X and Height (+0x4c) > Y (signed jle; no lower-bound test and no check that the released button is the held direction). Then SlewTimer SetEnabled False, latch := 0, RateSpin, the other three buttons enabled and Slew1 enabled (unconditionally). E/W only: if Tracking +0x5d1 = 0, call 0x5654a8 (ClocktimerTimer, Sender = the button, which it ignores).",
+      "evidence": [
+        "GNU-MANUAL-UP",
+        "LISTING"
+      ],
+      "modelled": "releaseManualSlew(state, options, clock|null, 'release'|'cancel'): never refused while latched (unsupported options, limits, a bad step or an unknown HA never block it); clears the latch and enables RateSpin, N/S/E/W and Slew. For E/W with Tracking off and a valid explicit radio clock reading it chains radioClockTick (steps RA-17, RA-13); without one, or with an invalid one, the release happens and RA/HA are kept (WEB-CLOCK-01: the host or optical clock is never substituted). The Slew1 enable with Tracking off is an original quirk kept (Set Coordinates becomes enabled).",
+      "crossRelease": "releaseManualSlewThrough(state, options, clock|null, direction) runs this contract through the MouseUp of `direction` (RA-19 KeyUp): the enabling is relative to that direction, so after a hold of d != r button r stays disabled (manualButtonLeftDisabled := r, outcome manual-released-other), and the ClocktimerTimer chain follows r (E/W with Tracking off), not the held phase. With r = d the state and outcome equal releaseManualSlew's (steps RA-19, RA-17[, RA-13]).",
+      "notModelled": "The Width/Height test for pointers (the browser owner decides, WEB-MANUAL-01; for keys X = Y = 1 passes on the DFM 25 x 25 buttons, no runtime resize is recovered) and a release through another direction's MouseUp from a pointer or Space/Enter hold (WEB-KEY-03 owner isolation: only an RA-19 table-key hold is released that way)."
+    },
+    {
+      "id": "RA-18",
+      "title": "SlewTimerTimer (manual step, pole reflection, RA wrap)",
+      "ranges": [
+        "0x565e58..0x566210 (final RET 0x566210; SEH 0x566203/0x566208)",
+        "0x5668e0..0x566a18 (RA-12 predicate; limits-off return True at 0x5668f9)",
+        "0x566019..0x5660ed (failure path), 0x5651cc..0x565276"
+      ],
+      "observed": "Copies RA +0x5df, Dec +0x5e9 and HA +0x5d5. Codes 0/1: Dec := pole flag +0x5d4 ? Dec - step : Dec + step; if |Dec| > Single 0x566214 (90): push 0, call 0x408c44; flag ^= 1; Dec := Dec > Single 0x566218 (0) ? Single 0x56621c (180) - Dec : Single 0x566220 (-180) - Dec; RA += Single 0x566224 (12); HA += 12; NBtn/SBtn captions := flag ? 'S'/'N' (0x566230/0x56623c) : 'N'/'S'. Codes 2/3: RA := RA + step, HA := HA - step. Then 0x5668e0 with first-pushed argument the proposed HA and last-pushed argument the proposed Dec (0x565ff4..0x56600c; Self's stored current Dec in the 90 test) (True at once when env+0x37cf = 0, 0x5668f9). True: copies written, RA := 0x4bad9c(RA), LEDs 0x565bd4/0x56588c, beam 0x561e88. False: SlewTimer off (0x56601b), latch 0, 0x5651cc (N/S/E/W := Tracking, Slew1 := Tracking or transit, RateSpin/labels/Receiver enabled), AddCurrentItemtoList1 (+0x480) disabled, MessageBox via 0x47e09c (direction ShortStrings 0x566240..0x566258 chosen by +0x53d, parts 0x566260/0x56627c, caption 0x56628c, flags 0x10); copies not written.",
+      "evidence": [
+        "GNU-SLEWTIMER",
+        "GNU-MANUAL-CONTEXT",
+        "MANUAL-STATIC-VALUES"
+      ],
+      "modelled": "manualSlewTick with a browser run token (manualRun) rejecting late callbacks; radioLabManualTickRefusal gates options outside WEB-OPT-01, limits on without an accepted clock reading/known HA (manual-limits-clock), a stored step outside WEB-MANUAL-03 and a proposed step whose altitude verdict WEB-ALT-01 does not admit (manual-altitude-undecided) (all atomic; the panel registers no interval then). With limits on the proposal is checked (RA-12); a decided failure applies the native failure path (manual-altitude-limit, steps RA-18 + RA-12) keeping the toggled pole flag; a failure while another box is open is refused (WEB-ALT-02). HA is not normalized; an unknown (null) HA stays null. manualButtonCaption derives the captions from poleReversed. The operand order of fsubp follows the existing RA-11/RA-13 reading of these listings.",
+      "notModelled": "The 0x408c44 call (probably an API thunk, possibly a sound; import not resolved), LED repaint, beam 0x561e88, the RateSpin labels and the original failure message text (typed-decoded; OpenVireo wording shown).",
+      "uncertainty": "Binary64, not x87 Extended: near |Dec| = 90 or Dec = 0 a binary64 sum can decide differently from the native one. No tolerance is added and no error bound is claimed (U5). Windows timer cadence is not reproduced (WEB-TIMER-01)."
+    },
+    {
+      "id": "RA-19",
+      "title": "FormKeyDown / FormKeyUp N/S/E/W keyboard table (partly mapped in the browser)",
+      "ranges": [
+        "0x5680c4..0x5681d6 (FormKeyDown; lookup 0x568101, jump table 0x568134, cases 0x568148/0x56816c/0x568190/0x5681b4, default/epilogue 0x5681d6)",
+        "0x5681dc..0x5682a8 (FormKeyUp; lookup 0x568213, jump table 0x568246, cases 0x56825a/0x56826c/0x56827e/0x568290, default/epilogue 0x5682a0 pop ebp; ret 4; bytes from 0x5682a4 are literal data)",
+        "0x46601c..0x466057 (virtual +0xd4 target: TButton VMT 0x437fc8 slot 0x43809c and TWinControl VMT 0x4597cc slot 0x4598a0)",
+        "0x408d2c (jmp [0x620b30], user32.SetFocus)"
+      ],
+      "observed": "Both handlers compare Word [Key] with 0x65 first (0x5680cd / 0x5681df) and exit, before the latch +0x5d2 is tested (KeyDown requires it clear, KeyUp set); then idx := Key - 69 (add 0xffffffbb) with unsigned ja above 0x32, the byte lookup and the jump table. The two 51-byte lookups share SHA-256 a4e0d61d...: 69/100 E, 78/104/110 N, 83/98/115 S, 87/102/119 W, 101 E (unreachable behind the 0x65 guard); every other cell is the default exit. KeyDown cases load the button (+0x43c S, +0x440 E, +0x444 W, +0x438 N), call its virtual +0xd4, then its MouseDown (0x5663c4, 0x5664e8, 0x566634, 0x5662a0). KeyUp cases call the MouseUp (0x56645c, 0x56658c, 0x5666dc, 0x566338) directly and do NOT call +0xd4 (correcting this record's earlier 'each case calls virtual +0xd4' statement; the native key only focuses on key down). Arguments: ecx = 0 (mbLeft), pushes Shift byte [ebp+8], X = 1, Y = 1, eax = Self, edx = the original Sender (the focused control). No MouseDown/MouseUp reads the Shift argument. Key is never zeroed, so VCL default key processing continues. While latched the KeyUp of any table key runs that key's own MouseUp, which has no held-direction check: MouseUp(r) enables RateSpin, Slew1 and the three buttons other than r, so after MouseDown(d) disabled the three other than d, button r stays disabled for r != d; E/W MouseUp call ClocktimerTimer with Tracking off, so the clock call follows the released key (E held then N released: no call; N held then E released: call). Keys follow the buttons, not the captions. +0xd4 resolves to 0x46601c in both VMTs, with three paths: 0x472e7c (dl = 1) non-nil -> the form method 0x477f18; otherwise [Self+0x1c4] non-zero -> 0x4660a0 and the SetFocus thunk 0x408d2c; otherwise (field 0) 0x472e8c (dl = 1), whose identity and behavior are not established. Neither the 0x477f18 branch for a disabled or hidden button nor the 0x472e8c branch is closed.",
+      "evidence": [
+        "GNU-MANUAL-KEYS",
+        "MANUAL-STATIC-VALUES",
+        "GNU-MANUAL-DOWN",
+        "GNU-MANUAL-UP",
+        "RA19-SUPPLEMENT",
+        "RA19-CROSS-RELEASE",
+        "RA19-PLAN"
+      ],
+      "modelled": "src/core/radioKeyboard.ts (pure): RA19_KEY_DIRECTIONS, RA19_CASES, ra19Dispatch(vk, 'down'|'up', latched) in native order (0x65 guard, latch, Word table bounds, lookup; a non-Word, NaN, fractional or out-of-range key, a bad phase or a non-boolean latch throws), ra19TableDirection, and the WEB-KEY-02 browserVirtualKey/browserTableKey mapping. src/core/radioAntenna.ts releaseManualSlewThrough (the KeyUp -> MouseUp of the released key, RA-17 crossRelease) and the ephemeral field manualButtonLeftDisabled read by manualButtonEnabled and radioLabManualRefusal (manual-unavailable). The field is cleared by FormActivate (activateRadioLab), 0x565140/0x5651cc (both toggleTracking branches, the SlewTimerTimer failure path), the slew start, completion and stop Yes, a press (model projection: while latched the enabled set is derived from the held direction) and a normal release; it is kept by an instant slew, clock ticks, RateSpin and other box answers. It is not persisted. src/core/radioManualInput.ts table owner (WEB-KEY-03). The browser presses through the existing pressManualSlew admission.",
+      "notModelled": "The native result of +0xd4 on a disabled or hidden button (the 0x477f18 form branch, a VCL exception or not, is not closed; the browser refuses such presses as manual-unavailable without choosing a native outcome), VCL default processing of the unzeroed Key, Windows key delivery (WM_KEYDOWN/WM_SYSKEYDOWN, repeat timing, keyboard layout and NumLock handling), the browser use of the F4/F8 entries (decoded only), and any writer of the four buttons' Enabled outside the admitted transitions above.",
+      "inference": "Analyst inference, not evidence: 101, 110, 115 and 119 are ASCII 'e', 'n', 's', 'w'; the author probably wrote lowercase character codes, which in VK space alias NUMPAD5, DECIMAL, F4 and F8, and the explicit 0x65 guard may patch the keypad-5 alias.",
+      "uncertainty": "G2: the TRadioLab root DFM (KeyPreview, form OnKeyDown/OnKeyUp) was not verified in this increment; the per-control wiring (DriveBtn, N/S/E/W, Rcvr1Btn -> FormKeyDown/FormKeyUp; RateSpin none) comes from MANUAL-STATIC-VALUES, and no full native form scope is claimed. G3: no whole-program proof of every writer of +0x438..+0x444 Enabled or of button Width/Height (Rcvr1BtnClick, PList and hot-list paths are out of this slice). The DOM to VK mapping is a browser assumption (WEB-KEY-02), not a runtime oracle. No Windows FPU, WM timing or layout parity is claimed (U2)."
     }
   ],
   "constants": [
@@ -368,8 +611,18 @@
     },
     {
       "address": "0x566a1c / 0x566a28 / 0x566a2c / 0x566a38",
-      "value": "Extended 2 pi / Single 24 / Extended pi/180 / Single 90 (RA-12, unused)",
-      "route": "derived listing, analyst decode"
+      "value": "Extended significand 0xc90fdaa22168c235 exponent 0x4001 (2 pi) / Single 24.0 / Extended significand 0x8efa351294e9c8ae exponent 0x3ff9 (pi/180) / Single 90.0 (RA-12)",
+      "route": "RA12-TYPED: typed static decodes with the existing PE mapper (resolves the earlier ambiguous 0x566a28 text decode)"
+    },
+    {
+      "address": "0x5a8fcb..0x5a8ffb (record+0x90c)",
+      "value": "Extended immediates {0x3a243ada, 0xb2b8c257, 0x3ffc} = binary64 0.17453292519943295 rad (10 degrees): compiled minimum altitude",
+      "route": "instruction immediates, typed binary64 in RA12-TYPED"
+    },
+    {
+      "address": "0x5a93ec / 0x5a9768",
+      "value": "Extended significand 0xe52ee0d31e0fbdc3 exponent 0x4004 (~180/pi) / significand 0x8efa351294e9c8ae exponent 0x3ff9 (~pi/180): TRadiOptsDlg threshold display and OK conversion (the web shows degrees with the 0x564d60 constant, which has the same significand and exponent as 0x5a93ec)",
+      "route": "RA12-TYPED"
     },
     {
       "address": "0x5667bc, 0x5649f9",
@@ -380,6 +633,26 @@
       "address": "0x5a8f8a..0x5a90ad",
       "value": "option defaults (RA-03)",
       "route": "instruction immediates"
+    },
+    {
+      "address": "0x5a8f55..0x5a8f83 (record+0x8f4)",
+      "value": "Extended significand 0xb25e34f17905f5c4, exponent 0xbfff (sign set) = binary64 -1.393499963671317 rad",
+      "route": "COORD-RA13-METADATA: typed instruction operands independently verified against the PE"
+    },
+    {
+      "address": "0x5ac748..0x5ac790 / 0x5ac794 / 0x5ac798",
+      "value": "Extended {0,0xd2228400,0x4013} = 1721424.5 / Single 100000 / Single 693594 (sum 2415018.5)",
+      "route": "Extended from the listing (RA13-PLAN); Singles by COORD-RA13-METADATA"
+    },
+    {
+      "address": "0x565808 / 0x487a38 / 0x487a3c / 0x487a40 / 0x487b48",
+      "value": "Single 24 / 24 / 1440 / 86400 / 24 (UT and date-object arithmetic; not used by the web JD policy)",
+      "route": "COORD-RA13-METADATA"
+    },
+    {
+      "address": "0x448e8b; RTTI 0x4459b4",
+      "value": "TTimer Interval := 1000; RTTI Interval default 1000 (RA-15)",
+      "route": "COORD-RA13-METADATA"
     }
   ],
   "binary64Note": "Independent static operand audit found identical significands 0x91a2b3c4d5e6f809/exponent0x3ff3 at0x5673fc and0x5678dc. The actual0x5678d0 significand is0xa7c5ac471b478423/exponent0x3fee, rounded once to Number1e-5. The initial analyst transcription ended80b/4423 respectively; the latter produced an eight-ULP lower binary64 tolerance and a different axis-completion decision at the rounded boundary. Earlier failed checks are retained privately; no x87/runtime parity is claimed.",
@@ -387,7 +660,7 @@
   "literalsNotDecoded": [
     "0x566b98/0x566ba8 stop question",
     "0x5671c0/0x5671e4 no-slew warning",
-    "0x5671fc..0x5672c0 and 0x5672f8 confirmation and limit texts",
+    "0x5671fc..0x5672c0 and 0x5672f8 confirmation and limit texts (0x5671fc, 0x5672a4 and 0x567380 are typed-decoded in RA12-TYPED but not shown; OpenVireo wording is used)",
     "0x567334/0x56735c transit note",
     "0x567380/0x5673bc Dec-only texts",
     "0x5673ec confirmation caption",
@@ -395,7 +668,9 @@
     "0x567918/0x567928 arrival box",
     "0x4f3814/0x4f3824/0x4f3854 input-error boxes",
     "0x565e48/0x565e54 ClockLbl",
-    "0x5b4a80 RateLbl table"
+    "0x5b4a80 RateLbl table",
+    "0x565804 ClocktimerTimer label separator; 0x565814/0x565820/0x565874 ClocktimerTimer limit path (typed-decoded in RA12-TYPED; not shown, OpenVireo wording is used)",
+    "0x566240..0x56628c SlewTimerTimer limit-failure message parts (typed-decoded in RA12-TYPED; not shown, OpenVireo wording is used)"
   ],
   "webPolicies": [
     {
@@ -413,9 +688,106 @@
       "title": "Auto-repeated Enter/Escape ignored in the coordinate dialog and message boxes and their Set Coordinates return-focus trigger",
       "rationale": "Reproduced on the unchanged panel with Playwright: a held Enter ran OK -> Yes (slew started) -> stop question -> Yes -> reopened dialog; a held Escape closed an error box and then cancelled the dialog. Native Windows key-repeat handling for these dialogs is not established and not claimed. Coordinator later reproduced a remaining cascade after a fresh held Yes: focus returned to Set Coordinates and repeat opened stop-slew. The same repeat guard now covers that return-focus trigger. Other main-window key behavior is unchanged.",
       "code": "src/components/RadioControlPanel.tsx ignoreHeldKey"
+    },
+    {
+      "id": "WEB-KEY-02",
+      "kind": "OpenVireo browser input assumption (new behavior, not recovered)",
+      "title": "DOM key event to Windows virtual key for the RA-19 table",
+      "rule": "browserVirtualKey reads KeyboardEvent.key, code, location, Ctrl/Alt/Meta/AltGraph and isComposing; never keyCode, which or charCode. An ASCII letter in key (either case, Shift allowed, location 0, non-empty code) is VK 65 + letter index; the letter follows the layout's interpreted key and code is only the physical identity of a hold. Keypad digits need location 3, code NumpadN and the same digit as key (NumLock on) -> VK 96 + N; keypad decimal needs location 3, code NumpadDecimal and key '.' or ',' -> VK 110. NumLock-off navigation keys, the digit row, arrows, non-Latin letters, composition (isComposing, Process), Dead, Unidentified and an empty code are unmapped. F1..F12 (key = code) are recognised and refused as reserved function keys, so the native F4 (VK 0x73 -> S) and F8 (VK 0x77 -> W) entries stay core-only and are never consumed. On keydown a held Ctrl, Alt, Meta or AltGraph refuses; keyups ignore modifiers. No new aliases, toggles or global shortcuts.",
+      "rationale": "Official definitions (RA19-SUPPLEMENT DOM-VK-STANDARDS): Microsoft VK_E/N/S/W 0x45/0x4e/0x53/0x57, keypad 4/5/6/8 0x64/0x65/0x66/0x68, decimal 0x6e, F4 0x73, F8 0x77; W3C UI Events code is the physical key and key the interpreted value. Raw character codes would be wrong (lowercase 'e' 101 is the ignored key, 'n' 110 collides with the decimal key).",
+      "differsFromNative": "Windows maps keys to VKs by its own layout and NumLock state and delivers Alt combinations as WM_SYSKEYDOWN; none of that is reproduced or claimed, and layout/OS mapping is not a runtime oracle. F4/F8 are excluded in the browser because they are platform-variable function keys.",
+      "code": "src/core/radioKeyboard.ts browserVirtualKey, browserTableKey"
+    },
+    {
+      "id": "WEB-KEY-03",
+      "kind": "OpenVireo browser input policy (new behavior around the recovered RA-19 dispatch)",
+      "title": "RA-19 key scope, ownership, focus step, cross release and cancellation",
+      "rule": "Keys act only through onKeyDown/onKeyUp of the controls marked data-antenna-key-scope: Tracking (DriveBtn) and the rendered N/S/E/W buttons, the DFM controls wired to FormKeyDown/FormKeyUp that the panel renders (Rcvr1Btn is not rendered; RateSpin has no key handler). No window or document key listener exists, so text fields, dialogs, Set Coordinates, Slew Rate, the radio switch, the body, other routes and foreign dialogs are unaffected. Space/Enter keep their WEB-MANUAL-02 path first. Only admitted table keys (decoded to a direction other than the ignored 0x65) are consumed with preventDefault. A decoded KeyDown with the latch clear, not auto-repeated and with no input owner is preflighted against the latest state and web gates (closed panel, inactive route, project operation, any modal, hidden page, radioLabManualRefusal); only then focus moves to that enabled, visible direction button (also from Tracking), and the press is re-checked and applied from the latest state through pressManualSlew (the owner {kind:'table', code, direction}). Latched, repeated and refused keys never move focus. While a table key owns the hold, a decoded KeyUp of any table key releases through that key's MouseUp (releaseManualSlewThrough, RA-19 cross release: the button left disabled and the clock call by released key); otherwise the owner's own physical code releases through the held direction (fallback when NumLock, layout, modifiers or composition changed the key's meaning); unrelated keyups (F4/F8, keypad 5, others) are kept and not consumed. Focus leaving the scope inside the document (key-scope-left), window blur, a hidden page, any modal, a project operation, the route becoming inactive, closing the panel and unmount cancel through releaseManualSlew(..., 'cancel') without resume; a late keyup does nothing while no new hold runs. This is not a quarantine rule: under a fresh table-key hold, any table key's release follows the cross release above. Pointer and Space/Enter owners ignore table events, and a table owner ignores pointer and Space/Enter events. The panel names a button left disabled by its original letter and current caption, with its recovery (a normal press and release of another enabled direction button, after any other listed refusal is resolved).",
+      "differsFromNative": "Natively the key reaches the focused control wired to FormKeyDown/FormKeyUp (form-level KeyPreview not verified, G2); a repeat with the latch clear starts a new hold; KeyDown calls +0xd4 (SetFocus method 0x46601c, whose disabled/hidden form branch 0x477f18 is not closed) with native WM timing; a table KeyUp also releases a mouse hold; deactivation leaves the latch set. The browser focus step is informed by the compiled method but is not native WM, exception or timing parity.",
+      "code": "src/core/radioManualInput.ts manualInputStep (table owner); src/components/RadioControlPanel.tsx onTableKeyDown, onTableKeyUp, onKeyScopeBlur, endManual(via), leftoverButton"
+    },
+    {
+      "id": "WEB-CLOCK-01",
+      "kind": "OpenVireo web scenario (new behavior, not recovered)",
+      "title": "Explicit radio UT and longitude",
+      "rule": "The learner applies a UT (parseClockUTC: YYYY-MM-DDTHH:MM:SS, 1900..2099, whole seconds) and, by a separate action, the compiled radio longitude. No default UT, no host clock, no observatory/optical clock or site import. Scenario time = applied UT + elapsed whole milliseconds of monotonic browser time (performance.now, injected into pure transitions; an earlier performance time than the anchor counts as 0). Running time must stay <= 2099-12-31T23:59:59.999Z; past it the scenario stops and readings are refused until a UT is applied again (nothing clamped, the antenna keeps its last accepted tick). The route owns that end: a deadline timeout (radioClockDomainWaitMS, 0 exactly when readRadioClock reports the domain) is armed for a running, anchored scenario independent of panel activation and route visibility, capped at 2147483647 ms and re-armed after a capped or early fire; none while paused, frozen, stopped or unsupplied, and after a freeze it re-arms from the remaining scenario time without catch-up. Reads and the timeout share one guarded step (stopRadioClockPastEnd) against the latest queued scenario, so a stale callback cannot stop a newer Apply/Pause/freeze. Pause or a host freeze past the end stops there (domain-stopped) instead of folding past it. The panel then shows a range-end note distinct from the unsupplied note; the last accepted UT/JD/LST are kept and no reading is invented. JD = 2440587.5 + ms/86400000 in binary64 (the existing siteClockReadingMS policy); LST = localSiderealHours(JD, longitude) with |longitude| <= pi. Re-applying a UT pauses and restarts scenario time (analogue of a host clock jump, not the date dialog). The scenario is temporary route state, excluded from Save investigation.",
+      "differsFromNative": "Native time is host local Now + env+0x382b and JD includes the optical time zone env+0x2ba8; neither is represented. Binary64 instead of x87 Extended; no certified error bound. Not linked to the observatory clock, although natively the radio and optical clocks share one date object.",
+      "code": "src/core/radioClock.ts, src/components/RadioTelescopeRoute.tsx",
+      "evidence": "radio-ra13-clock-validation/review-reproductions.json rangeBeforeActivation/rangeAfterManualRead (actual App, before the route-owned deadline: a pre-activation scenario paused past the end, and a stopped scenario reported as unsupplied); regressions in src/core/radioClock.test.ts and tests/radio-clock-app.spec.ts. Implementation contract only; native runtime not executed."
+    },
+    {
+      "id": "WEB-TIMER-02",
+      "kind": "OpenVireo browser timer policy (new behavior, not recovered)",
+      "title": "Nominal 1000 ms radio clock registration",
+      "rule": "One browser interval of RADIO_CLOCK_CONSTANTS.nominalIntervalMs (the RA-15 compiled TTimer default) while the antenna clocktimer is enabled, the scenario runs and no host project operation is active; a manual 'Deliver radio clock tick now' action is available whenever the scenario is supplied. It follows WEB-TIMER-01 ownership (latest accepted antenna state, at most one delivery per input, generation token = scenario run). The scenario is read on every callback, so a range overrun stops it even while delivery is skipped. Callbacks continue while a radio dialog/box is open and while the panel or route is hidden. A project operation cancels the registration and freezes scenario time; it re-anchors afterwards without catch-up. Each tick reads absolute scenario time, so a background-tab gap produces no accumulated ticks.",
+      "differsFromNative": "No WM_TIMER cadence, coalescing or message-loop equivalence is claimed."
+    },
+    {
+      "id": "WEB-HA-01",
+      "kind": "OpenVireo state policy (new behavior around recovered transitions)",
+      "title": "Unknown hour angle",
+      "rule": "The confirm-slew notice keeps the request-time hour angle captured at OK (or at the transit note's OK) from the reading available then; without a supplied radio clock it is null. An instant slew answered Yes stores that captured value (never a Yes-time reading), so it can store null. A ClocktimerTimer drift-branch tick with a null HA and no altitude failure is refused (hour-angle-unknown, nothing changes); a copy-branch tick (Tracking, manual-press latch or slewing) sets it again. A clock-tick altitude failure (RA-12, Tracking on) with a null HA is never discarded: Tracking := false, the reading and the box (or, behind an open box, WEB-ALT-02) are committed and only the drift write, which needs the HA, is skipped, so RA and the null HA stay as they are; no HA is invented. This is core/harness only: the App's compiled instantSlew is off. SlewTimer2 RA phases keep null as null. Before the first clock tick the HA starts from the FormActivate value 0 and follows SlewTimer2 RA phases.",
+      "differsFromNative": "Natively the clock always runs, so the HA is always defined; null exists only because the web clock can be unsupplied.",
+      "manualAddition": "Manual ticks (RA-18) keep a null HA null (also at a pole crossing). The E/W release (RA-17) with Tracking off chains ClocktimerTimer only with a valid explicit reading; with a null HA that chained tick is refused (hour-angle-unknown) and the release still happens. Natively the release always runs the clock tick; without a supplied reading the browser skips it and keeps RA and HA, never substituting host or optical time."
+    },
+    {
+      "id": "WEB-MANUAL-01",
+      "kind": "OpenVireo browser input policy (new behavior, not recovered)",
+      "title": "One input owner per manual hold; cancellation without resume",
+      "rule": "A hold has one owner: the first admitted pointer whose pointerdown on the button reports button 0 (left mouse button, a touch contact or a pen contact) while no owner exists, or the Space/Enter key on the focused button (WEB-MANUAL-02). PointerEvent.isPrimary is not checked, so a second finger can start a hold when the first finger is not holding one. Other pointers while an owner exists (a second finger), other buttons, auto-repeat and other keys are ignored. The owner's pointer-up anywhere (the button captures the pointer) or key-up of its key releases (RA-17); a pointermove from the owner reporting button 0 with bit 0 clear in buttons (left released while another mouse button stays down, reported by Pointer Events as a chorded pointermove) releases like pointer-up. A left press while another mouse button is already down arrives as pointermove and starts no hold; pointercancel/lostpointercapture of the owner, focus loss of a key owner's button, window blur, a hidden page, the route becoming inactive, a host project operation, any modal (the panel's own dialog or box, or any page <dialog> open as modal, observed while a hold is latched), the panel window closing and unmount cancel it through releaseManualSlew(..., 'cancel'). The press itself is ignored while the panel is closed, the route inactive, a project operation runs, a modal is open or the page is hidden, and every SlewTimer callback re-checks those causes, the run token and the owner before stepping, so a queued callback after release, cancellation or owner loss neither moves the telescope nor re-latches. A latched state without an owner (adopted from the host) is cancelled at once. There is never a resume: a fresh press is needed. A click (including an assistive-technology click without a held pointer or key) does nothing. The pure reducer is manualInputStep (src/core/radioManualInput.ts); the panel applies its effects to the latest working antenna state.",
+      "differsFromNative": "Natively MouseUp releases only when X < Width and Y < Height, so a release beyond the right/bottom edge keeps the hold; any direction's MouseUp releases; window deactivation, hiding and modal windows leave the latch and SlewTimer running. The browser releases on the owner's release anywhere and cancels on those causes instead. A release through another direction's MouseUp is modelled only for an RA-19 table-key owner (WEB-KEY-03).",
+      "code": "src/core/radioManualInput.ts manualInputStep; src/components/RadioControlPanel.tsx manualInput/endManual and the manual effects"
+    },
+    {
+      "id": "WEB-MANUAL-02",
+      "kind": "OpenVireo accessibility adaptation (new behavior, not recovered)",
+      "title": "Focusable direction buttons held with Space or Enter",
+      "rule": "The N/S/E/W buttons are focusable and keep the DFM TabOrder (N, S, E, W) in the DOM, laid out as the DFM cross (N top, E left, W right, S bottom), at least 44 x 44 CSS px with touch-action none. Space or Enter held on the focused button presses (not on auto-repeat) and its key-up releases; the default button activation is prevented.",
+      "differsFromNative": "The DFM gives the buttons TabStop False and 25 x 25 px; native keyboard control is the FormKeyDown/FormKeyUp letter and numeric-keypad table (RA-19), mapped in part under WEB-KEY-02/03 alongside this Space/Enter adaptation."
+    },
+    {
+      "id": "WEB-MANUAL-03",
+      "kind": "OpenVireo web domain (new behavior, not recovered)",
+      "title": "Manual step domain",
+      "rule": "A press needs a finite positive rate and the step MouseDown would write, a stored step is re-checked at every callback: N/S |step| finite, 90 + |step| > 90 and |step| <= 180 degrees; E/W |step| finite, 24 + |step| > 24 and |step| < 24 h. Outside it the press or callback is refused atomically (manual-step-unsupported); a release is always possible. Example: options A (max 6, base 50) then B (max 4, base 3241) at index 5 give rate 324100: the programmed RA step 6.0019 h is refused by WEB-OPT-01, the manual Dec step 90.03 degrees and RA step 6.0019 h are admitted.",
+      "rationale": "From Dec in [-90, 90], Dec +/- step lies in [-270, 270], where one recovered reflection (180 - x or -180 - x) returns to [-90, 90]; for x in [90, 360] the subtraction is exact in binary64 (Sterbenz). From RA in [0, 24), RA +/- step lies in (-24, 48), which the 0x4bad9c port maps with one 24 h correction. The 6 h WEB-OPT-01 limit belongs to the SlewTimer2 arrival window and is not reused.",
+      "differsFromNative": "Native has no such limit; larger steps run with Extended arithmetic. Synthetic validation only.",
+      "code": "src/core/radioAntenna.ts RADIO_MANUAL_WEB_DOMAIN, radioLabManualRefusal, radioLabManualTickRefusal"
+    },
+    {
+      "id": "WEB-MANUAL-04",
+      "kind": "OpenVireo web interlock (new behavior, not recovered)",
+      "title": "No manual press during a programmed slew",
+      "rule": "While a programmed slew is running or paused at the stop question (slewing or SlewTimer2 enabled), a press is refused (manual-programmed-slew) and nothing changes.",
+      "differsFromNative": "Natively reachable: Tracking off then on during a slew enables N/S/E/W through 0x5651cc, and a press then overwrites +0x53d/+0x525, which SlewTimer2 is using. Those shared semantics are not admitted, so this is a browser interlock, not a native rejection."
+    },
+    {
+      "id": "WEB-ALT-01",
+      "kind": "OpenVireo conditional browser admission policy (new behavior, not recovered; not a certified bound against the original x87 run)",
+      "title": "Altitude verdict admission",
+      "rule": "Evaluate 0x5668e0 in source order in binary64 with the browser's Math.sin/cos/sqrt/atan2: h = (HA x 2pi)/24, d = Dec x pi/180 (rounded Extended operands), x = sin(lat) sin(d) + cos(lat) (cos(h) cos(d)), alt = atan2(x, sqrt(1 - x*x)). With u = 2^-53: E_x = u (4|h| + 5|d| + 3|lat| + 32) + 2^-58 (|h| + |d| + |lat| + 8). Non-finite input, |h| > 2^20 or |x| >= 1 - E_x -> undecided 'domain' (zenith, nadir, huge or invalid values; the native square root could meet a negative operand there). Else E_alt = (E_x + 4u)/sqrt(1 - (|x| + E_x)^2) + 16u + u |threshold|; |alt - threshold| <= E_alt -> undecided 'precision' unless |stored current Dec| > 90 (both branches then give False). Otherwise the native rule: True iff threshold < alt and |stored current Dec| <= 90 (equality fails). No automatic verdict from the threshold alone and nothing clamped. Callers refuse an undecided verdict: the clock tick changes nothing (clock-altitude-undecided), the manual tick changes nothing and no interval is registered (manual-altitude-undecided), the slew request stores the target and shows a browser box (altitude-undecided).",
+      "assumptions": "The margin terms assume a few-ulp error per binary64 operation and browser Math call and an Extended-precision native evaluation; neither the browser nor the x87 transcendental accuracy is asserted or certified. Tests check closed forms (HA 0 and 12 h), the exact meridian boundary, symmetry and that decided verdicts lie outside the margin on the engine that runs them; the coordinator's independent Decimal vectors (radio-ra12-altitude-20261023/independent-altitude-vectors.json) are external mathematical controls, not native observations.",
+      "differsFromNative": "Native decides every case with Extended state (possibly carried from earlier Extended steps, RA-18 U5) and may raise EInvalidOp for a computed |x| > 1; the browser refuses the margin, domain and non-finite cases instead of guessing.",
+      "code": "src/core/radioAltitude.ts radioAltitudeCheck, radioAltitudeSineMargin, RADIO_ALTITUDE_WEB_POLICY"
+    },
+    {
+      "id": "WEB-ALT-02",
+      "kind": "OpenVireo presentation interlock (new behavior, not recovered)",
+      "title": "No stacked altitude boxes",
+      "rule": "A clock-tick altitude failure while another message box is open applies its native state effects: Tracking := false, the buttons untouched (0x565140 not called), the reading accepted and the copy/drift continuation. The open box stays unchanged (kind, text, captured HA, focus) and no second box opens; the failure is reported only in the status line (clock-altitude-limit-behind-box). Yes on a slew confirmation still does not re-check. A clock failure over the open coordinate dialog is applied and its box is presented above the dialog. A manual-tick failure while another box is open is still refused and changes nothing (altitude-notice-open); this is core/harness only, because the App cancels a hold whenever a box opens (WEB-MANUAL-01).",
+      "differsFromNative": "Natively Tracking := 0 at 0x56561f precedes the MessageBox at 0x56565b, and the copy/drift continuation starts at 0x565660. A timer firing inside an open box's modal loop and showing a nested box is a VCL inference (RA-13), not a runtime witness; the browser drops only that second box and keeps every state change. Atomic continuation (existing behavior, unchanged by RA-19): natively the MessageBox at 0x56565b blocks inside ClocktimerTimer, so the copy/drift continuation from 0x565660 runs only after the box is dismissed; the web commits Tracking := 0, the box state and that continuation in one atomic transition. No modal-loop timing parity is claimed; recommendation: keep the atomic continuation and change it only with a static witness of the modal-loop order.",
+      "code": "src/core/radioAntenna.ts radioClockTick, manualSlewTick"
+    },
+    {
+      "id": "WEB-ALT-03",
+      "kind": "OpenVireo web scenario (new behavior around recovered option fields)",
+      "title": "Radio options scenario and clock prerequisite",
+      "rule": "The App route starts at RADIO_COMPILED_OPTIONS (Limit Slewing off, minimum altitude 0.17453292519943295 rad). The panel's radio options scenario offers only the recovered TRadiOptsDlg SlewBox flag (record+0x93a) as a draft check box with Apply and Cancel/Escape (Cancel restores the draft from the options in use, as CancelBtnClick restores FormActivate's backup); the horizon limit (record+0x90c) is shown read only. Apply is a declared web guard: refused while a coordinate dialog or message box is open or a manual hold is latched. The route rebuilds the options from the compiled defaults with only that flag, so no other option, type or default is invented. Nothing is persisted (no INI or investigation-file field). With limits on, a slew request needs a request-time radio clock reading (limits-require-clock otherwise) and a manual press or tick needs an accepted clock reading and a known HA (manual-limits-clock).",
+      "differsFromNative": "Natively the options dialog belongs to the instructor/options workflow, edits every radio parameter, is copied into the environment record after the parent options modal and can be saved to and loaded from the options file; the clock always runs. None of that is simulated. The harness workbench takes fixed options and an optional fixed radio clock reading.",
+      "code": "src/components/RadioControlPanel.tsx RadioOptionsScenario, src/components/RadioTelescopeRoute.tsx applyOptions, src/core/radioAntenna.ts manualLimitsNeedClock and confirmOrGate"
     }
   ],
-  "numericPolicy": "binary64 throughout, except coordinate entry, which is evaluated exactly (BigInt rationals) and admitted per WEB-NUM-01. Extended operands are rounded once to binary64. Single operands (60, 3600, 0, 24, \u00b190, 12, 15, 10) are exact. Power(10, index-3) is evaluated as Number exponentiation. No x87 control-word or Extended rounding emulation. RA normalization follows the 0x4bad9c port policy of A06 (signed fractional turn, +24, rounded 24 -> 0). Display seconds use Number.toFixed (half away from zero on the exact binary value) for FloatToStrF ffFixed.",
+  "numericPolicy": "binary64 throughout, except coordinate entry, which is evaluated exactly (BigInt rationals) and admitted per WEB-NUM-01. Extended operands are rounded once to binary64. Single operands (60, 3600, 0, 24, \u00b190, 12, 15, 10) are exact. Power(10, index-3) is evaluated as Number exponentiation. No x87 control-word or Extended rounding emulation. RA normalization follows the 0x4bad9c port policy of A06 (signed fractional turn, +24, rounded 24 -> 0). Display seconds use Number.toFixed (half away from zero on the exact binary value) for FloatToStrF ffFixed. Radio clock (RA-13): JD, LST, d = LST - RA, HA and RA - HA are binary64 per WEB-CLOCK-01 (the explicit UTC -> JD policy and the existing 0x4881ac port); the HA change in SlewTimer2 RA phases is taken before normalization; no x87 evaluation and no certified native error bound. Manual (RA-16..RA-18): steps in source order (rate x K, (-rate) x K, rate x K / 15, (-rate) x K / 15) with K the decoder's binary64 value; Singles 90, 0, +/-180, 12 and 15 are exact; Dec, the reflection, RA + 12 and HA +/- step are binary64; RA through the 0x4bad9c port, HA not normalized. Independent binary64 tests restate these operations; they are not x87 or native oracles, and near |Dec| = 90 or Dec = 0 binary64 may decide differently from Extended (no tolerance added). Altitude (RA-12): binary64 in source order with browser Math and the WEB-ALT-01 conditional admission margin; undecided verdicts are refused, never clamped.",
   "permissionDenials": [
     "ls -la over the task-3 evidence directories (compound command) - denied; Glob used instead",
     "python3 -I -c summary of rea-probe-evidence.json - denied; Grep used instead",
@@ -423,20 +795,158 @@
     "node rea.mjs --help - denied; package sources read instead",
     "Grep over /home/dobleuber/Documents/Codex/2026-10-17/task-2 and /tmp/clea-static-research roots - denied; narrower allowed paths used",
     "grep -n \u2026 | head pipelines - denied; Grep tool used",
-    "Numeric-admission correction session: python3 -I -c summary of DELIVERY.json, mkdir of the correction evidence folder, env-prefixed/compound Playwright command, node -e arithmetic probe, grep -n over the test file - each needed approval and was not retried in that form (Read/Write/Grep tools, per-run configs and Vitest assertions used instead)"
+    "Numeric-admission correction session: python3 -I -c summary of DELIVERY.json, mkdir of the correction evidence folder, env-prefixed/compound Playwright command, node -e arithmetic probe, grep -n over the test file - each needed approval and was not retried in that form (Read/Write/Grep tools, per-run configs and Vitest assertions used instead)",
+    "RA-19 keyboard implementation session: a Bash loop printing the RA-19 supplement files and a read-only git status were denied (Bash unavailable in that session); not retried, the Read/Grep/Glob tools were used instead. The optional DFM-RADIOLAB read denied in the plan phase was not retried by any route (G2 stays open).",
+    "Hot list implementation session: compound/pipelined Bash reads (cat/head over listings, ls of the project root), a direct ./node_modules/.bin/tsc -b and npm --prefix run build were denied; not retried in that form. Read/Grep/Glob were used, and the build and tests ran through plain npm run build, npm test and npm run test:e2e from the project directory."
   ],
-  "validation": "src/core/radioAntenna.test.ts and tests/radio-antenna.spec.ts test the chosen implementation contract against these ranges. They are not an oracle for the original runtime; no original execution, emulation or microemulation was used.",
+  "validation": "src/core/radioAntenna.test.ts, src/core/radioAltitude.test.ts, src/core/radioClock.test.ts, src/core/radioManualInput.test.ts, src/core/radioKeyboard.test.ts, tests/radio-antenna.spec.ts, tests/radio-clock-app.spec.ts, tests/radio-manual-app.spec.ts, tests/radio-altitude-app.spec.ts and tests/radio-keyboard-app.spec.ts (hot list: src/core/radioHotList.test.ts, src/core/sharedHotList.test.ts, src/core/radioAntennaHotList.test.ts and tests/radio-hotlist-app.spec.ts) test the chosen implementation contract against these ranges. They are not an oracle for the original runtime; no original execution, emulation or microemulation was used.",
   "webTimerOwnership": {
     "id": "WEB-TIMER-01",
     "nativeBasis": "RA-11 100 ms SlewTimer2 and RC-06 1 ms branch; native message scheduling not reproduced",
-    "policy": "One periodic browser registration reads latest committed input, delivers at most once per input, and is cancelled on disable/pause/unmount/owner run change. Component checks latest enabled/run ownership before delivery, including commit-to-passive-cleanup gap. Other antenna state changes do not postpone cadence. Hidden panel does not stop the timer.",
-    "evidence": "radio-antenna-independent/quota-preservation/before-gap-report.json and after-gap-report.json; native runtime not executed"
+    "policy": "One periodic browser registration reads the latest accepted antenna state, delivers at most once per input, and is cancelled on disable/pause/unmount/owner run change. The panel writes each accepted transition's state as its working state before handing it to the host and replaces it only when the host commits a new antenna prop (identity), so SlewTimer2, the clocktimer and antenna user actions in the same task chain from each other's result instead of overwriting it. Component checks latest enabled/run ownership before delivery, including commit-to-passive-cleanup gap. Other antenna state changes do not postpone cadence. Hidden panel does not stop the timer.",
+    "evidence": "radio-antenna-independent/quota-preservation/before-gap-report.json and after-gap-report.json; radio-ra13-clock-validation/review-reproductions.json sameTaskTimers (syntheticScheduling: true; a synthetic same-task reproduction of a 1000 ms + 100 ms overwrite, not a native, Windows or Chrome throttling witness); native runtime not executed",
+    "manualAddition": "RA-18 SlewTimer (DFM Interval 100 ms) has its own separate startRadioTimer registration (the same helper and policy as SlewTimer2 and the clocktimer; RADIO_LAB_CONSTANTS.manualTimerIntervalMs) while a hold is latched, delivery is automatic, no WEB-MANUAL-01 cancellation cause holds and radioLabManualTickRefusal is null; the generation token is manualRun. Press, release, cancellation and manual ticks step from the latest working antenna state, so they chain with ClocktimerTimer and each other inside one task before React commits. Unlike SlewTimer2, a hidden route, a closed panel or a modal cancels the hold (WEB-MANUAL-01)."
   },
   "webOptionProfile": {
     "id": "WEB-OPT-01",
     "policy": "Shape-valid host options are supported only if initial Dec is finite within [-90,90] degrees and all reachable rate indices 1..max(4,maxRateIndex) produce finite positive advancing Dec/RA steps, with RA step < 6 h. Refuse without clamping. Not native options validation.",
-    "stateContext": "radioLabRateIssues checks a rate only where a step that moves the telescope comes from it, with the live options deciding the branch and the coordinates deciding whether an RA step is taken. After the first FormActivate (0x5649f3, index 4 from the options then current) the rate is recomputed only by RateSpin (0x566784/0x566838) and by the start loop (0x566f6b, also run before the instantSlew branch, so an instant start can recompute and store index/rate/step without using them to move), which only raises the index to the options maximum, so an index above max(4,maxRateIndex) set under earlier options or by a restored host state is kept. Consumers (RA-10/RA-11 listings): start Dec step 0x566f8a; stored rate read once at the non-transit Dec->RA switch 0x5674ff..0x56750f, where +0x53e := Extended 0x5678d0 >= |d| and, when set, the same callback completes without adding the computed RA step (RA not snapped); Dec/RA phases add the fixed step +0x525; transit goes to phase 3; instantSlew 0x566fb3 writes the pointing. The gates share the switch separation/tolerance helpers with slewTimerTick (same arithmetic and order, no new tolerance). 'stored' (Dec phase of a non-transit slew, running or paused, whose switch takes the RA step) refuses only the switch callback with rate-unsupported (radioLabTickRefusal, which reports a refusal only while SlewTimer2 is enabled: when idle or paused at the stop question no callback is pending and slewTimerTick answers slew-timer-idle first; the panel registers no interval from then on and Motion names the cause); RA-phase, transit and within-tolerance switches report nothing. 'start' refuses OK and Yes for the pending coordinates (valid J2000 dialog draft whose OK reaches the confirmation, else the committed confirmation target, else none chosen): Dec step only for transit or a within-tolerance switch, full criteria otherwise, none for instantSlew. OK applies it after the parse/web-domain/B1950 results and only when OK is on the path to a possible start, that is when it reaches the confirmation or, on a transit telescope, the transit note that precedes the confirmation (no-slew warning and limits gate store the target first, as in the original); the option-record check stays before parsing. 'down'/'up' refuses a RateSpin press in that Dec phase and is not listed while a modal is open. Other presses keep the native arithmetic and are applied. Reasons are shown in a panel note and inside the open dialog/confirmation, with close-first recovery while a modal covers the buttons and live-option alternatives on a panel whose Tracking button was hidden at first FormActivate. Nothing is clamped or recomputed.",
+    "stateContext": "radioLabRateIssues checks a rate only where a step that moves the telescope comes from it, with the live options deciding the branch and the coordinates deciding whether an RA step is taken. After the first FormActivate (0x5649f3, index 4 from the options then current) the rate is recomputed only by RateSpin (0x566784/0x566838) and by the start loop (0x566f6b, also run before the instantSlew branch, so an instant start can recompute and store index/rate/step without using them to move), which only raises the index to the options maximum, so an index above max(4,maxRateIndex) set under earlier options or by a restored host state is kept. Consumers (RA-10/RA-11 listings): start Dec step 0x566f8a; stored rate read once at the non-transit Dec->RA switch 0x5674ff..0x56750f, where +0x53e := Extended 0x5678d0 >= |d| and, when set, the same callback completes without adding the computed RA step (RA not snapped); Dec/RA phases add the fixed step +0x525; transit goes to phase 3; instantSlew 0x566fb3 writes the pointing. The gates share the switch separation/tolerance helpers with slewTimerTick (same arithmetic and order, no new tolerance). 'stored' (Dec phase of a non-transit slew, running or paused, whose switch takes the RA step) refuses only the switch callback with rate-unsupported (radioLabTickRefusal, which reports a refusal only while SlewTimer2 is enabled: when idle or paused at the stop question no callback is pending and slewTimerTick answers slew-timer-idle first; the panel registers no interval from then on and Motion names the cause); RA-phase, transit and within-tolerance switches report nothing. 'start' refuses OK and Yes for the pending coordinates (valid dialog draft, converted when B1950.0, whose OK reaches the confirmation, else the committed confirmation target, else none chosen): Dec step only for transit or a within-tolerance switch, full criteria otherwise, none for instantSlew. OK applies it after the parse/web-domain results, to the converted J2000 target for a B1950.0 draft (epoch.RA-EP-03), and only when OK is on the path to a possible start, that is when it reaches the confirmation or, on a transit telescope, the transit note that precedes the confirmation (no-slew warning and limits gate store the target first, as in the original); the option-record check stays before parsing. 'down'/'up' refuses a RateSpin press in that Dec phase and is not listed while a modal is open. Other presses keep the native arithmetic and are applied. Reasons are shown in a panel note and inside the open dialog/confirmation, with close-first recovery while a modal covers the buttons and live-option alternatives on a panel whose Tracking button was hidden at first FormActivate. Nothing is clamped or recomputed.",
     "stateContextEvidence": "Coordinator reproductions radio-antenna-independent/review-lifecycle-findings/cross-options.json (A maxRateIndex 6/base 50, B 4/3241, index 5 rate 324100, RA step 6.00185185 h), radio-antenna-independent/phase-context-findings/observations.json (phase-2 fixed step 0.9259259259259259 over-refused; transit and instant starts refused on an inapplicable RA step) and radio-antenna-independent/tolerance-feedback-findings/observations.json (same-RA, RA 3h0m0.018s and exact no-motion entries refused at OK; live transit off at a within-tolerance switch, deltaRa 0.000004999999999810711 <= 0.00001, refused); regressions in src/core/radioAntenna.test.ts and tests/radio-antenna-lifecycle.spec.ts. Consumer locations are the existing derived listings; no fresh REA or native run. Implementation contract only; native runtime not executed.",
-    "missingAuthority": "INI loader, instructor options and TRadioOptsDlg validation; shared clock, drift and altitude limits remain gated. Caller-state assumption: a host-restored antenna state carries a step written by the start; the fixed step +0x525 is not re-checked (conditional review finding 2 from source reading, a synthetic patchAntenna state only; no supported UI/import ingress demonstrated, no native step validation invented)."
+    "missingAuthority": "INI loader, instructor options and the full TRadiOptsDlg (only the Limit Slewing flag is offered, WEB-ALT-03), and the native host clock/date dialog are replaced by the explicit WEB-CLOCK-01 scenario (radio clock ticks are refused while the options are outside this profile). Caller-state assumption: a host-restored antenna state carries a step written by the start; the fixed step +0x525 is not re-checked (conditional review finding 2 from source reading, a synthetic patchAntenna state only; no supported UI/import ingress demonstrated, no native step validation invented)."
+  },
+  "hotList": {
+    "scope": "Slew > Hot List > View/Select (list window, selection, coordinate dialog, Cancel back to the list, OK through the Set Coordinates request path) and Load, over one HTL list shared with the observatory editor. The list window caption and its Slew to Selection/Close menu captions are recovered (formCaptions). Add Current Item, Save Updated List, the row formatter 0x590110, the load information text and the no-selection text are not ported. Bounded I06 status: not I06 complete.",
+    "evidenceRoot": "/tmp/clea-static-research/radio-hotlist-20261023/",
+    "rea": {
+      "resourceInventory": {"evidenceId": "ev_cf8d975fac29b7995f8c12914c7aa9860bcf0d9845be479281659a03048c5028", "use": "Fresh REA resource inventory (resource 149, RCDATA TRADIOLAB, offset 2195716, 12882 bytes, SHA-256 b87302b15835a576b19ccbb63f4e6578824a004965d00a2c9a07f8cf1fb28288); RADIO-HOTLIST-MENU.json is the typed menu subtree decoded by observatory_inventory.py (SHA-256 822a7f18e108a9ecba7f138b362bb8b668a68b203ec941f73e340bbe2016f1f4). Not re-run by the implementer."},
+      "fileHeaders": {"evidenceId": "ev_7dc6bf019bb51fb9459330ede891894f63461ca615942d0b0ea347d926407a39", "path": "rea-file-headers.json", "use": "Coordinator REA file-header record for the same artifact; not re-run."}
+    },
+    "literals": {
+      "path": "radio-literals.json",
+      "items": [
+        {"address": "pchar 0x567c24", "sha256": "26ddab55395c8f5ab74834bff17ef3c5607695915151f593c2bcf4e691c6234c", "text": "Observation List Empty", "use": "caption of the 0x40 empty-list box (MessageBox wrapper 0x47e09c, ecx)"},
+        {"address": "pchar 0x567c3c", "sha256": "166394160c83e41765bba337515560fcf32e0a4e6e5675b8f68b3d62cb0fe57d", "text": "No items in Observation List!", "use": "text of the same box (edx)"}
+      ]
+    },
+    "formCaptions": {
+      "path": "LIST-EVENTS-AND-CAPTIONS.json",
+      "source": "RCDATA 10/THOTLISTFORM1/0 (offset 2058116, 2499 bytes), slice verified in the original PE by the coordinator; no original bytes in this repository",
+      "dfmSliceSHA256": "55e515a9b10153cd5e9f906fd3cf8633491337a07af9faa87348f8fd8b7d66cf",
+      "derivedDFMSHA256": "7b382c1bd51bec4db4c501569667d9b6ff6600d69383b26c950ea1e5322352db",
+      "items": [
+        {"property": "THotListForm1.Caption", "text": "Select Object for Observation", "use": "list window heading"},
+        {"property": "SlewtoSelection1.Caption (TMenuItem, OnClick Slew1Click)", "text": "&Slew to Selection", "use": "shown as a button (WEB-HL-06)"},
+        {"property": "Close1.Caption (TMenuItem, OnClick Close1Click)", "text": "&Close", "use": "shown as a button (WEB-HL-06)"}
+      ],
+      "code": "src/core/radioAntenna.ts RADIO_HOT_LIST_FORM_CAPTIONS, src/components/RadioHotListDialog.tsx"
+    },
+    "contracts": [
+      {"id": "RA-HL-01", "title": "One shared list", "ranges": ["0x5903a8..0x5903d8 shared-formcreate code e6c8e4cd0eee36cc2ced7568041f065ca829e7be77844f084e61d4513aea6677 listing 75b84b9bb4db91eaa35933ffbf77df283bae6fae48ac5d52e1a3b58d8642a4fc", "0x404c70..0x404cce object-constructor-helper code 3f84fdabdf91a814e7c375a377f9ac9cfdfbc59819abf4e13ca5fa7402b761bb listing ee0cd5791d70ab1fc174c34614b08d84f8b9d0535e3e1336c5d8235a6963dfd8", "list-comparator-slots.json / list-comparator-pointer.json: [0x58f3cc] = 0x58f3d8, slot +4 = 0x590398, equality 0x590388 not used for ordering"], "rule": "List form [0x5b5998], list at +0x58d, 0x56-byte records; FormCreate writes +0x585 := 0, +0x588 := 0, +0x587 := 1. The optical Load 0x53f498 and the radio LoadHotList1Click 0x568024 reach the same global.", "code": "src/core/sharedHotList.ts, src/useSharedHotList.ts, src/OpenVireo.tsx"},
+      {"id": "RA-HL-02", "title": "Load reader", "ranges": ["0x5903d8..0x590531 shared-read code cd3e95b940cedf3c6e49f977d0ea88d8005c1ef94bcefe72040d965a8988963f listing d1bade62175dc24f6e0633617e1bd8ae588780949ac167f706cdcbe78add7841", "0x53f498..0x53f770 shared-load code 7abacf2692b3be2ad1b145b42f1a502d7b71e48161b4c9923eab01aa1f1f7495 listing 80d6c88a048a6310a85a11bff853a9e3f66e495fecb52c7c1bfeffce15f1b682", "0x568024..0x568031 radio-load code 0f7c3eb71d31d04efeed2fee37aa7426cad22b897076a017e149eea12807bbfb listing 5420e85e071b0445825a2609d93f1ce6b63894958c2ceef623a775c918ee46b1"], "rule": "FileExists false -> False; Reset/IOResult failure (0x590434..0x590483) -> 0x10 box, list kept; otherwise clear at 0x590494 (0x4924fc, only when non-empty) before the record loop, every 0x56-byte record through 0x492728, path to 0x5bcf3c, +0x587 := 1, True. Only the Reset/IOResult failure is statically shown to keep the old list; behaviour after the clear (for example a failing read in the loop) is not runtime-certified. The web's whole-file validation, atomic replacement and keeping the current list on every failure are a declared web policy (WEB-HL-01).", "code": "src/components/RadioControlPanel.tsx loadRadioHotList; codec unchanged in src/core/hotList.ts"},
+      {"id": "RA-HL-03", "title": "Order comparator", "ranges": ["0x590388..0x5903a8 list-comparators code 9307dd008a0711cc19d86d08a21f3e59845f022746875d95cc3702412acb3b66 listing 93550014e86de4be6e1f7b638ff145503079e6e4c2d2b9f4018464cd8233b63b"], "rule": "0x590398: fld TBYTE [edx+0x19]; fld TBYTE [ecx+0x19]; fcompp; setb -> Greater(EDX,ECX) iff RA80(EDX) > RA80(ECX) for admitted finite values. Dec is never compared.", "code": "src/core/radioHotList.ts htlRaKeys"},
+      {"id": "RA-HL-04", "title": "Cursor insertion", "ranges": ["0x492728..0x4927fc list-insert code 134ceed0190bf07e09eab50152dea74700038380d28434a06e0a8da109677840 listing 4cee6b73401cb5e4380071127562d2ee76ba1740f697c9275ad5c4a5f9229c5d", "0x492528..0x492573 list-insert-head code 7ab1e730871a9a0935b61642e536681dc908e75631d11ef3789722d55cc322af", "0x492574..0x4925d9 list-insert-after code f9261e620d6bb93972d4f185b5afb63bf06334a8f5427182552f8ff33bc06606", "0x492628..0x4926dc list-cursor code 183722676335800ac5ee0aedde8bf235ff2f34f0db7f7b5fac8ce18d0f8266b9"], "rule": "Empty -> head. Greater(new,cursor): forward while not tail and !Greater(cursor,new), back one if Greater(cursor,new), insert after. Otherwise back while not head and !Greater(new,cursor); at the head insert before it iff Greater(head,new), else after the cursor. The cursor ends on the inserted node.", "confirmed": {"rule": "0x492708/0x492710/0x49271c test head = nil, cursor = head and cursor = tail. The constructor 0x4924d4 sets head, tail and cursor to nil. The clear 0x4924fc sets the cursor to the tail and calls 0x4925dc while the head is not nil; 0x4925dc unlinks the current node and moves the cursor to its predecessor, so the last removal (the head) leaves the cursor nil. This closes the earlier assumption shared with the NOMAD port; no order or arithmetic changed.", "listings": ["0x492708..0x492728 list-predicates.asm 9bf63bc79a44c8fd1f2bc8a97e78bcce568f281841d0969ccf94fe1cfb9eca86 (OPTIONAL-LIST-PREDICATES.json)", "0x4924d4..0x4924fc list-init.asm 4f26abbb08e960b295d266f03f7f90336a6effe3f27527adb45704fdbdcfd81a (LIST-INIT-REMOVE.json)", "0x4924fc..0x492528 list-clear.asm 468ad6a4695b6d48f131394d109817cbfb71553ff6640f7df895f2e5364e10a3 (OPTIONAL-LIST-PREDICATES.json)", "0x4925dc..0x492628 list-remove-current.asm 55b0ac2f7be4d1cfb98d5cdacf88e7be9d5f7827dce182b4c00aed442c8b9962 (LIST-INIT-REMOVE.json)"]}, "code": "src/core/radioHotList.ts nativeCursorInsertionOrder, radioHotListProjection"},
+      {"id": "RA-HL-05", "title": "List window", "ranges": ["0x591e24..0x591f2f shared-select code 50f7bf8436ae9b45011371b911999082157bf228cd50a3c2214c0598a8d2f210 listing ffa156bc5f124e7de362697663fb60e4aeb6cf10698c539dd668bd783a191580", "0x591fd0..0x591fe0 shared-doubleclick code 188e7912c4e0f041148d3580c0f611feda4c9395693eb1984750d7d4af1e34dd", "0x590c28..0x590c73 shared-activate code b327d8e413193d6fd0ac58c91527903e44cc1377e215313acd28e192094639b5", "0x59070c..0x590ab8 shared-formshow code 5e6f22daca2eef6722be836ae7b5337116811955e2857ae4c75175e29905eeec", "0x590c14..0x590c1c shared-close code 62f355d9b149192e4796aa3391ef3d4174ea9e00c9e2e0bd05d1fa4c33074d65", "0x591fe0..0x5920a8 list-mouseup.asm ad73a7fb67c12c09c43976e002895faccf211e1d8cf7a4df107f0c55458cbd42", "0x5920c8..0x592120 list-keyup.asm 6ab78deed0978a24ee6b83af0b14714d1dcf4cb2e76b0b32d83e0484f46b5bd3", "0x5920a8..0x5920c6 list-mousedown.asm f79cfe6276917de049d37f24f0e4504e7852d7bed385d45b12f48a31ee75ff7a", "LIST-EVENTS-AND-CAPTIONS.json: THotListForm1 DFM (RCDATA slice 55e515a9b10153cd5e9f906fd3cf8633491337a07af9faa87348f8fd8b7d66cf, derived DFM 7b382c1bd51bec4db4c501569667d9b6ff6600d69383b26c950ea1e5322352db) binds ListBox1 OnDblClick/OnKeyUp/OnMouseDown/OnMouseUp"], "rule": "Slew1Click: ItemIndex in [0, Count) -> +0x588 := index (0x591e86), node at index (0x492688), raw 10+10 bytes to +0x5a8/+0x5b2, +0x5a7 := 1, Close; otherwise 0x30 box (text 0x591f38 not decoded), list stays. DblClick -> Slew1Click. ListBox1MouseUp writes ItemIndex to +0x588 (0x59208f); ListBox1KeyUp writes it only when in [0, Count) (0x592114). So a click or arrow-key selection is remembered across Close and reopen before any Slew1Click. Activate resets +0x5a7. FormShow rebuilds the rows in list order and sets ItemIndex := +0x588. The web applies MouseUp/KeyUp on the list's change event (timing adaptation, no window-message parity). Out of scope: the right-click popup path of MouseUp (button 1) and the other list menu actions (Search, Print, Save List, Edit/Delete/Undo).", "code": "src/core/radioAntenna.ts selectRadioHotListIndex, slewToHotListSelection, closeRadioHotList; src/components/RadioHotListDialog.tsx"},
+      {"id": "RA-HL-06", "title": "Menu and empty list", "ranges": ["RADIO-HOTLIST-MENU.json (TRADIOLAB DFM offsets 11534..12056)", "0x567b28..0x567b45 and 0x567c05..0x567c21 radio-select code 38a1ac96fa5ac55fa0be39278a66f60fff9b66535abd8d39e7921df7cd36c9b2 listing 130b8ef8d1c8d443d14a894882455f67d4b0abadd64a95e31099115ee41e7a68"], "rule": "Slew1 > HotList1 (caption with double quotes): View/Select -> PListSelectClick, Add -> PListAddClick Enabled=False, N7 hidden, Load -> LoadHotList1Click, Save Updated -> PListSaveClick Enabled=False Visible=False. PListSelectClick: empty list -> MessageBox 0x40 caption 0x567c24, text 0x567c3c, nothing else.", "code": "src/core/radioAntenna.ts RADIO_LAB_CAPTIONS, RADIO_HOT_LIST_LITERALS, openRadioHotList"},
+      {"id": "RA-HL-07", "title": "Selection loop", "ranges": ["0x567b4b..0x567bfd radio-select (same listing)", "0x566b57..0x566b68 set-coordinates-epoch-reference.asm (RA-07 EpochGrp call with DL = 1)", "EPOCH-CONTROL-FINDING.json, coordinator reference f708fd768039a1b703b91c347d321cdd5635ab5c0c96c3a4c6c2d4a701ba9347"], "rule": "ShowModal of the list; +0x5a7 set -> copy +0x5a8/+0x5b2 into the stored coordinates (cells 0x5b5e20/0x5b5604), SkyCoords +0x3c5 := 0 (J2000, 0x567bb1), then 0x567bbf..0x567bc9 loads SkyCoords +0x3a0 (EpochGrp), EDX := 0 and calls vmt+0x68 = SetEnabled(False); RA-07 calls the same control and slot with DL = 1 (0x566b5e..0x566b68). SkyCoords ShowModal; ModalResult = 1 -> 0x566bc4 and exit; otherwise BL := 0 (0x567bf9) and loop back to the list. +0x5a7 clear (0x567b5e -> 0x567bfb): static reading only, on the first pass BL is uninitialized; after a coordinate-dialog Cancel BL is a known 0, so 0x567bfd je 0x567b4b shows the list again. No native runtime result is claimed for either pass (WEB-HL-02).", "code": "src/core/radioAntenna.ts slewToHotListSelection, cancelSkyCoords (origin 'hot-list'), confirmSkyCoords unchanged"}
+    ],
+    "webPolicies": [
+      {"id": "WEB-HL-01", "title": "Shared document and read ownership", "rule": "One temporary App-owned document (editor, name, revision, read slot, optical-draft flag). Reads have an owner token and the revision at begin; commit is atomic (existing optical Open semantics) and stale on a wrong token/owner, a newer revision or (radio) an open optical draft. An optical Add/Edit draft refuses radio Load and cancels a pending radio read. Radio View/Select, selection, Cancel and OK never write the document. Not in investigation JSON; a reload clears it.", "code": "src/core/sharedHotList.ts, src/useSharedHotList.ts, src/HotListEditor.tsx"},
+      {"id": "WEB-HL-02", "title": "Close exits", "rule": "Closing the list without a selection always ends View/Select.", "differsFromNative": "Static reading of 0x567b5e -> 0x567bfb: on the first pass the exit depends on an uninitialized BL; after a coordinate-dialog Cancel BL is a known 0 (0x567bf9), so 0x567bfd je 0x567b4b would show the list again. No native runtime result or original runtime defect is claimed; the web Close always exits and is never made non-dismissible."},
+      {"id": "WEB-HL-03", "title": "Programmed-slew interlock", "rule": "View/Select is refused while a programmed slew runs or is paused at the stop question (hot-list-slewing).", "differsFromNative": "Natively reachable while the Slew menu is enabled."},
+      {"id": "WEB-HL-04", "title": "File-order to projection bridge", "rule": "The radio rows are always recomputed from the confirmed file-order list (memoized by list identity, never from an earlier projection); no native historic cursor is claimed across web edits, deletes, Undo or New. The observatory editor's file order, Undo and byte-preserving Save are unchanged."},
+      {"id": "WEB-HL-05", "title": "Read cancellation", "rule": "A pending radio read is cancelled by its Cancel button, an antenna dialog/box or the list opening, the route hidden, a project operation, a hidden page and unmount; its late completion is ignored and the document kept."},
+      {"id": "WEB-HL-06", "title": "Presentation", "rule": "The list window heading and its Slew to Selection/Close controls use the recovered DFM captions (formCaptions); natively these are menu items, the web shows them as buttons. A short units note replaces the earlier recovery paragraph. The decimal row format (0x590110 not ported), the help text, the load status and the no-selection text are OpenVireo wording; the empty-list box uses the decoded caption and text. Rows are radio options (touch, exact index, duplicates keyed by source index); the list is application-modal like the other antenna surfaces (header inert, Options Apply refused, hidden or busy route suppresses presentation, held Enter/Escape ignored)."},
+      {"id": "WEB-HL-07", "title": "Numerics", "rule": "Order uses the retained 80-bit RA key as (exponent << 64) | significand with +-0 equal, for the codec-admitted domain (zeros and positive normals); stored coordinates, prefill, the no-slew equality and the altitude check use the codec's parse-time binary64 values (-0 kept). No x87 exception, precision-control or runtime parity is claimed."},
+      {"id": "WEB-HL-08", "title": "Browser history while the list is shown", "rule": "Browser Back/Forward hides the open list without closing it, and the App header becomes usable. Intentional observatory edits (for example an optical Remove) stay allowed; drafts, Undo and the remembered index are never cleared. On return the recomputed projection (WEB-HL-04) is shown at the remembered index, or the no-selection note when it is out of range. The stored target, the pointing and the slew state do not change until an explicit Slew to Selection.", "differsFromNative": "Not reachable natively: the list is application-modal. No native history semantics are claimed, and the optical editor is not locked globally.", "evidence": "HIDDEN-LIST-CONTROL.json (coordinator reproduction of the existing web history/document policy, not native runtime)", "code": "src/components/RadioControlPanel.tsx (presentation suppression), src/core/radioHotList.ts radioHotListProjection; tests/radio-hotlist-app.spec.ts"}
+    ],
+    "validation": "src/core/radioHotList.test.ts (hand-traced cases, raw-vs-Number, the coordinator fixture order Z,HIGH,LOW,DUP,MID -> [2,3,1,4,0] with this test's own values, an exhaustive comparison with a linked-list transliteration of 0x492728 and with the accepted NOMAD port on RA-only keys), src/core/sharedHotList.test.ts, src/core/radioAntennaHotList.test.ts and tests/radio-hotlist-app.spec.ts. Synthetic files only in the repository. Coordinator results on the initial candidate dd648dee (COORDINATOR-QA-INITIAL.json): 1279 resources, typecheck and build passed, 2251 unit tests in 196 files; 22 actual-App desktop/touch flows including the local original Hubble file with 0 omissions; 13 original HTL files (281 rows) with retained bytes, codec binary64 bits and exact-fraction order checked; 9841 production-vs-independent-reference order cases and 11841 internal reference cross-checks; visual checks at 1440/375/320 with no overflow, rows >= 44 px and focus passed; broad Playwright regression 527 passed, 160 conditional omissions, 0 unexpected, 0 flaky. The initial candidate failed the independent epoch check (enabled true vs false), corrected here (epochEnabled false on the hot-list path); final QA and review of the corrected candidate are pending. These checks cover the chosen contract only and do not show native runtime, GDI or x87 equivalence. The 13 original files came from archive 58dc02a6 and stay outside the web source."
+  },
+  "epoch": {
+    "scope": "Set Coordinates epoch choice (TSkyCoordsDlg EpochGrp J2000.0/B1950.0): the fixed-epoch precession callgraph, FormActivate's J2000->B1950 conversion before the prefill, OKBtnClick's B1950->J2000 conversion after validation, the +0x3c5 flag lifecycle (FormCreate, OK, hot-list selection) and its two readers at the slew confirmation. Radio-local; no persistence, JSON/CSV or schema change. Receivers, beam and the rest of I06 stay gated: I06 is not complete.",
+    "evidenceRoot": "/tmp/clea-static-research/radio-epoch-preparation/",
+    "evidenceIndex": {"path": "CANONICAL-EPOCH-EVIDENCE.json", "sha256": "d3c1d043fbd407a8489d3c07db8d22dba4a25e7893acb0463c3799dac2bf66ec", "note": "Only its 18 listings and typed cells are canonical; the *-initial-unverified.asm sweeps in the same folder are not authority and were not used."},
+    "requestSlewSupplement": {"path": "REQUEST-SLEW-SUPPLEMENT.json", "sha256": "f2db61cb2596d96432fd92dba450b4562b35a1911e11dc99b355340ef07f360d", "listing": "radio-request-slew.asm", "listingSHA256": "3983f6d14471c20627e61edca7c59be26b5d5e3e73e3b36f4e598546490e3885", "range": "0x566bc4..0x5671b6 (entry through final RET including SEH)", "decodedNativeConfirmationText": false},
+    "rea": {"sectionHeaders": {"evidenceId": "ev_e38712cf9c7d43940da29cd5dc4bc40bf7f633a2c4d32642a40a0c87b1112228", "path": "rea-section-headers.json", "use": "Same REA objdump section-header record as rea.manualSectionHeaders: places the dialog globals 0x5bc1c0/0x5bc1cc in .bss (0x5b6000..). Section metadata only; not re-run by the implementer."}},
+    "disassembler": "Coordinator: GNU objdump -d -M intel --no-show-raw-insn over bounded ranges (no byte columns). fsubp/fsubrp/fdivp are read with Intel operand semantics. Anchor: ArcSin 0x427000 fsubp st(1),st must give 1 - x*x (otherwise ArcSin is NaN for every |x| < 1); 0x4ba2c4 (alpha / 2pi) and 0x4ba307 (pi/2 - |dec0|) agree, and the opposite reading would send every Dec to the polar branch. Analyst inference with a strong anchor, not a byte-level decode by the implementer.",
+    "listings": [
+      {"file": "coordinate-init.asm", "range": "0x4b98cc..0x4b98f3", "sha256": "a6875ba7e6caad1ef590a4376b29b7440c02f5759cc7cd0e8d8d119ea905795d"},
+      {"file": "coordinate-init-wrapper.asm", "range": "0x4b98f4..0x4b9916", "sha256": "832d0642fa84494aa964aaf2639a8012028bcd553e7265554d3378aebbfc568a"},
+      {"file": "coordinate-epoch-wrapper.asm", "range": "0x4b9f44..0x4b9f64", "sha256": "8a7b3e0d6268544701a65e15a66021d8e5d4bb2888e9e8e50e7fb722d612d37a"},
+      {"file": "precession.asm", "range": "0x4b9f64..0x4ba369", "sha256": "f20459bb4d8269409342e3f5fb03aef0869ba121e6d773bede22cd83a9f61cad"},
+      {"file": "fraction.asm", "range": "0x40365c..0x403689", "sha256": "26a976123b53a849938b34f63d4c994d0826d2eb04c1990df7d6067b2082b31a"},
+      {"file": "cos.asm", "range": "0x4036ac..0x4036b9", "sha256": "821d20426d1b5d889514a5b5710fae4ed033f57ac863f9afb9abe6fa0195e4ce"},
+      {"file": "sin.asm", "range": "0x4036bc..0x4036c9", "sha256": "b8e7036a85a400c7cea45c92fd4f499f6b2e7fd95a6d5c03ee84a985e95debf9"},
+      {"file": "sqrt.asm", "range": "0x4036f0..0x4036fd", "sha256": "764bb05cb5394aaaa5f3773d47061753adf90b0bd0e0c7845e46d02f6fd5d9b8"},
+      {"file": "atan2.asm", "range": "0x42700c..0x42701c", "sha256": "dad1c709b236e0be7fddaff9444c21ba8bd6909210d7299e150ddea33945f8f3"},
+      {"file": "clamped-asin.asm", "range": "0x485984..0x4859ed", "sha256": "1b7d94f1fa61da66694bd34f180c52ba6abde30af7cc0d6119cac134d466e182"},
+      {"file": "clamped-acos.asm", "range": "0x4859f8..0x485a61", "sha256": "4e4ed9c328b2fad6f2904d7e0f199d815a4ff6203c73a2b28088c3aff1d14290"},
+      {"file": "asin.asm", "range": "0x426ff4..0x42700c", "sha256": "5326ade28fa6e4eaca04422b1d830a50d1c1a6c0d0718a40ec7530885a4fa315"},
+      {"file": "acos.asm", "range": "0x426fd8..0x426ff4", "sha256": "fa16b05aca9c641c1a4274f9337e7d9d1a1d324db54a96eb46ee7e44687b4622"},
+      {"file": "skycoords-create.asm", "range": "0x4f3100..0x4f3134", "sha256": "b1a2737909dbe527865459b3d3272491689e40b7406391cfdc107923a5e18b48"},
+      {"file": "skycoords-activate.asm", "range": "0x4f3134..0x4f33d7", "sha256": "67107199971e7e70424308d53eea8105713b2a869acbe1649bf4c06474cea73b"},
+      {"file": "skycoords-ok.asm", "range": "0x4f33f4..0x4f3802", "sha256": "5c79307a6ddb821e0d1ae80d310756b82004353de7b52754fa6d171815d2b646"},
+      {"file": "radio-set-coordinates.asm", "range": "0x566a3c..0x566b96", "sha256": "f708fd768039a1b703b91c347d321cdd5635ab5c0c96c3a4c6c2d4a701ba9347"},
+      {"file": "radio-hotlist-select.asm", "range": "0x567b28..0x567c22", "sha256": "130b8ef8d1c8d443d14a894882455f67d4b0abadd64a95e31099115ee41e7a68"}
+    ],
+    "typedCells": [
+      {"va": "0x4859f0", "kind": "Single32", "numerator": "1", "denominator": "1", "Number": 1, "cellSHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c", "constant": "clampLimit"},
+      {"va": "0x4859f4", "kind": "Single32", "numerator": "0", "denominator": "1", "Number": 0, "cellSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119", "constant": "clampSign"},
+      {"va": "0x485a64", "kind": "Single32", "numerator": "1", "denominator": "1", "Number": 1, "cellSHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c", "constant": "clampLimit"},
+      {"va": "0x485a68", "kind": "Single32", "numerator": "0", "denominator": "1", "Number": 0, "cellSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119", "constant": "clampSign"},
+      {"va": "0x4ba36c", "kind": "Single32", "numerator": "2451545", "denominator": "1", "Number": 2451545, "cellSHA256": "d43d25a6ac2ecb5fa1c837c23cac467296c92aed0b3bfae0bc2bb4328829e16e", "constant": "jdReference"},
+      {"va": "0x4ba370", "kind": "Single32", "numerator": "36525", "denominator": "1", "Number": 36525, "cellSHA256": "1ad14270dbc22ded1bfd8012b082114beecfab7ecd0dd087a159a05ae71ad673", "constant": "daysPerCentury"},
+      {"va": "0x4ba374", "kind": "Extended80", "numerator": "10502543057902090955", "denominator": "75557863725914323419136", "Number": 0.000139, "cellSHA256": "fea96a47fd199a122725f5ecc16909e6511ecc4bfc279e849a8b9f62132049f2", "constant": "a2"},
+      {"va": "0x4ba380", "kind": "Extended80", "numerator": "6440496225894952851", "denominator": "4611686018427387904", "Number": 1.39656, "cellSHA256": "25fe091205d37ff29a31ab3967ab3dc011a771b2ab8a7748a05137857fa8f42f", "constant": "a1"},
+      {"va": "0x4ba38c", "kind": "Extended80", "numerator": "10386282975795093281", "denominator": "4503599627370496", "Number": 2306.2181, "cellSHA256": "663841416fd0e910b30b0ce7020c076cccfca8706bf777611371fb688cb08fb3", "constant": "a0"},
+      {"va": "0x4ba398", "kind": "Extended80", "numerator": "3248988140214315907", "denominator": "9444732965739290427392", "Number": 0.000344, "cellSHA256": "b256892ddb2d1f9624885fe01d615bcada6c3586162de65d1f66f822c372e664", "constant": "zeta1T"},
+      {"va": "0x4ba3a4", "kind": "Extended80", "numerator": "2784351550485719721", "denominator": "9223372036854775808", "Number": 0.30188, "cellSHA256": "2b797e691d16a8ba193f491ac9c0ef6e46be03042ddab7ec07c82da1bedc38fe", "constant": "zeta1"},
+      {"va": "0x4ba3b0", "kind": "Extended80", "numerator": "166002249919312255", "denominator": "9223372036854775808", "Number": 0.017998, "cellSHA256": "fbc8302ae714f4e52dcbc68c2b1cbe84ae8f395e83266986a65aa94ca7274aaa", "constant": "zeta2"},
+      {"va": "0x4ba3bc", "kind": "Single32", "numerator": "3600", "denominator": "1", "Number": 3600, "cellSHA256": "a2de4eae6b06803de770c5571556a05a1479d295004dfad1797d469370265d2b", "constant": "arcsecondsPerDegree"},
+      {"va": "0x4ba3c0", "kind": "Extended80", "numerator": "5151302725743731799", "denominator": "295147905179352825856", "Number": 0.017453292519943295, "cellSHA256": "59768c6f56cf8adedf2c47aa7dc875017768fbf4b6816536f38660ee93f8595d", "constant": "degreesToRadians"},
+      {"va": "0x4ba3cc", "kind": "Extended80", "numerator": "9973638011820690691", "denominator": "151115727451828646838272", "Number": 6.6e-05, "cellSHA256": "600d9670d87275ed148e598ab52b504128b1c90f8f34ff7aab8ddb4f0eb4f2db", "constant": "z1T"},
+      {"va": "0x4ba3d8", "kind": "Extended80", "numerator": "5048320450652092991", "denominator": "4611686018427387904", "Number": 1.09468, "cellSHA256": "e1251364fa4b1daa6852e0f09f460494e9a15f6297f2b2e0731a6f00a9c0b9c0", "constant": "z1"},
+      {"va": "0x4ba3e4", "kind": "Extended80", "numerator": "5372577317979759489", "denominator": "295147905179352825856", "Number": 0.018203, "cellSHA256": "b6e79132cd9596857b36d8e0288b9bca89d29625f7b92c086d5229469e913a64", "constant": "z2"},
+      {"va": "0x4ba3f0", "kind": "Extended80", "numerator": "8198028214261704091", "denominator": "37778931862957161709568", "Number": 0.000217, "cellSHA256": "86cfedb12cf5262d41d3cd1031ee52e53a33a3b43ef726453e3884c99fc0a37f", "constant": "thetaTT"},
+      {"va": "0x4ba3fc", "kind": "Extended80", "numerator": "-7870303359048180197", "denominator": "9223372036854775808", "Number": -0.8533, "cellSHA256": "343ba0b0d69f101baa09d2602d295b52c9bb7b5a3f6f2808f10eca08b1f35917", "constant": "theta0T"},
+      {"va": "0x4ba408", "kind": "Extended80", "numerator": "9026613822374623471", "denominator": "4503599627370496", "Number": 2004.3109, "cellSHA256": "d5872c61edb551505efd73175e82c64f15c63b41a31c7c92031366ad9f20b582", "constant": "theta0"},
+      {"va": "0x4ba414", "kind": "Extended80", "numerator": "-7870303359048180197", "denominator": "18446744073709551616", "Number": -0.42665, "cellSHA256": "035d87d42255f280f0840aa0f50f349797d9ebfa608070030d06d2d05cff2014", "constant": "theta1"},
+      {"va": "0x4ba420", "kind": "Extended80", "numerator": "3086730579341966691", "denominator": "73786976294838206464", "Number": 0.041833, "cellSHA256": "a2982a4c2dd203d901f5325b9a37a06e67cb82945f2245bfd4c873ada0cd87be", "constant": "theta2"},
+      {"va": "0x4ba42c", "kind": "Extended80", "numerator": "14488038916154245685", "denominator": "2305843009213693952", "Number": 6.283185307179586, "cellSHA256": "8d51234665467e8fe6b80b11280b863cbe02a3804bb81e4a0290e144ac5a5d86", "constant": "twoPi"},
+      {"va": "0x4ba438", "kind": "Single32", "numerator": "0", "denominator": "1", "Number": 0, "cellSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119", "constant": "zero"},
+      {"va": "0x4ba43c", "kind": "Extended80", "numerator": "14488038916154245685", "denominator": "9223372036854775808", "Number": 1.5707963267948966, "cellSHA256": "b005ac93ca05f2ec9073bffe3bf6e6bfb744c4b5b32ef1ff202a229ea01277f8", "constant": "halfPi"},
+      {"va": "0x4ba448", "kind": "Extended80", "numerator": "5902958103587056517", "denominator": "590295810358705651712", "Number": 0.01, "cellSHA256": "a7d3e5df3aa9fdd98d5ad7f69719d6511e1a10975528de6c6691cdf50eb7ccf1", "constant": "poleMargin"},
+      {"va": "0x4f33d8", "kind": "Single32", "numerator": "15", "denominator": "1", "Number": 15, "cellSHA256": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e", "constant": "hoursToDegrees"},
+      {"va": "0x4f33dc", "kind": "Extended80", "numerator": "5151302725743731799", "denominator": "295147905179352825856", "Number": 0.017453292519943295, "cellSHA256": "59768c6f56cf8adedf2c47aa7dc875017768fbf4b6816536f38660ee93f8595d", "constant": "callerDegreesToRadians"},
+      {"va": "0x4f33e8", "kind": "Extended80", "numerator": "16514384080961256899", "denominator": "288230376151711744", "Number": 57.29577951308232, "cellSHA256": "6fd0ac341b48a859893f1d4d815dd4c74f8b92cd70c177b9587ae406f391bd2d", "constant": "radiansToDegrees"},
+      {"va": "0x4f3804", "kind": "Single32", "numerator": "60", "denominator": "1", "Number": 60, "cellSHA256": "fb7614b89815f3ebaaba34a1cbd1fe490c839c39571d6a45e3a3cff5fcb1383c", "constant": "lab:minutesPerUnit"},
+      {"va": "0x4f3808", "kind": "Single32", "numerator": "3600", "denominator": "1", "Number": 3600, "cellSHA256": "a2de4eae6b06803de770c5571556a05a1479d295004dfad1797d469370265d2b", "constant": "lab:secondsPerUnit"},
+      {"va": "0x4f380c", "kind": "Single32", "numerator": "0", "denominator": "1", "Number": 0, "cellSHA256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119", "constant": "lab:raMinHours"},
+      {"va": "0x4f3810", "kind": "Single32", "numerator": "24", "denominator": "1", "Number": 24, "cellSHA256": "e4d11efbb477a76acb589cc3c6d78f8067d35f26293029ec6dc2bda8df62bff4", "constant": "lab:raMaxHours"},
+      {"va": "0x4f384c", "kind": "Single32", "numerator": "-90", "denominator": "1", "Number": -90, "cellSHA256": "4fd3bdc53f3c9e3cd335206d932f6749387d563ec55685d2a2a465205d8a7fe6", "constant": "lab:decMinDegrees"},
+      {"va": "0x4f3850", "kind": "Single32", "numerator": "90", "denominator": "1", "Number": 90, "cellSHA256": "375f9f99bd284d0e60013f795d63d10f14ed23414c86cd3788905485d77a6a95", "constant": "lab:decMaxDegrees"},
+      {"va": "0x4f386c", "kind": "Single32", "numerator": "15", "denominator": "1", "Number": 15, "cellSHA256": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e", "constant": "hoursToDegrees"},
+      {"va": "0x4f3870", "kind": "Extended80", "numerator": "5151302725743731799", "denominator": "295147905179352825856", "Number": 0.017453292519943295, "cellSHA256": "59768c6f56cf8adedf2c47aa7dc875017768fbf4b6816536f38660ee93f8595d", "constant": "callerDegreesToRadians"},
+      {"va": "0x4f387c", "kind": "Extended80", "numerator": "16514384080961256899", "denominator": "288230376151711744", "Number": 57.29577951308232, "cellSHA256": "6fd0ac341b48a859893f1d4d815dd4c74f8b92cd70c177b9587ae406f391bd2d", "constant": "radiansToDegrees"}
+    ],
+    "fixedEpochs": [
+      {"label": "J2000", "source": "caller immediates 0x4f3182 and 0x4f372d (Extended pushed as three dwords 0x4014/0x95a16400/0)", "numerator": "2451545", "denominator": "1", "Number": 2451545, "constant": "jdJ2000"},
+      {"label": "B1950", "source": "caller immediates 0x4f320c and 0x4f36c7 (0x4014/0x948409b1/0xa9fbe76d)", "numerator": "10701689273204860781", "denominator": "4398046511104", "exactDecimal": "2433282.423500000000103682396002113819122314453125", "Number": 2433282.4235, "constant": "jdB1950"}
+    ],
+    "contracts": [
+      {"id": "RA-EP-01", "title": "Fixed-epoch precession Precess 0x4b9f64 and its helpers", "ranges": ["0x4b9f64..0x4ba369 precession.asm", "0x4b9f44..0x4b9f64 coordinate-epoch-wrapper.asm", "0x4b98f4..0x4b9916 coordinate-init-wrapper.asm", "0x4b98cc..0x4b98f3 coordinate-init.asm", "0x40365c..0x403689 Frac", "0x4036ac Cos, 0x4036bc Sin, 0x4036f0 Sqrt", "0x42700c..0x42701c ArcTan2", "0x485984..0x4859ed ClampAsin, 0x4859f8..0x485a61 ClampAcos", "0x426ff4..0x42700c ArcSin, 0x426fd8..0x426ff4 ArcCos"], "rule": "Record at form+0x3a4 (33 bytes): +3 epoch JD, +0xd RA rad, +0x17 Dec rad; +0/+1 written 2/1 by Init 0x4b98cc and never read in the callgraph (meaning unknown); +2 tag written by Init/Precess and not read. Precess(rec, tag, E1): E0 := rec.jd; fcompp/je (taken when equal or unordered) returns with nothing written; else rec.tag := tag, rec.jd := E1; T := (E0 - 2451545)/36525, t := (E1 - E0)/36525; A := (1.39656 - T*0.000139)*T + 2306.2181; zeta := (A + ((0.30188 - T*0.000344) + t*0.017998)*t)*t; z := (A + ((T*0.000066 + 1.09468) + t*0.018203)*t)*t; theta := (((-0.8533 - T*0.000217)*T + 2004.3109) + ((-0.42665 - T*0.000217) - t*0.041833)*t)*t; each angle (x/3600)*(pi/180). a := cos(dec0)*sin(ra0+zeta); b := (cos(theta)*cos(dec0))*cos(ra0+zeta) - sin(theta)*sin(dec0); c := (sin(theta)*cos(dec0))*cos(ra0+zeta) + cos(theta)*sin(dec0). ra := ArcTan2(a, b) + z (Y = first pushed); ra := Frac(ra/2pi)*2pi; if not (ra >= 0) ra += 2pi. If 0.01 >= pi/2 - |dec0| (inclusive, SOURCE Dec): dec := ClampAcos(Sqrt(b*b + a*a)), which is >= 0 (southern sign lost), else dec := ClampAsin(c). Clamp: |x| > 1 -> +1 if x > 0 else -1; NaN unclamped (jbe on unordered). ArcSin(x) = fpatan(x, sqrt(1 - x*x)); ArcCos(x) = fpatan(sqrt((1 + x)*(1 - x)), x). No epsilon. Stack cleanup: Init 0x4b98cc ret 0x10 (0x4b98f0), init wrapper 0x4b98f4 ret 0x10 (0x4b9913), epoch wrapper 0x4b9f44 ret 0xc (0x4b9f61), Precess ret 0xc (no SEH frame), ArcTan2 ret 0x18, helpers ret 0xc.", "code": "src/core/radioEpoch.ts precessRecord"},
+      {"id": "RA-EP-02", "title": "TSkyCoordsDlg.FormActivate J2000 -> B1950 before the prefill", "ranges": ["0x4f3134..0x4f33d7 skycoords-activate.asm"], "rule": "0x4f316f: +0x3c5 = 0 skips to the prefill. Otherwise Init(2, 1, tag 1, J2000 JD) at 0x4f3194; rec.ra := (globalRA*15)*(pi/180) (Single 0x4f33d8, Extended 0x4f33dc), rec.dec := globalDec*(pi/180); Precess(tag 0, B1950 JD) 0x4f321f; globals 0x5bc1c0 := (rec.ra*(180/pi))/15 (Extended 0x4f33e8) and 0x5bc1cc := rec.dec*(180/pi) (0x4f3224..0x4f3268). Then the RA-08 prefill from the globals (0x4f326f..0x4f3372) and ItemIndex := +0x3c5 (0x4f3378..0x4f338f). The B1950 values stay in the globals whatever the dialog result.", "code": "src/core/radioAntenna.ts openSetCoordinates"},
+      {"id": "RA-EP-03", "title": "TSkyCoordsDlg.OKBtnClick B1950 -> J2000 after validation", "ranges": ["0x4f369a..0x4f37b4 skycoords-ok.asm"], "rule": "After both validations: 0x4f36a3..0x4f36b0 +0x3c5 := (EpochGrp.ItemIndex = 1). If set: Init(2, 1, tag 0, B1950 JD) 0x4f36dc; rec.ra := (h*15)*(pi/180) (Single 0x4f386c, Extended 0x4f3870), rec.dec := deg*(pi/180); Precess(tag 1, J2000 JD) 0x4f373d; locals := (rec.ra*(180/pi))/15 (Extended 0x4f387c) and rec.dec*(180/pi). 0x4f3781..0x4f37b4 store the locals to the globals for both epochs. Validation failures (RA-09) exit earlier with ModalResult 0 and write neither the flag nor the globals.", "code": "src/core/radioAntenna.ts confirmSkyCoords, skyCoordsDraftTarget"},
+      {"id": "RA-EP-04", "title": "+0x3c5 writers and readers", "ranges": ["0x4f312a skycoords-create.asm (FormCreate := 0; globals zeroed 0x4f3102..0x4f3123)", "0x4f36b0 skycoords-ok.asm", "0x567bb1 radio-hotlist-select.asm (:= 0 after a row is selected; EpochGrp disabled 0x567bbf..)", "0x566b5e..0x566b68 radio-set-coordinates.asm (EpochGrp enabled, DL = 1)", "0x4f316f, 0x4f3378 skycoords-activate.asm", "0x566dc7 (non-transit) and 0x566f1b (transit) radio-request-slew.asm, each appending pchar 0x5672f8 through 0x4061c4 before the 0x24 confirmation at 0x566f43"], "rule": "Writers: FormCreate 0, OK (ItemIndex = 1) after validation, hot-list selection 0. Readers: FormActivate (conversion and ItemIndex) and the slew confirmation, which appends one more line (literal 0x5672f8, not decoded) on both the non-transit and the transit path when the flag is set. Changing the epoch radio does nothing else (no EpochGrp OnClick among the three published methods). Cancel (bkCancel) neither converts nor rolls back. A separate non-canonical Ghidra dossier shows TObsrvtry ProgrammedSlew 0x5399e8 reading the same globals and +0x3c5 at 0x539bff (cross-lab sharing); not ported (WEB-EP-02).", "code": "src/core/radioAntenna.ts skyCoordsB1950, confirmOrGate, slewToHotListSelection; src/components/RadioControlPanel.tsx NoticeView"}
+    ],
+    "webPolicies": [
+      {"id": "WEB-EP-01", "title": "One activation per explicit open", "rule": "The RA-EP-02 conversion runs once inside openSetCoordinates for each explicit Set Coordinates open. Hiding and showing the route, an error box over the dialog, a page dialog or a project operation re-presents the stored draft and never re-runs it.", "differsFromNative": "Whether a native WM_ACTIVATE re-delivery re-runs OnActivate (which would convert and prefill again) is not established; no such re-activation is invented. Extends the accepted RA-09 draft-preservation policy."},
+      {"id": "WEB-EP-02", "title": "Radio-local flag", "rule": "skyCoordsB1950 and the stored target belong to the radio antenna state only; the web optical target card is not this dialog.", "differsFromNative": "Natively the dialog instance, its globals and +0x3c5 are shared with TObsrvtry (non-canonical dossier); that sharing is not ported."},
+      {"id": "WEB-EP-03", "title": "Confirmation note and dialog guidance", "rule": "When +0x3c5 is set at the request, the confirmation (both paths) shows a short note labelled as an OpenVireo note that the coordinates were converted from the B1950.0 entry, plus a sign remark when the polar branch dropped a southern sign. The dialog explains the conversion, the southern-pole sign loss (with a polite status warning while the current entry would lose it at OK), the converting reopen (with B1950.0 chosen a valid OK converts the fields to J2000.0 and can shift the target; with J2000.0 chosen it stores the fields directly without conversion; Cancel leaves the converted B1950 values stored and the next open converts them again as if they were J2000) and a lost minus: shown while the stored B1950 Dec is below 0 and the CURRENT Declination fields, read with the OK parse/minus/admission rules, give a positive Dec with a zero degree without '-' (skyCoordsPrefillMinusLost; components summing to a negative Dec or cancelling exactly to zero, a carried -1 and a rounded zero give no note, while negative arcminutes/arcseconds with a positive admitted sum, e.g. 0/-30/3600, still show it). A separate reopen warning (antenna-b1950-reopen-pole) appears when this open's RA-EP-02 conversion took the polar branch on a southern stored Dec: dialog-scoped web metadata openSouthPoleSignLost, kept through edits, epoch choices, error boxes and re-presentation, reset by the next open, OK, Cancel or hot-list selection; the native flags are unchanged and nothing is persisted. targetHoldsB1950 is web-only display metadata for those notes and the stored-coordinates label.", "differsFromNative": "The native literal 0x5672f8 is not decoded and is not reproduced; the guidance texts are OpenVireo's."},
+      {"id": "WEB-EP-04", "title": "Numerics and invariant", "rule": "binary64 in source order; each cell rounded once from its exact source ratio; Math.sin/cos/sqrt/atan2 with the native ArcSin/ArcCos forms. Inputs are the values OK admits (WEB-NUM-01) or a stored target; outputs are checked finite in [0, 24] h and [-90, 90] deg and an implementation error is thrown otherwise (not a user gate; nothing clamped).", "differsFromNative": "Native Extended registers, fsin/fcos/fpatan and Frac at 64-bit precision with chop are not reproduced. binary64 rounding can choose a different Dec branch near the 0.01 rad threshold or a different RA (0 h vs 24 h) near zero; no certified bound against the original x87 run is available and no deadband is added."}
+    ],
+    "referenceVectors": {"path": "app-reference-vectors.json", "sha256": "f77b4c69c336c6af39da880d0e0ed3014a9155046d565e203aaa42defbc53862", "use": "Coordinator-derived synthetic V1/V2/V3 expected display fields (Decimal, 95 digits, provided before implementation): B1950 entry -> J2000 fields, reopen fields and Cancel-then-reopen fields. Used by src/core/radioEpoch.test.ts, src/core/radioAntenna.test.ts and tests/radio-epoch-app.spec.ts. Synthetic: not acquired observations and not a native-runtime oracle. The coordinator's further 270 references and large-sample validation are kept separately."},
+    "notPorted": ["Literal 0x5672f8 (confirmation epoch line), not decoded", "Record bytes +0/+1 meaning", "TObsrvtry sharing of the dialog (WEB-EP-02)", "Native re-activation semantics (WEB-EP-01)", "x87/Extended evaluation (WEB-EP-04)"],
+    "validation": "src/core/radioEpoch.test.ts, src/core/radioAntenna.test.ts (epoch lifecycle), src/core/radioAntennaHotList.test.ts and tests/radio-epoch-app.spec.ts test the chosen implementation contract. They are not an oracle for the original runtime; no original execution, emulation or microemulation was used.",
+    "permissionDenials": ["Epoch implementation session: a compound cd && cat over AGENTS.md/REVIEW.md and the coordinator files, and a node -e summary of this provenance file were denied; not retried in that form (Read/Grep used instead)."]
   }
 }

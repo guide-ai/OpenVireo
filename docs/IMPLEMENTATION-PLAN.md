@@ -323,7 +323,7 @@ Keep four explicit layers:
 3. **Session/exercise model:** observatory → telescope → instrument → acquisition → analysis → record/export. Recover effects of VCL events/setters as state contracts without rebuilding VCL/Win32. Explicit identity, cancellation, undo, seed/time state and migration rules.
 4. **Web presentation:** React/TypeScript, SVG for the current sky/spectrum preview, canvas/WebGL only if measured rendering volume needs them. English message catalog with stable keys and typed interpolation; `Intl` for display, machine schemas for scientific files. No mandatory backend/account/cloud service. RAM state now; IndexedDB/Workers/PWA only when their requirements are concrete.
 
-The existing path can remain `clea-web`; product/package/title is OpenVireo. Do not rename directories merely to change branding. Keep `AGENTS.md` as the sole general agent guide and `REVIEW.md` as the review criteria. No public hosting, push or original execution is implied by this plan.
+The existing path can remain `clea-web`; product/package/title is OpenVireo. Do not rename directories merely to change branding. Keep `AGENTS.md` as the sole general agent guide and `REVIEW.md` as the review criteria. No public hosting, deployment or original execution is implied by this plan; normal Git publication of validated, accepted work is authorized as specified in AGENTS.md and the operating boundary below.
 
 ## Estimation basis and distinct scenarios
 
@@ -435,7 +435,7 @@ Test families: original-format records and round trips; independent arithmetic/p
 
 ## Current operating boundary and next steps
 
-Continue authorized local implementation, static REA/Ghidra inspection and read-only review. Keep the persistent loopback preview available. Do not run original CLEA, add emulators, change security settings, publish assets, push or deploy under this plan.
+Continue authorized local implementation, static REA/Ghidra inspection and read-only review. Keep the persistent loopback preview available. Normal commits and pushes of validated, accepted project work to guide-ai/OpenVireo are authorized; this supersedes the former no-commit/no-push boundary. Publish only the reviewed scope and already authorized resources; do not force-push, merge or deploy. Do not run original CLEA, add emulators, change security settings or publicly host assets under this plan.
 
 The original early queue is historical: bounded image/slit/source acquisition and much optical analysis are now delivered. The selected next slice A06 adds only evidence-backed coordinate motion. Its general options/global event fidelity and moving acquisition remain open. Phase-0 edition/rights/NE risks and the other row-level dependencies remain separate;no original execution ornew instrument is implied.
 

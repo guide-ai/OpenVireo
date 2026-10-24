@@ -204,12 +204,15 @@ const focusEvents=(page:Page)=>page.evaluate(()=>(window as unknown as{__radioFo
 async function hostReleased(page:Page){await expect(header(page)).not.toHaveAttribute('inert');await expect(toolbar(page)).not.toHaveAttribute('inert');await expect(presented(page)).toHaveAttribute('data-modal-presented','false');}
 async function hostHeld(page:Page){await expect(header(page)).toHaveAttribute('inert','');await expect(toolbar(page)).toHaveAttribute('inert','');await expect(presented(page)).toHaveAttribute('data-modal-presented','true');}
 
-test('radio telescope route: explicit compiled-default scenario, access, Tracking, invalid coordinates, B1950 gate, Cancel, confirm, stop and resume; a presented box owns the App header and toolbar',async({page},info)=>{
+test('radio telescope route: explicit compiled-default scenario, access, Tracking, invalid coordinates, epoch choice, Cancel, confirm, stop and resume; a presented box owns the App header and toolbar',async({page},info)=>{
  await openRadio(page,info);
  await expect(id(page,'radio-route-scenario-options')).toContainText('recovered compiled defaults');await expect(id(page,'radio-route-scenario-options')).toContainText('maximum rate index 5, rate base 50');
  await expect(id(page,'radio-route-scenario-options')).toContainText('the current classroom configuration is not known');
  await expect(id(page,'radio-route-scenario-access')).toContainText('below 8000 ms');await expect(id(page,'radio-route-scenario-slew')).toContainText('nominal 100 ms browser interval');
- await expect(id(page,'radio-route-scenario-gates')).toContainText('B1950.0 input');await expect(id(page,'radio-route-persistence')).toContainText('not included in Save investigation');
+ await expect(id(page,'radio-route-scenario-gates')).toContainText('or in B1950.0 converted with the original fixed-epoch precession');await expect(id(page,'radio-route-scenario-gates')).not.toContainText('B1950.0 input');
+ await expect(id(page,'radio-route-scenario-gates')).not.toContainText('the hot list and pulsar');
+ await expect(id(page,'radio-route-scenario-gates')).toContainText('receivers, the beam, the hot list’s Add Current Item and Save from this panel (disabled; their enabling code is not recovered) and pulsar signals');
+ await expect(id(page,'radio-route-persistence')).toContainText('not included in Save investigation');
  await expect(id(page,'radio-env-diameter-current')).toHaveText('Not supplied');await expect(id(page,'radio-switch')).toBeDisabled();
  await expect(id(page,'radio-env').getByText('The recovered compiled default is 100, used when no options file loads; the value in a current classroom configuration is not known, so supply it explicitly.',{exact:false})).toBeVisible();
  // Access waits for the manual access tick and needs the explicitly supplied diameter.
@@ -227,9 +230,9 @@ test('radio telescope route: explicit compiled-default scenario, access, Trackin
  await expect(notice(page)).toHaveAttribute('data-kind','ra-invalid');await expect(id(page,'antenna-notice-ok')).toBeFocused();
  await page.keyboard.press('Escape');await expect(notice(page)).toHaveCount(0);await expect(id(page,'antenna-dialog')).toBeVisible();await expect(id(page,'antenna-field-raHours')).toHaveValue('25');
  await enterCoordinates(page,['5','0','0','-90','1','0']);await id(page,'antenna-dialog-ok').click();await expect(notice(page)).toHaveAttribute('data-kind','dec-invalid');await id(page,'antenna-notice-ok').click();
- await id(page,'antenna-field-decMinutes').fill('0');await id(page,'antenna-epoch-1').check();await expect(id(page,'antenna-b1950-gap')).toBeVisible();
- await id(page,'antenna-dialog-ok').click();await expect(notice(page)).toHaveAttribute('data-kind','b1950-gated');await id(page,'antenna-notice-ok').click();
- await expect(id(page,'antenna-target')).toHaveText(target!);await id(page,'antenna-epoch-0').check();
+ // Choosing B1950.0 shows the conversion note but converts nothing by itself; back to J2000 and Cancel (no OK, no flag).
+ await id(page,'antenna-field-decMinutes').fill('0');await id(page,'antenna-epoch-1').check();await expect(id(page,'antenna-b1950-note')).toBeVisible();
+ await expect(id(page,'antenna-target')).toHaveText(target!);await id(page,'antenna-epoch-0').check();await expect(id(page,'antenna-b1950-note')).toHaveCount(0);
  await page.keyboard.press('Escape');await expect(id(page,'antenna-dialog')).toHaveCount(0);await expect(id(page,'antenna-status')).toContainText('cancelled');
  await expect(id(page,'antenna-target')).toHaveText(target!);await expect(id(page,'antenna-ra')).toHaveText('0 Hrs 0 Mins 0.00 Secs');await hostReleased(page);
  // Confirm a supported J2000 slew; the start wording names the rate actually used.
@@ -379,10 +382,33 @@ test('review regression: Find to pending arrival yields focus directly to the bo
  await openRadio(page,info);await setupRadio(page,info);await startSlew(page,['1','0','0','30','0','0']);
  await press(info,nav(page,'Radio data'));await toggleDisclosure(page);await useFile(page);await id(page,'saved-rows-find').click();await id(page,'saved-rows-query').fill('kept across arrival');
  await expect.poll(()=>id(page,'antenna-ra').textContent()).toBe('1 Hrs 0 Mins 0.00 Secs');
+ // The target RA can be shown one SlewTimer2 callback before the arrival: wait for the logical arrival while hidden.
+ await expect(id(page,'antenna-status')).toHaveText('Slew complete.');
+ await expect(id(page,'antenna-motion')).toHaveText('Telescope stopped.');
+ await expect(notice(page)).toHaveCount(0);
  await recordFocus(page);
  await page.goBack();await expect(notice(page)).toHaveAttribute('data-kind','slew-complete');await expect(id(page,'antenna-notice-ok')).toBeFocused();
  expect(await focusEvents(page)).toEqual(['antenna-notice-ok']);await id(page,'antenna-notice-ok').click();
  await press(info,nav(page,'Radio data'));await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('kept across arrival');await page.keyboard.press('Escape');
+});
+
+test('review regression: Back after the target RA but before the arrival callback focuses the h1, then the box; the Find draft is kept',async({page},info)=>{
+ await openRadio(page,info);await setupRadio(page,info);
+ await press(info,nav(page,'Radio data'));await toggleDisclosure(page);await useFile(page);await press(info,nav(page,'Radio telescope'));
+ // Every tool used below is loaded before installing the clock: freezing React's lazy load would test the scheduler instead.
+ await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);
+ await startSlew(page,['1','0','0','30','0','0']);await flushTasks(page);
+ await press(info,nav(page,'Radio data'));await flushTasks(page);await id(page,'saved-rows-find').click();await id(page,'saved-rows-query').fill('kept before arrival');
+ // One nominal 100 ms SlewTimer2 callback at a time until the hidden readout shows the target RA.
+ for(let i=0;i<80&&await id(page,'antenna-ra').textContent()!=='1 Hrs 0 Mins 0.00 Secs';i++){await page.clock.runFor(100);await flushTasks(page);}
+ await expect(id(page,'antenna-ra')).toHaveText('1 Hrs 0 Mins 0.00 Secs');
+ await expect(id(page,'antenna-status')).not.toHaveText('Slew complete.');await expect(id(page,'antenna-motion')).toContainText('Slewing in Right Ascension');
+ await expect(notice(page)).toHaveCount(0);
+ await recordFocus(page);await page.goBack();await expect(heading(page,'Radio telescope control')).toBeFocused();
+ await page.clock.runFor(100);await flushTasks(page);
+ await expect(notice(page)).toHaveAttribute('data-kind','slew-complete');await expect(id(page,'antenna-notice-ok')).toBeFocused();
+ expect(await focusEvents(page)).toEqual(['H1:Radio telescope control','antenna-notice-ok']);await id(page,'antenna-notice-ok').click();
+ await press(info,nav(page,'Radio data'));await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('kept before arrival');await page.keyboard.press('Escape');
 });
 
 test('actual App radio held Enter and Escape act on one surface at a time',async({page},info)=>{

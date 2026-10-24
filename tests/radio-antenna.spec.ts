@@ -88,7 +88,7 @@ test('stop question pauses the slew; No resumes, Yes stops; cancel and late tick
  await expect(id(page,'antenna-ra')).toHaveText(ra!);await expect(id(page,'antenna-dec')).toHaveText(dec!);await expect(id(page,'antenna-target')).toContainText('1h 0m');
 });
 
-test('dialog keeps focus inside, rejects Declination, gates B1950 and blocks the main window while modal',async({page})=>{
+test('dialog keeps focus inside, rejects Declination, converts B1950 (southern pole sign lost) and blocks the main window while modal',async({page})=>{
  await openPanel(page);await id(page,'antenna-tracking').click();await id(page,'antenna-set-coordinates').click();
  const first=id(page,'antenna-field-raHours'),cancel=id(page,'antenna-dialog-cancel');
  await cancel.focus();await page.keyboard.press('Tab');await expect(first).toBeFocused();
@@ -99,10 +99,15 @@ test('dialog keeps focus inside, rejects Declination, gates B1950 and blocks the
  await expect(id(page,'antenna-dialog')).toBeVisible();
  await enterCoordinates(page,['5','0','0','-90','1','0']);await id(page,'antenna-dialog-ok').click();
  await expect(notice(page)).toHaveAttribute('data-kind','dec-invalid');await id(page,'antenna-notice-ok').click();
- await id(page,'antenna-field-decMinutes').fill('0');await id(page,'antenna-epoch-1').check();await expect(id(page,'antenna-b1950-gap')).toBeVisible();
- await id(page,'antenna-dialog-ok').click();await expect(notice(page)).toHaveAttribute('data-kind','b1950-gated');await expect(notice(page)).toContainText('not recovered');
- await id(page,'antenna-notice-ok').click();await expect(id(page,'antenna-target')).toContainText('0h 0m 0.00s');
- await id(page,'antenna-epoch-0').check();await id(page,'antenna-dialog-ok').click();
+ await id(page,'antenna-field-decMinutes').fill('0');await id(page,'antenna-epoch-1').check();await expect(id(page,'antenna-b1950-note')).toBeVisible();
+ // B1950 −90°: the polar branch (RA-EP-01) gives a northern J2000 Declination, as in the original; the dialog warns first.
+ await expect(id(page,'antenna-b1950-pole')).toBeVisible();
+ await id(page,'antenna-dialog-ok').click();await expect(notice(page)).toHaveAttribute('data-kind','confirm-slew');
+ await expect(id(page,'antenna-notice-text')).toContainText('Dec +89° 43′');await expect(id(page,'antenna-notice-b1950')).toHaveAttribute('data-pole-sign-lost','true');
+ await id(page,'antenna-notice-no').click();await expect(id(page,'antenna-target')).toContainText('+89° 43′');
+ // Reopen converts the stored target to B1950 (epoch remembered); J2000 then takes the entry as typed.
+ await id(page,'antenna-set-coordinates').click();await expect(id(page,'antenna-epoch-1')).toBeChecked();await expect(id(page,'antenna-b1950-reopen')).toBeVisible();
+ await id(page,'antenna-epoch-0').check();await enterCoordinates(page,['5','0','0','-90','0','0']);await id(page,'antenna-dialog-ok').click();
  await expect(id(page,'antenna-notice-text')).toHaveText('Slew the telescope to RA 5h 0m 0.00s, Dec −90° 0′ 0.0″?');
  await id(page,'antenna-notice-no').click();await expect(id(page,'antenna-status')).toContainText('Slew declined');
  await expect(id(page,'antenna-ra')).toHaveText('0 Hrs 0 Mins 0.00 Secs');
@@ -135,7 +140,8 @@ test('closing the panel during a slew turns the switch off; the slew finishes hi
 test('enforced limits stop at the clock gate without moving',async({page})=>{
  await openPanel(page,'?limits=1');await id(page,'antenna-tracking').click();await id(page,'antenna-set-coordinates').click();
  await enterCoordinates(page,['3','0','0','10','0','0']);await id(page,'antenna-dialog-ok').click();
- await expect(notice(page)).toHaveCount(0);await expect(id(page,'antenna-status')).toContainText('need the sidereal clock');
+ // limits-require-clock (RA-12 G2): the current wording names the missing radio UT; the old "sidereal clock" phrase is retired.
+ await expect(notice(page)).toHaveCount(0);await expect(id(page,'antenna-status')).toContainText('no radio UT is supplied');
  await expect(id(page,'antenna-ra')).toHaveText('0 Hrs 0 Mins 0.00 Secs');await expect(id(page,'antenna-target')).toContainText('3h 0m 0.00s');
 });
 

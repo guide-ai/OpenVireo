@@ -1,0 +1,101 @@
+{
+  "policy": "OpenVireo-radio-pulsar-catalog-v1",
+  "scope": "Internal pure-TypeScript dependency: pulsar catalog codec (0x562234/0x562490), nearest-pulsar picker (0x562830/0x562950) and receiver source association (0x56575d..0x5657c4). No UI, I/O, production consumer, acquisition, noise, timing, measurement, PLR, session or format change. Does not complete Radio I06/I07/N07/E06.",
+  "artifact": {
+    "name": "CLEA_VEO.exe (VIREO 1.504)",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "note": "Never executed, emulated or microemulated. Only safe derived listings and typed constant records were read."
+  },
+  "externalCatalog": {
+    "name": "Pulsars.dat",
+    "archive": "CLEA_Vireo.zip (SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b), member program files/CLEA/VIREO/Pulsars.dat, CRC32 0xd3fdfdbd",
+    "sha256": "ba94ee94c359e2afd4acce940266d69983d24a93893719cca20d3e23ef3dceaa",
+    "bytes": 285692,
+    "rows": 558,
+    "sourceCredit": "Project CLEA / Gettysburg College VIREO distribution",
+    "license": "No new redistribution determination. Kept outside the repository; not among the 1279 manifested resources; not bundled, copied or published. Only name, hash, size and counts appear here.",
+    "receipt": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-source-20261024/PULSAR-CATALOG-SOURCE-RECEIPT.json (SHA-256 ab8c4ab49f5656d40ee902c266e5548289c6fefae06de09894b2255afe20e710)",
+    "testHook": "OPENVIREO_PULSARS_DAT (src/core/radioPulsarCatalog.original.test.ts); skipped by name when unset, fails when supplied but unreadable or of another hash."
+  },
+  "derivedEvidence": [
+    {"file": "pulsar-catalog-constructor-canonical.asm", "range": "0x562234..0x56245f", "sha256": "57aa248bfa42669854cb1755bfc81d26765ccc4a932211476378ba21baf8c349"},
+    {"file": "pulsar-catalog-row-canonical.asm", "range": "0x562490..0x562822", "sha256": "ec8baf072c74f989ea9b1874e6e966751f01ff6cd109865351ae8f9914abc6c5"},
+    {"file": "pulsar-select-canonical.asm", "range": "0x562830..0x562949", "sha256": "326d1558236841792f118cad0b23a3a387c1fcafa4f16a6d085412e2e3fb63c5"},
+    {"file": "pulsar-separation-canonical.asm", "range": "0x562950..0x5629c2", "sha256": "fa37a0845fc7451558ab8ca6b998bf08617918551c9896df15cfbdfe7db6689d"},
+    {"file": "separation-llvm-intel-canonical.asm", "range": "0x562978..0x562986", "sha256": "f1286041b66879ab15d80a6ff5ce61400cd5a85b23e7b7cd3d7b4426edf52c87"},
+    {"file": "reset-canonical.asm", "range": "0x492628", "sha256": "81b6d3d91bc9e97ad8ef8cfa06b9d238253c63cbf41e472bb570f9724a198859"},
+    {"file": "next-canonical.asm", "range": "0x492634", "sha256": "2698f18e947971ed8619117693a1c05dbfc54a3964245f80cb51040210ce01a4"},
+    {"file": "previous-canonical.asm", "range": "0x492668", "sha256": "b76ef93adc171c2aeb81df77937f9732b81faf4c2a1550e34b90e4607d11915c"},
+    {"file": "at-tail-canonical.asm", "range": "0x49271c", "sha256": "cc63d69f2a7c2746b8943dc41acd9d101a1a0e6c28922e1dfbb5dc6a19f2fcc0"},
+    {"file": "insert-after-current-canonical.asm", "range": "0x492574", "sha256": "f8189cfa120abe3b74c1399e97fcfc3c96c7043c38925e92e1a583671e9d1212"},
+    {"file": "insert-first-canonical.asm", "range": "0x492528", "sha256": "1c84db2f24ae19fad44861f3e558d3ab197f2c9ee5aa6b939c2a5a49e3526e76"},
+    {"file": "clock-source-association-canonical.asm", "range": "0x565723..0x5657c4", "sha256": "3e2a109543e277da01d1915fe1817b07de845a25ade8ef822c8717ca7386d9ac"},
+    {"file": "other-source-picker-block-canonical.asm", "range": "0x567f80..0x567fd9 (captured prefix)", "sha256": "04772facec07af6ccf444d4644f8c2356b992e38c374b1b08d96255cd41defa9"},
+    {"file": "text-read-chars-canonical.asm", "sha256": "070b2904d6ff70582c33b422da45883ed48a2d53853eed22324491bd3e84bf3e"},
+    {"file": "text-readln-canonical.asm", "sha256": "8bd180bedd3eb09983f24ffaa607dc28933ccdbfa655c7576cad46afb75fe43d"},
+    {"file": "PULSAR-CATALOG-TYPED-CONSTANTS.json", "sha256": "3e2dd0d356c0e2a2efc42464e639a15ab96f20b78c9f0ee834db840ec089bc3c"},
+    {"file": "PULSAR-CATALOG-COLUMN-AUDIT.json", "sha256": "5f751f9afbd3c62671b7eadc2842c880ca6ed7d9ca3f583d16cb9894d7e8280e"},
+    {"file": "ORIGINAL-CATALOG-CONTROLS.json", "sha256": "56087d38f5d92facf41538c303c513a4ad613937037ca95104afcb9070ff87fd"},
+    {"file": "pulsar-parameters-contracts.json", "sha256": "2c365a8cf7f2bde33ecdc21a76cb807d3d34e1ba06128b8a2d1fd55797d111f0"},
+    {"file": "IMPLEMENT-COORDINATOR-NOTES.md", "sha256": "bc8908139777789f69f242e6e964868f1f2aa69e21c476af5eff628f34fa3bcd"},
+    {"file": "correction-open-main-canonical.asm", "range": "0x567958..0x567a8b", "sha256": "c3df4c2a3e02fdfe19ba8e874aa0eabe935e87906cbd0bbed263c7aa784629e1", "originalPath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/contracts-recovery-20261023/receiver-controls/open-main-canonical.asm"},
+    {"file": "correction-receiver-create-canonical.asm", "range": "0x5721d8; used 0x572392..0x5723a0", "sha256": "e74fbe55fc1282aa027886655dd72d17d058c87390d6043e569ff4697a17e14b", "originalPath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/contracts-recovery-20261023/radio-options-subdialogs/receiver-create-canonical.asm"},
+    {"file": "correction-TRCVR_FORM1-DFM.json", "range": "OnCreate=FormCreate", "sha256": "3b5622ae856de99adef4b80c540983cef10a8510b114673cd3be7d009c038058", "originalPath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-beam-preparation/TRCVR_FORM1-DFM.json"},
+    {"file": "RECEIVER-VMT-FIELDS-METHODS.json", "range": "FormCreate 0x5721d8 (VMT 0x571a6c)", "sha256": "2cbd15ee1e0a15ce553897095c247d61987f894865563246e67427b760eaac98"},
+    {"file": "cos-helper-canonical.asm", "range": "0x4036ac", "sha256": "821d20426d1b5d889514a5b5710fae4ed033f57ac863f9afb9abe6fa0195e4ce"},
+    {"file": "sqrt-helper-canonical.asm", "range": "0x4036f0", "sha256": "764bb05cb5394aaaa5f3773d47061753adf90b0bd0e0c7845e46d02f6fd5d9b8"},
+    {"file": "receiver-coupling-canonical.asm", "range": "0x573f78..0x573f91", "sha256": "ab173efc2d30d7af2a4d31d20d2e2d5e21efd78ae1556f4fcaa0ac225be4b722"},
+    {"file": "receiver-source-refresh-canonical.asm", "range": "0x574c83..0x574ca2", "sha256": "3b97fb71319c3269008fcd18cf9ba42f83b1789c7839045fceb3fa04f0456007"},
+    {"file": "receiver-frame-canonical.asm", "range": "0x5737fc (+0x51f reader, gate only)", "sha256": "3ef091ef016f5aee4288eaa4167840076198d84ec0128e7b08bc0495da058159"},
+    {"file": "source-alias-pulsar-list-click-canonical.asm", "range": "0x567f80..0x568023 (final ret)", "sha256": "1e4f80b67b0eaaa9bdc89f42d384916382f943683682ae7ea3cb31e14c47d925", "originalPath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/contracts-recovery-20261023/source-alias-followup/pulsar-list-click-canonical.asm"},
+    {"file": "SOURCE-ALIAS-SINGLE-METHOD-ENTRY.json", "range": "entry 0x5641ed: PulsarList1Click -> 0x567f80 [S]", "sha256": "9930803d8fb79431c07ad7e6011dbcbb047d46e3214a0a3d70ff8e7f5e491ed1", "originalPath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/contracts-recovery-20261023/source-alias-followup/SINGLE-METHOD-ENTRY.json"},
+    {"file": "SOURCE-ALIAS-METHOD-OWNER-BINDING.json", "range": "table 0x563f6b -> TRadioLab [I: layout calibrated on TPlsrDataForm1 VMT 0x56871c]; not event delivery", "sha256": "55028bae124c281a9de653c2bcdf296b77dee8968524a6c946cfa10187cdea04", "originalPath": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/contracts-recovery-20261023/source-alias-followup/METHOD-OWNER-BINDING.json"},
+    {"file": "receiver-parameter-display-canonical.asm", "range": "0x572f8c..; 0x573367 fld +0x51f (+0x51f reader, gate only)", "sha256": "a66df430a5b7dd8099983f15cae00b94b1f9440e1f09f1c7b6a6c9756c2d3200"}
+  ],
+  "evidenceDirectory": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-source-20261024 (hashes as recorded in INPUT-MANIFEST.json, PULSAR-CATALOG-ADDENDUM-MANIFEST.json, CORRECTION-EVIDENCE-MANIFEST.json and SOURCE-ALIAS-RECOVERY-MANIFEST.json, as verified by the coordinator; copied verbatim and not recomputed by the implementer)",
+  "typedConstants": [
+    {"va": "0x562824", "type": "Single", "value": 24, "use": "RA ×24", "cellSha256": "e4d11efbb477a76acb589cc3c6d78f8067d35f26293029ec6dc2bda8df62bff4"},
+    {"va": "0x562828", "type": "Single", "value": 360, "use": "RA ÷360", "cellSha256": "82a72eeef4f720c75f627f5ccf9f2963cceb6210f66318ec6362722e29a564f9"},
+    {"va": "0x56282c", "type": "Single", "value": 2400000, "use": "epoch offset (not 2400000.5)", "cellSha256": "9f01e4e297fb403d7aa20359603692cac1aa0cc428c2aa67c7912005c558c139"},
+    {"va": "0x56294c", "type": "Single", "value": 1, "use": "RA window, hours", "cellSha256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"},
+    {"va": "0x5629d4", "type": "Single", "value": 15, "use": "hours to degrees", "cellSha256": "a5d4cd5b9cc4aba67ebe403c68466c378868947703d75704381d0c90e2615d1e"},
+    {"va": "0x5629c8", "type": "Extended80", "significand": "0x8efa351294e9c8ae", "exponent": "0x3ff9", "exactDecimal": "0.017453292519943295769139146242365789873929315945133566856384277343750", "webValue": 0.017453292519943295, "use": "degrees to radians; nearest double is web policy", "cellSha256": "59768c6f56cf8adedf2c47aa7dc875017768fbf4b6816536f38660ee93f8595d"},
+    {"va": "0x56574b..0x56575d", "type": "Extended immediate", "value": 5, "use": "CLOCK_REASSOCIATE_LIMIT (0x4001:a0000000:00000000)"},
+    {"va": "0x567958", "type": "Extended immediate", "value": 2, "use": "RECEIVER_OPEN_LIMIT (0x4000:80000000:00000000) [S] correction-open-main-canonical.asm, push at 0x5679c4..0x5679ce, call 0x562830 at 0x5679d6; Rcvr1Btn name per plan; also pushed at 0x567fad"}
+  ],
+  "contracts": [
+    {"id": "RA-PC-01", "tag": "S", "text": "Fixed columns/widths/destinations and Single/Extended types per row parser; RA ×24 then ÷360; epoch +2400000; identifiers right-trimmed of 0x20 only."},
+    {"id": "RA-PC-02", "tag": "S", "text": "Read(buffer,510) then ReadLn per line; append after cursor keeps file order and duplicates; no blank/comment skip."},
+    {"id": "RA-PS-01", "tag": "S", "text": "Picker: first in-window record (|ΔRA| < 1 h, NaN inside), Prior+Next back to it, keep record when L > sep, exit after |ΔRA| > 1 h or tail; first run only; no RA wrap; earlier wins ties."},
+    {"id": "RA-PS-02", "tag": "S/A", "text": "Separation sqrt(((RA−rec.ra)·15/cos(Dec·K1))² + (Dec−rec.dec)²): divides by cosine of pointing Dec (fdivrp, GNU and LLVM agree). Not great-circle."},
+    {"id": "RA-PS-03", "tag": "S", "text": "Association: hit sets receiver+0x4a2 := &TRadioLab+0x5f7, copies the record into that shared buffer (rep movs 0x565787 / 0x567a00) and writes receiver+0x51f := separation; miss sets +0x4a2 := nil, clears the first byte of +0x5f7 and leaves +0x51f stale."},
+    {"id": "RA-PS-04", "tag": "S/I", "text": "Initial offset: TRcvr_Form1 FormCreate 0x5721d8 (VMT 0x571a6c, DFM OnCreate=FormCreate) zeroes, on its normal path (guard 0x5bce00 at 0x5721dc..0x572201, unidentified 0x450100/0x405c88), the 10-byte Extended receiver+0x51f..+0x528 at 0x572392..0x5723a0 (+0.0); the open caller creates the form when the form variable slot [[0x5b5b44]] is nil before calling the picker (0x56795d..0x5679d6). [I] class pointer 0x571a20 = VMT−0x4c."},
+    {"id": "RA-PS-05", "tag": "S/I", "text": "Shared alias, conditional: receiver+0x4a2 points at the single TRadioLab+0x5f7 buffer, which TRadioLab.PulsarList1Click 0x567f80 (identity S/I) overwrites (0x567fd5) or clears (0x567fd9); no receiver-field write in the prefix 0x567f80..0x567fd9; callees 0x474408/0x476f40/0x47a010 not analysed. Coupling 0x573f78..0x573f91 compares +0x4a6 with the name behind the pointer and calls refresh 0x574ba4, which reads through it (0x574c83..0x574ca2). Applies only if the method on the same instance (event delivery not shown) runs while a receiver holds that pointer; static reading, not a reproduced run."},
+    {"id": "WEB-PC-01", "tag": "W", "text": "Bytes ≤ 1 MiB, rows ≤ 10000, non-empty; printable ASCII; LF/CRLF; final terminator adds no row."},
+    {"id": "WEB-PC-02", "tag": "W", "text": "Cut each line at 510 bytes; refuse lines < 454 bytes and interior blank lines; any refusal rejects the whole file."},
+    {"id": "WEB-PC-03", "tag": "W", "text": "ASCII decimal grammar with sign/exponent and surrounding spaces; non-finite results refused; Single fields Math.fround with a finite check. Not StrToFloat locale parity."},
+    {"id": "WEB-PC-04", "tag": "W", "text": "Doubles for Extended, Math.cos/Math.sqrt for fcos/fsqrt; no x87 equivalence. Empty or null catalog selects nothing; initial receiver offset null is an explicit web sentinel (never associated), distinct from the native initial +0.0 (RA-PS-04); no consumer, not migrated to 0."},
+    {"id": "WEB-PC-05", "tag": "W", "text": "The receiver association stores an owned, frozen snapshot of the record; the native shared-buffer alias (RA-PS-05) is not modelled."}
+  ],
+  "fieldUnits": {
+    "source": "pulsar-parameters-contracts.json / TPlsrDataForm1 DFM labels and display routine [D]",
+    "x2a": "period, s", "x34": "period derivative, s/s", "x3e": "period epoch, caption PEpoch (MJD); stored as the MJD column + 2400000 (native convention), not an ordinary JD (MJD + 2400000.5); the display subtracts 2400000",
+    "s48": "sky background temperature, K", "s4c": "dispersion measure, pc/cm^3", "s50": "pulse width, ms",
+    "s54": "400 MHz flux density, mJy", "s58": "600 MHz flux density, mJy", "s5c": "1400 MHz flux density, mJy",
+    "limit": "Catalog references only; never learner measurements. Labels do not establish detector units or calibration."
+  },
+  "notClaimed": [
+    "Original runtime or numerical equivalence (no execution, emulation or P-code for 0x562950).",
+    "Delphi StrToFloat locale/overflow behaviour, control-Z text-mode handling or partial-buffer behaviour for short lines.",
+    "Completion of Radio I06/I07/N07/E06; any receiver UI, acquisition or signal."
+  ],
+  "openGates": [
+    "Failed-load literals 0x564d08/0x564d40/0x564d44 and routine 0x47df9c",
+    "Catalog ownership/free and env+0x764/+0x26c path binding",
+    "Event delivery to TRadioLab.PulsarList1Click 0x567f80 (static identity only), and its unidentified callees 0x474408, 0x476f40 and 0x47a010",
+    "Initial-offset contract (web null vs native +0.0) before porting the +0x51f readers 0x5737fc, 0x573367, 0x57403f, 0x574ceb",
+    "Before receiver UI integration: +0x4a2 alias, buffer and form lifetime; PulsarList1Click overwrite/clear; coupling refresh; slave copies 0x573fc1 and 0x574d7f; picker cursor and catalog+0x42 zeroing (0x56285c..0x562864)",
+    "Catalog consumers 0x567aa5 and 0x568c76.. (TPlsrDataForm1 browser)",
+    "radioPulsarCatalog.original.test.ts with OPENVIREO_PULSARS_DAT set: recorded by the coordinator for the pre-correction candidate (fixture enabled); Codex re-runs it after the correction"
+  ]
+}

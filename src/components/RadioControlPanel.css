@@ -33,6 +33,12 @@
 .antenna-readout dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .antenna-label{font-weight:600}
 .radio-control .antenna-spin{min-width:44px;font-size:16px}
+.antenna-manual{display:grid;gap:6px;margin:8px 0;min-width:0}
+.antenna-manual p{margin:0;overflow-wrap:anywhere}
+.antenna-manual-pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);grid-template-areas:". n ." "e . w" ". s .";gap:6px;justify-content:start}
+.antenna-manual-north{grid-area:n}.antenna-manual-south{grid-area:s}.antenna-manual-east{grid-area:e}.antenna-manual-west{grid-area:w}
+.radio-control .antenna-manual-button{width:48px;height:48px;min-width:44px;min-height:44px;margin:0;padding:0;border:2px solid #6b7780;border-radius:6px;background:#eef1f0;color:#162b38;font-family:"MS Sans Serif",Tahoma,ui-sans-serif,sans-serif;font-size:16px;font-weight:700;line-height:1;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.radio-control .antenna-manual-button[data-held]{background:#23756c;border-color:#174d47;color:#fff}
 .antenna-backdrop{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(18,32,38,.35);overflow:auto}
 .antenna-backdrop-top{z-index:41}
 .antenna-dialog{width:min(100%,30rem);max-height:calc(100vh - 24px);overflow:auto;background:#fff;border:2px solid #265f4c;border-radius:8px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
@@ -53,6 +59,12 @@
 .antenna-modal-limit p{margin:0}
 .antenna-modal-limit ul{margin:6px 0 0;padding-left:1.2em}
 .antenna-modal-limit li{line-height:1.5;overflow-wrap:anywhere}
+.antenna-hotlist-menu{flex-basis:100%;display:grid;gap:4px;min-width:0}
+.antenna-hotlist-menu p{margin:0;overflow-wrap:anywhere}
+.antenna-hotlist-rows{display:grid;gap:4px;margin:6px 0;max-height:min(50vh,22rem);overflow:auto}
+.antenna-hotlist-row{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 8px;border:1px solid #c9d1cf;border-radius:6px;cursor:pointer;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.antenna-hotlist-row[data-checked]{border-color:#23756c;background:#eaf5f2}
+.antenna-hotlist-row input{width:20px;height:20px;flex:0 0 auto;margin:0}
 .radio-control .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}.antenna-readout{grid-template-columns:1fr}}
 .radio-route{max-width:1100px}.radio-route-scenario{padding:18px 22px;margin-bottom:16px}.radio-route-scenario h2{margin:0 0 8px;font-size:16px}.radio-route-scenario ul{margin:0;padding-left:1.2em}.radio-route-scenario li{font-size:13px;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.radio-route-persistence{margin:10px 0 0;padding:8px 10px;border-left:4px solid #b5651d;background:#fff8f0;font-size:13px;line-height:1.5}

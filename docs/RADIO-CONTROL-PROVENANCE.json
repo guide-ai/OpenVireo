@@ -1,6 +1,6 @@
 {
   "policy": "OpenVireo-radio-control-switch-v1",
-  "scope": "I06 subflow only: TEnvironment1 radio control switch (RadCntrlSw), radio scope access (id 3), deferred ScopeTimer completion and radio control-panel window visibility. TRadioLab antenna/pointing/beam/receiver behavior is not recovered.",
+  "scope": "I06 subflow only: TEnvironment1 radio control switch (RadCntrlSw), radio scope access (id 3), deferred ScopeTimer completion, radio control-panel window visibility and the pre-activation File > Set Observation Date/Time, ID dialog (RC-12..RC-17). TRadioLab antenna/pointing/beam/receiver behavior is not recovered here.",
   "artifact": {
     "name": "CLEA_VEO.exe (VIREO 1.504)",
     "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
@@ -108,13 +108,102 @@
       "evidence": "Derived listing target.asm lines 521753..521816 (method addresses from the TRadioLab VMT decode, claude-radio-antenna/tradiolab-metadata.json)."
     }
   ],
+  "dateContractsNote": "RC-12..RC-17 come from the later date-preparation evidence (dateEvidence below) and are kept apart from the RC-01..RC-11 transition contracts that radioControl.ts emits as steps; their code is src/core/radioDateDialog.ts, applyRadioClockDialogUT in src/core/radioClock.ts and src/components/RadioTelescopeRoute.tsx.",
+  "dateContracts": [
+    {
+      "id": "RC-12",
+      "title": "SetDateTime1 (env+0x454) enabling before activation",
+      "ranges": ["Run1Click 0x589ce8..0x58a198 (enable 0x58a0ff..0x58a11e; TMountCDROM cancel exit 0x58a09a)", "RadioPulsars1Click 0x58ab9c (Visible 0x58ab9f..0x58aba7; [+0x383f] := 6)", "RC-08 0x58ca8c..0x58cbb2 (On: SetEnabled(False); Off: SetEnabled(True))"],
+      "dfm": ["TEnvironment1 RCDATA 3a7a6a6118e6b5a81afabf67032f9b15a2cf92ab70e125f081e15cab7a44e6b3: File1 > SetDateTime1 Caption 'Set Observation &Date/Time, ID...', Enabled=False, OnClick SetDateTime1Click"],
+      "observed": "Exercise entry only makes the item visible; 0x58b098, 0x5aaaac and 0x45e524 make no direct Date, ID or Enabled writes; 0x45e524 dispatches through root virtual +0x84, and its transitive or virtual callees are not proven. Run1Click is the only recovered writer that enables it before activation, after the catalog path check (TABLES\\REGIONS.BIN, the CGSC/Program Files path, or TMountCDROM OK): Enabled := [+0x383f] in {0,1,6}. This is not an exhaustive absence proof: PHASE0-STATIC-XREF-CANDIDATES lists unverified SetEnabled calls on env+0x454 at 0x58c982 and 0x58c9c8, beside OpticalWin (+0x4bc) visibility writes (apparently an optical-switch On/Off pair like RC-08; RC-02 hides OptCntrlSw); not traced. The radio exercise does not open the dialog itself (0x58b2ec is called automatically only when [+0x383f] = 1).",
+      "modelled": "WEB-DATE-01 (below): the browser offers the item from exercise entry until activation. WEB-DATE-01 never reads or writes item454Enabled; it is null until the first switch On, then RC-08 sets it false (On) and true (Off), which the panel shows while the item stays refused (activation reached). No Run, CD-ROM, timezone, instructor or password flag is assigned.",
+      "evidence": "PHASE0-SETDATE-MENU-DFM.json, PHASE0-RUN-CANONICAL.json / environment-run.asm (sha256 15404896e7d7de24266b377e6d25fb43444807b84a52f35692fb5127bd8dcf60), radio-exercise-entry.asm (5d1e93a90289c2c39092cd88e43043636dbcda4beb18c8b7935a36a95ab0f620), PHASE0-CLOSURE.json A/B."
+    },
+    {
+      "id": "RC-13",
+      "title": "SetDateTime1Click controller",
+      "ranges": ["0x58b2ec..0x58b442 (listing date-controller.asm sha256 4ef52278defa1746f0d3fe730029f277521d7d7acbe31c05e9ceb1ef53b16806)"],
+      "observed": "A fresh TUTTimeDlg is created on every open and freed at 0x58b439. The 52-byte date record env+0x37de is copied to the draft (0x58b30d..0x58b320), not the ID. CancelBtn.Enabled is seeded from SetDateTime1.Enabled. On OK: Now (0x487b4c), record update (0x487b64), offset env+0x382b, then the radio hook only when Radio1 (item env+0x430) is visible: 0x58b41a..0x58b424 tests byte +0x3e, written by 0x4549c8 (menu-setvisible.asm 0x4549c8..0x4549d8, SHA-256 0b67f3496dd45f07d82c28d4c0cae459d7bfc8605902bae279d9cd8dfaf7679e), the setter RC-02 uses for menu visibility and RC-08 infers to be TMenuItem.SetVisible (property name inferred). Checked is +0x38 (SetChecked 0x454858), Enabled +0x39 (SetEnabled 0x4548ac). This amends the earlier 'checked' reading (MENU-VISIBILITY-CORRECTION.json, SHA-256 052ae48ada816ee86d860ce640ddfe87c82cbdd6ab17bef279bf75a47a21cbaa); the original notes and plan stay as historical records.",
+      "modelled": "openRadioDateDialog refreshes the prefill from the scenario instant at each open and the ID from the stored value; Cancel is always enabled (the item is enabled whenever the web offers it). Now₁/Now₂ and env+0x382b are not modelled. The Radio1 visibility correction changes nothing at runtime: the hook exits before activation and after activation the item stays refused; no exemption after switch Off is inferred (a visible Radio1 may still reach the hook while the radio is Off).",
+      "uncertainty": "Whether FormActivate disables Cancel under other exercise modes ([+0x383f]/[+0x2e7e]) is not traced; it is not needed while the item is enabled. ut-form-activate.asm 0x4fddf4..0x4fde31 reads as Cancel.Enabled := Cancel.Enabled OR env+0x2e7e ≠ 0 OR env+0x383f = 0 on form field +0x364, assuming that field is CancelBtn and virtual +0x50 = GetEnabled, +0x68 = SetEnabled (inferred)."
+    },
+    {
+      "id": "RC-14",
+      "title": "TUTTimeDlg FormActivate / OKBtnClick / FormClose",
+      "ranges": ["FormActivate 0x4fdc5c..0x4fde6b (b69efac63b100677048a24ac4368c7cfdbc556977947d616b991ccfae3b18e54)", "OKBtnClick 0x4fdf0c..0x4fe078 (47702f6d35cc4bf5703fec15db03fe38ac0223a46c7d2c8954c0405daf236e35)", "FormClose 0x4fdec8..0x4fdf09 (523c3e814bd861f3f0ba2d25df4319422625fac091e822061692e9bd00ade637)"],
+      "dfm": ["TUTTIMEDLG RCDATA 6a68bddc71ee0bd1d90d82417a9d8973981ea5ee287eb616a267452dfa162347: Caption 'Set Date/Time, ID'; labels 'ID # of Unknown Object', '(From Lab Sheet or Instructor)', 'Observation Date', 'YYYY/MM/DD', 'Universal Time (UTC) ', 'HH:MM:SS'; IDEd MaxLength 18 (TabOrder 4), DateEd (0), TimeEd (1), OKBtn bkOK (2), CancelBtn bkCancel (3); hints 'Get ID from lab sheet or instructor', 'Enter full (4 digit) year', 'Use 24 hr format.'"],
+      "observed": "FormActivate sets the date/time separators and formats (restored by FormClose), fills IDEd from ShortString 0x5bc1e4 (zero-initialised .bss, zero at load; the only recovered ID writer is OKBtnClick; pointer cell 0x5b5d98 → 0x5bc1e4 is loaded at eight other unverified sites (0x500246, 0x50fbd0, 0x522cf0, 0x523a78, 0x567d31, 0x5733af, 0x57383f, 0x574794); no full indirect-alias proof and no historical or startup ID value is claimed), DateEd := FormatDateTime('c', Trunc64(record+0x14)) giving YYYY/MM/DD (0x40370c truncates), TimeEd hh:mm:ss, and focuses DateEd with its text selected. OKBtnClick writes the ID first: empty IDEd → ShortString 0x4fe078 'UNKNOWN' (7 characters, content sha256 23759997b3c59884dc4c0ff5320d6301b0e7f63bf0f6483a7b54d7d43bc5ccd1), otherwise a ShortString[18] copy (cl = 0x12) with spaces kept; then StrToDate(DateEd) and the time parser, minus the Extended at 0x5bc221, then 0x487b64. An exception sets ModalResult 0 (0x4fe034) and re-raises: the error box appears, the dialog stays open and the ID stays written. Cancel writes nothing.",
+      "modelled": "confirmRadioDateDialog: error box open → refused; gate re-check; ID written; date, time, range; success closes. cancelRadioDateDialog writes nothing. The runtime-library message text is not reproduced (WEB-DATE-04).",
+      "uncertainty": "The Extended at 0x5bc221 (record 0x5bc1f7 + 0x2a; its time-zone role is inferred from analyst notes on 0x487b64, not established) and the host local date are not modelled; the algebraic cancellation of the time zone in the radio clock path is not an x87-exact proof."
+    },
+    {
+      "id": "RC-15",
+      "title": "StrToDate / ScanDate on the dialog date",
+      "ranges": ["StrToDate 0x40e92c..0x40e960 (b11c516a79306854c837f83db4ebd6cabd95086caa7f2ece4b875e7a4228f978)", "TryStrToDate 0x40e960..0x40e996 (e67b8309a59c9e52c285f23d991f9b69cde011a4557329112277ad0017235ee2)", "ScanDate 0x40e3e8..0x40e71c (db0c6aa5186fd14ef32f4236f865f04a99f22b88899414d99b1a3b99c6d09d6c)", "SkipSpace 0x40e0d8 (272ca326b8eafce87a0b66433d0a9c47e406f1aa17a3850ebe16d3112bbfd6de)", "ScanNumber 0x40e0fc (2e71395e3b39edea1a51b553a1fc3fb00b63bb7f822d155ee3c509b226d0dab9)", "ScanChar 0x40e268 (2be7d9097d5c05cd80f8f011eec8fc8342c078cdb231cd700086538f5dbb980e)", "GetDateOrder 0x40e2a4 (0c6f8d246bc2b3106eb92cea9b9eeef0ed7a4622e715113a35ed4517e8344c60)", "TryEncodeDate 0x40d1b8 (3ae5b9ad35857bec2a965fc3c8ddb5e1775be8bb7f4a9a9efa2295dfe0034d39)", "IsLeapYear 0x40d17c (6f2b9c168dba893e1c935cc02025f7d8965f1110b8186a51bee1739f6394d0c5)"],
+      "observed": "Order YMD; only ASCII 0x20 is skipped; ScanNumber reads digits while the value is below 1000 (leading zeros allowed; '20091/…' leaves a digit unread and fails at the separator); the separator '/' may be preceded by spaces; once a second '/' is seen the third number is required; one optional trailing '/' and spaces; TryEncodeDate checks Y 1..9999, M 1..12, D 1..month table; TryStrToDate requires Length(S) < Pos (the whole text consumed). A two-number date takes CurrentYear (0x40d4cc) and a year of ≤ 2 digits is widened with the window 0x5ae838.",
+      "g1": "Typed cells (PHASE0-CALENDAR-TYPED-CELLS.json, G1-VERIFIED.json): era pattern 0x40e724 AnsiString 'e' (sha256 3f79bb7b435b05321651daefd374cdc681dc06faa65e374e38337b88ca046dea) and FarEast pattern 0x40e730 'ddd' (730f75dafd73e047b86acb2dbd74e75dcb93272fa084a9082848f2341aa1abb6) are not substrings of the forced format; month tables 0x5ae83c (1299334ba085db87b1fc794003104052d57a5d9ad6c3d1e49659f9c3916e5e29) and 0x5ae854 (b9ffcb9a732b3f5a516986ce3eaba2a804f063d5cc47aa6d52577b2a4aca3f76) are the Gregorian common/leap tables; IsLeapYear is the Gregorian rule (static instruction reading). Day offset 693594 at 0x40d25e. No native runtime oracle.",
+      "modelled": "scanDialogDate: exact integer port; outcomes ok, error (syntax, trailing, calendar) or unsupported:host-year (two-number dates and years of ≤ 2 digits, whose result depends on the host year). Refused as a whole; this also covers some forms the native scanner rejects whatever the host year (with two numbers ScanDate 0x40e5c8..0x40e5f3 puts the first in Month, so '2009/06' is always an EConvertError). The host year is never read."
+    },
+    {
+      "id": "RC-16",
+      "title": "Dialog time parser",
+      "ranges": ["0x48647c..0x48657b (55656c509c71f9ce36acbca4568a3d1c4e1088d8ca6621781a94c76ad042db54)", "tokenizer 0x48690c..0x4869fd (c92627834c2db99764a1caecfbb8bca58e1114dfde5f4fa0cc381997ad0d3dac)"],
+      "observed": "Tokenizer: delete leading spaces and separator characters, cut at the next separator (or the end), StrToFloat (0x40cf60) the piece, delete it plus one character. Hours by ':', then minutes by ':' if text remains, then seconds by ' ' if text remains; missing parts are 0. ((s/60)+m)/60+h with Single 60 (0x48657c), plus Single 12 (0x48658c) when the remainder equals AnsiString 'PM' (0x486588, content sha256 6b987654a41163849bd70f7354ec7a205cea30d282c0e84be1cfe8a0e3927c78), divided by Single 24 (0x486590). No range check; any other remainder is ignored.",
+      "modelled": "parseDialogTime: the same tokenization; every part must pass the existing FLOAT_TEXT grammar (parseDelphiFloat) and be a plain signed integer with |part| ≤ 1 000 000; the total is exact integer seconds (WEB-DATE-02). Refusals are browser limits, not recovered native parse errors."
+    },
+    {
+      "id": "RC-17",
+      "title": "Radio date hook",
+      "ranges": ["0x565ab0..0x565bd2 (8788284e7876da017e45bca5ca7c3618360184c43fe7892a51afb9d5145e057c)"],
+      "observed": "Exits when TRadioLab byte +0x4d5 (activated) is 0. Otherwise computes LST with the OPTICAL longitude env+0x2b86 and writes RA from the retained hour angle (+0x5d5).",
+      "modelled": "Only the pre-activation exit: the dialog is refused once activation is reached (WEB-DATE-01). The post-activation hook stays refused: env+0x2b86 is not recovered and RadioLongitude env+0x3789 is not substituted."
+    }
+  ],
+  "webAdmissions": [
+    {
+      "id": "WEB-DATE-01",
+      "title": "Startup gate (declared adaptation)",
+      "rule": "Available iff the exercise is entered, activation has not been reached, a radio UT is applied and the scenario has not stopped at the range end. Activation reached is a sticky latch: antenna activated, or the panel window ever shown (natively showing the form runs FormActivate even when the web refuses activation for an unsupported option profile); it survives RC-11 close and switch Off. Refused gates show a disabled item with the reason.",
+      "basis": "The browser has no Run step; the workbench already admits radio access after exercise selection (RC-02 → RC-03) from bundled assets instead of the CD-ROM/catalog path. That check concerns star-catalog files, not date or ID input.",
+      "notClaimed": "Run executed; Windows file availability; effects of the Run callees 0x589bd8 and 0x58edcc; a value for item454Enabled; native startup, modal or GDI timing."
+    },
+    {
+      "id": "WEB-DATE-02",
+      "title": "Text and number subset",
+      "rule": "Printable ASCII (0x20..0x7e) only; date and time ≤ 32 characters, ID ≤ 18 (DFM MaxLength); edits outside are refused at the field (no silent truncation). Date: exact RC-15 port. Time: FLOAT_TEXT tokens, plain signed integers, |part| ≤ 1 000 000, else unsupported (spelling, form, large). The result must lie in 1900-01-01T00:00:00Z … 2099-12-31T23:59:59Z, else unsupported:domain (for example year 0009 is natively valid but outside the browser range).",
+      "notClaimed": "x87 Extended/double evaluation, the cancellation of the Extended at 0x5bc221 (record 0x5bc1f7 + 0x2a; its time-zone role is inferred from analyst notes on 0x487b64, not established), DecimalSeparator-dependent forms, any error bound against the native result."
+    },
+    {
+      "id": "WEB-DATE-03",
+      "title": "Clock application",
+      "rule": "applyRadioClockDialogUT: utc and draftUTC := the ISO text, elapsedMS := 0, run + 1, limit := null; Start/Pause intent kept; a running anchored scenario re-anchors at the performance time, a frozen one stays unanchored; longitude untouched. No Now₁/Now₂ delta or env+0x382b offset."
+    },
+    {
+      "id": "WEB-DATE-04",
+      "title": "Presentation and ID scope",
+      "rule": "The ID lives only in the route state for this window: never saved, exported, imported from a DAT file or written into records, and nothing reads it. Error-box wording is OpenVireo's. Tab order follows the visual layout (ID first; native TabOrder Date, Time, OK, Cancel, ID); no system-menu close. The route reports the panel's presentation gated by its own active/busy inputs (the panel's report arrives one commit late), so hiding the route or starting a project operation releases the App in the same commit. When the dialog closes, focus returns to the menu item, or to the Radio UT field when the item is no longer available (the range-end gate closed while open); a suppression, a hidden or busy route or a native modal moves no focus. In the App every route change cancels a running project operation and the route is inert while one runs, so busy suppression has no normal App path; it is defensive and was checked only with a controlled route host, not by tests/radio-date-app.spec.ts.",
+      "notClaimed": "Historical ID metadata or persistence; native error text."
+    }
+  ],
+  "dateEvidence": {
+    "root": "/tmp/clea-static-research/radio-date-preparation",
+    "method": "Coordinator static PE / typed Delphi DFM and VMT metadata and complete objdump instruction listings without bytes; no original execution or emulation; no native parity claim.",
+    "manifests": [
+      {"file": "DATE-RECOVERY-MANIFEST.json", "note": "lists safe evidence files with SHA-256 (UT-FORM-CANONICAL 601942bf…653d, UTTIME-DFM 4ad35d5c…3cd6, CANONICAL-DATE-PREPARATION e3a725d3…f676, RTL-DATE-SCAN-CANONICAL 5997f2c9…982d, DATE-TOKENIZER-CANONICAL 489bf21c…d3d7, DATE-TYPED-LITERALS 715c0912…9a0d)"},
+      {"file": "PHASE0-CLOSURE.json", "note": "lists the phase-0 files with SHA-256 (PHASE0-SETDATE-MENU-DFM 20801e6c…3fc2, PHASE0-RUN-CANONICAL 06526b18…6b48, PHASE0-ID-INITIAL-STORAGE 3e6abe64…2392)"},
+      {"file": "G1-VERIFIED.json and PHASE0-CALENDAR-TYPED-CELLS.json", "note": "G1 typed cells cited by RC-15; SHA-256 from DATE-EVIDENCE-ADDITIONAL-HASHES.json: G1-VERIFIED 4027ca3281da2ac15b6bae0b664a28c9a4876bcf810584998cccdcc85091e0bf, PHASE0-CALENDAR-TYPED-CELLS aad1846d633e525b3eb38d0495b8efaf4d5f89bce1b4dad8a227033ade4e23c5."},
+      {"file": "MENU-VISIBILITY-CORRECTION.json and menu-setvisible.asm", "note": "Later static amendment (RC-13: Radio1 visible, not checked): MENU-VISIBILITY-CORRECTION 052ae48ada816ee86d860ce640ddfe87c82cbdd6ab17bef279bf75a47a21cbaa, menu-setvisible.asm 0b67f3496dd45f07d82c28d4c0cae459d7bfc8605902bae279d9cd8dfaf7679e (both listed in DATE-EVIDENCE-ADDITIONAL-HASHES.json). Not a runtime oracle."}
+    ],
+    "noBinaryBytes": true
+  },
   "unresolved": [
     "TRadioLab antenna controls are now in docs/RADIO-ANTENNA-PROVENANCE.json (RA-01..RA-14); beam, receiver, timing and signal behavior remain unrecovered.",
     "env+0x37ab (dish diameter) and env+0x2e84 (access option byte): compiled defaults 100 and 0 are recovered (RA-03); options-file and options-dialog owners remain unrecovered, so the host still supplies them explicitly.",
-    "Names of menu items at +0x408 and +0x454 and the five other Window1 children's individual offsets.",
+    "Name of the menu item at +0x408 and the five other Window1 children's individual offsets (+0x454 is SetDateTime1 from typed metadata, RC-12; its native Enabled value before Run stays unknown in the browser state).",
+    "Post-activation Set Date/Time, ID: the hook (RC-17) needs the optical longitude env+0x2b86, the Extended at 0x5bc221 (record 0x5bc1f7 + 0x2a; its time-zone role is inferred from analyst notes on 0x487b64, not established), host Now and env+0x382b, none recovered as values; refused. I06 stays partial.",
     "CntrlSwPnl and IDPnl visibility transitions.",
     "Radio scope access from other exercises, optical/radio interplay beyond the shared fields, cursor/beep presentation."
   ],
-  "numericPolicy": "Only the Int32 diameter is numeric. Input is strict decimal text, range -2147483648..2147483647, formatted like Delphi IntToStr (String(n), negative zero normalised to 0). No floating point is involved.",
-  "validation": "src/core/radioControl.test.ts tests the chosen implementation contract against these ranges. They are not an oracle for the original runtime and no original execution was used."
+  "numericPolicy": "RC-01..RC-11: only the Int32 diameter is numeric (strict decimal text, -2147483648..2147483647, Delphi IntToStr formatting, negative zero normalised to 0); no floating point. RC-12..RC-17 (chosen date contract): the date scanner is an exact integer port; for the admitted full-year path the instant is exact integer arithmetic (days × 86400 + whole seconds, × 1000 ms, all below 2^53). The native path forms a Double TDateTime and evaluates the time with Single 60/12/24 constants in x87 Extended, minus the Extended at 0x5bc221; it is not reproduced, and no Number/x87 parity or error bound is claimed.",
+  "validation": "src/core/radioControl.test.ts tests the chosen implementation contract against these ranges; src/core/radioDateDialog.test.ts, the WEB-DATE-03 block of src/core/radioClock.test.ts and tests/radio-date-app.spec.ts cover RC-12..RC-17 and WEB-DATE-01..04. Date vectors restate the static reading; time vectors are the browser subset. They are not an oracle for the original runtime and no original execution was used."
 }

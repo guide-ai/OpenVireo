@@ -18,22 +18,23 @@ Everything described here as host behavior is a **WEB adaptation**: route visibi
 
 - **Route.** A header button "Radio telescope" opens the route `#radio-control`. `src/components/RadioTelescopeRoute.tsx` holds the control, scenario-input and antenna states and mounts the existing controlled `RadioControlPanel`. The 100 ms slew updates therefore re-render only this subtree, not the other instruments. The workspace is lazily loaded on the first visit and then stays mounted.
 - **Chosen web scenario** (stated on the route):
-  - Telescope options: the recovered compiled defaults (`RADIO_COMPILED_OPTIONS`, RA-03), used by the original when no options file loads. No options file is read, and the current classroom configuration is unknown.
+  - Telescope options: the recovered compiled defaults (`RADIO_COMPILED_OPTIONS`, RA-03), used by the original when no options file loads. No options file is read, and the current classroom configuration is unknown. The panel's radio options scenario (WEB-ALT-03) lets the learner turn the recovered Limit Slewing flag on or off with Apply. Every other option, including the 10° horizon limit, stays compiled, and the options are temporary route state.
   - Main-window inputs start unsupplied, with the dome state byte at its FormCreate value 0. They are not linked to the observatory dome. The learner chooses **Use compiled defaults** (diameter 100, access option off) or enters values.
   - Access: with the access option off, the original waits a pseudo-random time (`Random(8000)`), which is not reproduced. The learner delivers the access tick by hand (the existing manual delivery). With the option byte set, the existing 1 ms callback is used.
   - Slews: the existing nominal 100 ms browser interval. This is not Windows timer timing.
-- **Supported:** first activation, Tracking, Slew Rate, Set Coordinates with the recovered validation, the web numeric domain and the B1950 gate, confirmation, programmed J2000 slew, stop and resume, arrival, and hidden-panel continuation (RC-11).
-- **Not available** (gated, not invented): receivers, the beam, the hot list, manual N/S/E/W slewing, the shared sidereal clock and drift, altitude limits, B1950 precession and any acquisition or signal.
+  - Radio clock (RA-13): an explicit UT and the compiled radio longitude, each applied by the learner (no default, no host or observatory clock). Ticks use a nominal 1000 ms browser interval or the manual tick. The scenario card is inert while a radio dialog or box is open.
+- **Supported:** first activation, Tracking, Slew Rate, Set Coordinates with the recovered validation, the web numeric domain and J2000.0 or B1950.0 entry (recovered fixed-epoch conversion and flag lifecycle, RA-EP-01…04), confirmation, programmed slew to the J2000 target, stop and resume, arrival, hidden-panel continuation (RC-11), and the clock's hour-angle and RA drift bookkeeping.
+- **Not available** (gated, not invented): receivers, the beam, the hot list’s Add Current Item and Save from this panel (disabled; their enabling code is not recovered), the RA-19 F4/F8 entries and native key delivery (press-and-hold N/S/E/W and, in part, the original letter and NumLock-on keypad keys are available; see [RADIO-ANTENNA.md](RADIO-ANTENNA.md)), the full options dialog and options file, the native date dialog and local-date labels, a link to the observatory clock, the undecoded B1950 confirmation literal `0x5672f8` and any acquisition or signal. The altitude limit (RA-12) is available with Limit Slewing on and a supplied radio UT, under the WEB-ALT-01 admission policy.
 - **Persistence:** temporary. The state is kept while the tab is open, also on other routes. It is not part of Save investigation or of any restore, and a reload resets it.
 
 ## 3. Host modality and visibility (WEB policy)
 
 | Condition | Saved-row viewer | Radio panel |
 |---|---|---|
-| Route hidden | inactive: read cancelled, Find dialog/notice closed and kept | dialog/box not presented, state kept; **timers keep running**, so a slew can arrive in the background without taking focus or making anything inert |
-| Project operation (busy) | inactive | not presented; ScopeTimer and SlewTimer2 registrations cancelled; a fresh registration starts afterwards; **no elapsed-time catch-up** |
+| Route hidden | inactive: read cancelled, Find dialog/notice closed and kept | dialog/box not presented, state kept; the ScopeTimer, SlewTimer2 and radio clock registrations **keep running**, so a slew can arrive in the background without taking focus or making anything inert; a manual N/S/E/W hold is instead **cancelled** (its SlewTimer stops) and does not resume on return: a fresh press is needed |
+| Project operation (busy) | inactive | not presented; ScopeTimer, SlewTimer2 and radio clock registrations cancelled and radio scenario time frozen; a fresh registration starts afterwards; **no elapsed-time catch-up**; a manual N/S/E/W hold is **cancelled** and does not resume when the operation ends: a fresh press is needed |
 | Disclosure closed | inactive | — |
-| A native modal `<dialog>` of the page is open (About, Hubble lab guide, PLR dialog) | Find waits | dialog/box waits (`useSyncExternalStore` over `dialog:modal`, observed only while a radio dialog or box is pending) and is presented when it closes |
+| A native modal `<dialog>` of the page is open (About, Hubble lab guide, PLR dialog) | Find waits | dialog/box waits (`useSyncExternalStore` over `dialog:modal`, observed only while a radio dialog or box is pending or a manual hold is latched) and is presented when it closes; the ScopeTimer, SlewTimer2 and radio clock keep running; a manual N/S/E/W hold is **cancelled** and does not resume when the dialog closes: a fresh press is needed |
 | Radio dialog or box presented | — | App header and investigation toolbar inert (only while **presented**, not while latent); LSS Options' own host inertness is unchanged |
 
 - **Route heading focus.** After a route change the host focuses the route's `h1` unless a native modal dialog is open or a radio dialog/box is presented. On the active, non-busy radio route, a pending surface also suppresses the intermediate heading focus while another tool's native dialog closes and the radio box becomes presented. A hidden/inactive radio route advertises no such pending ownership, so it cannot suppress another tool's heading.
@@ -62,7 +63,7 @@ In [PULSAR-ANALYSIS.md](PULSAR-ANALYSIS.md), the properties table now says "list
 
 ## 7. Remaining original contracts (not covered here)
 
-The sidereal clock (RA-13) and altitude limits (RA-12) need a shared clock. B1950 precession (`0x4b9f44`/`0x4b9f64`) is not recovered. Also not covered: manual N/S/E/W slewing, Receiver, the beam and hot list, the options loader and `TRadioOptsDlg`, the access-option dialog control, decoded message-box and status literals, the RateLbl table, and an original reload command for the saved-row layout. Whether the observatory dome is the `[+0x552]` byte is not established.
+The radio clock (RA-13) now runs from an explicit, temporary web UT scenario with the compiled radio longitude (see [RADIO-ANTENNA.md](RADIO-ANTENNA.md)). It is not linked to the observatory clock, does not read host time and does not port the native date dialog or local-date labels. The altitude limit (RA-12) runs at its clock, manual and request callers when Limit Slewing is applied, under a conditional browser admission policy (WEB-ALT-01…03 in [RADIO-ANTENNA.md](RADIO-ANTENNA.md)). B1950 entry runs through the recovered precession `0x4b9f44`/`0x4b9f64` (binary64 policy, no x87 equivalence; tests/radio-epoch-app.spec.ts). Also not covered: the RA-19 F4/F8 entries and native key delivery (the letter/keypad table is mapped in part, WEB-KEY-02/03), Receiver, the beam and hot list, the options loader and the rest of `TRadiOptsDlg`, the access-option dialog control, decoded message-box and status literals, the RateLbl table, and an original reload command for the saved-row layout. Whether the observatory dome is the `[+0x552]` byte is not established.
 
 ## 8. Post-review web follow-up
 
@@ -78,8 +79,8 @@ Optional catalog cleanup, a general modal registry and future options-loader wor
 
 ## 9. Tests
 
-- Unit (Vitest): the predictor and tolerance regressions are in `src/core/radioAntenna.test.ts`. The audited TSX count is 51 (`RadioTelescopeRoute.tsx` adds no direct render literals).
-- Actual App (Playwright, desktop 1440 × 1050 and touch 375 × 812): `tests/radio-saved-rows-app.spec.ts`. The navigation reachability list in `tests/recorded-analysis-navigation.spec.ts` includes the new header button.
+- Unit (Vitest): the predictor and tolerance regressions are in `src/core/radioAntenna.test.ts`; radio clock contracts in `src/core/radioClock.test.ts` and the RA-13 blocks of `radioAntenna.test.ts`. The audited TSX count is 51 (`RadioTelescopeRoute.tsx` adds no direct render literals).
+- Actual App (Playwright, desktop 1440 × 1050 and touch 375 × 812): `tests/radio-saved-rows-app.spec.ts` and `tests/radio-clock-app.spec.ts`. The navigation reachability list in `tests/recorded-analysis-navigation.spec.ts` includes the new header button.
 - Standalone contracts (owned harness, skipped without it): `tests/pulsar-saved-rows.spec.ts` (with a distinct-sink callback test), `tests/radio-control.spec.ts`, `tests/radio-antenna.spec.ts` and `tests/radio-antenna-lifecycle.spec.ts`.
 
 Tests check the chosen web contract; they are not an oracle for the original program.
@@ -91,7 +92,7 @@ Tests check the chosen web contract; they are not an oracle for the original pro
 3. Use **Find…** with From Top, From Cursor and Cancel. Note that Case Dependent is remembered but not used. Download the original file.
 4. Open **Find…**, type text, press the browser Back and Forward buttons, and see the dialog return with your text. Close the disclosure while a file is being read, and see the read cancelled.
 5. Open **Radio telescope**. Read the chosen scenario, then choose **Exercise**, **Use compiled defaults**, **Telescope access: Radio**, **Deliver scope timer tick now** and switch **Radio** on.
-6. Choose **Tracking** and **Slew ▸ Set Coordinates…**. Try 25 h (error) and B1950.0 (gate), then Cancel. Enter 0 h 30 m 0 s, +35° and confirm with Yes.
+6. Choose **Tracking** and **Slew ▸ Set Coordinates…**. Try 25 h (error), choose B1950.0 to see the conversion note (nothing converts until OK), then Cancel. Enter 0 h 30 m 0 s, +35° and confirm with Yes.
 7. While the telescope slews, open **Observatory**: nothing takes focus. Return to **Radio telescope**: the arrival box is shown.
 8. Start a slew, choose Set Coordinates (stop question), then No to resume or Yes to stop.
 9. Return to **Radio data**: the recorded measurement and its comment are unchanged. **Save investigation** behaves as before. A page reload empties both temporary workspaces.

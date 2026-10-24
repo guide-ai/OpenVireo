@@ -1,0 +1,17 @@
+/* Pulsar Parameters utility card (docs/RADIO-PULSAR-PARAMETERS.md). The Find dialog and boxes reuse .antenna-dialog. */
+.pulsar-params-subheading{margin:10px 0 4px;font-size:15px}
+.pulsar-params-source{overflow-wrap:anywhere}
+.pulsar-params-window{border:2px solid #265f4c;border-radius:8px;padding:10px 12px;margin-top:10px;min-width:0}
+.pulsar-params-window h3{margin:0 0 6px;font-size:15px}
+.pulsar-params-window h3:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.pulsar-params-menu{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 8px}
+.pulsar-params-grid{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.pulsar-params-grid .antenna-field{flex:1 1 9rem}
+.pulsar-params-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0}
+.pulsar-params-row-label{flex:1 1 100%}
+.pulsar-params-part{display:inline-flex;align-items:center;gap:4px;min-width:0}
+.pulsar-params-part input{width:7rem;max-width:100%}
+.pulsar-params-value{min-height:36px;width:100%;box-sizing:border-box;font-variant-numeric:tabular-nums;background:#f3f5f4}
+.pulsar-params-group{border:1px solid #c9d1cf;border-radius:6px;padding:8px 10px;margin:8px 0}
+.pulsar-params-help{border-left:3px solid #265f4c;padding:4px 10px;margin:6px 0}
+.pulsar-params-window input:focus-visible,.pulsar-params-window button:focus-visible{outline:3px solid #23756c;outline-offset:2px}

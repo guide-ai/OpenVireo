@@ -1,0 +1,102 @@
+{
+  "policy": "OpenVireo-radio-pulsar-parameters-v1",
+  "scope": "Pulsar Parameters reference utility on the #radio-control route: TPlsrDataForm1 (VMT 0x56871c) display, Prev/Next, Update/Reset, Exit and TSearchInput1 (VMT 0x5682f0) Find, over a learner-loaded reference catalog. No receiver, acquisition, beam, noise, timing, measurement, notebook, PLR/DAT/CSV, session or investigation-format change. Does not complete Radio I06/I07/N07/E06 and claims no scientific or original-runtime equivalence.",
+  "artifact": {
+    "name": "CLEA_VEO.exe (VIREO 1.504)",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "archiveSha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+    "sourceCredit": "Project CLEA / Gettysburg College VIREO distribution",
+    "note": "Never executed, emulated or microemulated. Only the safe derived dossier below was read."
+  },
+  "dossier": {
+    "root": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024",
+    "manifest": {"file": "INPUT-MANIFEST.json", "sha256": "7272865808c62846b9ccf14c028cd4f2cebb041408dba23cee641453ee13b1b3", "files": 31, "note": "Hash computed by the implement phase; to be confirmed by the coordinator."},
+    "files": [
+      {"file": "activate-canonical.asm", "range": "0x568c4c..0x568e0f", "role": "TPlsrDataForm1.FormActivate", "sha256": "39275c6c883940bdd7b76a41bfc3e4c2b50aef5c1f55f12251439378f7aef7c6"},
+      {"file": "display-source-canonical.asm", "range": "0x568e10..0x5690be", "role": "display record", "sha256": "00f663b5ffb7b64c9362ee715f9328b02a978f16b83ab8b95face863617c8e89"},
+      {"file": "derived-period-canonical.asm", "range": "0x5690c4..0x569193", "role": "Date/Period", "sha256": "04a692a108d8e4645a16dbdf03b58585a5e98e1763ed8838ceab0c49b1861002"},
+      {"file": "derived-distance-canonical.asm", "range": "0x56919c..0x569232", "role": "Density/Distance", "sha256": "07984fd531d1c836b428ed35cbe0b0a2d7a771cf1849895db6e9b6ee6d43a073"},
+      {"file": "update-canonical.asm", "range": "0x5694f8..0x5695e4", "role": "UpdtBtnClick", "sha256": "7c003a80366823bfff02b41ee16014759feb794c0a2c362cd3d4781dd81ef7eb"},
+      {"file": "reset-canonical.asm", "range": "0x56960c..0x56966d", "role": "RSetBtnClick", "sha256": "66dcfd367c64fdf7321d6be496242c5712bda4a324ed471c80d667d9662745c4"},
+      {"file": "date-change-canonical.asm", "range": "0x5695ec..0x56960a", "role": "JDEdChange", "sha256": "fa3cf3fd160a95f74e2abf9bff48bdb0fb9219a1547155920c45201294e73c1d"},
+      {"file": "density-change-canonical.asm", "range": "0x569670..0x56968e", "role": "DnstyEdChange", "sha256": "7edd45204eee4c18512867e476785e4290a4d839f5e57afc420e70fbde8ef814"},
+      {"file": "next-canonical.asm", "range": "0x569274..0x5692b3", "role": "NextBtnClick", "sha256": "f460d44cc5748f405ec9074b53b43d1c66aa9885150610769cdd25cc0ecb590d"},
+      {"file": "previous-canonical.asm", "range": "0x5692b4..0x5692f3", "role": "PrevBtnClick", "sha256": "954f78d81ebca195ad4895963e8fb1f7f28b5c4f6362040d771bafc804524ed0"},
+      {"file": "find-canonical.asm", "range": "0x5692f4..0x5694d5", "role": "FindPulsar1Click", "sha256": "96dc350dc309fcb3a9158af24ed650f6d3dcd35cc5b7d86ae9741e6d3ef83581"},
+      {"file": "find-dialog-ok-canonical.asm", "range": "0x5684f8..0x5685ae", "role": "TSearchInput1.OKBtnClick", "sha256": "75708c01067258a6284030db8f59f98a81e9791388914465b308407d08c7f4b9"},
+      {"file": "find-dialog-cancel-canonical.asm", "range": "0x5685b0..0x5685ba", "role": "TSearchInput1.CnclBtnClick", "sha256": "7baee3b3ca5e269e640ef807dfd197976401a9b14b1cc0e3d1e4f71e453cffd7"},
+      {"file": "find-dialog-activate-canonical.asm", "range": "0x5685bc..0x5686b8", "role": "TSearchInput1.FormActivate", "sha256": "9be17a8dc44d2440e958097b5311a9f4793e0e726f27de163e08fc2c964c7dad"},
+      {"file": "find-dialog-create-canonical.asm", "range": "0x5686bc..0x5686ce", "role": "TSearchInput1.FormCreate", "sha256": "985f237b121f234dfe3eb1b87e9bb132490c7ee8c7aa9962a6026d4be69f895a"},
+      {"file": "name-pos-canonical.asm", "range": "0x40640c..0x40654e", "role": "Pos", "sha256": "2c28efed2eead825c6dce1f2f93c51269398e1c67020cfa788effeaa48606c0f"},
+      {"file": "PARAMETERS-CONTRACTS.json", "role": "PP-01..PP-09", "sha256": "2c365a8cf7f2bde33ecdc21a76cb807d3d34e1ba06128b8a2d1fd55797d111f0"},
+      {"file": "PARAMETERS-FORM-AND-VMT.json", "role": "TPlsrDataForm1 DFM/VMT", "sha256": "3465ce43dbafdc0189f8312cffcc31fd4074298b57b9d1109509bc222c1180a0"},
+      {"file": "FIND-FORM-AND-VMT.json", "role": "TSearchInput1 DFM/VMT", "sha256": "796b361c97e05fbd15491dfd15a8ba2f140f0e5e8021ce47632ae98d20b34fce"},
+      {"file": "PULSAR-LIST-ENTRY-OWNER.json", "role": "PulsarList1Click 0x567f80 owned by TRadioLab", "sha256": "55028bae124c281a9de653c2bcdf296b77dee8968524a6c946cfa10187cdea04"},
+      {"file": "pulsar-list-entry-canonical.asm", "range": "0x567f80..0x568023", "role": "PulsarList1Click", "sha256": "1e4f80b67b0eaaa9bdc89f42d384916382f943683682ae7ea3cb31e14c47d925"},
+      {"file": "WARNING-THUNK-IDENTITY.json", "role": "0x408c44 = MessageBeep", "sha256": "f807541eec8df239a14b33bebd75f6670cb211710232748d830134116ae1e4f3"},
+      {"file": "WINDOW-STATE-SETTER.json", "role": "0x476f40 = WindowState setter", "sha256": "4fb0ef526a31e882c2d20352b761a63a78898848d35509aa9eea65ef9e343958"},
+      {"file": "WINDOW-STATE-ENUM.json", "role": "0 = wsNormal", "sha256": "f421e198d93ffe6b2df76c70926e4c671a47b076a26544991ac16ba649f5d61f"},
+      {"file": "CATALOG-LOAD-ERROR-CONTRACTS.json", "role": "native load failure (not reproduced)", "sha256": "0207533c8431912134019427576d9fc4a026b33eb3ae062b513b8bd2d4bd3bda"},
+      {"file": "CODEC-DEPENDENCY-ACCEPTANCE.json", "role": "accepted codec/selector", "sha256": "825fbfa1bfff87fe57de0d4c2bf20718169d9c313f5d9b885050ed2ccf028b89"},
+      {"file": "round-helper-canonical.asm", "range": "0x403700..0x403709", "role": "System.Round (FISTP, current CW)", "sha256": "ffd795de0db62e3177d72c33671e97133a82f65ef3a7e06533f9de10e964ee31"},
+      {"file": "native-date-getter-canonical.asm", "range": "0x487bcc..0x487be7", "role": "date getter (fields + global 0x5bad48)", "sha256": "1acb317c848fc5aa11962c4c6957385ece07a4b6fa5592b756bf32a6e010c07c"},
+      {"file": "fixed-format-wrapper-canonical.asm", "range": "0x486268..0x486291", "role": "ffFixed wrapper to 0x40cf28", "sha256": "dc5f22f45f61d25f766b470b6dc0c5c52af89cedc7cabb524af137f86fde1fb5"},
+      {"file": "exponent-format-wrapper-canonical.asm", "range": "0x48634c..0x486375", "role": "ffExponent wrapper to 0x40cf28", "sha256": "377d5f67216c53f0685d533b6cbe17ed076177a2ab80676a72e36889f0225460"},
+      {"file": "parameters-exit-canonical.asm", "range": "0x569234..0x569273", "role": "Exit1Click", "sha256": "26ce0f5b286b919c4da98517cb73c1967e39371309190447b04cdd044d1df4a4"}
+    ],
+    "addenda": [
+      {"file": "UPDATE-DEFAULT-SETTER.json", "sha256": "a6f9ad3039ffae48efa3a68038c90269f6b390b4743d45dd4a68f0f2b1cafff0", "finding": "0x43fb98 is the setter of the VCL Default(Boolean) property (RTTI 0x4381f9, 0x480848). JDEdChange/DnstyEdChange pass true, Reset passes false. Static role only; Enter/focus delivery not proven."},
+      {"file": "COMPILED-CW-CELLS.json", "sha256": "81b470e3e2712e50bc43b2411d52fa35b644d21eccedd1b8e3b152afe5ecb17d", "finding": "Compiled x87 control-word cell 0x5ae024 = 0x1332 (RC nearest/ties-even, PC 64-bit). Mutable global; the runtime CW at 0x5691ef is not observed."},
+      {"file": "FIND-MISS-LITERALS.json", "sha256": "fe11daa4144677ceb04a04c439dc41fe22b5aa4431546698e9c08a6351a34775", "finding": "Independent static recovery in the research root (source SHA-256 781bc970…c54c), not the excluded G2 receipt: ShortStrings 0x5694d8 = '\"' (1) and 0x5694dc = '\" Not Found in List!' (20), button word 0x5694f4 = 4. Not reproduced; 0x450100 identity and delivery not established."},
+      {"file": "FIND-MESSAGE-APPEND-BOUNDS.json", "sha256": "86903df7101ed97c35c3a1ff3ce30909019fe3a35b7bc6dede859fcedec661d1", "finding": "0x403c20 CL is the destination capacity: 0x569466 cl=0x0d = 1 + 12 (query ShortString[12], not a 13-character limit); 0x569480 cl=0x21 = 13 + 20. No truncation; queryMaxLength stays 12."},
+      {"file": "shortstring-append-canonical.asm", "range": "0x403c20..0x403c4f", "sha256": "2a5fa9d4e56c8160859bc94c2ae30e42cc4c3a377d01ba712f1dd38bf5d14676", "finding": "ShortString append helper (AL = destination + source length compared with CL; copy clamped to CL − destination length)."}
+    ]
+  },
+  "resources": {
+    "TPLSRDATAFORM1": {"resourceVA": "0x682514", "size": 11648, "sha256": "42e248a8fb12b9d2fc0835e10466d7ff317e29bf5d1a5c440ae0791d50bf9f9b", "use": "raw captions/hints copied as text constants only"},
+    "TSEARCHINPUT1": {"resourceVA": "0x692950", "size": 1010, "sha256": "c80e48ad2fa6717e314d11aaad98fef33da09ab9d2e2f8bfc5d6c822476fcf21", "use": "raw captions copied as text constants only"}
+  },
+  "excludedEvidence": [
+    "B/claude-radio-antenna/tradiolab-metadata.json, radio-ra12-altitude verified-field-roles.json, the G2 receipt and any derived field-role claim were not read or used.",
+    "The historical RADIO-ANTENNA-PROVENANCE.json assertion of a compiled Find mode is not used as authority; no compiled default for env+0x37ce is claimed."
+  ],
+  "externalCatalog": {
+    "name": "Pulsars.dat",
+    "sha256": "ba94ee94c359e2afd4acce940266d69983d24a93893719cca20d3e23ef3dceaa",
+    "bytes": 285692,
+    "rows": 558,
+    "status": "Not one of the 1279 manifested resources; not bundled, embedded, copied or uploaded. The browser reads a learner-chosen file into memory only; this identity only labels matching bytes.",
+    "testHooks": ["OPENVIREO_PULSARS_DAT (src/core/radioPulsarParameters.original.test.ts, tests/radio-pulsar-parameters-app.spec.ts); skipped by name when unset."]
+  },
+  "typedConstants": [
+    {"VA": "0x5690c0", "type": "Single", "value": 2400000, "use": "PEpoch display"},
+    {"VA": "0x569194", "type": "Single", "value": 2400000, "use": "Date display"},
+    {"VA": "0x5695e8", "type": "Single", "value": 2400000, "use": "Update date add"},
+    {"VA": "0x569198", "type": "Single", "value": 86400, "use": "period days to seconds"},
+    {"VA": "0x568dbb..0x568dcf / 0x569627..0x56963b", "type": "Extended", "significand": "0xf5c28f5c28f5c28f", "exponent": "0x3ff9", "binary64": 0.03, "use": "default electron density"},
+    {"VA": "0x567fad..0x567fb7", "type": "Extended", "value": 2.0, "use": "picker limit at Open"}
+  ],
+  "contracts": [
+    {"id": "PP-01", "web": ["pulsarSourceTexts"], "evidence": "S"},
+    {"id": "PP-02", "web": ["pulsarDerivedPeriod", "pulsarDerivedTexts", "WEB-PP-EPOCH-01"], "evidence": "S"},
+    {"id": "PP-03", "web": ["pulsarDerivedDistance", "WEB-PP-NUM-01", "WEB-PP-UPD-02"], "evidence": "S + W rounding policy"},
+    {"id": "PP-04", "web": ["updatePulsarDerived", "WEB-PP-UPD-01"], "evidence": "S"},
+    {"id": "PP-05", "web": ["openPulsarParameters", "resetPulsarDerived", "WEB-PP-CLK-01", "WEB-PP-OPEN-02"], "evidence": "S + W clock source"},
+    {"id": "PP-06", "web": ["editPulsarDate", "editPulsarDensity", "WEB-PP-KEY-01"], "evidence": "S + addendum UPDATE-DEFAULT-SETTER"},
+    {"id": "PP-07", "web": ["openPulsarParameters", "nextPulsar", "previousPulsar", "WEB-PP-NAV-01", "WEB-PP-OWN-01"], "evidence": "S"},
+    {"id": "PP-08", "web": ["confirmPulsarFind", "WEB-PP-FIND-02"], "evidence": "S + addenda FIND-MISS-LITERALS, FIND-MESSAGE-APPEND-BOUNDS"},
+    {"id": "PP-09", "web": ["openPulsarFind", "confirmPulsarFind", "cancelPulsarFind", "pulsarNameContains", "WEB-PP-FIND-01", "WEB-PP-FIND-03"], "evidence": "S"}
+  ],
+  "webPolicies": ["WEB-PP-SRC-01", "WEB-PP-SRC-02", "WEB-PP-SRC-03", "WEB-PP-OPEN-01", "WEB-PP-OPEN-02", "WEB-PP-OWN-01", "WEB-PP-CLK-01", "WEB-PP-EPOCH-01", "WEB-PP-UPD-01", "WEB-PP-UPD-02", "WEB-PP-NUM-01", "WEB-PP-FMT-01", "WEB-PP-NAV-01", "WEB-PP-FIND-01", "WEB-PP-FIND-02", "WEB-PP-FIND-03", "WEB-PP-KEY-01", "WEB-PP-EXIT-01", "WEB-PP-PRES-01", "WEB-PP-HELP-01", "WEB-PP-SAVE-01"],
+  "gaps": [
+    {"id": "G1", "text": "[I] Whether VCL re-runs TPlsrDataForm1.FormActivate 0x568c4c on any re-activation of the form: after the modal Find closes (before the caller saves the cursor), after the 0x450100 box, or on returning from another window. It would re-seed, reset JD/density and redisplay. Not proven. Web activates only at Open (WEB-PP-OPEN-02)."},
+    {"id": "G2", "text": "Identity, modal activation and event delivery of 0x450100 (message kind dl=1, button word 0x5694f4 = 4, meaning not asserted). The literal text is statically recovered (addenda FIND-MISS-LITERALS, FIND-MESSAGE-APPEND-BOUNDS) but not reproduced: OpenVireo wording is used (WEB-PP-FIND-02)."},
+    {"id": "G3", "text": "VCL Enter/focus delivery for the Default(Boolean) property set through 0x43fb98: Enter is a web affordance (WEB-PP-KEY-01)."},
+    {"id": "G4", "text": "0x40cf28 formatting identity, sign and rounding; host DecimalSeparator/locale."},
+    {"id": "G5", "text": "0x479d50, 0x47a010 and 0x474408 lifetime; the native close box; whether the form slot is cleared on Exit."},
+    {"id": "G6", "text": "Runtime x87 control word at 0x5691ef (compiled default 0x1332 only) and zero/huge-density exception outcomes."},
+    {"id": "G7", "text": "Help1Click 0x569690 and the HLP text: not ported; authored web help instead."},
+    {"id": "G8", "text": "env+0x37ce identification mode: no owner in the web; the first-open mode 1 (B1950) is an explicit web policy."},
+    {"id": "receiver", "text": "Shared TRadioLab+0x5f7 buffer (overwritten/cleared by PulsarList1Click, aliased by the receiver) and the shared list cursor (also moved by the picker and clock reassociation): not modelled; the window owns a private index and a local seed copy."}
+  ]
+}
