@@ -22,7 +22,7 @@ export type PulsarReferenceState=Readonly<{
 export const INITIAL_PULSAR_REFERENCE:PulsarReferenceState=Object.freeze({catalog:null,source:null,read:null,nextToken:1});
 
 export type PulsarReferenceOutcome=
- |'reading'|'window-open'|'read-pending'
+ |'reading'|'window-open'|'receiver-open'|'read-pending'
  |'loaded'|'invalid'|'too-large'|'read-error'|'cancelled'|'stale';
 export type PulsarReferenceTransition=Readonly<{state:PulsarReferenceState;outcome:PulsarReferenceOutcome;changed:boolean;token?:number;error?:PulsarCatalogError}>;
 const keep=(state:PulsarReferenceState,outcome:PulsarReferenceOutcome):PulsarReferenceTransition=>Object.freeze({state,outcome,changed:false});
@@ -32,10 +32,12 @@ const next=(state:PulsarReferenceState,outcome:PulsarReferenceOutcome,extra:Part
 /** Display name: at most 128 characters, rendered as text only. */
 export const pulsarReferenceName=(name:string)=>Array.from(typeof name==='string'?name:'').slice(0,PULSAR_REFERENCE_WEB_POLICY.nameMaxLength).join('');
 
-/** Start a read. Refused while the utility window is open (its catalog is never replaced under it) or another read
- * is pending. */
-export function beginPulsarReferenceRead(s:PulsarReferenceState,name:string,windowOpen:boolean):PulsarReferenceTransition{
+/** Start a read. Refused while the utility window is open (its catalog is never replaced under it), while any receiver
+ * window exists (WEB-RX-CAT-01: the receivers read this catalog at Open and at each clock reassociation) or another
+ * read is pending. */
+export function beginPulsarReferenceRead(s:PulsarReferenceState,name:string,windowOpen:boolean,receiverOpen=false):PulsarReferenceTransition{
  if(windowOpen)return keep(s,'window-open');
+ if(receiverOpen)return keep(s,'receiver-open');
  if(s.read!==null)return keep(s,'read-pending');
  const token=s.nextToken;
  return next({...s,read:Object.freeze({token,name:pulsarReferenceName(name)}),nextToken:token+1},'reading',{token});

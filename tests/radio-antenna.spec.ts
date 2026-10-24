@@ -34,7 +34,7 @@ test('Tracking → Set Coordinates → validation → confirmation → programme
  await expect(setCoordinates).toHaveText('Slew ▸ Set Coordinates...');await expect(setCoordinates).toBeDisabled();await expect(id(page,'antenna-menu-disabled')).toBeVisible();
  await expect(id(page,'antenna-rate-up')).toBeDisabled();
  await id(page,'antenna-tracking').click();await expect(id(page,'antenna-tracking-state')).toHaveText('Tracking on');await expect(id(page,'antenna-tracking')).toHaveAttribute('aria-pressed','true');
- await expect(setCoordinates).toBeEnabled();await expect(id(page,'antenna-receiver')).toContainText('nothing is received');
+ await expect(setCoordinates).toBeEnabled();await expect(id(page,'antenna-receiver')).toContainText('Receiver button: enabled.');
  await setCoordinates.click();
  const dialog=id(page,'antenna-dialog');await expect(dialog).toBeVisible();await expect(dialog).toContainText('Enter Sky Coordinates for Slew');await expect(dialog).toContainText('Epoch of Input Coordinates');
  await expect(id(page,'antenna-field-raHours')).toBeFocused();await expect(id(page,'antenna-field-raHours')).toHaveValue('0');await expect(id(page,'antenna-field-decDegrees')).toHaveValue('38');

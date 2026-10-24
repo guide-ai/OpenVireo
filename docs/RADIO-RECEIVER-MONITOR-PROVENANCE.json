@@ -1,0 +1,53 @@
+{
+  "increment": "R-RX2 silent receiver monitor (main receiver plus two channels)",
+  "binary": {"name": "CLEA_VEO.exe", "SHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"},
+  "plan": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-rx2-monitor-20261024-plan/plan.txt",
+  "method": "Static listings, typed cells and DFM defaults only. No CLEA execution, emulation, microemulation or native trace; no binary bytes or excluded metadata read. Tests check this implementation's contract, not native equivalence.",
+  "priorAcceptance": {"R-RX1": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-receiver-signal-validation/RADIO-RECEIVER-SIGNAL-LOCAL-ACCEPTANCE.json", "utc": "2026-10-24T07:09:49Z"},
+  "evidence": {
+    "recoveryManifest": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/RECOVERY-PROVENANCE.json",
+    "hashSource": "SHA-256 values of recovered files are copied from RECOVERY-PROVENANCE.json (2026-10-24T13:38:17Z) and RECEIVER-DISPLAY-LITERALS-VERIFIED.json. Hashes of the ROOT canonical listings marked implementerComputed were computed by the implement phase with sha256sum over the derived text listings (not binary bytes).",
+    "files": [
+      {"id": "RXD-01", "path": "radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-create.asm", "VA": "0x5720cc", "SHA256": "8900380f22a2385588e75eb794b9fd9295d177fe346554888773439b0c111363"},
+      {"id": "RXD-02", "path": "radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-reset.asm", "VA": "0x572130", "SHA256": "6475d2c81a3168ea01419a0b307750c4e06e0b798ae7e481d9d380f73ebd4c70"},
+      {"id": "RXD-01-append", "path": "radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-append.asm", "VA": "0x5721a8..0x5721d7", "SHA256": "50e921104814fa39200682e0d6103769c863e456ea78e28ae89f850060076a42"},
+      {"id": "RXD-03", "path": "radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-paint.asm", "VA": "0x572a20..0x572e22", "SHA256": "1570e3ae728f0a77a9794893327fc94d4af43fb58ed5157004504ac2e5baf848"},
+      {"id": "RXD-04", "path": "radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-frequency-reset.asm", "VA": "0x572e24..0x572f5d", "SHA256": "49cb3623071039b6dbd11dcc85b75824c8b541f2ebdb358275f63d66fc851984"},
+      {"id": "FORMAT-2", "path": "radio-rx2-monitor-recovered-20261024/rea-derived/beam-sexagesimal-format.asm", "VA": "0x486f4c..0x487159", "SHA256": "af951dc4c9630dbf8b68d92636767ebac5ad8a63f51f0bdc93b9b8ca3aa348b8"},
+      {"id": "FREQ-down", "path": "radio-rx2-monitor-recovered-20261024/audio-owner-close/safe-views/frequency-down.asm", "SHA256": "2de976dfbf4756fcc0a193a7cb6113b13b62d06ce51e929e564f4da839acd222"},
+      {"id": "FREQ-up", "path": "radio-rx2-monitor-recovered-20261024/audio-owner-close/safe-views/frequency-up.asm", "SHA256": "b1faf22b97c7983048adbbcfa6174a6dfe0613356fb5888b571cbc85b4b11709"},
+      {"id": "CLOSE", "path": "radio-rx2-monitor-recovered-20261024/audio-owner-close/safe-views/receiver-close.asm", "VA": "0x5726f0", "SHA256": "2d620be1af1fc5c866f0a9964f342c8d7362587dbf9ca2a28dcd22f296f99a8e"},
+      {"id": "SILENT-01", "path": "radio-rx2-monitor-recovered-20261024/audio-owner-close/AUDIO-OWNER-CLOSE-RESULTS.json", "SHA256": "b795af768cf2c2fd30553f58c0d3fabf0fcfd4daf301fe2bee4d72edf9b2a341"},
+      {"id": "OWNER-53A", "path": "radio-rx2-monitor-recovered-20261024/audio-owner-close/CLASS-HIERARCHY-AND-MESSAGE53A.json", "SHA256": "8a8a92edb0439cad82296526dfb03e01d7b748613284e178ccfa79cc14e8327a"},
+      {"id": "TYPED-CELLS", "path": "radio-rx2-monitor-recovered-20261024/bounded/RADIO-TYPED-CELLS.json", "SHA256": "3a5bdf8cbe736e5e8e17d0035c13f0512217bab3c4a2d52a76c6530f428976e0"},
+      {"id": "DISPLAY-LITERALS", "path": "radio-rx2-monitor-recovered-20261024/RECEIVER-DISPLAY-LITERALS-VERIFIED.json", "SHA256": "39d770858ad69677444c361b624a3aa401fd16d5a447989cb29183ba3fa2dfd8"},
+      {"id": "FORM-RESIZE", "path": "radio-rx2-monitor-recovered-20261024/existing-listing-recovery/form-resize.asm", "VA": "0x575080", "SHA256": "e92e384b112f112b84f7dbb3aa053a9e45e31a7b063b4365daf587bd84684dc2"},
+      {"id": "PARAM", "path": "ROOT/analysis/radio-receiver-source-20261024/receiver-parameter-display-canonical.asm", "VA": "0x572f8c", "SHA256": "a66df430a5b7dd8099983f15cae00b94b1f9440e1f09f1c7b6a6c9756c2d3200"},
+      {"id": "SOURCE-REFRESH", "path": "ROOT/analysis/radio-receiver-source-20261024/receiver-source-refresh-canonical.asm", "VA": "0x574ba4 (reset call 0x574c0c)", "SHA256": "3b97fb71319c3269008fcd18cf9ba42f83b1789c7839045fceb3fa04f0456007", "implementerComputed": true},
+      {"id": "FRAME/FINISH", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-record/frame-canonical.asm", "VA": "0x573790 (finish 0x573b20..0x573bb8)", "SHA256": "d31088cb788467a579523d969cce89be130e63564116682d1c65270024bd9ea4", "implementerComputed": true},
+      {"id": "MODE", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-record/receive-mode-canonical.asm", "VA": "0x5745f8", "SHA256": "1575a2535b3cbf9cb6a929764361220beff434971009040f5439e32122bbbbc4"},
+      {"id": "FC", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-record/form-create-canonical.asm", "VA": "0x5721d8", "SHA256": "e74fbe55fc1282aa027886655dd72d17d058c87390d6043e569ff4697a17e14b", "implementerComputed": true},
+      {"id": "IDLE", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-record/controls-idle-canonical.asm", "VA": "0x575a38", "SHA256": "f50d69f1ab631eaa1ea6071e8b677dc8fb12f614284881c292d076a7745f6c1b", "implementerComputed": true},
+      {"id": "ADD", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-controls/add-channel-canonical.asm", "VA": "0x574e90 (no slot 0x574ead..0x574eaf)", "SHA256": "de393459fc7ec5adc75b2658f7240ab0e18e0881ad933d52bd7a3d87b6d5c29e", "implementerComputed": true},
+      {"id": "INCR-down", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-controls/step-down-canonical.asm", "SHA256": "e3048515563f8d81faed958182aaedab3940871d68192a06d9e79e0fb8c87fb2"},
+      {"id": "INCR-up", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-controls/step-up-canonical.asm", "SHA256": "3ef6e959955ba4b02dbb156640d96037803ec36fdcaee71c0b15d38890e2478d"},
+      {"id": "INIT-INSTANCE-generic", "path": "radio-rx2-monitor-recovered-20261024/audio-owner-close/safe-views/runtime-init-instance.asm", "VA": "0x404f1c", "SHA256": "f041bdb1cacec85660922fcdc29daaab2ecf2531ce0fe85b9fec7d9eeb1de543", "note": "generic; receiver-creation linkage not closed; SHA-256 copied from RECOVERY-PROVENANCE.json, not recomputed"}
+    ]
+  },
+  "cells": {
+    "captions": {"0x567a94": "Receiver 1", "0x573630": "Receive", "0x573640": "Stop", "0x573650": "Yes", "0x57365c": "No", "0x573668": "On", "0x573674": "Off"},
+    "apertureBeam": {"0x573680": "   Aperture: ", "0x573698": " Meters    ", "0x5736d4": "'", "0x5736e0": " Deg ", "0x5736ec": "Effective FOV: ", "0x573704": " Deg", "0x573710": "Beam (HPBW): "},
+    "sourceIdentity": {"0x573728/0x573dd8": "UNKNOWN", "0x573738/0x573de8": "ObjX-", "0x573740/0x573df0": "Receiver 1", "0x57374c/0x573dfc": "Pulsar ", "0x573754/0x573e04": "No Pulsar in Beam!", "0x573770": "Receiver ", "0x573784": " (Slave)"},
+    "annotation": {"0x572f68": " Sec ", "0x572f78": " MHz ", "0x572f88": " "},
+    "beamFormatter": {"0x48715c": "Single 60", "0x487160": "ShortString ' '", "0x48716c": "AnsiString '0'"},
+    "stepCaptions": {"0x5b4ab0": "0.01", "0x5b4ab5": "0.10", "0x5b4aba": "1.00", "0x5b4abf": "10.0", "0x5b4ac4": "100"},
+    "gridSingles": {"0x572db8": 16, "0x572dbc": 1, "0x572dc0": 10, "0x572dc4": 5, "0x572dc8": 100, "0x572dcc": 50},
+    "frequencyClamp": {"0x5742ec": 400, "0x57446c": 1400},
+    "notText": {"0x57268c": "Word mask 4", "0x5726c0": "PChar 'POpts is Nil!'", "0x5726d0": "PChar 'POpts Is Not Assigned!'"},
+    "excludedProvenanceOnly": {"0x576d84": "Error in waveOutReset (audio)"}
+  },
+  "corrections": ["F4: +0x583 is written by every parameter refresh (Activate sets it)", "Add with no empty slot creates nothing (was refused)", "post-0x53a renamed send-0x53a (synchronous dispatch, 0x40516c)", "Resize 0x575080 writes no N (+0x51d)", "0x577214/0x57724c audio routing not used (PRE-01)"],
+  "webPolicies": ["WEB-RX-AUDIO-01", "WEB-RX-CAT-01", "WEB-RX-TIME-01", "WEB-RX-CAD-01", "WEB-RX-SEED-01", "WEB-RX-ERR-01", "WEB-RX-ACT-01", "WEB-RX-PAINT-01", "WEB-RX-PAINT-02", "WEB-RX-GEOM-01", "WEB-RX-DISP-01", "WEB-RX-FOCUS-01", "WEB-RX-KEY-01", "WEB-RX-CLK-01", "WEB-RX-OWNER-01", "WEB-RX-ADD-01", "WEB-RX-PP-01", "WEB-RX-NUM-01", "WEB-RX-OPT-01", "WEB-RX-PERSIST-01"],
+  "limits": ["SILENT-01 is a conditional invariant (fresh instance, +0x42f false), not a native no-op: waveOutClose(0) and Randomize 0x576712 still run natively.", "Baseline end 640 is an inferred logical pen extent, not a proven VCL/GDI identity.", "No native equivalence, delivery, focus-restoration or pixel claim."],
+  "remaining": ["Record and the 1600/1601 limit", "Identify/Save/result-7", "audio and PRE-01", "marks and DblClick", "Align and window states", "env+0x37d6", "ShowWindow table 0x5afa8c", "other +0x499 writers", "0x4270c0", "historical FPU/RNG/locale/GDI", "Application+0x44 runtime value and 0x53a delivery"]
+}

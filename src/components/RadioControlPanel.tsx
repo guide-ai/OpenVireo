@@ -71,7 +71,12 @@ export type RadioControlPanelProps=Readonly<{
  /** The shared HTL document (sharedHotList.ts). When given, Slew ▸ Hot List (View/Select, the disabled Add, Load) is
   * shown; radio Load is its only radio writer. Without it no hot-list item is rendered. */
  hotList?:SharedHotListHandle;
+ /** When given, the TRadioLab Receiver button (Rcvr1Btn, TabOrder 6) is rendered; the host owns the receiver windows and
+  * names why the button is unavailable. Without it no button is rendered. */
+ receiver?:RadioReceiverButton;
 }>;
+export type RadioReceiverButtonReason='available'|'not-activated'|'receiver-disabled'|'no-catalog'|'catalog-reading'|'seed-invalid'|'modal'|'inactive';
+export type RadioReceiverButton=Readonly<{available:boolean;reason:RadioReceiverButtonReason;onOpen:()=>void;buttonRef:RefObject<HTMLButtonElement|null>}>;
 export type RadioClockSource=Readonly<{
  /** The scenario reading now; the host stops its scenario itself when this reports a domain overrun. */
  read:()=>RadioClockRead;
@@ -203,11 +208,11 @@ function ModalLimit({lead,reasons,testId}:Readonly<{lead:string;reasons:readonly
 const domKey=(e:KeyboardEvent<HTMLElement>):BrowserKeyInput=>({key:e.key,code:e.code,location:e.location,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,
  altGraph:e.getModifierState('AltGraph'),isComposing:e.nativeEvent.isComposing});
 /** WEB-KEY-03 key scope: the TRadioLab controls the DFM wires to FormKeyDown/FormKeyUp that the panel renders (Tracking and
- * N/S/E/W; Receiver is not rendered, RateSpin has no key handler). */
+ * N/S/E/W; RateSpin has no key handler; Receiver stays outside: whether Rcvr1Btn is wired to FormKeyDown is not established). */
 const KEY_SCOPE='[data-antenna-key-scope]';
 
 export default function RadioControlPanel({state,environment,onTransition,onEnvironmentChange,translate=englishRadio,autoScopeTimer=true,
- antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList}:RadioControlPanelProps){
+ antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList,receiver}:RadioControlPanelProps){
  const t=translate,ta=antennaTranslate,id=useId();
  const [outcome,setOutcome]=useState<RadioOutcome|null>(null),[envError,setEnvError]=useState(false);
  const [antennaOutcome,setAntennaOutcome]=useState<RadioLabOutcome|null>(null),[antennaError,setAntennaError]=useState(false);
@@ -602,7 +607,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    {antenna&&onAntennaTransition&&antenna.activated
     ?<AntennaControls antenna={antenna} options={antennaOptions} ta={ta} run={runAntenna} autoSlewTimer={autoSlewTimer} suspended={slewRefusal} setCoordinatesRef={setCoordinatesRef} hotList={hotMenu}
       clockSupplied={radioClock?.supplied??false} clockDomain={radioClock?.domain??false} onClockTick={()=>{const now=clockNow();if(now)runAntenna(a=>radioClockTick(a,antennaOptions,now));}}
-      manual={{input:manualInput,cancel:manualCancel,suspended:manualRefusal,keys:tableKeys}}/>
+      manual={{input:manualInput,cancel:manualCancel,suspended:manualRefusal,keys:tableKeys}} receiver={receiver}/>
     :<p className="radio-control-note">{ta(profileSupported?'antenna.notActivated':'antenna.profile.notActivated')}</p>}
    <button type="button" className="secondary-button" data-testid="radio-panel-close" onClick={()=>run(()=>closeRadioPanel(state,environment))}>{t('radio.panel.close')}</button>
   </section>}
@@ -676,7 +681,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
 
 type AntennaControlsProps=Readonly<{antenna:RadioLabState;options:RadioLabOptions;ta:RadioAntennaTranslate;run:(step:(a:RadioLabState)=>RadioLabTransition)=>void;autoSlewTimer:boolean;
  suspended:'options-unsupported'|'rate-unsupported'|null;setCoordinatesRef:RefObject<HTMLButtonElement|null>;clockSupplied:boolean;clockDomain:boolean;onClockTick:()=>void;
- manual:ManualPadInput;hotList:HotListMenu|null}>;
+ manual:ManualPadInput;hotList:HotListMenu|null;receiver?:RadioReceiverButton}>;
 /** Slew ▸ Hot List items (RA-HL-06) and the radio Load state. */
 type HotListMenu=Readonly<{doc:SharedHotList;load:HotLoadStatus|null;viewSelectRef:RefObject<HTMLButtonElement|null>;fileRef:RefObject<HTMLInputElement|null>;
  onView:()=>void;onLoad:()=>void;onFile:(file:File|undefined)=>void;onCancelLoad:()=>void}>;
@@ -744,7 +749,7 @@ const CLOCK_MAX_TEXT=new Date(RADIO_CLOCK_CONSTANTS.maxUTMS).toISOString();
 /** Decimal hours with the JD label's ffFixed 6 policy (web diagnostics; the original LED images are not reproduced). */
 const hoursText=(ta:RadioAntennaTranslate,hours:number)=>ta('antenna.clock.hoursValue',{hours:formatFixed(hours,6)});
 /** TRadioLab controls in DFM order (TabOrder: DriveBtn 0, N 1, S 2, E 3, W 4, RateSpin 5, Receiver 6). */
-function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCoordinatesRef,clockSupplied,clockDomain,onClockTick,manual,hotList:hot}:AntennaControlsProps){
+function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCoordinatesRef,clockSupplied,clockDomain,onClockTick,manual,hotList:hot,receiver}:AntennaControlsProps){
  const id=useId(),onOff=(v:boolean)=>ta(v?'antenna.state.enabled':'antenna.state.disabled'),yes=(v:boolean)=>ta(v?'antenna.options.yes':'antenna.options.no');
  const ra=splitSexagesimal(a.pointing.ra,2),dec=splitSexagesimal(a.pointing.dec,1);
  const storedEntered=!(a.target.ra===0&&a.target.dec===0),leftover=leftoverButton(a);
@@ -817,7 +822,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
      ?<p className="radio-control-note" data-testid="antenna-manual" data-left-disabled={leftover}>{ta('antenna.manual.stateLeftover',{caption:manualButtonCaption(a,leftover),original:RADIO_LAB_CAPTIONS[leftover]})}</p>
      :<p className="radio-control-note" data-testid="antenna-manual">{ta('antenna.manual.state',{state:onOff(a.manualButtonsEnabled)})}</p>}
     <ManualPad a={a} options={options} ta={ta} manual={manual} autoSlewTimer={autoSlewTimer} run={run} keysNoteId={`${id}-keys`}/>
-    <p className="radio-control-note" data-testid="antenna-receiver">{ta('antenna.receiver.state',{state:onOff(a.receiverEnabled)})}</p>
+    {!receiver&&<p className="radio-control-note" data-testid="antenna-receiver">{ta('antenna.receiver.state',{state:onOff(a.receiverEnabled)})} {ta('antenna.receiver.unhosted')}</p>}
    </section>
    <section className="radio-control-block" aria-labelledby={`${id}-rate`}>
     <h4 id={`${id}-rate`}><span className="radio-control-native">{RADIO_LAB_CAPTIONS.slewRate}</span></h4>
@@ -828,6 +833,12 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
     <p data-testid="antenna-rate" aria-live="polite">{ta('antenna.rate.value',{index:a.rateIndex,rate:a.rate})}</p>
     <p className="radio-control-note">{ta('antenna.rate.gap')}</p>
    </section>
+   {receiver&&<section className="radio-control-block" aria-labelledby={`${id}-receiver-button`} data-testid="antenna-receiver-block">
+    <button ref={receiver.buttonRef} id={`${id}-receiver-button`} type="button" className="secondary-button" data-testid="antenna-receiver-button" disabled={!receiver.available}
+     aria-describedby={`${id}-receiver`} onKeyDown={ignoreHeldKey} onClick={receiver.onOpen}>{RADIO_LAB_CAPTIONS.receiver}</button>
+    <p id={`${id}-receiver`} className="radio-control-note" data-testid="antenna-receiver" data-reason={receiver.reason}>
+     {ta('antenna.receiver.state',{state:onOff(a.receiverEnabled)})} {ta(`antenna.receiver.reason.${receiver.reason}`)}</p>
+   </section>}
    <section className="radio-control-block" aria-labelledby={`${id}-motion`}>
     <h4 id={`${id}-motion`}>{ta('antenna.status.heading')}</h4>
     <p data-testid="antenna-motion" data-manual={a.manualPress||undefined}>{a.manualPress

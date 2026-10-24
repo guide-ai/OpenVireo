@@ -48,7 +48,7 @@ Every transition returns `{ok:true, bank, events, frames} | {ok:false, error:{ki
 | `reassociateReceiverOnClock` | `0x565723..0x5657cb` | Skipped without a main; else the picker with limit 5 on the main only. |
 | `overwriteSourceBufferFromPulsarList` | `0x567f80` | Overwrites or clears `+0x5f7` only; no receiver field, no refresh. Has no UI caller yet. |
 | `copyLiveRadioOptions` | OA-03 live copy | Replaces the live options view; existing caches unchanged. |
-| `queryCloseReceiver`, `closeReceiver` | `0x5727e8`, `0x5726f0` | Slot 1 with slot 2 present is refused with the recovered literals. Main close: timer off, profile freed, children closed slot 2 then 1, slot cleared, `0x53a` posted (handler not ported). Buffer and random stream stay. |
+| `queryCloseReceiver`, `closeReceiver` | `0x5727e8`, `0x5726f0` | Slot 1 with slot 2 present is refused with the recovered literals. Main close: timer off, profile freed, children closed slot 2 then 1, slot cleared, `0x53a` sent synchronously (`send-0x53a`; handler not ported). Buffer and random stream stay. |
 
 ### FormCreate `0x5721d8` [S]
 
@@ -158,15 +158,14 @@ The controls are independent math checks, not a native oracle; the lifecycle tes
 
 ## Gaps (not done)
 
-- UI: receiver window and display owner `0x5720cc`/`0x572130`/`0x5721a8`, labels and their formatters, layout `0x574fa4`, the callee `0x572a20` called at Receive start, activation timing relative to Receive.
-- Frequency/step handlers (`0x574170`, `0x5742f0`, `0x574df0`, `0x574e40`) and their `0x57724c`/`0x576c28`/`0x572e24` effects; `+0x423`.
-- Record, Identify/Properties, Save writer `0x56b36c`, the `0x5bcca0` list (1600 vs 1601), result-7 handoff; audio (`+0x42f`, `0x5b584c`); the `0x53a` handler.
-- Cadence policy (timer interval 40 or 1, RC-REC-10), page/route/modal pausing, Randomize seed policy for a UI.
-- The UI time basis for `now` (native-like local time-of-day fraction versus a declared monotonic deviation) and a coupling-refusal abort/recovery policy, both prerequisites before any UI.
-- Pulsar Parameters integration with the shared buffer and the shared list cursor.
+Ported since by R-RX2 ([RADIO-RECEIVER-MONITOR.md](RADIO-RECEIVER-MONITOR.md)): the display owner `0x5720cc`/`0x572130`/`0x5721a8`/`0x5721c4`, Paint `0x572a20` (called at Receive start), the parameter refresh text and the beam formatter `0x486f4c`, the Freq and Freq Incr. handlers with the `0x572e24` annotation, the UI time basis (WEB-RX-TIME-01), the 40 ms cadence (WEB-RX-CAD-01), the seed policy (WEB-RX-SEED-01) and the coupling-refusal policy (WEB-RX-ERR-01). Corrections there: `+0x583` is also written by every parameter refresh (F4, so Activate sets it); Add Channel with no empty slot creates nothing instead of being refused; the close event is `send-0x53a` (synchronous dispatch, recipient not modelled).
+
+- Layout `0x574fa4`, Resize state propagation and window states; `+0x423`; the `0x57724c`/`0x576c28` audio effects (anomaly PRE-01).
+- Record, Identify/Properties, Save writer `0x56b36c`, the `0x5bcca0` list (1600 vs 1601), result-7 handoff; audio (`+0x42f`, `0x5b584c`); the `0x53a` handler's effect.
+- Pulsar Parameters integration with the shared buffer and the shared list cursor (isolated, WEB-RX-PP-01).
 - The TRadiOptsDlg dialog, the 982-byte settings reader, Reset/Cancel/WM_CLOSE and options `0x91e`/`0x939`/`0x93f`.
 - P3 (full callback/global RNG reachability), historical CW/FPU, Randomize counters, host OS predicate, locale, JD/offset owners (`0x5bad48`), native exception aftermath of the refusals.
-- Other `+0x499` writers, Windows timer/message scheduling, host time changes and time zone/DST; the native σ before activation; the native outcome at z = 5 − 2⁻⁵⁰.
+- Other `+0x499` writers, Windows timer/message scheduling, host time changes and time zone/DST; the native σ before activation (the generic InitInstance zero-fill `0x404f1c` is recovered, but its link to receiver creation is not closed; the web refuses unset or zero σ); the native outcome at z = 5 − 2⁻⁵⁰.
 
 ## Review resolution (2026-10-24)
 
@@ -176,7 +175,7 @@ Source: `analysis/radio-receiver-signal-20261024-review/review.txt`; findings in
 - **F2 (`resolved` comment):** the field is null until the first non-null-source build, and a null-source build keeps the previous value. The behaviour already matched; the comment was corrected and the null-build test now pins `resolved: null`.
 - **F3 (refusal basis):** all refusals are [W], with a per-kind native basis. Static hazard support is claimed only for N = 0 and exactly z = +5.
 - **Nits:** the spatial-factor σ comment no longer claims unowned or zero memory; the `RadioRandomCursor` export note was corrected; the z = 5 − 2⁻⁵⁰ edge and coupling-refusal recovery regressions were added.
-- **Not adopted:** the review's InitInstance zero-σ claim. No InitInstance source was independently recovered, so no native initial σ is claimed.
+- **Not adopted:** the review's InitInstance zero-σ claim. No InitInstance source was independently recovered, so no native initial σ is claimed. (Later R-RX2 recovery: generic `0x404f1c`, `runtime-init-instance.asm` SHA-256 `f041bdb1cacec85660922fcdc29daaab2ecf2531ce0fe85b9fec7d9eeb1de543`, copied from `RECOVERY-PROVENANCE.json`, not recomputed; the receiver creation link is still not closed, so it remains not adopted and no native initial σ is claimed.)
 - **N1 (final-review wording):** source `analysis/radio-receiver-signal-fixes-20261024-review/review.txt`; controls in `analysis/radio-receiver-midnight-20261024/` (`TIME-DIVISOR-AND-MIDNIGHT-CONTROLS.json` SHA-256 `f6d28d8811446da54692ba226ef8cf8ce610352d4ac095219fb5ad97d0a91063`, `MIDNIGHT-N1-VERIFICATION.json` 2026-10-24T06:49:29.997Z, SHA-256 `fccd1e835a652b75f740cee8be63e5ef85c973d5f8248a474eed1d271c451902`; digests from `MIDNIGHT-INPUT-HASHES.json`, 2026-10-24T06:54:24.434404+00:00, copied, not recomputed). The universal "about 24 h" recovery wording is replaced by the conditional gate statement, including the final-31 ms case, and the `0x40d0dc` divisor now has its own cell hash. Docs and a test only; no runtime, API, guard or error-detail change.
 
-Final independent review and acceptance of this corrective delta remain pending. This section does not assert that the module or the project is done.
+The first internal R-RX1 acceptance is recorded by the coordinator at `/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-receiver-signal-validation/RADIO-RECEIVER-SIGNAL-LOCAL-ACCEPTANCE.json` (2026-10-24T07:09:49Z). The R-RX2 changes to this module are pending their own review. This section does not assert that the module or the project is done.

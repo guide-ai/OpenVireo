@@ -4,6 +4,9 @@
 // 0x573f5c, frame 0x573790, timer 0x574ad4, close query 0x5727e8, close 0x5726f0, scale steps 0x574470/0x5744c4/
 // 0x574518/0x574588, clock reassociation 0x565723..0x5657cb and PulsarList1Click 0x567f80. Pure TypeScript, no UI,
 // recording, PLR, audio or cadence. See docs/RADIO-RECEIVER-SIGNAL.md and RADIO-RECEIVER-SIGNAL-PROVENANCE.json.
+// R-RX2 (docs/RADIO-RECEIVER-MONITOR.md): the state part of the parameter refresh 0x572f8c (aperture/beam text, +0x583,
+// titles, the title-change lastX reset), the trace store +0x587 (reset inside the source refresh, append in the frame),
+// the Freq and Freq Incr. steps, Paint's refresh, the own SlaveBtn enable and the corrected Add/Close ends.
 // Every transition returns new frozen objects; a refusal leaves the input bank (and its random stream) untouched.
 import {roundNearestEven} from './numericPolicy';
 import type {RadioPointing} from './radioAntenna';
@@ -12,6 +15,9 @@ import {buildPulsarProfile,createPulsarProfile,currentPulsarSample,nextPulsarSam
 import {CLOCK_REASSOCIATE_LIMIT,RECEIVER_OPEN_LIMIT,selectNearestPulsar} from './radioPulsarSelect';
 import {RadioSignalError,radioPoisson,randomizeRadioStream,type RadioRandomStream,type RadioSignalErrorKind} from './radioRandom';
 import {radioExtendedWords,radioPlanck,radioThermalRecord,type RadioThermalRecord} from './radioThermal';
+import {
+ createReceiverTrace,receiverApertureBase,receiverChildTitle,receiverFovText,receiverHpbwText,receiverMainTitle,resetReceiverTrace,type RadioReceiverTrace,
+} from './radioReceiverDisplay';
 
 export const RADIO_RECEIVER_CONSTANTS=Object.freeze({
  /** FormCreate immediates: +0x529 600 MHz (0x572258..0x57226a), +0x533 step 100 and index 5, +0x53d vertical 1.0,
@@ -41,11 +47,17 @@ export const RADIO_RECEIVER_CONSTANTS=Object.freeze({
  timerGate:Number('3.500000000000000000075177482791269367203013107570086503983475267887115E-7'),
  /** Scale step cells (receiver-controls/CANONICAL-MANIFEST.json). */
  horizontalMin:Math.fround(0.5),horizontalMax:Math.fround(16),verticalMin:Math.fround(0.125),verticalMax:Math.fround(8),stepFactor:Math.fround(2),
+ /** Freq clamps: Singles 0x5742ec = 400 and 0x57446c = 1400 (the clamped value is an Extended immediate of the same
+  * value). Freq Incr. index bounds 1..5 (0x574df4/0x574e44). */
+ frequencyMinMHz:Math.fround(400),frequencyMaxMHz:Math.fround(1400),stepIndexMin:1,stepIndexMax:5,
  /** ShortString 0x574dd8, length 20 (cell cdf89e4d…), copied by rep movs at 0x574d18..0x574d2a. */
  noSourceIdentifier:'No Object Identified',
  /** Bounded ShortString copy 0x403c5c with cl = 0x14 at 0x574c9b. */
  identifierLimit:20,
 });
+/** [W-NUM] Freq Incr. step per index: exact binary64 10^(index − 3). 0x4270c0(Single 10, Single(i − 3)) is not identified
+ * and its Extended result is not claimed (WEB-RX-NUM-01). Index 0 is not a table entry. */
+export const RADIO_RECEIVER_STEP_VALUES=Object.freeze([Number.NaN,0.01,0.1,1,10,100] as const);
 /** Close-query literals 0x572878 (text) and 0x5728c4 (caption). */
 export const RADIO_RECEIVER_LITERALS=Object.freeze({
  closeRefusalText:'Close the Lowest Receiver First, or Close the Master Receiver to Close All.',closeRefusalCaption:'Cannot Close Receiver!',
@@ -99,6 +111,15 @@ export type RadioReceiver=Readonly<{
   * time-of-day fraction), stamped at Receive start (0x57499b) and at each admitted tick (0x574b04). */
  audio:false;alternation:number;lastTick:number|null;
  lastSignal:number|null;lastRow:number|null;
+ /** +0x4bb ShortString[32] title and +0x4dc ShortString[60] aperture text: '' before the first parameter refresh as a web
+  * initial state [W]. The generic InitInstance zero-fill 0x404f1c (runtime-init-instance.asm) is recovered, but the
+  * receiver form's creation path is not independently linked to it, so no native initial value is claimed. Activation
+  * refreshes both before the card is shown. */
+ title:string;apertureText:string;
+ /** +0x587 display trace store (constructor 0x5720cc at FormCreate). */
+ trace:RadioReceiverTrace;
+ /** Own SlaveBtn (Add Channel) Enabled: DFM True; Receive, slot 2, the sweep finish and a child close write it. */
+ addEnabled:boolean;
 }>;
 export type RadioReceiverSlots=readonly [RadioReceiver|null,RadioReceiver|null,RadioReceiver|null];
 export type RadioReceiverBank=Readonly<{
@@ -116,7 +137,11 @@ export type RadioReceiverBank=Readonly<{
  recording:false;
 }>;
 
-export type RadioReceiverFrame=Readonly<{slot:number;position:number;inSource:boolean;sourceTerm:number;background:number;signal:number;row:number|null}>;
+/** erasePosition: the position before the signal (erase band); position: re-read after it (a coupling refresh may
+ * rewrite it). wrapErase: position = N with no pending stop (FRAME step 9). */
+export type RadioReceiverFrame=Readonly<{slot:number;position:number;inSource:boolean;sourceTerm:number;background:number;signal:number;row:number|null;
+ erasePosition:number;wrapErase:boolean}>;
+export type RadioReceiverControl='horizontal'|'vertical'|'frequency'|'frequency-step';
 export type RadioReceiverEvent=Readonly<
  |{kind:'created';slot:number}
  |{kind:'source-hit';limit:number;name:string;offset:number}
@@ -127,9 +152,20 @@ export type RadioReceiverEvent=Readonly<
  |{kind:'beam';slot:number;changed:boolean}
  |{kind:'receive-started'}|{kind:'stop-requested'}
  |{kind:'sweep-reset';slot:number}|{kind:'sweep-finished';slot:number;position:number}
- |{kind:'step';slot:number;control:'horizontal'|'vertical';value:number}|{kind:'at-limit';slot:number;control:'horizontal'|'vertical'}
+ |{kind:'step';slot:number;control:RadioReceiverControl;value:number}|{kind:'at-limit';slot:number;control:RadioReceiverControl}
  |{kind:'timer-disabled'}|{kind:'timer-gated'}|{kind:'timer-batch';batch:number}
- |{kind:'closed';slot:number}|{kind:'post-0x53a'}
+ |{kind:'closed';slot:number}
+ /** Close 0x5726f0 → 0x40516c: synchronous virtual dispatch of 0x53a to Application+0x44; the recipient is not modelled. */
+ |{kind:'send-0x53a'}
+ /** Paint 0x572a20 ran (its refresh included): the presentation draws receiverPaintOps for the slot. */
+ |{kind:'paint';slot:number}
+ /** 0x572e24 ran (a frequency change while receiving): receiverAnnotationOps for the slot. */
+ |{kind:'annotation';slot:number}
+ /** The main title changed while not receiving: every lastX := 0 (refresh 0x572f8c). */
+ |{kind:'trace-cleared';cause:'title'}
+ |{kind:'trace-reset';slot:0}
+ /** Add Channel with no empty slot: nothing is created (0x574ead..0x574eaf). */
+ |{kind:'add-nothing'}
 >;
 export type RadioReceiverError=Readonly<{kind:RadioSignalErrorKind;detail:string}>;
 export type RadioReceiverResult=Readonly<
@@ -137,15 +173,24 @@ export type RadioReceiverResult=Readonly<
  |{ok:false;error:RadioReceiverError}>;
 
 type Mutable<T>={-readonly [K in keyof T]:T[K]};
-type Draft={options:RadioReceiverOptions|null;buffer:RadioSourceBuffer;slots:(Mutable<RadioReceiver>|null)[];profile:PulsarProfile|null;stream:RadioRandomStream|null;timerEnabled:boolean};
+type Draft={options:RadioReceiverOptions|null;buffer:RadioSourceBuffer;slots:(Mutable<RadioReceiver>|null)[];profile:PulsarProfile|null;stream:RadioRandomStream|null;timerEnabled:boolean;
+ /** Trace stores copied in this transition (copy on first write; sealed and frozen at the end). */
+ traces:Set<RadioReceiverTrace>};
 type Run=(d:Draft,events:RadioReceiverEvent[],frames:RadioReceiverFrame[])=>void;
+type TraceDraft={maxIndex:number;dt:number|null;rows:(number|null)[];lastX:number};
 const fail=(kind:RadioSignalErrorKind,detail:string):never=>{throw new RadioSignalError(kind,detail);};
+/** The receiver's trace store, writable for the rest of this transition. */
+function ownTrace(d:Draft,r:Mutable<RadioReceiver>):TraceDraft{
+ if(!d.traces.has(r.trace)){const copy:TraceDraft={...r.trace,rows:r.trace.rows.slice()};r.trace=copy;d.traces.add(copy);}
+ return r.trace as TraceDraft;
+}
 function seal(d:Draft):RadioReceiverBank{
- const slots=Object.freeze(d.slots.map(r=>r===null?null:Object.freeze({...r}))) as unknown as RadioReceiverSlots;
+ const trace=(t:RadioReceiverTrace)=>d.traces.has(t)?Object.freeze({...t,rows:Object.freeze(t.rows.slice())}):t;
+ const slots=Object.freeze(d.slots.map(r=>r===null?null:Object.freeze({...r,trace:trace(r.trace)}))) as unknown as RadioReceiverSlots;
  return Object.freeze({options:d.options,sourceBuffer:d.buffer,slots,profile:d.profile,random:d.stream,timerEnabled:d.timerEnabled,recording:false});
 }
 function run(bank:RadioReceiverBank,body:Run):RadioReceiverResult{
- const d:Draft={options:bank.options,buffer:bank.sourceBuffer,slots:bank.slots.map(r=>r===null?null:{...r}),profile:bank.profile,stream:bank.random,timerEnabled:bank.timerEnabled};
+ const d:Draft={options:bank.options,buffer:bank.sourceBuffer,slots:bank.slots.map(r=>r===null?null:{...r}),profile:bank.profile,stream:bank.random,timerEnabled:bank.timerEnabled,traces:new Set()};
  const events:RadioReceiverEvent[]=[],frames:RadioReceiverFrame[]=[];
  try{body(d,events,frames);}
  catch(error){if(error instanceof RadioSignalError)return Object.freeze({ok:false,error:Object.freeze({kind:error.kind,detail:error.detail})});throw error;}
@@ -177,7 +222,8 @@ function formCreate(d:Draft,index:0|1|2,seed:number|undefined,events:RadioReceiv
   sweepWidth:k.displayWidth-1,position:null,batch:batchFor(k.horizontal),interval:null,
   sensitivity,backgroundFactor:o.background928/k.backgroundDivisor,area:q*q,detectorThermal:radioThermalRecord(o.temperature930),
   displayGain:verticalGain*sensitivity,skyThermal,offset:0,searchRadius:0,beamRadius:null,beamSigma:null,spatial:null,
-  sourceAttached:false,identifiedName:null,inSource:null,receiving:false,stopPending:null,audio:false,alternation:1,lastTick:null,lastSignal:null,lastRow:null};
+  sourceAttached:false,identifiedName:null,inSource:null,receiving:false,stopPending:null,audio:false,alternation:1,lastTick:null,lastSignal:null,lastRow:null,
+  title:'',apertureText:'',trace:createReceiverTrace(k.displayWidth-1),addEnabled:true};
  if(index===0)d.profile=profile;
  events.push({kind:'created',slot:index});
 }
@@ -198,20 +244,37 @@ function associate(d:Draft,catalog:PulsarCatalog|null,pointing:RadioPointing,lim
  events.push({kind:'source-hit',limit,name:hit.record.primaryName,offset:hit.separation});
 }
 
-/** Beam part of 0x572f8c (0x573141..0x5732ed) with the live options. f = 0 (or unordered) or dish 0 keeps the fields. */
-function beam(d:Draft,r:Mutable<RadioReceiver>,events:RadioReceiverEvent[]){
- const k=RADIO_RECEIVER_CONSTANTS,o=d.options??fail('options-missing','beam');
- const f=r.frequencyMHz;
- if(f===k.beamZero||Number.isNaN(f)||o.dishDiameterMeters===0){events.push({kind:'beam',slot:r.index,changed:false});return;}
- const radius=((k.beamNumerator/(f*k.beamFrequencyMultiplier))/o.dishDiameterMeters)*k.radiansToDegrees,sigma=radius/k.sigmaDivisor;
- r.beamRadius=radius;r.beamSigma=sigma;
- r.searchRadius=o.beamWidth92c>k.beamZero?k.searchPositive*o.beamWidth92c:sigma*k.searchSigma;
- events.push({kind:'beam',slot:r.index,changed:true});
+/** State part of the parameter refresh 0x572f8c with the live options: the aperture text, the beam (0x573141..0x5732ed;
+ * f = 0 or unordered, or dish 0, keeps the beam fields and the base text), +0x583 := pointer set and +0x405 > +0x51f
+ * (strict; NaN false), then the title: the main rewrites it and, when it changed while not receiving, sets every
+ * receiver's lastX := 0; a child writes its fixed title. Labels and the caption derive from these fields. */
+function displayRefresh(d:Draft,r:Mutable<RadioReceiver>,events:RadioReceiverEvent[]){
+ const k=RADIO_RECEIVER_CONSTANTS,o=d.options??fail('options-missing','display refresh');
+ const base=receiverApertureBase(o.dishDiameterMeters),f=r.frequencyMHz;
+ r.apertureText=base;
+ let changed=false;
+ if(!(f===k.beamZero||Number.isNaN(f)||o.dishDiameterMeters===0)){
+  const radius=((k.beamNumerator/(f*k.beamFrequencyMultiplier))/o.dishDiameterMeters)*k.radiansToDegrees,sigma=radius/k.sigmaDivisor;
+  r.beamRadius=radius;r.beamSigma=sigma;changed=true;
+  if(o.beamWidth92c>k.beamZero){r.searchRadius=k.searchPositive*o.beamWidth92c;r.apertureText=receiverFovText(base,o.beamWidth92c);}
+  else{r.searchRadius=sigma*k.searchSigma;r.apertureText=receiverHpbwText(base,2*radius);}
+ }
+ r.inSource=r.sourceAttached&&r.searchRadius>r.offset;
+ if(r.index===0){
+  const title=receiverMainTitle(r.inSource,d.buffer.record);
+  if(title!==r.title&&!r.receiving){
+   for(const x of d.slots)if(x)ownTrace(d,x).lastX=0;
+   events.push({kind:'trace-cleared',cause:'title'});
+  }
+  r.title=title;
+ }else r.title=receiverChildTitle(r.index);
+ events.push({kind:'beam',slot:r.index,changed});
 }
 
 /** 0x574cb7..0x574d15 and 0x57400b..0x574063: 1 when live +0x92c > 0, else Exp(−(o/σ)²/2) with this receiver's σ.
- * [W] σ unset (no ported path wrote +0x3fb) or 0 is refused. The native pre-activation +0x3fb value is not
- * established here; a native division would depend on the unknown FPU control word. */
+ * [W] σ unset (no ported path wrote +0x3fb) or 0 is refused. The generic 0x404f1c zero-fill is recovered, but its link
+ * to receiver creation is not closed, so no native pre-activation +0x3fb value is claimed; a native division would depend
+ * on the unknown FPU control word. */
 function spatial(d:Draft,r:Mutable<RadioReceiver>):number{
  const k=RADIO_RECEIVER_CONSTANTS,o=d.options??fail('options-missing','spatial factor');
  if(o.beamWidth92c>k.spatialZero)return 1;
@@ -225,6 +288,8 @@ function refresh(d:Draft,cause:'receive'|'coupling',jd:number|null,allocateSeed:
  // fild Word +0x51d; fld +0x56f; fdivrp → H/N into +0x419
  const dt=m.horizontal/m.sweepWidth;
  m.position=m.sweepWidth;m.interval=dt;m.batch=batchFor(m.horizontal);
+ // 0x574c0c: the main trace store is reset before the profile build; children are never reset (RXD-02).
+ m.trace=resetReceiverTrace(m.trace,dt);events.push({kind:'trace-reset',slot:0});
  if(jd===null||!Number.isFinite(jd))fail('clock-required','source refresh JD (0x487bcc)');
  const source=m.sourceAttached?d.buffer.record:null;
  if(m.sourceAttached&&source===null)fail('receiver-unavailable','attached pointer without a copied record');
@@ -265,20 +330,33 @@ function signal(d:Draft,r:Mutable<RadioReceiver>,jd:number|null,events:RadioRece
  return {sourceTerm,background:draw.value,signal:total>0?total:0};
 }
 
-/** Frame 0x573790 (display, labels and recording omitted). */
+/** Frame 0x573790 (labels, audio and recording omitted; the drawing is receiverFrameOps on the frame record). */
 function frame(d:Draft,slot:number,jd:number|null,events:RadioReceiverEvent[],frames:RadioReceiverFrame[]){
  const m=main(d),r=slotOf(d,slot);
  if(r.index===0){if(r.position===null)fail('receiver-unavailable','frame before any refresh');r.position=(r.position!+1)&0xffff;}
  else r.position=m.position;
  // 0x5737f3..0x573816: pointer set and +0x405 > +0x51f (ja: NaN and equality false); children copy the master flag.
+ const prior=r.inSource??false;
  r.inSource=r.index===0?r.sourceAttached&&r.searchRadius>r.offset:m.inSource;
+ // The main title is rewritten when +0x583 changed; the frame resets no lastX [S].
+ if(r.index===0&&r.inSource!==prior)r.title=receiverMainTitle(r.inSource===true,d.buffer.record);
+ const erasePosition=r.position??0;
  const s=signal(d,r,jd,events);
  const rounded=roundNearestEven(s.signal*r.displayGain),row=RADIO_RECEIVER_CONSTANTS.displayBaseline-rounded;
  r.lastSignal=s.signal;r.lastRow=Number.isSafeInteger(row)&&row>=-(2**31)&&row<=2**31-1?row:null;
+ // A coupling refresh inside the signal may rewrite the position, so it is read again (FRAME step 6).
  const position=r.position??0;
- frames.push(Object.freeze({slot:r.index,position,inSource:r.inSource===true,sourceTerm:s.sourceTerm,background:s.background,signal:s.signal,row:r.lastRow}));
+ // Append 0x5721a8 (as appendReceiverTrace): only x ≤ max; rows[x] := Word(row), lastX := x. A null row stays null [W].
+ const ix=position&0xffff;
+ if(ix<=r.trace.maxIndex){const t=ownTrace(d,r);t.rows[ix]=r.lastRow===null?null:r.lastRow&0xffff;t.lastX=ix;}
+ const wrapErase=position===r.sweepWidth&&r.stopPending!==true;
+ frames.push(Object.freeze({slot:r.index,position,inSource:r.inSource===true,sourceTerm:s.sourceTerm,background:s.background,signal:s.signal,row:r.lastRow,erasePosition,wrapErase}));
  if(position>=r.sweepWidth){
-  if(r.stopPending===true){if(r.index===0)d.timerEnabled=false;events.push({kind:'sweep-finished',slot:r.index,position});}
+  if(r.stopPending===true){
+   // FINISH: timer off; the idle helper 0x575a38 with Self = main enables the main's own SlaveBtn.
+   if(r.index===0){d.timerEnabled=false;r.addEnabled=true;}
+   events.push({kind:'sweep-finished',slot:r.index,position});
+  }
   else{r.position=0;events.push({kind:'sweep-reset',slot:r.index});}
  }
 }
@@ -289,24 +367,34 @@ export function openMainReceiver(bank:RadioReceiverBank,input:ReceiverSourceInpu
  return run(bank,(d,events)=>{if(d.slots[0]===null)formCreate(d,0,input.createSeed,events);associate(d,input.catalog,input.pointing,RECEIVER_OPEN_LIMIT,events);});
 }
 /** 0x574e90: first empty child slot; the child's FormCreate (Randomize) runs first, then the master's pointer and
- * offset are copied. [W] Refused without a main, while the main timer runs (Add disabled from Receive to the sweep
- * finish, RC-REC-09) and when both slots are used (the button is disabled after slot 2). */
+ * offset are copied; creating slot 2 disables the main's Add. No empty slot creates nothing (add-nothing, 0x574ead..
+ * 0x574eaf): reachable once the sweep finish re-enabled Add with both slots used. [W] Refused without a main, while the
+ * main timer runs (WEB-RX-ADD-01, RC-REC-09) and while the main's Add is disabled. */
 export function addReceiverChannel(bank:RadioReceiverBank,input:Readonly<{createSeed?:number}>):RadioReceiverResult{
  return run(bank,(d,events)=>{
   const m=main(d);
   if(d.timerEnabled)fail('receiver-unavailable','Add Channel is disabled while receiving or finishing a sweep');
-  const slot=d.slots[1]===null?1:d.slots[2]===null?2:fail('receiver-unavailable','both child slots are used');
+  if(!m.addEnabled)fail('receiver-unavailable','Add Channel is disabled');
+  const slot=d.slots[1]===null?1:d.slots[2]===null?2:null;
+  if(slot===null){events.push({kind:'add-nothing'});return;}
   formCreate(d,slot,input.createSeed,events);
   const c=d.slots[slot]!;c.sourceAttached=m.sourceAttached;c.offset=m.offset;
+  if(slot===2)m.addEnabled=false;
  });
 }
-/** FormActivate 0x5728dc with 0x5b584c+5 false [W]: a child copies the master's +0x584 and +0x56f; then the beam. */
+/** FormActivate 0x5728dc with 0x5b584c+5 false [W]: a child copies the master's +0x584 and +0x56f; then the parameter
+ * refresh (title, +0x583 and, for the main, the title-change lastX reset: activation is not idempotent). */
 export function activateReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverResult{
  return run(bank,(d,events)=>{
   const r=slotOf(d,slot);
   if(r.index!==0){const m=main(d);r.receiving=m.receiving;r.horizontal=m.horizontal;}
-  beam(d,r,events);
+  displayRefresh(d,r,events);
  });
+}
+/** Paint 0x572a20 state part: the parameter refresh 0x572f8c, then the drawing (paint event → receiverPaintOps).
+ * [W] The web paints at canvas mount (first WM_PAINT after Show [I]) and at Receive start [S] only (WEB-RX-PAINT-01). */
+export function paintReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverResult{
+ return run(bank,(d,events)=>{const r=slotOf(d,slot);displayRefresh(d,r,events);events.push({kind:'paint',slot:r.index});});
 }
 /** Live options copy (OA-03): caches already taken by existing receivers are unchanged. */
 export function copyLiveRadioOptions(bank:RadioReceiverBank,options:RadioReceiverOptions):RadioReceiverResult{
@@ -326,11 +414,13 @@ export function reassociateReceiverOnClock(bank:RadioReceiverBank,input:Receiver
 }
 
 export type ReceiveToggleInput=Readonly<{jd:number|null;now:number;allocateSeed?:number}>;
-/** Mode 0x5745f8 on the main receiver, then each child in slot order. Start: clear +0x42d, snapshot +0x579, refresh
- * (first build Randomizes with allocateSeed), stamp +0x499 := now (caller-supplied scalar for Time 0x40d448, see
- * receiverTimerTick), enable the timer. Stop: +0x42d := 1 only.
+/** Mode 0x5745f8 on the main receiver, then each child in slot order. Start: receiving helper 0x575c6c (Add off), clear
+ * +0x42d, Paint (refresh + drawing), snapshot +0x579, source refresh (trace reset; first build Randomizes with
+ * allocateSeed), stamp +0x499 := now (caller-supplied scalar for Time 0x40d448, see receiverTimerTick), enable the timer,
+ * refresh. Each child: copy +0x584, Add off, clear +0x42d, Paint, snapshot, refresh. Stop: +0x42d := 1 and the refresh
+ * (whose title change may clear lastX).
  * [W] Refused while a stop is pending and the timer still runs (the Mode control stays disabled until the finish);
- * after the finish a new Receive is admitted and clears the stale flag. */
+ * after the finish a new Receive is admitted and clears the stale flag. A refusal is atomic (no Paint, no trace reset). */
 export function toggleReceive(bank:RadioReceiverBank,input:ReceiveToggleInput):RadioReceiverResult{
  return run(bank,(d,events)=>{
   const m=main(d);
@@ -338,15 +428,21 @@ export function toggleReceive(bank:RadioReceiverBank,input:ReceiveToggleInput):R
   m.receiving=!m.receiving;
   if(m.receiving){
    if(!Number.isFinite(input.now))fail('clock-required','timer stamp (0x40d448)');
-   m.stopPending=false;m.horizontalSnapshot=m.horizontal;
+   m.addEnabled=false;m.stopPending=false;
+   displayRefresh(d,m,events);events.push({kind:'paint',slot:0});
+   m.horizontalSnapshot=m.horizontal;
    refresh(d,'receive',input.jd,input.allocateSeed,events);
    m.lastTick=input.now;d.timerEnabled=true;events.push({kind:'receive-started'});
   }else{m.stopPending=true;events.push({kind:'stop-requested'});}
-  beam(d,m,events);
+  displayRefresh(d,m,events);
   for(const c of [d.slots[1],d.slots[2]])if(c){
    c.receiving=m.receiving;
-   if(c.receiving){c.stopPending=false;c.horizontalSnapshot=c.horizontal;}else c.stopPending=true;
-   beam(d,c,events);
+   if(c.receiving){
+    c.addEnabled=false;c.stopPending=false;
+    displayRefresh(d,c,events);events.push({kind:'paint',slot:c.index});
+    c.horizontalSnapshot=c.horizontal;
+   }else c.stopPending=true;
+   displayRefresh(d,c,events);
   }
  });
 }
@@ -386,7 +482,9 @@ export function queryCloseReceiver(bank:RadioReceiverBank,slot:number):ReceiverC
  return Object.freeze({canClose:true});
 }
 /** Close query, then FormClose 0x5726f0. Main: timer off, profile freed, children closed slot 2 then 1, slot cleared,
- * message 0x53a posted (its handler is not ported). Child: slot cleared. The buffer and random stream stay. */
+ * 0x53a sent synchronously to Application+0x44 (recipient not modelled, WEB-RX-OWNER-01). Child: slot cleared and the
+ * main's Add enabled. The buffer and random stream stay. The unguarded audio cleanup (waveOutClose(+0x59)) has no web
+ * counterpart (WEB-RX-AUDIO-01). */
 export function closeReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverResult{
  return run(bank,(d,events)=>{
   const r=slotOf(d,slot);
@@ -394,8 +492,11 @@ export function closeReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverR
   if(r.index===0){
    d.timerEnabled=false;d.profile=null;
    for(const s of [2,1])if(d.slots[s]){d.slots[s]=null;events.push({kind:'closed',slot:s});}
-   d.slots[0]=null;events.push({kind:'closed',slot:0},{kind:'post-0x53a'});
-  }else{d.slots[r.index]=null;events.push({kind:'closed',slot:r.index});}
+   d.slots[0]=null;events.push({kind:'closed',slot:0},{kind:'send-0x53a'});
+  }else{
+   d.slots[r.index]=null;events.push({kind:'closed',slot:r.index});
+   if(d.slots[0])d.slots[0].addEnabled=true;
+  }
  });
 }
 
@@ -409,7 +510,7 @@ export function stepHorizontal(bank:RadioReceiverBank,slot:number,direction:'dow
    const can=direction==='down'?x.horizontal>k.horizontalMin:!(x.horizontal>=k.horizontalMax);
    if(!can){events.push({kind:'at-limit',slot:x.index,control:'horizontal'});return false;}
    x.horizontal=direction==='down'?x.horizontal/k.stepFactor:x.horizontal*k.stepFactor;
-   events.push({kind:'step',slot:x.index,control:'horizontal',value:x.horizontal});beam(d,x,events);return true;
+   events.push({kind:'step',slot:x.index,control:'horizontal',value:x.horizontal});displayRefresh(d,x,events);return true;
   };
   if(apply(r)&&r.index===0)for(const c of [d.slots[1],d.slots[2]])if(c)apply(c);
  });
@@ -422,6 +523,35 @@ export function stepVertical(bank:RadioReceiverBank,slot:number,direction:'down'
   if(!can){events.push({kind:'at-limit',slot:r.index,control:'vertical'});return;}
   r.verticalGain=direction==='down'?r.verticalGain/k.stepFactor:r.verticalGain*k.stepFactor;
   r.displayGain=r.verticalGain*r.sensitivity;
-  events.push({kind:'step',slot:r.index,control:'vertical',value:r.verticalGain});beam(d,r,events);
+  events.push({kind:'step',slot:r.index,control:'vertical',value:r.verticalGain});displayRefresh(d,r,events);
+ });
+}
+/** Freq MHz down/up (frequency-down.asm 2de976df…, frequency-up.asm b1faf22b…): candidate f ∓ step; down: unless it is
+ * ≥ 400 it becomes 400; up: above 1400 it becomes 1400. An unchanged (or unordered) candidate only beeps (at-limit, no
+ * refresh). Otherwise f is written, the parameters refresh and, while receiving, the annotation 0x572e24 is redrawn.
+ * Allowed while receiving. The audio branch (flag5) is off this path under SILENT-01 (WEB-RX-AUDIO-01). */
+export function stepFrequency(bank:RadioReceiverBank,slot:number,direction:'down'|'up'):RadioReceiverResult{
+ return run(bank,(d,events)=>{
+  const k=RADIO_RECEIVER_CONSTANTS,r=slotOf(d,slot),f=r.frequencyMHz;
+  let c=direction==='down'?f-r.stepMHz:f+r.stepMHz;
+  if(direction==='down'){if(!(c>=k.frequencyMinMHz))c=400;}
+  else if(c>k.frequencyMaxMHz)c=1400;
+  if(c===f||Number.isNaN(c)){events.push({kind:'at-limit',slot:r.index,control:'frequency'});return;}
+  r.frequencyMHz=c;
+  events.push({kind:'step',slot:r.index,control:'frequency',value:c});
+  displayRefresh(d,r,events);
+  if(r.receiving)events.push({kind:'annotation',slot:r.index});
+ });
+}
+/** Freq Incr. down/up (step-down/up-canonical.asm): index bounds 1..5 (a limit only beeps); step := 10^(index − 3)
+ * (RADIO_RECEIVER_STEP_VALUES, WEB-RX-NUM-01), then the parameter refresh. */
+export function stepFrequencyIncrement(bank:RadioReceiverBank,slot:number,direction:'down'|'up'):RadioReceiverResult{
+ return run(bank,(d,events)=>{
+  const k=RADIO_RECEIVER_CONSTANTS,r=slotOf(d,slot);
+  const index=r.stepIndex+(direction==='down'?-1:1);
+  if(index<k.stepIndexMin||index>k.stepIndexMax){events.push({kind:'at-limit',slot:r.index,control:'frequency-step'});return;}
+  r.stepIndex=index;r.stepMHz=RADIO_RECEIVER_STEP_VALUES[index];
+  events.push({kind:'step',slot:r.index,control:'frequency-step',value:r.stepMHz});
+  displayRefresh(d,r,events);
  });
 }

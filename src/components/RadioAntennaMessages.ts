@@ -5,7 +5,7 @@
  * original literals were not decoded (the decoded hot-list empty box is passed in from RADIO_HOT_LIST_LITERALS).
  * Pure data: no React or scientific state imports. */
 export const RADIO_ANTENNA_MESSAGES_EN=Object.freeze({
- 'antenna.scope':'Recovered from VIREO: the main-window Radio switch, radio scope access and panel window, and inside the radio control panel Tracking, Slew Rate and Slew ▸ Set Coordinates with the original coordinate dialog, validation, J2000.0 or B1950.0 entry (with the original fixed-epoch precession), confirmation, programmed slew and stop, Slew ▸ Hot List ▸ View/Select and Load with the original Right Ascension list order, the panel clock’s hour-angle and Right Ascension bookkeeping when you supply a radio UT, press-and-hold N/S/E/W slewing with the mouse, touch, Space/Enter and, partly, the original letter and numeric-keypad keys, and the horizon (altitude) limit check when the Limit Slewing option is on and a radio UT is supplied. Receivers, pulsar signals, the beam, adding the current item to the hot list, Set Observation Date/Time, ID after the panel has been shown (the part before is on this route) and the rest of the original options dialog are not recovered and are not simulated.',
+ 'antenna.scope':'Recovered from VIREO: the main-window Radio switch, radio scope access and panel window, and inside the radio control panel Tracking, Slew Rate and Slew ▸ Set Coordinates with the original coordinate dialog, validation, J2000.0 or B1950.0 entry (with the original fixed-epoch precession), confirmation, programmed slew and stop, Slew ▸ Hot List ▸ View/Select and Load with the original Right Ascension list order, the panel clock’s hour-angle and Right Ascension bookkeeping when you supply a radio UT, press-and-hold N/S/E/W slewing with the mouse, touch, Space/Enter and, partly, the original letter and numeric-keypad keys, and the horizon (altitude) limit check when the Limit Slewing option is on and a radio UT is supplied. On the radio telescope route, Receiver opens a silent receiver monitor (a modelled display, not an observation). Recording, sound, pulsar identification, Align, adding the current item to the hot list, Set Observation Date/Time, ID after the panel has been shown (the part before is on this route) and the rest of the original options dialog are not recovered and are not simulated.',
  'antenna.notActivated':'The control panel initializes the first time its window is shown.',
  'antenna.menu.heading':'Panel menu',
  'antenna.menu.item':'{menu} ▸ {item}',
@@ -66,7 +66,16 @@ export const RADIO_ANTENNA_MESSAGES_EN=Object.freeze({
  'antenna.manual.tick':'Deliver one manual slew-timer tick',
  'antenna.status.manual':'Manual slew: the {caption} button is held; one step per nominal {interval} ms slew-timer tick.',
  'antenna.status.manualSuspended':'Manual slew suspended by a browser limit: {cause} No ticks are delivered and the position is kept; release the button to end the hold.',
- 'antenna.receiver.state':'Receiver button: {state}. Receivers and pulsar signals are not recovered; nothing is received.',
+ 'antenna.receiver.state':'Receiver button: {state}.',
+ 'antenna.receiver.unhosted':'Receiver windows are offered only on the radio telescope route.',
+ 'antenna.receiver.reason.available':'It opens the receiver window, or activates it again when it is already open.',
+ 'antenna.receiver.reason.not-activated':'The panel has not been initialized yet.',
+ 'antenna.receiver.reason.receiver-disabled':'Turn Tracking on to enable it, as in the original.',
+ 'antenna.receiver.reason.no-catalog':'Load a reference pulsar catalog under Pulsar Parameters first; the receiver reads it (no catalog is bundled).',
+ 'antenna.receiver.reason.catalog-reading':'A reference catalog is still being read.',
+ 'antenna.receiver.reason.seed-invalid':'The receiver random seed is not valid; correct it under Receiver monitor.',
+ 'antenna.receiver.reason.modal':'Close the open dialog or message first.',
+ 'antenna.receiver.reason.inactive':'Not available while another operation runs.',
  'antenna.state.enabled':'enabled',
  'antenna.state.disabled':'disabled',
  'antenna.status.heading':'Motion',

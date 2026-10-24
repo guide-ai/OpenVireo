@@ -2,7 +2,7 @@ import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,typ
 import './RadioPulsarParameters.css';
 import {menuCaptionText} from '../core/radioControl';
 import type {RadioLabState} from '../core/radioAntenna';
-import {parsePulsarCatalog,type PulsarCatalogError} from '../core/radioPulsarCatalog';
+import {parsePulsarCatalog,type PulsarCatalog,type PulsarCatalogError} from '../core/radioPulsarCatalog';
 import {selectNearestPulsar} from '../core/radioPulsarSelect';
 import {
  PULSAR_FIND_CAPTIONS,PULSAR_PARAMETERS_CAPTIONS,PULSAR_PARAMETERS_CONSTANTS,PULSAR_PARAMETERS_WEB_POLICY,
@@ -23,7 +23,7 @@ type LoadStatus=Readonly<
  |{kind:'reading'|'too-large'|'read-error'|'cancelled';name:string}
  |{kind:'invalid';name:string;error:PulsarCatalogError}
  |{kind:'loaded'}
- |{kind:'refused';reason:'window-open'|'read-pending'|'inactive'}
+ |{kind:'refused';reason:'window-open'|'receiver-open'|'read-pending'|'inactive'}
 >;
 type FocusTarget='heading'|'open'|'find'|'date'|'density';
 type FieldRefusal='date'|'density'|null;
@@ -41,6 +41,10 @@ export type PulsarParametersHostInput=Readonly<{
  readClockJD:()=>number|null;
  /** Pointing and activation for the WEB-PP-OPEN-01 seed; never written. */
  antenna:RadioLabState;
+ /** WEB-RX-CAT-01: receiver windows exist, so Load is refused (rendered state; catalogLockedNow is checked at the click
+  * and when the read begins). */
+ catalogLocked:boolean;
+ catalogLockedNow:()=>boolean;
 }>;
 export type PulsarParametersHost=Readonly<{
  /** The Find dialog or a box exists (presented or not). */
@@ -51,6 +55,11 @@ export type PulsarParametersHost=Readonly<{
  presented:boolean;
  card:ReactNode;
  layer:ReactNode;
+ /** The loaded reference catalog (rendered state) and whether a read is pending. */
+ catalog:PulsarCatalog|null;
+ catalogReading:boolean;
+ /** The latest accepted catalog, for callbacks (the receivers read it at Open and at clock reassociation). */
+ currentCatalog:()=>PulsarCatalog|null;
 }>;
 
 /** A target that can take focus: connected, enabled, rendered and not under an inert ancestor. */
@@ -63,7 +72,7 @@ const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
  * application-modal surfaces (WEB-PP-PRES-01). Both states are temporary: never saved, restored or sent anywhere. Every
  * change goes through the pure transitions; steps run on the latest accepted state (refs), as stepDate does.
  */
-export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,readClockJD,antenna}:PulsarParametersHostInput):PulsarParametersHost{
+export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,readClockJD,antenna,catalogLocked,catalogLockedNow}:PulsarParametersHostInput):PulsarParametersHost{
  const id=useId();
  const [reference,setReference]=useState<PulsarReferenceState>(INITIAL_PULSAR_REFERENCE);
  const referenceRef=useRef(reference);
@@ -76,8 +85,8 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,readC
  const [focusRequest,setFocusRequest]=useState<Readonly<{target:FocusTarget;serial:number}>|null>(null);
  const serial=useRef(0);
  const requestFocus=(target:FocusTarget)=>setFocusRequest({target,serial:++serial.current});
- const latest=useRef({active,busy,readClockJD,antenna});
- useLayoutEffect(()=>{latest.current={active,busy,readClockJD,antenna};});
+ const latest=useRef({active,busy,readClockJD,antenna,catalogLockedNow});
+ useLayoutEffect(()=>{latest.current={active,busy,readClockJD,antenna,catalogLockedNow};});
  const stepReference=(step:(s:PulsarReferenceState)=>PulsarReferenceTransition)=>{
   const result=step(referenceRef.current);if(result.changed){referenceRef.current=result.state;setReference(result.state);}return result;
  };
@@ -97,8 +106,8 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,readC
  const loadFile=async(file:File|undefined)=>{
   if(!file)return;
   if(!loadOpen()){setLoad({kind:'refused',reason:'inactive'});return;}
-  const begun=stepReference(s=>beginPulsarReferenceRead(s,file.name,winRef.current!==null));
-  if(begun.token===undefined){setLoad({kind:'refused',reason:begun.outcome==='window-open'?'window-open':'read-pending'});return;}
+  const begun=stepReference(s=>beginPulsarReferenceRead(s,file.name,winRef.current!==null,latest.current.catalogLockedNow()));
+  if(begun.token===undefined){setLoad({kind:'refused',reason:begun.outcome==='window-open'||begun.outcome==='receiver-open'?begun.outcome:'read-pending'});return;}
   const token=begun.token,name=begun.state.read!.name,alive=()=>referenceRef.current.read?.token===token;
   setLoad({kind:'reading',name});
   try{
@@ -170,11 +179,12 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,readC
    <input ref={fileRef} type="file" hidden data-testid="pulsar-ref-file" aria-label={t('pulsarParameters.reference.fileLabel')}
     onChange={e=>{const file=e.target.files?.[0];e.target.value='';void loadFile(file);}}/>
    <div className="button-row">
-    <button type="button" className="secondary-button" data-testid="pulsar-ref-load" disabled={reading||win!==null} aria-describedby={`${id}-load-reason`}
-     onClick={()=>fileRef.current?.click()}>{t('pulsarParameters.reference.load')}</button>
+    <button type="button" className="secondary-button" data-testid="pulsar-ref-load" disabled={reading||win!==null||catalogLocked} aria-describedby={`${id}-load-reason`}
+     onClick={()=>{if(latest.current.catalogLockedNow()){setLoad({kind:'refused',reason:'receiver-open'});return;}fileRef.current?.click();}}>{t('pulsarParameters.reference.load')}</button>
     {reading&&<button type="button" className="secondary-button" data-testid="pulsar-ref-cancel" onClick={cancelRead}>{t('pulsarParameters.reference.cancel')}</button>}
    </div>
-   <p id={`${id}-load-reason`} className="radio-control-note" data-testid="pulsar-ref-load-reason">{win!==null?t('pulsarParameters.reference.windowOpen'):''}</p>
+   <p id={`${id}-load-reason`} className="radio-control-note" data-testid="pulsar-ref-load-reason">
+    {win!==null?t('pulsarParameters.reference.windowOpen'):catalogLocked?t('pulsarParameters.reference.receiverOpen'):''}</p>
    {source===null?<p data-testid="pulsar-ref-none">{t('pulsarParameters.reference.none')}</p>:<dl className="radio-control-state pulsar-params-source">
     <dt>{t('pulsarParameters.reference.name')}</dt><dd data-testid="pulsar-ref-name" style={{overflowWrap:'anywhere'}}>{source.name}</dd>
     <dt>{t('pulsarParameters.reference.bytes')}</dt><dd data-testid="pulsar-ref-bytes">{source.bytes}</dd>
@@ -201,7 +211,7 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,readC
    onOk={()=>{setFindRefused(false);run(confirmPulsarFind,'find');}} onCancel={()=>{setFindRefused(false);run(cancelPulsarFind,'find');}}/>}
   {presented&&win?.notice&&<PulsarNoticeBox notice={win.notice} onDismiss={()=>dismiss(win.notice!)}/>}
  </div>;
- return {open:surfaceOpen,pending,presented,card,layer};
+ return {open:surfaceOpen,pending,presented,card,layer,catalog,catalogReading:reading,currentCatalog:()=>referenceRef.current.catalog};
 }
 
 function loadText(load:LoadStatus|null):string{

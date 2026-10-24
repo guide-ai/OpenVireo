@@ -52,4 +52,9 @@ describe('reference catalog admission',()=>{
   expect(pulsarReferenceName('é'.repeat(200))).toHaveLength(128);
   expect(beginPulsarReferenceRead(INITIAL_PULSAR_REFERENCE,'<b>x</b>',false).state.read?.name).toBe('<b>x</b>');// rendered as text
  });
+ it('refuses a read while a receiver window exists (WEB-RX-CAT-01); allowed again once they are closed',()=>{
+  const s=loaded();
+  expect(beginPulsarReferenceRead(s,'x',false,true)).toMatchObject({outcome:'receiver-open',changed:false,state:s});
+  expect(beginPulsarReferenceRead(s,'x',false,false).outcome).toBe('reading');
+ });
 });

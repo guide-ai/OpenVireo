@@ -2,11 +2,12 @@ import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import type {PulsarRecord} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_COMPILED_OPTIONS,RADIO_RECEIVER_CONSTANTS,RADIO_RECEIVER_LITERALS,activateReceiver,addReceiverChannel,closeReceiver,
- copyLiveRadioOptions,createRadioReceiverBank,openMainReceiver,overwriteSourceBufferFromPulsarList,queryCloseReceiver,
- reassociateReceiverOnClock,receiverTimerGate,receiverTimerTick,stepHorizontal,stepVertical,toggleReceive,
+ RADIO_RECEIVER_COMPILED_OPTIONS,RADIO_RECEIVER_CONSTANTS,RADIO_RECEIVER_LITERALS,RADIO_RECEIVER_STEP_VALUES,activateReceiver,addReceiverChannel,closeReceiver,
+ copyLiveRadioOptions,createRadioReceiverBank,openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,queryCloseReceiver,
+ reassociateReceiverOnClock,receiverTimerGate,receiverTimerTick,stepFrequency,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,
  type RadioReceiverBank,type RadioReceiverFrame,type RadioReceiverOptions,type RadioReceiverResult,
 } from './radioReceiver';
+import {appendReceiverTrace,createReceiverTrace} from './radioReceiverDisplay';
 
 // Synthetic records and seeds only. Numeric controls: RECEIVER-SIGNAL-CONTROLS.json and INDEPENDENT-MATH-HOLDOUTS.json
 // (independent Decimal/LCG math). Lifecycle expectations follow the cited listings; they are not a native runtime trace.
@@ -85,9 +86,13 @@ describe('beam and spatial factor',()=>{
   const s=ok(toggleReceive(moved,{jd:JD,now:nextNow(),allocateSeed:2})).bank;
   expect(s.slots[0]!.spatial!).toBeCloseTo(0.6065306597126334236037995349911804534419181354871869556828921587350565,15);
  });
- it('refuses a refresh that needs σ before any activation',()=>{
+ it('refuses a refresh that needs σ when no refresh wrote it (dish 0); Receive Paints before the source refresh',()=>{
+  // R-RX2: Mode runs Paint (its refresh writes the beam) before the source refresh, so an unactivated receiver with a
+  // nonzero dish now has σ; with dish 0 the beam is skipped and σ stays unset.
   const b=ok(openMainReceiver(bankOf(),{catalog:[A],pointing:POINT,createSeed:1})).bank;
-  expect(kindOf(toggleReceive(b,{jd:JD,now:nextNow(),allocateSeed:2}))).toBe('beam-not-prepared');
+  expect(ok(toggleReceive(b,{jd:JD,now:nextNow(),allocateSeed:2})).bank.slots[0]!.beamSigma).not.toBeNull();
+  const zero=ok(openMainReceiver(bankOf({...RADIO_RECEIVER_COMPILED_OPTIONS,dishDiameterMeters:0}),{catalog:[A],pointing:POINT,createSeed:1})).bank;
+  expect(kindOf(toggleReceive(zero,{jd:JD,now:nextNow(),allocateSeed:2}))).toBe('beam-not-prepared');
  });
 });
 
@@ -150,7 +155,8 @@ describe('in-source test and shared-buffer coupling',()=>{
   const t=tick(o),kinds=t.events.map(e=>e.kind);
   expect(t.events.filter(e=>e.kind==='refresh')).toEqual([{kind:'refresh',cause:'coupling',attached:true,name:'J0001+00'}]);
   // The nested refresh writes position := N inside the first main frame, so that frame ends the sweep.
-  expect(kinds.slice(0,3)).toEqual(['timer-batch','refresh','sweep-reset']);
+  // R-RX2: the source refresh resets the main trace store first (trace-reset precedes refresh).
+  expect(kinds.slice(0,4)).toEqual(['timer-batch','trace-reset','refresh','sweep-reset']);
   expect(t.frames.slice(0,2).map(f=>[f.slot,f.position])).toEqual([[0,400],[1,0]]);
   expect(t.bank.profile!.period).toBe(0.25);expect(t.bank.slots[0]!.skyThermal.temperatureK).toBe(60);
   expect(t.bank.slots[1]!.skyThermal.temperatureK).toBe(50);
@@ -218,7 +224,7 @@ describe('timer batch 0x574ad4 and the sweep lifecycle',()=>{
    b=t.bank;
   }
   const c=ok(closeReceiver(b,0));
-  expect(c.events).toEqual([{kind:'closed',slot:0},{kind:'post-0x53a'}]);
+  expect(c.events).toEqual([{kind:'closed',slot:0},{kind:'send-0x53a'}]);
   expect(c.bank).toMatchObject({slots:[null,null,null],profile:null,timerEnabled:false});
   expect(c.bank.sourceBuffer).toBe(s.sourceBuffer);expect(c.bank.random).toBe(s.random);
  });
@@ -274,7 +280,7 @@ describe('timer batch 0x574ad4 and the sweep lifecycle',()=>{
   expect(kindOf(receiverTimerTick(stop,{now:nextNow(),jd:JD}))).toBe('poisson-mean-domain');// the sweep cannot finish
   expect(kindOf(toggleReceive(stop,{jd:JD,now:nextNow()}))).toBe('receiver-unavailable');
   const c=ok(closeReceiver(stop,0));
-  expect(c.events).toEqual([{kind:'closed',slot:0},{kind:'post-0x53a'}]);
+  expect(c.events).toEqual([{kind:'closed',slot:0},{kind:'send-0x53a'}]);
   expect(c.bank).toMatchObject({slots:[null,null,null],profile:null,timerEnabled:false});
   expect(c.bank.sourceBuffer).toBe(o.sourceBuffer);expect(c.bank.random).toBe(o.random);
  });
@@ -306,13 +312,130 @@ describe('channels, scales and close',()=>{
   expect(queryCloseReceiver(s,1)).toEqual({canClose:false,text:RADIO_RECEIVER_LITERALS.closeRefusalText,caption:RADIO_RECEIVER_LITERALS.closeRefusalCaption});
   expect(kindOf(closeReceiver(s,1))).toBe('close-refused');
   const c=ok(closeReceiver(s,0));
-  expect(c.events).toEqual([{kind:'closed',slot:2},{kind:'closed',slot:1},{kind:'closed',slot:0},{kind:'post-0x53a'}]);
+  expect(c.events).toEqual([{kind:'closed',slot:2},{kind:'closed',slot:1},{kind:'closed',slot:0},{kind:'send-0x53a'}]);
   expect(c.bank).toMatchObject({slots:[null,null,null],profile:null,timerEnabled:false});
   expect(c.bank.sourceBuffer).toBe(s.sourceBuffer);expect(c.bank.random).toBe(s.random);
   const re=ok(activateReceiver(ok(openMainReceiver(c.bank,{catalog:[A],pointing:POINT,createSeed:12})).bank,0)).bank;
   expect(re.profile!.allocated).toBe(false);
   expect(kindOf(toggleReceive(re,{jd:JD,now:nextNow()}))).toBe('randomize-seed-required');
   const child=ok(closeReceiver(ok(closeReceiver(s,2)).bank,1)).bank;expect(child.slots.map(r=>r?.index??null)).toEqual([0,null,null]);
+ });
+});
+
+describe('R-RX2 display state: parameter refresh, trace store, Freq/Incr steps and Add/Close ends',()=>{
+ // [W] contract checks of the recovered order (docs/RADIO-RECEIVER-MONITOR.md), not native oracles.
+ const B=rec({legacyName:'B0000+00'});
+ const HPBW_TEXT="   Aperture: 100 Meters    Beam (HPBW): 0 Deg 41.9'";
+ const stop=(b:RadioReceiverBank)=>ok(toggleReceive(b,{jd:JD,now:nextNow()}));
+ const finish=(b:RadioReceiverBank)=>{let s=stop(b).bank;while(s.timerEnabled)s=tick(s).bank;return s;};
+ it('activation writes the aperture/HPBW text, +0x583 (F4) and the titles',()=>{
+  const b=opened(2,[B]),[m,c1,c2]=b.slots;
+  expect(m).toMatchObject({inSource:true,title:'Pulsar B0000+00',apertureText:HPBW_TEXT});
+  expect(c1).toMatchObject({inSource:true,title:'Receiver 2 (Slave)',apertureText:HPBW_TEXT});expect(c2!.title).toBe('Receiver 3 (Slave)');
+  const away=ok(activateReceiver(ok(openMainReceiver(bankOf(),{catalog:[B],pointing:{ra:12,dec:-40},createSeed:1})).bank,0)).bank.slots[0]!;
+  expect(away).toMatchObject({inSource:false,title:'No Pulsar in Beam!'});
+  // Positive +0x92c: the effective-FOV text replaces the HPBW text.
+  const fov=ok(activateReceiver(ok(copyLiveRadioOptions(opened(0,[B]),{...RADIO_RECEIVER_COMPILED_OPTIONS,provenance:'supplied-record',beamWidth92c:Math.fround(1.5)})).bank,0)).bank;
+  expect(fov.slots[0]!.apertureText).toBe('   Aperture: 100 Meters    Effective FOV: 1.50 Deg');
+ });
+ it('clears every lastX only on a main title change while not receiving',()=>{
+  let b=started(1,[B]);for(let i=0;i<3;i++)b=tick(b).bank;
+  expect(b.slots.map(r=>r?.trace.lastX)).toEqual([17,17,undefined]);
+  // Reassociation misses while receiving: the next refresh rewrites the title but keeps lastX.
+  b=ok(reassociateReceiverOnClock(b,{catalog:[B],pointing:{ra:12,dec:-40}})).bank;
+  const v=ok(stepVertical(b,0,'up'));
+  expect(v.bank.slots[0]!.title).toBe('No Pulsar in Beam!');expect(v.events.some(e=>e.kind==='trace-cleared')).toBe(false);
+  expect(v.bank.slots[0]!.trace.lastX).toBe(17);
+  // A child refresh never clears; Stop's main refresh with an unchanged title does not either.
+  const s=stop(v.bank);expect(s.events.some(e=>e.kind==='trace-cleared')).toBe(false);expect(s.bank.slots[0]!.trace.lastX).toBe(17);
+  // Back in the beam while stopped: the title changes and every lastX is cleared.
+  const hit=ok(reassociateReceiverOnClock(s.bank,{catalog:[B],pointing:POINT})).bank,p=ok(paintReceiver(hit,0));
+  expect(p.events).toEqual([{kind:'trace-cleared',cause:'title'},{kind:'beam',slot:0,changed:true},{kind:'paint',slot:0}]);
+  expect(p.bank.slots.map(r=>r?.trace.lastX)).toEqual([0,0,undefined]);
+  expect(p.bank.slots[0]!.trace.rows).toEqual(hit.slots[0]!.trace.rows);// rows are kept; only lastX is cleared
+ });
+ it('the frame rewrites the main title when +0x583 changes, without a lastX reset',()=>{
+  const s=started(0,[B]),m=s.slots[0]!;
+  const t=tick({...s,slots:[{...m,offset:m.searchRadius*2},null,null]});
+  expect(t.bank.slots[0]!.title).toBe('No Pulsar in Beam!');expect(t.events.some(e=>e.kind==='trace-cleared')).toBe(false);
+  expect(t.bank.slots[0]!.trace.lastX).toBe(5);
+ });
+ it('resets only the main trace inside the source refresh; a refused Receive leaves it untouched',()=>{
+  let b=started(1,[B]);
+  const [m,c]=b.slots;
+  expect(m!.trace).toMatchObject({maxIndex:399,dt:0.01,lastX:0});expect(m!.trace.rows).toEqual(new Array(400).fill(0));
+  expect(c!.trace).toMatchObject({maxIndex:399,dt:null,lastX:0});expect(c!.trace.rows.every(v=>v===null)).toBe(true);
+  b=finish(tick(b).bank);
+  expect(b.slots[0]!.trace.lastX).toBeGreaterThan(0);
+  const snapshot=JSON.stringify(b);
+  expect(kindOf(toggleReceive(b,{jd:null,now:nextNow()}))).toBe('clock-required');expect(JSON.stringify(b)).toBe(snapshot);
+ });
+ it('appends rows 1..399 as Words with lastX; erasePosition differs from position on a coupling frame',()=>{
+  let b=started(1,[B]);const t=tick(b);b=t.bank;
+  expect(t.frames.map(f=>[f.slot,f.erasePosition,f.position,f.wrapErase])).toEqual([[0,401,401,false],[1,0,0,false],
+   [0,1,1,false],[1,1,1,false],[0,2,2,false],[1,2,2,false],[0,3,3,false],[1,3,3,false],[0,4,4,false],[1,4,4,false],[0,5,5,false],[1,5,5,false]]);
+  let expected=createReceiverTrace(400);
+  for(const f of t.frames.filter(x=>x.slot===1))expected=appendReceiverTrace(expected,f.position,f.row);
+  expect(b.slots[1]!.trace.rows).toEqual(expected.rows);expect(b.slots[1]!.trace.lastX).toBe(5);
+  expect(b.slots[0]!.trace.rows.slice(1,6)).toEqual(t.frames.filter(f=>f.slot===0).slice(1).map(f=>f.row!&0xffff));
+  // Sweep to the wrap: position 400 erases the left band and is not stored (x > 399).
+  let wrap:RadioReceiverFrame|undefined;
+  while(!wrap){const n=tick(b);b=n.bank;wrap=n.frames.find(f=>f.slot===0&&f.position===400);}
+  expect(wrap.wrapErase).toBe(true);expect(b.slots[0]!.trace.lastX).toBeLessThanOrEqual(399);
+  const o=ok(overwriteSourceBufferFromPulsarList(b,{catalog:[rec({primaryName:'J0001+00',legacyName:'B0001+00'})],pointing:POINT})).bank;
+  const first=tick(o).frames[0];
+  expect(first.erasePosition).not.toBe(first.position);expect(first.position).toBe(400);expect(first.wrapErase).toBe(true);
+ });
+ it('steps Freq MHz within 400..1400 (beep at a limit, no refresh), annotates only while receiving, per receiver',()=>{
+  let b=opened(1,[B]);
+  const down=[...Array(3)].map(()=>{const r=ok(stepFrequency(b,0,'down'));b=r.bank;return r;});
+  expect(down.map(r=>r.events.map(e=>e.kind))).toEqual([['step','beam'],['step','beam'],['at-limit']]);
+  expect(b.slots[0]!.frequencyMHz).toBe(400);expect(b.slots[1]!.frequencyMHz).toBe(600);
+  for(let i=0;i<12;i++)b=ok(stepFrequency(b,0,'up')).bank;
+  expect(b.slots[0]!.frequencyMHz).toBe(1400);
+  expect(ok(stepFrequency(b,0,'up')).events).toEqual([{kind:'at-limit',slot:0,control:'frequency'}]);
+  // A candidate below 400 clamps to 400 (450 − 100).
+  const c=ok(stepFrequency({...b,slots:[{...b.slots[0]!,frequencyMHz:450},b.slots[1],null]},0,'down')).bank;expect(c.slots[0]!.frequencyMHz).toBe(400);
+  const s=started(1,[B]),r=ok(stepFrequency(s,1,'up'));
+  expect(r.events.map(e=>e.kind)).toEqual(['step','beam','annotation']);expect(r.bank.timerEnabled).toBe(true);
+  expect(r.bank.slots[1]!.frequencyMHz).toBe(700);expect(r.bank.slots[0]!.frequencyMHz).toBe(600);
+  // 0.01 accumulation is binary64 (WEB-RX-NUM-01): 600 − 0.01 three times.
+  let f=opened(0,[B]);for(let i=0;i<4;i++)f=ok(stepFrequencyIncrement(f,0,'down')).bank;
+  expect(f.slots[0]).toMatchObject({stepIndex:1,stepMHz:0.01});
+  for(let i=0;i<3;i++)f=ok(stepFrequency(f,0,'down')).bank;
+  expect(f.slots[0]!.frequencyMHz).toBe(600-0.01-0.01-0.01);
+ });
+ it('bounds Freq Incr. to 1..5 with the exact binary64 step table',()=>{
+  let b=opened(0,[B]);
+  expect(ok(stepFrequencyIncrement(b,0,'up')).events).toEqual([{kind:'at-limit',slot:0,control:'frequency-step'}]);
+  const seen:number[]=[];
+  for(let i=0;i<4;i++){b=ok(stepFrequencyIncrement(b,0,'down')).bank;seen.push(b.slots[0]!.stepMHz);}
+  expect(seen).toEqual([10,1,0.1,0.01]);expect(RADIO_RECEIVER_STEP_VALUES.slice(1)).toEqual([0.01,0.1,1,10,100]);
+  expect(ok(stepFrequencyIncrement(b,0,'down')).events).toEqual([{kind:'at-limit',slot:0,control:'frequency-step'}]);
+ });
+ it('tracks the main Add enable: slot 2, Receive, the finish and a child close',()=>{
+  let b=opened(1,[B]);expect(b.slots[0]!.addEnabled).toBe(true);
+  b=ok(addReceiverChannel(b,{createSeed:7})).bank;expect(b.slots[0]!.addEnabled).toBe(false);
+  expect(kindOf(addReceiverChannel(b,{createSeed:8}))).toBe('receiver-unavailable');
+  b=ok(closeReceiver(b,2)).bank;expect(b.slots[0]!.addEnabled).toBe(true);
+  b=ok(toggleReceive(b,{jd:JD,now:nextNow(),allocateSeed:2})).bank;expect(b.slots.map(r=>r?.addEnabled)).toEqual([false,false,undefined]);
+  b=finish(b);expect(b.slots[0]!.addEnabled).toBe(true);
+ });
+ it('Add Channel after a finish with both slots used creates nothing (correction of the both-slots refusal)',()=>{
+  let b=opened(2,[B]);b=ok(toggleReceive(b,{jd:JD,now:nextNow(),allocateSeed:2})).bank;b=finish(b);
+  expect(b.slots[0]!.addEnabled).toBe(true);
+  const r=ok(addReceiverChannel(b,{createSeed:9}));
+  expect(r.events).toEqual([{kind:'add-nothing'}]);expect(r.bank.slots).toEqual(b.slots);expect(r.bank.random).toBe(b.random);
+ });
+ it('paintReceiver refreshes and reports a paint; repeated paints are idempotent',()=>{
+  const b=opened(1,[B]),p1=ok(paintReceiver(b,1)),p2=ok(paintReceiver(p1.bank,1));
+  expect(p1.events).toEqual([{kind:'beam',slot:1,changed:true},{kind:'paint',slot:1}]);
+  expect(p2.bank.slots).toEqual(p1.bank.slots);expect(p1.bank.slots).toEqual(b.slots);
+ });
+ it('Receive Paints the main and every child, then the frames; a refused Receive emits nothing',()=>{
+  const r=ok(toggleReceive(opened(1,[B]),{jd:JD,now:nextNow(),allocateSeed:2}));
+  expect(r.events.filter(e=>e.kind==='paint'||e.kind==='trace-reset'||e.kind==='receive-started').map(e=>e.kind==='paint'?`paint${e.slot}`:e.kind))
+   .toEqual(['paint0','trace-reset','receive-started','paint1']);
  });
 });
 
@@ -323,7 +446,7 @@ describe('purity',()=>{
   expect(JSON.stringify(s)).toBe(snapshot);
  });
  it('keeps React, DOM, host clocks and Math.random out of the new core modules',()=>{
-  for(const f of ['radioRandom.ts','radioThermal.ts','radioPulsarProfile.ts','radioReceiver.ts']){
+  for(const f of ['radioRandom.ts','radioThermal.ts','radioPulsarProfile.ts','radioReceiver.ts','radioReceiverDisplay.ts','radioReceiverSession.ts']){
    const text=readFileSync(new URL(`./${f}`,import.meta.url),'utf8');
    expect(text,f).not.toMatch(/from 'react'|document\.|window\.|Date\.now|new Date|Math\.random|performance\.now|localStorage/);
   }
