@@ -177,7 +177,8 @@ export function receiverAnnotationOps(r:RadioReceiver):readonly ReceiverDisplayO
 
 /** Drawing part of Paint 0x572a20 (the refresh 0x572f8c that precedes it is a state transition, paintReceiver): background,
  * grid, trace pen, replay of 0..lastX only while idle with lastX ≠ 0 (MoveTo(0, at 0), then LineTo; a never-written
- * entry lifts the pen [W]), baseline 0x572dd0, annotation. Manual marks are always −1 here. Final pen (640, 111). */
+ * entry lifts the pen [W]), baseline 0x572dd0, annotation. Final pen (640, 111). Paint's mark tail (R-RX3) is not part of
+ * these ops: its line/label calls are mark events drawn on the separate mark overlay (radioReceiverMarks). */
 export function receiverPaintOps(r:RadioReceiver):Readonly<{ops:readonly ReceiverDisplayOp[];pen:ReceiverPen}>{
  const g=RECEIVER_DISPLAY_GEOMETRY,col=RECEIVER_DISPLAY_COLOURS,ops:ReceiverDisplayOp[]=[];
  ops.push({kind:'fill',x0:0,y0:0,x1:g.width,y1:g.height},{kind:'pen',colour:col.grid});

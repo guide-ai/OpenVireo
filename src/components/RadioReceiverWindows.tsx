@@ -1,16 +1,20 @@
-import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type RefObject} from 'react';
+import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type PointerEvent,type RefObject} from 'react';
 import './RadioReceiverWindows.css';
 import type {RadioLabTransition,RadioPointing} from '../core/radioAntenna';
 import type {PulsarCatalog} from '../core/radioPulsarCatalog';
-import type {RadioReceiver,RadioReceiverControl} from '../core/radioReceiver';
+import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent} from '../core/radioReceiver';
 import {
  RECEIVER_DFM_CAPTIONS,RECEIVER_DISPLAY_COLOURS,RECEIVER_DISPLAY_GEOMETRY,RECEIVER_DISPLAY_LITERALS,receiverCaption,receiverLabels,receiverPaintOps,
  type ReceiverDisplayOp,type ReceiverPen,
 } from '../core/radioReceiverDisplay';
+import {RECEIVER_MARK_LABEL_BACKGROUND,RECEIVER_MARK_WEB_POLICY,receiverMarkOverlayOps,type ReceiverMarkOverlay,type ReceiverMarkSelector} from '../core/radioReceiverMarks';
+import {receiverMarkCode,receiverMarkColumn,receiverMarkMoveReleases,type ReceiverMarkButton} from '../core/radioReceiverMarkInput';
 import {
- RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,editReceiverSeed,nextReceiverSeed,
- openReceiverWindow,paintReceiverWindow,reassociateReceivers,receiverControlAvailability,receiverSessionOpen,requestReceiverClose,stepReceiver,tickReceivers,
- toggleReceiverMode,type RadioReceiverSession,type ReceiverCanvasLog,type ReceiverControlState,type ReceiverSessionOutcome,type ReceiverSessionTransition,
+ RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,clearReceiverNextMark,completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,editReceiverSeed,
+ endMarkGesture,markPointerDown,markPointerMove,markPointerUp,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,placeReceiverMark,reassociateReceivers,
+ receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,requestReceiverClose,stepReceiver,stepReceiverMark,tickReceivers,toggleReceiverMode,
+ type RadioReceiverSession,type ReceiverCanvasLog,type ReceiverControlState,type ReceiverMarkAvailability,type ReceiverMarkLease,type ReceiverSessionOutcome,
+ type ReceiverSessionTransition,
 } from '../core/radioReceiverSession';
 import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
@@ -52,10 +56,34 @@ const CONTROL_NAME:Readonly<Record<RadioReceiverControl,PlainMessageKey>>={
  frequency:'radioReceiver.control.frequency','frequency-step':'radioReceiver.control.step',vertical:'radioReceiver.control.vertical',horizontal:'radioReceiver.control.horizontal',
 };
 
+const MARK_NAME:readonly [PlainMessageKey,PlainMessageKey]=['radioReceiver.marks.first','radioReceiver.marks.second'];
+/** Window numbers (slot + 1, as on the cards) of a list of slots. */
+const windowList=(slots:readonly number[])=>slots.map(s=>String(s+1)).join(', ');
+/** Status text of a mark transition: per-window line outcomes of one press/release/placement (a collision is named, the
+ * stored mark is not replaced by the requested one), the Clear result, or the end of a gesture. Moves are not announced. */
+function markOutcomeText(action:string,events:readonly RadioReceiverEvent[]):string{
+ if(events.some(e=>e.kind==='mark-gated'))return t('radioReceiver.marks.status.gated');
+ if(action==='mark-end')return t('radioReceiver.marks.status.ended');
+ if(action==='mark-clear'){
+  const cleared=events.flatMap(e=>e.kind==='mark-cleared'?[e]:[]);
+  if(cleared.length===0)return t('radioReceiver.marks.status.clearNone');
+  return cleared[0].selector===1?t('radioReceiver.marks.status.clearedSecond',{windows:windowList(cleared.map(e=>e.slot))}):t('radioReceiver.marks.status.clearedFirst');
+ }
+ const lines=events.flatMap(e=>e.kind==='mark-line'?[e]:[]);
+ if(lines.length===0)return '';
+ const mark=t(MARK_NAME[lines[0].selector]),x=lines[0].x;
+ if(lines.some(e=>e.outcome==='timer'))return t('radioReceiver.marks.status.timer',{mark});
+ const stored=lines.filter(e=>e.outcome==='stored').map(e=>e.slot),collided=lines.filter(e=>e.outcome==='collision').map(e=>e.slot);
+ if(collided.length===0)return lines.length===1?t('radioReceiver.marks.status.placed',{mark,x}):t('radioReceiver.marks.status.placedAll',{mark,x,windows:windowList(stored)});
+ if(stored.length===0)return t('radioReceiver.marks.status.collision',{mark,x,windows:windowList(collided)});
+ return t('radioReceiver.marks.status.placedSome',{mark,x,stored:windowList(stored),collided:windowList(collided)});
+}
+
 /** The product text of a session outcome for the status line ('' when nothing is announced). */
 function outcomeText(o:ReceiverSessionOutcome):string{
  if(o.kind==='refused')return t('radioReceiver.status.refused',{reason:t(`radioReceiver.error.${o.error.kind}`)});
  if(o.kind==='web-refused')return t(`radioReceiver.status.web.${o.reason}`);
+ if(o.action.startsWith('mark-'))return markOutcomeText(o.action,o.events);
  const kinds=o.events.map(e=>e.kind);
  const limit=o.events.find(e=>e.kind==='at-limit');
  if(limit&&limit.kind==='at-limit')return t('radioReceiver.status.atLimit',{control:t(CONTROL_NAME[limit.control])});
@@ -167,7 +195,81 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const dismissBox=()=>{if(stepSession(dismissReceiverCloseBox).changed)requestFocus('close1',1);};
  const paint=(slot:number)=>{stepSession(s=>paintReceiverWindow(s,slot));};
 
+ // ---- R-RX3 marks (docs/RADIO-RECEIVER-MARKS.md). One pointer lease across the bank, read from sessionRef (never from a
+ // rendered snapshot). Presses need the shown route, no project operation, no surface over the cards and no foreign dialog.
  const cardsInert=antennaModal||dateOpen||parametersPresented||boxPresented;
+ const inertRef=useRef(cardsInert);
+ useLayoutEffect(()=>{inertRef.current=cardsInert;});
+ const overlays=useRef<(HTMLCanvasElement|null)[]>([null,null,null]),displays=useRef<(HTMLDivElement|null)[]>([null,null,null]);
+ const marksAdmitted=()=>latest.current.active&&!latest.current.busy&&!inertRef.current&&!nativeModalOpen();
+ const releaseCapture=(l:ReceiverMarkLease)=>{
+  const el=overlays.current[l.slot];
+  try{if(el?.hasPointerCapture(l.pointerId))el.releasePointerCapture(l.pointerId);}catch{/* already released by the browser */}
+ };
+ /** WEB-MARK-CANCEL: ends the gesture (no attempt; last accepted marks kept). Runs on an inactive or busy route too. */
+ const endGesture=()=>{
+  const l=sessionRef.current.markLease;if(!l)return;
+  const r=stepSession(endMarkGesture);releaseCapture(l);
+  if(r.changed)setNotice({slot:l.slot,outcome:r.outcome});
+ };
+ const endGestureRef=useRef(endGesture);
+ useLayoutEffect(()=>{endGestureRef.current=endGesture;});
+ /** Logical column of a pointer on a window's overlay ('press' refuses outside 0..400, 'drag' clamps). */
+ const columnOf=(slot:number,clientX:number,mode:'press'|'drag')=>{
+  const el=overlays.current[slot];if(!el)return null;const rect=el.getBoundingClientRect();
+  return receiverMarkColumn(clientX,rect.left,rect.width,mode);
+ };
+ const markDown=(slot:number,e:PointerEvent<HTMLCanvasElement>,selected:ReceiverMarkSelector)=>{
+  const code=receiverMarkCode({pointerType:e.pointerType,button:e.button,isPrimary:e.isPrimary},selected);
+  if(code===null||sessionRef.current.markLease||!marksAdmitted())return;
+  const x=columnOf(slot,e.clientX,'press');if(x===null)return;
+  const press={pointerId:e.pointerId,pointerType:e.pointerType,button:e.button as ReceiverMarkButton,slot,code,x};
+  if(receiverMarkAvailability(sessionRef.current,slot)!=='enabled'){userAction(slot,s=>markPointerDown(s,press));return;}
+  e.preventDefault();
+  displays.current[slot]?.focus({preventScroll:true});
+  const el=e.currentTarget;
+  try{el.setPointerCapture(e.pointerId);}catch{return;}
+  const r=userAction(slot,s=>markPointerDown(s,press));
+  if(!r?.session.markLease)try{el.releasePointerCapture(e.pointerId);}catch{/* not captured */}
+ };
+ const markRelease=(l:ReceiverMarkLease,clientX:number)=>{
+  const x=columnOf(l.slot,clientX,'drag');
+  if(x===null||!marksAdmitted()){endGesture();return;}
+  userAction(l.slot,s=>markPointerUp(s,{pointerId:l.pointerId,x}));releaseCapture(l);
+ };
+ const markMove=(e:PointerEvent<HTMLCanvasElement>)=>{
+  const l=sessionRef.current.markLease;if(!l||l.pointerId!==e.pointerId)return;
+  if(!marksAdmitted()){endGesture();return;}
+  if(receiverMarkMoveReleases(l.button,e.button,e.buttons)){markRelease(l,e.clientX);return;}
+  const x=columnOf(l.slot,e.clientX,'drag');if(x===null)return;
+  stepSession(s=>markPointerMove(s,{pointerId:e.pointerId,x}));
+ };
+ const markUp=(e:PointerEvent<HTMLCanvasElement>)=>{
+  const l=sessionRef.current.markLease;if(!l||l.pointerId!==e.pointerId)return;
+  markRelease(l,e.clientX);
+ };
+ /** pointercancel and lostpointercapture of the lease's pointer (after a release the lease is already gone). */
+ const markCancel=(e:PointerEvent<HTMLCanvasElement>)=>{const l=sessionRef.current.markLease;if(l&&l.pointerId===e.pointerId)endGesture();};
+ /** Focus leaving the origin display, or Escape on it. */
+ const markLeave=(slot:number)=>{const l=sessionRef.current.markLease;if(l&&l.slot===slot)endGesture();};
+ const markPlace=(slot:number,selector:ReceiverMarkSelector,text:string)=>userAction(slot,s=>placeReceiverMark(s,slot,selector,text));
+ const markStep=(slot:number,selector:ReceiverMarkSelector,delta:1|-1)=>userAction(slot,s=>stepReceiverMark(s,slot,selector,delta));
+ const markClear=(slot:number)=>{userAction(slot,s=>clearReceiverNextMark(s,slot));};
+ const markHandlers:MarkHandlers={down:markDown,move:markMove,up:markUp,cancel:markCancel,leave:markLeave,place:markPlace,step:markStep,clear:markClear,
+  overlayRef:(slot,el)=>{overlays.current[slot]=el;},displayRef:(slot,el)=>{displays.current[slot]=el;}};
+ // Window/document listeners and the foreign-dialog subscription exist only while a lease does (no document key listener).
+ const leased=session.markLease!==null;
+ useEffect(()=>{
+  if(!leased)return;
+  const end=()=>endGestureRef.current();
+  const hidden=()=>{if(document.visibilityState==='hidden')end();};
+  const stop=observeNativeModals(()=>{if(nativeModalOpen())end();});
+  window.addEventListener('blur',end);document.addEventListener('visibilitychange',hidden);
+  return ()=>{stop();window.removeEventListener('blur',end);document.removeEventListener('visibilitychange',hidden);};
+ },[leased]);
+ // Route hidden, project operation or a surface over the cards: the gesture ends before paint.
+ useLayoutEffect(()=>{if(!active||busy||cardsInert)endGestureRef.current();},[active,busy,cardsInert]);
+
  const next=nextReceiverSeed(session);
  return <div className="radio-receiver-workspace" data-testid="receiver-workspace" data-timer={session.bank.timerEnabled}>
   <section className="card radio-control radio-control-env radio-receiver-setup" aria-labelledby={`${id}-setup`} data-testid="receiver-setup" inert={cardsInert||undefined}>
@@ -185,19 +287,27 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="receiver-setup-status">
     {notice&&(notice.slot===null||session.bank.slots[notice.slot]===null)?outcomeText(notice.outcome):''}</p>
   </section>
-  {session.bank.slots.map((r,slot)=>r&&<ReceiverCard key={slot} r={r} session={session} log={session.canvases[slot]} inert={cardsInert}
+  {session.bank.slots.map((r,slot)=>r&&<ReceiverCard key={slot} r={r} session={session} log={session.canvases[slot]} overlay={session.markOverlays[slot]} inert={cardsInert}
    notice={notice&&notice.slot===slot?outcomeText(notice.outcome):''} headingRef={el=>{headings.current[slot]=el;}} closeRef={el=>{closes.current[slot]=el;}}
-   addRef={slot===0?addRef:undefined} onStep={step} onAdd={add} onMode={mode} onClose={close} onPaint={paint}/>)}
+   addRef={slot===0?addRef:undefined} onStep={step} onAdd={add} onMode={mode} onClose={close} onPaint={paint} marks={markHandlers}/>)}
   {boxPresented&&session.closeBox&&<ReceiverCloseBox caption={session.closeBox.caption} text={session.closeBox.text} onDismiss={dismissBox}/>}
  </div>;
 }
 
-type CardProps=Readonly<{r:RadioReceiver;session:RadioReceiverSession;log:ReceiverCanvasLog|null;inert:boolean;notice:string;
+type MarkHandlers=Readonly<{
+ down:(slot:number,e:PointerEvent<HTMLCanvasElement>,selected:ReceiverMarkSelector)=>void;move:(e:PointerEvent<HTMLCanvasElement>)=>void;
+ up:(e:PointerEvent<HTMLCanvasElement>)=>void;cancel:(e:PointerEvent<HTMLCanvasElement>)=>void;leave:(slot:number)=>void;
+ place:(slot:number,selector:ReceiverMarkSelector,text:string)=>ReceiverSessionTransition|null;step:(slot:number,selector:ReceiverMarkSelector,delta:1|-1)=>void;
+ clear:(slot:number)=>void;overlayRef:(slot:number,el:HTMLCanvasElement|null)=>void;displayRef:(slot:number,el:HTMLDivElement|null)=>void;
+}>;
+type CardProps=Readonly<{r:RadioReceiver;session:RadioReceiverSession;log:ReceiverCanvasLog|null;overlay:ReceiverMarkOverlay|null;inert:boolean;notice:string;
  headingRef:(el:HTMLHeadingElement|null)=>void;closeRef:(el:HTMLButtonElement|null)=>void;addRef?:RefObject<HTMLButtonElement|null>;
- onStep:(slot:number,control:RadioReceiverControl,direction:'down'|'up')=>void;onAdd:()=>void;onMode:(slot:number)=>void;onClose:(slot:number)=>void;onPaint:(slot:number)=>void}>;
-/** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder. */
-function ReceiverCard({r,session,log,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint}:CardProps){
+ onStep:(slot:number,control:RadioReceiverControl,direction:'down'|'up')=>void;onAdd:()=>void;onMode:(slot:number)=>void;onClose:(slot:number)=>void;onPaint:(slot:number)=>void;
+ marks:MarkHandlers}>;
+/** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder, then the web mark controls. */
+function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks}:CardProps){
  const id=useId(),slot=r.index,main=slot===0,labels=receiverLabels(r),avail=receiverControlAvailability(session,slot);
+ const [selected,setSelected]=useState<ReceiverMarkSelector>(0);
  const caption=receiverCaption(r.title,r.apertureText),finishing=r.stopPending===true&&session.bank.timerEnabled;
  const error=session.tickError;
  const spin=(control:RadioReceiverControl,caption:string,value:string,down:PlainMessageKey,up:PlainMessageKey,state:ReceiverControlState)=>
@@ -212,7 +322,12 @@ function ReceiverCard({r,session,log,inert,notice,headingRef,closeRef,addRef,onS
  return <section className="card radio-control radio-receiver-card" aria-labelledby={`${id}-caption`} data-testid={`receiver-card-${slot}`} inert={inert||undefined}>
   <h3 ref={headingRef} id={`${id}-caption`} tabIndex={-1} className="radio-control-native radio-receiver-caption" data-testid={`receiver-heading-${slot}`}>{caption}</h3>
   <p className="radio-control-note">{main?t('radioReceiver.card.main'):t('radioReceiver.card.child',{n:slot+1})}</p>
-  <ReceiverCanvas slot={slot} r={r} log={log} onPaint={onPaint}/>
+  <div ref={el=>marks.displayRef(slot,el)} className="radio-receiver-display" role="group" tabIndex={-1} aria-label={t('radioReceiver.marks.display',{n:slot+1})}
+   data-testid={`receiver-display-${slot}`} onKeyDown={e=>{if(e.key==='Escape')marks.leave(slot);}}
+   onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget as Node|null))marks.leave(slot);}}>
+   <ReceiverCanvas slot={slot} r={r} log={log} onPaint={onPaint}/>
+   <ReceiverMarkCanvas slot={slot} overlay={overlay} selected={selected} marks={marks}/>
+  </div>
   <div className="radio-receiver-controls">
    {spin('frequency',D.frequency,labels.frequency,'radioReceiver.control.frequencyDown','radioReceiver.control.frequencyUp',avail.frequency)}
    {spin('frequency-step',D.step,labels.step,'radioReceiver.control.stepDown','radioReceiver.control.stepUp',avail['frequency-step'])}
@@ -239,8 +354,101 @@ function ReceiverCard({r,session,log,inert,notice,headingRef,closeRef,addRef,onS
    {r.position===null?t('radioReceiver.card.sweepNone'):finishing?t('radioReceiver.card.finishing',{position:r.position,width:r.sweepWidth}):t('radioReceiver.card.sweep',{position:r.position,width:r.sweepWidth})}</p>
   {main&&<p data-testid="receiver-source">{r.identifiedName===null?t('radioReceiver.card.sourceNone'):t('radioReceiver.card.source',{name:r.identifiedName})}</p>}
   {main&&error?<p role="alert" className="radio-receiver-alert" data-testid="receiver-tick-error" data-kind={error.kind}>{t('radioReceiver.tickError',{reason:t(`radioReceiver.error.${error.kind}`)})}</p>:null}
+  <ReceiverMarks slot={slot} r={r} overlay={overlay} availability={receiverMarkAvailability(session,slot)} selected={selected} onSelect={setSelected} marks={marks}/>
   <p className="radio-control-status" role="status" aria-live="polite" data-testid={`receiver-status-${slot}`}>{notice}</p>
  </section>;
+}
+
+/** WEB-MARK-RENDER overlay above the base display: cleared and redrawn from the session's overlay alone (never Paint, a
+ * refresh or the random stream), with its own pen and stroke so nothing leaks into the base canvas's next trace segment.
+ * Pointer input (WEB-MARK-INPUT) is taken here; touch-action none only on this element; the context menu is suppressed
+ * only here. Double-click with the primary button runs Clear (declared web binding, WEB-MARK-CLEAR). */
+function ReceiverMarkCanvas({slot,overlay,selected,marks}:Readonly<{slot:number;overlay:ReceiverMarkOverlay|null;selected:ReceiverMarkSelector;marks:MarkHandlers}>){
+ const ref=useRef<HTMLCanvasElement>(null);
+ useLayoutEffect(()=>{
+  const ctx=ref.current?.getContext('2d');if(!ctx)return;
+  ctx.clearRect(0,0,G.width,G.height);if(!overlay)return;
+  let pen={x:0,y:0},stroke=0;
+  for(const op of receiverMarkOverlayOps(overlay)){
+   if(op.kind==='pen')stroke=op.colour;
+   else if(op.kind==='move')pen={x:op.x,y:op.y};
+   else if(op.kind==='line'){
+    ctx.strokeStyle=css(stroke);ctx.lineWidth=1;ctx.lineCap='square';ctx.beginPath();ctx.moveTo(pen.x+0.5,pen.y+0.5);ctx.lineTo(op.x+0.5,op.y+0.5);ctx.stroke();
+    pen={x:op.x,y:op.y};
+   }else if(op.kind==='text'){
+    ctx.font='bold 13px sans-serif';ctx.textBaseline='top';
+    const width=Math.ceil(ctx.measureText(op.text).width);
+    ctx.fillStyle=css(RECEIVER_MARK_LABEL_BACKGROUND);ctx.fillRect(op.x,op.y,width,16);
+    ctx.fillStyle=css(op.colour);ctx.fillText(op.text,op.x,op.y);
+   }
+  }
+ },[overlay]);
+ return <canvas ref={el=>{ref.current=el;marks.overlayRef(slot,el);}} width={G.width} height={G.height} className="radio-receiver-overlay" aria-hidden="true"
+  data-testid={`receiver-overlay-${slot}`} onPointerDown={e=>marks.down(slot,e,selected)} onPointerMove={marks.move} onPointerUp={marks.up}
+  onPointerCancel={marks.cancel} onLostPointerCapture={marks.cancel} onContextMenu={e=>e.preventDefault()}
+  onDoubleClick={e=>{if(e.button===0)marks.clear(slot);}}/>;
+}
+
+const ARROW_STEP:Readonly<Record<string,1|-1>>={ArrowUp:1,ArrowDown:-1};
+/** Per-window mark controls (WEB-MARK-KEYBOARD): First/Second selection (component state; selecting places nothing), the
+ * position spinbutton (blank while unset; Enter or Place commits a validated draft; Home/End place at 0/400; ArrowUp/Down
+ * step a placed mark by one; ArrowLeft/Right keep caret movement; Escape restores the stored value; held keys are
+ * ignored), Clear, and the readout of stored columns and last drawn labels. */
+function ReceiverMarks({slot,r,overlay,availability,selected,onSelect,marks}:Readonly<{slot:number;r:RadioReceiver;overlay:ReceiverMarkOverlay|null;
+ availability:ReceiverMarkAvailability;selected:ReceiverMarkSelector;onSelect:(s:ReceiverMarkSelector)=>void;marks:MarkHandlers}>){
+ const id=useId(),stored=r.marks[selected],enabled=availability==='enabled';
+ const [draft,setDraft]=useState<string|null>(null),[invalid,setInvalid]=useState(false);
+ // A stored change from any input shows the stored column again.
+ useEffect(()=>{setDraft(null);setInvalid(false);},[stored,selected]);
+ const value=draft??(stored>=0?String(stored):'');
+ const place=(text:string)=>{
+  const result=marks.place(slot,selected,text),o=result?.outcome;
+  const bad=o?.kind==='web-refused'&&o.reason==='mark-position-invalid';
+  setInvalid(bad);if(!bad&&result)setDraft(null);
+ };
+ const onKeyDown=(e:KeyboardEvent<HTMLInputElement>)=>{
+  const plain=!e.altKey&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey;
+  if(!plain||!['Enter','Home','End','ArrowUp','ArrowDown','Escape'].includes(e.key))return;
+  e.preventDefault();if(e.repeat)return;
+  if(e.key==='Enter')place(value);
+  else if(e.key==='Home')place(String(RECEIVER_MARK_WEB_POLICY.minColumn));
+  else if(e.key==='End')place(String(RECEIVER_MARK_WEB_POLICY.maxColumn));
+  else if(e.key==='Escape'){setDraft(null);setInvalid(false);}
+  else marks.step(slot,selected,ARROW_STEP[e.key]);
+ };
+ const shown=(sel:ReceiverMarkSelector)=>r.marks[sel]<0?t('radioReceiver.marks.unset'):t('radioReceiver.marks.column',{x:r.marks[sel]});
+ const label=(sel:ReceiverMarkSelector)=>{const l=overlay?.labels[sel];return l?t('radioReceiver.marks.labelValue',{text:l.text,x:l.x}):t('radioReceiver.marks.labelNone');};
+ const l0=overlay?.labels[0]??null,l1=overlay?.labels[1]??null;
+ return <fieldset className="radio-receiver-marks" data-testid={`receiver-marks-${slot}`}>
+  <legend>{t('radioReceiver.marks.legend')}</legend>
+  <p className="radio-control-note">{t('radioReceiver.marks.scope')}</p>
+  <div className="radio-receiver-mark-select" role="radiogroup" aria-label={t('radioReceiver.marks.selectLabel')}>
+   {([0,1] as const).map(sel=><label key={sel}>
+    <input type="radio" name={`${id}-mark`} value={sel} checked={selected===sel} data-testid={`receiver-mark-select-${sel===0?'first':'second'}-${slot}`}
+     onChange={()=>onSelect(sel)}/>{t(MARK_NAME[sel])}</label>)}
+  </div>
+  <div className="radio-receiver-mark-position">
+   <label htmlFor={`${id}-position`}>{t('radioReceiver.marks.position',{mark:t(MARK_NAME[selected])})}</label>
+   <input id={`${id}-position`} type="text" inputMode="numeric" role="spinbutton" autoComplete="off" spellCheck={false} maxLength={8} data-testid={`receiver-mark-position-${slot}`}
+    value={value} disabled={!enabled} aria-valuemin={RECEIVER_MARK_WEB_POLICY.minColumn} aria-valuemax={RECEIVER_MARK_WEB_POLICY.maxColumn}
+    aria-valuenow={stored>=0?stored:undefined} aria-invalid={invalid||undefined} aria-describedby={`${id}-help ${id}-timer`}
+    onChange={e=>{setDraft(e.target.value);setInvalid(false);}} onKeyDown={onKeyDown}/>
+   <button type="button" className="secondary-button" data-testid={`receiver-mark-place-${slot}`} disabled={!enabled} onKeyDown={ignoreHeldKey} onClick={()=>place(value)}>
+    {t('radioReceiver.marks.place')}</button>
+   <button type="button" className="secondary-button" data-testid={`receiver-mark-clear-${slot}`} aria-describedby={`${id}-clear`} onKeyDown={ignoreHeldKey}
+    onClick={()=>marks.clear(slot)}>{t('radioReceiver.marks.clear')}</button>
+  </div>
+  <p id={`${id}-help`} className="radio-control-note">{t('radioReceiver.marks.help')}</p>
+  <p id={`${id}-timer`} className="radio-control-note" data-testid={`receiver-mark-timer-${slot}`}>{enabled?'':t('radioReceiver.marks.timerHelp')}</p>
+  <p id={`${id}-clear`} className="radio-control-note">{t('radioReceiver.marks.clearHelp')}</p>
+  <dl className="radio-control-state radio-receiver-mark-readout" data-testid={`receiver-mark-readout-${slot}`} data-mark-first={r.marks[0]} data-mark-second={r.marks[1]}
+   data-label-first={l0?.text??''} data-label-first-x={l0?.x??''} data-label-second={l1?.text??''} data-label-second-x={l1?.x??''}>
+   <dt>{t('radioReceiver.marks.firstStored')}</dt><dd data-testid={`receiver-mark-first-${slot}`}>{shown(0)}</dd>
+   <dt>{t('radioReceiver.marks.secondStored')}</dt><dd data-testid={`receiver-mark-second-${slot}`}>{shown(1)}</dd>
+   <dt>{t('radioReceiver.marks.firstLabel')}</dt><dd className="radio-control-native radio-receiver-mark-label" data-testid={`receiver-mark-label-first-${slot}`}>{label(0)}</dd>
+   <dt>{t('radioReceiver.marks.secondLabel')}</dt><dd className="radio-control-native radio-receiver-mark-label" data-testid={`receiver-mark-label-second-${slot}`}>{label(1)}</dd>
+  </dl>
+ </fieldset>;
 }
 
 /** Logical 401 × 142 display (WEB-RX-DISP-01/PAINT-01/02): the canvas bitmap is retained; ops newer than the last drawn

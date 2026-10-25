@@ -1,0 +1,75 @@
+{
+  "increment": "R-RX3 manual receiver marks and time readout",
+  "binary": {"name": "CLEA_VEO.exe", "SHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"},
+  "plan": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-rx3-marks-20261024-plan/plan.txt",
+  "method": "Static listings, typed cells and DFM defaults only. No CLEA execution, emulation, microemulation or native trace; no binary bytes or excluded metadata read. Tests check this implementation's contract, not native equivalence.",
+  "staticPackage": {
+    "path": "/tmp/clea-static-research/radio-rx3-mark-contracts-20261024/",
+    "note": "Context copy of the definition package. SHA-256 values below are copied from its CONTRACTS.json, CAPTURE-AUDIT.json, FORMAT-CAPTURE-AUDIT.json and DELIVERY.json; none was recomputed by the implement phase. The coordinator verified the original typed-cell and capture hashes directly; that verification is the coordinator's record, not this file's.",
+    "files": [
+      {"name": "CONTRACTS.json", "SHA256": "bb91df8ab351c8d172aa0c14755b9a9b1be7f33cd15f8e14f4de6a928598e522"},
+      {"name": "ACCEPTANCE-CASES.json", "SHA256": "52bea64de022de7f81077ea263fe534348f90fccc2062bbb24ca8a51229d5979", "note": "30 proposed cases; independent Fraction/Decimal arithmetic, not a native oracle"},
+      {"name": "STATIC-VERIFICATION.json", "SHA256": "6dffdf943e92125702a7cec400199431c3571cae9f612afedad0d84e1f348cbd", "note": "155 static provenance/entry/return/branch checks; not runtime or numerical equivalence"},
+      {"name": "CAPTURE-AUDIT.json", "SHA256": "d8b4590d55e6b5989cec32e8913237708000de2644228389283ac1089a58fee9"},
+      {"name": "FORMAT-CAPTURE-AUDIT.json", "SHA256": "d2f0e96f80798e0c3b15e1d33377a6e37cd4cd056a4466ca568e3c18ab9fbff4"}
+    ]
+  },
+  "contracts": [
+    {"id": "M1-TIME", "VA": "0x575684..0x5757fa", "web": "receiverMarkTimeText (radioReceiverMarks.ts)"},
+    {"id": "M2-FORMAT", "VA": "0x486268..0x48628f -> 0x40cf28..0x40cf5a -> 0x40c5dc", "web": "formatFixed under WEB-MARK-NUMERIC (no x87/FBSTP/locale parity)"},
+    {"id": "M3-TIMER", "VA": "0x5750c8..0x5750e0; 0x575520..0x57552f; 0x448ff4..0x449001", "web": "receiverMarkDown gate, attemptMarkLine timer outcome, receiverMarkAvailability"},
+    {"id": "M4-OWNERSHIP", "VA": "0x5750c8..0x575469", "web": "receiverMarkDown/Move/Up (radioReceiver.ts)"},
+    {"id": "M5-LIMITS-COLLISION", "VA": "0x575510..0x57567e; 0x572630..0x57267f", "web": "attemptMarkLine, RECEIVER_MARK_CONSTANTS.markBackupLastY"},
+    {"id": "M6-CLEAR-PAINT", "VA": "0x57546c..0x57550c; 0x572d63..0x572daa", "web": "clearReceiverMarks, Paint tail (paintMarks), painted snapshot"},
+    {"id": "RECEIVE-RESET", "VA": "0x5746c8/0x5746d2", "web": "toggleReceive marks := -1 before each Paint; drag flags untouched"}
+  ],
+  "evidence": {
+    "hashSource": "Copied from CONTRACTS.json sources[] (2026-10-24T16:00:38Z), CAPTURE-AUDIT.json typedCells[] and FORMAT-CAPTURE-AUDIT.json mode2Dispatch; not recomputed.",
+    "listings": [
+      {"id": "DOWN", "path": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-mouse-down.asm", "VA": "0x5750c8", "SHA256": "fbadaad4fd8c9288449139038b27ca687d40483c4c262bf3e347461f4b0b4103"},
+      {"id": "MOVE", "path": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-mouse-move.asm", "VA": "0x575200", "SHA256": "be2a9941a611b2790f84e3356a0ae79abeabdbba70141b0f378bf37399ac71c4"},
+      {"id": "UP", "path": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-mouse-up.asm", "VA": "0x575334", "SHA256": "326901ab57a138c5347e40a5d680094cf27b435a4b6ba3a483ce15dee010190b"},
+      {"id": "DBLCLICK+LINE", "path": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/existing-listing-recovery/form-double-click.asm", "VA": "0x57546c (line helper 0x575510 follows)", "SHA256": "e947069b6a5a8159811350eefff98a03a0315e619bb94fb2050ac8df605d5117"},
+      {"id": "PAINT", "path": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/existing-listing-recovery/display-paint.asm", "VA": "0x572a20 (tail 0x572d63..0x572daa)", "SHA256": "1570e3ae728f0a77a9794893327fc94d4af43fb58ed5157004504ac2e5baf848"},
+      {"id": "LABEL", "path": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/saved-helper-recovery/marker-time-label.asm", "VA": "0x575684", "SHA256": "6077243f3f1c19a2702f02002d6fe7ac512763d7e9be58e228bd29cec7ea3710"},
+      {"id": "HELPER-BINDINGS", "path": "/tmp/clea-static-research/radio-rx2-monitor-recovered-20261024/SAVED-CANVAS-HELPER-BINDINGS.json", "SHA256": "6b345c7286624d1d2bfc07da4808a1bdd406f203d122a9b54f1bf72741210856"},
+      {"id": "VMT", "path": "ROOT/analysis/radio-receiver-source-20261024/RECEIVER-VMT-FIELDS-METHODS.json", "SHA256": "2cbd15ee1e0a15ce553897095c247d61987f894865563246e67427b760eaac98"},
+      {"id": "DFM", "path": "ROOT/analysis/radio-receiver-source-20261024/correction-TRCVR_FORM1-DFM.json", "SHA256": "3b5622ae856de99adef4b80c540983cef10a8510b114673cd3be7d009c038058"},
+      {"id": "MODE", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-record/receive-mode-canonical.asm", "VA": "0x5745f8", "SHA256": "1575a2535b3cbf9cb6a929764361220beff434971009040f5439e32122bbbbc4"},
+      {"id": "FRAME", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-record/frame-canonical.asm", "VA": "0x573790", "SHA256": "d31088cb788467a579523d969cce89be130e63564116682d1c65270024bd9ea4"},
+      {"id": "FC", "path": "ROOT/analysis/radio-receiver-signal-20261024/receiver-record/form-create-canonical.asm", "VA": "0x5721d8 (marks 0x572630..0x57267f)", "SHA256": "e74fbe55fc1282aa027886655dd72d17d058c87390d6043e569ff4697a17e14b"}
+    ],
+    "formatCaptures": {
+      "note": "Recorded under /home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-rx3-mark-contracts-20261024/ (CONTRACTS.json sources[]) and copied to the /tmp package; DELIVERY.json lists the same SHA-256 for the /tmp copies. Both locations recorded; hashes copied, not recomputed.",
+      "files": [
+        {"name": "round-helper.asm", "VA": "0x403700..0x403718", "SHA256": "9338ec41162b2a83e1d63e4ddd1d593ff8abdacc9e277b24537a712f31888cca"},
+        {"name": "concat-two.asm", "VA": "0x406148..0x4061c4", "SHA256": "cd617317f4f817b7c340e306cf311699852e53bfb61ec62dcb70996f33df836b"},
+        {"name": "float-format.asm", "VA": "0x40cf28..0x40d020", "SHA256": "deaf2f790e0cbf409a34c8fcbe1f068faa1fa1975976d6e787d8f12181704315"},
+        {"name": "float-to-text-entry.asm", "VA": "0x40c5dc..0x40c6b8", "SHA256": "c34c3d81cbafb8bea10e457a32c3c89b62732f669083bb16bea1288ba0655313"},
+        {"name": "float-to-text-branches.asm", "VA": "0x40c6d2..0x40c7e2", "SHA256": "f16bd94869cee843eeac9f888e8f5ba06e1415d862d7c73a40ea4ea253f9a6dd"},
+        {"name": "float-to-text-tail.asm", "VA": "0x40c8a9..0x40c8af", "SHA256": "e0eb0cc9032a73ef6ed06e63d3df3a5f1e7f38b9002655e382cd59f5fb060cf6"},
+        {"name": "float-to-decimal.asm", "VA": "0x40cb88..0x40cdb4", "SHA256": "478f1fdaf06217bfa9437bcf3fa9c01ebf1550d0da9eee4997a8a47bf7a0db2b"},
+        {"name": "timer-enabled-setter.asm", "VA": "0x448ff4..0x449004", "SHA256": "4e868ce57bde9fbc8d0a4e07541ca1bdebc78a3a86da105883a06f72b7eb236a"}
+      ]
+    }
+  },
+  "cells": {
+    "0x5757fc": {"type": "Single", "value": 1.0, "SHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"},
+    "0x575808": {"type": "AnsiString", "text": " Sec", "SHA256": "13192237a177ec4123aa7a24294ea532f0cbf5654f81e92b27353214924d7d23", "note": "SHA-256 of the 13-byte span from 0x575800"},
+    "0x575818": {"type": "AnsiString", "text": "  ", "SHA256": "7b0b2e0b605de07e4ab66f0b15f7d4a99c4640cebce89d1745529631ffd93616", "note": "SHA-256 of the 11-byte span from 0x575810"},
+    "0x40c6c0": {"type": "mode-2 dispatch pointer", "value": "0x40c778", "SHA256": "5cb31a604fe45a8958e3d00b7cf5508c077f4287eed0091d161d21f03104741b"},
+    "colours": {"selector0": "0xffff00 (0x575621/0x575636 pen, 0x5756dc/0x5756eb font)", "selector1": "0xffffff"},
+    "labelOrigins": {"selector0": "(10, 10)", "selector1": "(300, 10)"}
+  },
+  "tags": {
+    "S": ["M1..M6 order, gates and literals", "Receive reset 0x5746c8/0x5746d2", "positions -1 at FormCreate"],
+    "D": ["Display1 401 x 142, so lastBackupY 141 (conditional)", "FormDblClick bound to the form, not Display1"],
+    "I": ["TColor shown as BGR", "TMouseButton/TShiftState left/right reading", "line end y = 141 (native Self+0x4c - 1 not established)"],
+    "W": ["initial drag flags false (FormCreate does not write them)", "WEB-MARK-* policies"]
+  },
+  "webPolicies": ["WEB-MARK-DOMAIN", "WEB-MARK-INPUT", "WEB-MARK-CANCEL", "WEB-MARK-KEYBOARD", "WEB-MARK-CLEAR", "WEB-MARK-RENDER", "WEB-MARK-NUMERIC", "WEB-MARK-LIFETIME"],
+  "deviations": ["WEB-MARK-KEYBOARD uses ArrowUp/ArrowDown for steps (approved amendment); ArrowLeft/ArrowRight keep caret movement in the editable field. The proposal named ArrowLeft/Right."],
+  "fixtures": "Tests use synthetic in-test catalogs and constructed states only; no original rows, resources or optional fixture files are bundled or read by the new tests.",
+  "limits": ["No native numeric-text equality (FPU control word, 0x404984 scaling, FBSTP/carry, decimal separator 0x5b880f).", "No GDI pixel, font, clipping, TextOut opacity or partial-restore parity.", "No TPaintBox-to-form double-click forwarding claim; the canvas double-click is a declared browser binding.", "No native drag-flag cancellation claim.", "CDP touch input in tests is synthetic browser input, not real OS multitouch."],
+  "remaining": ["Record and the 1600/1601 limit", "Identify/Save/result-7", "audio and PRE-01", "Align and window states", "historical FPU/RNG/locale/GDI", "native line end Self+0x4c - 1", "TPaintBox double-click forwarding"]
+}

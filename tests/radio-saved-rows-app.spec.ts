@@ -211,7 +211,7 @@ test('radio telescope route: explicit compiled-default scenario, access, Trackin
  await expect(id(page,'radio-route-scenario-access')).toContainText('below 8000 ms');await expect(id(page,'radio-route-scenario-slew')).toContainText('nominal 100 ms browser interval');
  await expect(id(page,'radio-route-scenario-gates')).toContainText('or in B1950.0 converted with the original fixed-epoch precession');await expect(id(page,'radio-route-scenario-gates')).not.toContainText('B1950.0 input');
  await expect(id(page,'radio-route-scenario-gates')).not.toContainText('the hot list and pulsar');
- await expect(id(page,'radio-route-scenario-gates')).toContainText('receiver recording, sound, pulsar identification, Align and display marks, and the hot list’s Add Current Item and Save from this panel (disabled; their enabling code is not recovered)');
+ await expect(id(page,'radio-route-scenario-gates')).toContainText('receiver recording, sound, pulsar identification and Align, and the hot list’s Add Current Item and Save from this panel (disabled; their enabling code is not recovered)');
  await expect(id(page,'radio-route-persistence')).toContainText('not included in Save investigation');
  await expect(id(page,'radio-env-diameter-current')).toHaveText('Not supplied');await expect(id(page,'radio-switch')).toBeDisabled();
  await expect(id(page,'radio-env').getByText('The recovered compiled default is 100, used when no options file loads; the value in a current classroom configuration is not known, so supply it explicitly.',{exact:false})).toBeVisible();

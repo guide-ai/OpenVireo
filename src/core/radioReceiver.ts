@@ -7,6 +7,9 @@
 // R-RX2 (docs/RADIO-RECEIVER-MONITOR.md): the state part of the parameter refresh 0x572f8c (aperture/beam text, +0x583,
 // titles, the title-change lastX reset), the trace store +0x587 (reset inside the source refresh, append in the frame),
 // the Freq and Freq Incr. steps, Paint's refresh, the own SlaveBtn enable and the corrected Add/Close ends.
+// R-RX3 (docs/RADIO-RECEIVER-MARKS.md): the two manual marks +0x430/+0x434 with their drag flags +0x586/+0x585, Display1
+// MouseDown 0x5750c8, MouseMove 0x575200, MouseUp 0x575334, FormDblClick 0x57546c, Paint's tail 0x572d63..0x572daa and the
+// Receive-start index reset; the line and label helpers are in radioReceiverMarks.
 // Every transition returns new frozen objects; a refusal leaves the input bank (and its random stream) untouched.
 import {roundNearestEven} from './numericPolicy';
 import type {RadioPointing} from './radioAntenna';
@@ -18,6 +21,7 @@ import {radioExtendedWords,radioPlanck,radioThermalRecord,type RadioThermalRecor
 import {
  createReceiverTrace,receiverApertureBase,receiverChildTitle,receiverFovText,receiverHpbwText,receiverMainTitle,resetReceiverTrace,type RadioReceiverTrace,
 } from './radioReceiverDisplay';
+import {RECEIVER_MARK_CONSTANTS,attemptMarkLine,isReceiverMarkInt32,receiverMarkTimeText,type ReceiverMarkLineOutcome,type ReceiverMarkPair,type ReceiverMarkSelector} from './radioReceiverMarks';
 
 export const RADIO_RECEIVER_CONSTANTS=Object.freeze({
  /** FormCreate immediates: +0x529 600 MHz (0x572258..0x57226a), +0x533 step 100 and index 5, +0x53d vertical 1.0,
@@ -120,6 +124,11 @@ export type RadioReceiver=Readonly<{
  trace:RadioReceiverTrace;
  /** Own SlaveBtn (Add Channel) Enabled: DFM True; Receive, slot 2, the sweep finish and a child close write it. */
  addEnabled:boolean;
+ /** R-RX3 Int32 +0x430 (first) and +0x434 (second) mark columns; −1 unset (FormCreate 0x572675/0x57267f, Receive start). */
+ marks:ReceiverMarkPair;
+ /** R-RX3 drag flags +0x586 (first) and +0x585 (second). FormCreate does not write them: the initial false is web policy [W]
+  * (same caveat as the InitInstance zero-fill 0x404f1c). Receive does not reset them (not in the captured block). */
+ markDrag:readonly [boolean,boolean];
 }>;
 export type RadioReceiverSlots=readonly [RadioReceiver|null,RadioReceiver|null,RadioReceiver|null];
 export type RadioReceiverBank=Readonly<{
@@ -157,8 +166,19 @@ export type RadioReceiverEvent=Readonly<
  |{kind:'closed';slot:number}
  /** Close 0x5726f0 → 0x40516c: synchronous virtual dispatch of 0x53a to Application+0x44; the recipient is not modelled. */
  |{kind:'send-0x53a'}
- /** Paint 0x572a20 ran (its refresh included): the presentation draws receiverPaintOps for the slot. */
- |{kind:'paint';slot:number}
+ /** Paint 0x572a20 ran (its refresh included): the presentation draws receiverPaintOps for the slot. painted: the receiver
+  * as Paint drew it, when a later step of the same transition changes it (Clear Paints several receivers in turn). */
+ |{kind:'paint';slot:number;painted?:RadioReceiver}
+ /** R-RX3 MouseDown refused while the main Timer1 runs (0x5750dc..0x5750e0): no flag, mark or label written. */
+ |{kind:'mark-gated';slot:number}
+ /** R-RX3 one line helper 0x575510 call with its outcome (stored also when x is negative or beyond the canvas). */
+ |{kind:'mark-line';slot:number;selector:ReceiverMarkSelector;x:number;outcome:ReceiverMarkLineOutcome}
+ /** R-RX3 one label helper 0x575684 call that drew (x in 0..N). Calls with an invalid x draw nothing and emit nothing. */
+ |{kind:'mark-label';slot:number;selector:ReceiverMarkSelector;x:number;text:string}
+ /** R-RX3 FormDblClick wrote −1 to a mark before that receiver's Paint. */
+ |{kind:'mark-cleared';slot:number;selector:ReceiverMarkSelector}
+ /** R-RX3 FormDblClick with neither origin mark set: nothing happens. */
+ |{kind:'marks-none';slot:number}
  /** 0x572e24 ran (a frequency change while receiving): receiverAnnotationOps for the slot. */
  |{kind:'annotation';slot:number}
  /** The main title changed while not receiving: every lastX := 0 (refresh 0x572f8c). */
@@ -198,6 +218,8 @@ function run(bank:RadioReceiverBank,body:Run):RadioReceiverResult{
 }
 const main=(d:Draft)=>d.slots[0]??fail('receiver-unavailable','no main receiver');
 const slotOf=(d:Draft,slot:number)=>(Number.isInteger(slot)&&slot>=0&&slot<=2?d.slots[slot]:null)??fail('receiver-unavailable',`no receiver in slot ${slot}`);
+const UNSET_MARKS:ReceiverMarkPair=Object.freeze([RECEIVER_MARK_CONSTANTS.unset,RECEIVER_MARK_CONSTANTS.unset] as const);
+const NO_MARK_DRAG:readonly [boolean,boolean]=Object.freeze([false,false] as const);
 const batchFor=(h:number)=>h===RADIO_RECEIVER_CONSTANTS.batchSpecialH?1:roundNearestEven(RADIO_RECEIVER_CONSTANTS.batchNumerator/h)&0xffff;
 
 /** New bank with an empty buffer and no receivers. options null stands for 0x5bce04 = nil. */
@@ -223,7 +245,8 @@ function formCreate(d:Draft,index:0|1|2,seed:number|undefined,events:RadioReceiv
   sensitivity,backgroundFactor:o.background928/k.backgroundDivisor,area:q*q,detectorThermal:radioThermalRecord(o.temperature930),
   displayGain:verticalGain*sensitivity,skyThermal,offset:0,searchRadius:0,beamRadius:null,beamSigma:null,spatial:null,
   sourceAttached:false,identifiedName:null,inSource:null,receiving:false,stopPending:null,audio:false,alternation:1,lastTick:null,lastSignal:null,lastRow:null,
-  title:'',apertureText:'',trace:createReceiverTrace(k.displayWidth-1),addEnabled:true};
+  title:'',apertureText:'',trace:createReceiverTrace(k.displayWidth-1),addEnabled:true,
+  marks:UNSET_MARKS,markDrag:NO_MARK_DRAG};
  if(index===0)d.profile=profile;
  events.push({kind:'created',slot:index});
 }
@@ -361,6 +384,128 @@ function frame(d:Draft,slot:number,jd:number|null,events:RadioReceiverEvent[],fr
  }
 }
 
+// ---------------------------------------------------------------- R-RX3 marks
+/** One line helper 0x575510 call on r: the main Timer1 gate, the collision compare with lastBackupY = 141 [S/D], the store. */
+function markLine(d:Draft,r:Mutable<RadioReceiver>,selector:ReceiverMarkSelector,x:number,events:RadioReceiverEvent[]){
+ const a=attemptMarkLine(r.marks,selector,x,d.timerEnabled,RECEIVER_MARK_CONSTANTS.markBackupLastY);
+ r.marks=a.marks;events.push({kind:'mark-line',slot:r.index,selector,x,outcome:a.outcome});
+}
+/** One label helper 0x575684 call on r with r's own snapshot +0x579 and N +0x51d; no timer test. */
+function markLabel(r:Mutable<RadioReceiver>,selector:ReceiverMarkSelector,x:number,events:RadioReceiverEvent[]){
+ const text=receiverMarkTimeText(r.horizontalSnapshot,r.sweepWidth,x);
+ if(text!==null)events.push({kind:'mark-label',slot:r.index,selector,x,text});
+}
+/** One target of a mouse handler: line(sel, x), label(sel, x) with the requested x even when the line was refused, then
+ * label(1 − sel, the target's stored other mark). */
+function markTarget(d:Draft,r:Mutable<RadioReceiver>,selector:ReceiverMarkSelector,x:number,events:RadioReceiverEvent[]){
+ markLine(d,r,selector,x,events);markLabel(r,selector,x,events);
+ const other=(1-selector) as ReceiverMarkSelector;markLabel(r,other,r.marks[other],events);
+}
+/** Second-mark attempts: the origin, then the main when the origin is a child, then the other present children in slot
+ * order 1, 2. Each target has its own collision compare and snapshot; a refusal never stops the later calls. clearDrag:
+ * MouseUp clears the origin's +0x585 after its own attempt and before the broadcast. */
+function markSecondBroadcast(d:Draft,origin:Mutable<RadioReceiver>,x:number,events:RadioReceiverEvent[],clearDrag:boolean){
+ markTarget(d,origin,1,x,events);
+ if(clearDrag)origin.markDrag=withDrag(origin.markDrag,1,false);
+ if(origin.index!==0)markTarget(d,main(d),1,x,events);
+ for(const s of [1,2]){const c=d.slots[s];if(s!==origin.index&&c)markTarget(d,c,1,x,events);}
+}
+const withDrag=(f:readonly [boolean,boolean],selector:ReceiverMarkSelector,v:boolean):readonly [boolean,boolean]=>{
+ if(f[selector]===v)return f;const n=[...f] as [boolean,boolean];n[selector]=v;return Object.freeze(n);
+};
+const withMark=(m:ReceiverMarkPair,selector:ReceiverMarkSelector,v:number):ReceiverMarkPair=>{
+ const n=[...m] as [number,number];n[selector]=v;return Object.freeze(n);
+};
+/** Paint's tail 0x572d63..0x572daa: line(first) when first ≥ 0, line(second) when second ≥ 0 (the same helper, so the timer
+ * gate and collision compare apply), then label(first) and label(second) with the stored values. */
+function paintMarks(d:Draft,r:Mutable<RadioReceiver>,events:RadioReceiverEvent[]){
+ for(const sel of [0,1] as const)if(r.marks[sel]>=0)markLine(d,r,sel,r.marks[sel],events);
+ markLabel(r,0,r.marks[0],events);markLabel(r,1,r.marks[1],events);
+}
+/** A frozen copy of r as Paint drew it, with its own frozen trace copy. */
+function paintedSnapshot(r:Mutable<RadioReceiver>):RadioReceiver{
+ return Object.freeze({...r,trace:Object.freeze({...r.trace,rows:Object.freeze(r.trace.rows.slice())})});
+}
+/** Paint 0x572a20 inside a transition: refresh, the drawing (paint event) and the mark tail. */
+function paint(d:Draft,r:Mutable<RadioReceiver>,events:RadioReceiverEvent[],snapshot=false){
+ displayRefresh(d,r,events);
+ events.push(snapshot?{kind:'paint',slot:r.index,painted:paintedSnapshot(r)}:{kind:'paint',slot:r.index});
+ paintMarks(d,r,events);
+}
+/** A result with the same bank object (no transition). */
+const same=(bank:RadioReceiverBank,events:readonly RadioReceiverEvent[]):RadioReceiverResult=>
+ Object.freeze({ok:true,bank,events:Object.freeze(events.map(e=>Object.freeze(e))),frames:Object.freeze([])});
+const markSlot=(bank:RadioReceiverBank,slot:number)=>Number.isInteger(slot)&&slot>=0&&slot<=2?bank.slots[slot]:null;
+const refuseSlot=(slot:number):RadioReceiverResult=>Object.freeze({ok:false,error:Object.freeze({kind:'receiver-unavailable' as const,detail:`no receiver in slot ${slot}`})});
+const refuseX=(x:number):RadioReceiverResult=>Object.freeze({ok:false,error:Object.freeze({kind:'receiver-unavailable' as const,detail:`mark x ${x} is not an Int32`})});
+
+/** Display1 MouseDown 0x5750c8 with TMouseButton code 0 (first) or 1 (second). The main Timer1 gate returns before any
+ * write (same bank object, mark-gated). Code 0: +0x586 := 1 and one local target. Code 1: +0x585 := 1 and the
+ * second-mark broadcast. Requested Y is not read by the helpers and is not an input. Non-Int32 x is refused atomically
+ * (structural; the session admits only 0..400). */
+export function receiverMarkDown(bank:RadioReceiverBank,slot:number,button:ReceiverMarkSelector,x:number):RadioReceiverResult{
+ const r0=markSlot(bank,slot);if(!r0)return refuseSlot(slot);
+ if(!isReceiverMarkInt32(x))return refuseX(x);
+ if(button!==0&&button!==1)return Object.freeze({ok:false,error:Object.freeze({kind:'receiver-unavailable' as const,detail:`mark button ${String(button)}`})});
+ if(bank.timerEnabled)return same(bank,[{kind:'mark-gated',slot:r0.index}]);
+ return run(bank,(d,events)=>{
+  const r=slotOf(d,slot);
+  r.markDrag=withDrag(r.markDrag,button,true);
+  if(button===0)markTarget(d,r,0,x,events);else markSecondBroadcast(d,r,x,events,false);
+ });
+}
+export type ReceiverMarkShift=Readonly<{left:boolean;right:boolean}>;
+/** Display1 MouseMove 0x575200: +0x586 with ssLeft (0x8) runs the first branch; otherwise +0x585 with ssRight (0x10) the
+ * second-mark broadcast; otherwise nothing (same bank). No timer test: the line refuses but the labels still run. */
+export function receiverMarkMove(bank:RadioReceiverBank,slot:number,shift:ReceiverMarkShift,x:number):RadioReceiverResult{
+ const r0=markSlot(bank,slot);if(!r0)return refuseSlot(slot);
+ if(!isReceiverMarkInt32(x))return refuseX(x);
+ const first=r0.markDrag[0]&&shift.left,second=!first&&r0.markDrag[1]&&shift.right;
+ if(!first&&!second)return same(bank,[]);
+ return run(bank,(d,events)=>{const r=slotOf(d,slot);if(first)markTarget(d,r,0,x,events);else markSecondBroadcast(d,r,x,events,false);});
+}
+/** Display1 MouseUp 0x575334: +0x586 with code 0: one local target, then +0x586 := 0. Otherwise +0x585 with code 1: the
+ * origin target, +0x585 := 0, then the broadcast. Otherwise nothing (same bank). No timer test. */
+export function receiverMarkUp(bank:RadioReceiverBank,slot:number,button:ReceiverMarkSelector,x:number):RadioReceiverResult{
+ const r0=markSlot(bank,slot);if(!r0)return refuseSlot(slot);
+ if(!isReceiverMarkInt32(x))return refuseX(x);
+ const first=r0.markDrag[0]&&button===0,second=!first&&r0.markDrag[1]&&button===1;
+ if(!first&&!second)return same(bank,[]);
+ return run(bank,(d,events)=>{
+  const r=slotOf(d,slot);
+  if(first){markTarget(d,r,0,x,events);r.markDrag=withDrag(r.markDrag,0,false);}
+  else markSecondBroadcast(d,r,x,events,true);
+ });
+}
+/** [W] WEB-MARK-CANCEL: one drag flag := false with no attempt (a cancelled browser gesture, or the end of a keyboard
+ * placement). This is not a native drag-flag cancellation claim. Unchanged flags return the same bank. */
+export function endReceiverMarkDrag(bank:RadioReceiverBank,slot:number,selector:ReceiverMarkSelector):RadioReceiverResult{
+ const r0=markSlot(bank,slot);if(!r0)return refuseSlot(slot);
+ if(!r0.markDrag[selector])return same(bank,[]);
+ return run(bank,d=>{const r=slotOf(d,slot);r.markDrag=withDrag(r.markDrag,selector,false);});
+}
+/** FormDblClick 0x57546c (no timer test). Origin second ≥ 0: second := −1 and Paint for the origin, then the main when the
+ * origin is a child, then the other present children in slot order, each set to −1 and Painted whether or not it had a
+ * second mark. Otherwise origin first ≥ 0: first := −1 and Paint the origin. Otherwise nothing (same bank, marks-none).
+ * Each Paint is a full state transition (refresh: title, beam, +0x583, a title-change lastX reset); its paint event
+ * carries the receiver as drawn at that stage. */
+export function clearReceiverMarks(bank:RadioReceiverBank,slot:number):RadioReceiverResult{
+ const r0=markSlot(bank,slot);if(!r0)return refuseSlot(slot);
+ const selector:ReceiverMarkSelector|null=r0.marks[1]>=0?1:r0.marks[0]>=0?0:null;
+ if(selector===null)return same(bank,[{kind:'marks-none',slot:r0.index}]);
+ return run(bank,(d,events)=>{
+  const clear=(r:Mutable<RadioReceiver>)=>{
+   r.marks=withMark(r.marks,selector,RECEIVER_MARK_CONSTANTS.unset);events.push({kind:'mark-cleared',slot:r.index,selector});
+   paint(d,r,events,true);
+  };
+  const origin=slotOf(d,slot);clear(origin);
+  if(selector===1){
+   if(origin.index!==0)clear(main(d));
+   for(const s of [1,2]){const c=d.slots[s];if(s!==origin.index&&c)clear(c);}
+  }
+ });
+}
+
 export type ReceiverSourceInput=Readonly<{catalog:PulsarCatalog|null;pointing:RadioPointing}>;
 /** Rcvr1Btn 0x567958: FormCreate when the main slot is empty (needs createSeed), then the picker with limit 2. */
 export function openMainReceiver(bank:RadioReceiverBank,input:ReceiverSourceInput&Readonly<{createSeed?:number}>):RadioReceiverResult{
@@ -391,10 +536,11 @@ export function activateReceiver(bank:RadioReceiverBank,slot:number):RadioReceiv
   displayRefresh(d,r,events);
  });
 }
-/** Paint 0x572a20 state part: the parameter refresh 0x572f8c, then the drawing (paint event → receiverPaintOps).
- * [W] The web paints at canvas mount (first WM_PAINT after Show [I]) and at Receive start [S] only (WEB-RX-PAINT-01). */
+/** Paint 0x572a20 state part: the parameter refresh 0x572f8c, then the drawing (paint event → receiverPaintOps), then the
+ * mark tail (R-RX3). [W] The web paints at canvas mount (first WM_PAINT after Show [I]), at Receive start [S] and in the
+ * mark Clear [S] only (WEB-RX-PAINT-01). */
 export function paintReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverResult{
- return run(bank,(d,events)=>{const r=slotOf(d,slot);displayRefresh(d,r,events);events.push({kind:'paint',slot:r.index});});
+ return run(bank,(d,events)=>{paint(d,slotOf(d,slot),events);});
 }
 /** Live options copy (OA-03): caches already taken by existing receivers are unchanged. */
 export function copyLiveRadioOptions(bank:RadioReceiverBank,options:RadioReceiverOptions):RadioReceiverResult{
@@ -415,7 +561,7 @@ export function reassociateReceiverOnClock(bank:RadioReceiverBank,input:Receiver
 
 export type ReceiveToggleInput=Readonly<{jd:number|null;now:number;allocateSeed?:number}>;
 /** Mode 0x5745f8 on the main receiver, then each child in slot order. Start: receiving helper 0x575c6c (Add off), clear
- * +0x42d, Paint (refresh + drawing), snapshot +0x579, source refresh (trace reset; first build Randomizes with
+ * +0x42d, marks := −1 (R-RX3), Paint (refresh + drawing), snapshot +0x579, source refresh (trace reset; first build Randomizes with
  * allocateSeed), stamp +0x499 := now (caller-supplied scalar for Time 0x40d448, see receiverTimerTick), enable the timer,
  * refresh. Each child: copy +0x584, Add off, clear +0x42d, Paint, snapshot, refresh. Stop: +0x42d := 1 and the refresh
  * (whose title change may clear lastX).
@@ -429,7 +575,8 @@ export function toggleReceive(bank:RadioReceiverBank,input:ReceiveToggleInput):R
   if(m.receiving){
    if(!Number.isFinite(input.now))fail('clock-required','timer stamp (0x40d448)');
    m.addEnabled=false;m.stopPending=false;
-   displayRefresh(d,m,events);events.push({kind:'paint',slot:0});
+   // R-RX3: +0x430/+0x434 := −1 before this receiver's Paint (0x5746c8/0x5746d2); the drag flags are not written.
+   m.marks=UNSET_MARKS;paint(d,m,events);
    m.horizontalSnapshot=m.horizontal;
    refresh(d,'receive',input.jd,input.allocateSeed,events);
    m.lastTick=input.now;d.timerEnabled=true;events.push({kind:'receive-started'});
@@ -439,7 +586,7 @@ export function toggleReceive(bank:RadioReceiverBank,input:ReceiveToggleInput):R
    c.receiving=m.receiving;
    if(c.receiving){
     c.addEnabled=false;c.stopPending=false;
-    displayRefresh(d,c,events);events.push({kind:'paint',slot:c.index});
+    c.marks=UNSET_MARKS;paint(d,c,events);
     c.horizontalSnapshot=c.horizontal;
    }else c.stopPending=true;
    displayRefresh(d,c,events);

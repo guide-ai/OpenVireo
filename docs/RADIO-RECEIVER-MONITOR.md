@@ -2,7 +2,7 @@
 
 The Receiver button of the radio control panel opens a TRcvr_Form1 main receiver and up to two child channels as cards. Each card has the recovered controls and a logical 401 × 142 display. The display is drawn from the R-RX1 signal chain ([RADIO-RECEIVER-SIGNAL.md](RADIO-RECEIVER-SIGNAL.md)) with a learner-loaded reference catalog.
 
-This is a **modelled display, not an observation**. It is silent, temporary (not in Save investigation; reload resets it) and does not record. Record, sound and volume, Identify/Properties, Align, display marks, PLR writing and the Add Current Item / PulsarList menu effects are not ported. It does not complete Radio or any of the 58 capabilities. Native equivalence is not established: no CLEA execution, emulation or native trace was used, and tests are contract checks of this implementation.
+This is a **modelled display, not an observation**. It is silent, temporary (not in Save investigation; reload resets it) and does not record. Record, sound and volume, Identify/Properties, Align, PLR writing and the Add Current Item / PulsarList menu effects are not ported. Display marks were excluded from R-RX2 and are now added by R-RX3 ([RADIO-RECEIVER-MARKS.md](RADIO-RECEIVER-MARKS.md)). It does not complete Radio or any of the 58 capabilities. Native equivalence is not established: no CLEA execution, emulation or native trace was used, and tests are contract checks of this implementation.
 
 Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Evidence tags: [S] static listing, [D] DFM/resource default, [I] analyst inference, [W] web policy. Paths, hashes and VAs are in [RADIO-RECEIVER-MONITOR-PROVENANCE.json](RADIO-RECEIVER-MONITOR-PROVENANCE.json).
 
@@ -18,7 +18,7 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
 ## Ported contracts
 
 - **RXD-01/02 trace store** [S] (`0x5720cc`, `0x572130`, `0x5721a8`, `0x5721c4`). K = Word(Display.Width) − 1 = 400; max index Word(K − 1) = 399; append only for x ≤ 399 (Word y, lastX := x); lookup beyond max gives 0. Reset zeroes 0..max and lastX and stores dt. The main store is reset inside the source refresh (`0x574c0c`) before the profile build; children are never reset. GetMem storage is not zeroed, so never-written child entries are `null` [W] and lift the pen when replayed.
-- **RXD-03 Paint** [S] (`0x572a20`). Order: parameter refresh → teal background → grid (H-dependent step and minor count; majors 10 at H = 1, 5 below 1, Round(H) otherwise; ticks 111→120/130; final major at x = W) → yellow pen → replay of 0..lastX only when not receiving and lastX ≠ 0 → baseline `0x572dd0` → annotation → marks (always −1 here). Paint is a state transition (its refresh writes `+0x405`, `+0x583`, title and caption).
+- **RXD-03 Paint** [S] (`0x572a20`). Order: parameter refresh → teal background → grid (H-dependent step and minor count; majors 10 at H = 1, 5 below 1, Round(H) otherwise; ticks 111→120/130; final major at x = W) → yellow pen → replay of 0..lastX only when not receiving and lastX ≠ 0 → baseline `0x572dd0` → annotation → marks (always −1 in R-RX2; R-RX3 ports the tail, drawn on a separate overlay). Paint is a state transition (its refresh writes `+0x405`, `+0x583`, title and caption).
 - **RXD-04 annotation** [S] (`0x572e24`). fixed1(H) + `" Sec "` at (10, 124); fixed2(f) + `" MHz "` padded with `" "` to ≥ 12 characters at (307, 124); colour 0xff00; font colour and PenPos restored. Writes no state and draws no science.
 - **PARAM refresh** [S] (`0x572f8c`). Aperture text, the beam, `+0x583 := pointer && +0x405 > +0x51f` (strict, NaN false; correction F4: also written at Activate), titles. The main title changing while not receiving sets every lastX := 0. Labels: Freq fixed2, Step caption `0x5b4aab + 5i`, Vert fixed2, Horz fixed1, ModeDisp `Receive`/`Stop` (`+0x39c`, not the Mode button), AlignDisp `Yes` (main), RcrdDisp `Off`.
 - **FORMAT-2 beam** [S] (`0x486f4c` with `0x486b20`). Decimal minutes with one decimal, 60-minute carry, whole degrees wrapped below 360, four-character head, `'0'` prefix when the pre-carry rounded minutes are below ten (quirk kept). Defaults (600 MHz, 100 m): `"   Aperture: 100 Meters    Beam (HPBW): 0 Deg 41.9'"`. Positive `+0x92c` gives the Effective FOV text instead.
@@ -54,7 +54,7 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
 
 ## Remaining items
 
-Record and the 1600/1601 list limit; Identify/Save/result-7; audio and PRE-01; manual marks and DblClick; Align and window states; `env+0x37d6`; the ShowWindow table `0x5afa8c`; other `+0x499` writers; `0x4270c0`; historical FPU, global RNG, locale and GDI state; the actual `Application+0x44` value and the `0x53a` delivery.
+Record and the 1600/1601 list limit; Identify/Save/result-7; audio and PRE-01; Align and window states (manual marks and DblClick: R-RX3, with its own remaining gaps); `env+0x37d6`; the ShowWindow table `0x5afa8c`; other `+0x499` writers; `0x4270c0`; historical FPU, global RNG, locale and GDI state; the actual `Application+0x44` value and the `0x53a` delivery.
 
 ## Tests
 

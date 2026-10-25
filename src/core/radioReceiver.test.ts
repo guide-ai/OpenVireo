@@ -2,10 +2,10 @@ import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import type {PulsarRecord} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_COMPILED_OPTIONS,RADIO_RECEIVER_CONSTANTS,RADIO_RECEIVER_LITERALS,RADIO_RECEIVER_STEP_VALUES,activateReceiver,addReceiverChannel,closeReceiver,
- copyLiveRadioOptions,createRadioReceiverBank,openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,queryCloseReceiver,
- reassociateReceiverOnClock,receiverTimerGate,receiverTimerTick,stepFrequency,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,
- type RadioReceiverBank,type RadioReceiverFrame,type RadioReceiverOptions,type RadioReceiverResult,
+ RADIO_RECEIVER_COMPILED_OPTIONS,RADIO_RECEIVER_CONSTANTS,RADIO_RECEIVER_LITERALS,RADIO_RECEIVER_STEP_VALUES,activateReceiver,addReceiverChannel,clearReceiverMarks,closeReceiver,
+ copyLiveRadioOptions,createRadioReceiverBank,endReceiverMarkDrag,openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,queryCloseReceiver,
+ reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerGate,receiverTimerTick,stepFrequency,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,
+ type RadioReceiver,type RadioReceiverBank,type RadioReceiverEvent,type RadioReceiverFrame,type RadioReceiverOptions,type RadioReceiverResult,
 } from './radioReceiver';
 import {appendReceiverTrace,createReceiverTrace} from './radioReceiverDisplay';
 
@@ -439,6 +439,152 @@ describe('R-RX2 display state: parameter refresh, trace store, Freq/Incr steps a
  });
 });
 
+describe('R-RX3 manual marks: MouseDown/Move/Up, FormDblClick, Paint tail and the Receive reset',()=>{
+ // [W] contract checks of the recovered call order (docs/RADIO-RECEIVER-MARKS.md, CONTRACTS.json M3–M6), not native
+ // oracles. "Constructed" banks patch fields the public API cannot reach (structural cases); they are labelled as such.
+ const B=rec({legacyName:'B0000+00'});
+ type Patch=Partial<Pick<RadioReceiver,'marks'|'markDrag'|'horizontalSnapshot'>>;
+ /** Constructed bank: per-slot patches (structural cases only). */
+ const patched=(b:RadioReceiverBank,patches:readonly (Patch|null)[]):RadioReceiverBank=>Object.freeze({...b,
+  slots:Object.freeze(b.slots.map((r,i)=>r&&Object.freeze({...r,...(patches[i]??{})}))) as unknown as RadioReceiverBank['slots']});
+ const withMarks=(b:RadioReceiverBank,first:readonly number[],second:readonly number[])=>patched(b,[0,1,2].map(i=>({marks:Object.freeze([first[i],second[i]] as const)})));
+ const lines=(events:readonly RadioReceiverEvent[])=>events.flatMap(e=>e.kind==='mark-line'?[[e.slot,e.selector,e.x,e.outcome]]:[]);
+ const labelEvents=(events:readonly RadioReceiverEvent[])=>events.flatMap(e=>e.kind==='mark-label'?[[e.slot,e.selector,e.x,e.text]]:[]);
+ const paints=(events:readonly RadioReceiverEvent[])=>events.flatMap(e=>e.kind==='paint'?[e.slot]:[]);
+ const marksOf=(b:RadioReceiverBank)=>b.slots.map(r=>r?[...r.marks]:null);
+ const finish=(b:RadioReceiverBank)=>{let s=ok(toggleReceive(b,{jd:JD,now:nextNow()})).bank;while(s.timerEnabled)s=tick(s).bank;return s;};
+
+ it('FormCreate leaves both marks −1 and both drag flags false [W]',()=>{
+  expect(opened(2).slots.map(r=>[r!.marks,r!.markDrag])).toEqual([[[-1,-1],[false,false]],[[-1,-1],[false,false]],[[-1,-1],[false,false]]]);
+ });
+ it('LOCAL-FIRST: code 0 sets +0x586 and attempts only the origin: line, own label, other label (unset draws nothing)',()=>{
+  const b=opened(2),r=ok(receiverMarkDown(b,2,0,100));
+  expect(r.events).toEqual([{kind:'mark-line',slot:2,selector:0,x:100,outcome:'stored'},{kind:'mark-label',slot:2,selector:0,x:100,text:'1.00 Sec'}]);
+  expect(marksOf(r.bank)).toEqual([[-1,-1],[-1,-1],[100,-1]]);expect(r.bank.slots[2]!.markDrag).toEqual([true,false]);
+  expect(r.bank.slots[0]).toEqual(b.slots[0]);expect(r.bank.slots[1]).toEqual(b.slots[1]);
+  expect(r.bank.random).toBe(b.random);expect(r.bank.profile).toBe(b.profile);expect(r.bank.sourceBuffer).toBe(b.sourceBuffer);
+ });
+ it('x = N = 400 is a stored line and a label although the trace store ends at 399',()=>{
+  const r=ok(receiverMarkDown(opened(0),0,0,400));
+  expect(r.bank.slots[0]!.trace.maxIndex).toBe(399);expect(r.bank.slots[0]!.marks).toEqual([400,-1]);
+  expect(labelEvents(r.events)).toEqual([[0,0,400,'4.00 Sec']]);
+ });
+ it('COLLISION-BROADCAST: second at 10 from slot 1 attempts 1, 0, 2; the main collides; stored seconds [80, 10, 10]; labels use the requested x',()=>{
+  const b=withMarks(opened(2),[10,20,30],[80,80,80]),r=ok(receiverMarkDown(b,1,1,10));
+  expect(lines(r.events)).toEqual([[1,1,10,'stored'],[0,1,10,'collision'],[2,1,10,'stored']]);
+  expect(r.bank.slots.map(x=>x!.marks[1])).toEqual([80,10,10]);
+  expect(labelEvents(r.events)).toEqual([[1,1,10,'0.10 Sec'],[1,0,20,'0.20 Sec'],[0,1,10,'0.10 Sec'],[0,0,10,'0.10 Sec'],[2,1,10,'0.10 Sec'],[2,0,30,'0.30 Sec']]);
+  expect(r.bank.slots.map(x=>x!.markDrag)).toEqual([[false,false],[false,true],[false,false]]);// only the origin's +0x585
+ });
+ it('COLLISION-LABEL (constructed snapshot 2): the first stays 10 while its label attempt shows the requested 100',()=>{
+  const b=patched(opened(0),[{marks:Object.freeze([10,100] as const),horizontalSnapshot:2}]),r=ok(receiverMarkDown(b,0,0,100));
+  expect(lines(r.events)).toEqual([[0,0,100,'collision']]);expect(r.bank.slots[0]!.marks).toEqual([10,100]);
+  expect(labelEvents(r.events)).toEqual([[0,0,100,'0.500 Sec'],[0,1,100,'0.500 Sec']]);
+ });
+ it('OWN-SNAPSHOT (constructed [1, 2, 4], structural: the API cannot build it): each target labels with its own snapshot',()=>{
+  const b=patched(withMarks(opened(2),[1,2,3],[-1,-1,-1]),[{horizontalSnapshot:1},{horizontalSnapshot:2},{horizontalSnapshot:4}]);
+  const r=ok(receiverMarkDown(b,0,1,100));
+  expect(labelEvents(r.events).filter(l=>l[1]===1).map(l=>[l[0],l[3]])).toEqual([[0,'0.2500 Sec'],[1,'0.500 Sec'],[2,'1.00 Sec']]);
+ });
+ it('TIMER-DOWN: refused before any write with the same bank object; Move/Up have no timer test (lingering flag across Receive, structural)',()=>{
+  const s=started(1),r=ok(receiverMarkDown(s,0,0,100));
+  expect(r.bank).toBe(s);expect(r.events).toEqual([{kind:'mark-gated',slot:0}]);
+  // A Down whose release never arrived leaves +0x586 set; Receive resets the indices but not the flags.
+  const down=ok(receiverMarkDown(opened(0),0,0,10)).bank,rx=ok(toggleReceive(down,{jd:JD,now:nextNow(),allocateSeed:2})).bank;
+  expect(rx.slots[0]).toMatchObject({marks:[-1,-1],markDrag:[true,false]});expect(rx.timerEnabled).toBe(true);
+  const mv=ok(receiverMarkMove(rx,0,{left:true,right:false},100));
+  expect(lines(mv.events)).toEqual([[0,0,100,'timer']]);expect(labelEvents(mv.events)).toEqual([[0,0,100,'1.00 Sec']]);
+  const up=ok(receiverMarkUp(mv.bank,0,0,100));
+  expect(lines(up.events)).toEqual([[0,0,100,'timer']]);expect(up.bank.slots[0]).toMatchObject({marks:[-1,-1],markDrag:[false,false]});
+  expect(up.bank.random).toBe(rx.random);expect(up.bank.profile).toBe(rx.profile);
+ });
+ it('MOVE-PRIORITY (constructed both flags): the first branch wins; no matching flag/bit returns the same bank',()=>{
+  const b=patched(opened(1),[{markDrag:Object.freeze([true,true] as const)}]);
+  expect(lines(ok(receiverMarkMove(b,0,{left:true,right:true},50)).events)).toEqual([[0,0,50,'stored']]);
+  expect(lines(ok(receiverMarkMove(b,0,{left:false,right:true},60)).events)).toEqual([[0,1,60,'stored'],[1,1,60,'stored']]);
+  const none=ok(receiverMarkMove(opened(1),0,{left:true,right:true},50));expect(none.events).toEqual([]);
+ });
+ it('Up: code 1 clears the origin +0x585 after its own attempt, then broadcasts; a mismatched button does nothing',()=>{
+  let b=ok(receiverMarkDown(opened(2),2,1,50)).bank;
+  expect(b.slots[2]!.markDrag).toEqual([false,true]);
+  const mismatch=ok(receiverMarkUp(b,2,0,70));expect(mismatch.bank).toBe(b);expect(mismatch.events).toEqual([]);
+  const up=ok(receiverMarkUp(b,2,1,70));b=up.bank;
+  expect(lines(up.events).map(l=>l[0])).toEqual([2,0,1]);expect(b.slots.map(r=>r!.marks[1])).toEqual([70,70,70]);
+  expect(b.slots[2]!.markDrag).toEqual([false,false]);
+  expect(ok(endReceiverMarkDrag(b,2,1)).bank).toBe(b);// unchanged flag: same bank
+ });
+ it('refuses non-Int32 x, an invalid code and an absent slot atomically',()=>{
+  const b=opened(0);
+  for(const r of [receiverMarkDown(b,0,0,1.5),receiverMarkDown(b,0,0,2**31),receiverMarkMove(b,0,{left:true,right:false},Number.NaN),receiverMarkUp(b,0,0,Infinity),
+   receiverMarkDown(b,1,0,10),clearReceiverMarks(b,2),endReceiverMarkDrag(b,1,0),receiverMarkDown(b,0,2 as 0,10)])expect(kindOf(r)).toBe('receiver-unavailable');
+ });
+ it('CLEAR-PRIORITY: seconds cleared and Painted in origin 1, main 0, child 2 order; the next Clear clears only the origin first',()=>{
+  const b=withMarks(opened(2),[10,20,30],[40,40,40]),c1=ok(clearReceiverMarks(b,1));
+  expect(c1.events.filter(e=>e.kind==='mark-cleared')).toEqual([{kind:'mark-cleared',slot:1,selector:1},{kind:'mark-cleared',slot:0,selector:1},{kind:'mark-cleared',slot:2,selector:1}]);
+  expect(paints(c1.events)).toEqual([1,0,2]);expect(marksOf(c1.bank)).toEqual([[10,-1],[20,-1],[30,-1]]);
+  // Each Paint's tail redraws the remaining first mark and its label.
+  expect(lines(c1.events)).toEqual([[1,0,20,'stored'],[0,0,10,'stored'],[2,0,30,'stored']]);
+  const c2=ok(clearReceiverMarks(c1.bank,1));
+  expect(paints(c2.events)).toEqual([1]);expect(marksOf(c2.bank)).toEqual([[10,-1],[-1,-1],[30,-1]]);
+  expect(c2.events.map(e=>e.kind)).toEqual(['mark-cleared','beam','paint']);
+ });
+ it('CLEAR-ORIGIN: the origin without a second clears only its first; other windows keep their seconds',()=>{
+  const c=ok(clearReceiverMarks(withMarks(opened(2),[10,20,30],[40,-1,40]),1));
+  expect(paints(c.events)).toEqual([1]);expect(marksOf(c.bank)).toEqual([[10,40],[-1,-1],[30,40]]);
+ });
+ it('a second Clear from the main Paints every present child even without a second mark; nothing set gives marks-none',()=>{
+  const c=ok(clearReceiverMarks(withMarks(opened(2),[-1,-1,-1],[40,-1,-1]),0));
+  expect(paints(c.events)).toEqual([0,1,2]);expect(c.events.filter(e=>e.kind==='mark-cleared').map(e=>e.slot)).toEqual([0,1,2]);
+  const b=opened(1),n=ok(clearReceiverMarks(b,1));expect(n.bank).toBe(b);expect(n.events).toEqual([{kind:'marks-none',slot:1}]);
+ });
+ it('Clear runs each Paint as a full refresh; each paint event keeps the receiver as that stage drew it (title change after a reassociation miss)',()=>{
+  let b=finish(tick(tick(started(1,[B])).bank).bank);
+  const lastX=b.slots.map(r=>r?.trace.lastX);expect(lastX[1]).toBeGreaterThan(0);
+  b=ok(reassociateReceiverOnClock(b,{catalog:[B],pointing:{ra:12,dec:-40}})).bank;expect(b.slots[0]!.title).toBe('Pulsar B0000+00');
+  b=ok(receiverMarkUp(ok(receiverMarkDown(b,1,1,50)).bank,1,1,50)).bank;
+  const c=ok(clearReceiverMarks(b,1));
+  expect(c.events.map(e=>e.kind)).toEqual(['mark-cleared','beam','paint','mark-cleared','trace-cleared','beam','paint']);
+  const [p1,p0]=c.events.flatMap(e=>e.kind==='paint'?[e]:[]);
+  expect(p1.painted!.trace.lastX).toBe(lastX[1]);// the child was drawn before the main's refresh cleared every lastX
+  expect(c.bank.slots[1]!.trace.lastX).toBe(0);expect(c.bank.slots[0]!.title).toBe('No Pulsar in Beam!');
+  expect(p0.painted).toMatchObject({title:'No Pulsar in Beam!',marks:[-1,-1]});expect(p0.painted!.trace.lastX).toBe(0);
+  expect(c.bank.random).toBe(b.random);expect(c.bank.profile).toBe(b.profile);
+  expect(deepFrozen(c.events)).toBe(true);expect(deepFrozen(c.bank)).toBe(true);
+ });
+ it('Paint tail: line(first), line(second), label(first), label(second) after the drawing; repeated Paints are idempotent',()=>{
+  let b=ok(receiverMarkUp(ok(receiverMarkDown(opened(0),0,0,100)).bank,0,0,100)).bank;
+  b=ok(receiverMarkUp(ok(receiverMarkDown(b,0,1,300)).bank,0,1,300)).bank;
+  const p=ok(paintReceiver(b,0));
+  expect(p.events).toEqual([{kind:'beam',slot:0,changed:true},{kind:'paint',slot:0},
+   {kind:'mark-line',slot:0,selector:0,x:100,outcome:'stored'},{kind:'mark-line',slot:0,selector:1,x:300,outcome:'stored'},
+   {kind:'mark-label',slot:0,selector:0,x:100,text:'1.00 Sec'},{kind:'mark-label',slot:0,selector:1,x:300,text:'3.00 Sec'}]);
+  expect(p.bank.slots).toEqual(b.slots);expect(ok(paintReceiver(p.bank,0)).events).toEqual(p.events);
+ });
+ it('RECEIVE-RESET: every receiver gets −1 before its Paint (no mark tail draws); drag flags are not written',()=>{
+  let b=ok(receiverMarkDown(opened(1),0,0,100)).bank;b=ok(receiverMarkDown(b,1,1,200)).bank;
+  expect(marksOf(b)).toEqual([[100,200],[-1,200],null]);
+  const r=ok(toggleReceive(b,{jd:JD,now:nextNow(),allocateSeed:2}));
+  expect(marksOf(r.bank)).toEqual([[-1,-1],[-1,-1],null]);
+  expect(r.bank.slots.map(x=>x?.markDrag??null)).toEqual([[true,false],[false,true],null]);
+  expect(r.events.some(e=>e.kind==='mark-line'||e.kind==='mark-label')).toBe(false);
+  expect(paints(r.events)).toEqual([0,1]);
+  // Stop does not reset the marks (none are set while receiving); the finish keeps them −1.
+  expect(marksOf(finish(r.bank))).toEqual([[-1,-1],[-1,-1],null]);
+ });
+ it('drag sequences write only marks, flags and labels: no RNG, profile, buffer, trace, title, beam or in-source change',()=>{
+  const b=opened(2,[B]);let x=b;
+  for(const step of [()=>receiverMarkDown(x,1,1,20),()=>receiverMarkMove(x,1,{left:false,right:true},40),()=>receiverMarkMove(x,1,{left:false,right:true},45),
+   ()=>receiverMarkUp(x,1,1,45),()=>receiverMarkDown(x,0,0,120),()=>receiverMarkMove(x,0,{left:true,right:false},130),()=>receiverMarkUp(x,0,0,130)])x=ok(step()).bank;
+  expect(marksOf(x)).toEqual([[130,45],[-1,45],[-1,45]]);
+  expect(x.random).toBe(b.random);expect(x.profile).toBe(b.profile);expect(x.sourceBuffer).toBe(b.sourceBuffer);
+  for(const i of [0,1,2]){
+   const before=b.slots[i]!,after=x.slots[i]!;
+   expect(after.trace).toBe(before.trace);
+   expect([after.title,after.apertureText,after.beamRadius,after.beamSigma,after.inSource,after.searchRadius]).toEqual([before.title,before.apertureText,before.beamRadius,before.beamSigma,before.inSource,before.searchRadius]);
+  }
+ });
+});
+
 describe('purity',()=>{
  it('returns deep-frozen banks and leaves inputs untouched',()=>{
   const s=started(2),snapshot=JSON.stringify(s),t=tick(s);
@@ -446,7 +592,7 @@ describe('purity',()=>{
   expect(JSON.stringify(s)).toBe(snapshot);
  });
  it('keeps React, DOM, host clocks and Math.random out of the new core modules',()=>{
-  for(const f of ['radioRandom.ts','radioThermal.ts','radioPulsarProfile.ts','radioReceiver.ts','radioReceiverDisplay.ts','radioReceiverSession.ts']){
+  for(const f of ['radioRandom.ts','radioThermal.ts','radioPulsarProfile.ts','radioReceiver.ts','radioReceiverDisplay.ts','radioReceiverSession.ts','radioReceiverMarks.ts','radioReceiverMarkInput.ts']){
    const text=readFileSync(new URL(`./${f}`,import.meta.url),'utf8');
    expect(text,f).not.toMatch(/from 'react'|document\.|window\.|Date\.now|new Date|Math\.random|performance\.now|localStorage/);
   }
