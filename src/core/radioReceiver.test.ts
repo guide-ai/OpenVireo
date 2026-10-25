@@ -2,9 +2,10 @@ import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import type {PulsarRecord} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_COMPILED_OPTIONS,RADIO_RECEIVER_CONSTANTS,RADIO_RECEIVER_LITERALS,RADIO_RECEIVER_STEP_VALUES,activateReceiver,addReceiverChannel,clearReceiverMarks,closeReceiver,
- copyLiveRadioOptions,createRadioReceiverBank,endReceiverMarkDrag,openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,queryCloseReceiver,
- reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerGate,receiverTimerTick,stepFrequency,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,
+ EMPTY_RADIO_RECORD_HEADER,RADIO_RECEIVER_COMPILED_OPTIONS,RADIO_RECEIVER_CONSTANTS,RADIO_RECEIVER_LITERALS,RADIO_RECEIVER_STEP_VALUES,activateReceiver,addReceiverChannel,
+ armRecordCapture,clearReceiverMarks,closeReceiver,copyLiveRadioOptions,createRadioReceiverBank,endReceiverMarkDrag,openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,
+ queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerGate,receiverTimerTick,receiverWindowMoved,stepFrequency,
+ stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,toggleReceiverAlign,toggleRecordByte,
  type RadioReceiver,type RadioReceiverBank,type RadioReceiverEvent,type RadioReceiverFrame,type RadioReceiverOptions,type RadioReceiverResult,
 } from './radioReceiver';
 import {appendReceiverTrace,createReceiverTrace} from './radioReceiverDisplay';
@@ -582,6 +583,115 @@ describe('R-RX3 manual marks: MouseDown/Move/Up, FormDblClick, Paint tail and th
    expect(after.trace).toBe(before.trace);
    expect([after.title,after.apertureText,after.beamRadius,after.beamSigma,after.inSource,after.searchRadius]).toEqual([before.title,before.apertureText,before.beamRadius,before.beamSigma,before.inSource,before.searchRadius]);
   }
+ });
+});
+
+describe('R-RX5 AL-* Align: FormCreate, AlignDisp, toggle, layout, message 3, Add, Activate, Receive and the main finish',()=>{
+ // [W] contract checks of the recovered order (docs/RADIO-RECEIVER-ALIGN.md, CONTRACTS.json AL-*), not native oracles.
+ const placed=(events:readonly RadioReceiverEvent[])=>events.flatMap(e=>e.kind==='window-placed'?[`${e.cause}${e.slot}`]:[]);
+ const kinds=(events:readonly RadioReceiverEvent[])=>events.map(e=>e.kind==='window-placed'?`${e.cause}${e.slot}`:e.kind);
+ const finish=(b:RadioReceiverBank)=>{let s=ok(toggleReceive(b,{jd:JD,now:nextNow()})).bank;while(s.timerEnabled)s=tick(s).bank;return s;};
+
+ it('AL-INIT: false/false before any window [W]; every FormCreate writes on with the guard clear; AlignDisp only from a main refresh',()=>{
+  const none=bankOf();expect(none.align).toEqual({on:false,guard:false});
+  const o=ok(openMainReceiver(none,{catalog:[A],pointing:POINT,createSeed:1})).bank;
+  expect(o.align).toEqual({on:true,guard:false});expect(o.slots[0]!.alignLabel).toBe('');
+  // The main's activation lays out with no child (only the guard is set), then its refresh writes 'Yes'.
+  const a=ok(activateReceiver(o,0));expect(kinds(a.events)).toEqual(['trace-cleared','beam']);// first title: the R-RX2 lastX reset
+  expect(a.bank.align).toEqual({on:true,guard:true});expect(a.bank.slots[0]!.alignLabel).toBe('Yes');
+  // Children never write +0x3bc.
+  const c=ok(activateReceiver(ok(addReceiverChannel(a.bank,{createSeed:3})).bank,1)).bank;
+  expect(c.slots[1]!.alignLabel).toBe('');expect(c.slots[0]!.alignLabel).toBe('Yes');
+  expect(deepFrozen(c)).toBe(true);
+ });
+ it('AL-TOGGLE: On → Off refreshes the main (No) and places nothing; Off → On with the guard clear places 2 then 1 and sets it; set, nothing',()=>{
+  const b=opened(2);expect(b.align).toEqual({on:true,guard:false});// the children's activations cleared it
+  const t1=ok(toggleReceiverAlign(b));
+  expect(t1.events).toEqual([{kind:'align-toggled',on:false},{kind:'beam',slot:0,changed:true}]);
+  expect(t1.bank.align).toEqual({on:false,guard:false});expect(t1.bank.slots[0]!.alignLabel).toBe('No');
+  const t2=ok(toggleReceiverAlign(t1.bank));
+  expect(kinds(t2.events)).toEqual(['align-toggled','beam','layout2','layout1']);
+  expect(t2.bank.align).toEqual({on:true,guard:true});expect(t2.bank.slots[0]!.alignLabel).toBe('Yes');
+  const t3=ok(toggleReceiverAlign(t2.bank));expect(t3.bank.align).toEqual({on:false,guard:true});expect(placed(t3.events)).toEqual([]);
+  const t4=ok(toggleReceiverAlign(t3.bank));expect(placed(t4.events)).toEqual([]);expect(t4.bank.align).toEqual({on:true,guard:true});
+  expect(t4.bank.slots.slice(1).map(r=>r!.alignLabel)).toEqual(['','']);
+  expect(kindOf(toggleReceiverAlign(bankOf()))).toBe('receiver-unavailable');
+ });
+ it('AL-LAYOUT with no child only sets the guard; Align is admitted while receiving (0x575c6c does not touch it)',()=>{
+  let b=ok(toggleReceiverAlign(opened(0))).bank;expect(b.align).toEqual({on:false,guard:true});
+  b=ok(receiverWindowMoved(b,0)).bank;expect(b.align).toEqual({on:false,guard:false});
+  const t=ok(toggleReceiverAlign(b));expect(placed(t.events)).toEqual([]);expect(t.bank.align).toEqual({on:true,guard:true});
+  const s=started(1),r=ok(toggleReceiverAlign(s));
+  expect(r.bank.timerEnabled).toBe(true);expect(r.bank.slots[0]!.alignLabel).toBe('No');expect(r.events.some(e=>e.kind==='trace-cleared')).toBe(false);
+  expect(r.bank.random).toBe(s.random);expect(r.bank.profile).toBe(s.profile);
+ });
+ it('AL-MOVE: off clears the guard and places nothing; on re-snaps 2 then 1 only when slot 1 exists and leaves the guard',()=>{
+  const b=opened(2),set=ok(activateReceiver(b,0)).bank;expect(set.align.guard).toBe(true);
+  const m1=ok(receiverWindowMoved(set,2));expect(placed(m1.events)).toEqual(['move2','move1']);expect(m1.bank.align).toEqual({on:true,guard:true});
+  const m2=ok(receiverWindowMoved(b,0));expect(placed(m2.events)).toEqual(['move2','move1']);expect(m2.bank.align).toEqual({on:true,guard:false});
+  expect(ok(receiverWindowMoved(opened(0),0)).events).toEqual([]);
+  const off=ok(toggleReceiverAlign(set)).bank,m3=ok(receiverWindowMoved(off,1));
+  expect(m3.events).toEqual([]);expect(m3.bank.align).toEqual({on:false,guard:false});
+  expect(kindOf(receiverWindowMoved(opened(1),2))).toBe('receiver-unavailable');
+  expect(m1.bank.slots).toEqual(set.slots);expect(m1.bank.random).toBe(set.random);expect(m1.bank.profile).toBe(set.profile);
+ });
+ it('AL-ADD: the child is placed whatever Align is, then the layout; FormCreate leaves AlignDisp stale until the next main refresh',()=>{
+  const b=ok(toggleReceiverAlign(opened(0))).bank,a=ok(addReceiverChannel(b,{createSeed:3}));
+  expect(kinds(a.events)).toEqual(['created','add1','layout1']);
+  expect(a.bank.align).toEqual({on:true,guard:true});expect(a.bank.slots[0]!.alignLabel).toBe('No');
+  const act=ok(activateReceiver(a.bank,1)).bank;expect(act.slots[0]!.alignLabel).toBe('No');expect(act.align.guard).toBe(false);
+  expect(ok(stepVertical(act,0,'up')).bank.slots[0]!.alignLabel).toBe('Yes');
+  // Slot 2 under Align on: placed, Add disabled, layout 2 then 1.
+  expect(kinds(ok(addReceiverChannel(act,{createSeed:4})).events)).toEqual(['created','add2','layout2','layout1']);
+ });
+ it('AL-ADD add-nothing: the layout still runs (guard clear: 2 then 1; set: nothing); slots and stream unchanged',()=>{
+  let f=finish(started(2));expect(f.align.guard).toBe(true);
+  expect(ok(addReceiverChannel(f,{createSeed:9})).events).toEqual([{kind:'add-nothing'}]);
+  f=ok(activateReceiver(f,1)).bank;
+  const n=ok(addReceiverChannel(f,{createSeed:9}));
+  expect(kinds(n.events)).toEqual(['add-nothing','layout2','layout1']);expect(n.bank.slots).toEqual(f.slots);expect(n.bank.random).toBe(f.random);
+ });
+ it('AL-ACTIVATE: a child clears the guard; the main lays out (2 then 1) before its refresh',()=>{
+  const b=opened(2),m=ok(activateReceiver(b,0));
+  expect(kinds(m.events)).toEqual(['layout2','layout1','beam']);expect(m.bank.align.guard).toBe(true);
+  expect(kinds(ok(activateReceiver(m.bank,0)).events)).toEqual(['beam']);
+  expect(ok(activateReceiver(m.bank,2)).bank.align).toEqual({on:true,guard:false});
+ });
+ it('AL-RECEIVE: start lays out after Paint and before the source refresh; Stop has none; the main finish lays out before record-finished',()=>{
+  const r=ok(toggleReceive(opened(1),{jd:JD,now:nextNow(),allocateSeed:2})),k=kinds(r.events);
+  expect(k.slice(k.indexOf('paint'),k.indexOf('refresh')+1)).toEqual(['paint','layout1','trace-reset','refresh']);
+  expect(r.bank.align.guard).toBe(true);
+  expect(placed(ok(toggleReceive(r.bank,{jd:JD,now:nextNow()})).events)).toEqual([]);
+  let s=ok(armRecordCapture(ok(toggleRecordByte(opened(1))).bank,EMPTY_RADIO_RECORD_HEADER)).bank;
+  s=ok(toggleReceive(s,{jd:JD,now:nextNow(),allocateSeed:2})).bank;
+  s=ok(activateReceiver(s,1)).bank;expect(s.align.guard).toBe(false);
+  s=ok(toggleReceive(s,{jd:JD,now:nextNow()})).bank;
+  let fin:string[]=[];
+  while(s.timerEnabled){const t=tick(s);s=t.bank;if(t.events.some(e=>e.kind==='record-finished'))fin=kinds(t.events);}
+  const i=fin.indexOf('sweep-finished');
+  expect(fin.slice(i,i+3)).toEqual(['sweep-finished','layout1','record-finished']);
+  expect(fin.filter(x=>x.startsWith('layout'))).toEqual(['layout1']);// later main finishes in the batch find the guard set
+ });
+ it('science invariance: the same seeds with and without interleaved toggles and moves give equal frames, draws, rows, traces and marks',()=>{
+  const runIt=(interleave:boolean)=>{
+   let c=5000;const now=()=>(c+=1e-6);
+   const ops=[(x:RadioReceiverBank)=>toggleReceiverAlign(x),(x:RadioReceiverBank)=>receiverWindowMoved(x,2),(x:RadioReceiverBank)=>receiverWindowMoved(x,0),
+    (x:RadioReceiverBank)=>toggleReceiverAlign(x),(x:RadioReceiverBank)=>receiverWindowMoved(x,1)];
+   let b=ok(armRecordCapture(ok(toggleRecordByte(opened(2))).bank,EMPTY_RADIO_RECORD_HEADER)).bank,k=0;
+   const mix=()=>{if(interleave)b=ok(ops[k++%ops.length](b)).bank;};
+   const frames:RadioReceiverFrame[]=[];
+   mix();b=ok(toggleReceive(b,{jd:JD,now:now(),allocateSeed:2})).bank;
+   for(let i=0;i<30;i++){mix();const t=ok(receiverTimerTick(b,{now:now(),jd:JD}));b=t.bank;frames.push(...t.frames);}
+   mix();b=ok(toggleReceive(b,{jd:JD,now:now()})).bank;
+   while(b.timerEnabled){mix();const t=ok(receiverTimerTick(b,{now:now(),jd:JD}));b=t.bank;frames.push(...t.frames);}
+   mix();b=ok(receiverMarkUp(ok(receiverMarkDown(b,1,1,120)).bank,1,1,120)).bank;mix();
+   b=ok(receiverMarkUp(ok(receiverMarkDown(b,0,0,30)).bank,0,0,30)).bank;mix();
+   return {frames,random:b.random,rows:b.recording.rows,header:b.recording.header,profile:b.profile,slots:b.slots.map(r=>r&&{...r,alignLabel:''})};
+  };
+  const plain=runIt(false),mixed=runIt(true);
+  expect(plain.frames.length).toBeGreaterThan(100);expect(plain.rows.length).toBeGreaterThan(0);
+  expect(mixed).toEqual(plain);
+  expect(plain.slots.map(r=>r&&[...r.marks])).toEqual([[30,120],[-1,120],[-1,120]]);
  });
 });
 

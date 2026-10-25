@@ -47,8 +47,6 @@ export const RECEIVER_WEB_DISPLAY_POLICY=Object.freeze({
  exercise383f:6,
  /** [S] compiled default 0x5a908a; the options dialog and its reader are not ported. */
  titleMode939:1,
- /** [S] FormCreate 0x5bce08 := 1; Resize is not modelled, so AlignDisp stays Yes. */
- align5bce08:true,
 });
 
 /** ShortString[n] bound (0x403c5c copies at most n characters). */
@@ -102,12 +100,13 @@ export const receiverChildTitle=(index:number)=>cap(RECEIVER_DISPLAY_LITERALS.re
 export const receiverCaption=(title:string,aperture:string)=>cap(title+aperture,92);
 
 export type ReceiverLabels=Readonly<{frequency:string;step:string;vertical:string;horizontal:string;mode:string;align:string|null;record:string}>;
-/** Refresh 0x572f8c label texts: Freq fixed2, Step caption, Vert fixed2, Horz fixed1, ModeDisp, AlignDisp (main) and
- * RcrdDisp (R-RX4: the stored caption, written by the refresh and the finish; stale after a FormCreate disarm). */
+/** Refresh 0x572f8c label texts: Freq fixed2, Step caption, Vert fixed2, Horz fixed1, ModeDisp, AlignDisp (main; R-RX5: the
+ * stored caption +0x3bc, stale after a FormCreate reset of 0x5bce08) and RcrdDisp (R-RX4: the stored caption, written by the
+ * refresh and the finish; stale after a FormCreate disarm). */
 export function receiverLabels(r:RadioReceiver):ReceiverLabels{
  const L=RECEIVER_DISPLAY_LITERALS;
  return Object.freeze({frequency:formatFixed(r.frequencyMHz,2),step:RECEIVER_STEP_CAPTIONS[r.stepIndex]??'',vertical:formatFixed(r.verticalGain,2),
-  horizontal:formatFixed(r.horizontal,1),mode:r.receiving?L.receive:L.stop,align:r.index===0?(RECEIVER_WEB_DISPLAY_POLICY.align5bce08?L.yes:L.no):null,record:r.recordLabel});
+  horizontal:formatFixed(r.horizontal,1),mode:r.receiving?L.receive:L.stop,align:r.index===0?r.alignLabel:null,record:r.recordLabel});
 }
 
 // ---------------------------------------------------------------- trace store (+0x587)

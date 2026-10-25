@@ -7,18 +7,23 @@
 // window composed from the mark events (WEB-MARK-RENDER), keyboard placement/steps (WEB-MARK-KEYBOARD) and Clear.
 // R-RX4 (docs/RADIO-RECEIVER-RECORD.md): the Record prompts (RC-REC-03), the finish dialogs (RC-REC-08) and the host
 // requests (lease, phase, commit, release, open analysis) that the presentation applies to the shared current dataset.
+// R-RX5 (docs/RADIO-RECEIVER-ALIGN.md): the Align toggle, the web card order of the windows (radioReceiverArrangement,
+// reconciled at every commit from the bank's window-placed events) and the Move up/down controls that deliver message 3.
 import type {RadioLabTransition,RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import {
  RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,armRecordCapture,clearReceiverMarks,clearRecordByte,closeReceiver,createRadioReceiverBank,endReceiverMarkDrag,
  openMainReceiver,paintReceiver,queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerTick,refreshRecordLabel,stepFrequency,
- stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,toggleRecordByte,
+ receiverWindowMoved,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,toggleReceiverAlign,toggleRecordByte,
  type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverResult,type RadioRecordHeader,
 } from './radioReceiver';
 import {RADIO_IDENTIFY_POLICY,radioIdentifyIssue,type RadioRecordCapture} from './radioReceiverRecord';
 import {RECEIVER_DISPLAY_GEOMETRY,receiverAnnotationOps,receiverFrameOps,receiverPaintOps,type ReceiverDisplayOp,type ReceiverPen} from './radioReceiverDisplay';
 import {EMPTY_RECEIVER_MARK_OVERLAY,isReceiverMarkColumn,overlayWithLabel,overlayWithLine,type ReceiverMarkOverlay,type ReceiverMarkSelector} from './radioReceiverMarks';
 import {parseReceiverMarkPosition,type ReceiverMarkButton} from './radioReceiverMarkInput';
+import {
+ EMPTY_RECEIVER_ARRANGEMENT,moveReceiverWindowOrder,receiverArrangementAfter,type ReceiverArrangement,type ReceiverMoveDirection,type ReceiverWindowSlot,
+} from './radioReceiverArrangement';
 
 export const RADIO_RECEIVER_SESSION_POLICY=Object.freeze({
  /** WEB-RX-CAD-01: Timer1 interval 40 ms (NT-branch reading of 0x48c394); no host OS claim. */
@@ -56,6 +61,8 @@ export type RadioReceiverSession=Readonly<{
  markOverlays:ReceiverMarkOverlays;
  /** R-RX4 Record prompts, finish dialogs and the capture lease this session holds. */
  record:ReceiverRecordState;
+ /** R-RX5 WEB card order of the open windows (WEB-RX-ALIGN-ARR-01); page lifetime only. */
+ arrangement:ReceiverArrangement;
 }>;
 /** RC-REC-03 prompts. unsaved: 0x575958 (flags 0x13); erase: 0x575a08 (flags 0x41). generation: the current dataset's
  * generation when the Record press was taken; the erase OK is refused when it changed (WEB-REC-TXN). */
@@ -79,10 +86,12 @@ export type ReceiverRecordHostRequest=Readonly<
 export type ReceiverRecordArmingResult=Readonly<{ok:true;seed:RadioRecordHeader}|{ok:false;reason:'capture-lease'|'superseded'|'analysis-busy'|'lease-mismatch'}>;
 export type ReceiverAction='seed'|'open'|'add'|'mode'|'tick'|'reassociate'|'step'|'paint'|'close'|'dismiss-box'
  |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear'
- |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save';
+ |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save'
+ |'align'|'move';
 export type ReceiverWebRefusal='seed-invalid'|'seed-locked'|'no-catalog'|'close-box-open'
  |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound'
- |'record-dialog-open'|'record-locked'|'record-analysis-busy'|'record-lease-held'|'record-superseded'|'record-input'|'identify-length'|'identify-text';
+ |'record-dialog-open'|'record-locked'|'record-analysis-busy'|'record-lease-held'|'record-superseded'|'record-input'|'identify-length'|'identify-text'
+ |'window-edge'|'window-input';
 export type ReceiverSessionOutcome=Readonly<
  |{kind:'ok';action:ReceiverAction;events:readonly RadioReceiverEvent[]}
  |{kind:'refused';action:ReceiverAction;error:RadioReceiverError}
@@ -110,7 +119,7 @@ export function createRadioReceiverSession():RadioReceiverSession{
  const created=createRadioReceiverBank(RADIO_RECEIVER_COMPILED_OPTIONS);
  if(!created.ok)throw new Error('compiled receiver options refused');
  return Object.freeze({bank:created.bank,seed:seedOf(RADIO_RECEIVER_SESSION_POLICY.defaultSeedText,0),canvases:Object.freeze([null,null,null]) as Canvases,tickError:null,closeBox:null,
-  markLease:null,markOverlays:Object.freeze([null,null,null]) as ReceiverMarkOverlays,record:INITIAL_RECORD_STATE});
+  markLease:null,markOverlays:Object.freeze([null,null,null]) as ReceiverMarkOverlays,record:INITIAL_RECORD_STATE,arrangement:EMPTY_RECEIVER_ARRANGEMENT});
 }
 
 const keep=(session:RadioReceiverSession,outcome:ReceiverSessionOutcome):ReceiverSessionTransition=>Object.freeze({session,outcome:Object.freeze(outcome),changed:false});
@@ -137,7 +146,7 @@ function overlayEvents(o:ReceiverMarkOverlays,events:readonly RadioReceiverEvent
  }
  return next;
 }
-type CommitPatch=Partial<Pick<RadioReceiverSession,'canvases'|'tickError'|'closeBox'|'markLease'|'markOverlays'|'record'>>;
+type CommitPatch=Partial<Pick<RadioReceiverSession,'canvases'|'tickError'|'closeBox'|'markLease'|'markOverlays'|'record'|'arrangement'>>;
 /** R-RX4 bookkeeping of a transition's record events: a FormCreate disarm releases the lease; the Receive header moves it to
  * 'receiving'; the finish opens the dialogs on the capture taken from the bank (no append follows a finish); a main close
  * commits a capture whose Receive had started (WEB partial commit, no dialogs), then releases the lease once. */
@@ -166,7 +175,9 @@ function commit(s:RadioReceiverSession,action:ReceiverAction,events:readonly Rad
  const used=s.seed.used+randomizeCount(s.bank,bank);
  const markOverlays=overlayEvents(patch.markOverlays??s.markOverlays,events);
  const rec=recordFromEvents(patch.record??s.record,bank,events),host=[...extraHost,...rec.host];
- const session:RadioReceiverSession=Object.freeze({...s,bank,seed:used===s.seed.used?s.seed:seedOf(s.seed.text,used),...patch,markOverlays,record:rec.record});
+ // R-RX5: every committed transition reconciles the card order with the open windows and its window-placed events.
+ const arrangement=receiverArrangementAfter(patch.arrangement??s.arrangement,bank.slots,events);
+ const session:RadioReceiverSession=Object.freeze({...s,bank,seed:used===s.seed.used?s.seed:seedOf(s.seed.text,used),...patch,markOverlays,record:rec.record,arrangement});
  return Object.freeze({session,outcome:Object.freeze({kind:'ok',action,events}),changed:true,...(host.length?{host:Object.freeze(host.map(h=>Object.freeze(h)))}:{})});
 }
 
@@ -333,8 +344,8 @@ export type ReceiverControlState='enabled'|'disabled'|'not-ported'|'absent';
 const recordLocked=(s:RadioReceiverSession)=>s.bank.timerEnabled&&s.bank.recording.armed;
 /** RC-REC-09. Main: Freq/Incr/Vert while not receiving armed; Horz while the timer is off; Add while its own enable holds
  * and the timer is off; Mode unless a stop is pending with the timer on; Record while the timer is off (Receive disables it,
- * the finish enables it); Close always; Align not ported. Children: Freq/Incr/Vert (same record lock) and Close only
- * (FormCreate hides HorzSpin, Mode, Add, Align and Record). */
+ * the finish enables it); Close always; Align always (R-RX5: the receiving helper 0x575c6c does not touch it). Children:
+ * Freq/Incr/Vert (same record lock) and Close only (FormCreate hides HorzSpin, Mode, Add, Align and Record). */
 export function receiverControlAvailability(s:RadioReceiverSession,slot:number):Readonly<Record<ReceiverControlName,ReceiverControlState>>{
  const r=s.bank.slots[slot],on=(v:boolean):ReceiverControlState=>v?'enabled':'disabled';
  const all=(v:ReceiverControlState)=>({frequency:v,'frequency-step':v,vertical:v,horizontal:v,add:v,mode:v,align:v,record:v,close:v});
@@ -343,7 +354,47 @@ export function receiverControlAvailability(s:RadioReceiverSession,slot:number):
  if(r.index!==0)return Object.freeze({...all('absent'),frequency:free,'frequency-step':free,vertical:free,close:'enabled'});
  const timer=s.bank.timerEnabled;
  return Object.freeze({frequency:free,'frequency-step':free,vertical:free,horizontal:on(!timer),add:on(r.addEnabled&&!timer),
-  mode:on(!(r.stopPending===true&&timer)),align:'not-ported',record:on(!timer),close:'enabled'});
+  mode:on(!(r.stopPending===true&&timer)),align:'enabled',record:on(!timer),close:'enabled'});
+}
+
+// ---------------------------------------------------------------- R-RX5 Align and window order
+/**
+ * Align button 0x575034 on the main (AL-TOGGLE). Modal boxes block it; any mark lease ends first (WEB-MARK-CANCEL, marks
+ * kept); then the toggle, its refresh of the main and, when now on, the layout, whose window-placed events re-stack the
+ * cards. Off moves nothing. No seed, clock, catalog, canvas log or record state is involved; a refusal leaves the session
+ * (lease included) untouched.
+ */
+export function toggleReceiverAlignment(s:RadioReceiverSession):ReceiverSessionTransition{
+ const box=blockedByBox(s,'align');if(box)return box;
+ const b=withoutLease(s);
+ const r=toggleReceiverAlign(b.bank);
+ if(!r.ok)return refused(s,'align',r.error);
+ return commit(b,'align',r.events,r.bank);
+}
+/**
+ * WEB-RX-ALIGN-MOVE-01 Move up/down of one window card: the card swaps ranks with its neighbour (the pressed card is the one
+ * moved form: one message-3 delivery, 0x57296c; the neighbour only follows the document flow). Under Align off the guard is
+ * cleared and the new order stays; under Align on, with slot 1 open, the handler places 2 then 1 below the main again, so
+ * the column re-stacks. Refused (session untouched) at a column edge ('window-edge') and for a bad slot or direction.
+ */
+export function moveReceiverWindow(s:RadioReceiverSession,slot:number,dir:ReceiverMoveDirection):ReceiverSessionTransition{
+ const box=blockedByBox(s,'move');if(box)return box;
+ const i=slotIndex(slot);
+ if(i===null||!s.bank.slots[i]||(dir!=='up'&&dir!=='down'))return webRefused(s,'move','window-input');
+ const swapped=moveReceiverWindowOrder(s.arrangement,i,dir);
+ if(!swapped)return webRefused(s,'move','window-edge');
+ const b=withoutLease(s);
+ const r=receiverWindowMoved(b.bank,i);
+ if(!r.ok)return refused(s,'move',r.error);
+ return commit(b,'move',r.events,r.bank,{arrangement:swapped});
+}
+export type ReceiverWindowMoveState='enabled'|'edge'|'absent';
+/** Move up/down of a window: 'edge' at the top/bottom of the column (also with a single window), 'absent' without it. Under
+ * Align on a move is admitted and snaps back (the original's response to moving an aligned window). */
+export function receiverWindowMoveAvailability(s:RadioReceiverSession,slot:number):Readonly<{up:ReceiverWindowMoveState;down:ReceiverWindowMoveState}>{
+ const i=slotIndex(slot),rank=i===null||!s.bank.slots[i]?-1:s.arrangement.order.indexOf(i as ReceiverWindowSlot);
+ if(rank<0)return Object.freeze({up:'absent',down:'absent'});
+ return Object.freeze({up:rank===0?'edge':'enabled',down:rank===s.arrangement.order.length-1?'edge':'enabled'});
 }
 
 // ---------------------------------------------------------------- R-RX4 Record

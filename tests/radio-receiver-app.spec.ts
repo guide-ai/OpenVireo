@@ -115,8 +115,8 @@ test('Open → Receive → Stop at the sweep end → Close → reopen; labels, r
  for(const [control,value] of [['frequency','600.00'],['frequency-step','100'],['vertical','1.00'],['horizontal','4.0']])
   await expect(id(page,`receiver-${control}-value-0`)).toHaveText(value);
  await expect(id(page,'receiver-mode-disp-0')).toHaveText('Stop');await expect(id(page,'receiver-align-disp')).toHaveText('Yes');await expect(id(page,'receiver-record-disp')).toHaveText('Off');
- // R-RX4: Record is enabled while the main timer is off (docs/RADIO-RECEIVER-RECORD.md); Align stays unported.
- await expect(id(page,'receiver-align')).toBeDisabled();await expect(id(page,'receiver-record')).toBeEnabled();
+ // R-RX4: Record is enabled while the main timer is off (docs/RADIO-RECEIVER-RECORD.md); R-RX5: Align is live and on.
+ await expect(id(page,'receiver-align')).toBeEnabled();await expect(id(page,'receiver-align')).toHaveAttribute('aria-pressed','true');await expect(id(page,'receiver-record')).toBeEnabled();
  await expect(id(page,'receiver-seed')).toBeDisabled();await expect(id(page,'receiver-seed-next')).toHaveText('Next reseed uses 2.');
  await expect(id(page,'receiver-sweep-0')).toHaveText('No sweep yet.');
  // The display is painted at mount (teal background, green grid, baseline and annotation): no yellow trace yet.
@@ -174,10 +174,10 @@ test('Freq MHz 400..1400 with at-limit beeps, Freq Incr. 1..5, held Enter ignore
  await id(page,'receiver-frequency-down-0').focus();
  await page.keyboard.down('Enter');await page.keyboard.down('Enter');await page.keyboard.down('Enter');await page.keyboard.up('Enter');
  await expect(value).toHaveText('1399.98');
- // DFM TabOrder of the main window controls (the disabled Align is skipped; R-RX4 Record is enabled).
+ // DFM TabOrder of the main window controls (R-RX4 Record and R-RX5 Align are enabled).
  await id(page,'receiver-frequency-down-0').focus();
  const order=['receiver-frequency-up-0','receiver-frequency-step-down-0','receiver-frequency-step-up-0','receiver-vertical-down-0','receiver-vertical-up-0',
-  'receiver-horizontal-down-0','receiver-horizontal-up-0','receiver-add','receiver-mode','receiver-record','receiver-close-0'];
+  'receiver-horizontal-down-0','receiver-horizontal-up-0','receiver-add','receiver-align','receiver-mode','receiver-record','receiver-close-0'];
  for(const t of order){await page.keyboard.press('Tab');await expect(id(page,t)).toBeFocused();}
  // The table key N on the Receiver button does nothing (outside the RA-19 key scope).
  const dec=await id(page,'antenna-dec').getAttribute('data-dec-degrees');

@@ -64,6 +64,8 @@ describe('beam formatter 0x486f4c and parameter texts',()=>{
  it('labels: fixed2/fixed1, step caption, ModeDisp, AlignDisp on the main only, RcrdDisp Off',()=>{
   expect(receiverLabels(receiver())).toEqual({frequency:'600.00',step:'100',vertical:'1.00',horizontal:'4.0',mode:'Stop',align:'Yes',record:'Off'});
   expect(receiverLabels(receiver({index:1,receiving:true,stepIndex:1,frequencyMHz:599.99}))).toMatchObject({frequency:'599.99',step:'0.01',mode:'Receive',align:null});
+  // R-RX5: AlignDisp is the stored main caption +0x3bc (a stale 'No' or the '' before any refresh is shown as stored).
+  expect(['No','',''].map((alignLabel,i)=>receiverLabels(receiver({alignLabel,index:i===2?1:0})).align)).toEqual(['No','',null]);
  });
 });
 

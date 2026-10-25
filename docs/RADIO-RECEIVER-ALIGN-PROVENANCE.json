@@ -1,0 +1,67 @@
+{
+  "feature": "R-RX5 receiver Align: arranges receiver windows (web card order), never signals",
+  "acceptanceClaim": "none; no capability or status is promoted and the original denominator is unchanged",
+  "artifact": {
+    "name": "CLEA_VEO.exe (VIREO 1.504)",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "sources": {
+    "rx5": {
+      "dir": "/tmp/clea-static-research/radio-rx5-align-20261025",
+      "contracts": "CONTRACTS.json (AL-INIT, AL-TOGGLE, AL-LAYOUT, AL-RESIZE, AL-ACTIVATE, AL-MOVE, AL-ADD, AL-RECEIVE; metadata bindings TRcvr_Form1 VMT 0x571a6c message 3 → 0x57296c, TWinControl 0x4597cc message 3 → 0x46444c, TForm ClientHeight getter 0x45d8d4, TCustomForm Left 0x475190/0x47aa68 and Top 0x4751b0/0x47aaa4, WindowState field 0x273 setter 0x476f40)",
+      "contractsSha256": "404f2ac96ead080767e22bf8d00d83b7285227db2b557261e2d3f940de4c2785",
+      "hashVerification": "CONTRACTS.json and the 13 listed evidence/listing SHA-256 values were independently matched by the coordinator; not recomputed by the author; no new resource uploads",
+      "evidence": {
+        "VMT-GEOMETRY-BINDINGS.json": "f4e7ef5cb4dc569dbd154c73c7508e55e2baeae5b548faf69a5f9f875893e394",
+        "WINDOWSTATE-ENUM.json": "9d8a018554d2957417e65f5c76fc4770a0a7086df7a491335392f78a531487ad",
+        "STATE-API-BINDING.json": "caa9ec7b1183d020b1866d588658be81f9ef874a0aeb45df31ef4bd8b4d4834a",
+        "layout-canonical.asm (0x574fa4..0x575032)": "b29e454d8433fd67362414d29bd7fd2de2695487f662c383eed617cec76c8ec6",
+        "activation-initial.asm (0x5728dc..0x57296a, message 3 0x57296c..0x572a1f)": "c4186d8983d14002d696d131c7908d445a1cf04aa9b0e7c9f2d2d7906afceacf",
+        "resize-initial.asm (0x575080..0x5750c5, not ported)": "804ae8915ae37ec00d7d7229f1e13d67b4def21394c444e2c22b4e4272903e02",
+        "form-state-canonical.asm": "62a7f89f8b7baca5a8cb0660f2d8c99a1d0f43554c428217f72318bfa2ffd537",
+        "top-setter-canonical.asm": "2f4b1bcf81229a93c3b4fea08b519799e0b7e807e877a8b7bce5456f940543eb",
+        "add-and-align-context.asm (0x574e90..0x574fa0)": "8e46b89033bf134f2f0d2167f98790b0b06d198b386bcc8db25c6a786017ed90"
+      },
+      "hashSource": "SHA-256 values as recorded in CONTRACTS.json evidence[]; not recomputed by the author"
+    },
+    "receiverRecord": {
+      "dir": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-signal-20261024/receiver-record",
+      "listings": {
+        "align-initial.asm (0x575034..0x57507e)": "952b6c46131b735879f7bc9ad1c9f5474fcb4087c0f637b4f9e3e16862cd1110",
+        "form-create-canonical.asm (0x572614/0x57261b)": "e74fbe55fc1282aa027886655dd72d17d058c87390d6043e569ff4697a17e14b",
+        "receive-mode-canonical.asm (0x574719/0x57471b)": "1575a2535b3cbf9cb6a929764361220beff434971009040f5439e32122bbbbc4",
+        "frame-canonical.asm (0x573b86..0x573b91)": "d31088cb788467a579523d969cce89be130e63564116682d1c65270024bd9ea4"
+      },
+      "notes": "receiver-record CONTRACTS.md:81 (Align must not be assumed disabled while receiving); controls-receiving 0x575c6c..0x575e8c does not write Align"
+    },
+    "notUsed": [
+      "the original executable bytes",
+      "the excluded writer-caller listing (0x56b36c..0x56b678) and any copy or derivative",
+      "the excluded antenna metadata and altitude field-role files and their derivatives",
+      "the quarantined combined contract-readiness file",
+      "src/core/tmpProbe.test.ts"
+    ]
+  },
+  "contracts": [
+    { "id": "AL-INIT", "range": "0x572614/0x57261b", "tag": "S", "module": "radioReceiver formCreate", "web": "[W] false/false before any FormCreate (no window shows it)" },
+    { "id": "AL-DISP", "range": "0x573082..0x5730b6 ('Yes' 0x573650, 'No' 0x57365c)", "tag": "S", "module": "radioReceiver displayRefresh (main only) → RadioReceiver.alignLabel", "web": "'' before the first refresh [W]; stale after a FormCreate reset (WEB-RX-ALIGN-LABEL-01)" },
+    { "id": "AL-LAYOUT", "range": "0x574fa4..0x575032", "tag": "S", "module": "radioReceiver alignLayout", "web": "final 0x47a010 on the main not followed (WEB-RX-ALIGN-ACT-01); wsNormal identity (WEB-RX-ALIGN-WS-01)" },
+    { "id": "AL-TOGGLE", "range": "0x575034..0x57507e", "tag": "S", "module": "radioReceiver toggleReceiverAlign; session toggleReceiverAlignment" },
+    { "id": "AL-MOVE", "range": "0x57296c..0x572a1f", "tag": "S/I", "module": "radioReceiver receiverWindowMoved; session moveReceiverWindow", "inference": "message 3 read as WM_MOVE by platform convention; +0x4a1 and 0x408c44(0x30) not ported" },
+    { "id": "AL-ADD", "range": "0x574e90..0x574fa0", "tag": "S", "module": "radioReceiver addReceiverChannel" },
+    { "id": "AL-ACTIVATE", "range": "0x5728dc..0x57296a", "tag": "S", "module": "radioReceiver activateReceiver", "web": "0x5b584c+5 false [W]; drag-flag reset 0x57295b unchanged" },
+    { "id": "AL-RECEIVE", "range": "0x57471b; 0x573b86..0x573b91", "tag": "S", "module": "radioReceiver toggleReceive start, frame (main finish)" },
+    { "id": "AL-RESIZE", "range": "0x575080..0x5750c5", "tag": "S", "module": "not ported", "web": "WEB-RX-ALIGN-WS-01: unreachable on the web" }
+  ],
+  "webPolicies": ["WEB-RX-ALIGN-ARR-01", "WEB-RX-ALIGN-MOVE-01", "WEB-RX-ALIGN-NOREMOUNT", "WEB-RX-ALIGN-LABEL-01", "WEB-RX-ALIGN-ACT-01", "WEB-RX-ALIGN-WS-01", "WEB-RX-ALIGN-CLOSE-01"],
+  "invariants": ["I1 order is a permutation of the open slots", "I2 Align on implies the stacked order", "I3 Align/Move change no science state except the documented refresh effects and ending a lease", "I4 guard set implies no Align-off move since the last acting layout"],
+  "limits": [
+    "Static code and metadata only; no original runtime or OS event witness.",
+    "The stale AlignDisp after Add is the chosen web activation order, not a native runtime guarantee.",
+    "No native pixel, geometry, focus, GDI, modal or event-order parity; tests check the chosen web contract.",
+    "Synthetic browser catalogs are test fixtures, never CLEA observations.",
+    "Move accessible names follow WCAG 2.2 SC 2.5.3 (visible text first); no assistive-technology or OS voice test.",
+    "The close-box note is web text [W]; the native literal is unchanged."
+  ],
+  "remaining": ["window states / AL-RESIZE 0x575080", "ShowWindow table [1,6,3]", "0x47a010 transitive effects", "+0x4a1 writer and the 0x408c44 beep", "native window geometry", "Save wrapper 0x56b36c", "audio"]
+}

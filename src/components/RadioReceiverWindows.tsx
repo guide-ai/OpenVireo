@@ -18,11 +18,13 @@ import {receiverMarkCode,receiverMarkColumn,receiverMarkMoveReleases,type Receiv
 import {
  RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,answerRecordIdentify,answerRecordPrompt,answerRecordSave,clearReceiverNextMark,closeRecordProperties,completeRecordArming,
  completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,dismissRecordFull,editReceiverSeed,editRecordIdentify,endMarkGesture,markPointerDown,markPointerMove,
- markPointerUp,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,placeReceiverMark,pressRecord,reassociateReceivers,receiverControlAvailability,receiverMarkAvailability,
- receiverSessionOpen,recordDialogOpen,requestReceiverClose,stepReceiver,stepReceiverMark,tickReceivers,toggleReceiverMode,
+ markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,placeReceiverMark,pressRecord,reassociateReceivers,receiverControlAvailability,
+ receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,recordDialogOpen,requestReceiverClose,stepReceiver,stepReceiverMark,tickReceivers,
+ toggleReceiverAlignment,toggleReceiverMode,
  type RadioReceiverSession,type ReceiverCanvasLog,type ReceiverControlState,type ReceiverMarkAvailability,type ReceiverMarkLease,type ReceiverRecordArmingResult,
  type ReceiverRecordFinish,type ReceiverRecordHostRequest,type ReceiverRecordHostSnapshot,type ReceiverRecordPrompt,type ReceiverSessionOutcome,type ReceiverSessionTransition,
 } from '../core/radioReceiverSession';
+import {receiverWindowRank,type ReceiverMoveDirection} from '../core/radioReceiverArrangement';
 import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t,type PlainMessageKey} from '../i18n';
@@ -59,7 +61,9 @@ const G=RECEIVER_DISPLAY_GEOMETRY,L=RECEIVER_DISPLAY_LITERALS,D=RECEIVER_DFM_CAP
 const css=(c:number)=>`rgb(${c&0xff},${(c>>8)&0xff},${(c>>16)&0xff})`;
 const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
  !!el&&el.isConnected&&!(el as HTMLButtonElement).disabled&&el.getClientRects().length>0&&!el.closest('[inert]');
-type FocusTarget=Readonly<{kind:'heading'|'after-child-close'|'after-main-close'|'close1'|'record';slot:number;serial:number}>;
+/** R-RX5 'align' and 'move-up'/'move-down' restore focus on the pressed control after the cards were reordered (a moved DOM
+ * node loses focus in browsers). */
+type FocusTarget=Readonly<{kind:'heading'|'after-child-close'|'after-main-close'|'close1'|'record'|'align'|'move-up'|'move-down';slot:number;serial:number}>;
 /** text: an explicit status that replaces the outcome's text (Record answers and the main close, whose outcome alone is ambiguous). */
 type Notice=Readonly<{slot:number|null;outcome:ReceiverSessionOutcome;text?:string}>;
 const noticeText=(n:Notice)=>n.text??outcomeText(n.outcome);
@@ -100,6 +104,7 @@ function outcomeText(o:ReceiverSessionOutcome):string{
  if(o.action==='record-arming')return t('radioReceiver.record.status.armed');
  if(o.action==='record'||o.action==='record-prompt')return kinds.includes('beam')?t('radioReceiver.record.status.disarmed'):'';
  if(o.action==='record-identify')return t('radioReceiver.record.status.committed');
+ if(o.action==='align'){const a=o.events.find(e=>e.kind==='align-toggled');return a?.kind==='align-toggled'?t(a.on?'radioReceiver.align.status.on':'radioReceiver.align.status.off'):'';}
  const limit=o.events.find(e=>e.kind==='at-limit');
  if(limit&&limit.kind==='at-limit')return t('radioReceiver.status.atLimit',{control:t(CONTROL_NAME[limit.control])});
  if(o.action==='open')return t('radioReceiver.status.opened');
@@ -219,22 +224,53 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
 
  // ---- Focus (WEB-RX-FOCUS-01, web policy only: native SetFocus/activation order is not reproduced).
  const headings=useRef<(HTMLHeadingElement|null)[]>([null,null,null]),closes=useRef<(HTMLButtonElement|null)[]>([null,null,null]);
- const addRef=useRef<HTMLButtonElement>(null),setupHeading=useRef<HTMLHeadingElement>(null),recordButton=useRef<HTMLButtonElement>(null);
+ const addRef=useRef<HTMLButtonElement>(null),setupHeading=useRef<HTMLHeadingElement>(null),recordButton=useRef<HTMLButtonElement>(null),alignButton=useRef<HTMLButtonElement>(null);
+ const moveButtons=useRef<Record<ReceiverMoveDirection,(HTMLButtonElement|null)[]>>({up:[null,null,null],down:[null,null,null]});
  useEffect(()=>{
   if(focus===null||nativeModalOpen())return;
+  const m=moveButtons.current;
   const order=focus.kind==='heading'?[headings.current[focus.slot]]
    :focus.kind==='after-child-close'?[addRef.current,headings.current[0]]
    :focus.kind==='after-main-close'?[receiverButtonRef.current,setupHeading.current]
    :focus.kind==='record'?[recordButton.current,headings.current[0]]
+   :focus.kind==='align'?[alignButton.current,headings.current[0]]
+   :focus.kind==='move-up'?[m.up[focus.slot],m.down[focus.slot],headings.current[focus.slot]]
+   :focus.kind==='move-down'?[m.down[focus.slot],m.up[focus.slot],headings.current[focus.slot]]
    :[closes.current[1]];
   order.find(canTakeFocus)?.focus();
  },[focus,receiverButtonRef]);
 
  const step=(slot:number,control:RadioReceiverControl,direction:'down'|'up')=>userAction(slot,s=>stepReceiver(s,slot,control,direction));
  const add=()=>{
-  const before=sessionRef.current.bank.slots,r=userAction(0,addReceiverWindow);
+  // R-RX5: a child FormCreate turns Align on (0x572614); after an Off the stack and the stale AlignDisp are announced.
+  const wasOff=!sessionRef.current.bank.align.on,before=sessionRef.current.bank.slots;
+  const r=userAction(0,addReceiverWindow,r=>{
+   if(r.outcome.kind!=='ok'||!wasOff||!r.session.bank.align.on)return undefined;
+   const reset=t('radioReceiver.status.addedAlignReset');
+   return r.outcome.events.some(e=>e.kind==='record-disarmed')?`${t('radioReceiver.record.status.formCreate')} ${reset}`:reset;
+  });
   const slot=[1,2].find(i=>before[i]===null&&r?.session.bank.slots[i]);
   if(slot!==undefined)requestFocus('heading',slot);
+ };
+ // ---- R-RX5 Align (docs/RADIO-RECEIVER-ALIGN.md). A lease the transition ended also releases its pointer capture.
+ const align=()=>{
+  const l=sessionRef.current.markLease,r=userAction(0,toggleReceiverAlignment);
+  if(r?.outcome.kind!=='ok')return;
+  if(l)releaseCapture(l);
+  requestFocus('align',0);
+ };
+ /** WEB-RX-ALIGN-MOVE-01: one message-3 delivery for the pressed window. An edge press is answered by the session's refusal. */
+ const move=(slot:number,dir:ReceiverMoveDirection)=>{
+  const l=sessionRef.current.markLease;
+  const r=userAction(slot,s=>moveReceiverWindow(s,slot,dir),r=>{
+   if(r.outcome.kind!=='ok')return undefined;
+   const a=r.session.arrangement;
+   return r.session.bank.align.on?t('radioReceiver.window.status.restacked')
+    :t('radioReceiver.window.status.moved',{n:slot+1,rank:receiverWindowRank(a,slot)??0,count:a.order.length});
+  });
+  if(r?.outcome.kind!=='ok')return;
+  if(l)releaseCapture(l);
+  requestFocus(dir==='up'?'move-up':'move-down',slot);
  };
  /** Mode is aria-disabled (not disabled) while a stop is pending, so focus stays on it; such a press does nothing. */
  const mode=(slot:number)=>{
@@ -351,7 +387,9 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  useLayoutEffect(()=>{if(!active||busy||cardsInert)endGestureRef.current();},[active,busy,cardsInert]);
 
  const next=nextReceiverSeed(session);
- return <div className="radio-receiver-workspace" data-testid="receiver-workspace" data-timer={session.bank.timerEnabled}>
+ const order=session.arrangement.order;
+ return <div className="radio-receiver-workspace" data-testid="receiver-workspace" data-timer={session.bank.timerEnabled} data-align={session.bank.align.on?'on':'off'}
+  data-order={order.join(',')}>
   <section className="card radio-control radio-control-env radio-receiver-setup" aria-labelledby={`${id}-setup`} data-testid="receiver-setup" inert={cardsInert||undefined}>
    <h2 ref={setupHeading} id={`${id}-setup`} tabIndex={-1}>{t('radioReceiver.setup.heading')}</h2>
    <ul className="radio-receiver-notes" data-testid="receiver-notes">
@@ -367,11 +405,15 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="receiver-setup-status">
     {notice&&(notice.slot===null||session.bank.slots[notice.slot]===null)?noticeText(notice):''}</p>
   </section>
-  {session.bank.slots.map((r,slot)=>r&&<ReceiverCard key={slot} r={r} session={session} log={session.canvases[slot]} overlay={session.markOverlays[slot]} inert={cardsInert}
-   notice={notice&&notice.slot===slot?noticeText(notice):''} headingRef={el=>{headings.current[slot]=el;}} closeRef={el=>{closes.current[slot]=el;}}
+  {/* WEB-RX-ALIGN-NOREMOUNT: keyed by slot in one parent, so a reorder moves the same card instances (no Paint, no overlay
+     reset, canvas bitmaps kept). */}
+  {order.map(slot=>{const r=session.bank.slots[slot];return r&&<ReceiverCard key={slot} r={r} session={session} log={session.canvases[slot]} overlay={session.markOverlays[slot]}
+   inert={cardsInert} notice={notice&&notice.slot===slot?noticeText(notice):''} headingRef={el=>{headings.current[slot]=el;}} closeRef={el=>{closes.current[slot]=el;}}
    addRef={slot===0?addRef:undefined} onStep={step} onAdd={add} onMode={mode} onClose={close} onPaint={paint} marks={markHandlers}
-   recordHost={!!pulsarData} recordRef={slot===0?recordButton:undefined} onRecord={record}/>)}
-  {closePresented&&session.closeBox&&<ReceiverCloseBox caption={session.closeBox.caption} text={session.closeBox.text} onDismiss={dismissBox}/>}
+   recordHost={!!pulsarData} recordRef={slot===0?recordButton:undefined} onRecord={record}
+   alignRef={slot===0?alignButton:undefined} onAlign={align} onMove={move} moveRef={(dir,el)=>{moveButtons.current[dir][slot]=el;}}/>;})}
+  {closePresented&&session.closeBox&&<ReceiverCloseBox caption={session.closeBox.caption} text={session.closeBox.text} onDismiss={dismissBox}
+   closeFirst={session.bank.slots.reduce((h,r,i)=>r?i+1:h,1)}/>}
   <div className="radio-control" style={{display:'contents'}} data-testid="receiver-record-layer" data-modal-pending={recordPending} data-modal-presented={recordPresented}>
    {recordPresented&&session.record.prompt&&<RecordPromptBox prompt={session.record.prompt} onAnswer={answerPrompt}/>}
    {recordPresented&&session.record.finish&&<RecordFinishSurface finish={session.record.finish} onFull={recordFull} onDraft={recordDraft} onIdentify={recordIdentify}
@@ -486,10 +528,19 @@ type MarkHandlers=Readonly<{
 type CardProps=Readonly<{r:RadioReceiver;session:RadioReceiverSession;log:ReceiverCanvasLog|null;overlay:ReceiverMarkOverlay|null;inert:boolean;notice:string;
  headingRef:(el:HTMLHeadingElement|null)=>void;closeRef:(el:HTMLButtonElement|null)=>void;addRef?:RefObject<HTMLButtonElement|null>;
  onStep:(slot:number,control:RadioReceiverControl,direction:'down'|'up')=>void;onAdd:()=>void;onMode:(slot:number)=>void;onClose:(slot:number)=>void;onPaint:(slot:number)=>void;
- marks:MarkHandlers;recordHost:boolean;recordRef?:RefObject<HTMLButtonElement|null>;onRecord:()=>void}>;
-/** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder, then the web mark controls. */
-function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks,recordHost,recordRef,onRecord}:CardProps){
+ marks:MarkHandlers;recordHost:boolean;recordRef?:RefObject<HTMLButtonElement|null>;onRecord:()=>void;
+ alignRef?:RefObject<HTMLButtonElement|null>;onAlign:()=>void;onMove:(slot:number,dir:ReceiverMoveDirection)=>void;moveRef:(dir:ReceiverMoveDirection,el:HTMLButtonElement|null)=>void}>;
+/** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder, then the web mark controls
+ * and the R-RX5 window-position group. */
+function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks,recordHost,recordRef,onRecord,
+ alignRef,onAlign,onMove,moveRef}:CardProps){
  const id=useId(),slot=r.index,main=slot===0,labels=receiverLabels(r),avail=receiverControlAvailability(session,slot);
+ // R-RX5: AlignDisp is the stored caption; after a FormCreate reset it can say No while Align is on (WEB-RX-ALIGN-LABEL-01).
+ const aligned=session.bank.align.on,alignStale=main&&aligned&&labels.align===L.no;
+ const rank=receiverWindowRank(session.arrangement,slot)??0,count=session.arrangement.order.length,moves=receiverWindowMoveAvailability(session,slot);
+ const moveButton=(dir:ReceiverMoveDirection)=><button ref={el=>moveRef(dir,el)} type="button" className="secondary-button" data-testid={`receiver-move-${dir}-${slot}`}
+  aria-label={t(dir==='up'?'radioReceiver.window.upLabel':'radioReceiver.window.downLabel',{n:slot+1})} aria-disabled={moves[dir]!=='enabled'||undefined}
+  aria-describedby={`${id}-window-help`} onKeyDown={ignoreHeldKey} onClick={()=>onMove(slot,dir)}>{t(dir==='up'?'radioReceiver.window.up':'radioReceiver.window.down')}</button>;
  const [selected,setSelected]=useState<ReceiverMarkSelector>(0);
  const caption=receiverCaption(r.title,r.apertureText),finishing=r.stopPending===true&&session.bank.timerEnabled;
  const error=session.tickError;
@@ -502,7 +553,8 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
    <button type="button" className="secondary-button antenna-spin" aria-label={t(up)} data-testid={`receiver-${control}-up-${slot}`} disabled={state!=='enabled'}
     onKeyDown={ignoreHeldKey} onClick={()=>onStep(slot,control,'up')}>+</button>
   </div>;
- return <section className="card radio-control radio-receiver-card" aria-labelledby={`${id}-caption`} data-testid={`receiver-card-${slot}`} inert={inert||undefined}>
+ return <section className="card radio-control radio-receiver-card" aria-labelledby={`${id}-caption`} data-testid={`receiver-card-${slot}`} inert={inert||undefined}
+  data-rank={rank} data-stacked={!main&&aligned||undefined}>
   <h3 ref={headingRef} id={`${id}-caption`} tabIndex={-1} className="radio-control-native radio-receiver-caption" data-testid={`receiver-heading-${slot}`}>{caption}</h3>
   <p className="radio-control-note">{main?t('radioReceiver.card.main'):t('radioReceiver.card.child',{n:slot+1})}</p>
   <div ref={el=>marks.displayRef(slot,el)} className="radio-receiver-display" role="group" tabIndex={-1} aria-label={t('radioReceiver.marks.display',{n:slot+1})}
@@ -521,14 +573,16 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
   </div>
   <div className="button-row radio-receiver-buttons">
    {main&&<button ref={addRef} type="button" className="secondary-button" data-testid="receiver-add" disabled={avail.add!=='enabled'} onKeyDown={ignoreHeldKey} onClick={onAdd}>{D.add}</button>}
-   {main&&<button type="button" className="secondary-button" data-testid="receiver-align" disabled aria-describedby={`${id}-unported`}>{D.align}</button>}
+   {main&&<button ref={alignRef} type="button" className="secondary-button" data-testid="receiver-align" disabled={avail.align!=='enabled'} aria-pressed={aligned}
+    aria-describedby={alignStale?`${id}-align ${id}-align-stale`:`${id}-align`} onKeyDown={ignoreHeldKey} onClick={onAlign}>{D.align}</button>}
    {main&&<button type="button" className="primary-button" data-testid="receiver-mode" aria-disabled={avail.mode!=='enabled'||undefined} aria-describedby={finishing?`${id}-sweep`:undefined}
     onKeyDown={ignoreHeldKey} onClick={()=>{if(avail.mode==='enabled')onMode(slot);}}>{D.mode}</button>}
    {main&&<button ref={recordRef} type="button" className="secondary-button" data-testid="receiver-record" disabled={avail.record!=='enabled'||!recordHost}
     aria-describedby={`${id}-record`} onKeyDown={ignoreHeldKey} onClick={onRecord}>{D.record}</button>}
    <button ref={closeRef} type="button" className="secondary-button" data-testid={`receiver-close-${slot}`} onKeyDown={ignoreHeldKey} onClick={()=>onClose(slot)}>{t('radioReceiver.control.close')}</button>
   </div>
-  {main&&<p id={`${id}-unported`} className="radio-control-note">{t('radioReceiver.card.unported')}</p>}
+  {main&&<p id={`${id}-align`} className="radio-control-note" data-testid="receiver-align-note" data-on={aligned}>{t(aligned?'radioReceiver.align.on':'radioReceiver.align.off')}</p>}
+  {alignStale&&<p id={`${id}-align-stale`} className="radio-control-note" data-testid="receiver-align-stale">{t('radioReceiver.align.staleOn')}</p>}
   {main&&<div id={`${id}-record`} className="radio-control-note" data-testid="receiver-record-state" data-armed={session.bank.recording.armed} data-capturing={session.record.receiving}
    data-rows={session.bank.recording.rows.length/3} data-full={session.bank.recording.full}>
    <p>{recordHost?t('radioReceiver.record.scope'):t('radioReceiver.record.noHost')}</p>
@@ -545,6 +599,12 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
   {main&&<p data-testid="receiver-source">{r.identifiedName===null?t('radioReceiver.card.sourceNone'):t('radioReceiver.card.source',{name:r.identifiedName})}</p>}
   {main&&error?<p role="alert" className="radio-receiver-alert" data-testid="receiver-tick-error" data-kind={error.kind}>{t('radioReceiver.tickError',{reason:t(`radioReceiver.error.${error.kind}`)})}</p>:null}
   <ReceiverMarks slot={slot} r={r} overlay={overlay} availability={receiverMarkAvailability(session,slot)} selected={selected} onSelect={setSelected} marks={marks}/>
+  <div className="radio-receiver-window" role="group" aria-labelledby={`${id}-window`} data-testid={`receiver-window-${slot}`} data-rank={rank} data-count={count}>
+   <span id={`${id}-window`} className="radio-receiver-window-legend">{t('radioReceiver.window.legend')}</span>
+   <span data-testid={`receiver-window-position-${slot}`}>{t('radioReceiver.window.position',{rank,count})}</span>
+   <div className="button-row">{moveButton('up')}{moveButton('down')}</div>
+   <p id={`${id}-window-help`} className="radio-control-note">{t('radioReceiver.window.help')}</p>
+  </div>
   <p className="radio-control-status" role="status" aria-live="polite" data-testid={`receiver-status-${slot}`}>{notice}</p>
  </section>;
 }
@@ -680,8 +740,9 @@ function ReceiverCanvas({slot,r,log,onPaint}:Readonly<{slot:number;r:RadioReceiv
 }
 
 /** FormCloseQuery box (MessageBox flags 0x40, MB_ICONINFORMATION | MB_OK) with the recovered caption and text; Enter or
- * Escape closes it. Focus returns to the slot-1 Close button. */
-function ReceiverCloseBox({caption,text,onDismiss}:Readonly<{caption:string;text:string;onDismiss:()=>void}>){
+ * Escape closes it. Focus returns to the slot-1 Close button. WEB-RX-ALIGN-CLOSE-01: the refusal is by slot, not position;
+ * the native literal stays verbatim and a web note names the highest open receiver (closeFirst) wherever its card is. */
+function ReceiverCloseBox({caption,text,closeFirst,onDismiss}:Readonly<{caption:string;text:string;closeFirst:number;onDismiss:()=>void}>){
  const id=useId(),root=useRef<HTMLDivElement>(null),button=useRef<HTMLButtonElement>(null);
  useEffect(()=>{button.current?.focus();},[]);
  const onKeyDown=(e:KeyboardEvent<HTMLDivElement>)=>{
@@ -691,9 +752,10 @@ function ReceiverCloseBox({caption,text,onDismiss}:Readonly<{caption:string;text
  };
  return <div className="radio-control" style={{display:'contents'}}>
   <div className="antenna-backdrop antenna-backdrop-top">
-   <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} className="antenna-dialog antenna-notice" data-testid="receiver-close-box" onKeyDown={onKeyDown}>
+   <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body ${id}-order`} className="antenna-dialog antenna-notice" data-testid="receiver-close-box" onKeyDown={onKeyDown}>
     <h3 id={`${id}-title`} className="radio-control-native">{caption}</h3>
     <p id={`${id}-body`} className="radio-control-native" data-testid="receiver-close-box-text">{text}</p>
+    <p id={`${id}-order`} className="radio-control-note" data-testid="receiver-close-box-order">{t('radioReceiver.box.closeOrder',{n:closeFirst})}</p>
     <p className="radio-control-note">{t('radioReceiver.box.note')}</p>
     <div className="button-row">
      <button ref={button} type="button" className="primary-button" data-testid="receiver-close-box-ok" onClick={onDismiss}>{t('radioReceiver.box.ok')}</button>

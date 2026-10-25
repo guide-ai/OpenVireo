@@ -3,12 +3,14 @@ import {readFileSync} from 'node:fs';
 import type {RadioLabTransition} from './radioAntenna';
 import type {PulsarRecord} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,clearReceiverNextMark,completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,editReceiverSeed,
- endMarkGesture,markPointerDown,markPointerMove,markPointerUp,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,parseReceiverSeed,placeReceiverMark,
- reassociateReceivers,receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,requestReceiverClose,stepReceiver,stepReceiverMark,tickReceivers,
- toggleReceiverMode,type RadioReceiverSession,type ReceiverMarkPress,type ReceiverSessionTransition,
+ RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,clearReceiverNextMark,completeRecordArming,completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,
+ editReceiverSeed,endMarkGesture,markPointerDown,markPointerMove,markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,parseReceiverSeed,
+ placeReceiverMark,pressRecord,reassociateReceivers,receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,requestReceiverClose,
+ stepReceiver,stepReceiverMark,tickReceivers,toggleReceiverAlignment,toggleReceiverMode,type RadioReceiverSession,type ReceiverMarkPress,type ReceiverSessionTransition,
 } from './radioReceiverSession';
 import {receiverPaintOps} from './radioReceiverDisplay';
+import {EMPTY_RADIO_RECORD_HEADER} from './radioReceiver';
+import {isStackedReceiverArrangement,type ReceiverMoveDirection} from './radioReceiverArrangement';
 
 // [W] contract checks of the web session (docs/RADIO-RECEIVER-MONITOR.md), synthetic records only; not native oracles.
 const rec=(o:Partial<PulsarRecord>={}):PulsarRecord=>Object.freeze({primaryName:'J0000+00',legacyName:'B0000+00',ra:6,dec:10,x2a:0.5,x34:0,x3e:2451545,
@@ -132,7 +134,7 @@ describe('controls, close box and clock ticks',()=>{
   let s=open();
   // R-RX4: Record is enabled while the main timer is off (Receive disables it, the finish enables it).
   expect(receiverControlAvailability(s,0)).toEqual({frequency:'enabled','frequency-step':'enabled',vertical:'enabled',horizontal:'enabled',add:'enabled',mode:'enabled',
-   align:'not-ported',record:'enabled',close:'enabled'});
+   align:'enabled',record:'enabled',close:'enabled'});
   s=take(addReceiverWindow(take(addReceiverWindow(s))));
   expect(receiverControlAvailability(s,0).add).toBe('disabled');
   expect(receiverControlAvailability(s,2)).toEqual({frequency:'enabled','frequency-step':'enabled',vertical:'enabled',horizontal:'absent',add:'absent',mode:'absent',
@@ -290,6 +292,105 @@ describe('R-RX3 marks: pointer lease, overlays, keyboard, Clear and lifecycle (W
   for(const t of [press(boxed,{pointerId:5}),placeReceiverMark(boxed,0,0,'5'),stepReceiverMark(boxed,2,0,1),clearReceiverNextMark(boxed,0),markPointerMove(boxed,{pointerId:1,x:20})])
    expect(t.outcome).toMatchObject({kind:'web-refused',reason:'close-box-open'});
   expect(take(endMarkGesture(boxed)).markLease).toBeNull();
+ });
+});
+
+describe('R-RX5 Align and the window order (WEB-RX-ALIGN-*)',()=>{
+ // [W] web-policy regressions of the session (docs/RADIO-RECEIVER-ALIGN.md); synthetic records only, no native geometry claim.
+ const order=(s:RadioReceiverSession)=>[...s.arrangement.order];
+ const move=(s:RadioReceiverSession,slot:number,dir:ReceiverMoveDirection)=>moveReceiverWindow(s,slot,dir);
+ const snap=(rows:number)=>({generation:1,rows,saved:false,analysisBusy:false,leaseHeld:false});
+ it('Open stacks [0], Add stacks 1 and 2; Align is enabled on the main in every timer state; edge and input refusals keep the session',()=>{
+  let s=open();expect(order(s)).toEqual([0]);expect(s.bank.align).toEqual({on:true,guard:true});
+  expect(receiverWindowMoveAvailability(s,0)).toEqual({up:'edge',down:'edge'});expect(receiverWindowMoveAvailability(s,1)).toEqual({up:'absent',down:'absent'});
+  const edge=move(s,0,'up');expect(edge.outcome).toEqual({kind:'web-refused',action:'move',reason:'window-edge'});expect(edge.session).toBe(s);expect(edge.changed).toBe(false);
+  for(const [slot,dir] of [[3,'up'],[1,'up'],[0,'left'],[-1,'down'],[0.5,'up']] as const){
+   const r=move(s,slot,dir as ReceiverMoveDirection);expect(r.outcome,`${slot} ${dir}`).toEqual({kind:'web-refused',action:'move',reason:'window-input'});expect(r.session).toBe(s);
+  }
+  s=take(addReceiverWindow(take(addReceiverWindow(s))));expect(order(s)).toEqual([0,1,2]);
+  expect([0,1,2].map(i=>receiverWindowMoveAvailability(s,i))).toEqual([{up:'edge',down:'enabled'},{up:'enabled',down:'enabled'},{up:'enabled',down:'edge'}]);
+  expect(receiverControlAvailability(s,1).align).toBe('absent');
+  s=take(mode(s));expect(receiverControlAvailability(s,0).align).toBe('enabled');
+  s=take(mode(s));expect(s.bank.slots[0]!.stopPending).toBe(true);expect(receiverControlAvailability(s,0).align).toBe('enabled');
+  expect(toggleReceiverAlignment(createRadioReceiverSession()).outcome).toMatchObject({kind:'refused',action:'align',error:{kind:'receiver-unavailable'}});
+ });
+ it('Align on: a move snaps back at once; Off repositions nothing; Off moves reorder; On re-stacks',()=>{
+  let s=take(addReceiverWindow(take(addReceiverWindow(open()))));
+  const back=move(s,2,'up');expect(order(take(back))).toEqual([0,1,2]);
+  if(back.outcome.kind!=='ok')throw new Error('expected ok');
+  expect(back.outcome.events.flatMap(e=>e.kind==='window-placed'?[`${e.cause}${e.slot}`]:[])).toEqual(['move2','move1']);
+  s=take(toggleReceiverAlignment(s));expect(s.bank.align.on).toBe(false);expect(order(s)).toEqual([0,1,2]);expect(s.bank.slots[0]!.alignLabel).toBe('No');
+  s=take(move(s,2,'up'));expect(order(s)).toEqual([0,2,1]);
+  s=take(move(s,2,'up'));expect(order(s)).toEqual([2,0,1]);
+  expect(receiverWindowMoveAvailability(s,2)).toEqual({up:'edge',down:'enabled'});expect(move(s,2,'up').outcome).toMatchObject({reason:'window-edge'});
+  s=take(toggleReceiverAlignment(s));expect(order(s)).toEqual([0,1,2]);expect(s.bank.slots[0]!.alignLabel).toBe('Yes');
+ });
+ it('Off → Add turns Align on and stacks, AlignDisp stays No until the main refresh; close the highest and re-add; main close and reopen',()=>{
+  let s=take(addReceiverWindow(open()));
+  s=take(toggleReceiverAlignment(s));s=take(move(s,1,'up'));expect(order(s)).toEqual([1,0]);
+  s=take(addReceiverWindow(s));expect(order(s)).toEqual([0,1,2]);expect(s.bank.align.on).toBe(true);expect(s.bank.slots[0]!.alignLabel).toBe('No');
+  s=take(stepReceiver(s,0,'vertical','up'));expect(s.bank.slots[0]!.alignLabel).toBe('Yes');
+  s=take(toggleReceiverAlignment(s));s=take(move(s,2,'up'));s=take(move(s,2,'up'));expect(order(s)).toEqual([2,0,1]);
+  s=take(requestReceiverClose(s,2));expect(order(s)).toEqual([0,1]);expect(s.bank.align.on).toBe(false);
+  s=take(addReceiverWindow(s));expect(order(s)).toEqual([0,1,2]);expect(s.bank.align.on).toBe(true);
+  s=take(toggleReceiverAlignment(s));s=take(move(s,0,'down'));expect(order(s)).toEqual([1,0,2]);
+  s=take(requestReceiverClose(s,0));expect(order(s)).toEqual([]);
+  s=open(s);expect(order(s)).toEqual([0]);expect(s.bank.align).toEqual({on:true,guard:true});expect(s.bank.slots[0]!.alignLabel).toBe('Yes');
+ });
+ it('toggle and move end a mark lease (marks kept, no attempt); the close box and the Record dialogs refuse with the session untouched',()=>{
+  const s=take(addReceiverWindow(open()));
+  const leased=take(markPointerDown(s,{pointerId:1,pointerType:'touch',button:0,slot:1,code:0,x:80}));
+  for(const t of [toggleReceiverAlignment(leased),move(leased,1,'up')]){
+   const n=take(t);expect(n.markLease).toBeNull();expect(n.bank.slots[1]!.marks).toEqual([80,-1]);expect(n.bank.slots[1]!.markDrag).toEqual([false,false]);
+   expect(n.markOverlays).toBe(leased.markOverlays);expect(n.canvases).toBe(leased.canvases);expect(n.bank.random).toBe(leased.bank.random);expect(n.seed).toBe(leased.seed);
+  }
+  const boxed=take(requestReceiverClose(take(addReceiverWindow(s)),1));expect(boxed.closeBox).not.toBeNull();
+  for(const t of [toggleReceiverAlignment(boxed),move(boxed,2,'up')]){expect(t.outcome).toMatchObject({kind:'web-refused',reason:'close-box-open'});expect(t.session).toBe(boxed);}
+  const prompt=take(pressRecord(s,snap(3)));expect(prompt.record.prompt).not.toBeNull();
+  for(const t of [toggleReceiverAlignment(prompt),move(prompt,1,'up')]){expect(t.outcome).toMatchObject({kind:'web-refused',reason:'record-dialog-open'});expect(t.session).toBe(prompt);}
+ });
+ it('toggling and moving while capturing send no host request and keep the record state and capture rows',()=>{
+  let s=take(addReceiverWindow(take(addReceiverWindow(open()))));
+  const press=pressRecord(s,snap(0));expect(press.host?.map(h=>h.kind)).toEqual(['acquire']);s=take(press);
+  s=take(completeRecordArming(s,{ok:true,seed:EMPTY_RADIO_RECORD_HEADER}));
+  s=take(mode(s));for(let i=0;i<3;i++)s=tick(s).session;
+  expect(s.record.receiving).toBe(true);expect(s.bank.recording.rows.length).toBeGreaterThan(0);
+  const t1=toggleReceiverAlignment(s),a=take(t1);expect(t1.host).toBeUndefined();
+  const t2=move(a,2,'up'),b=take(t2);expect(t2.host).toBeUndefined();expect(order(b)).toEqual([0,2,1]);
+  for(const x of [a,b]){expect(x.record).toBe(s.record);expect(x.bank.recording.rows).toBe(s.bank.recording.rows);expect(x.bank.recording.header).toBe(s.bank.recording.header);}
+  expect(tick(b).session.bank.recording.rows.length).toBeGreaterThan(s.bank.recording.rows.length);
+ });
+ it('a seeded operation sequence keeps I1–I4 after every step',()=>{
+  let x=20261025;const rnd=(n:number)=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return (x>>>16)%n;};// in-test LCG (high bits)
+  let s=createRadioReceiverSession(),offMoved=false;const stats={offMoves:0,onMoves:0,toggles:0};
+  for(let i=0;i<500;i++){
+   if(s.closeBox)s=take(dismissReceiverCloseBox(s));
+   const op=rnd(10),slot=rnd(3),dir:ReceiverMoveDirection=rnd(2)?'up':'down';
+   const before=s,wasOn=s.bank.align.on,wasGuard=s.bank.align.guard;
+   const t:ReceiverSessionTransition=op===0?openReceiverWindow(s,{catalog:[A],pointing:POINT}):op===1?addReceiverWindow(s):op===2?requestReceiverClose(s,slot)
+    :op===3?toggleReceiverAlignment(s):op<=6?move(s,slot,dir):op===7?mode(s):op===8?tick(s):placeReceiverMark(s,slot,0,String(rnd(401)));
+   s=t.session;
+   const openSlots=[0,1,2].filter(k=>s.bank.slots[k]!==null);
+   expect([...s.arrangement.order].sort(),`I1 step ${i}`).toEqual(openSlots);
+   if(s.bank.align.on)expect(isStackedReceiverArrangement(s.arrangement),`I2 step ${i}`).toBe(true);
+   if(!wasGuard&&s.bank.align.guard)offMoved=false;
+   const okAlign=(op===3||(op>=4&&op<=6))&&t.outcome.kind==='ok';
+   if(okAlign&&op!==3){if(wasOn)stats.onMoves++;else{stats.offMoves++;offMoved=true;}}
+   if(okAlign&&op===3)stats.toggles++;
+   if(s.bank.align.guard)expect(offMoved,`I4 step ${i}`).toBe(false);
+   if(okAlign&&t.outcome.kind==='ok'){
+    const b=before.bank,a=s.bank,cleared=t.outcome.events.some(e=>e.kind==='trace-cleared');
+    expect(a.random,`I3 step ${i}`).toBe(b.random);expect(a.profile).toBe(b.profile);expect(a.sourceBuffer).toBe(b.sourceBuffer);
+    expect(a.recording.rows).toBe(b.recording.rows);expect(s.record).toBe(before.record);expect(s.seed.used).toBe(before.seed.used);
+    expect(s.canvases).toBe(before.canvases);expect(s.markOverlays).toBe(before.markOverlays);
+    for(const k of [0,1,2]){
+     const r0=b.slots[k],r1=a.slots[k];if(!r0){expect(r1).toBeNull();continue;}
+     expect(r1!.marks).toEqual(r0.marks);if(!cleared)expect(r1!.trace).toBe(r0.trace);
+    }
+   }
+  }
+  // The sequence reaches both Align states with accepted moves (coverage of the invariants, not a count contract).
+  expect(stats.offMoves).toBeGreaterThan(0);expect(stats.onMoves).toBeGreaterThan(0);expect(stats.toggles).toBeGreaterThan(0);
  });
 });
 

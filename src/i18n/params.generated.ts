@@ -2299,7 +2299,9 @@ export interface MessageParameters {
   "radioReceiver.setup.nextNone": never;
   "radioReceiver.card.main": never;
   "radioReceiver.card.child": "n";
-  "radioReceiver.card.unported": never;
+  "radioReceiver.align.on": never;
+  "radioReceiver.align.off": never;
+  "radioReceiver.align.staleOn": never;
   "radioReceiver.card.modeDisp": never;
   "radioReceiver.card.alignDisp": never;
   "radioReceiver.card.recordDisp": never;
@@ -2371,6 +2373,7 @@ export interface MessageParameters {
   "radioReceiver.marks.status.clearNone": never;
   "radioReceiver.tickError": "reason";
   "radioReceiver.box.note": never;
+  "radioReceiver.box.closeOrder": "n";
   "radioReceiver.box.ok": never;
   "radioReceiver.error.options-missing": never;
   "radioReceiver.error.options-domain": never;
@@ -2431,4 +2434,18 @@ export interface MessageParameters {
   "radioReceiver.status.web.record-input": never;
   "radioReceiver.status.web.identify-length": never;
   "radioReceiver.status.web.identify-text": never;
+  "radioReceiver.align.status.on": never;
+  "radioReceiver.align.status.off": never;
+  "radioReceiver.window.legend": never;
+  "radioReceiver.window.position": "count" | "rank";
+  "radioReceiver.window.up": never;
+  "radioReceiver.window.down": never;
+  "radioReceiver.window.upLabel": "n";
+  "radioReceiver.window.downLabel": "n";
+  "radioReceiver.window.help": never;
+  "radioReceiver.window.status.moved": "count" | "n" | "rank";
+  "radioReceiver.window.status.restacked": never;
+  "radioReceiver.status.web.window-edge": never;
+  "radioReceiver.status.web.window-input": never;
+  "radioReceiver.status.addedAlignReset": never;
 }

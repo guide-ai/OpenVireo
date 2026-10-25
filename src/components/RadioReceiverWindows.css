@@ -26,6 +26,12 @@
 .radio-receiver-alert{margin:6px 0;padding:8px 10px;border-left:4px solid #b03a2e;background:#fdf0ee;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
 .radio-receiver-card button:focus-visible,.radio-receiver-setup input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
 .radio-receiver-card [aria-disabled="true"]{opacity:.6;cursor:not-allowed}
+/* R-RX5 window position group and the cue of a channel window stacked under Align (the order itself is the card order). */
+.radio-receiver-window{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:8px 0;padding:6px 10px;border:1px solid #c9d1cf;border-radius:6px;min-width:0}
+.radio-receiver-window-legend{font-size:14px;font-weight:600}
+.radio-receiver-window .button-row{flex-wrap:wrap;margin:0}
+.radio-receiver-window .radio-control-note{flex-basis:100%;margin:0;overflow-wrap:anywhere}
+.radio-receiver-card[data-stacked]{border-left:4px solid #23756c}
 /* R-RX4 Record notes and the finish Properties table (the boxes reuse .antenna-dialog). */
 .radio-receiver-card [data-testid="receiver-record-state"] p{margin:4px 0;overflow-wrap:anywhere}
 .radio-receiver-record-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}

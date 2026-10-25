@@ -14,6 +14,10 @@
 // the scratch triple 0x5bce10 (frame store 0x573a30..0x573a4a), the Receive header write 0x574766..0x574969, the timer
 // append 0x574b6d..0x574b82 into the bounded append 0x56a92c and the finish 0x573bbd..0x573bfc (disarm, RcrdDisp Off). The
 // capture rows stay in this bank until the session commits them (WEB buffered commit); dialogs are the session's.
+// R-RX5 (docs/RADIO-RECEIVER-ALIGN.md): Align 0x5bce08 and the layout guard 0x5bce09 (FormCreate 0x572614/0x57261b), the
+// AlignDisp caption +0x3bc (refresh 0x573082..0x5730b6), the layout 0x574fa4, the toggle 0x575034, the message-3 handler
+// 0x57296c and the layout calls in Activate 0x57294f, Add 0x574f97, Receive 0x57471b and the main frame finish 0x573b91.
+// They arrange receiver windows (window-placed events), never signals; AL-RESIZE 0x575080 is not ported (WEB-RX-ALIGN-WS-01).
 // Every transition returns new frozen objects; a refusal leaves the input bank (and its random stream) untouched.
 import {roundNearestEven} from './numericPolicy';
 import type {RadioPointing} from './radioAntenna';
@@ -139,7 +143,15 @@ export type RadioReceiver=Readonly<{
  /** R-RX4 RcrdDisp caption: 'On'/'Off' (0x573668/0x573674) from 0x5bce28 at each refresh 0x572f8c, 'Off' (0x573e20) at the
   * finish. '' before the first refresh [W] (FormCreate does not write it); a FormCreate disarm leaves it stale. */
  recordLabel:string;
+ /** R-RX5 AlignDisp caption +0x3bc: 'Yes'/'No' (0x573650/0x57365c) from 0x5bce08, written only on the main (index 0) by the
+  * refresh 0x572f8c. '' before the first refresh [W] (FormCreate does not write it); a FormCreate reset of 0x5bce08 leaves it
+  * stale until the main's next refresh (WEB-RX-ALIGN-LABEL-01). Never written on children. */
+ alignLabel:string;
 }>;
+/** R-RX5 Align 0x5bce08 (on) and the layout guard 0x5bce09. [W] false/false before any FormCreate: unobservable on the web,
+ * since no window exists to show them; every FormCreate writes 1/0 (0x572614/0x57261b). */
+export type RadioReceiverAlign=Readonly<{on:boolean;guard:boolean}>;
+export const INITIAL_RADIO_RECEIVER_ALIGN:RadioReceiverAlign=Object.freeze({on:false,guard:false});
 export type RadioReceiverSlots=readonly [RadioReceiver|null,RadioReceiver|null,RadioReceiver|null];
 type Cells<T>=readonly [T,T,T];
 /** R-RX4 header cells at data object +4 as the capture sees them: seeded at arming from the current dataset, written by
@@ -167,6 +179,8 @@ export type RadioReceiverBank=Readonly<{
  timerEnabled:boolean;
  /** R-RX4 0x5bce28, 0x5bce10 and the working capture. */
  recording:RadioRecording;
+ /** R-RX5 0x5bce08 and 0x5bce09. */
+ align:RadioReceiverAlign;
 }>;
 
 /** erasePosition: the position before the signal (erase band); position: re-read after it (a coupling refresh may
@@ -219,6 +233,11 @@ export type RadioReceiverEvent=Readonly<
  |{kind:'record-finished';full:boolean}
  /** R-RX4 the main window closed with the byte set (receiving: Receive had started). The byte stays set until a FormCreate. */
  |{kind:'record-orphaned';receiving:boolean}
+ /** R-RX5 one child placement: Left := main.Left, Top := main.Top + main.ClientHeight · slot (Add 0x574f14..0x574f45, layout
+  * 0x574fd9..0x575002, message 3 0x5729dd..0x572a0e). The presentation's arrangement applies it (WEB-RX-ALIGN-ARR-01). */
+ |{kind:'window-placed';slot:1|2;cause:'add'|'layout'|'move'}
+ /** R-RX5 Align 0x575034: 0x5bce08 xor 1. */
+ |{kind:'align-toggled';on:boolean}
 >;
 export type RadioReceiverError=Readonly<{kind:RadioSignalErrorKind;detail:string}>;
 export type RadioReceiverResult=Readonly<
@@ -230,7 +249,7 @@ type Mutable<T>={-readonly [K in keyof T]:T[K]};
 type RecordingDraft={armed:boolean;scratch:[number,number,number];header:RadioRecordHeader|null;rows:readonly number[];full:boolean;ownRows:number[]|null};
 type Draft={options:RadioReceiverOptions|null;buffer:RadioSourceBuffer;slots:(Mutable<RadioReceiver>|null)[];profile:PulsarProfile|null;stream:RadioRandomStream|null;timerEnabled:boolean;
  /** Trace stores copied in this transition (copy on first write; sealed and frozen at the end). */
- traces:Set<RadioReceiverTrace>;recording:RecordingDraft};
+ traces:Set<RadioReceiverTrace>;recording:RecordingDraft;align:{on:boolean;guard:boolean}};
 type Run=(d:Draft,events:RadioReceiverEvent[],frames:RadioReceiverFrame[])=>void;
 type TraceDraft={maxIndex:number;dt:number|null;rows:(number|null)[];lastX:number};
 const fail=(kind:RadioSignalErrorKind,detail:string):never=>{throw new RadioSignalError(kind,detail);};
@@ -245,12 +264,13 @@ function seal(d:Draft):RadioReceiverBank{
  const rd=d.recording;
  const recording:RadioRecording=Object.freeze({armed:rd.armed,scratch:Object.freeze([...rd.scratch] as [number,number,number]),header:rd.header,
   rows:rd.ownRows?Object.freeze(rd.ownRows):rd.rows,full:rd.full});
- return Object.freeze({options:d.options,sourceBuffer:d.buffer,slots,profile:d.profile,random:d.stream,timerEnabled:d.timerEnabled,recording});
+ return Object.freeze({options:d.options,sourceBuffer:d.buffer,slots,profile:d.profile,random:d.stream,timerEnabled:d.timerEnabled,recording,
+  align:Object.freeze({on:d.align.on,guard:d.align.guard})});
 }
 function run(bank:RadioReceiverBank,body:Run):RadioReceiverResult{
  const r0=bank.recording;
  const d:Draft={options:bank.options,buffer:bank.sourceBuffer,slots:bank.slots.map(r=>r===null?null:{...r}),profile:bank.profile,stream:bank.random,timerEnabled:bank.timerEnabled,traces:new Set(),
-  recording:{armed:r0.armed,scratch:[...r0.scratch] as [number,number,number],header:r0.header,rows:r0.rows,full:r0.full,ownRows:null}};
+  recording:{armed:r0.armed,scratch:[...r0.scratch] as [number,number,number],header:r0.header,rows:r0.rows,full:r0.full,ownRows:null},align:{on:bank.align.on,guard:bank.align.guard}};
  const events:RadioReceiverEvent[]=[],frames:RadioReceiverFrame[]=[];
  try{body(d,events,frames);}
  catch(error){if(error instanceof RadioSignalError)return Object.freeze({ok:false,error:Object.freeze({kind:error.kind,detail:error.detail})});throw error;}
@@ -265,7 +285,7 @@ const batchFor=(h:number)=>h===RADIO_RECEIVER_CONSTANTS.batchSpecialH?1:roundNea
 /** New bank with an empty buffer and no receivers. options null stands for 0x5bce04 = nil. */
 export function createRadioReceiverBank(options:RadioReceiverOptions|null):RadioReceiverResult{
  const empty:RadioReceiverBank=Object.freeze({options:null,sourceBuffer:INITIAL_RADIO_SOURCE_BUFFER,slots:Object.freeze([null,null,null]) as RadioReceiverSlots,
-  profile:null,random:null,timerEnabled:false,recording:INITIAL_RADIO_RECORDING});
+  profile:null,random:null,timerEnabled:false,recording:INITIAL_RADIO_RECORDING,align:INITIAL_RADIO_RECEIVER_ALIGN});
  return run(empty,d=>{
   if(options!==null){const issue=radioReceiverOptionsIssue(options);if(issue)fail('options-domain',issue);}
   d.options=options===null?null:Object.freeze({...options});
@@ -286,9 +306,11 @@ function formCreate(d:Draft,index:0|1|2,seed:number|undefined,events:RadioReceiv
   displayGain:verticalGain*sensitivity,skyThermal,offset:0,searchRadius:0,beamRadius:null,beamSigma:null,spatial:null,
   sourceAttached:false,identifiedName:null,inSource:null,receiving:false,stopPending:null,audio:false,alternation:1,lastTick:null,lastSignal:null,lastRow:null,
   title:'',apertureText:'',trace:createReceiverTrace(k.displayWidth-1),addEnabled:true,
-  marks:UNSET_MARKS,markDrag:NO_MARK_DRAG,recordLabel:''};
+  marks:UNSET_MARKS,markDrag:NO_MARK_DRAG,recordLabel:'',alignLabel:''};
  if(index===0)d.profile=profile;
  events.push({kind:'created',slot:index});
+ // R-RX5 0x572614/0x57261b: 0x5bce08 := 1, 0x5bce09 := 0 on every FormCreate; AlignDisp is not rewritten here.
+ d.align.on=true;d.align.guard=false;
  // R-RX4 0x572622: 0x5bce28 := 0 on the main and on the child path; RcrdDisp is not rewritten here.
  if(d.recording.armed){d.recording.armed=false;events.push({kind:'record-disarmed',slot:index});}
 }
@@ -333,9 +355,21 @@ function displayRefresh(d:Draft,r:Mutable<RadioReceiver>,events:RadioReceiverEve
   }
   r.title=title;
  }else r.title=receiverChildTitle(r.index);
+ // R-RX5 AlignDisp +0x3bc from 0x5bce08, main only (0x573082..0x5730b6: 'Yes' 0x573650 / 'No' 0x57365c).
+ if(r.index===0)r.alignLabel=d.align.on?RECEIVER_DISPLAY_LITERALS.yes:RECEIVER_DISPLAY_LITERALS.no;
  // R-RX4 RcrdDisp from the recording byte (0x573668 'On' / 0x573674 'Off').
  r.recordLabel=d.recording.armed?RECEIVER_DISPLAY_LITERALS.on:RECEIVER_DISPLAY_LITERALS.off;
  events.push({kind:'beam',slot:r.index,changed});
+}
+
+/** R-RX5 layout 0x574fa4..0x575032: acts only when 0x5bce08 = 1 and 0x5bce09 = 0. Visits slot 2 then slot 1; each present
+ * child (WindowState +0x273 is wsNormal on the web, WEB-RX-ALIGN-WS-01) gets Left/Top below the main (window-placed), the
+ * activation helper 0x47a010 and WindowState := wsNormal (identity here). Then 0x5bce09 := 1. The final 0x47a010 on the
+ * main is not followed (its transitive effects are not closed, WEB-RX-ALIGN-ACT-01). */
+function alignLayout(d:Draft,events:RadioReceiverEvent[]){
+ if(!d.align.on||d.align.guard)return;
+ for(const slot of [2,1] as const)if(d.slots[slot])events.push({kind:'window-placed',slot,cause:'layout'});
+ d.align.guard=true;
 }
 
 /** 0x574cb7..0x574d15 and 0x57400b..0x574063: 1 when live +0x92c > 0, else Exp(−(o/σ)²/2) with this receiver's σ.
@@ -426,6 +460,8 @@ function frame(d:Draft,slot:number,jd:number|null,events:RadioReceiverEvent[],fr
    // FINISH: timer off; the idle helper 0x575a38 with Self = main enables the main's own SlaveBtn.
    if(r.index===0){d.timerEnabled=false;r.addEnabled=true;}
    events.push({kind:'sweep-finished',slot:r.index,position});
+   // R-RX5 0x573b86..0x573b91: the main's finish runs the layout before the record finish.
+   if(r.index===0)alignLayout(d,events);
    // R-RX4 0x573bbd..0x573bfc (any frame that finishes; the main runs first, so later frames see the byte clear): byte := 0,
    // RcrdDisp := 'Off'. The full box, Identify, Properties and the Save question follow in the session (WEB-REC-BATCH).
    if(d.recording.armed){d.recording.armed=false;r.recordLabel=RECEIVER_DISPLAY_LITERALS.off;events.push({kind:'record-finished',full:d.recording.full});}
@@ -571,19 +607,50 @@ export function addReceiverChannel(bank:RadioReceiverBank,input:Readonly<{create
   if(d.timerEnabled)fail('receiver-unavailable','Add Channel is disabled while receiving or finishing a sweep');
   if(!m.addEnabled)fail('receiver-unavailable','Add Channel is disabled');
   const slot=d.slots[1]===null?1:d.slots[2]===null?2:null;
-  if(slot===null){events.push({kind:'add-nothing'});return;}
+  // R-RX5 0x574eaf → 0x574f95: the add-nothing path still runs the layout.
+  if(slot===null){events.push({kind:'add-nothing'});alignLayout(d,events);return;}
   formCreate(d,slot,input.createSeed,events);
   const c=d.slots[slot]!;c.sourceAttached=m.sourceAttached;c.offset=m.offset;
+  // R-RX5 0x574f14..0x574f55: the new child is placed below the main whatever Align is (then 0x47a010 and wsNormal).
+  events.push({kind:'window-placed',slot,cause:'add'});
   if(slot===2)m.addEnabled=false;
+  alignLayout(d,events);// 0x574f97
  });
 }
-/** FormActivate 0x5728dc with 0x5b584c+5 false [W]: a child copies the master's +0x584 and +0x56f; then the parameter
- * refresh (title, +0x583 and, for the main, the title-change lastX reset: activation is not idempotent). */
+/** FormActivate 0x5728dc with 0x5b584c+5 false [W]: a child copies the master's +0x584 and +0x56f and clears the layout
+ * guard 0x5bce09 (0x572944); the main runs the layout 0x574fa4 (0x57294f); then the parameter refresh (title, +0x583,
+ * AlignDisp and, for the main, the title-change lastX reset: activation is not idempotent). The drag-flag reset at 0x57295b
+ * is not changed by R-RX5. */
 export function activateReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverResult{
  return run(bank,(d,events)=>{
   const r=slotOf(d,slot);
-  if(r.index!==0){const m=main(d);r.receiving=m.receiving;r.horizontal=m.horizontal;}
+  if(r.index!==0){const m=main(d);r.receiving=m.receiving;r.horizontal=m.horizontal;d.align.guard=false;}
+  else alignLayout(d,events);
   displayRefresh(d,r,events);
+ });
+}
+/** R-RX5 Align button 0x575034..0x57507e on the main: 0x5bce08 xor 1, the refresh 0x572f8c of the main (AlignDisp and the
+ * other recovered refresh effects), then, when now on, WindowState := wsNormal for slots 1 and 2 (identity on the web) and
+ * the layout. Off never repositions any window; [W] admitted in every timer and record state (the receiving helper 0x575c6c
+ * does not touch Align); refused only without a main. Reads no clock, catalog or random stream. */
+export function toggleReceiverAlign(bank:RadioReceiverBank):RadioReceiverResult{
+ return run(bank,(d,events)=>{
+  const m=main(d);
+  d.align.on=!d.align.on;events.push({kind:'align-toggled',on:d.align.on});
+  displayRefresh(d,m,events);
+  if(d.align.on)alignLayout(d,events);
+ });
+}
+/** R-RX5 message 3 handler 0x57296c (read as WM_MOVE by platform convention) for the window in slot. After the inherited
+ * 0x46444c: Align off clears the guard 0x5bce09 and returns. Align on: with the guard clear on a child, the +0x4a1
+ * suppression or the 0x408c44(0x30) beep (neither ported: no audio); then, only when slot 1 exists, slots 2 then 1 are
+ * placed below the main again. The guard is not written on that path. */
+export function receiverWindowMoved(bank:RadioReceiverBank,slot:number):RadioReceiverResult{
+ return run(bank,(d,events)=>{
+  slotOf(d,slot);
+  if(!d.align.on){d.align.guard=false;return;}
+  if(!d.slots[1])return;
+  for(const s of [2,1] as const)if(d.slots[s])events.push({kind:'window-placed',slot:s,cause:'move'});
  });
 }
 /** Paint 0x572a20 state part: the parameter refresh 0x572f8c, then the drawing (paint event → receiverPaintOps), then the
@@ -636,7 +703,7 @@ function appendRecord(d:Draft,events:RadioReceiverEvent[]){
 
 export type ReceiveToggleInput=Readonly<{jd:number|null;now:number;allocateSeed?:number}>;
 /** Mode 0x5745f8 on the main receiver, then each child in slot order. Start: receiving helper 0x575c6c (Add off), clear
- * +0x42d, marks := −1 (R-RX3), Paint (refresh + drawing), snapshot +0x579, source refresh (trace reset; first build Randomizes with
+ * +0x42d, marks := −1 (R-RX3), Paint (refresh + drawing), snapshot +0x579, the Align layout (R-RX5), source refresh (trace reset; first build Randomizes with
  * allocateSeed), stamp +0x499 := now (caller-supplied scalar for Time 0x40d448, see receiverTimerTick), enable the timer,
  * refresh. Each child: copy +0x584, Add off, clear +0x42d, Paint, snapshot, refresh. Stop: +0x42d := 1 and the refresh
  * (whose title change may clear lastX).
@@ -653,6 +720,7 @@ export function toggleReceive(bank:RadioReceiverBank,input:ReceiveToggleInput):R
    // R-RX3: +0x430/+0x434 := −1 before this receiver's Paint (0x5746c8/0x5746d2); the drag flags are not written.
    m.marks=UNSET_MARKS;paint(d,m,events);
    m.horizontalSnapshot=m.horizontal;
+   alignLayout(d,events);// R-RX5 0x57471b, before the source refresh 0x574ba4
    refresh(d,'receive',input.jd,input.allocateSeed,events);
    if(d.recording.armed)writeRecordHeader(d,events);
    m.lastTick=input.now;d.timerEnabled=true;events.push({kind:'receive-started'});
