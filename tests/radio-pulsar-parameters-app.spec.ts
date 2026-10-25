@@ -6,7 +6,8 @@ import {env} from 'node:process';
 // reference catalog admission (invalid, too large, cancel, route change, project operation, reimport), the read-only
 // window, Prev/Next ends, Update/Reset with the sequential partial store, Find (seed, substring, miss, Cancel, retained
 // query, keyboard), modality and yielding to an antenna box, Exit/reopen, Save investigation bytes, reload and a 390 px
-// layout. No harness and no product debug hook: only the rendered App, browser history and the test-only read hold.
+// layout. No harness and no product debug hook: only the rendered App, browser history, the test-only read hold and, in the
+// yielding test, Playwright's controlled clock.
 // The catalog below is synthetic (no original rows); expected strings are the chosen web contract, not native oracles.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
 const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
@@ -62,6 +63,7 @@ async function loadCatalog(page:Page,name='synthetic-pulsars.dat',text=CATALOG){
 const field=(page:Page,name:string)=>id(page,`pulsar-params-field-${name}`);
 const fieldsOf=async(page:Page,names:readonly string[])=>Object.fromEntries(await Promise.all(names.map(async n=>[n,await field(page,n).inputValue()])));
 const findDialog=(page:Page)=>id(page,'pulsar-find-dialog'),notice=(page:Page)=>id(page,'pulsar-params-notice');
+async function flushTasks(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 
 async function openRadio(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
@@ -232,12 +234,20 @@ test('reads: Cancel, route change and a project operation cancel a held read and
 
 test('an antenna box arriving while Find is open takes over; Find returns with its draft and focus; Back hides and Forward restores the box',async({page})=>{
  await openRadio(page);await switchOn(page);await loadCatalog(page);
+ // Every surface used below is rendered once before the clock is frozen; the slew then advances one nominal 100 ms tick at a time.
+ await openWindow(page);await id(page,'pulsar-params-find').click();await id(page,'pulsar-find-cancel').click();await id(page,'pulsar-params-exit').click();
+ await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);await flushTasks(page);
  await id(page,'antenna-tracking').click();await expect(id(page,'antenna-tracking-state')).toHaveText('Tracking on');
  // A short programmed slew; Find opens while it runs.
  await id(page,'antenna-set-coordinates').click();
  for(const [name,value] of [['raHours','0'],['raMinutes','0'],['raSeconds','30'],['decDegrees','38'],['decMinutes','25'],['decSeconds','0']] as const)await id(page,`antenna-field-${name}`).fill(value);
  await id(page,'antenna-dialog-ok').click();await expect(id(page,'antenna-notice')).toHaveAttribute('data-kind','confirm-slew');await id(page,'antenna-notice-yes').click();
  await openWindow(page);await id(page,'pulsar-params-find').click();await id(page,'pulsar-find-query').fill('kept');
+ // The clock is paused: the slew is still running and no arrival box exists while the draft is typed.
+ expect(await id(page,'antenna-notice').count()).toBe(0);await expect(id(page,'antenna-ticks')).toBeAttached();
+ await expect(findDialog(page)).toBeVisible();await expect(id(page,'pulsar-find-query')).toHaveValue('kept');
+ // At most 100 nominal SlewTimer2 callbacks (10 s simulated) until the arrival box appears.
+ for(let i=0;i<100&&await id(page,'antenna-notice').count()===0;i++){await page.clock.runFor(100);await flushTasks(page);}
  await expect(id(page,'antenna-notice')).toHaveAttribute('data-kind','slew-complete',{timeout:20_000});await expect(id(page,'antenna-notice-ok')).toBeFocused();
  await expect(findDialog(page)).toHaveCount(0);await expect(layer(page)).toHaveAttribute('data-modal-pending','true');
  await id(page,'antenna-notice-ok').click();
