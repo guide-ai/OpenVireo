@@ -1,0 +1,70 @@
+{
+  "feature": "R-RX4 receiver Record → Identify → modal Properties → Save question (No) → existing manual Pulsar Analysis, over one App-owned current pulsar dataset",
+  "acceptanceClaim": "none; no capability is promoted and the original denominator is unchanged",
+  "artifact": {
+    "name": "CLEA_VEO.exe (VIREO 1.504)",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "sources": {
+    "receiverRecord": {
+      "dir": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-signal-20261024/receiver-record",
+      "contracts": "CONTRACTS.json / CONTRACTS.md (RC-REC-01..RC-REC-10)",
+      "literals": "LITERALS.json",
+      "listings": {
+        "record-button": "0x57581c..0x57594d e6884d75e15510b67d6ff9861a15991d3ce5baf1ca35e4cbbe3aed67acfff6f1",
+        "frame": "0x573790..0x573dce d31088cb788467a579523d969cce89be130e63564116682d1c65270024bd9ea4",
+        "timer": "0x574ad4..0x574b91 e5a6f04594d2bdb5b45f0ac8202a1cdced4d43fc85001d00f0971af8da7cb198",
+        "receive-mode": "0x5745f8..0x574ab0 1575a2535b3cbf9cb6a929764361220beff434971009040f5439e32122bbbbc4",
+        "plr-append-frame": "0x56a92c..0x56a964 75d04d18ae7ba6e4e7de94351e318c69cfd5e11adfe40ff32237b41c0c678b28",
+        "plr-clear": "0x56a8e0..0x56a929 8676e87b124fa23002e3f2b8f3a40b055112228a47262ec78e1f85b2bfc6b76c",
+        "form-create": "0x5721d8..0x57268c e74fbe55fc1282aa027886655dd72d17d058c87390d6043e569ff4697a17e14b",
+        "controls-idle": "0x575a38..0x575c6b f50d69f1ab631eaa1ea6071e8b677dc8fb12f614284881c292d076a7745f6c1b",
+        "controls-receiving": "0x575c6c..0x575e8c 944ff9750963a60795983379cbe28a5c871d9b095cc1fc48efc3c25892cfbf27",
+        "list-init": "0x4924d4..0x4924fc 4f26abbb08e960b295d266f03f7f90336a6effe3f27527adb45704fdbdcfd81a",
+        "list-insert-head": "0x492528..0x492574 1c84db2f24ae19fad44861f3e558d3ab197f2c9ee5aa6b939c2a5a49e3526e76",
+        "list-insert-after": "0x492574..0x4925d9 f8189cfa120abe3b74c1399e97fcfc3c96c7043c38925e92e1a583671e9d1212"
+      },
+      "resource": "TRCVR_FORM1 DFM cbc60c12e5d5f918b53fc32b264f7af5234e44a18f25d48f6657a4aaf7e5b278"
+    },
+    "rx4": {
+      "dir": "/tmp/clea-static-research/radio-rx4-record-20261025",
+      "identify": "IDENTIFY-CLASS-BINDING.json (TStrIpDlg class ref 0x5250c4, VMT 0x525110, FormShow 0x5252d4, OKBtnClick 0x525308; THdrDisp cross-check); IDENTIFY-DFM.json (resource f20d31499562c8eca8922964e9b3cf17fd7917aae309aa8907969f4e6e4198a2); IDENTIFY-METHODS.asm 0x5252d4..0x52535b 7d05796ba72d9d0565c6ce45882d9e3dafdd4584203527e0a40b0293ff117d7c",
+      "analysis": "ANALYSIS-GLOBAL-BINDING.json (0x5ad4cc..0x5ad4df a763c96ee01c44f8f3d5c933543db04dbe0a8acc57710d95d3c622d629e9d8f3: alias 0x5b5d84 → TPlsrAnalysisForm1); ANALYSIS-CAPTURES.json (the four used captures with full SHA-256 in PULSAR-ANALYSIS-PROVENANCE.json listing RX4-ANALYSIS-CAPTURES; prepare-bases 0x56b9c8..0x56ba67 f88216c7d5f81300b500f180b9e26feb916faadae414e4498eb67d3ca0159ec7); ANALYSIS-LOAD-EMPTY-LITERALS.json",
+      "measurementOriginGate": "MEASUREMENT-ORIGIN-GATE.json; measurement-record-file-gate.asm 0x570e77..0x570ed2 538744dcb651480d828952978d24b9b96b742562fbb4deda41b5bf2a0912abb8",
+      "literalsAndConstants": "requested-literals-and-constants.json (0x56b9bc 'No Data' 33cf6899…803e, 0x5719a4 'Data Not Written to File' 2e9bb7a2…1638, 0x570f38/0x570f54 delimiters)",
+      "resolution": "RECOVERY-RESOLUTION.json (D1..D5)",
+      "propertiesClose": "HEADER-PROPERTIES-CLOSE.json 34021992df36e3f8a61172443248ee565d1eab11702050a197458a6f9cee367c; header-properties-ok.asm 0x5719c0..0x5719c5 091bef39a3901cdc48d15cc9372bf75ae0f15146f9ab7e0a7499345b11cce04c; header-properties-close-helper.asm 0x47a008..0x47a00f 01a9bca36d0ec2b0d4174de3a59b8056bf92713222e2bd4a9441ccde10ddeeb0; properties-activation-helper.asm 0x47a010..0x47a024 67da0453494e4e533b65c743d0b472e87dec2846fe8ccf6cb467dfd0facd216b"
+    },
+    "notUsed": [
+      "the excluded writer-caller listing (0x56b36c..0x56b678) and any copy or derivative",
+      "the excluded antenna metadata and altitude field-role files and their derivatives",
+      "the quarantined combined CONTRACT-READINESS.json",
+      "original binary bytes",
+      "the retracted 0x47a000..0x47a010 note of HEADER-PROPERTIES-CLOSE.json",
+      "the paired-use Hide reading of 0x47a008 in RADIO-CONTROL-PROVENANCE.json (an inference, not a witness)"
+    ]
+  },
+  "contracts": [
+    { "id": "E1", "rcRec": "RC-REC-03", "range": "0x57581c..0x57594c", "tag": "S", "module": "radioReceiverSession.pressRecord/answerRecordPrompt/completeRecordArming; radioReceiver.toggleRecordByte/clearRecordByte/armRecordCapture" },
+    { "id": "E2", "rcRec": "RC-REC-01", "range": "0x572622", "tag": "S", "module": "radioReceiver formCreate (record-disarmed)" },
+    { "id": "E3", "rcRec": "RC-REC-05", "range": "0x574766..0x574969", "tag": "S", "module": "radioReceiver writeRecordHeader", "inference": "name source +0xd read as the catalog legacy name with exercise byte 6 and +0x939 = 1 (RECEIVER_WEB_DISPLAY_POLICY)" },
+    { "id": "E4", "rcRec": "RC-REC-06, RC-REC-08", "range": "0x573a30..0x573a4a, 0x573bbd..0x573d8f", "tag": "S", "module": "radioReceiver frame (scratch, record-finished); radioReceiverSession finish stages", "inference": "push 0 at 0x573d04 and call 0x408c44 at 0x573d06 (before the Properties ShowModal at 0x573d14) read as MessageBeep, not ported" },
+    { "id": "E5", "rcRec": "RC-REC-06", "range": "0x574b6d..0x574b82", "tag": "S", "module": "radioReceiver receiverTimerTick" },
+    { "id": "E6", "rcRec": "RC-REC-07", "range": "0x56a92c..0x56a963, 0x4924d4..0x4925d8", "tag": "S, I", "module": "radioReceiver appendRecord", "inference": "1601 triples is a static conditional deduction; the literal says 1600" },
+    { "id": "E7", "range": "0x5252d4..0x52535a, 0x573c29..0x573cff", "tag": "S, D, I", "module": "radioReceiverRecord radioIdentifyIssue; RecordFinishSurface", "inference": "0x43c450(EditStr, 40) read as MaxLength; bkOK/bkCancel default/cancel semantics inherited from VCL" },
+    { "id": "E8", "range": "0x56ac04..0x56aeb7, 0x56b7ac..0x56b9ba", "tag": "S, D", "module": "pulsarAnalysis.pulsarActivateData (PLR-ACTIVATE-01)" },
+    { "id": "E9", "range": "0x56af38..0x56afb7", "tag": "S", "module": "pulsarAnalysis.pulsarRequestLoad/pulsarAnswerLoad (PLR-LOAD-PROMPT-01)" },
+    { "id": "E10", "range": "0x56b7c9, 0x56bf11", "tag": "S", "module": "pulsarCurrentData.pulsarDataPresentation ('reserved-name')" },
+    { "id": "E11", "range": "0x570e77..0x570ed2, 0x571931..0x57194b", "tag": "S", "module": "pulsarAnalysis lineCandidate, pulsarReviewEdit pulsarEntryTail, pulsarCurrentData.pulsarDataProperties (PLR-MEMORY-01)" },
+    { "id": "E12", "range": "0x5719c0..0x5719c5, 0x47a008..0x47a00f, 0x573d14..0x573d1a", "tag": "S", "module": "RecordFinishSurface Properties OK; radioReceiverSession.closeRecordProperties", "inference": "no direct ModalResult store in the observed 6-byte method 0x5719c0 or the 8-byte wrapper 0x47a008 (the transitive helpers 0x475600/0x45e1b4 are not closed); the frame does not test the ShowModal result; Show/Hide semantics, a ModalResult value and the transitive VCL effects are not claimed" }
+  ],
+  "web": [
+    "WEB-REC-OWNER", "WEB-REC-TXN", "WEB buffered commit", "WEB-REC-BATCH (no RNG interleaving or modal-order equivalence; not only painting differs)",
+    "WEB-REC-CAP", "WEB-REC-STOP", "WEB-REC-ID", "WEB-REC-SAVE (Yes disabled with its reason; web default Cancel; erase keeps native default OK)",
+    "WEB-REC-NODATA", "WEB-REC-MEM", "WEB-REC-HEADER", "RC-REC-09 lock", "flag representation (0x96/0x97/0x98/0x99), 0x5db store not ported"
+  ],
+  "barriers": ["B1 0x56b36c body", "B2 0x56bf11 draw routine", "B3 VCL modal reentry order", "B4 0x56aec0/0x56aed4, +0x5cb, main+0x468, the 0x476f40 body, and the transitive VCL/window effects of 0x475600 (from the Properties OK via 0x47a008 with EDX 0, and from 0x47a010 with DL 1) and 0x45e1b4 (0x47a010); the OK handler itself is observed (E12)", "B5 runtime 1600/1601", "B6 x87 Extended parity"],
+  "dataOrigin": "model-generated receiver capture; not observed CLEA data; page lifetime only",
+  "noOriginalExecutionOrEmulation": true,
+  "noRawPeBytesEmitted": true
+}

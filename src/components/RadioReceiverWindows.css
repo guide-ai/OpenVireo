@@ -26,3 +26,12 @@
 .radio-receiver-alert{margin:6px 0;padding:8px 10px;border-left:4px solid #b03a2e;background:#fdf0ee;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
 .radio-receiver-card button:focus-visible,.radio-receiver-setup input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
 .radio-receiver-card [aria-disabled="true"]{opacity:.6;cursor:not-allowed}
+/* R-RX4 Record notes and the finish Properties table (the boxes reuse .antenna-dialog). */
+.radio-receiver-card [data-testid="receiver-record-state"] p{margin:4px 0;overflow-wrap:anywhere}
+.radio-receiver-record-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.radio-receiver-record-table th,.radio-receiver-record-table td{border:1px solid #c9d1cf;padding:2px 6px;text-align:left}
+[data-testid="receiver-record-finish"] dl div{display:flex;flex-wrap:wrap;gap:4px 8px}
+/* One label/value pair per row at every width (the global two-column grid is for direct dt/dd children). */
+[data-testid="receiver-record-finish"] dl{grid-template-columns:minmax(0,1fr)}
+[data-testid="receiver-record-finish"] dd{margin:0;overflow-wrap:anywhere}
+[data-testid="receiver-record-finish"] input{max-width:100%;min-width:0}

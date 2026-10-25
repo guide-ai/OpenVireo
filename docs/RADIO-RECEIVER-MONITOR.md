@@ -2,7 +2,7 @@
 
 The Receiver button of the radio control panel opens a TRcvr_Form1 main receiver and up to two child channels as cards. Each card has the recovered controls and a logical 401 × 142 display. The display is drawn from the R-RX1 signal chain ([RADIO-RECEIVER-SIGNAL.md](RADIO-RECEIVER-SIGNAL.md)) with a learner-loaded reference catalog.
 
-This is a **modelled display, not an observation**. It is silent, temporary (not in Save investigation; reload resets it) and does not record. Record, sound and volume, Identify/Properties, Align, PLR writing and the Add Current Item / PulsarList menu effects are not ported. Display marks were excluded from R-RX2 and are now added by R-RX3 ([RADIO-RECEIVER-MARKS.md](RADIO-RECEIVER-MARKS.md)). It does not complete Radio or any of the 58 capabilities. Native equivalence is not established: no CLEA execution, emulation or native trace was used, and tests are contract checks of this implementation.
+This is a **modelled display, not an observation**. It is silent, temporary (not in Save investigation; reload resets it) and does not record. Record, sound and volume, Identify/Properties, Align, PLR writing and the Add Current Item / PulsarList menu effects are not ported. Display marks were excluded from R-RX2 and are now added by R-RX3 ([RADIO-RECEIVER-MARKS.md](RADIO-RECEIVER-MARKS.md)). Record, Identify, the modal Properties and the Save question's No handoff to Pulsar Analysis are added by R-RX4 ([RADIO-RECEIVER-RECORD.md](RADIO-RECEIVER-RECORD.md)); saving a recording to a file stays unavailable. It does not complete Radio or any of the 58 capabilities. Native equivalence is not established: no CLEA execution, emulation or native trace was used, and tests are contract checks of this implementation.
 
 Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Evidence tags: [S] static listing, [D] DFM/resource default, [I] analyst inference, [W] web policy. Paths, hashes and VAs are in [RADIO-RECEIVER-MONITOR-PROVENANCE.json](RADIO-RECEIVER-MONITOR-PROVENANCE.json).
 
@@ -54,7 +54,7 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
 
 ## Remaining items
 
-Record and the 1600/1601 list limit; Identify/Save/result-7; audio and PRE-01; Align and window states (manual marks and DblClick: R-RX3, with its own remaining gaps); `env+0x37d6`; the ShowWindow table `0x5afa8c`; other `+0x499` writers; `0x4270c0`; historical FPU, global RNG, locale and GDI state; the actual `Application+0x44` value and the `0x53a` delivery.
+Record, the 1600/1601 bound, Identify, the modal Properties and the Save question's No path are R-RX4 (`docs/RADIO-RECEIVER-RECORD.md`); the Save wrapper `0x56b36c` (Yes) stays unavailable; audio and PRE-01; Align and window states (manual marks and DblClick: R-RX3, with its own remaining gaps); `env+0x37d6`; the ShowWindow table `0x5afa8c`; other `+0x499` writers; `0x4270c0`; historical FPU, global RNG, locale and GDI state; the actual `Application+0x44` value and the `0x53a` delivery.
 
 ## Tests
 

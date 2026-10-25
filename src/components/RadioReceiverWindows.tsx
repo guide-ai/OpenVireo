@@ -1,8 +1,14 @@
-import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type PointerEvent,type RefObject} from 'react';
+import {useEffect,useId,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type PointerEvent,type ReactNode,type RefObject} from 'react';
 import './RadioReceiverWindows.css';
 import type {RadioLabTransition,RadioPointing} from '../core/radioAntenna';
 import type {PulsarCatalog} from '../core/radioPulsarCatalog';
 import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent} from '../core/radioReceiver';
+import {
+ PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,commitPulsarCapture,pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarHeaderCells,pulsarMemoryRecording,
+ releasePulsarCaptureLease,setPulsarCapturePhase,
+} from '../core/pulsarCurrentData';
+import {RADIO_IDENTIFY_DFM,RADIO_IDENTIFY_POLICY,RADIO_RECORD_LITERALS,radioCaptureInput,radioIdentifyIssue} from '../core/radioReceiverRecord';
+import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
 import {
  RECEIVER_DFM_CAPTIONS,RECEIVER_DISPLAY_COLOURS,RECEIVER_DISPLAY_GEOMETRY,RECEIVER_DISPLAY_LITERALS,receiverCaption,receiverLabels,receiverPaintOps,
  type ReceiverDisplayOp,type ReceiverPen,
@@ -10,11 +16,12 @@ import {
 import {RECEIVER_MARK_LABEL_BACKGROUND,RECEIVER_MARK_WEB_POLICY,receiverMarkOverlayOps,type ReceiverMarkOverlay,type ReceiverMarkSelector} from '../core/radioReceiverMarks';
 import {receiverMarkCode,receiverMarkColumn,receiverMarkMoveReleases,type ReceiverMarkButton} from '../core/radioReceiverMarkInput';
 import {
- RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,clearReceiverNextMark,completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,editReceiverSeed,
- endMarkGesture,markPointerDown,markPointerMove,markPointerUp,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,placeReceiverMark,reassociateReceivers,
- receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,requestReceiverClose,stepReceiver,stepReceiverMark,tickReceivers,toggleReceiverMode,
- type RadioReceiverSession,type ReceiverCanvasLog,type ReceiverControlState,type ReceiverMarkAvailability,type ReceiverMarkLease,type ReceiverSessionOutcome,
- type ReceiverSessionTransition,
+ RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,answerRecordIdentify,answerRecordPrompt,answerRecordSave,clearReceiverNextMark,closeRecordProperties,completeRecordArming,
+ completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,dismissRecordFull,editReceiverSeed,editRecordIdentify,endMarkGesture,markPointerDown,markPointerMove,
+ markPointerUp,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,placeReceiverMark,pressRecord,reassociateReceivers,receiverControlAvailability,receiverMarkAvailability,
+ receiverSessionOpen,recordDialogOpen,requestReceiverClose,stepReceiver,stepReceiverMark,tickReceivers,toggleReceiverMode,
+ type RadioReceiverSession,type ReceiverCanvasLog,type ReceiverControlState,type ReceiverMarkAvailability,type ReceiverMarkLease,type ReceiverRecordArmingResult,
+ type ReceiverRecordFinish,type ReceiverRecordHostRequest,type ReceiverRecordHostSnapshot,type ReceiverRecordPrompt,type ReceiverSessionOutcome,type ReceiverSessionTransition,
 } from '../core/radioReceiverSession';
 import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
@@ -41,6 +48,8 @@ type Props=Readonly<{
  receiverButtonRef:RefObject<HTMLButtonElement|null>;
  /** Called in the layout phase, only when the summary changes. */
  onSummaryChange:(summary:RadioReceiverSummary)=>void;
+ /** R-RX4 the App's current pulsar dataset (absent: Record stays disabled) and the No → Pulsar Analysis navigation. */
+ pulsarData?:SharedPulsarDataHandle;onOpenPulsarAnalysis?:()=>void;
 }>;
 
 /** Browser interval host for the receiver Timer1 registration (WEB-RX-CAD-01). */
@@ -50,8 +59,10 @@ const G=RECEIVER_DISPLAY_GEOMETRY,L=RECEIVER_DISPLAY_LITERALS,D=RECEIVER_DFM_CAP
 const css=(c:number)=>`rgb(${c&0xff},${(c>>8)&0xff},${(c>>16)&0xff})`;
 const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
  !!el&&el.isConnected&&!(el as HTMLButtonElement).disabled&&el.getClientRects().length>0&&!el.closest('[inert]');
-type FocusTarget=Readonly<{kind:'heading'|'after-child-close'|'after-main-close'|'close1';slot:number;serial:number}>;
-type Notice=Readonly<{slot:number|null;outcome:ReceiverSessionOutcome}>;
+type FocusTarget=Readonly<{kind:'heading'|'after-child-close'|'after-main-close'|'close1'|'record';slot:number;serial:number}>;
+/** text: an explicit status that replaces the outcome's text (Record answers and the main close, whose outcome alone is ambiguous). */
+type Notice=Readonly<{slot:number|null;outcome:ReceiverSessionOutcome;text?:string}>;
+const noticeText=(n:Notice)=>n.text??outcomeText(n.outcome);
 const CONTROL_NAME:Readonly<Record<RadioReceiverControl,PlainMessageKey>>={
  frequency:'radioReceiver.control.frequency','frequency-step':'radioReceiver.control.step',vertical:'radioReceiver.control.vertical',horizontal:'radioReceiver.control.horizontal',
 };
@@ -85,6 +96,10 @@ function outcomeText(o:ReceiverSessionOutcome):string{
  if(o.kind==='web-refused')return t(`radioReceiver.status.web.${o.reason}`);
  if(o.action.startsWith('mark-'))return markOutcomeText(o.action,o.events);
  const kinds=o.events.map(e=>e.kind);
+ if(kinds.includes('record-disarmed'))return t('radioReceiver.record.status.formCreate');
+ if(o.action==='record-arming')return t('radioReceiver.record.status.armed');
+ if(o.action==='record'||o.action==='record-prompt')return kinds.includes('beam')?t('radioReceiver.record.status.disarmed'):'';
+ if(o.action==='record-identify')return t('radioReceiver.record.status.committed');
  const limit=o.events.find(e=>e.kind==='at-limit');
  if(limit&&limit.kind==='at-limit')return t('radioReceiver.status.atLimit',{control:t(CONTROL_NAME[limit.control])});
  if(o.action==='open')return t('radioReceiver.status.opened');
@@ -100,7 +115,8 @@ function outcomeText(o:ReceiverSessionOutcome):string{
  * holds it and the 40 ms timer so the 25 Hz updates re-render only this subtree. Every step runs on the latest accepted
  * session (sessionRef), as the route's stepDate does. Nothing is saved, restored or sent anywhere; no audio is produced.
  */
-export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange}:Props){
+export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange,
+ pulsarData,onOpenPulsarAnalysis}:Props){
  const id=useId();
  const [session,setSession]=useState<RadioReceiverSession>(createRadioReceiverSession);
  const sessionRef=useRef(session);
@@ -108,15 +124,48 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const [focus,setFocus]=useState<FocusTarget|null>(null);
  const serial=useRef(0);
  const requestFocus=(kind:FocusTarget['kind'],slot:number)=>setFocus({kind,slot,serial:++serial.current});
- const latest=useRef({active,busy,catalogNow,pointingNow,readClockJD,perfNow});
- useLayoutEffect(()=>{latest.current={active,busy,catalogNow,pointingNow,readClockJD,perfNow};});
- const stepSession=(step:(s:RadioReceiverSession)=>ReceiverSessionTransition)=>{
-  const result=step(sessionRef.current);if(result.changed){sessionRef.current=result.session;setSession(result.session);}return result;
+ const latest=useRef({active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis});
+ useLayoutEffect(()=>{latest.current={active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis};});
+ /** R-RX4 host requests, applied synchronously in order to the shared current dataset (WEB-REC-TXN). An 'acquire' is
+  * answered at once through completeRecordArming, whose outcome becomes the notice. */
+ const applyHost=(requests:readonly ReceiverRecordHostRequest[])=>{
+  const data=latest.current.pulsarData;
+  for(const h of requests){
+   if(h.kind==='open-analysis'){latest.current.onOpenPulsarAnalysis?.();continue;}
+   if(!data){if(h.kind==='acquire'){const r=stepSession(s=>completeRecordArming(s,{ok:false,reason:'lease-mismatch'}));setNotice({slot:0,outcome:r.outcome});}continue;}
+   if(h.kind==='acquire'){
+    const r=data.update(d=>acquirePulsarCaptureLease(d,h.id,h.generation,h.erase));
+    const result:ReceiverRecordArmingResult=r.ok?{ok:true,seed:pulsarHeaderCells(r.doc.data)}:{ok:false,reason:r.reason};
+    const done=stepSession(s=>completeRecordArming(s,result));setNotice({slot:0,outcome:done.outcome});
+   }else if(h.kind==='release')data.update(d=>releasePulsarCaptureLease(d,h.id));
+   else if(h.kind==='phase')data.update(d=>setPulsarCapturePhase(d,h.id,h.phase));
+   else{
+    // A capture without a header leaves the data unchanged; the session's explicit release still ends the lease.
+    const input=radioCaptureInput(h.capture,h.name);
+    if(input)data.update(d=>commitPulsarCapture(d,h.id,pulsarMemoryRecording(input)));
+   }
+  }
+ };
+ // [W] Defensive disposal: an unmount releases only the lease this session still holds, on the latest owner (a missing or
+ // foreign lease is refused by id and changes nothing). The App never unmounts the workspace; review-only, no App witness.
+ useEffect(()=>()=>{
+  const id=sessionRef.current.record.leaseId;
+  if(id!==null)latest.current.pulsarData?.update(d=>releasePulsarCaptureLease(d,id));
+ },[]);
+ const stepSession=(step:(s:RadioReceiverSession)=>ReceiverSessionTransition):ReceiverSessionTransition=>{
+  const result=step(sessionRef.current);if(result.changed){sessionRef.current=result.session;setSession(result.session);}
+  if(result.host)applyHost(result.host);
+  return result;
+ };
+ const recordSnapshot=():ReceiverRecordHostSnapshot=>{
+  const doc=latest.current.pulsarData?.current();
+  if(!doc)return {generation:0,rows:0,saved:false,analysisBusy:false,leaseHeld:true};
+  return {generation:doc.generation,rows:pulsarDataRows(doc.data),saved:pulsarDataSaved(doc.data),analysisBusy:doc.analysis.modal||doc.analysis.reading,leaseHeld:doc.lease!==null};
  };
  /** User actions: only on the shown route outside a project operation. */
- const userAction=(slot:number|null,step:(s:RadioReceiverSession)=>ReceiverSessionTransition)=>{
+ const userAction=(slot:number|null,step:(s:RadioReceiverSession)=>ReceiverSessionTransition,text?:(r:ReceiverSessionTransition)=>string|undefined)=>{
   if(!latest.current.active||latest.current.busy)return null;
-  const result=stepSession(step);setNotice({slot,outcome:result.outcome});return result;
+  const result=stepSession(step);setNotice({slot,outcome:result.outcome,text:text?.(result)});return result;
  };
  const clockNow=()=>({jd:latest.current.readClockJD(),now:latest.current.perfNow()/RADIO_RECEIVER_SESSION_POLICY.msPerDay});
 
@@ -151,10 +200,13 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   return registration.cancel;
  },[timerActive]);// stepSession/clockNow read refs and stable setters only
 
- // ---- Close box presentation: the active route, no project operation, no antenna surface and no foreign native dialog.
- const boxPending=session.closeBox!==null&&active&&!busy;
+ // ---- Close box and R-RX4 Record surfaces: presented only on the active route, with no project operation, no antenna
+ // surface and no foreign native dialog. Otherwise they stay latent with their state (prompt, stage and Identify draft).
+ const closePending=session.closeBox!==null&&active&&!busy,recordPending=recordDialogOpen(session)&&active&&!busy;
+ const boxPending=closePending||recordPending;
  const foreign=useSyncExternalStore(boxPending?observeNativeModals:observeNothing,boxPending?nativeModalOpen:noNativeModal,noNativeModal);
  const boxPresented=boxPending&&!foreign&&!antennaModal;
+ const closePresented=boxPresented&&closePending,recordPresented=boxPresented&&recordPending&&!closePending;
  const hasReceivers=receiverSessionOpen(session),seedValid=session.seed.base!==null;
  const reported=useRef<RadioReceiverSummary|null>(null),reportTo=useRef(onSummaryChange);
  useLayoutEffect(()=>{reportTo.current=onSummaryChange;});
@@ -167,12 +219,13 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
 
  // ---- Focus (WEB-RX-FOCUS-01, web policy only: native SetFocus/activation order is not reproduced).
  const headings=useRef<(HTMLHeadingElement|null)[]>([null,null,null]),closes=useRef<(HTMLButtonElement|null)[]>([null,null,null]);
- const addRef=useRef<HTMLButtonElement>(null),setupHeading=useRef<HTMLHeadingElement>(null);
+ const addRef=useRef<HTMLButtonElement>(null),setupHeading=useRef<HTMLHeadingElement>(null),recordButton=useRef<HTMLButtonElement>(null);
  useEffect(()=>{
   if(focus===null||nativeModalOpen())return;
   const order=focus.kind==='heading'?[headings.current[focus.slot]]
    :focus.kind==='after-child-close'?[addRef.current,headings.current[0]]
    :focus.kind==='after-main-close'?[receiverButtonRef.current,setupHeading.current]
+   :focus.kind==='record'?[recordButton.current,headings.current[0]]
    :[closes.current[1]];
   order.find(canTakeFocus)?.focus();
  },[focus,receiverButtonRef]);
@@ -189,11 +242,38 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   const input=clockNow();userAction(slot,s=>toggleReceiverMode(s,input));
  };
  const close=(slot:number)=>{
-  const r=userAction(slot,s=>requestReceiverClose(s,slot));
+  // WEB-REC-TXN 7: the partial-rows text only when the close requested the capture commit (after Receive started).
+  const r=userAction(slot,s=>requestReceiverClose(s,slot),r=>r.host?.some(h=>h.kind==='commit')?t('radioReceiver.record.status.partial'):undefined);
   if(r?.outcome.kind==='ok'&&r.session.bank.slots[slot]===null)requestFocus(slot===0?'after-main-close':'after-child-close',slot);
  };
  const dismissBox=()=>{if(stepSession(dismissReceiverCloseBox).changed)requestFocus('close1',1);};
  const paint=(slot:number)=>{stepSession(s=>paintReceiverWindow(s,slot));};
+
+ // ---- R-RX4 Record (docs/RADIO-RECEIVER-RECORD.md). Each answer reads the latest current-dataset snapshot.
+ const recordAdmitted=()=>latest.current.active&&!latest.current.busy;
+ const recordStep=(step:(s:RadioReceiverSession)=>ReceiverSessionTransition,text?:(r:ReceiverSessionTransition)=>string|undefined)=>{
+  if(!recordAdmitted())return null;
+  const r=stepSession(step);
+  if(!r.host?.some(h=>h.kind==='acquire'))setNotice({slot:0,outcome:r.outcome,text:text?.(r)});
+  return r;
+ };
+ const record=()=>{const snap=recordSnapshot();recordStep(s=>pressRecord(s,snap));};
+ const answerPrompt=(answer:'no'|'ok'|'cancel')=>{
+  const kind=sessionRef.current.record.prompt?.kind,snap=recordSnapshot();
+  const r=recordStep(s=>answerRecordPrompt(s,answer,snap),r=>r.outcome.kind==='ok'&&answer==='cancel'&&kind==='unsaved'?t('radioReceiver.record.status.cancelled'):undefined);
+  if(r&&!recordDialogOpen(r.session))requestFocus('record',0);
+ };
+ const recordFull=()=>{recordStep(dismissRecordFull);};
+ const recordDraft=(text:string)=>{
+  if(!recordAdmitted())return;
+  stepSession(s=>editRecordIdentify(s,text));setNotice(n=>n?.outcome.action==='record-identify'&&n.outcome.kind==='web-refused'?null:n);
+ };
+ const recordIdentify=(answer:'ok'|'cancel')=>{recordStep(s=>answerRecordIdentify(s,answer));};
+ const recordProperties=()=>{recordStep(closeRecordProperties);};
+ const recordSave=(answer:'no'|'cancel')=>{
+  const r=recordStep(s=>answerRecordSave(s,answer),()=>t(answer==='no'?'radioReceiver.record.status.analysis':'radioReceiver.record.status.kept'));
+  if(r?.outcome.kind==='ok'&&answer==='cancel')requestFocus('record',0);
+ };
 
  // ---- R-RX3 marks (docs/RADIO-RECEIVER-MARKS.md). One pointer lease across the bank, read from sessionRef (never from a
  // rendered snapshot). Presses need the shown route, no project operation, no surface over the cards and no foreign dialog.
@@ -285,13 +365,116 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    <p data-testid="receiver-seed-next">{next===undefined?t('radioReceiver.setup.nextNone'):t('radioReceiver.setup.next',{seed:next})}</p>
    {/* Outcomes without a window (a refused Open, the last close) are announced here. */}
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="receiver-setup-status">
-    {notice&&(notice.slot===null||session.bank.slots[notice.slot]===null)?outcomeText(notice.outcome):''}</p>
+    {notice&&(notice.slot===null||session.bank.slots[notice.slot]===null)?noticeText(notice):''}</p>
   </section>
   {session.bank.slots.map((r,slot)=>r&&<ReceiverCard key={slot} r={r} session={session} log={session.canvases[slot]} overlay={session.markOverlays[slot]} inert={cardsInert}
-   notice={notice&&notice.slot===slot?outcomeText(notice.outcome):''} headingRef={el=>{headings.current[slot]=el;}} closeRef={el=>{closes.current[slot]=el;}}
-   addRef={slot===0?addRef:undefined} onStep={step} onAdd={add} onMode={mode} onClose={close} onPaint={paint} marks={markHandlers}/>)}
-  {boxPresented&&session.closeBox&&<ReceiverCloseBox caption={session.closeBox.caption} text={session.closeBox.text} onDismiss={dismissBox}/>}
+   notice={notice&&notice.slot===slot?noticeText(notice):''} headingRef={el=>{headings.current[slot]=el;}} closeRef={el=>{closes.current[slot]=el;}}
+   addRef={slot===0?addRef:undefined} onStep={step} onAdd={add} onMode={mode} onClose={close} onPaint={paint} marks={markHandlers}
+   recordHost={!!pulsarData} recordRef={slot===0?recordButton:undefined} onRecord={record}/>)}
+  {closePresented&&session.closeBox&&<ReceiverCloseBox caption={session.closeBox.caption} text={session.closeBox.text} onDismiss={dismissBox}/>}
+  <div className="radio-control" style={{display:'contents'}} data-testid="receiver-record-layer" data-modal-pending={recordPending} data-modal-presented={recordPresented}>
+   {recordPresented&&session.record.prompt&&<RecordPromptBox prompt={session.record.prompt} onAnswer={answerPrompt}/>}
+   {recordPresented&&session.record.finish&&<RecordFinishSurface finish={session.record.finish} onFull={recordFull} onDraft={recordDraft} onIdentify={recordIdentify}
+    onProperties={recordProperties} onSave={recordSave} refusal={notice?.outcome.kind==='web-refused'&&notice.outcome.action==='record-identify'?noticeText(notice):''}/>}
+  </div>
  </div>;
+}
+
+/** Keys of a Record box: held Enter/Escape ignored, Escape answers the box's Cancel path, Tab stays inside. */
+const boxKeys=(e:KeyboardEvent<HTMLDivElement>,root:HTMLElement|null,escape:()=>void)=>{
+ if(ignoreHeldKey(e))return;
+ if(e.key==='Escape'){e.preventDefault();escape();return;}
+ trapTab(e,root);
+};
+/** RC-REC-03 prompts as application-modal boxes with the recovered captions and texts. unsaved (flags 0x13): Yes is shown
+ * disabled with its reason (the Save wrapper 0x56b36c is not recovered); No and Cancel are the recovered paths; WEB default
+ * button Cancel (the native default Yes is unavailable). erase (flags 0x41): OK (the native default) and Cancel. Escape is
+ * Cancel. Enter activates the focused button (no global Enter). Held keys are ignored. */
+function RecordPromptBox({prompt,onAnswer}:Readonly<{prompt:ReceiverRecordPrompt;onAnswer:(a:'no'|'ok'|'cancel')=>void}>){
+ const id=useId(),root=useRef<HTMLDivElement>(null),first=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{first.current?.focus();},[prompt.kind]);
+ const L=RADIO_RECORD_LITERALS,unsaved=prompt.kind==='unsaved';
+ return <div className="antenna-backdrop antenna-backdrop-top">
+  <div ref={root} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`} className="antenna-dialog antenna-notice"
+   data-testid="receiver-record-prompt" data-kind={prompt.kind} onKeyDown={e=>boxKeys(e,root.current,()=>onAnswer('cancel'))}>
+   <h3 id={`${id}-title`} className="radio-control-native">{unsaved?L.unsavedCaption:L.eraseCaption}</h3>
+   <p id={`${id}-body`} className="radio-control-native" style={{whiteSpace:'pre-line'}} data-testid="receiver-record-prompt-text">{unsaved?L.unsavedText:L.eraseText}</p>
+   {unsaved&&<p id={`${id}-gated`} className="radio-control-note" data-testid="receiver-record-yes-reason">{t('radioReceiver.record.yesGated')} {t('radioReceiver.record.webDefault')}</p>}
+   <p className="radio-control-note">{t('radioReceiver.record.boxNote')}</p>
+   <div className="button-row">
+    {unsaved?<>
+     <button type="button" className="secondary-button" disabled aria-describedby={`${id}-gated`} data-testid="receiver-record-yes">{t('radioReceiver.record.yes')}</button>
+     <button type="button" className="secondary-button" data-testid="receiver-record-no" onClick={()=>onAnswer('no')}>{t('radioReceiver.record.no')}</button>
+     <button ref={first} type="button" className="primary-button" data-testid="receiver-record-cancel" onClick={()=>onAnswer('cancel')}>{t('radioReceiver.record.cancel')}</button>
+    </>:<>
+     <button ref={first} type="button" className="primary-button" data-testid="receiver-record-ok" onClick={()=>onAnswer('ok')}>{t('radioReceiver.record.ok')}</button>
+     <button type="button" className="secondary-button" data-testid="receiver-record-cancel" onClick={()=>onAnswer('cancel')}>{t('radioReceiver.record.cancel')}</button>
+    </>}
+   </div>
+  </div>
+ </div>;
+}
+
+type FinishProps=Readonly<{finish:ReceiverRecordFinish;onFull:()=>void;onDraft:(text:string)=>void;onIdentify:(a:'ok'|'cancel')=>void;onProperties:()=>void;
+ onSave:(a:'no'|'cancel')=>void;refusal:string}>;
+/** RC-REC-08 finish dialogs, one at a time (WEB-REC-BATCH: after the tick batch): the full box, Identify (TStrIpDlg), the
+ * modal Properties of the committed capture, then the Save question. */
+function RecordFinishSurface({finish,onFull,onDraft,onIdentify,onProperties,onSave,refusal}:FinishProps){
+ const id=useId(),root=useRef<HTMLDivElement>(null),focusTarget=useRef<HTMLElement|null>(null);
+ const stage=finish.stage,L=RADIO_RECORD_LITERALS;
+ useEffect(()=>{const el=focusTarget.current;el?.focus();if(el instanceof HTMLInputElement)el.select();},[stage]);
+ // The committed memory recording, for the Properties text (the same formatter as Pulsar Analysis).
+ const memory=useMemo(()=>{const input=finish.committed?radioCaptureInput(finish.capture,finish.name):null;return input?pulsarMemoryRecording(input):null;},[finish.committed,finish.capture,finish.name]);
+ const escape=stage==='full'?onFull:stage==='identify'?()=>onIdentify('cancel'):stage==='properties'?onProperties:()=>onSave('cancel');
+ const box=(caption:string,body:ReactNode,buttons:ReactNode,note?:string)=><div className="antenna-backdrop antenna-backdrop-top">
+  <div ref={root} role={stage==='identify'||stage==='properties'?'dialog':'alertdialog'} aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-body`}
+   className="antenna-dialog antenna-notice" data-testid="receiver-record-finish" data-stage={stage} onKeyDown={e=>boxKeys(e,root.current,escape)}>
+   <h3 id={`${id}-title`} className="radio-control-native">{caption}</h3>
+   <div id={`${id}-body`}>{body}</div>
+   {note&&<p className="radio-control-note">{note}</p>}
+   <div className="button-row">{buttons}</div>
+  </div>
+ </div>;
+ const ref=(el:HTMLElement|null)=>{focusTarget.current=el;};
+ if(stage==='full')return box(L.fullCaption,<p className="radio-control-native" data-testid="receiver-record-full-text">{L.fullText}</p>,
+  <button ref={ref} type="button" className="primary-button" data-testid="receiver-record-full-ok" onClick={onFull}>{t('radioReceiver.record.ok')}</button>,t('radioReceiver.record.fullNote'));
+ if(stage==='identify'){
+  const issue=radioIdentifyIssue(finish.draft);
+  return box(L.identifyCaption,<div className="antenna-field">
+   <label htmlFor={`${id}-name`} className="radio-control-native">{L.identifyLabel}</label>
+   <input ref={ref} id={`${id}-name`} type="text" autoComplete="off" spellCheck={false} data-testid="receiver-record-identify-input" value={finish.draft}
+    aria-invalid={issue!==null||undefined} aria-describedby={`${id}-help ${id}-refusal`} maxLength={RADIO_IDENTIFY_POLICY.draftLimit}
+    onChange={e=>onDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.repeat){e.preventDefault();onIdentify('ok');}}}/>
+   <span id={`${id}-help`} className="radio-control-note">{t('radioReceiver.record.identifyHelp')}</span>
+   {finish.draft===PULSAR_RESERVED_DATA_NAME&&<span className="radio-control-note" data-testid="receiver-record-identify-nodata">{t('radioReceiver.record.identifyNoData')}</span>}
+   <span id={`${id}-refusal`} className="radio-control-note" role="status" aria-live="polite" data-testid="receiver-record-identify-refusal">{refusal}</span>
+  </div>,<>
+   <button type="button" className="primary-button" data-testid="receiver-record-identify-ok" onClick={()=>onIdentify('ok')}>{RADIO_IDENTIFY_DFM.ok}</button>
+   <button type="button" className="secondary-button" data-testid="receiver-record-identify-cancel" onClick={()=>onIdentify('cancel')}>{RADIO_IDENTIFY_DFM.cancel}</button>
+  </>);
+ }
+ if(stage==='properties'){
+  const props=memory?pulsarDataProperties(memory):null,P='radioReceiver.record.properties.';
+  return box(t('radioReceiver.record.propertiesHeading'),props&&<>
+   <p className="radio-control-note">{t('radioReceiver.record.propertiesNote')}</p>
+   <dl className="radio-control-state">
+    {(['object','start','aperture','interval','points','file'] as const).map(k=><div key={k}><dt>{t(`${P}${k}` as `radioReceiver.record.properties.${typeof k}`)}</dt>
+     <dd className="radio-control-native" data-testid={`receiver-record-prop-${k}`}>{props.fields[k]}</dd></div>)}
+   </dl>
+   <table className="radio-receiver-record-table">
+    <thead><tr><th scope="col">{t('radioReceiver.record.properties.receiver')}</th><th scope="col">{t('radioReceiver.record.properties.frequency')}</th><th scope="col">{t('radioReceiver.record.properties.gain')}</th></tr></thead>
+    <tbody>{props.receivers.map(r=><tr key={r.receiver} data-testid={`receiver-record-prop-receiver-${r.receiver+1}`}><th scope="row">{r.receiver+1}</th><td>{r.frequency}</td><td>{r.gain}</td></tr>)}</tbody>
+   </table>
+  </>,<button ref={ref} type="button" className="primary-button" data-testid="receiver-record-properties-ok" onClick={onProperties}>{t('radioReceiver.record.ok')}</button>);
+ }
+ return box(L.saveCaption,<>
+  <p className="radio-control-native" style={{whiteSpace:'pre-line'}} data-testid="receiver-record-save-text">{L.saveText}</p>
+  <p id={`${id}-gated`} className="radio-control-note" data-testid="receiver-record-save-yes-reason">{t('radioReceiver.record.yesGated')} {t('radioReceiver.record.webDefault')}</p>
+ </>,<>
+  <button type="button" className="secondary-button" disabled aria-describedby={`${id}-gated`} data-testid="receiver-record-save-yes">{t('radioReceiver.record.yes')}</button>
+  <button type="button" className="secondary-button" data-testid="receiver-record-save-no" onClick={()=>onSave('no')}>{t('radioReceiver.record.no')}</button>
+  <button ref={ref} type="button" className="primary-button" data-testid="receiver-record-save-cancel" onClick={()=>onSave('cancel')}>{t('radioReceiver.record.cancel')}</button>
+ </>,t('radioReceiver.record.boxNote'));
 }
 
 type MarkHandlers=Readonly<{
@@ -303,9 +486,9 @@ type MarkHandlers=Readonly<{
 type CardProps=Readonly<{r:RadioReceiver;session:RadioReceiverSession;log:ReceiverCanvasLog|null;overlay:ReceiverMarkOverlay|null;inert:boolean;notice:string;
  headingRef:(el:HTMLHeadingElement|null)=>void;closeRef:(el:HTMLButtonElement|null)=>void;addRef?:RefObject<HTMLButtonElement|null>;
  onStep:(slot:number,control:RadioReceiverControl,direction:'down'|'up')=>void;onAdd:()=>void;onMode:(slot:number)=>void;onClose:(slot:number)=>void;onPaint:(slot:number)=>void;
- marks:MarkHandlers}>;
+ marks:MarkHandlers;recordHost:boolean;recordRef?:RefObject<HTMLButtonElement|null>;onRecord:()=>void}>;
 /** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder, then the web mark controls. */
-function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks}:CardProps){
+function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks,recordHost,recordRef,onRecord}:CardProps){
  const id=useId(),slot=r.index,main=slot===0,labels=receiverLabels(r),avail=receiverControlAvailability(session,slot);
  const [selected,setSelected]=useState<ReceiverMarkSelector>(0);
  const caption=receiverCaption(r.title,r.apertureText),finishing=r.stopPending===true&&session.bank.timerEnabled;
@@ -341,10 +524,17 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
    {main&&<button type="button" className="secondary-button" data-testid="receiver-align" disabled aria-describedby={`${id}-unported`}>{D.align}</button>}
    {main&&<button type="button" className="primary-button" data-testid="receiver-mode" aria-disabled={avail.mode!=='enabled'||undefined} aria-describedby={finishing?`${id}-sweep`:undefined}
     onKeyDown={ignoreHeldKey} onClick={()=>{if(avail.mode==='enabled')onMode(slot);}}>{D.mode}</button>}
-   {main&&<button type="button" className="secondary-button" data-testid="receiver-record" disabled aria-describedby={`${id}-unported`}>{D.record}</button>}
+   {main&&<button ref={recordRef} type="button" className="secondary-button" data-testid="receiver-record" disabled={avail.record!=='enabled'||!recordHost}
+    aria-describedby={`${id}-record`} onKeyDown={ignoreHeldKey} onClick={onRecord}>{D.record}</button>}
    <button ref={closeRef} type="button" className="secondary-button" data-testid={`receiver-close-${slot}`} onKeyDown={ignoreHeldKey} onClick={()=>onClose(slot)}>{t('radioReceiver.control.close')}</button>
   </div>
   {main&&<p id={`${id}-unported`} className="radio-control-note">{t('radioReceiver.card.unported')}</p>}
+  {main&&<div id={`${id}-record`} className="radio-control-note" data-testid="receiver-record-state" data-armed={session.bank.recording.armed} data-capturing={session.record.receiving}
+   data-rows={session.bank.recording.rows.length/3} data-full={session.bank.recording.full}>
+   <p>{recordHost?t('radioReceiver.record.scope'):t('radioReceiver.record.noHost')}</p>
+   {session.record.receiving?<p data-testid="receiver-record-capturing">{t('radioReceiver.record.capturing',{rows:session.bank.recording.rows.length/3})}</p>
+    :session.bank.recording.armed&&session.record.leaseId!==null?<p data-testid="receiver-record-armed">{t('radioReceiver.record.armed')}</p>:null}
+  </div>}
   <dl className="radio-control-state radio-receiver-indicators">
    <dt>{t('radioReceiver.card.modeDisp')}</dt><dd className="radio-control-native" data-testid={`receiver-mode-disp-${slot}`}>{labels.mode}</dd>
    {labels.align!==null&&<><dt>{t('radioReceiver.card.alignDisp')}</dt><dd className="radio-control-native" data-testid="receiver-align-disp">{labels.align}</dd></>}

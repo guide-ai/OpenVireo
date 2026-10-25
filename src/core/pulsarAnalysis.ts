@@ -6,9 +6,17 @@
  * marked WEB: pointer clamping, modal blocking, the pan window bound and the gated native
  * CSV save. Round() uses roundNearestEven from the shared numeric policy. That is not a
  * measured x87 control word.
+ *
+ * R-RX4: the data is the App's current dataset (src/core/pulsarCurrentData.ts): an admitted .PLR file or a receiver capture
+ * held in memory. Activation with new data (PLR-ACTIVATE-01), the Load prompt (PLR-LOAD-PROMPT-01) and the memory record
+ * row without a file field (PLR-MEMORY-01) are ported here.
  */
 import { roundNearestEven } from './numericPolicy';
-import { formatExponent, formatFixed, plrSample, type PlrReceiverIndex, type PlrRecording } from './pulsarRecording';
+import { formatExponent, formatFixed, type PlrReceiverIndex, type PlrRecording } from './pulsarRecording';
+import {
+  pulsarChannelFrequency, pulsarChannelGain, pulsarDataAperture, pulsarDataFileName, pulsarDataHighest, pulsarDataInterval, pulsarDataPresentation, pulsarDataRows,
+  pulsarDataSample, pulsarDataSaved, pulsarDataStart, type PulsarCurrentValue, type PulsarData,
+} from './pulsarCurrentData';
 import type { PulsarReviewSession } from './pulsarReview';
 
 export type PulsarPanel = PlrReceiverIndex;
@@ -23,6 +31,15 @@ export const PULSAR_ZOOM_MIN = 0.125, PULSAR_ZOOM_MAX = 8;      // f32 0x56cf1c 
 export const PULSAR_FACTOR_MIN = 0.125, PULSAR_FACTOR_MAX = 8;  // f32 0x56c9a4 / 0x56ca50 (and panel 2/3 copies)
 export const PULSAR_PAN_RATES = Object.freeze([1, 10, 100] as const); // 0x56d1b0
 export type PulsarPanRate = typeof PULSAR_PAN_RATES[number];
+/**
+ * NUL-terminated ASCII spans (ANALYSIS-LOAD-EMPTY-LITERALS.json, CLEA_VEO.exe 781bc970…c54c): the activation box
+ * 0x56aef0 text / 0x56af1c caption (flags 0x40) and the Load prompt 0x56b1d0 text / 0x56b258 caption (flags 0x13).
+ */
+export const PULSAR_ACTIVATE_LITERALS = Object.freeze({
+  emptyText: 'Select "File"->"Load" from Menu to begin.', emptyCaption: 'No Current Data to Analyze',
+  loadText: 'You have not saved your current pulsar data!  You will lose recorded pulsar data if you load without saving.\r\n\r\nSave current data now?',
+  loadCaption: 'Recorded Pulsar Data Not Saved!',
+});
 /** TMEASFORM Cmnt1Ed.MaxLength=80. The shortstring[81] storage (0x570b9d) has a distinct capacity. */
 export const PULSAR_COMMENT_MAX = 80;
 const HORIZONTAL_SCALE = 100;            // f32 0x56c8fc / 0x56c444
@@ -48,10 +65,11 @@ export type PulsarMeasurement = Readonly<{
   horizontal: readonly [number, number, number];
   comments: readonly [string, string, string];
 }>;
+/** file: the record row's file field (0x570e77..0x570ec0, appended only when +0x96 is set); null for memory data, whose row ends at the aperture. */
 export type PulsarEntryFields = Readonly<{
   object: string; frequency: string; gain: string;
   reference: string | null; vertical: string | null; horizontal: string | null;
-  start: string; comment: string; points: string; intervalMs: string; aperture: string; file: string;
+  start: string; comment: string; points: string; intervalMs: string; aperture: string; file: string | null;
 }>;
 /**
  * One appended measurement line (0x570b3c). `fields` is the structured record that Review shows.
@@ -67,8 +85,14 @@ export type PulsarMeasurementEntry = Readonly<{ sequence: number; panel: PulsarP
 export type PulsarRecordSession = Readonly<{ queue: readonly PulsarPanel[]; position: number; draft: string }>;
 export type PulsarClearPrompt = 'unsaved' | 'confirm' | null;
 
+/** WEB-REC-NODATA notice of the last activation that presented no data: 'empty' (no rows) or 'reserved-name' ('No Data'). */
+export type PulsarDataNotice = 'empty' | 'reserved-name' | null;
 export type PulsarAnalysisState = Readonly<{
-  recording: PlrRecording | null;
+  /** The presented data (a file or a memory capture). */
+  recording: PulsarData | null;
+  dataNotice: PulsarDataNotice;
+  /** The Load prompt 0x56b1d0 (flags 0x13) is open. */
+  loadPrompt: boolean;
   propertiesOpen: boolean;
   zoom: number; windowStart: number; windowEnd: number; panRate: PulsarPanRate;
   /** Pan step in seconds, form+0x58d+0x2e. Set by a pan press, read by every timer tick. */
@@ -111,7 +135,8 @@ export type PulsarOutcome =
   | 'review-disabled' | 'review-opened' | 'review-selected' | 'review-no-selection' | 'review-notice-closed'
   | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed'
   | 'review-edit-no-selection' | 'review-edit-notice-closed' | 'review-edit-opened' | 'review-edit-draft' | 'review-edited' | 'review-edit-cancelled'
-  | 'review-edit-unsupported-text' | 'review-edit-unsupported-quote' | 'review-edit-unsupported-length' | 'review-edit-unsupported-layout';
+  | 'review-edit-unsupported-text' | 'review-edit-unsupported-quote' | 'review-edit-unsupported-length' | 'review-edit-unsupported-layout'
+  | 'activated' | 'activated-empty' | 'activated-reserved' | 'notice-closed' | 'load-prompt' | 'load-allowed' | 'load-cancelled' | 'channel-unrecorded';
 
 /** `placed`: this transition stored an accepted cursor placement. The stored value can equal the previous one. */
 export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; placed: boolean; evidence: readonly string[] }>;
@@ -127,7 +152,7 @@ const triple = <T>(f: (ch: PulsarPanel) => T): Triple<T> => Object.freeze([f(0),
 const with3 = <T>(t: Triple<T>, ch: PulsarPanel, v: T): Triple<T> => triple(i => (i === ch ? v : t[i]));
 
 export const INITIAL_PULSAR_ANALYSIS: PulsarAnalysisState = Object.freeze({
-  recording: null, propertiesOpen: false,
+  recording: null, dataNotice: null, loadPrompt: false, propertiesOpen: false,
   zoom: 1, windowStart: 0, windowEnd: 0, panRate: 10, panStep: 0, zoomInEnabled: true, zoomOutEnabled: true,
   factors: triple(() => 1), modes: triple((): PulsarCursorMode => 'vertical'), cursors: triple(() => EMPTY_CURSOR), referenceText: '',
   measurement: EMPTY_MEASUREMENT, pending: triple(() => false), leftDrag: false, rightDrag: false, gesturePlaced: triple(() => false),
@@ -139,14 +164,14 @@ const NO_GESTURE_PLACEMENT = INITIAL_PULSAR_ANALYSIS.gesturePlaced;
 const done = (state: PulsarAnalysisState, outcome: PulsarOutcome, evidence: readonly string[], changed = true, placed = false): PulsarTransition =>
   Object.freeze({ state: changed ? Object.freeze(state) : state, outcome, changed, placed, evidence: Object.freeze([...evidence]) });
 const keep = (s: PulsarAnalysisState, outcome: PulsarOutcome, evidence: readonly string[] = []) => done(s, outcome, evidence, false);
-/** A record, clear or Review dialog is open. Each is modal natively (ShowModal / MessageDlg), so everything else waits. */
-export const pulsarModalOpen = (s: PulsarAnalysisState) => s.recordSession !== null || s.clearPrompt !== null || s.reviewSession !== null;
+/** A record, clear, Review dialog or the Load prompt is open. Each is modal natively (ShowModal / MessageDlg / MessageBox), so everything else waits. */
+export const pulsarModalOpen = (s: PulsarAnalysisState) => s.recordSession !== null || s.clearPrompt !== null || s.reviewSession !== null || s.loadPrompt;
 const modal = pulsarModalOpen;
-const dt = (s: PulsarAnalysisState) => (s.recording as PlrRecording).interval.value;
+const dt = (s: PulsarAnalysisState) => pulsarDataInterval(s.recording as PulsarData);
 
 /** Panel ch can hold a pending measurement: rows exist and ch ≤ highest recorded index (0x56d48f, 0x56d63f, 0x56d803). */
-export function pulsarPanelRecordable(rec: PlrRecording | null, ch: PulsarPanel): boolean {
-  return !!rec && rec.rowCount > 0 && rec.highestIndex.value >= ch;
+export function pulsarPanelRecordable(rec: PulsarData | null, ch: PulsarPanel): boolean {
+  return !!rec && rec.rowCount > 0 && pulsarDataHighest(rec) >= ch;
 }
 
 // ---------------------------------------------------------------- cursor primitives
@@ -154,7 +179,8 @@ export function pulsarPanelRecordable(rec: PlrRecording | null, ch: PulsarPanel)
 export const pulsarTimeAt = (s: PulsarAnalysisState, x: number) => s.windowStart + x * dt(s) / s.zoom;
 /** 0x56c376..0x56c397: x = Round((t − start)·zoom/dt) */
 const pixelOfTime = (s: PulsarAnalysisState, t: number) => roundNearestEven((t - s.windowStart) * s.zoom / dt(s));
-const gainOf = (s: PulsarAnalysisState, ch: PulsarPanel) => (s.recording as PlrRecording).gains[ch].effective;
+/** File: effective gain; memory: the raw header cell, null for an unrecorded receiver whose cell was never written. */
+const gainOf = (s: PulsarAnalysisState, ch: PulsarPanel) => pulsarChannelGain(s.recording as PulsarData, ch);
 
 // WEB: each placement returns null when Number cannot represent the result (±Infinity or NaN). Native x87
 // Extended has a wider range, so such a value is refused here rather than stored, formatted or recorded.
@@ -170,12 +196,16 @@ function placeReference(s: PulsarAnalysisState, ch: PulsarPanel, x: number): Pul
   if (!Number.isFinite(t)) return null;
   return { ...s, referenceText: formatFixed(t, 6), cursors: with3(s.cursors, ch, Object.freeze({ ...s.cursors[ch], referenceX: x, referenceTime: t, referenceVisible: x >= 0 })), measurement: Object.freeze({ ...s.measurement, reference: t }) };
 }
-/** 0x56c6dc: only y with 0 ≤ y < base[ch] is accepted ('outside' changes nothing). When computing, value = (base[ch] − y)/(gain·100·factor). */
-function placeHorizontal(s: PulsarAnalysisState, ch: PulsarPanel, y: number, compute: boolean): PulsarAnalysisState | 'outside' | null {
+/**
+ * 0x56c6dc: only y with 0 ≤ y < base[ch] is accepted ('outside' changes nothing). When computing, value = (base[ch] − y)/(gain·100·factor).
+ * WEB (PLR-MEMORY-01): 'unrecorded' when the panel's gain cell was never written (memory data above its highest receiver).
+ */
+function placeHorizontal(s: PulsarAnalysisState, ch: PulsarPanel, y: number, compute: boolean): PulsarAnalysisState | 'outside' | 'unrecorded' | null {
   const base = PULSAR_BASES[ch];
   if (!(Number.isInteger(y) && y >= 0 && y < base)) return 'outside';
-  const c = s.cursors[ch];
-  const value = compute ? (base - y) / (gainOf(s, ch) * HORIZONTAL_SCALE * s.factors[ch]) : c.horizontalValue;
+  const c = s.cursors[ch], g = gainOf(s, ch);
+  if (g === null) return 'unrecorded';
+  const value = compute ? (base - y) / (g * HORIZONTAL_SCALE * s.factors[ch]) : c.horizontalValue;
   if (!Number.isFinite(value)) return null;
   return { ...s, cursors: with3(s.cursors, ch, Object.freeze({ ...c, horizontalY: y, horizontalValue: value, horizontalText: formatExponent(value, 5, 2), horizontalVisible: true })), measurement: Object.freeze({ ...s.measurement, horizontal: with3(s.measurement.horizontal, ch, value) }) };
 }
@@ -197,11 +227,12 @@ function redraw(s: PulsarAnalysisState, ch: PulsarPanel): PulsarAnalysisState | 
   const v = c.verticalTime >= 0 ? placeVertical(s, ch, pixelOfTime(s, c.verticalTime)) : hide(s, ch, 'verticalVisible');
   const r = v && (c.referenceTime >= 0 ? placeReference(v, ch, pixelOfTime(v, c.referenceTime)) : hide(v, ch, 'referenceVisible'));
   if (!r) return null;
-  if (!(c.horizontalValue >= 0)) return hide(r, ch, 'horizontalVisible');
-  const y = roundNearestEven(PULSAR_BASES[ch] - c.horizontalValue * HORIZONTAL_SCALE * gainOf(r, ch) * r.factors[ch]);
+  const g = gainOf(r, ch);
+  if (!(c.horizontalValue >= 0) || g === null) return hide(r, ch, 'horizontalVisible');
+  const y = roundNearestEven(PULSAR_BASES[ch] - c.horizontalValue * HORIZONTAL_SCALE * g * r.factors[ch]);
   if (!Number.isFinite(y)) return null;
   const h = placeHorizontal(r, ch, y, false);
-  return h === 'outside' ? hide(r, ch, 'horizontalVisible') : h;
+  return h === 'outside' || h === 'unrecorded' ? hide(r, ch, 'horizontalVisible') : h;
 }
 const redrawAll = (s: PulsarAnalysisState) => {
   let n: PulsarAnalysisState | null = s;
@@ -229,8 +260,52 @@ function zoomReset(s: PulsarAnalysisState): PulsarAnalysisState {
 /** Load1Click 0x56af38 after a successful read. The measurement list is not cleared. WEB: only admitted files reach here, so native partial-read state cannot occur. */
 export function pulsarLoad(s: PulsarAnalysisState, recording: PlrRecording): PulsarTransition {
   if (modal(s)) return keep(s, 'blocked-modal');
-  const base: PulsarAnalysisState = { ...s, recording, leftDrag: false, rightDrag: false, recordEnabled: false, reviewEnabled: false, saveEnabled: false };
+  const base: PulsarAnalysisState = { ...s, recording, dataNotice: null, leftDrag: false, rightDrag: false, recordEnabled: false, reviewEnabled: false, saveEnabled: false };
   return done({ ...zoomReset(base), propertiesOpen: true }, 'loaded', ['PLR-LOAD-01', 'PLR-RANGE-01', 'PLR-RESET-01', 'PLR-PROP-01']);
+}
+
+/**
+ * FormActivate 0x56ac04 when new data is current (+0x99 set by the Receive header write; WEB: the App's dataset generation
+ * changed). PrepareNoData 0x56b7ac(dl = 1): window [0, 400·dt], zoom 1, pan rate 10, factors 1, cursor records −1; modes
+ * vertical (0x57c := 0); Record (+0x464) disabled; every panel recorded (0x57f := 1); the measurement record cleared
+ * (0x56fe6c). Review (+0x388) is enabled iff the measurement list count is > 0 (0x56ae32..0x56ae49) and Save (+0x38c) iff
+ * Review is and 0x5db is 0. The measurement list itself is not cleared. Rows → Properties shown non-modally (0x56ade3);
+ * no rows → the 'No Current Data to Analyze' box (0x56adfb..0x56ae20). The zoom buttons are not written.
+ * WEB: the 0x5db := 1 store and the caption 0x56aec0/0x56aed4 are not ported (listSaved keeps its value); 'No Data' data is
+ * refused (WEB-REC-NODATA); no-row data presents no panels or Properties. Refused while a modal session is open.
+ */
+export function pulsarActivateData(s: PulsarAnalysisState, data: PulsarCurrentValue | null): PulsarTransition {
+  if (modal(s)) return keep(s, 'blocked-modal');
+  const presentation = pulsarDataPresentation(data), recording = presentation === 'ok' ? data as PulsarData : null;
+  const reviewEnabled = s.list.length > 0;
+  const n: PulsarAnalysisState = {
+    ...s, recording, dataNotice: presentation === 'ok' ? null : presentation, propertiesOpen: recording !== null,
+    zoom: 1, windowStart: 0, windowEnd: recording ? pulsarDataInterval(recording) * WINDOW_SAMPLES : 0, panRate: 10,
+    factors: triple(() => 1), modes: triple((): PulsarCursorMode => 'vertical'), cursors: triple(() => EMPTY_CURSOR), referenceText: '',
+    pending: triple(() => false), measurement: EMPTY_MEASUREMENT, recordEnabled: false, gesturePlaced: NO_GESTURE_PLACEMENT, leftDrag: false, rightDrag: false,
+    reviewEnabled, saveEnabled: reviewEnabled && !s.listSaved,
+  };
+  return done(n, presentation === 'ok' ? 'activated' : presentation === 'empty' ? 'activated-empty' : 'activated-reserved', ['PLR-ACTIVATE-01', 'PLR-RANGE-01']);
+}
+/** WEB: dismiss the non-modal activation notice. */
+export function pulsarDismissDataNotice(s: PulsarAnalysisState): PulsarTransition {
+  if (s.dataNotice === null) return keep(s, 'invalid-input');
+  return done({ ...s, dataNotice: null }, 'notice-closed', []);
+}
+
+/**
+ * Load1Click prefix 0x56af38..0x56afb7: when the current data has rows and +0x97 is 0, the MessageBox 0x56b1d0 / 0x56b258
+ * (flags 0x13). Cancel (2) exits; Yes (6) calls 0x56b36c (WEB: not offered, body not recovered); anything else continues to
+ * the OpenDialog. 'load-allowed': open the picker now. The prompt reads the App's current dataset, not the presented copy.
+ */
+export function pulsarRequestLoad(s: PulsarAnalysisState, current: PulsarCurrentValue | null): PulsarTransition {
+  if (modal(s)) return keep(s, 'blocked-modal');
+  if (pulsarDataRows(current) > 0 && !pulsarDataSaved(current)) return done({ ...s, loadPrompt: true }, 'load-prompt', ['PLR-LOAD-PROMPT-01']);
+  return keep(s, 'load-allowed', ['PLR-LOAD-PROMPT-01']);
+}
+export function pulsarAnswerLoad(s: PulsarAnalysisState, answer: 'no' | 'cancel'): PulsarTransition {
+  if (!s.loadPrompt || (answer !== 'no' && answer !== 'cancel')) return keep(s, 'invalid-input');
+  return done({ ...s, loadPrompt: false }, answer === 'no' ? 'load-allowed' : 'load-cancelled', ['PLR-LOAD-PROMPT-01']);
 }
 export function pulsarReset(s: PulsarAnalysisState): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');
@@ -330,9 +405,9 @@ export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: Pulsar
   if (!s.recording) return keep(s, 'no-recording');
   if (modal(s)) return keep(s, 'blocked-modal');
   if (!intIn(p.x, 0, PULSAR_PLOT_WIDTH - 1) || !intIn(p.y, 0, PULSAR_PANEL_HEIGHTS[ch] - 1)) return keep(s, 'invalid-input');
-  let refused = false, placed = false;
-  const take = (st: PulsarAnalysisState, result: PulsarAnalysisState | 'outside' | null) => {
-    if (result === null) { refused = true; return st; }
+  let refused = false, placed = false, unrecorded = false;
+  const take = (st: PulsarAnalysisState, result: PulsarAnalysisState | 'outside' | 'unrecorded' | null) => {
+    if (result === null || result === 'unrecorded') { refused = true; unrecorded ||= result === 'unrecorded'; return st; }
     if (result === 'outside') return st;
     placed = true;
     return result;
@@ -365,8 +440,9 @@ export function pulsarPointer(s: PulsarAnalysisState, ch: PulsarPanel, p: Pulsar
     }
     if (!n.leftDrag && !n.rightDrag && n.gesturePlaced.some(Boolean)) n = { ...n, gesturePlaced: NO_GESTURE_PLACEMENT };
   }
-  if (refused && n === s) return keep(s, 'number-unsupported');
-  return done(n, refused ? 'number-unsupported' : 'cursor', ['PLR-MOUSE-01', p.button === 'left' && s.modes[ch] === 'horizontal' ? 'PLR-CURSOR-H-01' : 'PLR-CURSOR-V-01'], true, placed);
+  const refusal: PulsarOutcome = unrecorded ? 'channel-unrecorded' : 'number-unsupported';
+  if (refused && n === s) return keep(s, refusal, unrecorded ? ['PLR-MEMORY-01'] : []);
+  return done(n, refused ? refusal : 'cursor', ['PLR-MOUSE-01', p.button === 'left' && s.modes[ch] === 'horizontal' ? 'PLR-CURSOR-H-01' : 'PLR-CURSOR-V-01'], true, placed);
 }
 /**
  * WEB boundary for pointer cancel, lost pointer capture and host deactivation: clears the drag latches
@@ -380,9 +456,9 @@ export function pulsarPointerRelease(s: PulsarAnalysisState): PulsarTransition {
 }
 
 /** Outcomes that write no status of their own. */
-export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft', 'review-selected', 'review-edit-draft']);
+export const PULSAR_SILENT_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['cursor', 'pointer-ignored', 'pointer-released', 'record-draft', 'review-selected', 'review-edit-draft', 'notice-closed', 'load-allowed']);
 /** Refusal statuses say the latest input was not taken and the last accepted state is kept. */
-const REFUSAL_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['number-unsupported', 'display-unsupported']);
+const REFUSAL_OUTCOMES: ReadonlySet<PulsarOutcome> = new Set<PulsarOutcome>(['number-unsupported', 'display-unsupported', 'channel-unrecorded']);
 /**
  * WEB status policy. `shown` is the outcome that wrote the current status, or null for a file or read status.
  * Returns the outcome to announce, or null to keep the current status. Every non-silent outcome is announced.
@@ -422,17 +498,22 @@ function advance(s: PulsarAnalysisState, session: PulsarRecordSession): PulsarAn
 /** Panel whose record dialog is open, or null. */
 export const pulsarRecordPanel = (s: PulsarAnalysisState): PulsarPanel | null => s.recordSession ? s.recordSession.queue[s.recordSession.position] : null;
 
-/** Field text as the record dialog shows it (activation 0x570898) and as OK 0x570b3c appends it. A value equal to 0.0 is blank. */
+/** A header cell as a number for formatting; an unwritten cell is NaN, which entryNumbersFinite refuses before any append. */
+const cell = (v: number | null) => v ?? Number.NaN;
+/**
+ * Field text as the record dialog shows it (activation 0x570898) and as OK 0x570b3c appends it. A value equal to 0.0 is blank.
+ * file: the browser file name of a read file (+0x96 = 1), or null for memory data (+0x96 = 0: no suffix, 0x570e85 → 0x570ec5).
+ */
 export function pulsarEntryFields(s: PulsarAnalysisState, ch: PulsarPanel, comment: string): PulsarEntryFields | null {
   const rec = s.recording; if (!rec) return null;
   const m = s.measurement;
   return Object.freeze({
-    object: rec.name, frequency: formatFixed(rec.frequencies[ch].value, 2), gain: formatFixed(rec.gains[ch].effective, 3),
+    object: rec.name, frequency: formatFixed(cell(pulsarChannelFrequency(rec, ch)), 2), gain: formatFixed(cell(pulsarChannelGain(rec, ch)), 3),
     reference: m.reference !== 0 ? formatFixed(m.reference, 6) : null,
     vertical: m.vertical[ch] !== 0 ? formatFixed(m.vertical[ch], 6) : null,
     horizontal: m.horizontal[ch] !== 0 ? formatExponent(m.horizontal[ch], 5, 2) : null,
-    start: formatFixed(rec.start.value, 8), comment, points: String(rec.rowCount),
-    intervalMs: formatFixed(rec.interval.value * 1000, 2), aperture: String(rec.aperture.value), file: rec.fileName,
+    start: formatFixed(pulsarDataStart(rec), 8), comment, points: String(rec.rowCount),
+    intervalMs: formatFixed(pulsarDataInterval(rec) * 1000, 2), aperture: String(pulsarDataAperture(rec)), file: pulsarDataFileName(rec),
   });
 }
 export type PulsarRecordDialog = Readonly<{ panel: PulsarPanel; object: string; start: string; frequency: string; gain: string; reference: string; vertical: string; horizontal: string; draft: string; draftValid: boolean; remaining: number }>;
@@ -442,7 +523,7 @@ export function pulsarRecordDialog(s: PulsarAnalysisState): PulsarRecordDialog |
   if (ch === null || !rec || !session) return null;
   const m = s.measurement;
   return Object.freeze({
-    panel: ch, object: rec.name, start: formatFixed(rec.start.value, 8), frequency: formatFixed(rec.frequencies[ch].value, 2), gain: formatFixed(rec.gains[ch].effective, 3),
+    panel: ch, object: rec.name, start: formatFixed(pulsarDataStart(rec), 8), frequency: formatFixed(cell(pulsarChannelFrequency(rec, ch)), 2), gain: formatFixed(cell(pulsarChannelGain(rec, ch)), 3),
     reference: formatFixed(m.reference, 6), vertical: formatFixed(m.vertical[ch], 6), horizontal: formatExponent(m.horizontal[ch], 5, 2),
     draft: session.draft, draftValid: pulsarCommentValid(session.draft), remaining: session.queue.length - session.position - 1,
   });
@@ -454,12 +535,12 @@ export function pulsarRecordDialog(s: PulsarAnalysisState): PulsarRecordDialog |
  */
 const lineCandidate = (f: PulsarEntryFields) =>
   `"${f.object}",${f.frequency},${f.gain},` + [f.reference, f.vertical, f.horizontal].map(v => v === null ? '"",' : v + ',').join('') +
-  `${f.start},"${f.comment}",${f.points},${f.intervalMs},${f.aperture},"${f.file}"`;
+  `${f.start},"${f.comment}",${f.points},${f.intervalMs},${f.aperture}` + (f.file === null ? '' : `,"${f.file}"`);
 
 /** WEB: every number the entry formats must be finite, so no field is silently blank or an unrepresentable value is recorded. */
 function entryNumbersFinite(s: PulsarAnalysisState, ch: PulsarPanel): boolean {
-  const rec = s.recording as PlrRecording, m = s.measurement;
-  return [rec.frequencies[ch].value, rec.gains[ch].effective, rec.start.value, rec.interval.value * 1000, m.reference, m.vertical[ch], m.horizontal[ch]].every(Number.isFinite);
+  const rec = s.recording as PulsarData, m = s.measurement;
+  return [cell(pulsarChannelFrequency(rec, ch)), cell(pulsarChannelGain(rec, ch)), pulsarDataStart(rec), pulsarDataInterval(rec) * 1000, m.reference, m.vertical[ch], m.horizontal[ch]].every(Number.isFinite);
 }
 /**
  * OK 0x570b3c. A refused comment or number keeps the dialog open with its draft.
@@ -508,18 +589,19 @@ export type PulsarPoint = Readonly<{ x: number; y: number }>;
  */
 export function pulsarTrace(s: PulsarAnalysisState, ch: PulsarPanel): readonly PulsarPoint[] {
   const rec = s.recording; if (!rec) return Object.freeze([]);
-  const d = rec.interval.value, g = rec.gains[ch].effective, f = s.factors[ch], base = PULSAR_BASES[ch];
-  const yOf = (v: number) => base - roundNearestEven(v * g * f);
+  // WEB (PLR-MEMORY-01): a never-written gain cell (memory data above its highest receiver) draws the baseline.
+  const d = pulsarDataInterval(rec), g = pulsarChannelGain(rec, ch), f = s.factors[ch], base = PULSAR_BASES[ch];
+  const yOf = (v: number) => g === null ? base : base - roundNearestEven(v * g * f);
   const pts: PulsarPoint[] = [];
   let idx = roundNearestEven(s.windowStart / d);
   if (s.zoom >= 1) {
     const k = roundNearestEven(s.zoom);
-    pts.push({ x: 0, y: yOf(plrSample(rec, idx, ch) ?? 0) });
-    for (let x = k; x <= PULSAR_PLOT_WIDTH; x += k) { idx++; const v = plrSample(rec, idx, ch); pts.push({ x, y: v === null ? base : yOf(v) }); }
+    pts.push({ x: 0, y: yOf(pulsarDataSample(rec, idx, ch) ?? 0) });
+    for (let x = k; x <= PULSAR_PLOT_WIDTH; x += k) { idx++; const v = pulsarDataSample(rec, idx, ch); pts.push({ x, y: v === null ? base : yOf(v) }); }
   } else {
     const n = roundNearestEven(1 / s.zoom);
     idx -= n;
-    const sum = () => { let t = 0; for (let i = 0; i < n; i++) { idx++; t += plrSample(rec, idx, ch) ?? 0; } return t; };
+    const sum = () => { let t = 0; for (let i = 0; i < n; i++) { idx++; t += pulsarDataSample(rec, idx, ch) ?? 0; } return t; };
     pts.push({ x: 0, y: yOf(sum()) });
     for (let x = 1; x <= PULSAR_PLOT_WIDTH; x++) pts.push({ x, y: yOf(sum() / n) });
   }

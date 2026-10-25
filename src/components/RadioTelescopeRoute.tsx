@@ -17,6 +17,7 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import {usePulsarParametersHost} from './RadioPulsarParameters';
 import {t,type PlainMessageKey} from '../i18n';
 import type {SharedHotListHandle} from '../useSharedHotList';
+import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
 
 /** Scenario inputs at first use: the FormCreate dome byte 0 (RC-01) and nothing supplied. The learner applies the recovered
  * compiled defaults (diameter 100, access option off) or other values explicitly; the observatory dome is not linked. */
@@ -50,6 +51,8 @@ export type RadioTelescopeRouteProps=Readonly<{
  onModalPresentedChange:(presented:boolean)=>void;
  /** The shared HTL document owned by the App (forwarded to the panel's Slew ▸ Hot List). */
  hotList?:SharedHotListHandle;
+ /** R-RX4 the App's current pulsar dataset and the navigation to Pulsar Analysis (forwarded to the receiver Record). */
+ pulsarData?:SharedPulsarDataHandle;onOpenPulsarAnalysis?:()=>void;
 }>;
 
 /**
@@ -66,7 +69,7 @@ export type RadioTelescopeRouteProps=Readonly<{
  * same catalog (locked while receivers exist), the pointing, the radio clock JD and perfNow; it writes none of them. The
  * state is temporary: it is not part of any investigation file.
  */
-export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList}:RadioTelescopeRouteProps){
+export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis}:RadioTelescopeRouteProps){
  const [state,setState]=useState<RadioControlState>(INITIAL_RADIO_CONTROL);
  const [environment,setEnvironment]=useState<RadioEnvironment>(UNSUPPLIED_ENVIRONMENT);
  const [antenna,setAntenna]=useState<RadioLabState>(INITIAL_RADIO_LAB);
@@ -152,7 +155,8 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  // same route, busy and foreign-dialog rules. The clock is read without side effects (no range-end stop from here).
  /** Side-effect-free JD of the radio clock scenario now (no range-end stop from here), or null without an ok reading. */
  const readClockJD=()=>{const r=readRadioClock(scenario,perfNow());return r.status==='ok'?r.reading.jd:null;};
- // The receiver close box makes the card application-modal behind it (as the date dialog does).
+ // The receiver close box and the R-RX4 Record prompts and finish dialogs make the card application-modal behind them (as
+ // the date dialog does).
  const receiverBoxPresented=receiverSummary.boxPresented&&active&&!busy;
  const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented,antenna,readClockJD,
   catalogLocked:receiverSummary.hasReceivers,catalogLockedNow:()=>receiverApiRef.current?.hasReceivers()??false});
@@ -279,7 +283,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   </div>
   <RadioReceiverWorkspace active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented}
    catalogNow={parameters.currentCatalog} pointingNow={()=>antennaRef.current.pointing} readClockJD={readClockJD} perfNow={perfNow}
-   apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary}/>
+   apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary} pulsarData={pulsarData} onOpenPulsarAnalysis={onOpenPulsarAnalysis}/>
   {/* .radio-control (box-less) only scopes the shared dialog styles; the layer itself is never inert. */}
   <div className="radio-control" style={{display:'contents'}} data-testid="radio-date-layer" data-modal-pending={datePending} data-modal-presented={datePresented}>
    {datePresented&&dateState.dialog&&<RadioDateDialogView dialog={dateState.dialog} refusal={fieldRefusal} onEdit={editDate} onOk={confirmDate} onCancel={cancelDate}

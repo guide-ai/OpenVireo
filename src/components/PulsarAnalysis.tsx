@@ -1,14 +1,21 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type RefObject, type SyntheticEvent } from 'react';
+import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import './PulsarAnalysis.css';
 import { resourceSha256 } from '../io/boundedResource';
-import { admitPlrRecording, plrProperties, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
+import { admitPlrRecording, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
 import {
-  INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarAnnouncement, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord,
-  pulsarCancelRecord, pulsarConfirmRecord, pulsarFactor, pulsarLoad, pulsarModalOpen, pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer,
-  pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom,
+  INITIAL_PULSAR_ANALYSIS, PULSAR_ACTIVATE_LITERALS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarActivateData, pulsarAnnouncement,
+  pulsarAnswerClear, pulsarAnswerLoad, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord, pulsarDismissDataNotice, pulsarFactor, pulsarLoad, pulsarModalOpen,
+  pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft,
+  pulsarRequestClear, pulsarRequestLoad, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
+import {
+  importPulsarRecording, isFileData, isMemoryData, pulsarDataHighest, pulsarDataProperties, pulsarDataRows, pulsarDataSaved, pulsarFrequencyText, setPulsarAnalysisActivity,
+  type PulsarData,
+} from '../core/pulsarCurrentData';
+import { useSharedPulsarData, type SharedPulsarDataHandle } from '../useSharedPulsarData';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
 import {
   pulsarReviewAnswerDelete, pulsarReviewCancel, pulsarReviewConfirm, pulsarReviewDismissNotice, pulsarReviewEscape, pulsarReviewOpen, pulsarReviewRequestDelete, pulsarReviewSelect,
@@ -28,8 +35,12 @@ import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } f
  * A host that hides the panel (CSS, an `inert` ancestor or similar) must pass `active={false}` for as long
  * as it is hidden: the panel does not observe ancestor styles or attributes, so reads, pan timers and
  * dialogs follow `active`, not visibility.
+ * `data` (R-RX4) is the App's current pulsar dataset, shared with the receiver Record path; without it (standalone
+ * harnesses) the panel owns a private one. A newer dataset generation is adopted (FormActivate, PLR-ACTIVATE-01) only
+ * while the panel is active with no modal session and no pending read; otherwise a note says it is waiting, so drafts,
+ * Review working copies and the confirmed list are kept. The panel reports its modal/read activity to the dataset.
  */
-export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean }>;
+export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean; data?: SharedPulsarDataHandle }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
 /**
  * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, text
@@ -67,10 +78,14 @@ const captureRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => {
 /** Client pixel index of a position in a box of n native pixels. */
 const pixelIndex = (offset: number, size: number, n: number) => Math.min(n - 1, Math.max(0, Math.floor(offset / size * n)));
 
-export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = true }: PulsarAnalysisProps) {
+export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = true, data }: PulsarAnalysisProps) {
   const t = useMemo(() => translate ?? createPulsarTranslator(), [translate]);
   const [s, setS] = useState<PulsarAnalysisState>(INITIAL_PULSAR_ANALYSIS);
   const current = useRef(s);
+  const local = useSharedPulsarData(), shared = data ?? local;
+  // The dataset generation this panel presents (the initial empty generation 0 needs no activation).
+  const [adoptedGeneration, setAdoptedGeneration] = useState(0), adopted = useRef(0);
+  const adopt = (generation: number) => { adopted.current = generation; setAdoptedGeneration(generation); };
   const [digest, setDigest] = useState<Readonly<{ recording: PlrRecording; sha256: string }> | null>(null);
   const [reading, setReading] = useState<string | null>(null);
   const [rejection, setRejection] = useState<string | null>(null);
@@ -102,8 +117,12 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // which would drop the chosen file. The read completes, or the learner cancels it; a cancel or read error lifts the gate.
   // Each opener otherwise keeps its own enabled state.
   const readPending = reading !== null;
-  const dialog = pulsarRecordDialog(s), readouts = pulsarReadouts(s), props = rec ? plrProperties(rec) : null;
+  const dialog = pulsarRecordDialog(s), readouts = pulsarReadouts(s), props = rec ? pulsarDataProperties(rec) : null;
   const recordPanel = dialog?.panel ?? null;
+  const fileRec = isFileData(rec) ? rec : null, memoryRec = isMemoryData(rec) ? rec : null;
+  // R-RX4 shared dataset: a held capture lease disables Load (WEB-REC-TXN); a newer generation waits for an idle, active panel.
+  const leased = shared.doc.lease !== null, newer = shared.doc.generation !== adoptedGeneration;
+  useLayoutEffect(() => { shared.update(d => setPulsarAnalysisActivity(d, { modal, reading: readPending })); }, [shared, modal, readPending]);
 
   useEffect(() => { if (recordPanel !== null) commentInput.current?.focus(); }, [recordPanel, s.recordSession?.position]);
   useEffect(() => { if (s.clearPrompt) clearDefault.current?.focus(); }, [s.clearPrompt]);
@@ -185,10 +204,49 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     onContextMenu: (e: ReactMouseEvent<HTMLButtonElement>) => e.preventDefault(),
   });
 
+  // E9 Load prompt (PLR-LOAD-PROMPT-01): a click on the chooser asks first when the current data has rows and is not saved;
+  // No opens the chooser from the same user gesture. A file supplied without that click (for example a drop) is refused
+  // while the question applies. WEB one-shot grant: `pick` holds the dataset generation of the click the panel let through
+  // (or of the No answer) and the next change event consumes it; it only counts for that same generation. The input's
+  // standard `cancel` event, a new real click and the panel's deactivation withdraw it. Window blur does not (the chooser
+  // itself blurs the page). `reentry` marks answerLoad's own synchronous programmatic click.
+  const fileInput = useRef<HTMLInputElement>(null), pick = useRef<number | null>(null), reentry = useRef(false), loadDefault = useRef<HTMLButtonElement>(null);
+  const promptNeeded = () => { const d = shared.current().data; return pulsarDataRows(d) > 0 && !pulsarDataSaved(d); };
+  const onChooserClick = (e: ReactMouseEvent<HTMLInputElement>) => {
+    if (reentry.current) return;
+    pick.current = null;
+    const tr = act(st => pulsarRequestLoad(st, shared.current().data));
+    if (tr.outcome === 'load-allowed') pick.current = shared.current().generation; else e.preventDefault();
+  };
+  const answerLoad = (answer: 'no' | 'cancel') => {
+    let tr: PulsarTransition | null = null;
+    // The commit that removes `inert` from the chooser must happen before the programmatic click.
+    flushSync(() => { tr = act(st => pulsarAnswerLoad(st, answer)); });
+    if ((tr as PulsarTransition | null)?.outcome !== 'load-allowed') { focusAfterModal.current = fileInput.current; return; }
+    pick.current = shared.current().generation;
+    reentry.current = true;
+    try { fileInput.current?.click(); } finally { reentry.current = false; }
+  };
+  // React does not deliver `cancel` for <input>; a browser without this event keeps the grant until the next real click,
+  // a deactivation or a dataset change (docs/PULSAR-ANALYSIS.md).
+  useEffect(() => {
+    const el = fileInput.current;
+    if (!el) return;
+    const cancelled = () => { pick.current = null; say(t('pulsar.status.pickerCancelled')); };
+    el.addEventListener('cancel', cancelled);
+    return () => el.removeEventListener('cancel', cancelled);
+  }, [t]);// say uses a stable setter and a ref
   async function onFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
+    const grant = pick.current; pick.current = null;
+    const picked = grant !== null && grant === shared.current().generation;
     if (!file) { say(t('pulsar.status.pickerCancelled')); return; }
+    // WEB-REC-TXN defence in depth: Load is disabled under a capture lease; a change delivered anyway is refused unread.
+    if (shared.current().lease) { setRejection(`${t('pulsar.reject.title', { name: file.name })} ${t('pulsar.reject.capture-lease')}`); return; }
+    if (!picked && promptNeeded()) { say(t('pulsar.status.loadPromptFirst')); return; }
+    // WEB-REC-TXN: the commit is refused when the current dataset changed after this read started.
+    const generation = shared.current().generation;
     const token = ++epoch.current;
     setReading(file.name); setRejection(null);
     const late = () => { say(t('pulsar.status.lateDiscarded')); };
@@ -206,6 +264,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (token !== epoch.current || !activeRef.current) return late();
       setReading(null);
       const owner = document.activeElement;
+      // A modal session refuses the load as before ('blocked-modal'); the dataset is not changed then.
+      if (pulsarModalOpen(current.current)) { act(st => pulsarLoad(st, admission.recording)); return; }
+      const committed = shared.update(d => importPulsarRecording(d, admission.recording, generation));
+      if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
+      adopt(committed.doc.generation);
       // A hold must not carry the previous recording's step into the new window.
       panHold.release();
       const tr = act(st => pulsarLoad(st, admission.recording));
@@ -223,12 +286,23 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   useLayoutEffect(() => {
     activeRef.current = active;
     if (active) return;
+    pick.current = null;
     panHold.release();
     panKeys.current.clear();
     pointerOwner.current = null;
     if (current.current.leftDrag || current.current.rightDrag) act(pulsarPointerRelease);
     if (reading !== null) cancelRead();
   });
+  // R-RX4 adoption of a newer current dataset (FormActivate with new data, PLR-ACTIVATE-01): only while active, with no
+  // modal session and no pending read. The confirmed measurement list is kept; Review follows its count.
+  useLayoutEffect(() => {
+    if (!active || readPending || modal) return;
+    const doc = shared.current();
+    if (doc.generation === adopted.current) return;
+    adopt(doc.generation);
+    panHold.release();
+    act(st => pulsarActivateData(st, doc.data));
+  }, [active, readPending, modal, shared]);// act/adopt read refs and stable setters only
   // WEB modal dialogs: the record, clear and Review dialogs are native <dialog> elements opened with showModal(),
   // so the browser top layer makes the rest of the page inert and keeps focus inside. A dialog opens only
   // while the panel is active and rendered and no other modal dialog is open, so an existing host modal stays
@@ -237,9 +311,10 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // it is active again. Review's inner question is a section of the same dialog, with the list and buttons
   // inert while it is open. No VCL parity is claimed.
   const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null), reviewDialog = useRef<HTMLDialogElement>(null);
+  const loadDialog = useRef<HTMLDialogElement>(null);
   const ownClose = useRef(new WeakSet<HTMLDialogElement>());
   const [syncModal] = useState(() => () => {
-    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current;
+    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current;
     if (!el) return;
     if (!activeRef.current) { if (el.open) { ownClose.current.add(el); el.close(); } return; }
     if (el.open) return;
@@ -249,12 +324,12 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     try { el.showModal(); } catch { return; }
     // Review: the open question's default button, else the editor's comment, else the selected row, else Cancel (an empty working copy).
     const review = () => reviewPromptDefault.current ?? reviewEditComment.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
-    (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : review())?.focus();
+    (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : el === loadDialog.current ? loadDefault.current : review())?.focus();
   });
   useLayoutEffect(() => { syncModal(); });
   useEffect(() => {
     // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
-    const closed = (e: Event) => { if (e.target !== recordDialog.current && e.target !== clearDialog.current && e.target !== reviewDialog.current) syncModal(); };
+    const closed = (e: Event) => { if (e.target !== recordDialog.current && e.target !== clearDialog.current && e.target !== reviewDialog.current && e.target !== loadDialog.current) syncModal(); };
     if (!modal || !active) return;
     document.addEventListener('close', closed, true);
     // Conditional rendering can remove an open modal without a close event. Observe only
@@ -307,11 +382,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     },
   });
   function download() {
-    if (!rec) return;
+    if (!fileRec) return;
     try {
-      const url = URL.createObjectURL(new Blob([rec.bytes], { type: 'application/octet-stream' }));
+      const url = URL.createObjectURL(new Blob([fileRec.bytes], { type: 'application/octet-stream' }));
       const a = document.createElement('a');
-      a.href = url; a.download = rec.fileName; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove();
+      a.href = url; a.download = fileRec.fileName; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch { say(t('pulsar.status.downloadError')); }
   }
@@ -341,29 +416,48 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
           <h3 id={`${idPrefix}file`}>{t('pulsar.file.heading')}</h3>
           <label className="plr-button">
             {t('pulsar.file.choose')}
-            <input type="file" accept=".plr,.PLR" onChange={onFile} disabled={modal} data-testid="pulsar-file" />
+            <input ref={fileInput} type="file" accept=".plr,.PLR" onChange={onFile} onClick={onChooserClick} disabled={modal || leased} aria-describedby={leased ? `${idPrefix}leased` : undefined} data-testid="pulsar-file" />
           </label>
           <p className="plr-help">{t('pulsar.file.help')}</p>
+          {leased && <p className="plr-warning" id={`${idPrefix}leased`} data-testid="pulsar-leased" data-phase={shared.doc.lease?.phase}>{t('pulsar.file.leased')}</p>}
+          {newer && <p className="plr-help" data-testid="pulsar-waiting">{t('pulsar.file.waiting')}</p>}
           {reading && <p role="status" data-testid="pulsar-reading">{t('pulsar.file.reading', { name: reading })} <button type="button" onClick={cancelRead} data-testid="pulsar-cancel-read">{t('pulsar.file.cancelRead')}</button></p>}
           {rejection && <div role="alert" className="plr-error" data-testid="pulsar-rejection">{rejection} <button type="button" onClick={() => setRejection(null)}>{t('pulsar.file.dismiss')}</button></div>}
-          {rec ? (
+          {s.dataNotice && (
+            <div role="alert" className="plr-error" data-testid="pulsar-data-notice" data-kind={s.dataNotice}>
+              {s.dataNotice === 'empty'
+                ? <><strong>{PULSAR_ACTIVATE_LITERALS.emptyCaption}</strong> <span data-testid="pulsar-data-notice-text">{PULSAR_ACTIVATE_LITERALS.emptyText}</span> <span className="plr-help">{t('pulsar.notice.emptyNote')}</span></>
+                : <span data-testid="pulsar-data-notice-text">{t('pulsar.notice.reserved')}</span>}
+              {' '}<button type="button" onClick={() => act(pulsarDismissDataNotice)} data-testid="pulsar-data-notice-dismiss">{t('pulsar.file.dismiss')}</button>
+            </div>
+          )}
+          {fileRec ? (
             <dl className="plr-identity" data-testid="pulsar-identity">
-              <dt>{t('pulsar.file.name')}</dt><dd data-testid="pulsar-file-name">{rec.fileName}</dd>
-              <dt>{t('pulsar.file.bytes')}</dt><dd data-testid="pulsar-bytes">{rec.bytes.byteLength}</dd>
-              <dt>{t('pulsar.file.sha')}</dt><dd className="plr-hash" data-testid="pulsar-sha">{digest?.recording === rec ? digest.sha256 : ''}</dd>
-              <dt>{t('pulsar.file.lineEnding')}</dt><dd>{rec.lineEnding}</dd>
+              <dt>{t('pulsar.file.name')}</dt><dd data-testid="pulsar-file-name">{fileRec.fileName}</dd>
+              <dt>{t('pulsar.file.bytes')}</dt><dd data-testid="pulsar-bytes">{fileRec.bytes.byteLength}</dd>
+              <dt>{t('pulsar.file.sha')}</dt><dd className="plr-hash" data-testid="pulsar-sha">{digest?.recording === fileRec ? digest.sha256 : ''}</dd>
+              <dt>{t('pulsar.file.lineEnding')}</dt><dd>{fileRec.lineEnding}</dd>
             </dl>
+          ) : memoryRec ? (
+            <div data-testid="pulsar-memory">
+              <p className="plr-warning" data-testid="pulsar-memory-origin">{t('pulsar.memory.origin')}</p>
+              <dl className="plr-identity">
+                <dt>{t('pulsar.memory.capture')}</dt><dd data-testid="pulsar-memory-capture">{memoryRec.captureId}</dd>
+                <dt>{t('pulsar.memory.rows')}</dt><dd data-testid="pulsar-memory-rows">{memoryRec.rowCount}</dd>
+                <dt>{t('pulsar.memory.full')}</dt><dd data-testid="pulsar-memory-full">{t(memoryRec.full ? 'pulsar.memory.fullYes' : 'pulsar.memory.fullNo')}</dd>
+              </dl>
+            </div>
           ) : <p data-testid="pulsar-none">{t('pulsar.file.none')}</p>}
-          {rec && <p><button type="button" onClick={download} data-testid="pulsar-download">{t('pulsar.file.download')}</button> <span className="plr-help">{t('pulsar.file.downloadNote')}</span></p>}
+          {fileRec && <p><button type="button" onClick={download} data-testid="pulsar-download">{t('pulsar.file.download')}</button> <span className="plr-help">{t('pulsar.file.downloadNote')}</span></p>}
         </section>
 
         {rec && props && s.propertiesOpen && (
           <section className="plr-props" role="dialog" aria-modal="false" aria-labelledby={`${idPrefix}props`} data-testid="pulsar-properties">
             <h3 id={`${idPrefix}props`}>{t('pulsar.props.heading')}</h3>
-            <p className="plr-help">{t('pulsar.props.note')}</p>
+            <p className="plr-help">{t(fileRec ? 'pulsar.props.note' : 'pulsar.props.noteMemory')}</p>
             <dl>
               {(['object', 'start', 'aperture', 'interval', 'points', 'file'] as const).map(k => (
-                <div key={k}><dt>{t(`pulsar.props.${k}`)}</dt><dd><output data-testid={`pulsar-prop-${k}`}>{props.fields[k]}</output>{k === 'file' && <span className="plr-help"> {t('pulsar.props.fileNote')}</span>}</dd></div>
+                <div key={k}><dt>{t(`pulsar.props.${k}`)}</dt><dd><output data-testid={`pulsar-prop-${k}`}>{props.fields[k]}</output>{k === 'file' && fileRec && <span className="plr-help"> {t('pulsar.props.fileNote')}</span>}</dd></div>
               ))}
             </dl>
             <table className="plr-table">
@@ -408,7 +502,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
               {PULSAR_PANELS.map(ch => <Panel key={ch} ch={ch} s={s} t={t} act={act} idPrefix={idPrefix} primaryAs={primaryAs} owner={pointerOwner} />)}
             </div>
             <p className="plr-reference">{t('pulsar.reference')} <output data-testid="pulsar-reference">{readouts.reference}</output></p>
-
+          </>
+        )}
+        {/* The results stay available while confirmed measurements exist, also when the current data presents no panels. */}
+        {(rec || s.list.length > 0) && (
+          <>
             <section className="plr-results" aria-labelledby={`${idPrefix}results`}>
               <h3 id={`${idPrefix}results`}>{t('pulsar.results.heading')}</h3>
               <div className="plr-row">
@@ -466,6 +564,19 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
           </>)}
         </dialog>
       )}
+      {s.loadPrompt && (
+        <dialog ref={loadDialog} role="alertdialog" aria-labelledby={`${idPrefix}load`} aria-describedby={`${idPrefix}load-text`} className="plr-modal" data-testid="pulsar-load-dialog"
+          {...dialogEvents(() => answerLoad('cancel'))}>
+          <h3 id={`${idPrefix}load`}>{PULSAR_ACTIVATE_LITERALS.loadCaption}</h3>
+          <p id={`${idPrefix}load-text`} style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-load-text">{PULSAR_ACTIVATE_LITERALS.loadText}</p>
+          <p className="plr-help" id={`${idPrefix}load-gated`} data-testid="pulsar-load-yes-reason">{t('pulsar.load.yesGated')} {t('pulsar.load.webDefault')}</p>
+          <div className="plr-row">
+            <button type="button" disabled aria-describedby={`${idPrefix}load-gated`} data-testid="pulsar-load-yes">{t('pulsar.load.yes')}</button>
+            <button type="button" onClick={() => answerLoad('no')} data-testid="pulsar-load-no">{t('pulsar.load.no')}</button>
+            <button type="button" ref={loadDefault} onClick={() => answerLoad('cancel')} data-testid="pulsar-load-cancel">{t('pulsar.load.cancel')}</button>
+          </div>
+        </dialog>
+      )}
       {s.reviewSession && (
         <dialog ref={reviewDialog} aria-labelledby={`${idPrefix}review-heading`} className="plr-modal plr-review" data-testid="pulsar-review-dialog"
           {...dialogEvents(() => finishReview(act(pulsarReviewEscape)))}>
@@ -480,9 +591,13 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
 
 type PanelProps = Readonly<{ ch: PulsarPanel; s: PulsarAnalysisState; t: PulsarTranslate; act: Act; idPrefix: string; primaryAs: 'left' | 'right'; owner: RefObject<number | null> }>;
 function Panel({ ch, s, t, act, idPrefix, primaryAs, owner }: PanelProps) {
-  const rec = s.recording as PlrRecording;
+  const rec = s.recording as PulsarData;
+  // A memory capture has no lexeme: WEB fixed2 of the header cell, or a 'not recorded' text when the cell was never written.
+  const freq = pulsarFrequencyText(rec, ch), n = ch + 1;
+  const receiverText = freq === null ? t('pulsar.panel.receiverUnknown', { n }) : t('pulsar.panel.receiver', { n, freq });
+  const freqLabel = freq === null ? t('pulsar.panel.freqUnknown') : t('pulsar.panel.freqLabel', { freq });
   const svg = useRef<SVGSVGElement>(null);
-  const c = s.cursors[ch], n = ch + 1, recordable = pulsarPanelRecordable(rec, ch);
+  const c = s.cursors[ch], recordable = pulsarPanelRecordable(rec, ch);
   const factor = s.factors[ch];
   // Native DispBox client geometry (PLR-GEOM-01): 400 × height pixels with the baseline at base.
   const width = PULSAR_PLOT_WIDTH, height = PULSAR_PANEL_HEIGHTS[ch], base = PULSAR_BASES[ch];
@@ -529,8 +644,8 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs, owner }: PanelProps) {
   const release = (e: ReactPointerEvent<SVGSVGElement>) => { if (owner.current !== e.pointerId) return; owner.current = null; act(pulsarPointerRelease); };
   return (
     <section className="plr-panel" aria-labelledby={`${idPrefix}panel-${n}`} data-testid={`pulsar-panel-${n}`}>
-      <h4 id={`${idPrefix}panel-${n}`}>{t('pulsar.panel.label', { n })}: {t('pulsar.panel.receiver', { n, freq: rec.frequencies[ch].lexeme })}</h4>
-      {!recordable && rec.highestIndex.value < ch && <p className="plr-help" data-testid={`pulsar-panel-${n}-not-recorded`}>{t('pulsar.panel.notRecorded', { n })}</p>}
+      <h4 id={`${idPrefix}panel-${n}`}>{t('pulsar.panel.label', { n })}: {receiverText}</h4>
+      {!recordable && pulsarDataHighest(rec) < ch && <p className="plr-help" data-testid={`pulsar-panel-${n}-not-recorded`}>{t(isMemoryData(rec) ? 'pulsar.panel.notRecordedMemory' : 'pulsar.panel.notRecorded', { n })}</p>}
       <div className="plr-panel-body">
         <svg ref={svg} className="plr-plot" viewBox={`-0.5 -0.5 ${width} ${height}`} style={{ aspectRatio: `${width} / ${height}` }} role="img" tabIndex={0}
           aria-label={t('pulsar.panel.plot', { n })} data-testid={`pulsar-plot-${n}`} data-base={base}
@@ -553,7 +668,7 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs, owner }: PanelProps) {
             {ticks[ch].map(tk => <line key={tk.y} x1={0} y1={tk.y} x2={tk.length} y2={tk.y} />)}
           </g>
           {ch === 0 && <text x={5} y={14} fill={COLOR.trace} fontSize={11}>{rec.name}</text>}
-          <text x={310} y={26} fill={COLOR.trace} fontSize={11}>{t('pulsar.panel.freqLabel', { freq: rec.frequencies[ch].lexeme })}</text>
+          <text x={310} y={26} fill={COLOR.trace} fontSize={11}>{freqLabel}</text>
           <polyline points={points} fill="none" stroke={COLOR.trace} strokeWidth={1} vectorEffect="non-scaling-stroke" data-testid={`pulsar-trace-${n}`} />
           {drawX(c.verticalVisible, c.verticalX) && <line x1={c.verticalX} y1={0} x2={c.verticalX} y2={base} stroke={COLOR.vertical} vectorEffect="non-scaling-stroke" data-testid={`pulsar-vline-${n}`} />}
           {drawX(c.referenceVisible, c.referenceX) && <line x1={c.referenceX} y1={0} x2={c.referenceX} y2={base} stroke={COLOR.reference} vectorEffect="non-scaling-stroke" data-testid={`pulsar-rline-${n}`} />}

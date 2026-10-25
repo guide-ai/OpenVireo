@@ -10,6 +10,10 @@
 // R-RX3 (docs/RADIO-RECEIVER-MARKS.md): the two manual marks +0x430/+0x434 with their drag flags +0x586/+0x585, Display1
 // MouseDown 0x5750c8, MouseMove 0x575200, MouseUp 0x575334, FormDblClick 0x57546c, Paint's tail 0x572d63..0x572daa and the
 // Receive-start index reset; the line and label helpers are in radioReceiverMarks.
+// R-RX4 (docs/RADIO-RECEIVER-RECORD.md): the recording byte 0x5bce28 (Record 0x57581c toggle, FormCreate disarm 0x572622),
+// the scratch triple 0x5bce10 (frame store 0x573a30..0x573a4a), the Receive header write 0x574766..0x574969, the timer
+// append 0x574b6d..0x574b82 into the bounded append 0x56a92c and the finish 0x573bbd..0x573bfc (disarm, RcrdDisp Off). The
+// capture rows stay in this bank until the session commits them (WEB buffered commit); dialogs are the session's.
 // Every transition returns new frozen objects; a refusal leaves the input bank (and its random stream) untouched.
 import {roundNearestEven} from './numericPolicy';
 import type {RadioPointing} from './radioAntenna';
@@ -19,7 +23,7 @@ import {CLOCK_REASSOCIATE_LIMIT,RECEIVER_OPEN_LIMIT,selectNearestPulsar} from '.
 import {RadioSignalError,radioPoisson,randomizeRadioStream,type RadioRandomStream,type RadioSignalErrorKind} from './radioRandom';
 import {radioExtendedWords,radioPlanck,radioThermalRecord,type RadioThermalRecord} from './radioThermal';
 import {
- createReceiverTrace,receiverApertureBase,receiverChildTitle,receiverFovText,receiverHpbwText,receiverMainTitle,resetReceiverTrace,type RadioReceiverTrace,
+ RECEIVER_DISPLAY_LITERALS,createReceiverTrace,receiverApertureBase,receiverChildTitle,receiverFovText,receiverHpbwText,receiverMainTitle,resetReceiverTrace,type RadioReceiverTrace,
 } from './radioReceiverDisplay';
 import {RECEIVER_MARK_CONSTANTS,attemptMarkLine,isReceiverMarkInt32,receiverMarkTimeText,type ReceiverMarkLineOutcome,type ReceiverMarkPair,type ReceiverMarkSelector} from './radioReceiverMarks';
 
@@ -58,6 +62,9 @@ export const RADIO_RECEIVER_CONSTANTS=Object.freeze({
  noSourceIdentifier:'No Object Identified',
  /** Bounded ShortString copy 0x403c5c with cl = 0x14 at 0x574c9b. */
  identifierLimit:20,
+ /** R-RX4 0x56a92c: insert while the signed last index +0x84 is below 0x640 (so 1601 triples at most, static conditional
+  * deduction RC-REC-07; the box literal 0x573e38 says 1600); ShortString[40] header name (cl = 0x28 at 0x5747da). */
+ recordLastIndexBound:0x640,recordNameLimit:40,
 });
 /** [W-NUM] Freq Incr. step per index: exact binary64 10^(index − 3). 0x4270c0(Single 10, Single(i − 3)) is not identified
  * and its Extended result is not claimed (WEB-RX-NUM-01). Index 0 is not a table entry. */
@@ -129,8 +136,24 @@ export type RadioReceiver=Readonly<{
  /** R-RX3 drag flags +0x586 (first) and +0x585 (second). FormCreate does not write them: the initial false is web policy [W]
   * (same caveat as the InitInstance zero-fill 0x404f1c). Receive does not reset them (not in the captured block). */
  markDrag:readonly [boolean,boolean];
+ /** R-RX4 RcrdDisp caption: 'On'/'Off' (0x573668/0x573674) from 0x5bce28 at each refresh 0x572f8c, 'Off' (0x573e20) at the
+  * finish. '' before the first refresh [W] (FormCreate does not write it); a FormCreate disarm leaves it stale. */
+ recordLabel:string;
 }>;
 export type RadioReceiverSlots=readonly [RadioReceiver|null,RadioReceiver|null,RadioReceiver|null];
+type Cells<T>=readonly [T,T,T];
+/** R-RX4 header cells at data object +4 as the capture sees them: seeded at arming from the current dataset, written by
+ * Receive 0x574766..0x574969 (name, aperture, highest, present receivers' frequency and gain, start, interval). null: a cell
+ * no ported path has written. Absent receivers keep the seeded cells (the native loop skips them). */
+export type RadioRecordHeader=Readonly<{name:string|null;aperture:number|null;highestIndex:0|1|2|null;frequencies:Cells<number|null>;gains:Cells<number|null>;
+ start:number|null;interval:number|null}>;
+export const EMPTY_RADIO_RECORD_HEADER:RadioRecordHeader=Object.freeze({name:null,aperture:null,highestIndex:null,frequencies:Object.freeze([null,null,null] as const),
+ gains:Object.freeze([null,null,null] as const),start:null,interval:null});
+/** R-RX4 recording state of the bank. armed: 0x5bce28 (.bss, initially 0). scratch: the three Doubles 0x5bce10 (.bss, 0.0).
+ * rows: the capture's appended triples, flat (WEB: held here until the session commits them to the current dataset).
+ * full: +0x98 of that capture. */
+export type RadioRecording=Readonly<{armed:boolean;scratch:Cells<number>;header:RadioRecordHeader|null;rows:readonly number[];full:boolean}>;
+export const INITIAL_RADIO_RECORDING:RadioRecording=Object.freeze({armed:false,scratch:Object.freeze([0,0,0] as const),header:null,rows:Object.freeze([]),full:false});
 export type RadioReceiverBank=Readonly<{
  /** Live options record view (0x5bce04); feeds the beam (+0x916, +0x92c) and the spatial factor (+0x92c). */
  options:RadioReceiverOptions|null;
@@ -142,8 +165,8 @@ export type RadioReceiverBank=Readonly<{
  random:RadioRandomStream|null;
  /** Main Timer1 (+0x3a4) Enabled. */
  timerEnabled:boolean;
- /** 0x5bce28: [W] always false; recording is not ported. */
- recording:false;
+ /** R-RX4 0x5bce28, 0x5bce10 and the working capture. */
+ recording:RadioRecording;
 }>;
 
 /** erasePosition: the position before the signal (erase band); position: re-read after it (a coupling refresh may
@@ -186,6 +209,16 @@ export type RadioReceiverEvent=Readonly<
  |{kind:'trace-reset';slot:0}
  /** Add Channel with no empty slot: nothing is created (0x574ead..0x574eaf). */
  |{kind:'add-nothing'}
+ /** R-RX4 FormCreate 0x572622 cleared a set recording byte (Open of a new main or Add of a child). */
+ |{kind:'record-disarmed';slot:number}
+ /** R-RX4 Receive 0x574766..0x574969 wrote the header (the byte was set at the start). */
+ |{kind:'record-header'}
+ /** R-RX4 0x56a92c at the bound: +0x98 := 1, the sample is not stored. */
+ |{kind:'record-full'}
+ /** R-RX4 finish 0x573bbd..0x573bfc in the main frame: byte := 0, RcrdDisp 'Off'; the session runs the dialogs. */
+ |{kind:'record-finished';full:boolean}
+ /** R-RX4 the main window closed with the byte set (receiving: Receive had started). The byte stays set until a FormCreate. */
+ |{kind:'record-orphaned';receiving:boolean}
 >;
 export type RadioReceiverError=Readonly<{kind:RadioSignalErrorKind;detail:string}>;
 export type RadioReceiverResult=Readonly<
@@ -193,9 +226,11 @@ export type RadioReceiverResult=Readonly<
  |{ok:false;error:RadioReceiverError}>;
 
 type Mutable<T>={-readonly [K in keyof T]:T[K]};
+/** Recording draft: rows are copied on the first append of the transition. */
+type RecordingDraft={armed:boolean;scratch:[number,number,number];header:RadioRecordHeader|null;rows:readonly number[];full:boolean;ownRows:number[]|null};
 type Draft={options:RadioReceiverOptions|null;buffer:RadioSourceBuffer;slots:(Mutable<RadioReceiver>|null)[];profile:PulsarProfile|null;stream:RadioRandomStream|null;timerEnabled:boolean;
  /** Trace stores copied in this transition (copy on first write; sealed and frozen at the end). */
- traces:Set<RadioReceiverTrace>};
+ traces:Set<RadioReceiverTrace>;recording:RecordingDraft};
 type Run=(d:Draft,events:RadioReceiverEvent[],frames:RadioReceiverFrame[])=>void;
 type TraceDraft={maxIndex:number;dt:number|null;rows:(number|null)[];lastX:number};
 const fail=(kind:RadioSignalErrorKind,detail:string):never=>{throw new RadioSignalError(kind,detail);};
@@ -207,10 +242,15 @@ function ownTrace(d:Draft,r:Mutable<RadioReceiver>):TraceDraft{
 function seal(d:Draft):RadioReceiverBank{
  const trace=(t:RadioReceiverTrace)=>d.traces.has(t)?Object.freeze({...t,rows:Object.freeze(t.rows.slice())}):t;
  const slots=Object.freeze(d.slots.map(r=>r===null?null:Object.freeze({...r,trace:trace(r.trace)}))) as unknown as RadioReceiverSlots;
- return Object.freeze({options:d.options,sourceBuffer:d.buffer,slots,profile:d.profile,random:d.stream,timerEnabled:d.timerEnabled,recording:false});
+ const rd=d.recording;
+ const recording:RadioRecording=Object.freeze({armed:rd.armed,scratch:Object.freeze([...rd.scratch] as [number,number,number]),header:rd.header,
+  rows:rd.ownRows?Object.freeze(rd.ownRows):rd.rows,full:rd.full});
+ return Object.freeze({options:d.options,sourceBuffer:d.buffer,slots,profile:d.profile,random:d.stream,timerEnabled:d.timerEnabled,recording});
 }
 function run(bank:RadioReceiverBank,body:Run):RadioReceiverResult{
- const d:Draft={options:bank.options,buffer:bank.sourceBuffer,slots:bank.slots.map(r=>r===null?null:{...r}),profile:bank.profile,stream:bank.random,timerEnabled:bank.timerEnabled,traces:new Set()};
+ const r0=bank.recording;
+ const d:Draft={options:bank.options,buffer:bank.sourceBuffer,slots:bank.slots.map(r=>r===null?null:{...r}),profile:bank.profile,stream:bank.random,timerEnabled:bank.timerEnabled,traces:new Set(),
+  recording:{armed:r0.armed,scratch:[...r0.scratch] as [number,number,number],header:r0.header,rows:r0.rows,full:r0.full,ownRows:null}};
  const events:RadioReceiverEvent[]=[],frames:RadioReceiverFrame[]=[];
  try{body(d,events,frames);}
  catch(error){if(error instanceof RadioSignalError)return Object.freeze({ok:false,error:Object.freeze({kind:error.kind,detail:error.detail})});throw error;}
@@ -225,7 +265,7 @@ const batchFor=(h:number)=>h===RADIO_RECEIVER_CONSTANTS.batchSpecialH?1:roundNea
 /** New bank with an empty buffer and no receivers. options null stands for 0x5bce04 = nil. */
 export function createRadioReceiverBank(options:RadioReceiverOptions|null):RadioReceiverResult{
  const empty:RadioReceiverBank=Object.freeze({options:null,sourceBuffer:INITIAL_RADIO_SOURCE_BUFFER,slots:Object.freeze([null,null,null]) as RadioReceiverSlots,
-  profile:null,random:null,timerEnabled:false,recording:false});
+  profile:null,random:null,timerEnabled:false,recording:INITIAL_RADIO_RECORDING});
  return run(empty,d=>{
   if(options!==null){const issue=radioReceiverOptionsIssue(options);if(issue)fail('options-domain',issue);}
   d.options=options===null?null:Object.freeze({...options});
@@ -246,9 +286,11 @@ function formCreate(d:Draft,index:0|1|2,seed:number|undefined,events:RadioReceiv
   displayGain:verticalGain*sensitivity,skyThermal,offset:0,searchRadius:0,beamRadius:null,beamSigma:null,spatial:null,
   sourceAttached:false,identifiedName:null,inSource:null,receiving:false,stopPending:null,audio:false,alternation:1,lastTick:null,lastSignal:null,lastRow:null,
   title:'',apertureText:'',trace:createReceiverTrace(k.displayWidth-1),addEnabled:true,
-  marks:UNSET_MARKS,markDrag:NO_MARK_DRAG};
+  marks:UNSET_MARKS,markDrag:NO_MARK_DRAG,recordLabel:''};
  if(index===0)d.profile=profile;
  events.push({kind:'created',slot:index});
+ // R-RX4 0x572622: 0x5bce28 := 0 on the main and on the child path; RcrdDisp is not rewritten here.
+ if(d.recording.armed){d.recording.armed=false;events.push({kind:'record-disarmed',slot:index});}
 }
 
 function clearName(b:RadioSourceBuffer):RadioSourceBuffer{
@@ -291,6 +333,8 @@ function displayRefresh(d:Draft,r:Mutable<RadioReceiver>,events:RadioReceiverEve
   }
   r.title=title;
  }else r.title=receiverChildTitle(r.index);
+ // R-RX4 RcrdDisp from the recording byte (0x573668 'On' / 0x573674 'Off').
+ r.recordLabel=d.recording.armed?RECEIVER_DISPLAY_LITERALS.on:RECEIVER_DISPLAY_LITERALS.off;
  events.push({kind:'beam',slot:r.index,changed});
 }
 
@@ -367,6 +411,9 @@ function frame(d:Draft,slot:number,jd:number|null,events:RadioReceiverEvent[],fr
  const s=signal(d,r,jd,events);
  const rounded=roundNearestEven(s.signal*r.displayGain),row=RADIO_RECEIVER_CONSTANTS.displayBaseline-rounded;
  r.lastSignal=s.signal;r.lastRow=Number.isSafeInteger(row)&&row>=-(2**31)&&row<=2**31-1?row:null;
+ // R-RX4 0x573a30..0x573a4a: when the byte is set, the signal before display gain goes to 0x5bce10 + 8·index (binary64 here,
+ // an Extended → Double fstp natively; no x87 store emulation).
+ if(d.recording.armed)d.recording.scratch[r.index]=s.signal;
  // A coupling refresh inside the signal may rewrite the position, so it is read again (FRAME step 6).
  const position=r.position??0;
  // Append 0x5721a8 (as appendReceiverTrace): only x ≤ max; rows[x] := Word(row), lastX := x. A null row stays null [W].
@@ -379,6 +426,9 @@ function frame(d:Draft,slot:number,jd:number|null,events:RadioReceiverEvent[],fr
    // FINISH: timer off; the idle helper 0x575a38 with Self = main enables the main's own SlaveBtn.
    if(r.index===0){d.timerEnabled=false;r.addEnabled=true;}
    events.push({kind:'sweep-finished',slot:r.index,position});
+   // R-RX4 0x573bbd..0x573bfc (any frame that finishes; the main runs first, so later frames see the byte clear): byte := 0,
+   // RcrdDisp := 'Off'. The full box, Identify, Properties and the Save question follow in the session (WEB-REC-BATCH).
+   if(d.recording.armed){d.recording.armed=false;r.recordLabel=RECEIVER_DISPLAY_LITERALS.off;events.push({kind:'record-finished',full:d.recording.full});}
   }
   else{r.position=0;events.push({kind:'sweep-reset',slot:r.index});}
  }
@@ -559,6 +609,31 @@ export function reassociateReceiverOnClock(bank:RadioReceiverBank,input:Receiver
  return run(bank,(d,events)=>{if(d.slots[0]===null){events.push({kind:'reassociation-skipped'});return;}associate(d,input.catalog,input.pointing,CLOCK_REASSOCIATE_LIMIT,events);});
 }
 
+/** R-RX4 Receive header 0x574766..0x574969, after the source refresh. Name: with the pointer +0x4a2 set, exercise byte 6
+ * (≠ 1, RECEIVER_WEB_DISPLAY_POLICY) and +0x939 = 1, ShortString[40] of the buffer's legacy name (+0xd); without the
+ * pointer ''. Aperture Word +0x916. Highest: contiguous children from slot 1. Frequency +0x529 and gain +0x53d × +0x40f of
+ * the main and of each present child; absent receivers keep their cells. Start: profile owner +0x12; interval: main
+ * +0x419. The +0x99 := 1, +0x96/+0x97 := 0 stores have their web counterpart in the commit (WEB buffered commit). */
+function writeRecordHeader(d:Draft,events:RadioReceiverEvent[]){
+ const k=RADIO_RECEIVER_CONSTANTS,m=main(d),o=d.options??fail('options-missing','record header'),seed=d.recording.header??EMPTY_RADIO_RECORD_HEADER;
+ const source=m.sourceAttached?d.buffer.record:null;
+ let highest=0;while(highest<2&&d.slots[highest+1])highest++;
+ const frequencies=[...seed.frequencies] as [number|null,number|null,number|null],gains=[...seed.gains] as [number|null,number|null,number|null];
+ for(const r of d.slots)if(r){frequencies[r.index]=r.frequencyMHz;gains[r.index]=r.verticalGain*r.sensitivity;}
+ d.recording.header=Object.freeze({name:source?source.legacyName.slice(0,k.recordNameLimit):'',aperture:o.dishDiameterMeters,highestIndex:highest as 0|1|2,
+  frequencies:Object.freeze(frequencies),gains:Object.freeze(gains),start:(d.profile??fail('receiver-unavailable','no profile owner')).start,interval:m.interval});
+ events.push({kind:'record-header'});
+}
+/** R-RX4 append 0x56a92c of the scratch triple. +0x96/+0x97 are 0 during a web capture (the lease refuses imports), so
+ * its clear-and-drop branch is not reached. Insert while the last index (rows − 1) is below 0x640, else +0x98 := 1. */
+function appendRecord(d:Draft,events:RadioReceiverEvent[]){
+ const rd=d.recording;
+ if(rd.rows.length/3-1<RADIO_RECEIVER_CONSTANTS.recordLastIndexBound){
+  if(!rd.ownRows){rd.ownRows=rd.rows.slice();rd.rows=rd.ownRows;}
+  rd.ownRows.push(rd.scratch[0],rd.scratch[1],rd.scratch[2]);
+ }else if(!rd.full){rd.full=true;events.push({kind:'record-full'});}
+}
+
 export type ReceiveToggleInput=Readonly<{jd:number|null;now:number;allocateSeed?:number}>;
 /** Mode 0x5745f8 on the main receiver, then each child in slot order. Start: receiving helper 0x575c6c (Add off), clear
  * +0x42d, marks := −1 (R-RX3), Paint (refresh + drawing), snapshot +0x579, source refresh (trace reset; first build Randomizes with
@@ -579,6 +654,7 @@ export function toggleReceive(bank:RadioReceiverBank,input:ReceiveToggleInput):R
    m.marks=UNSET_MARKS;paint(d,m,events);
    m.horizontalSnapshot=m.horizontal;
    refresh(d,'receive',input.jd,input.allocateSeed,events);
+   if(d.recording.armed)writeRecordHeader(d,events);
    m.lastTick=input.now;d.timerEnabled=true;events.push({kind:'receive-started'});
   }else{m.stopPending=true;events.push({kind:'stop-requested'});}
   displayRefresh(d,m,events);
@@ -592,6 +668,32 @@ export function toggleReceive(bank:RadioReceiverBank,input:ReceiveToggleInput):R
    displayRefresh(d,c,events);
   }
  });
+}
+
+// ---------------------------------------------------------------- R-RX4 Record button 0x57581c
+/** 0x575832..0x57583b: 0x5bce28 xor 1. [W] Refused without a main and while the main timer runs (Receive disables the main
+ * Record button until the finish re-enables it, RC-REC-09). The prompts and the clear are the session's. */
+export function toggleRecordByte(bank:RadioReceiverBank):RadioReceiverResult{
+ return run(bank,d=>{main(d);if(d.timerEnabled)fail('receiver-unavailable','Record is disabled while receiving or finishing a sweep');d.recording.armed=!d.recording.armed;});
+}
+/** 0x5758ab / 0x5758fe: 0x5bce28 := 0 (Cancel of a prompt, or a refused arming). refresh: then the refresh 0x572f8c of the
+ * main (0x575925; the unsaved prompt's Cancel jumps past it to 0x57592c). */
+export function clearRecordByte(bank:RadioReceiverBank,refresh:boolean):RadioReceiverResult{
+ return run(bank,(d,events)=>{d.recording.armed=false;if(refresh&&d.slots[0])displayRefresh(d,d.slots[0],events);});
+}
+/** 0x575905..0x575927 with the byte set: the three scratch Doubles := 0.0, then the refresh of the main ('On'). [W] The
+ * capture starts empty with the header cells of the current dataset (seed) and +0x98 = 0. */
+export function armRecordCapture(bank:RadioReceiverBank,seed:RadioRecordHeader):RadioReceiverResult{
+ return run(bank,(d,events)=>{
+  const m=main(d);
+  if(!d.recording.armed)fail('receiver-unavailable','the recording byte is not set');
+  d.recording.scratch=[0,0,0];d.recording.header=Object.freeze({...seed});d.recording.rows=Object.freeze([]);d.recording.ownRows=null;d.recording.full=false;
+  displayRefresh(d,m,events);
+ });
+}
+/** 0x575925 → 0x572f8c on the main after a disarm (the byte is already 0). */
+export function refreshRecordLabel(bank:RadioReceiverBank):RadioReceiverResult{
+ return run(bank,(d,events)=>{displayRefresh(d,main(d),events);});
 }
 
 /** 0x574ae9..0x574afb: proceed unless Extended 3.5e-7 > now − last. [W] An unset +0x499 admits the tick. With
@@ -618,6 +720,8 @@ export function receiverTimerTick(bank:RadioReceiverBank,input:Readonly<{now:num
   for(let i=0;i<batch;i++){
    frame(d,0,input.jd,events,frames);
    for(const slot of [1,2])if(d.slots[slot])frame(d,slot,input.jd,events,frames);
+   // R-RX4 0x574b6d..0x574b82: append only while the byte is still set (a finish in this iteration cleared it).
+   if(d.recording.armed)appendRecord(d,events);
   }
  });
 }
@@ -637,6 +741,7 @@ export function closeReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverR
   const r=slotOf(d,slot);
   if(!queryCloseReceiver(bank,slot).canClose)fail('close-refused',RADIO_RECEIVER_LITERALS.closeRefusalText);
   if(r.index===0){
+   if(d.recording.armed)events.push({kind:'record-orphaned',receiving:r.receiving});
    d.timerEnabled=false;d.profile=null;
    for(const s of [2,1])if(d.slots[s]){d.slots[s]=null;events.push({kind:'closed',slot:s});}
    d.slots[0]=null;events.push({kind:'closed',slot:0},{kind:'send-0x53a'});

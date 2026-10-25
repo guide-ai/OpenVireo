@@ -166,7 +166,9 @@ describe('acceptance vectors R01–R17 (contract/acceptance-cases.json)', () => 
     expect(s.list[1].nativeLineCandidate).toBe('"Obj, "Q" E2E",y,"",,"same"');
   });
   it('R14 retained entries, opaque candidates, recording bytes and the whole display state are unchanged', () => {
-    const s0 = initial([11, 22, 33]), bytes = s0.recording!.bytes, copy = Uint8Array.from(bytes);
+    // R-RX4: recording is the shared PulsarData union; this fixture is an admitted file.
+    const file = (st: PulsarAnalysisState) => st.recording as PlrRecording;
+    const s0 = initial([11, 22, 33]), bytes = file(s0).bytes, copy = Uint8Array.from(bytes);
     const s = run(s0, ['open', { selectOrdinal: 0 }, 'requestDelete', 'yes', 'confirmReview']);
     expect(ids(s.list)).toEqual([22, 33]);
     expect(s.list[0]).toBe(E22);
@@ -174,8 +176,8 @@ describe('acceptance vectors R01–R17 (contract/acceptance-cases.json)', () => 
     for (const e of s.list) { expect(Object.isFrozen(e)).toBe(true); expect(e.fields).toBe(ENTRIES[e.sequence].fields); }
     expect(s.list[0].nativeLineCandidate).toBe('"Obj, "Q" E2E",y,"",,"same"');
     expect(s.recording).toBe(s0.recording);
-    expect(s.recording!.bytes).toBe(bytes);
-    expect(Array.from(s.recording!.bytes)).toEqual(Array.from(copy));
+    expect(file(s).bytes).toBe(bytes);
+    expect(Array.from(file(s).bytes)).toEqual(Array.from(copy));
     const changedKeys = (Object.keys(s0) as (keyof PulsarAnalysisState)[]).filter(k => s[k] !== s0[k]).sort();
     expect(changedKeys).toEqual(['list', 'listSaved', 'saveEnabled']);
   });

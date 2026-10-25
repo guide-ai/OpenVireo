@@ -146,8 +146,13 @@ export function pulsarEditorRebuild(record: PulsarEditorRecord, controlText: str
 }
 
 // ---------------------------------------------------------------- supported subset
-/** The opaque tail of a record line: points, interval (ms), aperture and the quoted file name, as Record appends them. */
-export const pulsarEntryTail = (f: PulsarEntryFields) => `${f.points},${f.intervalMs},${f.aperture},"${f.file}"`;
+/**
+ * The opaque tail of a record line: points, interval (ms), aperture and, only when the row has a file field (+0x96 set,
+ * 0x570e7e), the quoted file name, as Record appends them. A memory-data row ends at the aperture (no suffix,
+ * MEASUREMENT-ORIGIN-GATE 0x570e85 → 0x570ec5); it is not given an empty quoted name. Its 11-column candidate goes through
+ * the same literal parse/rebuild and template check as a 12-column one (PLR-MEMORY-01).
+ */
+export const pulsarEntryTail = (f: PulsarEntryFields) => `${f.points},${f.intervalMs},${f.aperture}` + (f.file === null ? '' : `,"${f.file}"`);
 /**
  * The record-line template of the structured fields with comment c. A duplicate of the web Record writer's
  * lineCandidate (pulsarAnalysis.ts), kept as a self-consistency guard; not an independent model or a native witness.

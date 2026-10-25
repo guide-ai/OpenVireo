@@ -14,6 +14,10 @@ It does **not** receive signals, model receivers or noise, use the pulsar catalo
 
 Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and gates, are in [PULSAR-ANALYSIS-PROVENANCE.json](PULSAR-ANALYSIS-PROVENANCE.json). Artifact: VIREO 1.504 `CLEA_VEO.exe`, SHA-256 `781bc970…c54c`.
 
+## Current data shared with the receiver (R-RX4)
+
+The window now presents the App's one current pulsar dataset ([RADIO-RECEIVER-RECORD.md](RADIO-RECEIVER-RECORD.md)): a loaded `.PLR` file, or a receiver recording made in this tab and opened through the receiver's Save question **No**. The recording is model-generated, not observed CLEA data, and has no bytes, file name, SHA-256 or download; its Properties show `Data Not Written to File` and its record rows have 11 columns (no file field, PLR-MEMORY-01). A newer dataset is adopted with the recovered activation resets (PLR-ACTIVATE-01) only while no dialog is open and no file is being read; the confirmed measurement list is kept and Review follows its count. Load asks the recovered unsaved-data question for such a recording, with Yes unavailable (PLR-LOAD-PROMPT-01). Its No allows one chooser selection only (WEB one-shot grant, bound to the dataset generation): the file input's standard `cancel` event, an empty selection, a new click or leaving the window withdraws it, so a later drop or selection without a fresh answer is refused and the recording is kept. Window blur does not withdraw it, because the chooser itself blurs the page. In a browser that does not fire the input `cancel` event, the grant stays until the next click, leaving the window or a dataset change. Load is disabled while a receiver recording holds the dataset (armed, receiving, or committed while its Properties and Save question are still open), a change delivered anyway is refused unread, and a late import is refused visibly instead of being dropped.
+
 ## Evidence route
 
 - **REA**, used twice:

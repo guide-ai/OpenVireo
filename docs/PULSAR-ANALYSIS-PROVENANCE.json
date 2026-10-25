@@ -58,6 +58,25 @@
   },
   "listings": [
     {
+      "id": "RX4-ANALYSIS-CAPTURES",
+      "path": "/tmp/clea-static-research/radio-rx4-record-20261025/ANALYSIS-CAPTURES.json",
+      "sha256": "analysis-form-create.asm 6775926d5aea013659bb03c791661671fe9cb794f342d5eb52458d7336d30313 (0x56a964..0x56aae5); analysis-form-activate.asm 87ccccdac8a501e1634fcece15da6dd2db45f21efbd877560840bb8e7aa2d06f (0x56ac04..0x56aeb8); analysis-load-prompt.asm 17148ae9cedbacf3a5e8900615d3ce4782f2f53a23b214c90b936321985ddf34 (0x56af38..0x56afbc); analysis-prepare-no-data.asm 09e8d4a80e16a028fa7f7963c9ac8969a7709c8fffa5985b102f0c2dbbc85820 (0x56b7ac..0x56b9bb)",
+      "kind": "bounded GNU static captures (R-RX4 receipt), complete instructions, no execution or emulation; the excluded range 0x56b36c..0x56b678 is not used"
+    },
+    {
+      "id": "RX4-ANALYSIS-LITERALS",
+      "path": "/tmp/clea-static-research/radio-rx4-record-20261025/ANALYSIS-LOAD-EMPTY-LITERALS.json",
+      "sha256": "0x56b1d0 bb0fefc7a6f2d4435b9c4bfe9694d3ff6c06c7085192c1978f9ede7c0d30db35; 0x56b258 fa1e59aab0f853ad214ca4aaef85a6006935180f3d3e676cb8006fa1e3f9c6fa; 0x56aef0 4766bc3ed75d498cb87b52c36e1c285ddce19e47162fb3c867e841c68cc29890; 0x56af1c 1b5962a92cbbd1d4df21c46169bc3beaf6da3e87ce76eb55fd3dbbc9cafe5c84",
+      "kind": "NUL-terminated ASCII spans with per-string data SHA-256; ANALYSIS-GLOBAL-BINDING.json (listing a763c96e…d8f3) binds alias 0x5b5d84 to the TPlsrAnalysisForm1 CreateForm 0x5ad4cc"
+    },
+    {
+      "id": "RX4-MEASUREMENT-ORIGIN-GATE",
+      "path": "/tmp/clea-static-research/radio-rx4-record-20261025/measurement-record-file-gate.asm",
+      "range": "0x570e77..0x570ed2",
+      "sha256": "538744dcb651480d828952978d24b9b96b742562fbb4deda41b5bf2a0912abb8",
+      "kind": "bounded GNU disassembly with receipt MEASUREMENT-ORIGIN-GATE.json: +0x96 = 0 jumps 0x570e85 → 0x570ec5 past the ',' '\"' +0x9a '\"' suffix; both paths append the line through 0x41d8a0 (0x570ecd). Not the complete function"
+    },
+    {
       "id": "TARGET-ASM",
       "path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/native-field-recovery/target.asm",
       "sha256": "164c88c2ad20ba6d9ebc4fd2989143dfec3fb68d9f5f97183018344a59b124db",
@@ -298,7 +317,7 @@
       "source": "GNU-571748; COORDINATOR-properties-binding.json; COORDINATOR-properties-data.json; COORDINATOR-form-properties.json (THDRDISP)",
       "observed": "THdrDisp.FormActivate: IDEd +0x364 name; JDEd +0x36c ffFixed(+0x68,8); AprEd +0x370 IntToStr(word +0x29); DelTED +0x3ac ffFixed(+0x72 × Single 1000 @0x571998,2); Freq1Ed +0x378 / Gain1Ed +0x394 receiver 0 frequency(2)/gain(3); Freq2/Gain2 (+0x380/+0x398) and Freq3/Gain3 (+0x384/+0x39c) only when byte +0x2b > 0 / > 1, otherwise blank; PointsEd +0x3a4 IntToStr(obj+0x84 + 1); FileNmEd +0x3b8 filename if +0x97 else literal 0x5719a4 'Data Not Written to File'.",
       "binding": "Properties1Click 0x56d848 → Show form slot 0x5b59d4 (→ 0x5bcdf0), created at 0x5ad4ae from class ref 0x571450 → VMT 0x57149c, class THdrDisp (self-verified). FormActivate reads [[0x5b5be8]] = [0x5bcca0], the reader's data object. DFM captions: 'Object:', 'Data Start:', 'Aperture:', 'Frequency (MHz):', 'Receiver 1/2/3', 'Relative Gain:', '# of Data Points:', 'Delta T (MSecs):', 'File:'.",
-      "web": "File shows the File.name the browser supplied. Natively FileNmEd shows +0x9a whenever +0x97 is set; the known stores of that text and its unknown native content are listed in fileNameField, so no native file-name equivalence is claimed. The no-file literal cannot occur because only file loads exist"
+      "web": "File shows the File.name the browser supplied. Natively FileNmEd shows +0x9a whenever +0x97 is set; the known stores of that text and its unknown native content are listed in fileNameField, so no native file-name equivalence is claimed. R-RX4: a receiver recording held in memory (+0x97 = 0) shows the literal 0x5719a4 'Data Not Written to File' (pulsarDataProperties, PLR-MEMORY-01)"
     },
     {
       "id": "PLR-GEOM-01",
@@ -312,7 +331,7 @@
       "range": "0x56b7ac..0x56b9ba",
       "source": "TARGET-ASM lines 530342-530465",
       "observed": "If name equals literal 0x56b9bc 'No Data' (decoded), writes interval 0.01 s into the data object and window [0,4]. Otherwise window start 0, end dt × Single 400 (0x56b9c4, decoded), zoom := 1, pan rate := 10, tick params (2,50,5,10). With dl=1 it also resets factors and cursor records.",
-      "web": "The placeholder name is rejected at admission, so the overwrite cannot occur"
+      "web": "The placeholder name is rejected at admission, and receiver-recording data with that name is not presented (PLR-ACTIVATE-01, WEB-REC-NODATA), so the overwrite cannot occur"
     },
     {
       "id": "PLR-PAINT-01",
@@ -389,7 +408,30 @@
       "range": "0x56af38..0x56b1c7",
       "source": "PLR-STATIC analysis-load.asm",
       "observed": "If the list is non-empty and +0x97 = 0, Yes/No/Cancel save prompt; OpenDialog; reader 0x56a260; menus +0x464/+0x38c/+0x388 disabled; 0x57f[0..2] := 1; caption; 0x56b7ac(dl=1); ZmRSet 0x56cf20; Show Properties 0x5b59d4. The measurement list 0x5bcde0 (alias 0x5b5720, decoded) is not cleared.",
-      "web": "Only admitted files load, so the native unsaved-RAM prompt never applies (no acquisition handoff). Focus moves to Properties Close in the commit that opens it, only if focus is still on body or the file input after the read"
+      "web": "Only admitted files load. The unsaved-data prompt before the OpenDialog is PLR-LOAD-PROMPT-01 (it applies to a receiver recording held in memory). Focus moves to Properties Close in the commit that opens it, only if focus is still on body or the file input after the read. R-RX4: the commit goes through the App's current dataset (src/core/pulsarCurrentData.ts) and is refused visibly when a receiver capture lease is held ('capture-lease') or the dataset changed after the read started ('superseded'); the file is then not loaded"
+    },
+    {
+      "id": "PLR-ACTIVATE-01",
+      "range": "0x56ac04..0x56aeb7, 0x56b7ac..0x56b9ba, 0x56a964..0x56aae4",
+      "source": "RX4-ANALYSIS-CAPTURES (analysis-form-activate.asm, analysis-prepare-no-data.asm, analysis-form-create.asm); RX4-ANALYSIS-LITERALS",
+      "observed": "FormCreate sets form byte +0x5c5 := 1. FormActivate: when +0x5c5 or data +0x99 is set, +0x5c5/+0x5c6 := 0, PrepareNoData 0x56b7ac(dl = 1) (name = 'No Data' 0x56b9bc → interval := 0.01 written into the data object and a 4 s window; otherwise window [0, dt·Single 400]; tick params (2,50,5,10); zoom := 1; pan rate := 10; with dl = 1 every panel factor := 1.0 and cursor record := −1, readouts cleared, +0x99 := 0), modes 0x57c[0..2] := 0, readout colours; when the data list is not empty Properties (0x5b59d4) Show and a virtual +0x84 call, otherwise MessageBox 0x56aef0 'Select \"File\"->\"Load\" from Menu to begin.' caption 0x56af1c 'No Current Data to Analyze' flags 0x40; Record +0x464 disabled; Review +0x388 enabled iff the measurement list [0x5bcde0] count (vmt+0x14) > 0 (0x56ae32..0x56ae49); Save +0x38c enabled iff Review is enabled and form byte 0x5db = 0; 0x57f[0..2] := 1; 0x5db := 1; 0x56fe6c clears the measurement record. The measurement list is not cleared.",
+      "web": "pulsarActivateData runs when the App's dataset generation is newer than the presented one, only while the panel is active with no modal session and no pending read (otherwise a 'newer data waiting' note keeps drafts, Review working copies and the confirmed list). It applies the PrepareNoData resets, modes, pending, Record, Review (list count) and Save (Review and not listSaved) and opens Properties for data with rows. WEB-REC-NODATA: data named 'No Data' is not presented ('reserved-name'; the 0.01 s overwrite and the uncaptured draw branch 0x56bf11 are not reinterpreted); data without rows presents no panels or Properties and shows the recovered box text as a non-modal alert. Not ported: the 0x5db := 1 store (listSaved keeps its value), the captions 0x56aec0/0x56aed4, the 0x380/0x374/0x394 menu items, main+0x468 and the readout colours. The first activation (+0x5c5) of an empty App dataset shows the existing 'No recording loaded.' text instead of the box",
+      "uncertainty": "Static evidence only. The VCL OnActivate firing order relative to Show of the analysis form from the receiver finish, and the zoom buttons' enable state after PrepareNoData (not written there), are not runtime-witnessed"
+    },
+    {
+      "id": "PLR-LOAD-PROMPT-01",
+      "range": "0x56af38..0x56afb7",
+      "source": "RX4-ANALYSIS-CAPTURES (analysis-load-prompt.asm); RX4-ANALYSIS-LITERALS",
+      "observed": "Load1Click: when the data list [0x5bcca0]+0x80 is not empty and +0x97 is 0, MessageBox text 0x56b1d0 'You have not saved your current pulsar data!  You will lose recorded pulsar data if you load without saving.' / 'Save current data now?', caption 0x56b258 'Recorded Pulsar Data Not Saved!', flags 0x13. Result 2 (Cancel) exits through 0x56b192; result 6 (Yes) calls 0x56b36c; any other result continues to the OpenDialog setup (0x56afbc).",
+      "web": "pulsarRequestLoad/pulsarAnswerLoad read the App's current dataset. Yes is shown disabled with its reason (the body of 0x56b36c is not recovered and no writer exists); No opens the file chooser from the same user gesture; Cancel keeps everything. WEB default button Cancel (the native default Yes is unavailable); Escape is Cancel. A file supplied without the guarded chooser click (for example a drop) is refused while the question applies. WEB one-shot grant: the allowed click or the No answer grants one chooser change for the dataset generation of that moment; the next change event consumes it (an empty selection included) and a different generation does not match it. The file input's standard cancel event, a new real click and the window's deactivation withdraw it; window blur does not (the chooser itself blurs the page). A browser without the input cancel event keeps the grant until the next real click, deactivation or dataset change. This bounds the permission to one invocation, as the native Load1Click asks again each time; it is web policy, not a native witness. A .PLR file read by this window sets +0x97, so the prompt does not apply to it"
+    },
+    {
+      "id": "PLR-MEMORY-01",
+      "range": "0x570e77..0x570ed2, 0x571931..0x57194b",
+      "source": "RX4-MEASUREMENT-ORIGIN-GATE; GNU-571748; docs/RADIO-RECEIVER-RECORD-PROVENANCE.json (RC-REC-05, RC-REC-06, RC-REC-08)",
+      "observed": "Record row tail: with +0x96 = 0 the jump at 0x570e85 skips the ',' '\"' +0x9a '\"' suffix and the line ends at the aperture; both paths append it (0x570ecd). Properties FileNmEd shows literal 0x5719a4 'Data Not Written to File' when +0x97 = 0. The receiver Receive header write sets +0x96 = +0x97 = 0 (0x574954..0x574969).",
+      "web": "A receiver capture is a PulsarMemoryRecording: origin 'memory', no bytes, file name, lexemes, line ending, download or SHA-256; samples are the receiver's binary64 signals copied once (no text serialisation or reparse); header cells of absent receivers keep their previous known values or stay null. Its record rows have 11 columns (fields.file null; no invented empty quoted name); 12-column file rows are unchanged. The comment-only Review Edit admits such a row only through the same printable-ASCII, field-capacity, template and literal parse/rebuild checks (PLR-REVIEW-EDIT-STATIC-01); rows failing them stay refused with their reason. Panel labels show fixed2 of the header frequency (no lexeme exists). A panel whose gain cell was never written draws the baseline and refuses a horizontal reading ('channel-unrecorded'); this is a WEB domain policy, not a native result. The data is model-generated, not an observed CLEA recording, and is kept only for the page lifetime (not in Save investigation, CSV or the notebook)",
+      "uncertainty": "The +0x9a text is never shown or appended for memory data. x87 Extended vs binary64 for the header cells and samples is not established (RC-REC-06). Self-consistency of the 11-column candidate with the literal editor model is not a native Record-writer witness"
     },
     {
       "id": "PLR-RECORD-01",
@@ -566,7 +608,7 @@
     "pulsar catalog, period, PDot/PEpoch and DM/distance formulas",
     "random state",
     "browser clock",
-    "in-RAM recording handoff from the receiver",
+    "the receiver Save wrapper 0x56b36c and any file writer for a receiver recording (the in-RAM handoff itself is R-RX4: docs/RADIO-RECEIVER-RECORD.md)",
     "native PLR writer 0x56a518 (the download is a raw byte copy)",
     "native measurement CSV writer",
     "review-dialog Find (recovered, not enabled: PLR-REVIEW-FIND-STATIC-01) and Undo",

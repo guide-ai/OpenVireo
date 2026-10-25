@@ -103,11 +103,11 @@ export const receiverCaption=(title:string,aperture:string)=>cap(title+aperture,
 
 export type ReceiverLabels=Readonly<{frequency:string;step:string;vertical:string;horizontal:string;mode:string;align:string|null;record:string}>;
 /** Refresh 0x572f8c label texts: Freq fixed2, Step caption, Vert fixed2, Horz fixed1, ModeDisp, AlignDisp (main) and
- * RcrdDisp (recording not ported: 0x5bce28 stays 0). */
+ * RcrdDisp (R-RX4: the stored caption, written by the refresh and the finish; stale after a FormCreate disarm). */
 export function receiverLabels(r:RadioReceiver):ReceiverLabels{
  const L=RECEIVER_DISPLAY_LITERALS;
  return Object.freeze({frequency:formatFixed(r.frequencyMHz,2),step:RECEIVER_STEP_CAPTIONS[r.stepIndex]??'',vertical:formatFixed(r.verticalGain,2),
-  horizontal:formatFixed(r.horizontal,1),mode:r.receiving?L.receive:L.stop,align:r.index===0?(RECEIVER_WEB_DISPLAY_POLICY.align5bce08?L.yes:L.no):null,record:L.off});
+  horizontal:formatFixed(r.horizontal,1),mode:r.receiving?L.receive:L.stop,align:r.index===0?(RECEIVER_WEB_DISPLAY_POLICY.align5bce08?L.yes:L.no):null,record:r.recordLabel});
 }
 
 // ---------------------------------------------------------------- trace store (+0x587)

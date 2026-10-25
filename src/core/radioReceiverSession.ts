@@ -5,14 +5,17 @@
 // is saved or restored (WEB-RX-PERSIST-01). See docs/RADIO-RECEIVER-MONITOR.md.
 // R-RX3 (docs/RADIO-RECEIVER-MARKS.md): one pointer lease across the bank (WEB-MARK-INPUT/CANCEL), one mark overlay per
 // window composed from the mark events (WEB-MARK-RENDER), keyboard placement/steps (WEB-MARK-KEYBOARD) and Clear.
+// R-RX4 (docs/RADIO-RECEIVER-RECORD.md): the Record prompts (RC-REC-03), the finish dialogs (RC-REC-08) and the host
+// requests (lease, phase, commit, release, open analysis) that the presentation applies to the shared current dataset.
 import type {RadioLabTransition,RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,clearReceiverMarks,closeReceiver,createRadioReceiverBank,endReceiverMarkDrag,openMainReceiver,
- paintReceiver,queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerTick,stepFrequency,stepFrequencyIncrement,
- stepHorizontal,stepVertical,toggleReceive,
- type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverResult,
+ RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,armRecordCapture,clearReceiverMarks,clearRecordByte,closeReceiver,createRadioReceiverBank,endReceiverMarkDrag,
+ openMainReceiver,paintReceiver,queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerTick,refreshRecordLabel,stepFrequency,
+ stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,toggleRecordByte,
+ type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverResult,type RadioRecordHeader,
 } from './radioReceiver';
+import {RADIO_IDENTIFY_POLICY,radioIdentifyIssue,type RadioRecordCapture} from './radioReceiverRecord';
 import {RECEIVER_DISPLAY_GEOMETRY,receiverAnnotationOps,receiverFrameOps,receiverPaintOps,type ReceiverDisplayOp,type ReceiverPen} from './radioReceiverDisplay';
 import {EMPTY_RECEIVER_MARK_OVERLAY,isReceiverMarkColumn,overlayWithLabel,overlayWithLine,type ReceiverMarkOverlay,type ReceiverMarkSelector} from './radioReceiverMarks';
 import {parseReceiverMarkPosition,type ReceiverMarkButton} from './radioReceiverMarkInput';
@@ -51,16 +54,41 @@ export type RadioReceiverSession=Readonly<{
  markLease:ReceiverMarkLease|null;
  /** R-RX3 mark overlay per window (null: no window), separate from the base canvas logs. */
  markOverlays:ReceiverMarkOverlays;
+ /** R-RX4 Record prompts, finish dialogs and the capture lease this session holds. */
+ record:ReceiverRecordState;
 }>;
+/** RC-REC-03 prompts. unsaved: 0x575958 (flags 0x13); erase: 0x575a08 (flags 0x41). generation: the current dataset's
+ * generation when the Record press was taken; the erase OK is refused when it changed (WEB-REC-TXN). */
+export type ReceiverRecordPrompt=Readonly<{kind:'unsaved'|'erase';generation:number}>;
+/** RC-REC-08 finish stages in order: 'full' (only when +0x98), 'identify', 'properties' (modal), 'save'. The capture is
+ * committed to the current dataset when Identify closes (committed: true from 'properties' on); the session keeps its lease
+ * (WEB 'committed' phase) until the Save answer releases it. */
+export type ReceiverRecordFinish=Readonly<{stage:'full'|'identify'|'properties'|'save';capture:RadioRecordCapture;draft:string;name:string;committed:boolean}>;
+export type ReceiverRecordState=Readonly<{prompt:ReceiverRecordPrompt|null;finish:ReceiverRecordFinish|null;
+ /** The lease this session holds on the current dataset, or null. receiving: Receive started under it. */
+ leaseId:number|null;receiving:boolean;nextId:number}>;
+/** The current dataset as the Record press sees it (WEB-REC-TXN). */
+export type ReceiverRecordHostSnapshot=Readonly<{generation:number;rows:number;saved:boolean;analysisBusy:boolean;leaseHeld:boolean}>;
+/** Requests the presentation applies to the shared current dataset, in order. 'acquire' needs completeRecordArming. */
+export type ReceiverRecordHostRequest=Readonly<
+ |{kind:'acquire';id:number;generation:number;erase:boolean}
+ |{kind:'release';id:number}
+ |{kind:'phase';id:number;phase:'receiving'|'finishing'}
+ |{kind:'commit';id:number;capture:RadioRecordCapture;name:string}
+ |{kind:'open-analysis'}>;
+export type ReceiverRecordArmingResult=Readonly<{ok:true;seed:RadioRecordHeader}|{ok:false;reason:'capture-lease'|'superseded'|'analysis-busy'|'lease-mismatch'}>;
 export type ReceiverAction='seed'|'open'|'add'|'mode'|'tick'|'reassociate'|'step'|'paint'|'close'|'dismiss-box'
- |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear';
+ |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear'
+ |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save';
 export type ReceiverWebRefusal='seed-invalid'|'seed-locked'|'no-catalog'|'close-box-open'
- |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound';
+ |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound'
+ |'record-dialog-open'|'record-locked'|'record-analysis-busy'|'record-lease-held'|'record-superseded'|'record-input'|'identify-length'|'identify-text';
 export type ReceiverSessionOutcome=Readonly<
  |{kind:'ok';action:ReceiverAction;events:readonly RadioReceiverEvent[]}
  |{kind:'refused';action:ReceiverAction;error:RadioReceiverError}
  |{kind:'web-refused';action:ReceiverAction;reason:ReceiverWebRefusal}>;
-export type ReceiverSessionTransition=Readonly<{session:RadioReceiverSession;outcome:ReceiverSessionOutcome;changed:boolean}>;
+/** host: R-RX4 requests for the shared current dataset (absent: none). */
+export type ReceiverSessionTransition=Readonly<{session:RadioReceiverSession;outcome:ReceiverSessionOutcome;changed:boolean;host?:readonly ReceiverRecordHostRequest[]}>;
 export type ReceiverSourceNow=Readonly<{catalog:PulsarCatalog|null;pointing:RadioPointing}>;
 export type ReceiverClockNow=Readonly<{jd:number|null;now:number}>;
 
@@ -76,12 +104,13 @@ const seedOf=(text:string,used:number):ReceiverSeed=>Object.freeze({text,base:pa
 /** The seed the next Randomize site receives, or undefined when the text is invalid. */
 export const nextReceiverSeed=(s:RadioReceiverSession):number|undefined=>s.seed.base===null?undefined:(s.seed.base+s.seed.used)>>>0;
 export const receiverSessionOpen=(s:RadioReceiverSession)=>s.bank.slots.some(r=>r!==null);
+const INITIAL_RECORD_STATE:ReceiverRecordState=Object.freeze({prompt:null,finish:null,leaseId:null,receiving:false,nextId:1});
 
 export function createRadioReceiverSession():RadioReceiverSession{
  const created=createRadioReceiverBank(RADIO_RECEIVER_COMPILED_OPTIONS);
  if(!created.ok)throw new Error('compiled receiver options refused');
  return Object.freeze({bank:created.bank,seed:seedOf(RADIO_RECEIVER_SESSION_POLICY.defaultSeedText,0),canvases:Object.freeze([null,null,null]) as Canvases,tickError:null,closeBox:null,
-  markLease:null,markOverlays:Object.freeze([null,null,null]) as ReceiverMarkOverlays});
+  markLease:null,markOverlays:Object.freeze([null,null,null]) as ReceiverMarkOverlays,record:INITIAL_RECORD_STATE});
 }
 
 const keep=(session:RadioReceiverSession,outcome:ReceiverSessionOutcome):ReceiverSessionTransition=>Object.freeze({session,outcome:Object.freeze(outcome),changed:false});
@@ -108,12 +137,37 @@ function overlayEvents(o:ReceiverMarkOverlays,events:readonly RadioReceiverEvent
  }
  return next;
 }
-type CommitPatch=Partial<Pick<RadioReceiverSession,'canvases'|'tickError'|'closeBox'|'markLease'|'markOverlays'>>;
-function commit(s:RadioReceiverSession,action:ReceiverAction,events:readonly RadioReceiverEvent[],bank:RadioReceiverBank,patch:CommitPatch={}):ReceiverSessionTransition{
+type CommitPatch=Partial<Pick<RadioReceiverSession,'canvases'|'tickError'|'closeBox'|'markLease'|'markOverlays'|'record'>>;
+/** R-RX4 bookkeeping of a transition's record events: a FormCreate disarm releases the lease; the Receive header moves it to
+ * 'receiving'; the finish opens the dialogs on the capture taken from the bank (no append follows a finish); a main close
+ * commits a capture whose Receive had started (WEB partial commit, no dialogs), then releases the lease once. */
+function recordFromEvents(r:ReceiverRecordState,bank:RadioReceiverBank,events:readonly RadioReceiverEvent[]){
+ let record=r;const host:ReceiverRecordHostRequest[]=[];
+ const capture=(id:number,full:boolean):RadioRecordCapture|null=>bank.recording.header?Object.freeze({captureId:id,header:bank.recording.header,rows:bank.recording.rows,full}):null;
+ for(const e of events){
+  const id=record.leaseId;if(id===null)continue;
+  if(e.kind==='record-disarmed'){host.push({kind:'release',id});record={...record,leaseId:null,receiving:false};}
+  else if(e.kind==='record-header'){host.push({kind:'phase',id,phase:'receiving'});record={...record,receiving:true};}
+  else if(e.kind==='record-finished'){
+   const c=capture(id,e.full);if(!c)continue;
+   const name=c.header.name??'';
+   host.push({kind:'phase',id,phase:'finishing'});
+   record={...record,receiving:false,finish:Object.freeze({stage:e.full?'full':'identify',capture:c,draft:name,name,committed:false})};
+  }else if(e.kind==='record-orphaned'){
+   const c=record.receiving?capture(id,bank.recording.full):null;
+   if(c)host.push({kind:'commit',id,capture:c,name:c.header.name??''});
+   host.push({kind:'release',id});
+   record={...record,leaseId:null,receiving:false};
+  }
+ }
+ return {record:record===r?r:Object.freeze(record),host};
+}
+function commit(s:RadioReceiverSession,action:ReceiverAction,events:readonly RadioReceiverEvent[],bank:RadioReceiverBank,patch:CommitPatch={},extraHost:readonly ReceiverRecordHostRequest[]=[]):ReceiverSessionTransition{
  const used=s.seed.used+randomizeCount(s.bank,bank);
  const markOverlays=overlayEvents(patch.markOverlays??s.markOverlays,events);
- const session:RadioReceiverSession=Object.freeze({...s,bank,seed:used===s.seed.used?s.seed:seedOf(s.seed.text,used),...patch,markOverlays});
- return Object.freeze({session,outcome:Object.freeze({kind:'ok',action,events}),changed:true});
+ const rec=recordFromEvents(patch.record??s.record,bank,events),host=[...extraHost,...rec.host];
+ const session:RadioReceiverSession=Object.freeze({...s,bank,seed:used===s.seed.used?s.seed:seedOf(s.seed.text,used),...patch,markOverlays,record:rec.record});
+ return Object.freeze({session,outcome:Object.freeze({kind:'ok',action,events}),changed:true,...(host.length?{host:Object.freeze(host.map(h=>Object.freeze(h)))}:{})});
 }
 
 /** Appends ops to a log; a full-canvas fill starts it afresh (it covers everything before). Bounded by opLogLimit. */
@@ -144,7 +198,10 @@ function drawEvents(c:Canvases,bank:RadioReceiverBank,events:readonly RadioRecei
  }
  return next;
 }
-const blockedByBox=(s:RadioReceiverSession,action:ReceiverAction)=>s.closeBox!==null?webRefused(s,action,'close-box-open'):null;
+/** A recovered box or an R-RX4 Record prompt or finish dialog is modal over the windows. */
+const blockedByBox=(s:RadioReceiverSession,action:ReceiverAction)=>s.closeBox!==null?webRefused(s,action,'close-box-open')
+ :recordDialogOpen(s)?webRefused(s,action,'record-dialog-open'):null;
+export const recordDialogOpen=(s:RadioReceiverSession)=>s.record.prompt!==null||s.record.finish!==null;
 /** WEB-MARK-CANCEL: the session without its lease; the origin's drag flag is cleared with no attempt, no rollback and no
  * invented final column. Used before Open/activate, Add, Mode, Close, keyboard placement and Clear. */
 function withoutLease(s:RadioReceiverSession):RadioReceiverSession{
@@ -235,6 +292,7 @@ export function reassociateReceivers(s:RadioReceiverSession,input:ReceiverSource
 /** Freq MHz, Freq Incr., Vert. Gain and Horz. Secs spin buttons. */
 export function stepReceiver(s:RadioReceiverSession,slot:number,control:RadioReceiverControl,direction:'down'|'up'):ReceiverSessionTransition{
  const box=blockedByBox(s,'step');if(box)return box;
+ if(control!=='horizontal'&&recordLocked(s))return webRefused(s,'step','record-locked');
  const step=control==='frequency'?stepFrequency:control==='frequency-step'?stepFrequencyIncrement:control==='vertical'?stepVertical:stepHorizontal;
  const r:RadioReceiverResult=step(s.bank,slot,direction);
  if(!r.ok)return refused(s,'step',r.error);
@@ -270,17 +328,129 @@ export function dismissReceiverCloseBox(s:RadioReceiverSession):ReceiverSessionT
 
 export type ReceiverControlName='frequency'|'frequency-step'|'vertical'|'horizontal'|'add'|'mode'|'align'|'record'|'close';
 export type ReceiverControlState='enabled'|'disabled'|'not-ported'|'absent';
-/** RC-REC-09 in monitor mode. Main: Freq/Incr/Vert/Close always; Horz while the timer is off; Add while its own enable
- * holds and the timer is off; Mode unless a stop is pending with the timer on; Align/Record not ported. Children:
- * Freq/Incr/Vert/Close only (FormCreate hides HorzSpin, Mode, Add, Align and Record). */
+/** RC-REC-09: the receiving helper 0x575c6c disables Vert/Freq/Incr on the main and the children only when 0x5bce28 is set;
+ * the finish's idle helper 0x575a38 enables them again. */
+const recordLocked=(s:RadioReceiverSession)=>s.bank.timerEnabled&&s.bank.recording.armed;
+/** RC-REC-09. Main: Freq/Incr/Vert while not receiving armed; Horz while the timer is off; Add while its own enable holds
+ * and the timer is off; Mode unless a stop is pending with the timer on; Record while the timer is off (Receive disables it,
+ * the finish enables it); Close always; Align not ported. Children: Freq/Incr/Vert (same record lock) and Close only
+ * (FormCreate hides HorzSpin, Mode, Add, Align and Record). */
 export function receiverControlAvailability(s:RadioReceiverSession,slot:number):Readonly<Record<ReceiverControlName,ReceiverControlState>>{
  const r=s.bank.slots[slot],on=(v:boolean):ReceiverControlState=>v?'enabled':'disabled';
  const all=(v:ReceiverControlState)=>({frequency:v,'frequency-step':v,vertical:v,horizontal:v,add:v,mode:v,align:v,record:v,close:v});
  if(!r)return Object.freeze(all('absent'));
- if(r.index!==0)return Object.freeze({...all('absent'),frequency:'enabled','frequency-step':'enabled',vertical:'enabled',close:'enabled'});
+ const free=on(!recordLocked(s));
+ if(r.index!==0)return Object.freeze({...all('absent'),frequency:free,'frequency-step':free,vertical:free,close:'enabled'});
  const timer=s.bank.timerEnabled;
- return Object.freeze({frequency:'enabled','frequency-step':'enabled',vertical:'enabled',horizontal:on(!timer),add:on(r.addEnabled&&!timer),
-  mode:on(!(r.stopPending===true&&timer)),align:'not-ported',record:'not-ported',close:'enabled'});
+ return Object.freeze({frequency:free,'frequency-step':free,vertical:free,horizontal:on(!timer),add:on(r.addEnabled&&!timer),
+  mode:on(!(r.stopPending===true&&timer)),align:'not-ported',record:on(!timer),close:'enabled'});
+}
+
+// ---------------------------------------------------------------- R-RX4 Record
+const recordPatch=(s:RadioReceiverSession,next:Partial<ReceiverRecordState>):ReceiverRecordState=>Object.freeze({...s.record,...next});
+/** The bank result as a committed transition (events drive the lease bookkeeping), or the refusal. */
+function recordCommit(s:RadioReceiverSession,action:ReceiverAction,r:RadioReceiverResult,record:Partial<ReceiverRecordState>,host:readonly ReceiverRecordHostRequest[]=[]):ReceiverSessionTransition{
+ if(!r.ok)return refused(s,action,r.error);
+ return commit(s,action,r.events,r.bank,{record:recordPatch(s,record),canvases:drawEvents(s.canvases,r.bank,r.events)},host);
+}
+/**
+ * Record button 0x57581c on the main (RC-REC-03). Arming (byte 0 → 1): the unsaved prompt when the current dataset has rows
+ * and +0x97 = 0; otherwise the erase prompt when it has rows; otherwise the lease is requested at once. [W] Arming is refused
+ * while the analysis window has a modal session or a pending read, or another lease is held (WEB-REC-TXN). Disarming
+ * (1 → 0): the refresh shows 'Off' and the lease is released. [W] The native disarm also asks the erase question when the
+ * list is non-empty; under the web lease the list is always empty while the byte is set, so that branch is not reached.
+ */
+export function pressRecord(s:RadioReceiverSession,snap:ReceiverRecordHostSnapshot):ReceiverSessionTransition{
+ const box=blockedByBox(s,'record');if(box)return box;
+ const wasArmed=s.bank.recording.armed;
+ if(!wasArmed){
+  if(snap.analysisBusy)return webRefused(s,'record','record-analysis-busy');
+  if(snap.leaseHeld||s.record.leaseId!==null)return webRefused(s,'record','record-lease-held');
+ }
+ const b=withoutLease(s);
+ const toggled=toggleRecordByte(b.bank);
+ if(!toggled.ok)return refused(s,'record',toggled.error);
+ if(wasArmed){
+  const refreshed=refreshRecordLabel(toggled.bank);
+  const id=s.record.leaseId;
+  return recordCommit(b,'record',refreshed.ok?Object.freeze({...refreshed,events:[...toggled.events,...refreshed.events]}):refreshed,{receiving:false,leaseId:null},
+   id===null?[]:[{kind:'release',id}]);
+ }
+ if(snap.rows>0)return recordCommit(b,'record',toggled,{prompt:Object.freeze({kind:snap.saved?'erase':'unsaved',generation:snap.generation})});
+ return recordCommit(b,'record',toggled,{},[{kind:'acquire',id:s.record.nextId,generation:snap.generation,erase:false}]);
+}
+/**
+ * Prompt answers. unsaved (0x13): 'cancel' (2) clears the byte and skips the refresh (0x5758ab → 0x57592c); 'no' (7) falls
+ * through to the second check, which asks the erase question while the list is non-empty. [W] 'yes' (6, the Save wrapper
+ * 0x56b36c) is not offered: its body is not recovered. erase (0x41): 'ok' (1) requests the clear and the lease for the
+ * prompt's generation; 'cancel' clears the byte, then the refresh shows 'Off'.
+ */
+export function answerRecordPrompt(s:RadioReceiverSession,answer:'no'|'ok'|'cancel',snap:ReceiverRecordHostSnapshot):ReceiverSessionTransition{
+ const p=s.record.prompt;
+ if(!p||(p.kind==='unsaved'&&answer==='ok')||(p.kind==='erase'&&answer==='no'))return webRefused(s,'record-prompt','record-input');
+ if(answer==='cancel')return recordCommit(s,'record-prompt',clearRecordByte(s.bank,p.kind==='erase'),{prompt:null});
+ if(answer==='no'){
+  if(snap.rows>0)return recordCommit(s,'record-prompt',ok0(s.bank),{prompt:Object.freeze({kind:'erase',generation:p.generation})});
+  return recordCommit(s,'record-prompt',ok0(s.bank),{prompt:null},[{kind:'acquire',id:s.record.nextId,generation:p.generation,erase:false}]);
+ }
+ return recordCommit(s,'record-prompt',ok0(s.bank),{prompt:null},[{kind:'acquire',id:s.record.nextId,generation:p.generation,erase:true}]);
+}
+const ok0=(bank:RadioReceiverBank):RadioReceiverResult=>Object.freeze({ok:true,bank,events:Object.freeze([]),frames:Object.freeze([])});
+/** The host's answer to an 'acquire': the scratch cells := 0.0, the capture starts with the dataset's header cells and the
+ * refresh shows 'On' (0x57590e..0x575927); a refusal clears the byte and the refresh shows 'Off' (nothing was erased). */
+export function completeRecordArming(s:RadioReceiverSession,result:ReceiverRecordArmingResult):ReceiverSessionTransition{
+ if(!s.bank.recording.armed||s.record.leaseId!==null||recordDialogOpen(s))return webRefused(s,'record-arming','record-input');
+ if(!result.ok){
+  const r=clearRecordByte(s.bank,true);
+  if(!r.ok)return refused(s,'record-arming',r.error);
+  const reason:ReceiverWebRefusal=result.reason==='analysis-busy'?'record-analysis-busy':result.reason==='superseded'?'record-superseded':'record-lease-held';
+  const t=commit(s,'record-arming',r.events,r.bank,{canvases:drawEvents(s.canvases,r.bank,r.events)});
+  return Object.freeze({...t,outcome:Object.freeze({kind:'web-refused',action:'record-arming',reason})});
+ }
+ return recordCommit(s,'record-arming',armRecordCapture(s.bank,result.seed),{leaseId:s.record.nextId,receiving:false,nextId:s.record.nextId+1});
+}
+const finishStep=(s:RadioReceiverSession,action:ReceiverAction,finish:ReceiverRecordFinish|null,host:readonly ReceiverRecordHostRequest[]=[]):ReceiverSessionTransition=>
+ commit(s,action,[],s.bank,{record:recordPatch(s,{finish})},host);
+/** 'Data Buffer Filled' (flags 0x40) OK, then Identify. */
+export function dismissRecordFull(s:RadioReceiverSession):ReceiverSessionTransition{
+ const f=s.record.finish;if(f?.stage!=='full')return webRefused(s,'record-full','record-input');
+ return finishStep(s,'record-full',Object.freeze({...f,stage:'identify'}));
+}
+/** EditStr draft (bounded; an invalid draft stays visible and is refused at OK). */
+export function editRecordIdentify(s:RadioReceiverSession,text:string):ReceiverSessionTransition{
+ const f=s.record.finish;if(f?.stage!=='identify'||typeof text!=='string'||text.length>RADIO_IDENTIFY_POLICY.draftLimit)return webRefused(s,'record-draft','record-input');
+ if(text===f.draft)return keep(s,{kind:'ok',action:'record-draft',events:[]});
+ return finishStep(s,'record-draft',Object.freeze({...f,draft:text}));
+}
+/** Identify (TStrIpDlg) result: OK (1) copies EditStr back as the name (OKBtnClick 0x525308, copy-back 0x573cc3..0x573cf3);
+ * Cancel keeps the header name. Either way the capture is committed once (WEB buffered commit) and the modal Properties
+ * (0x5b59d4, ShowModal) follow. The lease stays held (WEB-REC-TXN) until the Save answer. [W] An over-long or non-ASCII OK
+ * is refused in the dialog. */
+export function answerRecordIdentify(s:RadioReceiverSession,answer:'ok'|'cancel'):ReceiverSessionTransition{
+ const f=s.record.finish;if(f?.stage!=='identify'||s.record.leaseId!==f.capture.captureId)return webRefused(s,'record-identify','record-input');
+ let name=f.name;
+ if(answer==='ok'){
+  const issue=radioIdentifyIssue(f.draft);
+  if(issue)return webRefused(s,'record-identify',issue==='length'?'identify-length':'identify-text');
+  name=f.draft;
+ }
+ return commit(s,'record-identify',[],s.bank,{record:recordPatch(s,{finish:Object.freeze({...f,stage:'properties',name,committed:true})})},
+  [{kind:'commit',id:f.capture.captureId,capture:f.capture,name}]);
+}
+/** The modal Properties closed: the Save question (flags 0x23). */
+export function closeRecordProperties(s:RadioReceiverSession):ReceiverSessionTransition{
+ const f=s.record.finish;if(f?.stage!=='properties')return webRefused(s,'record-properties','record-input');
+ return finishStep(s,'record-properties',Object.freeze({...f,stage:'save'}));
+}
+/** Save question: 'no' (7) opens the analysis window (Show of [0x5b5d84], 0x573d75..0x573d8a); 'cancel' ends the finish
+ * (the main+0x468 enable at 0x573d5b..0x573d6a is not ported). [W] 'yes' (6, 0x56b36c) is not offered (body not recovered).
+ * WEB-REC-TXN: either answer ends the finish and releases the session's lease exactly once, before the analysis opens (so
+ * its Load is enabled). The answer is never refused for a missing lease, so the dialog cannot trap the user. */
+export function answerRecordSave(s:RadioReceiverSession,answer:'no'|'cancel'):ReceiverSessionTransition{
+ const f=s.record.finish;if(f?.stage!=='save'||(answer!=='no'&&answer!=='cancel'))return webRefused(s,'record-save','record-input');
+ const id=s.record.leaseId,host:ReceiverRecordHostRequest[]=id!==null&&id===f.capture.captureId?[{kind:'release',id}]:[];
+ if(answer==='no')host.push({kind:'open-analysis'});
+ return commit(s,'record-save',[],s.bank,{record:recordPatch(s,{finish:null,leaseId:id===f.capture.captureId?null:id})},host);
 }
 
 // ---------------------------------------------------------------- R-RX3 marks

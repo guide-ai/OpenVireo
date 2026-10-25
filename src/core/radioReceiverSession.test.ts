@@ -130,13 +130,14 @@ describe('canvas op logs',()=>{
 describe('controls, close box and clock ticks',()=>{
  it('availability for idle, receiving, stop-pending and both-slot states (RC-REC-09)',()=>{
   let s=open();
+  // R-RX4: Record is enabled while the main timer is off (Receive disables it, the finish enables it).
   expect(receiverControlAvailability(s,0)).toEqual({frequency:'enabled','frequency-step':'enabled',vertical:'enabled',horizontal:'enabled',add:'enabled',mode:'enabled',
-   align:'not-ported',record:'not-ported',close:'enabled'});
+   align:'not-ported',record:'enabled',close:'enabled'});
   s=take(addReceiverWindow(take(addReceiverWindow(s))));
   expect(receiverControlAvailability(s,0).add).toBe('disabled');
   expect(receiverControlAvailability(s,2)).toEqual({frequency:'enabled','frequency-step':'enabled',vertical:'enabled',horizontal:'absent',add:'absent',mode:'absent',
    align:'absent',record:'absent',close:'enabled'});
-  s=take(mode(s));expect(receiverControlAvailability(s,0)).toMatchObject({horizontal:'disabled',add:'disabled',mode:'enabled',frequency:'enabled'});
+  s=take(mode(s));expect(receiverControlAvailability(s,0)).toMatchObject({horizontal:'disabled',add:'disabled',mode:'enabled',frequency:'enabled',record:'disabled'});
   s=take(mode(s));expect(receiverControlAvailability(s,0).mode).toBe('disabled');
   while(s.bank.timerEnabled)s=tick(s).session;
   expect(receiverControlAvailability(s,0)).toMatchObject({horizontal:'enabled',add:'enabled',mode:'enabled'});
@@ -295,7 +296,8 @@ describe('R-RX3 marks: pointer lease, overlays, keyboard, Clear and lifecycle (W
 describe('source and route audits',()=>{
  const read=(p:string)=>readFileSync(new URL(p,import.meta.url),'utf8');
  const FORBIDDEN=/Date\.now|new Date|performance\.now|Math\.random|crypto\.|localStorage|sessionStorage|indexedDB|fetch\(|XMLHttpRequest|WebSocket|AudioContext|new Audio|HTMLAudioElement|navigator\.mediaDevices/;
- const files=['./radioReceiver.ts','./radioReceiverDisplay.ts','./radioReceiverSession.ts','./radioReceiverMarks.ts','./radioReceiverMarkInput.ts','../components/RadioReceiverWindows.tsx'];
+ const files=['./radioReceiver.ts','./radioReceiverDisplay.ts','./radioReceiverSession.ts','./radioReceiverMarks.ts','./radioReceiverMarkInput.ts','./radioReceiverRecord.ts',
+  './pulsarCurrentData.ts','../useSharedPulsarData.ts','../components/RadioReceiverWindows.tsx'];
  it('keeps host clocks, RNG, storage, network and audio out of the receiver modules',()=>{
   for(const f of files)expect(read(f),f).not.toMatch(FORBIDDEN);
  });
@@ -305,9 +307,13 @@ describe('source and route audits',()=>{
   expect(route).not.toMatch(/Date\.now|new Date\(\)|Math\.random|crypto\./);
  });
  it('imports nothing from the PLR, notebook, io or optical modules',()=>{
-  for(const f of files){
+  // R-RX4: the receiver side reaches the shared current dataset only through pulsarCurrentData (and its App hook), which
+  // owns the PLR accessors; pulsarCurrentData itself reads pulsarRecording and is not a receiver module.
+  for(const f of files.filter(f=>!f.includes('pulsarCurrentData'))){
    const imports=[...read(f).matchAll(/from '([^']+)'/g)].map(m=>m[1]);
    for(const i of imports)expect(i,`${f}: ${i}`).not.toMatch(/pulsarRecording|pulsarAnalysis|pulsarSavedRows|pulsarReview|\/io\/|optical|spectrum|hubble/i);
   }
+  const current=[...read('./pulsarCurrentData.ts').matchAll(/from '([^']+)'/g)].map(m=>m[1]);
+  expect(current).toEqual(['./pulsarRecording']);
  });
 });
