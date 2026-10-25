@@ -26,7 +26,7 @@ describe.skipIf(!FIXTURE)('Pulsar Parameters on the original Pulsars.dat (OPENVI
  it('opens at the head without a seed; J2000 Find 1927+18 lands on the first duplicate and Next moves past it',()=>{
   const catalog=load();
   const w=win(openPulsarParameters(null,catalog,null,null));expect(w.index).toBe(0);
-  const found=win(confirmPulsarFind(win(choosePulsarFindMode(win(editPulsarFindQuery(win(openPulsarFind(w)),'1927+18')),2))));
+  const found=win(confirmPulsarFind(win(choosePulsarFindMode(win(editPulsarFindQuery(win(openPulsarFind(w,null)),'1927+18')),2))));
   expect(found.notice).toBeNull();expect(found.index).toBe(452);expect(found.source.j2000).toContain('1927+18');
   expect(win(nextPulsar(found)).index).toBe(453);
  });

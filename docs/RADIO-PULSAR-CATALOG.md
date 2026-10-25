@@ -1,6 +1,6 @@
-# Radio pulsar catalog codec and nearest-source picker (internal)
+# Radio pulsar catalog codec and source picker (internal)
 
-Status: **internal dependency**, consumed only by the Pulsar Parameters reference utility (`RADIO-PULSAR-PARAMETERS.md`), which passes it bytes of a learner-chosen file and uses the picker for its Open seed. There is still no receiver, acquisition or session format. This does not complete Radio I06/I07/N07/E06 and claims no original numerical equivalence. Provenance: `RADIO-PULSAR-CATALOG-PROVENANCE.json`.
+Status: **internal dependency**. The Pulsar Parameters reference utility (`RADIO-PULSAR-PARAMETERS.md`) passes the codec bytes of a learner-chosen file; the picker is used by Receiver Open and the clock reassociation of the silent receiver monitor (`RADIO-RECEIVER-MONITOR.md`), not as the utility's Open seed (Open only reads the shared buffer those picker runs write). The picker is not a global nearest search: it scans in file order, only the first run within 1 h of RA, without RA wrap. There is still no acquisition or session format. This does not complete Radio I06/I07/N07/E06 and claims no original numerical equivalence. Provenance: `RADIO-PULSAR-CATALOG-PROVENANCE.json`.
 
 Modules (pure TypeScript; no React, network, file I/O or Node APIs):
 
@@ -168,8 +168,8 @@ RA is in hours and Dec in degrees **[I, matching TRadioLab +0x5df/+0x5e9 [A]]**.
 - What `0x47df9c` does (possibly Terminate).
 - Who frees the catalog.
 - The env+0x764/+0x26c path binding.
-- Event delivery to `TRadioLab.PulsarList1Click` `0x567f80` (static identity only), and its unidentified callees `0x474408`, `0x476f40` and `0x47a010`.
+- Event delivery to `TRadioLab.PulsarList1Click` `0x567f80` (static identity only; R-RX6 models it as a session action with no UI caller, and the menu item's initial DFM state and conditional enable/show are recovered but not its runtime availability: `RADIO-PULSAR-PARAMETERS.md` PP-10, PulsarList1 availability, G9), and its unidentified callees `0x474408` and `0x47a010` (`0x476f40` is the WindowState setter).
 - The initial-offset contract and the +0x51f readers `0x5737fc`, `0x57403f` and `0x574ceb` are now modelled in the internal receiver core (`RADIO-RECEIVER-SIGNAL.md`: FormCreate +0.0, in-source test, spatial factor). The reader `0x573367` (label display) is not ported. `associateReceiverSource` above stays as the earlier, unused web helper with its `null` sentinel; the receiver core does not use it.
-- The +0x4a2 alias, the single +0x5f7 buffer, the PulsarList1Click overwrite and clear, the coupling refresh and the slave copies `0x573fc1` and `0x574d7f` are modelled in that core without UI. Still open before receiver UI integration: form lifetime and event delivery, and the picker's cursor and catalog+0x42 zeroing (`0x56285c..0x562864`).
+- The +0x4a2 alias, the single +0x5f7 buffer, the PulsarList1Click overwrite and clear, the coupling refresh and the slave copies `0x573fc1` and `0x574d7f` are modelled in that core; R-RX6 does not deliver the PulsarList overwrite/clear through the UI (the Pulsar Parameters Open only reads the buffer) and mirrors the picker's end cursor (`pulsarPickerCursor`, PP-11) in that window. Still open: form lifetime, the menu item's runtime availability (G9), and the picker's catalog+0x42 zeroing (`0x56285c..0x562864`), which no ported code observes.
 - Catalog consumer at `0x567aa5` (not ported). The TPlsrDataForm1 browser (`0x568c76..`, AtHead/AtTail, no wrap) is ported as a reference utility with a web file chooser, read tokens, cancellation, keyboard and mobile criteria: see `RADIO-PULSAR-PARAMETERS.md`. The native load failure box and quit request above remain unported.
 - Ghidra P-code for `0x562950` was not obtained. The operand direction rests on the two disassemblers.

@@ -4,8 +4,8 @@ import type {RadioLabTransition} from './radioAntenna';
 import type {PulsarRecord} from './radioPulsarCatalog';
 import {
  RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,clearReceiverNextMark,completeRecordArming,completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,
- editReceiverSeed,endMarkGesture,markPointerDown,markPointerMove,markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,parseReceiverSeed,
- placeReceiverMark,pressRecord,reassociateReceivers,receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,requestReceiverClose,
+ editReceiverSeed,endMarkGesture,markPointerDown,markPointerMove,markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,overwriteReceiverSourceBuffer,paintReceiverWindow,parseReceiverSeed,
+ placeReceiverMark,pressRecord,reassociateReceivers,receiverBoxRefusal,receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,requestReceiverClose,
  stepReceiver,stepReceiverMark,tickReceivers,toggleReceiverAlignment,toggleReceiverMode,type RadioReceiverSession,type ReceiverMarkPress,type ReceiverSessionTransition,
 } from './radioReceiverSession';
 import {receiverPaintOps} from './radioReceiverDisplay';
@@ -391,6 +391,99 @@ describe('R-RX5 Align and the window order (WEB-RX-ALIGN-*)',()=>{
   }
   // The sequence reaches both Align states with accepted moves (coverage of the invariants, not a count contract).
   expect(stats.offMoves).toBeGreaterThan(0);expect(stats.onMoves).toBeGreaterThan(0);expect(stats.toggles).toBeGreaterThan(0);
+ });
+});
+
+describe('R-RX6 PulsarList1Click on the shared buffer, modelled, no UI caller (WEB-PP-LIST-03)',()=>{
+ // [W] contract checks of the modelled session action (the web Open never calls it); synthetic records only. Later ticks may
+ // legitimately run the existing name coupling (rebuild, RNG draws): only the click itself is claimed to leave the receivers untouched.
+ const B=rec({primaryName:'J0001+01',legacyName:'B0001+01',ra:6.1,dec:10});
+ const list=(s:RadioReceiverSession,catalog:readonly PulsarRecord[]|null=[B],pointing:Readonly<{ra:number;dec:number}>=POINT)=>overwriteReceiverSourceBuffer(s,{catalog,pointing});
+ const snap=(rows:number)=>({generation:1,rows,saved:false,analysisBusy:false,leaseHeld:false});
+ const events=(t:ReceiverSessionTransition)=>t.outcome.kind==='ok'?t.outcome.events:[];
+ it('hit copies, miss clears the J2000 name only; no receiver field, seed, canvas, overlay, record or arrangement changes',()=>{
+  const s=take(paintReceiverWindow(open(),0));
+  const hit=list(s);expect(events(hit)).toEqual([{kind:'buffer-overwritten',name:'J0001+01'}]);
+  const h=take(hit);
+  expect(h.bank.sourceBuffer).toEqual({record:B,primaryNameCleared:false});expect(h.bank.sourceBuffer.record).not.toBe(B);
+  expect(h.bank.slots).toEqual(s.bank.slots);expect(h.bank.slots[0]!.trace).toBe(s.bank.slots[0]!.trace);
+  for(const k of ['profile','random','options','timerEnabled'] as const)expect(h.bank[k],k).toBe(s.bank[k]);
+  expect(h.bank.recording).toEqual(s.bank.recording);expect(h.bank.recording.rows).toBe(s.bank.recording.rows);expect(h.bank.align).toEqual(s.bank.align);
+  expect(h.seed).toBe(s.seed);expect(h.canvases).toBe(s.canvases);expect(h.markOverlays).toBe(s.markOverlays);expect(h.record).toBe(s.record);expect(h.arrangement).toBe(s.arrangement);
+  expect(h.bank.slots[0]).toMatchObject({sourceAttached:true,offset:0,title:s.bank.slots[0]!.title,identifiedName:s.bank.slots[0]!.identifiedName});
+  const miss=list(h,[B],FAR);expect(events(miss)).toEqual([{kind:'buffer-name-cleared'}]);
+  const m=take(miss);expect(m.bank.sourceBuffer).toEqual({record:{...B,primaryName:''},primaryNameCleared:true});expect(m.bank.slots).toEqual(s.bank.slots);
+  expect(take(list(s,[A])).bank.sourceBuffer.record).toEqual(A);// the same name: equal buffer, still no receiver change
+  // Without receivers the buffer is written as well (TRadioLab owns it).
+  const none=take(list(createRadioReceiverSession()));expect(none.bank.sourceBuffer.record).toEqual(B);expect(receiverSessionOpen(none)).toBe(false);
+  expect(list(s,null).outcome).toEqual({kind:'web-refused',action:'pulsar-list',reason:'no-catalog'});
+ });
+ it('the close box and the Record prompt or finish refuse atomically; a mark lease and a tick error stay',()=>{
+  const boxed=take(requestReceiverClose(take(addReceiverWindow(take(addReceiverWindow(open())))),1));
+  const b=list(boxed);expect(b.outcome).toEqual({kind:'web-refused',action:'pulsar-list',reason:'close-box-open'});expect(b.session).toBe(boxed);expect(b.changed).toBe(false);
+  const prompt=take(pressRecord(open(),snap(3)));
+  const p=list(prompt);expect(p.outcome).toMatchObject({kind:'web-refused',reason:'record-dialog-open'});expect(p.session).toBe(prompt);
+  const leased=take(markPointerDown(open(),{pointerId:1,pointerType:'mouse',button:0,slot:0,code:0,x:80}));
+  const l=take(list(leased));expect(l.markLease).toBe(leased.markLease);expect(l.bank.slots[0]!.markDrag).toEqual([true,false]);expect(l.bank.slots[0]!.marks).toEqual(leased.bank.slots[0]!.marks);
+  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04});
+  let e=take(mode(open()));e=tick(e).session;e=take(reassociateReceivers(e,{catalog:[P],pointing:POINT}));e=tick(e).session;
+  expect(e.tickError).toMatchObject({kind:'poisson-mean-domain'});
+  expect(take(list(e,[P])).tickError).toBe(e.tickError);
+ });
+ it('armed Record: the next Receive header takes the new legacy name; capturing and a pending stop also accept the write',()=>{
+  let s=open();s=take(pressRecord(s,snap(0)));s=take(completeRecordArming(s,{ok:true,seed:EMPTY_RADIO_RECORD_HEADER}));
+  const armed=take(list(s));expect(armed.record).toBe(s.record);expect(armed.bank.recording).toEqual(s.bank.recording);
+  const r=take(mode(armed));expect(r.bank.recording.header!.name).toBe('B0001+01');
+  const capturing=take(list(r,[A]));expect(capturing.bank.recording).toEqual(r.bank.recording);expect(capturing.bank.recording.rows).toBe(r.bank.recording.rows);
+  expect(capturing.record).toBe(r.record);
+  const stopping=take(mode(capturing));expect(stopping.bank.slots[0]!.stopPending).toBe(true);
+  expect(take(list(stopping)).bank.sourceBuffer.record).toEqual(B);
+ });
+ it('while receiving: the same name rebuilds nothing; another name rebuilds and draws at the next tick, not at the click',()=>{
+  let s=take(mode(open()));s=tick(s).session;
+  const same=take(list(s,[A]));expect(same.bank.random).toBe(s.bank.random);expect(same.bank.profile).toBe(s.bank.profile);
+  expect(events(tick(same)).some(e=>e.kind==='refresh')).toBe(false);
+  const other=take(list(s));expect(other.bank.random).toBe(s.bank.random);expect(other.bank.profile).toBe(s.bank.profile);expect(other.seed).toBe(s.seed);
+  const next=tick(other);
+  expect(events(next)).toContainEqual({kind:'refresh',cause:'coupling',attached:true,name:'J0001+01'});
+  expect(next.session.bank.random!.events).toBeGreaterThan(other.bank.random!.events);
+ });
+ it('a miss: the next master frame rebuilds from the stale record under an empty name; a detached main does not couple',()=>{
+  let s=take(mode(open()));s=tick(s).session;
+  const cleared=take(list(s,[A],FAR));
+  expect(events(tick(cleared))).toContainEqual({kind:'refresh',cause:'coupling',attached:true,name:''});
+  let d=take(mode(take(openReceiverWindow(createRadioReceiverSession(),{catalog:[A],pointing:FAR}))));d=tick(d).session;
+  expect(d.bank.slots[0]!.sourceAttached).toBe(false);
+  const written=take(list(d,[A]));expect(events(tick(written)).some(e=>e.kind==='refresh')).toBe(false);
+ });
+ it('the main title changes only at its next parameter refresh (Align)',()=>{
+  const s=open(),before=s.bank.slots[0]!.title;
+  const w=take(list(s));expect(w.bank.slots[0]!.title).toBe(before);
+  const a=take(toggleReceiverAlignment(w));expect(a.bank.slots[0]!.title).not.toBe(before);expect(a.bank.slots[0]!.title).toContain('B0001+01');
+ });
+ it('receiverBoxRefusal: the read-only gate of the reference Open names the reason the session gate refuses with',()=>{
+  const fresh=createRadioReceiverSession(),opened=open();
+  expect(receiverBoxRefusal(fresh)).toBeNull();expect(receiverBoxRefusal(opened)).toBeNull();
+  const boxed=take(requestReceiverClose(take(addReceiverWindow(take(addReceiverWindow(open())))),1));
+  const prompt=take(pressRecord(open(),snap(3)));
+  let f=take(completeRecordArming(take(pressRecord(open(),snap(0))),{ok:true,seed:EMPTY_RADIO_RECORD_HEADER}));
+  f=take(mode(f));for(let i=0;i<3;i++)f=tick(f).session;f=take(mode(f));while(f.bank.timerEnabled)f=tick(f).session;
+  expect(f.record.finish).not.toBeNull();expect(f.record.prompt).toBeNull();
+  const cases:[RadioReceiverSession,string][]=[[boxed,'close-box-open'],[prompt,'record-dialog-open'],[f,'record-dialog-open']];
+  for(const [s,reason] of cases){
+   const before={...s};
+   expect(receiverBoxRefusal(s)).toBe(reason);
+   for(const k of Object.keys(before) as (keyof RadioReceiverSession)[])expect(s[k],k).toBe(before[k]);
+   expect(list(s).outcome).toEqual({kind:'web-refused',action:'pulsar-list',reason});
+  }
+  for(const s of [fresh,opened])expect(list(s).outcome.kind).toBe('ok');
+ });
+ it('a persistent coupling refusal recovers after a hit whose name equals the identified name',()=>{
+  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04});
+  let s=take(mode(open()));s=tick(s).session;s=take(reassociateReceivers(s,{catalog:[P],pointing:POINT}));s=tick(s).session;
+  expect(s.tickError).not.toBeNull();expect(s.bank.slots[0]!.identifiedName).toBe('J0000+00');
+  const back=take(list(s,[A]));expect(back.tickError).toBe(s.tickError);
+  const ok=tick(back);expect(ok.outcome.kind).toBe('ok');expect(ok.session.tickError).toBeNull();
  });
 });
 

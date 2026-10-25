@@ -2253,6 +2253,13 @@ export interface MessageParameters {
   "pulsarParameters.open.noCatalog": never;
   "pulsarParameters.open.reading": never;
   "pulsarParameters.open.available": never;
+  "pulsarParameters.open.refused.inactive": never;
+  "pulsarParameters.open.refused.no-catalog": never;
+  "pulsarParameters.open.refused.reading": never;
+  "pulsarParameters.open.refused.modal": never;
+  "pulsarParameters.open.refused.close-box-open": never;
+  "pulsarParameters.open.refused.record-dialog-open": never;
+  "pulsarParameters.open.refused.unavailable": never;
   "pulsarParameters.window.readOnly": never;
   "pulsarParameters.window.sourceDomain": never;
   "pulsarParameters.window.position": "count" | "position";
@@ -2265,8 +2272,10 @@ export interface MessageParameters {
   "pulsarParameters.window.issue.density-domain": never;
   "pulsarParameters.window.issue.distance-domain": never;
   "pulsarParameters.window.epochNote": never;
-  "pulsarParameters.window.seed": "name";
-  "pulsarParameters.window.seedNone": never;
+  "pulsarParameters.window.shared.name": "name";
+  "pulsarParameters.window.shared.none": never;
+  "pulsarParameters.window.cursorNote": "name" | "position";
+  "pulsarParameters.window.pointerNote": "name" | "position" | "shown";
   "pulsarParameters.help.title": never;
   "pulsarParameters.help.body": never;
   "pulsarParameters.help.note": never;

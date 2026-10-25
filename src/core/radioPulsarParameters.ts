@@ -1,7 +1,8 @@
 // Pulsar Parameters utility: TPlsrDataForm1 (VMT 0x56871c) and its Find dialog TSearchInput1 (VMT 0x5682f0), recovered
-// statically from VIREO 1.504 CLEA_VEO.exe (SHA-256 781bc970…c54c); see docs/RADIO-PULSAR-PARAMETERS.md (PP-01..PP-09,
+// statically from VIREO 1.504 CLEA_VEO.exe (SHA-256 781bc970…c54c); see docs/RADIO-PULSAR-PARAMETERS.md (PP-01..PP-11,
 // WEB-PP-*). Pure state only: no React, file I/O, clock or catalog ownership. The record values are catalog references:
-// nothing here writes a measurement, notebook, session or receiver state.
+// nothing here writes a measurement, notebook, session or receiver state. The shared +0x5f7 buffer is read through the
+// seeds the caller passes; the shared list cursor is mirrored in the window (listCursor, PP-11).
 import {parseDelphiFloat,roundHalfEven,skyCoordsFieldsFor,formatFixed,SKY_COORDS_FIELD_MAX_LENGTH} from './radioAntenna';
 import {formatExponent} from './pulsarRecording';
 import type {PulsarCatalog,PulsarRecord} from './radioPulsarCatalog';
@@ -18,7 +19,8 @@ export const PULSAR_PARAMETERS_CONSTANTS=Object.freeze({
   * 0x569627..0x56963b (electrons/cm³, DnstyEd hint). Its nearest binary64 is 0.03: the 11 dropped significand bits
   * (0x28f) start with 0, so there is no tie or double rounding. */
  defaultDensity:ext(0xf5c28f5c28f5c28fn,0x3ff9),
- /** Extended 0x4000:80000000:00000000 = 2.0 pushed at 0x567fad..0x567fb7 for the picker call in PulsarList1Click. */
+ /** Extended 0x4000:80000000:00000000 = 2.0 pushed at 0x567fad..0x567fb7 for the picker call in PulsarList1Click
+  * (modelled write only: no UI caller, WEB-PP-LIST-03). */
  openLimit:2,
  /** TSearchInput1 stored query ShortString[12] at +0x37c (cl = 0xc at 0x568552 and 0x56862b). */
  queryMaxLength:12,
@@ -58,7 +60,7 @@ export type PulsarFindMode=0|1|2;
 export type PulsarFindMemory=Readonly<{query:string;mode:PulsarFindMode}>;
 /** The open Find dialog: NameEd text and the checked radio button (J00RadBtn checked = 2). */
 export type PulsarFindDraft=Readonly<{text:string;mode:1|2}>;
-/** Local copy of the names the picker put at TRadioLab+0x5f7 (J2000) and +0x5f7+0xd (B1950) at Open. */
+/** The names read from the live TRadioLab+0x5f7 buffer (J2000 at +0, B1950 at +0xd) when its J2000 name is non-empty. */
 export type PulsarSeed=Readonly<{primaryName:string;legacyName:string}>;
 
 export type PulsarSourceField='raHours'|'raMinutes'|'raSeconds'|'decDegrees'|'decMinutes'|'decSeconds'|'period'|'periodDot'|'epoch'|'sky'|'dm'|'width'|'s400'|'s600'|'s1400';
@@ -71,8 +73,14 @@ export type PulsarParametersNotice=Readonly<{kind:'not-found';query:string;mode:
 export type PulsarParametersWindow=Readonly<{
  /** Frozen catalog reference owned by this window for its lifetime. */
  catalog:PulsarCatalog;
- /** Record index: stands for both form+0x45c and the shared list cursor (WEB-PP-OWN-01). */
+ /** form+0x45c, the record pointer the derived routines (Update, Reset) read. */
  index:number;
+ /** The record whose texts the last display 0x568e10 wrote ("Record n of N"). Differs from index only after a Find miss
+  * restored a cursor that the receiver's source association had moved (WEB-PP-FIND-02′). */
+ shownIndex:number;
+ /** WEB-PP-CUR-01 mirror of the catalog owner's shared list cursor ([+0x5cd]+4, position field +0): Next/Prev step it, and
+  * the picker of Receiver Open and of the clock reassociation moves it (movePulsarListCursor). */
+ listCursor:number;
  /** form+0x448 local JD: native Extended (fstp TBYTE 0x568db4/0x569553/0x569620), web binary64 [W] (WEB-PP-NUM-01);
   * null when no clock reading was available (WEB-PP-CLK-01). */
  localJD:number|null;
@@ -87,6 +95,7 @@ export type PulsarParametersWindow=Readonly<{
  distanceText:string;
  derivedIssues:readonly PulsarDerivedIssue[];
  updateEnabled:boolean;
+ /** The live-buffer names the last activation scanned with (WEB-PP-ACT-01); null: no name, so the head. */
  seed:PulsarSeed|null;
  findMemory:PulsarFindMemory;
  find:PulsarFindDraft|null;
@@ -99,7 +108,8 @@ export type PulsarParametersOutcome=
  |'opened'|'reopened'|'modal'|'next'|'previous'|'at-first'|'at-last'
  |'date-edited'|'density-edited'|'field-too-long'|'updated'|'update-disabled'|'date-invalid'|'density-invalid'|'reset'
  |'find-opened'|'find-edited'|'find-too-long'|'find-mode'|'found'|'not-found'|'find-cancelled'|'no-find'
- |'notice-dismissed'|'no-notice'|'exited';
+ |'notice-dismissed'|'no-notice'|'exited'
+ |'cursor-moved'|'cursor-unchanged'|'cursor-ignored';
 export type PulsarParametersTransition=Readonly<{window:PulsarParametersWindow|null;outcome:PulsarParametersOutcome;changed:boolean}>;
 
 // ----------------------------------------------------------------- numeric helpers (WEB-PP-NUM-01, WEB-PP-FMT-01)
@@ -157,8 +167,9 @@ const refreshed=(w:PulsarParametersWindow,localJD:number|null,density:number):Pu
  const d=pulsarDerivedTexts(w.catalog[w.index],localJD,density);
  return {...w,localJD,density,dateText:d.dateText,densityText:d.densityText,periodText:d.periodText,distanceText:d.distanceText,derivedIssues:d.issues};
 };
-/** 0x568e10 for the current index: source texts, both derived routines, then Update SetEnabled(false) at 0x569094. */
-const displayed=(w:PulsarParametersWindow):PulsarParametersWindow=>({...refreshed(w,w.localJD,w.density),source:pulsarSourceTexts(w.catalog[w.index]),updateEnabled:false,boundary:null});
+/** 0x568e10 for the current pointer: source texts, both derived routines, then Update SetEnabled(false) at 0x569094. */
+const displayed=(w:PulsarParametersWindow):PulsarParametersWindow=>({...refreshed(w,w.localJD,w.density),source:pulsarSourceTexts(w.catalog[w.index]),shownIndex:w.index,
+ updateEnabled:false,boundary:null});
 const codePoints=(text:string,max:number)=>Array.from(text).slice(0,max).join('');
 /** Pos 0x40640c as used by the callers (result > 0): literal, case-sensitive substring; an empty needle never matches. */
 export const pulsarNameContains=(name:string,needle:string)=>needle!==''&&name.includes(needle);
@@ -166,38 +177,56 @@ export const pulsarNameContains=(name:string,needle:string)=>needle!==''&&name.i
 function checkCatalog(catalog:PulsarCatalog){if(!Array.isArray(catalog)||catalog.length===0)throw new Error('Pulsar Parameters needs a non-empty catalog');}
 function checkJD(jd:number|null){if(jd!==null&&!Number.isFinite(jd))throw new Error('Invalid local JD');}
 
-/** Copy of the picker hit for the seed (PulsarList1Click 0x567fc8..0x567fd5); null on a miss (0x567fd9 clears the
- * first byte, so Activate and Find see no name). */
+/** Seed of one record's names, as the activation reads them from +0x5f7 after a PulsarList1Click hit (0x567fc8..0x567fd5);
+ * null for no record or an empty J2000 name. The live-buffer form is pulsarSeedFromBuffer (radioPulsarList.ts). */
 export const pulsarSeedFor=(record:PulsarRecord|null):PulsarSeed|null=>
  record===null||record.primaryName===''?null:Object.freeze({primaryName:record.primaryName,legacyName:record.legacyName});
 
-/** WEB-PP-OPEN-01 Open: create the window (FormCreate: Find memory '' / 0) or keep it and its Find memory, then run
- * FormActivate 0x568c4c: with a seed name, scan from the head for the first record whose J2000 name contains it
- * (Pos(sharedName, rec.J2000) > 0 at 0x568ceb), else the head; local JD := seedJD (stands for the date getter 0x487bcc),
- * density := the compiled literal; display. A different catalog starts a fresh window. */
+/** WEB-PP-LIST-01 precheck of the Open refusal order, read before any window change: the window's own Find dialog or box is
+ * modal over it. */
+export const pulsarParametersOpenRefusal=(prev:PulsarParametersWindow|null):'modal'|null=>prev!==null&&isModal(prev)?'modal':null;
+
+/** WEB-PP-OPEN-01/WEB-PP-ACT-01 Open: create the window (FormCreate: Find memory '' / 0) or keep it and its Find memory, then
+ * run FormActivate 0x568c4c with the live buffer's names (the caller reads the receiver session's buffer and writes nothing,
+ * WEB-PP-LIST-03; Receiver Open and the clock reassociation are its only writers): with a name,
+ * Reset and Next over the list for the first record whose J2000 name contains it (Pos(sharedName, rec.J2000) > 0 at
+ * 0x568ceb), else Reset + Next (the head); pointer +0x45c and the shared list cursor := that record; local JD := seedJD
+ * (stands for the date getter 0x487bcc), density := the compiled literal; display. A different catalog starts a fresh window. */
 export function openPulsarParameters(prev:PulsarParametersWindow|null,catalog:PulsarCatalog,seed:PulsarSeed|null,seedJD:number|null):PulsarParametersTransition{
  checkCatalog(catalog);checkJD(seedJD);
- if(prev!==null&&isModal(prev))return keep(prev,'modal');
+ if(pulsarParametersOpenRefusal(prev))return keep(prev,'modal');
  const reuse=prev!==null&&prev.catalog===catalog;
  let index=0;
  if(seed!==null&&seed.primaryName!==''){const hit=catalog.findIndex(r=>pulsarNameContains(r.primaryName,seed.primaryName));if(hit>=0)index=hit;}
- const base:PulsarParametersWindow={catalog,index,localJD:seedJD,density:PULSAR_PARAMETERS_CONSTANTS.defaultDensity,source:pulsarSourceTexts(catalog[index]),
-  dateText:'',densityText:'',periodText:'',distanceText:'',derivedIssues:[],updateEnabled:false,seed,
+ const base:PulsarParametersWindow={catalog,index,shownIndex:index,listCursor:index,localJD:seedJD,density:PULSAR_PARAMETERS_CONSTANTS.defaultDensity,
+  source:pulsarSourceTexts(catalog[index]),dateText:'',densityText:'',periodText:'',distanceText:'',derivedIssues:[],updateEnabled:false,seed,
   findMemory:reuse&&prev!==null?prev.findMemory:Object.freeze({query:'',mode:0}),find:null,notice:null,boundary:null};
  return done(displayed(base),reuse?'reopened':'opened');
 }
 
-/** NextBtnClick 0x569274 / PrevBtnClick 0x5692b4: at the tail/head MessageBeep(0x30) and nothing moves (no wrap);
- * otherwise move and display. */
+/** NextBtnClick 0x569274 / PrevBtnClick 0x5692b4 on the shared list cursor: AtTail/AtHead → MessageBeep(0x30) and nothing
+ * moves (no wrap), even when another record is shown; otherwise step the cursor, pointer := cursor, display. */
 export function nextPulsar(w:PulsarParametersWindow):PulsarParametersTransition{
  if(isModal(w))return keep(w,'modal');
- if(w.index>=w.catalog.length-1)return done({...w,boundary:'last'},'at-last');
- return done(displayed({...w,index:w.index+1}),'next');
+ if(w.listCursor>=w.catalog.length-1)return done({...w,boundary:'last'},'at-last');
+ const c=w.listCursor+1;
+ return done(displayed({...w,index:c,listCursor:c}),'next');
 }
 export function previousPulsar(w:PulsarParametersWindow):PulsarParametersTransition{
  if(isModal(w))return keep(w,'modal');
- if(w.index<=0)return done({...w,boundary:'first'},'at-first');
- return done(displayed({...w,index:w.index-1}),'previous');
+ if(w.listCursor<=0)return done({...w,boundary:'first'},'at-first');
+ const c=w.listCursor-1;
+ return done(displayed({...w,index:c,listCursor:c}),'previous');
+}
+
+/** WEB-PP-CUR-01: the picker 0x562830 of Receiver Open 0x5679d6 or of the clock reassociation 0x56575d ran on the catalog
+ * owner, so the shared cursor now stands at index (pulsarPickerCursor). Accepted while Find or a box is open (the timer
+ * keeps firing under a modal). Nothing is displayed: pointer, shown texts, edits and the boundary status stay. A different
+ * catalog object (unreachable: the catalog is locked while receivers exist) or an index outside it is ignored. */
+export function movePulsarListCursor(w:PulsarParametersWindow,catalog:PulsarCatalog|null,index:number|null):PulsarParametersTransition{
+ if(catalog!==w.catalog||(index!==null&&!(Number.isInteger(index)&&index>=0&&index<w.catalog.length)))return keep(w,'cursor-ignored');
+ if(index===null||index===w.listCursor)return keep(w,'cursor-unchanged');
+ return done({...w,listCursor:index},'cursor-moved');
 }
 
 /** JDEdChange 0x5695ec / DnstyEdChange 0x569670: Update SetEnabled(true) (and Default(true) via 0x43fb98). Edits
@@ -238,16 +267,17 @@ export function resetPulsarDerived(w:PulsarParametersWindow,seedJD:number|null):
  return done({...refreshed(w,seedJD,PULSAR_PARAMETERS_CONSTANTS.defaultDensity),updateEnabled:false,boundary:null},'reset');
 }
 
-/** FindPulsar1Click 0x5692f4 shows the dialog; its FormActivate 0x5685bc runs: an empty stored query takes the mode
- * from env+0x37ce (web: PULSAR_PARAMETERS_WEB_POLICY.webInitialFindMode) and the seed's B1950 (mode ≠ 2) or J2000 name,
- * both written to the stored query/mode; a non-empty stored query and its mode are kept. The edit shows the stored
- * query; J2000 is checked when the mode is 2. */
-export function openPulsarFind(w:PulsarParametersWindow):PulsarParametersTransition{
+/** FindPulsar1Click 0x5692f4 shows the dialog; its FormActivate 0x5685bc runs (WEB-PP-FIND-04): an empty stored query takes
+ * the mode from env+0x37ce (web: PULSAR_PARAMETERS_WEB_POLICY.webInitialFindMode) and, only when the live +0x5f7 J2000
+ * length byte is non-zero (liveSeed not null, any mode), the buffer's B1950 (mode ≠ 2) or J2000 name, both written to the
+ * stored query/mode; a non-empty stored query and its mode are kept. The edit shows the stored query; J2000 is checked
+ * when the mode is 2. The cursor is not saved here: Find saves it after the dialog returns (confirmPulsarFind). */
+export function openPulsarFind(w:PulsarParametersWindow,liveSeed:PulsarSeed|null):PulsarParametersTransition{
  if(isModal(w))return keep(w,'modal');
  let memory=w.findMemory;
  if(memory.query===''){
   const mode=PULSAR_PARAMETERS_WEB_POLICY.webInitialFindMode;
-  const name=w.seed===null?'':codePoints(mode===2?w.seed.primaryName:w.seed.legacyName,PULSAR_PARAMETERS_CONSTANTS.queryMaxLength);
+  const name=liveSeed===null||liveSeed.primaryName===''?'':codePoints(mode===2?liveSeed.primaryName:liveSeed.legacyName,PULSAR_PARAMETERS_CONSTANTS.queryMaxLength);
   memory=Object.freeze({query:name,mode});
  }
  return done({...w,findMemory:memory,boundary:null,find:Object.freeze({text:memory.query,mode:memory.mode===2?2:1})},'find-opened');
@@ -263,16 +293,18 @@ export function choosePulsarFindMode(w:PulsarParametersWindow,mode:1|2):PulsarPa
  return done({...w,find:Object.freeze({...w.find,mode})},'find-mode');
 }
 /** OKBtnClick 0x5684f8: stored query := first 12 characters of the edit (no trim, case fold or prefix), mode := 2 when
- * J2000 is checked, else 1; ModalResult 1. The caller then saves the cursor and scans from the head with
- * Pos(query, mode = 2 ? J2000 : B1950) > 0. A hit is displayed; a miss restores the record (nothing is displayed again,
- * so pending edits stay) and shows the not-found box. */
+ * J2000 is checked, else 1; ModalResult 1. The caller (WEB-PP-FIND-02′) then saves the shared cursor index [list+0] as it
+ * is now (a clock reassociation may have moved it while the dialog was open), Resets and scans with
+ * Pos(query, mode = 2 ? J2000 : B1950) > 0, writing +0x45c at every step. Hit: pointer, cursor and shown record := the hit,
+ * displayed. Miss: +0x45c := GoTo(saved), so pointer and cursor both return to the saved index; nothing is displayed (the
+ * shown texts and pending edits stay, and may now describe another record than the pointer) and the not-found box opens. */
 export function confirmPulsarFind(w:PulsarParametersWindow):PulsarParametersTransition{
  if(w.find===null||w.notice!==null)return keep(w,'no-find');
  const query=codePoints(w.find.text,PULSAR_PARAMETERS_CONSTANTS.queryMaxLength),mode:1|2=w.find.mode===2?2:1;
- const memory=Object.freeze({query,mode}),closed={...w,findMemory:memory,find:null,boundary:null};
+ const saved=w.listCursor,memory=Object.freeze({query,mode}),closed={...w,findMemory:memory,find:null,boundary:null};
  const hit=w.catalog.findIndex(r=>pulsarNameContains(mode===2?r.primaryName:r.legacyName,query));
- if(hit>=0)return done(displayed({...closed,index:hit}),'found');
- return done({...closed,notice:Object.freeze({kind:'not-found',query,mode})},'not-found');
+ if(hit>=0)return done(displayed({...closed,index:hit,listCursor:hit}),'found');
+ return done({...closed,index:saved,listCursor:saved,notice:Object.freeze({kind:'not-found',query,mode})},'not-found');
 }
 /** CnclBtnClick 0x5685b0 only sets ModalResult 2: nothing is committed or scanned. WEB: Escape does the same. */
 export function cancelPulsarFind(w:PulsarParametersWindow):PulsarParametersTransition{

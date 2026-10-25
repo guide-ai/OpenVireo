@@ -1,6 +1,6 @@
 {
   "policy": "OpenVireo-radio-pulsar-parameters-v1",
-  "scope": "Pulsar Parameters reference utility on the #radio-control route: TPlsrDataForm1 (VMT 0x56871c) display, Prev/Next, Update/Reset, Exit and TSearchInput1 (VMT 0x5682f0) Find, over a learner-loaded reference catalog. No receiver, acquisition, beam, noise, timing, measurement, notebook, PLR/DAT/CSV, session or investigation-format change. Does not complete Radio I06/I07/N07/E06 and claims no scientific or original-runtime equivalence.",
+  "scope": "Pulsar Parameters reference utility on the #radio-control route: TPlsrDataForm1 (VMT 0x56871c) display, Prev/Next, Update/Reset, Exit and TSearchInput1 (VMT 0x5682f0) Find, over a learner-loaded reference catalog. R-RX6: its Open is an explicit web reference adaptation that only reads the receiver session's shared +0x5f7 buffer (written only by Receiver Open and the clock reassociation; no picker runs at Open), and the window mirrors the catalog owner's shared list cursor moved by those picker runs. TRadioLab.PulsarList1Click 0x567f80 is modelled as a pure session action with no UI caller; the native PulsarList1 menu item's runtime availability is unproven (pulsarListAvailability). No acquisition, beam, noise, timing, measurement, notebook, PLR/DAT/CSV, receiver-formula or investigation-format change. Does not complete Radio I06/I07/N07/E06 or any inventory capability and claims no scientific or original-runtime equivalence.",
   "artifact": {
     "name": "CLEA_VEO.exe (VIREO 1.504)",
     "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
@@ -52,6 +52,42 @@
       {"file": "shortstring-append-canonical.asm", "range": "0x403c20..0x403c4f", "sha256": "2a5fa9d4e56c8160859bc94c2ae30e42cc4c3a377d01ba712f1dd38bf5d14676", "finding": "ShortString append helper (AL = destination + source length compared with CL; copy clamped to CL − destination length)."}
     ]
   },
+  "rx6Evidence": {
+    "note": "R-RX6 (PP-10, PP-11). SHA-256 values below were verified by the coordinator and supplied to the implement phase; they were not computed by the implementer. No new disassembly, original bytes or execution were used.",
+    "files": [
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024/PULSAR-LIST-ENTRY-OWNER.json", "role": "PulsarList1Click 0x567f80 owned by TRadioLab", "sha256": "55028bae124c281a9de653c2bcdf296b77dee8968524a6c946cfa10187cdea04"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024/pulsar-list-entry-canonical.asm", "range": "0x567f80..0x568023", "role": "PulsarList1Click", "sha256": "1e4f80b67b0eaaa9bdc89f42d384916382f943683682ae7ea3cb31e14c47d925"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024/activate-canonical.asm", "range": "0x568c4c..0x568e0f", "role": "FormActivate: live-buffer seed, cursor scan", "sha256": "39275c6c883940bdd7b76a41bfc3e4c2b50aef5c1f55f12251439378f7aef7c6"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024/next-canonical.asm", "range": "0x569274..0x5692b3", "role": "Next on the shared cursor", "sha256": "f460d44cc5748f405ec9074b53b43d1c66aa9885150610769cdd25cc0ecb590d"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024/previous-canonical.asm", "range": "0x5692b4..0x5692f3", "role": "Prev on the shared cursor", "sha256": "954f78d81ebca195ad4895963e8fb1f7f28b5c4f6362040d771bafc804524ed0"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024/find-canonical.asm", "range": "0x5692f4..0x5694d5", "role": "Find: save index, scan, GoTo restore", "sha256": "96dc350dc309fcb3a9158af24ed650f6d3dcd35cc5b7d86ae9741e6d3ef83581"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-pulsar-parameters-20261024/find-dialog-activate-canonical.asm", "range": "0x5685bc..0x5686b8", "role": "Find FormActivate: J2000 length gate", "sha256": "9be17a8dc44d2440e958097b5311a9f4793e0e726f27de163e08fc2c964c7dad"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-source-20261024/pulsar-select-canonical.asm", "range": "0x562830..0x562949", "role": "picker loops and end cursor", "sha256": "326d1558236841792f118cad0b23a3a387c1fcafa4f16a6d085412e2e3fb63c5"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-source-20261024/clock-source-association-canonical.asm", "role": "clock reassociation: picker call at 0x56575d (limit 5.0)", "sha256": "3e2a109543e277da01d1915fe1817b07de845a25ade8ef822c8717ca7386d9ac"},
+      {"path": "/tmp/clea-static-research/radio-hotlist-20261023/list-cursor.asm", "range": "0x492628..0x4926db", "role": "Reset, Next, Prior, GoTo, tail helper", "sha256": "cd81b4d38085ebf77b03fc2dd36509bccd6fc902b0e25124ce1a67c3e69d7a49"},
+      {"path": "/tmp/clea-static-research/radio-hotlist-20261023/list-predicates.asm", "range": "0x492708..0x492725", "role": "empty, AtHead, AtTail", "sha256": "9bf63bc79a44c8fd1f2bc8a97e78bcce568f281841d0969ccf94fe1cfb9eca86"}
+    ],
+    "notRead": "The excluded metadata, field-role files, G2 receipt and writer-caller listing were not read. The TRADIOLAB DFM PulsarList1 menu item was later decoded by a fresh bounded static proof: see pulsarListAvailability."
+  },
+  "pulsarListAvailability": {
+    "note": "Fresh narrow static availability proof for PulsarList1 (research root /tmp/clea-static-research/radio-rx6-pulsar-link-20261025, PULSAR-LIST-AVAILABILITY-CONTRACTS.json). The five file SHA-256 values were verified by the coordinator and supplied to the implement phase; the resource and decoder values are quoted from PULSAR-LIST-MENU.json. None was computed by the implementer. No original execution, emulation or excluded metadata lineage.",
+    "files": [
+      {"path": "/tmp/clea-static-research/radio-rx6-pulsar-link-20261025/PULSAR-LIST-MENU.json", "role": "bounded DFM decode of the TRADIOLAB resource: File1 > PulsarList1 properties", "sha256": "4eba439dc2f55cf60c83f247db6b7a91375a9108784f1d888a740600064b79f8"},
+      {"path": "/tmp/clea-static-research/radio-rx6-pulsar-link-20261025/PULSAR-LIST-SINGLE-COMPONENT-BINDING.json", "role": "published field TRadioLab+0x46c = PulsarList1", "sha256": "840c968eab9c1c678e6b3e92496aa878a4d6f69618bf942d13667253775867e6"},
+      {"path": "/tmp/clea-static-research/radio-rx6-pulsar-link-20261025/PULSAR-LIST-MENU-SETTERS.json", "role": "0x4548ac TMenuItem.Enabled, 0x4549c8 TMenuItem.Visible", "sha256": "12b9844378c08a29313254c0e7793a4199fd8bea25db2098e23b24b3a9105418"},
+      {"path": "/tmp/clea-static-research/radio-rx6-pulsar-link-20261025/radio-create-activate-bounded.asm", "role": "bounded capture; TRadioLab FormActivate 0x5643fc (RET 0x564c8f): conditional Enabled/Visible := True", "sha256": "1d915b45e5589617eb75fa3fe718b8d0172752fbca567d86cb8d97ed283883b0"},
+      {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-source-20261024/correction-open-main-canonical.asm", "role": "Receiver Open (RET 0x567a8b): conditional Enabled := False", "sha256": "c3df4c2a3e02fdfe19ba8e874aa0eabe935e87906cbd0bbed263c7aa784629e1"}
+    ],
+    "resource": {"identity": [10, "TRADIOLAB", 0], "bytes": 12882, "consumedBytes": 12882, "sha256": "b87302b15835a576b19ccbb63f4e6578824a004965d00a2c9a07f8cf1fb28288"},
+    "decoder": {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/observatory_inventory.py", "sha256": "822a7f18e108a9ecba7f138b362bb8b668a68b203ec941f73e340bbe2016f1f4", "method": "only the Dfm class and helper definitions evaluated; module top level not executed"},
+    "initialDFM": {"parent": "File1", "name": "PulsarList1", "Caption": "Pulsar &List...", "Enabled": false, "Visible": false, "OnClick": "PulsarList1Click"},
+    "publishedField": "TRadioLab+0x46c = PulsarList1",
+    "setters": {"0x4548ac": "TMenuItem.Enabled", "0x4549c8": "TMenuItem.Visible"},
+    "activation": {"entry": "0x5643fc", "firstInitGuard": "Self+0x4d5 == 0; otherwise branch to 0x564bc0", "optionsBase": "[[0x5b59a4]]+0x2e95", "condition": "byte[options+0x941] != 0, i.e. env+0x37d6", "writes": ["0x56459c..0x5645a4 PulsarList1.Enabled := True", "0x5645a9..0x5645b1 PulsarList1.Visible := True"], "finalRET": "0x564c8f"},
+    "receiverOpen": {"condition": "byte[env+0x37d6] != 0", "write": "0x567a6e..0x567a76 PulsarList1.Enabled := False", "finalRET": "0x567a8b"},
+    "interpretation": "The initial DFM state (Enabled = False, Visible = False) is not proof that the item is always hidden: FormActivate enables and shows it when env+0x37d6 is non-zero, and Receiver Open disables it again under the same condition. No native availability is claimed; the web Open is an explicit reference adaptation that only reads the buffer, and PulsarList1Click is modelled internally (overwriteReceiverSourceBuffer) without a UI caller.",
+    "limits": ["env+0x37d6 owner, default and historical value not recovered; no option is invented.", "Whether closing the receiver re-enables the item, VCL event delivery and form lifetime are not established.", "The bounded capture includes data between procedures; only the aligned methods and addresses above are interpreted.", "No native GUI, runtime or x87 equivalence claim."]
+  },
   "resources": {
     "TPLSRDATAFORM1": {"resourceVA": "0x682514", "size": 11648, "sha256": "42e248a8fb12b9d2fc0835e10466d7ff317e29bf5d1a5c440ae0791d50bf9f9b", "use": "raw captions/hints copied as text constants only"},
     "TSEARCHINPUT1": {"resourceVA": "0x692950", "size": 1010, "sha256": "c80e48ad2fa6717e314d11aaad98fef33da09ab9d2e2f8bfc5d6c822476fcf21", "use": "raw captions copied as text constants only"}
@@ -74,20 +110,22 @@
     {"VA": "0x5695e8", "type": "Single", "value": 2400000, "use": "Update date add"},
     {"VA": "0x569198", "type": "Single", "value": 86400, "use": "period days to seconds"},
     {"VA": "0x568dbb..0x568dcf / 0x569627..0x56963b", "type": "Extended", "significand": "0xf5c28f5c28f5c28f", "exponent": "0x3ff9", "binary64": 0.03, "use": "default electron density"},
-    {"VA": "0x567fad..0x567fb7", "type": "Extended", "value": 2.0, "use": "picker limit at Open"}
+    {"VA": "0x567fad..0x567fb7", "type": "Extended", "value": 2.0, "use": "picker limit in PulsarList1Click (modelled, not UI-delivered: the web Open runs no picker)"}
   ],
   "contracts": [
     {"id": "PP-01", "web": ["pulsarSourceTexts"], "evidence": "S"},
     {"id": "PP-02", "web": ["pulsarDerivedPeriod", "pulsarDerivedTexts", "WEB-PP-EPOCH-01"], "evidence": "S"},
     {"id": "PP-03", "web": ["pulsarDerivedDistance", "WEB-PP-NUM-01", "WEB-PP-UPD-02"], "evidence": "S + W rounding policy"},
     {"id": "PP-04", "web": ["updatePulsarDerived", "WEB-PP-UPD-01"], "evidence": "S"},
-    {"id": "PP-05", "web": ["openPulsarParameters", "resetPulsarDerived", "WEB-PP-CLK-01", "WEB-PP-OPEN-02"], "evidence": "S + W clock source"},
+    {"id": "PP-05", "web": ["openPulsarParameters", "resetPulsarDerived", "pulsarSeedFromBuffer", "pulsarParametersOpenRefusal", "receiverBoxRefusal", "WEB-PP-CLK-01", "WEB-PP-OPEN-02", "WEB-PP-LIST-01", "WEB-PP-LIST-02", "WEB-PP-ACT-01"], "evidence": "S + W clock source, read-only reference Open and its gates"},
     {"id": "PP-06", "web": ["editPulsarDate", "editPulsarDensity", "WEB-PP-KEY-01"], "evidence": "S + addendum UPDATE-DEFAULT-SETTER"},
     {"id": "PP-07", "web": ["openPulsarParameters", "nextPulsar", "previousPulsar", "WEB-PP-NAV-01", "WEB-PP-OWN-01"], "evidence": "S"},
     {"id": "PP-08", "web": ["confirmPulsarFind", "WEB-PP-FIND-02"], "evidence": "S + addenda FIND-MISS-LITERALS, FIND-MESSAGE-APPEND-BOUNDS"},
-    {"id": "PP-09", "web": ["openPulsarFind", "confirmPulsarFind", "cancelPulsarFind", "pulsarNameContains", "WEB-PP-FIND-01", "WEB-PP-FIND-03"], "evidence": "S"}
+    {"id": "PP-09", "web": ["openPulsarFind", "confirmPulsarFind", "cancelPulsarFind", "pulsarNameContains", "pulsarSeedFromBuffer", "WEB-PP-FIND-01", "WEB-PP-FIND-03", "WEB-PP-FIND-04"], "evidence": "S"},
+    {"id": "PP-10", "web": ["overwriteReceiverSourceBuffer (modelled, no UI caller)", "overwriteSourceBufferFromPulsarList (unchanged)", "WEB-PP-LIST-03"], "evidence": "S (entry, owner) + S/D availability facts (pulsarListAvailability); write model only, not UI-delivered"},
+    {"id": "PP-11", "web": ["pulsarPickerCursor", "movePulsarListCursor", "nextPulsar", "previousPulsar", "confirmPulsarFind", "WEB-PP-CUR-01", "WEB-PP-FIND-02", "WEB-PP-PRES-02"], "evidence": "S (list helpers, picker loops, handlers); complete only relative to the ported cursor movers"}
   ],
-  "webPolicies": ["WEB-PP-SRC-01", "WEB-PP-SRC-02", "WEB-PP-SRC-03", "WEB-PP-OPEN-01", "WEB-PP-OPEN-02", "WEB-PP-OWN-01", "WEB-PP-CLK-01", "WEB-PP-EPOCH-01", "WEB-PP-UPD-01", "WEB-PP-UPD-02", "WEB-PP-NUM-01", "WEB-PP-FMT-01", "WEB-PP-NAV-01", "WEB-PP-FIND-01", "WEB-PP-FIND-02", "WEB-PP-FIND-03", "WEB-PP-KEY-01", "WEB-PP-EXIT-01", "WEB-PP-PRES-01", "WEB-PP-HELP-01", "WEB-PP-SAVE-01"],
+  "webPolicies": ["WEB-PP-SRC-01", "WEB-PP-SRC-02", "WEB-PP-SRC-03", "WEB-PP-OPEN-01", "WEB-PP-OPEN-02", "WEB-PP-LIST-01", "WEB-PP-LIST-02", "WEB-PP-LIST-03", "WEB-PP-ACT-01", "WEB-PP-CUR-01", "WEB-PP-OWN-01", "WEB-PP-CLK-01", "WEB-PP-EPOCH-01", "WEB-PP-UPD-01", "WEB-PP-UPD-02", "WEB-PP-NUM-01", "WEB-PP-FMT-01", "WEB-PP-NAV-01", "WEB-PP-FIND-01", "WEB-PP-FIND-02", "WEB-PP-FIND-03", "WEB-PP-FIND-04", "WEB-PP-KEY-01", "WEB-PP-EXIT-01", "WEB-PP-PRES-01", "WEB-PP-PRES-02", "WEB-PP-HELP-01", "WEB-PP-SAVE-01"],
   "gaps": [
     {"id": "G1", "text": "[I] Whether VCL re-runs TPlsrDataForm1.FormActivate 0x568c4c on any re-activation of the form: after the modal Find closes (before the caller saves the cursor), after the 0x450100 box, or on returning from another window. It would re-seed, reset JD/density and redisplay. Not proven. Web activates only at Open (WEB-PP-OPEN-02)."},
     {"id": "G2", "text": "Identity, modal activation and event delivery of 0x450100 (message kind dl=1, button word 0x5694f4 = 4, meaning not asserted). The literal text is statically recovered (addenda FIND-MISS-LITERALS, FIND-MESSAGE-APPEND-BOUNDS) but not reproduced: OpenVireo wording is used (WEB-PP-FIND-02)."},
@@ -97,6 +135,7 @@
     {"id": "G6", "text": "Runtime x87 control word at 0x5691ef (compiled default 0x1332 only) and zero/huge-density exception outcomes."},
     {"id": "G7", "text": "Help1Click 0x569690 and the HLP text: not ported; authored web help instead."},
     {"id": "G8", "text": "env+0x37ce identification mode: no owner in the web; the first-open mode 1 (B1950) is an explicit web policy."},
-    {"id": "receiver", "text": "Shared TRadioLab+0x5f7 buffer (overwritten/cleared by PulsarList1Click, aliased by the receiver) and the shared list cursor (also moved by the picker and clock reassociation): not modelled; the window owns a private index and a local seed copy."}
+    {"id": "receiver", "text": "Resolved by R-RX6 within the ported flows: Receiver Open and the clock reassociation write the shared +0x5f7 buffer; Open (activation) and Find read it live and write nothing; the window mirrors the shared list cursor those picker runs move. PulsarList1Click is modelled (overwriteReceiverSourceBuffer) with no UI caller. Open: the runtime availability of the PulsarList1 menu item (G9), the cursor movers 0x567aa5, the excluded Save writer region and the ClocktimerTimer callbacks 0x56588c/0x561e88 (not ported; no move invented), the picker's catalog+0x42 zeroing (unobserved by ported code), and G1 re-activation on focus return."},
+    {"id": "G9", "text": "Runtime availability of File > PulsarList1: the DFM starts it disabled and hidden; FormActivate 0x5643fc enables and shows it and Receiver Open disables it, both only when env+0x37d6 is non-zero. The owner, default and historical value of env+0x37d6, any re-enable at receiver close, VCL event delivery and form lifetime are not established, so PulsarList1Click is not delivered by the web UI and no option value is invented."}
   ]
 }

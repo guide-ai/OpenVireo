@@ -64,8 +64,8 @@ export type RadioTelescopeRouteProps=Readonly<{
  * the panel's explicit radio options scenario (WEB-ALT-03); the horizon limit stays compiled. Before activation, File ▸
  * Set Observation Date/Time, ID (RC-12…RC-17, WEB-DATE-01…04) sets the applied UT from the dialog and stores the typed ID
  * for this window only; nothing reads that ID. The Pulsar Parameters utility (docs/RADIO-PULSAR-PARAMETERS.md) reads a
- * learner-loaded reference catalog, the radio clock scenario at Open/Reset and the antenna pointing at Open; it writes none
- * of them. The panel's Receiver button opens the silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md), which reads the
+ * learner-loaded reference catalog, the radio clock scenario at Open/Reset and, at Open and Find, the receiver session's
+ * shared source buffer; it writes none of them. The panel's Receiver button opens the silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md), which reads the
  * same catalog (locked while receivers exist), the pointing, the radio clock JD and perfNow; it writes none of them. The
  * state is temporary: it is not part of any investigation file.
  */
@@ -158,7 +158,11 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  // The receiver close box and the R-RX4 Record prompts and finish dialogs make the card application-modal behind them (as
  // the date dialog does).
  const receiverBoxPresented=receiverSummary.boxPresented&&active&&!busy;
- const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented,antenna,readClockJD,
+ // R-RX6: Open and Find read the receiver session's shared +0x5f7 buffer live and write nothing; the receiver close box and
+ // Record dialogs refuse Open (WEB-PP-LIST-01..03); the receivers' picker runs move the window's shared list cursor (WEB-PP-CUR-01).
+ const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented,
+  antennaNow:()=>antennaRef.current,dateOpenNow:()=>dateRef.current.dialog!==null,readClockJD,
+  sharedSource:()=>receiverApiRef.current?.sourceBuffer()??null,receiverBoxNow:()=>receiverApiRef.current?.boxRefusal()??null,
   catalogLocked:receiverSummary.hasReceivers,catalogLockedNow:()=>receiverApiRef.current?.hasReceivers()??false});
  // A dialog removed by a suppression must not move focus; read by the view's cleanup after this commit's layout effects.
  const dateSuppressed=useRef(false);
@@ -283,7 +287,8 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   </div>
   <RadioReceiverWorkspace active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented}
    catalogNow={parameters.currentCatalog} pointingNow={()=>antennaRef.current.pointing} readClockJD={readClockJD} perfNow={perfNow}
-   apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary} pulsarData={pulsarData} onOpenPulsarAnalysis={onOpenPulsarAnalysis}/>
+   apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary} pulsarData={pulsarData} onOpenPulsarAnalysis={onOpenPulsarAnalysis}
+   onSourcePicker={parameters.pickerMoved}/>
   {/* .radio-control (box-less) only scopes the shared dialog styles; the layer itself is never inert. */}
   <div className="radio-control" style={{display:'contents'}} data-testid="radio-date-layer" data-modal-pending={datePending} data-modal-presented={datePresented}>
    {datePresented&&dateState.dialog&&<RadioDateDialogView dialog={dateState.dialog} refusal={fieldRefusal} onEdit={editDate} onOk={confirmDate} onCancel={cancelDate}

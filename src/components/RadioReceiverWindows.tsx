@@ -2,7 +2,7 @@ import {useEffect,useId,useLayoutEffect,useMemo,useRef,useState,useSyncExternalS
 import './RadioReceiverWindows.css';
 import type {RadioLabTransition,RadioPointing} from '../core/radioAntenna';
 import type {PulsarCatalog} from '../core/radioPulsarCatalog';
-import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent} from '../core/radioReceiver';
+import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent,RadioSourceBuffer} from '../core/radioReceiver';
 import {
  PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,commitPulsarCapture,pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarHeaderCells,pulsarMemoryRecording,
  releasePulsarCaptureLease,setPulsarCapturePhase,
@@ -18,7 +18,7 @@ import {receiverMarkCode,receiverMarkColumn,receiverMarkMoveReleases,type Receiv
 import {
  RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,answerRecordIdentify,answerRecordPrompt,answerRecordSave,clearReceiverNextMark,closeRecordProperties,completeRecordArming,
  completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,dismissRecordFull,editReceiverSeed,editRecordIdentify,endMarkGesture,markPointerDown,markPointerMove,
- markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,placeReceiverMark,pressRecord,reassociateReceivers,receiverControlAvailability,
+ markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,paintReceiverWindow,placeReceiverMark,pressRecord,reassociateReceivers,receiverBoxRefusal,receiverControlAvailability,
  receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,recordDialogOpen,requestReceiverClose,stepReceiver,stepReceiverMark,tickReceivers,
  toggleReceiverAlignment,toggleReceiverMode,
  type RadioReceiverSession,type ReceiverCanvasLog,type ReceiverControlState,type ReceiverMarkAvailability,type ReceiverMarkLease,type ReceiverRecordArmingResult,
@@ -29,9 +29,12 @@ import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t,type PlainMessageKey} from '../i18n';
 
-/** Host access for the route: open from the panel's Receiver button, the antenna transitions (clock reassociation) and
- * the catalog lock. Set while the workspace is mounted. */
-export type RadioReceiverApi=Readonly<{open:()=>void;antennaTransition:(tr:RadioLabTransition)=>void;hasReceivers:()=>boolean}>;
+/** Host access for the route: open from the panel's Receiver button, the antenna transitions (clock reassociation), the
+ * catalog lock, and two read-only views for Pulsar Parameters: the shared +0x5f7 buffer (sourceBuffer, read live; only
+ * Receiver Open and the clock reassociation write it) and whether the close box or a Record dialog is modal (boxRefusal).
+ * Set while the workspace is mounted. */
+export type RadioReceiverApi=Readonly<{open:()=>void;antennaTransition:(tr:RadioLabTransition)=>void;hasReceivers:()=>boolean;
+ sourceBuffer:()=>RadioSourceBuffer;boxRefusal:()=>'close-box-open'|'record-dialog-open'|null}>;
 export type RadioReceiverSummary=Readonly<{hasReceivers:boolean;seedValid:boolean;boxPending:boolean;boxPresented:boolean}>;
 export const INITIAL_RADIO_RECEIVER_SUMMARY:RadioReceiverSummary=Object.freeze({hasReceivers:false,seedValid:true,boxPending:false,boxPresented:false});
 
@@ -52,6 +55,9 @@ type Props=Readonly<{
  onSummaryChange:(summary:RadioReceiverSummary)=>void;
  /** R-RX4 the App's current pulsar dataset (absent: Record stays disabled) and the No → Pulsar Analysis navigation. */
  pulsarData?:SharedPulsarDataHandle;onOpenPulsarAnalysis?:()=>void;
+ /** WEB-PP-CUR-01: called synchronously after a committed Receiver Open or clock reassociation whose picker ran (a source-hit
+  * or source-miss event), with exactly the catalog and pointing that transition used. */
+ onSourcePicker?:(catalog:PulsarCatalog|null,pointing:RadioPointing)=>void;
 }>;
 
 /** Browser interval host for the receiver Timer1 registration (WEB-RX-CAD-01). */
@@ -121,7 +127,7 @@ function outcomeText(o:ReceiverSessionOutcome):string{
  * session (sessionRef), as the route's stepDate does. Nothing is saved, restored or sent anywhere; no audio is produced.
  */
 export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange,
- pulsarData,onOpenPulsarAnalysis}:Props){
+ pulsarData,onOpenPulsarAnalysis,onSourcePicker}:Props){
  const id=useId();
  const [session,setSession]=useState<RadioReceiverSession>(createRadioReceiverSession);
  const sessionRef=useRef(session);
@@ -129,8 +135,8 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const [focus,setFocus]=useState<FocusTarget|null>(null);
  const serial=useRef(0);
  const requestFocus=(kind:FocusTarget['kind'],slot:number)=>setFocus({kind,slot,serial:++serial.current});
- const latest=useRef({active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis});
- useLayoutEffect(()=>{latest.current={active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis};});
+ const latest=useRef({active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker});
+ useLayoutEffect(()=>{latest.current={active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker};});
  /** R-RX4 host requests, applied synchronously in order to the shared current dataset (WEB-REC-TXN). An 'acquire' is
   * answered at once through completeRecordArming, whose outcome becomes the notice. */
  const applyHost=(requests:readonly ReceiverRecordHostRequest[])=>{
@@ -175,20 +181,27 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const clockNow=()=>({jd:latest.current.readClockJD(),now:latest.current.perfNow()/RADIO_RECEIVER_SESSION_POLICY.msPerDay});
 
  // ---- Host API (the panel's Receiver button and the antenna transitions).
+ /** WEB-PP-CUR-01: a committed transition whose picker 0x562830 ran reports it with the input it used. */
+ const pickerRan=(r:ReceiverSessionTransition,input:Readonly<{catalog:PulsarCatalog|null;pointing:RadioPointing}>)=>{
+  if(r.outcome.kind==='ok'&&r.outcome.events.some(e=>e.kind==='source-hit'||e.kind==='source-miss'))latest.current.onSourcePicker?.(input.catalog,input.pointing);
+ };
  const open=()=>{
-  const r=userAction(null,s=>openReceiverWindow(s,{catalog:latest.current.catalogNow(),pointing:latest.current.pointingNow()}));
-  if(r?.outcome.kind==='ok'){setNotice({slot:0,outcome:r.outcome});requestFocus('heading',0);}
+  const input={catalog:latest.current.catalogNow(),pointing:latest.current.pointingNow()};
+  const r=userAction(null,s=>openReceiverWindow(s,input));
+  if(r?.outcome.kind==='ok'){pickerRan(r,input);setNotice({slot:0,outcome:r.outcome});requestFocus('heading',0);}
  };
  /** WEB-RX-CLK-01: a completed RA-13 tick reassociates with limit 5 from the latest catalog and the tick's pointing. */
  const antennaTransition=(tr:RadioLabTransition)=>{
   if(!completedRadioClockTick(tr)||!receiverSessionOpen(sessionRef.current))return;
-  stepSession(s=>reassociateReceivers(s,{catalog:latest.current.catalogNow(),pointing:tr.state.pointing}));
+  const input={catalog:latest.current.catalogNow(),pointing:tr.state.pointing};
+  pickerRan(stepSession(s=>reassociateReceivers(s,input)),input);
  };
  const apiImpl=useRef({open,antennaTransition});
  useLayoutEffect(()=>{apiImpl.current={open,antennaTransition};});
  useLayoutEffect(()=>{
   apiRef.current=Object.freeze({open:()=>apiImpl.current.open(),antennaTransition:(tr:RadioLabTransition)=>apiImpl.current.antennaTransition(tr),
-   hasReceivers:()=>receiverSessionOpen(sessionRef.current)});
+   hasReceivers:()=>receiverSessionOpen(sessionRef.current),
+   sourceBuffer:()=>sessionRef.current.bank.sourceBuffer,boxRefusal:()=>receiverBoxRefusal(sessionRef.current)});
   return ()=>{apiRef.current=null;};
  },[apiRef]);
 

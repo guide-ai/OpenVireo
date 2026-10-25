@@ -13,7 +13,7 @@ import type {RadioLabTransition,RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import {
  RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,armRecordCapture,clearReceiverMarks,clearRecordByte,closeReceiver,createRadioReceiverBank,endReceiverMarkDrag,
- openMainReceiver,paintReceiver,queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerTick,refreshRecordLabel,stepFrequency,
+ openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerTick,refreshRecordLabel,stepFrequency,
  receiverWindowMoved,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,toggleReceiverAlign,toggleRecordByte,
  type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverResult,type RadioRecordHeader,
 } from './radioReceiver';
@@ -87,7 +87,7 @@ export type ReceiverRecordArmingResult=Readonly<{ok:true;seed:RadioRecordHeader}
 export type ReceiverAction='seed'|'open'|'add'|'mode'|'tick'|'reassociate'|'step'|'paint'|'close'|'dismiss-box'
  |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear'
  |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save'
- |'align'|'move';
+ |'align'|'move'|'pulsar-list';
 export type ReceiverWebRefusal='seed-invalid'|'seed-locked'|'no-catalog'|'close-box-open'
  |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound'
  |'record-dialog-open'|'record-locked'|'record-analysis-busy'|'record-lease-held'|'record-superseded'|'record-input'|'identify-length'|'identify-text'
@@ -209,9 +209,10 @@ function drawEvents(c:Canvases,bank:RadioReceiverBank,events:readonly RadioRecei
  }
  return next;
 }
-/** A recovered box or an R-RX4 Record prompt or finish dialog is modal over the windows. */
-const blockedByBox=(s:RadioReceiverSession,action:ReceiverAction)=>s.closeBox!==null?webRefused(s,action,'close-box-open')
- :recordDialogOpen(s)?webRefused(s,action,'record-dialog-open'):null;
+/** A recovered box or an R-RX4 Record prompt or finish dialog is modal over the windows. Read-only: the reason, or null. */
+export const receiverBoxRefusal=(s:RadioReceiverSession):'close-box-open'|'record-dialog-open'|null=>
+ s.closeBox!==null?'close-box-open':recordDialogOpen(s)?'record-dialog-open':null;
+const blockedByBox=(s:RadioReceiverSession,action:ReceiverAction)=>{const reason=receiverBoxRefusal(s);return reason===null?null:webRefused(s,action,reason);};
 export const recordDialogOpen=(s:RadioReceiverSession)=>s.record.prompt!==null||s.record.finish!==null;
 /** WEB-MARK-CANCEL: the session without its lease; the origin's drag flag is cleared with no attempt, no rollback and no
  * invented final column. Used before Open/activate, Add, Mode, Close, keyboard placement and Clear. */
@@ -298,6 +299,23 @@ export function reassociateReceivers(s:RadioReceiverSession,input:ReceiverSource
  const r=reassociateReceiverOnClock(s.bank,input);
  if(!r.ok)return refused(s,'reassociate',r.error);
  return commit(s,'reassociate',r.events,r.bank);
+}
+
+/**
+ * WEB-PP-LIST-03 modelled TRadioLab.PulsarList1Click 0x567f80, with no UI caller: the native menu item's runtime availability
+ * is unproven (docs/RADIO-PULSAR-PARAMETERS.md, PulsarList1 availability), and the Pulsar Parameters Open only reads the buffer.
+ * The existing overwriteSourceBufferFromPulsarList (picker limit 2): a hit copies the record into +0x5f7, a miss clears its
+ * J2000 name. No receiver field, pointer, offset, refresh, paint, title, trace, mark or lease, Record byte, arrangement or
+ * seed changes, and the persistent tick error stays; a later tick may then run the existing name coupling. Admitted with or
+ * without receivers and while receiving, armed, capturing or with a stop pending; the close box and the Record prompts and
+ * finish dialogs refuse it atomically (they are modal over the windows). A mark lease is not ended (no withoutLease).
+ */
+export function overwriteReceiverSourceBuffer(s:RadioReceiverSession,input:ReceiverSourceNow):ReceiverSessionTransition{
+ const box=blockedByBox(s,'pulsar-list');if(box)return box;
+ if(input.catalog===null)return webRefused(s,'pulsar-list','no-catalog');
+ const r=overwriteSourceBufferFromPulsarList(s.bank,input);
+ if(!r.ok)return refused(s,'pulsar-list',r.error);
+ return commit(s,'pulsar-list',r.events,r.bank);
 }
 
 /** Freq MHz, Freq Incr., Vert. Gain and Horz. Secs spin buttons. */

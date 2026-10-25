@@ -106,7 +106,8 @@ test('admission, read-only window, Prev/Next ends, Update partial store and Rese
   .toEqual({b1950:'B0557+10',j2000:'J0600+1000',raHours:'6',raMinutes:'0',raSeconds:'0.00',decDegrees:'10',decMinutes:'0',decSeconds:'0.0',period:'0.500000000000',
    periodDot:'1.0000E-15',epoch:'50000.0000',sky:'28.2',dm:'30.00',width:'12.5',s400:'14.0',s600:'9.0',s1400:'3.0',date:'',density:'0.030',derivedPeriod:'',distance:'1000'});
  for(const name of ['j2000','period','epoch','dm','derivedPeriod','distance'])await expect(field(page,name)).toHaveAttribute('readonly','');
- await expect(id(page,'pulsar-params-update')).toBeDisabled();await expect(id(page,'pulsar-params-seed')).toHaveText('No seeded name: the first record was shown at Open.');
+ await expect(id(page,'pulsar-params-update')).toBeDisabled();await expect(id(page,'pulsar-params-seed')).toHaveAttribute('data-seed','none');
+ await expect(id(page,'pulsar-params-seed')).toHaveText('At Open, the receivers’ shared source name was empty, so the window opened at the first record. Open did not change it.');
  await expect(id(page,'pulsar-params-derived-issues')).toContainText('No radio clock reading');
  // The file chooser is refused while the window is open; the catalog stays.
  await expect(id(page,'pulsar-ref-load')).toBeDisabled();await choose(page,'other.dat',OTHER);
@@ -154,9 +155,15 @@ test('admission, read-only window, Prev/Next ends, Update partial store and Rese
  await expect(id(page,'pulsar-params-window')).toHaveCount(0);await expect(id(page,'pulsar-params-open')).toBeDisabled();
 });
 
-test('Find: pointing seed, B1950/J2000 substring, miss keeps the record, Cancel and Escape commit nothing, retained query; application-modal; Enter/Escape act once',async({page})=>{
- await openRadio(page);await switchOn(page);await loadCatalog(page);await openWindow(page);
- await expect(field(page,'j2000')).toHaveValue('J0001+3826');await expect(id(page,'pulsar-params-seed')).toHaveText('Seeded by the antenna pointing: J0001+3826.');
+test('Find: shared-name seed, B1950/J2000 substring, miss keeps the record, Cancel and Escape commit nothing, retained query; application-modal; Enter/Escape act once',async({page})=>{
+ await openRadio(page);await switchOn(page);
+ await id(page,'antenna-tracking').click();await expect(id(page,'antenna-tracking-state')).toHaveText('Tracking on');
+ await loadCatalog(page);
+ // Receiver Open (the reachable writer) associates J0001+3826 at the first pointing; Open then reads that shared name.
+ await id(page,'antenna-receiver-button').click();await expect(id(page,'receiver-card-0')).toBeVisible();await expect(id(page,'receiver-heading-0')).toBeFocused();
+ await openWindow(page);
+ await expect(field(page,'j2000')).toHaveValue('J0001+3826');await expect(id(page,'pulsar-params-seed')).toHaveAttribute('data-seed','name');
+ await expect(id(page,'pulsar-params-seed')).toHaveText('At Open, the receivers’ shared source name was J0001+3826: the window opened at the first record whose J2000 name contains it, or at the first record if none does. Open did not change that name.');
  // First open: B1950 checked and the seed's B1950 name, selected.
  await id(page,'pulsar-params-find').click();await expect(findDialog(page)).toBeVisible();await hostHeld(page);
  await expect(id(page,'pulsar-find-query')).toBeFocused();await expect(id(page,'pulsar-find-query')).toHaveValue('B2358+38');
@@ -193,7 +200,7 @@ test('Find: pointing seed, B1950/J2000 substring, miss keeps the record, Cancel 
  // Over-long Find edits are refused, not truncated.
  await id(page,'pulsar-params-find').click();await id(page,'pulsar-find-query').fill('x'.repeat(65));
  await expect(id(page,'pulsar-find-refusal')).toContainText('refused');await expect(id(page,'pulsar-find-query')).toHaveValue('2048');await page.keyboard.press('Escape');
- // Reopen keeps the query; Exit forgets it: the next window seeds from the pointing again.
+ // Reopen keeps the query; Exit forgets it: the next window seeds from the shared name again.
  await id(page,'pulsar-params-open').click();await expect(field(page,'j2000')).toHaveValue('J0001+3826');
  await id(page,'pulsar-params-find').click();await expect(id(page,'pulsar-find-query')).toHaveValue('2048');await page.keyboard.press('Escape');
  await id(page,'pulsar-params-exit').click();await openWindow(page);
