@@ -25,13 +25,18 @@ import {
   pulsarReviewEditCancel, pulsarReviewEditConfirm, pulsarReviewEditDraft, pulsarReviewEditSupport, pulsarReviewEditView, pulsarReviewRequestEdit,
   type PulsarEditorField, type PulsarReviewEditView,
 } from '../core/pulsarReviewEdit';
+import {
+  RESULTS_EXPORT_FIELDS, RESULTS_EXPORT_FILE_NAME, RESULTS_EXPORT_LIMITS, RESULTS_EXPORT_MEDIA_TYPE, resultsExportDownloadFailed, resultsExportEdit, resultsExportFieldProblem, resultsExportOpen,
+  resultsExportRequest, resultsExportValue, type ResultsExportField, type ResultsExportFieldProblem, type ResultsExportSession,
+} from '../core/pulsarResultsExport';
+import type { SavedRowField } from '../core/pulsarSavedRows';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
- * panel is inert, an in-flight read is cancelled, a held pan stops and an open record, clear or Review
- * dialog closes (its session, including Review's staged working copy, is kept). The loaded bytes and the
- * confirmed measurement list are kept.
+ * panel is inert, an in-flight read is cancelled, a held pan stops and an open record, clear, Review or export
+ * dialog closes (its session, including Review's staged working copy and the export draft, is kept). The loaded
+ * bytes and the confirmed measurement list are kept.
  * A host that hides the panel (CSS, an `inert` ancestor or similar) must pass `active={false}` for as long
  * as it is hidden: the panel does not observe ancestor styles or attributes, so reads, pan timers and
  * dialogs follow `active`, not visibility.
@@ -64,6 +69,22 @@ const EDIT_FIELD_LABEL: Readonly<Record<PulsarEditorField, PulsarMessageKey>> = 
   object: 'pulsar.review.object', frequency: 'pulsar.review.frequency', gain: 'pulsar.review.gain', reference: 'pulsar.review.reference', vertical: 'pulsar.review.vertical',
   horizontal: 'pulsar.review.horizontal', start: 'pulsar.review.start', comment: 'pulsar.review.comment', tail: 'pulsar.reviewEdit.tail',
 };
+/** R-RX10 export dialog: field labels and help, and the Review column label that names a refused row field. */
+const EXPORT_FIELD_LABEL: Readonly<Record<ResultsExportField, PulsarMessageKey>> = {
+  date: 'pulsar.export.field.date', time: 'pulsar.export.field.time', table: 'pulsar.export.field.table',
+  name1: 'pulsar.export.field.name1', name2: 'pulsar.export.field.name2', name3: 'pulsar.export.field.name3', name4: 'pulsar.export.field.name4',
+};
+const EXPORT_FIELD_HELP: Readonly<Record<ResultsExportField, PulsarMessageKey>> = {
+  date: 'pulsar.export.help.dateTime', time: 'pulsar.export.help.dateTime', table: 'pulsar.export.help.table',
+  name1: 'pulsar.export.help.name', name2: 'pulsar.export.help.name', name3: 'pulsar.export.help.name', name4: 'pulsar.export.help.name',
+};
+const EXPORT_ROW_FIELD_LABEL: Readonly<Record<SavedRowField, PulsarMessageKey>> = {
+  object: 'pulsar.review.object', frequency: 'pulsar.review.frequency', gain: 'pulsar.review.gain', reference: 'pulsar.review.reference', vertical: 'pulsar.review.vertical',
+  horizontal: 'pulsar.review.horizontal', start: 'pulsar.review.start', comment: 'pulsar.review.comment', points: 'pulsar.review.points', intervalMs: 'pulsar.review.interval',
+  aperture: 'pulsar.review.aperture', file: 'pulsar.review.file',
+};
+/** While the export dialog is open every core action is refused unchanged, as behind the other modal dialogs ('blocked-modal'). */
+const blockedByExport = (s: PulsarAnalysisState): PulsarTransition => Object.freeze({ state: s, outcome: 'blocked-modal', changed: false, placed: false, evidence: Object.freeze([]) });
 const clampInt = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(v)));
 /**
  * WEB keyboard policy, scoped to this component and its descendant dialogs: ignore Enter keydowns marked
@@ -87,7 +108,12 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const [adoptedGeneration, setAdoptedGeneration] = useState(0), adopted = useRef(0);
   const adopt = (generation: number) => { adopted.current = generation; setAdoptedGeneration(generation); };
   const [digest, setDigest] = useState<Readonly<{ recording: PlrRecording; sha256: string }> | null>(null);
-  const [reading, setReading] = useState<string | null>(null);
+  // The pending read is mirrored in a ref so the export opener checks it synchronously.
+  const [reading, setReadingState] = useState<string | null>(null), readingRef = useRef<string | null>(null);
+  const setReading = (name: string | null) => { readingRef.current = name; setReadingState(name); };
+  // R-RX10 export dialog session (src/core/pulsarResultsExport.ts), mirrored in a ref so every guard reads the latest session.
+  const [exportSession, setExportSession] = useState<ResultsExportSession | null>(null), exportRef = useRef<ResultsExportSession | null>(null);
+  const setExport = (next: ResultsExportSession | null) => { exportRef.current = next; setExportSession(next); };
   const [rejection, setRejection] = useState<string | null>(null);
   const [status, setStatus] = useState('');
   const [primaryAs, setPrimaryAs] = useState<'left' | 'right'>('left');
@@ -103,7 +129,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // Transitions run on the latest committed state, so rapid pointer events are never applied to a stale copy.
   // Which outcome writes the status is the core's pulsarAnnouncement policy.
   const act: Act = fn => {
-    const tr = fn(current.current);
+    const tr = exportRef.current ? blockedByExport(current.current) : fn(current.current);
     if (tr.changed) { current.current = tr.state; setS(tr.state); }
     const announced = pulsarAnnouncement(statusOutcome.current, tr);
     if (announced) say(t(`pulsar.outcome.${announced}` as PulsarMessageKey), announced);
@@ -111,9 +137,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   };
   const actRef = useRef(act);
   useLayoutEffect(() => { actRef.current = act; });
-  const rec = s.recording, modal = pulsarModalOpen(s);
+  // The export dialog is a modal session too: it makes the main region inert, holds pan and newer-data adoption, and is
+  // reported to the shared dataset, so receiver arming is refused while it is open (also on a hidden route).
+  const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null;
   // WEB pending-read gate (the native load is synchronous): while a chosen file is being read, its contents or
-  // its SHA-256, no control opens a modal (Record, Review, Clear). A modal makes the finished read's load be refused,
+  // its SHA-256, no control opens a modal (Record, Review, Clear, Export). A modal makes the finished read's load be refused,
   // which would drop the chosen file. The read completes, or the learner cancels it; a cancel or read error lifts the gate.
   // Each opener otherwise keeps its own enabled state.
   const readPending = reading !== null;
@@ -242,6 +270,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     const grant = pick.current; pick.current = null;
     const picked = grant !== null && grant === shared.current().generation;
     if (!file) { say(t('pulsar.status.pickerCancelled')); return; }
+    // R-RX10: a change delivered while the export dialog is open is refused unread, so nothing reaches the shared dataset.
+    if (exportRef.current) { say(t('pulsar.export.fileRefused')); return; }
     // WEB-REC-TXN defence in depth: Load is disabled under a capture lease; a change delivered anyway is refused unread.
     if (shared.current().lease) { setRejection(`${t('pulsar.reject.title', { name: file.name })} ${t('pulsar.reject.capture-lease')}`); return; }
     if (!picked && promptNeeded()) { say(t('pulsar.status.loadPromptFirst')); return; }
@@ -264,8 +294,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (token !== epoch.current || !activeRef.current) return late();
       setReading(null);
       const owner = document.activeElement;
-      // A modal session refuses the load as before ('blocked-modal'); the dataset is not changed then.
-      if (pulsarModalOpen(current.current)) { act(st => pulsarLoad(st, admission.recording)); return; }
+      // A modal session (the export dialog included) refuses the load as before ('blocked-modal'); the dataset is not changed then.
+      if (pulsarModalOpen(current.current) || exportRef.current) { act(st => pulsarLoad(st, admission.recording)); return; }
       const committed = shared.update(d => importPulsarRecording(d, admission.recording, generation));
       if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
       adopt(committed.doc.generation);
@@ -311,10 +341,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // it is active again. Review's inner question is a section of the same dialog, with the list and buttons
   // inert while it is open. No VCL parity is claimed.
   const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null), reviewDialog = useRef<HTMLDialogElement>(null);
-  const loadDialog = useRef<HTMLDialogElement>(null);
+  const loadDialog = useRef<HTMLDialogElement>(null), exportDialog = useRef<HTMLDialogElement>(null), exportFirst = useRef<HTMLInputElement>(null), exportButton = useRef<HTMLButtonElement>(null);
   const ownClose = useRef(new WeakSet<HTMLDialogElement>());
   const [syncModal] = useState(() => () => {
-    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current;
+    // The export dialog never coexists with the others: it opens only when none is open, and blocks every core action.
+    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current ?? exportDialog.current;
     if (!el) return;
     if (!activeRef.current) { if (el.open) { ownClose.current.add(el); el.close(); } return; }
     if (el.open) return;
@@ -324,12 +355,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     try { el.showModal(); } catch { return; }
     // Review: the open question's default button, else the editor's comment, else the selected row, else Cancel (an empty working copy).
     const review = () => reviewPromptDefault.current ?? reviewEditComment.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
-    (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : el === loadDialog.current ? loadDefault.current : review())?.focus();
+    (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : el === loadDialog.current ? loadDefault.current
+      : el === exportDialog.current ? exportFirst.current : review())?.focus();
   });
   useLayoutEffect(() => { syncModal(); });
   useEffect(() => {
     // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
-    const closed = (e: Event) => { if (e.target !== recordDialog.current && e.target !== clearDialog.current && e.target !== reviewDialog.current && e.target !== loadDialog.current) syncModal(); };
+    const own = [recordDialog, clearDialog, reviewDialog, loadDialog, exportDialog];
+    const closed = (e: Event) => { if (!own.some(d => e.target === d.current)) syncModal(); };
     if (!modal || !active) return;
     document.addEventListener('close', closed, true);
     // Conditional rendering can remove an open modal without a close event. Observe only
@@ -382,7 +415,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     },
   });
   function download() {
-    if (!fileRec) return;
+    if (!fileRec || exportRef.current) return;
     try {
       const url = URL.createObjectURL(new Blob([fileRec.bytes], { type: 'application/octet-stream' }));
       const a = document.createElement('a');
@@ -405,6 +438,94 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (!support.supported && support.field)
       say(`${t('pulsar.outcome.review-edit-unsupported-length')} ${t('pulsar.reviewEdit.lengthDetail', { field: t(EDIT_FIELD_LABEL[support.field]), length: support.length ?? '', capacity: support.capacity ?? '' })}`, tr.outcome);
   };
+
+  // R-RX10 export of the confirmed list (WEB-NWE-01..05). Every guard reads refs when the action runs, so a script action
+  // in the same task as another change sees that change. Nothing here touches the analysis state, the list, its saved flag,
+  // pending readings, cursors, comments, Review, the shared dataset or any storage.
+  const exportOpenable = () => {
+    const panel = root.current, doc = shared.current(), st = current.current;
+    return activeRef.current && !!panel && panel.getClientRects().length > 0 && !panel.parentElement?.closest('[inert]') && document.querySelector('dialog:modal') === null
+      && readingRef.current === null && !pulsarModalOpen(st) && exportRef.current === null && st.list.length > 0 && !st.leftDrag && !st.rightDrag
+      && doc.lease === null && doc.generation === adopted.current;
+  };
+  const openExport = () => {
+    if (exportRef.current) return;
+    if (!exportOpenable()) { say(t('pulsar.export.unavailable')); return; }
+    setExport(resultsExportOpen(current.current.list, adopted.current));
+  };
+  // Another native modal dialog (a host one) owns focus: a stale script action on this dialog does nothing, and the
+  // session, its draft and the focus owner stay as they are. Checked when each export action runs, not only at render.
+  const exportForeignModal = () => [...document.querySelectorAll('dialog:modal')].some(d => d !== exportDialog.current);
+  // WEB: a download request in progress. It is claimed before any browser call (Blob URL, link click), so a synchronous
+  // reentrant Download, edit or Cancel from inside that call does nothing and the in-flight snapshot is kept.
+  const exportBusy = useRef(false);
+  const editExport = (field: ResultsExportField, value: string) => {
+    const session = exportRef.current;
+    if (!session || exportBusy.current || exportForeignModal()) return;
+    const next = resultsExportEdit(session, field, value);
+    if (next !== session) setExport(next);
+  };
+  const closeExport = () => {
+    if (!exportRef.current || exportBusy.current || exportForeignModal()) return;
+    setExport(null);
+    focusAfterModal.current = exportButton.current;
+    say(t('pulsar.export.cancelled'));
+  };
+  /**
+   * Download. Only while the dialog is presented (a hidden route closes it, and a click then does nothing). The snapshot
+   * must still be the live list and dataset generation, and no other native modal may own focus. A requested download
+   * ends the session at once, so a second request in the same task finds none; a reentrant request from inside the
+   * browser calls finds the in-flight claim and does nothing. A browser error releases the claim and keeps the session
+   * and its draft for one new request.
+   */
+  const requestExport = () => {
+    const session = exportRef.current, dialogEl = exportDialog.current;
+    if (!session || exportBusy.current || !activeRef.current || !dialogEl?.open || exportForeignModal()) return;
+    const doc = shared.current();
+    const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current);
+    const r = resultsExportRequest(session, { list: current.current.list, generation: doc.generation, ready });
+    if (r.kind === 'refused') { setExport(r.session); return; }
+    exportBusy.current = true;
+    let url: string | null = null, a: HTMLAnchorElement | null = null, failed = false;
+    try {
+      url = URL.createObjectURL(new Blob([r.bytes], { type: RESULTS_EXPORT_MEDIA_TYPE }));
+      a = document.createElement('a');
+      a.href = url; a.download = RESULTS_EXPORT_FILE_NAME; a.rel = 'noopener';
+      // Inside the open dialog: the rest of the page is inert while it is shown.
+      dialogEl.append(a); a.click();
+    } catch {
+      failed = true;
+    } finally {
+      a?.remove();
+      exportBusy.current = false;
+    }
+    if (failed) {
+      if (url !== null) { const owned = url; try { URL.revokeObjectURL(owned); } catch { /* nothing else to release */ } }
+      setExport(resultsExportDownloadFailed(session));
+      return;
+    }
+    const issued = url as string;
+    setTimeout(() => URL.revokeObjectURL(issued), 1000);
+    setExport(null);
+    focusAfterModal.current = exportButton.current;
+    say(t('pulsar.export.requested', { name: RESULTS_EXPORT_FILE_NAME, count: r.rowCount }));
+  };
+  const exportProblemText = (p: ResultsExportFieldProblem) => t(`pulsar.export.problem.${p.code}` as PulsarMessageKey, { position: p.position ?? '', length: p.length ?? '', max: p.max ?? '' });
+  const exportRefusalText = (session: ResultsExportSession): string => {
+    const r = session.refusal;
+    if (!r) return '';
+    if (r.code === 'row') {
+      const p = r.problem;
+      const reason = p.code === 'row-field' && p.field ? t('pulsar.export.row.row-field', { field: t(EXPORT_ROW_FIELD_LABEL[p.field]) }) : t(`pulsar.export.row.${p.code}` as PulsarMessageKey);
+      return t('pulsar.export.row', { seq: session.list[p.ordinal]?.sequence ?? p.ordinal + 1, reason });
+    }
+    if (r.code === 'list') {
+      const p = r.problem;
+      return t(`pulsar.export.list.${p.code}` as PulsarMessageKey, { count: 'count' in p ? p.count : '', max: 'max' in p ? p.max : '', bytes: 'bytes' in p ? p.bytes : '' });
+    }
+    return t(`pulsar.export.refusal.${r.code}` as PulsarMessageKey);
+  };
+  const exportDisabled = !active || readPending || modal || s.list.length === 0 || s.leftDrag || s.rightDrag || leased || newer;
 
   return (
     <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis" onKeyDownCapture={captureRepeatedEnter}>
@@ -510,13 +631,15 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
             <section className="plr-results" aria-labelledby={`${idPrefix}results`}>
               <h3 id={`${idPrefix}results`}>{t('pulsar.results.heading')}</h3>
               <div className="plr-row">
-                {/* The three modal openers share the pending-read gate. */}
+                {/* The modal openers share the pending-read gate. */}
                 <button type="button" ref={recordButton} onClick={() => act(st => pulsarBeginRecord(st))} disabled={!s.recordEnabled || readPending} data-testid="pulsar-record">{t('pulsar.results.record')}</button>
                 <button type="button" ref={reviewButton} onClick={() => act(pulsarReviewOpen)} disabled={!s.reviewEnabled || readPending} aria-haspopup="dialog" data-testid="pulsar-review">{t('pulsar.results.review')}</button>
                 <button type="button" ref={clearButton} onClick={() => act(st => pulsarRequestClear(st))} disabled={readPending} data-testid="pulsar-clear">{t('pulsar.results.clear')}</button>
                 <button type="button" disabled aria-describedby={`${idPrefix}save-gated`} data-testid="pulsar-save">{t('pulsar.results.save')}</button>
+                <button type="button" ref={exportButton} onClick={openExport} disabled={exportDisabled} aria-haspopup="dialog" aria-describedby={`${idPrefix}export-note`} data-testid="pulsar-export">{t('pulsar.export.open')}</button>
               </div>
               <p className="plr-help" id={`${idPrefix}save-gated`}>{t('pulsar.results.saveGated')}</p>
+              <p className="plr-help" id={`${idPrefix}export-note`} data-testid="pulsar-export-note">{t('pulsar.export.note')}</p>
               <p className="plr-warning" data-testid="pulsar-persistence">{t('pulsar.results.persistence')}</p>
               <p data-testid="pulsar-count">{t('pulsar.results.count', { count: s.list.length })}</p>
             </section>
@@ -583,6 +706,45 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
           <Review session={s.reviewSession} editor={pulsarReviewEditView(s)} t={t} idPrefix={idPrefix} act={act} finish={finishReview} requestEdit={requestEdit}
             refs={{ edit: reviewEdit, remove: reviewDelete, cancel: reviewCancel, promptDefault: reviewPromptDefault, editComment: reviewEditComment }} />
           <p role="status" className="plr-status">{status}</p>
+        </dialog>
+      )}
+      {exportSession && (
+        <dialog ref={exportDialog} aria-labelledby={`${idPrefix}export`} aria-describedby={`${idPrefix}export-scope`} className="plr-modal plr-export" data-testid="pulsar-export-dialog"
+          {...dialogEvents(closeExport)}>
+          <h3 id={`${idPrefix}export`}>{t('pulsar.export.heading')}</h3>
+          <p className="plr-help" id={`${idPrefix}export-scope`} data-testid="pulsar-export-scope">{t('pulsar.export.scope', { count: exportSession.list.length })}</p>
+          <p className="plr-help" data-testid="pulsar-export-consequence">{t('pulsar.export.consequence')}</p>
+          <p className="plr-help">{t('pulsar.export.format')}</p>
+          <div className="plr-export-fields">
+            {RESULTS_EXPORT_FIELDS.map(field => {
+              const value = resultsExportValue(exportSession.draft, field), over = exportSession.oversize.find(o => o.field === field);
+              // An empty required field is marked after the first download request; any other problem as soon as it is typed.
+              const found = resultsExportFieldProblem(exportSession.draft, field);
+              const problem = found && (exportSession.attempted || found.code !== 'required') ? found : null;
+              const inputId = `${idPrefix}export-${field}`, helpId = `${inputId}-help`, problemId = `${inputId}-problem`, invalid = !!over || !!problem;
+              return (
+                <div key={field} className="plr-export-field">
+                  <label htmlFor={inputId}>{t(EXPORT_FIELD_LABEL[field])}</label>
+                  <input id={inputId} ref={field === 'date' ? exportFirst : undefined} value={value} autoComplete="off" spellCheck={false}
+                    aria-invalid={invalid} aria-describedby={invalid ? `${problemId} ${helpId}` : helpId}
+                    onChange={e => editExport(field, e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); requestExport(); } }} data-testid={`pulsar-export-${field}`} />
+                  <span className="plr-help" id={helpId}>{t(EXPORT_FIELD_HELP[field])}</span>
+                  {invalid && (
+                    <span className="plr-export-problem" id={problemId} data-testid={`pulsar-export-problem-${field}`}>
+                      {over ? t('pulsar.export.problem.oversize', { length: over.length, max: RESULTS_EXPORT_LIMITS.maxDraft }) : problem && exportProblemText(problem)}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {exportSession.refusal && <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-export-alert" data-code={exportSession.refusal.code}>{exportRefusalText(exportSession)}</p>}
+          {exportSession.failure && <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-export-failure">{t('pulsar.export.failure')}</p>}
+          <div className="plr-row">
+            <button type="button" onClick={requestExport} data-testid="pulsar-export-download">{t('pulsar.export.download', { name: RESULTS_EXPORT_FILE_NAME })}</button>
+            <button type="button" onClick={closeExport} data-testid="pulsar-export-cancel">{t('pulsar.export.cancel')}</button>
+          </div>
         </dialog>
       )}
     </section>

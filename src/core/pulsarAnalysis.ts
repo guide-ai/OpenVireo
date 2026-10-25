@@ -74,12 +74,14 @@ export type PulsarEntryFields = Readonly<{
 /**
  * One appended measurement line (0x570b3c). `fields` is the structured record that Review shows.
  * `nativeLineCandidate` is an opaque internal candidate built from the decoded delimiter literals
- * 0x570f28 '"', 0x570f2c ',', 0x570f38 ',', 0x570f48 '"",', 0x570f54 '"'. It is not a validatable or
- * exportable native CSV: names are wrapped in '"' without escaping, as the literals suggest, so an admitted
+ * 0x570f28 '"', 0x570f2c ',', 0x570f38 ',', 0x570f48 '"",', 0x570f54 '"'. It is not by itself a validated
+ * native CSV line: names are wrapped in '"' without escaping, as the literals suggest, so an admitted
  * object or file name containing an unescaped '"' can make its field boundaries ambiguous;
- * a comma inside a fully quoted field alone is not evidence of ambiguity. Only the Review comment editor
- * reads it, through the bounded round-trip predicate of pulsarReviewEdit.ts; CSV save 0x56feac is gated,
- * and number text is not x87 parity.
+ * a comma inside a fully quoted field alone is not evidence of ambiguity. Two readers use it: the Review
+ * comment editor, through the bounded round-trip predicate of pulsarReviewEdit.ts, and the WEB results export
+ * (pulsarResultsExport.ts), which copies it verbatim only when the strict saved-rows profile admits it and it
+ * agrees with `fields`, and refuses it otherwise. The native CSV save 0x56feac stays gated, and number text is
+ * not x87 parity.
  */
 export type PulsarMeasurementEntry = Readonly<{ sequence: number; panel: PulsarPanel; fields: PulsarEntryFields; nativeLineCandidate: string }>;
 export type PulsarRecordSession = Readonly<{ queue: readonly PulsarPanel[]; position: number; draft: string }>;
@@ -529,9 +531,10 @@ export function pulsarRecordDialog(s: PulsarAnalysisState): PulsarRecordDialog |
   });
 }
 /**
- * Opaque candidate (see PulsarMeasurementEntry): names are not escaped, so it is not a validatable or exportable CSV
- * line. Only the Review comment editor parses it, through the bounded round-trip predicate of pulsarReviewEdit.ts,
- * which keeps a duplicate of this template as a self-consistency guard. No native CSV writer or export uses it.
+ * Opaque candidate (see PulsarMeasurementEntry): names are not escaped, so it is not by itself a validated CSV
+ * line. The Review comment editor parses it through the bounded round-trip predicate of pulsarReviewEdit.ts,
+ * which keeps a duplicate of this template as a self-consistency guard. The WEB results export copies it only when
+ * the strict profile and the field agreement of pulsarResultsExport.ts accept it. No native CSV writer uses it.
  */
 const lineCandidate = (f: PulsarEntryFields) =>
   `"${f.object}",${f.frequency},${f.gain},` + [f.reference, f.vertical, f.horizontal].map(v => v === null ? '"",' : v + ',').join('') +

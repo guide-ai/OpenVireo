@@ -27,7 +27,9 @@
  * traced to the editor captures, and its agreement with a web-built candidate is self-consistency, not a native
  * Record-writer witness (x87 number text and writer caps stay unbound, and the native file field is +0x9a text of
  * unknown content, PLR-REVIEW-FIND-STATIC-01; the tail check uses the browser file name, so it never certified that a
- * native tail fits the parser's 100-byte tail): NativeLineCandidate stays an internal opaque candidate.
+ * native tail fits the parser's 100-byte tail): for this editor NativeLineCandidate stays an opaque candidate. The WEB
+ * results export (pulsarResultsExport.ts) applies its own strict profile and field agreement before copying it; neither
+ * check makes it native writer output.
  *
  * WEB: the editor is one inline layer of the Review dialog. It keeps the working copy and the ordinal captured
  * when it opened (all other Review actions are refused while it is open). Natively Review's OnActivate may re-run
