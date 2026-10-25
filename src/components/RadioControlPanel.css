@@ -52,6 +52,19 @@
 .radio-control .antenna-dialog .button-row{align-items:stretch}
 .radio-control .antenna-dialog .primary-button,.radio-control .antenna-dialog .secondary-button{min-width:88px;min-height:40px;margin:0;padding:8px 16px;font-size:13px;line-height:1.2}
 .antenna-dialog button:focus-visible,.antenna-dialog input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+/* R-RX9 Radio configuration numeric section and the full Radio Simulation Options form (scoped). */
+.radio-access-numeric{min-width:0;overflow-wrap:anywhere}
+.radio-access-numeric h4{margin:10px 0 4px;font-size:14px}
+.radio-access-numeric .button-row button{white-space:normal;max-width:100%;text-align:left}
+.radio-access-numeric dd{min-width:0;overflow-wrap:anywhere}
+.radio-access-numeric ul{margin:4px 0;padding-left:1.2em}
+.radio-access-numeric li{line-height:1.5}
+.antenna-dialog.radio-options-full{width:min(100%,36rem)}
+.radio-options-full .radio-options-parameters .antenna-field{flex:1 1 9rem}
+.radio-options-full .radio-options-flags{flex-direction:column;align-items:flex-start;gap:4px}
+.radio-options-full .antenna-group{min-width:0}
+.radio-options-full .antenna-group label{overflow-wrap:anywhere}
+.radio-options-failure-layer{z-index:42}
 .antenna-profile{border-color:#b5651d;border-left-width:4px;background:#fff8f0}
 .antenna-profile ul{margin:6px 0 0;padding-left:1.2em}
 .antenna-profile li{line-height:1.5;overflow-wrap:anywhere}

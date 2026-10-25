@@ -4,9 +4,12 @@ import {
  INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,RADIO_OPTIONS_COMPILED_FALLBACK,applyDemonstrationGate,cancelRadioOptions,closePreferences,createRadioAccessState,
  dismissUserOptions,editAccessPulsarList,okRadioOptions,openPreferences,openRadioOptions,pulsarListAvailability,radioLabFirstActivation,receiverCloseMessage,
  receiverOpened,setCloseRecipient,
- type RadioAccessState,type RadioAccessTransition,type RadioOptionsRecord,
+ RADIO_OPTIONS_TYPED_KEYS,applyCompiledOptionsBranch,dismissRadioOptionsFailure,editRadioOptionsFlag,editRadioOptionsText,isRadioOptionsFullRecord,okRadioSimulationOptions,
+ radioOptionsCompiledRecord,
+ type RadioAccessState,type RadioAccessTransition,type RadioOptionsFullRecord,type RadioOptionsRecord,
 } from './radioAccessOptions';
 import * as access from './radioAccessOptions';
+import {RADIO_OPTIONS_NUMERIC_CONSTANTS as K,RADIO_OPTIONS_OK_ORDER,type RadioOptionsNumberField} from './radioOptionsNumeric';
 
 // Synthetic records and sequences only: tests are evidence of the chosen contract (docs/RADIO-ACCESS-OPTIONS.md), not an
 // oracle for the original program. No native file, classroom value or 2370-byte record is used.
@@ -188,6 +191,193 @@ describe('T9–T12 PulsarList1 menu',()=>{
  });
 });
 
+// ---- R-RX9 numeric authority and the full Radio Simulation Options form (docs/RADIO-SIMULATION-OPTIONS.md). Synthetic
+// sequences; the compiled record is the recovered defaults routine, the texts are chosen web inputs.
+const optIn=(h:boolean,ok=true):Step=>s=>applyCompiledOptionsBranch(s,h,ok);
+const text=(f:RadioOptionsNumberField,v:string):Step=>s=>editRadioOptionsText(s,f,v);
+const fullOk:Step=okRadioSimulationOptions,dismissFailure:Step=dismissRadioOptionsFailure;
+const full=(s:RadioAccessState)=>s.root as RadioOptionsFullRecord;
+const numericOf=(s:RadioAccessState)=>s.parent!.child!.numeric!;
+/** Compiled branch, gate, Preferences, Radio... */
+const fullOpen=(h=true)=>run(INITIAL_RADIO_ACCESS,optIn(h),demo,prefs,radio);
+/** A valid text per field whose stored value differs from the compiled one, and an invalid text per field. */
+const NEW:Record<RadioOptionsNumberField,[string,number]>={horizon90c:['20',20*K.degreesToRadians],aperture916:['200',200],baseSlew91a:['60',60],soundSync91e:['0.5',0.5],
+ sampleRate922:['11025',11025],gain924:['2',2],background928:['7',7],beamWidth92c:['0.5',0.5],temperature930:['40',40]};
+
+describe('R-RX9 WEB-RSO-AUTH-01 numeric authority',()=>{
+ it('starts absent; the compiled branch gives exactly the 19-key recovered record, root and env, once',()=>{
+  expect(INITIAL_RADIO_ACCESS.authority).toEqual({kind:'absent'});
+  for(const h of [true,false]){
+   const r=applyCompiledOptionsBranch(INITIAL_RADIO_ACCESS,h,true);
+   expect(r.outcome).toBe('authority-applied');expect(r.state.authority).toEqual({kind:'compiled-branch',hostPredicate:h});
+   expect(Object.keys(r.state.root).sort()).toEqual([...RADIO_OPTIONS_TYPED_KEYS].sort());expect(RADIO_OPTIONS_TYPED_KEYS).toHaveLength(19);
+   expect(r.state.root).toBe(radioOptionsCompiledRecord(h));expect(r.state.env).toEqual(r.state.root);expect(r.state.env).not.toBe(r.state.root);
+   expect(full(r.state)).toMatchObject({horizon90c:K.compiledHorizonRadians,aperture916:100,baseSlew91a:50,soundSync91e:h?0.7649999856948853:0.9200000166893005,
+    sampleRate922:5512,gain924:1,background928:5,beamWidth92c:0,temperature930:50,telescopeType938:0,pulsarId939:1,limitSlewing93a:false,maxRateIndex93b:5,
+    plotPulsars93c:false,hotListFile93d:false,hotListExact93e:false,soundFeatures93f:true,testMode940:false,accessPulsarList:false});
+   expect(r.state.gate).toBe(INITIAL_RADIO_ACCESS.gate);expect(r.state.menu).toBe(INITIAL_RADIO_ACCESS.menu);expect(r.state.lastChildOk).toBeNull();
+   for(const o of [r.state.root,r.state.env,r.state.authority])expect(Object.isFrozen(o)).toBe(true);
+   expect(isRadioOptionsFullRecord(r.state.root)).toBe(true);
+  }
+  expect(()=>applyCompiledOptionsBranch(INITIAL_RADIO_ACCESS,1 as never,true)).toThrow(TypeError);
+  expect(()=>radioOptionsCompiledRecord('true' as never)).toThrow(TypeError);
+ });
+ it('refuses with the same state: surface open, already set, record changed, consumers differ',()=>{
+  const cases:[RadioAccessState,boolean,string][]=[
+   [run(INITIAL_RADIO_ACCESS,prefs),true,'refused-surface-open'],[run(INITIAL_RADIO_ACCESS,demo,prefs),true,'refused-surface-open'],
+   [run(INITIAL_RADIO_ACCESS,optIn(true)),true,'refused-authority-set'],
+   [accessOn(),true,'refused-record-changed'],[run(INITIAL_RADIO_ACCESS,demo,prefs,radio,check(true),ok,parentCancel,prefs,radio,check(false),ok),true,'refused-surface-open'],
+   [INITIAL_RADIO_ACCESS,false,'refused-consumers-differ'],
+  ];
+  for(const [s,consumers,outcome] of cases){
+   const r=applyCompiledOptionsBranch(s,false,consumers);
+   expect(r.outcome,outcome).toBe(outcome);expect(r.changed).toBe(false);expect(r.state).toBe(s);
+  }
+  // Root back to Off but env still On (parent open, then closed): refused until both are Off again; the check is on values
+  // and shape (one key, false), not on history.
+  const rootOff=run(accessOn(),prefs,radio,check(false),ok);
+  expect(applyCompiledOptionsBranch(run(rootOff,s=>({state:Object.freeze({...s,parent:null}),outcome:'preferences-closed-cancel',changed:true})),true,true).outcome).toBe('refused-record-changed');
+  expect(applyCompiledOptionsBranch(run(accessOn(),turnOff),true,true).outcome).toBe('authority-applied');
+  // A supplied Access-only record with unknown properties is not untouched.
+  const extra=createRadioAccessState({accessPulsarList:false,note:'x'} as RadioOptionsRecord);
+  expect(applyCompiledOptionsBranch(extra,true,true)).toMatchObject({outcome:'refused-record-changed',changed:false});
+ });
+ it('keeps old Access-only supplied records, typed-looking or unknown properties included; full admission is explicit',()=>{
+  const partial={accessPulsarList:false,aperture916:'x',horizon90c:null,limitSlewing93a:1,opaque:{a:[1]}};
+  const s0=createRadioAccessState(partial as RadioOptionsRecord);
+  expect(s0.authority).toEqual({kind:'absent'});expect(s0.root).toEqual(partial);
+  const child=run(s0,demo,prefs,radio).parent!.child!;expect(child.numeric).toBeUndefined();expect(child.snapshot).toBe(s0.root);
+  expect(okRadioOptions(run(s0,demo,prefs,radio),'not-ported').state.root).toEqual({...partial});
+  // Explicit admission: complete typed records only; every missing or invalid field throws, nothing is manufactured.
+  const good={...radioOptionsCompiledRecord(true),unknown:{kept:true}};
+  const s1=createRadioAccessState(good as RadioOptionsRecord,{numericAuthority:'supplied'});
+  expect(s1.authority).toEqual({kind:'supplied'});expect(s1.root).toEqual(good);expect(Object.isFrozen(s1.root.unknown)).toBe(true);
+  for(const key of RADIO_OPTIONS_TYPED_KEYS){
+   const missing:Record<string,unknown>={...good};delete missing[key];
+   expect(()=>createRadioAccessState(missing as RadioOptionsRecord,{numericAuthority:'supplied'}),key).toThrow(TypeError);
+  }
+  const bad:[string,unknown][]=[['aperture916',2**31],['aperture916',1.5],['sampleRate922',65536],['gain924',0.1],['beamWidth92c',Infinity],['horizon90c',Number.NaN],
+   ['telescopeType938',3],['pulsarId939',-1],['maxRateIndex93b',256],['maxRateIndex93b',1.5],['testMode940',0],['accessPulsarList','false']];
+  for(const [key,v] of bad)expect(()=>createRadioAccessState({...good,[key]:v} as RadioOptionsRecord,{numericAuthority:'supplied'}),`${key}=${String(v)}`).toThrow(TypeError);
+  expect(()=>createRadioAccessState(good as RadioOptionsRecord,{numericAuthority:'compiled'} as never)).toThrow(TypeError);
+  // maxRateIndex93b may be any byte (normalised by OK).
+  expect(createRadioAccessState({...good,maxRateIndex93b:255} as RadioOptionsRecord,{numericAuthority:'supplied'}).root.maxRateIndex93b).toBe(255);
+ });
+ it('cross refusals: the Access-only OK under an authority, the full OK and edits without one',()=>{
+  const opened=fullOpen();
+  expect(okRadioOptions(opened,'not-ported')).toMatchObject({outcome:'refused-numeric-authority',changed:false});
+  const absent=run(INITIAL_RADIO_ACCESS,demo,prefs,radio);
+  for(const step of [fullOk,text('aperture916','5'),(s:RadioAccessState)=>editRadioOptionsFlag(s,'limitSlewing',true)]){
+   const r=step(absent);expect(r.outcome).toBe('refused-no-authority');expect(r.state).toBe(absent);
+  }
+  expect(fullOk(run(INITIAL_RADIO_ACCESS,optIn(true),demo,prefs))).toMatchObject({outcome:'refused-no-child'});
+ });
+});
+
+describe('R-RX9 full form: activation, ordered OK, failure prefix, whole Cancel',()=>{
+ it('activation shows the nine recovered texts for each branch, the check boxes and the same snapshot',()=>{
+  for(const [h,sync] of [[true,'0.76500'],[false,'0.92000']] as const){
+   const s=fullOpen(h),c=s.parent!.child!;
+   expect(c.snapshot).toBe(s.root);expect(c.checked).toBe(false);
+   expect(c.numeric).toEqual({texts:{horizon90c:'10.0',aperture916:'100',baseSlew91a:'50',soundSync91e:sync,sampleRate922:'5512',gain924:'1.00',background928:'5',
+    beamWidth92c:'0.00',temperature930:'50.0'},limitSlewing:false,fastSlewing:true,failure:null});
+  }
+ });
+ it('an untouched OK keeps every compiled value bit-identical (web policy) and sets lastChildOk',()=>{
+  const s=fullOpen(),r=fullOk(s);
+  expect(r.outcome).toBe('radio-ok');expect(r.state.root).toEqual(s.root);expect(r.state.root).not.toBe(s.root);
+  expect(Object.is(full(r.state).horizon90c,K.compiledHorizonRadians)).toBe(true);expect(Object.is(full(r.state).beamWidth92c,0)).toBe(true);
+  expect(r.state.lastChildOk).toBe(true);expect(r.state.parent).toEqual({child:null});expect(r.state.env).toBe(s.env);
+ });
+ it('writes all ten flags before any number: a horizon failure still stores the flags',()=>{
+  let s=run(fullOpen(),s=>editRadioOptionsFlag(s,'limitSlewing',true),s=>editRadioOptionsFlag(s,'fastSlewing',false),check(true),text('horizon90c','abc'));
+  const r=fullOk(s);s=r.state;
+  expect(r.outcome).toBe('radio-ok-numeric-failed');
+  expect(full(s)).toMatchObject({limitSlewing93a:true,maxRateIndex93b:4,accessPulsarList:true,telescopeType938:0,pulsarId939:1,soundFeatures93f:true});
+  expect(full(s).horizon90c).toBe(K.compiledHorizonRadians);
+  expect(numericOf(s).failure).toEqual({field:'horizon90c',position:0,text:'abc',kind:'grammar',reason:'grammar'});
+  expect(s.lastChildOk).toBeNull();expect(s.parent!.child).not.toBeNull();
+ });
+ it('fails at each of the nine positions: earlier fields new, the failing and later fields old, child open, lastChildOk unchanged',()=>{
+  const base=fullOpen(),compiled=full(base);
+  for(const [position,field] of RADIO_OPTIONS_OK_ORDER.entries()){
+   const edits=RADIO_OPTIONS_OK_ORDER.map(f=>text(f,f===field?'1,5':NEW[f][0]));
+   const r=fullOk(run(base,...edits)),root=full(r.state);
+   expect(r.outcome,field).toBe('radio-ok-numeric-failed');expect(r.changed).toBe(true);
+   expect(numericOf(r.state).failure,field).toEqual({field,position,text:'1,5',kind:'grammar',reason:'grammar'});
+   for(const [i,f] of RADIO_OPTIONS_OK_ORDER.entries())expect(Object.is(root[f],i<position?NEW[f][1]:compiled[f]),`${field}: ${f}`).toBe(true);
+   expect(r.state.lastChildOk).toBeNull();expect(r.state.env).toBe(base.env);
+   // Every edit is refused while the box is open; OK and Cancel too.
+   for(const step of [text('aperture916','9'),check(true),(s:RadioAccessState)=>editRadioOptionsFlag(s,'limitSlewing',true),fullOk,cancel]){
+    const x=step(r.state);expect(x.outcome).toBe('refused-failure-open');expect(x.state).toBe(r.state);
+   }
+  }
+ });
+ it('a Sound Sync failure stops before Sample Rate, Gain and Background; a web limit is reported as such',()=>{
+  const r=fullOk(run(fullOpen(),text('aperture916','300'),text('soundSync91e','3.5e38'),text('gain924','4'),text('background928','9')));
+  expect(numericOf(r.state).failure).toEqual({field:'soundSync91e',position:3,text:'3.5e38',kind:'web-limit',reason:'single-range'});
+  expect(full(r.state)).toMatchObject({aperture916:300,soundSync91e:K.syncHostTrue,gain924:1,background928:5});
+ });
+ it('repeated failures accumulate with no rollback; a corrected OK then succeeds; whole Cancel restores the activation snapshot',()=>{
+  const s0=fullOpen(),snapshot=s0.root;
+  let s=run(s0,text('aperture916','250'),text('baseSlew91a','x'),fullOk);
+  expect(full(s).aperture916).toBe(250);
+  s=run(s,dismissFailure,text('aperture916','260'),text('baseSlew91a','70'),text('soundSync91e','bad'),fullOk);
+  expect(full(s)).toMatchObject({aperture916:260,baseSlew91a:70});expect(numericOf(s).failure?.field).toBe('soundSync91e');
+  // Dismissal keeps the drafts and the snapshot (no re-snapshot, WEB-RSO-ERR-01).
+  const d=dismissRadioOptionsFailure(s);expect(d.outcome).toBe('failure-dismissed');
+  expect(numericOf(d.state).texts.baseSlew91a).toBe('70');expect(d.state.parent!.child!.snapshot).toBe(snapshot);
+  expect(dismissRadioOptionsFailure(d.state)).toMatchObject({outcome:'refused-no-failure',changed:false});
+  const back=cancelRadioOptions(d.state);
+  expect(back.outcome).toBe('radio-cancelled');expect(Object.is(back.state.root,snapshot)).toBe(true);expect(back.state.lastChildOk).toBe(false);
+  const fixed=run(d.state,text('soundSync91e','1.5'),fullOk);
+  expect(fixed.lastChildOk).toBe(true);expect(full(fixed)).toMatchObject({aperture916:260,baseSlew91a:70,soundSync91e:1});
+ });
+ it('normalises the maximum index from Fast Slewing (supplied 3, 7, 5), also when a number fails',()=>{
+  for(const [supplied,shown,stored] of [[3,false,4],[7,false,4],[5,true,5]] as const){
+   const s0=createRadioAccessState({...radioOptionsCompiledRecord(false),maxRateIndex93b:supplied} as RadioOptionsRecord,{numericAuthority:'supplied'});
+   const opened=run(s0,demo,prefs,radio);expect(numericOf(opened).fastSlewing).toBe(shown);
+   expect(full(fullOk(opened).state).maxRateIndex93b).toBe(stored);
+   expect(full(fullOk(run(opened,text('temperature930','?'))).state).maxRateIndex93b).toBe(stored);
+  }
+ });
+ it('writes read-only flags back unchanged and keeps unknown properties by reference',()=>{
+  const supplied={...radioOptionsCompiledRecord(true),telescopeType938:2,pulsarId939:0,plotPulsars93c:true,hotListFile93d:true,hotListExact93e:true,soundFeatures93f:false,
+   testMode940:true,opaque:{bytes:[9]}};
+  const s0=createRadioAccessState(supplied as RadioOptionsRecord,{numericAuthority:'supplied'}),opaque=s0.root.opaque;
+  const r=fullOk(run(s0,demo,prefs,radio,text('beamWidth92c','0.123')));
+  expect(full(r.state)).toMatchObject({telescopeType938:2,pulsarId939:0,plotPulsars93c:true,hotListFile93d:true,hotListExact93e:true,soundFeatures93f:false,testMode940:true,
+   beamWidth92c:Math.fround(0.123)});
+  expect(r.state.root.opaque).toBe(opaque);
+  // Reopened: the Single shows two digits; an untouched OK stores the lossy value (declared display policy).
+  const again=run(r.state,radio);expect(numericOf(again).texts.beamWidth92c).toBe('0.12');
+  expect(full(fullOk(again).state).beamWidth92c).toBe(Math.fround(0.12));
+  expect(Object.keys(fullOk(again).state.root).sort()).toEqual([...RADIO_OPTIONS_TYPED_KEYS,'opaque'].sort());
+ });
+ it('edits: unchanged, over-long refused without truncation, flags',()=>{
+  const s=fullOpen();
+  expect(text('aperture916','100')(s)).toMatchObject({outcome:'numeric-unchanged',changed:false});
+  const long='9'.repeat(65),r=text('aperture916',long)(s);expect(r).toMatchObject({outcome:'refused-field-too-long',changed:false});expect(r.state).toBe(s);
+  const at=text('aperture916','9'.repeat(64))(s);expect(at.outcome).toBe('numeric-edited');expect(numericOf(at.state).texts.aperture916).toHaveLength(64);
+  expect(at.state.root).toBe(s.root);
+  expect(editRadioOptionsFlag(s,'fastSlewing',true)).toMatchObject({outcome:'flag-unchanged',changed:false});
+  expect(numericOf(editRadioOptionsFlag(s,'fastSlewing',false).state).fastSlewing).toBe(false);
+  expect(()=>editRadioOptionsText(s,'other' as never,'1')).toThrow(TypeError);expect(()=>editRadioOptionsFlag(s,'testMode' as never,true)).toThrow(TypeError);
+  expect(()=>editRadioOptionsText(s,'gain924',1 as never)).toThrow(TypeError);
+  // A 64-character invalid draft is kept as typed and fails at OK (a web limit, here int64-range).
+  const f=fullOk(at.state);expect(numericOf(f.state).failure).toMatchObject({field:'aperture916',kind:'web-limit',reason:'int64-range'});
+ });
+ it('the parent copies the full record to env on OK and Cancel; nothing is projected by the core',()=>{
+  const s=run(fullOpen(),text('aperture916','150'),fullOk,parentCancel);
+  expect(full(s).aperture916).toBe(150);expect(s.env).toBe(s.root);expect((s.env as RadioOptionsFullRecord).aperture916).toBe(150);
+  const k=run(fullOpen(),text('horizon90c','30'),fullOk);const viaOk=closePreferences(k,'ok');
+  expect(viaOk.save).toBe('not-ported');expect((viaOk.state.env as RadioOptionsFullRecord).horizon90c).toBe(30*K.degreesToRadians);
+  // Menu flags still read env.accessPulsarList.
+  const menu=run(INITIAL_RADIO_ACCESS,optIn(false),demo,prefs,radio,check(true),fullOk,parentCancel,activate);
+  expect(menu.menu).toEqual({enabled:true,visible:true,activationSeen:true});
+ });
+});
+
 describe('isolation',()=>{
  it('never mutates inputs and returns frozen states',()=>{
   const snapshot=JSON.stringify(INITIAL_RADIO_ACCESS);
@@ -219,9 +409,11 @@ describe('isolation',()=>{
   expect(json.pulsarListCommand).toContain('PulsarList1Click');expect(json.pulsarListCommand).toContain('WEB-PP-LIST-04');
   expect(json.webPolicies).toContain('WEB-ACC-LIST-01');
  });
- it('imports nothing: no React, receiver, source buffer, RNG, clock, record or i18n',()=>{
+ it('imports only the import-free numeric policy (R-RX9): no React, receiver, source buffer, RNG, clock, record or i18n',()=>{
   const source=readFileSync(new URL('./radioAccessOptions.ts',import.meta.url),'utf8');
-  expect([...source.matchAll(/^import .*$/gm)]).toEqual([]);
+  expect([...source.matchAll(/^import\b[\s\S]*?from\s*'([^']+)';/gm)].map(m=>m[1])).toEqual(['./radioOptionsNumeric']);
   expect(source).not.toMatch(/\brequire\(|\bimport\(/);
+  const numeric=readFileSync(new URL('./radioOptionsNumeric.ts',import.meta.url),'utf8');
+  expect(numeric).not.toMatch(/^import\b/m);
  });
 });

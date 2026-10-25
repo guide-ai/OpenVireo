@@ -12,10 +12,10 @@
 import type {RadioLabTransition,RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,armRecordCapture,clearReceiverMarks,clearRecordByte,closeReceiver,createRadioReceiverBank,endReceiverMarkDrag,
+ RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,armRecordCapture,clearReceiverMarks,clearRecordByte,closeReceiver,copyLiveRadioOptions,createRadioReceiverBank,endReceiverMarkDrag,
  openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerTick,refreshRecordLabel,stepFrequency,
  receiverWindowMoved,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,toggleReceiverAlign,toggleRecordByte,
- type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverResult,type RadioRecordHeader,
+ type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverOptions,type RadioReceiverResult,type RadioRecordHeader,
 } from './radioReceiver';
 import {RADIO_IDENTIFY_POLICY,radioIdentifyIssue,type RadioRecordCapture} from './radioReceiverRecord';
 import {RECEIVER_DISPLAY_GEOMETRY,receiverAnnotationOps,receiverFrameOps,receiverPaintOps,type ReceiverDisplayOp,type ReceiverPen} from './radioReceiverDisplay';
@@ -87,7 +87,7 @@ export type ReceiverRecordArmingResult=Readonly<{ok:true;seed:RadioRecordHeader}
 export type ReceiverAction='seed'|'open'|'add'|'mode'|'tick'|'reassociate'|'step'|'paint'|'close'|'dismiss-box'
  |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear'
  |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save'
- |'align'|'move'|'pulsar-list';
+ |'align'|'move'|'pulsar-list'|'live-options';
 export type ReceiverWebRefusal='seed-invalid'|'seed-locked'|'no-catalog'|'close-box-open'
  |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound'
  |'record-dialog-open'|'record-locked'|'record-analysis-busy'|'record-lease-held'|'record-superseded'|'record-input'|'identify-length'|'identify-text'
@@ -317,6 +317,23 @@ export function overwriteReceiverSourceBuffer(s:RadioReceiverSession,input:Recei
  const r=overwriteSourceBufferFromPulsarList(s.bank,input);
  if(!r.ok)return refused(s,'pulsar-list',r.error);
  return commit(s,'pulsar-list',r.events,r.bank);
+}
+
+/**
+ * R-RX9 WEB-RSO-PROJ-01 (docs/RADIO-SIMULATION-OPTIONS.md): the receivers' live options view takes the projected record
+ * through the existing OA-03 copyLiveRadioOptions. Only bank.options changes: the FormCreate caches of existing receivers
+ * (sensitivity, background, thermal record, area), their fields, the canvases, overlays, seed, Record state and
+ * arrangement are kept, and no event, paint, Randomize, Open or seed step runs; aperture and beam texts follow at the next
+ * display refresh, receivers created later take the new values. [W] Refused, changing nothing, while a recovered box or a
+ * Record dialog is open, and while this session holds the Record capture lease or an armed capture (record-lease-held), so
+ * a Receive header never mixes options; nothing retries it.
+ */
+export function copyReceiverLiveOptions(s:RadioReceiverSession,options:RadioReceiverOptions):ReceiverSessionTransition{
+ const box=blockedByBox(s,'live-options');if(box)return box;
+ if(s.record.leaseId!==null||s.bank.recording.armed)return webRefused(s,'live-options','record-lease-held');
+ const r=copyLiveRadioOptions(s.bank,options);
+ if(!r.ok)return refused(s,'live-options',r.error);
+ return commit(s,'live-options',r.events,r.bank);
 }
 
 /** Freq MHz, Freq Incr., Vert. Gain and Horz. Secs spin buttons. */

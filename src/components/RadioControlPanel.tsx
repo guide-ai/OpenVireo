@@ -74,6 +74,10 @@ export type RadioControlPanelProps=Readonly<{
  /** When given, the TRadioLab Receiver button (Rcvr1Btn, TabOrder 6) is rendered; the host owns the receiver windows and
   * names why the button is unavailable. Without it no button is rendered. */
  receiver?:RadioReceiverButton;
+ /** R-RX9 (default false): the dish diameter env+0x37ab is record+0x916 of the radio options, owned by the host's numeric
+  * authority. The scenario's diameter editor, Apply, Cancel and Clear are disabled with a note, the compiled-defaults preset
+  * writes only the access option byte, and the handlers re-check the latest value; the other inputs stay usable. */
+ managedDiameter?:boolean;
 }>;
 export type RadioReceiverButtonReason='available'|'not-activated'|'receiver-disabled'|'no-catalog'|'catalog-reading'|'seed-invalid'|'modal'|'inactive';
 export type RadioReceiverButton=Readonly<{available:boolean;reason:RadioReceiverButtonReason;onOpen:()=>void;buttonRef:RefObject<HTMLButtonElement|null>}>;
@@ -212,12 +216,18 @@ const domKey=(e:KeyboardEvent<HTMLElement>):BrowserKeyInput=>({key:e.key,code:e.
 const KEY_SCOPE='[data-antenna-key-scope]';
 
 export default function RadioControlPanel({state,environment,onTransition,onEnvironmentChange,translate=englishRadio,autoScopeTimer=true,
- antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList,receiver}:RadioControlPanelProps){
+ antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList,receiver,managedDiameter=false}:RadioControlPanelProps){
  const t=translate,ta=antennaTranslate,id=useId();
+ const managedRef=useRef(managedDiameter);
+ useLayoutEffect(()=>{managedRef.current=managedDiameter;});
  const [outcome,setOutcome]=useState<RadioOutcome|null>(null),[envError,setEnvError]=useState(false);
  const [antennaOutcome,setAntennaOutcome]=useState<RadioLabOutcome|null>(null),[antennaError,setAntennaError]=useState(false);
- const [draft,setDraft]=useState(environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters)),[draftInvalid,setDraftInvalid]=useState(false);
- useEffect(()=>{setDraft(environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters));setDraftInvalid(false);},[environment.dishDiameterMeters]);
+ const envDiameterText=environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters);
+ const [draft,setDraft]=useState(envDiameterText),[draftInvalid,setDraftInvalid]=useState(false);
+ useEffect(()=>{setDraft(envDiameterText);setDraftInvalid(false);},[envDiameterText]);
+ // WEB-RSO-OWN-01: the hand-over to a managed diameter withdraws an earlier draft's invalid mark; the unapplied draft text
+ // is kept but neither shown nor applied while managed (the editor shows the current value).
+ useEffect(()=>{if(managedDiameter)setDraftInvalid(false);},[managedDiameter]);
  const antennaModal=antenna?isRadioLabModal(antenna):false;
  // WEB presentation ownership: the pending dialog or box (logical state, kept in `antenna`) is rendered only while the
  // host shows the panel, no project operation runs and no native modal dialog of the page is open.
@@ -543,7 +553,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const yesNo=(v:boolean|null)=>v===null?t('radio.state.unknown'):v?t('radio.state.yes'):t('radio.state.no');
  const byte=(v:number|null)=>v===null?t('radio.state.none'):String(v);
  const changeEnv=(patch:Partial<RadioEnvironment>)=>onEnvironmentChange?.({...environment,...patch});
- const applyDraft=()=>{try{changeEnv({dishDiameterMeters:parseDishDiameter(draft)});setDraftInvalid(false);}catch{setDraftInvalid(true);}};
+ const applyDraft=()=>{if(managedRef.current)return;try{changeEnv({dishDiameterMeters:parseDishDiameter(draft)});setDraftInvalid(false);}catch{setDraftInvalid(true);}};
  const windowCaption=menuCaptionText(NATIVE_CAPTIONS.window);
  const setCoordinatesRef=useRef<HTMLButtonElement>(null),radioSwitchRef=useRef<HTMLButtonElement>(null);
  // WEB focus return: closing the panel removes Set Coordinates and its close button, so the live main-window switch
@@ -639,18 +649,19 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    <label className="radio-control-check"><input type="checkbox" data-testid="radio-env-option" checked={environment.accessOptionByte} onChange={e=>changeEnv({accessOptionByte:e.target.checked})}/>{t('radio.env.option')}</label>
    <label className="radio-control-check"><input type="checkbox" data-testid="radio-env-other" checked={environment.otherWindowItemsVisible} onChange={e=>changeEnv({otherWindowItemsVisible:e.target.checked})}/>{t('radio.env.otherWindows')}</label>
    <label htmlFor={`${id}-diameter`}>{t('radio.env.diameter')}</label>
-   <input id={`${id}-diameter`} data-testid="radio-env-diameter" type="text" inputMode="numeric" maxLength={11} value={draft} aria-invalid={draftInvalid} aria-describedby={`${id}-diameter-help`} onChange={e=>{setDraft(e.target.value);setDraftInvalid(false);}} onKeyDown={e=>{if(e.key==='Enter')applyDraft();}}/>
+   <input id={`${id}-diameter`} data-testid="radio-env-diameter" type="text" inputMode="numeric" maxLength={11} value={managedDiameter?envDiameterText:draft} aria-invalid={!managedDiameter&&draftInvalid}aria-describedby={`${id}-diameter-help`} disabled={managedDiameter} onChange={e=>{setDraft(e.target.value);setDraftInvalid(false);}} onKeyDown={e=>{if(e.key==='Enter')applyDraft();}}/>
    <p id={`${id}-diameter-help`} className="radio-control-note">{t('radio.env.diameterHelp')}</p>
+   {managedDiameter&&<p className="radio-control-note" data-testid="radio-env-diameter-managed">{t('radio.env.diameterManaged')}</p>}
    <p className="radio-control-note" data-testid="radio-env-diameter-current">{environment.dishDiameterMeters===null?t('radio.env.diameterNone'):String(environment.dishDiameterMeters)}</p>
    <div className="button-row">
-    <button type="button" className="primary-button" data-testid="radio-env-apply" onClick={applyDraft}>{t('radio.env.apply')}</button>
-    <button type="button" className="secondary-button" data-testid="radio-env-cancel" onClick={()=>{setDraft(environment.dishDiameterMeters===null?'':String(environment.dishDiameterMeters));setDraftInvalid(false);}}>{t('radio.env.cancel')}</button>
-    <button type="button" className="secondary-button" data-testid="radio-env-clear" onClick={()=>{changeEnv({dishDiameterMeters:null});setDraftInvalid(false);}}>{t('radio.env.clear')}</button>
+    <button type="button" className="primary-button" data-testid="radio-env-apply" disabled={managedDiameter} onClick={applyDraft}>{t('radio.env.apply')}</button>
+    <button type="button" className="secondary-button" data-testid="radio-env-cancel" disabled={managedDiameter} onClick={()=>{setDraft(envDiameterText);setDraftInvalid(false);}}>{t('radio.env.cancel')}</button>
+    <button type="button" className="secondary-button" data-testid="radio-env-clear" disabled={managedDiameter} onClick={()=>{if(managedRef.current)return;changeEnv({dishDiameterMeters:null});setDraftInvalid(false);}}>{t('radio.env.clear')}</button>
    </div>
-   {draftInvalid&&<p role="alert" data-testid="radio-env-error">{t('radio.env.invalid')}</p>}
+   {!managedDiameter&&draftInvalid&&<p role="alert" data-testid="radio-env-error">{t('radio.env.invalid')}</p>}
    <h3>{ta('antenna.defaults.heading')}</h3>
    <p className="radio-control-note">{ta('antenna.defaults.help')}</p>
-   <div className="button-row"><button type="button" className="secondary-button" data-testid="radio-env-compiled" onClick={()=>{changeEnv({...RADIO_COMPILED_ENVIRONMENT});setDraftInvalid(false);}}>{ta('antenna.defaults.apply')}</button></div>
+   <div className="button-row"><button type="button" className="secondary-button" data-testid="radio-env-compiled" onClick={()=>{changeEnv(managedRef.current?{accessOptionByte:RADIO_COMPILED_ENVIRONMENT.accessOptionByte}:{...RADIO_COMPILED_ENVIRONMENT});setDraftInvalid(false);}}>{ta('antenna.defaults.apply')}</button></div>
   </fieldset>}
   <details className="radio-control-block" data-testid="radio-state" inert={antennaModal||undefined}>
    <summary>{t('radio.state.heading')}</summary>

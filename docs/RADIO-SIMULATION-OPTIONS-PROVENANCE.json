@@ -1,0 +1,49 @@
+{
+  "increment": "R-RX9 Radio Simulation Options numeric workflow",
+  "baseline": "d73dafbda7940f6020fe595ee4501909623ef997",
+  "artifact": {"sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c", "executedOrEmulated": false},
+  "resource": {"identity": "RCDATA 10/TRADIOPTSDLG/0", "sha256": "911c0d2c784928c2b3872b517447b3db935ae18c987902ecd77e77065e3141a1"},
+  "evidenceRoot": "/tmp/clea-static-research/radio-rx9-numeric-options-20261025",
+  "hashPolicy": "Every SHA-256 below is quoted from EVIDENCE-SHA256.json in the evidence root (supplied by the coordinator); none was computed by the implementer. Static, REA-derived evidence and bounded coordinator inspection only; no fresh runtime oracle.",
+  "files": [
+    {"path": "FRESH-CONTROL-BINDING.json", "role": "TRadiOptsDlg VMT 0x5a7c84, field table 0x5a7d88, controls and methods (RSO-01)", "sha256": "6f43b46b2ff621958676a4c3ad9dae279cdafc986064becde0058c5465f5caa4", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "RADIO-OPTIONS-RESOURCE.json", "role": "TRADIOPTSDLG DFM captions and child order (RSO-01)", "sha256": "54b389c6b1d8f1d696aa6e2130d2a08cf9a293cf6037ffb9df4239cf594d194e", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "radio-options-defaults-bounded.asm", "role": "compiled defaults 0x5a8fcb..0x5a90ad (RSO-02, RSO-02b)", "range": "0x5a8ec4..0x5a90bb", "sha256": "bd1a0fae22259130a627b169d2581ad38764e318507fe5cb16ed020ca56efe0f", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "sync-host-predicate.asm", "role": "0x48c360 host predicate (RSO-02b)", "sha256": "3aac3f7fb986e81b3e5a3fcf3976ad39348334c4bfa2bcd9ac26480c04044731", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "radio-options-activate.asm", "role": "FormActivate snapshot, display and focus (RSO-03)", "range": "0x5a9138..0x5a93e9", "sha256": "1f398fb914ede05bbf6c0271801e4d60b1729773072a721548a009dc52cb5069", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "numeric-fixed-format-wrapper.asm", "role": "0x486268 → 0x40cf28 ffFixed precision 18 (RSO-04)", "sha256": "c3432afda5452d6bd1672bb68c2c9125f5fc8defa8d13a19889b44523c03be07", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "radio-options-ok.asm", "role": "OKBtnClick flags, ordered numbers, Sync clamp (RSO-05, RSO-06, RSO-08)", "range": "0x5a9428..0x5a9765", "sha256": "c4b16d7e92f61bc7d90f500acc03fda969e0be5f164a7e3a35aaa123a5fd2439", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "str-to-float-entry.asm", "role": "0x40cf60 StrToFloat entry (RSO-06)", "sha256": "e9d5270d53a498de8ebc259506d77695d1121e0e174e40cd080b158a9e31efb6", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "round-int32-helper.asm", "role": "0x403700 FISTP QWORD Round, 0x40370c Trunc (RSO-07)", "sha256": "bc0a0c4f032b0249955e374456634ea2bead18c9967dd74ebbdb5729d72e37b2", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "numeric-error-handler-aligned.asm", "role": "aligned failure handler: literal 0x5a9780 → 0x405ec8 → helper 0x486ae0 → box 0x47e09c caption 0x5a97c4 flags 0x10, ModalResult := 0 at 0x5a9723 (RSO-09)", "range": "0x5a96f4..0x5a972e", "sha256": "7835252adaecb0290ca7b48c1a15e3c25005c4e0956b2275183842f365543107", "receipt": "EVIDENCE-SHA256.json; PLAN-INDEPENDENT-CORROBORATION.json capture"},
+    {"path": "PLAN-INDEPENDENT-CORROBORATION.json", "role": "handler/literal corroboration and the aperture ownership arithmetic 0x2e95 + 0x916 = 0x37ab (RSO-09, RSO-12)", "sha256": "f8bf9aef477aa7bf2d3eaae3f487601f47a5d0d7af11c8b14a328a754a6c17bf", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "radio-options-cancel.asm", "role": "CancelBtnClick whole-snapshot restore (RSO-10)", "range": "0x5a9940..0x5a995e", "sha256": "7f1dd79c56711776dc5f086478ae6900718efaefd87943032682a07c817f2441", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "G9-OWNERSHIP-AND-DELIVERY-CONTRACT.json", "role": "same object, last child result, Preferences root → env copy, consumer offsets (RSO-11, RSO-12)", "sha256": "e025fb7259a237de6b6e6ba60f4d4f5b4591c802da655c547f62abd759695735", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "G9-RECOVERED-CONTRACT.json", "role": "R-RX7 compiled fallback and child ownership baseline", "sha256": "9e83c9d8d72a54e790be185150672f9362c1f6ae012479ea15e9190bf735000e", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "options-radio-child-button.asm", "role": "RadiOptsBtnClick 0x5a6f58, assignment 0x5a6f9c (RSO-11)", "range": "0x5a6f58..0x5a6faf", "sha256": "dc981853fb3ea991d0758415da655f7023aec04c56d6e9af7501d761f4242fca", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "options-cancel-reset-release-radio.asm", "role": "parent Cancel/Reset/release (not ported)", "range": "0x5a6d04..0x5a6fb0", "sha256": "bf2928dcc12308d7cf29aacee3254af1756203583e2d839ccc55a468debfd068", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "TYPED-LITERALS.json", "role": "Extended 0x5a93ec/0x5a9768, Sync Singles, caption 0x5a97c4", "sha256": "7b9e94173703e1c1950dc4478d939b44e1727be5a56688a0fe79a47a0d626a1e", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "RECOVERED-CONTRACT.json", "role": "R-RX9 recovered contract and remaining limits", "sha256": "57abcfcc5798891a5f59845d14479c59a2c9fbbef0b3ca8b181403874a8dfdb4", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "INDEPENDENT-STATIC-CHECKS.json", "role": "independent static checks (static, not runtime passes)", "sha256": "6c9bc576d0355a2bdca0ef62249a65f82ea2bbf7cc348311fecca385d6679939", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "ACCEPTANCE-CASES.json", "role": "acceptance cases (contract inputs, not oracles)", "sha256": "d19275a618dfb35ba2a6003a0b185df0e2f1146fd287f9b3db2c34841aeea151", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "REUSED-EVIDENCE-MANIFEST.json", "role": "manifest of reused R-RX7/G9 evidence", "sha256": "82174c2f24f23b0db5ae8844b5a1973b8005149b8c5e26be7af5e3f3accc8445", "receipt": "EVIDENCE-SHA256.json"},
+    {"path": "FRESH-HELPER-CAPTURES.json", "role": "receipts of the fresh helper captures", "sha256": "8856433f7d8f9d9bb73575d114d009bb8fc2ce4b65412c73f076e00951913042", "receipt": "EVIDENCE-SHA256.json"}
+  ],
+  "contracts": [
+    {"id": "RSO-03", "native": "FormActivate 0x5a9138 snapshot 2370 bytes, display digits 1,int,int,5,int,2,int,2,1, focus HorzEd", "web": "openRadioOptions under an authority; WEB-RSO-FMT-01, WEB-RSO-KEY-01"},
+    {"id": "RSO-05/06", "native": "OK 0x5a9428 flags 0x5a9463..0x5a954f, numbers 0x5a9555..0x5a96d2 in OK order", "web": "okRadioSimulationOptions; WEB-RSO-NUM-01..03"},
+    {"id": "RSO-09", "native": "handler 0x5a96f4..0x5a9729, box 0x47e09c caption 0x5a97c4, ModalResult := 0", "web": "failure kept on the child, no rollback; WEB-RSO-ERR-01"},
+    {"id": "RSO-10", "native": "Cancel 0x5a9940 whole snapshot", "web": "cancelRadioOptions unchanged"},
+    {"id": "RSO-11/12", "native": "Preferences copy 0x588751..0x588767; consumers at env+0x2e95 + offset, 0x37ab = 0x916", "web": "WEB-RSO-OWN-01, WEB-RSO-PROJ-01"}
+  ],
+  "webPolicies": ["WEB-RSO-AUTH-01", "WEB-RSO-OWN-01", "WEB-RSO-NUM-01", "WEB-RSO-NUM-02", "WEB-RSO-NUM-03", "WEB-RSO-FMT-01", "WEB-RSO-ERR-01", "WEB-RSO-KEY-01", "WEB-RSO-PROJ-01", "WEB-RSO-SAVE-01"],
+  "notPromoted": "The exception class/type behind the candidate table words 0x5a96e8..0x5a96f0 (class-name pointer not an ASCII ShortString) and the final runtime body of helper 0x486ae0. The literal 0x5a9780 is documented as the helper's input only.",
+  "notRead": "src/core/tmpProbe.test.ts, .env, raw original bytes, tradiolab-metadata, verified-field-roles, the excluded G2 receipt and derivatives, writer-caller-56b36c and the ranges 0x56b36c..0x56b678, native-field-recovery/target.asm and quarantined readiness files were not read.",
+  "limits": [
+    "No native execution, emulation or GUI observation; tests are contract evidence, not oracles.",
+    "Exact-decimal BigInt → ties-even Int64 → low32/low16 is a chosen web policy; native StrToFloat accumulation, the active FPU control word and FISTP out-of-range behaviour are not established.",
+    "The horizon is stored as binary64, not Extended; FloatToStrF precision-18 boundaries are not claimed.",
+    "The historical host branch of 0x48c394 is unknown; both compiled branches are explicit learner choices.",
+    "The 2370-byte native record, its loader and writer, Files/Site/Reset/INI/save and the effects of sound, plotting, hot-list writing, Test Mode, Arecibo and Pulsar Identification are not ported."
+  ]
+}

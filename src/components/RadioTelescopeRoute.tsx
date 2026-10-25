@@ -17,6 +17,10 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import {usePulsarParametersHost} from './RadioPulsarParameters';
 import {useRadioAccessHost} from './RadioAccessOptions';
 import {preparePulsarListCommand,type PulsarListCommandResult} from '../core/radioPulsarListCommand';
+import {radioOptionsCompiledRecord,type RadioOptionsRecord} from '../core/radioAccessOptions';
+import {projectRadioOptionsEnv,radioOptionsConsumerMismatches,type RadioOptionsProjectionReport,type RadioReceiverProjectionReport} from '../core/radioOptionsProjection';
+import {RADIO_RECEIVER_COMPILED_OPTIONS,type RadioReceiverOptions} from '../core/radioReceiver';
+import {copyReceiverLiveOptions} from '../core/radioReceiverSession';
 import {t,type PlainMessageKey} from '../i18n';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
@@ -75,7 +79,11 @@ export type RadioTelescopeRouteProps=Readonly<{
  * option and the PulsarList1 readout; it only observes the antenna's first activation and committed receiver Open/close
  * events. R-RX8: that card also shows File ▸ Pulsar List... while the item is shown; its click runs runPulsarList here,
  * which writes only the receivers' shared source buffer and activates Pulsar Parameters (WEB-PP-LIST-04), never the menu
- * flags, a receiver Open or the picker callback. The state is temporary: it is not part of any investigation file.
+ * flags, a receiver Open or the picker callback. R-RX9 (docs/RADIO-SIMULATION-OPTIONS.md): once the learner chooses a
+ * compiled numeric branch there, the radio options own the antenna options, the receivers' live options view and the
+ * panel's dish diameter (env+0x37ab = env+0x2e95 + 0x916); each Preferences close projects the env copy onto them
+ * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. The state
+ * is temporary: it is not part of any investigation file.
  */
 export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis}:RadioTelescopeRouteProps){
  const [state,setState]=useState<RadioControlState>(INITIAL_RADIO_CONTROL);
@@ -100,8 +108,26 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   const result=step(dateRef.current);if(result.changed){dateRef.current=result.state;setDateState(result.state);}return result;
  };
  const id=useId(),o=RADIO_COMPILED_OPTIONS;
- /** Only Limit Slewing comes from the scenario; every other value stays the compiled default (no other owner exists here). */
- const applyOptions=(next:RadioLabOptions)=>setOptions(Object.freeze({...RADIO_COMPILED_OPTIONS,limitsEnabled:next.limitsEnabled===true}));
+ // R-RX9: the latest accepted antenna options and panel inputs, read by the opt-in check and the projection in handlers.
+ const optionsRef=useRef(options),environmentRef=useRef(environment);
+ useLayoutEffect(()=>{optionsRef.current=options;},[options]);
+ useLayoutEffect(()=>{environmentRef.current=environment;},[environment]);
+ /** The receivers' live options view as last committed here (the workspace starts from the compiled defaults and only the
+  * R-RX9 projection replaces it). Presentation only. */
+ const [liveReceiverOptions,setLiveReceiverOptions]=useState<RadioReceiverOptions>(RADIO_RECEIVER_COMPILED_OPTIONS);
+ /** Only Limit Slewing comes from the scenario; every other value stays the compiled default (no other owner exists here).
+  * R-RX9: under a numeric authority the radio options own the antenna options; a scenario apply that reaches this handler
+  * anyway (same task, programmatic) is ignored. */
+ const applyOptions=(next:RadioLabOptions)=>{
+  if(access.authorityNow().kind!=='absent')return;
+  const value=Object.freeze({...RADIO_COMPILED_OPTIONS,limitsEnabled:next.limitsEnabled===true});optionsRef.current=value;setOptions(value);
+ };
+ /** The panel's scenario inputs. R-RX9: under a numeric authority env+0x37ab is record+0x916, so no legacy write (the
+  * diameter editor, Clear or the compiled-defaults preset) may change the diameter; the other inputs are kept as sent. */
+ const changeEnvironment=(next:RadioEnvironment)=>{
+  const value=access.authorityNow().kind==='absent'?next:Object.freeze({...next,dishDiameterMeters:environmentRef.current.dishDiameterMeters});
+  environmentRef.current=value;setEnvironment(value);
+ };
  // A project operation freezes scenario time; its end re-anchors it without catch-up (the panel also cancels its timers).
  useEffect(()=>{setScenario(s=>(busy?freezeRadioClock:thawRadioClock)(s,perfNow()).scenario);},[busy]);
  const apply=(step:(s:RadioClockScenario)=>RadioClockScenarioTransition)=>{
@@ -176,10 +202,35 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  const listRunner=useRef<()=>PulsarListCommandResult>(()=>LIST_UNAVAILABLE);
  const routeLatest=useRef({active,busy}),panelPresentedRef=useRef(false);
  useLayoutEffect(()=>{routeLatest.current={active,busy};});
+ /** WEB-RSO-AUTH-01 opt-in check on the latest consumer values (antenna options, receiver live view, panel diameter). */
+ const optionsMismatches=(hostPredicate:boolean)=>radioOptionsConsumerMismatches(radioOptionsCompiledRecord(hostPredicate),
+  {antenna:optionsRef.current,receiver:receiverApiRef.current?.sessionNow().bank.options??null,environment:environmentRef.current});
+ /** WEB-RSO-PROJ-01: synchronously after a committed Preferences close under an authority. Each consumer commits on its own
+  * latest owner state; a refused consumer keeps its value and is reported as refused (no retry, no Open, reseed,
+  * reassociation or paint). The receiver copy is a compare-and-swap on the session it was prepared from. */
+ const projectOptions=(env:RadioOptionsRecord):RadioOptionsProjectionReport=>{
+  const api=receiverApiRef.current,session=api?.sessionNow()??null;
+  const p=projectRadioOptionsEnv(env,{antenna:optionsRef.current,antennaHeld:antennaRef.current.manualPress,receiver:session?.bank.options??null,environment:environmentRef.current});
+  if(p.antenna.kind==='applied'){optionsRef.current=p.antenna.options;setOptions(p.antenna.options);}
+  if(p.panel.kind==='applied'){environmentRef.current=p.panel.environment;setEnvironment(p.panel.environment);}
+  let receiver:RadioReceiverProjectionReport;
+  if(p.receiver.kind!=='apply')receiver=p.receiver;
+  else if(api===null||session===null)receiver={kind:'unavailable'};
+  else{
+   const tr=copyReceiverLiveOptions(session,p.receiver.options),o=tr.outcome;
+   if(o.kind==='web-refused')receiver={kind:o.reason==='record-lease-held'?'refused-record-lease':'refused-box'};
+   else if(o.kind==='refused')receiver={kind:'refused-error'};
+   else if(api.commitLiveOptions(session,tr)){receiver={kind:'applied',changes:p.receiver.changes};setLiveReceiverOptions(p.receiver.options);}
+   else receiver={kind:'refused-stale'};
+  }
+  return Object.freeze({antenna:p.antenna,receiver:Object.freeze(receiver),panel:p.panel});
+ };
  const access=useRadioAccessHost({active,busy,antennaModal:modal,receiverBoxPending:receiverSummary.boxPending&&active&&!busy,
   surfaceNow:()=>isRadioLabModal(antennaRef.current)||dateRef.current.dialog!==null||parametersOpenRef.current?'modal'
    :receiverApiRef.current?.boxRefusal()?'receiver-box':null,
-  runPulsarList:()=>listRunner.current()});
+  runPulsarList:()=>listRunner.current(),
+  numeric:{mismatchesFor:optionsMismatches,onEnvironmentCopied:projectOptions,view:{antenna:options,receiver:liveReceiverOptions,panelDiameter:environment.dishDiameterMeters}}});
+ const optionsManaged=access.authority.kind!=='absent';
  // R-RX6: Open and Find read the receiver session's shared +0x5f7 buffer live and write nothing; the receiver close box and
  // Record dialogs refuse Open (WEB-PP-LIST-01..03); the receivers' picker runs move the window's shared list cursor (WEB-PP-CUR-01).
  const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented||access.open,
@@ -266,7 +317,8 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   <section className="card radio-route-scenario" aria-labelledby="radio-route-scenario-title" data-testid="radio-route-scenario" inert={dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id="radio-route-scenario-title">{t('radioRoute.scenario.heading')}</h2>
    <ul>
-    <li data-testid="radio-route-scenario-options">{t('radioRoute.scenario.options',{max:o.maxRateIndex,base:o.rateBase})}</li>
+    <li data-testid="radio-route-scenario-options" data-managed={optionsManaged}>{optionsManaged?t('radioRoute.scenario.optionsManaged',{max:options.maxRateIndex,base:options.rateBase})
+     :t('radioRoute.scenario.options',{max:o.maxRateIndex,base:o.rateBase})}</li>
     <li data-testid="radio-route-scenario-environment">{t('radioRoute.scenario.environment')}</li>
     <li data-testid="radio-route-scenario-access">{t('radioRoute.scenario.access',{range:RANDOM_ACCESS_RANGE_MS})}</li>
     <li data-testid="radio-route-scenario-slew">{t('radioRoute.scenario.slew',{interval:RADIO_LAB_CONSTANTS.slewTimerIntervalMs})}</li>
@@ -325,11 +377,11 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
       configuration that has yielded (open, not presented) must not make the panel, and so that antenna box, inert. */}
   <div style={{display:'contents'}} inert={dateOpen||parameters.presented||behindReceiverBox||panelBehindAccess} data-testid="radio-route-panel-wrapper">
    <RadioControlPanel state={state} environment={environment}
-    onTransition={tr=>{setState(tr.state);if(tr.state.radioPanelShown)stepDate(markRadioActivationReached);}} onEnvironmentChange={setEnvironment}
+    onTransition={tr=>{setState(tr.state);if(tr.state.radioPanelShown)stepDate(markRadioActivationReached);}} onEnvironmentChange={changeEnvironment}
     antenna={antenna} onAntennaTransition={tr=>{
      setAntenna(tr.state);antennaRef.current=tr.state;if(tr.state.activated)stepDate(markRadioActivationReached);
      receiverApiRef.current?.antennaTransition(tr);access.antennaTransition(tr);
-    }} antennaOptions={options} onAntennaOptionsChange={applyOptions}
+    }} antennaOptions={options} onAntennaOptionsChange={optionsManaged?undefined:applyOptions} managedDiameter={optionsManaged}
     active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}/>
   </div>
   <RadioReceiverWorkspace active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented} configurationOpen={access.open}

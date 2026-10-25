@@ -3,13 +3,13 @@ import {readFileSync} from 'node:fs';
 import type {RadioLabTransition} from './radioAntenna';
 import type {PulsarRecord} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,clearReceiverNextMark,completeRecordArming,completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,
+ RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,clearReceiverNextMark,completeRecordArming,completedRadioClockTick,copyReceiverLiveOptions,createRadioReceiverSession,dismissReceiverCloseBox,
  editReceiverSeed,endMarkGesture,markPointerDown,markPointerMove,markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,overwriteReceiverSourceBuffer,paintReceiverWindow,parseReceiverSeed,
  placeReceiverMark,pressRecord,reassociateReceivers,receiverBoxRefusal,receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,requestReceiverClose,
  stepReceiver,stepReceiverMark,tickReceivers,toggleReceiverAlignment,toggleReceiverMode,type RadioReceiverSession,type ReceiverMarkPress,type ReceiverSessionTransition,
 } from './radioReceiverSession';
 import {receiverPaintOps} from './radioReceiverDisplay';
-import {EMPTY_RADIO_RECORD_HEADER} from './radioReceiver';
+import {EMPTY_RADIO_RECORD_HEADER,RADIO_RECEIVER_COMPILED_OPTIONS,type RadioReceiverOptions} from './radioReceiver';
 import {isStackedReceiverArrangement,type ReceiverMoveDirection} from './radioReceiverArrangement';
 
 // [W] contract checks of the web session (docs/RADIO-RECEIVER-MONITOR.md), synthetic records only; not native oracles.
@@ -484,6 +484,51 @@ describe('R-RX6 PulsarList1Click on the shared buffer, modelled (WEB-PP-LIST-03)
   expect(s.tickError).not.toBeNull();expect(s.bank.slots[0]!.identifiedName).toBe('J0000+00');
   const back=take(list(s,[A]));expect(back.tickError).toBe(s.tickError);
   const ok=tick(back);expect(ok.outcome.kind).toBe('ok');expect(ok.session.tickError).toBeNull();
+ });
+});
+
+describe('R-RX9 live options copy (WEB-RSO-PROJ-01, OA-03 copyLiveRadioOptions)',()=>{
+ // [W] contract checks of the session action the route calls after a Preferences close; synthetic options only.
+ const NEW:RadioReceiverOptions=Object.freeze({provenance:'supplied-record',dishDiameterMeters:50,gain924:2,background928:9,beamWidth92c:Math.fround(0.25),temperature930:Math.fround(30)});
+ const snap=(rows:number)=>({generation:1,rows,saved:false,analysisBusy:false,leaseHeld:false});
+ const copy=(s:RadioReceiverSession,o:RadioReceiverOptions=NEW)=>copyReceiverLiveOptions(s,o);
+ it('replaces only bank.options: receivers, caches, canvases, overlays, seed, record and arrangement are kept; no event',()=>{
+  const s=take(paintReceiverWindow(open(),0)),t=copy(s);
+  expect(t.outcome).toEqual({kind:'ok',action:'live-options',events:[]});expect(t.host).toBeUndefined();
+  const c=take(t);
+  expect(c.bank.options).toEqual(NEW);expect(c.bank.options).not.toBe(NEW);expect(s.bank.options).toEqual(RADIO_RECEIVER_COMPILED_OPTIONS);
+  expect(c.bank.slots).toEqual(s.bank.slots);expect(c.bank.slots[0]!.trace).toBe(s.bank.slots[0]!.trace);
+  for(const k of ['sensitivity','backgroundFactor','area','detectorThermal','apertureText','title'] as const)expect(c.bank.slots[0]![k],k).toEqual(s.bank.slots[0]![k]);
+  for(const k of ['profile','random','sourceBuffer','timerEnabled'] as const)expect(c.bank[k],k).toBe(s.bank[k]);
+  expect(c.bank.recording).toEqual(s.bank.recording);
+  expect(c.seed).toBe(s.seed);expect(c.canvases).toBe(s.canvases);expect(c.markOverlays).toBe(s.markOverlays);expect(c.record).toBe(s.record);expect(c.arrangement).toBe(s.arrangement);
+  // Without receivers the view is replaced too (the first Open's FormCreate takes it).
+  expect(take(copy(createRadioReceiverSession())).bank.options).toEqual(NEW);
+ });
+ it('refuses atomically under the close box, a Record prompt or finish, an armed capture and a held capture lease',()=>{
+  const boxed=take(requestReceiverClose(take(addReceiverWindow(take(addReceiverWindow(open())))),1));
+  expect(copy(boxed)).toMatchObject({session:boxed,changed:false,outcome:{kind:'web-refused',action:'live-options',reason:'close-box-open'}});
+  const prompt=take(pressRecord(open(),snap(3)));
+  expect(copy(prompt)).toMatchObject({session:prompt,changed:false,outcome:{kind:'web-refused',reason:'record-dialog-open'}});
+  const armed=take(completeRecordArming(take(pressRecord(open(),snap(0))),{ok:true,seed:EMPTY_RADIO_RECORD_HEADER}));
+  expect(armed.record.leaseId).not.toBeNull();
+  const a=copy(armed);expect(a).toMatchObject({changed:false,outcome:{kind:'web-refused',reason:'record-lease-held'}});expect(a.session).toBe(armed);
+  const capturing=take(mode(armed));expect(capturing.bank.recording.header).not.toBeNull();
+  expect(copy(capturing).outcome).toMatchObject({kind:'web-refused',reason:'record-lease-held'});
+  // The header the Receive start wrote still names the aperture in use then.
+  expect(capturing.bank.recording.header!.aperture).toBe(100);
+  expect(copy(open(),{...NEW,dishDiameterMeters:20000}).outcome).toMatchObject({kind:'refused',action:'live-options',error:{kind:'options-domain'}});
+ });
+ it('existing receivers keep their FormCreate caches; a child added later takes the new ones; the aperture text follows a paint',()=>{
+  const s=take(paintReceiverWindow(open(),0)),before=s.bank.slots[0]!;
+  const c=take(copy(s));
+  expect(c.bank.slots[0]!.apertureText).toBe(before.apertureText);
+  const added=take(addReceiverWindow(c)),child=added.bank.slots[1]!;
+  expect(child.sensitivity).toBe(2);expect(child.area).not.toBe(before.area);expect(added.bank.slots[0]!.sensitivity).toBe(before.sensitivity);
+  expect(added.bank.slots[0]!.area).toBe(before.area);
+  const painted=take(paintReceiverWindow(c,0));
+  expect(painted.bank.slots[0]!.apertureText).not.toBe(before.apertureText);
+  expect(painted.bank.slots[0]!.apertureText).toContain('50');
  });
 });
 

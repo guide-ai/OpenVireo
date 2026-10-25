@@ -47,7 +47,7 @@ Every transition returns `{ok:true, bank, events, frames} | {ok:false, error:{ki
 | `stepHorizontal`, `stepVertical` | `0x574518`/`0x574588`, `0x574470`/`0x5744c4` | H halves above 0.5 / doubles below 16 (master propagates); gain halves above 0.125 / doubles below 8, `+0x565` recomputed. At a limit the outcome is `at-limit` (the beep is not reproduced). |
 | `reassociateReceiverOnClock` | `0x565723..0x5657cb` | Skipped without a main; else the picker with limit 5 on the main only. |
 | `overwriteSourceBufferFromPulsarList` | `0x567f80` | Overwrites or clears `+0x5f7` only; no receiver field, no refresh. The session action `overwriteReceiverSourceBuffer` (R-RX6, WEB-PP-LIST-03) wraps it; since R-RX8 `File ▸ Pulsar List...` calls it under the web menu history (WEB-PP-LIST-04), while the menu item's classroom availability stays unproven (`RADIO-PULSAR-PARAMETERS.md` G9). |
-| `copyLiveRadioOptions` | OA-03 live copy | Replaces the live options view; existing caches unchanged. |
+| `copyLiveRadioOptions` | OA-03 live copy | Replaces the live options view; existing caches unchanged. R-RX9 caller: `copyReceiverLiveOptions` (session) after a Preferences close under a numeric authority, refused under a box, Record dialog or capture lease (WEB-RSO-PROJ-01, [RADIO-SIMULATION-OPTIONS.md](RADIO-SIMULATION-OPTIONS.md)). |
 | `queryCloseReceiver`, `closeReceiver` | `0x5727e8`, `0x5726f0` | Slot 1 with slot 2 present is refused with the recovered literals. Main close: timer off, profile freed, children closed slot 2 then 1, slot cleared, `0x53a` sent synchronously (`send-0x53a`; handler not ported). Buffer and random stream stay. |
 
 ### FormCreate `0x5721d8` [S]

@@ -34,10 +34,13 @@ import {t,type PlainMessageKey} from '../i18n';
  * Open, the clock reassociation and File ▸ Pulsar List... write it) and whether the close box or a Record dialog is modal
  * (boxRefusal). R-RX8 (WEB-PP-LIST-04): sessionNow is the latest accepted session; commitPulsarList commits a prepared
  * 'pulsar-list' transition only while that session is still the latest (false otherwise, nothing changed). It runs no
- * notice, picker callback, onReceiverOpened, host request, focus, paint or seed step. Set while the workspace is mounted. */
+ * notice, picker callback, onReceiverOpened, host request, focus, paint or seed step. Set while the workspace is mounted.
+ * R-RX9 (WEB-RSO-PROJ-01): commitLiveOptions commits a prepared 'live-options' transition (copyReceiverLiveOptions) under
+ * the same compare-and-swap rule and with the same absence of side effects. */
 export type RadioReceiverApi=Readonly<{open:()=>void;antennaTransition:(tr:RadioLabTransition)=>void;hasReceivers:()=>boolean;
  sourceBuffer:()=>RadioSourceBuffer;boxRefusal:()=>'close-box-open'|'record-dialog-open'|null;
- sessionNow:()=>RadioReceiverSession;commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean}>;
+ sessionNow:()=>RadioReceiverSession;commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean;
+ commitLiveOptions:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean}>;
 export type RadioReceiverSummary=Readonly<{hasReceivers:boolean;seedValid:boolean;boxPending:boolean;boxPresented:boolean}>;
 export const INITIAL_RADIO_RECEIVER_SUMMARY:RadioReceiverSummary=Object.freeze({hasReceivers:false,seedValid:true,boxPending:false,boxPresented:false});
 
@@ -219,6 +222,11 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>{
     const o=t.outcome;
     if(sessionRef.current!==expected||o.kind!=='ok'||o.action!=='pulsar-list'||!t.changed||t.host!==undefined)return false;
+    sessionRef.current=t.session;setSession(t.session);return true;
+   },
+   commitLiveOptions:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>{
+    const o=t.outcome;
+    if(sessionRef.current!==expected||o.kind!=='ok'||o.action!=='live-options'||!t.changed||t.host!==undefined)return false;
     sessionRef.current=t.session;setSession(t.session);return true;
    }});
   return ()=>{apiRef.current=null;};
