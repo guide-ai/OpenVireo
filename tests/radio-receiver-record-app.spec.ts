@@ -457,3 +457,216 @@ test('N1: closing the main after arming but before Receive claims no data and re
  expect(Number(await id(page,'pulsar-memory-rows').textContent())).toBeGreaterThanOrEqual(rows);
  await expect(id(page,'pulsar-leased')).toHaveCount(0);await expect(id(page,'pulsar-file')).toBeEnabled();
 });
+
+// ---- R-RX11 regressions: the Load chooser joins the pending-read gate. Web policy (the native Load reads synchronously, so
+// no event-order parity is claimed). The read and digest holds are test-only init scripts that control timing; the PLR text
+// is synthetic and the recordings model-generated. Expected strings are the chosen web contract, not native oracles.
+const LOADED='Recording loaded. The data properties are shown.';
+const LATE='An earlier read finished after it was replaced or cancelled, and was ignored.';
+const READ_CANCELLED='Reading cancelled. The current analysis is unchanged.';
+type DigestHold={armed:boolean;release:(()=>void)|null};
+/** Test-only hold: after armDigest, the next crypto.subtle.digest call waits until releaseDigest. Product code is unchanged. */
+const holdDigest=(page:Page)=>page.addInitScript(()=>{
+ const w=window as unknown as{__digest:DigestHold};w.__digest={armed:false,release:null};
+ const digest=SubtleCrypto.prototype.digest;
+ SubtleCrypto.prototype.digest=function(this:SubtleCrypto,algorithm:AlgorithmIdentifier,data:BufferSource){
+  if(!w.__digest.armed)return digest.call(this,algorithm,data);
+  w.__digest.armed=false;const self=this;
+  return new Promise<ArrayBuffer>((resolve,reject)=>{w.__digest.release=()=>{digest.call(self,algorithm,data).then(resolve,reject);};});
+ };
+});
+const armDigest=(page:Page)=>page.evaluate(()=>{(window as unknown as{__digest:DigestHold}).__digest.armed=true;});
+const digestHeld=(page:Page)=>expect.poll(()=>page.evaluate(()=>(window as unknown as{__digest:DigestHold}).__digest.release!==null)).toBe(true);
+const releaseDigest=(page:Page)=>page.evaluate(()=>{const d=(window as unknown as{__digest:DigestHold}).__digest,r=d.release!;d.release=null;r();});
+/** A scripted change with any text (forceChange always delivers the valid PLR). */
+const forceFile=(page:Page,name:string,text:string)=>id(page,'pulsar-file').evaluate((el:HTMLInputElement,[body,n])=>{
+ const dt=new DataTransfer();dt.items.add(new File([body],n));el.files=dt.files;el.dispatchEvent(new Event('change',{bubbles:true}));
+},[text,name] as const);
+/** Unsaved memory data with one confirmed measurement. */
+async function memoryWithMeasurement(page:Page){
+ await startApp(page);await setupReceiver(page);await captureToIdentify(page);const points=await identifyToAnalysis(page);
+ await recordManual(page,'kept');await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ return points;
+}
+/** The real Load click → the unsaved-data prompt → No: resolves with the browser file chooser. */
+async function loadNo(page:Page){
+ await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
+ const chooser=page.waitForEvent('filechooser');await id(page,'pulsar-load-no').click();return chooser;
+}
+/** Ordinary pointer presses at the chooser label's text and at the (disabled) input itself, by page coordinates. */
+async function pressDisabledChooser(page:Page){
+ const input=id(page,'pulsar-file');
+ const text=await input.evaluate(el=>{const range=document.createRange();range.selectNodeContents(el.parentElement!.firstChild!);const b=range.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2};});
+ const box=(await input.boundingBox())!;
+ await page.mouse.click(text.x,text.y);await page.mouse.click(box.x+box.width/2,box.y+box.height/2);await flush(page);
+}
+
+test('R-RX11: during a held memory → PLR read the chooser is disabled through contents and SHA-256; presses open nothing; the file loads once',async({page},info)=>{
+ await holdReads(page);await holdDigest(page);
+ const points=await memoryWithMeasurement(page);
+ const input=id(page,'pulsar-file'),load=id(page,'pulsar-load-dialog');
+ await(await loadNo(page)).setFiles(plrFile('held-gate.plr'));await held(page,'held-gate.plr');
+ await expect(id(page,'pulsar-reading')).toBeVisible();await expect(input).toBeDisabled();
+ const chooserEnabledWhileReading=await input.isEnabled();
+ const status=await id(page,'pulsar-status').textContent();
+ let choosers=0;page.on('filechooser',()=>{choosers++;});
+ // Contents phase: ordinary presses on the disabled label and input open no prompt, picker or modal and write no status.
+ await pressDisabledChooser(page);
+ await expect(load).toHaveCount(0);await expect(page.locator('dialog:modal')).toHaveCount(0);
+ await expect(id(page,'pulsar-status')).toHaveText(status!);expect(choosers).toBe(0);
+ await expect(id(page,'pulsar-memory-rows')).toHaveText(points);
+ await info.attach('rrx11-chooser-disabled.png',{body:await page.screenshot({path:info.outputPath('rrx11-chooser-disabled.png'),fullPage:true}),contentType:'image/png'});
+ // An unsaved scripted change without a new one-shot grant is refused as before; the read continues.
+ await forceChange(page,'other.plr');await flush(page);
+ await expect(id(page,'pulsar-status')).toHaveText(PROMPT_FIRST);await expect(id(page,'pulsar-reading')).toBeVisible();await expect(input).toBeDisabled();
+ // SHA-256 phase: the contents are read, the digest is held; the gate still holds.
+ await armDigest(page);await release(page,'held-gate.plr');await digestHeld(page);await flush(page);
+ await expect(id(page,'pulsar-reading')).toBeVisible();await expect(input).toBeDisabled();
+ await pressDisabledChooser(page);
+ await expect(load).toHaveCount(0);await expect(page.locator('dialog:modal')).toHaveCount(0);expect(choosers).toBe(0);
+ await expect(id(page,'pulsar-memory-rows')).toHaveText(points);
+ await releaseDigest(page);await expect(id(page,'pulsar-reading')).toHaveCount(0);await flush(page);
+ const probe={
+  chooserEnabledWhileReading,
+  loadPromptOpenedDuringRead:await load.count(),
+  sourceStillMemory:await id(page,'pulsar-memory').count(),
+  loadedIncomingFile:await id(page,'pulsar-file-name').filter({hasText:'held-gate.plr'}).count(),
+  promptStillOpen:await page.locator('dialog:modal').count(),
+ };
+ await info.attach('rrx11-probe.json',{body:JSON.stringify(probe,null,1),contentType:'application/json'});
+ expect(probe).toEqual({chooserEnabledWhileReading:false,loadPromptOpenedDuringRead:0,sourceStillMemory:0,loadedIncomingFile:1,promptStillOpen:0});
+ await expect(id(page,'pulsar-file-name')).toHaveText('held-gate.plr');await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
+ await expect(id(page,'pulsar-bytes')).toHaveText(String(Buffer.byteLength(PLR,'latin1')));
+ await expect(id(page,'pulsar-status')).toHaveText(LOADED);await expect(id(page,'pulsar-properties')).toBeVisible();
+ await expect(id(page,'pulsar-prop-object')).toHaveText('SYNTH');
+ await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ expect((await download(page,id(page,'pulsar-download'))).equals(Buffer.from(PLR,'latin1'))).toBe(true);
+ await expect(input).toBeEnabled();expect(choosers).toBe(0);
+});
+
+type Reentry={calls:number;enabledAtClick:boolean|null;prevented:boolean|null};
+/** SYNTHETIC timing control, not original runtime: the only arrayBuffer wrapper of its test (no holdReads). The first
+ *  arrayBuffer() of the File named `target` runs synchronously inside onFile, after setReading but before React renders the
+ *  disabled chooser. From inside that call it records whether the input is still enabled, clicks it once, records whether
+ *  the click's default was prevented (window bubble listener), and then holds the read in `__held` (same shape as holdReads,
+ *  so held/release apply). Other files and later calls delegate to the original arrayBuffer untouched. */
+const holdReentry=(page:Page,target:string)=>page.addInitScript(name=>{
+ type Hold={release:()=>void};const w=window as unknown as{__held:Map<string,Hold>;__reentry:Reentry};
+ w.__held=new Map();w.__reentry={calls:0,enabledAtClick:null,prevented:null};
+ const read=Blob.prototype.arrayBuffer;
+ Blob.prototype.arrayBuffer=function(this:Blob){
+  if(!(this instanceof File&&this.name===name))return read.call(this);
+  if(++w.__reentry.calls>1)return read.call(this);
+  const input=document.querySelector<HTMLInputElement>('[data-testid="pulsar-file"]');
+  if(input){
+   w.__reentry.enabledAtClick=!input.disabled;
+   const observe=(ev:Event)=>{if(ev.target===input)w.__reentry.prevented=ev.defaultPrevented;};
+   window.addEventListener('click',observe);
+   try{input.click();}finally{window.removeEventListener('click',observe);}
+  }
+  const self=this;return new Promise<ArrayBuffer>((resolve,reject)=>w.__held.set(name,{release:()=>{read.call(self).then(resolve,reject);}}));
+ };
+},target);
+const reentry=(page:Page)=>page.evaluate(()=>(window as unknown as{__reentry:Reentry}).__reentry);
+
+test('R-RX11 SYNTHETIC File.arrayBuffer reentry before render: a click on the still-enabled chooser is refused by the click-time check',async({page})=>{
+ // Not a native, natural or ordinary-click race: the test's own arrayBuffer wrapper clicks the input from inside onFile's
+ // first read call, before React has committed the disabled chooser, so the click reaches the handler with the DOM input
+ // still enabled. Only the latest-ref read check stands between that click and the unsaved-data Load prompt.
+ await holdReentry(page,'held-reentry.plr');
+ const points=await memoryWithMeasurement(page);
+ const input=id(page,'pulsar-file'),load=id(page,'pulsar-load-dialog');
+ const chooser=await loadNo(page);
+ const status=await id(page,'pulsar-status').textContent();
+ let choosers=0;page.on('filechooser',()=>{choosers++;});
+ await chooser.setFiles(plrFile('held-reentry.plr'));await held(page,'held-reentry.plr');
+ // The click ran on an enabled DOM input and was refused (default prevented by the handler).
+ expect(await reentry(page)).toEqual({calls:1,enabledAtClick:true,prevented:true});
+ await flush(page);
+ await expect(load).toHaveCount(0);await expect(page.locator('dialog:modal')).toHaveCount(0);expect(choosers).toBe(0);
+ await expect(id(page,'pulsar-status')).toHaveText(status!);
+ await expect(id(page,'pulsar-memory')).toBeVisible();await expect(id(page,'pulsar-memory-rows')).toHaveText(points);
+ await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ // Now rendered: the chooser is disabled for the rest of the read.
+ await expect(id(page,'pulsar-reading')).toBeVisible();await expect(input).toBeDisabled();
+ await release(page,'held-reentry.plr');await expect(id(page,'pulsar-reading')).toHaveCount(0);await flush(page);
+ await expect(id(page,'pulsar-file-name')).toHaveText('held-reentry.plr');await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
+ await expect(id(page,'pulsar-bytes')).toHaveText(String(Buffer.byteLength(PLR,'latin1')));
+ await expect(id(page,'pulsar-status')).toHaveText(LOADED);await expect(id(page,'pulsar-properties')).toBeVisible();
+ await expect(id(page,'pulsar-memory')).toHaveCount(0);await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ expect(await reentry(page)).toEqual({calls:1,enabledAtClick:true,prevented:true});
+ await expect(load).toHaveCount(0);await expect(input).toBeEnabled();expect(choosers).toBe(0);
+});
+
+test('R-RX11 imported file: a newer scripted read still wins; Cancel reading and a read error lift the gate; focus returns to the chooser only from the page body',async({page},info)=>{
+ await holdReads(page);await startApp(page);await toAnalysis(page);
+ const input=id(page,'pulsar-file');
+ await input.setInputFiles(plrFile('route.plr'));await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
+ // Latest read wins, unchanged: the older held read finishes late and is ignored.
+ await input.setInputFiles(plrFile('held-old.plr'));await held(page,'held-old.plr');await expect(input).toBeDisabled();
+ await forceChange(page,'fresh-new.plr');
+ await expect(id(page,'pulsar-file-name')).toHaveText('fresh-new.plr');await expect(id(page,'pulsar-reading')).toHaveCount(0);await expect(input).toBeEnabled();
+ await release(page,'held-old.plr');await flush(page);
+ await expect(id(page,'pulsar-status')).toHaveText(LATE);await expect(id(page,'pulsar-file-name')).toHaveText('fresh-new.plr');
+ // Cancel reading lifts the gate before another file is chosen.
+ await input.setInputFiles(plrFile('held-cancel.plr'));await held(page,'held-cancel.plr');await expect(input).toBeDisabled();
+ await id(page,'pulsar-cancel-read').click();
+ await expect(input).toBeEnabled();await expect(id(page,'pulsar-status')).toHaveText(READ_CANCELLED);
+ await release(page,'held-cancel.plr');await flush(page);
+ await expect(id(page,'pulsar-status')).toHaveText(LATE);await expect(id(page,'pulsar-file-name')).toHaveText('fresh-new.plr');
+ // A read error that started on the focused chooser lifts the gate and returns focus there.
+ // TEST CONTROL: the focus owner while the chooser is disabled is recorded as observed; if it is not already the page body,
+ // the test blurs it, so the release starts from unowned body focus and the return to the chooser is the product's one-shot
+ // request, not focus the browser kept. This is no claim about where every browser leaves focus on a disabled input.
+ await input.focus();await expect(input).toBeFocused();
+ await forceFile(page,'held-bad.plr','not a recording\r\n');await held(page,'held-bad.plr');await expect(input).toBeDisabled();
+ const pendingFocus=await page.evaluate(()=>{const a=document.activeElement;return a===null?'none':a===document.body?'body':(a as HTMLElement).dataset.testid??a.tagName;});
+ await info.attach('rrx11-focus-while-reading.json',{body:JSON.stringify({pendingFocus}),contentType:'application/json'});
+ if(pendingFocus!=='body')await page.evaluate(()=>{(document.activeElement as HTMLElement|null)?.blur();});
+ await expect.poll(()=>page.evaluate(()=>document.activeElement===document.body)).toBe(true);await expect(input).not.toBeFocused();
+ await release(page,'held-bad.plr');
+ await expect(id(page,'pulsar-rejection')).toContainText('Recording not loaded: held-bad.plr.');
+ await expect(input).toBeEnabled();await expect(input).toBeFocused();
+ await expect(id(page,'pulsar-file-name')).toHaveText('fresh-new.plr');await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
+ // A control the learner focused during the read keeps focus after the error.
+ await input.focus();await forceFile(page,'held-bad-other.plr','not a recording\r\n');await held(page,'held-bad-other.plr');
+ const other=id(page,'pulsar-properties-open');await other.focus();await expect(other).toBeFocused();
+ await release(page,'held-bad-other.plr');
+ await expect(id(page,'pulsar-rejection')).toContainText('Recording not loaded: held-bad-other.plr.');
+ await expect(input).toBeEnabled();await flush(page);await expect(other).toBeFocused();
+ await expect(id(page,'pulsar-file-name')).toHaveText('fresh-new.plr');
+});
+
+test('R-RX11 size refusal before the first await: the same oversize file twice from the focused chooser queues no refocus; Dismiss leaves focus on the page body',async({page})=>{
+ // The size check runs synchronously before any read: the chooser is never rendered disabled, so the refusal requests no
+ // focus restoration. A second identical rejection commits nothing; a stale request would focus the chooser on the next,
+ // unrelated commit (the Dismiss below). Synthetic zero bytes over the bound, no real or original file.
+ await startApp(page);await toAnalysis(page);
+ const input=id(page,'pulsar-file');
+ await input.setInputFiles(plrFile('route.plr'));await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
+ await id(page,'pulsar-properties-close').click();await expect(id(page,'pulsar-properties')).toHaveCount(0);
+ await recordManual(page,'kept');await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ // Counts delivered change events, so the second (identical) refusal is known to have run.
+ await input.evaluate(el=>{const w=window as unknown as{__changes:number};w.__changes=0;el.addEventListener('change',()=>{w.__changes++;},true);});
+ const big={name:'big-same.plr',mimeType:'application/octet-stream',buffer:Buffer.alloc(2*1024*1024+1)};
+ await input.focus();await expect(input).toBeFocused();
+ await input.setInputFiles(big);await flush(page);
+ const rejection=id(page,'pulsar-rejection');await expect(rejection).toContainText('Recording not loaded: big-same.plr.');
+ const first=await rejection.textContent();
+ await expect(input).toBeFocused();
+ await input.setInputFiles(big);await flush(page);
+ expect(await page.evaluate(()=>(window as unknown as{__changes:number}).__changes)).toBe(2);
+ await expect(rejection).toHaveText(first!);await expect(rejection).toHaveCount(1);
+ await expect(input).toBeEnabled();await expect(id(page,'pulsar-reading')).toHaveCount(0);await expect(input).toBeFocused();
+ await expect(id(page,'pulsar-file-name')).toHaveText('route.plr');await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
+ await expect(id(page,'pulsar-bytes')).toHaveText(String(Buffer.byteLength(PLR,'latin1')));
+ await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ // Dismiss takes focus, then its removal leaves focus on the body; no queued request moves it to the chooser.
+ await rejection.locator('button').click();await flush(page);
+ await expect(rejection).toHaveCount(0);
+ await expect(input).not.toBeFocused();
+ await expect.poll(()=>page.evaluate(()=>document.activeElement===document.body)).toBe(true);
+ await expect(id(page,'pulsar-file-name')).toHaveText('route.plr');await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
+ await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ expect((await download(page,id(page,'pulsar-download'))).equals(Buffer.from(PLR,'latin1'))).toBe(true);
+});

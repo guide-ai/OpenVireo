@@ -141,9 +141,9 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // reported to the shared dataset, so receiver arming is refused while it is open (also on a hidden route).
   const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null;
   // WEB pending-read gate (the native load is synchronous): while a chosen file is being read, its contents or
-  // its SHA-256, no control opens a modal (Record, Review, Clear, Export). A modal makes the finished read's load be refused,
-  // which would drop the chosen file. The read completes, or the learner cancels it; a cancel or read error lifts the gate.
-  // Each opener otherwise keeps its own enabled state.
+  // its SHA-256, no control opens a modal (Record, Review, Clear, Export, and the Load chooser with its unsaved-data prompt).
+  // A modal makes the finished read's load be refused, which would drop the chosen file. The read completes, or the learner
+  // cancels it; a cancel or read error lifts the gate. Each opener otherwise keeps its own enabled state.
   const readPending = reading !== null;
   const dialog = pulsarRecordDialog(s), readouts = pulsarReadouts(s), props = rec ? pulsarDataProperties(rec) : null;
   const recordPanel = dialog?.panel ?? null;
@@ -238,10 +238,13 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // (or of the No answer) and the next change event consumes it; it only counts for that same generation. The input's
   // standard `cancel` event, a new real click and the panel's deactivation withdraw it. Window blur does not (the chooser
   // itself blurs the page). `reentry` marks answerLoad's own synchronous programmatic click.
+  // R-RX11: the chooser joins the pending-read gate. A click that runs while a read is pending (checked on the ref, so also
+  // before the disabled state is rendered) is refused unchanged: no prompt, no picker, no status and no grant change.
   const fileInput = useRef<HTMLInputElement>(null), pick = useRef<number | null>(null), reentry = useRef(false), loadDefault = useRef<HTMLButtonElement>(null);
   const promptNeeded = () => { const d = shared.current().data; return pulsarDataRows(d) > 0 && !pulsarDataSaved(d); };
   const onChooserClick = (e: ReactMouseEvent<HTMLInputElement>) => {
     if (reentry.current) return;
+    if (readingRef.current !== null) { e.preventDefault(); return; }
     pick.current = null;
     const tr = act(st => pulsarRequestLoad(st, shared.current().data));
     if (tr.outcome === 'load-allowed') pick.current = shared.current().generation; else e.preventDefault();
@@ -255,6 +258,17 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     reentry.current = true;
     try { fileInput.current?.click(); } finally { reentry.current = false; }
   };
+  // One-shot request from a failed read that started with focus on the chooser. Every commit clears it; focus returns to the
+  // chooser only if it is enabled, shown and not inert in an active panel, and focus is on the page body or nowhere, so a
+  // control, dialog or route that took focus meanwhile keeps it. Nothing is queued or retried.
+  const refocusChooser = useRef(false);
+  useLayoutEffect(() => {
+    if (!refocusChooser.current) return;
+    refocusChooser.current = false;
+    const el = fileInput.current, focused = document.activeElement;
+    if (!el || el.disabled || !activeRef.current || el.getClientRects().length === 0 || el.closest('[inert]')) return;
+    if (focused === document.body || focused === null) el.focus();
+  });
   // React does not deliver `cancel` for <input>; a browser without this event keeps the grant until the next real click,
   // a deactivation or a dataset change (docs/PULSAR-ANALYSIS.md).
   useEffect(() => {
@@ -277,12 +291,16 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (!picked && promptNeeded()) { say(t('pulsar.status.loadPromptFirst')); return; }
     // WEB-REC-TXN: the commit is refused when the current dataset changed after this read started.
     const generation = shared.current().generation;
+    // Disabling the focused chooser for the read can move focus to the page; a failed read asks to return it (refocusChooser).
+    const fromChooser = document.activeElement === e.target && e.target === fileInput.current;
     const token = ++epoch.current;
     setReading(file.name); setRejection(null);
     const late = () => { say(t('pulsar.status.lateDiscarded')); };
-    const fail = (text: string) => { setReading(null); setRejection(`${t('pulsar.reject.title', { name: file.name })} ${text}`); };
+    const fail = (text: string, restoreFocus = fromChooser) => { if (restoreFocus) refocusChooser.current = true; setReading(null); setRejection(`${t('pulsar.reject.title', { name: file.name })} ${text}`); };
     try {
-      if (file.size > PLR_MAX_BYTES) { fail(t('pulsar.reject.size')); return; }
+      // Refused before the first await: the chooser was never rendered disabled, so no focus restoration is requested
+      // (an identical repeated rejection commits nothing, and a request would wait for an unrelated later commit).
+      if (file.size > PLR_MAX_BYTES) { fail(t('pulsar.reject.size'), false); return; }
       const buffer = await file.arrayBuffer();
       if (token !== epoch.current || !activeRef.current) return late();
       const admission = admitPlrRecording(new Uint8Array(buffer), file.name);
@@ -537,7 +555,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
           <h3 id={`${idPrefix}file`}>{t('pulsar.file.heading')}</h3>
           <label className="plr-button">
             {t('pulsar.file.choose')}
-            <input ref={fileInput} type="file" accept=".plr,.PLR" onChange={onFile} onClick={onChooserClick} disabled={modal || leased} aria-describedby={leased ? `${idPrefix}leased` : undefined} data-testid="pulsar-file" />
+            <input ref={fileInput} type="file" accept=".plr,.PLR" onChange={onFile} onClick={onChooserClick} disabled={modal || leased || readPending} aria-describedby={leased ? `${idPrefix}leased` : undefined} data-testid="pulsar-file" />
           </label>
           <p className="plr-help">{t('pulsar.file.help')}</p>
           {leased && <p className="plr-warning" id={`${idPrefix}leased`} data-testid="pulsar-leased" data-phase={shared.doc.lease?.phase}>{t('pulsar.file.leased')}</p>}
