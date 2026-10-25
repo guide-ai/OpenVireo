@@ -16,6 +16,7 @@ import {
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {usePulsarParametersHost} from './RadioPulsarParameters';
 import {useRadioAccessHost} from './RadioAccessOptions';
+import {preparePulsarListCommand,type PulsarListCommandResult} from '../core/radioPulsarListCommand';
 import {t,type PlainMessageKey} from '../i18n';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
@@ -40,6 +41,8 @@ const CLOCK_OUTCOME_KEYS:Readonly<Partial<Record<RadioClockScenarioOutcome,Plain
 /** WEB-DATE-02 domain bounds of the dialog result (whole seconds), for the browser-limit box. */
 const DATE_MIN_TEXT=new Date(RADIO_DATE_WEB_LIMITS.minUTMS).toISOString().slice(0,19)+'Z',DATE_MAX_TEXT=new Date(RADIO_DATE_WEB_LIMITS.maxUTMS).toISOString().slice(0,19)+'Z';
 const DATE_MENU_TEXT=menuCaptionText(SET_DATE_MENU_CAPTION);
+const LIST_UNAVAILABLE:PulsarListCommandResult=Object.freeze({ok:false,reason:'unavailable'});
+const LIST_PREPARE_FAILED:PulsarListCommandResult=Object.freeze({ok:false,reason:'prepare-failed'});
 type DateFieldRefusal=Readonly<{field:RadioDateField;outcome:'field-too-long'|'field-not-ascii'}>;
 
 export type RadioTelescopeRouteProps=Readonly<{
@@ -70,7 +73,9 @@ export type RadioTelescopeRouteProps=Readonly<{
  * same catalog (locked while receivers exist), the pointing, the radio clock JD and perfNow; it writes none of them. The
  * R-RX7 Radio configuration card (docs/RADIO-ACCESS-OPTIONS.md) owns the Preferences gate scenario, the Access Pulsar List
  * option and the PulsarList1 readout; it only observes the antenna's first activation and committed receiver Open/close
- * events and writes nothing else. The state is temporary: it is not part of any investigation file.
+ * events. R-RX8: that card also shows File ▸ Pulsar List... while the item is shown; its click runs runPulsarList here,
+ * which writes only the receivers' shared source buffer and activates Pulsar Parameters (WEB-PP-LIST-04), never the menu
+ * flags, a receiver Open or the picker callback. The state is temporary: it is not part of any investigation file.
  */
 export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis}:RadioTelescopeRouteProps){
  const [state,setState]=useState<RadioControlState>(INITIAL_RADIO_CONTROL);
@@ -167,9 +172,14 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  // as the receiver box it must yield to. Preferences is refused, before any native step, while another radio surface
  // exists (latest state).
  const parametersOpenRef=useRef(false);
+ // R-RX8 File ▸ Pulsar List...: the card calls the latest runPulsarList (set below, after both owners exist) through a ref.
+ const listRunner=useRef<()=>PulsarListCommandResult>(()=>LIST_UNAVAILABLE);
+ const routeLatest=useRef({active,busy}),panelPresentedRef=useRef(false);
+ useLayoutEffect(()=>{routeLatest.current={active,busy};});
  const access=useRadioAccessHost({active,busy,antennaModal:modal,receiverBoxPending:receiverSummary.boxPending&&active&&!busy,
   surfaceNow:()=>isRadioLabModal(antennaRef.current)||dateRef.current.dialog!==null||parametersOpenRef.current?'modal'
-   :receiverApiRef.current?.boxRefusal()?'receiver-box':null});
+   :receiverApiRef.current?.boxRefusal()?'receiver-box':null,
+  runPulsarList:()=>listRunner.current()});
  // R-RX6: Open and Find read the receiver session's shared +0x5f7 buffer live and write nothing; the receiver close box and
  // Record dialogs refuse Open (WEB-PP-LIST-01..03); the receivers' picker runs move the window's shared list cursor (WEB-PP-CUR-01).
  const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented||access.open,
@@ -177,6 +187,26 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   sharedSource:()=>receiverApiRef.current?.sourceBuffer()??null,receiverBoxNow:()=>receiverApiRef.current?.boxRefusal()??null,
   catalogLocked:receiverSummary.hasReceivers,catalogLockedNow:()=>receiverApiRef.current?.hasReceivers()??false});
  useLayoutEffect(()=>{parametersOpenRef.current=parameters.open;});
+ /** WEB-PP-LIST-04 File ▸ Pulsar List...: synchronous, no await. Every gate reads the latest refs (a Receiver Open, antenna
+  * dialog or date dialog earlier in the same task counts), the pure preparation runs on one snapshot, and both owners are
+  * re-checked BEFORE the first commit; each commit is then a compare-and-swap that cannot run another owner's request. A
+  * refusal changes nothing. No onReceiverOpened, picker callback, Receiver Open, menu step, paint or seed step follows.
+  * This all-or-nothing admission is web policy: the native entry stores the buffer before its form calls, with no rollback. */
+ const runPulsarList=():PulsarListCommandResult=>{
+  const api=receiverApiRef.current,list=parameters.listSnapshot(),route=routeLatest.current;
+  const prepared=preparePulsarListCommand({host:{active:route.active,busy:route.busy,pageVisible:document.visibilityState!=='hidden'},menu:access.menuNow(),
+   catalog:list.catalog,reading:list.reading,
+   modal:isRadioLabModal(antennaRef.current)||dateRef.current.dialog!==null||access.openNow()||nativeModalOpen()||panelPresentedRef.current,
+   session:api?.sessionNow()??null,window:list.window,pointing:antennaRef.current.pointing,clockJD:readClockJD()});
+  if(!prepared.ok)return prepared;
+  const now=parameters.listSnapshot();
+  if(api===null||receiverApiRef.current!==api||api.sessionNow()!==prepared.before.session||now.window!==prepared.before.window||now.catalog!==list.catalog)return LIST_PREPARE_FAILED;
+  if(!api.commitPulsarList(prepared.before.session,prepared.session))return LIST_PREPARE_FAILED;
+  // Unreachable after the checks above (no reentrant request between the two synchronous commits); never reported as success.
+  if(!parameters.commitListActivation(prepared.before.window,prepared.window,{source:prepared.source,name:prepared.name}))throw new Error('File ▸ Pulsar List...: Pulsar Parameters changed between two synchronous commits');
+  return prepared;
+ };
+ useLayoutEffect(()=>{listRunner.current=runPulsarList;});
  // A dialog removed by a suppression must not move focus; read by the view's cleanup after this commit's layout effects.
  const dateSuppressed=useRef(false);
  useLayoutEffect(()=>{dateSuppressed.current=dateOpen&&!datePresented;});
@@ -184,6 +214,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  // The host learns whether the panel or the date dialog is presented: called only on change, false once at mount, and
  // false on unmount while presenting. Reported in the layout phase so the host makes its controls inert before paint.
  const [panelPresented,setPanelPresented]=useState(false);
+ useLayoutEffect(()=>{panelPresentedRef.current=panelPresented&&active&&!busy;});
  // The panel's report reaches this state one commit late. Gate it with the same route inputs the panel derives in this
  // render (active route, no project operation), so a stale true left by hiding the route or starting a project operation
  // is cleared in this commit, before the App's route-focus effect reads it (as the panel's former direct callback did).

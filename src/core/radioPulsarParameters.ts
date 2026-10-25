@@ -20,7 +20,7 @@ export const PULSAR_PARAMETERS_CONSTANTS=Object.freeze({
   * (0x28f) start with 0, so there is no tie or double rounding. */
  defaultDensity:ext(0xf5c28f5c28f5c28fn,0x3ff9),
  /** Extended 0x4000:80000000:00000000 = 2.0 pushed at 0x567fad..0x567fb7 for the picker call in PulsarList1Click
-  * (modelled write only: no UI caller, WEB-PP-LIST-03). */
+  * (modelled write WEB-PP-LIST-03, delivered by File ▸ Pulsar List..., WEB-PP-LIST-04; the reference Open runs no picker). */
  openLimit:2,
  /** TSearchInput1 stored query ShortString[12] at +0x37c (cl = 0xc at 0x568552 and 0x56862b). */
  queryMaxLength:12,
@@ -187,8 +187,9 @@ export const pulsarSeedFor=(record:PulsarRecord|null):PulsarSeed|null=>
 export const pulsarParametersOpenRefusal=(prev:PulsarParametersWindow|null):'modal'|null=>prev!==null&&isModal(prev)?'modal':null;
 
 /** WEB-PP-OPEN-01/WEB-PP-ACT-01 Open: create the window (FormCreate: Find memory '' / 0) or keep it and its Find memory, then
- * run FormActivate 0x568c4c with the live buffer's names (the caller reads the receiver session's buffer and writes nothing,
- * WEB-PP-LIST-03; Receiver Open and the clock reassociation are its only writers): with a name,
+ * run FormActivate 0x568c4c with the live buffer's names (the reference Open reads the receiver session's buffer and writes
+ * nothing; File ▸ Pulsar List... passes the buffer after its own write, WEB-PP-LIST-04; Receiver Open, the clock
+ * reassociation and that command are its writers): with a name,
  * Reset and Next over the list for the first record whose J2000 name contains it (Pos(sharedName, rec.J2000) > 0 at
  * 0x568ceb), else Reset + Next (the head); pointer +0x45c and the shared list cursor := that record; local JD := seedJD
  * (stands for the date getter 0x487bcc), density := the compiled literal; display. A different catalog starts a fresh window. */

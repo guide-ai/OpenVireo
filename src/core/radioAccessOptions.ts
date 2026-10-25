@@ -212,7 +212,8 @@ export function setCloseRecipient(s:RadioAccessState,recipient:RadioCloseRecipie
 }
 
 export type RadioPulsarListAvailability='hidden'|'hidden-enabled'|'shown-enabled'|'shown-disabled';
-/** Readout of the two flags. The command itself is not delivered by the web UI (WEB-PP-LIST-03). */
+/** Readout of the two flags. File ▸ Pulsar List... (WEB-ACC-LIST-01, WEB-PP-LIST-04) reads these flags at its click and
+ * never writes them. */
 export function pulsarListAvailability(menu:RadioPulsarListMenu):RadioPulsarListAvailability{
  if(!menu.visible)return menu.enabled?'hidden-enabled':'hidden';
  return menu.enabled?'shown-enabled':'shown-disabled';

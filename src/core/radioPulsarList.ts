@@ -1,7 +1,8 @@
 // The shared catalog list cursor ([+0x5cd]+4) and the live-buffer seed as the web reaches them (CLEA_VEO.exe SHA-256
 // 781bc970…c54c); see docs/RADIO-PULSAR-PARAMETERS.md (PP-05, PP-11, WEB-PP-ACT-01, WEB-PP-CUR-01). Pure helpers only: no
-// React, I/O, clock, RNG, receiver session or window state. Nothing here writes the buffer: Receiver Open and the clock write
-// it (the picker stays selectNearestPulsar); the modelled PulsarList1Click write has no UI caller (WEB-PP-LIST-03).
+// React, I/O, clock, RNG, receiver session or window state. Nothing here writes the buffer: Receiver Open, the clock and the
+// modelled PulsarList1Click write it (the picker stays selectNearestPulsar); that write is delivered by File ▸ Pulsar List...
+// (WEB-PP-LIST-04), which seeds the window from the post-write buffer through pulsarSeedFromBuffer.
 import type {RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import type {PulsarSeed} from './radioPulsarParameters';

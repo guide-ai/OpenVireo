@@ -394,8 +394,8 @@ describe('R-RX5 Align and the window order (WEB-RX-ALIGN-*)',()=>{
  });
 });
 
-describe('R-RX6 PulsarList1Click on the shared buffer, modelled, no UI caller (WEB-PP-LIST-03)',()=>{
- // [W] contract checks of the modelled session action (the web Open never calls it); synthetic records only. Later ticks may
+describe('R-RX6 PulsarList1Click on the shared buffer, modelled (WEB-PP-LIST-03), delivered by File ▸ Pulsar List... since R-RX8 (WEB-PP-LIST-04)',()=>{
+ // [W] contract checks of the modelled session action (the reference Open never calls it); synthetic records only. Later ticks may
  // legitimately run the existing name coupling (rebuild, RNG draws): only the click itself is claimed to leave the receivers untouched.
  const B=rec({primaryName:'J0001+01',legacyName:'B0001+01',ra:6.1,dec:10});
  const list=(s:RadioReceiverSession,catalog:readonly PulsarRecord[]|null=[B],pointing:Readonly<{ra:number;dec:number}>=POINT)=>overwriteReceiverSourceBuffer(s,{catalog,pointing});

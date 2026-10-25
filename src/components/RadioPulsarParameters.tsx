@@ -4,6 +4,7 @@ import {menuCaptionText} from '../core/radioControl';
 import {isRadioLabModal,type RadioLabState,type RadioPointing} from '../core/radioAntenna';
 import {parsePulsarCatalog,type PulsarCatalog,type PulsarCatalogError} from '../core/radioPulsarCatalog';
 import {pulsarPickerCursor,pulsarSeedFromBuffer} from '../core/radioPulsarList';
+import type {PulsarListCommandPrepared} from '../core/radioPulsarListCommand';
 import type {RadioSourceBuffer} from '../core/radioReceiver';
 import {
  PULSAR_FIND_CAPTIONS,PULSAR_PARAMETERS_CAPTIONS,PULSAR_PARAMETERS_CONSTANTS,PULSAR_PARAMETERS_WEB_POLICY,
@@ -30,6 +31,8 @@ type LoadStatus=Readonly<
 type OpenRefusal='inactive'|'no-catalog'|'reading'|'modal'|'close-box-open'|'record-dialog-open'|'unavailable';
 type FocusTarget='heading'|'open'|'find'|'date'|'density';
 type FieldRefusal='date'|'density'|null;
+/** What File ▸ Pulsar List... wrote, from the command's own result: a hit (J2000 name `name`, possibly '') or a miss. */
+type ListWrite=Readonly<Pick<PulsarListCommandPrepared,'source'|'name'>>;
 
 export type PulsarParametersHostInput=Readonly<{
  /** The route is shown. */
@@ -73,6 +76,12 @@ export type PulsarParametersHost=Readonly<{
  /** WEB-PP-CUR-01: the picker ran on the catalog owner with this catalog and pointing (Receiver Open or a clock
   * reassociation); the open window's shared cursor follows, without any display. Uses refs only. */
  pickerMoved:(catalog:PulsarCatalog|null,pointing:RadioPointing)=>void;
+ /** R-RX8 (WEB-PP-LIST-04): the latest admitted catalog, pending read and window, for File ▸ Pulsar List... (refs only). */
+ listSnapshot:()=>Readonly<{catalog:PulsarCatalog|null;reading:boolean;window:PulsarParametersWindow|null}>;
+ /** Commits the command's prepared activation only while `expected` is still the latest window (false otherwise, nothing
+  * changed); the heading takes focus. No picker cursor move follows: the activation's scan is the final cursor. `written`
+  * is the command's hit/miss and J2000 name, for the seed note (the seed alone cannot tell a miss from an unnamed hit). */
+ commitListActivation:(expected:PulsarParametersWindow|null,next:PulsarParametersWindow,written:ListWrite)=>boolean;
 }>;
 
 /** A target that can take focus: connected, enabled, rendered and not under an inert ancestor. */
@@ -92,6 +101,8 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
  const [load,setLoad]=useState<LoadStatus|null>(null);
  const [win,setWin]=useState<PulsarParametersWindow|null>(null);
  const winRef=useRef(win);
+ /** Which entry ran the window's last activation: the read-only reference Open or File ▸ Pulsar List... (the seed note). */
+ const [activatedBy,setActivatedBy]=useState<'open'|ListWrite>('open');
  const [fieldRefusal,setFieldRefusal]=useState<FieldRefusal>(null);
  const [findRefused,setFindRefused]=useState(false);
  const [helpShown,setHelpShown]=useState(false);
@@ -149,10 +160,10 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
  // ---- Window transitions (WEB-PP-OPEN-01 … WEB-PP-EXIT-01).
  const openRef=useRef<HTMLButtonElement>(null),headingRef=useRef<HTMLHeadingElement>(null),findRef=useRef<HTMLButtonElement>(null);
  const dateRef=useRef<HTMLInputElement>(null),densityRef=useRef<HTMLInputElement>(null);
- /** WEB-PP-LIST-01: the web reference Open (an explicit adaptation; PulsarList1Click is not delivered, WEB-PP-LIST-03). Every
-  * gate is checked on the latest state at the press, in order, before any window change; a refusal moves no cursor or
-  * window. Open writes nothing: the activation reads the receiver session's live buffer, still initial until Receiver Open
-  * or a clock reassociation writes it (WEB-PP-LIST-02), and no picker runs. */
+ /** WEB-PP-LIST-01: the web reference Open (an explicit adaptation, distinct from File ▸ Pulsar List..., WEB-PP-LIST-04).
+  * Every gate is checked on the latest state at the press, in order, before any window change; a refusal moves no cursor or
+  * window. Open writes nothing: the activation reads the receiver session's live buffer, still initial until Receiver Open,
+  * a clock reassociation or File ▸ Pulsar List... writes it (WEB-PP-LIST-02), and no picker runs. */
  const open=()=>{
   const l=latest.current,{catalog,read}=referenceRef.current,a=l.antennaNow();
   const refusal:OpenRefusal|null=!loadOpen()?'inactive':catalog===null?'no-catalog':read!==null?'reading'
@@ -161,7 +172,13 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
   const buffer=l.sharedSource();
   if(buffer===null&&a.activated){setOpenRefusal('unavailable');return;}
   const result=openPulsarParameters(winRef.current,catalog,pulsarSeedFromBuffer(buffer),l.readClockJD());
-  if(result.changed){winRef.current=result.window;setWin(result.window);setOpenRefusal(null);setFieldRefusal(null);requestFocus('heading');}
+  if(result.changed){winRef.current=result.window;setWin(result.window);setActivatedBy('open');setOpenRefusal(null);setFieldRefusal(null);requestFocus('heading');}
+ };
+ const listSnapshot=()=>Object.freeze({catalog:referenceRef.current.catalog,reading:referenceRef.current.read!==null,window:winRef.current});
+ const commitListActivation=(expected:PulsarParametersWindow|null,next:PulsarParametersWindow,written:ListWrite)=>{
+  if(winRef.current!==expected)return false;
+  winRef.current=next;setWin(next);setActivatedBy(Object.freeze({source:written.source,name:written.name}));setOpenRefusal(null);setFieldRefusal(null);setFindRefused(false);requestFocus('heading');
+  return true;
  };
  const pickerMoved=(catalog:PulsarCatalog|null,pointing:RadioPointing)=>{
   stepWindow(w=>movePulsarListCursor(w,catalog,catalog===w.catalog?pulsarPickerCursor(catalog,pointing):null));
@@ -225,7 +242,7 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
   <p id={`${id}-open-reason`} className="radio-control-note" data-testid="pulsar-params-open-reason">{openReason}</p>
   <p className="radio-control-status" role="status" aria-live="polite" data-testid="pulsar-params-open-status" data-reason={openRefusal??undefined}>
    {openRefusal===null?'':t(`pulsarParameters.open.refused.${openRefusal}`)}</p>
-  {win!==null&&<PulsarParametersWindowView win={win} fieldRefusal={fieldRefusal} helpShown={helpShown} headingRef={headingRef} findRef={findRef} dateRef={dateRef} densityRef={densityRef}
+  {win!==null&&<PulsarParametersWindowView win={win} activatedBy={activatedBy} fieldRefusal={fieldRefusal} helpShown={helpShown} headingRef={headingRef} findRef={findRef} dateRef={dateRef} densityRef={densityRef}
    onPrev={()=>run(previousPulsar)} onNext={()=>run(nextPulsar)} onEdit={edit} onUpdate={update} onReset={()=>{setFieldRefusal(null);run(w=>resetPulsarDerived(w,latest.current.readClockJD()));}}
    onFind={()=>{setFindRefused(false);run(w=>openPulsarFind(w,pulsarSeedFromBuffer(latest.current.sharedSource())));}} onExit={exit} onHelp={()=>setHelpShown(v=>!v)}/>}
  </section>;
@@ -236,7 +253,8 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
    onOk={()=>{setFindRefused(false);run(confirmPulsarFind,'find');}} onCancel={()=>{setFindRefused(false);run(cancelPulsarFind,'find');}}/>}
   {presented&&win?.notice&&<PulsarNoticeBox notice={win.notice} onDismiss={()=>dismiss(win.notice!)}/>}
  </div>;
- return {open:surfaceOpen,pending,presented,card,layer,catalog,catalogReading:reading,currentCatalog:()=>referenceRef.current.catalog,pickerMoved};
+ return {open:surfaceOpen,pending,presented,card,layer,catalog,catalogReading:reading,currentCatalog:()=>referenceRef.current.catalog,pickerMoved,
+  listSnapshot,commitListActivation};
 }
 
 function loadText(load:LoadStatus|null):string{
@@ -249,19 +267,26 @@ function loadText(load:LoadStatus|null):string{
  return t(`pulsarParameters.reference.status.${load.kind}`,{name:load.name,max:PULSAR_REFERENCE_WEB_POLICY.maxBytes});
 }
 
-type WindowViewProps=Readonly<{win:PulsarParametersWindow;fieldRefusal:FieldRefusal;helpShown:boolean;
+type WindowViewProps=Readonly<{win:PulsarParametersWindow;activatedBy:'open'|ListWrite;fieldRefusal:FieldRefusal;helpShown:boolean;
  headingRef:RefObject<HTMLHeadingElement|null>;findRef:RefObject<HTMLButtonElement|null>;dateRef:RefObject<HTMLInputElement|null>;densityRef:RefObject<HTMLInputElement|null>;
  onPrev:()=>void;onNext:()=>void;onEdit:(field:'date'|'density',text:string)=>void;onUpdate:()=>void;onReset:()=>void;onFind:()=>void;onExit:()=>void;onHelp:()=>void}>;
 /** TPlsrDataForm1 as a card region: every catalog field is a read-only input (DFM ReadOnly=True); only Date (MJD) and
  * Electron Density are editable (WEB-PP-PRES-01). Captions are the raw DFM strings; menu accelerators are stripped. */
-function PulsarParametersWindowView({win,fieldRefusal,helpShown,headingRef,findRef,dateRef,densityRef,onPrev,onNext,onEdit,onUpdate,onReset,onFind,onExit,onHelp}:WindowViewProps){
+function PulsarParametersWindowView({win,activatedBy,fieldRefusal,helpShown,headingRef,findRef,dateRef,densityRef,onPrev,onNext,onEdit,onUpdate,onReset,onFind,onExit,onHelp}:WindowViewProps){
  const id=useId(),s=win.source;
  // WEB-PP-PRES-02: the shown record, the shared list cursor and the restored pointer are named separately when they differ.
  // The notes are plain text (no live region): a clock tick that moves the cursor redraws nothing and announces nothing.
  const cursorMoved=win.listCursor!==win.shownIndex,pointerMoved=win.index!==win.shownIndex;
  const nameAt=(i:number)=>win.catalog[i].primaryName===''?win.catalog[i].legacyName:win.catalog[i].primaryName;
- // WEB-PP-PRES-02: the shared name the last Open read (Open never changes it).
- const seedText=win.seed===null?t('pulsarParameters.window.shared.none'):t('pulsarParameters.window.shared.name',{name:win.seed.primaryName});
+ // WEB-PP-PRES-02: the shared name the last activation read: Open never changes it; File ▸ Pulsar List... had just written
+ // it (WEB-PP-LIST-04), and the record shown can be an earlier prefix or duplicate match than the one written. After the
+ // command the note follows the command's own hit/miss and name, never the seed: a miss and a hit on a record with an
+ // empty J2000 name both leave no seed.
+ const seedText=activatedBy==='open'
+  ?win.seed===null?t('pulsarParameters.window.shared.none'):t('pulsarParameters.window.shared.name',{name:win.seed.primaryName})
+  :activatedBy.source==='miss'?t('pulsarParameters.window.shared.commandNone')
+  :activatedBy.name===''||activatedBy.name===null?t('pulsarParameters.window.shared.commandUnnamed')
+  :t('pulsarParameters.window.shared.commandName',{name:activatedBy.name});
  const readOnly=(name:PulsarSourceField|'j2000'|'b1950'|'derivedPeriod'|'distance',value:string,labelledBy:string)=>
   <input id={`${id}-${name}`} type="text" readOnly value={value} aria-labelledby={labelledBy} data-testid={`pulsar-params-field-${name}`} className="pulsar-params-value"/>;
  const plain=(name:PulsarSourceField|'j2000'|'b1950',caption:string,value:string)=><div className="antenna-field">
@@ -351,7 +376,7 @@ function PulsarParametersWindowView({win,fieldRefusal,helpShown,headingRef,findR
    {derivedNotes.length>0&&<ul className="radio-control-note" data-testid="pulsar-params-derived-issues">{derivedNotes.map(text=><li key={text}>{text}</li>)}</ul>}
    <p className="radio-control-note">{t('pulsarParameters.window.epochNote')}</p>
   </div>
-  <p className="radio-control-note" data-testid="pulsar-params-seed" data-seed={win.seed===null?'none':'name'} style={{overflowWrap:'anywhere'}}>{seedText}</p>
+  <p className="radio-control-note" data-testid="pulsar-params-seed" data-seed={win.seed===null?'none':'name'} data-activation={activatedBy==='open'?'open':'command'} style={{overflowWrap:'anywhere'}}>{seedText}</p>
  </div>;
 }
 

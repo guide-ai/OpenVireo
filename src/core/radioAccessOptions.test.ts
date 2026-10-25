@@ -214,7 +214,10 @@ describe('isolation',()=>{
   expect(tail?.receipt).toContain('PREFERENCES-TAIL-CAPTURE.json');
   const prefix=files.find(f=>f.path==='g9-options/environment-preferences.asm');
   expect(prefix?.range).toBeDefined();expect(prefix!.range).not.toContain('0x5889f8');
-  expect(json.notDelivered).toContain('PulsarList1Click');
+  // R-RX8: the command is delivered by the card under the recovered history; the readout keeps its own policy.
+  expect(json.notDelivered).toBeUndefined();
+  expect(json.pulsarListCommand).toContain('PulsarList1Click');expect(json.pulsarListCommand).toContain('WEB-PP-LIST-04');
+  expect(json.webPolicies).toContain('WEB-ACC-LIST-01');
  });
  it('imports nothing: no React, receiver, source buffer, RNG, clock, record or i18n',()=>{
   const source=readFileSync(new URL('./radioAccessOptions.ts',import.meta.url),'utf8');

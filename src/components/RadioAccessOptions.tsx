@@ -4,8 +4,9 @@ import type {RadioLabTransition} from '../core/radioAntenna';
 import {
  INITIAL_RADIO_ACCESS,RADIO_ACCESS_DFM,RADIO_ACCESS_LITERALS,applyDemonstrationGate,cancelRadioOptions,closePreferences,dismissUserOptions,editAccessPulsarList,
  okRadioOptions,openPreferences,openRadioOptions,pulsarListAvailability,radioLabFirstActivation,receiverCloseMessage,receiverOpened,setCloseRecipient,
- type RadioAccessHostRefusal,type RadioAccessOutcome,type RadioAccessState,type RadioAccessTransition,type RadioCloseRecipient,
+ type RadioAccessHostRefusal,type RadioAccessOutcome,type RadioAccessState,type RadioAccessTransition,type RadioCloseRecipient,type RadioPulsarListMenu,
 } from '../core/radioAccessOptions';
+import type {PulsarListCommandRefusal,PulsarListCommandResult} from '../core/radioPulsarListCommand';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t,type PlainMessageKey} from '../i18n';
 
@@ -19,6 +20,9 @@ const STATUS:Readonly<Partial<Record<RadioAccessOutcome,PlainMessageKey>>>={
  'preferences-closed-ok':'radioAccess.status.preferences-closed-ok','preferences-closed-cancel':'radioAccess.status.preferences-closed-cancel',
 };
 type MenuEvent='activation-shown'|'activation-hidden'|'open-disabled'|'open-skipped'|'close-environment'|'close-enabled'|'close-skipped';
+/** The last File ▸ Pulsar List... result: the shared name written and the record the window shows, or the refusal. On a
+ * hit, name '' means the copied record has an empty J2000 name (from the command's result, never the seed). */
+type ListStatus=Readonly<{outcome:'hit'|'miss'|PulsarListCommandRefusal;name:string;position:number;shown:string}>;
 const MENU_EVENT:Readonly<Partial<Record<RadioAccessOutcome,MenuEvent>>>={
  'menu-receiver-open-disable':'open-disabled','menu-receiver-open-skip':'open-skipped',
  'close-not-delivered':'close-environment','menu-close-enable':'close-enabled','menu-close-skip':'close-skipped',
@@ -36,12 +40,17 @@ export type RadioAccessHostInput=Readonly<{
  receiverBoxPending:boolean;
  /** Handler-time web guard: another radio surface is open now (latest state), or null. */
  surfaceNow:()=>'modal'|'receiver-box'|null;
+ /** R-RX8 File ▸ Pulsar List... (WEB-ACC-LIST-01, WEB-PP-LIST-04): the route's synchronous admission, preparation and
+  * two-owner commit. Its result is only announced here; this host writes no source, window or menu flag for it. */
+ runPulsarList:()=>PulsarListCommandResult;
 }>;
 export type RadioAccessHost=Readonly<{
  /** The refusal box or the options dialog exists (presented or not): the other radio cards are behind it. */
  open:boolean;
  /** Latest accepted state, for same-task handler checks. */
  openNow:()=>boolean;
+ /** Latest accepted PulsarList1 flags (a Receiver Open earlier in the same task already counts). Read only. */
+ menuNow:()=>RadioPulsarListMenu;
  /** It would be presented on this route outside a project operation. */
  pending:boolean;
  /** It is presented. */
@@ -65,18 +74,21 @@ const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
  * WEB host of the R-RX7 Radio configuration (docs/RADIO-ACCESS-OPTIONS.md): a card with the gate scenario, the Preferences
  * opener, read-only values, the PulsarList1 readout and the close-recipient adaptation; and, as application-modal
  * surfaces, the USER OPTIONS! box and the partial Optical/Radio Simulation Options dialogs. Every change goes through the
- * pure transitions on the latest accepted state (stateRef). Nothing is saved, restored or sent anywhere; the receivers,
- * source buffer, cursor, records, clocks and RNG are never touched.
+ * pure transitions on the latest accepted state (stateRef). Nothing is saved, restored or sent anywhere. R-RX8: while the
+ * item is shown the card also renders the File ▸ Pulsar List... command (disabled while the item is disabled); its click
+ * runs the route's runPulsarList, which alone writes the shared source buffer and activates Pulsar Parameters. This host
+ * never touches the receivers, source buffer, cursor, records, clocks or RNG, and the command never writes the menu flags.
  */
-export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow}:RadioAccessHostInput):RadioAccessHost{
+export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow,runPulsarList}:RadioAccessHostInput):RadioAccessHost{
  const id=useId();
  const [state,setState]=useState<RadioAccessState>(INITIAL_RADIO_ACCESS);
  const stateRef=useRef(state);
  const [status,setStatus]=useState<RadioAccessOutcome|null>(null);
  const [childStatus,setChildStatus]=useState<'radio-ok'|'radio-cancelled'|null>(null);
  const [menuEvent,setMenuEvent]=useState<MenuEvent|null>(null);
- const latest=useRef({active,busy,surfaceNow});
- useLayoutEffect(()=>{latest.current={active,busy,surfaceNow};});
+ const [listStatus,setListStatus]=useState<ListStatus|null>(null);
+ const latest=useRef({active,busy,surfaceNow,runPulsarList});
+ useLayoutEffect(()=>{latest.current={active,busy,surfaceNow,runPulsarList};});
  const step=(fn:(s:RadioAccessState)=>RadioAccessTransition)=>{
   const r=fn(stateRef.current);if(r.changed){stateRef.current=r.state;setState(r.state);}return r;
  };
@@ -102,6 +114,15 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
   setStatus(r.outcome==='user-options-shown'||r.outcome==='preferences-opened'?null:r.outcome);setChildStatus(null);
  };
  const chooseRecipient=(recipient:RadioCloseRecipient)=>{cardUser(s=>setCloseRecipient(s,recipient));};
+ /** WEB-ACC-LIST-01: File ▸ Pulsar List.... The route checks every gate on the latest state (menuNow included) and commits;
+  * here only the outcome is announced: the shared name written and the record the window shows, which are named apart. */
+ const runList=()=>{
+  const r=latest.current.runPulsarList();
+  if(!r.ok){setListStatus({outcome:r.reason,name:'',position:0,shown:''});return;}
+  const w=r.window;
+  setListStatus({outcome:r.source,name:r.name??'',position:w.shownIndex+1,shown:w.source.j2000===''?w.source.b1950:w.source.j2000});
+ };
+ const menuNow=()=>stateRef.current.menu;
 
  // ---- Dialog actions.
  const dismiss=()=>{const r=user(dismissUserOptions);if(r?.changed)setStatus(r.outcome);};
@@ -137,6 +158,10 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  const onOff=(v:boolean)=>t(v?'radioAccess.values.on':'radioAccess.values.off');
  const last=state.lastChildOk===null?t('radioAccess.values.lastUnknown'):t(state.lastChildOk?'radioAccess.values.lastOk':'radioAccess.values.lastNotOk');
  const statusKey=status===null?undefined:STATUS[status];
+ const listText=listStatus===null?'':listStatus.outcome==='hit'
+  ?listStatus.name===''?t('radioAccess.list.status.unnamed',{shown:listStatus.shown})
+  :t('radioAccess.list.status.hit',{name:listStatus.name,position:listStatus.position,shown:listStatus.shown})
+  :listStatus.outcome==='miss'?t('radioAccess.list.status.miss'):t(`radioAccess.list.refused.${listStatus.outcome}`);
  const card=(inert:boolean)=><section className="card radio-control radio-control-env radio-access" aria-labelledby={`${id}-title`} data-testid="radio-access-card"
   inert={inert||open||undefined} data-gate={state.gate.open?'open':'closed'}>
   <h2 ref={headingRef} id={`${id}-title`} tabIndex={-1}>{t('radioAccess.heading')}</h2>
@@ -168,7 +193,13 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
   <p className="radio-control-note" data-testid="radio-access-menu-flags">{t('radioAccess.menu.flags',{enabled:flag(menu.enabled),visible:flag(menu.visible)})}</p>
   <p className="radio-control-note" data-testid="radio-access-menu-history">{menu.activationSeen?t('radioAccess.menu.activationDone'):t('radioAccess.menu.activationPending')}</p>
   <p className="radio-control-note" data-testid="radio-access-menu-event" data-event={menuEvent??undefined}>{menuEvent===null?'':t(`radioAccess.menu.event.${menuEvent}`)}</p>
-  <p className="radio-control-note" data-testid="radio-access-not-delivered">{t('radioAccess.menu.notDelivered')}</p>
+  {menu.visible&&<div className="button-row">
+   <button type="button" className="secondary-button" data-testid="radio-access-pulsar-list" disabled={!menu.enabled} aria-describedby={`${id}-list-note`}
+    onKeyDown={ignoreHeldKey} onClick={runList}>{menuCaptionText(D.pulsarListCaption)}</button>
+  </div>}
+  <p id={`${id}-list-note`} className="radio-control-note" data-testid="radio-access-command-note">{t('radioAccess.menu.command')}</p>
+  <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-access-list-status" data-outcome={listStatus?.outcome}
+   style={{overflowWrap:'anywhere'}}>{listText}</p>
   <fieldset className="antenna-group radio-access-recipient" data-testid="radio-access-recipient" data-recipient={state.closeRecipient} aria-describedby={`${id}-recipient-note`}>
    <legend>{t('radioAccess.recipient.legend')}</legend>
    <label><input type="radio" name={`${id}-recipient`} data-testid="radio-access-recipient-environment" checked={state.closeRecipient==='environment'}
@@ -190,7 +221,7 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
    returnFocus={prefsRef} fallbackFocus={headingRef} suppressed={suppressed}/>}
   {presented&&child!==null&&<RadioOptionsChildDialog checked={child.checked} onEdit={editChild} onOk={okChild} onCancel={cancelChild} returnFocus={radioRef} suppressed={suppressed}/>}
  </div>;
- return {open,openNow,pending,presented,card,layer,
+ return {open,openNow,menuNow,pending,presented,card,layer,
   antennaTransition,receiverOpened:onReceiverOpened,mainCloseMessage:onMainClose};
 }
 

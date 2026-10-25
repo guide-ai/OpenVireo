@@ -2,8 +2,9 @@ import {test,expect,type Browser,type Locator,type Page,type TestInfo} from '@pl
 import {readFile} from 'node:fs/promises';
 // Actual App flows of R-RX7 (docs/RADIO-ACCESS-OPTIONS.md): the Preferences gate scenario, the partial Optical/Radio
 // Simulation Options dialogs on one radio options object, the environment copy read by the panel, and the PulsarList1
-// readout (first activation, Receiver Open disable, the 0x53a close recipient). PulsarList1Click is never delivered. No
-// harness and no product debug hook: the rendered App, its data attributes, the browser clock control and programmatic
+// readout (first activation, Receiver Open disable, the 0x53a close recipient). R-RX8: the readout's flags now also decide
+// whether the File ▸ Pulsar List... command is rendered and enabled; it is never clicked here (its flows are in
+// tests/radio-pulsar-list-command-app.spec.ts). No harness and no product debug hook: the rendered App, its data attributes, the browser clock control and programmatic
 // clicks on controls behind a surface. The catalog is synthetic (no original rows); expected strings are the chosen web
 // contract, not native oracles.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
@@ -120,10 +121,16 @@ async function values(page:Page,root:string,env:string,last:string){
  await expect(id(page,'radio-access-root')).toHaveAttribute('data-value',root);await expect(id(page,'radio-access-env')).toHaveAttribute('data-value',env);
  await expect(id(page,'radio-access-last')).toHaveAttribute('data-value',last);
 }
-/** No File ▸ Pulsar List... command anywhere in the radio route, whatever the flags say. */
-async function noCommand(page:Page){
- await expect(id(page,'radio-route').getByRole('button',{name:/Pulsar List/})).toHaveCount(0);
- await expect(id(page,'radio-access-not-delivered')).toContainText('Command not delivered');
+/** R-RX8 File ▸ Pulsar List... (WEB-ACC-LIST-01) from the flags only: absent while the item is hidden (also hidden with
+ * Enabled set), otherwise the one native-caption button of the route, enabled only while the item is enabled. It is never
+ * clicked here, so no command outcome exists. */
+async function commandIs(page:Page,state:'absent'|'disabled'|'enabled'){
+ const buttons=id(page,'radio-route').getByRole('button',{name:/Pulsar List/}),button=id(page,'radio-access-pulsar-list');
+ await expect(id(page,'radio-access-command-note')).toContainText('File ▸ Pulsar List... appears here only while the item is shown');
+ await expect(id(page,'radio-access-list-status')).not.toHaveAttribute('data-outcome');
+ if(state==='absent'){await expect(button).toHaveCount(0);await expect(buttons).toHaveCount(0);return;}
+ await expect(buttons).toHaveCount(1);await expect(button).toHaveText('Pulsar List...');
+ if(state==='enabled')await expect(button).toBeEnabled();else await expect(button).toBeDisabled();
 }
 
 test('closed gate: Preferences shows the recovered USER OPTIONS! box; OK, Escape and Enter close it; held keys; nothing changes',async({page})=>{
@@ -133,7 +140,7 @@ test('closed gate: Preferences shows the recovered USER OPTIONS! box; OK, Escape
  await values(page,'false','false','unknown');await expect(id(page,'radio-access-last')).toHaveText('Unknown: its startup value was not recovered');
  await expect(id(page,'radio-access-origin')).toContainText('It is not a classroom value.');
  await menuIs(page,'hidden');await expect(id(page,'radio-access-menu-flags')).toHaveText('Enabled: False · Visible: False');
- await expect(id(page,'radio-access-menu')).toHaveAttribute('data-activation-seen','false');await noCommand(page);
+ await expect(id(page,'radio-access-menu')).toHaveAttribute('data-activation-seen','false');await commandIs(page,'absent');
  // Mouse: the box, its recovered literals, the cards behind it.
  await id(page,'radio-access-preferences').click();
  const box=id(page,'radio-access-refusal');await expect(box).toBeVisible();
@@ -180,16 +187,16 @@ test('Demonstration gate and nested dialogs: Radio OK then outer Cancel applies;
  await menuIs(page,'hidden');await expect(id(page,'radio-access-menu-history')).toContainText('has not had its first activation');
  // First activation with the copy On: shown and enabled.
  await switchOnTracking(page);
- await menuIs(page,'shown-enabled','activation-shown');await expect(id(page,'radio-access-menu-flags')).toHaveText('Enabled: True · Visible: True');await noCommand(page);
+ await menuIs(page,'shown-enabled','activation-shown');await expect(id(page,'radio-access-menu-flags')).toHaveText('Enabled: True · Visible: True');await commandIs(page,'enabled');
  // Receiver Open (a source hit) disables it.
- await openReceiver(page);await menuIs(page,'shown-disabled','open-disabled');
+ await openReceiver(page);await menuIs(page,'shown-disabled','open-disabled');await commandIs(page,'disabled');
  // Default recipient TEnvironment1: no handler, nothing changes.
  await expect(id(page,'radio-access-recipient')).toHaveAttribute('data-recipient','environment');
  await closeMain(page);await menuIs(page,'shown-disabled','close-environment');
  // [W] TRadioLab recipient: the recovered handler re-enables (visibility untouched).
  await openReceiver(page);await menuIs(page,'shown-disabled','open-disabled');
  await id(page,'radio-access-recipient-radio-lab').check();await expect(id(page,'radio-access-recipient')).toHaveAttribute('data-recipient','radio-lab');
- await closeMain(page);await menuIs(page,'shown-enabled','close-enabled');await noCommand(page);
+ await closeMain(page);await menuIs(page,'shown-enabled','close-enabled');await commandIs(page,'enabled');
  // A new Open disables again; with the copy turned Off, reopening the existing main window calls Open again (skipped).
  await openReceiver(page);await menuIs(page,'shown-disabled','open-disabled');
  await configure(page,false,'ok');
@@ -214,7 +221,7 @@ test('history: access turned on after the first activation keeps the item hidden
  await menuIs(page,'hidden','activation-hidden');
  await loadCatalog(page);await openReceiver(page);await menuIs(page,'hidden','open-disabled');
  await id(page,'radio-access-recipient-radio-lab').check();await closeMain(page);
- await menuIs(page,'hidden-enabled','close-enabled');await expect(id(page,'radio-access-menu-flags')).toHaveText('Enabled: True · Visible: False');await noCommand(page);
+ await menuIs(page,'hidden-enabled','close-enabled');await expect(id(page,'radio-access-menu-flags')).toHaveText('Enabled: True · Visible: False');await commandIs(page,'absent');
  // Reload resets the whole session.
  await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-access-card')).toBeVisible();
  await values(page,'false','false','unknown');await menuIs(page,'hidden');await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');

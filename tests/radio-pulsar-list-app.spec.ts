@@ -1,9 +1,10 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 // Actual App flows of R-RX6 (docs/RADIO-PULSAR-PARAMETERS.md PP-05/PP-11, WEB-PP-LIST-*, WEB-PP-ACT-01, WEB-PP-CUR-01,
-// WEB-PP-FIND-02′/04, WEB-PP-PRES-02): the Pulsar Parameters Open only reads the receiver session's shared source buffer
-// (PulsarList1Click is modelled but not delivered), Find seeds from that buffer, and the receivers' picker runs (Receiver
-// Open, clock reassociation) are its only writers and move the window's shared list cursor. No harness and no product debug hook: the rendered App, its data attributes, browser history,
+// WEB-PP-FIND-02′/04, WEB-PP-PRES-02): the Pulsar Parameters reference Open only reads the receiver session's shared source
+// buffer, Find seeds from that buffer, and the receivers' picker runs (Receiver Open, clock reassociation) write it and move
+// the window's shared list cursor. The menu item is never shown in these flows, so File ▸ Pulsar List... (R-RX8, the third
+// writer, WEB-PP-LIST-04) is exercised in tests/radio-pulsar-list-command-app.spec.ts. No harness and no product debug hook: the rendered App, its data attributes, browser history,
 // the browser clock control, the test-only read hold, a test-only foreign <dialog> and programmatic clicks on controls that
 // are inert behind a surface (to exercise the handler-time gates). The catalog is synthetic (no original rows); expected
 // strings are the chosen web contract, not native oracles.

@@ -302,8 +302,9 @@ export function reassociateReceivers(s:RadioReceiverSession,input:ReceiverSource
 }
 
 /**
- * WEB-PP-LIST-03 modelled TRadioLab.PulsarList1Click 0x567f80, with no UI caller: the native menu item's runtime availability
- * is unproven (docs/RADIO-PULSAR-PARAMETERS.md, PulsarList1 availability), and the Pulsar Parameters Open only reads the buffer.
+ * WEB-PP-LIST-03 modelled TRadioLab.PulsarList1Click 0x567f80, delivered by File ▸ Pulsar List... (WEB-PP-LIST-04, through
+ * preparePulsarListCommand in radioPulsarListCommand.ts) under the R-RX7 menu history; the native item's classroom
+ * availability stays unproven (G9), and the reference Pulsar Parameters Open only reads the buffer.
  * The existing overwriteSourceBufferFromPulsarList (picker limit 2): a hit copies the record into +0x5f7, a miss clears its
  * J2000 name. No receiver field, pointer, offset, refresh, paint, title, trace, mark or lease, Record byte, arrangement or
  * seed changes, and the persistent tick error stays; a later tick may then run the existing name coupling. Admitted with or

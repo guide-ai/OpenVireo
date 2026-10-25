@@ -319,7 +319,17 @@ describe('provenance record',()=>{
   expect(avail.activation.writes).toHaveLength(2);expect(avail.receiverOpen.write).toContain('Enabled := False');
   // G9 stays listed, partially resolved by R-RX7 (owner and close routing), with the classroom value and delivery still open.
   const g9=(json.gaps as {id:string;text:string}[]).find(g=>g.id==='G9');
-  expect(g9?.text).toContain('Partially resolved by R-RX7');expect(g9?.text).toContain('PulsarList1Click stays undelivered');
+  expect(g9?.text).toContain('Partially resolved by R-RX7');expect(g9?.text).toContain('delivered by File ▸ Pulsar List... (R-RX8)');
+  expect(g9?.text).toContain('no classroom availability is claimed');
+  // R-RX8 evidence: the 21 copies with their quoted SHA-256 (64 hex digits); a copy of an R-RX6 source keeps the R-RX6 hash.
+  const rx8=json.rx8Evidence.files as {path:string;source:string;sha256:string}[];
+  expect(rx8).toHaveLength(21);expect(new Set(rx8.map(f=>f.path)).size).toBe(21);expect(rx8.every(f=>/^[0-9a-f]{64}$/.test(f.sha256))).toBe(true);
+  expect(json.rx8Evidence.manifestSHA256).toBe('37a7ed51605d983ceb9581b62e2b1b58272569d64481c30682af84ca9e787e7d');
+  expect(json.rx8Evidence.staticChecksPassed).toBe(67);
+  const rx6BySource=new Map(rx6.map(f=>[f.path,f.sha256]));let overlap=0;
+  for(const f of rx8){const h=rx6BySource.get(f.source);if(h!==undefined){overlap++;expect(f.sha256,f.source).toBe(h);}}
+  expect(overlap).toBeGreaterThanOrEqual(10);
+  expect(json.webPolicies).toContain('WEB-PP-LIST-04');expect(doc).toContain('| PP-10 |');
   expect(json.contracts.find((c:{id:string})=>c.id==='PP-10').web.join(' ')).not.toMatch(/pulsarListEntryFor|pulsarParametersOpenRefusal/);
   expect(json.externalCatalog.sha256).toBe('ba94ee94c359e2afd4acce940266d69983d24a93893719cca20d3e23ef3dceaa');
  });

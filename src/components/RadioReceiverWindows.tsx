@@ -30,11 +30,14 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import {t,type PlainMessageKey} from '../i18n';
 
 /** Host access for the route: open from the panel's Receiver button, the antenna transitions (clock reassociation), the
- * catalog lock, and two read-only views for Pulsar Parameters: the shared +0x5f7 buffer (sourceBuffer, read live; only
- * Receiver Open and the clock reassociation write it) and whether the close box or a Record dialog is modal (boxRefusal).
- * Set while the workspace is mounted. */
+ * catalog lock, and two read-only views for Pulsar Parameters: the shared +0x5f7 buffer (sourceBuffer, read live; Receiver
+ * Open, the clock reassociation and File ▸ Pulsar List... write it) and whether the close box or a Record dialog is modal
+ * (boxRefusal). R-RX8 (WEB-PP-LIST-04): sessionNow is the latest accepted session; commitPulsarList commits a prepared
+ * 'pulsar-list' transition only while that session is still the latest (false otherwise, nothing changed). It runs no
+ * notice, picker callback, onReceiverOpened, host request, focus, paint or seed step. Set while the workspace is mounted. */
 export type RadioReceiverApi=Readonly<{open:()=>void;antennaTransition:(tr:RadioLabTransition)=>void;hasReceivers:()=>boolean;
- sourceBuffer:()=>RadioSourceBuffer;boxRefusal:()=>'close-box-open'|'record-dialog-open'|null}>;
+ sourceBuffer:()=>RadioSourceBuffer;boxRefusal:()=>'close-box-open'|'record-dialog-open'|null;
+ sessionNow:()=>RadioReceiverSession;commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean}>;
 export type RadioReceiverSummary=Readonly<{hasReceivers:boolean;seedValid:boolean;boxPending:boolean;boxPresented:boolean}>;
 export const INITIAL_RADIO_RECEIVER_SUMMARY:RadioReceiverSummary=Object.freeze({hasReceivers:false,seedValid:true,boxPending:false,boxPresented:false});
 
@@ -211,7 +214,13 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  useLayoutEffect(()=>{
   apiRef.current=Object.freeze({open:()=>apiImpl.current.open(),antennaTransition:(tr:RadioLabTransition)=>apiImpl.current.antennaTransition(tr),
    hasReceivers:()=>receiverSessionOpen(sessionRef.current),
-   sourceBuffer:()=>sessionRef.current.bank.sourceBuffer,boxRefusal:()=>receiverBoxRefusal(sessionRef.current)});
+   sourceBuffer:()=>sessionRef.current.bank.sourceBuffer,boxRefusal:()=>receiverBoxRefusal(sessionRef.current),
+   sessionNow:()=>sessionRef.current,
+   commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>{
+    const o=t.outcome;
+    if(sessionRef.current!==expected||o.kind!=='ok'||o.action!=='pulsar-list'||!t.changed||t.host!==undefined)return false;
+    sessionRef.current=t.session;setSession(t.session);return true;
+   }});
   return ()=>{apiRef.current=null;};
  },[apiRef]);
 
