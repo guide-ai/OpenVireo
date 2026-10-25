@@ -317,7 +317,9 @@ describe('provenance record',()=>{
    '12b9844378c08a29313254c0e7793a4199fd8bea25db2098e23b24b3a9105418','1d915b45e5589617eb75fa3fe718b8d0172752fbca567d86cb8d97ed283883b0','c3df4c2a3e02fdfe19ba8e874aa0eabe935e87906cbd0bbed263c7aa784629e1']);
   expect(avail.initialDFM).toEqual({parent:'File1',name:'PulsarList1',Caption:'Pulsar &List...',Enabled:false,Visible:false,OnClick:'PulsarList1Click'});
   expect(avail.activation.writes).toHaveLength(2);expect(avail.receiverOpen.write).toContain('Enabled := False');
-  expect(json.gaps.map((g:{id:string})=>g.id)).toContain('G9');
+  // G9 stays listed, partially resolved by R-RX7 (owner and close routing), with the classroom value and delivery still open.
+  const g9=(json.gaps as {id:string;text:string}[]).find(g=>g.id==='G9');
+  expect(g9?.text).toContain('Partially resolved by R-RX7');expect(g9?.text).toContain('PulsarList1Click stays undelivered');
   expect(json.contracts.find((c:{id:string})=>c.id==='PP-10').web.join(' ')).not.toMatch(/pulsarListEntryFor|pulsarParametersOpenRefusal/);
   expect(json.externalCatalog.sha256).toBe('ba94ee94c359e2afd4acce940266d69983d24a93893719cca20d3e23ef3dceaa');
  });

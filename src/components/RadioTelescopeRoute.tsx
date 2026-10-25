@@ -15,6 +15,7 @@ import {
 } from '../core/radioDateDialog';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {usePulsarParametersHost} from './RadioPulsarParameters';
+import {useRadioAccessHost} from './RadioAccessOptions';
 import {t,type PlainMessageKey} from '../i18n';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
@@ -67,7 +68,9 @@ export type RadioTelescopeRouteProps=Readonly<{
  * learner-loaded reference catalog, the radio clock scenario at Open/Reset and, at Open and Find, the receiver session's
  * shared source buffer; it writes none of them. The panel's Receiver button opens the silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md), which reads the
  * same catalog (locked while receivers exist), the pointing, the radio clock JD and perfNow; it writes none of them. The
- * state is temporary: it is not part of any investigation file.
+ * R-RX7 Radio configuration card (docs/RADIO-ACCESS-OPTIONS.md) owns the Preferences gate scenario, the Access Pulsar List
+ * option and the PulsarList1 readout; it only observes the antenna's first activation and committed receiver Open/close
+ * events and writes nothing else. The state is temporary: it is not part of any investigation file.
  */
 export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis}:RadioTelescopeRouteProps){
  const [state,setState]=useState<RadioControlState>(INITIAL_RADIO_CONTROL);
@@ -158,12 +161,22 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  // The receiver close box and the R-RX4 Record prompts and finish dialogs make the card application-modal behind them (as
  // the date dialog does).
  const receiverBoxPresented=receiverSummary.boxPresented&&active&&!busy;
+ // R-RX7 Radio configuration: its box and dialogs are application-modal over every radio card and yield (kept) to an antenna
+ // surface or a pending receiver box/Record dialog. Pending, not presented: a receiver box that became pending behind an
+ // antenna box is committed before that box closes, so the configuration never mounts (and takes focus) in the same commit
+ // as the receiver box it must yield to. Preferences is refused, before any native step, while another radio surface
+ // exists (latest state).
+ const parametersOpenRef=useRef(false);
+ const access=useRadioAccessHost({active,busy,antennaModal:modal,receiverBoxPending:receiverSummary.boxPending&&active&&!busy,
+  surfaceNow:()=>isRadioLabModal(antennaRef.current)||dateRef.current.dialog!==null||parametersOpenRef.current?'modal'
+   :receiverApiRef.current?.boxRefusal()?'receiver-box':null});
  // R-RX6: Open and Find read the receiver session's shared +0x5f7 buffer live and write nothing; the receiver close box and
  // Record dialogs refuse Open (WEB-PP-LIST-01..03); the receivers' picker runs move the window's shared list cursor (WEB-PP-CUR-01).
- const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented,
-  antennaNow:()=>antennaRef.current,dateOpenNow:()=>dateRef.current.dialog!==null,readClockJD,
+ const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented||access.open,
+  antennaNow:()=>antennaRef.current,dateOpenNow:()=>dateRef.current.dialog!==null||access.openNow(),readClockJD,
   sharedSource:()=>receiverApiRef.current?.sourceBuffer()??null,receiverBoxNow:()=>receiverApiRef.current?.boxRefusal()??null,
   catalogLocked:receiverSummary.hasReceivers,catalogLockedNow:()=>receiverApiRef.current?.hasReceivers()??false});
+ useLayoutEffect(()=>{parametersOpenRef.current=parameters.open;});
  // A dialog removed by a suppression must not move focus; read by the view's cleanup after this commit's layout effects.
  const dateSuppressed=useRef(false);
  useLayoutEffect(()=>{dateSuppressed.current=dateOpen&&!datePresented;});
@@ -175,7 +188,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  // render (active route, no project operation), so a stale true left by hiding the route or starting a project operation
  // is cleared in this commit, before the App's route-focus effect reads it (as the panel's former direct callback did).
  // On entry, true still arrives one commit later; the App waits on data-modal-pending meanwhile.
- const modalPresented=(panelPresented&&active&&!busy)||datePresented||parameters.presented||receiverBoxPresented;
+ const modalPresented=(panelPresented&&active&&!busy)||datePresented||parameters.presented||receiverBoxPresented||access.presented;
  const reportTo=useRef(onModalPresentedChange),reported=useRef<boolean|null>(null);
  useLayoutEffect(()=>{reportTo.current=onModalPresentedChange;});
  useLayoutEffect(()=>{if(reported.current!==modalPresented){reported.current=modalPresented;reportTo.current(modalPresented);}},[modalPresented]);
@@ -206,19 +219,20 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  const receiverReason:RadioReceiverButtonReason=!antenna.activated?'not-activated':!antenna.receiverEnabled?'receiver-disabled'
   :parameters.catalog===null?'no-catalog':parameters.catalogReading?'catalog-reading'
   :!receiverSummary.seedValid&&!receiverSummary.hasReceivers?'seed-invalid'
-  :modal||dateOpen||parameters.presented||receiverBoxPresented?'modal':!active||busy?'inactive':'available';
+  :modal||dateOpen||parameters.presented||receiverBoxPresented||access.open?'modal':!active||busy?'inactive':'available';
  const receiverGate=useRef(receiverReason);
  useLayoutEffect(()=>{receiverGate.current=receiverReason;});
  /** The press re-checks the latest accepted antenna state and the committed gate before the workspace opens. */
  const openReceiver=()=>{
   const a=antennaRef.current;
-  if(!a.activated||!a.receiverEnabled||isRadioLabModal(a)||receiverGate.current!=='available')return;
+  if(!a.activated||!a.receiverEnabled||isRadioLabModal(a)||access.openNow()||receiverGate.current!=='available')return;
   receiverApiRef.current?.open();
  };
  const receiverButton:RadioReceiverButton={available:receiverReason==='available',reason:receiverReason,onOpen:openReceiver,buttonRef:receiverButtonRef};
  const behindReceiverBox=receiverBoxPresented||undefined;
+ const behindAccess=access.open||undefined,panelBehindAccess=access.presented||undefined;
  return <div className="radio-route" data-testid="radio-route">
-  <section className="card radio-route-scenario" aria-labelledby="radio-route-scenario-title" data-testid="radio-route-scenario" inert={dateOpen||parameters.presented||behindReceiverBox}>
+  <section className="card radio-route-scenario" aria-labelledby="radio-route-scenario-title" data-testid="radio-route-scenario" inert={dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id="radio-route-scenario-title">{t('radioRoute.scenario.heading')}</h2>
    <ul>
     <li data-testid="radio-route-scenario-options">{t('radioRoute.scenario.options',{max:o.maxRateIndex,base:o.rateBase})}</li>
@@ -230,7 +244,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
    </ul>
    <p className="radio-route-persistence" data-testid="radio-route-persistence">{t('radioRoute.persistence')}</p>
   </section>
-  <section className="card radio-control radio-control-env radio-route-clock" aria-labelledby={`${id}-clock`} data-testid="radio-route-clock" data-running={scenario.running} inert={modal||dateOpen||parameters.presented||behindReceiverBox}>
+  <section className="card radio-control radio-control-env radio-route-clock" aria-labelledby={`${id}-clock`} data-testid="radio-route-clock" data-running={scenario.running} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id={`${id}-clock`}>{t('radioRoute.clock.heading')}</h2>
    <p className="radio-control-note">{t('radioRoute.clock.help',{min:'1900-01-01T00:00:00',max:UT_MAX_TEXT})}</p>
    <label htmlFor={`${id}-utc`}>{t('radioRoute.clock.utLabel')}</label>
@@ -258,7 +272,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
    </p>
    <p className="radio-control-note" data-testid="radio-clock-limits">{t('radioRoute.clock.limits')}</p>
   </section>
-  <section className="card radio-control radio-control-env radio-route-date" aria-labelledby={`${id}-date`} data-testid="radio-route-date" data-available={dateGate.status==='available'} inert={modal||dateOpen||parameters.presented||behindReceiverBox}>
+  <section className="card radio-control radio-control-env radio-route-date" aria-labelledby={`${id}-date`} data-testid="radio-route-date" data-available={dateGate.status==='available'} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id={`${id}-date`}>{t('radioRoute.date.heading')}</h2>
    <p className="radio-control-note">{t('radioRoute.date.help')}</p>
    <div className="button-row">
@@ -272,20 +286,23 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
    <p className="radio-control-note">{t('radioRoute.date.storedNote')}</p>
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-date-status">{dateStatusText}</p>
   </section>
+  {access.card(modal||dateOpen||parameters.presented||receiverBoxPresented)}
   {parameters.card}
-  {/* A box-less wrapper: while the date dialog, a presented Pulsar Parameters surface or the receiver close box is open,
-      the whole panel is behind it (application-modal). An antenna box that arrives meanwhile takes over: the utility's
-      surface and the receiver box yield to it. */}
-  <div style={{display:'contents'}} inert={dateOpen||parameters.presented||behindReceiverBox} data-testid="radio-route-panel-wrapper">
+  {/* A box-less wrapper: while the date dialog, a presented Pulsar Parameters surface, the receiver close box or a presented
+      Radio configuration surface is open, the whole panel is behind it (application-modal). An antenna box that arrives
+      meanwhile takes over: the utility's surface, the receiver box and the configuration surfaces yield to it. A
+      configuration that has yielded (open, not presented) must not make the panel, and so that antenna box, inert. */}
+  <div style={{display:'contents'}} inert={dateOpen||parameters.presented||behindReceiverBox||panelBehindAccess} data-testid="radio-route-panel-wrapper">
    <RadioControlPanel state={state} environment={environment}
     onTransition={tr=>{setState(tr.state);if(tr.state.radioPanelShown)stepDate(markRadioActivationReached);}} onEnvironmentChange={setEnvironment}
     antenna={antenna} onAntennaTransition={tr=>{
      setAntenna(tr.state);antennaRef.current=tr.state;if(tr.state.activated)stepDate(markRadioActivationReached);
-     receiverApiRef.current?.antennaTransition(tr);
+     receiverApiRef.current?.antennaTransition(tr);access.antennaTransition(tr);
     }} antennaOptions={options} onAntennaOptionsChange={applyOptions}
     active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}/>
   </div>
-  <RadioReceiverWorkspace active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented}
+  <RadioReceiverWorkspace active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented} configurationOpen={access.open}
+   onReceiverOpened={access.receiverOpened} onMainCloseMessage={access.mainCloseMessage}
    catalogNow={parameters.currentCatalog} pointingNow={()=>antennaRef.current.pointing} readClockJD={readClockJD} perfNow={perfNow}
    apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary} pulsarData={pulsarData} onOpenPulsarAnalysis={onOpenPulsarAnalysis}
    onSourcePicker={parameters.pickerMoved}/>
@@ -296,6 +313,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
    {datePresented&&dateState.dialog?.error&&<RadioDateErrorBox failure={dateState.dialog.error} dialog={dateState.dialog} storedId={dateState.storedId} onDismiss={()=>stepDate(dismissRadioDateError)}/>}
   </div>
   {parameters.layer}
+  {access.layer}
  </div>;
 }
 

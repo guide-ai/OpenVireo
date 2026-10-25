@@ -4,7 +4,7 @@ Status: **internal pure-TypeScript dependency**. It ports the receiver scientifi
 
 There is no UI, recording, PLR writer, audio, cadence policy, session/CSV/PLR format change, resource change or dependency. No acquisition is enabled and no observation is produced. The increment does **not** close I06, I07, N07 or E06 and does not change the 58-capability counts.
 
-Correction to the plan introduction: I06 is **not** done. The antenna has accepted subflows, but I06 and all of Radio remain partial. Since R-RX6 the Pulsar Parameters Open reads this core's shared buffer through the session and writes nothing, and the window mirrors the shared list cursor (`RADIO-PULSAR-PARAMETERS.md`, PP-05/PP-11); the session action `overwriteReceiverSourceBuffer` models PulsarList1Click and is tested, with no UI caller (PP-10, G9). This core itself is unchanged.
+Correction to the plan introduction: I06 is **not** done. The antenna has accepted subflows, but I06 and all of Radio remain partial. Since R-RX6 the Pulsar Parameters Open reads this core's shared buffer through the session and writes nothing, and the window mirrors the shared list cursor (`RADIO-PULSAR-PARAMETERS.md`, PP-05/PP-11); the session action `overwriteReceiverSourceBuffer` models PulsarList1Click and is tested, with no UI caller (PP-10, G9). R-RX7 shows the menu item's availability flags as a readout and still delivers no PulsarList1Click (`RADIO-ACCESS-OPTIONS.md`). This core itself is unchanged.
 
 Provenance, hashes, cells and tags: `RADIO-RECEIVER-SIGNAL-PROVENANCE.json`. Tags: **[S]** static listing, **[I]** analyst inference, **[D]** resource/DFM data, **[W]** web policy.
 

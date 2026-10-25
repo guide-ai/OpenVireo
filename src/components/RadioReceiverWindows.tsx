@@ -45,6 +45,8 @@ type Props=Readonly<{
  busy:boolean;
  /** An antenna dialog/box, the date dialog or a presented Pulsar Parameters surface: the cards are behind it. */
  antennaModal:boolean;dateOpen:boolean;parametersPresented:boolean;
+ /** R-RX7 a Radio configuration box or dialog exists: the cards are behind it. */
+ configurationOpen?:boolean;
  /** Latest accepted reference catalog, antenna pointing and side-effect-free radio clock JD; read only in handlers and callbacks. */
  catalogNow:()=>PulsarCatalog|null;pointingNow:()=>RadioPointing;readClockJD:()=>number|null;
  /** Monotonic milliseconds (the route's perfNow). */
@@ -58,6 +60,11 @@ type Props=Readonly<{
  /** WEB-PP-CUR-01: called synchronously after a committed Receiver Open or clock reassociation whose picker ran (a source-hit
   * or source-miss event), with exactly the catalog and pointing that transition used. */
  onSourcePicker?:(catalog:PulsarCatalog|null,pointing:RadioPointing)=>void;
+ /** R-RX7 (docs/RADIO-ACCESS-OPTIONS.md): called after a committed Receiver Open whose picker ran (source-hit or
+  * source-miss, the paths that converge at 0x567a44), also when reopening the existing main window. Never for a refusal. */
+ onReceiverOpened?:()=>void;
+ /** R-RX7: called after a committed main close whose events include send-0x53a. Never for a refused close or the close box. */
+ onMainCloseMessage?:()=>void;
 }>;
 
 /** Browser interval host for the receiver Timer1 registration (WEB-RX-CAD-01). */
@@ -126,8 +133,8 @@ function outcomeText(o:ReceiverSessionOutcome):string{
  * holds it and the 40 ms timer so the 25 Hz updates re-render only this subtree. Every step runs on the latest accepted
  * session (sessionRef), as the route's stepDate does. Nothing is saved, restored or sent anywhere; no audio is produced.
  */
-export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange,
- pulsarData,onOpenPulsarAnalysis,onSourcePicker}:Props){
+export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,configurationOpen=false,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange,
+ pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage}:Props){
  const id=useId();
  const [session,setSession]=useState<RadioReceiverSession>(createRadioReceiverSession);
  const sessionRef=useRef(session);
@@ -135,8 +142,8 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const [focus,setFocus]=useState<FocusTarget|null>(null);
  const serial=useRef(0);
  const requestFocus=(kind:FocusTarget['kind'],slot:number)=>setFocus({kind,slot,serial:++serial.current});
- const latest=useRef({active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker});
- useLayoutEffect(()=>{latest.current={active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker};});
+ const latest=useRef({active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage});
+ useLayoutEffect(()=>{latest.current={active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage};});
  /** R-RX4 host requests, applied synchronously in order to the shared current dataset (WEB-REC-TXN). An 'acquire' is
   * answered at once through completeRecordArming, whose outcome becomes the notice. */
  const applyHost=(requests:readonly ReceiverRecordHostRequest[])=>{
@@ -188,7 +195,10 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const open=()=>{
   const input={catalog:latest.current.catalogNow(),pointing:latest.current.pointingNow()};
   const r=userAction(null,s=>openReceiverWindow(s,input));
-  if(r?.outcome.kind==='ok'){pickerRan(r,input);setNotice({slot:0,outcome:r.outcome});requestFocus('heading',0);}
+  if(r?.outcome.kind==='ok'){
+   pickerRan(r,input);setNotice({slot:0,outcome:r.outcome});requestFocus('heading',0);
+   if(r.outcome.events.some(e=>e.kind==='source-hit'||e.kind==='source-miss'))latest.current.onReceiverOpened?.();
+  }
  };
  /** WEB-RX-CLK-01: a completed RA-13 tick reassociates with limit 5 from the latest catalog and the tick's pointing. */
  const antennaTransition=(tr:RadioLabTransition)=>{
@@ -294,6 +304,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   // WEB-REC-TXN 7: the partial-rows text only when the close requested the capture commit (after Receive started).
   const r=userAction(slot,s=>requestReceiverClose(s,slot),r=>r.host?.some(h=>h.kind==='commit')?t('radioReceiver.record.status.partial'):undefined);
   if(r?.outcome.kind==='ok'&&r.session.bank.slots[slot]===null)requestFocus(slot===0?'after-main-close':'after-child-close',slot);
+  if(r?.outcome.kind==='ok'&&r.outcome.events.some(e=>e.kind==='send-0x53a'))latest.current.onMainCloseMessage?.();
  };
  const dismissBox=()=>{if(stepSession(dismissReceiverCloseBox).changed)requestFocus('close1',1);};
  const paint=(slot:number)=>{stepSession(s=>paintReceiverWindow(s,slot));};
@@ -326,7 +337,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
 
  // ---- R-RX3 marks (docs/RADIO-RECEIVER-MARKS.md). One pointer lease across the bank, read from sessionRef (never from a
  // rendered snapshot). Presses need the shown route, no project operation, no surface over the cards and no foreign dialog.
- const cardsInert=antennaModal||dateOpen||parametersPresented||boxPresented;
+ const cardsInert=antennaModal||dateOpen||parametersPresented||configurationOpen||boxPresented;
  const inertRef=useRef(cardsInert);
  useLayoutEffect(()=>{inertRef.current=cardsInert;});
  const overlays=useRef<(HTMLCanvasElement|null)[]>([null,null,null]),displays=useRef<(HTMLDivElement|null)[]>([null,null,null]);

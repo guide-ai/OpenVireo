@@ -1,0 +1,63 @@
+{
+  "increment": "R-RX7 Radio configuration ownership and PulsarList1 availability",
+  "baseline": "45433b7",
+  "artifact": {"sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c", "executedOrEmulated": false},
+  "hashPolicy": "Every SHA-256 below is quoted from a capture receipt, a contract in the evidence directory or the coordinator's verification records (fix1-context/PROVENANCE-VERIFICATION.json, fix1-context/TAIL-PROOF-CONFIRMATION.json); none was computed by the implementer. No cited proof has a null hash.",
+  "evidenceRoot": "/tmp/clea-static-research/radio-rx7-access-20261025",
+  "copies": [
+    {"dest": "g9-options", "files": 50, "manifestSHA256": "68f91a1f76a9461ac91997a35982f6ae60a1a05f169dec0eb12f4ae7906b658a"},
+    {"dest": "g9-ownership", "files": 36, "manifestSHA256": "65260477eb7601d3152fe9732c93f7fd44096cdc2724c597ea27f9a579750f54"}
+  ],
+  "files": [
+    {"path": "g9-options/G9-RECOVERED-CONTRACT.json", "role": "compiled fallback, checkbox owner, OK/Cancel, Preferences entry and copy, 0x53a handler", "sha256": "9e83c9d8d72a54e790be185150672f9362c1f6ae012479ea15e9190bf735000e", "receipt": "g9-ownership/G9-OWNERSHIP-AND-DELIVERY-CONTRACT.json buildsOn"},
+    {"path": "g9-ownership/G9-OWNERSHIP-AND-DELIVERY-CONTRACT.json", "role": "ownership, gate, persistence boundary, receiver close routing", "sha256": "e025fb7259a237de6b6e6ba60f4d4f5b4591c802da655c547f62abd759695735", "receipt": "fix1-context/PROVENANCE-VERIFICATION.json (coordinator SHA-256)"},
+    {"path": "g9-ownership/MESSAGE-ROUTE-PROOF.json", "role": "TEnvironment1 and TRadioLab class chains, 0x53a handler 0x567af8, startup main form", "sha256": "0e582375f8367bd19ad5414ae2eed66e7ab6008f8cdbbaebe095ef283b1f3eac", "receipt": "fix1-context/PROVENANCE-VERIFICATION.json (coordinator SHA-256)"},
+    {"path": "g9-ownership/GATE-MESSAGE-AND-XREF-CORRECTION.json", "role": "0x588a84 INSTRUCTOR text, 0x588b70 USER OPTIONS!", "sha256": "20b117a512c6dd9c9256d8c1902cc90ef1045e2598433fe574a374ee7a13ef0d", "receipt": "fix1-context/PROVENANCE-VERIFICATION.json (coordinator SHA-256)"},
+    {"path": "g9-ownership/PREFERENCES-GATE-UI.json", "role": "TOPTIONSDLG DFM (resource SHA-256 183d69820285e82447c912b112179435e23c1ed3866058f7c8d31988348f99cf)", "sha256": "c9889e6476444cf9d5fa610e23a223c804d207e9868761fcc212abb634c04b02", "receipt": "fix1-context/PROVENANCE-VERIFICATION.json (coordinator SHA-256)"},
+    {"path": "g9-ownership/INDEPENDENT-CHECKS.json", "role": "43 static integrity and corroboration checks", "sha256": "25f8ac6e2207dbc08a991d2d205776f01c763fb6346a44fa7944bd0e8cc81133", "receipt": "fix1-context/PROVENANCE-VERIFICATION.json (coordinator SHA-256)"},
+    {"path": "g9-options/environment-preferences.asm", "role": "Preferences1Click prefix: gate test 0x5886c9 (je 0x5889a6), parent creation and alias, copy 0x588751..0x588767, ModalResult test 0x588770 (jne 0x588998), save confirmation call 0x58ed74", "range": "capture 0x5886ac..0x5888d0 (Preferences1Click prefix only, not the full procedure)", "sha256": "8c653ca3b8683ad92e16ccafda24a0de6770e29f5cdf3d53a775de426a2d5cb7", "receipt": "g9-options/PREFERENCES-CAPTURES.json"},
+    {"path": "g9-options/environment-preferences-tail.asm", "role": "Preferences1Click tail: ModalResult ≠ 1 target 0x588998, USER OPTIONS! box 0x5889a6..0x5889cb (message 0x588a84, caption 0x588b70, call 0x47e09c), canonical RET 0x5889f8", "range": "capture 0x5888ce..0x588a10 exclusive; canonical RET 0x5889f8; data after RET is not code", "sha256": "734dafb67567808d1fd2024260afbbb56ed50b5d28a6b9d6074f762d864ca592", "receipt": "g9-options/PREFERENCES-TAIL-CAPTURE.json; fix1-context/TAIL-PROOF-CONFIRMATION.json"},
+    {"path": "g9-options/radio-options-activate.asm", "range": "0x5a9138..0x5a93e9", "sha256": "1f398fb914ede05bbf6c0271801e4d60b1729773072a721548a009dc52cb5069", "receipt": "g9-options/RADIO-OPTIONS-HANDLER-CAPTURES.json"},
+    {"path": "g9-options/radio-options-ok.asm", "range": "0x5a9428..0x5a9765", "sha256": "c4b16d7e92f61bc7d90f500acc03fda969e0be5f164a7e3a35aaa123a5fd2439", "receipt": "g9-options/RADIO-OPTIONS-HANDLER-CAPTURES.json"},
+    {"path": "g9-options/radio-options-cancel.asm", "range": "0x5a9940..0x5a995e", "sha256": "7f1dd79c56711776dc5f086478ae6900718efaefd87943032682a07c817f2441", "receipt": "g9-options/RADIO-OPTIONS-HANDLER-CAPTURES.json"},
+    {"path": "g9-options/radio-options-defaults-bounded.asm", "range": "0x5a8ec4..0x5a90bb", "sha256": "bd1a0fae22259130a627b169d2581ad38764e318507fe5cb16ed020ca56efe0f", "receipt": "g9-options/CAPTURE-RECEIPT.json"},
+    {"path": "g9-options/radio-close-message53a-handler.asm", "range": "0x567af8..0x567b26", "sha256": "d7eedc69e2b69d10f653f9760c6bbae28db510f1b99c3417c97fc0d298c06406", "receipt": "g9-options/MESSAGE53A-CAPTURE.json"},
+    {"path": "g9-options/MESSAGE53A-CAPTURE.json", "role": "0x53a handler capture", "sha256": "7f51974d85bfa1a1b35c1852ddbc8b781a36d476889d0cd88eab17b0e0b34a0c", "receipt": "g9-options/G9-RECOVERED-CONTRACT.json evidenceFilesSHA256"},
+    {"path": "g9-options/RADIO-OPTIONS-RESOURCE.json", "role": "TRADIOPTSDLG DFM decode (resource SHA-256 911c0d2c784928c2b3872b517447b3db935ae18c987902ecd77e77065e3141a1)", "sha256": "54b389c6b1d8f1d696aa6e2130d2a08cf9a293cf6037ffb9df4239cf594d194e", "receipt": "g9-options/G9-RECOVERED-CONTRACT.json evidenceFilesSHA256"},
+    {"path": "g9-ownership/options-radio-child-button.asm", "range": "0x5a6f58..0x5a6faf", "sha256": "dc981853fb3ea991d0758415da655f7023aec04c56d6e9af7501d761f4242fca", "receipt": "g9-ownership/OWNERSHIP-CAPTURE-RECEIPT.json"},
+    {"path": "g9-ownership/options-activate-full.asm", "range": "0x5a56e0..0x5a602c", "sha256": "bc43eb1f1559d316d39d8de4b77294955b5eb151fb837c0b514cd6ad74acde29", "receipt": "g9-ownership/OWNERSHIP-CAPTURE-RECEIPT.json"},
+    {"path": "g9-ownership/options-ok-full.asm", "range": "0x5a6068..0x5a6ccc", "sha256": "a0a44d09e5c7d50e5bd92e3eca18ec2960546911e47e516b0731ecdd87556811", "receipt": "g9-ownership/OWNERSHIP-CAPTURE-RECEIPT.json"},
+    {"path": "g9-ownership/options-optical-change-helper.asm", "range": "0x5a6e98..0x5a6edc", "sha256": "5b2abf8f9f7e4c4ad4391c9805989939c179c65f6761fd93919b6d8936d08017", "receipt": "g9-ownership/OWNERSHIP-CAPTURE-RECEIPT.json"},
+    {"path": "g9-ownership/options-cancel-reset-release-radio.asm", "range": "0x5a6d04..0x5a6fb0", "sha256": "bf2928dcc12308d7cf29aacee3254af1756203583e2d839ccc55a468debfd068", "receipt": "g9-ownership/CAPTURE-RECEIPT.json"},
+    {"path": "g9-ownership/environment-create-full.asm", "range": "0x58792c..0x587cf0", "sha256": "c7c54291a9333ef34c61981281d06bbe4d8ce34fbe1dc76411cd2e069f6c9203", "receipt": "g9-ownership/GATE-AND-MAINFORM-CAPTURE.json"},
+    {"path": "g9-ownership/application-createform.asm", "range": "0x47dd40..0x47de80", "sha256": "f94a92abace622b27a91e7b05aee396edef742524c48ab6e4074ccfb575ae6ab", "receipt": "g9-ownership/GATE-AND-MAINFORM-CAPTURE.json"},
+    {"path": "g9-ownership/prior-admitted-route-proof/receiver-close.asm", "role": "receiver main close 0x5726f0, 0x53a dispatch", "sha256": "2d620be1af1fc5c866f0a9964f342c8d7362587dbf9ca2a28dcd22f296f99a8e", "receipt": "G9-OWNERSHIP-AND-DELIVERY-CONTRACT.json provenanceOfAdmittedCopies"},
+    {"path": "g9-ownership/prior-admitted-route-proof/CLASS-HIERARCHY-AND-MESSAGE53A.json", "sha256": "8a8a92edb0439cad82296526dfb03e01d7b748613284e178ccfa79cc14e8327a", "receipt": "G9-OWNERSHIP-AND-DELIVERY-CONTRACT.json provenanceOfAdmittedCopies"},
+    {"path": "g9-ownership/prior-admitted-route-proof/startup-first-forms.asm", "sha256": "031798ef4540fd4f95b2aa9471d66582988b7dcb175340e89e400abbe7fc9785", "receipt": "G9-OWNERSHIP-AND-DELIVERY-CONTRACT.json provenanceOfAdmittedCopies"},
+    {"path": "g9-ownership/prior-admitted-route-proof/startup-radio-form.asm", "sha256": "f62509810aa52a4790f00f95983cebe3591da839ae0ea3979e075d965a78fb58", "receipt": "G9-OWNERSHIP-AND-DELIVERY-CONTRACT.json provenanceOfAdmittedCopies"},
+    {"path": "g9-options/prior-rx6-fresh-menu-proof/radio-create-activate-bounded.asm", "role": "TRadioLab FormActivate 0x5643fc, PulsarList1 enable/show", "sha256": "1d915b45e5589617eb75fa3fe718b8d0172752fbca567d86cb8d97ed283883b0", "receipt": "PULSAR-LIST-AVAILABILITY-CONTRACTS.json"},
+    {"path": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/radio-receiver-source-20261024/correction-open-main-canonical.asm", "role": "Receiver Open: hit/miss converge 0x567a44, then the conditional disable 0x567a65..0x567a76", "sha256": "c3df4c2a3e02fdfe19ba8e874aa0eabe935e87906cbd0bbed263c7aa784629e1", "receipt": "PULSAR-LIST-AVAILABILITY-CONTRACTS.json; coordinator confirmation"}
+  ],
+  "contracts": [
+    {"id": "T0", "native": "FormCreate gate := 0 at 0x587c2d; record+0x941 := 0 at 0x5a90ad (fallback only when no file loads); env copy 0x587a20..0x587a36; PulsarList1 DFM Enabled/Visible False", "web": "createRadioAccessState; lastChildOk null (startup env+0x37d9 not recovered)"},
+    {"id": "T1", "native": "Demonstration branch gate := 1 at 0x587c6a", "web": "[W] applyDemonstrationGate: gate write only, once per session"},
+    {"id": "T2", "native": "Preferences1Click 0x5886ac, gate test 0x5886c9, message 0x588a84/0x588b70, parent creation 0x5886f3..0x588725, alias 0x58870e", "web": "openPreferences; web guards first"},
+    {"id": "T4", "native": "0x5a6f58/0x5a6f67 new child; FormActivate 0x5a9138 snapshot and Checked 0x5a9240..0x5a924f", "web": "openRadioOptions"},
+    {"id": "T6", "native": "OK 0x5a9428 store 0x5a954f before numeric validation; failure ModalResult 0 at 0x5a9723; button assignment 0x5a6f9c", "web": "okRadioOptions('not-ported'); 'failed' core-only: chosen core-only contract assuming no intervening FormActivate [I]"},
+    {"id": "T7", "native": "Cancel 0x5a9940..0x5a995e whole-record restore; button assignment 0x5a6f9c", "web": "cancelRadioOptions"},
+    {"id": "T8", "native": "copy root → env+0x2e95 at 0x588751..0x588767 before ModalResult test 0x588770; OK → 0x58ed74 save confirmation", "web": "closePreferences; save not ported; lastChildOk shows the last child return (0x5a6f9c), before the unported save confirmation"},
+    {"id": "T9", "native": "TRadioLab FormActivate 0x5643fc guard +0x4d5; Enabled 0x56459c..0x5645a4, Visible 0x5645a9..0x5645b1 when env+0x37d6 ≠ 0", "web": "radioLabFirstActivation on the antenna's committed 'activated' outcome"},
+    {"id": "T10", "native": "Receiver Open: converge 0x567a44, Enabled := False 0x567a6e..0x567a76 when env+0x37d6 ≠ 0", "web": "receiverOpened after a committed Open with source-hit/source-miss"},
+    {"id": "T11", "native": "close 0x572769..0x572790 → Dispatch 0x40516c to Application+0x44 (TEnvironment1 on the captured startup path, no handler); TRadioLab handler 0x567af8, Enabled := True 0x567b0e..0x567b16 when env+0x37d6 ≠ 0", "web": "receiverCloseMessage after a committed send-0x53a; TRadioLab only as the [W] recipient"}
+  ],
+  "webPolicies": ["WEB-ACC-GATE-01", "WEB-ACC-FORM-01", "WEB-ACC-PRES-01", "WEB-ACC-FOCUS-01", "WEB-ACC-MENU-01", "WEB-ACC-HOOK-01", "WEB-ACC-ROUTE-01", "WEB-ACC-SAVE-01"],
+  "notDelivered": "PulsarList1Click 0x567f80 (WEB-PP-LIST-03): no UI caller; the readout shows the flags only.",
+  "notRead": "src/core/tmpProbe.test.ts, the excluded G2 receipt, tradiolab-metadata.json, verified-field-roles.json, writer-caller-56b36c.asm and its copies, historical target.asm, quarantined readiness files and the raw original binary were not read.",
+  "limits": [
+    "No native execution, emulation or GUI observation; tests are contract evidence, not oracles.",
+    "Startup env+0x37d9, the env+0x550 reassignment at 0x58ef6f, native Escape/X-close routing, numeric OK round-trip and error domains, other Demonstration Mode effects, Login, runtime main-form lifetime, DefaultHandler effects and the classroom value of env+0x37d6 are not established.",
+    "The 2370-byte native record, its loader and writer are not ported; only record+0x941 is interpreted.",
+    "Numeric failure → Cancel reactivation gap [I]: child FormActivate 0x5a9138 has no first-activation guard and the failure box 0x5a9719 → 0x47e09c is not identified; if returning from it reactivates the form, the form re-snapshots and Cancel would not undo the flag. The core 'failed' outcome is the chosen contract with no intervening FormActivate; no numeric flow is implemented.",
+    "lastChildOk shows the last child return (0x5a6f9c), before the unported save confirmation (0x58ed74); the native No branch and the reassignment at 0x58ef6f after the save are not modelled."
+  ]
+}
