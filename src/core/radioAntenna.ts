@@ -18,9 +18,15 @@
  * 0x5668e0 (RA-12, radioAltitude.ts) is applied at its three callers (ClocktimerTimer, SlewTimerTimer, slew request)
  * under the WEB-ALT-01 admission policy. Slew ▸ Hot List ▸ View/Select (RA-HL-05..07) opens the list window, writes the
  * stored coordinates from the selected row and continues in the coordinate dialog; its row order and the shared
- * document are in radioHotList.ts and sharedHotList.ts. The Set Coordinates epoch choice (RA-EP-01..04) converts B1950.0
+ * document are in radioHotList.ts and sharedHotList.ts. The list's Search (RA-HL-09) runs the shared Find dialog and the
+ * Search1Click loop of radioHotListSearch.ts under WEB-HL-09..11 (per-step length, one explicit modal lifecycle, a found
+ * highlight kept apart from the remembered selection). The Set Coordinates epoch choice (RA-EP-01..04) converts B1950.0
  * entries with the recovered fixed-epoch precession of radioEpoch.ts and keeps the dialog's +0x3c5 flag lifecycle. */
 import {isRadioClockReading,type RadioClockReading} from './radioClock';
+import {
+ INITIAL_RADIO_HOT_LIST_SEARCH,RADIO_HOT_LIST_SEARCH_QUERY_MAX,foldAsciiCase,radioHotListSearchStart,radioHotListVisibleIndex,searchRadioHotListRows,
+ type RadioHotListSearchMode,type RadioHotListSearchState,
+} from './radioHotListSearch';
 import {precessSkyCoords,type RadioEpochConversion} from './radioEpoch';
 import {RADIO_ALTITUDE_CONSTANTS,radioAltitudeCheck,type RadioAltitudeCheck,type RadioAltitudeUndecidedReason} from './radioAltitude';
 
@@ -168,6 +174,8 @@ export type RadioLabNotice=Readonly<
  |{kind:'altitude-undecided';reason:RadioAltitudeUndecidedReason} // browser box (WEB-ALT-01), OK; target stays stored
  |{kind:'hot-list-empty'}         // PListSelectClick 0x567c05 flags 0x40, OK (decoded caption/text, RADIO_HOT_LIST_LITERALS)
  |{kind:'hot-list-no-selection'}  // Slew1Click 0x591ef0 flags 0x30, OK; the list stays open (text not decoded)
+ /** query: as compared (folded when case-insensitive), the +0x380 text 0x590f64 reads. */
+ |{kind:'hot-list-search-miss';query:string} // Search1Click 0x590f52..0x590f9e flags 0x40, OK; decoded caption 0x591028 and text parts 0x59100c/0x591018
 >;
 export type RadioLabNoticeKind=RadioLabNotice['kind'];
 export type NoticeAnswer='ok'|'cancel'|'yes'|'no';
@@ -175,7 +183,7 @@ export const NOTICE_BUTTONS:Readonly<Record<RadioLabNoticeKind,readonly NoticeAn
  'ra-invalid':['ok'],'dec-invalid':['ok'],'ra-unsupported':['ok'],'dec-unsupported':['ok'],'no-slew-needed':['ok'],'transit-dec-only':['ok','cancel'],
  'confirm-slew':['yes','no'],'stop-slew':['yes','no'],'slew-complete':['ok'],
  'altitude-limit-tracking':['ok'],'altitude-limit-manual':['ok'],'altitude-limit-request':['ok'],'altitude-undecided':['ok'],
- 'hot-list-empty':['ok'],'hot-list-no-selection':['ok'],
+ 'hot-list-empty':['ok'],'hot-list-no-selection':['ok'],'hot-list-search-miss':['ok'],
 });
 /** +0x53d: 0 Dec rising, 1 Dec falling, 2 RA rising, 3 RA falling (or transit finish). Shared with the manual handlers,
  * which write the held direction there (MANUAL_DIRECTION_CODE). */
@@ -249,6 +257,10 @@ export type RadioLabState=Readonly<{
   * (THotListForm1 RCDATA slice 55e515a9…, derived DFM 7b382c1b…). An index into the radio projection, kept across
   * Close/reopen and list replacements, and valid only when in range (never repaired). */
  hotListIndex:number;
+ /** List Search (RA-HL-09): the shared Find dialog's remembered query +0x380 and case flag +0x3d3, its open draft and the
+  * found highlight (WEB-HL-11). Reset to INITIAL_RADIO_HOT_LIST_SEARCH each time the list is shown (FormActivate 0x590c28
+  * writes, WEB-HL-10). Radio-local and never persisted. */
+ hotListSearch:RadioHotListSearchState;
  /** TSkyCoordsDlg +0x3c5 (RA-EP-04): the last OK chose B1950.0. FormCreate 0x4f312a := 0; OKBtnClick 0x4f36b0 :=
   * (ItemIndex = 1) after both validations; PListSelectClick 0x567bb1 := 0 after a row is selected. Read by
   * FormActivate 0x4f316f/0x4f3378 and the slew confirmation (0x566dc7, 0x566f1b). Radio-local (WEB-EP-02). */
@@ -273,7 +285,9 @@ export type RadioLabOutcome=
  |'manual-started'|'manual-latched'|'manual-unavailable'|'manual-programmed-slew'|'manual-limits-clock'|'manual-step-unsupported'
  |'manual-tick'|'manual-altitude-limit'|'manual-altitude-undecided'|'manual-idle'|'manual-released'|'manual-released-other'|'manual-cancelled'
  |'hot-list-opened'|'hot-list-empty'|'hot-list-slewing'|'hot-list-not-open'|'hot-list-index-selected'|'hot-list-index-invalid'
- |'hot-list-no-selection'|'hot-list-selected'|'hot-list-closed'|'hot-list-reopened';
+ |'hot-list-no-selection'|'hot-list-selected'|'hot-list-closed'|'hot-list-reopened'
+ |'hot-list-search-opened'|'hot-list-search-edited'|'hot-list-search-too-long'|'hot-list-search-cancelled'|'hot-list-search-empty'
+ |'hot-list-search-found'|'hot-list-search-not-found'|'hot-list-search-not-open';
 export type RadioLabTransition=Readonly<{state:RadioLabState;outcome:RadioLabOutcome;changed:boolean;steps:readonly string[]}>;
 
 const ZERO:RadioPointing=Object.freeze({ra:0,dec:0});
@@ -283,7 +297,7 @@ export const INITIAL_RADIO_LAB:RadioLabState=Object.freeze({
  phase:0,axisDone:false,step:0,rateIndex:0,rate:0,slewMenuEnabled:true,manualButtonsEnabled:true,rateSpinEnabled:true,
  receiverEnabled:true,trackingVisible:false,eastWestVisible:false,addToListEnabled:false,status:'none',dialog:null,notice:null,
  hourAngle:0,manualPress:false,manualRun:0,manualButtonLeftDisabled:null,poleReversed:false,clockTimerEnabled:false,clock:null,
- hotListShown:false,hotListIndex:0,skyCoordsB1950:false,targetHoldsB1950:false,
+ hotListShown:false,hotListIndex:0,hotListSearch:INITIAL_RADIO_HOT_LIST_SEARCH,skyCoordsB1950:false,targetHoldsB1950:false,
 });
 
 const isByte=(v:unknown)=>typeof v==='number'&&Number.isInteger(v)&&v>=0&&v<=255;
@@ -473,12 +487,18 @@ export function radioLabTickRefusal(s:RadioLabState,options:RadioLabOptions):'op
  return raStepPending(s,options)&&s.axisDone&&rateIssue(s.rate,s.rateIndex)?'rate-unsupported':null;
 }
 
+/** A frozen highlight is immutable and keeps its identity across non-hit transitions (Cancel, empty submit, a miss and its
+ * OK, unrelated ticks), so a new identity means a new hit; every hit builds a fresh object. A mutable one is copied and frozen. */
+const freezeSearch=(h:RadioHotListSearchState):RadioHotListSearchState=>Object.freeze({...h,dialog:h.dialog&&Object.freeze({...h.dialog}),
+ found:h.found&&(Object.isFrozen(h.found)?h.found:Object.freeze({...h.found}))});
 const freezeState=(s:RadioLabState):RadioLabState=>Object.freeze({...s,pointing:Object.freeze({...s.pointing}),target:Object.freeze({...s.target}),
- dialog:s.dialog&&Object.freeze({...s.dialog,fields:Object.freeze({...s.dialog.fields})}),notice:s.notice&&Object.freeze({...s.notice}),clock:s.clock&&Object.freeze({...s.clock})});
+ dialog:s.dialog&&Object.freeze({...s.dialog,fields:Object.freeze({...s.dialog.fields})}),notice:s.notice&&Object.freeze({...s.notice}),clock:s.clock&&Object.freeze({...s.clock}),
+ hotListSearch:freezeSearch(s.hotListSearch)});
 /** A committed transition always yields a new frozen state; the first argument documents the source state at call sites. */
 const done=(_previous:RadioLabState,next:RadioLabState,outcome:RadioLabOutcome,steps:string[]):RadioLabTransition=>Object.freeze({state:freezeState(next),outcome,changed:true,steps:Object.freeze(steps)});
 const same=(s:RadioLabState,outcome:RadioLabOutcome,steps:string[]=[]):RadioLabTransition=>Object.freeze({state:s,outcome,changed:false,steps:Object.freeze(steps)});
-const modal=(s:RadioLabState)=>s.dialog!==null||s.notice!==null||s.hotListShown;
+/** The Find dialog only exists while the list is shown; it is counted on its own as a defensive invariant. */
+const modal=(s:RadioLabState)=>s.dialog!==null||s.notice!==null||s.hotListShown||s.hotListSearch.dialog!==null;
 /** WEB-OPT-01 refusal: nothing changes (state, pointing, target, dialog draft and open box are kept). */
 const unsupported=(s:RadioLabState)=>same(s,'options-unsupported');
 /** WEB-OPT-01 state-context refusal (radioLabRateIssues): the options are supported but the rate is not; nothing changes. */
@@ -721,7 +741,8 @@ export function selectSkyCoordsEpoch(s:RadioLabState,index:0|1):RadioLabTransiti
 export function cancelSkyCoords(s:RadioLabState):RadioLabTransition{
  if(!s.dialog)return same(s,'dialog-closed');
  if(s.notice)return same(s,'modal-open');
- if(s.dialog.origin==='hot-list')return done(s,{...s,dialog:null,hotListShown:true},'hot-list-reopened',['RA-07','RA-HL-07']);
+ // The list is shown again (its FormActivate runs): the Find state is reset as on View/Select (WEB-HL-10).
+ if(s.dialog.origin==='hot-list')return done(s,{...s,dialog:null,hotListShown:true,hotListSearch:INITIAL_RADIO_HOT_LIST_SEARCH},'hot-list-reopened',['RA-07','RA-HL-07']);
  // RA-EP-02: a converting open already wrote the B1950 values; Cancel keeps them (no rollback).
  return done(s,{...s,dialog:null},s.targetHoldsB1950?'dialog-cancelled-b1950':'dialog-cancelled',['RA-07']);
 }
@@ -741,18 +762,72 @@ export function openRadioHotList(s:RadioLabState,options:RadioLabOptions,rowCoun
  if(slewHeld(s))return same(s,'hot-list-slewing');
  if(!isSupportedRadioLabProfile(options))return unsupported(s);
  if(rowCount===0)return done(s,{...s,notice:{kind:'hot-list-empty'}},'hot-list-empty',['RA-HL-06']);
- return done(s,{...s,hotListShown:true},'hot-list-opened',['RA-HL-06','RA-HL-05']);
+ // FormActivate 0x590c28 empties the Find query and clears its case flag on this ShowModal entry (WEB-HL-10).
+ return done(s,{...s,hotListShown:true,hotListSearch:INITIAL_RADIO_HOT_LIST_SEARCH},'hot-list-opened',['RA-HL-06','RA-HL-05']);
 }
 /** ListBox1MouseUp 0x59208f / ListBox1KeyUp 0x592114 analogue: the ItemIndex after a click or arrow key becomes the
- * remembered index (+0x588). The web applies it on the list's change event; that timing is a browser adaptation and
- * no window-message parity is claimed. Only while the list is shown without a box over it, and only for an existing row. */
+ * remembered index (+0x588). The web applies it on the list's change and click events; that timing is a browser adaptation
+ * and no window-message parity is claimed. Only while the list is shown without a box or the Find dialog over it, and only
+ * for an existing row. WEB-HL-11: this explicit choice also ends a Search highlight, so choosing the row the highlight
+ * already marks (equal index) is a change when a highlight exists. */
 export function selectRadioHotListIndex(s:RadioLabState,index:number,rowCount:number):RadioLabTransition{
  checkRowCount(rowCount);
  if(!s.hotListShown)return same(s,'hot-list-not-open');
- if(s.notice||s.dialog)return same(s,'modal-open');
+ if(s.notice||s.dialog||s.hotListSearch.dialog)return same(s,'modal-open');
  if(!Number.isInteger(index)||index<0||index>=rowCount)return same(s,'hot-list-index-invalid');
- if(s.hotListIndex===index)return same(s,'hot-list-index-selected');
- return done(s,{...s,hotListIndex:index},'hot-list-index-selected',[]);
+ if(s.hotListIndex===index&&s.hotListSearch.found===null)return same(s,'hot-list-index-selected');
+ return done(s,{...s,hotListIndex:index,hotListSearch:{...s.hotListSearch,found:null}},'hot-list-index-selected',[]);
+}
+
+/** Search1Click 0x590c74 opening the shared Find dialog (ShowModal vmt+0xfc at 0x590ce3). Its Activate 0x492aa4 loads the
+ * remembered query +0x380 into the edit and the case flag +0x3d3 into the check box (CB8..CB10 order: shown, activated,
+ * then the modal loop). Only while the list is shown with no box, coordinate dialog or Find dialog over it. Changes only
+ * hotListSearch. The VCL loading flag and callback-assignment conditions of CB10 are not modelled. */
+export function openRadioHotListSearch(s:RadioLabState):RadioLabTransition{
+ if(!s.hotListShown)return same(s,'hot-list-search-not-open');
+ if(s.notice||s.dialog||s.hotListSearch.dialog)return same(s,'modal-open');
+ const {query,matchCase}=s.hotListSearch;
+ return done(s,{...s,hotListSearch:{...s.hotListSearch,dialog:{query,matchCase}}},'hot-list-search-opened',['RA-HL-09']);
+}
+/** Edits of the open Find dialog's SrchStr1 (MaxLength 80) and Match case check box. Nothing is remembered until a
+ * submit (Cancel copies nothing). Throws on a non-string query or a non-boolean flag. */
+export function editRadioHotListSearch(s:RadioLabState,query:string,matchCase:boolean):RadioLabTransition{
+ if(typeof query!=='string'||typeof matchCase!=='boolean')throw new TypeError('Invalid search draft');
+ const d=s.hotListSearch.dialog;
+ if(!s.hotListShown||!d)return same(s,'hot-list-search-not-open');
+ if(s.notice)return same(s,'modal-open');
+ if(query.length>RADIO_HOT_LIST_SEARCH_QUERY_MAX)return same(s,'hot-list-search-too-long');
+ if(d.query===query&&d.matchCase===matchCase)return same(s,'hot-list-search-edited');
+ return done(s,{...s,hotListSearch:{...s.hotListSearch,dialog:{query,matchCase}}},'hot-list-search-edited',[]);
+}
+/** Find Top 0x492b24 / Next 0x492bc0 followed by the rest of Search1Click, as one atomic transition (the modal result is
+ * taken, the dialog hides, then the caller reads the mode; CB11/CB12). Both buttons first copy the edit into +0x380 and the
+ * check box into +0x3d3.
+ * - Empty edit: mode 2, so Search1Click exits; the remembered query becomes '' and the case flag the check box. No box.
+ * - Otherwise: with the flag clear the query is lowercased in place (0x590d7b, A..Z only) and that folded text is what is
+ *   remembered; the loop (searchRadioHotListRows) starts at 0 (Top) or at the visible index + 1 (Next, radioHotListVisibleIndex).
+ *   A hit sets only the highlight (WEB-HL-11: not hotListIndex, not the target); a miss opens the decoded 0x40 box over the
+ *   list and keeps the highlight as it was. No reentrant list activation is applied on return (WEB-HL-10).
+ * `rowTexts` are the current projection's row texts (formatRadioHotListRow). Throws on an invalid mode or rows. */
+export function submitRadioHotListSearch(s:RadioLabState,mode:RadioHotListSearchMode,rowTexts:readonly string[]):RadioLabTransition{
+ if(mode!=='top'&&mode!=='next')throw new RangeError('Invalid search mode');
+ if(!Array.isArray(rowTexts)||rowTexts.some(t=>typeof t!=='string'))throw new TypeError('Invalid hot list row texts');
+ const search=s.hotListSearch,d=search.dialog;
+ if(!s.hotListShown||!d)return same(s,'hot-list-search-not-open');
+ if(s.notice||s.dialog)return same(s,'modal-open');
+ if(d.query==='')return done(s,{...s,hotListSearch:{...search,query:'',matchCase:d.matchCase,dialog:null}},'hot-list-search-empty',['RA-HL-09']);
+ const query=d.matchCase?d.query:foldAsciiCase(d.query);
+ const start=radioHotListSearchStart(mode,radioHotListVisibleIndex(s.hotListIndex,search.found,rowTexts));
+ const result=searchRadioHotListRows(rowTexts,query,d.matchCase,start);
+ if(result.kind==='hit')return done(s,{...s,hotListSearch:{query,matchCase:d.matchCase,dialog:null,found:{index:result.index,text:rowTexts[result.index]}}},'hot-list-search-found',['RA-HL-09']);
+ return done(s,{...s,hotListSearch:{query,matchCase:d.matchCase,dialog:null,found:search.found},notice:{kind:'hot-list-search-miss',query}},'hot-list-search-not-found',['RA-HL-09']);
+}
+/** Find Cancel 0x492c5c (also Escape in the browser; the window-close X path is not modelled): mode 2, so Search1Click
+ * exits. Nothing is copied: the remembered query and case flag stay. */
+export function cancelRadioHotListSearch(s:RadioLabState):RadioLabTransition{
+ if(!s.hotListSearch.dialog)return same(s,'hot-list-search-not-open');
+ if(s.notice)return same(s,'modal-open');
+ return done(s,{...s,hotListSearch:{...s.hotListSearch,dialog:null}},'hot-list-search-cancelled',['RA-HL-09']);
 }
 /** Slew1Click 0x591e24 (DblClick 0x591fd0 calls it): with ItemIndex in [0, Count) the node at that index is copied to
  * the stored coordinates (0x591e99..0x591ecc → PListSelectClick 0x567b64..0x567ba6) and the list closes; then
@@ -762,12 +837,12 @@ export function selectRadioHotListIndex(s:RadioLabState,index:number,rowCount:nu
  * FormActivate finds +0x3c5 clear and converts nothing, and an earlier B1950.0 choice is forgotten (RA-EP-04).
  * Otherwise the 0x30 box and the list stays. `rows` are the projection's coordinates (the codec's parse-time binary64
  * values, −0 kept); the remembered index is never moved to another row. WEB-OPT-01 is checked before the stored
- * coordinates are written. */
+ * coordinates are written. WEB-HL-11: a Search highlight is not the selection; this always uses hotListIndex. */
 export function slewToHotListSelection(s:RadioLabState,options:RadioLabOptions,rows:readonly RadioPointing[]):RadioLabTransition{
  checkOptions(options);
  if(!Array.isArray(rows))throw new Error('Invalid hot list rows');
  if(!s.hotListShown)return same(s,'hot-list-not-open');
- if(s.notice||s.dialog)return same(s,'modal-open');
+ if(s.notice||s.dialog||s.hotListSearch.dialog)return same(s,'modal-open');
  const i=s.hotListIndex,row=Number.isInteger(i)&&i>=0&&i<rows.length?rows[i]:null;
  if(!row)return done(s,{...s,notice:{kind:'hot-list-no-selection'}},'hot-list-no-selection',['RA-HL-05']);
  const k=RADIO_LAB_CONSTANTS;
@@ -782,7 +857,7 @@ export function slewToHotListSelection(s:RadioLabState,options:RadioLabOptions,r
  * list again. No native runtime result is claimed for either pass; the web Close always exits. */
 export function closeRadioHotList(s:RadioLabState):RadioLabTransition{
  if(!s.hotListShown)return same(s,'hot-list-not-open');
- if(s.notice||s.dialog)return same(s,'modal-open');
+ if(s.notice||s.dialog||s.hotListSearch.dialog)return same(s,'modal-open');
  return done(s,{...s,hotListShown:false},'hot-list-closed',['RA-HL-05']);
 }
 

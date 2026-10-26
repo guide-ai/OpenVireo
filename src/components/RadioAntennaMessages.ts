@@ -2,7 +2,9 @@
  * TSkyCoordsDlg). Scoped to this slice and ready for translation; it does not touch the
  * shared en.json. Original DFM captions are NOT here: they are rendered from
  * RADIO_LAB_CAPTIONS/SKY_COORDS_CAPTIONS. Message-box wording is OpenVireo's because the
- * original literals were not decoded (the decoded hot-list empty box is passed in from RADIO_HOT_LIST_LITERALS).
+ * original literals were not decoded (the decoded hot-list empty box is passed in from RADIO_HOT_LIST_LITERALS, and the
+ * decoded Search not-found box from RADIO_HOT_LIST_SEARCH_LITERALS). The Search field, check box and button labels and
+ * help are OpenVireo wording; the Find dialog title is the original caption 0x590fe4.
  * Pure data: no React or scientific state imports. */
 export const RADIO_ANTENNA_MESSAGES_EN=Object.freeze({
  'antenna.scope':'Recovered from VIREO: the main-window Radio switch, radio scope access and panel window, and inside the radio control panel Tracking, Slew Rate and Slew ▸ Set Coordinates with the original coordinate dialog, validation, J2000.0 or B1950.0 entry (with the original fixed-epoch precession), confirmation, programmed slew and stop, Slew ▸ Hot List ▸ View/Select and Load with the original Right Ascension list order, the panel clock’s hour-angle and Right Ascension bookkeeping when you supply a radio UT, press-and-hold N/S/E/W slewing with the mouse, touch, Space/Enter and, partly, the original letter and numeric-keypad keys, and the horizon (altitude) limit check when the Limit Slewing option is on and a radio UT is supplied. On the radio telescope route, Receiver opens a silent receiver monitor (a modelled display, not an observation). Recording, sound, pulsar identification, Align, adding the current item to the hot list, Set Observation Date/Time, ID after the panel has been shown (the part before is on this route) and the rest of the original options dialog are not recovered and are not simulated.',
@@ -131,6 +133,8 @@ export const RADIO_ANTENNA_MESSAGES_EN=Object.freeze({
  'antenna.notice.hot-list-empty':'{text}',
  'antenna.notice.nativeLiteral':'Original message box (flags {flags}) with its decoded original caption and text.',
  'antenna.notice.hot-list-no-selection':'No hot-list row is selected. Choose a row, then Slew to Selection; the list stays open.',
+ 'antenna.notice.title.hot-list-search-miss':'{caption}',
+ 'antenna.notice.hot-list-search-miss':'{text}',
  'antenna.hotList.heading':'Hot list',
  'antenna.hotList.item':'{menu} ▸ {group} ▸ {item}',
  'antenna.hotList.addDisabled':'Add Current Item to List is disabled in the original menu and is not ported: the code that would enable it and the object name it would store are not recovered.',
@@ -169,6 +173,16 @@ export const RADIO_ANTENNA_MESSAGES_EN=Object.freeze({
  'antenna.hotList.row':'{position} · {id} · {remarks} · RA {ra} h · Dec {dec}°',
  'antenna.hotList.unnamed':'Unnamed entry',
  'antenna.hotList.origin':'Coordinates from the hot list. Cancel returns to the list.',
+ 'antenna.hotList.search.open':'Search…',
+ 'antenna.hotList.search.help':'Finds text in the row text shown above each row (the recovered list text), from the first row (Search from top) or from the row after the highlighted or selected one (Find next); it does not wrap around. A match may start in one row and continue into the next, joined by one space; leading spaces of each row are skipped. Without Match case only the letters A–Z are compared without case, as in the original. Enter chooses Search from top and Escape chooses Cancel. A found row is highlighted, not selected.',
+ 'antenna.hotList.search.query':'Text to find',
+ 'antenna.hotList.search.matchCase':'Match case',
+ 'antenna.hotList.search.top':'Search from top',
+ 'antenna.hotList.search.next':'Find next',
+ 'antenna.hotList.search.cancel':'Cancel',
+ 'antenna.hotList.found':'Search found row {position}. It is highlighted, not selected: Slew to Selection still uses the selected row. Click, tap or press Space on the highlighted row to select it, or double-click it to select it and slew.',
+ 'antenna.hotList.foundSelected':'Search found row {position}, which is the selected row.',
+ 'antenna.hotList.foundMark':'Found',
  'antenna.direction.north':'North',
  'antenna.direction.south':'South',
  'antenna.direction.east':'East',
@@ -311,6 +325,14 @@ export const RADIO_ANTENNA_MESSAGES_EN=Object.freeze({
  'antenna.outcome.hot-list-selected':'Hot list coordinates stored; confirm them in the coordinate dialog.',
  'antenna.outcome.hot-list-closed':'Hot list closed; nothing changed.',
  'antenna.outcome.hot-list-reopened':'Coordinate dialog cancelled; back to the hot list. The stored coordinates stay.',
+ 'antenna.outcome.hot-list-search-opened':'Find dialog opened.',
+ 'antenna.outcome.hot-list-search-edited':'Search text updated.',
+ 'antenna.outcome.hot-list-search-too-long':'The search text accepts at most {max} characters, as in the original field; nothing changed.',
+ 'antenna.outcome.hot-list-search-cancelled':'Search cancelled; nothing changed.',
+ 'antenna.outcome.hot-list-search-empty':'No search text: nothing was searched. As in the original, the empty text and the Match case choice are remembered for the next search.',
+ 'antenna.outcome.hot-list-search-found':'Search found a row; it is highlighted, not selected.',
+ 'antenna.outcome.hot-list-search-not-found':'Search text not found; the highlight and the selection are unchanged.',
+ 'antenna.outcome.hot-list-search-not-open':'The Find dialog is not open; nothing changed.',
 } as const);
 
 export type RadioAntennaMessageKey=keyof typeof RADIO_ANTENNA_MESSAGES_EN;

@@ -176,8 +176,8 @@ describe('selection, the coordinate dialog and Cancel back to the list',()=>{
   expect(closeRadioHotList(back).outcome).toBe('hot-list-closed');
  });
  it('binds the hot-list contracts, evidence records and decoded literals in the provenance file',()=>{
-  expect(provenance.hotList.contracts.map(c=>c.id)).toEqual(Array.from({length:8},(_,i)=>`RA-HL-0${i+1}`));
-  expect(provenance.hotList.webPolicies.map(p=>p.id)).toEqual(Array.from({length:8},(_,i)=>`WEB-HL-0${i+1}`));
+  expect(provenance.hotList.contracts.map(c=>c.id)).toEqual(Array.from({length:9},(_,i)=>`RA-HL-${String(i+1).padStart(2,'0')}`));
+  expect(provenance.hotList.webPolicies.map(p=>p.id)).toEqual(Array.from({length:11},(_,i)=>`WEB-HL-${String(i+1).padStart(2,'0')}`));
   const captions=provenance.hotList.formCaptions;
   expect(captions.dfmSliceSHA256).toBe('55e515a9b10153cd5e9f906fd3cf8633491337a07af9faa87348f8fd8b7d66cf');
   expect(captions.derivedDFMSHA256).toBe('7b382c1bd51bec4db4c501569667d9b6ff6600d69383b26c950ea1e5322352db');

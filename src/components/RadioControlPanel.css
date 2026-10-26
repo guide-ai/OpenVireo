@@ -83,6 +83,19 @@
 .antenna-hotlist-row-text{display:grid;gap:2px;min-width:0;flex:1 1 auto}
 .antenna-hotlist-native{font-family:ui-monospace,"Cascadia Mono",Consolas,"Liberation Mono","Courier New",monospace;font-size:12px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
 .antenna-hotlist-decimal{font-size:12px;color:#53686f}
+/* R-RX22 Search highlight (WEB-HL-11): dashed amber, distinct from the checked (selected) style; a found row's radio always
+   shows its focus ring, also after the programmatic focus of a hit. */
+.antenna-hotlist-row[data-found]{border-style:dashed;border-color:#b5651d;box-shadow:inset 0 0 0 1px #b5651d}
+.antenna-hotlist-row[data-found]:not([data-checked]){background:#fff8f0}
+.antenna-hotlist-row[data-found] input:focus{outline:3px solid #23756c;outline-offset:2px}
+.antenna-hotlist-found-mark{flex:0 0 auto;padding:0 6px;border:1px solid #b5651d;border-radius:4px;color:#7a3f0d;font-size:12px;font-weight:600}
+.antenna-dialog.antenna-hotlist-search{width:min(100%,28rem)}
+.antenna-hotlist-search .antenna-field input{min-height:44px}
+.antenna-hotlist-search .antenna-hotlist-search-case{min-height:44px}
+.antenna-hotlist-search .antenna-hotlist-search-case input{width:20px;height:20px;margin:0}
+.radio-control .antenna-hotlist-search .primary-button,.radio-control .antenna-hotlist-search .secondary-button{min-height:44px}
+/* R-RX22 FIX2: the miss box body keeps the query's significant spaces (HS-09) and wraps a long (MaxLength 80) query. */
+.antenna-notice[data-kind="hot-list-search-miss"]>p[id$="-body"]{white-space:pre-wrap;overflow-wrap:anywhere}
 .radio-control .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}.antenna-readout{grid-template-columns:1fr}}
 .radio-route{max-width:1100px}.radio-route-scenario{padding:18px 22px;margin-bottom:16px}.radio-route-scenario h2{margin:0 0 8px;font-size:16px}.radio-route-scenario ul{margin:0;padding-left:1.2em}.radio-route-scenario li{font-size:13px;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.radio-route-persistence{margin:10px 0 0;padding:8px 10px;border-left:4px solid #b5651d;background:#fff8f0;font-size:13px;line-height:1.5}

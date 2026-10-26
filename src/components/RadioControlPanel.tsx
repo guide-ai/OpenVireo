@@ -11,6 +11,7 @@ import {
  isRadioLabModal,isRadioLabOptions,isSupportedRadioLabProfile,openSetCoordinates,radioClockTick,radioLabProfileIssues,radioLabRateIssues,radioLabTickRefusal,selectSkyCoordsEpoch,slewTimerTick,splitSexagesimal,toggleTracking,
  MANUAL_DIRECTIONS,RADIO_MANUAL_WEB_DOMAIN,RADIO_OPTIONS_CAPTIONS,heldManualDirection,manualButtonCaption,manualButtonEnabled,manualSlewTick,pressManualSlew,radioLabManualRefusal,radioLabManualTickRefusal,releaseManualSlew,
  releaseManualSlewThrough,RADIO_HOT_LIST_LITERALS,closeRadioHotList,openRadioHotList,selectRadioHotListIndex,slewToHotListSelection,skyCoordsDraftTarget,skyCoordsPrefillMinusLost,
+ cancelRadioHotListSearch,editRadioHotListSearch,openRadioHotListSearch,submitRadioHotListSearch,
  type ManualDirection,type NoticeAnswer,type RadioLabManualRefusal,type RadioLabManualTickRefusal,type RadioLabNotice,type RadioLabNoticeKind,type RadioLabOptions,type RadioLabOutcome,type RadioLabProfileIssue,type RadioLabRateIssue,
  type RadioLabState,type RadioLabTransition,type SkyCoordsDialog,type SkyCoordsField,
 } from '../core/radioAntenna';
@@ -23,9 +24,12 @@ import {createRadioTranslator,type RadioMessageKey,type RadioTranslate} from './
 import {createRadioAntennaTranslator,type RadioAntennaMessageKey,type RadioAntennaTranslate} from './RadioAntennaMessages';
 import {HTL_MAX_BYTES,HtlError,parseHtl,type HtlErrorCode} from '../core/hotList';
 import {radioHotListProjection,type RadioHotListRow} from '../core/radioHotList';
+import {formatRadioHotListRow} from '../core/radioHotListFormat';
+import {RADIO_HOT_LIST_SEARCH_LITERALS,RADIO_HOT_LIST_SEARCH_QUERY_MAX,radioHotListMissText} from '../core/radioHotListSearch';
 import {beginHotListRead,cancelHotListRead,commitHotListRead,failHotListRead,type SharedHotList} from '../core/sharedHotList';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import RadioHotListDialog from './RadioHotListDialog';
+import RadioHotListSearchDialog from './RadioHotListSearchDialog';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import './RadioControlPanel.css';
 
@@ -104,8 +108,9 @@ const englishRadio=createRadioTranslator(),englishAntenna=createRadioAntennaTran
 const SCOPED_RC_OUTCOMES:Partial<Record<RadioOutcome,RadioAntennaMessageKey>>={'panel-hidden-switch-off':'antenna.outcome.panel-hidden-switch-off'};
 const outcomeText=(o:RadioOutcome,t:RadioTranslate,ta:RadioAntennaTranslate)=>{const scoped=SCOPED_RC_OUTCOMES[o];return scoped?ta(scoped):t(`radio.outcome.${o}` as RadioMessageKey);};
 /** Per-keystroke and per-tick outcomes are not announced in the live status line. */
-const QUIET_OUTCOMES:ReadonlySet<RadioLabOutcome>=new Set(['slew-tick','field-edited','epoch-selected','clock-tick','manual-tick','manual-idle','hot-list-index-selected']);
-const antennaOutcomeText=(o:RadioLabOutcome,ta:RadioAntennaTranslate)=>o==='field-too-long'?ta('antenna.outcome.field-too-long',{max:SKY_COORDS_FIELD_MAX_LENGTH}):ta(`antenna.outcome.${o}` as RadioAntennaMessageKey);
+const QUIET_OUTCOMES:ReadonlySet<RadioLabOutcome>=new Set(['slew-tick','field-edited','epoch-selected','clock-tick','manual-tick','manual-idle','hot-list-index-selected','hot-list-search-edited']);
+const antennaOutcomeText=(o:RadioLabOutcome,ta:RadioAntennaTranslate)=>o==='field-too-long'?ta('antenna.outcome.field-too-long',{max:SKY_COORDS_FIELD_MAX_LENGTH})
+ :o==='hot-list-search-too-long'?ta('antenna.outcome.hot-list-search-too-long',{max:RADIO_HOT_LIST_SEARCH_QUERY_MAX}):ta(`antenna.outcome.${o}` as RadioAntennaMessageKey);
 
 /** Message-box category and MessageBox flags operand (0x47e09c); null flags = browser box, explained by `note`. With
  * flags, `note` (default antenna.notice.native) explains the wording and receives the flags. */
@@ -124,6 +129,8 @@ const NOTICE_META:Readonly<Record<RadioLabNoticeKind,{title:RadioAntennaMessageK
  // RA-HL-06: decoded caption/text (RADIO_HOT_LIST_LITERALS). RA-HL-05: text 0x591f38 not decoded.
  'hot-list-empty':{title:'antenna.notice.title.hot-list-empty',flags:'0x40',note:'antenna.notice.nativeLiteral'},
  'hot-list-no-selection':{title:'antenna.notice.title.warning',flags:'0x30'},
+ // RA-HL-09: decoded caption 0x591028 and text parts 0x59100c/0x591018 around the compared query (RADIO_HOT_LIST_SEARCH_LITERALS).
+ 'hot-list-search-miss':{title:'antenna.notice.title.hot-list-search-miss',flags:'0x40',note:'antenna.notice.nativeLiteral'},
 };
 const BUTTON_KEYS:Readonly<Record<NoticeAnswer,RadioAntennaMessageKey>>={ok:'antenna.button.ok',cancel:'antenna.button.cancel',yes:'antenna.button.yes',no:'antenna.button.no'};
 /** Windows MessageBox convention (inference): Escape answers OK on an OK box and Cancel on OK/Cancel; Yes/No boxes ignore it. */
@@ -138,9 +145,12 @@ function noticeText(n:RadioLabNotice,ta:RadioAntennaTranslate):string{
  if(n.kind==='altitude-limit-request')return ta(n.transit?'antenna.notice.altitude-limit-request-transit':'antenna.notice.altitude-limit-request');
  if(n.kind==='altitude-undecided')return ta(`antenna.notice.altitude-undecided.${n.reason}`);
  if(n.kind==='hot-list-empty')return ta('antenna.notice.hot-list-empty',{text:RADIO_HOT_LIST_LITERALS.emptyText});
+ // The imported query is inserted as plain text (React text), never as markup.
+ if(n.kind==='hot-list-search-miss')return ta('antenna.notice.hot-list-search-miss',{text:radioHotListMissText(n.query)});
  return ta(`antenna.notice.${n.kind}` as RadioAntennaMessageKey);
 }
-const noticeTitle=(n:RadioLabNotice,ta:RadioAntennaTranslate)=>n.kind==='hot-list-empty'?ta('antenna.notice.title.hot-list-empty',{caption:RADIO_HOT_LIST_LITERALS.emptyCaption}):ta(NOTICE_META[n.kind].title);
+const noticeTitle=(n:RadioLabNotice,ta:RadioAntennaTranslate)=>n.kind==='hot-list-empty'?ta('antenna.notice.title.hot-list-empty',{caption:RADIO_HOT_LIST_LITERALS.emptyCaption})
+ :n.kind==='hot-list-search-miss'?ta('antenna.notice.title.hot-list-search-miss',{caption:RADIO_HOT_LIST_SEARCH_LITERALS.missCaption}):ta(NOTICE_META[n.kind].title);
 /** Radio Load status (WEB-HL-05/06). */
 type HotLoadStatus=Readonly<{kind:'reading';name:string}|{kind:'loaded';name:string;count:number}|{kind:'cancelled'}|{kind:'stale'}
  |{kind:'refused';reason:'optical-draft'|'read-pending'|'modal'|'menu'|'inactive'}|{kind:'error';code:HtlErrorCode|'read';row:number}>;
@@ -314,6 +324,9 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  // handlers read the latest shared document, never the rendered one.
  const hotRows=useMemo<readonly RadioHotListRow[]>(()=>{const list=hotList?.doc.editor?.list;return list?attempt(()=>radioHotListProjection(list).rows)??[]:[];},[hotList?.doc.editor?.list]);
  const currentHotRows=():readonly RadioHotListRow[]=>{const list=latest.current.hotList?.current().editor?.list;return list?radioHotListProjection(list).rows:[];};
+ /** RA-HL-09: the row texts Search compares, from the latest shared document at the submit. */
+ const currentHotTexts=():readonly string[]=>currentHotRows().map(r=>formatRadioHotListRow(r.record));
+ const hotSearchRef=useRef<HTMLButtonElement>(null);
  const [hotLoad,setHotLoad]=useState<HotLoadStatus|null>(null);
  /** Token of this panel's pending shared read (null: none). */
  const radioRead=useRef<number|null>(null);
@@ -565,7 +578,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const closurePrior=useRef({presented,panelShown:state.radioPanelShown});
  // The surface that started the current modal sequence: View/Select (the list, its coordinate dialog and the empty box)
  // or Set Coordinates (its dialog or the stop question). Boxes that follow (errors, confirmation, arrival) keep it.
- const hotListOrigin=antenna?.hotListShown||antenna?.dialog?.origin==='hot-list'||antenna?.notice?.kind==='hot-list-empty'||antenna?.notice?.kind==='hot-list-no-selection';
+ const hotListOrigin=antenna?.hotListShown||antenna?.dialog?.origin==='hot-list'||antenna?.notice?.kind==='hot-list-empty'||antenna?.notice?.kind==='hot-list-no-selection'||antenna?.notice?.kind==='hot-list-search-miss';
  const setCoordinatesOrigin=!hotListOrigin&&(antenna?.dialog!=null||antenna?.notice?.kind==='stop-slew');
  const returnToHotList=useRef(false);
  useLayoutEffect(()=>{if(hotListOrigin)returnToHotList.current=true;else if(setCoordinatesOrigin)returnToHotList.current=false;},[hotListOrigin,setCoordinatesOrigin]);
@@ -675,10 +688,19 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
     <dt>{t('radio.state.item454')}</dt><dd>{yesNo(state.item454Enabled)}</dd>
    </dl>
   </details>
-  {presented&&antenna?.hotListShown&&<RadioHotListDialog rows={hotRows} index={antenna.hotListIndex} blocked={antenna.notice!==null||antenna.dialog!==null} ta={ta}
+  {presented&&antenna?.hotListShown&&<RadioHotListDialog rows={hotRows} index={antenna.hotListIndex} found={antenna.hotListSearch.found}
+   blocked={antenna.notice!==null||antenna.dialog!==null||antenna.hotListSearch.dialog!==null}
+   searchBlock={antenna.hotListSearch.dialog!==null||antenna.notice?.kind==='hot-list-search-miss'} ta={ta}
    onSelect={i=>runAntenna(a=>selectRadioHotListIndex(a,i,currentHotRows().length))}
    onSlew={()=>runAntenna(a=>slewToHotListSelection(a,antennaOptions,currentHotRows().map(r=>({ra:r.record.ra,dec:r.record.dec}))))}
-   onClose={()=>runAntenna(a=>closeRadioHotList(a))} returnFocus={viewSelectRef} suppressed={suppressed} ignoreHeld={ignoreHeldKey} trap={trapTab}/>}
+   onClose={()=>runAntenna(a=>closeRadioHotList(a))} onSearch={()=>runAntenna(a=>openRadioHotListSearch(a))} searchRef={hotSearchRef}
+   returnFocus={viewSelectRef} suppressed={suppressed} ignoreHeld={ignoreHeldKey} trap={trapTab}/>}
+  {/* RA-HL-09 Find dialog above the list (WEB-HL-10); message boxes stay above it (antenna-backdrop-top). */}
+  {presented&&antenna?.hotListShown&&antenna.hotListSearch.dialog&&<RadioHotListSearchDialog draft={antenna.hotListSearch.dialog} blocked={antenna.notice!==null} ta={ta}
+   onQuery={query=>runAntenna(a=>editRadioHotListSearch(a,query,a.hotListSearch.dialog?.matchCase??false))}
+   onMatchCase={matchCase=>runAntenna(a=>editRadioHotListSearch(a,a.hotListSearch.dialog?.query??'',matchCase))}
+   onSubmit={mode=>runAntenna(a=>submitRadioHotListSearch(a,mode,currentHotTexts()))} onCancel={()=>runAntenna(a=>cancelRadioHotListSearch(a))}
+   returnFocus={hotSearchRef} suppressed={suppressed} ignoreHeld={ignoreHeldKey} trap={trapTab}/>}
   {presented&&antenna?.dialog&&<SkyCoordsDialogView dialog={antenna.dialog} blocked={antenna.notice!==null} ta={ta} limitReasons={startRefusal}
    storedB1950={antenna.targetHoldsB1950?{dec:antenna.target.dec}:null}
    onEdit={(field,text)=>runAntenna(a=>editSkyCoordsField(a,field,text))} onEpoch={i=>runAntenna(a=>selectSkyCoordsEpoch(a,i))}

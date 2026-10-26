@@ -1643,7 +1643,8 @@ describe('captions, catalog and provenance',()=>{
    'manual-started':true,'manual-latched':true,'manual-unavailable':true,'manual-programmed-slew':true,'manual-limits-clock':true,'manual-step-unsupported':true,
    'manual-tick':true,'manual-altitude-limit':true,'manual-altitude-undecided':true,'manual-idle':true,'manual-released':true,'manual-released-other':true,'manual-cancelled':true,
    'hot-list-opened':true,'hot-list-empty':true,'hot-list-slewing':true,'hot-list-not-open':true,'hot-list-index-selected':true,'hot-list-index-invalid':true,
-   'hot-list-no-selection':true,'hot-list-selected':true,'hot-list-closed':true,'hot-list-reopened':true};
+   'hot-list-no-selection':true,'hot-list-selected':true,'hot-list-closed':true,'hot-list-reopened':true,
+   'hot-list-search-opened':true,'hot-list-search-edited':true,'hot-list-search-too-long':true,'hot-list-search-cancelled':true,'hot-list-search-empty':true,'hot-list-search-found':true,'hot-list-search-not-found':true,'hot-list-search-not-open':true};
   const ta=createRadioAntennaTranslator();
   for(const o of Object.keys(every))expect(Object.hasOwn(RADIO_ANTENNA_MESSAGES_EN,`antenna.outcome.${o}`)).toBe(true);
   for(const k of Object.keys(NOTICE_BUTTONS))for(const key of k.endsWith('-unsupported')?[`antenna.notice.${k}.cancellation`,`antenna.notice.${k}.precision`]
