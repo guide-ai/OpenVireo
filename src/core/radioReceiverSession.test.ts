@@ -536,9 +536,18 @@ describe('source and route audits',()=>{
  const read=(p:string)=>readFileSync(new URL(p,import.meta.url),'utf8');
  const FORBIDDEN=/Date\.now|new Date|performance\.now|Math\.random|crypto\.|localStorage|sessionStorage|indexedDB|fetch\(|XMLHttpRequest|WebSocket|AudioContext|new Audio|HTMLAudioElement|navigator\.mediaDevices/;
  const files=['./radioReceiver.ts','./radioReceiverDisplay.ts','./radioReceiverSession.ts','./radioReceiverMarks.ts','./radioReceiverMarkInput.ts','./radioReceiverRecord.ts',
-  './pulsarCurrentData.ts','../useSharedPulsarData.ts','../components/RadioReceiverWindows.tsx'];
+  './pulsarCurrentData.ts','../useSharedPulsarData.ts','../components/RadioReceiverWindows.tsx','./radioReceiverAudition.ts'];
  it('keeps host clocks, RNG, storage, network and audio out of the receiver modules',()=>{
   for(const f of files)expect(read(f),f).not.toMatch(FORBIDDEN);
+ });
+ it('R-RX13: AudioContext is reached only through the audition host, which has no other host surface',()=>{
+  const host=read('../components/receiverAuditionHost.ts');
+  expect(host).toMatch(/AudioContext/);
+  expect(host).not.toMatch(/Date\.now|new Date|performance\.now|Math\.random|crypto\.|localStorage|sessionStorage|indexedDB|fetch\(|XMLHttpRequest|WebSocket|new Audio|HTMLAudioElement|navigator|mediaDevices|getUserMedia|Worker/);
+  expect([...host.matchAll(/from '([^']+)'/g)].map(m=>m[1])).toEqual(['../core/radioReceiverAudition']);
+  const windows=read('../components/RadioReceiverWindows.tsx');
+  expect(windows).toMatch(/from '\.\/receiverAuditionHost'/);
+  for(const f of files)expect(read(f),f).not.toMatch(/AudioContext/);
  });
  it('the route reads performance.now once (perfNow) and no other host clock or random source',()=>{
   const route=read('../components/RadioTelescopeRoute.tsx');

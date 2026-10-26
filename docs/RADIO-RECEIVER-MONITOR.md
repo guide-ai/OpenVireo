@@ -13,7 +13,8 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
 | `src/core/radioReceiverDisplay.ts` | Literals, labels, titles, caption, beam formatter, trace store leaf ops, grid, display ops (pure). |
 | `src/core/radioReceiver.ts` | R-RX1 bank plus the R-RX2 order: parameter refresh, trace reset/append, Freq/Incr/Paint, Add/Close ends. No signal, profile, thermal or Poisson formula changed. |
 | `src/core/radioReceiverSession.ts` | Web session: seed, canvas op logs, tick error, close box, control availability (pure). |
-| `src/components/RadioReceiverWindows.tsx` | Workspace, cards, canvas, close box, 40 ms timer, focus. |
+| `src/components/RadioReceiverWindows.tsx` | Workspace, cards, canvas, close box, 40 ms timer, focus; R-RX13 audition group. |
+| `src/core/radioReceiverAudition.ts`, `src/components/receiverAuditionHost.ts` | R-RX13 web trace audition (pure mapping and lease; the only `AudioContext` host). See [RADIO-RECEIVER-AUDITION.md](RADIO-RECEIVER-AUDITION.md). |
 
 ## Ported contracts
 
@@ -32,7 +33,7 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
 
 ## Web policies
 
-- **WEB-RX-AUDIO-01 (silent).** Every receiver has `+0x42f` = false by web restriction; the compiled default `+0x93f` = 1 and FormCreate's `waveOutGetNumDevs` call are not reproduced. Under SILENT-01 (fresh 140-byte zeroed `PulsarSoundObj`, `+0x42f` false throughout; `AUDIO-OWNER-CLOSE-RESULTS.json`) the audio flags and fields stay zero and no receiver or science field changes. Natively the cleanup still calls `waveOutClose(0)` at every close and finish, and the constructor Randomize `0x576712` runs at unit init; their OS effect is unobserved. **This is not a native no-op claim.** Audio stays excluded until anomaly PRE-01 (`+0x51`/ESI in `0x576c28`/`0x576b04`) has an evidenced contract; it is neither corrected nor reproduced, and nothing is routed through `0x57724c`/`0x576c28`/`0x576b04`.
+- **WEB-RX-AUDIO-01 (silent).** Every receiver has `+0x42f` = false by web restriction; the compiled default `+0x93f` = 1 and FormCreate's `waveOutGetNumDevs` call are not reproduced. Under SILENT-01 (fresh 140-byte zeroed `PulsarSoundObj`, `+0x42f` false throughout; `AUDIO-OWNER-CLOSE-RESULTS.json`) the audio flags and fields stay zero and no receiver or science field changes. Natively the cleanup still calls `waveOutClose(0)` at every close and finish, and the constructor Randomize `0x576712` runs at unit init; their OS effect is unobserved. **This is not a native no-op claim.** Audio stays excluded until anomaly PRE-01 (`+0x51`/ESI in `0x576c28`/`0x576b04`) has an evidenced contract; it is neither corrected nor reproduced, and nothing is routed through `0x57724c`/`0x576c28`/`0x576b04`. R-RX13 ([RADIO-RECEIVER-AUDITION.md](RADIO-RECEIVER-AUDITION.md), WEB-RX-AUDITION-01..04) adds only a separate web sonification of a stopped trace on an explicit press; it does not change this policy, `+0x42f` or any receiver field.
 - **WEB-RX-CAT-01.** A learner-loaded reference catalog is required (native: Pulsars.dat read at TRadioLab FormCreate). Load is refused while any receiver exists; Open is refused while a read is pending.
 - **WEB-RX-TIME-01.** `now` = route `performance.now()` / 86 400 000, a monotonic day scalar (explicit deviation from Time `0x40d448`): no midnight or backward stall. JD always comes from the radio clock scenario, read without side effects.
 - **WEB-RX-CAD-01.** One 40 ms browser interval (NT-branch reading of `0x48c394`; no host OS claim) while the main timer is enabled and no project operation runs. One batch per admitted tick, no catch-up; it keeps running on a hidden route and under modals. H is simulated seconds per sweep, not real time.
@@ -62,6 +63,7 @@ Record, the 1600/1601 bound, Identify, the modal Properties and the Save questio
 - `radioReceiver.test.ts`: activation F4, title-change lastX reset, frame title rewrite, trace reset/append and atomic refusal, Freq/Incr bounds, Add enable lifecycle, add-nothing, `send-0x53a`, Paint idempotence.
 - `radioReceiverSession.test.ts`: seed sequence, refusals, the pinned synthetic P = 0.04 refusal at H = 4 and success at H = 8, persistent tick error, gated/disabled ticks keeping a stored tick error (constructed caller states), op logs, availability, close box, RA-13 detection, and source/route audits (host clock, RNG, storage, network, audio, imports).
 - `tests/radio-receiver-app.spec.ts` (actual App, synthetic in-test catalog, browser clock control): full flow, Freq/Incr limits, keyboard order and held keys, channels and the close box, refusals and the coupling alert, catalog lock, project operation, route hide/show, modality, viewports 1440/390/375/320, reload, and one dropped-log repaint test with test-only Canvas API instrumentation (a temporarily unavailable 2D context, recorded segments) compared with an unfaulted seeded control run. An optional `OPENVIREO_PULSARS_DAT` run checks invariants only.
+- R-RX13: `radioReceiverAudition.test.ts`, `receiverAuditionHost.test.ts` and `tests/radio-receiver-audition-app.spec.ts` (see [RADIO-RECEIVER-AUDITION.md](RADIO-RECEIVER-AUDITION.md)); the source audit above also covers the audition core and confines `AudioContext` to its host.
 
 ## Review resolution (2026-10-24, R-RX2)
 

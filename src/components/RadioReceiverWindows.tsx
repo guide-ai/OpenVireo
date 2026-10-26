@@ -26,6 +26,12 @@ import {
 } from '../core/radioReceiverSession';
 import {receiverWindowRank,type ReceiverMoveDirection} from '../core/radioReceiverArrangement';
 import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
+import {
+ createReceiverAuditionState,pressReceiverAudition,pruneReceiverAudition,receiverAuditionEnded,receiverAuditionFailed,receiverAuditionInvalidation,receiverAuditionRunning,
+ receiverAuditionSource,refuseReceiverAudition,stopReceiverAudition,
+ type ReceiverAuditionCause,type ReceiverAuditionEnvironment,type ReceiverAuditionNotice,type ReceiverAuditionState,type ReceiverAuditionStep,
+} from '../core/radioReceiverAudition';
+import {browserReceiverAuditionDeps,createReceiverAuditionHost,type ReceiverAuditionHost,type ReceiverAuditionHostEvent} from './receiverAuditionHost';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t,type PlainMessageKey} from '../i18n';
 
@@ -133,11 +139,33 @@ function outcomeText(o:ReceiverSessionOutcome):string{
  return '';
 }
 
+/** R-RX13 text of an audition refusal reason. */
+function auditionReasonText(reason:Extract<ReceiverAuditionNotice,{kind:'refused'}>['reason'],column:number|undefined):string{
+ if(reason==='missing-row'||reason==='invalid-row')return t(`radioReceiver.audition.reason.${reason}`,{column:column??''});
+ return t(`radioReceiver.audition.reason.${reason}`);
+}
+/** R-RX13 text of a card's audition status line ('' when nothing is announced). */
+function auditionText(n:ReceiverAuditionNotice|null):string{
+ if(!n)return '';
+ if(n.kind==='refused')return auditionReasonText(n.reason,n.column);
+ if(n.kind==='starting')return t('radioReceiver.audition.status.starting');
+ if(n.kind==='ended')return t(`radioReceiver.audition.status.end.${n.cause}`);
+ if(n.kind==='failed')return t(`radioReceiver.audition.status.failed.${n.failure}`);
+ const p=n.pcm,parts=[t('radioReceiver.audition.status.playing',{n:n.slot+1,first:p.firstColumn,last:p.lastColumn,ms:p.durationMs})];
+ if(p.silent)parts.push(t('radioReceiver.audition.status.silent'));
+ if(p.clippedHigh>0)parts.push(t('radioReceiver.audition.status.clipped',{count:p.clippedHigh}));
+ return parts.join(' ');
+}
+/** What a card shows of the audition: its phase, whether a press can start one, the reason when not, and its status. */
+type CardAudition=Readonly<{phase:'idle'|'starting'|'playing';available:boolean;reason:string;status:string}>;
+
 /**
  * WEB workspace of the silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md): TRcvr_Form1 main and up to two child
  * channels as cards, each with its logical 401 × 142 display. The session (radioReceiverSession) is pure; this component
  * holds it and the 40 ms timer so the 25 Hz updates re-render only this subtree. Every step runs on the latest accepted
- * session (sessionRef), as the route's stepDate does. Nothing is saved, restored or sent anywhere; no audio is produced.
+ * session (sessionRef), as the route's stepDate does. Nothing is saved, restored or sent anywhere. The native receiver audio
+ * is not produced; R-RX13 adds only the web trace audition (docs/RADIO-RECEIVER-AUDITION.md), whose host is created at the
+ * first admitted press and which never steps the session.
  */
 export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,configurationOpen=false,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange,
  pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage}:Props){
@@ -427,6 +455,64 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  // Route hidden, project operation or a surface over the cards: the gesture ends before paint.
  useLayoutEffect(()=>{if(!active||busy||cardsInert)endGestureRef.current();},[active,busy,cardsInert]);
 
+ // ---- R-RX13 trace audition (docs/RADIO-RECEIVER-AUDITION.md). The pure lease state is kept like the session (ref plus
+ // state); the host exists only after the first admitted press. Nothing here steps the session.
+ const [audition,setAudition]=useState<ReceiverAuditionState>(createReceiverAuditionState);
+ const auditionRef=useRef(audition),hostRef=useRef<ReceiverAuditionHost|null>(null);
+ const applyAudition=(step:ReceiverAuditionStep)=>{
+  if(step.state!==auditionRef.current){auditionRef.current=step.state;setAudition(step.state);}
+  if(step.stop!==null)hostRef.current?.stop(step.stop);
+ };
+ const auditionEnv=():ReceiverAuditionEnvironment=>({active:latest.current.active,busy:latest.current.busy,modal:inertRef.current||nativeModalOpen(),
+  hidden:document.visibilityState==='hidden'});
+ const stopAudition=(cause:ReceiverAuditionCause)=>applyAudition(stopReceiverAudition(auditionRef.current,cause));
+ /** Host events re-check the latest route and session before a lease is shown as playing. */
+ const hostEvent=(e:ReceiverAuditionHostEvent)=>{
+  if(e.kind!=='running'){applyAudition(receiverAuditionEnded(auditionRef.current,e.generation,e.kind));return;}
+  const cause=receiverAuditionInvalidation(auditionRef.current,sessionRef.current.bank,auditionEnv());
+  if(cause){hostRef.current?.stop(e.generation);applyAudition(receiverAuditionEnded(auditionRef.current,e.generation,cause));return;}
+  applyAudition(receiverAuditionRunning(auditionRef.current,e.generation));
+ };
+ const hostEventRef=useRef(hostEvent);
+ useLayoutEffect(()=>{hostEventRef.current=hostEvent;});
+ /** One press: refused without any host call unless admitted; a stop is applied before a start, all inside the gesture. */
+ const pressAudition=(slot:number)=>{
+  const env=auditionEnv();
+  if(!env.active||env.busy||env.modal||env.hidden){applyAudition({state:refuseReceiverAudition(auditionRef.current,slot,'unavailable'),stop:null,start:null});return;}
+  const step=pressReceiverAudition(auditionRef.current,sessionRef.current.bank,slot);
+  applyAudition(step);
+  if(!step.start)return;
+  const host=hostRef.current??=createReceiverAuditionHost(browserReceiverAuditionDeps(),e=>hostEventRef.current(e));
+  const g=step.start.generation,result=host.start(g,step.start.pcm);
+  if(result==='running')applyAudition(receiverAuditionRunning(auditionRef.current,g));
+  else if(result!=='pending')applyAudition(receiverAuditionFailed(auditionRef.current,g,result));
+ };
+ // Session, route, project operation or a surface over the cards: the lease is checked before paint; never resumed.
+ useLayoutEffect(()=>{
+  const cause=receiverAuditionInvalidation(auditionRef.current,sessionRef.current.bank,auditionEnv());
+  if(cause)stopAudition(cause);
+  const pruned=pruneReceiverAudition(auditionRef.current,sessionRef.current.bank);
+  if(pruned!==auditionRef.current)applyAudition({state:pruned,stop:null,start:null});
+ },[session,active,busy,cardsInert]);// applyAudition/auditionEnv read refs and a stable setter only
+ // While a lease exists: page hidden, pagehide and a foreign modal dialog (checked; ordinary DOM changes do not stop it).
+ const auditioning=audition.active!==null;
+ useEffect(()=>{
+  if(!auditioning)return;
+  const hidden=()=>{if(document.visibilityState==='hidden')stopAudition('document-hidden');};
+  const pagehide=()=>stopAudition('document-hidden');
+  const unobserve=observeNativeModals(()=>{if(nativeModalOpen())stopAudition('modal');});
+  document.addEventListener('visibilitychange',hidden);window.addEventListener('pagehide',pagehide);
+  return ()=>{unobserve();document.removeEventListener('visibilitychange',hidden);window.removeEventListener('pagehide',pagehide);};
+ },[auditioning]);
+ useEffect(()=>()=>{hostRef.current?.stopAll();},[]);
+ const auditionAdmitted=active&&!busy&&!cardsInert;
+ const cardAudition=(slot:number):CardAudition=>{
+  const a=audition.active,phase=a&&a.slot===slot?a.phase==='playing'?'playing':'starting':'idle';
+  const source=receiverAuditionSource(session.bank,slot);
+  const reason=!source.ok?auditionReasonText(source.reason,source.column):auditionAdmitted?'':t('radioReceiver.audition.reason.unavailable');
+  return {phase,available:auditionAdmitted&&source.ok,reason,status:auditionText(audition.notices[slot as 0|1|2]??null)};
+ };
+
  const next=nextReceiverSeed(session);
  const order=session.arrangement.order;
  return <div className="radio-receiver-workspace" data-testid="receiver-workspace" data-timer={session.bank.timerEnabled} data-align={session.bank.align.on?'on':'off'}
@@ -452,7 +538,8 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    inert={cardsInert} notice={notice&&notice.slot===slot?noticeText(notice):''} headingRef={el=>{headings.current[slot]=el;}} closeRef={el=>{closes.current[slot]=el;}}
    addRef={slot===0?addRef:undefined} onStep={step} onAdd={add} onMode={mode} onClose={close} onPaint={paint} marks={markHandlers}
    recordHost={!!pulsarData} recordRef={slot===0?recordButton:undefined} onRecord={record}
-   alignRef={slot===0?alignButton:undefined} onAlign={align} onMove={move} moveRef={(dir,el)=>{moveButtons.current[dir][slot]=el;}}/>;})}
+   alignRef={slot===0?alignButton:undefined} onAlign={align} onMove={move} moveRef={(dir,el)=>{moveButtons.current[dir][slot]=el;}}
+   audition={cardAudition(slot)} onAudition={pressAudition}/>;})}
   {closePresented&&session.closeBox&&<ReceiverCloseBox caption={session.closeBox.caption} text={session.closeBox.text} onDismiss={dismissBox}
    closeFirst={session.bank.slots.reduce((h,r,i)=>r?i+1:h,1)}/>}
   <div className="radio-control" style={{display:'contents'}} data-testid="receiver-record-layer" data-modal-pending={recordPending} data-modal-presented={recordPresented}>
@@ -570,11 +657,12 @@ type CardProps=Readonly<{r:RadioReceiver;session:RadioReceiverSession;log:Receiv
  headingRef:(el:HTMLHeadingElement|null)=>void;closeRef:(el:HTMLButtonElement|null)=>void;addRef?:RefObject<HTMLButtonElement|null>;
  onStep:(slot:number,control:RadioReceiverControl,direction:'down'|'up')=>void;onAdd:()=>void;onMode:(slot:number)=>void;onClose:(slot:number)=>void;onPaint:(slot:number)=>void;
  marks:MarkHandlers;recordHost:boolean;recordRef?:RefObject<HTMLButtonElement|null>;onRecord:()=>void;
- alignRef?:RefObject<HTMLButtonElement|null>;onAlign:()=>void;onMove:(slot:number,dir:ReceiverMoveDirection)=>void;moveRef:(dir:ReceiverMoveDirection,el:HTMLButtonElement|null)=>void}>;
-/** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder, then the web mark controls
- * and the R-RX5 window-position group. */
+ alignRef?:RefObject<HTMLButtonElement|null>;onAlign:()=>void;onMove:(slot:number,dir:ReceiverMoveDirection)=>void;moveRef:(dir:ReceiverMoveDirection,el:HTMLButtonElement|null)=>void;
+ audition:CardAudition;onAudition:(slot:number)=>void}>;
+/** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder, then the web mark controls,
+ * the R-RX5 window-position group and the R-RX13 web trace audition group. */
 function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks,recordHost,recordRef,onRecord,
- alignRef,onAlign,onMove,moveRef}:CardProps){
+ alignRef,onAlign,onMove,moveRef,audition,onAudition}:CardProps){
  const id=useId(),slot=r.index,main=slot===0,labels=receiverLabels(r),avail=receiverControlAvailability(session,slot);
  // R-RX5: AlignDisp is the stored caption; after a FormCreate reset it can say No while Align is on (WEB-RX-ALIGN-LABEL-01).
  const aligned=session.bank.align.on,alignStale=main&&aligned&&labels.align===L.no;
@@ -645,6 +733,20 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
    <span data-testid={`receiver-window-position-${slot}`}>{t('radioReceiver.window.position',{rank,count})}</span>
    <div className="button-row">{moveButton('up')}{moveButton('down')}</div>
    <p id={`${id}-window-help`} className="radio-control-note">{t('radioReceiver.window.help')}</p>
+  </div>
+  {/* R-RX13: aria-disabled (not disabled) when idle and unavailable, so focus stays and a press announces the reason. */}
+  <div className="radio-receiver-audition" role="group" aria-labelledby={`${id}-audition`} data-testid={`receiver-audition-${slot}`} data-phase={audition.phase}
+   data-available={audition.available}>
+   <span id={`${id}-audition`} className="radio-receiver-window-legend">{t('radioReceiver.audition.legend')}</span>
+   <div className="button-row">
+    <button type="button" className="secondary-button" data-testid={`receiver-audition-button-${slot}`}
+     aria-label={t(audition.phase==='idle'?'radioReceiver.audition.playLabel':'radioReceiver.audition.stopLabel',{n:slot+1})}
+     aria-disabled={audition.phase==='idle'&&!audition.available||undefined} aria-describedby={`${id}-audition-help ${id}-audition-reason`}
+     onKeyDown={ignoreHeldKey} onClick={()=>onAudition(slot)}>{t(audition.phase==='idle'?'radioReceiver.audition.play':'radioReceiver.audition.stop')}</button>
+   </div>
+   <p id={`${id}-audition-help`} className="radio-control-note">{t('radioReceiver.audition.help')}</p>
+   <p id={`${id}-audition-reason`} className="radio-control-note" data-testid={`receiver-audition-reason-${slot}`}>{audition.reason}</p>
+   <p className="radio-control-status" role="status" aria-live="polite" data-testid={`receiver-audition-status-${slot}`}>{audition.status}</p>
   </div>
   <p className="radio-control-status" role="status" aria-live="polite" data-testid={`receiver-status-${slot}`}>{notice}</p>
  </section>;

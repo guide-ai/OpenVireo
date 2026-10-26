@@ -31,6 +31,11 @@
 .radio-receiver-window-legend{font-size:14px;font-weight:600}
 .radio-receiver-window .button-row{flex-wrap:wrap;margin:0}
 .radio-receiver-window .radio-control-note{flex-basis:100%;margin:0;overflow-wrap:anywhere}
+/* R-RX13 web trace audition group (same frame as the window-position group). */
+.radio-receiver-audition{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:8px 0;padding:6px 10px;border:1px solid #c9d1cf;border-radius:6px;min-width:0}
+.radio-receiver-audition .button-row{flex-wrap:wrap;margin:0}
+.radio-receiver-audition .radio-control-note,.radio-receiver-audition .radio-control-status{flex-basis:100%;margin:0;overflow-wrap:anywhere}
+.radio-receiver-audition .radio-control-note:empty{display:none}
 .radio-receiver-card[data-stacked]{border-left:4px solid #23756c}
 /* R-RX4 Record notes and the finish Properties table (the boxes reuse .antenna-dialog). */
 .radio-receiver-card [data-testid="receiver-record-state"] p{margin:4px 0;overflow-wrap:anywhere}
