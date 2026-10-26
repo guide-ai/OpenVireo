@@ -536,7 +536,7 @@ describe('source and route audits',()=>{
  const read=(p:string)=>readFileSync(new URL(p,import.meta.url),'utf8');
  const FORBIDDEN=/Date\.now|new Date|performance\.now|Math\.random|crypto\.|localStorage|sessionStorage|indexedDB|fetch\(|XMLHttpRequest|WebSocket|AudioContext|new Audio|HTMLAudioElement|navigator\.mediaDevices/;
  const files=['./radioReceiver.ts','./radioReceiverDisplay.ts','./radioReceiverSession.ts','./radioReceiverMarks.ts','./radioReceiverMarkInput.ts','./radioReceiverRecord.ts',
-  './pulsarCurrentData.ts','../useSharedPulsarData.ts','../components/RadioReceiverWindows.tsx','./radioReceiverAudition.ts'];
+  './pulsarCurrentData.ts','../useSharedPulsarData.ts','../components/RadioReceiverWindows.tsx','./radioReceiverAudition.ts','./radioFinishSave.ts'];
  it('keeps host clocks, RNG, storage, network and audio out of the receiver modules',()=>{
   for(const f of files)expect(read(f),f).not.toMatch(FORBIDDEN);
  });
@@ -563,5 +563,14 @@ describe('source and route audits',()=>{
   }
   const current=[...read('./pulsarCurrentData.ts').matchAll(/from '([^']+)'/g)].map(m=>m[1]);
   expect(current).toEqual(['./pulsarRecording']);
+ });
+ it('R-RX17: the finish claim and recorder are reached only by the finish Save core and the Radio presentation',()=>{
+  // docs/RADIO-FINISH-SAVE.md WEB-RX17-03: the Analysis Save and the R-RX16 arming Save keep the generic, lease-refusing recorder.
+  const FINISH=/pulsarFinishWriteClaim|recordPulsarFinishWrittenCopy/;
+  for(const f of ['../components/PulsarAnalysis.tsx','./radioRecordSave.ts','./pulsarSavedCopy.ts','../components/pulsarSaveHost.ts','./radioReceiverSession.ts'])
+   expect(read(f),f).not.toMatch(FINISH);
+  expect(read('./radioFinishSave.ts')).toMatch(/pulsarFinishWriteClaim/);expect(read('./radioFinishSave.ts')).not.toMatch(/recordPulsarFinishWrittenCopy\(/);
+  const windows=read('../components/RadioReceiverWindows.tsx');
+  expect(windows.match(/recordPulsarFinishWrittenCopy\(/g)).toHaveLength(1);expect(windows).not.toMatch(/pulsarFinishWriteClaim/);
  });
 });

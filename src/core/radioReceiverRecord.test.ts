@@ -6,19 +6,21 @@ import {
 } from './radioReceiver';
 import {
  addReceiverWindow,answerRecordIdentify,answerRecordPrompt,answerRecordSave,closeRecordProperties,completeRecordArming,createRadioReceiverSession,dismissRecordFull,
- editRecordIdentify,leaveRecordSave,openReceiverWindow,openRecordSave,pressRecord,reassociateReceivers,receiverBoxRefusal,receiverControlAvailability,recordDialogOpen,
- requestReceiverClose,stepReceiver,stepRecordSave,tickReceivers,toggleReceiverMode,
+ editRecordIdentify,leaveFinishSave,leaveRecordSave,openFinishSave,openReceiverWindow,openRecordSave,pressRecord,reassociateReceivers,receiverBoxRefusal,receiverControlAvailability,
+ recordDialogOpen,requestReceiverClose,stepFinishSave,stepReceiver,stepRecordSave,tickReceivers,toggleReceiverMode,
  type RadioReceiverSession,type ReceiverRecordHostRequest,type ReceiverSessionTransition,
 } from './radioReceiverSession';
 import {RADIO_IDENTIFY_POLICY,RADIO_RECORD_FLAGS,RADIO_RECORD_LITERALS,radioCaptureInput,radioIdentifyIssue} from './radioReceiverRecord';
 import {
  INITIAL_PULSAR_CURRENT_DATA,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,importPulsarRecording,isMemoryData,pulsarClaimBytes,pulsarCurrentSaved,
- pulsarDataRows,pulsarDataSaved,pulsarHeaderCells,pulsarMemoryRecording,pulsarOutputClaim,pulsarWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,
+ pulsarDataRows,pulsarDataSaved,pulsarHeaderCells,pulsarMemoryRecording,pulsarOutputClaim,pulsarWrittenCopy,recordPulsarFinishWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,
+ releasePulsarOutput,
  setPulsarAnalysisActivity,setPulsarCapturePhase,type PulsarCurrentData,type PulsarMemoryRecording,
 } from './pulsarCurrentData';
 import {
  radioRecordEraseNote,radioRecordSaveAbandoned,radioRecordSaveBegin,radioRecordSaveNoticed,radioRecordSaveSettled,radioRecordSaveStarted,type RadioRecordSave,
 } from './radioRecordSave';
+import {radioFinishSaveBegin} from './radioFinishSave';
 import {admitPlrRecording,type PlrRecording} from './pulsarRecording';
 
 // [W] contract checks of the chosen R-RX4 implementation (docs/RADIO-RECEIVER-RECORD.md) with synthetic catalog records
@@ -507,7 +509,7 @@ describe('R-RX16 arming Save Yes: Radio-owned dialog, verified receipt gate, exp
   expect(w.s.bank.recording.armed).toBe(true);
  });
 
- it('E4 stays gated: the finish Save question refuses a yes answer and the committed lease is not released for it',()=>{
+ it('the arming Save is not the finish Save: at the finish question openRecordSave and a yes answer are refused without host requests',()=>{
   const w=open(world());record(w);mode(w);for(let i=0;i<10;i++)tick(w);mode(w);untilFinished(w);
   take(drive(w,s=>answerRecordIdentify(s,'ok')));take(drive(w,closeRecordProperties));
   const before=w.requests.length;
@@ -515,5 +517,145 @@ describe('R-RX16 arming Save Yes: Radio-owned dialog, verified receipt gate, exp
   expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(r.host).toBeUndefined();
   expect(openRecordSave(w.s,w.doc).outcome).toMatchObject({kind:'web-refused',reason:'record-input'});
   expect(w.doc.lease).toEqual({id:1,phase:'committed'});expect(w.requests.length).toBe(before);
+ });
+});
+
+// R-RX17 (docs/RADIO-FINISH-SAVE.md): [S] E4-YES 0x573d47..0x573d59, Yes of the finish question calls the Save wrapper and its
+// normal return has no success test; [W] the finish Save dialog, its lease-object binding, its continuation and the verified
+// gate are web policy (stricter than the native normal return). The read-back bytes are the claim's own bytes or one flipped
+// byte, synthetic stand-ins for a browser read-back, not native writer output.
+describe('R-RX17 finish Save Yes: Radio-owned dialog under the committed lease; only a verified receipt ends the finish',()=>{
+ /** A receiver capture committed through Identify OK and Properties: the finish Save question, lease 1 committed. */
+ const question=()=>{
+  const w=open(world());record(w);mode(w);for(let i=0;i<10;i++)tick(w);mode(w);untilFinished(w);
+  take(drive(w,s=>answerRecordIdentify(s,'ok')));take(drive(w,closeRecordProperties));
+  expect(w.s.record.finish?.stage).toBe('save');expect(w.doc.lease).toEqual({id:1,phase:'committed'});
+  return w;
+ };
+ const fileSave=(w:World)=>{const f=w.s.record.finish;if(f?.stage!=='save-file'||!f.save||!f.lease)throw new Error('no finish save dialog');return {save:f.save,lease:f.lease};};
+ const opened=()=>{
+  const w=question();take(drive(w,s=>openFinishSave(s,w.doc)));
+  // The simulated capture must pass the R-RX14 build, or every Choose below would be a build refusal.
+  expect(fileSave(w).save.session.preview.ok).toBe(true);
+  return w;
+ };
+ const step=(w:World,f:(x:RadioRecordSave)=>RadioRecordSave)=>take(drive(w,s=>stepFinishSave(s,f)));
+ /** The component's path for one attempt: begin and claims, picker started, a read-back committed (or not), cleanup, settled. */
+ function attempt(w:World,token:number,readback:'equal'|'flipped'|'none'){
+  const {save,lease}=fileSave(w),begun=radioFinishSaveBegin(save,lease,w.doc);if(begun.kind!=='claim')throw new Error('refused');
+  w.doc=claimPulsarOutput(w.doc,'radio',token).doc;
+  step(w,x=>radioRecordSaveStarted(x,token));
+  let committed=false;
+  if(readback!=='none'){
+   const bytes=pulsarClaimBytes(begun.claim);if(readback==='flipped')bytes[0]^=1;
+   const r=recordPulsarFinishWrittenCopy(w.doc,begun.claim,{lease,outputToken:token},bytes,'finish.PLR');w.doc=r.doc;committed=r.ok;
+   step(w,x=>radioRecordSaveNoticed(x,token,r.ok?{code:'verified',fileName:'finish.PLR'}:{code:'mismatch',fileName:'finish.PLR',reason:r.reason}));
+  }else step(w,x=>radioRecordSaveNoticed(x,token,{code:'picker-cancelled',fileName:null}));
+  w.doc=releasePulsarOutput(w.doc,'radio',token).doc;
+  step(w,x=>radioRecordSaveSettled(x,token));
+  return {committed,claim:begun.claim,lease,byteLength:begun.claim.text.length};
+ }
+
+ it('Yes opens the dialog with no host request and the lease object kept; the answers, receiver actions and imports are refused',()=>{
+  const w=question(),lease=w.doc.lease,data=w.doc.data,before=w.requests.length;
+  const t=drive(w,s=>openFinishSave(s,w.doc));
+  expect(t.outcome).toMatchObject({kind:'ok',action:'record-finish-save-open'});expect(t.host).toBeUndefined();
+  const {save,lease:kept}=fileSave(w);
+  expect(kept).toBe(lease);expect(save).toMatchObject({attempt:null,abandoned:false,session:{purpose:'save',generation:w.doc.generation}});expect(save.session.data).toBe(data);
+  expect(w.requests.length).toBe(before);expect(w.doc.lease).toBe(lease);expect(w.s.record.leaseId).toBe(1);expect(recordDialogOpen(w.s)).toBe(true);
+  for(const a of ['no','cancel'] as const){const r=answerRecordSave(w.s,a);expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(r.host).toBeUndefined();}
+  expect(openFinishSave(w.s,w.doc).outcome).toMatchObject({kind:'web-refused',action:'record-finish-save-open',reason:'record-input'});
+  expect(answerRecordSave(w.s,'yes' as 'no').outcome).toMatchObject({kind:'web-refused',reason:'record-input'});
+  for(const r of [toggleReceiverMode(w.s,{jd:JD,now:now()}),addReceiverWindow(w.s),requestReceiverClose(w.s,0),pressRecord(w.s,snap(w))])
+   expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-dialog-open'});
+  expect(importPulsarRecording(w.doc,plr('DURING-FINISH-SAVE'),w.doc.generation)).toMatchObject({ok:false,reason:'capture-lease'});
+ });
+
+ it('Yes is refused, changing nothing, when the document no longer holds this committed capture',()=>{
+  const w=question(),s=w.s;
+  for(const doc of [releasePulsarCaptureLease(w.doc,1).doc,{...w.doc,data:plr()},INITIAL_PULSAR_CURRENT_DATA]){
+   const r=openFinishSave(s,doc);expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(r.session).toBe(s);expect(r.host).toBeUndefined();
+  }
+ });
+
+ it('Back is refused while an attempt is pending (also abandoned); afterwards the question returns with the lease, then No or Cancel release once',()=>{
+  for(const answer of ['no','cancel'] as const){
+   const w=opened(),{save,lease}=fileSave(w);
+   const begun=radioFinishSaveBegin(save,lease,w.doc);if(begun.kind!=='claim')throw new Error('refused');
+   w.doc=claimPulsarOutput(w.doc,'radio',5).doc;step(w,x=>radioRecordSaveStarted(x,5));
+   expect(leaveFinishSave(w.s,{kind:'back'}).outcome).toMatchObject({kind:'web-refused',action:'record-finish-save-exit',reason:'record-input'});
+   step(w,radioRecordSaveAbandoned);expect(fileSave(w).save).toMatchObject({attempt:5,abandoned:true,session:{save:{code:'abandoned'}}});
+   expect(fileSave(w).lease).toBe(lease);
+   expect(leaveFinishSave(w.s,{kind:'back'}).outcome).toMatchObject({kind:'web-refused'});
+   // The dead attempt's late notice and another token's settlement change nothing; its own cleanup settles it.
+   expect(stepFinishSave(w.s,x=>radioRecordSaveNoticed(x,5,{code:'verified',fileName:'late.PLR'})).changed).toBe(false);
+   expect(stepFinishSave(w.s,x=>radioRecordSaveSettled(x,4)).changed).toBe(false);
+   w.doc=releasePulsarOutput(w.doc,'radio',5).doc;step(w,x=>radioRecordSaveSettled(x,5));
+   const before=w.requests.length,back=drive(w,s=>leaveFinishSave(s,{kind:'back'}));
+   expect(back.outcome).toMatchObject({kind:'ok',action:'record-finish-save-exit'});expect(back.host).toBeUndefined();
+   const f=w.s.record.finish!;
+   expect(f.stage).toBe('save');expect(f.save).toBeUndefined();expect(f.lease).toBeUndefined();expect(f.committed).toBe(true);
+   expect(w.doc.lease).toBe(lease);expect(w.doc.written).toBeNull();expect(w.s.record.leaseId).toBe(1);
+   take(drive(w,s=>answerRecordSave(s,answer)));
+   expect(w.requests.slice(before).map(r=>r.kind)).toEqual(answer==='no'?['release','open-analysis']:['release']);
+   expect(w.doc.lease).toBeNull();expect(w.opened).toBe(answer==='no'?1:0);expect(pulsarCurrentSaved(w.doc)).toBe(false);
+  }
+ });
+
+ it('claim → write → equal read-back → receipt → the verified exit: one release only, no analysis, the same data object, saved',()=>{
+  const w=opened(),data=w.doc.data,generation=w.doc.generation,bank=w.s.bank,before=w.requests.length;
+  const a=attempt(w,1,'equal');
+  expect(a.committed).toBe(true);expect(pulsarWrittenCopy(w.doc)?.fileName).toBe('finish.PLR');expect(pulsarOutputClaim(w.doc)).toBeNull();
+  // The receipt alone releases nothing: the lease is still held until the session's exit asks for its release.
+  expect(w.doc.lease).toBe(a.lease);expect(w.requests.length).toBe(before);
+  const t=drive(w,s=>leaveFinishSave(s,{kind:'verified',fileName:'finish.PLR',byteLength:a.byteLength},w.doc));
+  expect(t.outcome).toMatchObject({kind:'ok',action:'record-finish-save-exit'});
+  expect(w.requests.slice(before)).toEqual([{kind:'release',id:1}]);expect(w.opened).toBe(0);
+  expect(w.s.record.finish).toBeNull();expect(w.s.record.leaseId).toBeNull();expect(w.s.bank).toBe(bank);
+  expect(w.doc.lease).toBeNull();expect(w.doc.data).toBe(data);expect(w.doc.generation).toBe(generation);expect(isMemoryData(w.doc.data)).toBe(true);
+  expect(pulsarCurrentSaved(w.doc)).toBe(true);expect(pulsarWrittenCopy(w.doc)?.byteLength).toBe(a.byteLength);
+  // A repeated exit makes no host request; the next Record asks only the erase question, and Load would be admitted.
+  const again=leaveFinishSave(w.s,{kind:'verified',fileName:'finish.PLR',byteLength:a.byteLength},w.doc);
+  expect(again.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(again.host).toBeUndefined();
+  expect(importPulsarRecording(w.doc,plr('AFTER'),generation).ok).toBe(true);
+  record(w);expect(w.s.record.prompt).toEqual({kind:'erase',generation});
+  expect(w.requests.slice(before).map(r=>r.kind)).toEqual(['release']);
+ });
+
+ it('cancelled and mismatched attempts stay in the dialog with the lease; a verified exit without a receipt is refused',()=>{
+  const w=opened(),lease=fileSave(w).lease,before=w.requests.length;
+  attempt(w,1,'none');expect(fileSave(w).save).toMatchObject({attempt:null,session:{save:{code:'picker-cancelled'}}});
+  const b=attempt(w,2,'flipped');
+  expect(b.committed).toBe(false);expect(fileSave(w).save).toMatchObject({attempt:null,session:{save:{code:'mismatch',reason:'readback-bytes'}}});
+  expect(w.doc.written).toBeNull();expect(w.doc.lease).toBe(lease);expect(w.requests.length).toBe(before);
+  const r=leaveFinishSave(w.s,{kind:'verified',fileName:'finish.PLR',byteLength:b.byteLength},w.doc);
+  expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(r.host).toBeUndefined();
+  expect(leaveFinishSave(w.s,{kind:'verified',fileName:'finish.PLR',byteLength:b.byteLength}).outcome).toMatchObject({kind:'web-refused'});
+  // A later equal attempt still verifies in the same dialog.
+  const c=attempt(w,3,'equal');expect(c.committed).toBe(true);
+  take(drive(w,s=>leaveFinishSave(s,{kind:'verified',fileName:'finish.PLR',byteLength:c.byteLength},w.doc)));
+  expect(w.requests.slice(before).map(r=>r.kind)).toEqual(['release']);
+ });
+
+ it('hostile RECEIPT → EXIT: an equal-valued lease substituted after the receipt opens no exit and nothing is released',()=>{
+  const w=opened(),before=w.requests.length;
+  const a=attempt(w,1,'equal');expect(a.committed).toBe(true);
+  const substitute=Object.freeze({id:1,phase:'committed' as const});
+  const forged={...w.doc,lease:substitute};
+  expect(pulsarWrittenCopy(forged)?.fileName).toBe('finish.PLR');// the receipt itself is still current
+  const r=leaveFinishSave(w.s,{kind:'verified',fileName:'finish.PLR',byteLength:a.byteLength},forged);
+  expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(r.host).toBeUndefined();expect(r.session).toBe(w.s);
+  expect(w.requests.length).toBe(before);
+ });
+
+ it('a late callback after the lease is gone (the unmount disposal path, pure): the old claim records nothing',()=>{
+  // Pure witness of the ownership rule only: the presentation's unmount teardown itself has no App or browser witness.
+  const w=opened(),{save,lease}=fileSave(w);
+  const begun=radioFinishSaveBegin(save,lease,w.doc);if(begun.kind!=='claim')throw new Error('refused');
+  w.doc=claimPulsarOutput(w.doc,'radio',7).doc;
+  w.doc=releasePulsarCaptureLease(w.doc,1).doc;// what the disposal requests for the session's own lease id
+  const late=recordPulsarFinishWrittenCopy(w.doc,begun.claim,{lease,outputToken:7},pulsarClaimBytes(begun.claim),'late.PLR');
+  expect(late).toMatchObject({ok:false,reason:'capture-lease'});expect(late.doc.written).toBeNull();
+  expect(pulsarOutputClaim(w.doc)).toEqual({owner:'radio',token:7});// held until that attempt's own cleanup releases it
  });
 });

@@ -573,17 +573,20 @@ test('unsupported browser API: Yes is disabled with its reason; No and Cancel st
  await toAnalysis(page);await expect(id(page,'pulsar-prop-file')).toHaveText(NOT_WRITTEN);
 });
 
-test('E4 and E9 stay gated: the finish Save question and the analysis Load question keep Yes disabled',async({page})=>{
+test('since R-RX17 the finish Save question offers Yes (not pressed here; see the finish Save spec) while E9, the analysis Load Yes, stays gated',async({page})=>{
  await installShim(page);
  await startApp(page);await setupReceiver(page);
  await id(page,'receiver-record').click();await id(page,'receiver-mode').click();await flush(page);await advance(page,400);await id(page,'receiver-mode').click();await flush(page);
  await untilFinished(page);await id(page,'receiver-record-identify-ok').click();await id(page,'receiver-record-properties-ok').click();
  await expect(finish(page)).toHaveAttribute('data-stage','save');
- await expect(id(page,'receiver-record-save-yes')).toBeDisabled();await expect(id(page,'receiver-record-save-yes-reason')).toContainText('not ported');
+ await assertSynthetic(page);
+ await expect(id(page,'receiver-record-save-yes')).toBeEnabled();await expect(id(page,'receiver-record-save-yes-reason')).toHaveAttribute('data-support','ok');
+ await expect(id(page,'receiver-record-save-yes-reason')).not.toContainText('not ported');
  await expect(id(page,'receiver-record-save-cancel')).toBeFocused();
  await id(page,'receiver-record-save-no').click();await expect(id(page,'pulsar-memory')).toBeVisible();await flush(page);
  await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
- await expect(id(page,'pulsar-load-yes')).toBeDisabled();await id(page,'pulsar-load-cancel').click();
+ await expect(id(page,'pulsar-load-yes')).toBeDisabled();await expect(id(page,'pulsar-load-yes-reason')).toContainText('not ported');
+ await id(page,'pulsar-load-cancel').click();
  expect((await shim(page)).calls).toBe(0);
 });
 

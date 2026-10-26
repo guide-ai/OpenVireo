@@ -11,6 +11,8 @@
 // reconciled at every commit from the bank's window-placed events) and the Move up/down controls that deliver message 3.
 // R-RX16 (docs/RADIO-RECORD-SAVE.md): the unsaved prompt's Yes opens a Radio-owned Save dialog ('save' prompt); its I/O stays in
 // the presentation, and only a verified receipt continues to the erase prompt.
+// R-RX17 (docs/RADIO-FINISH-SAVE.md): the finish Save question's Yes opens a Radio-owned Save dialog ('save-file' finish stage)
+// under the committed lease object; only a verified receipt ends the finish, releasing the session's own lease once.
 import type {RadioLabTransition,RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import {
@@ -21,7 +23,8 @@ import {
 } from './radioReceiver';
 import {RADIO_IDENTIFY_POLICY,radioIdentifyIssue,type RadioRecordCapture} from './radioReceiverRecord';
 import {radioRecordSaveOpen,type RadioRecordSave} from './radioRecordSave';
-import type {PulsarCurrentData} from './pulsarCurrentData';
+import {radioFinishSaveOpen,radioFinishSaveVerified} from './radioFinishSave';
+import type {PulsarCaptureLease,PulsarCurrentData} from './pulsarCurrentData';
 import {RECEIVER_DISPLAY_GEOMETRY,receiverAnnotationOps,receiverFrameOps,receiverPaintOps,type ReceiverDisplayOp,type ReceiverPen} from './radioReceiverDisplay';
 import {EMPTY_RECEIVER_MARK_OVERLAY,isReceiverMarkColumn,overlayWithLabel,overlayWithLine,type ReceiverMarkOverlay,type ReceiverMarkSelector} from './radioReceiverMarks';
 import {parseReceiverMarkPosition,type ReceiverMarkButton} from './radioReceiverMarkInput';
@@ -79,8 +82,11 @@ export type ReceiverRecordPrompt=Readonly<
  |{kind:'save';generation:number;save:RadioRecordSave}>;
 /** RC-REC-08 finish stages in order: 'full' (only when +0x98), 'identify', 'properties' (modal), 'save'. The capture is
  * committed to the current dataset when Identify closes (committed: true from 'properties' on); the session keeps its lease
- * (WEB 'committed' phase) until the Save answer releases it. */
-export type ReceiverRecordFinish=Readonly<{stage:'full'|'identify'|'properties'|'save';capture:RadioRecordCapture;draft:string;name:string;committed:boolean}>;
+ * (WEB 'committed' phase) until the Save answer releases it.
+ * R-RX17 (docs/RADIO-FINISH-SAVE.md): 'save-file' is the Radio-owned Save dialog opened by the Save question's Yes; it carries the
+ * R-RX16 Save sub-state (`save`) and the committed lease object it was opened under (`lease`), both only in that stage. */
+export type ReceiverRecordFinish=Readonly<{stage:'full'|'identify'|'properties'|'save'|'save-file';capture:RadioRecordCapture;draft:string;name:string;committed:boolean;
+ save?:RadioRecordSave;lease?:PulsarCaptureLease}>;
 export type ReceiverRecordState=Readonly<{prompt:ReceiverRecordPrompt|null;finish:ReceiverRecordFinish|null;
  /** The lease this session holds on the current dataset, or null. receiving: Receive started under it. */
  leaseId:number|null;receiving:boolean;nextId:number}>;
@@ -97,7 +103,7 @@ export type ReceiverRecordArmingResult=Readonly<{ok:true;seed:RadioRecordHeader}
 export type ReceiverAction='seed'|'open'|'add'|'mode'|'tick'|'reassociate'|'step'|'paint'|'close'|'dismiss-box'
  |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear'
  |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save'
- |'record-save-open'|'record-save-step'|'record-save-exit'
+ |'record-save-open'|'record-save-step'|'record-save-exit'|'record-finish-save-open'|'record-finish-save-step'|'record-finish-save-exit'
  |'align'|'move'|'pulsar-list'|'live-options';
 export type ReceiverWebRefusal='seed-invalid'|'seed-locked'|'no-catalog'|'close-box-open'
  |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound'
@@ -593,9 +599,9 @@ export function closeRecordProperties(s:RadioReceiverSession):ReceiverSessionTra
  return finishStep(s,'record-properties',Object.freeze({...f,stage:'save'}));
 }
 /** Save question: 'no' (7) opens the analysis window (Show of [0x5b5d84], 0x573d75..0x573d8a); 'cancel' ends the finish
- * (the main+0x468 enable at 0x573d5b..0x573d6a is not ported). [W] 'yes' (6, 0x56b36c at 0x573d54) stays gated (R-RX16 E4):
- * the session still holds the committed capture lease here, which the verified receipt refuses, and that lease is not
- * released early to make room for a Save.
+ * (the main+0x468 enable at 0x573d5b..0x573d6a is not ported). 'yes' (6, 0x56b36c at 0x573d54) is not an answer here: R-RX17
+ * openFinishSave opens the web Save dialog instead (the wrapper itself is not ported), and while that dialog is open
+ * ('save-file') both answers are refused ('record-input').
  * WEB-REC-TXN: either answer ends the finish and releases the session's lease exactly once, before the analysis opens (so
  * its Load is enabled). The answer is never refused for a missing lease, so the dialog cannot trap the user. */
 export function answerRecordSave(s:RadioReceiverSession,answer:'no'|'cancel'):ReceiverSessionTransition{
@@ -603,6 +609,46 @@ export function answerRecordSave(s:RadioReceiverSession,answer:'no'|'cancel'):Re
  const id=s.record.leaseId,host:ReceiverRecordHostRequest[]=id!==null&&id===f.capture.captureId?[{kind:'release',id}]:[];
  if(answer==='no')host.push({kind:'open-analysis'});
  return commit(s,'record-save',[],s.bank,{record:recordPatch(s,{finish:null,leaseId:id===f.capture.captureId?null:id})},host);
+}
+
+// ---------------------------------------------------------------- R-RX17 Finish-owned Save (docs/RADIO-FINISH-SAVE.md)
+/** The finish question again, without the Save dialog's sub-state and lease. */
+const finishQuestion=(f:ReceiverRecordFinish):ReceiverRecordFinish=>Object.freeze({stage:'save',capture:f.capture,draft:f.draft,name:f.name,committed:f.committed});
+/**
+ * WEB-RX17-01: Yes of the finish Save question. Admitted only at the question, for a committed capture whose lease this session
+ * holds (leaseId = captureId) and that the document still holds committed with this capture as its data (radioFinishSaveOpen);
+ * the dialog keeps that lease OBJECT. No host request (the lease stays held), no I/O and no picker. A refusal changes nothing
+ * ('record-input'); No and Cancel stay available at the question.
+ */
+export function openFinishSave(s:RadioReceiverSession,doc:PulsarCurrentData):ReceiverSessionTransition{
+ const f=s.record.finish;
+ if(f?.stage!=='save'||!f.committed||s.record.leaseId===null||s.record.leaseId!==f.capture.captureId)return webRefused(s,'record-finish-save-open','record-input');
+ const opened=radioFinishSaveOpen(doc,f.capture.captureId);
+ if(!opened.ok)return webRefused(s,'record-finish-save-open','record-input');
+ return finishStep(s,'record-finish-save-open',Object.freeze({...finishQuestion(f),stage:'save-file',save:opened.save,lease:opened.lease}));
+}
+/** Replaces only the finish Save dialog's sub-state (the radioRecordSave steps); the lease object is kept. Unchanged: no commit. */
+export function stepFinishSave(s:RadioReceiverSession,step:(save:RadioRecordSave)=>RadioRecordSave):ReceiverSessionTransition{
+ const f=s.record.finish;
+ if(f?.stage!=='save-file'||!f.save||!f.lease)return webRefused(s,'record-finish-save-step','record-input');
+ const save=step(f.save);
+ if(save===f.save)return keep(s,{kind:'ok',action:'record-finish-save-step',events:[]});
+ return finishStep(s,'record-finish-save-step',Object.freeze({...f,save}));
+}
+/**
+ * Leaves the finish Save dialog; refused while an attempt holds the output claim (also an abandoned one, until it settled).
+ * 'back' (WEB-RX17-06): the finish question again, with the same capture and the lease still held; its No and Cancel are the
+ * R-RX4 answers. 'verified' (WEB-RX17-04): only while this session still holds the lease (leaseId = captureId = the dialog's lease
+ * id) and the document's current receipt passes radioFinishSaveVerified for the dialog's lease object, data and generation; then
+ * the finish ends with exactly one release of the session's own lease and nothing else (no analysis, no erase, no arming).
+ */
+export function leaveFinishSave(s:RadioReceiverSession,exit:ReceiverRecordSaveExit,doc?:PulsarCurrentData):ReceiverSessionTransition{
+ const f=s.record.finish;
+ if(f?.stage!=='save-file'||!f.save||!f.lease||f.save.attempt!==null)return webRefused(s,'record-finish-save-exit','record-input');
+ if(exit.kind==='back')return finishStep(s,'record-finish-save-exit',finishQuestion(f));
+ const id=s.record.leaseId;
+ if(doc===undefined||id===null||id!==f.capture.captureId||f.lease.id!==id||!radioFinishSaveVerified(f.save,f.lease,doc,exit))return webRefused(s,'record-finish-save-exit','record-input');
+ return commit(s,'record-finish-save-exit',[],s.bank,{record:recordPatch(s,{finish:null,leaseId:null})},[{kind:'release',id}]);
 }
 
 // ---------------------------------------------------------------- R-RX3 marks

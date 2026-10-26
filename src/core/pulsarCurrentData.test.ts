@@ -3,8 +3,9 @@ import {admitPlrRecording,type PlrRecording} from './pulsarRecording';
 import {
  EMPTY_PULSAR_HEADER,INITIAL_PULSAR_CURRENT_DATA,PULSAR_DATA_NOT_WRITTEN,PULSAR_SAVE_NAME_MAX,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,importPulsarRecording,isMemoryData,
  pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataFileName,pulsarDataPresentation,pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarFrequencyText,
- pulsarHeaderCells,pulsarMemoryRecording,pulsarOutputClaim,pulsarSaveNameOk,pulsarWriteClaim,pulsarWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,setPulsarAnalysisActivity,
- setPulsarCapturePhase,type PulsarCaptureInput,type PulsarCurrentData,type PulsarMemoryRecording,type PulsarWriteClaim,type PulsarWriteRefusal,type PulsarWrittenCopy,
+ pulsarFinishWriteClaim,pulsarHeaderCells,pulsarMemoryRecording,pulsarOutputClaim,pulsarSaveNameOk,pulsarWriteClaim,pulsarWrittenCopy,recordPulsarFinishWrittenCopy,recordPulsarWrittenCopy,
+ releasePulsarCaptureLease,releasePulsarOutput,setPulsarAnalysisActivity,setPulsarCapturePhase,
+ type PulsarCaptureInput,type PulsarCaptureLease,type PulsarCurrentData,type PulsarMemoryRecording,type PulsarWriteClaim,type PulsarWriteRefusal,type PulsarWrittenCopy,
 } from './pulsarCurrentData';
 import {buildPulsarRawExport} from './pulsarRawExport';
 import {
@@ -362,5 +363,118 @@ describe('R-RX16 shared output claim: one owner and token, kept across dataset c
   expect(pulsarOutputClaim(recommitted)).toEqual({owner:'radio',token:7});
   // The claim stays the owner's to release after the bump.
   expect(pulsarOutputClaim(releasePulsarOutput(recommitted,'radio',7).doc)).toBeNull();
+ });
+});
+
+// R-RX17 (docs/RADIO-FINISH-SAVE.md, WEB-RX17-02/03): the finish claim domain, its lease-object binding and its owner checks are
+// web policy, not a recovered native flag. Synthetic fixtures; the read-back bytes are the claim's own bytes (or one changed
+// byte), stand-ins for a browser read-back, not native writer output.
+describe('R-RX17 finish claim: bound to the committed lease object, separate from generic claims',()=>{
+ /** The state at the finish Save question: capture `id` committed, its lease still held. */
+ const held=(m=capture({captureId:1}),id=1):PulsarCurrentData=>{
+  const r=setPulsarCapturePhase(acquirePulsarCaptureLease(INITIAL_PULSAR_CURRENT_DATA,id,0,false).doc,id,'receiving').doc;
+  return commitPulsarCapture(r,id,m).doc;
+ };
+ const textOf=(m:PulsarMemoryRecording)=>{const b=buildPulsarRawExport(m);if(!b.ok)throw new Error(b.problem.code);return b.text;};
+ const leaseOf=(d:PulsarCurrentData)=>{if(!d.lease)throw new Error('no lease');return d.lease;};
+ /** A held finish claim and the shared output claim of its attempt (radio, 5). */
+ const begun=(m=capture({captureId:1}))=>{
+  const d=held(m),lease=leaseOf(d),text=textOf(m),claim=pulsarFinishWriteClaim(d,lease,text);
+  if(!claim)throw new Error('no finish claim');
+  return {m,d,lease,text,claim,doc:claimPulsarOutput(d,'radio',5).doc,owner:{lease,outputToken:5}};
+ };
+ const refused=(doc:PulsarCurrentData,c:PulsarWriteClaim,owner:{lease:PulsarCaptureLease;outputToken:number},b:Uint8Array,name:string,reason:PulsarWriteRefusal)=>{
+  const r=recordPulsarFinishWrittenCopy(doc,c,owner,b,name);
+  expect(r,reason).toMatchObject({ok:false,reason});expect(r.doc).toBe(doc);
+ };
+
+ it('is issued only for the document’s own committed lease object and that capture; nothing in the document changes',()=>{
+  const m=capture({captureId:1}),d=held(m),lease=leaseOf(d),text=textOf(m);
+  expect(lease).toEqual({id:1,phase:'committed'});
+  const c=pulsarFinishWriteClaim(d,lease,text);
+  expect(c).not.toBeNull();expect(c!.data).toBe(m);expect(c!.generation).toBe(d.generation);expect(c!.text).toBe(text);
+  expect(d.written).toBeNull();expect(pulsarOutputClaim(d)).toBeNull();expect(d.lease).toBe(lease);
+  // An equal-valued copy of the lease, a non-frozen lease object, no lease, and a released lease.
+  expect(pulsarFinishWriteClaim(d,Object.freeze({id:1,phase:'committed' as const}),text)).toBeNull();
+  const loose={id:1,phase:'committed' as const};
+  expect(pulsarFinishWriteClaim({...d,lease:loose},loose,text)).toBeNull();
+  const released=releasePulsarCaptureLease(d,1).doc;
+  expect(pulsarFinishWriteClaim(released,lease,text)).toBeNull();
+  // The same capture under an armed, receiving or finishing lease of the same id (Record armed without erase keeps the data).
+  let a=acquirePulsarCaptureLease(released,1,released.generation,false).doc;
+  expect(pulsarFinishWriteClaim(a,leaseOf(a),text)).toBeNull();
+  for(const phase of ['receiving','finishing'] as const){a=setPulsarCapturePhase(a,1,phase).doc;expect(pulsarFinishWriteClaim(a,leaseOf(a),text),phase).toBeNull();}
+  // A capture that is not the lease's (captureId 7 under lease 1), file data, a non-frozen value, empty or non-ASCII text.
+  const other=held(capture({captureId:7}),1);
+  expect(pulsarFinishWriteClaim(other,leaseOf(other),text)).toBeNull();
+  expect(pulsarFinishWriteClaim({...d,data:plr()},lease,text)).toBeNull();
+  expect(pulsarFinishWriteClaim({...d,data:{...m}},lease,text)).toBeNull();
+  expect(pulsarFinishWriteClaim(d,lease,'')).toBeNull();expect(pulsarFinishWriteClaim(d,lease,'café')).toBeNull();
+ });
+
+ it('records a receipt that keeps the lease object, data, generation, activity and output claim; the release keeps the receipt',()=>{
+  const {m,d,lease,text,claim,doc,owner}=begun();
+  const r=recordPulsarFinishWrittenCopy(doc,claim,owner,pulsarClaimBytes(claim),'finish.PLR');
+  if(!r.ok)throw new Error(r.reason);
+  expect(r.doc.lease).toBe(lease);expect(r.doc.data).toBe(m);expect(r.doc.generation).toBe(d.generation);expect(r.doc.analysis).toBe(d.analysis);
+  expect(pulsarOutputClaim(r.doc)).toEqual({owner:'radio',token:5});
+  const w=pulsarWrittenCopy(r.doc) as PulsarWrittenCopy;
+  expect(w.fileName).toBe('finish.PLR');expect(w.byteLength).toBe(text.length);expect(w.data).toBe(m);expect(isMemoryData(r.doc.data)).toBe(true);
+  expect(pulsarDataProperties(m,w).fields.file).toBe('finish.PLR');
+  // The lease ends only by its own release (not done here); afterwards the receipt still describes the same data.
+  const free=releasePulsarCaptureLease(releasePulsarOutput(r.doc,'radio',5).doc,1).doc;
+  expect(free.lease).toBeNull();expect(pulsarWrittenCopy(free)?.fileName).toBe('finish.PLR');expect(pulsarCurrentSaved(free)).toBe(true);
+  expect(importPulsarRecording(free,plr(),free.generation).doc.written).toBeNull();
+ });
+
+ it('never crosses claim domains: a finish claim is refused by the generic recorder and a generic or spread claim by the finish one',()=>{
+  const {claim,doc,owner,text}=begun();
+  const good=pulsarClaimBytes(claim);
+  const free=releasePulsarCaptureLease(doc,1).doc;
+  expect(recordPulsarWrittenCopy(free,claim,good,'x.PLR')).toMatchObject({ok:false,reason:'claim'});
+  // The generic recorder still refuses any lease first (unchanged), so the finish lease never admits a generic receipt.
+  const generic=pulsarWriteClaim(doc,text) as PulsarWriteClaim;
+  expect(recordPulsarWrittenCopy(doc,generic,good,'x.PLR')).toMatchObject({ok:false,reason:'capture-lease'});
+  refused(doc,generic,owner,good,'x.PLR','claim');
+  refused(doc,{...claim} as PulsarWriteClaim,owner,good,'x.PLR','claim');
+  refused(doc,Object.freeze({data:claim.data,generation:claim.generation,metadata:claim.metadata,samples:claim.samples,text:claim.text}) as PulsarWriteClaim,owner,good,'x.PLR','claim');
+ });
+
+ it('refuses without the exact shared output claim (radio, token): absent, another token or the analysis owner',()=>{
+  const {claim,d,doc,owner}=begun(),good=pulsarClaimBytes(claim);
+  refused(d,claim,owner,good,'x.PLR','claim');
+  refused(doc,claim,{...owner,outputToken:6},good,'x.PLR','claim');
+  refused(claimPulsarOutput(d,'analysis',5).doc,claim,owner,good,'x.PLR','claim');
+ });
+
+ it('hostile lease substitution: an equal-valued or re-acquired lease with the same id is not the bound lease',()=>{
+  const {m,claim,doc,owner,lease}=begun(),good=pulsarClaimBytes(claim);
+  // Substituted in the document (same id and phase, another object): neither the owner's nor the substitute admits it.
+  const substitute=Object.freeze({id:1,phase:'committed' as const}),swapped={...doc,lease:substitute};
+  refused(swapped,claim,owner,good,'x.PLR','capture-lease');
+  refused(swapped,claim,{lease:substitute,outputToken:5},good,'x.PLR','capture-lease');
+  refused(doc,claim,{lease:substitute,outputToken:5},good,'x.PLR','capture-lease');
+  // Released, then the same id re-acquired (armed), then committed again on the same data object: a new lease object each time.
+  const released=releasePulsarCaptureLease(doc,1).doc;
+  refused(released,claim,owner,good,'x.PLR','capture-lease');
+  const again=setPulsarCapturePhase(acquirePulsarCaptureLease(released,1,released.generation,false).doc,1,'receiving').doc;
+  refused(again,claim,owner,good,'x.PLR','capture-lease');
+  const recommitted=commitPulsarCapture(again,1,m).doc;
+  expect(recommitted.lease).toEqual(lease);expect(recommitted.lease).not.toBe(lease);expect(recommitted.data).toBe(m);
+  refused(recommitted,claim,owner,good,'x.PLR','capture-lease');
+  refused(recommitted,claim,{lease:leaseOf(recommitted),outputToken:5},good,'x.PLR','capture-lease');
+ });
+
+ it('keeps the generic tail in order: superseded, source-mutated (also +0 → −0), read-back size and bytes, file name',()=>{
+  const {m,claim,doc,owner}=begun(),good=pulsarClaimBytes(claim);
+  refused({...doc,data:capture({captureId:1})},claim,owner,good,'x.PLR','superseded');
+  refused({...doc,generation:doc.generation+1},claim,owner,good,'x.PLR','superseded');
+  const v=m.samples[0];m.samples[0]=v+1;refused(doc,claim,owner,good,'x.PLR','source-mutated');
+  m.samples[0]=v;m.samples[2]=-0;refused(doc,claim,owner,good,'x.PLR','source-mutated');
+  m.samples[2]=0;
+  refused(doc,claim,owner,good.slice(0,-1),'x.PLR','readback-size');
+  const flipped=good.slice();flipped[3]^=1;refused(doc,claim,owner,flipped,'x.PLR','readback-bytes');
+  for(const name of ['','dir/a.PLR','a\u0001.PLR'])refused(doc,claim,owner,good,name,'file-name');
+  expect(recordPulsarFinishWrittenCopy(doc,claim,owner,good,'ok.PLR').ok).toBe(true);
  });
 });

@@ -122,7 +122,13 @@ test('Record → Receive → Stop → Identify (40-char refusal) → modal Prope
  const points=await id(page,'receiver-record-prop-points').textContent();expect(Number(points)).toBeGreaterThan(0);
  await id(page,'receiver-record-properties-ok').click();
  await expect(finish(page)).toHaveAttribute('data-stage','save');await expect(id(page,'receiver-record-save-text')).toContainText('("No" -> Open Analysis Window)');
- await expect(id(page,'receiver-record-save-yes')).toBeDisabled();await expect(id(page,'receiver-record-save-yes-reason')).toContainText('not ported');
+ // R-RX17 Yes opens the finish web Save only where the browser offers the save file picker (otherwise it is disabled with its
+ // reason); Cancel stays the web default either way. Yes is not pressed here (tests/radio-receiver-finish-save-app.spec.ts covers it).
+ const capable=await saveCapable(page);
+ await expect(id(page,'receiver-record-save-yes-reason')).toHaveAttribute('data-support',capable?'ok':/^(insecure-context|no-api)$/);
+ if(capable)await expect(id(page,'receiver-record-save-yes')).toBeEnabled();else await expect(id(page,'receiver-record-save-yes')).toBeDisabled();
+ await expect(id(page,'receiver-record-save-yes-reason')).toContainText('Web default button: Cancel');
+ await expect(id(page,'receiver-record-save-yes-reason')).not.toContainText('not ported');
  await expect(id(page,'receiver-record-save-cancel')).toBeFocused();
  await id(page,'receiver-record-save-no').click();
  // The existing manual analysis on the memory recording: no file identity, no download or SHA-256.

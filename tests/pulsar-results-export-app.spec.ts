@@ -320,7 +320,7 @@ async function startReceiver(page:Page){
 }
 const finish=(page:Page)=>id(page,'receiver-record-finish');
 
-test('RX10 receiver flow: memory capture → Identify → Properties → No → manual Record exports an 11-column row; an open export makes Radio Record refuse; raw Save Yes and Load Yes stay disabled',async({page})=>{
+test('RX10 receiver flow: memory capture → Identify → Properties → No → manual Record exports an 11-column row; an open export makes Radio Record refuse; the finish Save Yes follows browser capability (not pressed); Load Yes stays disabled',async({page})=>{
  await startReceiver(page);
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-disp')).toHaveText('On');
  await id(page,'receiver-mode').click();await flush(page);await expect(id(page,'receiver-record-capturing')).toBeVisible();
@@ -330,7 +330,13 @@ test('RX10 receiver flow: memory capture → Identify → Properties → No → 
  await id(page,'receiver-record-identify-input').fill('PSR B2358+38');await id(page,'receiver-record-identify-ok').click();
  await expect(finish(page)).toHaveAttribute('data-stage','properties');await id(page,'receiver-record-properties-ok').click();
  await expect(finish(page)).toHaveAttribute('data-stage','save');
- await expect(id(page,'receiver-record-save-yes')).toBeDisabled();// RX10-27: the raw capture Save Yes stays gated
+ // R-RX17 WEB-RX17-01: the finish Save Yes follows the browser's capability, read by this test's own probe (a secure context, a
+ // callable showSaveFilePicker and the real stream API), independent of the product's data-support. Never pressed here.
+ const saveCapable=await page.evaluate(()=>window.isSecureContext&&typeof (window as unknown as {showSaveFilePicker?:unknown}).showSaveFilePicker==='function'
+  &&typeof FileSystemFileHandle==='function'&&typeof (FileSystemFileHandle.prototype as unknown as {createWritable?:unknown}).createWritable==='function');
+ const saveYes=id(page,'receiver-record-save-yes'),saveYesReason=id(page,'receiver-record-save-yes-reason');
+ if(saveCapable){await expect(saveYes).toBeEnabled();await expect(saveYesReason).toHaveAttribute('data-support','ok');}
+ else{await expect(saveYes).toBeDisabled();await expect(saveYesReason).toHaveAttribute('data-support',/^(insecure-context|no-api)$/);}
  await id(page,'receiver-record-save-no').click();
  await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await expect(id(page,'pulsar-memory-origin')).toContainText('not an observation');const points=await id(page,'pulsar-memory-rows').textContent();

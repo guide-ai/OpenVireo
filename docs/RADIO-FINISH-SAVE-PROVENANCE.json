@@ -1,0 +1,128 @@
+{
+  "increment": "R-RX17 Radio-owned verified Save from the finish Save question (E4 Yes only)",
+  "acceptedBase": "f3575114d9d607a21f866bb060868f1620c20734",
+  "originalExecution": false,
+  "input": {
+    "file": "CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "evidence": {
+    "class": "static direct listings, not a runtime oracle",
+    "contractUTC": "2026-10-26T08:46:42.593910+00:00",
+    "contractFile": "RECOVERED-CONTRACT.json",
+    "acceptanceFile": "ACCEPTANCE-CASES.json (RX17-01..35, nativeOracle false)",
+    "planValidationFile": "PLAN-VALIDATION.json (accepted with required corrections)",
+    "researchLocation": "outside the web source (research root), not copied into the product",
+    "listings": [
+      {
+        "name": "frame-verified.asm",
+        "sha256": "d31088cb788467a579523d969cce89be130e63564116682d1c65270024bd9ea4",
+        "status": "copy of the R-RX16 listing (radio-rx16-save-reentry)"
+      },
+      {
+        "name": "writer-caller-56b36c.asm",
+        "sha256": "b56926da8ce354c26b671d94031d3b6656ca378703f716b5cffa2a115640f5be",
+        "status": "copy of the R-RX15 listing (radio-rx15-native-save)"
+      },
+      {
+        "name": "signal-write.asm",
+        "sha256": "55069a74c53d6daa29657dbef7768a2b5322a5c6145c8624802dbe303eebef7d",
+        "status": "copy of the R-RX15 listing (radio-rx15-native-save)"
+      }
+    ]
+  },
+  "staticFacts": [
+    {
+      "id": "E4-YES",
+      "tag": "S",
+      "range": "0x573d47..0x573d59",
+      "addresses": {
+        "question": "0x573d3f call 0x47e09c (flags 0x23); answer stored at [ebp-0x1c] (0x573d44)",
+        "yesTest": "0x573d47 cmp [ebp-0x1c],6; 0x573d4b jne 0x573d5b",
+        "saveCall": "0x573d4d..0x573d54 EAX = [0x5b5d84]; call 0x56b36c",
+        "afterSave": "0x573d59 jmp 0x573d6f (compares the original answer with 7)",
+        "frameHandler": "0x5737ae..0x5737b7 prologue: 0x5737af push 0x573dc0, prior FS frame and FS:[0] := ESP; handler entry 0x573dc0 jmp 0x4056e4 (not modelled)",
+        "frameCleanupReturn": "0x573d9f unlinks frame; 0x573da2 push 0x573dc7 supplies the return address for cleanup 0x573da7..0x573dbf, not handler installation"
+      },
+      "facts": [
+        "Yes calls the Save wrapper; its normal return is followed by no saved-flag or success test.",
+        "Yes skips the main+0x468 enable and the No analysis branch.",
+        "The continuation after an exception raised inside the wrapper is not established."
+      ],
+      "webUse": "WEB-RX17-01..10 (enabled, stricter than the native normal return by explicit web policy)"
+    },
+    {
+      "id": "E4-NO-CANCEL",
+      "tag": "S",
+      "range": "0x573d5b..0x573d9a",
+      "addresses": {
+        "nonYesEnable": "0x573d5b..0x573d6a main+0x468 via 0x4548ac (DL = 1)",
+        "noAnalysis": "0x573d75..0x573d8a 0x47a010 then 0x476f40 on [0x5b5d84]"
+      },
+      "facts": ["Window ownership effects are not fully bound (B4)."],
+      "webUse": "unchanged R-RX4 No/Cancel"
+    },
+    {
+      "id": "WRAPPER-CANCEL",
+      "tag": "S",
+      "range": "0x56b550..0x56b678",
+      "facts": [
+        "Dialog Execute false reaches 0x56b5f2 (done := 1), then cleanup and a normal return.",
+        "Extension warning: Cancel (2) done := 1; Yes (6) loops to the dialog; No (7) calls the writer 0x56a518.",
+        "SEH to 0x4056e4; a thrown-error continuation is not established."
+      ],
+      "webUse": "not ported (L1, L2); the browser cancel/refusal/I-O continuation is web policy"
+    },
+    {
+      "id": "WRITTEN-AFTER-CLOSE",
+      "tag": "S",
+      "range": "0x56a838..0x56a85d",
+      "facts": [
+        "Close 0x403bc8 and the I/O check 0x4030f8 precede +0x97 := 1 and the +0x9a name copy (ECX 0xff).",
+        "No +0x96 store; no durability proof."
+      ],
+      "webUse": "the same historical receipt as R-RX15, created by recordPulsarFinishWrittenCopy for the lease owner"
+    }
+  ],
+  "webPolicy": [
+    { "id": "WEB-RX17-01", "summary": "Finish Yes opens a Radio-owned Save dialog only for the session's own committed capture still held by the document; no I/O, picker or host request; disabled with a reason without browser support; web default Cancel." },
+    { "id": "WEB-RX17-02", "summary": "The dialog keeps the exact committed lease object; Begin and the verified exit require that identity, so a same-id or equal-valued lease is never admitted, claimed, recorded under or released." },
+    { "id": "WEB-RX17-03", "summary": "Separate finish claim domain bound to the lease object and the claimed data/generation/metadata/samples; recorder refusal order claim, capture-lease, then the shared generic tail; no cross-use with generic claims; the generic recorder still refuses any lease." },
+    { "id": "WEB-RX17-04", "summary": "Only a live verified receipt for the dialog's lease object, data and generation ends the finish, with exactly one release of the session's own lease; no analysis, erase or arming." },
+    { "id": "WEB-RX17-05", "summary": "Readiness: own lease held, no analysis read, no output claim; analysis.modal is not a condition (no deadlock). Arming Save and Analysis Save/Download stay refused under the lease." },
+    { "id": "WEB-RX17-06", "summary": "Back (Escape) returns to the question with the lease held; refused while an attempt holds the output claim; No/Cancel unchanged and refused while the dialog is open." },
+    { "id": "WEB-RX17-07", "summary": "Choose is its own click, synchronous up to showSaveFilePicker; detail > 1 ignored; a synchronous picker failure releases the claim at once." },
+    { "id": "WEB-RX17-08", "summary": "Attempt tokens and liveness; route hide, project operation or unmount make the attempt dead for good; output claim released only after cleanup; the capture lease stays held." },
+    { "id": "WEB-RX17-09", "summary": "The arming and finish Radio Saves never coexist; one running attempt and one shared output claim." },
+    { "id": "WEB-RX17-10", "summary": "Focus: Back on entry, Cancel at the question after Back, Record after the verified exit; held keys ignored; wrapping layout at 1440/375/320." }
+  ],
+  "unknowns": [
+    "main+0x468 and 0x476f40 window effects, and that Yes skips 0x468",
+    "native thrown-I/O continuation of the wrapper and the frame",
+    "the wrapper's empty-list box and its extension-warning No-writes path (not ported)",
+    "FPU, RNG, GDI and native equivalence",
+    "browser durability, rollback and a provider promise that never settles",
+    "native default button (Yes) vs the web default (Cancel)"
+  ],
+  "limits": [
+    "Static disassembly is not CLEA execution, a native exception oracle, x87/GDI/code-page/OS equivalence or physical write durability.",
+    "The web ends the finish only on a verified receipt; natively a normal return (including a cancelled dialog) ends it, and the exception continuation is unknown.",
+    "A hung provider keeps the dialog, the output claim, the capture lease and Analysis Load blocked until it settles; no timeout or forced release.",
+    "The unmount teardown has no runtime witness (the App never unmounts the workspace); only the pure late-callback/lease-identity rule is tested.",
+    "No en.json key is added; radioReceiver.record.yesGated is left unchanged and is no longer read by the finish question.",
+    "No original binary bytes or research dumps are copied into the product."
+  ],
+  "tests": {
+    "written": [
+      "src/core/pulsarCurrentData.test.ts (R-RX17 finish claim block, including hostile lease substitution)",
+      "src/core/radioFinishSave.test.ts (new: open, readiness, begin, hostile OPEN -> BEGIN, verified gate, hostile RECEIPT -> EXIT)",
+      "src/core/radioReceiverRecord.test.ts (R-RX17 world-harness block; the obsolete E4-gated test replaced)",
+      "src/core/radioReceiverSession.test.ts (audit: radioFinishSave.ts added; finish claim/recorder reach)",
+      "tests/radio-receiver-finish-save-app.spec.ts (new; synthetic picker over real OPFS handles, assertSynthetic before every Choose)",
+      "tests/radio-receiver-record-app.spec.ts (finish Yes follows the saveCapable probe)",
+      "tests/radio-receiver-record-save-app.spec.ts (finish Yes enabled, E9 gated)"
+    ],
+    "runByAuthor": [],
+    "note": "The implementing agent ran no test, build, typecheck or script in the original checkout (it contains an excluded diagnostic). Aggregate QA is run by the coordinator on a diagnostic-free copy; results are not recorded here."
+  }
+}

@@ -24,6 +24,8 @@
 .radio-receiver-buttons{flex-wrap:wrap}
 .radio-receiver-indicators{margin:6px 0}
 .radio-receiver-alert{margin:6px 0;padding:8px 10px;border-left:4px solid #b03a2e;background:#fdf0ee;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+/* R-RX17: a card status can hold a chosen file name; it wraps anywhere, nothing is cut or hidden. */
+.radio-receiver-card .radio-control-status{min-width:0;overflow-wrap:anywhere}
 .radio-receiver-card button:focus-visible,.radio-receiver-setup input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
 .radio-receiver-card [aria-disabled="true"]{opacity:.6;cursor:not-allowed}
 /* R-RX5 window position group and the cue of a channel window stacked under Align (the order itself is the card order). */

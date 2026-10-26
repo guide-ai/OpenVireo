@@ -5,17 +5,20 @@ import type {PulsarCatalog} from '../core/radioPulsarCatalog';
 import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent,RadioSourceBuffer} from '../core/radioReceiver';
 import {
  PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataProperties,pulsarDataRows,
- pulsarHeaderCells,pulsarMemoryRecording,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,setPulsarCapturePhase,type PulsarWriteClaim,
+ pulsarHeaderCells,pulsarMemoryRecording,recordPulsarFinishWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,setPulsarCapturePhase,
+ type PulsarCaptureLease,type PulsarWriteClaim,
 } from '../core/pulsarCurrentData';
 import {RAW_EXPORT_FILE_NAME,type RawExportField,type RawExportProblem} from '../core/pulsarRawExport';
 import {PULSAR_SAVE_PENDING,PULSAR_SAVE_READBACK_MAX_BYTES,pulsarSaveRefusalNotice,type PulsarSaveNotice,type PulsarSaveSupport} from '../core/pulsarSavedCopy';
 import {
  radioRecordEraseNote,radioRecordSaveAbandoned,radioRecordSaveBegin,radioRecordSaveFailed,radioRecordSaveNoticed,radioRecordSaveRefused,radioRecordSaveSettled,radioRecordSaveStarted,
- type RadioRecordSave,
+ type RadioRecordSave,type RadioRecordSaveBegin,
 } from '../core/radioRecordSave';
+import {radioFinishSaveBegin} from '../core/radioFinishSave';
 import {browserPulsarSaveSupport,continuePulsarSave,invokePulsarSavePicker,type SaveHandle} from './pulsarSaveHost';
 import {createPulsarTranslator,type PulsarMessageKey} from './PulsarMessages';
 import {createRadioSaveTranslator} from './RadioRecordSaveMessages';
+import {createFinishSaveTranslator} from './RadioFinishSaveMessages';
 import {RADIO_IDENTIFY_DFM,RADIO_IDENTIFY_POLICY,RADIO_RECORD_LITERALS,radioCaptureInput,radioIdentifyIssue} from '../core/radioReceiverRecord';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
 import {
@@ -26,9 +29,9 @@ import {RECEIVER_MARK_LABEL_BACKGROUND,RECEIVER_MARK_WEB_POLICY,receiverMarkOver
 import {receiverMarkCode,receiverMarkColumn,receiverMarkMoveReleases,type ReceiverMarkButton} from '../core/radioReceiverMarkInput';
 import {
  RADIO_RECEIVER_SESSION_POLICY,addReceiverWindow,answerRecordIdentify,answerRecordPrompt,answerRecordSave,clearReceiverNextMark,closeRecordProperties,completeRecordArming,
- completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,dismissRecordFull,editReceiverSeed,editRecordIdentify,endMarkGesture,leaveRecordSave,markPointerDown,markPointerMove,
- markPointerUp,moveReceiverWindow,nextReceiverSeed,openReceiverWindow,openRecordSave,paintReceiverWindow,placeReceiverMark,pressRecord,reassociateReceivers,receiverBoxRefusal,receiverControlAvailability,
- receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,recordDialogOpen,requestReceiverClose,stepReceiver,stepReceiverMark,stepRecordSave,tickReceivers,
+ completedRadioClockTick,createRadioReceiverSession,dismissReceiverCloseBox,dismissRecordFull,editReceiverSeed,editRecordIdentify,endMarkGesture,leaveFinishSave,leaveRecordSave,markPointerDown,
+ markPointerMove,markPointerUp,moveReceiverWindow,nextReceiverSeed,openFinishSave,openReceiverWindow,openRecordSave,paintReceiverWindow,placeReceiverMark,pressRecord,reassociateReceivers,receiverBoxRefusal,
+ receiverControlAvailability,receiverMarkAvailability,receiverSessionOpen,receiverWindowMoveAvailability,recordDialogOpen,requestReceiverClose,stepFinishSave,stepReceiver,stepReceiverMark,stepRecordSave,tickReceivers,
  toggleReceiverAlignment,toggleReceiverMode,
  type RadioReceiverSession,type ReceiverCanvasLog,type ReceiverControlState,type ReceiverMarkAvailability,type ReceiverMarkLease,type ReceiverRecordArmingResult,
  type ReceiverRecordFinish,type ReceiverRecordHostRequest,type ReceiverRecordHostSnapshot,type ReceiverRecordPrompt,type ReceiverRecordVerified,type ReceiverSessionOutcome,
@@ -102,8 +105,19 @@ type FocusTarget=Readonly<{kind:'heading'|'after-child-close'|'after-main-close'
 /** text: an explicit status that replaces the outcome's text (Record answers and the main close, whose outcome alone is ambiguous). */
 type Notice=Readonly<{slot:number|null;outcome:ReceiverSessionOutcome;text?:string}>;
 const noticeText=(n:Notice)=>n.text??outcomeText(n.outcome);
-/** R-RX16 (docs/RADIO-RECORD-SAVE.md): the reused R-RX15/R-RX14 Save texts and the Radio Save catalog. */
-const PT=createPulsarTranslator(),RS=createRadioSaveTranslator();
+/** R-RX16 (docs/RADIO-RECORD-SAVE.md): the reused R-RX15/R-RX14 Save texts and the Radio Save catalog; R-RX17
+ * (docs/RADIO-FINISH-SAVE.md): the finish Save catalog. */
+const PT=createPulsarTranslator(),RS=createRadioSaveTranslator(),FS=createFinishSaveTranslator();
+/** Which Radio Save dialog: R-RX16 from the Record arming question, R-RX17 from the finish Save question. */
+type RadioSaveKind='arming'|'finish';
+/** The texts and test ids that differ between the two Radio Save dialogs; everything else is shared. */
+type RadioSaveTexts=Readonly<{testId:string;heading:string;intro:string;back:string;pendingNote:string;notReady:string;abandoned:string;busy:string}>;
+const RADIO_SAVE_TEXTS:Readonly<Record<RadioSaveKind,RadioSaveTexts>>={
+ arming:{testId:'receiver-record-save',heading:RS('radioSave.heading'),intro:RS('radioSave.intro'),back:RS('radioSave.back'),pendingNote:RS('radioSave.pendingNote'),
+  notReady:RS('radioSave.refusal.not-ready'),abandoned:RS('radioSave.fail.abandoned'),busy:RS('radioSave.busy')},
+ finish:{testId:'receiver-finish-save',heading:FS('finishSave.heading'),intro:FS('finishSave.intro'),back:FS('finishSave.back'),pendingNote:FS('finishSave.pendingNote'),
+  notReady:FS('finishSave.refusal.not-ready'),abandoned:FS('finishSave.fail.abandoned'),busy:FS('finishSave.busy')},
+};
 const RAW_FIELD_LABEL:Readonly<Record<RawExportField,PulsarMessageKey>>={
  frequency1:'pulsar.rawExport.field.frequency1',frequency2:'pulsar.rawExport.field.frequency2',frequency3:'pulsar.rawExport.field.frequency3',
  gain1:'pulsar.rawExport.field.gain1',gain2:'pulsar.rawExport.field.gain2',gain3:'pulsar.rawExport.field.gain3',start:'pulsar.rawExport.field.start',interval:'pulsar.rawExport.field.interval',
@@ -113,12 +127,12 @@ const rawProblemText=(p:RawExportProblem)=>PT(`pulsar.rawExport.problem.${p.code
  count:'count' in p?p.count:'',max:'max' in p?p.max:'',position:'position' in p?p.position:'',length:'length' in p?p.length:'',bytes:'bytes' in p?p.bytes:'',
  field:'field' in p?PT(RAW_FIELD_LABEL[p.field]):'',receiver:'receiver' in p?p.receiver+1:'',row:'row' in p?p.row:'',channel:'channel' in p?p.channel+1:'',
 });
-/** A Save phase or result: the R-RX15 wording, except the abandoned text, which names this route and its buttons. */
-function recordSaveNoticeText(n:PulsarSaveNotice):string{
+/** A Save phase or result: the R-RX15 wording, except the abandoned text, which names this route and the dialog's buttons. */
+function recordSaveNoticeText(n:PulsarSaveNotice,abandoned:string):string{
  const file=n.fileName??'';
  if(PULSAR_SAVE_PENDING.has(n.code))return PT(`pulsar.save.phase.${n.code}` as PulsarMessageKey,{file});
  if(n.code==='verified')return PT('pulsar.save.verifiedShort',{file});
- if(n.code==='abandoned')return RS('radioSave.fail.abandoned');
+ if(n.code==='abandoned')return abandoned;
  return PT(`pulsar.save.fail.${n.code}` as PulsarMessageKey,{file});
 }
 const CONTROL_NAME:Readonly<Record<RadioReceiverControl,PlainMessageKey>>={
@@ -204,7 +218,11 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const [notice,setNotice]=useState<Notice|null>(null);
  const [focus,setFocus]=useState<FocusTarget|null>(null);
  const serial=useRef(0);
- const requestFocus=(kind:FocusTarget['kind'],slot:number)=>setFocus({kind,slot,serial:++serial.current});
+ // R-RX17 WEB-RX17-10: the one-shot Record focus intent of a verified finish exit under a foreign modal (effect below the marks
+ // refs). Any newer focus request or admitted action drops it.
+ const [finishFocus,setFinishFocus]=useState<number|null>(null),finishFocusRef=useRef<number|null>(null);
+ const dropFinishFocus=()=>{if(finishFocusRef.current!==null){finishFocusRef.current=null;setFinishFocus(null);}};
+ const requestFocus=(kind:FocusTarget['kind'],slot:number)=>{dropFinishFocus();setFocus({kind,slot,serial:++serial.current});};
  const latest=useRef({active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage});
  useLayoutEffect(()=>{latest.current={active,busy,catalogNow,pointingNow,readClockJD,perfNow,pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage};});
  /** R-RX4 host requests, applied synchronously in order to the shared current dataset (WEB-REC-TXN). An 'acquire' is
@@ -229,6 +247,8 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  };
  // [W] Defensive disposal: an unmount releases only the lease this session still holds, on the latest owner (a missing or
  // foreign lease is refused by id and changes nothing). The App never unmounts the workspace; review-only, no App witness.
+ // R-RX17: a finish Save attempt pending at unmount is dead (epoch bump, mounted false) and its output claim is released only by
+ // its own cleanup; the pure recorder would also refuse it once this lease object is gone (no mounted teardown witness exists).
  useEffect(()=>()=>{
   const id=sessionRef.current.record.leaseId;
   if(id!==null)latest.current.pulsarData?.update(d=>releasePulsarCaptureLease(d,id));
@@ -248,6 +268,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  /** User actions: only on the shown route outside a project operation. */
  const userAction=(slot:number|null,step:(s:RadioReceiverSession)=>ReceiverSessionTransition,text?:(r:ReceiverSessionTransition)=>string|undefined)=>{
   if(!latest.current.active||latest.current.busy)return null;
+  dropFinishFocus();
   const result=stepSession(step);setNotice({slot,outcome:result.outcome,text:text?.(result)});return result;
  };
  const clockNow=()=>({jd:latest.current.readClockJD(),now:latest.current.perfNow()/RADIO_RECEIVER_SESSION_POLICY.msPerDay});
@@ -318,14 +339,14 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  // R-RX16: the Save dialog's handlers act only while the Record surface is presented (read in handlers, set in the layout phase).
  const presentedRef=useRef(recordPresented);
  useLayoutEffect(()=>{presentedRef.current=recordPresented;});
- // R-RX16: a hidden route or a project operation makes a running Save attempt dead before paint. Its continuation aborts an
- // open stream and releases the output claim only after that cleanup settled; the dialog then shows 'abandoned'. Never resumed.
+ // R-RX16/R-RX17: a hidden route or a project operation makes a running Save attempt (arming or finish dialog) dead before
+ // paint. Its continuation aborts an open stream and releases the output claim only after that cleanup settled; the dialog then
+ // shows 'abandoned'. Never resumed: the epoch bump keeps it dead when the route returns. The finish lease stays held.
  useLayoutEffect(()=>{
   if(active&&!busy)return;
-  const p=sessionRef.current.record.prompt;
-  if(p?.kind!=='save'||p.save.attempt===null||p.save.abandoned)return;
-  saveEpoch.current++;
-  stepSession(s=>stepRecordSave(s,radioRecordSaveAbandoned));
+  const {prompt:p,finish:f}=sessionRef.current.record;
+  if(p?.kind==='save'&&p.save.attempt!==null&&!p.save.abandoned){saveEpoch.current++;stepSession(s=>stepRecordSave(s,radioRecordSaveAbandoned));}
+  else if(f?.stage==='save-file'&&f.save&&f.save.attempt!==null&&!f.save.abandoned){saveEpoch.current++;stepSession(s=>stepFinishSave(s,radioRecordSaveAbandoned));}
  },[active,busy]);// stepSession reads refs and stable setters only
  const hasReceivers=receiverSessionOpen(session),seedValid=session.seed.base!==null;
  const reported=useRef<RadioReceiverSummary|null>(null),reportTo=useRef(onSummaryChange);
@@ -405,6 +426,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const recordAdmitted=()=>latest.current.active&&!latest.current.busy;
  const recordStep=(step:(s:RadioReceiverSession)=>ReceiverSessionTransition,text?:(r:ReceiverSessionTransition)=>string|undefined)=>{
   if(!recordAdmitted())return null;
+  dropFinishFocus();
   const r=stepSession(step);
   if(!r.host?.some(h=>h.kind==='acquire'))setNotice({slot:0,outcome:r.outcome,text:text?.(r)});
   return r;
@@ -447,39 +469,66 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   const p=sessionRef.current.record.prompt;if(p?.kind!=='save'||p.save.attempt!==null)return;
   recordStep(s=>leaveRecordSave(s,{kind:'back'},recordSnapshot()),r=>r.outcome.kind==='ok'?RS('radioSave.status.back'):undefined);
  };
+ // ---- R-RX17 Radio-owned verified Save from the finish Save question (docs/RADIO-FINISH-SAVE.md). Same refs, guards, host and
+ // continuation as R-RX16; the finish dialog keeps the committed lease object and records through the owner-aware recorder.
+ const finishSaveStep=(step:(save:RadioRecordSave)=>RadioRecordSave)=>stepSession(s=>stepFinishSave(s,step));
+ /** Yes (6) of the finish Save question: opens the finish Save dialog (no I/O, no picker, the lease stays held). */
+ const finishSaveYes=()=>{
+  if(saveSupport!=='ok'||!presentedRef.current||nativeModalOpen())return;
+  if(sessionRef.current.record.finish?.stage!=='save')return;
+  const doc=latest.current.pulsarData?.current();if(!doc)return;
+  recordStep(s=>openFinishSave(s,doc),r=>FS(r.outcome.kind==='ok'?'finishSave.status.opened':'finishSave.status.unavailable'));
+ };
+ /** Back (and Escape): the finish question again, lease kept. Inert while an attempt holds the claim; detail > 1 is ignored. */
+ const finishSaveBack=(detail=0)=>{
+  if(detail>1||!presentedRef.current||saveRun.current!==null)return;
+  const f=sessionRef.current.record.finish;if(f?.stage!=='save-file'||!f.save||f.save.attempt!==null)return;
+  recordStep(s=>leaveFinishSave(s,{kind:'back'}),r=>r.outcome.kind==='ok'?FS('finishSave.status.back'):undefined);
+ };
  /**
-  * Choose file and save…: synchronous up to showSaveFilePicker (no await before it, so the click's user activation applies).
-  * A second click of a double-click (detail > 1) is ignored, so a double-click on Yes never reaches the picker. Order: the
-  * guards, the R-RX14/R-RX15 request and owned claim, the shared output claim (radio, token), then the picker. A synchronous
-  * picker failure releases the claim at once.
+  * Choose file and save… of either Radio Save dialog: synchronous up to showSaveFilePicker (no await before it, so the click's
+  * user activation applies). A second click of a double-click (detail > 1) is ignored, so a double-click on Yes never reaches the
+  * picker. Order: the guards, the R-RX14/R-RX15 request and owned claim (for the finish dialog bound to its lease object), the
+  * shared output claim (radio, token), then the picker. A synchronous picker failure releases the claim at once.
   */
- const recordSaveChoose=(e:ReactMouseEvent<HTMLButtonElement>)=>{
+ const radioSaveChoose=(kind:RadioSaveKind,e:ReactMouseEvent<HTMLButtonElement>)=>{
   if(e.detail>1||saveSupport!=='ok'||!recordAdmitted()||!presentedRef.current||nativeModalOpen()||!mounted.current||saveRun.current!==null)return;
-  const p=sessionRef.current.record.prompt,data=latest.current.pulsarData;
-  if(p?.kind!=='save'||p.save.attempt!==null||!data)return;
-  const begun=radioRecordSaveBegin(p.save,data.current());
-  if(begun.kind==='refused'){saveStep(()=>begun.save);return;}
+  const {prompt:p,finish:f}=sessionRef.current.record,data=latest.current.pulsarData;
+  if(!data)return;
+  let begun:RadioRecordSaveBegin,lease:PulsarCaptureLease|null=null;
+  if(kind==='arming'){
+   if(p?.kind!=='save'||p.save.attempt!==null)return;
+   begun=radioRecordSaveBegin(p.save,data.current());
+  }else{
+   if(f?.stage!=='save-file'||!f.save||!f.lease||f.save.attempt!==null)return;
+   lease=f.lease;begun=radioFinishSaveBegin(f.save,f.lease,data.current());
+  }
+  const step=kind==='arming'?saveStep:finishSaveStep;
+  if(begun.kind==='refused'){const refused=begun.save;step(()=>refused);return;}
   const token=++saveEpoch.current;
-  if(!data.update(d=>claimPulsarOutput(d,'radio',token)).ok){saveStep(x=>radioRecordSaveRefused(x,{code:'not-ready'}));return;}
+  if(!data.update(d=>claimPulsarOutput(d,'radio',token)).ok){step(x=>radioRecordSaveRefused(x,{code:'not-ready'}));return;}
   const invoked=invokePulsarSavePicker(window);
   if(!invoked.ok){
    data.update(d=>releasePulsarOutput(d,'radio',token));
-   saveStep(x=>radioRecordSaveFailed(x,Object.freeze({code:'picker-refused' as const,fileName:null})));
+   step(x=>radioRecordSaveFailed(x,Object.freeze({code:'picker-refused' as const,fileName:null})));
    return;
   }
   saveRun.current=token;
-  saveStep(x=>radioRecordSaveStarted(x,token));
-  void finishRecordSave(token,begun.claim,invoked.picked);
+  step(x=>radioRecordSaveStarted(x,token));
+  void runRadioSave(kind,token,begun.claim,invoked.picked,lease);
  };
  /**
   * The asynchronous rest of one attempt (R-RX15 continuePulsarSave, unchanged). Live: the same token, mounted, the route shown
-  * and no project operation; a foreign modal dialog does not stop it. Only recordPulsarWrittenCopy makes a receipt. The output
-  * claim (radio, token) is released only here, after the stream cleanup settled; then a verified attempt that is still live
-  * continues to the erase question (never to the erase itself).
+  * and no project operation; a foreign modal dialog does not stop it. Only recordPulsarWrittenCopy (arming) or
+  * recordPulsarFinishWrittenCopy (finish, with the dialog's lease object and this token) makes a receipt. The output claim
+  * (radio, token) is released only here, after the stream cleanup settled; then a verified attempt that is still live continues
+  * in the same task: the arming dialog to the erase question (never the erase itself), the finish dialog to the end of the
+  * finish (one release of the session's lease; the route stays Radio and no analysis opens).
   */
- async function finishRecordSave(token:number,claim:PulsarWriteClaim,picked:Promise<SaveHandle>){
+ async function runRadioSave(kind:RadioSaveKind,token:number,claim:PulsarWriteClaim,picked:Promise<SaveHandle>,lease:PulsarCaptureLease|null){
+  const step=kind==='arming'?saveStep:finishSaveStep;
   const live=()=>token===saveEpoch.current&&mounted.current&&latest.current.active&&!latest.current.busy;
-  const note=(n:PulsarSaveNotice)=>{if(live())saveStep(x=>radioRecordSaveNoticed(x,token,n));};
+  const note=(n:PulsarSaveNotice)=>{if(live())step(x=>radioRecordSaveNoticed(x,token,n));};
   let verified:Readonly<{fileName:string;byteLength:number}>|null=null;
   try{
    const r=await continuePulsarSave(picked,()=>pulsarClaimBytes(claim),PULSAR_SAVE_READBACK_MAX_BYTES,{live,phase:(code,fileName)=>note(Object.freeze({code,fileName}))});
@@ -487,8 +536,9 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    if(r.kind!=='readback'){note(Object.freeze({code:r.kind,fileName:'fileName' in r?r.fileName:null}));return;}
    const data=latest.current.pulsarData;if(!data)return;
    const check=pulsarClaimReadback(claim,r.bytes);
-   const step=data.update(d=>recordPulsarWrittenCopy(d,claim,r.bytes,r.fileName));
-   if(!step.ok){note(pulsarSaveRefusalNotice(step.reason,check,r.fileName));return;}
+   const owner=kind==='finish'&&lease!==null?Object.freeze({lease,outputToken:token}):null;
+   const written=owner?data.update(d=>recordPulsarFinishWrittenCopy(d,claim,owner,r.bytes,r.fileName)):data.update(d=>recordPulsarWrittenCopy(d,claim,r.bytes,r.fileName));
+   if(!written.ok){note(pulsarSaveRefusalNotice(written.reason,check,r.fileName));return;}
    note(Object.freeze({code:'verified' as const,fileName:r.fileName}));
    verified=Object.freeze({fileName:r.fileName,byteLength:claim.text.length});
   }catch{
@@ -497,10 +547,18 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   }finally{
    latest.current.pulsarData?.update(d=>releasePulsarOutput(d,'radio',token));
    if(saveRun.current===token)saveRun.current=null;
-   if(mounted.current)saveStep(x=>radioRecordSaveSettled(x,token));
+   if(mounted.current)step(x=>radioRecordSaveSettled(x,token));
   }
   const done=verified;
   if(done===null||!live())return;
+  if(kind==='finish'){
+   const doc=latest.current.pulsarData?.current();
+   const r=stepSession(s=>leaveFinishSave(s,{kind:'verified',fileName:done.fileName,byteLength:done.byteLength},doc));
+   setNotice({slot:0,outcome:r.outcome,text:r.outcome.kind==='ok'?FS('finishSave.status.verified',{file:done.fileName,bytes:done.byteLength}):undefined});
+   // Under a foreign modal the generic focus effect would drop the request; a one-shot intent waits for the last modal to close.
+   if(r.outcome.kind==='ok'){if(nativeModalOpen()){const k=++serial.current;finishFocusRef.current=k;setFinishFocus(k);}else requestFocus('record',0);}
+   return;
+  }
   const snap=recordSnapshot();
   const r=stepSession(s=>leaveRecordSave(s,{kind:'verified',fileName:done.fileName,byteLength:done.byteLength},snap));
   if(!r.host?.some(h=>h.kind==='acquire'))setNotice({slot:0,outcome:r.outcome,text:r.outcome.kind==='ok'?PT('pulsar.save.verified',{file:done.fileName,bytes:done.byteLength}):undefined});
@@ -511,6 +569,17 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const cardsInert=antennaModal||dateOpen||parametersPresented||configurationOpen||boxPresented;
  const inertRef=useRef(cardsInert);
  useLayoutEffect(()=>{inertRef.current=cardsInert;});
+ // R-RX17 WEB-RX17-10 (web policy): a verified finish exit under a foreign modal focuses Record once, at the first moment no
+ // modal dialog is open. The modal subscription exists only while the intent is pending, so a later unrelated dialog never
+ // refocuses Record. A hidden route, a project operation, an unmount or a newer admitted action or focus request drops it.
+ const finishForeign=useSyncExternalStore(finishFocus!==null?observeNativeModals:observeNothing,finishFocus!==null?nativeModalOpen:noNativeModal,noNativeModal);
+ useEffect(()=>{
+  if(finishFocus===null||finishForeign)return;
+  const ok=finishFocusRef.current===finishFocus&&latest.current.active&&!latest.current.busy&&!inertRef.current&&!nativeModalOpen()&&!recordDialogOpen(sessionRef.current);
+  finishFocusRef.current=null;setFinishFocus(null);// one attempt, whatever happens
+  if(ok)[recordButton.current,headings.current[0]].find(canTakeFocus)?.focus();
+ },[finishFocus,finishForeign]);// reads refs and a stable setter only
+ useLayoutEffect(()=>{if(!active||busy)dropFinishFocus();},[active,busy]);
  const overlays=useRef<(HTMLCanvasElement|null)[]>([null,null,null]),displays=useRef<(HTMLDivElement|null)[]>([null,null,null]);
  const marksAdmitted=()=>latest.current.active&&!latest.current.busy&&!inertRef.current&&!nativeModalOpen();
  const releaseCapture=(l:ReceiverMarkLease)=>{
@@ -673,10 +742,13 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    closeFirst={session.bank.slots.reduce((h,r,i)=>r?i+1:h,1)}/>}
   <div className="radio-control" style={{display:'contents'}} data-testid="receiver-record-layer" data-modal-pending={recordPending} data-modal-presented={recordPresented}>
    {recordPresented&&session.record.prompt&&(session.record.prompt.kind==='save'
-    ?<RecordSaveBox save={session.record.prompt.save} onChoose={recordSaveChoose} onBack={recordSaveBack}/>
+    ?<RecordSaveBox kind="arming" save={session.record.prompt.save} onChoose={e=>radioSaveChoose('arming',e)} onBack={recordSaveBack}/>
     :<RecordPromptBox prompt={session.record.prompt} note={eraseNote} support={saveSupport} onAnswer={answerPrompt} onYes={recordSaveYes}/>)}
-   {recordPresented&&session.record.finish&&<RecordFinishSurface finish={session.record.finish} onFull={recordFull} onDraft={recordDraft} onIdentify={recordIdentify}
-    onProperties={recordProperties} onSave={recordSave} refusal={notice?.outcome.kind==='web-refused'&&notice.outcome.action==='record-identify'?noticeText(notice):''}/>}
+   {recordPresented&&session.record.finish&&(session.record.finish.stage==='save-file'&&session.record.finish.save
+    ?<RecordSaveBox kind="finish" save={session.record.finish.save} onChoose={e=>radioSaveChoose('finish',e)} onBack={finishSaveBack}/>
+    :<RecordFinishSurface finish={session.record.finish} support={saveSupport} onFull={recordFull} onDraft={recordDraft} onIdentify={recordIdentify}
+     onProperties={recordProperties} onSave={recordSave} onSaveYes={finishSaveYes}
+     refusal={notice?.outcome.kind==='web-refused'&&notice.outcome.action==='record-identify'?noticeText(notice):''}/>)}
   </div>
  </div>;
 }
@@ -735,60 +807,66 @@ function RecordPromptBox({prompt,note,support,onAnswer,onYes}:Readonly<{prompt:E
  * wording. Choose file and save… is its own click (synchronous up to the picker). Back (also Escape) returns to the Record
  * question. While an attempt holds the output claim, Choose and Back are aria-disabled (focus stays) and do nothing. Back
  * takes focus when the dialog opens. Every text that can hold a chosen name wraps anywhere.
+ * R-RX17 (docs/RADIO-FINISH-SAVE.md): kind 'finish' is the same dialog opened by the finish Save question's Yes, with its own
+ * heading, intro, Back, pending, not-ready, abandoned and busy texts and the receiver-finish-save test ids; Back returns to the
+ * finish question. kind 'arming' renders exactly the R-RX16 dialog.
  */
-function RecordSaveBox({save,onChoose,onBack}:Readonly<{save:RadioRecordSave;onChoose:(e:ReactMouseEvent<HTMLButtonElement>)=>void;onBack:(detail?:number)=>void}>){
+function RecordSaveBox({kind,save,onChoose,onBack}:Readonly<{kind:RadioSaveKind;save:RadioRecordSave;onChoose:(e:ReactMouseEvent<HTMLButtonElement>)=>void;onBack:(detail?:number)=>void}>){
  const id=useId(),root=useRef<HTMLDivElement>(null),back=useRef<HTMLButtonElement>(null);
  useEffect(()=>{back.current?.focus();},[]);
+ const X=RADIO_SAVE_TEXTS[kind],T=X.testId;
  const s=save.session,d=s.data,p=s.preview,notice=s.save??null,pending=save.attempt!==null;
  const inactive=([0,1,2] as const).filter(i=>i>d.highestIndex).map(i=>i+1);
  const shown=notice!==null&&(PULSAR_SAVE_PENDING.has(notice.code)||notice.code==='verified');
- const status=notice!==null&&shown&&!save.abandoned?recordSaveNoticeText(notice):pending&&save.abandoned?RS('radioSave.busy'):'';
+ const status=notice!==null&&shown&&!save.abandoned?recordSaveNoticeText(notice,X.abandoned):pending&&save.abandoned?X.busy:'';
  const failure=notice!==null&&!shown?notice:null;
  const refusal=s.refusal===null?'':s.refusal.code==='build'?rawProblemText(s.refusal.problem)
-  :s.refusal.code==='not-ready'?RS('radioSave.refusal.not-ready'):PT('pulsar.save.refusal.stale');
+  :s.refusal.code==='not-ready'?X.notReady:PT('pulsar.save.refusal.stale');
  return <div className="antenna-backdrop antenna-backdrop-top">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-intro ${id}-scope`} aria-busy={pending||undefined}
-   className="antenna-dialog antenna-notice radio-receiver-save" data-testid="receiver-record-save" data-pending={pending} data-abandoned={save.abandoned}
+   className="antenna-dialog antenna-notice radio-receiver-save" data-testid={T} data-pending={pending} data-abandoned={save.abandoned}
    onKeyDown={e=>boxKeys(e,root.current,()=>onBack())}>
-   <h3 id={`${id}-title`}>{RS('radioSave.heading')}</h3>
-   <p id={`${id}-intro`} className="radio-control-note" data-testid="receiver-record-save-intro">{RS('radioSave.intro')}</p>
-   <p id={`${id}-scope`} className="radio-control-note" data-testid="receiver-record-save-scope">
+   <h3 id={`${id}-title`}>{X.heading}</h3>
+   <p id={`${id}-intro`} className="radio-control-note" data-testid={`${T}-intro`}>{X.intro}</p>
+   <p id={`${id}-scope`} className="radio-control-note" data-testid={`${T}-scope`}>
     {PT('pulsar.rawExport.scope',{rows:d.rowCount,capture:d.captureId,name:d.name,receivers:d.highestIndex+1})}</p>
-   <p className="radio-control-note radio-receiver-save-warning" data-testid="receiver-record-save-origin">{PT('pulsar.save.origin',{file:RAW_EXPORT_FILE_NAME})}</p>
-   <p className="radio-control-note" data-testid="receiver-record-save-format">{PT('pulsar.rawExport.format')}</p>
-   <p className="radio-control-note" data-testid="receiver-record-save-inactive">{inactive.length?PT('pulsar.rawExport.inactive',{list:inactive.join(', ')}):PT('pulsar.rawExport.inactiveNone')}</p>
-   <p className="radio-control-note radio-receiver-save-warning" data-testid="receiver-record-save-warning">{PT('pulsar.save.warning')}</p>
-   <p className="radio-control-note" data-testid="receiver-record-save-how">{PT('pulsar.save.how')}</p>
-   <p className="radio-control-note" data-testid="receiver-record-save-extension">{PT('pulsar.save.extensionRule')}</p>
-   {p.ok?<section aria-labelledby={`${id}-loss`} data-testid="receiver-record-save-loss">
+   <p className="radio-control-note radio-receiver-save-warning" data-testid={`${T}-origin`}>{PT('pulsar.save.origin',{file:RAW_EXPORT_FILE_NAME})}</p>
+   <p className="radio-control-note" data-testid={`${T}-format`}>{PT('pulsar.rawExport.format')}</p>
+   <p className="radio-control-note" data-testid={`${T}-inactive`}>{inactive.length?PT('pulsar.rawExport.inactive',{list:inactive.join(', ')}):PT('pulsar.rawExport.inactiveNone')}</p>
+   <p className="radio-control-note radio-receiver-save-warning" data-testid={`${T}-warning`}>{PT('pulsar.save.warning')}</p>
+   <p className="radio-control-note" data-testid={`${T}-how`}>{PT('pulsar.save.how')}</p>
+   <p className="radio-control-note" data-testid={`${T}-extension`}>{PT('pulsar.save.extensionRule')}</p>
+   {p.ok?<section aria-labelledby={`${id}-loss`} data-testid={`${T}-loss`}>
     <h4 id={`${id}-loss`}>{PT('pulsar.rawExport.loss.heading')}</h4>
     <ul>
-     <li data-testid="receiver-record-save-loss-header">{p.loss.header.length?PT('pulsar.rawExport.loss.header',{fields:p.loss.header.map(f=>PT(RAW_FIELD_LABEL[f])).join(', ')}):PT('pulsar.rawExport.loss.headerNone')}</li>
-     <li data-testid="receiver-record-save-loss-samples">{PT('pulsar.rawExport.loss.samples',{changed:p.loss.samplesChanged,total:p.rowCount*3,zeroed:p.loss.samplesZeroed})}</li>
+     <li data-testid={`${T}-loss-header`}>{p.loss.header.length?PT('pulsar.rawExport.loss.header',{fields:p.loss.header.map(f=>PT(RAW_FIELD_LABEL[f])).join(', ')}):PT('pulsar.rawExport.loss.headerNone')}</li>
+     <li data-testid={`${T}-loss-samples`}>{PT('pulsar.rawExport.loss.samples',{changed:p.loss.samplesChanged,total:p.rowCount*3,zeroed:p.loss.samplesZeroed})}</li>
      <li>{PT('pulsar.rawExport.loss.memory')}</li>
     </ul>
-   </section>:<p role="alert" className="radio-receiver-alert" data-testid="receiver-record-save-problem" data-code={p.problem.code}>{rawProblemText(p.problem)}</p>}
-   {refusal&&<p role="alert" className="radio-receiver-alert" data-testid="receiver-record-save-refusal" data-code={s.refusal?.code}>{refusal}</p>}
-   <p className="radio-control-status" role="status" aria-live="polite" data-testid="receiver-record-save-status"
+   </section>:<p role="alert" className="radio-receiver-alert" data-testid={`${T}-problem`} data-code={p.problem.code}>{rawProblemText(p.problem)}</p>}
+   {refusal&&<p role="alert" className="radio-receiver-alert" data-testid={`${T}-refusal`} data-code={s.refusal?.code}>{refusal}</p>}
+   <p className="radio-control-status" role="status" aria-live="polite" data-testid={`${T}-status`}
     data-code={shown&&!save.abandoned&&notice?notice.code:pending&&save.abandoned?'busy':''}>{status}</p>
-   {failure&&<p role="alert" className="radio-receiver-alert" data-testid="receiver-record-save-alert" data-code={failure.code}
-    data-reason={'reason' in failure?failure.reason:undefined}>{recordSaveNoticeText(failure)}</p>}
-   {pending&&<p className="radio-control-note" data-testid="receiver-record-save-pending">{RS('radioSave.pendingNote')}</p>}
+   {failure&&<p role="alert" className="radio-receiver-alert" data-testid={`${T}-alert`} data-code={failure.code}
+    data-reason={'reason' in failure?failure.reason:undefined}>{recordSaveNoticeText(failure,X.abandoned)}</p>}
+   {pending&&<p className="radio-control-note" data-testid={`${T}-pending`}>{X.pendingNote}</p>}
    <div className="button-row">
-    <button type="button" className="primary-button" disabled={!p.ok} aria-disabled={pending||undefined} data-testid="receiver-record-save-choose"
+    <button type="button" className="primary-button" disabled={!p.ok} aria-disabled={pending||undefined} data-testid={`${T}-choose`}
      onClick={onChoose}>{PT(notice?.code==='extension'?'pulsar.save.chooseAgain':'pulsar.save.choose')}</button>
-    <button ref={back} type="button" className="secondary-button" aria-disabled={pending||undefined} data-testid="receiver-record-save-back"
-     onClick={e=>onBack(e.detail)}>{RS('radioSave.back')}</button>
+    <button ref={back} type="button" className="secondary-button" aria-disabled={pending||undefined} data-testid={`${T}-back`}
+     onClick={e=>onBack(e.detail)}>{X.back}</button>
    </div>
   </div>
  </div>;
 }
 
-type FinishProps=Readonly<{finish:ReceiverRecordFinish;onFull:()=>void;onDraft:(text:string)=>void;onIdentify:(a:'ok'|'cancel')=>void;onProperties:()=>void;
- onSave:(a:'no'|'cancel')=>void;refusal:string}>;
+type FinishProps=Readonly<{finish:ReceiverRecordFinish;support:PulsarSaveSupport;onFull:()=>void;onDraft:(text:string)=>void;onIdentify:(a:'ok'|'cancel')=>void;onProperties:()=>void;
+ onSave:(a:'no'|'cancel')=>void;onSaveYes:()=>void;refusal:string}>;
 /** RC-REC-08 finish dialogs, one at a time (WEB-REC-BATCH: after the tick batch): the full box, Identify (TStrIpDlg), the
- * modal Properties of the committed capture, then the Save question. */
-function RecordFinishSurface({finish,onFull,onDraft,onIdentify,onProperties,onSave,refusal}:FinishProps){
+ * modal Properties of the committed capture, then the Save question (flags 0x23). R-RX17 (WEB-RX17-01): its Yes opens the
+ * Radio-owned finish Save dialog where the browser offers the save file picker (otherwise disabled with its reason); No and
+ * Cancel are the R-RX4 answers; WEB default button Cancel (the native default is Yes). */
+function RecordFinishSurface({finish,support,onFull,onDraft,onIdentify,onProperties,onSave,onSaveYes,refusal}:FinishProps){
  const id=useId(),root=useRef<HTMLDivElement>(null),focusTarget=useRef<HTMLElement|null>(null);
  const stage=finish.stage,L=RADIO_RECORD_LITERALS;
  useEffect(()=>{const el=focusTarget.current;el?.focus();if(el instanceof HTMLInputElement)el.select();},[stage]);
@@ -836,11 +914,15 @@ function RecordFinishSurface({finish,onFull,onDraft,onIdentify,onProperties,onSa
    </table>
   </>,<button ref={ref} type="button" className="primary-button" data-testid="receiver-record-properties-ok" onClick={onProperties}>{t('radioReceiver.record.ok')}</button>);
  }
+ const saveOk=support==='ok';
+ const reason=saveOk?`${FS('finishSave.yes.reason')} ${FS('finishSave.yes.webDefault')}`
+  :`${FS(support==='insecure-context'?'finishSave.yes.unsupported.insecure-context':'finishSave.yes.unsupported.no-api')} ${FS('finishSave.yes.webDefaultUnsupported')}`;
  return box(L.saveCaption,<>
   <p className="radio-control-native" style={{whiteSpace:'pre-line'}} data-testid="receiver-record-save-text">{L.saveText}</p>
-  <p id={`${id}-gated`} className="radio-control-note" data-testid="receiver-record-save-yes-reason">{t('radioReceiver.record.yesGated')} {t('radioReceiver.record.webDefault')}</p>
+  <p id={`${id}-gated`} className="radio-control-note" data-testid="receiver-record-save-yes-reason" data-support={support}>{reason}</p>
  </>,<>
-  <button type="button" className="secondary-button" disabled aria-describedby={`${id}-gated`} data-testid="receiver-record-save-yes">{t('radioReceiver.record.yes')}</button>
+  <button type="button" className="secondary-button" disabled={!saveOk} aria-haspopup={saveOk?'dialog':undefined} aria-describedby={`${id}-gated`}
+   data-testid="receiver-record-save-yes" onClick={onSaveYes}>{t('radioReceiver.record.yes')}</button>
   <button type="button" className="secondary-button" data-testid="receiver-record-save-no" onClick={()=>onSave('no')}>{t('radioReceiver.record.no')}</button>
   <button ref={ref} type="button" className="primary-button" data-testid="receiver-record-save-cancel" onClick={()=>onSave('cancel')}>{t('radioReceiver.record.cancel')}</button>
  </>,t('radioReceiver.record.boxNote'));

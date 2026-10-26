@@ -11,8 +11,8 @@
  * WEB-REC-OWNER: the App owns one PulsarCurrentData document for the page lifetime (never saved, restored or sent).
  * `generation` increases on every dataset change. A receiver capture holds an exclusive lease while it is armed,
  * receiving, finishing or committed (the capture is current while the Properties and Save question are still open); while
- * it is held no import may commit (WEB-REC-TXN). The lease ends with exactly one release (Save No/Cancel, disarm, the main
- * receiver close). 'committed' is a web transaction phase, not a native flag. WEB buffered commit: the descriptor
+ * it is held no import may commit (WEB-REC-TXN). The lease ends with exactly one release (Save No/Cancel, the R-RX17 verified
+ * finish Save, disarm, the main receiver close). 'committed' is a web transaction phase, not a native flag. WEB buffered commit: the descriptor
  * changes only at the arming erase, at the capture commit (end of Identify, or the main receiver close) and at an
  * import; natively the header is written at Receive start and rows are appended to the shared object on each tick.
  *
@@ -77,12 +77,13 @@ export type PulsarCurrentData = Readonly<{
   /**
    * R-RX15 (docs/PULSAR-SAVE-VERIFIED.md): the last verified browser copy of this memory capture, or null/absent. Historical:
    * it says that a copy was read back equal at that time, not that the file is still there or unchanged. Only
-   * recordPulsarWrittenCopy creates one; every dataset change (bump) drops it. Read it through pulsarWrittenCopy.
+   * recordPulsarWrittenCopy and, for the R-RX17 finish owner, recordPulsarFinishWrittenCopy create one; every dataset change
+   * (bump) drops it. Read it through pulsarWrittenCopy.
    */
   written?: PulsarWrittenCopy | null;
   /**
    * R-RX16 (docs/RADIO-RECORD-SAVE.md, WEB-RX16-05): the one browser output attempt of the page, or null/absent. Taken by
-   * the Pulsar Analysis Save or the Radio arming Save before its picker call and released by that owner, with that token,
+   * the Pulsar Analysis Save or a Radio Save (arming, or R-RX17 finish) before its picker call and released by that owner, with that token,
    * only after its stream cleanup settled. Kept by every dataset change (bump) and by a receipt; it is not a native flag.
    */
   output?: PulsarOutputClaim | null;
@@ -344,15 +345,19 @@ const asciiOnly = (text: string) => { for (let i = 0; i < text.length; i++) if (
  * text is empty or not ASCII. Nothing in the document changes.
  */
 export function pulsarWriteClaim(doc: PulsarCurrentData, text: string): PulsarWriteClaim | null {
+  const claim = claimOf(doc, text);
+  if (claim) WRITE_CLAIMS.add(claim);
+  return claim;
+}
+/** The claim object of pulsarWriteClaim, not yet registered in any claim domain. */
+function claimOf(doc: PulsarCurrentData, text: string): PulsarWriteClaim | null {
   const d = doc.data;
   if (!isMemoryData(d) || !Object.isFrozen(d) || !Object.isFrozen(d.frequencies) || !Object.isFrozen(d.gains)) return null;
   if (!(d.samples instanceof Float64Array) || !Number.isInteger(d.rowCount) || d.samples.length !== d.rowCount * 3) return null;
   if (typeof text !== 'string' || text.length === 0 || !asciiOnly(text)) return null;
   const samples = Object.freeze(Array.from(d.samples));
   if (!samples.every(Number.isFinite)) return null;
-  const claim = Object.freeze({ data: d, generation: doc.generation, metadata: snapshotOf(d), samples, text }) as PulsarWriteClaim;
-  WRITE_CLAIMS.add(claim);
-  return claim;
+  return Object.freeze({ data: d, generation: doc.generation, metadata: snapshotOf(d), samples, text }) as PulsarWriteClaim;
 }
 /** Fresh bytes of a claim's text, for one write. Mutating them changes neither the claim nor a later comparison. */
 export function pulsarClaimBytes(claim: PulsarWriteClaim): Uint8Array<ArrayBuffer> {
@@ -375,9 +380,13 @@ export function pulsarClaimReadback(claim: PulsarWriteClaim, readback: Uint8Arra
  * are unchanged (no adoption reset), so cursors, zoom and the measurement list stay; only `written` is set.
  */
 export function recordPulsarWrittenCopy(doc: PulsarCurrentData, claim: PulsarWriteClaim, readback: Uint8Array, fileName: string): PulsarWriteStep {
+  if (!WRITE_CLAIMS.has(claim)) return Object.freeze({ doc, ok: false, reason: 'claim' });
+  if (doc.lease) return Object.freeze({ doc, ok: false, reason: 'capture-lease' });
+  return writtenStep(doc, claim, readback, fileName);
+}
+/** The checks after the claim domain and the lease, in order, and the receipt. Shared by both recorders. */
+function writtenStep(doc: PulsarCurrentData, claim: PulsarWriteClaim, readback: Uint8Array, fileName: string): PulsarWriteStep {
   const refuse = (reason: PulsarWriteRefusal): PulsarWriteStep => Object.freeze({ doc, ok: false, reason });
-  if (!WRITE_CLAIMS.has(claim)) return refuse('claim');
-  if (doc.lease) return refuse('capture-lease');
   if (doc.data !== claim.data || doc.generation !== claim.generation) return refuse('superseded');
   if (!sourceMatches(claim.data, claim.metadata, claim.samples)) return refuse('source-mutated');
   const back = pulsarClaimReadback(claim, readback);
@@ -386,6 +395,46 @@ export function recordPulsarWrittenCopy(doc: PulsarCurrentData, claim: PulsarWri
   const receipt = Object.freeze({ data: claim.data, generation: claim.generation, metadata: claim.metadata, samples: claim.samples, fileName, byteLength: claim.text.length }) as PulsarWrittenCopy;
   WRITTEN_RECEIPTS.add(receipt);
   return Object.freeze({ doc: Object.freeze({ ...doc, written: receipt }), ok: true });
+}
+
+// ---------------------------------------------------------------- R-RX17 Finish-owned verified copy
+/*
+ * docs/RADIO-FINISH-SAVE.md WEB-RX17-02/03 [W]. The finish Save question's Yes (E4, 0x573d47..0x573d54) saves the capture while
+ * the session still holds its committed lease, which recordPulsarWrittenCopy refuses (and keeps refusing). A separate claim
+ * domain lets only that owner record a receipt: a finish claim is bound to the exact lease OBJECT that was current when the
+ * Radio Save dialog opened (not to its numeric id, which a later lease could reuse), and to the claimed data object, generation
+ * and owned metadata and samples, like a generic claim. A finish claim is never a generic claim and the reverse. The lease is
+ * never released or changed here; only `written` is set.
+ */
+const FINISH_CLAIMS = new WeakMap<object, PulsarCaptureLease>();
+/** The lease a finish claim may be issued and recorded under: the document's own committed lease, frozen, with a safe id. */
+const committedLease = (doc: PulsarCurrentData, lease: PulsarCaptureLease): boolean =>
+  typeof lease === 'object' && lease !== null && doc.lease === lease && Object.isFrozen(lease) && lease.phase === 'committed' && Number.isSafeInteger(lease.id);
+/**
+ * An owned finish claim for the current memory capture of the committed lease `lease` (the object itself), or null: another or
+ * no lease (also an equal-valued copy), a phase other than committed, data that is not that capture (captureId ≠ lease id), or
+ * any pulsarWriteClaim refusal. Nothing in the document changes.
+ */
+export function pulsarFinishWriteClaim(doc: PulsarCurrentData, lease: PulsarCaptureLease, text: string): PulsarWriteClaim | null {
+  if (!committedLease(doc, lease) || !isMemoryData(doc.data) || doc.data.captureId !== lease.id) return null;
+  const claim = claimOf(doc, text);
+  if (claim) FINISH_CLAIMS.set(claim, lease);
+  return claim;
+}
+/** The attempt that records: the lease object the Save dialog was opened for and the attempt's shared output token. */
+export type PulsarFinishWriteOwner = Readonly<{ lease: PulsarCaptureLease; outputToken: number }>;
+/**
+ * Records the verified copy for the finish owner. Refused, in order: 'claim' (not a finish claim of this module, or the shared
+ * output claim is not exactly ('radio', owner.outputToken)); 'capture-lease' (the claim was bound to another lease object than
+ * owner.lease, or that lease is no longer the document's committed lease, or the claimed capture is not that lease's); then the
+ * recordPulsarWrittenCopy tail unchanged ('superseded', 'source-mutated', 'readback-size', 'readback-bytes', 'file-name').
+ * On success only `written` changes: the lease, data, generation, analysis activity and output claim stay.
+ */
+export function recordPulsarFinishWrittenCopy(doc: PulsarCurrentData, claim: PulsarWriteClaim, owner: PulsarFinishWriteOwner, readback: Uint8Array, fileName: string): PulsarWriteStep {
+  const bound = FINISH_CLAIMS.get(claim), held = pulsarOutputClaim(doc);
+  if (bound === undefined || held === null || held.owner !== 'radio' || held.token !== owner.outputToken) return Object.freeze({ doc, ok: false, reason: 'claim' });
+  if (bound !== owner.lease || !committedLease(doc, bound) || claim.data.captureId !== bound.id) return Object.freeze({ doc, ok: false, reason: 'capture-lease' });
+  return writtenStep(doc, claim, readback, fileName);
 }
 /**
  * The receipt of the current data, or null: absent, not issued here, for another object or generation, or the data's
