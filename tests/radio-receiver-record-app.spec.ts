@@ -260,12 +260,12 @@ test('latent finish dialogs on a hidden route keep the Identify draft; Escape ke
  await toAnalysis(page);await expect(id(page,'pulsar-prop-object')).toHaveText('B2358+38');await expect(id(page,'pulsar-memory')).toBeVisible();
 });
 
-test('Add disarms with a stale On label until the main refresh; closing the main mid-capture makes the partial rows current',async({page})=>{
+test('Add disarms and the web indicator shows the actual flag, keeping the native cached label as metadata; closing the main makes partial rows current',async({page})=>{
  await startApp(page);await setupReceiver(page);
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-disp')).toHaveText('On');
  await id(page,'receiver-add').click();await expect(id(page,'receiver-card-1')).toBeVisible();
  await expect(id(page,'receiver-status-0')).toContainText('cleared the recording byte');
- await expect(id(page,'receiver-record-disp')).toHaveText('On');await expect(id(page,'receiver-record-armed')).toHaveCount(0);
+ await expect(id(page,'receiver-record-disp')).toHaveText('Off');await expect(id(page,'receiver-record-disp')).toHaveAttribute('data-native-record-display','On');await expect(id(page,'receiver-record-armed')).toHaveCount(0);
  await id(page,'receiver-vertical-up-0').click();await expect(id(page,'receiver-record-disp')).toHaveText('Off');
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-disp')).toHaveText('On');
  await id(page,'receiver-mode').click();await flush(page);

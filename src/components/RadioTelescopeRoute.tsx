@@ -2,7 +2,9 @@ import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,typ
 import RadioControlPanel,{type RadioClockSource,type RadioReceiverButton,type RadioReceiverButtonReason} from './RadioControlPanel';
 import {INITIAL_RADIO_RECEIVER_SUMMARY,RadioReceiverWorkspace,type RadioReceiverApi,type RadioReceiverSummary} from './RadioReceiverWindows';
 import {INITIAL_RADIO_CONTROL,RANDOM_ACCESS_RANGE_MS,menuCaptionText,type RadioControlState,type RadioEnvironment} from '../core/radioControl';
-import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,RADIO_LAB_CONSTANTS,isRadioLabModal,type RadioLabOptions,type RadioLabState} from '../core/radioAntenna';
+import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,RADIO_LAB_CONSTANTS,isRadioLabModal,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from '../core/radioAntenna';
+import {PULSAR_EXERCISE_SCENARIO,UNSUPPLIED_RADIO_ENVIRONMENT,pulsarSetupComplete,startPulsarExercise,type PulsarSetupStep} from '../core/pulsarExerciseStart';
+import {sameRadioExerciseSummary,type RadioExerciseSummary} from '../core/pulsarLab';
 import {
  INITIAL_RADIO_CLOCK_SCENARIO,RADIO_CLOCK_CONSTANTS,applyCompiledRadioLongitude,applyRadioClockDialogUT,applyRadioClockUTC,cancelRadioClockDraft,editRadioClockDraft,
  freezeRadioClock,pauseRadioClock,radioClockDomainWaitMS,radioClockInstant,readRadioClock,startRadioClock,stopRadioClockPastEnd,thawRadioClock,
@@ -26,8 +28,14 @@ import type {SharedHotListHandle} from '../useSharedHotList';
 import type {SharedPulsarDataHandle} from '../useSharedPulsarData';
 
 /** Scenario inputs at first use: the FormCreate dome byte 0 (RC-01) and nothing supplied. The learner applies the recovered
- * compiled defaults (diameter 100, access option off) or other values explicitly; the observatory dome is not linked. */
-const UNSUPPLIED_ENVIRONMENT:RadioEnvironment=Object.freeze({domeByte:0,accessOptionByte:false,dishDiameterMeters:null,otherWindowItemsVisible:false});
+ * compiled defaults (diameter 100, access option off) or other values explicitly, or Start pulsar exercise applies them while
+ * they are still unsupplied; the observatory dome is not linked. */
+const UNSUPPLIED_ENVIRONMENT:RadioEnvironment=UNSUPPLIED_RADIO_ENVIRONMENT;
+/** Why Start pulsar exercise is unavailable now (first failing gate), on the latest refs. */
+type ExerciseBlock='inactive'|'modal'|'receiver-box'|'hold';
+type ExerciseStatus=Readonly<{kind:'started'|'incomplete';applied:number;kept:number}|{kind:'blocked';reason:ExerciseBlock}|{kind:'refused';step:PulsarSetupStep;outcome:string}>;
+/** Refusal outcomes with their own wording; any other is named generically. */
+const EXERCISE_OUTCOMES=new Set(['diameter-required','timer-waiting-dome','draft-pending','options-unsupported','modal-open','manual-latched','changed','exercise-required','switch-unavailable']);
 /** Monotonic browser time injected into the pure scenario transitions. */
 const perfNow=()=>performance.now();
 /** Largest setTimeout delay (2^31 − 1 ms): browsers overflow a larger one and fire it at once, so the range-end deadline
@@ -61,6 +69,8 @@ export type RadioTelescopeRouteProps=Readonly<{
  hotList?:SharedHotListHandle;
  /** R-RX4 the App's current pulsar dataset and the navigation to Pulsar Analysis (forwarded to the receiver Record). */
  pulsarData?:SharedPulsarDataHandle;onOpenPulsarAnalysis?:()=>void;
+ /** WEB-PULSAR-GUIDE-01: the exercise state the pulsar guide reads, reported in the layout phase only when it changes. */
+ onExerciseProgress?:(summary:RadioExerciseSummary)=>void;
 }>;
 
 /**
@@ -85,8 +95,11 @@ export type RadioTelescopeRouteProps=Readonly<{
  * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. The state
  * is temporary: it is not part of any investigation file.
  */
-export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis}:RadioTelescopeRouteProps){
+export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress}:RadioTelescopeRouteProps){
  const [state,setState]=useState<RadioControlState>(INITIAL_RADIO_CONTROL);
+ // Latest accepted control state, read by Start pulsar exercise.
+ const controlRef=useRef(state);
+ useLayoutEffect(()=>{controlRef.current=state;},[state]);
  const [environment,setEnvironment]=useState<RadioEnvironment>(UNSUPPLIED_ENVIRONMENT);
  const [antenna,setAntenna]=useState<RadioLabState>(INITIAL_RADIO_LAB);
  // Latest accepted antenna state (committed or handed over by the panel in this task), read by the receiver handlers.
@@ -98,6 +111,10 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  const [options,setOptions]=useState<RadioLabOptions>(RADIO_COMPILED_OPTIONS);
  const [scenario,setScenario]=useState<RadioClockScenario>(INITIAL_RADIO_CLOCK_SCENARIO);
  const [clockOutcome,setClockOutcome]=useState<RadioClockScenarioOutcome|'domain-stopped'|null>(null);
+ // The scenario of the latest commit, read by Start pulsar exercise (a user click, so no functional update is pending).
+ const scenarioRef=useRef(scenario);
+ useLayoutEffect(()=>{scenarioRef.current=scenario;},[scenario]);
+ const [exerciseStatus,setExerciseStatus]=useState<ExerciseStatus|null>(null);
  // ---- File ▸ Set Observation Date/Time, ID before activation (RC-12…RC-17, WEB-DATE-01…04). Steps run on the latest
  // accepted date state (dateRef), so two actions in one task chain instead of reading the not yet committed state.
  const [dateState,setDateState]=useState<RadioDateState>(INITIAL_RADIO_DATE);
@@ -311,21 +328,101 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   receiverApiRef.current?.open();
  };
  const receiverButton:RadioReceiverButton={available:receiverReason==='available',reason:receiverReason,onOpen:openReceiver,buttonRef:receiverButtonRef};
+ /** The one commit path of a main-window control state (panel transitions and Start). */
+ const commitControl=(next:RadioControlState)=>{controlRef.current=next;setState(next);if(next.radioPanelShown)stepDate(markRadioActivationReached);};
+ /** The one commit path of an antenna transition (panel transitions and Start): the receivers and the Radio configuration
+  * observe every committed transition, so a Start activation is seen exactly as a panel activation. */
+ const commitAntenna=(tr:RadioLabTransition)=>{
+  setAntenna(tr.state);antennaRef.current=tr.state;if(tr.state.activated)stepDate(markRadioActivationReached);
+  receiverApiRef.current?.antennaTransition(tr);access.antennaTransition(tr);
+ };
+ // ---- WEB-PULSAR-START-01 Start pulsar exercise: gates on the latest refs, one pure snapshot, gates again, then commit.
+ const exerciseBlockNow=():ExerciseBlock|null=>{
+  const r=routeLatest.current,a=antennaRef.current;
+  if(!r.active||r.busy)return 'inactive';
+  if(isRadioLabModal(a)||dateRef.current.dialog!==null||parametersOpenRef.current||access.openNow()||nativeModalOpen()||panelPresentedRef.current)return 'modal';
+  if(receiverApiRef.current?.boxRefusal())return 'receiver-box';
+  return a.manualPress?'hold':null;
+ };
+ const exerciseBlock:ExerciseBlock|null=!active||busy?'inactive':modal||dateOpen||parameters.open||access.open?'modal'
+  :receiverSummary.boxPending?'receiver-box':antenna.manualPress?'hold':null;
+ const startExercise=()=>{
+  const blocked=exerciseBlockNow();if(blocked){setExerciseStatus({kind:'blocked',reason:blocked});return;}
+  const snapshot={control:controlRef.current,environment:environmentRef.current,antenna:antennaRef.current,options:optionsRef.current,clock:scenarioRef.current,
+   managedDiameter:access.authorityNow().kind!=='absent'};
+  const result=startPulsarExercise(snapshot);
+  if(!result.ok){setExerciseStatus({kind:'refused',step:result.step,outcome:result.outcome});return;}
+  if(exerciseBlockNow()!==null||controlRef.current!==snapshot.control||environmentRef.current!==snapshot.environment||antennaRef.current!==snapshot.antenna
+   ||scenarioRef.current!==snapshot.clock){setExerciseStatus({kind:'refused',step:'exercise',outcome:'changed'});return;}
+  if(result.control!==snapshot.control)commitControl(result.control);
+  if(result.environment!==snapshot.environment)changeEnvironment(result.environment);
+  for(const tr of result.antennaSteps)commitAntenna(tr);
+  if(result.clock!==snapshot.clock){scenarioRef.current=result.clock;setScenario(result.clock);if(result.applied.includes('ut'))setClockOutcome('utc-applied');}
+  // A kept Tracking that is off leaves setup incomplete: say so and name the control instead of reporting success.
+  setExerciseStatus({kind:result.trackingOff?'incomplete':'started',applied:result.applied.length,kept:result.kept.length});
+  // WEB-PP-SRC-04: the bundled reference catalog, only when none is loaded or being read (a loaded catalog is never replaced).
+  const list=parameters.listSnapshot();
+  if(list.catalog===null&&!list.reading)void parameters.loadBundled();
+ };
+ const setupDone=pulsarSetupComplete({control:state,antenna,clock:scenario});
+ const catalogState:RadioExerciseSummary['catalog']=parameters.catalog!==null?(parameters.source?.recorded?'recorded':'supplied'):parameters.catalogReading?'reading':'none';
+ const exerciseSummary:RadioExerciseSummary={setup:setupDone,catalog:catalogState,sourceInBeam:receiverSummary.sourceInBeam,receivers:receiverSummary.receivers,
+  frequencies:receiverSummary.frequencies,record:receiverSummary.record,trackingOff:antenna.activated&&!antenna.tracking};
+ const progressTo=useRef(onExerciseProgress),progressReported=useRef<RadioExerciseSummary|null>(null);
+ useLayoutEffect(()=>{progressTo.current=onExerciseProgress;});
+ useLayoutEffect(()=>{
+  const prev=progressReported.current;if(prev&&sameRadioExerciseSummary(prev,exerciseSummary))return;
+  progressReported.current=exerciseSummary;progressTo.current?.(exerciseSummary);
+ });
+ const exerciseStatusText=exerciseStatus===null?''
+  :exerciseStatus.kind==='blocked'?t(`radioRoute.exercise.blocked.${exerciseStatus.reason}`)
+  :exerciseStatus.kind==='refused'?t('radioRoute.exercise.status.refused',{step:t(`radioRoute.exercise.step.${exerciseStatus.step}`),
+   reason:EXERCISE_OUTCOMES.has(exerciseStatus.outcome)?t(`radioRoute.exercise.outcome.${exerciseStatus.outcome}` as PlainMessageKey):t('radioRoute.exercise.outcome.other',{outcome:exerciseStatus.outcome})})
+  :exerciseStatus.kind==='started'&&!setupDone?t(antenna.activated&&!antenna.tracking?'radioRoute.exercise.trackingOff':'radioRoute.exercise.available')
+  :exerciseStatus.kind==='incomplete'?(setupDone?t('radioRoute.exercise.ready'):antenna.activated&&!antenna.tracking?t('radioRoute.exercise.status.trackingOff',{applied:exerciseStatus.applied,kept:exerciseStatus.kept}):t('radioRoute.exercise.available'))
+  :exerciseStatus.applied===0?t('radioRoute.exercise.status.nothing'):t('radioRoute.exercise.status.started',{applied:exerciseStatus.applied,kept:exerciseStatus.kept});
+ const catalogText=parameters.catalog!==null?t(parameters.source?.recorded?'radioRoute.exercise.catalog.recorded':'radioRoute.exercise.catalog.supplied',{name:parameters.source?.name??''})
+  :parameters.catalogReading?t('radioRoute.exercise.catalog.reading'):parameters.bundledError?t(`radioRoute.exercise.catalog.error.${parameters.bundledError}`):t('radioRoute.exercise.catalog.none');
  const behindReceiverBox=receiverBoxPresented||undefined;
  const behindAccess=access.open||undefined,panelBehindAccess=access.presented||undefined;
  return <div className="radio-route" data-testid="radio-route">
+  <section className="card radio-control radio-control-env radio-route-exercise" aria-labelledby={`${id}-exercise`} data-testid="radio-exercise-card" data-setup={setupDone}
+   data-catalog={catalogState} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
+   <h2 id={`${id}-exercise`}>{t('radioRoute.exercise.heading')}</h2>
+   <p>{t('radioRoute.exercise.intro')}</p>
+   <div className="button-row">
+    <button type="button" className="primary-button" data-testid="radio-exercise-start" disabled={exerciseBlock!==null} aria-describedby={`${id}-exercise-reason ${id}-exercise-adaptation`}
+     onKeyDown={ignoreHeldKey} onClick={startExercise}>{t('radioRoute.exercise.start')}</button>
+    {parameters.catalog===null&&parameters.bundledError!==null&&!parameters.catalogReading&&<button type="button" className="secondary-button" data-testid="radio-exercise-catalog-retry"
+     disabled={!active||busy||parameters.open||receiverSummary.hasReceivers} onClick={()=>{void parameters.loadBundled();}}>{t('radioRoute.exercise.catalogRetry')}</button>}
+   </div>
+   <p id={`${id}-exercise-reason`} className="radio-control-note" data-testid="radio-exercise-reason" data-reason={exerciseBlock??undefined}>
+    {exerciseBlock===null?(setupDone?t('radioRoute.exercise.ready'):antenna.activated&&!antenna.tracking?t('radioRoute.exercise.trackingOff'):t('radioRoute.exercise.available')):t(`radioRoute.exercise.blocked.${exerciseBlock}`)}</p>
+   <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-exercise-status" data-kind={exerciseStatus&&(exerciseStatus.kind==='started'||exerciseStatus.kind==='incomplete')?(setupDone?'started':'incomplete'):exerciseStatus?.kind}
+    data-step={exerciseStatus?.kind==='refused'?exerciseStatus.step:undefined}>{exerciseStatusText}</p>
+   <p data-testid="radio-exercise-catalog" data-catalog={catalogState} data-error={parameters.bundledError??undefined}
+    role={parameters.bundledError&&parameters.catalog===null?'alert':undefined} style={{overflowWrap:'anywhere'}}>{catalogText}</p>
+   <p id={`${id}-exercise-adaptation`} className="radio-control-note" data-testid="radio-exercise-adaptation">{t('radioRoute.exercise.adaptation',{ut:PULSAR_EXERCISE_SCENARIO.ut})}</p>
+   <p className="radio-control-note">{t('radioRoute.exercise.guideHint')}</p>
+  </section>
   <section className="card radio-route-scenario" aria-labelledby="radio-route-scenario-title" data-testid="radio-route-scenario" inert={dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id="radio-route-scenario-title">{t('radioRoute.scenario.heading')}</h2>
-   <ul>
-    <li data-testid="radio-route-scenario-options" data-managed={optionsManaged}>{optionsManaged?t('radioRoute.scenario.optionsManaged',{max:options.maxRateIndex,base:options.rateBase})
-     :t('radioRoute.scenario.options',{max:o.maxRateIndex,base:o.rateBase})}</li>
-    <li data-testid="radio-route-scenario-environment">{t('radioRoute.scenario.environment')}</li>
-    <li data-testid="radio-route-scenario-access">{t('radioRoute.scenario.access',{range:RANDOM_ACCESS_RANGE_MS})}</li>
-    <li data-testid="radio-route-scenario-slew">{t('radioRoute.scenario.slew',{interval:RADIO_LAB_CONSTANTS.slewTimerIntervalMs})}</li>
-    <li data-testid="radio-route-scenario-clock">{t('radioRoute.scenario.clock',{interval:RADIO_CLOCK_CONSTANTS.nominalIntervalMs})}</li>
-    <li data-testid="radio-route-scenario-gates">{t('radioRoute.scenario.gates')}</li>
-   </ul>
    <p className="radio-route-persistence" data-testid="radio-route-persistence">{t('radioRoute.persistence')}</p>
+   {/* Phase 1 item 1.11: technical and provenance notes are collapsed; they are reading material, not controls or refusal reasons. */}
+   <details className="radio-research-notes" data-testid="radio-research-notes">
+    <summary>{t('radioRoute.notes.summary')}</summary>
+    <p className="radio-control-note">{t('radioRoute.notes.help')}</p>
+    <ul>
+     <li data-testid="radio-route-scenario-options" data-managed={optionsManaged}>{optionsManaged?t('radioRoute.scenario.optionsManaged',{max:options.maxRateIndex,base:options.rateBase})
+      :t('radioRoute.scenario.options',{max:o.maxRateIndex,base:o.rateBase})}</li>
+     <li data-testid="radio-route-scenario-environment">{t('radioRoute.scenario.environment')}</li>
+     <li data-testid="radio-route-scenario-access">{t('radioRoute.scenario.access',{range:RANDOM_ACCESS_RANGE_MS})}</li>
+     <li data-testid="radio-route-scenario-slew">{t('radioRoute.scenario.slew',{interval:RADIO_LAB_CONSTANTS.slewTimerIntervalMs})}</li>
+     <li data-testid="radio-route-scenario-clock">{t('radioRoute.scenario.clock',{interval:RADIO_CLOCK_CONSTANTS.nominalIntervalMs})}</li>
+     <li data-testid="radio-route-scenario-gates">{t('radioRoute.scenario.gates')}</li>
+    </ul>
+    <p className="radio-control-note" data-testid="radio-clock-limits">{t('radioRoute.clock.limits')}</p>
+   </details>
   </section>
   <section className="card radio-control radio-control-env radio-route-clock" aria-labelledby={`${id}-clock`} data-testid="radio-route-clock" data-running={scenario.running} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id={`${id}-clock`}>{t('radioRoute.clock.heading')}</h2>
@@ -353,7 +450,6 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="radio-clock-status">
     {clockOutcome==='domain-stopped'?t('radioRoute.clock.outcome.domain-stopped',{max:UT_MAX_TEXT}):clockOutcome==='start-domain'?t('radioRoute.clock.outcome.start-domain',{max:UT_MAX_TEXT}):outcomeKey?t(outcomeKey):''}
    </p>
-   <p className="radio-control-note" data-testid="radio-clock-limits">{t('radioRoute.clock.limits')}</p>
   </section>
   <section className="card radio-control radio-control-env radio-route-date" aria-labelledby={`${id}-date`} data-testid="radio-route-date" data-available={dateGate.status==='available'} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id={`${id}-date`}>{t('radioRoute.date.heading')}</h2>
@@ -377,11 +473,8 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
       configuration that has yielded (open, not presented) must not make the panel, and so that antenna box, inert. */}
   <div style={{display:'contents'}} inert={dateOpen||parameters.presented||behindReceiverBox||panelBehindAccess} data-testid="radio-route-panel-wrapper">
    <RadioControlPanel state={state} environment={environment}
-    onTransition={tr=>{setState(tr.state);if(tr.state.radioPanelShown)stepDate(markRadioActivationReached);}} onEnvironmentChange={changeEnvironment}
-    antenna={antenna} onAntennaTransition={tr=>{
-     setAntenna(tr.state);antennaRef.current=tr.state;if(tr.state.activated)stepDate(markRadioActivationReached);
-     receiverApiRef.current?.antennaTransition(tr);access.antennaTransition(tr);
-    }} antennaOptions={options} onAntennaOptionsChange={optionsManaged?undefined:applyOptions} managedDiameter={optionsManaged}
+    onTransition={tr=>commitControl(tr.state)} onEnvironmentChange={changeEnvironment}
+    antenna={antenna} onAntennaTransition={commitAntenna} antennaOptions={options} onAntennaOptionsChange={optionsManaged?undefined:applyOptions} managedDiameter={optionsManaged}
     active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}/>
   </div>
   <RadioReceiverWorkspace active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented} configurationOpen={access.open}

@@ -60,8 +60,22 @@ export type RadioReceiverApi=Readonly<{open:()=>void;antennaTransition:(tr:Radio
  sourceBuffer:()=>RadioSourceBuffer;boxRefusal:()=>'close-box-open'|'record-dialog-open'|null;
  sessionNow:()=>RadioReceiverSession;commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean;
  commitLiveOptions:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean}>;
-export type RadioReceiverSummary=Readonly<{hasReceivers:boolean;seedValid:boolean;boxPending:boolean;boxPresented:boolean}>;
-export const INITIAL_RADIO_RECEIVER_SUMMARY:RadioReceiverSummary=Object.freeze({hasReceivers:false,seedValid:true,boxPending:false,boxPresented:false});
+/** sourceInBeam, receivers, frequencies and record are presentation summaries for the pulsar guide (WEB-PULSAR-GUIDE-01):
+ * the name the main receiver's heading shows (null without a main window or with "No Pulsar in Beam!"), the open windows,
+ * their distinct frequency texts and the main Record phase. They never gate a receiver action. */
+export type RadioReceiverSummary=Readonly<{hasReceivers:boolean;seedValid:boolean;boxPending:boolean;boxPresented:boolean;
+ sourceInBeam:string|null;receivers:number;frequencies:number;record:'idle'|'armed'|'capturing'}>;
+export const INITIAL_RADIO_RECEIVER_SUMMARY:RadioReceiverSummary=Object.freeze({hasReceivers:false,seedValid:true,boxPending:false,boxPresented:false,
+ sourceInBeam:null,receivers:0,frequencies:0,record:'idle'});
+/** The source named by a main receiver heading ("Pulsar <name>   Aperture: …"), or null ("No Pulsar in Beam!", no window). */
+const PULSAR_TITLE_PREFIX='Pulsar ';
+const headingSource=(r:RadioReceiver|null):string|null=>{
+ if(!r)return null;
+ const caption=String(receiverCaption(r.title,r.apertureText));
+ if(!caption.startsWith(PULSAR_TITLE_PREFIX))return null;
+ const name=caption.slice(PULSAR_TITLE_PREFIX.length).split(/\s{2,}/)[0].trim();
+ return name===''?null:name;
+};
 
 type Props=Readonly<{
  /** The route is shown. Hidden, the timer keeps running and the close box stays pending. */
@@ -349,13 +363,19 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   else if(f?.stage==='save-file'&&f.save&&f.save.attempt!==null&&!f.save.abandoned){saveEpoch.current++;stepSession(s=>stepFinishSave(s,radioRecordSaveAbandoned));}
  },[active,busy]);// stepSession reads refs and stable setters only
  const hasReceivers=receiverSessionOpen(session),seedValid=session.seed.base!==null;
+ const openSlots=session.bank.slots.filter((r):r is RadioReceiver=>r!==null);
+ const sourceInBeam=headingSource(session.bank.slots[0]??null),receiverCount=openSlots.length;
+ const frequencyCount=new Set(openSlots.map(r=>receiverLabels(r).frequency)).size;
+ const recordPhase:RadioReceiverSummary['record']=session.record.receiving?'capturing':session.bank.recording.armed?'armed':'idle';
  const reported=useRef<RadioReceiverSummary|null>(null),reportTo=useRef(onSummaryChange);
  useLayoutEffect(()=>{reportTo.current=onSummaryChange;});
  useLayoutEffect(()=>{
   const prev=reported.current;
-  if(prev&&prev.hasReceivers===hasReceivers&&prev.seedValid===seedValid&&prev.boxPending===boxPending&&prev.boxPresented===boxPresented)return;
-  const next=Object.freeze({hasReceivers,seedValid,boxPending,boxPresented});reported.current=next;reportTo.current(next);
- },[hasReceivers,seedValid,boxPending,boxPresented]);
+  if(prev&&prev.hasReceivers===hasReceivers&&prev.seedValid===seedValid&&prev.boxPending===boxPending&&prev.boxPresented===boxPresented
+   &&prev.sourceInBeam===sourceInBeam&&prev.receivers===receiverCount&&prev.frequencies===frequencyCount&&prev.record===recordPhase)return;
+  const next=Object.freeze({hasReceivers,seedValid,boxPending,boxPresented,sourceInBeam,receivers:receiverCount,frequencies:frequencyCount,record:recordPhase});
+  reported.current=next;reportTo.current(next);
+ },[hasReceivers,seedValid,boxPending,boxPresented,sourceInBeam,receiverCount,frequencyCount,recordPhase]);
  useLayoutEffect(()=>()=>{if(reported.current?.boxPresented)reportTo.current({...reported.current,boxPresented:false});},[]);
 
  // ---- Focus (WEB-RX-FOCUS-01, web policy only: native SetFocus/activation order is not reproduced).
@@ -982,7 +1002,8 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
      <span className="radio-receiver-value radio-control-native" data-testid={`receiver-horizontal-value-${slot}`}>{labels.horizontal}</span></div>}
   </div>
   <div className="button-row radio-receiver-buttons">
-   {main&&<button ref={addRef} type="button" className="secondary-button" data-testid="receiver-add" disabled={avail.add!=='enabled'} onKeyDown={ignoreHeldKey} onClick={onAdd}>{D.add}</button>}
+   {main&&<button ref={addRef} type="button" className="secondary-button" data-testid="receiver-add" disabled={avail.add!=='enabled'}
+    aria-describedby={session.bank.recording.armed?`${id}-add-disarms`:undefined} onKeyDown={ignoreHeldKey} onClick={onAdd}>{D.add}</button>}
    {main&&<button ref={alignRef} type="button" className="secondary-button" data-testid="receiver-align" disabled={avail.align!=='enabled'} aria-pressed={aligned}
     aria-describedby={alignStale?`${id}-align ${id}-align-stale`:`${id}-align`} onKeyDown={ignoreHeldKey} onClick={onAlign}>{D.align}</button>}
    {main&&<button type="button" className="primary-button" data-testid="receiver-mode" aria-disabled={avail.mode!=='enabled'||undefined} aria-describedby={finishing?`${id}-sweep`:undefined}
@@ -991,6 +1012,7 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
     aria-describedby={`${id}-record`} onKeyDown={ignoreHeldKey} onClick={onRecord}>{D.record}</button>}
    <button ref={closeRef} type="button" className="secondary-button" data-testid={`receiver-close-${slot}`} onKeyDown={ignoreHeldKey} onClick={()=>onClose(slot)}>{t('radioReceiver.control.close')}</button>
   </div>
+  {main&&session.bank.recording.armed&&<p id={`${id}-add-disarms`} role="note" className="radio-control-note radio-receiver-alert" data-testid="receiver-add-disarms">{t('radioReceiver.record.addDisarms')}</p>}
   {main&&<p id={`${id}-align`} className="radio-control-note" data-testid="receiver-align-note" data-on={aligned}>{t(aligned?'radioReceiver.align.on':'radioReceiver.align.off')}</p>}
   {alignStale&&<p id={`${id}-align-stale`} className="radio-control-note" data-testid="receiver-align-stale">{t('radioReceiver.align.staleOn')}</p>}
   {main&&<div id={`${id}-record`} className="radio-control-note" data-testid="receiver-record-state" data-armed={session.bank.recording.armed} data-capturing={session.record.receiving}
@@ -1002,7 +1024,7 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
   <dl className="radio-control-state radio-receiver-indicators">
    <dt>{t('radioReceiver.card.modeDisp')}</dt><dd className="radio-control-native" data-testid={`receiver-mode-disp-${slot}`}>{labels.mode}</dd>
    {labels.align!==null&&<><dt>{t('radioReceiver.card.alignDisp')}</dt><dd className="radio-control-native" data-testid="receiver-align-disp">{labels.align}</dd></>}
-   {main&&<><dt>{t('radioReceiver.card.recordDisp')}</dt><dd className="radio-control-native" data-testid="receiver-record-disp">{labels.record}</dd></>}
+   {main&&<><dt>{t('radioReceiver.card.recordDisp')}</dt><dd className="radio-control-native" data-testid="receiver-record-disp" data-native-record-display={labels.record} data-armed={session.bank.recording.armed}>{t(session.bank.recording.armed?'radioAccess.values.on':'radioAccess.values.off')}</dd></>}
   </dl>
   <p id={`${id}-sweep`} data-testid={`receiver-sweep-${slot}`} data-position={r.position??''} data-receiving={r.receiving} data-stop-pending={r.stopPending===true} data-timer={session.bank.timerEnabled}>
    {r.position===null?t('radioReceiver.card.sweepNone'):finishing?t('radioReceiver.card.finishing',{position:r.position,width:r.sweepWidth}):t('radioReceiver.card.sweep',{position:r.position,width:r.sweepWidth})}</p>

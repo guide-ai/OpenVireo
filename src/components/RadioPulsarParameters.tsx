@@ -14,9 +14,10 @@ import {
 } from '../core/radioPulsarParameters';
 import {
  INITIAL_PULSAR_REFERENCE,PULSAR_REFERENCE_WEB_POLICY,beginPulsarReferenceRead,cancelPulsarReferenceRead,commitPulsarReferenceRead,failPulsarReferenceRead,
- type PulsarReferenceState,type PulsarReferenceTransition,
+ type PulsarReferenceSource,type PulsarReferenceState,type PulsarReferenceTransition,
 } from '../core/radioPulsarReferenceCatalog';
 import {resourceSha256} from '../io/boundedResource';
+import {BUNDLED_PULSAR_CATALOG,BundledPulsarCatalogError,fetchBundledPulsarCatalog,type BundledPulsarCatalogFailure} from '../io/bundledPulsarCatalog';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t} from '../i18n';
 
@@ -26,7 +27,10 @@ type LoadStatus=Readonly<
  |{kind:'invalid';name:string;error:PulsarCatalogError}
  |{kind:'loaded'}
  |{kind:'refused';reason:'window-open'|'receiver-open'|'read-pending'|'inactive'}
+ |{kind:'bundled-error';code:BundledPulsarCatalogFailure}
 >;
+/** Result of one bundled-catalog request: 'kept' when a catalog is already loaded (never replaced). */
+export type BundledCatalogOutcome='loaded'|'kept'|'refused'|'error'|'cancelled'|'stale'|'invalid';
 /** WEB-PP-LIST-01 handler-time refusal of Open, first failing gate in order; nothing changed. */
 type OpenRefusal='inactive'|'no-catalog'|'reading'|'modal'|'close-box-open'|'record-dialog-open'|'unavailable';
 type FocusTarget='heading'|'open'|'find'|'date'|'density';
@@ -73,6 +77,13 @@ export type PulsarParametersHost=Readonly<{
  catalogReading:boolean;
  /** The latest accepted catalog, for callbacks (the receivers read it at Open and at clock reassociation). */
  currentCatalog:()=>PulsarCatalog|null;
+ /** The loaded catalog's identity (recorded original bytes or user-supplied), rendered state. */
+ source:PulsarReferenceSource|null;
+ /** WEB-PP-SRC-04: read the bundled same-origin Pulsars.dat through the same begin/commit token flow, only while no catalog
+  * is loaded (a loaded catalog is never replaced) and Load is admitted. Size and SHA-256 are checked before the parse. */
+ loadBundled:()=>Promise<BundledCatalogOutcome>;
+ /** The last bundled request failed (shown with a retry); null otherwise. */
+ bundledError:BundledPulsarCatalogFailure|null;
  /** WEB-PP-CUR-01: the picker ran on the catalog owner with this catalog and pointing (Receiver Open or a clock
   * reassociation); the open window's shared cursor follows, without any display. Uses refs only. */
  pickerMoved:(catalog:PulsarCatalog|null,pointing:RadioPointing)=>void;
@@ -124,9 +135,37 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
  // re-checks the token and the gates; a late completion of a cancelled or replaced read changes nothing.
  const fileRef=useRef<HTMLInputElement>(null);
  const loadOpen=()=>latest.current.active&&!latest.current.busy&&document.visibilityState!=='hidden';
+ /** The pending bundled request, aborted with its read. */
+ const bundledAbort=useRef<AbortController|null>(null);
  const cancelRead=()=>{
+  bundledAbort.current?.abort();bundledAbort.current=null;
   const read=referenceRef.current.read;if(read===null)return;
   if(stepReference(s=>cancelPulsarReferenceRead(s,read.token)).outcome==='cancelled')setLoad({kind:'cancelled',name:read.name});
+ };
+ /** WEB-PP-SRC-04: begin (token) → same-origin fetch bounded to the recorded size → exact size and SHA-256 → parse → commit.
+  * The token is taken before the request; after every await the token and the gates are checked again, so a cancel, a
+  * hidden route, a project operation, a hidden page or an unmount discards the late result. */
+ const loadBundled=async():Promise<BundledCatalogOutcome>=>{
+  if(!loadOpen()){setLoad({kind:'refused',reason:'inactive'});return 'refused';}
+  if(referenceRef.current.catalog!==null)return 'kept';
+  const begun=stepReference(s=>beginPulsarReferenceRead(s,BUNDLED_PULSAR_CATALOG.name,winRef.current!==null,latest.current.catalogLockedNow()));
+  if(begun.token===undefined){setLoad({kind:'refused',reason:begun.outcome==='window-open'||begun.outcome==='receiver-open'?begun.outcome:'read-pending'});return 'refused';}
+  const token=begun.token,name=begun.state.read!.name,alive=()=>referenceRef.current.read?.token===token;
+  const abort=new AbortController();bundledAbort.current=abort;
+  setLoad({kind:'reading',name});
+  try{
+   const verified=await fetchBundledPulsarCatalog(fetch,abort.signal);
+   if(!alive())return 'stale';if(!loadOpen()){cancelRead();return 'cancelled';}
+   const result=stepReference(s=>commitPulsarReferenceRead(s,token,parsePulsarCatalog(new Uint8Array(verified.buffer)),verified.sha256,verified.buffer.byteLength));
+   if(result.outcome==='loaded'){setLoad({kind:'loaded'});return 'loaded';}
+   if(result.outcome==='invalid'&&result.error){setLoad({kind:'invalid',name,error:result.error});return 'invalid';}
+   return 'stale';
+  }catch(error){
+   if(!alive())return error instanceof DOMException&&error.name==='AbortError'?'cancelled':'stale';
+   stepReference(s=>failPulsarReferenceRead(s,token,'read-error'));
+   setLoad({kind:'bundled-error',code:error instanceof BundledPulsarCatalogError?error.code:'download'});
+   return 'error';
+  }finally{if(bundledAbort.current===abort)bundledAbort.current=null;}
  };
  const loadFile=async(file:File|undefined)=>{
   if(!file)return;
@@ -155,7 +194,7 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
   const hide=()=>{if(document.visibilityState==='hidden')cancelRead();};
   document.addEventListener('visibilitychange',hide);return ()=>document.removeEventListener('visibilitychange',hide);
  },[]);
- useEffect(()=>()=>{const read=referenceRef.current.read;if(read!==null)referenceRef.current=cancelPulsarReferenceRead(referenceRef.current,read.token).state;},[]);
+ useEffect(()=>()=>{bundledAbort.current?.abort();const read=referenceRef.current.read;if(read!==null)referenceRef.current=cancelPulsarReferenceRead(referenceRef.current,read.token).state;},[]);
 
  // ---- Window transitions (WEB-PP-OPEN-01 … WEB-PP-EXIT-01).
  const openRef=useRef<HTMLButtonElement>(null),headingRef=useRef<HTMLHeadingElement>(null),findRef=useRef<HTMLButtonElement>(null);
@@ -221,8 +260,11 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
    <div className="button-row">
     <button type="button" className="secondary-button" data-testid="pulsar-ref-load" disabled={reading||win!==null||catalogLocked} aria-describedby={`${id}-load-reason`}
      onClick={()=>{if(latest.current.catalogLockedNow()){setLoad({kind:'refused',reason:'receiver-open'});return;}fileRef.current?.click();}}>{t('pulsarParameters.reference.load')}</button>
+    <button type="button" className="secondary-button" data-testid="pulsar-ref-bundled" disabled={reading||win!==null||catalogLocked||catalog!==null} aria-describedby={`${id}-bundled-help`}
+     onClick={()=>{void loadBundled();}}>{t('pulsarParameters.reference.bundled')}</button>
     {reading&&<button type="button" className="secondary-button" data-testid="pulsar-ref-cancel" onClick={cancelRead}>{t('pulsarParameters.reference.cancel')}</button>}
    </div>
+   <p id={`${id}-bundled-help`} className="radio-control-note" data-testid="pulsar-ref-bundled-help">{t('pulsarParameters.reference.bundledHelp')}</p>
    <p id={`${id}-load-reason`} className="radio-control-note" data-testid="pulsar-ref-load-reason">
     {win!==null?t('pulsarParameters.reference.windowOpen'):catalogLocked?t('pulsarParameters.reference.receiverOpen'):''}</p>
    {source===null?<p data-testid="pulsar-ref-none">{t('pulsarParameters.reference.none')}</p>:<dl className="radio-control-state pulsar-params-source">
@@ -254,11 +296,12 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
   {presented&&win?.notice&&<PulsarNoticeBox notice={win.notice} onDismiss={()=>dismiss(win.notice!)}/>}
  </div>;
  return {open:surfaceOpen,pending,presented,card,layer,catalog,catalogReading:reading,currentCatalog:()=>referenceRef.current.catalog,pickerMoved,
-  listSnapshot,commitListActivation};
+  listSnapshot,commitListActivation,source,loadBundled,bundledError:load?.kind==='bundled-error'?load.code:null};
 }
 
 function loadText(load:LoadStatus|null):string{
  if(load===null||load.kind==='loaded')return load?t('pulsarParameters.reference.status.loaded'):'';
+ if(load.kind==='bundled-error')return t(`pulsarParameters.reference.status.bundled.${load.code}`,{name:BUNDLED_PULSAR_CATALOG.name});
  if(load.kind==='refused')return t(`pulsarParameters.reference.status.refused.${load.reason}`);
  if(load.kind==='invalid'){
   const e=load.error,reason=e.line===null?t(`pulsarParameters.reference.error.${e.kind}`,{line:'',field:''}):t(`pulsarParameters.reference.error.${e.kind}`,{line:e.line,field:e.field??''});

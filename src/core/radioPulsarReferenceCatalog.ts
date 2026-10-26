@@ -1,11 +1,11 @@
 // WEB-PP-SRC-01..03: admission of a learner-chosen reference catalog for the Pulsar Parameters utility. Pure web adapter
 // (no original contract): the original reads Pulsars.dat itself in TRadioLab FormCreate 0x5647a7, with no chooser; its
-// failure box (0x564d08..) and conditional quit request (0x47df9c) are not reproduced. The caller reads the bytes into
-// memory only; nothing is uploaded, bundled, copied or persisted. See docs/RADIO-PULSAR-PARAMETERS.md.
+// failure box (0x564d08..) and conditional quit request (0x47df9c) are not reproduced. The caller reads a chosen file into
+// memory only; nothing is uploaded, copied or persisted (the bundled copy: src/io/bundledPulsarCatalog.ts). See docs/RADIO-PULSAR-PARAMETERS.md.
 import {PULSAR_CATALOG_WEB_POLICY,type PulsarCatalog,type PulsarCatalogError,type PulsarCatalogParse} from './radioPulsarCatalog';
 
-/** Identity of the shipped VIREO 1.504 Pulsars.dat (docs/RADIO-PULSAR-CATALOG-PROVENANCE.json). It is not one of the
- * 1279 manifested resources and is never bundled: a match identifies bytes, not original runtime authority. */
+/** Identity of the VIREO 1.504 Pulsars.dat, bundled byte-exact since the second user approval (2026-10-26;
+ * docs/LOCAL-RESOURCES.json). A match identifies bytes, not original runtime authority. */
 export const RECORDED_VIREO_PULSARS_DAT=Object.freeze({sha256:'ba94ee94c359e2afd4acce940266d69983d24a93893719cca20d3e23ef3dceaa',bytes:285692,rows:558});
 export const PULSAR_REFERENCE_WEB_POLICY=Object.freeze({maxBytes:PULSAR_CATALOG_WEB_POLICY.maxBytes,nameMaxLength:128});
 

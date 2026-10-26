@@ -46,6 +46,7 @@ import {
   type LoadSaveFlow,
 } from '../core/pulsarLoadSave';
 import { createLoadSaveTranslator, type LoadSaveMessageKey, type LoadSaveTranslate } from './PulsarLoadSaveMessages';
+import { pulsarMeasurementSummary, samePulsarMeasurementSummary, type PulsarMeasurementSummary } from '../core/pulsarLab';
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
@@ -61,7 +62,9 @@ import { createLoadSaveTranslator, type LoadSaveMessageKey, type LoadSaveTransla
  * Review working copies and the confirmed list are kept. The panel reports its modal/read activity to the dataset.
  * `translateLoadSave` (R-RX18) replaces the `loadSave.*` catalog of the Load question Yes flow.
  */
-export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; translateLoadSave?: LoadSaveTranslate; idPrefix?: string; active?: boolean; data?: SharedPulsarDataHandle }>;
+export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; translateLoadSave?: LoadSaveTranslate; idPrefix?: string; active?: boolean; data?: SharedPulsarDataHandle;
+  /** WEB-PULSAR-GUIDE-01: the presented recording's confirmed-row summary, reported in the layout phase only when it changes. */
+  onMeasurementSummary?: (summary: PulsarMeasurementSummary) => void }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
 /**
  * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, text
@@ -131,7 +134,7 @@ const captureRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => {
 /** Client pixel index of a position in a box of n native pixels. */
 const pixelIndex = (offset: number, size: number, n: number) => Math.min(n - 1, Math.max(0, Math.floor(offset / size * n)));
 
-export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', active = true, data }: PulsarAnalysisProps) {
+export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', active = true, data, onMeasurementSummary }: PulsarAnalysisProps) {
   const t = useMemo(() => translate ?? createPulsarTranslator(), [translate]);
   const ls = useMemo(() => translateLoadSave ?? createLoadSaveTranslator(), [translateLoadSave]);
   const [s, setS] = useState<PulsarAnalysisState>(INITIAL_PULSAR_ANALYSIS);
@@ -211,6 +214,20 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
   const memoryWritten = memoryRec && written?.data === memoryRec ? written : null;
   // R-RX4 shared dataset: a held capture lease disables Load (WEB-REC-TXN); a newer generation waits for an idle, active panel.
   const leased = shared.doc.lease !== null, newer = shared.doc.generation !== adoptedGeneration;
+  // WEB-PULSAR-GUIDE-01: the guide reads which confirmed rows belong to the presented recording (Properties identity) and
+  // whether they hold reference and vertical times; it never judges a reading. Presentation only: no state is changed.
+  const measurementSummary = pulsarMeasurementSummary({
+    data: fileRec ? 'file' : memoryRec ? 'memory' : 'none', verifiedCopy: fileRec !== null || memoryWritten !== null,
+    key: props ? { object: String(props.fields.object), start: String(props.fields.start), points: String(props.fields.points), intervalMs: String(props.fields.interval), aperture: String(props.fields.aperture) } : null,
+    rows: s.list.map(entry => entry.fields),
+  });
+  const summaryTo = useRef(onMeasurementSummary), summaryReported = useRef<PulsarMeasurementSummary | null>(null);
+  useLayoutEffect(() => { summaryTo.current = onMeasurementSummary; });
+  useLayoutEffect(() => {
+    const prev = summaryReported.current;
+    if (prev && samePulsarMeasurementSummary(prev, measurementSummary)) return;
+    summaryReported.current = measurementSummary; summaryTo.current?.(measurementSummary);
+  });
   useLayoutEffect(() => { shared.update(d => setPulsarAnalysisActivity(d, { modal, reading: readPending })); }, [shared, modal, readPending]);
   // R-RX18 (WEB-RX18-08): an unmount, or a switch to another owner, withdraws this panel's activity from the owner it reported to,
   // so a surviving owner is not left busy. It updates that owner only, never this panel's state. `update` is stable per owner (the

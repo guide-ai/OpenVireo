@@ -1,0 +1,3 @@
+.pulsar-lab-dialog .pulsar-lab-next{font-weight:600;color:#285c48}.pulsar-lab-steps>li[data-next]{border-left:3px solid #3b8167;padding-left:12px;margin-left:-15px}.pulsar-lab-mark{display:inline-block;min-width:1.2em;color:#285c48}.pulsar-lab-dialog .pulsar-lab-status{font-weight:600;color:#285c48;margin:0}.pulsar-lab-dialog code{overflow-wrap:anywhere;white-space:normal}.pulsar-lab-kinds{margin:0}.pulsar-lab-kinds dt{font-weight:600;margin-top:10px}.pulsar-lab-kinds dd{margin:4px 0 0}
+.radio-research-notes{margin-top:8px}.radio-research-notes summary{font-weight:600;cursor:pointer;min-height:32px}.radio-route-exercise [data-testid=radio-exercise-catalog]{font-weight:600}
+@media(max-width:620px){.pulsar-lab-steps>li[data-next]{margin-left:-10px;padding-left:8px}}

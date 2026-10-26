@@ -1,12 +1,13 @@
 {
   "schema": 1,
-  "scope": "All1279files from LOCAL-RESOURCES.json included with byte-identical contents by explicit instruction;no executable,installer or downloaded archive is among them.",
-  "totalFiles": 1279,
-  "totalBytes": 76793135,
+  "scope": "All1280files from LOCAL-RESOURCES.json included with byte-identical contents by explicit instruction:the original1279plus Pulsars.dat under the second user approval of2026-10-26;no executable,installer or downloaded archive is among them.",
+  "totalFiles": 1280,
+  "totalBytes": 77078827,
   "extensions": {
     ".json": 1025,
     ".LST": 3,
     ".SP": 81,
+    ".dat": 1,
     ".png": 170
   },
   "groups": {
@@ -90,6 +91,14 @@
       "usedBy": "Runtime galaxy reference-image cards",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
+    "public/original/radio": {
+      "files": 1,
+      "bytes": 285692,
+      "materialClass": "unchanged-original-text-resource",
+      "description": "1unchanged original pulsar reference catalog:Pulsars.dat from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b),entry program files/CLEA/VIREO/Pulsars.dat;file SHA-256 ba94ee94c359e2afd4acce940266d69983d24a93893719cca20d3e23ef3dceaa",
+      "usedBy": "Runtime same-origin fetch by the Radio pulsar exercise Start(size and SHA-256 checked before parsing);reference values only,never observations",
+      "upstreamStatus": "Included under the second user approval(2026-10-26,AGENTS.md)on the basis of the recorded CLEA License.rtf terms(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.Likely upstream:ATNF Pulsar Catalogue(Manchester et al.2005);that origin is UNCERTAIN and not independently verified.No public-domain or open-license status and no independent upstream permission is asserted."
+    },
     "public/original/sky": {
       "files": 864,
       "bytes": 60936453,
@@ -118,7 +127,8 @@
     "catalogFamilies": "VIREO manual pp60\u201380: NASAADC distribution included multiple-author catalogs;GSC-ACT/ProjectPluto andSTScI policies are product/version-specific. NASA hosting alone is not NASA authorship.",
     "imageFamilies": "VIREO manual describes galaxy BMP sources chiefly from the1961Carnegie HubbleAtlas. PNG conversion preserves RGB pixels;individual image credits have not all been independently matched.",
     "spectralFamilies": "VIREO manual credits Jacoby/Hunter/Christian andKennicutt spectral resources,and some CLEA synthetic inputs. Individual file/source-policy mapping remains incomplete.",
-    "NASA": "NASA policy applies to NASA-created material with its stated conditions and third-party exceptions;the1279resources are not universally labelled NASA works."
+    "NASA": "NASA policy applies to NASA-created material with its stated conditions and third-party exceptions;the1279resources are not universally labelled NASA works.",
+    "pulsarCatalog": "Pulsars.dat:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Likely derived from the ATNF Pulsar Catalogue(Manchester,Hobbs,Teoh&Hobbs2005,AJ129,1993);this upstream attribution is uncertain and recorded as such."
   },
   "sourceNotices": [
     {

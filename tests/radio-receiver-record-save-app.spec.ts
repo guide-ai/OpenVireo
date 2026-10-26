@@ -223,8 +223,10 @@ test('Yes opens the Radio Save dialog without a picker; Choose writes and reads 
  await id(page,'receiver-record-yes').click();
  await expect(saveBox(page)).toBeVisible();await expect(back(page)).toBeFocused();
  expect((await shim(page)).calls).toBe(0);
- // The byte is armed (no refresh yet: the indicator still says Off), nothing is erased, every card is behind the dialog.
- await expect(id(page,'receiver-record-state')).toHaveAttribute('data-armed','true');await expect(id(page,'receiver-record-disp')).toHaveText('Off');
+ // The byte is armed: the displayed indicator follows it (WEB-REC-DISP) while the recovered cached text, not refreshed yet, stays
+ // Off as data-native-record-display; nothing is erased, every card is behind the dialog.
+ await expect(id(page,'receiver-record-state')).toHaveAttribute('data-armed','true');await expect(id(page,'receiver-record-disp')).toHaveText('On');
+ await expect(id(page,'receiver-record-disp')).toHaveAttribute('data-native-record-display','Off');
  await expect(id(page,'receiver-card-0')).toHaveAttribute('inert','');await expect(page.locator('.portal-header')).toHaveAttribute('inert','');
  await expect(id(page,'receiver-record-save-scope')).toContainText(`${points} rows`);
  await expect(id(page,'receiver-record-save-loss-samples')).toContainText(`of ${Number(points)*3} samples change`);

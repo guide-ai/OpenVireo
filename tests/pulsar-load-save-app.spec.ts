@@ -355,7 +355,10 @@ test('a hide while choosing ends the flow: arming is refused while it is open, a
  await yesToSave(page,seen);await saveToReady(page,'hide.PLR',seen);
  const c=await choose(page,seen);
  await page.goBack();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
- await id(page,'receiver-record').click();await expect(id(page,'receiver-record-disp')).toHaveText('Off');
+ // The hide ended the flow, so Record arms (the verified copy skips the unsaved prompt): the displayed indicator follows the
+ // actual byte (WEB-REC-DISP); the recovered cached text stays Off until its refresh.
+ await id(page,'receiver-record').click();await expect(id(page,'receiver-record-state')).toHaveAttribute('data-armed','true');
+ await expect(id(page,'receiver-record-disp')).toHaveText('On');await expect(id(page,'receiver-record-disp')).toHaveAttribute('data-native-record-display','Off');
  await page.goForward();await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await expect(readyDialog(page)).toHaveCount(0);
  expect(await c.element().evaluate(el=>el.isConnected)).toBe(false);

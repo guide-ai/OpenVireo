@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the1279versioned runtime,test and provenance resources;originals,derived resources and authored fixtures are distinguished in RESOURCE-PROVENANCE.json.",
+  "purpose": "Exact identity manifest for the1280versioned runtime,test and provenance resources(the original1279plus public/original/radio/Pulsars.dat,approved2026-10-26);originals,derived resources and authored fixtures are distinguished in RESOURCE-PROVENANCE.json.",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6396,6 +6396,11 @@
       "path": "public/original/spectra/NGC6643.SP",
       "bytes": 27616,
       "sha256": "0c3b5029702407f51aec0a70a8d9e0f42c9c6af432af693923c12d7c69f3bb83"
+    },
+    {
+      "path": "public/original/radio/Pulsars.dat",
+      "bytes": 285692,
+      "sha256": "ba94ee94c359e2afd4acce940266d69983d24a93893719cca20d3e23ef3dceaa"
     }
   ]
 }

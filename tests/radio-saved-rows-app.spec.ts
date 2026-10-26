@@ -159,10 +159,10 @@ test('saved-row host ownership: disclosure close, route change and project busy 
  await page.goForward();await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('B1919');await expect(id(page,'saved-rows-query')).toBeFocused();
  await expect(page.locator('dialog:modal')).toHaveCount(1);await expect(heading(page,'Recorded pulsar analysis')).not.toBeFocused();
  // A foreign native dialog (Hubble lab guide) opened elsewhere stays topmost on return; the Find waits, then returns with its draft.
- await page.goBack();await nav(page,'Hubble lab guide').click();await expect(page.locator('dialog.hubble-lab-dialog')).toHaveAttribute('open','');
+ await page.goBack();await nav(page,'Hubble lab guide').click();await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).toHaveAttribute('open','');
  await page.goForward();await expect(id(page,'saved-rows')).toBeVisible();await expect(findDialog(page)).toHaveCount(1);await expect(findDialog(page)).not.toBeVisible();
  await expect(id(page,'saved-rows-session')).toBeVisible();await expect(page.locator('dialog:modal')).toHaveCount(1);
- await page.keyboard.press('Escape');await expect(page.locator('dialog.hubble-lab-dialog')).not.toHaveAttribute('open','');
+ await page.keyboard.press('Escape');await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).not.toHaveAttribute('open','');
  await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('B1919');await expect(id(page,'saved-rows-query')).toBeFocused();
  await id(page,'saved-rows-from-top').click();await expect(selectedRow(page)).toHaveAttribute('data-testid','saved-rows-row-3');await expect(id(page,'saved-rows-session')).toHaveCount(0);
  // Coexistence: a Find session started behind the open PLR Record dialog (a scripted click, which the inert page would
@@ -211,7 +211,8 @@ test('radio telescope route: explicit compiled-default scenario, access, Trackin
  await expect(id(page,'radio-route-scenario-access')).toContainText('below 8000 ms');await expect(id(page,'radio-route-scenario-slew')).toContainText('nominal 100 ms browser interval');
  await expect(id(page,'radio-route-scenario-gates')).toContainText('or in B1950.0 converted with the original fixed-epoch precession');await expect(id(page,'radio-route-scenario-gates')).not.toContainText('B1950.0 input');
  await expect(id(page,'radio-route-scenario-gates')).not.toContainText('the hot list and pulsar');
- await expect(id(page,'radio-route-scenario-gates')).toContainText('receiver recording, sound, pulsar identification and Align, and the hot list’s Add Current Item and Save from this panel (disabled; their enabling code is not recovered)');
+ await expect(id(page,'radio-route-scenario-gates')).toContainText('Available: receiver Record with Identify and Properties, and Align of the receiver windows.');
+ await expect(id(page,'radio-route-scenario-gates')).toContainText('the hot list’s Add Current Item and Save from this panel (disabled; their enabling code is not recovered)');
  await expect(id(page,'radio-route-persistence')).toContainText('not included in Save investigation');
  await expect(id(page,'radio-env-diameter-current')).toHaveText('Not supplied');await expect(id(page,'radio-switch')).toBeDisabled();
  await expect(id(page,'radio-env').getByText('The recovered compiled default is 100, used when no options file loads; the value in a current classroom configuration is not known, so supply it explicitly.',{exact:false})).toBeVisible();
@@ -278,7 +279,7 @@ test('radio route: a hidden-route slew arrives in the background without taking 
  await expect(id(page,'antenna-dialog')).toBeVisible();await expect(id(page,'antenna-field-raHours')).toHaveValue('7');await expect(id(page,'antenna-field-raHours')).toBeFocused();await hostHeld(page);
  // An error box over the dialog, then the Hubble lab guide: both radio surfaces wait and return, one layer per Escape.
  await id(page,'antenna-field-raHours').fill('25');await id(page,'antenna-dialog-ok').click();await expect(notice(page)).toHaveAttribute('data-kind','ra-invalid');
- await page.goBack();await nav(page,'Hubble lab guide').click();await expect(page.locator('dialog.hubble-lab-dialog')).toHaveAttribute('open','');
+ await page.goBack();await nav(page,'Hubble lab guide').click();await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).toHaveAttribute('open','');
  await page.goForward();await expect(id(page,'antenna-dialog')).toHaveCount(0);await expect(notice(page)).toHaveCount(0);
  await page.keyboard.press('Escape');await expect(page.locator('dialog:modal')).toHaveCount(0);
  await expect(notice(page)).toHaveAttribute('data-kind','ra-invalid');await expect(id(page,'antenna-notice-ok')).toBeFocused();await expect(id(page,'antenna-dialog')).toBeVisible();
