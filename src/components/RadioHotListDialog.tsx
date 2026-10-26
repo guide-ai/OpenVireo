@@ -1,8 +1,9 @@
-import {useEffect,useId,useRef,type KeyboardEvent,type RefObject} from 'react';
+import {useEffect,useId,useMemo,useRef,type KeyboardEvent,type RefObject} from 'react';
 import {htlNumberDraft} from '../core/hotList';
 import {RADIO_HOT_LIST_FORM_CAPTIONS as C} from '../core/radioAntenna';
 import {menuCaptionText} from '../core/radioControl';
 import type {RadioHotListRow} from '../core/radioHotList';
+import {formatRadioHotListRow} from '../core/radioHotListFormat';
 import type {RadioAntennaTranslate} from './RadioAntennaMessages';
 
 export type RadioHotListDialogProps=Readonly<{
@@ -26,9 +27,9 @@ export type RadioHotListDialogProps=Readonly<{
 
 /** WEB presentation of the shared list window [0x5b5998] for View/Select (RA-HL-05). Rows are radio options so touch and
  * exact indices work; duplicates are separate options keyed by source index. The form caption and the Slew/Close menu
- * captions are recovered (RADIO_HOT_LIST_FORM_CAPTIONS) and shown as a heading and buttons (WEB-HL-06); the 0x590110 row
- * formatter is not ported, so rows show decimal coordinates. Presentation only: every change goes through the antenna
- * transitions. */
+ * captions are recovered (RADIO_HOT_LIST_FORM_CAPTIONS) and shown as a heading and buttons (WEB-HL-06). Each row shows
+ * the recovered 0x590110 text (RA-HL-08, aria-hidden, React text) above the position and imported decimal values, which
+ * stay the option's accessible name. Presentation only: every change goes through the antenna transitions. */
 export default function RadioHotListDialog({rows,index,blocked,ta,onSelect,onSlew,onClose,returnFocus,suppressed,ignoreHeld,trap}:RadioHotListDialogProps){
  const id=useId(),root=useRef<HTMLDivElement>(null),radios=useRef<(HTMLInputElement|null)[]>([]),closeButton=useRef<HTMLButtonElement>(null),wasBlocked=useRef(false),lastFocus=useRef<HTMLElement|null>(null);
  const focusRow=()=>{const target=radios.current[index>=0&&index<rows.length?index:0]??closeButton.current;target?.focus();};
@@ -50,6 +51,7 @@ export default function RadioHotListDialog({rows,index,blocked,ta,onSelect,onSle
   trap(e,root.current);
  };
  const inRange=index>=0&&index<rows.length;
+ const texts=useMemo(()=>rows.map(row=>formatRadioHotListRow(row.record)),[rows]);
  return <div className="antenna-backdrop">
   <div ref={root} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-help`} className="antenna-dialog antenna-hotlist" data-testid="antenna-hotlist-dialog" onKeyDown={onKeyDown} onFocus={e=>{lastFocus.current=e.target;}} inert={blocked||undefined}>
    <h3 id={`${id}-title`} className="radio-control-native">{C.form}</h3>
@@ -60,7 +62,10 @@ export default function RadioHotListDialog({rows,index,blocked,ta,onSelect,onSle
     {rows.map((row,i)=><label key={row.sourceIndex} className="antenna-hotlist-row" data-testid={`antenna-hotlist-row-${i+1}`} data-source-index={row.sourceIndex} data-checked={index===i||undefined}
      onDoubleClick={()=>{onSelect(i);onSlew();}}>
      <input ref={el=>{radios.current[i]=el;}} type="radio" name={`${id}-row`} value={i} checked={index===i} onChange={()=>onSelect(i)}/>
-     <span>{ta('antenna.hotList.row',{position:i+1,id:row.record.id||ta('antenna.hotList.unnamed'),remarks:row.record.remarks,ra:htlNumberDraft(row.record.ra),dec:htlNumberDraft(row.record.dec)})}</span>
+     <span className="antenna-hotlist-row-text">
+      <span className="antenna-hotlist-native" aria-hidden="true" data-testid={`antenna-hotlist-native-${i+1}`}>{texts[i]}</span>
+      <span className="antenna-hotlist-decimal" data-testid={`antenna-hotlist-decimal-${i+1}`}>{ta('antenna.hotList.row',{position:i+1,id:row.record.id||ta('antenna.hotList.unnamed'),remarks:row.record.remarks,ra:htlNumberDraft(row.record.ra),dec:htlNumberDraft(row.record.dec)})}</span>
+     </span>
     </label>)}
    </div>
    {rows.length===0&&<p className="radio-control-note" data-testid="antenna-hotlist-empty">{ta('antenna.hotList.dialog.empty')}</p>}

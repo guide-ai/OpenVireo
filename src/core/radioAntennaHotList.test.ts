@@ -112,6 +112,18 @@ describe('selection, the coordinate dialog and Cancel back to the list',()=>{
   const plain=ok(openSetCoordinates(tracking(),O));expect(plain.dialog!.origin).toBeUndefined();
   const cancelled=cancelSkyCoords(plain);expect(cancelled.outcome).toBe('dialog-cancelled');expect(cancelled.state.hotListShown).toBe(false);
  });
+ it('a row whose display carries to 24h stores the exact imported RA through selection and Cancel (RA-HL-08, WEB-HL-07)',()=>{
+  const CARRY:readonly RadioPointing[]=[{ra:24-2**-20,dec:-0.125}];
+  const t=slewToHotListSelection(ok(openRadioHotList(tracking(),O,1)),O,CARRY);
+  expect(t.outcome).toBe('hot-list-selected');
+  expect(Object.is(t.state.target.ra,24-2**-20)).toBe(true);expect(t.state.target.ra).toBeLessThan(24);expect(t.state.target.dec).toBe(-0.125);
+  // The dialog re-splits the same Number and shows the 24h carry; the stored target keeps the exact value.
+  expect(t.state.dialog!.fields).toEqual({raHours:'24',raMinutes:'0',raSeconds:'0.00',decDegrees:'0',decMinutes:'7',decSeconds:'30.0'});
+  const back=cancelSkyCoords(t.state);
+  expect(back.outcome).toBe('hot-list-reopened');
+  expect(Object.is(back.state.target.ra,24-2**-20)).toBe(true);expect(back.state.target.dec).toBe(-0.125);
+  expect(back.state).toMatchObject({hotListShown:true,hotListIndex:0,dialog:null});
+ });
  it('OK continues exactly as the Set Coordinates path; the error box keeps the origin and only Set Coordinates offers B1950 (converted)',()=>{
   const chosen=ok(slewToHotListSelection(shown(),O,ROWS)),viaSet=ok(openSetCoordinates({...chosen,dialog:null},O));
   // Same fields and J2000 index; the flags differ: no origin and the epoch group enabled on the Set Coordinates path.
@@ -164,7 +176,7 @@ describe('selection, the coordinate dialog and Cancel back to the list',()=>{
   expect(closeRadioHotList(back).outcome).toBe('hot-list-closed');
  });
  it('binds the hot-list contracts, evidence records and decoded literals in the provenance file',()=>{
-  expect(provenance.hotList.contracts.map(c=>c.id)).toEqual(Array.from({length:7},(_,i)=>`RA-HL-0${i+1}`));
+  expect(provenance.hotList.contracts.map(c=>c.id)).toEqual(Array.from({length:8},(_,i)=>`RA-HL-0${i+1}`));
   expect(provenance.hotList.webPolicies.map(p=>p.id)).toEqual(Array.from({length:8},(_,i)=>`WEB-HL-0${i+1}`));
   const captions=provenance.hotList.formCaptions;
   expect(captions.dfmSliceSHA256).toBe('55e515a9b10153cd5e9f906fd3cf8633491337a07af9faa87348f8fd8b7d66cf');

@@ -46,6 +46,21 @@ async function setupRadio(page:Page,press:Press=clickPress){
 }
 const rowSources=(page:Page)=>id(page,'antenna-hotlist-rows').locator('label').evaluateAll(rows=>rows.map(r=>Number(r.getAttribute('data-source-index'))));
 const rowRadio=(page:Page,position:number)=>id(page,`antenna-hotlist-row-${position}`).locator('input');
+const native=(page:Page,position:number)=>id(page,`antenna-hotlist-native-${position}`).textContent();
+const pad=(n:number)=>' '.repeat(n);
+/** File order: unnamed 24 − 2^-20 h (displays 24h), markup ID with Latin-1 remarks, 24-character ID with −0 Dec and
+ * 40-character remarks (the 98-character row) → RA projection source indices [1, 2, 0] (traced by hand). */
+const ID24='ABCDEFGHIJKLMNOPQRSTUVWX',R40='r'.repeat(40);
+const FORMAT=Buffer.concat([rec('',24-2**-20,-0.125),rec('<b>x</b>',1/512,90-2**-20,'Café µ'),rec(ID24,0.0625,-0,R40)]);
+const FORMAT_ROWS=[
+ `<b>x</b>${pad(16)}   0h 00m 07.03s   90° 00' 00.0"  Café µ`,
+ `${ID24}   0h 03m 45.00s    0° 00' 00.0"  ${R40}`,
+ `${pad(24)}  24h 00m 00.00s   -0° 07' 30.0"  `,
+];
+async function loadFormat(page:Page){
+ await id(page,'antenna-hotlist-file').setInputFiles(htlFile('format.htl',FORMAT));
+ await expect(id(page,'antenna-hotlist-source')).toHaveText('Shared list: format.htl, 3 rows.');
+}
 const holdReads=(page:Page)=>page.addInitScript(()=>{
  type Hold={release:()=>void};const w=window as unknown as{__held:Map<string,Hold>};w.__held=new Map();
  const read=Blob.prototype.arrayBuffer;
@@ -70,9 +85,16 @@ test('the observatory list and its edit appear in RA insertion order; file order
  await expect(id(page,'antenna-hotlist-open')).toHaveText('Slew ▸ "Hot List" ▸ View/Select from List...');
  await id(page,'antenna-hotlist-open').click();
  await expect(id(page,'antenna-hotlist-dialog')).toBeVisible();expect(await rowSources(page)).toEqual([2,3,1,4,0]);
- await expect(id(page,'antenna-hotlist-row-1')).toHaveText('1 · Twin · pair · RA 1 h · Dec 30°');
- await expect(id(page,'antenna-hotlist-row-3')).toHaveText('3 · High · raw · RA 1 h · Dec 20°');
- await expect(id(page,'antenna-hotlist-row-5')).toHaveText('5 · Zeta · edited · RA 23.5 h · Dec 10°');
+ // Recovered 0x590110 row text (RA-HL-08), compared exactly: toHaveText would normalize the padding.
+ expect(await native(page,1)).toBe(`Twin${pad(20)}   1h 00m 00.00s   30° 00' 00.0"  pair`);
+ expect(await native(page,3)).toBe(`High${pad(20)}   1h 00m 00.00s   20° 00' 00.0"  raw`);
+ expect(await native(page,4)).toBe(`Mid${pad(21)}  12h 00m 00.00s   -5° 00' 00.0"  middle`);
+ expect(await native(page,5)).toBe(`Zeta${pad(20)}  23h 30m 00.00s   10° 00' 00.0"  edited`);
+ await expect(id(page,'antenna-hotlist-native-1')).toHaveAttribute('aria-hidden','true');
+ await expect(id(page,'antenna-hotlist-decimal-1')).toHaveText('1 · Twin · pair · RA 1 h · Dec 30°');
+ await expect(id(page,'antenna-hotlist-decimal-3')).toHaveText('3 · High · raw · RA 1 h · Dec 20°');
+ await expect(id(page,'antenna-hotlist-decimal-5')).toHaveText('5 · Zeta · edited · RA 23.5 h · Dec 10°');
+ await expect(page.getByRole('radio',{name:'1 · Twin · pair · RA 1 h · Dec 30°',exact:true})).toBeChecked();
  await expect(rowRadio(page,1)).toBeChecked();await expect(rowRadio(page,1)).toBeFocused();
  // THotListForm1 DFM captions (form, SlewtoSelection1, Close1); no recovery-status text in the window.
  const dialog=id(page,'antenna-hotlist-dialog');
@@ -265,5 +287,66 @@ test.describe('touch 375',()=>{
   await id(page,'antenna-hotlist-select').tap();await expect(id(page,'antenna-field-raHours')).toHaveValue('12');await expect(id(page,'antenna-field-decDegrees')).toHaveValue('-5');
   await noOverflow(page);await id(page,'antenna-dialog-cancel').tap();await expect(rowRadio(page,4)).toBeChecked();
   await id(page,'antenna-hotlist-close').tap();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);await noOverflow(page);
+ });
+});
+
+test('recovered row text: exact padding, 24h display, dialog re-splits the imported value, escaped markup and Latin-1; bytes unchanged (RA-HL-08)',async({page})=>{
+ await openObservatoryHtl(page);await setupRadio(page);await loadFormat(page);
+ await id(page,'antenna-hotlist-open').click();await expect(id(page,'antenna-hotlist-dialog')).toBeVisible();
+ expect(await rowSources(page)).toEqual([1,2,0]);
+ for(let i=1;i<=3;i++){expect(await native(page,i)).toBe(FORMAT_ROWS[i-1]);await expect(id(page,`antenna-hotlist-native-${i}`)).toHaveAttribute('aria-hidden','true');}
+ expect((await native(page,2))!.length).toBe(98);
+ // Imported text is React text: the markup ID creates no element.
+ expect(await id(page,'antenna-hotlist-dialog').locator('b').count()).toBe(0);
+ // The decimal line keeps the exact imported Number and names the option, even with an empty ID.
+ const raw=String(24-2**-20);
+ expect(await id(page,'antenna-hotlist-decimal-3').textContent()).toBe(`3 · Unnamed entry ·  · RA ${raw} h · Dec -0.125°`);
+ await expect(rowRadio(page,3)).toHaveAccessibleName(new RegExp(`^3 · Unnamed entry · +· RA ${raw.replace('.','\\.')} h · Dec -0\\.125°$`));
+ // The row text may carry to 24h; the coordinate dialog re-splits the imported value (the exact stored target is covered in radioAntennaHotList.test.ts).
+ await rowRadio(page,3).click();await expect(rowRadio(page,3)).toBeChecked();
+ await id(page,'antenna-hotlist-select').click();await expect(id(page,'antenna-dialog')).toBeVisible();
+ for(const [name,value] of [['raHours','24'],['raMinutes','0'],['raSeconds','0.00'],['decDegrees','0'],['decMinutes','7'],['decSeconds','30.0']] as const)await expect(id(page,`antenna-field-${name}`)).toHaveValue(value);
+ await id(page,'antenna-dialog-cancel').click();
+ await expect(id(page,'antenna-hotlist-dialog')).toBeVisible();await expect(rowRadio(page,3)).toBeChecked();await expect(rowRadio(page,3)).toBeFocused();
+ expect(await native(page,3)).toBe(FORMAT_ROWS[2]);
+ await id(page,'antenna-hotlist-close').click();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);await expect(id(page,'antenna-hotlist-open')).toBeFocused();
+ await expect(id(page,'antenna-hotlist-add')).toBeDisabled();await expect(id(page,'antenna-hotlist-menu')).not.toContainText('Save Updated');
+ await nav(page,'Observatory').click();expect(await saveOptical(page)).toEqual(FORMAT);
+});
+
+test.describe('touch 320',()=>{
+ test.use({viewport:{width:320,height:700},hasTouch:true});
+ test('the recovered rows wrap inside the dialog without horizontal scrolling',async({page})=>{
+  await openObservatoryHtl(page);await setupRadio(page,tapPress);await loadFormat(page);
+  await id(page,'antenna-hotlist-open').tap();await expect(id(page,'antenna-hotlist-dialog')).toBeVisible();await noOverflow(page);
+  const dialog=id(page,'antenna-hotlist-dialog'),box=await dialog.boundingBox();
+  expect(box!.x).toBeGreaterThanOrEqual(0);expect(box!.x+box!.width).toBeLessThanOrEqual(320);
+  expect(await dialog.evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(0);
+  for(let i=1;i<=3;i++){
+   const row=await id(page,`antenna-hotlist-row-${i}`).boundingBox();expect(row!.height).toBeGreaterThanOrEqual(44);expect(row!.x+row!.width).toBeLessThanOrEqual(320);
+   expect(await id(page,`antenna-hotlist-native-${i}`).evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(0);
+   expect(await native(page,i)).toBe(FORMAT_ROWS[i-1]);
+  }
+  await id(page,'antenna-hotlist-row-2').tap();await expect(rowRadio(page,2)).toBeChecked();
+  await page.screenshot({path:'test-results/radio-hotlist-format-320.png'});
+  await id(page,'antenna-hotlist-select').tap();await expect(id(page,'antenna-field-raMinutes')).toHaveValue('3');await expect(id(page,'antenna-field-raSeconds')).toHaveValue('45.00');
+  await noOverflow(page);await id(page,'antenna-dialog-cancel').tap();await expect(rowRadio(page,2)).toBeChecked();
+  await id(page,'antenna-hotlist-close').tap();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);await noOverflow(page);
+ });
+});
+
+test.describe('keyboard 1440',()=>{
+ test.use({viewport:{width:1440,height:900}});
+ test('Enter, arrows and Escape keep a visible focus; the 98-character row wraps without overflow',async({page})=>{
+  await openObservatoryHtl(page);await setupRadio(page);await loadFormat(page);
+  await id(page,'antenna-hotlist-open').focus();await page.keyboard.press('Enter');
+  await expect(id(page,'antenna-hotlist-dialog')).toBeVisible();await expect(rowRadio(page,1)).toBeFocused();
+  await page.keyboard.press('ArrowDown');await expect(rowRadio(page,2)).toBeChecked();await expect(rowRadio(page,2)).toBeFocused();
+  expect(await rowRadio(page,2).evaluate(el=>{const s=getComputedStyle(el);return `${s.outlineStyle} ${s.outlineWidth}`;})).toBe('solid 3px');
+  const line=await id(page,'antenna-hotlist-native-2').evaluate(el=>({height:el.getBoundingClientRect().height,lineHeight:parseFloat(getComputedStyle(el).lineHeight),overflow:el.scrollWidth-el.clientWidth}));
+  const lines=Math.round(line.height/line.lineHeight);expect(lines).toBeGreaterThanOrEqual(1);expect(lines).toBeLessThanOrEqual(2);expect(line.overflow).toBeLessThanOrEqual(0);
+  expect(await native(page,2)).toBe(FORMAT_ROWS[1]);await noOverflow(page);
+  await page.screenshot({path:'test-results/radio-hotlist-format-1440.png'});
+  await page.keyboard.press('Escape');await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);await expect(id(page,'antenna-hotlist-open')).toBeFocused();
  });
 });
