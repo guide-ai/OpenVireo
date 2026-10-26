@@ -6,6 +6,8 @@ The rows are the current web analysis measurement rows, including measurements m
 
 Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Tags: [S] static listing, [W] web policy. Evidence paths, hashes and addresses are in [PULSAR-RESULTS-EXPORT-PROVENANCE.json](PULSAR-RESULTS-EXPORT-PROVENANCE.json).
 
+A separate button, **Add recorded measurements to a saved results file (.csv)…** (R-RX12, docs/PULSAR-RESULTS-APPEND.md), downloads a chosen strictly admitted results file followed by the same confirmed rows, as a new file `pulsar-results-appended.csv`. It does not change this export's core, layout, focus or metadata behavior. The two dialogs exclude each other and share one output claim.
+
 ## Modules
 
 - `src/core/pulsarResultsExport.ts`: pure contract (no React, DOM, clock, locale or storage). `buildResultsExport` (lexical layer), `exportPulsarResults` (stored rows plus field agreement), the dialog session (`resultsExportOpen`, `resultsExportEdit`, `resultsExportRequest`, `resultsExportDownloadFailed`). It reuses the strict reader of `src/core/pulsarSavedRows.ts`, which is unchanged.
@@ -69,7 +71,7 @@ These tests check this implementation's web contract. The reader agreeing with t
 
 ## Limits
 
-- Not ported: the host clock and locale formats (NWE-02, NWE-03), the stored identity values (NWE-04), append mode and its open-error dialog, the close and post-write reset `0x56fe6c` (NWE-10), the saved byte `0x5db`, and any confirmation that a file reached the filesystem.
+- Not ported: the host clock and locale formats (NWE-02, NWE-03), the stored identity values (NWE-04), native in-place append mode and its open-error dialog (the web append download is R-RX12), the close and post-write reset `0x56fe6c` (NWE-10), the saved byte `0x5db`, and any confirmation that a file reached the filesystem.
 - CR LF is a policy; the native newline flag remains unknown.
 - The row text is web-generated: no x87 or code-page parity is claimed, and the file name is the browser file name, not the native stored file-name text.
 - The raw Save wrapper `0x56b36c` stays excluded and gated. This does not complete Radio, N07, E06, native Save or audio PRE-01.

@@ -32,6 +32,8 @@ Each line is written by `WriteLn`. Payloads are copied by exact length, with no 
 
 An append save writes rows only, after the existing content. Rows from several saves therefore follow one header. They are admitted as one list in file order.
 
+The web append download (R-RX12, [PULSAR-RESULTS-APPEND.md](PULSAR-RESULTS-APPEND.md)) uses this reader unchanged in two places. It admits a chosen target file, which it never modifies. It then reads back the new file, made of the target's exact bytes followed by the confirmed rows. Its target chooser, read tokens and target are separate from this viewer's file, selection, Find memory and reads.
+
 ## Row profile (Record writer `0x570b3c`)
 
 ```
