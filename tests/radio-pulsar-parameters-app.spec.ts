@@ -88,7 +88,8 @@ test('admission, read-only window, Prev/Next ends, Update partial store and Rese
  await nav(page,'Radio telescope').click();await expect(id(page,'radio-control')).toBeVisible();
  await expect(id(page,'pulsar-params-open')).toBeDisabled();await expect(id(page,'pulsar-params-open-reason')).toHaveText('Load a reference catalog first.');
  await expect(id(page,'pulsar-ref-none')).toBeVisible();
- await expect(id(page,'pulsar-params-persistence')).toContainText('not included in Save investigation');
+ // Phase 1 item 1.5 (intentional change): Save investigation keeps the loaded catalog, never the window.
+ await expect(id(page,'pulsar-params-persistence')).toContainText('Save investigation keeps it');await expect(id(page,'pulsar-params-persistence')).toContainText('The window and your Date and Electron Density edits are not saved');
  // An invalid file is refused before any catalog exists; a valid one shows its identity (user-supplied, not the original).
  await choose(page,'short.dat','J0000\r\n');
  await expect(id(page,'pulsar-ref-status')).toHaveText('short.dat was not accepted: line 1 is shorter than the 454 characters the columns need. The previous catalog is kept.');
@@ -146,8 +147,12 @@ test('admission, read-only window, Prev/Next ends, Update partial store and Rese
  await id(page,'pulsar-params-exit').click();await expect(id(page,'pulsar-params-window')).toHaveCount(0);await expect(id(page,'pulsar-params-open')).toBeFocused();
  await loadCatalog(page,'other.dat',OTHER);await expect(id(page,'pulsar-ref-rows')).toHaveText('2');
  await openWindow(page);await expect(field(page,'j2000')).toHaveValue('J1927+18');await expect(field(page,'date')).toHaveValue('51545.00000000');
- // Nothing reached the investigation format; other radio state is untouched.
- expect((await save(page)).equals(before)).toBe(true);
+ // Phase 1 item 1.5 (intentional change): Save now adds the Radio part with the loaded catalog as supplied values; the window
+ // and its edits are not in it, and the unrelated base part is unchanged. Other radio state is untouched.
+ const saved=JSON.parse((await save(page)).toString('utf8'));
+ expect(saved.version).toBe(23);expect(saved.base).toEqual(JSON.parse(before.toString('utf8')));
+ expect(saved.radio.workspace.catalog).toMatchObject({kind:'supplied',name:'other.dat',rows:2,sha256:sha(OTHER)});
+ expect(JSON.stringify(saved.radio)).not.toContain('density');
  await expect(id(page,'radio-clock-applied')).toHaveText('2000-01-01T12:00:00 UT');await expect(id(page,'radio-switch')).toBeDisabled();
  await noOverflow(page);await page.screenshot({path:info.outputPath('pulsar-params-desktop.png'),fullPage:true});
  await id(page,'pulsar-params-card').screenshot({path:info.outputPath('pulsar-params-card-desktop.png')});

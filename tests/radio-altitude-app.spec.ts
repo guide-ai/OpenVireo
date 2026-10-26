@@ -1,5 +1,6 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 // Actual App flows of the RA-12 altitude limit (WEB-ALT-01..03; docs/RADIO-ANTENNA.md "Altitude limit (RA-12)"). Only the
 // rendered App, its raw data attributes and test-only clock/download wrappers. The radio clock is the explicit paused web
 // scenario (2000-01-01T12:00:00 UT, compiled longitude), so every reading is the same fixed instant. Altitudes quoted in
@@ -13,6 +14,19 @@ async function advance(page:Page,count:number,stepMs=100){for(let i=0;i<count;i+
 async function controlledClock(page:Page){await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);await flushTasks(page);}
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json=any;
+/** Phase 1 item 1.5: once Radio is used, Save writes v23, which wraps the unchanged v≤22 investigation in `base` and keeps the
+ * Radio part separately (with its consistency digest). The base must equal the earlier file exactly; returns the Radio part. */
+function radioPart(file:Buffer,before:Buffer):Json{
+ const next:Json=JSON.parse(file.toString('utf8')),old:Json=JSON.parse(before.toString('utf8'));
+ expect(old.version).toBeLessThanOrEqual(22);expect(next.version).toBe(23);
+ expect(Object.keys(next).sort()).toEqual(['base','format','numericalPolicy','radio','radioDigestSHA256','radioPolicy','version']);
+ expect(next.numericalPolicy).toBe('Number_x87_equivalence_unvalidated');expect(next.radioPolicy).toBe('OpenVireo radio investigation 1');
+ expect(next.base,'unrelated investigation unchanged').toEqual(old);
+ expect(createHash('sha256').update(JSON.stringify(next.radio)).digest('hex')).toBe(next.radioDigestSHA256);
+ return next.radio;
+}
 const raw=async(page:Page,testId:string,attribute:string)=>Number(await id(page,testId).getAttribute(attribute));
 const ra=(page:Page)=>raw(page,'antenna-ra','data-ra-hours'),dec=(page:Page)=>raw(page,'antenna-dec','data-dec-degrees');
 const lst=(page:Page)=>raw(page,'antenna-clock-lst','data-lst-hours'),ha=(page:Page)=>raw(page,'antenna-hour-angle','data-ha-hours');
@@ -61,7 +75,7 @@ async function untilArrival(page:Page){
  await expect(notice(page)).toHaveAttribute('data-kind','slew-complete');await id(page,'antenna-notice-ok').click();await flushTasks(page);
 }
 
-test('radio options scenario: draft, Cancel/Escape, the hold and dialog guards, Apply; limits without a clock refuse requests and manual steps; no persistence',async({page})=>{
+test('radio options scenario: draft, Cancel/Escape, the hold and dialog guards, Apply; limits without a clock refuse requests and manual steps; Save keeps them only in the Radio part, a reload does not',async({page})=>{
  await page.goto('/#observatory');const before=await save(page);
  await nav(page,'Radio telescope').click();await setupRadio(page);await trackingOn(page);
  await expect(id(page,'radio-route-scenario-options')).toContainText('Limit Slewing off');
@@ -91,8 +105,10 @@ test('radio options scenario: draft, Cancel/Escape, the hold and dialog guards, 
  await expect(id(page,'antenna-radio-options-apply')).toBeDisabled();await expect(id(page,'antenna-radio-options-blocked')).toContainText('Finish the open dialog');
  await id(page,'antenna-dialog-cancel').click();await flushTasks(page);await expect(id(page,'antenna-radio-options-apply')).toBeEnabled();
  await expect(current).toHaveAttribute('data-limits','true');
- // Not part of the investigation file; a reload returns to the compiled defaults.
- expect((await save(page)).equals(before)).toBe(true);
+ // Save investigation (v23) keeps the unrelated investigation unchanged and the applied limits, the stored target and the
+ // unmoved pointing in its Radio part; nothing is stored in the browser, so a reload without Restore returns to the defaults.
+ const saved=radioPart(await save(page),before).workspace;
+ expect(saved.options.limitsEnabled).toBe(true);expect(saved.antenna).toMatchObject({activated:true,tracking:true,target:{ra:3,dec:20},pointing:{dec:d0}});
  await page.reload();await page.goto('/#observatory');await nav(page,'Radio telescope').click();await setupRadio(page);
  await expect(id(page,'antenna-radio-options-current')).toHaveAttribute('data-limits','false');await expect(id(page,'antenna-options')).toContainText('Limit Slewing off');
 });

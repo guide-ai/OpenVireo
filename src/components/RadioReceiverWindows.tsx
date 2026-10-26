@@ -2,7 +2,8 @@ import {useEffect,useId,useLayoutEffect,useMemo,useRef,useState,useSyncExternalS
 import './RadioReceiverWindows.css';
 import type {RadioLabTransition,RadioPointing} from '../core/radioAntenna';
 import type {PulsarCatalog} from '../core/radioPulsarCatalog';
-import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent,RadioSourceBuffer} from '../core/radioReceiver';
+import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent,RadioSourceBuffer,ReceiverWindowConfiguration} from '../core/radioReceiver';
+import {configureReceiverWindow} from '../core/radioReceiverSession';
 import {
  PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataProperties,pulsarDataRows,
  pulsarHeaderCells,pulsarMemoryRecording,recordPulsarFinishWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,setPulsarCapturePhase,
@@ -38,6 +39,7 @@ import {
  type ReceiverSessionTransition,
 } from '../core/radioReceiverSession';
 import {receiverWindowRank,type ReceiverMoveDirection} from '../core/radioReceiverArrangement';
+import {pendingWindowsAfterClose} from '../core/radioInvestigation';
 import {startRadioTimer,type RadioTimerHost} from '../core/radioTimer';
 import {
  createReceiverAuditionState,pressReceiverAudition,pruneReceiverAudition,receiverAuditionEnded,receiverAuditionFailed,receiverAuditionInvalidation,receiverAuditionRunning,
@@ -59,6 +61,9 @@ import {t,type PlainMessageKey} from '../i18n';
 export type RadioReceiverApi=Readonly<{open:()=>void;antennaTransition:(tr:RadioLabTransition)=>void;hasReceivers:()=>boolean;
  sourceBuffer:()=>RadioSourceBuffer;boxRefusal:()=>'close-box-open'|'record-dialog-open'|null;
  sessionNow:()=>RadioReceiverSession;commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean;
+ /** Phase 1 item 1.5: the restored window settings not yet taken by an Open/Add (a plain ref read: no open, timer, paint,
+  * random draw or observing claim). */
+ pendingWindows:()=>readonly [ReceiverWindowConfiguration|null,ReceiverWindowConfiguration|null,ReceiverWindowConfiguration|null];
  commitLiveOptions:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>boolean}>;
 /** sourceInBeam, receivers, frequencies and record are presentation summaries for the pulsar guide (WEB-PULSAR-GUIDE-01):
  * the name the main receiver's heading shows (null without a main window or with "No Pulsar in Beam!"), the open windows,
@@ -104,6 +109,9 @@ type Props=Readonly<{
  onReceiverOpened?:()=>void;
  /** R-RX7: called after a committed main close whose events include send-0x53a. Never for a refused close or the close box. */
  onMainCloseMessage?:()=>void;
+ /** Phase 1 item 1.5: the idle session and window settings restored from an investigation file (read once, at mount). Each
+  * window's settings are applied once, right after the learner's own Open (main) or Add (channel) creates it. */
+ restored?:Readonly<{session:RadioReceiverSession;windows:readonly [ReceiverWindowConfiguration|null,ReceiverWindowConfiguration|null,ReceiverWindowConfiguration|null]}>|null;
 }>;
 
 /** Browser interval host for the receiver Timer1 registration (WEB-RX-CAD-01). */
@@ -225,9 +233,28 @@ type CardAudition=Readonly<{phase:'idle'|'starting'|'playing';available:boolean;
  * first admitted press and which never steps the session.
  */
 export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,configurationOpen=false,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange,
- pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage}:Props){
+ pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage,restored=null}:Props){
  const id=useId();
- const [session,setSession]=useState<RadioReceiverSession>(createRadioReceiverSession);
+ const [session,setSession]=useState<RadioReceiverSession>(()=>restored?.session??createRadioReceiverSession());
+ // Phase 1 item 1.5: restored window settings not yet applied (each one is used once, by the Open or Add that creates it).
+ const [pendingConfig,setPendingConfig]=useState(()=>restored?.windows??([null,null,null] as const)),pendingRef=useRef(pendingConfig);
+ const takeConfig=(slot:number):ReceiverWindowConfiguration|null=>{
+  const c=pendingRef.current[slot]??null;if(c===null)return null;
+  const next=pendingRef.current.map((x,i)=>i===slot?null:x) as unknown as typeof pendingConfig;pendingRef.current=next;setPendingConfig(next);return c;
+ };
+ /** Web policy: a committed transition that empties a window slot discards the pending restored settings of that window and
+  * every later one (pendingWindowsAfterClose), so Save never stores settings for a window the learner closed. */
+ const discardPendingClosed=(before:RadioReceiverSession['bank']['slots'],after:RadioReceiverSession['bank']['slots'])=>{
+  const slot=[0,1,2].find(i=>before[i]!==null&&after[i]===null);if(slot===undefined)return;
+  const next=pendingWindowsAfterClose(pendingRef.current,slot);
+  if(next!==pendingRef.current){pendingRef.current=next;setPendingConfig(next);}
+ };
+ /** Applies the restored settings of a window just created by the learner's Open or Add, before any Receive. */
+ const configureCreated=(slot:number)=>{
+  const c=takeConfig(slot);if(c===null)return;
+  const r=stepSession(s=>configureReceiverWindow(s,slot,c));
+  setNotice({slot,outcome:r.outcome,text:r.outcome.kind==='ok'?t('radioReceiver.status.configured',{n:slot+1}):undefined});
+ };
  const sessionRef=useRef(session);
  const [notice,setNotice]=useState<Notice|null>(null);
  const [focus,setFocus]=useState<FocusTarget|null>(null);
@@ -268,7 +295,8 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   if(id!==null)latest.current.pulsarData?.update(d=>releasePulsarCaptureLease(d,id));
  },[]);
  const stepSession=(step:(s:RadioReceiverSession)=>ReceiverSessionTransition):ReceiverSessionTransition=>{
-  const result=step(sessionRef.current);if(result.changed){sessionRef.current=result.session;setSession(result.session);}
+  const before=sessionRef.current.bank.slots;
+  const result=step(sessionRef.current);if(result.changed){sessionRef.current=result.session;setSession(result.session);discardPendingClosed(before,result.session.bank.slots);}
   if(result.host)applyHost(result.host);
   return result;
  };
@@ -294,9 +322,11 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  };
  const open=()=>{
   const input={catalog:latest.current.catalogNow(),pointing:latest.current.pointingNow()};
+  const created=sessionRef.current.bank.slots[0]===null;
   const r=userAction(null,s=>openReceiverWindow(s,input));
   if(r?.outcome.kind==='ok'){
    pickerRan(r,input);setNotice({slot:0,outcome:r.outcome});requestFocus('heading',0);
+   if(created)configureCreated(0);
    if(r.outcome.events.some(e=>e.kind==='source-hit'||e.kind==='source-miss'))latest.current.onReceiverOpened?.();
   }
  };
@@ -312,7 +342,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   apiRef.current=Object.freeze({open:()=>apiImpl.current.open(),antennaTransition:(tr:RadioLabTransition)=>apiImpl.current.antennaTransition(tr),
    hasReceivers:()=>receiverSessionOpen(sessionRef.current),
    sourceBuffer:()=>sessionRef.current.bank.sourceBuffer,boxRefusal:()=>receiverBoxRefusal(sessionRef.current),
-   sessionNow:()=>sessionRef.current,
+   sessionNow:()=>sessionRef.current,pendingWindows:()=>pendingRef.current,
    commitPulsarList:(expected:RadioReceiverSession,t:ReceiverSessionTransition)=>{
     const o=t.outcome;
     if(sessionRef.current!==expected||o.kind!=='ok'||o.action!=='pulsar-list'||!t.changed||t.host!==undefined)return false;
@@ -406,7 +436,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    return r.outcome.events.some(e=>e.kind==='record-disarmed')?`${t('radioReceiver.record.status.formCreate')} ${reset}`:reset;
   });
   const slot=[1,2].find(i=>before[i]===null&&r?.session.bank.slots[i]);
-  if(slot!==undefined)requestFocus('heading',slot);
+  if(slot!==undefined){requestFocus('heading',slot);configureCreated(slot);}
  };
  // ---- R-RX5 Align (docs/RADIO-RECEIVER-ALIGN.md). A lease the transition ended also releases its pointer capture.
  const align=()=>{
@@ -746,6 +776,11 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
    <p id={`${id}-seed-help`} className="radio-control-note" data-testid="receiver-seed-help">
     {hasReceivers?t('radioReceiver.setup.seedLocked'):seedValid?t('radioReceiver.setup.seedHelp'):t('radioReceiver.setup.seedInvalid')}</p>
    <p data-testid="receiver-seed-next">{next===undefined?t('radioReceiver.setup.nextNone'):t('radioReceiver.setup.next',{seed:next})}</p>
+   {pendingConfig.some(c=>c!==null)&&<div data-testid="receiver-restored-config">
+    <p className="radio-control-note">{t('radioReceiver.restored.note')}</p>
+    <ul>{pendingConfig.map((c,i)=>c&&<li key={i} data-testid={`receiver-restored-window-${i+1}`} data-frequency={c.frequencyMHz}>{t('radioReceiver.restored.window',
+     {n:i+1,frequency:c.frequencyMHz.toFixed(2),step:c.stepIndex,gain:c.verticalGain,horizontal:c.horizontal})}</li>)}</ul>
+   </div>}
    {/* Outcomes without a window (a refused Open, the last close) are announced here. */}
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="receiver-setup-status">
     {notice&&(notice.slot===null||session.bank.slots[notice.slot]===null)?noticeText(notice):''}</p>

@@ -1,5 +1,6 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 // Actual App flows of the manual N/S/E/W hold (RA-16..RA-18, WEB-MANUAL-01..04; docs/RADIO-ANTENNA.md). No harness and no
 // product debug hook: only the rendered App, its raw data attributes and test-only event/interval/file-read wrappers.
 // Expected values restate the recovered operations in binary64 (K, 15, 90, ±180, 12); they are the chosen web contract,
@@ -17,6 +18,19 @@ const file=(name:string,text:string,mimeType='text/plain')=>({name,mimeType,buff
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
 const restore=(page:Page,name:string,text:string)=>page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles(file(name,text,'application/json'));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json=any;
+/** Phase 1 item 1.5: once Radio is used, Save writes v23, which wraps the unchanged v≤22 investigation in `base` and keeps the
+ * Radio part separately (with its consistency digest). The base must equal the earlier file exactly; returns the Radio part. */
+function radioPart(saved:Buffer,before:Buffer):Json{
+ const next:Json=JSON.parse(saved.toString('utf8')),old:Json=JSON.parse(before.toString('utf8'));
+ expect(old.version).toBeLessThanOrEqual(22);expect(next.version).toBe(23);
+ expect(Object.keys(next).sort()).toEqual(['base','format','numericalPolicy','radio','radioDigestSHA256','radioPolicy','version']);
+ expect(next.numericalPolicy).toBe('Number_x87_equivalence_unvalidated');expect(next.radioPolicy).toBe('OpenVireo radio investigation 1');
+ expect(next.base,'unrelated investigation unchanged').toEqual(old);
+ expect(createHash('sha256').update(JSON.stringify(next.radio)).digest('hex')).toBe(next.radioDigestSHA256);
+ return next.radio;
+}
 const holdReads=(page:Page)=>page.addInitScript(()=>{
  type Hold={release:()=>void};const w=window as unknown as{__held:Map<string,Hold>};w.__held=new Map();
  const read=Blob.prototype.arrayBuffer;
@@ -170,7 +184,8 @@ test('window blur and a hidden page cancel the hold without resume, even with th
  await page.mouse.up();await flushTasks(page);await advance(page,2);expect(await dec(page)).toBe(d2);
 });
 
-test('a project operation cancels the hold; it does not resume after Cancel; Save bytes are unchanged and reload has no latch',async({page})=>{
+test('a project operation cancels the hold; it does not resume after Cancel; Save keeps the reached pointing, no hold, and reload has no latch',async({page})=>{
+ // `before` (v≤22, no Radio part) is the held Restore fixture: restoring it never replaces the Radio state.
  await holdReads(page);await page.goto('/#observatory');const before=await save(page);
  await nav(page,'Radio telescope').click();await setupRadio(page);await trackingOn(page);await controlledClock(page);
  await holdMouse(page,pad(page,'east'));await advance(page,2);
@@ -182,7 +197,11 @@ test('a project operation cancels the hold; it does not resume after Cancel; Sav
  await advance(page,5);expect(await ra(page)).toBe(r);await expect(pad(page,'east')).not.toHaveAttribute('data-held');
  await releaseRead(page,'held-manual.json');await flushTasks(page);await expect(toolbar(page).locator('[role="alert"]')).toHaveCount(0);
  await page.clock.resume();
- expect((await save(page)).equals(before)).toBe(true);// no manual or pole field in the investigation format
+ // Save (v23): the other tools unchanged; the Radio part keeps the pointing reached before the cancellation, the N/S
+ // orientation and Tracking, but no manual hold or latch field. Nothing is stored in the browser: reload has no latch.
+ const d=await dec(page),antenna=radioPart(await save(page),before).workspace.antenna;
+ expect(Object.keys(antenna).sort()).toEqual(['activated','hourAngle','pointing','poleReversed','rate','rateIndex','skyCoordsB1950','target','targetHoldsB1950','tracking']);
+ expect(antenna).toMatchObject({activated:true,tracking:true,poleReversed:false,pointing:{ra:r,dec:d}});
  await page.reload();await expect(heading(page,'Radio telescope control')).toBeVisible();
  await expect(id(page,'radio-switch')).toBeDisabled();await expect(pad(page,'north')).toHaveCount(0);
 });

@@ -1,6 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {
- EMPTY_PULSAR_MEASUREMENT_SUMMARY,INITIAL_RADIO_EXERCISE_SUMMARY,PULSAR_LAB_STEPS,pulsarLabProgress,pulsarMeasurementSummary,samePulsarMeasurementSummary,sameRadioExerciseSummary,
+ EMPTY_PULSAR_MEASUREMENT_SUMMARY,INITIAL_RADIO_EXERCISE_SUMMARY,PULSAR_LAB_REQUIRED_STEPS,PULSAR_LAB_STEPS,pulsarInvestigationState,pulsarLabProgress,pulsarListStamp,pulsarMeasurementSummary,
+ samePulsarMeasurementSummary,sameRadioExerciseSummary,
  type PulsarRecordingKey,type PulsarRowFields,type RadioExerciseSummary,
 } from './pulsarLab';
 
@@ -40,9 +41,10 @@ describe('pulsarMeasurementSummary (readings recorded, not judged)',()=>{
 });
 
 describe('pulsarLabProgress (recomputed from state, no stored checkmarks)',()=>{
- it('starts at setup with nothing done and the investigation backup pending',()=>{
+ it('starts at setup with nothing done; the investigation backup is available (Phase 1 item 1.5)',()=>{
   const p=pulsarLabProgress({radio:INITIAL_RADIO_EXERCISE_SUMMARY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0});
-  expect(PULSAR_LAB_STEPS.every(s=>!p.done[s])).toBe(true);expect(p.next).toBe('setup');expect(p.investigationBackup).toBe('pending');
+  expect(PULSAR_LAB_STEPS.every(s=>!p.done[s])).toBe(true);expect(p.next).toBe('setup');expect(p.investigationBackup).toBe('available');
+  expect(PULSAR_LAB_REQUIRED_STEPS).toEqual(['setup','catalog','point','channels','capture','period','delay','investigation']);
  });
  it('advances in order from the state alone and un-checks when data or rows go away',()=>{
   const radio:RadioExerciseSummary={...INITIAL_RADIO_EXERCISE_SUMMARY,setup:true};
@@ -57,15 +59,32 @@ describe('pulsarLabProgress (recomputed from state, no stored checkmarks)',()=>{
   expect(pulsarLabProgress({radio:RADIO_READY,analysis:period,captureRows:400}).next).toBe('delay');
   const both=summary([row('400.00','0.1','3.67'),row('400.00','0.2','0.8'),row('500.00','0.2','0.55')]);
   const all=pulsarLabProgress({radio:RADIO_READY,analysis:both,captureRows:400});
-  expect(all.next).toBe('save');expect(all.done.save).toBe(false);
+  expect(all.next).toBe('investigation');expect(all.done.investigation).toBe(false);expect(all.done.save).toBe(false);
+  const saved=pulsarLabProgress({radio:RADIO_READY,analysis:both,captureRows:400,investigation:'prepared'});
+  expect(saved.next).toBe('save');expect(saved.done.investigation).toBe(true);expect(saved.investigation).toBe('prepared');
   // Clearing the measurement list un-checks period and delay; losing the data un-checks capture too.
   expect(pulsarLabProgress({radio:RADIO_READY,analysis:captured,captureRows:400}).done.period).toBe(false);
   const gone=pulsarLabProgress({radio:RADIO_READY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0});
   expect([gone.done.capture,gone.done.period,gone.done.delay]).toEqual([false,false,false]);
  });
- it('a verified copy marks only the .PLR copy; the investigation backup stays pending',()=>{
+ it('a verified copy marks only the optional .PLR copy; it never marks the investigation step',()=>{
   const p=pulsarLabProgress({radio:RADIO_READY,analysis:summary([],'memory',true),captureRows:400});
-  expect(p.done.save).toBe(true);expect(p.investigationBackup).toBe('pending');
+  expect(p.done.save).toBe(true);expect(p.done.investigation).toBe(false);expect(p.investigation).toBe('none');
+ });
+ it('the investigation step needs a capture and a mark that still covers the current dataset and confirmed list',()=>{
+  const both=summary([row('400.00','0.1','3.67'),row('400.00','0.2','0.8'),row('500.00','0.2','0.55')]);
+  expect(pulsarLabProgress({radio:RADIO_READY,analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0,investigation:'restored'}).done.investigation).toBe(false);
+  expect(pulsarLabProgress({radio:RADIO_READY,analysis:both,captureRows:400,investigation:'restored'}).investigation).toBe('restored');
+  const data={},list=[{sequence:1,panel:0,fields:{object:'0329+54',comment:''}}];
+  const mark={kind:'prepared' as const,data,generation:3,listStamp:pulsarListStamp(list)};
+  expect(pulsarInvestigationState(mark,{data,generation:3,listStamp:pulsarListStamp(list)})).toBe('prepared');
+  // A new capture (other object or generation), Clear, a fourth row or a comment edit invalidates it.
+  expect(pulsarInvestigationState(mark,{data:{},generation:3,listStamp:mark.listStamp})).toBe('none');
+  expect(pulsarInvestigationState(mark,{data,generation:4,listStamp:mark.listStamp})).toBe('none');
+  expect(pulsarInvestigationState(mark,{data,generation:3,listStamp:pulsarListStamp([])})).toBe('none');
+  expect(pulsarInvestigationState(mark,{data,generation:3,listStamp:pulsarListStamp([...list,{sequence:2,panel:1,fields:{object:'0329+54',comment:''}}])})).toBe('none');
+  expect(pulsarInvestigationState(mark,{data,generation:3,listStamp:pulsarListStamp([{...list[0],fields:{object:'0329+54',comment:'edited'}}])})).toBe('none');
+  expect(pulsarInvestigationState(null,{data,generation:3,listStamp:mark.listStamp})).toBe('none');
  });
  it('reports an armed Record so the guide can warn that Add disarms it',()=>{
   expect(pulsarLabProgress({radio:{...RADIO_READY,record:'armed'},analysis:EMPTY_PULSAR_MEASUREMENT_SUMMARY,captureRows:0}).recordArmed).toBe(true);
@@ -81,7 +100,7 @@ describe('pulsarLabProgress (recomputed from state, no stored checkmarks)',()=>{
   const closed:RadioExerciseSummary={...RADIO_READY,sourceInBeam:null,receivers:0,frequencies:0};
   const both=summary([row('400.00','0.1','3.67'),row('400.00','0.2','0.8'),row('500.00','0.2','0.55')]);
   const p=pulsarLabProgress({radio:closed,analysis:both,captureRows:400});
-  expect(p.next).toBe('save');
+  expect(p.next).toBe('investigation');
   expect([p.done.point,p.done.channels]).toEqual([false,false]);
   expect([p.done.capture,p.done.period,p.done.delay]).toEqual([true,true,true]);
   // Clear still resets the measurement evidence.

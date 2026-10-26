@@ -62,6 +62,8 @@ export type PulsarParametersHostInput=Readonly<{
   * and when the read begins). */
  catalogLocked:boolean;
  catalogLockedNow:()=>boolean;
+ /** Phase 1 item 1.5: the reference catalog restored from an investigation file (read once, at mount; no read pending). */
+ initialReference?:PulsarReferenceState|null;
 }>;
 export type PulsarParametersHost=Readonly<{
  /** The Find dialog or a box exists (presented or not). */
@@ -77,6 +79,8 @@ export type PulsarParametersHost=Readonly<{
  catalogReading:boolean;
  /** The latest accepted catalog, for callbacks (the receivers read it at Open and at clock reassociation). */
  currentCatalog:()=>PulsarCatalog|null;
+ /** Phase 1 item 1.5: the latest reference state (catalog, source and pending read), read by Save investigation. */
+ referenceNow:()=>PulsarReferenceState;
  /** The loaded catalog's identity (recorded original bytes or user-supplied), rendered state. */
  source:PulsarReferenceSource|null;
  /** WEB-PP-SRC-04: read the bundled same-origin Pulsars.dat through the same begin/commit token flow, only while no catalog
@@ -102,12 +106,13 @@ const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
 /**
  * WEB host of the Pulsar Parameters utility (docs/RADIO-PULSAR-PARAMETERS.md): a reference catalog the learner loads into
  * memory (WEB-PP-SRC-01..03) and the TPlsrDataForm1 window as a non-modal card, with its Find dialog and boxes as
- * application-modal surfaces (WEB-PP-PRES-01). Both states are temporary: never saved, restored or sent anywhere. Every
+ * application-modal surfaces (WEB-PP-PRES-01). Never sent anywhere; Phase 1 item 1.5 Save investigation keeps only the
+ * loaded catalog (initialReference restores it), never the window. Every
  * change goes through the pure transitions; steps run on the latest accepted state (refs), as stepDate does.
  */
-export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,antennaNow,dateOpenNow,readClockJD,sharedSource,receiverBoxNow,catalogLocked,catalogLockedNow}:PulsarParametersHostInput):PulsarParametersHost{
+export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,antennaNow,dateOpenNow,readClockJD,sharedSource,receiverBoxNow,catalogLocked,catalogLockedNow,initialReference}:PulsarParametersHostInput):PulsarParametersHost{
  const id=useId();
- const [reference,setReference]=useState<PulsarReferenceState>(INITIAL_PULSAR_REFERENCE);
+ const [reference,setReference]=useState<PulsarReferenceState>(()=>initialReference&&initialReference.read===null?initialReference:INITIAL_PULSAR_REFERENCE);
  const referenceRef=useRef(reference);
  const [load,setLoad]=useState<LoadStatus|null>(null);
  const [win,setWin]=useState<PulsarParametersWindow|null>(null);
@@ -272,8 +277,8 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
     <dt>{t('pulsarParameters.reference.bytes')}</dt><dd data-testid="pulsar-ref-bytes">{source.bytes}</dd>
     <dt>{t('pulsarParameters.reference.sha')}</dt><dd data-testid="pulsar-ref-sha" style={{overflowWrap:'anywhere'}}>{source.sha256}</dd>
     <dt>{t('pulsarParameters.reference.rows')}</dt><dd data-testid="pulsar-ref-rows">{source.rows}</dd>
-    <dt>{t('pulsarParameters.reference.identity')}</dt><dd data-testid="pulsar-ref-identity" data-recorded={source.recorded}>
-     {source.recorded?t('pulsarParameters.reference.recorded'):t('pulsarParameters.reference.supplied')}</dd>
+    <dt>{t('pulsarParameters.reference.identity')}</dt><dd data-testid="pulsar-ref-identity" data-recorded={source.recorded} data-values-only={source.valuesOnly===true||undefined}>
+     {source.recorded?t('pulsarParameters.reference.recorded'):source.valuesOnly?t('pulsarParameters.reference.valuesOnly'):t('pulsarParameters.reference.supplied')}</dd>
    </dl>}
    <p className="radio-control-status" role="status" aria-live="polite" data-testid="pulsar-ref-status" data-kind={load?.kind}>{loadText(load)}</p>
   </div>
@@ -295,7 +300,7 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
    onOk={()=>{setFindRefused(false);run(confirmPulsarFind,'find');}} onCancel={()=>{setFindRefused(false);run(cancelPulsarFind,'find');}}/>}
   {presented&&win?.notice&&<PulsarNoticeBox notice={win.notice} onDismiss={()=>dismiss(win.notice!)}/>}
  </div>;
- return {open:surfaceOpen,pending,presented,card,layer,catalog,catalogReading:reading,currentCatalog:()=>referenceRef.current.catalog,pickerMoved,
+ return {open:surfaceOpen,pending,presented,card,layer,catalog,catalogReading:reading,currentCatalog:()=>referenceRef.current.catalog,referenceNow:()=>referenceRef.current,pickerMoved,
   listSnapshot,commitListActivation,source,loadBundled,bundledError:load?.kind==='bundled-error'?load.code:null};
 }
 

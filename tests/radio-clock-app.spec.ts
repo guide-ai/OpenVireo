@@ -1,5 +1,6 @@
 import {test,expect,type Locator,type Page,type TestInfo} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 // Actual App flows of the RA-13 radio clock (docs/RADIO-ANTENNA.md): explicit web UT scenario, compiled radio longitude,
 // manual and nominal 1000 ms ticks, Tracking/drift, slews, modality, hidden route/panel, project busy, range end and
 // formats. No harness and no product debug hook: only the rendered App, its test-only raw data attributes and file-read
@@ -21,6 +22,19 @@ const file=(name:string,text:string,mimeType='text/plain')=>({name,mimeType,buff
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
 const restore=(page:Page,name:string,text:string)=>page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles(file(name,text,'application/json'));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json=any;
+/** Phase 1 item 1.5: once Radio is used, Save writes v23, which wraps the unchanged v≤22 investigation in `base` and keeps the
+ * Radio part separately (with its consistency digest). The base must equal the earlier file exactly; returns the Radio part. */
+function radioPart(saved:Buffer,before:Buffer):Json{
+ const next:Json=JSON.parse(saved.toString('utf8')),old:Json=JSON.parse(before.toString('utf8'));
+ expect(old.version).toBeLessThanOrEqual(22);expect(next.version).toBe(23);
+ expect(Object.keys(next).sort()).toEqual(['base','format','numericalPolicy','radio','radioDigestSHA256','radioPolicy','version']);
+ expect(next.numericalPolicy).toBe('Number_x87_equivalence_unvalidated');expect(next.radioPolicy).toBe('OpenVireo radio investigation 1');
+ expect(next.base,'unrelated investigation unchanged').toEqual(old);
+ expect(createHash('sha256').update(JSON.stringify(next.radio)).digest('hex')).toBe(next.radioDigestSHA256);
+ return next.radio;
+}
 const holdReads=(page:Page)=>page.addInitScript(()=>{
  type Hold={release:()=>void};const w=window as unknown as{__held:Map<string,Hold>};w.__held=new Map();
  const read=Blob.prototype.arrayBuffer;
@@ -163,11 +177,15 @@ test('the clock keeps ticking with the panel window closed and the route hidden;
  expect(await ut(page)).toBe(T0+32_000);expect(await ra(page)).toBe(await lst(page));// Tracking off, HA 0 since activation
 });
 
-test('a project operation freezes the radio clock without catch-up; Save bytes are unchanged; reload resets the scenario',async({page},info)=>{
+test('a project operation freezes the radio clock without catch-up; Save keeps the other tools unchanged and the radio clock in its Radio part; reload resets the scenario',async({page},info)=>{
+ // `before` (v≤22, no Radio part) is the held Restore fixture: restoring it never replaces the Radio state.
  await holdReads(page);await page.goto('/#observatory');const before=await save(page);
  await press(info,nav(page,'Radio telescope'));await setupRadio(page,info);await supplyClock(page,info);await controlledClock(page);
  await press(info,id(page,'radio-clock-start'));await flushTasks(page);await advance(page,2);expect(await ut(page)).toBe(T0+2000);
- expect((await save(page)).equals(before)).toBe(true);// no radio clock field in the investigation format
+ // v23 Radio part: the applied UT, the compiled longitude and the elapsed scenario time (the Save itself starts nothing).
+ const running=radioPart(await save(page),before).workspace.clock;
+ expect(running).toMatchObject({utc:'2000-01-01T12:00:00',longitudeRadians:Number(LON),limit:null});
+ expect(running.elapsedMS).toBeGreaterThanOrEqual(2000);expect(running.elapsedMS).toBeLessThan(3000);
  await restore(page,'held-clock.json',before.toString('utf8'));await held(page,'held-clock.json');await flushTasks(page);
  await expect(page.locator('[data-testid="radio-route"]').locator('xpath=ancestor::div[@inert]')).toHaveCount(1);
  await page.clock.runFor(10_000);await flushTasks(page);expect(await ut(page)).toBe(T0+2000);
@@ -176,7 +194,11 @@ test('a project operation freezes the radio clock without catch-up; Save bytes a
  await page.clock.runFor(1);await flushTasks(page);expect(await ut(page)).toBe(T0+3000);// fresh registration, frozen span not caught up
  await release(page,'held-clock.json');await flushTasks(page);await expect(toolbar(page).locator('[role="alert"]')).toHaveCount(0);
  await press(info,id(page,'radio-clock-pause'));await flushTasks(page);await page.clock.resume();
- expect((await save(page)).equals(before)).toBe(true);
+ // The frozen span is not caught up in the saved elapsed time either; the unrelated base is still the earlier file.
+ const paused=radioPart(await save(page),before).workspace.clock;
+ expect(paused).toMatchObject({utc:'2000-01-01T12:00:00',longitudeRadians:Number(LON),limit:null});
+ expect(paused.elapsedMS).toBeGreaterThanOrEqual(3000);expect(paused.elapsedMS).toBeLessThan(4000);
+ // Nothing is stored in the browser: a reload without Restore returns to the unsupplied scenario.
  await page.reload();await expect(heading(page,'Radio telescope control')).toBeVisible();
  await expect(id(page,'radio-clock-applied')).toHaveText('Not supplied');await expect(id(page,'radio-clock-utc')).toHaveValue('');await expect(id(page,'radio-switch')).toBeDisabled();
 });
@@ -295,7 +317,9 @@ test('the route stops the scenario at the range end before panel activation and 
  await expect(id(page,'antenna-clock-unsupplied')).toHaveCount(0);await expect(id(page,'antenna-clock-none')).toBeVisible();await expect(id(page,'antenna-clock-tick')).toBeDisabled();
  await id(page,'radio-clock-utc').fill('2099-12-31T23:59:50');await press(info,id(page,'radio-clock-apply'));
  await expect(id(page,'antenna-clock-domain')).toHaveCount(0);await expect(id(page,'antenna-clock-unsupplied')).toHaveCount(0);await expect(id(page,'antenna-clock-tick')).toBeEnabled();
- expect((await save(page)).equals(before)).toBe(true);
+ // v23: the other tools unchanged; the Radio part keeps the re-applied UT, paused at it, with no range-end stop.
+ const clock=radioPart(await save(page),before).workspace.clock;
+ expect(clock).toEqual({utc:'2099-12-31T23:59:50',longitudeRadians:Number(LON),elapsedMS:0,limit:null});
 });
 
 test('a range-end deadline beyond the largest browser timeout is capped and re-armed instead of firing early',async({page},info)=>{

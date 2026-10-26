@@ -191,8 +191,12 @@ test('C01/C05/C20/C23/C24: the command writes and activates; the reference Open 
  await id(page,'pulsar-params-open').click();await windowAt(page,3,3,3);await expect(id(page,'pulsar-params-seed')).toHaveAttribute('data-activation','open');
  await expect(id(page,'pulsar-params-seed')).toContainText('was J0016+3824');
  await id(page,'pulsar-params-exit').click();
- // C24: nothing reached Save investigation; reload resets the command, the window and the menu history.
- expect((await save(page)).equals(before)).toBe(true);
+ // C24, Phase 1 item 1.5 (intentional change): Save investigation now keeps the applied Radio configuration and the shared
+ // source written by the command (never the window); the unrelated base part is unchanged. Reload resets everything.
+ const saved=JSON.parse((await save(page)).toString('utf8'));
+ expect(saved.version).toBe(23);expect(saved.base).toEqual(JSON.parse(before.toString('utf8')));
+ expect(saved.radio.workspace.receivers.sourceBuffer.record.primaryName).toBe('J0016+3824');
+ expect(saved.radio.workspace.access.menu).toEqual({enabled:true,visible:true,activationSeen:true});expect(saved.radio.workspace.access.env).toEqual({accessPulsarList:true});
  await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-access-card')).toBeVisible();
  await expect(command(page)).toHaveCount(0);await expect(id(page,'radio-access-menu')).toHaveAttribute('data-availability','hidden');
  await expect(id(page,'pulsar-ref-none')).toBeVisible();await expect(win(page)).toHaveCount(0);

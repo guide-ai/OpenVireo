@@ -3,8 +3,15 @@ import { admitPlrRecording, type PlrRecording } from './pulsarRecording';
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_BASES, PULSAR_PANEL_HEIGHTS, pulsarAnswerClear, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord,
   pulsarAnnouncement, pulsarFactor, pulsarLoad, pulsarMode, pulsarPan, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog,
-  pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom, type PulsarAnalysisState, type PulsarPointer, type PulsarTransition,
+  pulsarRecordDraft, pulsarRequestClear, pulsarReset, pulsarTrace, pulsarZoom, pulsarEntryLine, type PulsarAnalysisState, type PulsarPointer, type PulsarTransition,
 } from './pulsarAnalysis';
+
+it('Phase 1 item 1.5: pulsarEntryLine rebuilds exactly the candidate the confirm stored, for memory and file rows', () => {
+  const s = st(pulsarConfirmRecord(st(pulsarRecordDraft(st(pulsarBeginRecord(click(click(loaded(), 0, 40, 100, 'right'), 0, 120))), 'first'))));
+  expect(s.list).toHaveLength(1);
+  expect(pulsarEntryLine(s.list[0].fields)).toBe(s.list[0].nativeLineCandidate);
+  expect(pulsarEntryLine({ ...s.list[0].fields, file: null })).toBe(s.list[0].nativeLineCandidate.replace(/,"synthetic\.plr"$/, ''));
+});
 
 // SYNTHETIC fixture: 1000 rows with a ramp in channel 0, a constant in channel 1 and zeros in
 // channel 2. Interval 0.01 s, highest recorded index 1. Not an acquired observation.

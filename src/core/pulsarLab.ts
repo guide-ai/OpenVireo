@@ -54,25 +54,47 @@ export function pulsarMeasurementSummary(i:Readonly<{data:'none'|'memory'|'file'
  return Object.freeze({data:i.data,verifiedCopy:i.verifiedCopy,confirmed:own.length,timedRows:timed.length,delayFrequencies});
 }
 
-export type PulsarLabStep='setup'|'catalog'|'point'|'channels'|'capture'|'period'|'delay'|'save';
-export const PULSAR_LAB_STEPS:readonly PulsarLabStep[]=Object.freeze(['setup','catalog','point','channels','capture','period','delay','save']);
+/** 'investigation' (Phase 1 item 1.5) is the eighth required step; 'save' (the verified .PLR copy) stays an independent,
+ * optional step that is not counted. */
+export type PulsarLabStep='setup'|'catalog'|'point'|'channels'|'capture'|'period'|'delay'|'investigation'|'save';
+export const PULSAR_LAB_STEPS:readonly PulsarLabStep[]=Object.freeze(['setup','catalog','point','channels','capture','period','delay','investigation','save']);
+/** The required steps the guide counts (every step except the optional verified copy). */
+export const PULSAR_LAB_REQUIRED_STEPS:readonly PulsarLabStep[]=Object.freeze(PULSAR_LAB_STEPS.filter(s=>s!=='save'));
+/** Save/Restore investigation of the current dataset and confirmed rows: 'prepared' when Save investigation prepared a file
+ * and its download started for exactly this dataset and confirmed list, 'restored' when they came from a restored v23 file,
+ * 'none' otherwise (also after a new capture, a load, Clear or a row or comment change). Never a confirmed OS write. */
+export type PulsarInvestigationState='none'|'prepared'|'restored';
 export type PulsarLabProgress=Readonly<{
  done:Readonly<Record<PulsarLabStep,boolean>>;
- /** The first step not done, skipping 'point' and 'channels' while a capture exists (recorded evidence is not sent back by
-  * the live receiver steps before it); 'save' once the readings are recorded (its investigation part is a pending feature). */
+ /** The first required step not done, skipping 'point' and 'channels' while a capture exists (recorded evidence is not sent
+  * back by the live receiver steps before it); 'save' (the optional copy) once every required step is done. */
  next:PulsarLabStep;
- /** Save investigation does not yet hold the Radio capture and measurements (Phase 1 item 1.5): always pending here. */
- investigationBackup:'pending';
+ /** Save investigation holds the Radio workspace, capture and measurements (Phase 1 item 1.5). */
+ investigationBackup:'available';
+ /** What the investigation step's status says. */
+ investigation:PulsarInvestigationState;
  /** A channel was added while Record was armed: Add disarms Record. */
  recordArmed:boolean;
  /** Setup is incomplete only because the activated panel has Tracking off. */
  trackingOff:boolean;
 }>;
 
-/** captureRows: rows of the App's current dataset (a capture in memory or a loaded file). */
-export function pulsarLabProgress(i:Readonly<{radio:RadioExerciseSummary;analysis:PulsarMeasurementSummary;captureRows:number}>):PulsarLabProgress{
+/** Identity of a confirmed list by its contents (sequence, panel and fields of every row, in order): a new row, Clear, a
+ * Review deletion or a comment edit changes it. */
+export const pulsarListStamp=(list:readonly Readonly<{sequence:number;panel:number;fields:object}>[]):string=>JSON.stringify(list.map(e=>[e.sequence,e.panel,e.fields]));
+/** What Save or Restore investigation covered: the dataset object and generation and the confirmed-list stamp at that time. */
+export type PulsarInvestigationMark=Readonly<{kind:'prepared'|'restored';data:unknown;generation:number;listStamp:string}>;
+/** The mark holds only while the current dataset (same object and generation) and confirmed list are still the ones it covered. */
+export function pulsarInvestigationState(mark:PulsarInvestigationMark|null,now:Readonly<{data:unknown;generation:number;listStamp:string}>):PulsarInvestigationState{
+ return mark!==null&&mark.data===now.data&&mark.generation===now.generation&&mark.listStamp===now.listStamp?mark.kind:'none';
+}
+
+/** captureRows: rows of the App's current dataset (a capture in memory or a loaded file). investigation: the App's marker for
+ * the current dataset and confirmed list (absent: 'none'). */
+export function pulsarLabProgress(i:Readonly<{radio:RadioExerciseSummary;analysis:PulsarMeasurementSummary;captureRows:number;investigation?:PulsarInvestigationState}>):PulsarLabProgress{
  const {radio,analysis}=i;
  const capture=i.captureRows>0||analysis.data!=='none';
+ const investigation=i.investigation??'none';
  const done:Record<PulsarLabStep,boolean>={
   setup:radio.setup,
   catalog:radio.catalog==='recorded'||radio.catalog==='supplied',
@@ -81,12 +103,13 @@ export function pulsarLabProgress(i:Readonly<{radio:RadioExerciseSummary;analysi
   capture,
   period:capture&&analysis.timedRows>=1,
   delay:capture&&analysis.delayFrequencies>=2,
+  investigation:capture&&investigation!=='none',
   save:analysis.verifiedCopy,
  };
  // A capture (memory or loaded) and its readings are recorded evidence: the live receiver steps before it (pointing, open
  // receivers) do not send the learner back while it exists; their marks still follow the live state. Setup and catalog
  // still lead (after a page reload the Radio setup is really gone).
  const next=PULSAR_LAB_STEPS.find(s=>s!=='save'&&!done[s]&&!(capture&&(s==='point'||s==='channels')))??'save';
- return Object.freeze({done:Object.freeze(done),next,investigationBackup:'pending' as const,recordArmed:radio.record==='armed',
+ return Object.freeze({done:Object.freeze(done),next,investigationBackup:'available' as const,investigation:capture?investigation:'none',recordArmed:radio.record==='armed',
   trackingOff:!radio.setup&&radio.trackingOff});
 }

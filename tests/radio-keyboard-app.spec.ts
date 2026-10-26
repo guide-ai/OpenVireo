@@ -1,5 +1,6 @@
 import {test,expect,type CDPSession,type Locator,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 // Actual App flows of the RA-19 keyboard table (FormKeyDown/FormKeyUp, WEB-KEY-02/03; docs/RADIO-ANTENNA.md). No harness
 // and no product debug hook: only the rendered App, its raw data attributes and test-only listeners/wrappers. Expected
 // values restate the recovered operations in binary64 (K, 15, 90, ±180, 12); they are the chosen web contract, not native
@@ -15,6 +16,19 @@ const file=(name:string,text:string,mimeType='text/plain')=>({name,mimeType,buff
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
 const restore=(page:Page,name:string,text:string)=>page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles(file(name,text,'application/json'));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json=any;
+/** Phase 1 item 1.5: once Radio is used, Save writes v23, which wraps the unchanged v≤22 investigation in `base` and keeps the
+ * Radio part separately (with its consistency digest). The base must equal the earlier file exactly; returns the Radio part. */
+function radioPart(saved:Buffer,before:Buffer):Json{
+ const next:Json=JSON.parse(saved.toString('utf8')),old:Json=JSON.parse(before.toString('utf8'));
+ expect(old.version).toBeLessThanOrEqual(22);expect(next.version).toBe(23);
+ expect(Object.keys(next).sort()).toEqual(['base','format','numericalPolicy','radio','radioDigestSHA256','radioPolicy','version']);
+ expect(next.numericalPolicy).toBe('Number_x87_equivalence_unvalidated');expect(next.radioPolicy).toBe('OpenVireo radio investigation 1');
+ expect(next.base,'unrelated investigation unchanged').toEqual(old);
+ expect(createHash('sha256').update(JSON.stringify(next.radio)).digest('hex')).toBe(next.radioDigestSHA256);
+ return next.radio;
+}
 const holdReads=(page:Page)=>page.addInitScript(()=>{
  type Hold={release:()=>void};const w=window as unknown as{__held:Map<string,Hold>};w.__held=new Map();
  const read=Blob.prototype.arrayBuffer;
@@ -308,7 +322,8 @@ test('cancellation without resume: Tab out of the scope, window blur and a hidde
  await tracking(page).focus();await keyDown(page,'s');await advance(page,1);await keyUp(page,'s');d+=-n;expect(await dec(page)).toBe(d);
 });
 
-test('cancellation without resume: a foreign dialog, Back and a held restore; no key or leftover state is saved',async({page})=>{
+test('cancellation without resume: a foreign dialog, Back and a held restore; Save keeps the pointing but no key or hold state',async({page})=>{
+ // `before` (v≤22, no Radio part) is the held Restore fixture: restoring it never replaces the Radio state.
  await holdReads(page);await page.goto('/#observatory');const before=await save(page);
  await nav(page,'Radio telescope').click();await setupRadio(page);await trackingOn(page);await controlledClock(page);
  const n=500*K;let d=await dec(page);
@@ -333,11 +348,14 @@ test('cancellation without resume: a foreign dialog, Back and a held restore; no
  await tracking(page).focus();await keyDown(page,'n');await advance(page,2);expect(await dec(page)).toBe(d);await notHeld(page);await keyUp(page,'n');
  await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();await flushTasks(page);
  await releaseRead(page,'held-keyboard.json');await flushTasks(page);
- // A fresh press works; a cross release leaves S disabled; the saved investigation bytes are unchanged.
+ // A fresh press works; a cross release leaves S disabled. Save (v23) keeps the other tools unchanged and only the reached
+ // pointing and Tracking in its Radio part: the antenna snapshot has no key, hold or latch field.
  await tracking(page).focus();await keyDown(page,'n');await advance(page,1);d+=n;await keyDown(page,'s');await keyUp(page,'s');await keyUp(page,'n');
  expect(await dec(page)).toBe(d);await expect(pad(page,'south')).toHaveAttribute('data-left-disabled','true');
  await page.clock.resume();
- expect((await save(page)).equals(before)).toBe(true);
+ const antenna=radioPart(await save(page),before).workspace.antenna;
+ expect(Object.keys(antenna).sort()).toEqual(['activated','hourAngle','pointing','poleReversed','rate','rateIndex','skyCoordsB1950','target','targetHoldsB1950','tracking']);
+ expect(antenna).toMatchObject({activated:true,tracking:true,pointing:{dec:d}});
 });
 
 test('owner isolation: a mouse or Space hold ignores table keys; a table hold ignores the mouse and Space',async({page})=>{

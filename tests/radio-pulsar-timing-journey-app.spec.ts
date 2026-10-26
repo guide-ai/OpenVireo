@@ -135,7 +135,7 @@ type GuideState={next:string|null;done:Record<string,string|null>};
 async function guide(page:Page):Promise<GuideState>{
  await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
  const done:Record<string,string|null>={};
- for(const step of ['setup','catalog','point','channels','capture','period','delay','save'])done[step]=await id(page,`pulsar-lab-step-${step}`).getAttribute('data-done');
+ for(const step of ['setup','catalog','point','channels','capture','period','delay','investigation','save'])done[step]=await id(page,`pulsar-lab-step-${step}`).getAttribute('data-done');
  const next=await id(page,'pulsar-lab-next').getAttribute('data-next');
  await id(page,'pulsar-lab-close').click();await expect(dialog).toBeHidden();
  return {next,done};
@@ -262,7 +262,7 @@ async function journey(page:Page,info:TestInfo,input:Input){
  await installShim(page);const seen=choosers(page);
  await startApp(page);const storageBefore=await storage(page);
  await setupRadio(page);
- expect(await guide(page)).toEqual({next:'point',done:{setup:'true',catalog:'true',point:'false',channels:'false',capture:'false',period:'false',delay:'false',save:'false'}});
+ expect(await guide(page)).toEqual({next:'point',done:{setup:'true',catalog:'true',point:'false',channels:'false',capture:'false',period:'false',delay:'false',investigation:'false',save:'false'}});
 
  // 1. Pointing: slew onto the decoded source coordinates; the readout must match and the source must be in the beam.
  await slewTo(page,SLEW);
@@ -371,12 +371,16 @@ async function journey(page:Page,info:TestInfo,input:Input){
  expect(await reviewCells(page)).toEqual(memoryRows);
  const kept=await readouts(page);
  expect(kept).toEqual({reference:ref,vertical:[timeText(b),timeText(b-SHIFT600),timeText(b-SHIFT800)],count:'4 recorded measurements'});
- // Guide: readings recorded (not judged); no verified copy yet, so the save step is still open.
+ // Guide: readings recorded (not judged); no Save investigation yet, so the required investigation step is next; the
+ // verified .PLR copy is optional and not counted.
  const recorded=await guide(page);
- expect(recorded).toEqual({next:'save',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',save:'false'}});
+ expect(recorded).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
  await id(page,'pulsar-lab-open').click();
+ await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 pulsar steps done.');
  await expect(id(page,'pulsar-lab-status-period')).toHaveText('Reading recorded (not checked for correctness)');
- await expect(id(page,'pulsar-lab-backup-pending')).toBeVisible();await id(page,'pulsar-lab-close').click();
+ await expect(id(page,'pulsar-lab-status-investigation')).toHaveText('Not yet for this capture and these rows.');
+ await expect(id(page,'pulsar-lab-status-save')).toHaveText('No verified copy (optional step).');
+ await expect(id(page,'pulsar-lab-backup')).toHaveAttribute('data-backup','available');await id(page,'pulsar-lab-close').click();
 
  // 7. A failed write keeps the work: Load → Yes → Save → a planned write failure; then Cancel ends the flow (no new behaviour).
  await yesToSave(page,seen);
@@ -442,7 +446,7 @@ async function journey(page:Page,info:TestInfo,input:Input){
  // No stored checkmarks: after the reload the Radio setup is gone, while the reloaded file and its one timed row count again.
  const reloaded=await guide(page);
  expect(reloaded.next).toBe('setup');
- expect(reloaded.done).toMatchObject({setup:'false',catalog:'false',point:'false',channels:'false',capture:'true',period:'true',delay:'false'});
+ expect(reloaded.done).toMatchObject({setup:'false',catalog:'false',point:'false',channels:'false',capture:'true',period:'true',delay:'false',investigation:'false'});
  expect(await storage(page)).toEqual(storageBefore);
  await info.attach(`rrx24-readings-${input}.json`,{body:JSON.stringify({pointingOffsetDegrees:offset,points,start,a,b,period,delays,
   measuredPeriodSeconds:measuredPeriod,catalogPeriodSeconds:0.49,delay600Seconds:delay600,delay800Seconds:delay800,continuous600:DELAY600,continuous800:DELAY800,

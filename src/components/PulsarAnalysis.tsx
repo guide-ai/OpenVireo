@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type RefObject, type SyntheticEvent } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type MutableRefObject, type PointerEvent as ReactPointerEvent, type RefObject, type SyntheticEvent } from 'react';
+import { pulsarAnalysisSnapshot, type PulsarAnalysisSnapshot, type RadioSnapshotResult } from '../core/radioInvestigation';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import './PulsarAnalysis.css';
@@ -14,7 +15,7 @@ import {
 import {
   claimPulsarOutput, importPulsarRecording, isFileData, isMemoryData, pulsarClaimBytes, pulsarClaimReadback, pulsarCurrentSaved, pulsarDataHighest, pulsarDataProperties, pulsarDataRows,
   pulsarFrequencyText, pulsarOutputClaim, pulsarWrittenCopy, recordPulsarWrittenCopy, releasePulsarOutput, setPulsarAnalysisActivity,
-  type PulsarData, type PulsarDataStep, type PulsarWriteClaim,
+  type PulsarCurrentData, type PulsarData, type PulsarDataStep, type PulsarWriteClaim,
 } from '../core/pulsarCurrentData';
 import { useSharedPulsarData, type SharedPulsarDataHandle } from '../useSharedPulsarData';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
@@ -62,9 +63,16 @@ import { pulsarMeasurementSummary, samePulsarMeasurementSummary, type PulsarMeas
  * Review working copies and the confirmed list are kept. The panel reports its modal/read activity to the dataset.
  * `translateLoadSave` (R-RX18) replaces the `loadSave.*` catalog of the Load question Yes flow.
  */
+/** Phase 1 item 1.5: the initial state of a panel mounted by Restore investigation (rebuilt and checked before it is applied). */
+export type PulsarAnalysisRestore = Readonly<{ state: PulsarAnalysisState; adoptedGeneration: number; digest: Readonly<{ recording: PlrRecording; sha256: string }> | null }>;
+/** Phase 1 item 1.5: Save investigation reads the confirmed list (and, when this panel presents `doc.data`, its view). */
+export type PulsarAnalysisController = Readonly<{ snapshot: (doc: PulsarCurrentData) => RadioSnapshotResult<PulsarAnalysisSnapshot> }>;
 export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; translateLoadSave?: LoadSaveTranslate; idPrefix?: string; active?: boolean; data?: SharedPulsarDataHandle;
   /** WEB-PULSAR-GUIDE-01: the presented recording's confirmed-row summary, reported in the layout phase only when it changes. */
-  onMeasurementSummary?: (summary: PulsarMeasurementSummary) => void }>;
+  onMeasurementSummary?: (summary: PulsarMeasurementSummary) => void;
+  restored?: PulsarAnalysisRestore | null; controllerRef?: MutableRefObject<PulsarAnalysisController | null>;
+  /** Phase 1 item 1.5: the confirmed list, reported in the layout phase whenever it changes (the investigation mark). */
+  onConfirmedList?: (list: PulsarAnalysisState['list']) => void }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
 /**
  * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, text
@@ -134,16 +142,18 @@ const captureRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => {
 /** Client pixel index of a position in a box of n native pixels. */
 const pixelIndex = (offset: number, size: number, n: number) => Math.min(n - 1, Math.max(0, Math.floor(offset / size * n)));
 
-export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', active = true, data, onMeasurementSummary }: PulsarAnalysisProps) {
+export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', active = true, data, onMeasurementSummary, restored = null, controllerRef, onConfirmedList }: PulsarAnalysisProps) {
   const t = useMemo(() => translate ?? createPulsarTranslator(), [translate]);
   const ls = useMemo(() => translateLoadSave ?? createLoadSaveTranslator(), [translateLoadSave]);
-  const [s, setS] = useState<PulsarAnalysisState>(INITIAL_PULSAR_ANALYSIS);
+  // Phase 1 item 1.5: a panel mounted by Restore investigation starts from the restored state (read once, at mount).
+  const [s, setS] = useState<PulsarAnalysisState>(() => restored?.state ?? INITIAL_PULSAR_ANALYSIS);
   const current = useRef(s);
   const local = useSharedPulsarData(), shared = data ?? local;
   // The dataset generation this panel presents (the initial empty generation 0 needs no activation).
-  const [adoptedGeneration, setAdoptedGeneration] = useState(0), adopted = useRef(0);
+  const [adoptedGeneration, setAdoptedGeneration] = useState(() => restored?.adoptedGeneration ?? 0), adopted = useRef(adoptedGeneration);
   const adopt = (generation: number) => { adopted.current = generation; setAdoptedGeneration(generation); };
-  const [digest, setDigest] = useState<Readonly<{ recording: PlrRecording; sha256: string }> | null>(null);
+  const [digest, setDigest] = useState<Readonly<{ recording: PlrRecording; sha256: string }> | null>(() => restored?.digest ?? null);
+  const [restoredNote] = useState(() => restored !== null);
   // The pending read is mirrored in a ref so the export opener checks it synchronously.
   const [reading, setReadingState] = useState<string | null>(null), readingRef = useRef<string | null>(null);
   const setReading = (name: string | null) => { readingRef.current = name; setReadingState(name); };
@@ -1102,11 +1112,30 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
   const recordedChannels = PULSAR_PANELS.filter(ch => pulsarPanelRecordable(rec, ch)).length;
   const guideAvailability = recordedChannels === 0 ? t('pulsar.guide.noData') : recordedChannels === 1 ? t('pulsar.guide.oneChannel') : null;
 
+  // Phase 1 item 1.5: Save investigation reads the latest refs. A dialog, session, drag, read or save attempt refuses the
+  // snapshot (nothing is saved); the view is kept only while this panel presents exactly the current dataset.
+  useLayoutEffect(() => {
+    if (!controllerRef) return;
+    controllerRef.current = Object.freeze({
+      snapshot: (doc: PulsarCurrentData): RadioSnapshotResult<PulsarAnalysisSnapshot> => {
+        if (readingRef.current !== null || loadSaveRef.current?.phase === 'reading') return Object.freeze({ ok: false, reason: 'analysis-reading' });
+        if (exportRef.current || appendRef.current || rawRef.current || loadSaveRef.current || saveRun.current !== null || exportBusy.current) return Object.freeze({ ok: false, reason: 'analysis-dialog' });
+        const st = current.current;
+        return pulsarAnalysisSnapshot(st, adopted.current === doc.generation && st.recording !== null && st.recording === doc.data);
+      },
+    });
+    return () => { controllerRef.current = null; };
+  }, [controllerRef]);
+  const listTo = useRef(onConfirmedList);
+  useLayoutEffect(() => { listTo.current = onConfirmedList; });
+  useLayoutEffect(() => { listTo.current?.(s.list); }, [s.list]);
+
   return (
     <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis" onKeyDownCapture={captureRepeatedEnter}>
       <div className="plr-main" inert={modal}>
         <h2 id={`${idPrefix}title`}>{t('pulsar.title')}</h2>
         <p className="plr-scope">{t('pulsar.scope')}</p>
+        {restoredNote && <p className="plr-help" data-testid="pulsar-restored-note">{t('pulsar.restored.note')}</p>}
 
         <section className="plr-file" aria-labelledby={`${idPrefix}file`}>
           <h3 id={`${idPrefix}file`}>{t('pulsar.file.heading')}</h3>

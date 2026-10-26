@@ -213,7 +213,8 @@ test('radio telescope route: explicit compiled-default scenario, access, Trackin
  await expect(id(page,'radio-route-scenario-gates')).not.toContainText('the hot list and pulsar');
  await expect(id(page,'radio-route-scenario-gates')).toContainText('Available: receiver Record with Identify and Properties, and Align of the receiver windows.');
  await expect(id(page,'radio-route-scenario-gates')).toContainText('the hot list’s Add Current Item and Save from this panel (disabled; their enabling code is not recovered)');
- await expect(id(page,'radio-route-persistence')).toContainText('not included in Save investigation');
+ // Phase 1 item 1.5 (intentional change): Save investigation now includes the Radio workspace.
+ await expect(id(page,'radio-route-persistence')).toContainText('Save investigation includes the setup');
  await expect(id(page,'radio-env-diameter-current')).toHaveText('Not supplied');await expect(id(page,'radio-switch')).toBeDisabled();
  await expect(id(page,'radio-env').getByText('The recovered compiled default is 100, used when no options file loads; the value in a current classroom configuration is not known, so supply it explicitly.',{exact:false})).toBeVisible();
  // Access waits for the manual access tick and needs the explicitly supplied diameter.
@@ -295,7 +296,7 @@ test('radio route: a hidden-route slew arrives in the background without taking 
  await noOverflow(page);await page.screenshot({path:info.outputPath('radio-route-after-history.png'),fullPage:true});
 });
 
-test('project operations keep both temporary workspaces and the old formats: Save bytes unchanged, restore and restore error keep work, busy pauses slew ticks without catch-up; reload resets',async({page},info)=>{
+test('project operations: Save refuses during a slew and then adds the Radio part (base unchanged); an old file, a restore error and busy keep work; busy pauses slew ticks without catch-up; reload resets',async({page},info)=>{
  await holdReads(page);
  await page.goto('/#observatory');const before=await save(page);
  await press(info,nav(page,'Radio data'));await loadPlr(page);await recordManual(page,'manual across tools');await toggleDisclosure(page);await useFile(page);
@@ -303,8 +304,12 @@ test('project operations keep both temporary workspaces and the old formats: Sav
  // Every tool used below is loaded before installing the clock: freezing React's lazy load would test the scheduler instead.
  await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);
  await startSlew(page,['4','0','0','0','0','0']);await flushTasks(page);
- // Save investigation: the same bytes as before any radio or saved-row work (no new fields in the investigation format).
- expect((await save(page)).equals(before)).toBe(true);await expect(toolbar(page).getByText('Investigation saved.',{exact:false})).toBeVisible();
+ // Phase 1 item 1.5 (intentional change): Save investigation now includes the Radio workspace and the PLR measurements, so
+ // it refuses while the telescope slews; nothing is downloaded and the slew continues.
+ let downloads=0;page.on('download',()=>{downloads++;});
+ await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ await expect(toolbar(page).locator('[role="alert"]')).toContainText('Nothing was saved: the telescope is slewing');
+ await flushTasks(page);expect(downloads).toBe(0);
  // Busy (a held restore): slew ticks pause and are not caught up after Cancel.
  await expect(id(page,'antenna-ticks')).toBeVisible();
  await restore(page,'held-restore.json',before.toString('utf8'));await held(page,'held-restore.json');
@@ -327,7 +332,12 @@ test('project operations keep both temporary workspaces and the old formats: Sav
  await restore(page,'same-investigation.json',before.toString('utf8'));await expect(toolbar(page).getByText('Investigation restored.',{exact:false})).toBeVisible();
  await expect(id(page,'antenna-ra')).toHaveText(ra!);await expect(id(page,'antenna-dec')).toHaveText(dec!);await expect(id(page,'antenna-tracking-state')).toHaveText('Tracking on');
  await press(info,nav(page,'Radio data'));await expect(id(page,'saved-rows-identity-sha')).toHaveText(sha(CONTROL));await expectManual(page,1,'manual across tools');
- expect((await save(page)).equals(before)).toBe(true);
+ // The old (v≤22) file left Radio and the measurements untouched; Save now adds them (v23) with the unrelated base unchanged.
+ // The supplied saved-row viewer is still not part of it.
+ const saved=JSON.parse((await save(page)).toString('utf8'));
+ expect(saved.version).toBe(23);expect(saved.base).toEqual(JSON.parse(before.toString('utf8')));
+ expect(saved.radio.data).toMatchObject({kind:'file',fileName:'synthetic-e2e.plr',sha256:sha(PLR)});expect(saved.radio.analysis.list).toHaveLength(1);
+ expect(saved.radio.analysis.list[0].fields.comment).toBe('manual across tools');expect(JSON.stringify(saved.radio)).not.toContain('control.csv');
  // Reload: both temporary workspaces start empty, as their notices say.
  await page.reload();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
  await expect(id(page,'saved-rows')).toHaveCount(0);await toggleDisclosure(page);await expect(id(page,'saved-rows-none')).toBeVisible();

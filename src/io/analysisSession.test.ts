@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMeasurement } from '../core/spectrum';
 import { readImportedSpectrum } from './spectrumFiles';
 import { MAX_SESSION_BYTES, MAX_SESSION_ROWS, readAnalysisSession, serializeAnalysisSession, type AnalysisSession } from './analysisSession';
+import { pulsarMemoryRecording } from '../core/pulsarCurrentData';
+import { pulsarDataSnapshot } from '../core/radioInvestigation';
 beforeEach(()=>vi.stubGlobal('crypto',webcrypto));afterEach(()=>vi.unstubAllGlobals());
 async function fixture():Promise<AnalysisSession> {
   const sourceText='\uFEFFwavelength,intensity\r\n3700,.2\r\n4000,.5\r\n4700,1\r\n';
@@ -75,6 +77,26 @@ describe('version2 Hubble inputs and version1 migration',()=>{
     const data=JSON.parse(saved);expect(data.version).toBe(2);data.hubble.rows[0].input.measurementId=8;
     await expect(read(JSON.stringify(data))).rejects.toThrow();
     data.hubble.rows[0].input.measurementId=7;data.hubble.summary=71;await expect(read(JSON.stringify(data))).rejects.toThrow();
+  });
+  it('Phase 1 item 1.5: v23 wraps a v≤22 base and the radio part; old files carry no radio part; nesting and extra keys are refused',async()=>{
+    const session=await fixture();
+    const capture=pulsarMemoryRecording({captureId:3,name:'SYN',aperture:100,highestIndex:0,frequencies:[400,null,null],gains:[1,null,null],start:51544.5,interval:0.01,rows:[-0,1,2],full:false});
+    const radio={snapshot:{workspace:null,data:pulsarDataSnapshot(capture),analysis:null},prepared:null};
+    const saved=await serializeAnalysisSession({...session,radio});
+    const data=JSON.parse(saved);
+    expect(data.version).toBe(23);expect(data.base.version).toBeLessThanOrEqual(22);expect(data.radioPolicy).toBe('OpenVireo radio investigation 1');
+    expect(createHash('sha256').update(JSON.stringify(data.radio)).digest('hex')).toBe(data.radioDigestSHA256);
+    const restored=await read(saved);
+    expect(restored.rows).toEqual(session.rows);expect(restored.observation).toEqual(session.observation);
+    expect(Object.is((restored.radio!.prepared!.data as {samples:Float64Array}).samples[0],-0)).toBe(true);
+    // The extracted v22 base restores without any radio part (the optional-module pattern).
+    expect((await read(JSON.stringify(data.base))).radio).toBeUndefined();
+    expect((await read(await serializeAnalysisSession(session))).radio).toBeUndefined();
+    const nested=structuredClone(data);nested.base=structuredClone(data);
+    await expect(read(JSON.stringify(nested))).rejects.toThrow();
+    const extra=structuredClone(data);extra.radioExtra=1;await expect(read(JSON.stringify(extra))).rejects.toThrow();
+    const tampered=structuredClone(data);tampered.radio.data.samples[1]=2;await expect(read(JSON.stringify(tampered))).rejects.toThrow();
+    const policy=structuredClone(data);policy.radioPolicy='other';await expect(read(JSON.stringify(policy))).rejects.toThrow();
   });
   it('preserves example identity without copying examples into the measurement log',async()=>{
     const session=await fixture(),hubble={recipeId:'workbook' as const,rows:[{id:1,input:{kind:'workbook-example' as const,worksheetRow:2}}]};

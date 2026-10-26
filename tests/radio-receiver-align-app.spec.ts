@@ -1,5 +1,6 @@
 import {test,expect,type Browser,type CDPSession,type Locator,type Page,type TestInfo} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 // Actual App flows of R-RX5 Align (docs/RADIO-RECEIVER-ALIGN.md) on the #radio-control route: the live Align button and
 // indicator, the per-window Move up/down controls, the card order (data-order and the DOM order of the cards), no remount on a
 // reorder, the Add reset with the stale indicator, close/re-add and main reopen, Receive/Stop/Record with the finish dialogs,
@@ -15,6 +16,19 @@ const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documen
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
 const restore=(page:Page,name:string,text:string)=>page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name,mimeType:'application/json',buffer:Buffer.from(text,'utf8')});
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json=any;
+/** Phase 1 item 1.5: a file written while Radio is mounted is v23, which wraps the unchanged v≤22 investigation in `base` and
+ * keeps the Radio part separately (with its consistency digest); an older file has no Radio part. Returns both parts. */
+function investigationParts(saved:Buffer):{base:Json;radio:Json}{
+ const f:Json=JSON.parse(saved.toString('utf8'));
+ if(f.version!==23){expect(f.version).toBeLessThanOrEqual(22);expect(Object.hasOwn(f,'radio')).toBe(false);return {base:f,radio:null};}
+ expect(Object.keys(f).sort()).toEqual(['base','format','numericalPolicy','radio','radioDigestSHA256','radioPolicy','version']);
+ expect(f.numericalPolicy).toBe('Number_x87_equivalence_unvalidated');expect(f.radioPolicy).toBe('OpenVireo radio investigation 1');
+ expect(f.base.version).toBeLessThanOrEqual(22);
+ expect(createHash('sha256').update(JSON.stringify(f.radio)).digest('hex')).toBe(f.radioDigestSHA256);
+ return {base:f.base,radio:f.radio};
+}
 async function flush(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 /** Fake time in 200 ms steps (five 40 ms receiver ticks), letting React commit between steps. */
 async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}}
@@ -322,13 +336,19 @@ test('viewports 320/375/1440 without overflow (a browser resize is not AL-RESIZE
  await pressed(page,true);await expectOrder(page,'0,1,2');await expect(align(page)).toBeFocused();
 });
 
-test('Save investigation bytes are unchanged by Align and moves; a reload resets Align and the order',async({page})=>{
- await startApp(page);const before=await save(page);
+test('Save investigation keeps the receiver window settings but not Align or the card order; a reload resets Align and the order',async({page})=>{
+ await startApp(page);const before=investigationParts(await save(page));
  await setupReceiver(page);
  await id(page,'receiver-add').click();await align(page).click();await id(page,'receiver-move-up-1').click();await expectOrder(page,'1,0');
- expect((await save(page)).equals(before)).toBe(true);
+ // The other tools are unchanged; the Radio part keeps the two windows' settings in receiver (slot) order, not the card order.
+ const moved=await save(page),saved=investigationParts(moved);
+ expect(saved.base).toEqual(before.base);
+ expect(saved.radio.workspace.receivers.windows[0]).not.toBeNull();expect(saved.radio.workspace.receivers.windows[1]).not.toBeNull();
+ expect(saved.radio.workspace.receivers.windows[2]).toBeNull();
+ expect(JSON.stringify(saved.radio)).not.toMatch(/"(align|order)"/i);
  await align(page).click();await expectOrder(page,'0,1');
- expect((await save(page)).equals(before)).toBe(true);
+ // Align on and the original order: only excluded window positions changed, so the two successive files are byte-identical.
+ expect((await save(page)).equals(moved)).toBe(true);
  await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-control')).toBeVisible();
  await expect(cards(page)).toHaveCount(0);await expect(id(page,'receiver-workspace')).toHaveAttribute('data-order','');
  await expect(id(page,'receiver-workspace')).toHaveAttribute('data-align','off');

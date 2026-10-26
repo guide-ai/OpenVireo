@@ -55,7 +55,8 @@ export function isRadioClockReading(r:unknown):r is RadioClockReading{
  return isRadioClockInstant(v.utMs)&&typeof v.jd==='number'&&Number.isFinite(v.jd)&&typeof v.lstHours==='number'&&Number.isFinite(v.lstHours)&&v.lstHours>=0&&v.lstHours<=24;
 }
 
-/** Temporary web scenario owned by the radio route; never saved. */
+/** Temporary web scenario owned by the radio route. Phase 1 item 1.5: Save investigation keeps its applied inputs and folded
+ * time (radioClockSnapshot); a restore brings it back paused. */
 export type RadioClockScenario=Readonly<{
  /** Applied UT text (parseClockUTC form) or null: nothing supplied, so no clock tick can run. */
  utc:string|null;
@@ -190,6 +191,33 @@ export function radioClockDomainWaitMS(s:RadioClockScenario,perf:number):number|
  if(s.utc===null||!s.running||s.anchorPerfMS===null||s.limit!==null)return null;
  const remaining=RADIO_CLOCK_CONSTANTS.maxUTMS+1-parseClockUTC(s.utc)-s.elapsedMS,seg=Math.max(0,perf-s.anchorPerfMS);
  return Math.max(0,Math.ceil(remaining-seg));
+}
+/** Phase 1 item 1.5 (WEB): the applied inputs and the scenario time an investigation file keeps. Drafts, the run token and
+ * the performance anchor are not kept. */
+export type RadioClockSnapshot=Readonly<{utc:string|null;longitudeRadians:number|null;elapsedMS:number;limit:'domain'|null}>;
+/** The snapshot at `perf` without committing anything: a running (or frozen) scenario is folded exactly as Pause folds it,
+ * including the range-end stop. */
+export function radioClockSnapshot(s:RadioClockScenario,perf:number):RadioClockSnapshot{
+ const p=s.running?pauseRadioClock(s,perf).scenario:s;
+ return Object.freeze({utc:p.utc,longitudeRadians:p.longitudeRadians,elapsedMS:p.elapsedMS,limit:p.limit});
+}
+/** Why a snapshot cannot be restored (null: it can): the UT in the supported form and domain, the longitude, whole elapsed
+ * milliseconds, and an instant still in the domain unless the scenario had stopped at the range end. */
+export function radioClockSnapshotIssue(c:RadioClockSnapshot):string|null{
+ if(c.limit!==null&&c.limit!=='domain')return 'limit';
+ if(!Number.isSafeInteger(c.elapsedMS)||c.elapsedMS<0)return 'elapsed';
+ if(c.longitudeRadians!==null&&!isRadioLongitude(c.longitudeRadians))return 'longitude';
+ if(c.utc===null)return c.elapsedMS===0&&c.limit===null?null:'utc';
+ let base:number;try{base=parseClockUTC(c.utc);}catch{return 'utc';}
+ if(!isRadioClockInstant(base)||typeof c.utc!=='string'||c.utc.length>RADIO_CLOCK_CONSTANTS.draftMaxLength)return 'utc';
+ if(c.limit===null&&base+c.elapsedMS>RADIO_CLOCK_CONSTANTS.maxUTMS)return 'elapsed';
+ return null;
+}
+/** The restored scenario: paused at the saved instant (the Start intent is not restored, so no time runs until Start), the
+ * draft equal to the applied UT, a new generation. Throws on a snapshot radioClockSnapshotIssue refuses. */
+export function restoredRadioClockScenario(c:RadioClockSnapshot):RadioClockScenario{
+ if(radioClockSnapshotIssue(c)!==null)throw new Error('Unsupported radio clock snapshot');
+ return Object.freeze({utc:c.utc,draftUTC:c.utc??'',longitudeRadians:c.longitudeRadians,elapsedMS:c.elapsedMS,running:false,anchorPerfMS:null,run:1,limit:c.limit});
 }
 /** Guarded range-end stop for deadline callbacks and reads: stops only when the given scenario itself has passed the end
  * now, so a stale callback cannot stop a newer Apply, Pause or freeze. */

@@ -24,6 +24,8 @@ import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTR
 import { readImportedSpectrum } from './io/spectrumFiles';
 import { MAX_SESSION_ROWS, readInvestigationSession, serializeAnalysisSession, type SessionObservation } from './io/analysisSession';
 import { formatFloat32, formatZ, spectrumPoints } from './view/spectrum';
+import type { RadioInvestigation, RadioRestoreBlock, RadioSaveBlock } from './core/radioInvestigation';
+import type { RadioInvestigationRecord } from './io/radioInvestigation';
 import galaxyText from '../data/original/GLXYLNS.LST?raw';
 import balmerText from '../data/original/BALMER.LST?raw';
 import qsoText from '../data/original/AGN_QSO.LST?raw';
@@ -49,7 +51,9 @@ function Chart({ observation, z, reference, wide, baseline }: { observation: Imp
 }
 
 export type AnalysisController=Readonly<{acceptAcquisition:(observation:AcquisitionObservation)=>void;acceptImported:(source:ClassificationImport)=>void;openHubble:()=>void;saveSession:()=>Promise<boolean>;cancelSessionOperation:()=>void;restoreSessionFile:(file:File)=>Promise<boolean>}>;
-export default function SpectrumInstrument({onPrepareMotion,onRestoreMotion,onPrepareClusterSelection,onRestoreClusterSelection,onPrepareClusterComparison,onRestoreClusterComparison,onPrepareClusterDatabase,onRestoreClusterDatabase,library,controllerRef,onRestoreAcquisition,onKindChange,onLabProgress,classification=EMPTY_CLASSIFICATION_WORKSPACE,onRestoreClassification,onArchivesChange,onSessionBusy,onClassifyAcquisition,onClassifyImported,onPreparePhotometry,onRestorePhotometry,onPrepareObserving,onRestoreObserving,onPrepareEditing,onRestoreEditing,onPrepareOptical,onRestoreOptical,active=true}: {onPrepareMotion?:()=>MotionPreferences|null;onRestoreMotion?:(w:MotionPreferences)=>void;library: {samples: readonly Sample[]; name: string} | null;controllerRef?:Ref<AnalysisController>;onRestoreAcquisition?:(observation:AcquisitionObservation)=>void;onKindChange?:(star:boolean)=>void;onLabProgress?:(progress:HubbleLabProgress)=>void;active?:boolean;onPrepareOptical?:()=>OpticalWorkspace;onRestoreOptical?:(w:OpticalWorkspace)=>void;onPrepareEditing?:()=>SharedEditingWorkspace;onRestoreEditing?:(w:EditingWorkspace)=>void;onPrepareObserving?:()=>ObservingWorkspace;onRestoreObserving?:(w:ObservingWorkspace)=>void;onPreparePhotometry?:()=>PhotometerState|null;onRestorePhotometry?:(s:PhotometerState|null)=>void;classification?:ClassificationWorkspace;onRestoreClassification?:(w:ClassificationWorkspace,a:readonly AcquisitionObservation[])=>void;onArchivesChange?:(a:readonly AcquisitionObservation[])=>void;onSessionBusy?:(busy:boolean)=>void;onClassifyAcquisition?:(a:StarObservation)=>void;onClassifyImported?:(s:ClassificationImport)=>void;onPrepareClusterDatabase?:()=>ClusterDatabaseWorkspace|null;onRestoreClusterDatabase?:(w:ClusterDatabaseWorkspace|null)=>void;onPrepareClusterSelection?:()=>ClusterSelectionWorkspace|null;onRestoreClusterSelection?:(w:ClusterSelectionWorkspace|null)=>void;onPrepareClusterComparison?:()=>ClusterComparisonWorkspace|null;onRestoreClusterComparison?:(w:ClusterComparisonWorkspace|null)=>void}) {
+/** Phase 1 item 1.5: the Radio/Pulsar part of a Save ('none': nothing to keep, the file stays v≤22). */
+export type RadioPrepare=Readonly<{kind:'none'}|{kind:'blocked';reason:RadioSaveBlock}|{kind:'ready';snapshot:RadioInvestigation;onSaved:()=>void}>;
+export default function SpectrumInstrument({onPrepareRadio,onCheckRadioRestore,onRestoreRadio,onPrepareMotion,onRestoreMotion,onPrepareClusterSelection,onRestoreClusterSelection,onPrepareClusterComparison,onRestoreClusterComparison,onPrepareClusterDatabase,onRestoreClusterDatabase,library,controllerRef,onRestoreAcquisition,onKindChange,onLabProgress,classification=EMPTY_CLASSIFICATION_WORKSPACE,onRestoreClassification,onArchivesChange,onSessionBusy,onClassifyAcquisition,onClassifyImported,onPreparePhotometry,onRestorePhotometry,onPrepareObserving,onRestoreObserving,onPrepareEditing,onRestoreEditing,onPrepareOptical,onRestoreOptical,active=true}: {onPrepareRadio?:()=>RadioPrepare;onCheckRadioRestore?:()=>RadioRestoreBlock|null;onRestoreRadio?:(record:RadioInvestigationRecord)=>boolean;onPrepareMotion?:()=>MotionPreferences|null;onRestoreMotion?:(w:MotionPreferences)=>void;library: {samples: readonly Sample[]; name: string} | null;controllerRef?:Ref<AnalysisController>;onRestoreAcquisition?:(observation:AcquisitionObservation)=>void;onKindChange?:(star:boolean)=>void;onLabProgress?:(progress:HubbleLabProgress)=>void;active?:boolean;onPrepareOptical?:()=>OpticalWorkspace;onRestoreOptical?:(w:OpticalWorkspace)=>void;onPrepareEditing?:()=>SharedEditingWorkspace;onRestoreEditing?:(w:EditingWorkspace)=>void;onPrepareObserving?:()=>ObservingWorkspace;onRestoreObserving?:(w:ObservingWorkspace)=>void;onPreparePhotometry?:()=>PhotometerState|null;onRestorePhotometry?:(s:PhotometerState|null)=>void;classification?:ClassificationWorkspace;onRestoreClassification?:(w:ClassificationWorkspace,a:readonly AcquisitionObservation[])=>void;onArchivesChange?:(a:readonly AcquisitionObservation[])=>void;onSessionBusy?:(busy:boolean)=>void;onClassifyAcquisition?:(a:StarObservation)=>void;onClassifyImported?:(s:ClassificationImport)=>void;onPrepareClusterDatabase?:()=>ClusterDatabaseWorkspace|null;onRestoreClusterDatabase?:(w:ClusterDatabaseWorkspace|null)=>void;onPrepareClusterSelection?:()=>ClusterSelectionWorkspace|null;onRestoreClusterSelection?:(w:ClusterSelectionWorkspace|null)=>void;onPrepareClusterComparison?:()=>ClusterComparisonWorkspace|null;onRestoreClusterComparison?:(w:ClusterComparisonWorkspace|null)=>void}) {
   const [velocityDraft,setVelocityDraft]=useState<VelocityDraft>(()=>defaultVelocityDraft([]));
   const [stepInput, setStepInput] = useState('');
   const [control, setControl] = useState(INITIAL_CONTROL), [reference, setReference] = useState<keyof typeof references>('galaxy');
@@ -122,14 +126,19 @@ export default function SpectrumInstrument({onPrepareMotion,onRestoreMotion,onPr
   }
   async function exportSession():Promise<boolean> {
     if(busy)return false;
+    // Phase 1 item 1.5: an unsafe Radio/Pulsar state refuses the whole Save before any other part is prepared, and before the
+    // ticket or busy change, so a refused Save never advertises a session operation (whose effects could abandon an owned write).
+    let radio:RadioPrepare;
+    try{radio=onPrepareRadio?.()??{kind:'none'};}catch{setNotice('');setError(t('session.exportError'));return false;}
+    if(radio.kind==='blocked'){setNotice('');setError(t('project.radioBlocked',{reason:t(`project.radioBlock.${radio.reason}`)}));return false;}
     const ticket=++generation.current;setBusy(true);setError('');setNotice('');
     try {
       const motion=onPrepareMotion?.()??undefined,observing=onPrepareObserving?.(),photometry=onPreparePhotometry?.(),sharedEditing=onPrepareEditing?.(),optical=onPrepareOptical?.();
       const editing=sharedEditing?{...sharedEditing,velocity:velocityDraft}:undefined;
       const clusterDatabase=onPrepareClusterDatabase?.(),clusterComparison=onPrepareClusterComparison?.(),clusterSelection=onPrepareClusterSelection?.();
-      const saved=await serializeAnalysisSession({...(motion?{motion}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...(classificationWorkspaceUsed(classification)?{classification}:{}),...(acquisitions.length?{acquisitions}:{})});
+      const saved=await serializeAnalysisSession({...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...(classificationWorkspaceUsed(classification)?{classification}:{}),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
-      download(saved,'openvireo-session.json','application/json;charset=utf-8');setNotice(t('session.saved'));return true;
+      download(saved,'openvireo-session.json','application/json;charset=utf-8');if(radio.kind==='ready')radio.onSaved();setNotice(t('session.saved'));return true;
     } catch {if(ticket===generation.current)setError(t('session.exportError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
@@ -138,6 +147,9 @@ export default function SpectrumInstrument({onPrepareMotion,onRestoreMotion,onPr
   }
   async function restoreSessionFile(file:File):Promise<boolean> {
     if(busy)return false;
+    // Phase 1 item 1.5: an active capture, output attempt or analysis dialog/read refuses Restore before anything else runs.
+    const blockedNow=onCheckRadioRestore?.()??null;
+    if(blockedNow){setError(t('project.radioRestoreBlocked',{reason:t(`project.radioBlock.${blockedNow}`)}));return false;}
     const ticket=++generation.current;setBusy(true);setError('');setNotice('');
     try {
       onPrepareObserving?.();onPreparePhotometry?.();
@@ -151,6 +163,10 @@ export default function SpectrumInstrument({onPrepareMotion,onRestoreMotion,onPr
       const saved=incoming.session;
       references[saved.reference].lines.forEach(line=>shiftedWavelength(line.wavelength,currentZ(saved.control)));
       if(ticket!==generation.current)return false;
+      // Phase 1 item 1.5: after the awaits, re-check the latest guards, then the Radio part first; a refusal changes nothing.
+      const blockedLate=onCheckRadioRestore?.()??null;
+      if(blockedLate){setError(t('project.radioRestoreBlocked',{reason:t(`project.radioBlock.${blockedLate}`)}));return false;}
+      if(saved.radio&&!(onRestoreRadio?.(saved.radio)??false))return false;
       if(saved.clusterDatabase)onRestoreClusterDatabase?.(saved.clusterDatabase);
       if(saved.clusterComparison)onRestoreClusterComparison?.(saved.clusterComparison);
       if(saved.clusterSelection)onRestoreClusterSelection?.(saved.clusterSelection);
@@ -169,7 +185,7 @@ export default function SpectrumInstrument({onPrepareMotion,onRestoreMotion,onPr
     finally {if(ticket===generation.current)setBusy(false);}
   }
   function cancelSessionOperation(){generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}
-  useImperativeHandle(controllerRef,()=>({acceptAcquisition,acceptImported,cancelSessionOperation,saveSession:exportSession,restoreSessionFile,openHubble:()=>{const element=hubbleDetails.current;if(element){element.open=true;element.querySelector('summary')?.focus();element.scrollIntoView({block:'start'});}}}),[onPrepareMotion,onRestoreMotion,busy,acquisitions,observation,classification,control,stepInput,reference,wide,object,rows,hubble,onPreparePhotometry,onRestorePhotometry,onPrepareObserving,onRestoreObserving,onPrepareEditing,onRestoreEditing,velocityDraft,onPrepareOptical,onRestoreOptical,onPrepareClusterDatabase,onRestoreClusterDatabase,onPrepareClusterComparison,onRestoreClusterComparison,onPrepareClusterSelection,onRestoreClusterSelection]);
+  useImperativeHandle(controllerRef,()=>({acceptAcquisition,acceptImported,cancelSessionOperation,saveSession:exportSession,restoreSessionFile,openHubble:()=>{const element=hubbleDetails.current;if(element){element.open=true;element.querySelector('summary')?.focus();element.scrollIntoView({block:'start'});}}}),[onPrepareRadio,onCheckRadioRestore,onRestoreRadio,onPrepareMotion,onRestoreMotion,busy,acquisitions,observation,classification,control,stepInput,reference,wide,object,rows,hubble,onPreparePhotometry,onRestorePhotometry,onPrepareObserving,onRestoreObserving,onPrepareEditing,onRestoreEditing,velocityDraft,onPrepareOptical,onRestoreOptical,onPrepareClusterDatabase,onRestoreClusterDatabase,onPrepareClusterComparison,onRestoreClusterComparison,onPrepareClusterSelection,onRestoreClusterSelection]);
   return <div className="app-shell">
     <aside className="sidebar analyzer-sidebar"><a className="brand" href="#spectrum" aria-label={t('spectrum.home')}><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="currentColor"/><path d="M6 25 27 9M10 9l17 17M18 3v30M3 18h30" fill="none" stroke="currentColor"/></svg><span>{t('app.name')}<span className="brand-web"></span></span></a><div className="sidebar-label">{t('spectrum.sidebarTitle')}</div><nav aria-label={t('spectrum.tools')}><a href="#spectrum" className="nav-active"><span>◌</span> {t('spectrum.spectra')}</a><a href="#measurement-log"><span>▤</span> {t('spectrum.log')} <b>{rows.length}</b></a><button onClick={() => evidence.current?.showModal()}><span>⌘</span> {t('spectrum.evidence')}</button></nav><div className="sidebar-bottom"><span className="local-dot"/> {t('spectrum.localSession')}<span className="subtle">{t('spectrum.noServices')}</span></div></aside>
     <main id="spectrum"><header className="topbar"><div><span className="breadcrumb">{t(isStar?'spectrum.stellarEdition':'spectrum.hubbleEdition')}</span><span className="stage-pill">{t('spectrum.stage')}</span></div><button className="text-button" onClick={() => evidence.current?.showModal()}>{t('spectrum.about')}</button></header>

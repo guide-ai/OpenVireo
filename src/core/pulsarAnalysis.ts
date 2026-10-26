@@ -551,6 +551,8 @@ export function pulsarRecordDialog(s: PulsarAnalysisState): PulsarRecordDialog |
 const lineCandidate = (f: PulsarEntryFields) =>
   `"${f.object}",${f.frequency},${f.gain},` + [f.reference, f.vertical, f.horizontal].map(v => v === null ? '"",' : v + ',').join('') +
   `${f.start},"${f.comment}",${f.points},${f.intervalMs},${f.aperture}` + (f.file === null ? '' : `,"${f.file}"`);
+/** Phase 1 item 1.5: the same opaque candidate, rebuilt from restored fields (a restored entry never trusts a stored candidate). */
+export const pulsarEntryLine = (f: PulsarEntryFields): string => lineCandidate(f);
 
 /** WEB: every number the entry formats must be finite, so no field is silently blank or an unrepresentable value is recorded. */
 function entryNumbersFinite(s: PulsarAnalysisState, ch: PulsarPanel): boolean {

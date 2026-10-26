@@ -11,7 +11,8 @@ export type SharedPulsarDataHandle=Readonly<{
  /** Applies a pure step to the latest document and returns its result synchronously. */
  update:<S extends PulsarDocStep>(step:(doc:PulsarCurrentData)=>S)=>S;
 }>;
-/** Page-lifetime owner of the one current pulsar dataset (WEB-REC-OWNER; not persisted, a reload starts empty). */
+/** Page-lifetime owner of the one current pulsar dataset (WEB-REC-OWNER; a reload starts empty). Phase 1 item 1.5: only Save
+ * investigation copies its value into a file, and Restore investigation replaces it through replacePulsarCurrentData. */
 export function useSharedPulsarData():SharedPulsarDataHandle{
  const [doc,setDoc]=useState<PulsarCurrentData>(INITIAL_PULSAR_CURRENT_DATA),ref=useRef(doc);
  const current=useCallback(()=>ref.current,[]);

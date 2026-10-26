@@ -490,8 +490,13 @@ async function scenario(browser:Browser,info:TestInfo,withConfiguration:boolean)
 test('preservation: the same seeded receiver scenario with and without every configuration action gives identical receiver, cursor, Record and Save results',async({browser},info)=>{
  test.setTimeout(240_000);
  const a=await scenario(browser,info,false),b=await scenario(browser,info,true);
- // The configuration only changed its own readout.
+ // The configuration only changed its own readout and (Phase 1 item 1.5, intentional change) its own saved part.
  expect(a.menu).toBe('hidden');expect(b.menu).toBe('shown-enabled');
- expect({...b,menu:a.menu}).toEqual(a);
+ const radioOf=(text:string)=>{const v=JSON.parse(text);expect(v.version).toBe(23);return v;};
+ const sa=radioOf(a.saved),sb=radioOf(b.saved);
+ expect(sa.radio.workspace.access.menu.visible).toBe(false);expect(sb.radio.workspace.access).toMatchObject({gate:{open:true,source:'demonstration'},env:{accessPulsarList:true},closeRecipient:'radio-lab'});
+ delete sa.radio.workspace.access;delete sb.radio.workspace.access;delete sa.radioDigestSHA256;delete sb.radioDigestSHA256;
+ expect(sb).toEqual(sa);
+ expect({...b,menu:a.menu,saved:''}).toEqual({...a,saved:''});
  expect(a.source).toContain('J0001+3826');expect(a.identify).toBe('B2358+38');expect(a.properties).toContain('B2358+38');
 });

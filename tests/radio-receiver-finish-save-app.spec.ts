@@ -188,6 +188,7 @@ const SAMPLE_ROW=/^-?\d+\.\d{3},-?\d+\.\d{3},-?\d+\.\d{3}$/;
 // File named held-* waits until releaseRestore(name). Product code is unchanged.
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const saveInvestigation=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
+const toolbar=(page:Page)=>page.locator('.investigation-toolbar');
 const holdRestoreReads=(page:Page)=>page.addInitScript(()=>{
  type Hold={release:()=>void};const w=window as unknown as{__held:Map<string,Hold>};w.__held=new Map();
  const read=Blob.prototype.arrayBuffer;
@@ -198,6 +199,8 @@ const holdRestoreReads=(page:Page)=>page.addInitScript(()=>{
 });
 const restoreHeld=(page:Page,name:string)=>expect.poll(()=>page.evaluate(n=>(window as unknown as{__held:Map<string,unknown>}).__held.has(n),name)).toBe(true);
 const releaseRestore=(page:Page,name:string)=>page.evaluate(n=>{const m=(window as unknown as{__held:Map<string,{release:()=>void}>}).__held,h=m.get(n)!;m.delete(n);h.release();},name);
+/** Whether the restore file's read has started (it is held); false when Restore was refused before reading it. */
+const restoreRead=(page:Page,name:string)=>page.evaluate(n=>(window as unknown as{__held:Map<string,unknown>}).__held.has(n),name);
 /** Pulsar Analysis while the finish holds the committed capture lease: Load disabled, the lease shown, no picker reachable. */
 async function analysisLeased(page:Page){
  await expect(id(page,'pulsar-file')).toBeDisabled();await expect(id(page,'pulsar-leased')).toHaveAttribute('data-phase','committed');
@@ -360,33 +363,64 @@ test('hiding the route during a held write abandons the attempt for good; lease 
  await expect(id(page,'pulsar-prop-file')).toHaveText(NOT_WRITTEN);
 });
 
-test('DEFENSIVE HOST INJECTION: a project operation during a held finish write abandons the attempt (busy) until the product cleanup settles',async({page})=>{
+test('DEFENSIVE HOST INJECTION: Restore during a held finish write is refused before the file is read (capture); the owned write continues to its verified read-back',async({page})=>{
  // DEFENSIVE HOST INJECTION, NOT A USER-GESTURE WITNESS: the App header and toolbar are inert while the finish Save is presented,
  // so an ordinary user cannot start a project operation there. This test sets the restore input's file programmatically to
- // exercise the defensive `busy` path only; it claims nothing about the original runtime. No product hook, no inert removal.
+ // exercise the defensive path only; it claims nothing about the original runtime. No product hook, no inert removal.
+ // Phase 1 item 1.5 preflight: while the finish holds the committed capture lease, Restore is refused with the capture reason
+ // before its file is read, so no project operation or cancel span starts and the owned write is not abandoned. Only the
+ // completed byte read-back marks the copy as verified; the refused Restore grants nothing.
  await holdRestoreReads(page);await installShim(page);
  await startApp(page);
  const bytes=await saveInvestigation(page);// the App's own investigation bytes (a known safe restore fixture)
- await setupReceiver(page);await captureFromReceiver(page);
+ await setupReceiver(page);const points=await captureFromReceiver(page);
  await openFinishSave(page);
  await holdAt(page,'write','busy-op.PLR');await plan(page,{name:'busy-op.PLR'});await assertSynthetic(page);await clearLog(page);
  await choose(page).click();await waiting(page,'write','busy-op.PLR');await expect(status(page)).toHaveAttribute('data-code','writing');
  const calls=(await shim(page)).calls;
  await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'held-restore.json',mimeType:'application/json',buffer:bytes});
- await restoreHeld(page,'held-restore.json');await expect(box(page)).toHaveCount(0);
- await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();await releaseRestore(page,'held-restore.json');await flush(page);
- await expect(box(page)).toBeVisible();
- await expect(alert(page)).toHaveAttribute('data-code','abandoned');await expect(alert(page)).toContainText('a project operation started');
- await expect(alert(page)).not.toHaveText(FALSE_COMFORT);
- await expect(status(page)).toHaveAttribute('data-code','busy');
+ await expect(toolbar(page).locator('[role="alert"]')).toHaveText('Nothing was changed: a receiver Record is armed, capturing or finishing. Finish or disarm it first.');
+ await flush(page);
+ expect(await restoreRead(page,'held-restore.json'),'the file was never read').toBe(false);
+ await expect(toolbar(page).getByText('Cancel pending save/restore',{exact:true})).toHaveCount(0);
+ // The same defensive injection for Save: the inert toolbar button is clicked programmatically (HTMLElement.click(), not a user
+ // gesture). Save is refused with the capture reason before any project operation starts: no download and no Cancel span.
+ const downloads:string[]=[];page.on('download',d=>downloads.push(d.suggestedFilename()));
+ await page.evaluate(()=>{const b=Array.from(document.querySelectorAll<HTMLButtonElement>('.investigation-toolbar button')).find(x=>x.textContent==='Save investigation');
+  if(!b)throw new Error('missing Save investigation');b.click();});
+ await expect(toolbar(page).locator('[role="alert"]')).toHaveText('Nothing was saved: a receiver Record is armed, capturing or finishing. Finish or disarm it first.');
+ await flush(page);expect(downloads,'no investigation download').toEqual([]);
+ await expect(toolbar(page).getByText('Cancel pending save/restore',{exact:true})).toHaveCount(0);
+ // The same pending writer: the dialog stays, still writing, its controls disabled, no extra picker and no early receipt.
+ await expect(box(page)).toBeVisible();await expect(alert(page)).toHaveCount(0);
+ await expect(status(page)).toHaveAttribute('data-code','writing');await expect(id(page,'receiver-finish-save-pending')).toBeVisible();
  await expect(choose(page)).toHaveAttribute('aria-disabled','true');await expect(back(page)).toHaveAttribute('aria-disabled','true');
- expect((await shim(page)).calls).toBe(calls);
+ expect((await shim(page)).calls).toBe(calls);expect((await shim(page)).log).toEqual(['createWritable:busy-op.PLR','write:busy-op.PLR']);
+ await expect(id(page,'receiver-status-0')).not.toContainText('Verified copy saved');
+ // Release the original write: normal close and read-back; the verified copy ends the finish on Radio (one lease release).
  await release(page,'write','busy-op.PLR');
- await expect(status(page)).toHaveText('');
- expect((await shim(page)).log).toEqual(['createWritable:busy-op.PLR','write:busy-op.PLR','abort:busy-op.PLR']);
- await expect(box(page)).toBeVisible();await expect(finish(page)).toHaveCount(0);
- await back(page).click();await expect(finish(page)).toHaveAttribute('data-stage','save');await id(page,'receiver-record-save-cancel').click();
- await toAnalysis(page);await expect(id(page,'pulsar-prop-file')).toHaveText(NOT_WRITTEN);await expect(id(page,'pulsar-file')).toBeEnabled();
+ await expect(box(page)).toHaveCount(0);await expect(finish(page)).toHaveCount(0);
+ await expect(id(page,'receiver-status-0')).toContainText('Verified copy saved as “busy-op.PLR”');
+ const s=await shim(page);
+ expect(s.calls).toBe(calls);expect(s.log).toEqual(['createWritable:busy-op.PLR','write:busy-op.PLR','close:busy-op.PLR','getFile:busy-op.PLR']);
+ const saved=await opfs(page,'busy-op.PLR'),l=lines(saved);
+ expect(saved.toString('latin1').endsWith('\r\n')).toBe(true);expect(l.pop()).toBe('');expect(l.length).toBe(Number(points)+4);
+ for(const row of l.slice(4))expect(row).toMatch(SAMPLE_ROW);
+ // The current capture is kept and owns exactly this receipt; no stale restore replaced it and nothing is still being read.
+ await toAnalysis(page);
+ await expect(id(page,'pulsar-prop-file')).toHaveText('busy-op.PLR');await expect(id(page,'pulsar-save-capture-last-file')).toHaveText('Last verified copy: busy-op.PLR');
+ await expect(id(page,'pulsar-memory-rows')).toHaveText(points);await expect(id(page,'pulsar-restored-note')).toHaveCount(0);
+ await expect(id(page,'pulsar-leased')).toHaveCount(0);await expect(id(page,'pulsar-file')).toBeEnabled();
+ expect(await restoreRead(page,'held-restore.json')).toBe(false);
+ // Positive control: with the lease released (and Properties closed) the same Restore now reads its file; Cancel and the late
+ // read change nothing.
+ await id(page,'pulsar-properties-close').click();
+ await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'held-restore.json',mimeType:'application/json',buffer:bytes});
+ await restoreHeld(page,'held-restore.json');
+ await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();await releaseRestore(page,'held-restore.json');await flush(page);
+ await expect(id(page,'pulsar-memory-rows')).toHaveText(points);await expect(id(page,'pulsar-restored-note')).toHaveCount(0);
+ await id(page,'pulsar-properties-open').click();await expect(id(page,'pulsar-prop-file')).toHaveText('busy-op.PLR');await id(page,'pulsar-properties-close').click();
+ expect((await opfs(page,'busy-op.PLR')).equals(saved)).toBe(true);expect((await shim(page)).calls).toBe(calls);
 });
 
 // SYNTHETIC HOST DIALOG: a plain <dialog data-synthetic="true"> made by this test and opened with showModal(); it stands for a

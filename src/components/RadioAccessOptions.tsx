@@ -70,6 +70,8 @@ export type RadioAccessHostInput=Readonly<{
  runPulsarList:()=>PulsarListCommandResult;
  /** R-RX9 (docs/RADIO-SIMULATION-OPTIONS.md) the route's live consumers of the radio options. */
  numeric:RadioAccessNumericHost;
+ /** Phase 1 item 1.5: the applied configuration restored from an investigation file (read once, at mount; no box or dialog). */
+ initial?:RadioAccessState|null;
 }>;
 export type RadioAccessNumericHost=Readonly<{
  /** Handler-time opt-in check on the latest consumer values against the chosen compiled branch (empty: compatible). */
@@ -103,6 +105,8 @@ export type RadioAccessHost=Readonly<{
  /** R-RX9 numeric authority (rendered) and its latest accepted value, for same-task ownership guards. */
  authority:RadioOptionsAuthority;
  authorityNow:()=>RadioOptionsAuthority;
+ /** Phase 1 item 1.5: the latest accepted state, read by Save investigation. */
+ stateNow:()=>RadioAccessState;
 }>;
 
 /** A target that can take focus: connected, enabled, rendered and not under an inert ancestor. */
@@ -113,14 +117,15 @@ const canTakeFocus=(el:HTMLElement|null):el is HTMLElement=>
  * WEB host of the R-RX7 Radio configuration (docs/RADIO-ACCESS-OPTIONS.md): a card with the gate scenario, the Preferences
  * opener, read-only values, the PulsarList1 readout and the close-recipient adaptation; and, as application-modal
  * surfaces, the USER OPTIONS! box and the partial Optical/Radio Simulation Options dialogs. Every change goes through the
- * pure transitions on the latest accepted state (stateRef). Nothing is saved, restored or sent anywhere. R-RX8: while the
+ * pure transitions on the latest accepted state (stateRef). Nothing is sent anywhere; Phase 1 item 1.5 Save investigation
+ * keeps the applied configuration (never a box, dialog or draft) and `initial` restores it. R-RX8: while the
  * item is shown the card also renders the File ▸ Pulsar List... command (disabled while the item is disabled); its click
  * runs the route's runPulsarList, which alone writes the shared source buffer and activates Pulsar Parameters. This host
  * never touches the receivers, source buffer, cursor, records, clocks or RNG, and the command never writes the menu flags.
  */
-export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow,runPulsarList,numeric}:RadioAccessHostInput):RadioAccessHost{
+export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,surfaceNow,runPulsarList,numeric,initial}:RadioAccessHostInput):RadioAccessHost{
  const id=useId();
- const [state,setState]=useState<RadioAccessState>(INITIAL_RADIO_ACCESS);
+ const [state,setState]=useState<RadioAccessState>(()=>initial&&initial.refusal===null&&initial.parent===null?initial:INITIAL_RADIO_ACCESS);
  const stateRef=useRef(state);
  const [status,setStatus]=useState<RadioAccessOutcome|null>(null);
  const [childStatus,setChildStatus]=useState<'radio-ok'|'radio-cancelled'|null>(null);
@@ -305,7 +310,7 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
   {presented&&child?.numeric?.failure&&<RadioOptionsFailureBox failure={child.numeric.failure} onDismiss={dismissFailure}/>}
  </div>;
  return {open,openNow,menuNow,pending,presented,card,layer,
-  antennaTransition,receiverOpened:onReceiverOpened,mainCloseMessage:onMainClose,authority:state.authority,authorityNow};
+  antennaTransition,receiverOpened:onReceiverOpened,mainCloseMessage:onMainClose,authority:state.authority,authorityNow,stateNow:()=>stateRef.current};
 }
 
 type FocusBack=Readonly<{returnFocus:RefObject<HTMLElement|null>;fallbackFocus?:RefObject<HTMLElement|null>;suppressed:RefObject<boolean>}>;

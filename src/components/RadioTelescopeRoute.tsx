@@ -1,4 +1,5 @@
-import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type RefObject} from 'react';
+import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type RefObject} from 'react';
+import {radioWorkspaceSnapshot,type RadioSnapshotResult,type RadioWorkspaceSnapshot,type RestoredRadioWorkspace} from '../core/radioInvestigation';
 import RadioControlPanel,{type RadioClockSource,type RadioReceiverButton,type RadioReceiverButtonReason} from './RadioControlPanel';
 import {INITIAL_RADIO_RECEIVER_SUMMARY,RadioReceiverWorkspace,type RadioReceiverApi,type RadioReceiverSummary} from './RadioReceiverWindows';
 import {INITIAL_RADIO_CONTROL,RANDOM_ACCESS_RANGE_MS,menuCaptionText,type RadioControlState,type RadioEnvironment} from '../core/radioControl';
@@ -7,7 +8,7 @@ import {PULSAR_EXERCISE_SCENARIO,UNSUPPLIED_RADIO_ENVIRONMENT,pulsarSetupComplet
 import {sameRadioExerciseSummary,type RadioExerciseSummary} from '../core/pulsarLab';
 import {
  INITIAL_RADIO_CLOCK_SCENARIO,RADIO_CLOCK_CONSTANTS,applyCompiledRadioLongitude,applyRadioClockDialogUT,applyRadioClockUTC,cancelRadioClockDraft,editRadioClockDraft,
- freezeRadioClock,pauseRadioClock,radioClockDomainWaitMS,radioClockInstant,readRadioClock,startRadioClock,stopRadioClockPastEnd,thawRadioClock,
+ freezeRadioClock,pauseRadioClock,radioClockDomainWaitMS,radioClockInstant,radioClockSnapshot,readRadioClock,startRadioClock,stopRadioClockPastEnd,thawRadioClock,
  type RadioClockScenario,type RadioClockScenarioOutcome,type RadioClockScenarioTransition,
 } from '../core/radioClock';
 import {
@@ -71,7 +72,13 @@ export type RadioTelescopeRouteProps=Readonly<{
  pulsarData?:SharedPulsarDataHandle;onOpenPulsarAnalysis?:()=>void;
  /** WEB-PULSAR-GUIDE-01: the exercise state the pulsar guide reads, reported in the layout phase only when it changes. */
  onExerciseProgress?:(summary:RadioExerciseSummary)=>void;
+ /** Phase 1 item 1.5: the workspace restored from an investigation file, read once at mount (the host remounts the route
+  * with a new key, so every timer, hold, slew, dialog and read of the previous workspace ends with it). */
+ restored?:RestoredRadioWorkspace|null;
+ /** Phase 1 item 1.5: Save investigation reads the workspace through this controller (latest refs; refuses while unsafe). */
+ controllerRef?:MutableRefObject<RadioRouteController|null>;
 }>;
+export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<RadioWorkspaceSnapshot>}>;
 
 /**
  * WEB route workspace for the recovered radio telescope controls (docs/RADIO-SAVED-ROWS-INTEGRATION.md). The control,
@@ -92,24 +99,25 @@ export type RadioTelescopeRouteProps=Readonly<{
  * flags, a receiver Open or the picker callback. R-RX9 (docs/RADIO-SIMULATION-OPTIONS.md): once the learner chooses a
  * compiled numeric branch there, the radio options own the antenna options, the receivers' live options view and the
  * panel's dish diameter (env+0x37ab = env+0x2e95 + 0x916); each Preferences close projects the env copy onto them
- * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. The state
- * is temporary: it is not part of any investigation file.
+ * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. Phase 1
+ * item 1.5: Save investigation reads this workspace through controllerRef, and a restore mounts it from `restored`.
  */
-export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress}:RadioTelescopeRouteProps){
- const [state,setState]=useState<RadioControlState>(INITIAL_RADIO_CONTROL);
+export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef}:RadioTelescopeRouteProps){
+ const [initial]=useState(()=>restored);
+ const [state,setState]=useState<RadioControlState>(()=>initial?.control??INITIAL_RADIO_CONTROL);
  // Latest accepted control state, read by Start pulsar exercise.
  const controlRef=useRef(state);
  useLayoutEffect(()=>{controlRef.current=state;},[state]);
- const [environment,setEnvironment]=useState<RadioEnvironment>(UNSUPPLIED_ENVIRONMENT);
- const [antenna,setAntenna]=useState<RadioLabState>(INITIAL_RADIO_LAB);
+ const [environment,setEnvironment]=useState<RadioEnvironment>(()=>initial?.environment??UNSUPPLIED_ENVIRONMENT);
+ const [antenna,setAntenna]=useState<RadioLabState>(()=>initial?.antenna??INITIAL_RADIO_LAB);
  // Latest accepted antenna state (committed or handed over by the panel in this task), read by the receiver handlers.
  const antennaRef=useRef(antenna);
  useLayoutEffect(()=>{antennaRef.current=antenna;},[antenna]);
  // ---- Silent receiver monitor (R-RX2): the workspace owns its session; the route owns the button and the gates.
  const receiverApiRef=useRef<RadioReceiverApi|null>(null),receiverButtonRef=useRef<HTMLButtonElement>(null);
  const [receiverSummary,setReceiverSummary]=useState<RadioReceiverSummary>(INITIAL_RADIO_RECEIVER_SUMMARY);
- const [options,setOptions]=useState<RadioLabOptions>(RADIO_COMPILED_OPTIONS);
- const [scenario,setScenario]=useState<RadioClockScenario>(INITIAL_RADIO_CLOCK_SCENARIO);
+ const [options,setOptions]=useState<RadioLabOptions>(()=>initial?.options??RADIO_COMPILED_OPTIONS);
+ const [scenario,setScenario]=useState<RadioClockScenario>(()=>initial?.clock??INITIAL_RADIO_CLOCK_SCENARIO);
  const [clockOutcome,setClockOutcome]=useState<RadioClockScenarioOutcome|'domain-stopped'|null>(null);
  // The scenario of the latest commit, read by Start pulsar exercise (a user click, so no functional update is pending).
  const scenarioRef=useRef(scenario);
@@ -117,7 +125,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  const [exerciseStatus,setExerciseStatus]=useState<ExerciseStatus|null>(null);
  // ---- File ▸ Set Observation Date/Time, ID before activation (RC-12…RC-17, WEB-DATE-01…04). Steps run on the latest
  // accepted date state (dateRef), so two actions in one task chain instead of reading the not yet committed state.
- const [dateState,setDateState]=useState<RadioDateState>(INITIAL_RADIO_DATE);
+ const [dateState,setDateState]=useState<RadioDateState>(()=>initial?.date??INITIAL_RADIO_DATE);
  const dateRef=useRef(dateState);
  const [dateOutcome,setDateOutcome]=useState<RadioDateTransition|null>(null);
  const [fieldRefusal,setFieldRefusal]=useState<DateFieldRefusal|null>(null);
@@ -131,7 +139,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  useLayoutEffect(()=>{environmentRef.current=environment;},[environment]);
  /** The receivers' live options view as last committed here (the workspace starts from the compiled defaults and only the
   * R-RX9 projection replaces it). Presentation only. */
- const [liveReceiverOptions,setLiveReceiverOptions]=useState<RadioReceiverOptions>(RADIO_RECEIVER_COMPILED_OPTIONS);
+ const [liveReceiverOptions,setLiveReceiverOptions]=useState<RadioReceiverOptions>(()=>initial?.liveReceiverOptions??RADIO_RECEIVER_COMPILED_OPTIONS);
  /** Only Limit Slewing comes from the scenario; every other value stays the compiled default (no other owner exists here).
   * R-RX9: under a numeric authority the radio options own the antenna options; a scenario apply that reaches this handler
   * anyway (same task, programmatic) is ignored. */
@@ -246,14 +254,15 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   surfaceNow:()=>isRadioLabModal(antennaRef.current)||dateRef.current.dialog!==null||parametersOpenRef.current?'modal'
    :receiverApiRef.current?.boxRefusal()?'receiver-box':null,
   runPulsarList:()=>listRunner.current(),
-  numeric:{mismatchesFor:optionsMismatches,onEnvironmentCopied:projectOptions,view:{antenna:options,receiver:liveReceiverOptions,panelDiameter:environment.dishDiameterMeters}}});
+  numeric:{mismatchesFor:optionsMismatches,onEnvironmentCopied:projectOptions,view:{antenna:options,receiver:liveReceiverOptions,panelDiameter:environment.dishDiameterMeters}},
+  initial:initial?.access??null});
  const optionsManaged=access.authority.kind!=='absent';
  // R-RX6: Open and Find read the receiver session's shared +0x5f7 buffer live and write nothing; the receiver close box and
  // Record dialogs refuse Open (WEB-PP-LIST-01..03); the receivers' picker runs move the window's shared list cursor (WEB-PP-CUR-01).
  const parameters=usePulsarParametersHost({active,busy,antennaModal:modal,dateOpen:dateOpen||receiverBoxPresented||access.open,
   antennaNow:()=>antennaRef.current,dateOpenNow:()=>dateRef.current.dialog!==null||access.openNow(),readClockJD,
   sharedSource:()=>receiverApiRef.current?.sourceBuffer()??null,receiverBoxNow:()=>receiverApiRef.current?.boxRefusal()??null,
-  catalogLocked:receiverSummary.hasReceivers,catalogLockedNow:()=>receiverApiRef.current?.hasReceivers()??false});
+  catalogLocked:receiverSummary.hasReceivers,catalogLockedNow:()=>receiverApiRef.current?.hasReceivers()??false,initialReference:initial?.reference??null});
  useLayoutEffect(()=>{parametersOpenRef.current=parameters.open;});
  /** WEB-PP-LIST-04 File ▸ Pulsar List...: synchronous, no await. Every gate reads the latest refs (a Receiver Open, antenna
   * dialog or date dialog earlier in the same task counts), the pure preparation runs on one snapshot, and both owners are
@@ -364,6 +373,20 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   const list=parameters.listSnapshot();
   if(list.catalog===null&&!list.reading)void parameters.loadBundled();
  };
+ // ---- Phase 1 item 1.5 Save investigation: one synchronous snapshot of the latest accepted states (refs). The clock is
+ // folded as Pause would fold it, without committing anything. Any open radio surface, slew, hold, receiving, armed Record or
+ // catalog read refuses it (core radioWorkspaceSnapshot names the reason); nothing changes either way.
+ useLayoutEffect(()=>{
+  if(!controllerRef)return;
+  controllerRef.current=Object.freeze({snapshot:():RadioSnapshotResult<RadioWorkspaceSnapshot>=>{
+   const api=receiverApiRef.current;
+   if(dateRef.current.dialog!==null||parametersOpenRef.current||access.openNow()||panelPresentedRef.current||nativeModalOpen())return Object.freeze({ok:false,reason:'radio-dialog'});
+   if(api===null)return Object.freeze({ok:false,reason:'radio-profile'});
+   return radioWorkspaceSnapshot({control:controlRef.current,environment:environmentRef.current,antenna:antennaRef.current,options:optionsRef.current,
+    clock:radioClockSnapshot(scenarioRef.current,perfNow()),date:dateRef.current,access:access.stateNow(),receivers:api.sessionNow(),pendingWindows:api.pendingWindows(),reference:parameters.referenceNow()});
+  }});
+  return ()=>{controllerRef.current=null;};
+ });
  const setupDone=pulsarSetupComplete({control:state,antenna,clock:scenario});
  const catalogState:RadioExerciseSummary['catalog']=parameters.catalog!==null?(parameters.source?.recorded?'recorded':'supplied'):parameters.catalogReading?'reading':'none';
  const exerciseSummary:RadioExerciseSummary={setup:setupDone,catalog:catalogState,sourceInBeam:receiverSummary.sourceInBeam,receivers:receiverSummary.receivers,
@@ -381,11 +404,18 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   :exerciseStatus.kind==='started'&&!setupDone?t(antenna.activated&&!antenna.tracking?'radioRoute.exercise.trackingOff':'radioRoute.exercise.available')
   :exerciseStatus.kind==='incomplete'?(setupDone?t('radioRoute.exercise.ready'):antenna.activated&&!antenna.tracking?t('radioRoute.exercise.status.trackingOff',{applied:exerciseStatus.applied,kept:exerciseStatus.kept}):t('radioRoute.exercise.available'))
   :exerciseStatus.applied===0?t('radioRoute.exercise.status.nothing'):t('radioRoute.exercise.status.started',{applied:exerciseStatus.applied,kept:exerciseStatus.kept});
- const catalogText=parameters.catalog!==null?t(parameters.source?.recorded?'radioRoute.exercise.catalog.recorded':'radioRoute.exercise.catalog.supplied',{name:parameters.source?.name??''})
+ const catalogText=parameters.catalog!==null?t(parameters.source?.recorded?'radioRoute.exercise.catalog.recorded':parameters.source?.valuesOnly?'radioRoute.exercise.catalog.restoredValues':'radioRoute.exercise.catalog.supplied',{name:parameters.source?.name??''})
   :parameters.catalogReading?t('radioRoute.exercise.catalog.reading'):parameters.bundledError?t(`radioRoute.exercise.catalog.error.${parameters.bundledError}`):t('radioRoute.exercise.catalog.none');
  const behindReceiverBox=receiverBoxPresented||undefined;
  const behindAccess=access.open||undefined,panelBehindAccess=access.presented||undefined;
+ const restoredInstant=initial===null?null:radioClockInstant(initial.clock,0);
  return <div className="radio-route" data-testid="radio-route">
+  {initial!==null&&<section className="card radio-control radio-control-env" aria-labelledby={`${id}-restored`} data-testid="radio-restored-note">
+   <h2 id={`${id}-restored`}>{t('radioRoute.restored.heading')}</h2>
+   <p>{t('radioRoute.restored.help')}</p>
+   {restoredInstant!==null&&<p data-testid="radio-restored-clock">{t('radioRoute.restored.paused',{ut:new Date(restoredInstant).toISOString()})}</p>}
+   <p className="radio-control-note" data-testid="radio-restored-adaptation">{t('radioRoute.restored.adaptation')}</p>
+  </section>}
   <section className="card radio-control radio-control-env radio-route-exercise" aria-labelledby={`${id}-exercise`} data-testid="radio-exercise-card" data-setup={setupDone}
    data-catalog={catalogState} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id={`${id}-exercise`}>{t('radioRoute.exercise.heading')}</h2>
@@ -481,7 +511,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
    onReceiverOpened={access.receiverOpened} onMainCloseMessage={access.mainCloseMessage}
    catalogNow={parameters.currentCatalog} pointingNow={()=>antennaRef.current.pointing} readClockJD={readClockJD} perfNow={perfNow}
    apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary} pulsarData={pulsarData} onOpenPulsarAnalysis={onOpenPulsarAnalysis}
-   onSourcePicker={parameters.pickerMoved}/>
+   onSourcePicker={parameters.pickerMoved} restored={initial===null?null:{session:initial.receiverSession,windows:initial.receiverWindows}}/>
   {/* .radio-control (box-less) only scopes the shared dialog styles; the layer itself is never inert. */}
   <div className="radio-control" style={{display:'contents'}} data-testid="radio-date-layer" data-modal-pending={datePending} data-modal-presented={datePresented}>
    {datePresented&&dateState.dialog&&<RadioDateDialogView dialog={dateState.dialog} refusal={fieldRefusal} onEdit={editDate} onOk={confirmDate} onCancel={cancelDate}

@@ -11,7 +11,11 @@ export const PULSAR_REFERENCE_WEB_POLICY=Object.freeze({maxBytes:PULSAR_CATALOG_
 
 export type PulsarReferenceSource=Readonly<{name:string;bytes:number;sha256:string;rows:number;
  /** The SHA-256 and size equal the recorded original file; otherwise a user-supplied reference catalog. */
- recorded:boolean}>;
+ recorded:boolean;
+ /** Phase 1 item 1.5: a supplied catalog restored from an investigation file as its stored values only. The name, size,
+  * SHA-256 and row count are the historical claims written at Save; the original bytes were not kept or re-checked, so
+  * such a source is never `recorded`, whatever SHA-256 it claims. */
+ valuesOnly?:true}>;
 export type PulsarReferenceState=Readonly<{
  catalog:PulsarCatalog|null;
  source:PulsarReferenceSource|null;

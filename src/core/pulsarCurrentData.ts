@@ -8,7 +8,9 @@
  * arming clear 0x56a8e0, the Receive header 0x574766..0x574969, the timer append 0x56a92c and the analysis/Properties
  * windows all use that object.
  *
- * WEB-REC-OWNER: the App owns one PulsarCurrentData document for the page lifetime (never saved, restored or sent).
+ * WEB-REC-OWNER: the App owns one PulsarCurrentData document for the page lifetime (never sent). Phase 1 item 1.5: Save
+ * investigation stores a copy of its value and Restore investigation replaces it (replacePulsarCurrentData); the lease,
+ * output claim, analysis activity and verified-copy receipt are never stored.
  * `generation` increases on every dataset change. A receiver capture holds an exclusive lease while it is armed,
  * receiving, finishing or committed (the capture is current while the Properties and Save question are still open); while
  * it is held no import may commit (WEB-REC-TXN). The lease ends with exactly one release (Save No/Cancel, the R-RX17 verified
@@ -236,6 +238,21 @@ export function commitPulsarCapture(doc: PulsarCurrentData, id: number, memory: 
 export function releasePulsarCaptureLease(doc: PulsarCurrentData, id: number): PulsarDataStep {
   if (doc.lease?.id !== id) return refuse(doc, 'lease-mismatch');
   return ok({ ...doc, lease: null });
+}
+/**
+ * Phase 1 item 1.5 (WEB): Restore investigation replaces the current dataset with a restored value (a re-admitted .PLR, a
+ * rebuilt memory capture, a cleared header or nothing). Refused, changing nothing, while a capture lease, a browser output
+ * attempt, an analysis modal session or a pending analysis read exists. Like every dataset change it bumps the generation
+ * and drops a verified-copy receipt; no receipt is ever restored, so a restored memory capture is "Data Not Written to File".
+ */
+export type PulsarReplaceRefusal = 'capture-lease' | 'output-busy' | 'analysis-busy';
+export type PulsarReplaceStep = Readonly<{ doc: PulsarCurrentData; ok: true } | { doc: PulsarCurrentData; ok: false; reason: PulsarReplaceRefusal }>;
+export function replacePulsarCurrentData(doc: PulsarCurrentData, data: PulsarCurrentValue | null): PulsarReplaceStep {
+  const no = (reason: PulsarReplaceRefusal): PulsarReplaceStep => Object.freeze({ doc, ok: false, reason });
+  if (doc.lease) return no('capture-lease');
+  if (pulsarOutputClaim(doc) !== null) return no('output-busy');
+  if (doc.analysis.modal || doc.analysis.reading) return no('analysis-busy');
+  return Object.freeze({ doc: Object.freeze(bump(doc, data)), ok: true });
 }
 export function setPulsarAnalysisActivity(doc: PulsarCurrentData, activity: PulsarAnalysisActivity): PulsarDataStep {
   if (doc.analysis.modal === activity.modal && doc.analysis.reading === activity.reading) return Object.freeze({ doc, ok: true });

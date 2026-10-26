@@ -663,6 +663,46 @@ export function paintReceiver(bank:RadioReceiverBank,slot:number):RadioReceiverR
 export function copyLiveRadioOptions(bank:RadioReceiverBank,options:RadioReceiverOptions):RadioReceiverResult{
  return run(bank,d=>{const issue=radioReceiverOptionsIssue(options);if(issue)fail('options-domain',issue);d.options=Object.freeze({...options});});
 }
+/** Phase 1 item 1.5 (WEB, no native counterpart): the settings of one receiver window that an investigation file keeps.
+ * Freq MHz (+0x529), the Freq Incr. index (+0x3ed; its step is the table value), Vert. gain (+0x53d) and Horz. (+0x56f). */
+export type ReceiverWindowConfiguration=Readonly<{frequencyMHz:number;stepIndex:number;verticalGain:number;horizontal:number}>;
+const powerOfTwoIn=(v:number,min:number,max:number)=>{if(!(typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max))return false;let x=v;while(x<1)x*=2;while(x>1)x/=2;return x===1;};
+/** The values the recovered spin buttons can reach: a finite frequency in the clamp range, an index 1..5, and the two scale
+ * factors as powers of two inside their step bounds (each step halves or doubles them exactly). null: admitted. */
+export function receiverConfigurationIssue(c:unknown):string|null{
+ if(typeof c!=='object'||c===null)return 'not a record';
+ const v=c as Record<string,unknown>,k=RADIO_RECEIVER_CONSTANTS,f=v.frequencyMHz;
+ if(typeof f!=='number'||!Number.isFinite(f)||f<k.frequencyMinMHz||f>k.frequencyMaxMHz)return 'frequencyMHz';
+ if(typeof v.stepIndex!=='number'||!Number.isInteger(v.stepIndex)||v.stepIndex<k.stepIndexMin||v.stepIndex>k.stepIndexMax)return 'stepIndex';
+ if(!powerOfTwoIn(v.verticalGain as number,k.verticalMin,k.verticalMax))return 'verticalGain';
+ if(!powerOfTwoIn(v.horizontal as number,k.horizontalMin,k.horizontalMax))return 'horizontal';
+ return null;
+}
+/** The configuration of an open receiver window (what Save investigation keeps). */
+export const receiverWindowConfiguration=(r:RadioReceiver):ReceiverWindowConfiguration=>
+ Object.freeze({frequencyMHz:r.frequencyMHz,stepIndex:r.stepIndex,verticalGain:r.verticalGain,horizontal:r.horizontal});
+/** Phase 1 item 1.5 (WEB): applies a restored window configuration to the window in `slot` after the learner's own Open or
+ * Add, before any Receive: the same fields the spin buttons write (the step from RADIO_RECEIVER_STEP_VALUES, +0x565 :=
+ * gain · +0x40f), then the parameter refresh. No Randomize, source refresh, trace, paint, timer or record step runs. Refused
+ * while the main timer runs or the window is receiving, and for a configuration receiverConfigurationIssue refuses. */
+export function configureReceiver(bank:RadioReceiverBank,slot:number,c:ReceiverWindowConfiguration):RadioReceiverResult{
+ return run(bank,(d,events)=>{
+  const issue=receiverConfigurationIssue(c);if(issue)fail('receiver-unavailable',`configuration ${issue}`);
+  const r=slotOf(d,slot);
+  if(d.timerEnabled||r.receiving)fail('receiver-unavailable','configuration while receiving');
+  r.frequencyMHz=c.frequencyMHz;r.stepIndex=c.stepIndex;r.stepMHz=RADIO_RECEIVER_STEP_VALUES[c.stepIndex];
+  r.verticalGain=c.verticalGain;r.displayGain=r.verticalGain*r.sensitivity;r.horizontal=c.horizontal;
+  displayRefresh(d,r,events);
+ });
+}
+/** Phase 1 item 1.5 (WEB): a new bank's +0x5f7 buffer set to a restored copy (a bounded record snapshot, never the original
+ * bytes), so Pulsar Parameters Open finds the same source after a restore. Refused once a receiver exists. */
+export function withRestoredSourceBuffer(bank:RadioReceiverBank,buffer:RadioSourceBuffer):RadioReceiverResult{
+ return run(bank,d=>{
+  if(d.slots.some(r=>r!==null))fail('receiver-unavailable','source buffer restore with receivers');
+  d.buffer=Object.freeze({record:buffer.record===null?null:Object.freeze({...buffer.record}),primaryNameCleared:buffer.primaryNameCleared===true});
+ });
+}
 /** PulsarList1Click 0x567f80 (limit 2): overwrites or clears +0x5f7 only; no receiver field and no refresh. */
 export function overwriteSourceBufferFromPulsarList(bank:RadioReceiverBank,input:ReceiverSourceInput):RadioReceiverResult{
  return run(bank,(d,events)=>{

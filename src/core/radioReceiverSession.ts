@@ -2,7 +2,8 @@
 // canvas op log per window (pen and ops; the drawing state of the presentation, WEB-RX-PAINT-01/02), the persistent tick
 // refusal (WEB-RX-ERR-01) and the recovered close-refusal box. Pure TypeScript: no React, DOM, host clock, RNG, audio or
 // storage; the caller supplies JD (radio clock scenario) and `now` (a monotonic day scalar, WEB-RX-TIME-01). Nothing here
-// is saved or restored (WEB-RX-PERSIST-01). See docs/RADIO-RECEIVER-MONITOR.md.
+// is saved or restored (WEB-RX-PERSIST-01), except, Phase 1 item 1.5, the seed text, the live options view, the +0x5f7
+// buffer copy and each open window's settings (restoredRadioReceiverSession, configureReceiverWindow). See docs/RADIO-RECEIVER-MONITOR.md.
 // R-RX3 (docs/RADIO-RECEIVER-MARKS.md): one pointer lease across the bank (WEB-MARK-INPUT/CANCEL), one mark overlay per
 // window composed from the mark events (WEB-MARK-RENDER), keyboard placement/steps (WEB-MARK-KEYBOARD) and Clear.
 // R-RX4 (docs/RADIO-RECEIVER-RECORD.md): the Record prompts (RC-REC-03), the finish dialogs (RC-REC-08) and the host
@@ -16,7 +17,8 @@
 import type {RadioLabTransition,RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import {
- RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,armRecordCapture,clearReceiverMarks,clearRecordByte,closeReceiver,copyLiveRadioOptions,createRadioReceiverBank,endReceiverMarkDrag,
+ RADIO_RECEIVER_COMPILED_OPTIONS,activateReceiver,addReceiverChannel,armRecordCapture,clearReceiverMarks,clearRecordByte,closeReceiver,configureReceiver,copyLiveRadioOptions,createRadioReceiverBank,endReceiverMarkDrag,withRestoredSourceBuffer,
+ type ReceiverWindowConfiguration,type RadioSourceBuffer,
  openMainReceiver,overwriteSourceBufferFromPulsarList,paintReceiver,queryCloseReceiver,reassociateReceiverOnClock,receiverMarkDown,receiverMarkMove,receiverMarkUp,receiverTimerTick,refreshRecordLabel,stepFrequency,
  receiverWindowMoved,stepFrequencyIncrement,stepHorizontal,stepVertical,toggleReceive,toggleReceiverAlign,toggleRecordByte,
  type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverOptions,type RadioReceiverResult,type RadioRecordHeader,
@@ -104,7 +106,7 @@ export type ReceiverAction='seed'|'open'|'add'|'mode'|'tick'|'reassociate'|'step
  |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear'
  |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save'
  |'record-save-open'|'record-save-step'|'record-save-exit'|'record-finish-save-open'|'record-finish-save-step'|'record-finish-save-exit'
- |'align'|'move'|'pulsar-list'|'live-options';
+ |'align'|'move'|'pulsar-list'|'live-options'|'configure';
 export type ReceiverWebRefusal='seed-invalid'|'seed-locked'|'no-catalog'|'close-box-open'
  |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound'
  |'record-dialog-open'|'record-locked'|'record-analysis-busy'|'record-lease-held'|'record-superseded'|'record-input'|'identify-length'|'identify-text'
@@ -137,6 +139,24 @@ export function createRadioReceiverSession():RadioReceiverSession{
  if(!created.ok)throw new Error('compiled receiver options refused');
  return Object.freeze({bank:created.bank,seed:seedOf(RADIO_RECEIVER_SESSION_POLICY.defaultSeedText,0),canvases:Object.freeze([null,null,null]) as Canvases,tickError:null,closeBox:null,
   markLease:null,markOverlays:Object.freeze([null,null,null]) as ReceiverMarkOverlays,record:INITIAL_RECORD_STATE,arrangement:EMPTY_RECEIVER_ARRANGEMENT});
+}
+
+/** Phase 1 item 1.5 (WEB): the idle session a restore starts from. No window, timer, Record or random stream: the restored
+ * seed text starts a new count (a new run, never the saved run's stream continued), the live options view is the restored
+ * one and the +0x5f7 buffer holds the restored record copy. Throws on options or a buffer the bank refuses. */
+export function restoredRadioReceiverSession(input:Readonly<{seedText:string;options:RadioReceiverOptions;sourceBuffer:RadioSourceBuffer}>):RadioReceiverSession{
+ const base=createRadioReceiverSession();
+ const created=createRadioReceiverBank(input.options);if(!created.ok)throw new Error('restored receiver options refused');
+ const buffered=withRestoredSourceBuffer(created.bank,input.sourceBuffer);if(!buffered.ok)throw new Error('restored source buffer refused');
+ return Object.freeze({...base,bank:buffered.bank,seed:seedOf(String(input.seedText).slice(0,32),0)});
+}
+/** Phase 1 item 1.5 (WEB): the restored settings of one window, applied once after the learner's own Open or Add (no
+ * automatic Open, Receive, Record or timer). The recovered boxes refuse it like any other control. */
+export function configureReceiverWindow(s:RadioReceiverSession,slot:number,c:ReceiverWindowConfiguration):ReceiverSessionTransition{
+ const box=blockedByBox(s,'configure');if(box)return box;
+ const r=configureReceiver(s.bank,slot,c);
+ if(!r.ok)return refused(s,'configure',r.error);
+ return commit(s,'configure',r.events,r.bank);
 }
 
 const keep=(session:RadioReceiverSession,outcome:ReceiverSessionOutcome):ReceiverSessionTransition=>Object.freeze({session,outcome:Object.freeze(outcome),changed:false});

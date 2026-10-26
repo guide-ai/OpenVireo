@@ -382,6 +382,52 @@ export function setCloseRecipient(s:RadioAccessState,recipient:RadioCloseRecipie
  return next(s,{closeRecipient:recipient},'recipient-set');
 }
 
+// ---- Phase 1 item 1.5 (WEB): Save/Restore investigation of the applied configuration.
+/** What an investigation file keeps: the gate, the applied record and its env copy, the last child result, the menu flags,
+ * the close recipient and the authority. Never an open box or dialog, a draft or an opaque record field. Root and env are
+ * either the Access-only record ({accessPulsarList}) with no authority, or the complete 19-key typed record under a
+ * compiled-branch authority (isRadioOptionsFullRecord, no other key). A record supplied for tests is not a saved profile. */
+export type RadioAccessSnapshot=Readonly<{
+ gate:RadioAccessGate;authority:Readonly<{kind:'absent'}|{kind:'compiled-branch';hostPredicate:boolean}>;
+ root:RadioOptionsRecord;env:RadioOptionsRecord;lastChildOk:boolean|null;menu:RadioPulsarListMenu;closeRecipient:RadioCloseRecipient;
+}>;
+const exactKeys=(r:object,keys:readonly string[])=>{const k=Object.keys(r);return k.length===keys.length&&keys.every(x=>Object.hasOwn(r,x));};
+function recordIssue(r:unknown,authority:RadioAccessSnapshot['authority']):string|null{
+ if(r===null||typeof r!=='object'||Array.isArray(r)||!isPlain(r))return 'record';
+ if(authority.kind==='absent')return exactKeys(r,['accessPulsarList'])&&typeof (r as RadioOptionsRecord).accessPulsarList==='boolean'?null:'record';
+ return exactKeys(r,RADIO_OPTIONS_TYPED_KEYS as readonly string[])&&isRadioOptionsFullRecord(r)?null:'record';
+}
+/** Why a snapshot cannot be restored, or null. */
+export function radioAccessSnapshotIssue(s:RadioAccessSnapshot):string|null{
+ const g=s.gate;
+ if(!g||typeof g.open!=='boolean'||(g.source!=='not-supplied'&&g.source!=='demonstration')||g.open!==(g.source==='demonstration'))return 'gate';
+ const a=s.authority;
+ if(!a||(a.kind!=='absent'&&!(a.kind==='compiled-branch'&&typeof a.hostPredicate==='boolean')))return 'authority';
+ if(recordIssue(s.root,a))return 'root';if(recordIssue(s.env,a))return 'env';
+ if(s.lastChildOk!==null&&typeof s.lastChildOk!=='boolean')return 'last';
+ const m=s.menu;if(!m||typeof m.enabled!=='boolean'||typeof m.visible!=='boolean'||typeof m.activationSeen!=='boolean')return 'menu';
+ if(s.closeRecipient!=='environment'&&s.closeRecipient!=='radio-lab')return 'recipient';
+ return null;
+}
+/** The snapshot of a state, or a refusal: 'dialog' while its box or dialog exists, 'profile' for a supplied (test) origin or
+ * authority or a record with uninterpreted fields. */
+export function radioAccessSnapshot(s:RadioAccessState):Readonly<{ok:true;snapshot:RadioAccessSnapshot}|{ok:false;reason:'dialog'|'profile'}>{
+ if(s.refusal!==null||s.parent!==null)return Object.freeze({ok:false,reason:'dialog'});
+ if(s.origin!=='compiled-fallback'||s.authority.kind==='supplied')return Object.freeze({ok:false,reason:'profile'});
+ const snapshot:RadioAccessSnapshot=Object.freeze({gate:s.gate,authority:s.authority as RadioAccessSnapshot['authority'],root:s.root,env:s.env,lastChildOk:s.lastChildOk,menu:s.menu,
+  closeRecipient:s.closeRecipient});
+ return radioAccessSnapshotIssue(snapshot)===null?Object.freeze({ok:true,snapshot}):Object.freeze({ok:false,reason:'profile'});
+}
+/** The restored state: createRadioAccessState's startup state with the saved applied values; no box, dialog, draft or
+ * failure. Throws on a snapshot radioAccessSnapshotIssue refuses. */
+export function restoredRadioAccessState(s:RadioAccessSnapshot):RadioAccessState{
+ if(radioAccessSnapshotIssue(s)!==null)throw new TypeError('Invalid radio access snapshot');
+ const base=createRadioAccessState();
+ return Object.freeze({...base,gate:Object.freeze({open:s.gate.open,source:s.gate.source}),root:frozenCopy(s.root) as RadioOptionsRecord,env:frozenCopy(s.env) as RadioOptionsRecord,
+  lastChildOk:s.lastChildOk,menu:Object.freeze({enabled:s.menu.enabled,visible:s.menu.visible,activationSeen:s.menu.activationSeen}),closeRecipient:s.closeRecipient,
+  authority:Object.freeze(s.authority.kind==='absent'?{kind:'absent' as const}:{kind:'compiled-branch' as const,hostPredicate:s.authority.hostPredicate})});
+}
+
 export type RadioPulsarListAvailability='hidden'|'hidden-enabled'|'shown-enabled'|'shown-disabled';
 /** Readout of the two flags. File ▸ Pulsar List... (WEB-ACC-LIST-01, WEB-PP-LIST-04) reads these flags at its click and
  * never writes them. */

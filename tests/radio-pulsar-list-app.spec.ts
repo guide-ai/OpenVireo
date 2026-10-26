@@ -1,5 +1,6 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 // Actual App flows of R-RX6 (docs/RADIO-PULSAR-PARAMETERS.md PP-05/PP-11, WEB-PP-LIST-*, WEB-PP-ACT-01, WEB-PP-CUR-01,
 // WEB-PP-FIND-02′/04, WEB-PP-PRES-02): the Pulsar Parameters reference Open only reads the receiver session's shared source
 // buffer, Find seeds from that buffer, and the receivers' picker runs (Receiver Open, clock reassociation) write it and move
@@ -14,6 +15,20 @@ const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,in
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
+const sha=(b:Buffer|string)=>createHash('sha256').update(b).digest('hex');
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json=any;
+/** Phase 1 item 1.5: once Radio is used, Save writes v23, which wraps the unchanged v≤22 investigation in `base` and keeps the
+ * Radio part separately (with its consistency digest). The base must equal the earlier file exactly; returns the Radio part. */
+function radioPart(saved:Buffer,before:Buffer):Json{
+ const next:Json=JSON.parse(saved.toString('utf8')),old:Json=JSON.parse(before.toString('utf8'));
+ expect(old.version).toBeLessThanOrEqual(22);expect(next.version).toBe(23);
+ expect(Object.keys(next).sort()).toEqual(['base','format','numericalPolicy','radio','radioDigestSHA256','radioPolicy','version']);
+ expect(next.numericalPolicy).toBe('Number_x87_equivalence_unvalidated');expect(next.radioPolicy).toBe('OpenVireo radio investigation 1');
+ expect(next.base,'unrelated investigation unchanged').toEqual(old);
+ expect(sha(JSON.stringify(next.radio))).toBe(next.radioDigestSHA256);
+ return next.radio;
+}
 async function flush(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 /** Fake time in 200 ms steps (five 40 ms receiver ticks), letting React commit between steps. */
 async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}}
@@ -115,7 +130,7 @@ async function findSeed(page:Page,expected:string){
  await page.keyboard.press('Escape');await expect(id(page,'pulsar-find-dialog')).toHaveCount(0);
 }
 
-test('Open only reads the shared buffer: initial before and after activation, the Receiver Open name afterwards, kept at a miss pointing; Find seeds from it; no clock; Save bytes unchanged; reload empties',async({page})=>{
+test('Open only reads the shared buffer: initial before and after activation, the Receiver Open name afterwards, kept at a miss pointing; Find seeds from it; no clock; Save keeps the buffer and catalog values, not the window; reload empties',async({page})=>{
  await startApp(page);const before=await save(page);await radioRoute(page);await loadCatalog(page);
  // WEB-PP-LIST-02: before the antenna's first activation the activation reads the initial buffer.
  await openWindow(page);
@@ -147,7 +162,16 @@ test('Open only reads the shared buffer: initial before and after activation, th
  await expect(field(page,'j2000')).toHaveValue('J0001+3826');await windowAt(page,2,2,2);
  await findSeed(page,'B2358+38');
  await id(page,'pulsar-params-exit').click();
- expect((await save(page)).equals(before)).toBe(true);
+ // Save (v23): the other tools unchanged; the Radio part keeps the supplied catalog as values (never as the recorded original),
+ // the shared source buffer A, the open receiver's window settings and the miss pointing. The Pulsar Parameters window is not
+ // saved, and nothing is stored in the browser: a reload without Restore empties the catalog.
+ const pointing={ra:Number(await id(page,'antenna-ra').getAttribute('data-ra-hours')),dec:Number(await id(page,'antenna-dec').getAttribute('data-dec-degrees'))};
+ const w=radioPart(await save(page),before).workspace;
+ expect(w.catalog).toMatchObject({kind:'supplied',name:'synthetic-list.dat',bytes:Buffer.byteLength(CATALOG,'latin1'),sha256:sha(Buffer.from(CATALOG,'latin1')),rows:4});
+ expect(w.catalog.records.map((r:Json)=>[r.primaryName,r.legacyName])).toEqual(ROWS.map(r=>[r.primaryName,r.legacyName]));
+ expect(w.receivers.sourceBuffer).toMatchObject({primaryNameCleared:false,record:{primaryName:'J0001+3826',legacyName:'B2358+38'}});
+ expect(w.receivers.windows[0]).not.toBeNull();expect(w.receivers.windows.slice(1)).toEqual([null,null]);
+ expect(w.antenna).toMatchObject({activated:true,tracking:true,pointing});
  await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-control')).toBeVisible();
  await expect(id(page,'pulsar-ref-none')).toBeVisible();await expect(win(page)).toHaveCount(0);await expect(id(page,'pulsar-params-open')).toBeDisabled();
 });

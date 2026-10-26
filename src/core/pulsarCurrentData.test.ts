@@ -4,7 +4,7 @@ import {
  EMPTY_PULSAR_HEADER,INITIAL_PULSAR_CURRENT_DATA,PULSAR_DATA_NOT_WRITTEN,PULSAR_SAVE_NAME_MAX,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,importPulsarRecording,isMemoryData,
  pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataFileName,pulsarDataPresentation,pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarFrequencyText,
  pulsarFinishWriteClaim,pulsarHeaderCells,pulsarMemoryRecording,pulsarOutputClaim,pulsarSaveNameOk,pulsarWriteClaim,pulsarWrittenCopy,recordPulsarFinishWrittenCopy,recordPulsarWrittenCopy,
- releasePulsarCaptureLease,releasePulsarOutput,setPulsarAnalysisActivity,setPulsarCapturePhase,
+ releasePulsarCaptureLease,releasePulsarOutput,replacePulsarCurrentData,setPulsarAnalysisActivity,setPulsarCapturePhase,
  type PulsarCaptureInput,type PulsarCaptureLease,type PulsarCurrentData,type PulsarMemoryRecording,type PulsarWriteClaim,type PulsarWriteRefusal,type PulsarWrittenCopy,
 } from './pulsarCurrentData';
 import {buildPulsarRawExport} from './pulsarRawExport';
@@ -476,5 +476,23 @@ describe('R-RX17 finish claim: bound to the committed lease object, separate fro
   const flipped=good.slice();flipped[3]^=1;refused(doc,claim,owner,flipped,'x.PLR','readback-bytes');
   for(const name of ['','dir/a.PLR','a\u0001.PLR'])refused(doc,claim,owner,good,name,'file-name');
   expect(recordPulsarFinishWrittenCopy(doc,claim,owner,good,'ok.PLR').ok).toBe(true);
+ });
+});
+
+describe('Phase 1 item 1.5 replacePulsarCurrentData (Restore investigation)',()=>{
+ it('replaces the value with a new generation and no receipt; refused unchanged under a lease, an output or analysis activity',()=>{
+  const m=capture(),base=commitPulsarCapture(setPulsarCapturePhase(acquirePulsarCaptureLease(INITIAL_PULSAR_CURRENT_DATA,1,0,false).doc,1,'receiving').doc,1,m);
+  expect(replacePulsarCurrentData(base.doc,plr())).toMatchObject({ok:false,reason:'capture-lease'});
+  const free=releasePulsarCaptureLease(base.doc,1).doc;
+  const claimed=claimPulsarOutput(free,'analysis',5).doc,c=replacePulsarCurrentData(claimed,plr());
+  expect(c).toMatchObject({ok:false,reason:'output-busy'});expect(c.doc).toBe(claimed);
+  expect(replacePulsarCurrentData(setPulsarAnalysisActivity(free,{modal:true,reading:false}).doc,null)).toMatchObject({ok:false,reason:'analysis-busy'});
+  expect(replacePulsarCurrentData(setPulsarAnalysisActivity(free,{modal:false,reading:true}).doc,null)).toMatchObject({ok:false,reason:'analysis-busy'});
+  const restored=capture({captureId:9});
+  const r=replacePulsarCurrentData(free,restored);
+  expect(r.ok).toBe(true);expect(r.doc.data).toBe(restored);expect(r.doc.generation).toBe(free.generation+1);expect(r.doc.written).toBeNull();
+  // A restored memory capture is "Data Not Written to File" and the Load prompt still asks.
+  expect(pulsarCurrentSaved(r.doc)).toBe(false);expect(pulsarDataProperties(restored,pulsarWrittenCopy(r.doc)).fields.file).toBe(PULSAR_DATA_NOT_WRITTEN);
+  expect(replacePulsarCurrentData(r.doc,null)).toMatchObject({ok:true,doc:{data:null,generation:r.doc.generation+1}});
  });
 });

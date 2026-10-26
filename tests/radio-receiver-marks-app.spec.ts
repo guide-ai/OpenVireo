@@ -1,5 +1,6 @@
 import {test,expect,type Browser,type CDPSession,type Locator,type Page,type TestInfo} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 // Actual App flows of the manual receiver marks (docs/RADIO-RECEIVER-MARKS.md, R-RX3) on the #radio-control route. Only the
 // rendered App, its data attributes, the browser clock control and, where named, test-only instrumentation: Canvas API
 // recording of the base display, recorded DOM event order, a test-only foreign <dialog>, a visibilityState override, a
@@ -13,6 +14,21 @@ const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documen
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
 const restore=(page:Page,name:string,text:string)=>page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name,mimeType:'application/json',buffer:Buffer.from(text,'utf8')});
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json=any;
+/** Phase 1 item 1.5: a file written while Radio is mounted is v23, which wraps the unchanged v≤22 investigation in `base` and
+ * keeps the Radio part separately (with its consistency digest); an older file has no Radio part. Returns both parts. */
+function investigationParts(saved:Buffer):{base:Json;radio:Json}{
+ const f:Json=JSON.parse(saved.toString('utf8'));
+ if(f.version!==23){expect(f.version).toBeLessThanOrEqual(22);expect(Object.hasOwn(f,'radio')).toBe(false);return {base:f,radio:null};}
+ expect(Object.keys(f).sort()).toEqual(['base','format','numericalPolicy','radio','radioDigestSHA256','radioPolicy','version']);
+ expect(f.numericalPolicy).toBe('Number_x87_equivalence_unvalidated');expect(f.radioPolicy).toBe('OpenVireo radio investigation 1');
+ expect(f.base.version).toBeLessThanOrEqual(22);
+ expect(createHash('sha256').update(JSON.stringify(f.radio)).digest('hex')).toBe(f.radioDigestSHA256);
+ return {base:f.base,radio:f.radio};
+}
+/** Display marks are temporary: no saved key names a mark. */
+const noMarkKey=(radio:Json)=>expect(JSON.stringify(radio)).not.toMatch(/"[^"]*mark[^"]*":/i);
 async function flush(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}}
 /** Test-only hold: arrayBuffer() of a File named held-* waits until release(name). Product code is unchanged. */
@@ -104,7 +120,7 @@ const recordBaseCanvas=(page:Page)=>page.addInitScript(()=>{
 const baseRecord=(page:Page)=>page.evaluate(()=>{const w=window as unknown as CanvasRecord;return {lines:w.__rxLines,fills:w.__rxFills};});
 const resetBaseRecord=(page:Page)=>page.evaluate(()=>{const w=window as unknown as CanvasRecord;w.__rxLines=0;w.__rxFills=0;});
 
-test('desktop: left drag places the first mark, right press the second; base display untouched; Clear twice; double-click sequence; Save bytes unchanged',async({page})=>{
+test('desktop: left drag places the first mark, right press the second; base display untouched; Clear twice; double-click sequence; Save keeps the window settings, not the marks',async({page})=>{
  await recordBaseCanvas(page);await startApp(page);const before=await save(page);
  await radioRoute(page);await switchOnTracking(page);await loadCatalog(page);await openReceiver(page);
  await expect(id(page,`receiver-mark-position-0`)).toHaveValue('');await expectMarks(page,0,-1,-1);
@@ -142,7 +158,13 @@ test('desktop: left drag places the first mark, right press the second; base dis
  const p200=await columnPoint(page,0,200);await page.mouse.dblclick(p200.x,p200.y);
  expect(await page.evaluate(()=>(window as unknown as{__order:string[]}).__order)).toEqual(['pointerdown','pointerup','click','pointerdown','pointerup','click','dblclick']);
  await expectMarks(page,0,-1,-1);await expect(id(page,'receiver-status-0')).toHaveText('First mark cleared.');expect((await baseRecord(page)).fills).toBe(3);
- expect((await save(page)).equals(before)).toBe(true);
+ // Save (v23): the other tools unchanged (`before` has no Radio part); the Radio part keeps the open window's settings and the
+ // supplied catalog values, but no display mark.
+ const old=investigationParts(before),saved=investigationParts(await save(page));
+ expect(old.radio).toBeNull();expect(saved.base).toEqual(old.base);
+ expect(saved.radio.workspace.receivers.windows[0]).not.toBeNull();expect(saved.radio.workspace.receivers.windows.slice(1)).toEqual([null,null]);
+ expect(saved.radio.workspace.catalog).toMatchObject({kind:'supplied',name:'synthetic-receiver.dat',rows:2});
+ noMarkKey(saved.radio);
 });
 
 test('stop boundary: no new mark until the finish; the label uses the sweep snapshot, not the live Horz value; Receive resets',async({page})=>{
@@ -250,7 +272,15 @@ test('cancellation (mouse): an antenna dialog, a foreign dialog, a held restore 
  await page.goForward();await expect(id(page,'radio-control')).toBeVisible();await expectMarks(page,0,140,-1);
  // A fresh drag still works afterwards (no orphan lease).
  await drag(200,210);await page.mouse.up();await expectMarks(page,0,210,-1);
- expect((await save(page)).equals(before)).toBe(true);
+ // Save keeps the newly opened receiver, but not display marks. RA-07 openSetCoordinates seeds an all-zero stored target
+ // from the pointing when the dialog opens; Cancel does not undo that seed (radioAntenna.ts:710-747). Keep every other value.
+ const old=investigationParts(before),saved=investigationParts(await save(page));
+ expect(saved.base).toEqual(old.base);expect(saved.radio.data).toEqual(old.radio.data);expect(saved.radio.analysis).toEqual(old.radio.analysis);
+ expect(old.radio.workspace.antenna.target).toEqual({ra:0,dec:0});expect(old.radio.workspace.antenna.skyCoordsB1950).toBe(false);
+ expect({...saved.radio.workspace,receivers:null}).toEqual({...old.radio.workspace,receivers:null,antenna:{...old.radio.workspace.antenna,target:old.radio.workspace.antenna.pointing}});
+ expect(old.radio.workspace.receivers.windows).toEqual([null,null,null]);
+ expect(saved.radio.workspace.receivers.windows[0]).not.toBeNull();expect(saved.radio.workspace.receivers.windows.slice(1)).toEqual([null,null]);
+ noMarkKey(saved.radio);
 });
 
 /** A touch-enabled context with Chromium CDP touch input (synthetic browser input, not OS multitouch). Setup runs at the

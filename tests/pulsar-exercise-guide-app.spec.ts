@@ -79,7 +79,7 @@ type GuideState={next:string|null;done:Record<string,string|null>};
 async function guide(page:Page):Promise<GuideState>{
  await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
  const done:Record<string,string|null>={};
- for(const step of ['setup','catalog','point','channels','capture','period','delay','save'])done[step]=await id(page,`pulsar-lab-step-${step}`).getAttribute('data-done');
+ for(const step of ['setup','catalog','point','channels','capture','period','delay','investigation','save'])done[step]=await id(page,`pulsar-lab-step-${step}`).getAttribute('data-done');
  const next=await id(page,'pulsar-lab-next').getAttribute('data-next');
  await id(page,'pulsar-lab-close').click();await expect(dialog).toBeHidden();
  return {next,done};
@@ -120,7 +120,7 @@ for(const [label,viewport] of [['desktop 1440',{width:1440,height:1050}],['mobil
    for(const region of ['radio-exercise-card','radio-route-scenario','radio-route-clock','radio-route-date'])await noVisibleOffsets(id(page,region));
    await expect(id(page,'radio-exercise-reason')).toHaveText('Available. Pressing it again later changes nothing that is already set up.');
    await expect(id(page,'radio-exercise-adaptation')).toContainText(SCENARIO_UT);
-   expect(await guide(page)).toEqual({next:'setup',done:{setup:'false',catalog:'false',point:'false',channels:'false',capture:'false',period:'false',delay:'false',save:'false'}});
+   expect(await guide(page)).toEqual({next:'setup',done:{setup:'false',catalog:'false',point:'false',channels:'false',capture:'false',period:'false',delay:'false',investigation:'false',save:'false'}});
    expect(assets,'no catalog request before Start').toEqual([]);
    await shot(page,info,`before-start-${viewport.width}`);
 
@@ -134,7 +134,7 @@ for(const [label,viewport] of [['desktop 1440',{width:1440,height:1050}],['mobil
    await noVisibleOffsets(id(page,'radio-route-panel-wrapper'));
    expect(assets,'exactly one same-origin request for the bundled file').toEqual(['/original/radio/Pulsars.dat']);
    await expect(id(page,'pulsar-ref-bundled')).toBeDisabled();
-   expect(await guide(page)).toEqual({next:'point',done:{setup:'true',catalog:'true',point:'false',channels:'false',capture:'false',period:'false',delay:'false',save:'false'}});
+   expect(await guide(page)).toEqual({next:'point',done:{setup:'true',catalog:'true',point:'false',channels:'false',capture:'false',period:'false',delay:'false',investigation:'false',save:'false'}});
 
    // A second Start changes nothing and fetches nothing.
    const after=await radioSnapshot(page);
@@ -149,7 +149,9 @@ for(const [label,viewport] of [['desktop 1440',{width:1440,height:1050}],['mobil
    // Guide by keyboard: Enter on the header button opens it with Close focused; Escape closes it.
    await id(page,'pulsar-lab-open').focus();await page.keyboard.press('Enter');
    await expect(id(page,'pulsar-lab-dialog')).toBeVisible();await expect(id(page,'pulsar-lab-close')).toBeFocused();
-   await expect(id(page,'pulsar-lab-incomplete')).toBeVisible();await expect(id(page,'pulsar-lab-delay-formula')).toHaveText('delay [s] = 4150 × DM × (1/f_low² − 1/f_high²), with f in MHz and DM in pc/cm³');
+   // Phase 1 item 1.5: the backup is available (no "not complete" claim) and the counts have eight required steps.
+   await expect(id(page,'pulsar-lab-backup')).toHaveAttribute('data-backup','available');await expect(id(page,'pulsar-lab-counts')).toHaveText('2 of 8 pulsar steps done.');
+   await expect(id(page,'pulsar-lab-delay-formula')).toHaveText('delay [s] = 4150 × DM × (1/f_low² − 1/f_high²), with f in MHz and DM in pc/cm³');
    await expect(id(page,'pulsar-lab-add-disarms')).toBeVisible();await noVisibleOffsets(id(page,'pulsar-lab-dialog'));
    await shot(page,info,`guide-${viewport.width}`);
    await page.keyboard.press('Escape');await expect(id(page,'pulsar-lab-dialog')).toBeHidden();
@@ -427,16 +429,19 @@ test.describe('desktop 1440 (mouse), original catalog',()=>{
   const measuredDelay=(b-q)*DT;
   expect(Math.abs(measuredDelay-continuousDelay),'manual 400→500 MHz delay vs DM: within half a sample').toBeLessThanOrEqual(DT/2);
 
-  // Guide: readings recorded (not judged); the investigation backup is pending.
+  // Guide: readings recorded (not judged); Save investigation is the eighth required step and is not done yet (Phase 1 item 1.5).
   const g=await guide(page);
-  expect(g).toEqual({next:'save',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',save:'false'}});
+  expect(g).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
   await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-status-delay')).toHaveText('Reading recorded (not checked for correctness)');
-  await expect(id(page,'pulsar-lab-backup-pending')).toBeVisible();await shot(page,info,'original-guide');await id(page,'pulsar-lab-close').click();
+  await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 pulsar steps done.');
+  await expect(id(page,'pulsar-lab-investigation-note')).toHaveAttribute('data-investigation','none');
+  await expect(id(page,'pulsar-lab-status-investigation')).toHaveText('Not yet for this capture and these rows.');
+  await shot(page,info,'original-guide');await id(page,'pulsar-lab-close').click();
 
   // Closing the receivers un-checks pointing and channels, but the recorded capture and readings keep Next forward.
   await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();
   await id(page,'receiver-close-0').click();await expect(page.locator('[data-testid^="receiver-card-"]')).toHaveCount(0);
-  expect(await guide(page)).toEqual({next:'save',done:{setup:'true',catalog:'true',point:'false',channels:'false',capture:'true',period:'true',delay:'true',save:'false'}});
+  expect(await guide(page)).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'false',channels:'false',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
   await nav(page,'Radio data').click();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
   await expect(id(page,'pulsar-count')).toHaveText('3 recorded measurements');
 

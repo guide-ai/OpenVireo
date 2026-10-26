@@ -406,7 +406,7 @@ for(const width of [1440,390,375,320])test(`layout without overflow at ${width} 
  for(const testId of ['radio-access-card','radio-access-numeric','radio-env']){const b=await id(page,testId).boundingBox();expect(b,testId).not.toBeNull();expect(b!.x+b!.width,testId).toBeLessThanOrEqual(width);}
 });
 
-test('A/B: Save investigation bytes unchanged; File ▸ Pulsar List still works under the numeric authority',async({page})=>{
+test('A/B: Save investigation keeps the numeric authority (base part unchanged); File ▸ Pulsar List still works under it',async({page})=>{
  // Both saves at the same paused clock instant, so only the investigation content is compared.
  await startApp(page);await radioRoute(page);const before=await save(page);
  await id(page,'radio-env-compiled').click();await optIn(page);await demonstration(page);
@@ -417,9 +417,48 @@ test('A/B: Save investigation bytes unchanged; File ▸ Pulsar List still works 
  await id(page,'radio-switch').click();await expect(id(page,'antenna-status')).toContainText('initialized');
  await expect(id(page,'radio-access-menu')).toHaveAttribute('data-availability','shown-enabled');
  await expect(id(page,'radio-id-caption')).toHaveText('120 Meter Radio Telescope');
- const after=await save(page);expect(after.equals(before)).toBe(true);
+ // Phase 1 item 1.5 (intentional change): Save investigation now keeps the applied numeric authority (the 19-key record),
+ // the projected panel diameter and the menu flags; the unrelated base part is unchanged.
+ const a=JSON.parse(before.toString('utf8')),b=JSON.parse((await save(page)).toString('utf8'));
+ expect(a.version).toBe(23);expect(b.version).toBe(23);expect(b.base).toEqual(a.base);
+ expect(a.radio.workspace.access.authority).toEqual({kind:'absent'});
+ expect(b.radio.workspace.access.authority).toEqual({kind:'compiled-branch',hostPredicate:true});
+ expect(b.radio.workspace.access.root.aperture916).toBe(120);expect(Object.keys(b.radio.workspace.access.root)).toHaveLength(19);
+ expect(b.radio.workspace.environment.dishDiameterMeters).toBe(120);expect(b.radio.workspace.access.menu).toEqual({enabled:true,visible:true,activationSeen:true});
  await loadCatalog(page);await applyClock(page);
  await id(page,'radio-access-pulsar-list').click();await flush(page);
  await expect(id(page,'radio-access-list-status')).toHaveAttribute('data-outcome',/^(hit|miss)$/);
  await expect(id(page,'pulsar-params-window')).toBeVisible();
+});
+
+test('Phase 1 item 1.5: numeric preferences keep the applied slew rate; Save and Restore keep it, aperture 200 and caption 100; the next press computes from the restored options',async({page,browser},info)=>{
+ await startApp(page);await radioRoute(page);await switchOnTracking(page);
+ await expect(id(page,'antenna-rate')).toContainText('Index 4');await expect(id(page,'antenna-rate')).toContainText('500');
+ const rateText=(await id(page,'antenna-rate').textContent())!;
+ await optIn(page);await demonstration(page);await openFull(page);
+ await field(page,'aperture916').fill('200');await field(page,'baseSlew91a').fill('60');await fullOk(page);
+ await expect(id(page,'radio-access-numeric-report')).toHaveAttribute('data-antenna','applied');await expect(id(page,'antenna-options')).toContainText('rate base 60');
+ await expect(id(page,'radio-env-diameter-current')).toHaveText('200');await expect(id(page,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');
+ // The options change does not rewrite the applied rate (index 4 still at 500).
+ await expect(id(page,'antenna-rate')).toHaveText(rateText);
+ const bytes=await save(page);
+ await expect(page.locator('.investigation-toolbar').getByText('Investigation saved.',{exact:false})).toBeVisible();
+ const file=JSON.parse(bytes.toString('utf8'));
+ expect(file.radio.workspace.antenna).toMatchObject({activated:true,tracking:true,rateIndex:4,rate:500});
+ expect(file.radio.workspace.options.rateBase).toBe(60);expect(file.radio.workspace.environment.dishDiameterMeters).toBe(200);
+ expect(file.radio.workspace.control.idCaption).toEqual({kind:'radio',diameterMeters:100});
+ // Restore in a NEW context: the same rate at index 4, caption 100, current diameter 200; one rate-down press gives 60.
+ const context=await browser.newContext({baseURL:info.project.use.baseURL,acceptDownloads:true});
+ try{
+  const p=await context.newPage(),errors:string[]=[];p.on('pageerror',e=>errors.push(String(e)));
+  await p.goto('/#pulsar-analysis');await expect(heading(p,'Recorded pulsar analysis')).toBeVisible();
+  await p.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'rate.json',mimeType:'application/json',buffer:bytes});
+  await expect(p.locator('.investigation-toolbar').getByText('Investigation restored.',{exact:false})).toBeVisible({timeout:30_000});
+  await nav(p,'Radio telescope').click();await expect(heading(p,'Radio telescope control')).toBeVisible();
+  await expect(id(p,'antenna-rate')).toHaveText(rateText);
+  await expect(id(p,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');await expect(id(p,'radio-env-diameter-current')).toHaveText('200');
+  await expect(id(p,'antenna-options')).toContainText('rate base 60');
+  await id(p,'antenna-rate-down').click();await expect(id(p,'antenna-rate')).toContainText('Index 3');await expect(id(p,'antenna-rate')).toContainText('60');
+  expect(errors).toEqual([]);
+ }finally{await context.close();}
 });

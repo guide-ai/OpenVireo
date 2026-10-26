@@ -25,6 +25,7 @@ import {acquisitionObjectId,acquisitionJournalText,restoreAcquisitionObservation
 import {EMPTY_HUBBLE,readHubbleWorkspace,type HubbleWorkspace} from '../core/hubbleAnalysis';
 import { createMeasurement, currentZ, type Measurement, type ShiftControl } from '../core/spectrum';
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
+import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
 export const SESSION_PAYLOAD_BYTES=16*1024*1024,MAX_SESSION_BYTES=SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
@@ -35,6 +36,8 @@ export type SessionObservation=(ImportedSpectrum & Readonly<{name:string;kind?:u
 export type AnalysisSession=Readonly<{
   observation:SessionObservation|null; control:ShiftControl; stepInput:string;
   reference:keyof typeof REFERENCES; wide:boolean; object:string; rows:readonly Measurement[]; hubble:HubbleWorkspace; acquisitions?:readonly AcquisitionObservation[];classification?:ClassificationWorkspace;photometry?:PhotometerState;observing?:ObservingWorkspace;editing?:EditingWorkspace;optical?:OpticalWorkspace;clusterDatabase?:ClusterDatabaseWorkspace;clusterComparison?:ClusterComparisonWorkspace;clusterSelection?:ClusterSelectionWorkspace;motion?:MotionPreferences;
+  /** Phase 1 item 1.5 (v23): the Radio workspace, current pulsar dataset and pulsar measurements. Absent in v1..22 files. */
+  radio?:RadioInvestigationRecord;
 }>;
 export class AnalysisSessionError extends Error {
   constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
@@ -80,6 +83,13 @@ async function restore(value:unknown,verifySources=true,migrated=false):Promise<
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===23){
+    const r=record(value,['format','version','numericalPolicy','base','radioPolicy','radioDigestSHA256','radio']);
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.radioPolicy!==RADIO_INVESTIGATION_POLICY||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>22)fail('format');
+    const base=await restore(r.base,verifySources,true);
+    let radio:RadioInvestigationRecord;try{radio=await admitRadioInvestigation(r.radio,r.radioDigestSHA256,{verifySources});}catch{fail('state');}
+    return Object.freeze({...base,radio});
+  }
   if(version===22){
     const r=record(value,['format','version','numericalPolicy','base','motionPolicy','motionProofSHA256','motion']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.motionPolicy!==TELESCOPE_MOTION_POLICY||r.motionProofSHA256!==TELESCOPE_MOTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>21)fail('format');
@@ -160,6 +170,7 @@ async function restore(value:unknown,verifySources=true,migrated=false):Promise<
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 async function portable(session:AnalysisSession):Promise<unknown> {
+  if(session.radio!==undefined){const {radio,digest}=await portableRadioInvestigation(session.radio.snapshot);return {format:FORMAT,version:23,numericalPolicy:POLICY,base:await portable({...session,radio:undefined}),radioPolicy:RADIO_INVESTIGATION_POLICY,radioDigestSHA256:digest,radio};}
   if(session.motion!==undefined){let motion:MotionPreferences;try{motion=readMotionPreferences(session.motion);}catch{fail('state');}return {format:FORMAT,version:22,numericalPolicy:POLICY,base:await portable({...session,motion:undefined}),motionPolicy:TELESCOPE_MOTION_POLICY,motionProofSHA256:TELESCOPE_MOTION_SHA256,motion};}
   if(session.clusterSelection!==undefined){if(session.clusterComparison!==undefined||session.clusterDatabase!==undefined)fail('state');const clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(session.clusterSelection);return {format:FORMAT,version:21,numericalPolicy:POLICY,base:await portable({...session,clusterSelection:undefined}),clusterComparisonPolicy:CLUSTER_COMPARISON_POLICY,clusterComparisonSHA256:CLUSTER_COMPARISON_SHA256,nativeClusterPolicy:NATIVE_CLUSTER_POLICY,nativeClusterContractSHA256:NATIVE_CLUSTER_SHA256,clusterSelectionPolicy:CLUSTER_SELECTION_POLICY,clusterSelectionSHA256:CLUSTER_SELECTION_SHA256,clusterSelection};}
   if(session.clusterComparison!==undefined){if(session.clusterDatabase!==undefined)fail('state');const clusterComparison=readClusterComparisonWorkspace(session.clusterComparison);return {format:FORMAT,version:20,numericalPolicy:POLICY,base:await portable({...session,clusterComparison:undefined}),clusterComparisonPolicy:CLUSTER_COMPARISON_POLICY,clusterComparisonSHA256:CLUSTER_COMPARISON_SHA256,nativeClusterPolicy:NATIVE_CLUSTER_POLICY,nativeClusterContractSHA256:NATIVE_CLUSTER_SHA256,clusterComparison};}

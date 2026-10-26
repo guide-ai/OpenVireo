@@ -14,6 +14,8 @@ const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,in
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
 const save=(page:Page)=>download(page,page.getByRole('button',{name:'Save investigation',exact:true}));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parsed=(bytes:Buffer):any=>JSON.parse(bytes.toString('utf8'));
 const restore=(page:Page,name:string,text:string)=>page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name,mimeType:'application/json',buffer:Buffer.from(text,'utf8')});
 async function flush(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 /** Fake time in 200 ms steps (five 40 ms receiver ticks), letting React commit between steps. */
@@ -148,14 +150,16 @@ test('Open → Receive → Stop at the sweep end → Close → reopen; labels, r
  await expect(id(page,'receiver-mode')).not.toHaveAttribute('aria-disabled','true');
  for(const t of ['receiver-horizontal-up-0','receiver-add'])await expect(id(page,t)).toBeEnabled();
  const frozen=await position(page);await advance(page,400);expect(await position(page)).toBe(frozen);
- expect((await save(page)).equals(before)).toBe(true);
+ // Phase 1 item 1.5 (intentional change): Save now adds the Radio part (v23); the unrelated base part is unchanged.
+ const withRadio=parsed(await save(page));expect(withRadio.version).toBe(23);expect(withRadio.base).toEqual(parsed(before));
+ expect(withRadio.radio.workspace.receivers.windows[0]).toMatchObject({frequencyMHz:700,stepIndex:5});
  // Close: focus to the Receiver button; reopen creates a fresh window with the next seed.
  await id(page,'receiver-close-0').click();await expect(id(page,'receiver-card-0')).toHaveCount(0);await expect(id(page,'antenna-receiver-button')).toBeFocused();
  await expect(id(page,'receiver-setup-status')).toHaveText('Receiver window closed.');await expect(id(page,'receiver-seed')).toBeEnabled();
  // Seeds 1 (Open) and 2 (first profile allocation) were used; the refused Mode used none.
  await expect(id(page,'receiver-seed-next')).toHaveText('Next reseed uses 3.');
  await openReceiver(page);await expect(id(page,'receiver-frequency-value-0')).toHaveText('600.00');await expect(id(page,'receiver-sweep-0')).toHaveText('No sweep yet.');
- expect((await save(page)).equals(before)).toBe(true);
+ expect(parsed(await save(page)).base).toEqual(parsed(before));
 });
 
 test('Freq MHz 400..1400 with at-limit beeps, Freq Incr. 1..5, held Enter ignored; Receiver button outside the key scope',async({page})=>{
@@ -276,7 +280,13 @@ test('catalog lock, project operation (timer cancelled, no catch-up), route hide
  await page.getByRole('button',{name:'Cancel pending save/restore',exact:true}).click();await release(page,'held-restore.json');await flush(page);
  await advance(page,200);const resumed=await position(page);expect(resumed).not.toBe(frozen);
  expect(Math.abs(resumed-frozen)).toBeLessThan(60);// no catch-up of the 2 s gap (≈ 300 positions at H = 4)
- expect((await save(page)).equals(before)).toBe(true);
+ // Phase 1 item 1.5 (intentional change): Save now includes the Radio part, so it refuses while a receiver is receiving;
+ // nothing is downloaded and the receiver keeps running. The earlier file is the v23 Radio investigation.
+ expect(parsed(before).version).toBe(23);
+ let downloads=0;page.on('download',()=>{downloads++;});
+ await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ await expect(page.locator('.investigation-toolbar [role="alert"]')).toContainText('Nothing was saved: a receiver is receiving.');
+ await flush(page);expect(downloads).toBe(0);await expect(id(page,'receiver-mode-disp-0')).toHaveText('Receive');
  // Route hidden and shown: still receiving; the canvas bitmap is retained.
  const pixels=await page.evaluate(()=>(document.querySelector('[data-testid="receiver-canvas-0"]') as HTMLCanvasElement).toDataURL().length);
  await page.goBack();await expect(id(page,'radio-control')).toBeHidden();
