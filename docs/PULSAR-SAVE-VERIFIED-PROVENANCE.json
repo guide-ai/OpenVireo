@@ -1,0 +1,101 @@
+{
+  "increment": "R-RX15 analysis-only Save capture with verification",
+  "baselineCommit": "2ca5fb387e0e3d22957d6804ac2940425fc31d6e",
+  "artifact": {
+    "name": "CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "bytesReadForThisIncrement": false
+  },
+  "evidenceRoot": "/tmp/clea-static-research/radio-rx15-native-save-20261026",
+  "evidenceKind": "Preserved bounded static REA/GNU objdump captures and static PE literal decoding from an earlier phase. No fresh REA provider run, no original execution, no microemulation.",
+  "evidenceFiles": [
+    "RECOVERED-CONTRACT.json",
+    "WEB-WRITE-AUTHORITY.json",
+    "CAPTURE-RECEIPT.json",
+    "SAVE-DIALOG-CLASS-BINDING.json",
+    "SAVE-DIALOG-EXECUTE-RECEIPT.json",
+    "HELPER-IMPORT-IDENTITIES.json",
+    "IO-MESSAGE-IMPORT-IDENTITIES.json",
+    "IO-MESSAGE-FOLLOWUP-RECEIPT.json",
+    "FINAL-IMPORT-STUB-RECEIPT.json",
+    "CALLER-LITERAL-CANDIDATES.json",
+    "COORDINATOR-P3-ASSESSMENT.json",
+    "P3-PROVENANCE-ADDENDUM.json"
+  ],
+  "evidenceFilesReadByImplementer": ["RECOVERED-CONTRACT.json", "WEB-WRITE-AUTHORITY.json", "CAPTURE-RECEIPT.json", "CALLER-LITERAL-CANDIDATES.json"],
+  "evidenceFilesReadByImplementerNote": "Historical list of the original R-RX15 implementation phase; the P3 corrective reads are recorded separately in p3Corrective.",
+  "p3Corrective": {
+    "scope": "R-RX15 P3 corrective: text, comments, docs, provenance and regression tests only; no runtime change",
+    "evidenceFilesReadByImplementer": ["COORDINATOR-P3-ASSESSMENT.json", "P3-PROVENANCE-ADDENDUM.json", "RECOVERED-CONTRACT.json", "WEB-WRITE-AUTHORITY.json"],
+    "listingsReadByImplementer": [],
+    "coordinatorVerified": {
+      "record": "P3-PROVENANCE-ADDENDUM.json",
+      "UTC": "2026-10-26T06:02:16.994138+00:00",
+      "kind": "coordinator verification of already preserved eligible static listings, no fresh disassembly/native execution",
+      "scope": "SHA-256 and used ranges of text-output-close-backend.asm and message-dialog-wrapper-complete.asm; the signal-write.asm copy argument 0x56a84f..0x56a85d",
+      "originalExecution": false,
+      "newExcludedSourceAccess": false
+    }
+  },
+  "listings": [
+    { "name": "signal-read.asm", "sha256": "7d8aa6bad20841409a385db3596716e5488823b1dae566ec8fd2df66862b0f60", "source": "RECOVERED-CONTRACT.json reusedEligibleListings" },
+    { "name": "signal-clear.asm", "sha256": "86f6211b94b9a5b941c0bbc35335163ef6ccd60bc8a2ed47ed0abf04e3481cf7", "source": "RECOVERED-CONTRACT.json reusedEligibleListings" },
+    { "name": "signal-write.asm", "sha256": "55069a74c53d6daa29657dbef7768a2b5322a5c6145c8624802dbe303eebef7d", "source": "RECOVERED-CONTRACT.json reusedEligibleListings" },
+    { "name": "writer-caller-56b36c.asm", "sha256": "b56926da8ce354c26b671d94031d3b6656ca378703f716b5cffa2a115640f5be", "source": "RECOVERED-CONTRACT.json reusedEligibleListings" },
+    { "name": "list-position-helpers.asm", "range": "0x492628..0x492740", "sha256": "0579522589cbefb0255d4fe1e706cd7e748b2824be3cf5d5f9e774410e51c12d", "source": "CAPTURE-RECEIPT.json" },
+    { "name": "candidate-test-helper.asm", "range": "0x40b224..0x40b2f0", "sha256": "230d59d7855a70712a8cc2252b652f15cab53a5872e8ec6721b92ea36e109253", "source": "CAPTURE-RECEIPT.json" },
+    { "name": "remembered-state-helper.asm", "range": "0x40b514..0x40b5b0", "sha256": "6d8206b5156a9a60caddb8a7882df25f7a8036e905a38246cb84d6472ccf1e30", "source": "CAPTURE-RECEIPT.json" },
+    { "name": "io-check-wrapper.asm", "range": "0x4030f8..0x403150", "sha256": "851cdad72671875584a6bfccfaf80d96b649c4a0f651f7689e38392cacafedc4", "source": "CAPTURE-RECEIPT.json" },
+    { "name": "close-wrapper.asm", "range": "0x403bc8..0x403c20", "sha256": "fd354ae329d6e61f862937d82e508cb8f7391eddb3c851c643d9e73e008ac6e8", "source": "CAPTURE-RECEIPT.json" },
+    { "name": "dialog-string-getter.asm", "range": "0x44d988..0x44d9f4", "sha256": "037e88d1876758aad519ec7fcbe2358a000b80ed5da8013c65f38bbc9588d3da", "source": "CAPTURE-RECEIPT.json" },
+    { "name": "dialog-string-setter.asm", "range": "0x44d9f4..0x44da50", "sha256": "a9f7def4f495d47a2e8105020bc097f3c8458a7a664e98dc3eff0577585accd0", "source": "CAPTURE-RECEIPT.json" },
+    { "name": "text-output-close-backend.asm", "range": "0x403808..0x403874", "usedRange": "0x403808..0x403872", "sha256": "ab9b19e24481d166b4c5136c862b1c03e1761e9b682a9c14a37f999719cbc7cf", "source": "P3-PROVENANCE-ADDENDUM.json (coordinator-verified)" },
+    { "name": "message-dialog-wrapper-complete.asm", "range": "0x47e09c..0x47e2c0", "usedRange": "0x47e09c..0x47e214", "sha256": "a97911867f677ac9f842c58e095e083f78089531036c1189b7696f5c66e4dc52", "source": "P3-PROVENANCE-ADDENDUM.json (coordinator-verified)" }
+  ],
+  "listingsReadByImplementer": [],
+  "literals": [
+    { "address": "0x56b67c", "text": "List Is Empty!", "dataSHA256": "ceb29087b252ffc1e848f874ef3210f4a38b80701560a59355f700f83eae505c" },
+    { "address": "0x56b68c", "text": "No Recorded Data to Save!", "dataSHA256": "bbd91a26cd4d61f395101d507cc3bb6d189c6364c808dcdd10f1209c17395608" },
+    { "address": "0x56b6b0", "text": "Select File Name for Save", "dataSHA256": "137ce030a73d4d87435d4e9118a10def4ae92745fb58745e0b95ecf9455f1cbd" },
+    { "address": "0x56b6dc", "text": ".PLR", "dataSHA256": "76e562fa3ea8965adc830f1fb2c5f11f818c7e7754de739fb186117022d7c786" },
+    { "address": "0x56b6ec", "text": "The file extension you specified is not \".PLR\".  This may lead to confusion and errors when identfying and loading the file.\r\n\r\nDo you want to change your specification?", "dataSHA256": "1c908b78ceba05c3ed0e362c51e7727a0c02021da6b5ff191ee4d2fa77a438b4" },
+    { "address": "0x56b798", "text": "Extension Not .PLR!", "dataSHA256": "be2dc4f7831c66150189b7063da2872fb7a5deeb3df0ac5c7495fd0ae78a6096" }
+  ],
+  "literalsNote": "Storage-type candidates from CALLER-LITERAL-CANDIDATES.json (static PE decoding); binding by call-site type corroboration is recorded there. Not shown in the web UI; the web texts are authored.",
+  "contracts": [
+    { "id": "SAVE-WRITTEN", "tag": "S", "ranges": ["signal-write.asm 0x56a838..0x56a868", "close-wrapper.asm 0x403bc8..0x403c1d", "io-check-wrapper.asm 0x4030f8..0x403114", "text-output-close-backend.asm 0x403808..0x403872"], "ported": "receipt only after close and an exact read-back (WEB-SAVE-05)", "notClaimed": "fsync, physical durability, historical file content, all transitive effects",
+      "copyArgument": [
+        { "address": "0x56a84f", "instruction": "lea eax,[edi+0x9a]", "tag": "S" },
+        { "address": "0x56a855", "instruction": "mov edx,DWORD PTR [ebp-0x4]", "tag": "S" },
+        { "address": "0x56a858", "instruction": "mov ecx,0xff", "tag": "S" },
+        { "address": "0x56a85d", "instruction": "call0x4060cc", "tag": "S" }
+      ],
+      "copyArgumentSource": "P3-PROVENANCE-ADDENDUM.json copyArgument, copied unchanged (signal-write.asm 0x56a848..0x56a85d)",
+      "interpretation": { "tag": "I", "text": "The0xff argument is consistent with a bounded ShortString copy; no callee reinspection or native code-page/ANSIbyte equivalence in this increment. Cite exactargument rather than claiming the full capacity behavior is newlyproved." },
+      "webNameBound": { "tag": "W", "maxUTF16CodeUnits": 255, "nativeByteEquivalence": false } },
+    { "id": "SAVE-ORIGIN-INDEPENDENT", "tag": "S", "ranges": ["signal-read.asm 0x56a49d..0x56a4be", "signal-clear.asm 0x56a912..0x56a920", "signal-write.asm 0x56a848..0x56a85d"], "ported": "receipt separate from origin; memory stays memory; 11-column row" },
+    { "id": "SAVE-EXTENSION", "tag": "S", "ranges": ["writer-caller 0x56b563..0x56b5f6", "message-dialog-wrapper-complete.asm 0x47e09c..0x47e214"], "literals": ["0x56b6ec", "0x56b798"], "flags": "0x23", "ported": "extension rule with Choose again / Cancel (WEB-SAVE-04); No 7 not offered", "notClaimed": "overwrite question, +0x64 bit 0x80 mapping, runtime flags" },
+    { "id": "SAVE-DIALOG", "tag": "S", "evidence": ["SAVE-DIALOG-CLASS-BINDING.json", "dialog-string-getter.asm", "dialog-string-setter.asm"], "ported": "no; the browser picker replaces it", "notClaimed": "native dialog options, defaults, delivery" },
+    { "id": "SAVE-EMPTY", "tag": "S", "ported": "covered by the R-RX14 no-rows refusal; native literals not shown" },
+    { "id": "SAVE-ROWS", "tag": "S,I", "ported": "R-RX14 byte builder (every row once, in order)" },
+    { "id": "SAVE-CANDIDATE", "tag": "S", "ported": "no (no collision probe, no directory listing)" },
+    { "id": "SAVE-PATH", "tag": "S,I", "ported": "no (no remembered folder, no host path)" },
+    { "id": "THDRDISP-FILE", "tag": "S", "ranges": ["0x571931..0x57194b"], "ported": "Properties shows the receipt basename when +0x97 is set" }
+  ],
+  "webPolicy": ["WEB-SAVE-01", "WEB-SAVE-02", "WEB-SAVE-03", "WEB-SAVE-04", "WEB-SAVE-05", "WEB-SAVE-06", "WEB-SAVE-07", "WEB-SAVE-08"],
+  "browserSources": [
+    "https://wicg.github.io/file-system-access/#api-showsavefilepicker",
+    "https://fs.spec.whatwg.org/#api-filesystemfilehandle-createwritable",
+    "https://fs.spec.whatwg.org/#api-filesystemwritablefilestream-write",
+    "https://developer.chrome.com/docs/capabilities/web-apis/file-system-access"
+  ],
+  "unresolvedLimits": [
+    "actual native OSdialog delivery/defaults, host ANSI/DBCS/currentdirectory and file state not observed",
+    "browser picker/physical OS durability not proven by synthetic tests; capabilityfeature detection and explicit limits required",
+    "original SaveYes integrations separate; no wholeRadio completion claim",
+    "no native output/x87/GDI/locale equivalence; do not reinterpret extensionwarning asoverwrite"
+  ],
+  "originalExecution": false,
+  "microemulation": false,
+  "networkUsedByImplementer": false
+}

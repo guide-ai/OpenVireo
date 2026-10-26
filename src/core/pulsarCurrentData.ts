@@ -40,7 +40,10 @@ export const EMPTY_PULSAR_HEADER: PulsarHeaderCells = Object.freeze({
   name: null, aperture: null, highestIndex: null, frequencies: Object.freeze([null, null, null] as const), gains: Object.freeze([null, null, null] as const), start: null, interval: null,
 });
 
-/** A finished or partial receiver capture held only in memory (+0x96 = 0, +0x97 = 0). */
+/**
+ * A finished or partial receiver capture held only in memory (+0x96 = 0; +0x97 = 0 when the capture is committed). The
+ * R-RX15 verified copy is kept separately on the document (`written`) and read through pulsarWrittenCopy / pulsarCurrentSaved.
+ */
 export type PulsarMemoryRecording = Readonly<{
   origin: 'memory'; source: 'radio-receiver-model'; captureId: number;
   name: string; aperture: number; highestIndex: PlrReceiverIndex;
@@ -71,9 +74,15 @@ export type PulsarCurrentData = Readonly<{
   data: PulsarCurrentValue | null;
   lease: PulsarCaptureLease | null;
   analysis: PulsarAnalysisActivity;
+  /**
+   * R-RX15 (docs/PULSAR-SAVE-VERIFIED.md): the last verified browser copy of this memory capture, or null/absent. Historical:
+   * it says that a copy was read back equal at that time, not that the file is still there or unchanged. Only
+   * recordPulsarWrittenCopy creates one; every dataset change (bump) drops it. Read it through pulsarWrittenCopy.
+   */
+  written?: PulsarWrittenCopy | null;
 }>;
 export const INITIAL_PULSAR_CURRENT_DATA: PulsarCurrentData = Object.freeze({
-  generation: 0, data: null, lease: null, analysis: Object.freeze({ modal: false, reading: false }),
+  generation: 0, data: null, lease: null, analysis: Object.freeze({ modal: false, reading: false }), written: null,
 });
 
 export type PulsarDataRefusal = 'capture-lease' | 'superseded' | 'analysis-busy' | 'lease-mismatch';
@@ -84,7 +93,11 @@ const refuse = (doc: PulsarCurrentData, reason: PulsarDataRefusal): PulsarDataSt
 // ---------------------------------------------------------------- accessors
 /** Rows in the +0x80 list (0 for no data or a cleared header). */
 export const pulsarDataRows = (d: PulsarCurrentValue | null) => d === null || isClearedData(d) ? 0 : d.rowCount;
-/** +0x97: set by a successful read (0x56a49d..0x56a4be); 0 after a clear, a Receive header write and for memory data. */
+/**
+ * +0x97 of the value alone: set by a successful read (0x56a49d..0x56a4be); 0 after a clear and a Receive header write.
+ * @deprecated R-RX15: a memory capture can also have a verified written copy, which only the document knows. Use
+ * pulsarCurrentSaved(doc). Kept for callers that hold only a value (it answers as before R-RX15).
+ */
 export const pulsarDataSaved = (d: PulsarCurrentValue | null) => isFileData(d);
 /** The header cells of the current value (the Receive seed, WEB-REC-HEADER). File gains are the effective (zero → 1) values. */
 export function pulsarHeaderCells(d: PulsarCurrentValue | null): PulsarHeaderCells {
@@ -129,15 +142,20 @@ export function pulsarDataPresentation(d: PulsarCurrentValue | null): PulsarData
   return d.name === PLR_RESERVED_NAME ? 'reserved-name' : 'ok';
 }
 
-/** THdrDisp.FormActivate 0x571748 text. A file keeps plrProperties unchanged; memory data shows the 0x5719a4 literal (+0x97 = 0). */
-export function pulsarDataProperties(d: PulsarData): PlrProperties {
+/**
+ * THdrDisp.FormActivate 0x571748 text. A file keeps plrProperties unchanged; memory data shows the 0x5719a4 literal (+0x97 = 0)
+ * or, R-RX15, the browser basename of a verified copy (+0x9a shown when +0x97 is set, 0x571931..0x57194b). `written` must be
+ * the result of pulsarWrittenCopy(doc); a receipt of another data object is ignored, so older held data never shows it.
+ */
+export function pulsarDataProperties(d: PulsarData, written: PulsarWrittenCopy | null = null): PlrProperties {
   if (!isMemoryData(d)) return plrProperties(d);
   const h = d.highestIndex, cell = (v: number | null, digits: number) => v === null ? '' : formatFixed(v, digits);
+  const file = written !== null && WRITTEN_RECEIPTS.has(written) && written.data === d ? written.fileName : PULSAR_DATA_NOT_WRITTEN;
   return Object.freeze({
     fields: Object.freeze({
       object: d.name, start: formatFixed(d.start, 8), aperture: String(d.aperture),
       // fmul Single 1000 (0x571998) then ffFixed 2
-      interval: formatFixed(d.interval * 1000, 2), points: String(d.rowCount), file: PULSAR_DATA_NOT_WRITTEN,
+      interval: formatFixed(d.interval * 1000, 2), points: String(d.rowCount), file,
     }),
     receivers: Object.freeze(([0, 1, 2] as const).map(i => Object.freeze({
       receiver: i, recorded: i <= h, frequency: i <= h ? cell(d.frequencies[i], 2) : '', gain: i <= h ? cell(d.gains[i], 3) : '', gainZeroReplaced: false,
@@ -163,8 +181,9 @@ export function pulsarMemoryRecording(c: PulsarCaptureInput): PulsarMemoryRecord
 }
 
 // ---------------------------------------------------------------- transitions
+/** Every dataset change (import, arming erase, capture commit) drops a verified-copy receipt (R-RX15); nothing revives it. */
 const bump = (doc: PulsarCurrentData, data: PulsarCurrentValue | null, lease = doc.lease): PulsarCurrentData =>
-  ({ ...doc, generation: doc.generation + 1, data, lease });
+  ({ ...doc, generation: doc.generation + 1, data, lease, written: null });
 
 /**
  * Analysis Load commit. expectedGeneration is the generation when the read started: a later dataset change refuses it
@@ -212,3 +231,133 @@ export function setPulsarAnalysisActivity(doc: PulsarCurrentData, activity: Puls
   if (doc.analysis.modal === activity.modal && doc.analysis.reading === activity.reading) return Object.freeze({ doc, ok: true });
   return ok({ ...doc, analysis: Object.freeze({ modal: activity.modal, reading: activity.reading }) });
 }
+
+// ---------------------------------------------------------------- R-RX15 verified written copy
+/*
+ * docs/PULSAR-SAVE-VERIFIED.md. [S] SAVE-WRITTEN (signal-write.asm 0x56a838..0x56a868): the writer closes the file, runs the I/O
+ * check and only then sets +0x97 and the file name +0x9a; [S] SAVE-ORIGIN-INDEPENDENT: it never stores +0x96, so a written
+ * memory capture stays memory data (no file field in a measurement row). [W] web policy: a receipt is recorded only from an
+ * owned claim, after the browser stream was closed and a fresh read-back equals the claim's text byte for byte, and only
+ * while the dataset is still the claimed object, generation, metadata and samples. It is historical, not a file monitor.
+ *
+ * Ownership: claims and receipts are frozen, hold frozen ordinary arrays (no exposed typed array) and an immutable ASCII
+ * string, and are registered in module-private WeakSets. A spread copy or hand-made object is not a claim or receipt. The
+ * symbol brands only shape the types; they prove no I/O.
+ */
+declare const CLAIM: unique symbol;
+declare const WRITTEN: unique symbol;
+const WRITE_CLAIMS = new WeakSet<object>(), WRITTEN_RECEIPTS = new WeakSet<object>();
+
+/** The memory capture fields a claim owns a copy of (the object is producer-frozen; this copy is checked against it). */
+export type PulsarCaptureSnapshot = Readonly<{
+  captureId: number; name: string; aperture: number; highestIndex: PlrReceiverIndex;
+  frequencies: Cells<number | null>; gains: Cells<number | null>; start: number; interval: number; rowCount: number; full: boolean;
+}>;
+export type PulsarWriteClaim = Readonly<{
+  readonly [CLAIM]: true;
+  data: PulsarMemoryRecording; generation: number; metadata: PulsarCaptureSnapshot;
+  /** Frozen copy of the samples (Object.is comparison, so −0 and +0 differ). */
+  samples: readonly number[];
+  /** The canonical ASCII payload; fresh bytes are made from it for every write and compared with the read-back. */
+  text: string;
+}>;
+export type PulsarWrittenCopy = Readonly<{
+  readonly [WRITTEN]: true;
+  data: PulsarMemoryRecording; generation: number; metadata: PulsarCaptureSnapshot; samples: readonly number[];
+  /** The browser's basename of the chosen file (FileSystemHandle.name), never a folder path. */
+  fileName: string;
+  byteLength: number;
+}>;
+/** 'claim': not a claim this module issued. The others in check order; a refusal changes nothing (a prior receipt is kept). */
+export type PulsarWriteRefusal = 'claim' | 'capture-lease' | 'superseded' | 'source-mutated' | 'readback-size' | 'readback-bytes' | 'file-name';
+export type PulsarWriteStep = Readonly<{ doc: PulsarCurrentData; ok: true } | { doc: PulsarCurrentData; ok: false; reason: PulsarWriteRefusal }>;
+/**
+ * [S] The writer's +0x9a name copy passes ECX = 0xff (0x56a858 mov ecx,0xff) to call 0x4060cc at 0x56a85d
+ * (docs/PULSAR-SAVE-VERIFIED-PROVENANCE.json, SAVE-WRITTEN copyArgument). [I] That argument is read as a bounded ShortString
+ * copy; the callee is not re-inspected. [W] WEB policy, not recovered: at most 255 UTF-16 code units (no ANSI byte or
+ * code-page equivalence is claimed), no C0 control or DEL and no path separator (a basename only). Refused, never cut.
+ */
+export const PULSAR_SAVE_NAME_MAX = 255;
+export function pulsarSaveNameOk(name: unknown): name is string {
+  if (typeof name !== 'string' || name.length < 1 || name.length > PULSAR_SAVE_NAME_MAX) return false;
+  for (let i = 0; i < name.length; i++) { const c = name.charCodeAt(i); if (c < 0x20 || c === 0x7f || c === 0x2f || c === 0x5c) return false; }
+  return true;
+}
+
+const snapshotOf = (d: PulsarMemoryRecording): PulsarCaptureSnapshot => Object.freeze({
+  captureId: d.captureId, name: d.name, aperture: d.aperture, highestIndex: d.highestIndex,
+  frequencies: Object.freeze([d.frequencies[0], d.frequencies[1], d.frequencies[2]] as const), gains: Object.freeze([d.gains[0], d.gains[1], d.gains[2]] as const),
+  start: d.start, interval: d.interval, rowCount: d.rowCount, full: d.full,
+});
+const sameCells = (a: Cells<number | null>, b: Cells<number | null>) => Object.is(a[0], b[0]) && Object.is(a[1], b[1]) && Object.is(a[2], b[2]);
+/** The data object still holds exactly the owned metadata and samples (Object.is per value). */
+function sourceMatches(d: PulsarMemoryRecording, metadata: PulsarCaptureSnapshot, samples: readonly number[]): boolean {
+  const m = metadata, s = d.samples;
+  if (!(s instanceof Float64Array) || s.length !== samples.length) return false;
+  if (!Object.is(d.captureId, m.captureId) || d.name !== m.name || !Object.is(d.aperture, m.aperture) || d.highestIndex !== m.highestIndex || !sameCells(d.frequencies, m.frequencies)
+    || !sameCells(d.gains, m.gains) || !Object.is(d.start, m.start) || !Object.is(d.interval, m.interval) || d.rowCount !== m.rowCount || d.full !== m.full) return false;
+  for (let k = 0; k < s.length; k++) if (!Object.is(s[k], samples[k])) return false;
+  return true;
+}
+const asciiOnly = (text: string) => { for (let i = 0; i < text.length; i++) if (text.charCodeAt(i) > 0x7f) return false; return true; };
+
+/**
+ * An owned write claim for the current memory capture and its canonical payload text (the R-RX14 bytes, as built by the
+ * caller in the same task). null when the data is not a producer-frozen memory capture with finite rows×3 samples, or the
+ * text is empty or not ASCII. Nothing in the document changes.
+ */
+export function pulsarWriteClaim(doc: PulsarCurrentData, text: string): PulsarWriteClaim | null {
+  const d = doc.data;
+  if (!isMemoryData(d) || !Object.isFrozen(d) || !Object.isFrozen(d.frequencies) || !Object.isFrozen(d.gains)) return null;
+  if (!(d.samples instanceof Float64Array) || !Number.isInteger(d.rowCount) || d.samples.length !== d.rowCount * 3) return null;
+  if (typeof text !== 'string' || text.length === 0 || !asciiOnly(text)) return null;
+  const samples = Object.freeze(Array.from(d.samples));
+  if (!samples.every(Number.isFinite)) return null;
+  const claim = Object.freeze({ data: d, generation: doc.generation, metadata: snapshotOf(d), samples, text }) as PulsarWriteClaim;
+  WRITE_CLAIMS.add(claim);
+  return claim;
+}
+/** Fresh bytes of a claim's text, for one write. Mutating them changes neither the claim nor a later comparison. */
+export function pulsarClaimBytes(claim: PulsarWriteClaim): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(claim.text.length);
+  for (let i = 0; i < claim.text.length; i++) bytes[i] = claim.text.charCodeAt(i);
+  return bytes;
+}
+/** Read-back against the claim's immutable text: same length, then every byte. */
+export function pulsarClaimReadback(claim: PulsarWriteClaim, readback: Uint8Array): 'ok' | 'readback-size' | 'readback-bytes' {
+  if (!(readback instanceof Uint8Array) || readback.length !== claim.text.length) return 'readback-size';
+  for (let i = 0; i < readback.length; i++) if (readback[i] !== claim.text.charCodeAt(i)) return 'readback-bytes';
+  return 'ok';
+}
+
+/**
+ * Records the verified copy (the web counterpart of +0x97 := 1 and +0x9a := name after close and I/O check). Refused, in
+ * order: a claim this module did not issue; a held capture lease; another data object or generation ('superseded'); the
+ * same object whose metadata or samples changed in place ('source-mutated'); a read-back of another length or with any
+ * different byte; a file name outside pulsarSaveNameOk. On success the data object, generation, lease and analysis activity
+ * are unchanged (no adoption reset), so cursors, zoom and the measurement list stay; only `written` is set.
+ */
+export function recordPulsarWrittenCopy(doc: PulsarCurrentData, claim: PulsarWriteClaim, readback: Uint8Array, fileName: string): PulsarWriteStep {
+  const refuse = (reason: PulsarWriteRefusal): PulsarWriteStep => Object.freeze({ doc, ok: false, reason });
+  if (!WRITE_CLAIMS.has(claim)) return refuse('claim');
+  if (doc.lease) return refuse('capture-lease');
+  if (doc.data !== claim.data || doc.generation !== claim.generation) return refuse('superseded');
+  if (!sourceMatches(claim.data, claim.metadata, claim.samples)) return refuse('source-mutated');
+  const back = pulsarClaimReadback(claim, readback);
+  if (back !== 'ok') return refuse(back);
+  if (!pulsarSaveNameOk(fileName)) return refuse('file-name');
+  const receipt = Object.freeze({ data: claim.data, generation: claim.generation, metadata: claim.metadata, samples: claim.samples, fileName, byteLength: claim.text.length }) as PulsarWrittenCopy;
+  WRITTEN_RECEIPTS.add(receipt);
+  return Object.freeze({ doc: Object.freeze({ ...doc, written: receipt }), ok: true });
+}
+/**
+ * The receipt of the current data, or null: absent, not issued here, for another object or generation, or the data's
+ * metadata or samples no longer equal the owned copy.
+ */
+export function pulsarWrittenCopy(doc: PulsarCurrentData): PulsarWrittenCopy | null {
+  const w = doc.written;
+  if (!w || !WRITTEN_RECEIPTS.has(w) || w.data !== doc.data || w.generation !== doc.generation || !isMemoryData(doc.data)) return null;
+  return sourceMatches(w.data, w.metadata, w.samples) ? w : null;
+}
+/** +0x97 of the current dataset: an imported file, or a memory capture with a valid verified copy (R-RX15). */
+export const pulsarCurrentSaved = (doc: PulsarCurrentData) => isFileData(doc.data) || pulsarWrittenCopy(doc) !== null;

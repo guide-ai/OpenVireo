@@ -14,7 +14,8 @@
  *   openvireo-model-capture.PLR; only memory data; every refusal below fails closed and nothing is repaired. No native byte,
  *   x87, FPU, locale or line-terminator equivalence is claimed.
  * - Not ported: the writer's +0x97/+0x9a stores, its cursor calls and file handling, and the whole caller 0x56b36c (empty
- *   check, generated name, dialog, question, path store). The source data is never written to.
+ *   check, generated name, dialog, question, path store). The source data is never written to. R-RX15 reuses these bytes
+ *   for the separate verified browser Save (pulsarSavedCopy.ts); a download here still never marks anything saved.
  * - The output passes the strict reader as a self-consistency check, not as a native oracle. The PLR layout has no field for
  *   the model origin: a re-imported copy is ordinary file data.
  * Pure TypeScript: no React, no DOM, no clock, no storage.
@@ -23,6 +24,8 @@ import {
   admitPlrRecording, formatFixed, PLR_MAX_BYTES, PLR_MAX_NAME_CHARS, PLR_MAX_ROWS, PLR_RESERVED_NAME, PLR_VALUE_BOUNDS, type PlrReceiverIndex,
 } from './pulsarRecording';
 import { isMemoryData, type PulsarCurrentValue, type PulsarMemoryRecording } from './pulsarCurrentData';
+// Type-only: pulsarSavedCopy imports this module at runtime, so there is no runtime cycle.
+import type { PulsarSaveNotice } from './pulsarSavedCopy';
 
 /** WEB: the fixed basename of every raw export. It names the model origin, which the PLR layout cannot carry. */
 export const RAW_EXPORT_FILE_NAME = 'openvireo-model-capture.PLR';
@@ -162,11 +165,15 @@ export type RawExportSession = Readonly<{
   refusal: RawExportRefusal | null;
   /** The last download request threw in the browser; the session is kept for a new request. */
   failure: boolean;
+  /** R-RX15: 'save' is the verified browser Save dialog (src/core/pulsarSavedCopy.ts); 'download' (default) is R-RX14. */
+  purpose?: 'download' | 'save';
+  /** R-RX15: the phase or result of the latest Save attempt of this session; kept by refusals and download failures. */
+  save?: PulsarSaveNotice | null;
 }>;
 const session = (s: RawExportSession, patch: Partial<RawExportSession>): RawExportSession => Object.freeze({ ...s, ...patch });
 
-export const rawExportOpen = (data: PulsarMemoryRecording, generation: number): RawExportSession =>
-  Object.freeze({ data, generation, preview: buildPulsarRawExport(data), refusal: null, failure: false });
+export const rawExportOpen = (data: PulsarMemoryRecording, generation: number, purpose: 'download' | 'save' = 'download'): RawExportSession =>
+  Object.freeze({ data, generation, preview: buildPulsarRawExport(data), refusal: null, failure: false, purpose, save: null });
 
 export type RawExportContext = Readonly<{ data: PulsarCurrentValue | null; generation: number; ready: boolean }>;
 export type RawExportRequest =
@@ -193,3 +200,5 @@ export function rawExportRequest(s: RawExportSession, ctx: RawExportContext): Ra
 
 /** The browser refused to start the download: the session stays for a new request. */
 export const rawExportDownloadFailed = (s: RawExportSession): RawExportSession => session(s, { failure: true, refusal: null });
+/** R-RX15: the latest Save phase or result. A new phase replaces an earlier refusal or download failure, which no longer applies. */
+export const rawExportSaveNotice = (s: RawExportSession, save: PulsarSaveNotice): RawExportSession => session(s, { save, refusal: null, failure: false });

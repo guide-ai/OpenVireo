@@ -1,10 +1,12 @@
 import {describe,expect,it} from 'vitest';
 import {admitPlrRecording,type PlrRecording} from './pulsarRecording';
 import {
- EMPTY_PULSAR_HEADER,INITIAL_PULSAR_CURRENT_DATA,PULSAR_DATA_NOT_WRITTEN,acquirePulsarCaptureLease,commitPulsarCapture,importPulsarRecording,pulsarDataPresentation,
- pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarFrequencyText,pulsarHeaderCells,pulsarMemoryRecording,releasePulsarCaptureLease,setPulsarAnalysisActivity,
- setPulsarCapturePhase,type PulsarCaptureInput,type PulsarMemoryRecording,
+ EMPTY_PULSAR_HEADER,INITIAL_PULSAR_CURRENT_DATA,PULSAR_DATA_NOT_WRITTEN,PULSAR_SAVE_NAME_MAX,acquirePulsarCaptureLease,commitPulsarCapture,importPulsarRecording,isMemoryData,
+ pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataFileName,pulsarDataPresentation,pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarFrequencyText,
+ pulsarHeaderCells,pulsarMemoryRecording,pulsarSaveNameOk,pulsarWriteClaim,pulsarWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,setPulsarAnalysisActivity,
+ setPulsarCapturePhase,type PulsarCaptureInput,type PulsarCurrentData,type PulsarMemoryRecording,type PulsarWriteClaim,type PulsarWriteRefusal,type PulsarWrittenCopy,
 } from './pulsarCurrentData';
+import {buildPulsarRawExport} from './pulsarRawExport';
 import {
  INITIAL_PULSAR_ANALYSIS,PULSAR_BASES,pulsarActivateData,pulsarAnswerLoad,pulsarBeginRecord,pulsarConfirmRecord,pulsarFactor,pulsarLoad,pulsarModalOpen,pulsarPointer,
  pulsarRequestLoad,pulsarTrace,type PulsarAnalysisState,type PulsarPointer,type PulsarTransition,
@@ -162,5 +164,139 @@ describe('memory data in the manual analysis (PLR-MEMORY-01)',()=>{
   expect(Object.is(m.samples[0],0.0078)).toBe(true);
   expect(pulsarTrace(s,0)[0].y).toBe(PULSAR_BASES[0]);
   expect(PULSAR_BASES[0]-Math.round(0.008*8*8)).toBe(PULSAR_BASES[0]-1);
+ });
+});
+
+// R-RX15 (docs/PULSAR-SAVE-VERIFIED.md, WEB-SAVE-05/06). [S] SAVE-WRITTEN / SAVE-ORIGIN-INDEPENDENT are the recovered facts; the
+// receipt, its checks and its invalidation are the chosen web contract. The read-back bytes here are synthetic stand-ins for
+// a browser read-back, not native writer output.
+describe('R-RX15 verified written copy: receipt, refusals, invalidation and ownership',()=>{
+ /** A committed and released memory capture: the state after Save No. */
+ const committed=(m=capture()):PulsarCurrentData=>{
+  const r=setPulsarCapturePhase(acquirePulsarCaptureLease(INITIAL_PULSAR_CURRENT_DATA,1,0,false).doc,1,'receiving').doc;
+  return releasePulsarCaptureLease(commitPulsarCapture(r,1,m).doc,1).doc;
+ };
+ const textOf=(m:PulsarMemoryRecording)=>{const b=buildPulsarRawExport(m);if(!b.ok)throw new Error(b.problem.code);return b.text;};
+ const bytes=(text:string)=>Uint8Array.from(text,c=>c.charCodeAt(0));
+ const saved=(m=capture(),name='copy.PLR')=>{
+  const d=committed(m),text=textOf(m),claim=pulsarWriteClaim(d,text);
+  if(!claim)throw new Error('no claim');
+  const step=recordPulsarWrittenCopy(d,claim,bytes(text),name);
+  if(!step.ok)throw new Error(step.reason);
+  return {m,d,text,claim,doc:step.doc};
+ };
+
+ it('defaults: an imported file is saved, a memory capture is not; INITIAL carries no receipt and a file cannot be claimed',()=>{
+  expect(INITIAL_PULSAR_CURRENT_DATA.written).toBeNull();expect(pulsarWrittenCopy(INITIAL_PULSAR_CURRENT_DATA)).toBeNull();
+  const f=importPulsarRecording(INITIAL_PULSAR_CURRENT_DATA,plr(),0).doc;
+  expect(pulsarCurrentSaved(f)).toBe(true);expect(pulsarWrittenCopy(f)).toBeNull();expect(pulsarWriteClaim(f,'x')).toBeNull();
+  const d=committed();
+  expect(pulsarCurrentSaved(d)).toBe(false);expect(d.written).toBeNull();
+  // A document without the optional field (pre-R-RX15 fixtures) has no receipt.
+  const {written:_omit,...legacy}=d;void _omit;
+  expect(pulsarWrittenCopy(legacy)).toBeNull();expect(pulsarCurrentSaved(legacy)).toBe(false);
+ });
+
+ it('a receipt keeps the data object, generation, lease, activity and samples; origin stays memory; only Properties shows the basename',()=>{
+  const {m,d,text,doc}=saved();
+  const w=pulsarWrittenCopy(doc) as PulsarWrittenCopy;
+  expect(w.fileName).toBe('copy.PLR');expect(w.byteLength).toBe(text.length);
+  expect(doc.data).toBe(m);expect(doc.generation).toBe(d.generation);expect(doc.lease).toBeNull();expect(doc.analysis).toBe(d.analysis);
+  expect(isMemoryData(doc.data)).toBe(true);expect(pulsarCurrentSaved(doc)).toBe(true);
+  expect(Array.from(m.samples)).toEqual(Array.from({length:30},(_,i)=>i%3===2?0:(i+1)/7));
+  // +0x96 untouched: the measurement-row file field stays absent.
+  expect(pulsarDataFileName(m)).toBeNull();
+  expect(pulsarDataProperties(m,w).fields.file).toBe('copy.PLR');
+  expect(pulsarDataProperties(m).fields.file).toBe(PULSAR_DATA_NOT_WRITTEN);
+  expect(pulsarDataProperties(m,null).fields.file).toBe('Data Not Written to File');
+  // Another data object (older held or newer) never shows this receipt.
+  expect(pulsarDataProperties(capture(),w).fields.file).toBe(PULSAR_DATA_NOT_WRITTEN);
+  let s=st(pulsarActivateData(INITIAL_PULSAR_ANALYSIS,doc.data));s=st(pulsarConfirmRecord(st(pulsarBeginRecord(click(s,0,40)))));
+  expect(s.list[0].fields.file).toBeNull();expect(s.list[0].nativeLineCandidate.split(',')).toHaveLength(11);
+  // Load prompt: the document-aware flag skips it; the value-only default (existing callers) still asks.
+  expect(pulsarRequestLoad(INITIAL_PULSAR_ANALYSIS,m,pulsarCurrentSaved(doc)).outcome).toBe('load-allowed');
+  expect(pulsarRequestLoad(INITIAL_PULSAR_ANALYSIS,m,pulsarCurrentSaved(d)).outcome).toBe('load-prompt');
+  expect(pulsarRequestLoad(INITIAL_PULSAR_ANALYSIS,m).outcome).toBe('load-prompt');
+  expect(pulsarDataSaved(m)).toBe(false);// deprecated value-only accessor unchanged
+ });
+
+ it('refusals in order change nothing and keep a prior receipt: claim, lease, superseded, source-mutated, size, bytes, file name',()=>{
+  const {m,text,claim,doc:prior}=saved(capture(),'prior.PLR');
+  const good=bytes(text);
+  const refused=(doc:PulsarCurrentData,c:PulsarWriteClaim,b:Uint8Array,name:string,reason:PulsarWriteRefusal)=>{
+   const r=recordPulsarWrittenCopy(doc,c,b,name);
+   expect(r).toMatchObject({ok:false,reason});expect(r.doc).toBe(doc);
+  };
+  // Not an issued claim: a spread copy (symbol keys copied) or a hand-made object.
+  refused(prior,{...claim} as PulsarWriteClaim,good,'x.PLR','claim');
+  refused(prior,Object.freeze({data:m,generation:prior.generation,metadata:claim.metadata,samples:claim.samples,text}) as PulsarWriteClaim,good,'x.PLR','claim');
+  // A held capture lease (Record armed without erase keeps the receipt itself).
+  const leased=acquirePulsarCaptureLease(prior,2,prior.generation,false).doc;
+  refused(leased,claim,good,'x.PLR','capture-lease');expect(pulsarWrittenCopy(leased)?.fileName).toBe('prior.PLR');
+  // Another object or generation.
+  refused({...prior,data:capture()},claim,good,'x.PLR','superseded');
+  refused({...prior,generation:prior.generation+1},claim,good,'x.PLR','superseded');
+  // The same object mutated in place: a value, and +0 → −0 (Object.is).
+  const v=m.samples[0];m.samples[0]=v+1;
+  refused(prior,claim,good,'x.PLR','source-mutated');expect(pulsarWrittenCopy(prior)).toBeNull();expect(pulsarCurrentSaved(prior)).toBe(false);
+  m.samples[0]=v;m.samples[2]=-0;
+  refused(prior,claim,good,'x.PLR','source-mutated');expect(pulsarWrittenCopy(prior)).toBeNull();
+  m.samples[2]=0;expect(pulsarWrittenCopy(prior)?.fileName).toBe('prior.PLR');
+  // Read-back: one byte short, one byte longer, one byte changed.
+  refused(prior,claim,good.slice(0,-1),'x.PLR','readback-size');
+  refused(prior,claim,Uint8Array.from([...good,0x0a]),'x.PLR','readback-size');
+  const flipped=good.slice();flipped[5]^=1;refused(prior,claim,flipped,'x.PLR','readback-bytes');
+  // File name policy (WEB): 1..255 UTF-16 units, no C0/DEL, no separator.
+  for(const name of ['','x'.repeat(PULSAR_SAVE_NAME_MAX+1),'a\u0001.PLR','a\u007f.PLR','a\n.PLR','dir/a.PLR','dir\\a.PLR'])refused(prior,claim,good,name,'file-name');
+  expect(pulsarSaveNameOk('x'.repeat(PULSAR_SAVE_NAME_MAX-4)+'.PLR')).toBe(true);expect(pulsarSaveNameOk('é ü.PLR')).toBe(true);
+  expect(pulsarWrittenCopy(prior)?.fileName).toBe('prior.PLR');
+  // A later verified save of the same data replaces the receipt; the earlier one is gone.
+  const next=recordPulsarWrittenCopy(prior,claim,good,'second.PLR');
+  expect(next.ok).toBe(true);expect(pulsarWrittenCopy(next.doc)?.fileName).toBe('second.PLR');
+ });
+
+ it('import, arming erase and a new capture commit drop the receipt; activity, lease phases and release keep it; nothing revives it',()=>{
+  const {m,doc:w}=saved(capture(),'a.PLR');
+  const busy=setPulsarAnalysisActivity(w,{modal:true,reading:true}).doc;expect(pulsarWrittenCopy(busy)?.fileName).toBe('a.PLR');
+  const idle=setPulsarAnalysisActivity(busy,{modal:false,reading:false}).doc;
+  const armed=acquirePulsarCaptureLease(idle,9,idle.generation,false).doc;expect(pulsarCurrentSaved(armed)).toBe(true);
+  const receiving=setPulsarCapturePhase(armed,9,'receiving').doc;expect(pulsarWrittenCopy(receiving)).not.toBeNull();
+  const released=releasePulsarCaptureLease(receiving,9).doc;expect(pulsarWrittenCopy(released)?.fileName).toBe('a.PLR');
+  const erased=acquirePulsarCaptureLease(released,10,released.generation,true).doc;
+  expect(erased.written).toBeNull();expect(pulsarCurrentSaved(erased)).toBe(false);expect(pulsarDataRows(erased.data)).toBe(0);
+  // The old data and the old receipt under the later generation are not a receipt.
+  expect(pulsarWrittenCopy({...erased,data:m,written:released.written})).toBeNull();
+  const imported=importPulsarRecording(released,plr(),released.generation).doc;expect(imported.written).toBeNull();
+  const r=setPulsarCapturePhase(acquirePulsarCaptureLease(released,11,released.generation,false).doc,11,'receiving').doc;
+  expect(pulsarWrittenCopy(r)).not.toBeNull();
+  const recommitted=commitPulsarCapture(r,11,capture({name:'NEXT'})).doc;
+  expect(recommitted.written).toBeNull();expect(pulsarCurrentSaved(recommitted)).toBe(false);
+ });
+
+ it('owned claims: frozen ordinary copies and an immutable text; caller buffers cannot change a comparison; receipts cannot be forged',()=>{
+  const m=capture(),d=committed(m),text=textOf(m),claim=pulsarWriteClaim(d,text) as PulsarWriteClaim;
+  expect(Object.isFrozen(claim)).toBe(true);expect(Object.isFrozen(claim.samples)).toBe(true);expect(Object.isFrozen(claim.metadata)).toBe(true);
+  expect(Array.isArray(claim.samples)).toBe(true);expect(claim.samples).not.toBe(m.samples);expect(claim.text).toBe(text);
+  expect(()=>{(claim.samples as number[])[0]=99;}).toThrow(TypeError);
+  // Fresh bytes per call; mutating one copy changes neither the claim nor a later comparison.
+  const a=pulsarClaimBytes(claim),b=pulsarClaimBytes(claim);
+  expect(a).not.toBe(b);expect(a.buffer).not.toBe(b.buffer);
+  a[0]=0x41;
+  expect(pulsarClaimReadback(claim,b)).toBe('ok');expect(pulsarClaimReadback(claim,a)).toBe('readback-bytes');
+  // −0 is kept in the owned copy.
+  const z=capture({rows:[-0,1,0,0,2,0]}),zc=pulsarWriteClaim(committed(z),textOf(z)) as PulsarWriteClaim;
+  expect(Object.is(zc.samples[0],-0)).toBe(true);expect(Object.is(zc.samples[3],0)).toBe(true);
+  // Refused claims: empty or non-ASCII text, a non-frozen value, non-finite samples, a wrong sample shape.
+  expect(pulsarWriteClaim(d,'')).toBeNull();expect(pulsarWriteClaim(d,'café')).toBeNull();
+  expect(pulsarWriteClaim({...d,data:{...m}},text)).toBeNull();
+  expect(pulsarWriteClaim(committed(capture({rows:[Number.NaN,1,0]})),text)).toBeNull();
+  expect(pulsarWriteClaim({...d,data:Object.freeze({...m,samples:new Float64Array(5)})},text)).toBeNull();
+  // A spread or hand-made receipt is not a receipt.
+  const w=recordPulsarWrittenCopy(d,claim,b,'a.PLR').doc,real=w.written as PulsarWrittenCopy;
+  expect(pulsarWrittenCopy({...w,written:{...real}})).toBeNull();
+  expect(pulsarWrittenCopy({...w,written:Object.freeze({...real,fileName:'forged.PLR'})})).toBeNull();
+  expect(pulsarDataProperties(m,{...real}).fields.file).toBe(PULSAR_DATA_NOT_WRITTEN);
+  expect(()=>{(real as {fileName:string}).fileName='changed.PLR';}).toThrow(TypeError);
+  expect(pulsarWrittenCopy(w)?.fileName).toBe('a.PLR');
  });
 });

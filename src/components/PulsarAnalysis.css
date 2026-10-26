@@ -39,7 +39,7 @@
 .plr-pending{margin:0;font-weight:600}
 .plr-reference{font-weight:600}
 .plr-reference output{font-family:ui-monospace,monospace;color:#008a00}
-.plr-status{min-height:1.3em}
+.plr-status{min-height:1.3em;overflow-wrap:anywhere}
 .plr-warning{border-left:4px solid #b26a00;padding:.35rem .6rem;margin:.5rem 0;font-weight:600}
 .plr-modal{background:Canvas;color:CanvasText;width:min(36rem,calc(100% - 2rem));max-width:none;max-height:calc(100% - 2rem);overflow:auto;border:1px solid #888;border-radius:.4rem;padding:1rem}
 .plr-modal::backdrop{background:rgba(0,0,0,.55)}
@@ -76,6 +76,7 @@
 .plr-export-field .plr-export-problem{border-left:4px solid #b3261e;padding-left:.4rem}
 .plr-append p,.plr-append dd{overflow-wrap:anywhere}
 .plr-append input[type="file"]{max-width:100%;min-width:0}
+.plr-save p,.plr-save-last p{overflow-wrap:anywhere}
 @media (max-width:720px){
  .plr{padding:.5rem}
  .plr-panel-body{grid-template-columns:minmax(0,1fr)}

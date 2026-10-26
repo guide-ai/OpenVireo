@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  buildPulsarRawExport, RAW_EXPORT_FILE_NAME, rawExportDownloadFailed, rawExportOpen, rawExportRequest, type RawExportBuild, type RawExportProblem,
+  buildPulsarRawExport, RAW_EXPORT_FILE_NAME, rawExportDownloadFailed, rawExportOpen, rawExportRequest, rawExportSaveNotice, type RawExportBuild, type RawExportProblem,
 } from './pulsarRawExport';
 import { admitPlrRecording, PLR_MAX_BYTES } from './pulsarRecording';
 import { EMPTY_PULSAR_HEADER, pulsarMemoryRecording, type PulsarCaptureInput, type PulsarMemoryRecording } from './pulsarCurrentData';
@@ -203,6 +203,21 @@ describe('raw export session', () => {
     const changed = rawExportRequest(s, ready(d, 1));
     expect(changed.kind === 'refused' && changed.session.refusal).toEqual({ code: 'stale' });
     expect(changed.kind === 'refused' && changed.session.preview).toBe(s.preview);
+  });
+
+  it('R-RX15: purpose defaults to download; a Save notice survives refusals and download failures, and a new notice clears them', () => {
+    const d = capture(), s = rawExportOpen(d, 2);
+    expect(s.purpose).toBe('download'); expect(s.save).toBeNull();
+    const saving = rawExportSaveNotice(rawExportOpen(d, 2, 'save'), { code: 'verified-stale', fileName: 'a.PLR', reason: 'superseded' });
+    expect(saving.purpose).toBe('save');
+    const refused = rawExportRequest(saving, { data: d, generation: 3, ready: true });
+    if (refused.kind !== 'refused') throw new Error('expected refusal');
+    expect(refused.session.refusal).toEqual({ code: 'stale' }); expect(refused.session.save).toEqual({ code: 'verified-stale', fileName: 'a.PLR', reason: 'superseded' });
+    const failed = rawExportDownloadFailed(refused.session);
+    expect(failed.save).toBe(saving.save); expect(failed.purpose).toBe('save');
+    const next = rawExportSaveNotice(failed, { code: 'picking', fileName: null });
+    expect(next.refusal).toBeNull(); expect(next.failure).toBe(false); expect(next.save).toEqual({ code: 'picking', fileName: null });
+    expect(next.data).toBe(d); expect(next.preview).toBe(saving.preview); expect(Object.isFrozen(next)).toBe(true);
   });
 
   it('a browser failure keeps the session for a retry and clears the refusal', () => {

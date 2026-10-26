@@ -297,12 +297,14 @@ export function pulsarDismissDataNotice(s: PulsarAnalysisState): PulsarTransitio
 
 /**
  * Load1Click prefix 0x56af38..0x56afb7: when the current data has rows and +0x97 is 0, the MessageBox 0x56b1d0 / 0x56b258
- * (flags 0x13). Cancel (2) exits; Yes (6) calls 0x56b36c (WEB: not offered, body not recovered); anything else continues to
+ * (flags 0x13). Cancel (2) exits; Yes (6) calls 0x56b36c (WEB: not offered; the caller was recovered statically, but the original Save-Yes reentry is not ported); anything else continues to
  * the OpenDialog. 'load-allowed': open the picker now. The prompt reads the App's current dataset, not the presented copy.
+ * `saved` (R-RX15): +0x97 of the current document, pulsarCurrentSaved(doc), which also counts a verified written copy of a
+ * memory capture. Omitted, the value alone decides (an imported file is saved, memory data is not), as before R-RX15.
  */
-export function pulsarRequestLoad(s: PulsarAnalysisState, current: PulsarCurrentValue | null): PulsarTransition {
+export function pulsarRequestLoad(s: PulsarAnalysisState, current: PulsarCurrentValue | null, saved?: boolean): PulsarTransition {
   if (modal(s)) return keep(s, 'blocked-modal');
-  if (pulsarDataRows(current) > 0 && !pulsarDataSaved(current)) return done({ ...s, loadPrompt: true }, 'load-prompt', ['PLR-LOAD-PROMPT-01']);
+  if (pulsarDataRows(current) > 0 && !(saved ?? pulsarDataSaved(current))) return done({ ...s, loadPrompt: true }, 'load-prompt', ['PLR-LOAD-PROMPT-01']);
   return keep(s, 'load-allowed', ['PLR-LOAD-PROMPT-01']);
 }
 export function pulsarAnswerLoad(s: PulsarAnalysisState, answer: 'no' | 'cancel'): PulsarTransition {

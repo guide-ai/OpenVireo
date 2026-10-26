@@ -12,8 +12,9 @@ import {
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
 import {
-  importPulsarRecording, isFileData, isMemoryData, pulsarDataHighest, pulsarDataProperties, pulsarDataRows, pulsarDataSaved, pulsarFrequencyText, setPulsarAnalysisActivity,
-  type PulsarData,
+  importPulsarRecording, isFileData, isMemoryData, pulsarClaimBytes, pulsarClaimReadback, pulsarCurrentSaved, pulsarDataHighest, pulsarDataProperties, pulsarDataRows, pulsarFrequencyText,
+  pulsarWrittenCopy, recordPulsarWrittenCopy, setPulsarAnalysisActivity,
+  type PulsarData, type PulsarWriteClaim,
 } from '../core/pulsarCurrentData';
 import { useSharedPulsarData, type SharedPulsarDataHandle } from '../useSharedPulsarData';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
@@ -35,8 +36,10 @@ import {
 } from '../core/pulsarResultsAppend';
 import { admitSavedRows, savedRowsBytes, SAVED_ROWS_LIMITS, type SavedReadResult, type SavedRowField, type SavedRowsErrorCode } from '../core/pulsarSavedRows';
 import {
-  RAW_EXPORT_FILE_NAME, RAW_EXPORT_MEDIA_TYPE, rawExportDownloadFailed, rawExportOpen, rawExportRequest, type RawExportField, type RawExportProblem, type RawExportSession,
+  RAW_EXPORT_FILE_NAME, RAW_EXPORT_MEDIA_TYPE, rawExportDownloadFailed, rawExportOpen, rawExportRequest, rawExportSaveNotice, type RawExportField, type RawExportProblem, type RawExportSession,
 } from '../core/pulsarRawExport';
+import { PULSAR_SAVE_PENDING, pulsarSaveBegin, pulsarSaveRefusalNotice, type PulsarSaveNotice } from '../core/pulsarSavedCopy';
+import { browserPulsarSaveSupport, continuePulsarSave, invokePulsarSavePicker, type SaveHandle } from './pulsarSaveHost';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
 
 /**
@@ -145,6 +148,12 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // R-RX14 raw .PLR download session of the memory capture (src/core/pulsarRawExport.ts), mirrored in a ref like the export session.
   const [rawSession, setRawSession] = useState<RawExportSession | null>(null), rawRef = useRef<RawExportSession | null>(null);
   const setRaw = (next: RawExportSession | null) => { rawRef.current = next; setRawSession(next); };
+  // R-RX15 verified Save (a 'save' purpose raw session). saveEpoch: attempt tokens, never reset; a hide, unmount or new
+  // attempt makes an older continuation dead. saveRun: the token of the attempt that holds the output claim, if any.
+  // saveBusy mirrors that claim for rendering. Support is detected once per mount (WEB-SAVE-01).
+  const [saveSupport] = useState(() => browserPulsarSaveSupport());
+  const [saveBusy, setSaveBusy] = useState(false);
+  const saveEpoch = useRef(0), saveRun = useRef<number | null>(null), mounted = useRef(false);
   const [rejection, setRejection] = useState<string | null>(null);
   const [status, setStatus] = useState('');
   const [primaryAs, setPrimaryAs] = useState<'left' | 'right'>('left');
@@ -177,9 +186,13 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // A modal makes the finished read's load be refused, which would drop the chosen file. The read completes, or the learner
   // cancels it; a cancel or read error lifts the gate. Each opener otherwise keeps its own enabled state.
   const readPending = reading !== null;
-  const dialog = pulsarRecordDialog(s), readouts = pulsarReadouts(s), props = rec ? pulsarDataProperties(rec) : null;
+  // R-RX15: the verified copy of the current data, shown only for the memory capture this panel presents (never for older
+  // held data); Properties shows its basename through the same rule.
+  const written = pulsarWrittenCopy(shared.doc);
+  const dialog = pulsarRecordDialog(s), readouts = pulsarReadouts(s), props = rec ? pulsarDataProperties(rec, written) : null;
   const recordPanel = dialog?.panel ?? null;
   const fileRec = isFileData(rec) ? rec : null, memoryRec = isMemoryData(rec) ? rec : null;
+  const memoryWritten = memoryRec && written?.data === memoryRec ? written : null;
   // R-RX4 shared dataset: a held capture lease disables Load (WEB-REC-TXN); a newer generation waits for an idle, active panel.
   const leased = shared.doc.lease !== null, newer = shared.doc.generation !== adoptedGeneration;
   useLayoutEffect(() => { shared.update(d => setPulsarAnalysisActivity(d, { modal, reading: readPending })); }, [shared, modal, readPending]);
@@ -273,12 +286,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // R-RX11: the chooser joins the pending-read gate. A click that runs while a read is pending (checked on the ref, so also
   // before the disabled state is rendered) is refused unchanged: no prompt, no picker, no status and no grant change.
   const fileInput = useRef<HTMLInputElement>(null), pick = useRef<number | null>(null), reentry = useRef(false), loadDefault = useRef<HTMLButtonElement>(null);
-  const promptNeeded = () => { const d = shared.current().data; return pulsarDataRows(d) > 0 && !pulsarDataSaved(d); };
+  // R-RX15: "saved" is +0x97 of the document (an imported file or a valid verified copy of the memory capture).
+  const promptNeeded = () => { const doc = shared.current(); return pulsarDataRows(doc.data) > 0 && !pulsarCurrentSaved(doc); };
   const onChooserClick = (e: ReactMouseEvent<HTMLInputElement>) => {
     if (reentry.current) return;
     if (readingRef.current !== null) { e.preventDefault(); return; }
     pick.current = null;
-    const tr = act(st => pulsarRequestLoad(st, shared.current().data));
+    const doc = shared.current();
+    const tr = act(st => pulsarRequestLoad(st, doc.data, pulsarCurrentSaved(doc)));
     if (tr.outcome === 'load-allowed') pick.current = shared.current().generation; else e.preventDefault();
   };
   const answerLoad = (answer: 'no' | 'cancel') => {
@@ -320,8 +335,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (exportRef.current) { say(t('pulsar.export.fileRefused')); return; }
     // R-RX12: likewise while the append dialog is open (its own chooser is a separate input).
     if (appendRef.current) { say(t('pulsar.append.fileRefused')); return; }
-    // R-RX14: likewise while the raw .PLR download dialog is open.
-    if (rawRef.current) { say(t('pulsar.rawExport.fileRefused')); return; }
+    // R-RX14: likewise while the raw .PLR download dialog (or the R-RX15 Save dialog) is open.
+    if (rawRef.current) { say(t(rawRef.current.purpose === 'save' ? 'pulsar.save.fileRefused' : 'pulsar.rawExport.fileRefused')); return; }
     // WEB-REC-TXN defence in depth: Load is disabled under a capture lease; a change delivered anyway is refused unread.
     if (shared.current().lease) { setRejection(`${t('pulsar.reject.title', { name: file.name })} ${t('pulsar.reject.capture-lease')}`); return; }
     if (!picked && promptNeeded()) { say(t('pulsar.status.loadPromptFirst')); return; }
@@ -378,7 +393,19 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (reading !== null) cancelRead();
     // R-RX12: a pending target read is cancelled (its continuation finds a newer token); the session and an owned target stay.
     if (appendRef.current?.reading) { appendEpoch.current++; setAppend(resultsAppendCancelRead(appendRef.current)); }
+    // R-RX15: a pending Save attempt is abandoned: its continuation finds a newer token, aborts a stream that is still open
+    // and marks nothing. The output claim stays held until that cleanup settled. The session keeps an 'abandoned' notice.
+    if (saveRun.current !== null) {
+      saveEpoch.current++; saveRun.current = null;
+      const session = rawRef.current;
+      if (session) setRaw(rawExportSaveNotice(session, Object.freeze({ code: 'abandoned' as const, fileName: session.save?.fileName ?? null })));
+    }
   });
+  // R-RX15: an unmount abandons a pending Save attempt the same way (no state is set afterwards).
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; saveEpoch.current++; saveRun.current = null; };
+  }, []);
   // R-RX4 adoption of a newer current dataset (FormActivate with new data, PLR-ACTIVATE-01): only while active, with no
   // modal session and no pending read. The confirmed measurement list is kept; Review follows its count.
   useLayoutEffect(() => {
@@ -399,7 +426,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null), reviewDialog = useRef<HTMLDialogElement>(null);
   const loadDialog = useRef<HTMLDialogElement>(null), exportDialog = useRef<HTMLDialogElement>(null), exportFirst = useRef<HTMLInputElement>(null), exportButton = useRef<HTMLButtonElement>(null);
   const appendDialog = useRef<HTMLDialogElement>(null), appendFile = useRef<HTMLInputElement>(null), appendButton = useRef<HTMLButtonElement>(null), appendCancelRead = useRef<HTMLButtonElement>(null), appendDownload = useRef<HTMLButtonElement>(null);
-  const rawDialog = useRef<HTMLDialogElement>(null), rawButton = useRef<HTMLButtonElement>(null), rawCancel = useRef<HTMLButtonElement>(null);
+  const rawDialog = useRef<HTMLDialogElement>(null), rawButton = useRef<HTMLButtonElement>(null), rawCancel = useRef<HTMLButtonElement>(null), saveButton = useRef<HTMLButtonElement>(null);
   const ownClose = useRef(new WeakSet<HTMLDialogElement>());
   const [syncModal] = useState(() => () => {
     // The export, append and raw download dialogs never coexist with the others: each opens only when none is open, and blocks every core action.
@@ -717,18 +744,26 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // (exportBusy). These handlers do not change the analysis core state, the shared dataset's data, generation, saved flag,
   // origin or file name, the imported-file Download or any storage. The open session only feeds `modal`, which the layout
   // effect above reports as analysis.modal, so receiver arming is refused.
-  const openRaw = () => {
+  // R-RX15: the verified Save uses the same session type with purpose 'save' (its own dialog, opener and Cancel default).
+  const openRawSession = (purpose: 'download' | 'save') => {
     if (rawRef.current) return;
     const st = current.current;
-    if (!sessionOpenable() || !isMemoryData(st.recording) || shared.current().data !== st.recording) { say(t('pulsar.rawExport.unavailable')); return; }
-    setRaw(rawExportOpen(st.recording, adopted.current));
+    const unavailable = purpose === 'save' ? 'pulsar.save.unavailable' : 'pulsar.rawExport.unavailable';
+    if (purpose === 'save' && saveSupport !== 'ok') { say(t(unavailable)); return; }
+    if (!sessionOpenable() || !isMemoryData(st.recording) || shared.current().data !== st.recording) { say(t(unavailable)); return; }
+    setRaw(rawExportOpen(st.recording, adopted.current, purpose));
   };
+  const openRaw = () => openRawSession('download');
+  const openSave = () => openRawSession('save');
   const rawForeignModal = () => [...document.querySelectorAll('dialog:modal')].some(d => d !== rawDialog.current);
+  /** Cancel, Escape or the dialog's close request. Refused while a download or Save attempt holds the output claim. */
   const closeRaw = () => {
-    if (!rawRef.current || exportBusy.current || rawForeignModal()) return;
+    const session = rawRef.current;
+    if (!session || exportBusy.current || rawForeignModal()) return;
+    const saving = session.purpose === 'save';
     setRaw(null);
-    focusAfterModal.current = rawButton.current;
-    say(t('pulsar.rawExport.cancelled'));
+    focusAfterModal.current = saving ? saveButton.current : rawButton.current;
+    say(t(saving ? 'pulsar.save.cancelled' : 'pulsar.rawExport.cancelled'));
   };
   /**
    * Download, under the export rules: only while presented, with the session's data still the current object and generation
@@ -738,7 +773,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
    */
   const requestRaw = () => {
     const session = rawRef.current, dialogEl = rawDialog.current;
-    if (!session || exportBusy.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
+    if (!session || session.purpose === 'save' || exportBusy.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
     const doc = shared.current();
     const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current);
     const r = rawExportRequest(session, { data: doc.data, generation: doc.generation, ready });
@@ -766,10 +801,75 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       setTimeout(() => URL.revokeObjectURL(issued), 1000);
       setRaw(null);
       focusAfterModal.current = rawButton.current;
-      say(t('pulsar.rawExport.requested', { name: RAW_EXPORT_FILE_NAME, count: r.rowCount }));
+      // R-RX15: a download never touches the saved status; the text says which status the recording keeps.
+      const kept = pulsarWrittenCopy(shared.current());
+      say(kept && kept.data === session.data
+        ? t('pulsar.rawExport.requestedWritten', { name: RAW_EXPORT_FILE_NAME, count: r.rowCount, file: kept.fileName })
+        : t('pulsar.rawExport.requested', { name: RAW_EXPORT_FILE_NAME, count: r.rowCount }));
     } finally {
       exportBusy.current = false;
     }
+  };
+
+  /**
+   * R-RX15 verified Save (docs/PULSAR-SAVE-VERIFIED.md). The click handler is synchronous up to the picker call: the same
+   * guards as Download, the R-RX14 request order and an owned claim (pulsarSaveBegin), then the shared output claim, a new
+   * attempt token and showSaveFilePicker with no await before it. A synchronous picker throw releases the claim at once.
+   */
+  const requestSave = () => {
+    const session = rawRef.current, dialogEl = rawDialog.current;
+    if (!session || session.purpose !== 'save' || saveSupport !== 'ok' || exportBusy.current || !mounted.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
+    const doc = shared.current();
+    const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current);
+    const begun = pulsarSaveBegin(session, doc, ready);
+    if (begun.kind === 'refused') { setRaw(begun.session); return; }
+    exportBusy.current = true;
+    const token = ++saveEpoch.current;
+    const invoked = invokePulsarSavePicker(window);
+    if (!invoked.ok) {
+      exportBusy.current = false;
+      setRaw(rawExportSaveNotice(session, Object.freeze({ code: 'picker-refused' as const, fileName: null })));
+      return;
+    }
+    saveRun.current = token; setSaveBusy(true);
+    setRaw(rawExportSaveNotice(session, Object.freeze({ code: 'picking' as const, fileName: null })));
+    void finishSave(token, begun.claim, invoked.picked);
+  };
+  /**
+   * The asynchronous rest of one attempt. Only a live attempt (same token, mounted, active) writes its phase or result. A
+   * read-back is committed through the pure core, which refuses it unless the claimed data is still current and the bytes
+   * are equal. Success closes the dialog (unless another modal owns focus) and returns focus to the Save opener. The output
+   * claim is released only when the attempt, including any stream cleanup, has settled.
+   */
+  async function finishSave(token: number, claim: PulsarWriteClaim, picked: Promise<SaveHandle>) {
+    const live = () => token === saveEpoch.current && mounted.current && activeRef.current;
+    const note = (n: PulsarSaveNotice) => { const now = rawRef.current; if (live() && now) setRaw(rawExportSaveNotice(now, n)); };
+    try {
+      const r = await continuePulsarSave(picked, () => pulsarClaimBytes(claim), PLR_MAX_BYTES, { live, phase: (code, fileName) => note(Object.freeze({ code, fileName })) });
+      if (r.kind === 'dead' || !live()) return;
+      if (r.kind !== 'readback') { note(Object.freeze({ code: r.kind, fileName: 'fileName' in r ? r.fileName : null })); return; }
+      const check = pulsarClaimReadback(claim, r.bytes);
+      const step = shared.update(d => recordPulsarWrittenCopy(d, claim, r.bytes, r.fileName));
+      if (!step.ok) { note(pulsarSaveRefusalNotice(step.reason, check, r.fileName)); return; }
+      const message = t('pulsar.save.verified', { file: r.fileName, bytes: claim.text.length });
+      if (rawForeignModal() || !rawDialog.current?.open) { note(Object.freeze({ code: 'verified' as const, fileName: r.fileName })); say(message); return; }
+      setRaw(null);
+      focusAfterModal.current = saveButton.current;
+      say(message);
+    } catch {
+      // Not expected (every browser failure is mapped above); still reported as unverified, never as success.
+      note(Object.freeze({ code: 'unverified' as const, fileName: rawRef.current?.save?.fileName ?? null }));
+    } finally {
+      if (saveRun.current === token) saveRun.current = null;
+      exportBusy.current = false;
+      if (mounted.current) setSaveBusy(false);
+    }
+  }
+  const saveNoticeText = (n: PulsarSaveNotice): string => {
+    const file = n.fileName ?? '';
+    if (PULSAR_SAVE_PENDING.has(n.code)) return t(`pulsar.save.phase.${n.code}` as PulsarMessageKey, { file });
+    if (n.code === 'verified') return t('pulsar.save.verifiedShort', { file });
+    return t(`pulsar.save.fail.${n.code}` as PulsarMessageKey, { file });
   };
   const rawProblemText = (p: RawExportProblem) => t(`pulsar.rawExport.problem.${p.code}` as PulsarMessageKey, {
     count: 'count' in p ? p.count : '', max: 'max' in p ? p.max : '', position: 'position' in p ? p.position : '', length: 'length' in p ? p.length : '',
@@ -779,7 +879,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const rawRefusalText = (session: RawExportSession): string => {
     const r = session.refusal;
     if (!r) return '';
-    return r.code === 'build' ? rawProblemText(r.problem) : t(`pulsar.rawExport.refusal.${r.code}` as PulsarMessageKey);
+    if (r.code === 'build') return rawProblemText(r.problem);
+    return t(`${session.purpose === 'save' ? 'pulsar.save' : 'pulsar.rawExport'}.refusal.${r.code}` as PulsarMessageKey);
   };
   const rawDisabled = !active || readPending || modal || s.leftDrag || s.rightDrag || leased || newer;
 
@@ -817,14 +918,23 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
             </dl>
           ) : memoryRec ? (
             <div data-testid="pulsar-memory">
-              <p className="plr-warning" data-testid="pulsar-memory-origin">{t('pulsar.memory.origin')}</p>
+              <p className="plr-warning" data-testid="pulsar-memory-origin">{t(memoryWritten ? 'pulsar.memory.originWritten' : 'pulsar.memory.origin')}</p>
               <dl className="plr-identity">
                 <dt>{t('pulsar.memory.capture')}</dt><dd data-testid="pulsar-memory-capture">{memoryRec.captureId}</dd>
                 <dt>{t('pulsar.memory.rows')}</dt><dd data-testid="pulsar-memory-rows">{memoryRec.rowCount}</dd>
                 <dt>{t('pulsar.memory.full')}</dt><dd data-testid="pulsar-memory-full">{t(memoryRec.full ? 'pulsar.memory.fullYes' : 'pulsar.memory.fullNo')}</dd>
               </dl>
               <p><button type="button" ref={rawButton} onClick={openRaw} disabled={rawDisabled} aria-haspopup="dialog" aria-describedby={`${idPrefix}raw-export-note`} data-testid="pulsar-raw-export">{t('pulsar.rawExport.open')}</button></p>
-              <p className="plr-help" id={`${idPrefix}raw-export-note`} data-testid="pulsar-raw-export-note">{t('pulsar.rawExport.note')}</p>
+              <p className="plr-help" id={`${idPrefix}raw-export-note`} data-testid="pulsar-raw-export-note">{t(memoryWritten ? 'pulsar.rawExport.noteWritten' : 'pulsar.rawExport.note')}</p>
+              <p><button type="button" ref={saveButton} onClick={openSave} disabled={rawDisabled || saveSupport !== 'ok'} aria-haspopup="dialog" aria-describedby={`${idPrefix}save-capture-note`} data-testid="pulsar-save-capture">{t('pulsar.save.open')}</button></p>
+              <p className="plr-help" id={`${idPrefix}save-capture-note`} data-testid="pulsar-save-capture-note" data-support={saveSupport}>
+                {saveSupport === 'ok' ? t('pulsar.save.note') : t(`pulsar.save.unsupported.${saveSupport}` as PulsarMessageKey)}</p>
+              {memoryWritten && (
+                <div className="plr-save-last" data-testid="pulsar-save-capture-last">
+                  <p data-testid="pulsar-save-capture-last-file">{t('pulsar.save.lastCopy', { file: memoryWritten.fileName })}</p>
+                  <p className="plr-help">{t('pulsar.save.lastCopyNote', { bytes: memoryWritten.byteLength })}</p>
+                </div>
+              )}
             </div>
           ) : <p data-testid="pulsar-none">{t('pulsar.file.none')}</p>}
           {fileRec && <p><button type="button" onClick={download} data-testid="pulsar-download">{t('pulsar.file.download')}</button> <span className="plr-help">{t('pulsar.file.downloadNote')}</span></p>}
@@ -833,10 +943,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
         {rec && props && s.propertiesOpen && (
           <section className="plr-props" role="dialog" aria-modal="false" aria-labelledby={`${idPrefix}props`} data-testid="pulsar-properties">
             <h3 id={`${idPrefix}props`}>{t('pulsar.props.heading')}</h3>
-            <p className="plr-help">{t(fileRec ? 'pulsar.props.note' : 'pulsar.props.noteMemory')}</p>
+            <p className="plr-help">{t(fileRec ? 'pulsar.props.note' : memoryWritten ? 'pulsar.props.noteMemoryWritten' : 'pulsar.props.noteMemory')}</p>
             <dl>
               {(['object', 'start', 'aperture', 'interval', 'points', 'file'] as const).map(k => (
-                <div key={k}><dt>{t(`pulsar.props.${k}`)}</dt><dd><output data-testid={`pulsar-prop-${k}`}>{props.fields[k]}</output>{k === 'file' && fileRec && <span className="plr-help"> {t('pulsar.props.fileNote')}</span>}</dd></div>
+                <div key={k}><dt>{t(`pulsar.props.${k}`)}</dt><dd><output data-testid={`pulsar-prop-${k}`}>{props.fields[k]}</output>
+                  {k === 'file' && (fileRec || memoryWritten) && <span className="plr-help"> {t(fileRec ? 'pulsar.props.fileNote' : 'pulsar.props.fileNoteWritten')}</span>}</dd></div>
               ))}
             </dl>
             <table className="plr-table">
@@ -1047,15 +1158,26 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       )}
       {rawSession && (() => {
         const d = rawSession.data, p = rawSession.preview, inactive = ([0, 1, 2] as const).filter(i => i > d.highestIndex).map(i => i + 1);
+        // R-RX15: the Save dialog shares the preview, rounding list and refusals; it differs in heading, warnings and buttons.
+        const saving = rawSession.purpose === 'save', notice = rawSession.save ?? null;
+        const kept = written?.data === d ? written : null;
         return (
-          <dialog ref={rawDialog} aria-labelledby={`${idPrefix}raw-export`} aria-describedby={`${idPrefix}raw-export-scope`} className="plr-modal plr-export" data-testid="pulsar-raw-export-dialog"
+          <dialog ref={rawDialog} aria-labelledby={`${idPrefix}raw-export`} aria-describedby={`${idPrefix}raw-export-scope`} className={`plr-modal plr-export${saving ? ' plr-save' : ''}`}
+            aria-busy={saving && saveBusy ? true : undefined} data-testid={saving ? 'pulsar-save-capture-dialog' : 'pulsar-raw-export-dialog'}
             {...dialogEvents(closeRaw)}>
-            <h3 id={`${idPrefix}raw-export`}>{t('pulsar.rawExport.heading')}</h3>
+            <h3 id={`${idPrefix}raw-export`}>{t(saving ? 'pulsar.save.heading' : 'pulsar.rawExport.heading')}</h3>
             <p className="plr-help" id={`${idPrefix}raw-export-scope`} data-testid="pulsar-raw-export-scope">{t('pulsar.rawExport.scope', { rows: d.rowCount, capture: d.captureId, name: d.name, receivers: d.highestIndex + 1 })}</p>
-            <p className="plr-warning" data-testid="pulsar-raw-export-origin">{t('pulsar.rawExport.origin', { file: RAW_EXPORT_FILE_NAME })}</p>
+            <p className="plr-warning" data-testid="pulsar-raw-export-origin">{t(saving ? 'pulsar.save.origin' : 'pulsar.rawExport.origin', { file: RAW_EXPORT_FILE_NAME })}</p>
             <p className="plr-help" data-testid="pulsar-raw-export-format">{t('pulsar.rawExport.format')}</p>
             <p className="plr-help" data-testid="pulsar-raw-export-inactive">{inactive.length ? t('pulsar.rawExport.inactive', { list: inactive.join(', ') }) : t('pulsar.rawExport.inactiveNone')}</p>
-            <p className="plr-help" data-testid="pulsar-raw-export-consequence">{t('pulsar.rawExport.consequence')}</p>
+            {saving ? (<>
+              <p className="plr-warning" data-testid="pulsar-save-capture-warning">{t('pulsar.save.warning')}</p>
+              <p className="plr-help" data-testid="pulsar-save-capture-how">{t('pulsar.save.how')}</p>
+              <p className="plr-help" data-testid="pulsar-save-capture-extension">{t('pulsar.save.extensionRule')}</p>
+            </>) : (
+              <p className="plr-help" data-testid="pulsar-raw-export-consequence">
+                {kept ? t('pulsar.rawExport.consequenceWritten', { file: kept.fileName }) : t('pulsar.rawExport.consequence')}</p>
+            )}
             {p.ok ? (
               <section aria-labelledby={`${idPrefix}raw-export-loss`} data-testid="pulsar-raw-export-loss">
                 <h4 id={`${idPrefix}raw-export-loss`}>{t('pulsar.rawExport.loss.heading')}</h4>
@@ -1068,9 +1190,16 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
             ) : <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-raw-export-problem" data-code={p.problem.code}>{rawProblemText(p.problem)}</p>}
             {rawSession.refusal && <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-raw-export-alert" data-code={rawSession.refusal.code}>{rawRefusalText(rawSession)}</p>}
             {rawSession.failure && <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-raw-export-failure">{t('pulsar.rawExport.failure')}</p>}
+            {saving && <p role="status" className="plr-status" data-testid="pulsar-save-capture-status" data-code={notice && (PULSAR_SAVE_PENDING.has(notice.code) || notice.code === 'verified') ? notice.code : ''}>
+              {notice && (PULSAR_SAVE_PENDING.has(notice.code) || notice.code === 'verified') ? saveNoticeText(notice) : saveBusy ? t('pulsar.save.busy') : ''}</p>}
+            {saving && notice && !PULSAR_SAVE_PENDING.has(notice.code) && notice.code !== 'verified' && (
+              <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-save-capture-alert" data-code={notice.code} data-reason={'reason' in notice ? notice.reason : undefined}>{saveNoticeText(notice)}</p>
+            )}
             <div className="plr-row">
-              <button type="button" onClick={requestRaw} disabled={!p.ok} data-testid="pulsar-raw-export-download">{t('pulsar.rawExport.download', { name: RAW_EXPORT_FILE_NAME })}</button>
-              <button type="button" ref={rawCancel} onClick={closeRaw} data-testid="pulsar-raw-export-cancel">{t('pulsar.rawExport.cancel')}</button>
+              {saving
+                ? <button type="button" onClick={requestSave} disabled={!p.ok || saveSupport !== 'ok'} data-testid="pulsar-save-capture-choose">{t(notice?.code === 'extension' ? 'pulsar.save.chooseAgain' : 'pulsar.save.choose')}</button>
+                : <button type="button" onClick={requestRaw} disabled={!p.ok} data-testid="pulsar-raw-export-download">{t('pulsar.rawExport.download', { name: RAW_EXPORT_FILE_NAME })}</button>}
+              <button type="button" ref={rawCancel} onClick={closeRaw} data-testid="pulsar-raw-export-cancel">{t(saving ? 'pulsar.save.cancel' : 'pulsar.rawExport.cancel')}</button>
             </div>
           </dialog>
         );

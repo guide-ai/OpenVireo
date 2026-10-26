@@ -4,7 +4,7 @@ import type {RadioLabTransition,RadioPointing} from '../core/radioAntenna';
 import type {PulsarCatalog} from '../core/radioPulsarCatalog';
 import type {RadioReceiver,RadioReceiverControl,RadioReceiverEvent,RadioSourceBuffer} from '../core/radioReceiver';
 import {
- PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,commitPulsarCapture,pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarHeaderCells,pulsarMemoryRecording,
+ PULSAR_RESERVED_DATA_NAME,acquirePulsarCaptureLease,commitPulsarCapture,pulsarCurrentSaved,pulsarDataProperties,pulsarDataRows,pulsarHeaderCells,pulsarMemoryRecording,
  releasePulsarCaptureLease,setPulsarCapturePhase,
 } from '../core/pulsarCurrentData';
 import {RADIO_IDENTIFY_DFM,RADIO_IDENTIFY_POLICY,RADIO_RECORD_LITERALS,radioCaptureInput,radioIdentifyIssue} from '../core/radioReceiverRecord';
@@ -212,7 +212,9 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  const recordSnapshot=():ReceiverRecordHostSnapshot=>{
   const doc=latest.current.pulsarData?.current();
   if(!doc)return {generation:0,rows:0,saved:false,analysisBusy:false,leaseHeld:true};
-  return {generation:doc.generation,rows:pulsarDataRows(doc.data),saved:pulsarDataSaved(doc.data),analysisBusy:doc.analysis.modal||doc.analysis.reading,leaseHeld:doc.lease!==null};
+  // R-RX15: +0x97 of the document: an imported file, or a memory capture whose verified copy is still valid (the unsaved
+  // question is then skipped; the erase question is unchanged).
+  return {generation:doc.generation,rows:pulsarDataRows(doc.data),saved:pulsarCurrentSaved(doc),analysisBusy:doc.analysis.modal||doc.analysis.reading,leaseHeld:doc.lease!==null};
  };
  /** User actions: only on the shown route outside a project operation. */
  const userAction=(slot:number|null,step:(s:RadioReceiverSession)=>ReceiverSessionTransition,text?:(r:ReceiverSessionTransition)=>string|undefined)=>{
