@@ -10,7 +10,7 @@ This slice ports the original **Radio Pulsar Data Analysis** window (`TPlsrAnaly
 6. Record measurements into an in-app list, review them in the original working-copy transaction with confirmed Delete and a comment-only Edit (on rows that provably round-trip), and clear the list.
 7. Download the original recording bytes and import them again.
 
-It does **not** receive signals, model receivers or noise, use the pulsar catalog, or compute period, PDot or dispersion. It also does not claim I06, I07, N07 or E06 acceptance. All 64 primary acceptance statuses (the 58 functional packages plus the 6 quality items) stay unchanged.
+It does **not** receive signals, model receivers or noise, use the pulsar catalog, or compute period, PDot or dispersion. It also does not claim I06, I07, N07 or E06 acceptance. All 64 primary acceptance statuses (the 58 functional packages plus the 6 quality items) stay unchanged. Since R-RX19 an optional, static manual timing guide explains how the existing cursors serve same-channel and cross-channel readings, as OpenVireo guidance without any computation ([PULSAR-MANUAL-TIMING.md](PULSAR-MANUAL-TIMING.md)).
 
 Contracts PLR-READ-01 … PLR-FMT-01, with addresses, sources, inferences and gates, are in [PULSAR-ANALYSIS-PROVENANCE.json](PULSAR-ANALYSIS-PROVENANCE.json). Artifact: VIREO 1.504 `CLEA_VEO.exe`, SHA-256 `781bc970…c54c`.
 

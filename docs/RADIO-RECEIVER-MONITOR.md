@@ -2,7 +2,19 @@
 
 The Receiver button of the radio control panel opens a TRcvr_Form1 main receiver and up to two child channels as cards. Each card has the recovered controls and a logical 401 × 142 display. The display is drawn from the R-RX1 signal chain ([RADIO-RECEIVER-SIGNAL.md](RADIO-RECEIVER-SIGNAL.md)) with a learner-loaded reference catalog.
 
-This is a **modelled display, not an observation**. It is silent and temporary (not in Save investigation; reload resets it). As first delivered, R-RX2 did not record and did not port Record, sound and volume, Identify/Properties, Align, PLR writing or the Add Current Item / PulsarList menu effects. Later increments added display marks (R-RX3, [RADIO-RECEIVER-MARKS.md](RADIO-RECEIVER-MARKS.md)), Record, Identify, the modal Properties and the Save question's No handoff to Pulsar Analysis (R-RX4, [RADIO-RECEIVER-RECORD.md](RADIO-RECEIVER-RECORD.md)), and Align, its layout and message 3 (R-RX5, [RADIO-RECEIVER-ALIGN.md](RADIO-RECEIVER-ALIGN.md)). Since R-RX6 the PulsarList menu effect is modelled as a session action; R-RX8 delivers it as `File ▸ Pulsar List...` under the web menu history (its classroom availability is unproven), and the Pulsar Parameters reference Open only reads the shared buffer ([RADIO-PULSAR-PARAMETERS.md](RADIO-PULSAR-PARAMETERS.md)). Still not ported: sound and volume, saving a recording to a file (the native Save Yes, `0x56b36c`), window minimize/maximize states and AL-RESIZE, PLR writing and the Add Current Item menu effect. It does not complete Radio or any of the 58 capabilities. Native equivalence is not established: no CLEA execution, emulation or native trace was used, and tests are contract checks of this implementation.
+This is a **modelled display, not an observation**. It is silent and temporary (not in Save investigation; reload resets it). As first delivered, R-RX2 did not record and did not port Record, sound and volume, Identify/Properties, Align, PLR writing or the Add Current Item / PulsarList menu effects. Later increments added display marks (R-RX3, [RADIO-RECEIVER-MARKS.md](RADIO-RECEIVER-MARKS.md)), Record, Identify, the modal Properties and the Save question's No handoff to Pulsar Analysis (R-RX4, [RADIO-RECEIVER-RECORD.md](RADIO-RECEIVER-RECORD.md)), and Align, its layout and message 3 (R-RX5, [RADIO-RECEIVER-ALIGN.md](RADIO-RECEIVER-ALIGN.md)). Since R-RX6 the PulsarList menu effect is modelled as a session action; R-RX8 delivers it as `File ▸ Pulsar List...` under the web menu history (its classroom availability is unproven), and the Pulsar Parameters reference Open only reads the shared buffer ([RADIO-PULSAR-PARAMETERS.md](RADIO-PULSAR-PARAMETERS.md)). Later web adaptations, not native ports, are:
+- a separate web trace audition (R-RX13, [RADIO-RECEIVER-AUDITION.md](RADIO-RECEIVER-AUDITION.md));
+- a rounded `.PLR` download (R-RX14, [PULSAR-RAW-EXPORT.md](PULSAR-RAW-EXPORT.md));
+- verified web saves (R-RX15–R-RX18: [PULSAR-SAVE-VERIFIED.md](PULSAR-SAVE-VERIFIED.md), [RADIO-RECORD-SAVE.md](RADIO-RECORD-SAVE.md), [RADIO-FINISH-SAVE.md](RADIO-FINISH-SAVE.md), [PULSAR-LOAD-SAVE.md](PULSAR-LOAD-SAVE.md)).
+
+Still not ported:
+- native sound and volume (WEB-RX-AUDIO-01 and PRE-01 below are unchanged);
+- the native Save wrapper `0x56b36c` and its file dialog;
+- the native PLR writer `0x56a518` and its state stores (+0x97, +0x9a). The R-RX15 verified-copy receipt is a separate web counterpart of those stores, and the shipped web serializer, download and receipt (R-RX14/R-RX15) are web artifacts, not ports of the writer or its state;
+- window minimize/maximize states and AL-RESIZE;
+- the Add Current Item menu effect.
+
+It does not complete Radio or any of the 58 capabilities. Native equivalence is not established: no CLEA execution, emulation or native trace was used, and tests are contract checks of this implementation.
 
 Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Evidence tags: [S] static listing, [D] DFM/resource default, [I] analyst inference, [W] web policy. Paths, hashes and VAs are in [RADIO-RECEIVER-MONITOR-PROVENANCE.json](RADIO-RECEIVER-MONITOR-PROVENANCE.json).
 
@@ -55,7 +67,7 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
 
 ## Remaining items
 
-Record, the 1600/1601 bound, Identify, the modal Properties and the Save question's No path are R-RX4 (`docs/RADIO-RECEIVER-RECORD.md`); the Save wrapper `0x56b36c` (Yes) stays unavailable; audio and PRE-01; Align, the layout and message 3 are R-RX5 (`docs/RADIO-RECEIVER-ALIGN.md`), while window states, AL-RESIZE `0x575080` and the ShowWindow table `[1,6,3]` remain (manual marks and DblClick: R-RX3, with its own remaining gaps); `env+0x37d6`; the ShowWindow table `0x5afa8c`; other `+0x499` writers; `0x4270c0`; historical FPU, global RNG, locale and GDI state; the actual `Application+0x44` value and the `0x53a` delivery.
+Record, the 1600/1601 bound, Identify, the modal Properties and the Save question's No path are R-RX4 (`docs/RADIO-RECEIVER-RECORD.md`); the native Save wrapper `0x56b36c` is not ported; nor is the native PLR writer `0x56a518` (since R-RX16/R-RX17 the Yes answers open Radio-owned verified web Saves instead, [RADIO-RECORD-SAVE.md](RADIO-RECORD-SAVE.md), [RADIO-FINISH-SAVE.md](RADIO-FINISH-SAVE.md)); native audio and PRE-01 (R-RX13 is only a separate web audition); Align, the layout and message 3 are R-RX5 (`docs/RADIO-RECEIVER-ALIGN.md`), while window states, AL-RESIZE `0x575080` and the ShowWindow table `[1,6,3]` remain (manual marks and DblClick: R-RX3, with its own remaining gaps); `env+0x37d6`; the ShowWindow table `0x5afa8c`; other `+0x499` writers; `0x4270c0`; historical FPU, global RNG, locale and GDI state; the actual `Application+0x44` value and the `0x53a` delivery.
 
 ## Tests
 

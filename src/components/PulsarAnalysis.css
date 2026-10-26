@@ -78,6 +78,10 @@
 .plr-append input[type="file"]{max-width:100%;min-width:0}
 .plr-save p,.plr-save-last p{overflow-wrap:anywhere}
 .plr-load-save p,.plr-load-save h3{overflow-wrap:anywhere}
+.plr-guide{border:1px solid #888;border-radius:.25rem;padding:.5rem;margin:.75rem 0}
+/* R-RX19: explicit px floor; 2.5rem tracks the app root size and can fall below 40px. */
+.plr-guide summary{min-height:44px;display:list-item;padding:.5rem 0;cursor:pointer}
+.plr-guide p,.plr-guide li{overflow-wrap:anywhere}
 /* R-RX18: the dedicated Load chooser is opened only by its Choose button; it stays in the dialog but is visually hidden. */
 .plr-load-save input.plr-load-save-input{position:absolute;width:1px;height:1px;min-height:0;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 @media (max-width:720px){

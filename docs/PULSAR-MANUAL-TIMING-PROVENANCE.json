@@ -1,0 +1,41 @@
+{
+  "increment": "R-RX19",
+  "title": "Manual pulse timing guide in Pulsar Analysis",
+  "kind": "web-guidance",
+  "claim": "OpenVireo guidance paraphrasing original help cursor instructions; not a recovered native guide, algorithm, accuracy certificate or physical period/delay/dispersion result; no original equivalence",
+  "base": "7110af16fd4013f9d238fcd97da978c2afb21bab",
+  "artifact": {
+    "name": "CLEA_VEO.exe",
+    "version": "VIREO 1.504",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+    "executed": false,
+    "emulated": false
+  },
+  "inputEvidence": {
+    "file": "INPUT-EVIDENCE.json (coordinator, private research)",
+    "utc": "2026-10-26T12:16:51.121852+00:00",
+    "copySHA256": "617a9ebfa237c111782d33761ca2322da9cf8f2ea868b220bf46f88310033ae5",
+    "contractSHA256": "819b7d077934971259bdbb9228cc2b68a85f0441efe8b3416c2722396b8b77e7"
+  },
+  "helpTextPublished": false,
+  "helpUse": "instructional meaning only, paraphrased; not algorithm or runtime proof",
+  "segments": [
+    { "source": "PULSRHLP.TXT", "sourceSHA256": "3a6b8e727be8340095a284ad8dbe4e075613b2d081d83e93537a901a6c8377fc", "topic": "Measure Received Signals", "decodedStart": 15376, "decodedEnd": 16337, "segmentSHA256": "f422a0275ae4c48d5e0b8614d85ebde51f067a194635442cbb3f5ab4ca5697fb", "used": "a vertical cursor per screen and one shared reference cursor; analysis tool offers zoom/pan and recording" },
+    { "source": "PULSRANL.TXT", "sourceSHA256": "9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4", "topic": "Load Recorded Pulsar Data", "decodedStart": 0, "decodedEnd": 503, "segmentSHA256": "625ee551bb97965872208c54e40ca64b19f0c5dba49a660b77bd6c052b00a24e", "used": "context only: data reaches the window by Load or directly after recording" },
+    { "source": "PULSRANL.TXT", "sourceSHA256": "9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4", "topic": "View Data Properties", "decodedStart": 1025, "decodedEnd": 1732, "segmentSHA256": "cdf5b1f06092d259fe60892d035479019d4be4215a9d10f3c4d5fb7079e9f347", "used": "frequencies in MHz, interval between data points in msec" },
+    { "source": "PULSRANL.TXT", "sourceSHA256": "9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4", "topic": "Make Measurements", "decodedStart": 3216, "decodedEnd": 4338, "segmentSHA256": "818cc75a56799927f5b54794026d76ef6dd7f88f620c59770fdec4974821dd73", "used": "shared reference and per-panel vertical times in seconds; horizontal readout is relative strength; readout click selects mode; zoom helps inspection" },
+    { "source": "PULSRANL.TXT", "sourceSHA256": "9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4", "topic": "Record Measurements", "decodedStart": 4338, "decodedEnd": 5274, "segmentSHA256": "6b86887dc5fe0de5f3576b21ae64c8442a2aae7be2908b5944f9c0ad084cf55c", "used": "one dialog per panel with unrecorded measurements, optional comment, OK records, Cancel skips" },
+    { "source": "PULSRANL.TXT", "sourceSHA256": "9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4", "topic": "Save Recorded Measurements", "decodedStart": 6057, "decodedEnd": 6748, "segmentSHA256": "93647b4a1ca85f593ed32eddc079a99f26dd7e3a5e0bfc908f83908beb65565a", "used": "context only: the native save is not ported; the guide names the existing web Export, which only requests a download" }
+  ],
+  "web": {
+    "files": ["src/components/PulsarAnalysis.tsx", "src/components/PulsarAnalysis.css", "src/components/PulsarMessages.ts"],
+    "policy": "static native details/summary; no React state, effect, dialog, focus trap, persistent state, file format, numerical formula, fixture, product debug hook or dependency; inside the inert-while-modal main region",
+    "availability": "recorded channels counted with pulsarPanelRecordable (rows exist and panel <= highest recorded index); 0 -> nothing to measure, 1 -> comparison needs two"
+  },
+  "tests": {
+    "file": "tests/pulsar-manual-timing-app.spec.ts",
+    "vectors": "SYNTHETIC test-owned PLR text with hand-placed peaks; not CLEA data, not model output, no noise",
+    "oracle": "hand-written literals of the chosen web contract; not product-core results and not native oracles",
+    "executedByImplementer": false
+  }
+}

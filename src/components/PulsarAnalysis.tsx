@@ -1081,6 +1081,9 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
     return t(`${session.purpose === 'save' ? 'pulsar.save' : 'pulsar.rawExport'}.refusal.${r.code}` as PulsarMessageKey);
   };
   const rawDisabled = !active || readPending || modal || s.leftDrag || s.rightDrag || leased || newer;
+  // R-RX19 static guide: recorded channels by the same rule as pending/Record, so zero rows or panels beyond the highest index count as none.
+  const recordedChannels = PULSAR_PANELS.filter(ch => pulsarPanelRecordable(rec, ch)).length;
+  const guideAvailability = recordedChannels === 0 ? t('pulsar.guide.noData') : recordedChannels === 1 ? t('pulsar.guide.oneChannel') : null;
 
   return (
     <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis" onKeyDownCapture={captureRepeatedEnter}>
@@ -1192,6 +1195,15 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
             <p className="plr-reference">{t('pulsar.reference')} <output data-testid="pulsar-reference">{readouts.reference}</output></p>
           </>
         )}
+        {/* R-RX19: optional static guidance (native disclosure, no state); docs/PULSAR-MANUAL-TIMING.md. */}
+        <details className="plr-guide" data-testid="pulsar-guide">
+          <summary data-testid="pulsar-guide-summary">{t('pulsar.guide.summary')}</summary>
+          <p className="plr-help" data-testid="pulsar-guide-provenance">{t('pulsar.guide.provenance')}</p>
+          <ul>
+            {(['cursors', 'sameChannel', 'crossChannel', 'units', 'zoom', 'record'] as const).map(k => <li key={k} data-testid={`pulsar-guide-${k}`}>{t(`pulsar.guide.${k}`)}</li>)}
+          </ul>
+          {guideAvailability && <p className="plr-warning" data-testid="pulsar-guide-availability">{guideAvailability}</p>}
+        </details>
         {/* The results stay available while confirmed measurements exist, also when the current data presents no panels. */}
         {(rec || s.list.length > 0) && (
           <>
