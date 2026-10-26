@@ -224,10 +224,13 @@ test('an open analysis dialog refuses arming; unsaved memory data: Cancel keeps 
  await expect(id(page,'receiver-record-prompt')).toHaveAttribute('data-kind','erase');await id(page,'receiver-record-cancel').click();
  await expect(id(page,'receiver-record-disp')).toHaveText('Off');
  await toAnalysis(page);await expect(id(page,'pulsar-memory-rows')).toHaveText(points);
- // Load prompt (flags 0x13) for unsaved memory data: Cancel keeps it; No opens the chooser from the same gesture.
+ // Load prompt (flags 0x13) for unsaved memory data: Cancel keeps it; No opens the chooser from the same gesture. R-RX18: Yes
+ // opens the verified web Save only where this browser offers it (the test's own probe); it is not pressed here
+ // (tests/pulsar-load-save-app.spec.ts covers it).
  await id(page,'pulsar-file').click();
  const load=id(page,'pulsar-load-dialog');await expect(load).toBeVisible();await expect(id(page,'pulsar-load-text')).toContainText('You have not saved your current pulsar data!');
- await expect(id(page,'pulsar-load-yes')).toBeDisabled();await expect(id(page,'pulsar-load-cancel')).toBeFocused();
+ if(capable)await expect(id(page,'pulsar-load-yes')).toBeEnabled();else await expect(id(page,'pulsar-load-yes')).toBeDisabled();
+ await expect(id(page,'pulsar-load-cancel')).toBeFocused();
  await page.keyboard.press('Escape');await expect(load).toHaveCount(0);await expect(id(page,'pulsar-memory-rows')).toHaveText(points);
  await id(page,'pulsar-file').click();await expect(load).toBeVisible();
  const chooser=page.waitForEvent('filechooser');await id(page,'pulsar-load-no').click();

@@ -17,6 +17,10 @@ const settle=(page:Page)=>page.evaluate(()=>new Promise(r=>requestAnimationFrame
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,act:()=>Promise<unknown>){const next=page.waitForEvent('download');await act();const d=await next;return {name:d.suggestedFilename(),bytes:await readFile((await d.path())!)};}
 const hash=(page:Page,route:string)=>page.evaluate(r=>{location.hash=r;},route);
+/** The test's own probe of the browser API (not the product's data-support): secure context, a callable
+ *  showSaveFilePicker and FileSystemFileHandle.prototype.createWritable. No picker is called. */
+const browserSaveCapable=(page:Page)=>page.evaluate(()=>window.isSecureContext===true&&typeof (window as {showSaveFilePicker?:unknown}).showSaveFilePicker==='function'
+ &&typeof FileSystemFileHandle==='function'&&'createWritable' in FileSystemFileHandle.prototype);
 
 /** Test-only: counts URL.createObjectURL calls and can make them throw (a synthetic browser download error). Product code is unchanged. */
 const urlProbe=(page:Page)=>page.addInitScript(()=>{
@@ -320,7 +324,7 @@ async function startReceiver(page:Page){
 }
 const finish=(page:Page)=>id(page,'receiver-record-finish');
 
-test('RX10 receiver flow: memory capture → Identify → Properties → No → manual Record exports an 11-column row; an open export makes Radio Record refuse; the finish Save Yes follows browser capability (not pressed); Load Yes stays disabled',async({page})=>{
+test('RX10 receiver flow: memory capture → Identify → Properties → No → manual Record exports an 11-column row; an open export makes Radio Record refuse; the finish Save Yes follows browser capability (not pressed); Load Yes follows browser capability (not pressed)',async({page})=>{
  await startReceiver(page);
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-disp')).toHaveText('On');
  await id(page,'receiver-mode').click();await flush(page);await expect(id(page,'receiver-record-capturing')).toBeVisible();
@@ -360,8 +364,10 @@ test('RX10 receiver flow: memory capture → Identify → Properties → No → 
  await page.goForward();await expect(dialog(page)).toBeVisible();await expect(field(page,'date')).toHaveValue('waiting draft');
  await id(page,'pulsar-export-cancel').click();await expect(dialog(page)).toHaveCount(0);
  await expect(id(page,'pulsar-memory-rows')).toHaveText(points!);await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
- // RX10-27: the analysis Load prompt for unsaved memory data keeps Yes (save first) disabled.
- await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();await expect(id(page,'pulsar-load-yes')).toBeDisabled();
+ // RX10-27: the analysis Load prompt for unsaved memory data. Since R-RX18 its Yes (verified Save first) follows the test's own
+ // capability probe; it is not pressed here, and Escape still cancels and keeps the data and the list.
+ await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
+ if(await browserSaveCapable(page))await expect(id(page,'pulsar-load-yes')).toBeEnabled();else await expect(id(page,'pulsar-load-yes')).toBeDisabled();
  await page.keyboard.press('Escape');await expect(id(page,'pulsar-load-dialog')).toHaveCount(0);await expect(id(page,'pulsar-memory-rows')).toHaveText(points!);
 });
 

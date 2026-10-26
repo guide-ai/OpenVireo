@@ -6,7 +6,7 @@ import { resourceSha256 } from '../io/boundedResource';
 import { admitPlrRecording, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
 import {
   INITIAL_PULSAR_ANALYSIS, PULSAR_ACTIVATE_LITERALS, PULSAR_BASES, PULSAR_PANELS, PULSAR_PANEL_HEIGHTS, PULSAR_PAN_RATES, PULSAR_PLOT_WIDTH, pulsarActivateData, pulsarAnnouncement,
-  pulsarAnswerClear, pulsarAnswerLoad, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord, pulsarDismissDataNotice, pulsarFactor, pulsarLoad, pulsarModalOpen,
+  pulsarAnswerClear, pulsarAnswerLoad, pulsarAnswerLoadSave, pulsarAxisTicks, pulsarBeginRecord, pulsarCancelRecord, pulsarConfirmRecord, pulsarDismissDataNotice, pulsarFactor, pulsarLoad, pulsarModalOpen,
   pulsarMode, pulsarPan, pulsarPanelRecordable, pulsarPanRate, pulsarPanTick, pulsarPointer, pulsarPointerRelease, pulsarProperties, pulsarReadouts, pulsarRecordDialog, pulsarRecordDraft,
   pulsarRequestClear, pulsarRequestLoad, pulsarReset, pulsarTrace, pulsarZoom,
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
@@ -14,7 +14,7 @@ import {
 import {
   claimPulsarOutput, importPulsarRecording, isFileData, isMemoryData, pulsarClaimBytes, pulsarClaimReadback, pulsarCurrentSaved, pulsarDataHighest, pulsarDataProperties, pulsarDataRows,
   pulsarFrequencyText, pulsarOutputClaim, pulsarWrittenCopy, recordPulsarWrittenCopy, releasePulsarOutput, setPulsarAnalysisActivity,
-  type PulsarData, type PulsarWriteClaim,
+  type PulsarData, type PulsarDataStep, type PulsarWriteClaim,
 } from '../core/pulsarCurrentData';
 import { useSharedPulsarData, type SharedPulsarDataHandle } from '../useSharedPulsarData';
 import { createPulsarPanHold } from '../core/pulsarPanHold';
@@ -41,6 +41,11 @@ import {
 import { PULSAR_SAVE_PENDING, pulsarSaveBegin, pulsarSaveRefusalNotice, type PulsarSaveNotice } from '../core/pulsarSavedCopy';
 import { browserPulsarSaveSupport, continuePulsarSave, invokePulsarSavePicker, type SaveHandle } from './pulsarSaveHost';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
+import {
+  loadSaveAttempt, loadSaveChoiceCancelled, loadSaveChoose, loadSaveImport, loadSaveLive, loadSaveOpen, loadSaveReadLive, loadSaveReadOwned, loadSaveSelected, loadSaveVerified,
+  type LoadSaveFlow,
+} from '../core/pulsarLoadSave';
+import { createLoadSaveTranslator, type LoadSaveMessageKey, type LoadSaveTranslate } from './PulsarLoadSaveMessages';
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
@@ -54,8 +59,9 @@ import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } f
  * harnesses) the panel owns a private one. A newer dataset generation is adopted (FormActivate, PLR-ACTIVATE-01) only
  * while the panel is active with no modal session and no pending read; otherwise a note says it is waiting, so drafts,
  * Review working copies and the confirmed list are kept. The panel reports its modal/read activity to the dataset.
+ * `translateLoadSave` (R-RX18) replaces the `loadSave.*` catalog of the Load question Yes flow.
  */
-export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; idPrefix?: string; active?: boolean; data?: SharedPulsarDataHandle }>;
+export type PulsarAnalysisProps = Readonly<{ translate?: PulsarTranslate; translateLoadSave?: LoadSaveTranslate; idPrefix?: string; active?: boolean; data?: SharedPulsarDataHandle }>;
 type Act = (fn: (s: PulsarAnalysisState) => PulsarTransition) => PulsarTransition;
 /**
  * Sequentially focusable controls of a dialog, in document order. The dialogs contain only buttons, text
@@ -125,8 +131,9 @@ const captureRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => {
 /** Client pixel index of a position in a box of n native pixels. */
 const pixelIndex = (offset: number, size: number, n: number) => Math.min(n - 1, Math.max(0, Math.floor(offset / size * n)));
 
-export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = true, data }: PulsarAnalysisProps) {
+export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', active = true, data }: PulsarAnalysisProps) {
   const t = useMemo(() => translate ?? createPulsarTranslator(), [translate]);
+  const ls = useMemo(() => translateLoadSave ?? createLoadSaveTranslator(), [translateLoadSave]);
   const [s, setS] = useState<PulsarAnalysisState>(INITIAL_PULSAR_ANALYSIS);
   const current = useRef(s);
   const local = useSharedPulsarData(), shared = data ?? local;
@@ -154,6 +161,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const [saveSupport] = useState(() => browserPulsarSaveSupport());
   const [saveBusy, setSaveBusy] = useState(false);
   const saveEpoch = useRef(0), saveRun = useRef<number | null>(null), mounted = useRef(false);
+  // R-RX18 Load question Yes flow (src/core/pulsarLoadSave.ts), mirrored in a ref so every guard reads the latest flow. flowEpoch:
+  // flow ids; invocationEpoch: dedicated chooser invocations. Never reset, so an old flow id or invocation never matches a later one.
+  const [loadSave, setLoadSaveState] = useState<LoadSaveFlow | null>(null), loadSaveRef = useRef<LoadSaveFlow | null>(null);
+  const setLoadSave = (next: LoadSaveFlow | null) => { loadSaveRef.current = next; setLoadSaveState(next); };
+  const flowEpoch = useRef(0), invocationEpoch = useRef(0);
   const [rejection, setRejection] = useState<string | null>(null);
   const [status, setStatus] = useState('');
   const [primaryAs, setPrimaryAs] = useState<'left' | 'right'>('left');
@@ -169,18 +181,22 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // Transitions run on the latest committed state, so rapid pointer events are never applied to a stale copy.
   // Which outcome writes the status is the core's pulsarAnnouncement policy.
   const act: Act = fn => {
-    const tr = exportRef.current || appendRef.current || rawRef.current ? blockedByExport(current.current) : fn(current.current);
+    // R-RX18: a Load question Yes flow in any phase blocks every core action, like the other sessions (also while its file is read).
+    const tr = exportRef.current || appendRef.current || rawRef.current || loadSaveRef.current ? blockedByExport(current.current) : fn(current.current);
     if (tr.changed) { current.current = tr.state; setS(tr.state); }
     const announced = pulsarAnnouncement(statusOutcome.current, tr);
-    if (announced) say(t(`pulsar.outcome.${announced}` as PulsarMessageKey), announced);
+    // R-RX18 reading: no dialog is open, so the flow's refusal names the pending read instead of a dialog (outcome unchanged).
+    const flowReading = announced === 'blocked-modal' && !exportRef.current && !appendRef.current && !rawRef.current && loadSaveRef.current?.phase === 'reading';
+    if (announced) say(flowReading ? ls('loadSave.status.reading') : t(`pulsar.outcome.${announced}` as PulsarMessageKey), announced);
     return tr;
   };
   const actRef = useRef(act);
   useLayoutEffect(() => { actRef.current = act; });
   // The export dialog is a modal session too: it makes the main region inert, holds pan and newer-data adoption, and is
   // reported to the shared dataset, so receiver arming is refused while it is open (also on a hidden route). The append
-  // dialog (R-RX12) and the raw .PLR download dialog (R-RX14) are too.
-  const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null || appendSession !== null || rawSession !== null;
+  // dialog (R-RX12) and the raw .PLR download dialog (R-RX14) are too, and the R-RX18 Load after Save flow until its file is read
+  // (its reading phase is the pending-read gate instead).
+  const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null || appendSession !== null || rawSession !== null || (loadSave !== null && loadSave.phase !== 'reading');
   // WEB pending-read gate (the native load is synchronous): while a chosen file is being read, its contents or
   // its SHA-256, no control opens a modal (Record, Review, Clear, Export, and the Load chooser with its unsaved-data prompt).
   // A modal makes the finished read's load be refused, which would drop the chosen file. The read completes, or the learner
@@ -196,6 +212,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // R-RX4 shared dataset: a held capture lease disables Load (WEB-REC-TXN); a newer generation waits for an idle, active panel.
   const leased = shared.doc.lease !== null, newer = shared.doc.generation !== adoptedGeneration;
   useLayoutEffect(() => { shared.update(d => setPulsarAnalysisActivity(d, { modal, reading: readPending })); }, [shared, modal, readPending]);
+  // R-RX18 (WEB-RX18-08): an unmount, or a switch to another owner, withdraws this panel's activity from the owner it reported to,
+  // so a surviving owner is not left busy. It updates that owner only, never this panel's state. `update` is stable per owner (the
+  // handle object changes with every document). Assumes one analysis panel per owner: the activity is not keyed by panel.
+  const reportActivity = shared.update;
+  useLayoutEffect(() => () => { reportActivity(d => setPulsarAnalysisActivity(d, { modal: false, reading: false })); }, [reportActivity]);
 
   useEffect(() => { if (recordPanel !== null) commentInput.current?.focus(); }, [recordPanel, s.recordSession?.position]);
   useEffect(() => { if (s.clearPrompt) clearDefault.current?.focus(); }, [s.clearPrompt]);
@@ -290,7 +311,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const promptNeeded = () => { const doc = shared.current(); return pulsarDataRows(doc.data) > 0 && !pulsarCurrentSaved(doc); };
   const onChooserClick = (e: ReactMouseEvent<HTMLInputElement>) => {
     if (reentry.current) return;
-    if (readingRef.current !== null) { e.preventDefault(); return; }
+    // R-RX18: also refused while a Load question Yes flow exists (checked on the ref, before its disabled state is rendered).
+    if (readingRef.current !== null || loadSaveRef.current !== null) { e.preventDefault(); return; }
     pick.current = null;
     const doc = shared.current();
     const tr = act(st => pulsarRequestLoad(st, doc.data, pulsarCurrentSaved(doc)));
@@ -330,6 +352,9 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     e.target.value = '';
     const grant = pick.current; pick.current = null;
     const picked = grant !== null && grant === shared.current().generation;
+    // R-RX18: while a Load question Yes flow exists, a change of this generic chooser (for example one delivered by script) is
+    // refused unread: only the flow's own dedicated chooser invocation may load, never the saved-file allowance below.
+    if (loadSaveRef.current !== null) { if (file) say(ls('loadSave.fileRefused')); return; }
     if (!file) { say(t('pulsar.status.pickerCancelled')); return; }
     // R-RX10: a change delivered while the export dialog is open is refused unread, so nothing reaches the shared dataset.
     if (exportRef.current) { say(t('pulsar.export.fileRefused')); return; }
@@ -344,29 +369,63 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     const generation = shared.current().generation;
     // Disabling the focused chooser for the read can move focus to the page; a failed read asks to return it (refocusChooser).
     const fromChooser = document.activeElement === e.target && e.target === fileInput.current;
+    await readPlr(file, generation, fromChooser, e.target, null);
+  }
+  /**
+   * The strict read → SHA-256 → import → adopt → pulsarLoad path shared by the ordinary chooser and (R-RX18) the Load after Save
+   * flow. `flow` is null for the ordinary path, whose behaviour is unchanged. For a flow read (its flowId and dedicated chooser
+   * invocation): after each await the read must still be this flow's read (else it is obsolete and SILENT, so it never overwrites a
+   * newer status, read or flow) and its context and receipt must still be current (else it fails as superseded and ends the flow).
+   * Its commit is one synchronous step: the import rechecks the flow inside the shared update, then the flow ends and the data is
+   * adopted before the ordinary pulsarLoad, with no await, gap or new grant between.
+   */
+  async function readPlr(file: File, generation: number, fromChooser: boolean, target: EventTarget, flow: Readonly<{ flowId: number; invocation: number }> | null) {
     const token = ++epoch.current;
     setReading(file.name); setRejection(null);
-    const late = () => { say(t('pulsar.status.lateDiscarded')); };
-    const fail = (text: string, restoreFocus = fromChooser) => { if (restoreFocus) refocusChooser.current = true; setReading(null); setRejection(`${t('pulsar.reject.title', { name: file.name })} ${text}`); };
+    const ownFlow = () => flow !== null && loadSaveReadOwned(loadSaveRef.current, flow.flowId, flow.invocation);
+    // R-RX18 (WEB-RX18-08): after an unmount a late read is inert: no import, adoption or status.
+    const late = () => { if (flow === null && mounted.current) say(t('pulsar.status.lateDiscarded')); };
+    const fail = (text: string, restoreFocus = fromChooser) => {
+      // R-RX18: a failed read that still owns its flow ends the flow and clears that flow's status, so a stale reading or Choose
+      // notice never remains; the rejection alert carries the reason. ownFlow() is checked once, before its ref is cleared.
+      if (ownFlow()) { setLoadSave(null); say(''); }
+      if (restoreFocus) refocusChooser.current = true; setReading(null); setRejection(`${t('pulsar.reject.title', { name: file.name })} ${text}`);
+    };
+    const obsolete = () => token !== epoch.current || !mounted.current || !activeRef.current || (flow !== null && !ownFlow());
+    const contextLost = () => flow !== null && !loadSaveReadLive(loadSaveRef.current as LoadSaveFlow, shared.current(), flow.flowId, flow.invocation);
     try {
       // Refused before the first await: the chooser was never rendered disabled, so no focus restoration is requested
-      // (an identical repeated rejection commits nothing, and a request would wait for an unrelated later commit).
-      if (file.size > PLR_MAX_BYTES) { fail(t('pulsar.reject.size'), false); return; }
+      // (an identical repeated rejection commits nothing, and a request would wait for an unrelated later commit). A flow read
+      // ends its flow, which removes its dialog, so focus may return to the Load control.
+      if (file.size > PLR_MAX_BYTES) { fail(t('pulsar.reject.size'), flow !== null); return; }
       const buffer = await file.arrayBuffer();
-      if (token !== epoch.current || !activeRef.current) return late();
+      if (obsolete()) return late();
+      if (contextLost()) { fail(t('pulsar.reject.superseded')); return; }
       const admission = admitPlrRecording(new Uint8Array(buffer), file.name);
       if (admission.status === 'rejected') {
         fail(`${t(`pulsar.reject.${admission.reason}` as PulsarMessageKey, { detail: admission.detail })}${admission.line ? ' ' + t('pulsar.reject.line', { line: admission.line }) : ''}`);
         return;
       }
       const sha256 = await resourceSha256(admission.recording.bytes);
-      if (token !== epoch.current || !activeRef.current) return late();
+      if (obsolete()) return late();
+      if (contextLost()) { fail(t('pulsar.reject.superseded')); return; }
       setReading(null);
       const owner = document.activeElement;
-      // A modal session (the export dialog included) refuses the load as before ('blocked-modal'); the dataset is not changed then.
-      if (pulsarModalOpen(current.current) || exportRef.current || appendRef.current || rawRef.current) { act(st => pulsarLoad(st, admission.recording)); return; }
-      const committed = shared.update(d => importPulsarRecording(d, admission.recording, generation));
-      if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
+      let committed: PulsarDataStep;
+      if (flow !== null) {
+        // The flow blocks every opener, so no other session should exist; if one does, nothing is imported and the flow ends.
+        if (pulsarModalOpen(current.current) || exportRef.current || appendRef.current || rawRef.current) { fail(t('pulsar.outcome.blocked-modal')); return; }
+        const own = loadSaveRef.current as LoadSaveFlow;
+        committed = shared.update(d => loadSaveImport(d, own, flow.flowId, flow.invocation, admission.recording));
+        if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
+        // CR2: the own flow ends in the same task as its import, before the ordinary load below (which the flow would block).
+        setLoadSave(null);
+      } else {
+        // A modal session (the export dialog included) refuses the load as before ('blocked-modal'); the dataset is not changed then.
+        if (pulsarModalOpen(current.current) || exportRef.current || appendRef.current || rawRef.current) { act(st => pulsarLoad(st, admission.recording)); return; }
+        committed = shared.update(d => importPulsarRecording(d, admission.recording, generation));
+        if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
+      }
       adopt(committed.doc.generation);
       // A hold must not carry the previous recording's step into the new window.
       panHold.release();
@@ -374,13 +433,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (tr.changed) {
         setDigest(Object.freeze({ recording: admission.recording, sha256 }));
         // Properties open automatically after a load. Focus moves there only if the learner has not moved focus elsewhere meanwhile.
-        if (owner === document.body || owner === e.target || owner === null) focusProperties.current = owner;
+        if (owner === document.body || owner === target || owner === null) focusProperties.current = owner;
       }
     } catch {
-      if (token === epoch.current) fail(t('pulsar.reject.read'));
+      if (mounted.current && (flow === null ? token === epoch.current : !obsolete())) fail(t('pulsar.reject.read'));
     }
   }
-  const cancelRead = () => { epoch.current++; setReading(null); say(t('pulsar.status.readCancelled')); };
+  // R-RX18: cancelling a flow read ends that flow (CR6); its late continuation finds a newer token and stays silent.
+  const cancelRead = () => { epoch.current++; setReading(null); if (loadSaveRef.current?.phase === 'reading') setLoadSave(null); say(t('pulsar.status.readCancelled')); };
   // Deactivation runs in the commit, before any later timer tick or read continuation.
   useLayoutEffect(() => {
     activeRef.current = active;
@@ -393,6 +453,10 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (reading !== null) cancelRead();
     // R-RX12: a pending target read is cancelled (its continuation finds a newer token); the session and an owned target stay.
     if (appendRef.current?.reading) { appendEpoch.current++; setAppend(resultsAppendCancelRead(appendRef.current)); }
+    // R-RX18: a hide or busy state ends the Load after Save flow in every phase and withdraws its chooser grant (a later change of
+    // its dedicated input is foreign). A Save dialog of the flow stays as a standalone Save session (with the 'abandoned' notice
+    // below when an attempt was running), so its later verification never reaches the Load choice.
+    if (loadSaveRef.current !== null) setLoadSave(null);
     // R-RX15: a pending Save attempt is abandoned: its continuation finds a newer token, aborts a stream that is still open
     // and marks nothing. The output claim stays held until that cleanup settled. The session keeps an 'abandoned' notice.
     if (saveRun.current !== null) {
@@ -401,10 +465,13 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (session) setRaw(rawExportSaveNotice(session, Object.freeze({ code: 'abandoned' as const, fileName: session.save?.fileName ?? null })));
     }
   });
-  // R-RX15: an unmount abandons a pending Save attempt the same way (no state is set afterwards).
-  useEffect(() => {
+  // R-RX15, R-RX18 (WEB-RX18-08): an unmount abandons a pending Save attempt the same way, and makes a pending ordinary or flow
+  // read obsolete. A layout cleanup, so the panel is dead in the commit that removes it, before any later read or Save
+  // continuation. It sets no state of this panel. The attempt's own finally still releases exactly its output claim after its
+  // stream cleanup settled. Setting the flag on every mount keeps StrictMode's mount, unmount, mount sequence live.
+  useLayoutEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; saveEpoch.current++; saveRun.current = null; };
+    return () => { mounted.current = false; epoch.current++; saveEpoch.current++; saveRun.current = null; };
   }, []);
   // R-RX4 adoption of a newer current dataset (FormActivate with new data, PLR-ACTIVATE-01): only while active, with no
   // modal session and no pending read. The confirmed measurement list is kept; Review follows its count.
@@ -427,10 +494,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const loadDialog = useRef<HTMLDialogElement>(null), exportDialog = useRef<HTMLDialogElement>(null), exportFirst = useRef<HTMLInputElement>(null), exportButton = useRef<HTMLButtonElement>(null);
   const appendDialog = useRef<HTMLDialogElement>(null), appendFile = useRef<HTMLInputElement>(null), appendButton = useRef<HTMLButtonElement>(null), appendCancelRead = useRef<HTMLButtonElement>(null), appendDownload = useRef<HTMLButtonElement>(null);
   const rawDialog = useRef<HTMLDialogElement>(null), rawButton = useRef<HTMLButtonElement>(null), rawCancel = useRef<HTMLButtonElement>(null), saveButton = useRef<HTMLButtonElement>(null);
+  // R-RX18 Load after Save dialog: its Cancel (the default) and the dedicated chooser input of the current invocation.
+  const loadSaveDialog = useRef<HTMLDialogElement>(null), loadSaveCancel = useRef<HTMLButtonElement>(null), loadSaveInput = useRef<HTMLInputElement>(null);
   const ownClose = useRef(new WeakSet<HTMLDialogElement>());
   const [syncModal] = useState(() => () => {
     // The export, append and raw download dialogs never coexist with the others: each opens only when none is open, and blocks every core action.
-    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current ?? exportDialog.current ?? appendDialog.current ?? rawDialog.current;
+    // The R-RX18 Load after Save dialog likewise (it exists only after its Save dialog is gone).
+    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current ?? exportDialog.current ?? appendDialog.current ?? rawDialog.current
+      ?? loadSaveDialog.current;
     if (!el) return;
     if (!activeRef.current) { if (el.open) { ownClose.current.add(el); el.close(); } return; }
     if (el.open) return;
@@ -441,12 +512,13 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     // Review: the open question's default button, else the editor's comment, else the selected row, else Cancel (an empty working copy).
     const review = () => reviewPromptDefault.current ?? reviewEditComment.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
     (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : el === loadDialog.current ? loadDefault.current
-      : el === exportDialog.current ? exportFirst.current : el === appendDialog.current ? appendFile.current : el === rawDialog.current ? rawCancel.current : review())?.focus();
+      : el === exportDialog.current ? exportFirst.current : el === appendDialog.current ? appendFile.current : el === rawDialog.current ? rawCancel.current
+        : el === loadSaveDialog.current ? loadSaveCancel.current : review())?.focus();
   });
   useLayoutEffect(() => { syncModal(); });
   useEffect(() => {
     // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
-    const own = [recordDialog, clearDialog, reviewDialog, loadDialog, exportDialog, appendDialog, rawDialog];
+    const own = [recordDialog, clearDialog, reviewDialog, loadDialog, exportDialog, appendDialog, rawDialog, loadSaveDialog];
     const closed = (e: Event) => { if (!own.some(d => e.target === d.current)) syncModal(); };
     if (!modal || !active) return;
     document.addEventListener('close', closed, true);
@@ -500,7 +572,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     },
   });
   function download() {
-    if (!fileRec || exportRef.current || appendRef.current) return;
+    if (!fileRec || exportRef.current || appendRef.current || loadSaveRef.current) return;
     try {
       const url = URL.createObjectURL(new Blob([fileRec.bytes], { type: 'application/octet-stream' }));
       const a = document.createElement('a');
@@ -531,7 +603,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const sessionOpenable = () => {
     const panel = root.current, doc = shared.current(), st = current.current;
     return activeRef.current && !!panel && panel.getClientRects().length > 0 && !panel.parentElement?.closest('[inert]') && document.querySelector('dialog:modal') === null
-      && readingRef.current === null && !pulsarModalOpen(st) && exportRef.current === null && appendRef.current === null && rawRef.current === null && !st.leftDrag && !st.rightDrag
+      && readingRef.current === null && !pulsarModalOpen(st) && exportRef.current === null && appendRef.current === null && rawRef.current === null && loadSaveRef.current === null
+      && !st.leftDrag && !st.rightDrag
       && doc.lease === null && doc.generation === adopted.current;
   };
   const exportOpenable = () => sessionOpenable() && current.current.list.length > 0;
@@ -762,6 +835,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (!session || exportBusy.current || rawForeignModal()) return;
     const saving = session.purpose === 'save';
     setRaw(null);
+    // R-RX18 (CR6): Cancel of the flow's Save ends the Load question Yes flow. The data, a receipt and the list are kept; a later
+    // Load → No is a new, explicit choice under the existing rules. Focus returns to the Load control.
+    if (saving && loadSaveRef.current?.phase === 'save') {
+      setLoadSave(null);
+      focusAfterModal.current = fileInput.current;
+      say(ls('loadSave.status.saveCancelled'));
+      return;
+    }
     focusAfterModal.current = saving ? saveButton.current : rawButton.current;
     say(t(saving ? 'pulsar.save.cancelled' : 'pulsar.rawExport.cancelled'));
   };
@@ -773,7 +854,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
    */
   const requestRaw = () => {
     const session = rawRef.current, dialogEl = rawDialog.current;
-    if (!session || session.purpose === 'save' || exportBusy.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
+    if (!session || session.purpose === 'save' || loadSaveRef.current || exportBusy.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
     const doc = shared.current();
     // R-RX16 WEB-RX16-05: not while a Save attempt of either owner (here or the Radio arming Save) holds the shared output claim.
     const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current) && pulsarOutputClaim(doc) === null;
@@ -842,7 +923,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     }
     saveRun.current = token; setSaveBusy(true);
     setRaw(rawExportSaveNotice(session, Object.freeze({ code: 'picking' as const, fileName: null })));
-    void finishSave(token, begun.claim, invoked.picked);
+    // R-RX18 (CR4): the attempt records the Load question Yes flow that owns this Save dialog, if any; only that flow and this token
+    // can make the Load choice ready when the attempt verifies.
+    const flow = loadSaveRef.current, owned = flow && flow.phase === 'save' ? loadSaveAttempt(flow, flow.ctx.flowId, token) : null;
+    if (owned) setLoadSave(owned);
+    void finishSave(token, begun.claim, invoked.picked, owned ? owned.ctx.flowId : null);
   };
   /**
    * The asynchronous rest of one attempt. Only a live attempt (same token, mounted, active) writes its phase or result. A
@@ -850,7 +935,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
    * are equal. Success closes the dialog (unless another modal owns focus) and returns focus to the Save opener. The output
    * claim is released only when the attempt, including any stream cleanup, has settled.
    */
-  async function finishSave(token: number, claim: PulsarWriteClaim, picked: Promise<SaveHandle>) {
+  async function finishSave(token: number, claim: PulsarWriteClaim, picked: Promise<SaveHandle>, flowId: number | null) {
     const live = () => token === saveEpoch.current && mounted.current && activeRef.current;
     const note = (n: PulsarSaveNotice) => { const now = rawRef.current; if (live() && now) setRaw(rawExportSaveNotice(now, n)); };
     try {
@@ -861,6 +946,16 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       const step = shared.update(d => recordPulsarWrittenCopy(d, claim, r.bytes, r.fileName));
       if (!step.ok) { note(pulsarSaveRefusalNotice(step.reason, check, r.fileName)); return; }
       const message = t('pulsar.save.verified', { file: r.fileName, bytes: claim.text.length });
+      // R-RX18 (CR4): only the owning flow's own attempt, with a genuine current receipt of the flow's data and generation, makes
+      // the Load choice ready. The Save dialog closes (also under a foreign modal: the ready dialog then waits for it to close).
+      // No chooser opens here; the next step needs a fresh click.
+      const flow = loadSaveRef.current;
+      const ready = flowId !== null && flow !== null ? loadSaveVerified(flow, shared.current(), flowId, token, r.fileName) : null;
+      if (ready) {
+        setRaw(null); setLoadSave(ready);
+        say(`${message} ${ls('loadSave.status.ready')}`);
+        return;
+      }
       if (rawForeignModal() || !rawDialog.current?.open) { note(Object.freeze({ code: 'verified' as const, fileName: r.fileName })); say(message); return; }
       setRaw(null);
       focusAfterModal.current = saveButton.current;
@@ -876,6 +971,98 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       if (mounted.current) setSaveBusy(false);
     }
   }
+  /**
+   * R-RX18 E9 Yes (docs/PULSAR-LOAD-SAVE.md). Synchronous, refused unchanged unless: a single click (not the second of a double
+   * click), an active panel whose open Load question is the only modal dialog, no pending read, no other session or output in
+   * progress, no drag, and loadSaveOpen accepts (the question is open for the current unsaved memory capture this panel presents).
+   * Ownership passes from the question to the flow's Save dialog in this task: the prompt closes with 'load-save' (never
+   * 'load-allowed': no chooser and no grant), then the save session and the flow are set. No picker is called here.
+   */
+  const answerLoadSave = (e: ReactMouseEvent<HTMLButtonElement>) => {
+    if (e.detail > 1) return;
+    const dlg = loadDialog.current, st = current.current;
+    if (!activeRef.current || !dlg?.open || [...document.querySelectorAll('dialog:modal')].some(d => d !== dlg)) return;
+    if (readingRef.current !== null || loadSaveRef.current || exportRef.current || appendRef.current || rawRef.current || exportBusy.current || st.leftDrag || st.rightDrag) return;
+    const opened = loadSaveOpen(st, shared.current(), adopted.current, saveSupport, flowEpoch.current + 1);
+    if (!opened.ok) { say(ls(`loadSave.refused.${opened.reason}` as LoadSaveMessageKey)); return; }
+    flowEpoch.current++;
+    const tr = act(pulsarAnswerLoadSave);
+    if (tr.outcome !== 'load-save') return;
+    pick.current = null;
+    setRaw(rawExportOpen(opened.flow.ctx.data, opened.flow.ctx.generation, 'save'));
+    setLoadSave(opened.flow);
+  };
+  const loadSaveForeignModal = () => [...document.querySelectorAll('dialog:modal')].some(d => d !== loadSaveDialog.current);
+  /** The flow ended because its context or receipt changed; nothing is loaded. Focus returns to the Load control. */
+  const endLoadSaveStale = () => { setLoadSave(null); focusAfterModal.current = fileInput.current; say(ls('loadSave.status.stale')); };
+  /**
+   * Choose recording to load…: a fresh click only (never automatic after the Save). CR1: the new invocation is committed with
+   * flushSync, which mounts a new dedicated input keyed by (flowId, invocation), and that input is clicked in the same gesture with
+   * no await. An older input node, its change or its cancel can no longer consume the new grant.
+   */
+  const chooseLoadSave = (e: ReactMouseEvent<HTMLButtonElement>) => {
+    if (e.detail > 1) return;
+    const flow = loadSaveRef.current;
+    if (!flow || (flow.phase !== 'ready' && flow.phase !== 'choosing') || !activeRef.current || !loadSaveDialog.current?.open || loadSaveForeignModal() || readingRef.current !== null) return;
+    const step = loadSaveChoose(flow, shared.current(), flow.ctx.flowId, ++invocationEpoch.current);
+    if (!step.ok) {
+      if (step.end) endLoadSaveStale(); else if (step.reason === 'busy') say(ls('loadSave.refused.output'));
+      return;
+    }
+    flushSync(() => setLoadSave(step.flow));
+    loadSaveInput.current?.click();
+  };
+  /** Cancel, Escape or the close request of the Load after Save dialog: the flow ends and the current data, receipt and list stay. */
+  const cancelLoadSave = () => {
+    const flow = loadSaveRef.current;
+    if (!flow || (flow.phase !== 'ready' && flow.phase !== 'choosing') || loadSaveForeignModal()) return;
+    setLoadSave(null);
+    focusAfterModal.current = fileInput.current;
+    say(ls('loadSave.status.cancelled'));
+  };
+  /**
+   * A change of the dedicated input. flowId and invocation are the tuple the rendered input was bound to (CR1). Anything that is
+   * not the current input of the flow's outstanding invocation is silent (CR3). An empty selection consumes the grant ('ready');
+   * a changed context ends the flow; otherwise the flow moves to 'reading' (its dialog closes) and the shared reader runs.
+   */
+  async function onLoadSaveFile(e: ChangeEvent<HTMLInputElement>, flowId: number, invocation: number | null) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    const flow = loadSaveRef.current;
+    if (!flow || e.target !== loadSaveInput.current) return;
+    const sel = loadSaveSelected(flow, shared.current(), flowId, invocation, !!file);
+    if (sel.kind === 'foreign') return;
+    if (sel.kind === 'empty') { setLoadSave(sel.flow); say(ls('loadSave.status.noFile')); return; }
+    if (sel.kind === 'ended' || !file || invocation === null) { endLoadSaveStale(); return; }
+    setLoadSave(sel.flow);
+    await readPlr(file, sel.generation, true, e.target, { flowId, invocation });
+  }
+  // The input's standard `cancel` event (React does not deliver it for <input>), attached per dedicated input node with that node's
+  // own (flowId, invocation): it consumes only that invocation's grant. A browser that never fires it keeps the grant until Cancel,
+  // Choose again, a hide or a context change. Window blur never cancels (the chooser itself blurs the page).
+  const loadSaveKey = loadSave && (loadSave.phase === 'ready' || loadSave.phase === 'choosing') ? `${loadSave.ctx.flowId}:${loadSave.invocation ?? 0}` : null;
+  useLayoutEffect(() => {
+    const el = loadSaveInput.current, flow = loadSaveRef.current;
+    if (!el || !flow || loadSaveKey === null) return;
+    const flowId = flow.ctx.flowId, invocation = flow.invocation;
+    const cancelled = () => {
+      const now = loadSaveRef.current;
+      if (!now) return;
+      const next = loadSaveChoiceCancelled(now, flowId, invocation);
+      if (next === now) return;
+      setLoadSave(next); say(ls('loadSave.status.noFile'));
+    };
+    el.addEventListener('cancel', cancelled);
+    return () => el.removeEventListener('cancel', cancelled);
+  }, [loadSaveKey, ls]);// say and setLoadSave use stable setters and refs
+  // A changed generation, data object, lease or receipt ends a ready or choosing flow before any import.
+  useLayoutEffect(() => {
+    const flow = loadSaveRef.current;
+    if (!flow || (flow.phase !== 'ready' && flow.phase !== 'choosing')) return;
+    const doc = shared.current();
+    if (loadSaveLive(flow, doc) && pulsarWrittenCopy(doc) === flow.receipt) return;
+    endLoadSaveStale();
+  }, [shared.doc, loadSave]);// endLoadSaveStale uses stable setters and refs
   const saveNoticeText = (n: PulsarSaveNotice): string => {
     const file = n.fileName ?? '';
     if (PULSAR_SAVE_PENDING.has(n.code)) return t(`pulsar.save.phase.${n.code}` as PulsarMessageKey, { file });
@@ -1074,12 +1261,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
           {...dialogEvents(() => answerLoad('cancel'))}>
           <h3 id={`${idPrefix}load`}>{PULSAR_ACTIVATE_LITERALS.loadCaption}</h3>
           <p id={`${idPrefix}load-text`} style={{ whiteSpace: 'pre-line' }} data-testid="pulsar-load-text">{PULSAR_ACTIVATE_LITERALS.loadText}</p>
-          <p className="plr-help" id={`${idPrefix}load-gated`} data-testid="pulsar-load-yes-reason">{t('pulsar.load.yesGated')} {t('pulsar.load.webDefault')}</p>
+          <p className="plr-help" id={`${idPrefix}load-gated`} data-testid="pulsar-load-yes-reason" data-support={saveSupport}>
+            {saveSupport === 'ok' ? ls('loadSave.yes.reason') : ls(`loadSave.yes.unsupported.${saveSupport}` as LoadSaveMessageKey)} {t('pulsar.load.webDefault')}</p>
           <div className="plr-row">
-            <button type="button" disabled aria-describedby={`${idPrefix}load-gated`} data-testid="pulsar-load-yes">{t('pulsar.load.yes')}</button>
+            <button type="button" onClick={answerLoadSave} disabled={saveSupport !== 'ok'} aria-describedby={`${idPrefix}load-gated`} data-testid="pulsar-load-yes">{t('pulsar.load.yes')}</button>
             <button type="button" onClick={() => answerLoad('no')} data-testid="pulsar-load-no">{t('pulsar.load.no')}</button>
             <button type="button" ref={loadDefault} onClick={() => answerLoad('cancel')} data-testid="pulsar-load-cancel">{t('pulsar.load.cancel')}</button>
           </div>
+          <p role="status" aria-live="polite" className="plr-status" data-testid="pulsar-load-status">{status}</p>
         </dialog>
       )}
       {s.reviewSession && (
@@ -1177,6 +1366,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
             aria-busy={saving && saveBusy ? true : undefined} data-testid={saving ? 'pulsar-save-capture-dialog' : 'pulsar-raw-export-dialog'}
             {...dialogEvents(closeRaw)}>
             <h3 id={`${idPrefix}raw-export`}>{t(saving ? 'pulsar.save.heading' : 'pulsar.rawExport.heading')}</h3>
+            {saving && loadSave?.phase === 'save' && loadSave.ctx.data === d && <p className="plr-help" data-testid="pulsar-load-save-intro">{ls('loadSave.saveIntro')}</p>}
             <p className="plr-help" id={`${idPrefix}raw-export-scope`} data-testid="pulsar-raw-export-scope">{t('pulsar.rawExport.scope', { rows: d.rowCount, capture: d.captureId, name: d.name, receivers: d.highestIndex + 1 })}</p>
             <p className="plr-warning" data-testid="pulsar-raw-export-origin">{t(saving ? 'pulsar.save.origin' : 'pulsar.rawExport.origin', { file: RAW_EXPORT_FILE_NAME })}</p>
             <p className="plr-help" data-testid="pulsar-raw-export-format">{t('pulsar.rawExport.format')}</p>
@@ -1212,6 +1402,27 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
                 : <button type="button" onClick={requestRaw} disabled={!p.ok} data-testid="pulsar-raw-export-download">{t('pulsar.rawExport.download', { name: RAW_EXPORT_FILE_NAME })}</button>}
               <button type="button" ref={rawCancel} onClick={closeRaw} data-testid="pulsar-raw-export-cancel">{t(saving ? 'pulsar.save.cancel' : 'pulsar.rawExport.cancel')}</button>
             </div>
+          </dialog>
+        );
+      })()}
+      {loadSave && loadSave.receipt && (loadSave.phase === 'ready' || loadSave.phase === 'choosing') && (() => {
+        // R-RX18 Load after Save: one dialog per flow; one dedicated, visually hidden chooser per invocation (CR1).
+        const { flowId } = loadSave.ctx, invocation = loadSave.invocation, receipt = loadSave.receipt;
+        if (!receipt) return null;
+        return (
+          <dialog key={flowId} ref={loadSaveDialog} aria-labelledby={`${idPrefix}load-save`} aria-describedby={`${idPrefix}load-save-verified`} className="plr-modal plr-load-save"
+            data-testid="pulsar-load-save-dialog" data-phase={loadSave.phase} {...dialogEvents(cancelLoadSave)}>
+            <h3 id={`${idPrefix}load-save`}>{ls('loadSave.heading')}</h3>
+            <p id={`${idPrefix}load-save-verified`} data-testid="pulsar-load-save-verified">{ls('loadSave.verified', { file: receipt.fileName, bytes: receipt.byteLength })}</p>
+            <p className="plr-help" data-testid="pulsar-load-save-consequence">{ls('loadSave.consequence')}</p>
+            {loadSave.phase === 'choosing' && <p className="plr-help" data-testid="pulsar-load-save-choosing">{ls('loadSave.choosing')}</p>}
+            <input key={`${flowId}:${invocation ?? 0}`} ref={loadSaveInput} type="file" accept=".plr,.PLR" tabIndex={-1} aria-hidden="true" className="plr-load-save-input"
+              onChange={e => { void onLoadSaveFile(e, flowId, invocation); }} data-testid="pulsar-load-save-file" data-invocation={invocation ?? 0} />
+            <div className="plr-row">
+              <button type="button" onClick={chooseLoadSave} data-testid="pulsar-load-save-choose">{ls('loadSave.choose')}</button>
+              <button type="button" ref={loadSaveCancel} onClick={cancelLoadSave} data-testid="pulsar-load-save-cancel">{ls('loadSave.cancel')}</button>
+            </div>
+            <p role="status" className="plr-status" data-testid="pulsar-load-save-status">{status}</p>
           </dialog>
         );
       })()}

@@ -27,6 +27,10 @@ const offenders=(page:Page)=>page.evaluate(()=>{
 });
 async function flush(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}}
+/** The test's own probe of the browser API (not the product's data-support): secure context, a callable
+ *  showSaveFilePicker and FileSystemFileHandle.prototype.createWritable. No picker is called. */
+const saveCapable=(page:Page)=>page.evaluate(()=>window.isSecureContext===true&&typeof (window as {showSaveFilePicker?:unknown}).showSaveFilePicker==='function'
+ &&typeof FileSystemFileHandle==='function'&&'createWritable' in FileSystemFileHandle.prototype);
 /** Route change by the location hash: the App header is inert while a radio box is presented, as history navigation would be. */
 const hashTo=async(page:Page,hash:'#pulsar-analysis'|'#radio-control')=>{await page.evaluate(h=>{location.hash=h;},hash);await flush(page);};
 
@@ -400,7 +404,8 @@ test('a dataset change after the Record press makes Yes superseded: Record off, 
  // Load a file in Pulsar Analysis meanwhile (its own unsaved question → No → chooser).
  await hashTo(page,'#pulsar-analysis');await expect(id(page,'pulsar-analysis')).toBeVisible();
  await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
- await expect(id(page,'pulsar-load-yes')).toBeDisabled();// E9 stays gated
+ // R-RX18: E9 Yes follows the test's own capability probe; it is not pressed here (tests/pulsar-load-save-app.spec.ts covers it).
+ if(await saveCapable(page))await expect(id(page,'pulsar-load-yes')).toBeEnabled();else await expect(id(page,'pulsar-load-yes')).toBeDisabled();
  const chooser=page.waitForEvent('filechooser');await id(page,'pulsar-load-no').click();
  await (await chooser).setFiles({name:'later.plr',mimeType:'application/octet-stream',buffer:Buffer.from(PLR,'latin1')});
  await expect(id(page,'pulsar-file-name')).toHaveText('later.plr');
@@ -573,7 +578,7 @@ test('unsupported browser API: Yes is disabled with its reason; No and Cancel st
  await toAnalysis(page);await expect(id(page,'pulsar-prop-file')).toHaveText(NOT_WRITTEN);
 });
 
-test('since R-RX17 the finish Save question offers Yes (not pressed here; see the finish Save spec) while E9, the analysis Load Yes, stays gated',async({page})=>{
+test('since R-RX17 the finish Save question offers Yes and since R-RX18 E9, the analysis Load Yes, follows the save capability (neither pressed here)',async({page})=>{
  await installShim(page);
  await startApp(page);await setupReceiver(page);
  await id(page,'receiver-record').click();await id(page,'receiver-mode').click();await flush(page);await advance(page,400);await id(page,'receiver-mode').click();await flush(page);
@@ -585,8 +590,12 @@ test('since R-RX17 the finish Save question offers Yes (not pressed here; see th
  await expect(id(page,'receiver-record-save-cancel')).toBeFocused();
  await id(page,'receiver-record-save-no').click();await expect(id(page,'pulsar-memory')).toBeVisible();await flush(page);
  await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
- await expect(id(page,'pulsar-load-yes')).toBeDisabled();await expect(id(page,'pulsar-load-yes-reason')).toContainText('not ported');
- await id(page,'pulsar-load-cancel').click();
+ // R-RX18: the product's Yes and its data-support agree with the test's own probe (secure context, callable picker, createWritable).
+ const capable=await saveCapable(page);
+ await expect(id(page,'pulsar-load-yes-reason')).toHaveAttribute('data-support',capable?'ok':/^(insecure-context|no-api)$/);
+ if(capable)await expect(id(page,'pulsar-load-yes')).toBeEnabled();else await expect(id(page,'pulsar-load-yes')).toBeDisabled();
+ await expect(id(page,'pulsar-load-yes-reason')).not.toContainText('not ported');await expect(id(page,'pulsar-load-cancel')).toBeFocused();
+ await id(page,'pulsar-load-cancel').click();await expect(id(page,'pulsar-memory')).toBeVisible();
  expect((await shim(page)).calls).toBe(0);
 });
 

@@ -129,7 +129,9 @@ test('Download capture as .PLR: Cancel default, exact layout of the capture, not
  await toAnalysis(page);await expect(id(page,'pulsar-memory-rows')).toHaveText(points);
  // Round trip: the Load question still asks (unsaved); No → the downloaded bytes load as an ordinary file.
  await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
- await expect(id(page,'pulsar-load-yes')).toBeDisabled();await expect(id(page,'pulsar-load-yes-reason')).toContainText('not ported');
+ // R-RX18: Yes (verified Save first) follows the same probe; it is not pressed here.
+ await expect(id(page,'pulsar-load-yes-reason')).toHaveAttribute('data-support',capable?'ok':/^(insecure-context|no-api)$/);
+ if(capable)await expect(id(page,'pulsar-load-yes')).toBeEnabled();else await expect(id(page,'pulsar-load-yes')).toBeDisabled();
  const chooser=page.waitForEvent('filechooser');await id(page,'pulsar-load-no').click();
  await (await chooser).setFiles({name:FILE,mimeType:'application/octet-stream',buffer:got.bytes});
  await expect(id(page,'pulsar-sha')).toHaveText(sha(got.bytes));await expect(id(page,'pulsar-file-name')).toHaveText(FILE);

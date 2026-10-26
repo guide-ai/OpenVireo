@@ -152,7 +152,8 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.save.fileRefused': 'Nothing was loaded: finish or cancel the Save dialog first.',
   'pulsar.save.lastCopy': 'Last verified copy: {file}',
   'pulsar.save.lastCopyNote': 'Checked when it was written ({bytes} bytes read back equal). OpenVireo does not watch the file afterwards: a later save to the same file, or another program, may have changed it. Clearing the data, a new capture or a load drops this status.',
-  'pulsar.load.yesGated': 'Yes (save first) is not available here: the original Save dialog, its file naming and its questions are not ported, and this question cannot run the separate web Save. To keep a copy, choose Cancel and use “Save capture as .PLR (verified)…”, which marks the data as written only after its copy is read back equal, or “Download capture as .PLR…”, which leaves it unsaved.',
+  // Not rendered since R-RX18 (Yes opens the verified Save; src/components/PulsarLoadSaveMessages.ts); kept so existing catalogs stay complete.
+  'pulsar.load.yesGated':'Yes (save first) is not available here: the original Save dialog, its file naming and its questions are not ported, and this question cannot run the separate web Save. To keep a copy, choose Cancel and use “Save capture as .PLR (verified)…”, which marks the data as written only after its copy is read back equal, or “Download capture as .PLR…”, which leaves it unsaved.',
   'pulsar.load.webDefault': 'Web default button: Cancel.',
   'pulsar.load.yes': 'Yes',
   'pulsar.load.no': 'No',
@@ -221,6 +222,7 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.outcome.load-prompt': 'The current pulsar data has not been saved.',
   'pulsar.outcome.load-allowed': '',
   'pulsar.outcome.load-cancelled': 'Load cancelled. The current pulsar data is unchanged.',
+  'pulsar.outcome.load-save': 'Save first: the verified web Save opened. Nothing is loaded until its copy is read back equal and you then choose a recording to load.',
   'pulsar.outcome.channel-unrecorded': 'Not taken: this receiver was not recorded, so its gain is unknown and no horizontal reading can be computed.',
   'pulsar.toolbar.heading': 'Display controls',
   'pulsar.toolbar.properties': 'Properties…',

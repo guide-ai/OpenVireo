@@ -1,0 +1,90 @@
+{
+  "increment": "R-RX18 Analysis Load question Yes (E9) -> verified web Save -> separate fresh Load choice",
+  "acceptedBase": "78ea2e184483cc33f14f9061ac2b77f516c97385",
+  "artifact": {
+    "name": "CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "originalExecution": false,
+  "nativeOracle": false,
+  "method": "Bounded GNU objdump static listings reused from earlier increments (no new provider run, no original execution or emulation). Only the five direct listings below are used; no excluded or historical derived artifacts.",
+  "tags": {
+    "S": "static listing",
+    "I": "analyst inference",
+    "W": "web policy"
+  },
+  "listings": [
+    {
+      "file": "analysis-load-prefix-verified.asm",
+      "sha256": "17148ae9cedbacf3a5e8900615d3ce4782f2f53a23b214c90b936321985ddf34",
+      "range": "0x56af38..0x56afb7"
+    },
+    {
+      "file": "analysis-load-after-save.asm",
+      "sha256": "0e3a6c3598926631c0bfee2d48d8211fc2a80ee85703aad9f5e70c8f4c028aba",
+      "range": "0x56afbc..0x56b1c7"
+    },
+    {
+      "file": "writer-caller-56b36c.asm",
+      "sha256": "b56926da8ce354c26b671d94031d3b6656ca378703f716b5cffa2a115640f5be",
+      "range": "0x56b36c (Save wrapper; cited only as the callee of E9 Yes, nothing new claimed)"
+    },
+    {
+      "file": "signal-write.asm",
+      "sha256": "55069a74c53d6daa29657dbef7768a2b5322a5c6145c8624802dbe303eebef7d",
+      "range": "0x56a838..0x56a85d"
+    },
+    {
+      "file": "signal-read.asm",
+      "sha256": "7d8aa6bad20841409a385db3596716e5488823b1dae566ec8fd2df66862b0f60",
+      "range": "0x56a260 (reader; cited only as the callee at 0x56b093, nothing new claimed)"
+    }
+  ],
+  "facts": [
+    {
+      "id": "E9-PROMPT",
+      "tag": "S",
+      "listing": "analysis-load-prefix-verified.asm",
+      "range": "0x56af38..0x56afbc (exclusive)",
+      "observed": "Handler installed 0x56af4f push 0x56b1ba / 0x56af57 FS:[0]=ESP. List +0x80 non-empty (0x492708) and +0x97 = 0 (0x56af72) -> box 0x56b1d0 / caption 0x56b258, flags 0x13. Cancel (2) -> 0x56b192. Yes (6) -> 0x56afb5, call 0x56b36c at 0x56afb7. Other answers and the normal return of Yes -> 0x56afbc."
+    },
+    {
+      "id": "E9-SELECTOR",
+      "tag": "S",
+      "listing": "analysis-load-after-save.asm",
+      "range": "0x56afbc..0x56b098",
+      "observed": "Dialog fields +0x378/+0x5c7/+0x5cb set; virtual Execute 0x56b00d; false -> 0x56b188. No saved-flag or Save-success test before the selector. Conditional warning on dialog byte +0x64 bit 0x80 (0x56b018..0x56b06b, flags 0x13) not ported; bit mapping and literals not newly recovered. Reader 0x56a260 called only at 0x56b093 after the local accept byte [ebp-0xd] is set."
+    },
+    {
+      "id": "E9-CLEANUP",
+      "tag": "S",
+      "listing": "analysis-load-after-save.asm",
+      "range": "0x56b192..0x56b1c8 (exclusive)",
+      "observed": "Frame unlinked 0x56b197; normal cleanup push 0x56b1c1 at 0x56b19a; handler 0x56b1ba jmp 0x4056e4. Thrown-error continuation not established."
+    },
+    {
+      "id": "SAVE-WRITTEN",
+      "tag": "S",
+      "listing": "signal-write.asm",
+      "range": "0x56a838..0x56a85d",
+      "observed": "close 0x403bc8 (0x56a83e) and I/O check 0x4030f8 (0x56a843) before +0x97 := 1 (0x56a848) and the +0x9a name copy (0x56a84f..0x56a85d, ecx = 0xff). Same receipt semantics as R-RX15; no durability proved."
+    }
+  ],
+  "webPolicy": [
+    { "id": "WEB-RX18-01", "tag": "W", "summary": "Yes opens only the verified Save for the current unsaved memory capture the panel presents; outcome 'load-save', never 'load-allowed'; no picker, no chooser, no grant; disabled with a reason without Save support; no discard fallback." },
+    { "id": "WEB-RX18-02", "tag": "W", "summary": "Only the flow's own attempt token with a genuine current receipt of the flow's data object and generation, with the attempt's file name and not the prior written value, makes the flow ready. The saved flag is never the load authority." },
+    { "id": "WEB-RX18-03", "tag": "W", "summary": "Separate Load choice dialog, Cancel default; nothing loaded automatically; under a foreign modal it waits." },
+    { "id": "WEB-RX18-04", "tag": "W", "summary": "Fresh Choose click; flushSync mounts a dedicated input keyed by (flowId, invocation) and clicks it with no await; change and cancel handlers capture their own tuple; empty selection or standard cancel consumes the grant; window blur never cancels." },
+    { "id": "WEB-RX18-05", "tag": "W", "summary": "Shared strict reader; obsolete flow continuations are silent; own context loss fails as superseded; one synchronous commit: import rechecked inside the shared update, then the own flow ends, adoption, ordinary pulsarLoad." },
+    { "id": "WEB-RX18-06", "tag": "W", "summary": "Save Cancel, bad read, Cancel reading, hide, busy or context change end the flow with no automatic replacement; the old dedicated input stays invalid; ordinary Load rules apply afterwards." },
+    { "id": "WEB-RX18-07", "tag": "W", "summary": "Flow recognised by every handler through refs; output claims unchanged and released only after cleanup." },
+    { "id": "WEB-RX18-08", "tag": "W", "summary": "Hide/busy/unmount end the flow; a running Save keeps its abandoned notice as a standalone Save." }
+  ],
+  "unknowns": [
+    "Native conditional warning (+0x64 bit 0x80), its literals and full window/control effects.",
+    "Thrown I/O continuation (handlers to 0x4056e4), original partial read state and persistence.",
+    "OS picker and chooser behaviour, physical durability, FPU, RNG, GDI, locale.",
+    "Whether a given browser fires the input cancel event; the web grant then stays until Cancel, Choose again, a hide or a context change.",
+    "No native, numeric or scientific equivalence is claimed."
+  ]
+}

@@ -77,6 +77,9 @@
 .plr-append p,.plr-append dd{overflow-wrap:anywhere}
 .plr-append input[type="file"]{max-width:100%;min-width:0}
 .plr-save p,.plr-save-last p{overflow-wrap:anywhere}
+.plr-load-save p,.plr-load-save h3{overflow-wrap:anywhere}
+/* R-RX18: the dedicated Load chooser is opened only by its Choose button; it stays in the dialog but is visually hidden. */
+.plr-load-save input.plr-load-save-input{position:absolute;width:1px;height:1px;min-height:0;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 @media (max-width:720px){
  .plr{padding:.5rem}
  .plr-panel-body{grid-template-columns:minmax(0,1fr)}

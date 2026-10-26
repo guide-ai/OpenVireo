@@ -30,6 +30,10 @@ async function flush(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new 
 async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}}
 /** Route change by the location hash: the App header is inert while a radio box is presented, as history navigation would be. */
 const hashTo=async(page:Page,hash:'#pulsar-analysis'|'#radio-control')=>{await page.evaluate(h=>{location.hash=h;},hash);await flush(page);};
+/** The test's own probe of the browser API (not the product's data-support): secure context, a callable
+ *  showSaveFilePicker and FileSystemFileHandle.prototype.createWritable. No picker is called. */
+const saveCapable=(page:Page)=>page.evaluate(()=>window.isSecureContext===true&&typeof (window as {showSaveFilePicker?:unknown}).showSaveFilePicker==='function'
+ &&typeof FileSystemFileHandle==='function'&&'createWritable' in FileSystemFileHandle.prototype);
 
 // ---- Synthetic picker over this test's OPFS (copied from tests/radio-receiver-record-save-app.spec.ts).
 type Plan={name:string;truncate?:boolean;reject?:'AbortError'|'SecurityError';throwSync?:boolean};
@@ -294,9 +298,12 @@ test('failures and refusals stay in the finish Save dialog with the lease held; 
  await expect(finish(page)).toHaveCount(0);await expect(id(page,'receiver-status-0')).toHaveText(KEPT);
  await toAnalysis(page);
  await expect(id(page,'pulsar-prop-file')).toHaveText(NOT_WRITTEN);await expect(id(page,'pulsar-save-capture-last')).toHaveCount(0);await expect(id(page,'pulsar-file')).toBeEnabled();
- // E9 stays gated: the Load question's Yes is disabled with its own (unchanged) reason.
+ // Since R-RX18 the Load question's Yes follows the test's own capability probe; it is not pressed here, so no picker is called.
  await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
- await expect(id(page,'pulsar-load-yes')).toBeDisabled();await expect(id(page,'pulsar-load-yes-reason')).toContainText('not ported');
+ const capable=await saveCapable(page);
+ await expect(id(page,'pulsar-load-yes-reason')).toHaveAttribute('data-support',capable?'ok':/^(insecure-context|no-api)$/);
+ if(capable)await expect(id(page,'pulsar-load-yes')).toBeEnabled();else await expect(id(page,'pulsar-load-yes')).toBeDisabled();
+ await expect(id(page,'pulsar-load-cancel')).toBeFocused();
  await id(page,'pulsar-load-cancel').click();expect((await shim(page)).calls).toBe(8);
 });
 

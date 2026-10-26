@@ -7,10 +7,10 @@ When the main receiver's **Record** finds unsaved data, it asks the recovered qu
 - Only a verified copy continues to the recovered **erase** question (flags 0x41). The erase still needs its own **OK**.
 - Every other outcome stays in the dialog with an alert: cancel, refusal, wrong extension, write, close or read-back failure, mismatch, stale data, or an abandoned attempt. **Back to the question** (or Escape) returns to the unsaved question, whose No → erase and Cancel are unchanged.
 
-The data is a **model-generated capture of the receiver simulation, not observed CLEA data**. The two other original Save-Yes paths stay **gated** and are not enabled in this increment:
+The data is a **model-generated capture of the receiver simulation, not observed CLEA data**. In R-RX16 (history) the two other original Save-Yes paths stayed **gated** and were not enabled in that increment:
 
 - the finish Save question (E4) — since R-RX17 enabled separately, see [RADIO-FINISH-SAVE.md](RADIO-FINISH-SAVE.md);
-- the Pulsar Analysis Load question (E9).
+- the Pulsar Analysis Load question (E9) — since R-RX18 enabled separately, see [PULSAR-LOAD-SAVE.md](PULSAR-LOAD-SAVE.md).
 
 Radio is not complete. No native Save dialog, wrapper, exception or durability equivalence is claimed.
 
@@ -72,7 +72,7 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
   - The Analysis Save and the Analysis raw Download refuse (`not-ready`) while either owner holds it. So does Radio Choose.
   - This also covers a Radio attempt whose route was hidden but whose stream is still being cleaned up. The Analysis panel's own `exportBusy` does not see such an attempt.
 - **WEB-RX16-06 No deadlock** [W]. Radio Save readiness is: no capture lease, no pending analysis read, and no output claim. An open Analysis dialog (`analysis.modal`) is deliberately **not** a condition, because those dialogs stay open on their hidden route. The erase OK still refuses `analysis-busy` (unchanged): the byte goes off, the data and the receipt are kept, and the next Record asks only the erase question.
-- **WEB-RX16-07 Gated paths** [W]. E4 Yes (finish Save question) and E9 Yes (Analysis Load question) stay disabled with their reasons. Their lease and user-activation designs are not part of this increment. Since R-RX17, E4 Yes is enabled with its own lease design ([RADIO-FINISH-SAVE.md](RADIO-FINISH-SAVE.md)); E9 Yes stays disabled.
+- **WEB-RX16-07 Gated paths** [W]. E4 Yes (finish Save question) and E9 Yes (Analysis Load question) stay disabled with their reasons. Their lease and user-activation designs are not part of this increment. Since R-RX17, E4 Yes is enabled with its own lease design ([RADIO-FINISH-SAVE.md](RADIO-FINISH-SAVE.md)). Since R-RX18, E9 Yes opens the Analysis verified Save and then a separate, fresh Load choice ([PULSAR-LOAD-SAVE.md](PULSAR-LOAD-SAVE.md)); this Radio arming Save is unchanged.
 - **WEB-RX16-08 Liveness, focus and layout** [W].
   - Each attempt has a token. It is live only while the token is current, the workspace is mounted, the Radio route is shown and no project operation runs. A foreign modal dialog does not stop it.
   - A hidden route, a project operation or an unmount makes the attempt dead. A dead continuation aborts an open stream and marks nothing, and the claim stays held until that cleanup settles. The dialog shows `abandoned`, and Choose and Back are `aria-disabled` until then.
@@ -91,7 +91,7 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
 |---|---|---|
 | L1 | The native Save wrapper `0x56b36c` (dialog, naming, collision probe, remembered folder) and its delivery are not ported | The browser chooses one file; the R-RX15 web rules apply. |
 | L2 | SEH/exception continuation of E1 (`0x575942` → `0x4056e4`) not modelled | Failures stay in the dialog; no native error path is claimed. |
-| L3 | E4 and E9 Yes | Gated (WEB-RX16-07). Since R-RX17 only E9 stays gated; E4 → [RADIO-FINISH-SAVE.md](RADIO-FINISH-SAVE.md). |
+| L3 | E4 and E9 Yes | Gated (WEB-RX16-07). Since R-RX17 E4 → [RADIO-FINISH-SAVE.md](RADIO-FINISH-SAVE.md); since R-RX18 E9 → [PULSAR-LOAD-SAVE.md](PULSAR-LOAD-SAVE.md). |
 | L4 | A browser stage that never settles (most plainly a picker promise) | It keeps the shared output claim until that provider promise settles. Since R-RX16 this blocks across routes: a hung Radio attempt keeps its dialog (Choose, Back and Escape inert) and refuses Analysis Save and raw Download (`not-ready`); a hung Analysis attempt refuses Radio Choose (`not-ready`). Hiding the route or a project operation marks the attempt abandoned (logically dead) but does not release the claim. The application forces no timeout and no claim release while the provider promise is unsettled. A browser chooser Cancel that rejects the promise (`AbortError`) settles the attempt and releases its claim; a still-live attempt shows the cancel notice, while an abandoned attempt keeps its abandoned alert. |
 | L5 | Physical durability, OS dialog behaviour, x87, GDI, locale | Not claimed; the receipt is historical. |
 | L6 | Focus defaults (Cancel in the unsaved question; Cancel after an async verified Save) | Declared web choices that differ from the native defaults. |
@@ -134,9 +134,9 @@ Binary `CLEA_VEO.exe` SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15
   - Keyboard: double-click and held Enter on Yes; Tab wraps; Escape is Back; Enter on Choose; held Enter on the erase Cancel.
   - A synthetic host `<dialog>` during a held read-back.
   - Unsupported API.
-  - E9 still disabled; since R-RX17 the finish Save question's Yes is enabled (not pressed there; `tests/radio-receiver-finish-save-app.spec.ts` covers it).
+  - E9: disabled in R-RX16; since R-RX18 its enabled state follows the test's own capability probe (never pressed there; `tests/pulsar-load-save-app.spec.ts` covers the flow). Since R-RX17 the finish Save question's Yes is enabled (not pressed there; `tests/radio-receiver-finish-save-app.spec.ts` covers it).
   - Layout at 1440, 375 and 320 with 120-character names, including Range text-line checks and attached offender lists.
 
   These are web contract checks, not native or OS-dialog witnesses.
 - `tests/radio-receiver-record-app.spec.ts`: the old "Yes disabled" check now uses the test's own browser probe (`saveCapable`: secure context, a callable `showSaveFilePicker`, `createWritable`), independent of the product's `data-support`. The product's `data-support` and Yes's enabled state must agree with the probe; either branch is valid. Cancel is still focused and the web-default text is kept.
-- `tests/radio-receiver-raw-export-app.spec.ts`: only the old "Yes disabled, not ported" check after a Download changes, to the same probe; the Download still leaves the data unsaved, and the Load Yes stays disabled ("not ported").
+- `tests/radio-receiver-raw-export-app.spec.ts`: only the old "Yes disabled, not ported" check after a Download changes, to the same probe; the Download still leaves the data unsaved. The Load Yes was disabled ("not ported") through R-RX17; since R-RX18 that check follows the same probe (its `data-support` and enabled state) and Yes is never pressed.

@@ -138,7 +138,7 @@ export type PulsarOutcome =
   | 'review-delete-confirm' | 'review-delete-declined' | 'review-deleted' | 'review-cancelled' | 'review-confirmed'
   | 'review-edit-no-selection' | 'review-edit-notice-closed' | 'review-edit-opened' | 'review-edit-draft' | 'review-edited' | 'review-edit-cancelled'
   | 'review-edit-unsupported-text' | 'review-edit-unsupported-quote' | 'review-edit-unsupported-length' | 'review-edit-unsupported-layout'
-  | 'activated' | 'activated-empty' | 'activated-reserved' | 'notice-closed' | 'load-prompt' | 'load-allowed' | 'load-cancelled' | 'channel-unrecorded';
+  | 'activated' | 'activated-empty' | 'activated-reserved' | 'notice-closed' | 'load-prompt' | 'load-allowed' | 'load-cancelled' | 'load-save' | 'channel-unrecorded';
 
 /** `placed`: this transition stored an accepted cursor placement. The stored value can equal the previous one. */
 export type PulsarTransition = Readonly<{ state: PulsarAnalysisState; outcome: PulsarOutcome; changed: boolean; placed: boolean; evidence: readonly string[] }>;
@@ -297,8 +297,8 @@ export function pulsarDismissDataNotice(s: PulsarAnalysisState): PulsarTransitio
 
 /**
  * Load1Click prefix 0x56af38..0x56afb7: when the current data has rows and +0x97 is 0, the MessageBox 0x56b1d0 / 0x56b258
- * (flags 0x13). Cancel (2) exits; Yes (6) calls 0x56b36c (WEB: not offered; the caller was recovered statically, but the original Save-Yes reentry is not ported); anything else continues to
- * the OpenDialog. 'load-allowed': open the picker now. The prompt reads the App's current dataset, not the presented copy.
+ * (flags 0x13). Cancel (2) exits; Yes (6) calls 0x56b36c at 0x56afb7 (R-RX18 WEB: pulsarAnswerLoadSave, which only starts the
+ * verified web Save; see src/core/pulsarLoadSave.ts); anything else continues to the OpenDialog. 'load-allowed': open the picker now. The prompt reads the App's current dataset, not the presented copy.
  * `saved` (R-RX15): +0x97 of the current document, pulsarCurrentSaved(doc), which also counts a verified written copy of a
  * memory capture. Omitted, the value alone decides (an imported file is saved, memory data is not), as before R-RX15.
  */
@@ -310,6 +310,16 @@ export function pulsarRequestLoad(s: PulsarAnalysisState, current: PulsarCurrent
 export function pulsarAnswerLoad(s: PulsarAnalysisState, answer: 'no' | 'cancel'): PulsarTransition {
   if (!s.loadPrompt || (answer !== 'no' && answer !== 'cancel')) return keep(s, 'invalid-input');
   return done({ ...s, loadPrompt: false }, answer === 'no' ? 'load-allowed' : 'load-cancelled', ['PLR-LOAD-PROMPT-01']);
+}
+/**
+ * R-RX18 E9 Yes (docs/PULSAR-LOAD-SAVE.md). Natively 0x56afb7 calls the Save caller 0x56b36c and its normal return falls into the
+ * OpenDialog at 0x56afbc without a success test. WEB: closes the prompt with 'load-save' only. It is never 'load-allowed': no
+ * chooser opens and no load is permitted here; the component opens the verified Save, and only that flow's verified receipt
+ * leads to a separate, fresh Load choice.
+ */
+export function pulsarAnswerLoadSave(s: PulsarAnalysisState): PulsarTransition {
+  if (!s.loadPrompt) return keep(s, 'invalid-input');
+  return done({ ...s, loadPrompt: false }, 'load-save', ['PLR-LOAD-PROMPT-01', 'E9-PROMPT']);
 }
 export function pulsarReset(s: PulsarAnalysisState): PulsarTransition {
   if (!s.recording) return keep(s, 'no-recording');

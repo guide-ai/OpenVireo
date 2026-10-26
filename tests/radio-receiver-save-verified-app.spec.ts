@@ -27,6 +27,10 @@ const offenders=(page:Page)=>page.evaluate(()=>{
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();const d=await next;return {name:d.suggestedFilename(),bytes:await readFile((await d.path())!)};}
 async function flush(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.clock.runFor(Math.min(200,ms-t));await flush(page);}}
+/** The test's own probe of the browser API (not the product's data-support): secure context, a callable
+ *  showSaveFilePicker and FileSystemFileHandle.prototype.createWritable. No picker is called. */
+const saveCapable=(page:Page)=>page.evaluate(()=>window.isSecureContext===true&&typeof (window as {showSaveFilePicker?:unknown}).showSaveFilePicker==='function'
+ &&typeof FileSystemFileHandle==='function'&&'createWritable' in FileSystemFileHandle.prototype);
 
 // ---- Synthetic picker over this test's OPFS.
 type Plan={name:string;truncate?:boolean;reject?:'AbortError'|'SecurityError';throwSync?:boolean};
@@ -295,10 +299,12 @@ test('picker cancel, asynchronous and synchronous refusal: one call each, no ret
  expect(s.calls).toBe(3);expect(s.events).toEqual(['click','click','click']);expect(s.log.filter(e=>e.startsWith('createWritable'))).toEqual(['createWritable:existing.PLR']);// the seed only
  await expect(id(page,'pulsar-save-capture-last')).toHaveCount(0);
  await id(page,'pulsar-raw-export-cancel').click();await expect(id(page,'pulsar-prop-file')).toHaveText(NOT_WRITTEN);
- // Still unsaved: the Load question asks.
+ // Still unsaved: the Load question asks. Since R-RX18 its Yes follows the test's own capability probe (not pressed here).
  await id(page,'pulsar-file').click();await expect(id(page,'pulsar-load-dialog')).toBeVisible();
- await expect(id(page,'pulsar-load-yes')).toBeDisabled();await expect(id(page,'pulsar-load-yes-reason')).toContainText('Save capture as .PLR (verified)');
- await id(page,'pulsar-load-cancel').click();
+ const capable=await saveCapable(page);
+ await expect(id(page,'pulsar-load-yes-reason')).toHaveAttribute('data-support',capable?'ok':/^(insecure-context|no-api)$/);
+ if(capable)await expect(id(page,'pulsar-load-yes')).toBeEnabled();else await expect(id(page,'pulsar-load-yes')).toBeDisabled();
+ await id(page,'pulsar-load-cancel').click();expect((await shim(page)).calls).toBe(3);
 });
 
 test('a name without .PLR is not written to; Choose again uses a new click and a new picker call',async({page})=>{
