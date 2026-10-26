@@ -1,9 +1,9 @@
 import {describe,expect,it} from 'vitest';
 import {admitPlrRecording,type PlrRecording} from './pulsarRecording';
 import {
- EMPTY_PULSAR_HEADER,INITIAL_PULSAR_CURRENT_DATA,PULSAR_DATA_NOT_WRITTEN,PULSAR_SAVE_NAME_MAX,acquirePulsarCaptureLease,commitPulsarCapture,importPulsarRecording,isMemoryData,
+ EMPTY_PULSAR_HEADER,INITIAL_PULSAR_CURRENT_DATA,PULSAR_DATA_NOT_WRITTEN,PULSAR_SAVE_NAME_MAX,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,importPulsarRecording,isMemoryData,
  pulsarClaimBytes,pulsarClaimReadback,pulsarCurrentSaved,pulsarDataFileName,pulsarDataPresentation,pulsarDataProperties,pulsarDataRows,pulsarDataSaved,pulsarFrequencyText,
- pulsarHeaderCells,pulsarMemoryRecording,pulsarSaveNameOk,pulsarWriteClaim,pulsarWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,setPulsarAnalysisActivity,
+ pulsarHeaderCells,pulsarMemoryRecording,pulsarOutputClaim,pulsarSaveNameOk,pulsarWriteClaim,pulsarWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,setPulsarAnalysisActivity,
  setPulsarCapturePhase,type PulsarCaptureInput,type PulsarCurrentData,type PulsarMemoryRecording,type PulsarWriteClaim,type PulsarWriteRefusal,type PulsarWrittenCopy,
 } from './pulsarCurrentData';
 import {buildPulsarRawExport} from './pulsarRawExport';
@@ -298,5 +298,69 @@ describe('R-RX15 verified written copy: receipt, refusals, invalidation and owne
   expect(pulsarDataProperties(m,{...real}).fields.file).toBe(PULSAR_DATA_NOT_WRITTEN);
   expect(()=>{(real as {fileName:string}).fileName='changed.PLR';}).toThrow(TypeError);
   expect(pulsarWrittenCopy(w)?.fileName).toBe('a.PLR');
+ });
+});
+
+// R-RX16 (docs/RADIO-RECORD-SAVE.md, WEB-RX16-05): the shared output claim is web policy (one browser output attempt across Pulsar
+// Analysis and the Radio arming Save), not a recovered native flag. Synthetic fixtures.
+describe('R-RX16 shared output claim: one owner and token, kept across dataset changes, never released by another attempt',()=>{
+ const committed=(m=capture()):PulsarCurrentData=>{
+  const r=setPulsarCapturePhase(acquirePulsarCaptureLease(INITIAL_PULSAR_CURRENT_DATA,1,0,false).doc,1,'receiving').doc;
+  return releasePulsarCaptureLease(commitPulsarCapture(r,1,m).doc,1).doc;
+ };
+ it('starts empty; a claim refuses every second claim and is released only by its exact owner and token',()=>{
+  expect(INITIAL_PULSAR_CURRENT_DATA.output).toBeNull();expect(pulsarOutputClaim(INITIAL_PULSAR_CURRENT_DATA)).toBeNull();
+  const {output:_omit,...legacy}=INITIAL_PULSAR_CURRENT_DATA;void _omit;
+  expect(pulsarOutputClaim(legacy)).toBeNull();
+  const a=claimPulsarOutput(INITIAL_PULSAR_CURRENT_DATA,'radio',3);
+  expect(a.ok).toBe(true);expect(pulsarOutputClaim(a.doc)).toEqual({owner:'radio',token:3});
+  expect(Object.isFrozen(a.doc)).toBe(true);expect(Object.isFrozen(a.doc.output)).toBe(true);
+  // Nothing else changes.
+  expect({...a.doc,output:null}).toEqual(INITIAL_PULSAR_CURRENT_DATA);
+  for(const [owner,token] of [['analysis',4],['radio',4],['radio',3]] as const){
+   const busy=claimPulsarOutput(a.doc,owner,token);
+   expect(busy).toMatchObject({ok:false,reason:'output-busy'});expect(busy.doc).toBe(a.doc);
+  }
+  for(const [owner,token] of [['analysis',3],['radio',2],['radio',4]] as const){
+   const wrong=releasePulsarOutput(a.doc,owner,token);
+   expect(wrong).toMatchObject({ok:false,reason:'output-mismatch'});expect(wrong.doc).toBe(a.doc);
+  }
+  const done=releasePulsarOutput(a.doc,'radio',3);
+  expect(done.ok).toBe(true);expect(pulsarOutputClaim(done.doc)).toBeNull();
+  expect(releasePulsarOutput(done.doc,'radio',3)).toMatchObject({ok:false,reason:'output-mismatch'});
+  expect(releasePulsarOutput(INITIAL_PULSAR_CURRENT_DATA,'analysis',1)).toMatchObject({ok:false,reason:'output-mismatch'});
+ });
+ it('refuses a bad owner or token without changing anything',()=>{
+  for(const token of [0,-1,1.5,Number.NaN,Number.POSITIVE_INFINITY,2**53])
+   expect(claimPulsarOutput(INITIAL_PULSAR_CURRENT_DATA,'radio',token)).toMatchObject({ok:false,reason:'output-input',doc:INITIAL_PULSAR_CURRENT_DATA});
+  expect(claimPulsarOutput(INITIAL_PULSAR_CURRENT_DATA,'other' as 'radio',1)).toMatchObject({ok:false,reason:'output-input'});
+ });
+ it('an older attempt never releases a newer one, also across owners',()=>{
+  const first=claimPulsarOutput(INITIAL_PULSAR_CURRENT_DATA,'radio',1).doc;
+  const second=claimPulsarOutput(releasePulsarOutput(first,'radio',1).doc,'analysis',2).doc;
+  // The settled radio attempt's late cleanup must not drop the analysis claim.
+  expect(releasePulsarOutput(second,'radio',1)).toMatchObject({ok:false,reason:'output-mismatch',doc:second});
+  expect(pulsarOutputClaim(second)).toEqual({owner:'analysis',token:2});
+  const third=claimPulsarOutput(releasePulsarOutput(second,'analysis',2).doc,'radio',3).doc;
+  expect(releasePulsarOutput(third,'analysis',2)).toMatchObject({ok:false,reason:'output-mismatch'});
+ });
+ it('survives every dataset change (import, erase, commit) and a receipt; a receipt can be recorded while it is held',()=>{
+  const m=capture(),d=committed(m),held=claimPulsarOutput(d,'radio',7).doc;
+  const text=(()=>{const b=buildPulsarRawExport(m);if(!b.ok)throw new Error(b.problem.code);return b.text;})();
+  const claim=pulsarWriteClaim(held,text) as PulsarWriteClaim;
+  const written=recordPulsarWrittenCopy(held,claim,pulsarClaimBytes(claim),'held.PLR');
+  expect(written.ok).toBe(true);expect(pulsarOutputClaim(written.doc)).toEqual({owner:'radio',token:7});
+  expect(pulsarWrittenCopy(written.doc)?.fileName).toBe('held.PLR');
+  // Releasing the claim keeps the receipt (only `output` changes).
+  const released=releasePulsarOutput(written.doc,'radio',7).doc;
+  expect(pulsarWrittenCopy(released)?.fileName).toBe('held.PLR');expect(released.generation).toBe(written.doc.generation);
+  const imported=importPulsarRecording(held,plr(),held.generation).doc;
+  expect(imported.generation).toBe(held.generation+1);expect(pulsarOutputClaim(imported)).toEqual({owner:'radio',token:7});
+  const erased=acquirePulsarCaptureLease(held,2,held.generation,true).doc;
+  expect(pulsarDataRows(erased.data)).toBe(0);expect(pulsarOutputClaim(erased)).toEqual({owner:'radio',token:7});
+  const r=setPulsarCapturePhase(erased,2,'receiving').doc,recommitted=commitPulsarCapture(r,2,capture({name:'NEXT'})).doc;
+  expect(pulsarOutputClaim(recommitted)).toEqual({owner:'radio',token:7});
+  // The claim stays the owner's to release after the bump.
+  expect(pulsarOutputClaim(releasePulsarOutput(recommitted,'radio',7).doc)).toBeNull();
  });
 });

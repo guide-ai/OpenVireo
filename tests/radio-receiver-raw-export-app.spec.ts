@@ -23,6 +23,10 @@ const holdReads=(page:Page)=>page.addInitScript(()=>{
  };
 });
 const held=(page:Page,name:string)=>expect.poll(()=>page.evaluate(n=>(window as unknown as{__held:Map<string,unknown>}).__held.has(n),name)).toBe(true);
+/** The test's own probe of the browser API (not the product's data-support): secure context, a callable
+ *  showSaveFilePicker and FileSystemFileHandle.prototype.createWritable. No picker is called. */
+const saveCapable=(page:Page)=>page.evaluate(()=>window.isSecureContext===true&&typeof (window as {showSaveFilePicker?:unknown}).showSaveFilePicker==='function'
+ &&typeof FileSystemFileHandle==='function'&&'createWritable' in FileSystemFileHandle.prototype);
 
 const COLUMNS={primaryName:[0,12],legacyName:[12,8],ra:[20,16],dec:[62,16],x2a:[208,22],x34:[240,16],x3e:[266,14],s48:[336,8],s4c:[350,14],s50:[410,10],s54:[430,8],s58:[438,8],s5c:[446,8]} as const;
 type Row=Partial<Record<keyof typeof COLUMNS,string>>;
@@ -115,7 +119,12 @@ test('Download capture as .PLR: Cancel default, exact layout of the capture, not
  await expect(id(page,'pulsar-download')).toHaveCount(0);await expect(id(page,'pulsar-sha')).toHaveCount(0);
  await toRadio(page);
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-prompt')).toHaveAttribute('data-kind','unsaved');
- await expect(id(page,'receiver-record-yes')).toBeDisabled();await expect(id(page,'receiver-record-yes-reason')).toContainText('not ported');
+ // The Download left the capture unsaved, so Record still asks the unsaved question. R-RX16 Yes is available where the test's
+ // probe finds the browser API (either branch is valid); it is not pressed here.
+ const capable=await saveCapable(page);
+ await expect(id(page,'receiver-record-yes-reason')).toHaveAttribute('data-support',capable?'ok':/^(insecure-context|no-api)$/);
+ if(capable)await expect(id(page,'receiver-record-yes')).toBeEnabled();else await expect(id(page,'receiver-record-yes')).toBeDisabled();
+ await expect(id(page,'receiver-record-yes-reason')).toContainText('Web default button: Cancel');
  await id(page,'receiver-record-cancel').click();await expect(id(page,'receiver-record-disp')).toHaveText('Off');
  await toAnalysis(page);await expect(id(page,'pulsar-memory-rows')).toHaveText(points);
  // Round trip: the Load question still asks (unsaved); No → the downloaded bytes load as an ordinary file.

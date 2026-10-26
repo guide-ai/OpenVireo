@@ -15,6 +15,11 @@
  */
 import { RAW_EXPORT_FILE_NAME, rawExportRequest, type RawExportSession } from './pulsarRawExport';
 import { pulsarWriteClaim, type PulsarCurrentData, type PulsarWriteClaim, type PulsarWriteRefusal } from './pulsarCurrentData';
+import { PLR_MAX_BYTES } from './pulsarRecording';
+
+/** WEB-SAVE-05 read-back bound: the strict .PLR reader limit itself (PLR_MAX_BYTES, pulsarRecording.ts), named here for
+ *  Save owners that must not import the PLR reader (the R-RX16 Radio arming Save). Not a separate number. */
+export const PULSAR_SAVE_READBACK_MAX_BYTES: number = PLR_MAX_BYTES;
 
 export type PulsarSaveSupport = 'ok' | 'insecure-context' | 'no-api';
 /** WEB-SAVE-01: a secure context, a callable showSaveFilePicker and FileSystemFileHandle.prototype.createWritable. */

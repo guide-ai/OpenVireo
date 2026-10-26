@@ -46,3 +46,12 @@
 [data-testid="receiver-record-finish"] dl{grid-template-columns:minmax(0,1fr)}
 [data-testid="receiver-record-finish"] dd{margin:0;overflow-wrap:anywhere}
 [data-testid="receiver-record-finish"] input{max-width:100%;min-width:0}
+/* R-RX16 Radio arming Save dialog and the verified erase note (docs/RADIO-RECORD-SAVE.md): every text that can hold a chosen
+   file name or the capture name wraps anywhere; nothing is cut or hidden. */
+.radio-receiver-save{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.radio-receiver-save h3,.radio-receiver-save h4,.radio-receiver-save p,.radio-receiver-save li{min-width:0;overflow-wrap:anywhere}
+.radio-receiver-save h4{margin:8px 0 4px;font-size:14px}
+.radio-receiver-save ul{margin:0 0 6px;padding-left:1.2em;font-size:13px;line-height:1.5}
+.radio-receiver-save-warning{border-left:4px solid #a86b00;padding-left:8px}
+.radio-receiver-save .button-row{flex-wrap:wrap}
+.radio-receiver-save [aria-disabled="true"]{opacity:.6;cursor:not-allowed}

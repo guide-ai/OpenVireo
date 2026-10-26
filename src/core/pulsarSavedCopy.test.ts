@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  PULSAR_SAVE_PENDING, PULSAR_SAVE_PICKER_OPTIONS, pulsarSaveBegin, pulsarSaveExtensionOk, pulsarSaveRefusalNotice, pulsarSaveSupport,
+  PULSAR_SAVE_PENDING, PULSAR_SAVE_PICKER_OPTIONS, PULSAR_SAVE_READBACK_MAX_BYTES, pulsarSaveBegin, pulsarSaveExtensionOk, pulsarSaveRefusalNotice, pulsarSaveSupport,
 } from './pulsarSavedCopy';
 import { RAW_EXPORT_FILE_NAME, rawExportOpen, rawExportSaveNotice } from './pulsarRawExport';
+import { PLR_MAX_BYTES } from './pulsarRecording';
+import { continuePulsarSave, type SaveHandle } from '../components/pulsarSaveHost';
 import {
   INITIAL_PULSAR_CURRENT_DATA, acquirePulsarCaptureLease, commitPulsarCapture, pulsarClaimBytes, pulsarClaimReadback, pulsarMemoryRecording, recordPulsarWrittenCopy,
   releasePulsarCaptureLease, setPulsarCapturePhase, type PulsarCurrentData, type PulsarMemoryRecording,
@@ -78,6 +80,31 @@ describe('pulsarSaveBegin (WEB-SAVE-03)', () => {
     const s = rawExportSaveNotice(rawExportOpen(m, doc.generation, 'save'), { code: 'write-failed', fileName: 'a.PLR' });
     const r = pulsarSaveBegin(s, doc, false);
     expect(r.kind === 'refused' && r.session.save).toEqual({ code: 'write-failed', fileName: 'a.PLR' });
+  });
+});
+
+describe('the shared read-back bound (WEB-SAVE-05, R-RX16 Radio owner)', () => {
+  // CONTROLLED MOCK HOST: a plain object standing in for a FileSystemFileHandle whose getFile declares a size; no browser, OS
+  // picker or physical write is involved, and arrayBuffer is counted, not read from any file.
+  const host = (size: number) => {
+    let reads = 0;
+    const handle: SaveHandle = {
+      name: 'bound.PLR',
+      createWritable: async () => ({ write: async () => {}, close: async () => {}, abort: async () => {} }),
+      getFile: async () => ({ size, arrayBuffer: async () => { reads++; return new ArrayBuffer(0); } }),
+    };
+    return { handle, reads: () => reads };
+  };
+  const run = (h: ReturnType<typeof host>) =>
+    continuePulsarSave(Promise.resolve(h.handle), () => new Uint8Array(1), PULSAR_SAVE_READBACK_MAX_BYTES, { live: () => true, phase: () => {} });
+  it('is the strict .PLR profile limit: a declared size equal to PLR_MAX_BYTES is read, one byte more is refused before arrayBuffer', async () => {
+    expect(PULSAR_SAVE_READBACK_MAX_BYTES).toBe(PLR_MAX_BYTES);
+    const atLimit = host(PLR_MAX_BYTES);
+    expect(await run(atLimit)).toMatchObject({ kind: 'readback', fileName: 'bound.PLR' });
+    expect(atLimit.reads()).toBe(1);
+    const over = host(PLR_MAX_BYTES + 1);
+    expect(await run(over)).toEqual({ kind: 'readback-too-large', fileName: 'bound.PLR' });
+    expect(over.reads()).toBe(0);
   });
 });
 

@@ -12,8 +12,8 @@ import {
   type PulsarAnalysisState, type PulsarOutcome, type PulsarPanel, type PulsarPointer, type PulsarTransition,
 } from '../core/pulsarAnalysis';
 import {
-  importPulsarRecording, isFileData, isMemoryData, pulsarClaimBytes, pulsarClaimReadback, pulsarCurrentSaved, pulsarDataHighest, pulsarDataProperties, pulsarDataRows, pulsarFrequencyText,
-  pulsarWrittenCopy, recordPulsarWrittenCopy, setPulsarAnalysisActivity,
+  claimPulsarOutput, importPulsarRecording, isFileData, isMemoryData, pulsarClaimBytes, pulsarClaimReadback, pulsarCurrentSaved, pulsarDataHighest, pulsarDataProperties, pulsarDataRows,
+  pulsarFrequencyText, pulsarOutputClaim, pulsarWrittenCopy, recordPulsarWrittenCopy, releasePulsarOutput, setPulsarAnalysisActivity,
   type PulsarData, type PulsarWriteClaim,
 } from '../core/pulsarCurrentData';
 import { useSharedPulsarData, type SharedPulsarDataHandle } from '../useSharedPulsarData';
@@ -775,7 +775,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     const session = rawRef.current, dialogEl = rawDialog.current;
     if (!session || session.purpose === 'save' || exportBusy.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
     const doc = shared.current();
-    const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current);
+    // R-RX16 WEB-RX16-05: not while a Save attempt of either owner (here or the Radio arming Save) holds the shared output claim.
+    const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current) && pulsarOutputClaim(doc) === null;
     const r = rawExportRequest(session, { data: doc.data, generation: doc.generation, ready });
     if (r.kind === 'refused') { setRaw(r.session); return; }
     exportBusy.current = true;
@@ -813,20 +814,28 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
 
   /**
    * R-RX15 verified Save (docs/PULSAR-SAVE-VERIFIED.md). The click handler is synchronous up to the picker call: the same
-   * guards as Download, the R-RX14 request order and an owned claim (pulsarSaveBegin), then the shared output claim, a new
-   * attempt token and showSaveFilePicker with no await before it. A synchronous picker throw releases the claim at once.
+   * guards as Download, the R-RX14 request order and an owned claim (pulsarSaveBegin), then the panel's output claim
+   * (exportBusy), a new attempt token, the R-RX16 shared output claim of the document ('analysis', token) and showSaveFilePicker
+   * with no await before it. A synchronous picker throw releases both claims at once. The panel's exportBusy alone does not see
+   * a Radio arming Save (R-RX16) whose stream is still being cleaned up after its route was hidden; the shared claim does.
    */
   const requestSave = () => {
     const session = rawRef.current, dialogEl = rawDialog.current;
     if (!session || session.purpose !== 'save' || saveSupport !== 'ok' || exportBusy.current || !mounted.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
     const doc = shared.current();
-    const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current);
+    const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current) && pulsarOutputClaim(doc) === null;
     const begun = pulsarSaveBegin(session, doc, ready);
     if (begun.kind === 'refused') { setRaw(begun.session); return; }
     exportBusy.current = true;
     const token = ++saveEpoch.current;
+    if (!shared.update(d => claimPulsarOutput(d, 'analysis', token)).ok) {
+      exportBusy.current = false;
+      setRaw(Object.freeze({ ...session, refusal: Object.freeze({ code: 'not-ready' as const }), failure: false }));
+      return;
+    }
     const invoked = invokePulsarSavePicker(window);
     if (!invoked.ok) {
+      shared.update(d => releasePulsarOutput(d, 'analysis', token));
       exportBusy.current = false;
       setRaw(rawExportSaveNotice(session, Object.freeze({ code: 'picker-refused' as const, fileName: null })));
       return;
@@ -860,6 +869,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       // Not expected (every browser failure is mapped above); still reported as unverified, never as success.
       note(Object.freeze({ code: 'unverified' as const, fileName: rawRef.current?.save?.fileName ?? null }));
     } finally {
+      // R-RX16: exactly this attempt's shared claim, after its stream cleanup settled (a newer owner or token is refused unchanged).
+      shared.update(d => releasePulsarOutput(d, 'analysis', token));
       if (saveRun.current === token) saveRun.current = null;
       exportBusy.current = false;
       if (mounted.current) setSaveBusy(false);

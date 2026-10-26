@@ -27,6 +27,10 @@ const holdReads=(page:Page)=>page.addInitScript(()=>{
 });
 const held=(page:Page,name:string)=>expect.poll(()=>page.evaluate(n=>(window as unknown as{__held:Map<string,unknown>}).__held.has(n),name)).toBe(true);
 const release=(page:Page,name:string)=>page.evaluate(n=>{const m=(window as unknown as{__held:Map<string,{release:()=>void}>}).__held,h=m.get(n)!;m.delete(n);h.release();},name);
+/** The test's own probe of the browser API (not the product's data-support): secure context, a callable
+ *  showSaveFilePicker and FileSystemFileHandle.prototype.createWritable. No picker is called. */
+const saveCapable=(page:Page)=>page.evaluate(()=>window.isSecureContext===true&&typeof (window as {showSaveFilePicker?:unknown}).showSaveFilePicker==='function'
+ &&typeof FileSystemFileHandle==='function'&&'createWritable' in FileSystemFileHandle.prototype);
 
 // ---- Synthetic catalog (same fixed-column layout as tests/radio-receiver-app.spec.ts) and a synthetic PLR text.
 const COLUMNS={primaryName:[0,12],legacyName:[12,8],ra:[20,16],dec:[62,16],x2a:[208,22],x34:[240,16],x3e:[266,14],s48:[336,8],s4c:[350,14],s50:[410,10],s54:[430,8],s58:[438,8],s5c:[446,8]} as const;
@@ -197,11 +201,17 @@ test('an open analysis dialog refuses arming; unsaved memory data: Cancel keeps 
  await page.goForward();await expect(id(page,'pulsar-clear-dialog')).toBeVisible();await id(page,'pulsar-clear-cancel').click();
  await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
  await toRadio(page);
- // Unsaved memory data (flags 0x13): Yes is disabled with its reason, Cancel is the web default.
+ // Unsaved memory data (flags 0x13): R-RX16 Yes opens the Radio web Save only where the browser offers the save file picker
+ // (otherwise it is disabled with its reason); Cancel stays the web default either way. Yes is not pressed here
+ // (tests/radio-receiver-record-save-app.spec.ts covers it).
  await id(page,'receiver-record').click();
  await expect(id(page,'receiver-record-prompt')).toHaveAttribute('data-kind','unsaved');
  await expect(id(page,'receiver-record-prompt-text')).toContainText('You have not saved your previously recorded data!');
- await expect(id(page,'receiver-record-yes')).toBeDisabled();await expect(id(page,'receiver-record-yes-reason')).toContainText('Web default button: Cancel');
+ // The product's data-support and Yes must agree with the test's own probe of this browser (either branch is valid).
+ const capable=await saveCapable(page);
+ await expect(id(page,'receiver-record-yes-reason')).toHaveAttribute('data-support',capable?'ok':/^(insecure-context|no-api)$/);
+ if(capable)await expect(id(page,'receiver-record-yes')).toBeEnabled();else await expect(id(page,'receiver-record-yes')).toBeDisabled();
+ await expect(id(page,'receiver-record-yes-reason')).toContainText('Web default button: Cancel');
  await expect(id(page,'receiver-record-cancel')).toBeFocused();await page.keyboard.press('Enter');
  await expect(id(page,'receiver-record-prompt')).toHaveCount(0);await expect(id(page,'receiver-status-0')).toHaveText('Record cancelled; the previous data is kept.');
  await id(page,'receiver-record').click();await id(page,'receiver-record-no').click();

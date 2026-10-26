@@ -9,6 +9,8 @@
 // requests (lease, phase, commit, release, open analysis) that the presentation applies to the shared current dataset.
 // R-RX5 (docs/RADIO-RECEIVER-ALIGN.md): the Align toggle, the web card order of the windows (radioReceiverArrangement,
 // reconciled at every commit from the bank's window-placed events) and the Move up/down controls that deliver message 3.
+// R-RX16 (docs/RADIO-RECORD-SAVE.md): the unsaved prompt's Yes opens a Radio-owned Save dialog ('save' prompt); its I/O stays in
+// the presentation, and only a verified receipt continues to the erase prompt.
 import type {RadioLabTransition,RadioPointing} from './radioAntenna';
 import type {PulsarCatalog} from './radioPulsarCatalog';
 import {
@@ -18,6 +20,8 @@ import {
  type RadioReceiverBank,type RadioReceiverControl,type RadioReceiverError,type RadioReceiverEvent,type RadioReceiverOptions,type RadioReceiverResult,type RadioRecordHeader,
 } from './radioReceiver';
 import {RADIO_IDENTIFY_POLICY,radioIdentifyIssue,type RadioRecordCapture} from './radioReceiverRecord';
+import {radioRecordSaveOpen,type RadioRecordSave} from './radioRecordSave';
+import type {PulsarCurrentData} from './pulsarCurrentData';
 import {RECEIVER_DISPLAY_GEOMETRY,receiverAnnotationOps,receiverFrameOps,receiverPaintOps,type ReceiverDisplayOp,type ReceiverPen} from './radioReceiverDisplay';
 import {EMPTY_RECEIVER_MARK_OVERLAY,isReceiverMarkColumn,overlayWithLabel,overlayWithLine,type ReceiverMarkOverlay,type ReceiverMarkSelector} from './radioReceiverMarks';
 import {parseReceiverMarkPosition,type ReceiverMarkButton} from './radioReceiverMarkInput';
@@ -65,8 +69,14 @@ export type RadioReceiverSession=Readonly<{
  arrangement:ReceiverArrangement;
 }>;
 /** RC-REC-03 prompts. unsaved: 0x575958 (flags 0x13); erase: 0x575a08 (flags 0x41). generation: the current dataset's
- * generation when the Record press was taken; the erase OK is refused when it changed (WEB-REC-TXN). */
-export type ReceiverRecordPrompt=Readonly<{kind:'unsaved'|'erase';generation:number}>;
+ * generation when the Record press was taken; the erase OK is refused when it changed (WEB-REC-TXN).
+ * R-RX16 (docs/RADIO-RECORD-SAVE.md): 'save' is the Radio-owned Save dialog opened by the unsaved prompt's Yes (WEB-RX16-01); it
+ * keeps the byte armed and the dialog modal. An erase prompt reached from a verified Save carries `verified` (WEB-RX16-04). */
+export type ReceiverRecordVerified=Readonly<{fileName:string;byteLength:number}>;
+export type ReceiverRecordPrompt=Readonly<
+ |{kind:'unsaved';generation:number}
+ |{kind:'erase';generation:number;verified?:ReceiverRecordVerified}
+ |{kind:'save';generation:number;save:RadioRecordSave}>;
 /** RC-REC-08 finish stages in order: 'full' (only when +0x98), 'identify', 'properties' (modal), 'save'. The capture is
  * committed to the current dataset when Identify closes (committed: true from 'properties' on); the session keeps its lease
  * (WEB 'committed' phase) until the Save answer releases it. */
@@ -87,6 +97,7 @@ export type ReceiverRecordArmingResult=Readonly<{ok:true;seed:RadioRecordHeader}
 export type ReceiverAction='seed'|'open'|'add'|'mode'|'tick'|'reassociate'|'step'|'paint'|'close'|'dismiss-box'
  |'mark-down'|'mark-move'|'mark-up'|'mark-end'|'mark-place'|'mark-step'|'mark-clear'
  |'record'|'record-prompt'|'record-arming'|'record-full'|'record-identify'|'record-draft'|'record-properties'|'record-save'
+ |'record-save-open'|'record-save-step'|'record-save-exit'
  |'align'|'move'|'pulsar-list'|'live-options';
 export type ReceiverWebRefusal='seed-invalid'|'seed-locked'|'no-catalog'|'close-box-open'
  |'mark-lease-held'|'mark-input'|'mark-position-invalid'|'mark-unset'|'mark-bound'
@@ -463,24 +474,76 @@ export function pressRecord(s:RadioReceiverSession,snap:ReceiverRecordHostSnapsh
   return recordCommit(b,'record',refreshed.ok?Object.freeze({...refreshed,events:[...toggled.events,...refreshed.events]}):refreshed,{receiving:false,leaseId:null},
    id===null?[]:[{kind:'release',id}]);
  }
- if(snap.rows>0)return recordCommit(b,'record',toggled,{prompt:Object.freeze({kind:snap.saved?'erase':'unsaved',generation:snap.generation})});
+ if(snap.rows>0){
+  const prompt:ReceiverRecordPrompt=snap.saved?Object.freeze({kind:'erase',generation:snap.generation}):Object.freeze({kind:'unsaved',generation:snap.generation});
+  return recordCommit(b,'record',toggled,{prompt});
+ }
  return recordCommit(b,'record',toggled,{},[{kind:'acquire',id:s.record.nextId,generation:snap.generation,erase:false}]);
 }
 /**
  * Prompt answers. unsaved (0x13): 'cancel' (2) clears the byte and skips the refresh (0x5758ab → 0x57592c); 'no' (7) falls
- * through to the second check, which asks the erase question while the list is non-empty. [W] 'yes' (6, the Save wrapper
- * 0x56b36c) is not offered: its body is not recovered. erase (0x41): 'ok' (1) requests the clear and the lease for the
- * prompt's generation; 'cancel' clears the byte, then the refresh shows 'Off'.
+ * through to the second check, which asks the erase question while the list is non-empty. 'yes' (6, the Save wrapper
+ * 0x56b36c at 0x5758bb) is not an answer here: R-RX16 openRecordSave opens the web Save dialog instead (the wrapper itself is
+ * not ported). erase (0x41): 'ok' (1) requests the clear and the lease for the prompt's generation; 'cancel' clears the byte,
+ * then the refresh shows 'Off'. [W] While the R-RX16 Save dialog is open every answer is refused ('record-input'), so nothing
+ * can clear the byte or erase under a pending attempt.
  */
 export function answerRecordPrompt(s:RadioReceiverSession,answer:'no'|'ok'|'cancel',snap:ReceiverRecordHostSnapshot):ReceiverSessionTransition{
  const p=s.record.prompt;
- if(!p||(p.kind==='unsaved'&&answer==='ok')||(p.kind==='erase'&&answer==='no'))return webRefused(s,'record-prompt','record-input');
+ if(!p||p.kind==='save'||(p.kind==='unsaved'&&answer==='ok')||(p.kind==='erase'&&answer==='no'))return webRefused(s,'record-prompt','record-input');
  if(answer==='cancel')return recordCommit(s,'record-prompt',clearRecordByte(s.bank,p.kind==='erase'),{prompt:null});
  if(answer==='no'){
   if(snap.rows>0)return recordCommit(s,'record-prompt',ok0(s.bank),{prompt:Object.freeze({kind:'erase',generation:p.generation})});
   return recordCommit(s,'record-prompt',ok0(s.bank),{prompt:null},[{kind:'acquire',id:s.record.nextId,generation:p.generation,erase:false}]);
  }
  return recordCommit(s,'record-prompt',ok0(s.bank),{prompt:null},[{kind:'acquire',id:s.record.nextId,generation:p.generation,erase:true}]);
+}
+
+// ---------------------------------------------------------------- R-RX16 Radio-owned Save (docs/RADIO-RECORD-SAVE.md)
+/**
+ * WEB-RX16-01: Yes of the unsaved prompt. The Save dialog opens on the current dataset only when its generation is still the
+ * prompt's and it is memory data (radioRecordSaveOpen); the byte stays armed and the dialog stays modal (record-dialog-open).
+ * Otherwise the byte is cleared with the refresh ('Off'), nothing is erased, no host request is made and the outcome is
+ * 'record-superseded'. No I/O and no picker here.
+ */
+export function openRecordSave(s:RadioReceiverSession,doc:PulsarCurrentData):ReceiverSessionTransition{
+ const p=s.record.prompt;
+ if(p?.kind!=='unsaved'||!s.bank.recording.armed)return webRefused(s,'record-save-open','record-input');
+ const opened=radioRecordSaveOpen(doc,p.generation);
+ if(!opened.ok){
+  const r=clearRecordByte(s.bank,true);
+  if(!r.ok)return refused(s,'record-save-open',r.error);
+  const t=commit(s,'record-save-open',r.events,r.bank,{record:recordPatch(s,{prompt:null}),canvases:drawEvents(s.canvases,r.bank,r.events)});
+  return Object.freeze({...t,outcome:Object.freeze({kind:'web-refused',action:'record-save-open',reason:'record-superseded'})});
+ }
+ return commit(s,'record-save-open',[],s.bank,{record:recordPatch(s,{prompt:Object.freeze({kind:'save',generation:p.generation,save:opened.save})})});
+}
+/** Replaces only the Save dialog's sub-state (the radioRecordSave steps). An unchanged sub-state commits nothing. */
+export function stepRecordSave(s:RadioReceiverSession,step:(save:RadioRecordSave)=>RadioRecordSave):ReceiverSessionTransition{
+ const p=s.record.prompt;
+ if(p?.kind!=='save')return webRefused(s,'record-save-step','record-input');
+ const save=step(p.save);
+ if(save===p.save)return keep(s,{kind:'ok',action:'record-save-step',events:[]});
+ return commit(s,'record-save-step',[],s.bank,{record:recordPatch(s,{prompt:Object.freeze({kind:'save',generation:p.generation,save})})});
+}
+export type ReceiverRecordSaveExit=Readonly<{kind:'back'}|{kind:'verified';fileName:string;byteLength:number}>;
+/**
+ * Leaves the Save dialog; refused while an attempt holds the output claim (also an abandoned one, until it settled).
+ * 'back' (WEB-RX16-04): the unsaved prompt again with the same generation (its No → erase and Cancel are explicit).
+ * 'verified': only with a valid receipt for the prompt's generation (snap.saved, same generation); then the normal-return
+ * continuation 0x5758c0: the erase prompt (with the verified note) while the list is non-empty, else the plain arming.
+ * Nothing erases or arms automatically: the erase still needs its own OK.
+ */
+export function leaveRecordSave(s:RadioReceiverSession,exit:ReceiverRecordSaveExit,snap:ReceiverRecordHostSnapshot):ReceiverSessionTransition{
+ const p=s.record.prompt;
+ if(p?.kind!=='save'||p.save.attempt!==null)return webRefused(s,'record-save-exit','record-input');
+ if(exit.kind==='back')return commit(s,'record-save-exit',[],s.bank,{record:recordPatch(s,{prompt:Object.freeze({kind:'unsaved',generation:p.generation})})});
+ if(!snap.saved||snap.generation!==p.generation)return webRefused(s,'record-save-exit','record-input');
+ if(snap.rows>0){
+  const verified=Object.freeze({fileName:exit.fileName,byteLength:exit.byteLength});
+  return commit(s,'record-save-exit',[],s.bank,{record:recordPatch(s,{prompt:Object.freeze({kind:'erase',generation:p.generation,verified})})});
+ }
+ return commit(s,'record-save-exit',[],s.bank,{record:recordPatch(s,{prompt:null})},[{kind:'acquire',id:s.record.nextId,generation:p.generation,erase:false}]);
 }
 const ok0=(bank:RadioReceiverBank):RadioReceiverResult=>Object.freeze({ok:true,bank,events:Object.freeze([]),frames:Object.freeze([])});
 /** The host's answer to an 'acquire': the scratch cells := 0.0, the capture starts with the dataset's header cells and the
@@ -530,7 +593,9 @@ export function closeRecordProperties(s:RadioReceiverSession):ReceiverSessionTra
  return finishStep(s,'record-properties',Object.freeze({...f,stage:'save'}));
 }
 /** Save question: 'no' (7) opens the analysis window (Show of [0x5b5d84], 0x573d75..0x573d8a); 'cancel' ends the finish
- * (the main+0x468 enable at 0x573d5b..0x573d6a is not ported). [W] 'yes' (6, 0x56b36c) is not offered (body not recovered).
+ * (the main+0x468 enable at 0x573d5b..0x573d6a is not ported). [W] 'yes' (6, 0x56b36c at 0x573d54) stays gated (R-RX16 E4):
+ * the session still holds the committed capture lease here, which the verified receipt refuses, and that lease is not
+ * released early to make room for a Save.
  * WEB-REC-TXN: either answer ends the finish and releases the session's lease exactly once, before the analysis opens (so
  * its Load is enabled). The answer is never refused for a missing lease, so the dialog cannot trap the user. */
 export function answerRecordSave(s:RadioReceiverSession,answer:'no'|'cancel'):ReceiverSessionTransition{

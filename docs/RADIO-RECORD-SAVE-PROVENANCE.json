@@ -1,0 +1,143 @@
+{
+  "increment": "R-RX16 Radio-owned verified Save from the Record arming unsaved prompt (E1 Yes only)",
+  "acceptedBase": "a123442658c1a4ada72dc68a5c1bac8c7e1cc2ca",
+  "originalExecution": false,
+  "input": {
+    "file": "CLEA_VEO.exe",
+    "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+  },
+  "evidence": {
+    "producer": "bounded GNU objdump (-d -Mintel --no-show-raw-insn); established REA range-wrapper limitation, no provider retry",
+    "receiptUTC": "2026-10-26T06:49:18.605067+00:00",
+    "contractUTC": "2026-10-26T06:50:21.168552+00:00",
+    "receiptFile": "STATIC-RECEIPT.json",
+    "contractFile": "RECOVERED-CONTRACT.json",
+    "researchLocation": "outside the web source (research root), not copied into the product",
+    "listings": [
+      {
+        "name": "record-button-verified.asm",
+        "sha256": "e6884d75e15510b67d6ff9861a15991d3ce5baf1ca35e4cbbe3aed67acfff6f1",
+        "range": "0x57581c..0x57594d (exclusive)",
+        "status": "reused (receipt 'reused' list)"
+      },
+      {
+        "name": "frame-verified.asm",
+        "sha256": "d31088cb788467a579523d969cce89be130e63564116682d1c65270024bd9ea4",
+        "range": "0x573bbd..0x573dce (exclusive)",
+        "status": "reused (receipt 'reused' list)"
+      },
+      {
+        "name": "analysis-load-prefix-verified.asm",
+        "sha256": "17148ae9cedbacf3a5e8900615d3ce4782f2f53a23b214c90b936321985ddf34",
+        "range": "0x56af38..0x56afbc (prefix of the E9 range)",
+        "status": "reused (receipt 'reused' list)"
+      },
+      {
+        "name": "analysis-load-after-save.asm",
+        "sha256": "0e3a6c3598926631c0bfee2d48d8211fc2a80ee85703aad9f5e70c8f4c028aba",
+        "range": "0x56afbc..0x56b1c8 (exclusive; last instruction 0x56b1c7, 141 instructions)",
+        "status": "new in this receipt; an earlier proposed limit 0x56b1d0 decoded trailing data after the ret and was narrowed before any artifact was written"
+      }
+    ]
+  },
+  "staticFacts": [
+    {
+      "id": "E1",
+      "tag": "S",
+      "entry": "Record arming (Record button)",
+      "range": "0x57581c..0x57594d",
+      "addresses": {
+        "byteToggle": "0x575832..0x57583b (xor of 0x5bce28)",
+        "unsavedGate": "0x575849..0x57586c (list non-empty via 0x492708; +0x97 == 0)",
+        "unsavedQuestion": "0x575882 (MessageBox flags 0x13)",
+        "answerDispatch": "0x57589f..0x5758a9 (Cancel 2 -> 0x5758ab; Yes 6 -> 0x5758b4; other -> 0x5758c0)",
+        "saveCall": "0x5758bb call 0x56b36c (EAX = [0x5b5d84])",
+        "normalReturn": "0x5758c0 (second non-empty check)",
+        "eraseQuestion": "0x5758d5 (flags 0x41); OK 1 -> clear 0x56a8e0 at 0x5758f7; other -> byte := 0 at 0x5758fe",
+        "scratchZero": "0x575905..0x575923 (only while the byte is set)",
+        "refresh": "0x575927 call 0x572f8c",
+        "exceptionFrame": "push 0x575942 -> 0x4056e4 (not modelled)"
+      },
+      "facts": [
+        "Yes (6) calls the Save wrapper and its normal return reaches the second non-empty check and the separate erase question; no saved-flag or return-value test follows the Save.",
+        "Only erase OK (1) clears; any other erase answer clears the recording byte.",
+        "A Save picker cancellation is not an authorization to erase; a normal re-entry after a thrown I/O exception is not established."
+      ],
+      "webUse": "WEB-RX16-01..06, 08 (enabled)"
+    },
+    {
+      "id": "E4",
+      "tag": "S",
+      "entry": "Finish recording (frame)",
+      "range": "0x573bbd..0x573dce",
+      "addresses": {
+        "saveCall": "0x573d54 call 0x56b36c",
+        "afterSave": "0x573d59 jmp 0x573d6f (compares the original answer with 7)"
+      },
+      "facts": [
+        "Recording byte cleared; Identify and the modal Properties precede the Save question (flags 0x23).",
+        "No saved-success test after the Save call.",
+        "The non-Yes path enables main+0x468; No (7) shows the analysis and calls 0x476f40; these native window effects are not fully bound."
+      ],
+      "webUse": "WEB-RX16-07 (gated): the web committed capture lease is held until the answer and the verified receipt refuses a held lease; the lease is not released early."
+    },
+    {
+      "id": "E9",
+      "tag": "S",
+      "entry": "Analysis Load",
+      "range": "0x56af38..0x56b1c8",
+      "addresses": {
+        "saveCall": "0x56afb7 call 0x56b36c",
+        "normalReturn": "0x56afbc (as No)",
+        "chooser": "0x56b00d virtual call",
+        "falseExit": "0x56b188 (BL = 1)",
+        "loop": "0x56b18a (controlled by BL)",
+        "reader": "0x56b093 call 0x56a260",
+        "cancelCleanup": "0x56b192"
+      },
+      "facts": [
+        "No saved-flag or Save return-success test before the chooser.",
+        "The reader runs only on the selected/confirmed acceptance path."
+      ],
+      "webUse": "WEB-RX16-07 (gated): a browser continuation from an asynchronous Save into a file chooser needs its own user-activation design; not enabled in this increment. This is not a claim that it is impossible."
+    }
+  ],
+  "webPolicy": [
+    { "id": "WEB-RX16-01", "summary": "Yes opens a Radio-owned Save dialog only for the question's generation and memory data; otherwise Record off with refresh, nothing erased (record-superseded). No I/O or picker. Disabled with a reason without browser support." },
+    { "id": "WEB-RX16-02", "summary": "R-RX14 canonical preview and R-RX15 warnings; Choose is its own click, synchronous up to showSaveFilePicker; detail > 1 ignored." },
+    { "id": "WEB-RX16-03", "summary": "Only recordPulsarWrittenCopy (unchanged R-RX15 proof: owned claim, write, close, bounded fresh exact read-back, current claim, name rule) creates the receipt." },
+    { "id": "WEB-RX16-04", "summary": "Only a verified receipt continues to the erase question (with a verified note); every other outcome stays in the dialog as an alert; Back (Escape) returns to the unsaved question; nothing erases or arms automatically. Note gate (radioRecordEraseNote): the note is shown only while the current receipt (pulsarWrittenCopy) is for the question's generation with the noted file name and byte count; after a dataset change the plain erase text is shown, Cancel stays the default (the question's origin) and OK is refused record-superseded. Browser continuation is web policy, not the native normal return." },
+    { "id": "WEB-RX16-05", "summary": "One shared output claim {owner, token} on the current dataset document, taken before the picker and released by the exact owner and token after cleanup; kept across dataset changes; Analysis Save, Analysis raw Download and Radio Choose refuse while it is held." },
+    { "id": "WEB-RX16-06", "summary": "Radio Save readiness: no lease, no pending analysis read, no output claim; analysis.modal is not a condition (no deadlock). Erase OK still refuses analysis-busy with the receipt kept." },
+    { "id": "WEB-RX16-07", "summary": "E4 and E9 Yes stay disabled with their reasons." },
+    { "id": "WEB-RX16-08", "summary": "Attempt tokens and liveness (mounted, route shown, no project operation; a foreign modal does not stop it); abandoned attempts abort open streams and keep the claim until settled; focus: Back on entry, Cancel in the unsaved question, Cancel on the erase question after an async verified Save; wrapping layout at 1440/375/320." }
+  ],
+  "browserAuthority": [
+    "https://wicg.github.io/file-system-access/#api-showsavefilepicker",
+    "https://fs.spec.whatwg.org/#api-filesystemfilehandle-createwritable",
+    "https://fs.spec.whatwg.org/#api-filesystemwritablefilestream-write"
+  ],
+  "limits": [
+    "Static disassembly is not CLEA execution, a native exception oracle, x87/GDI/code-page/OS equivalence or physical write durability.",
+    "The original Save wrapper's dialog cancellation may return normally; the browser refusal/I-O continuation is explicit web policy.",
+    "No hidden or inactive Pulsar Analysis Save is invoked; Radio owns its dialog and attempt.",
+    "E4 and E9 stay gated; original VCL effects are not ported.",
+    "A browser stage that never settles (most plainly a picker promise) keeps the shared output claim held until that provider promise settles, which blocks both owners across routes: a hung Radio attempt keeps its dialog (Choose, Back, Escape inert) and refuses Analysis Save and raw Download (not-ready); a hung Analysis attempt refuses Radio Choose (not-ready). A route hide or a project operation marks the attempt abandoned (logically dead) but does not release the claim. The application forces no timeout or claim release while the promise is unsettled; a chooser Cancel that rejects the promise (AbortError) settles the attempt normally.",
+    "The Radio read-back bound is PULSAR_SAVE_READBACK_MAX_BYTES of the shared Save core (src/core/pulsarSavedCopy.ts), which is the strict PLR reader's PLR_MAX_BYTES itself; the Radio UI does not import the PLR reader.",
+    "No original binary bytes or research dumps are copied into the product."
+  ],
+  "tests": {
+    "written": [
+      "src/core/pulsarCurrentData.test.ts (R-RX16 shared output claim)",
+      "src/core/pulsarSavedCopy.test.ts (shared read-back bound through continuePulsarSave with a controlled mock host: PLR_MAX_BYTES read, PLR_MAX_BYTES + 1 refused before arrayBuffer)",
+      "src/core/radioRecordSave.test.ts (including the radioRecordEraseNote gate with a real receipt)",
+      "src/core/radioReceiverRecord.test.ts (R-RX16 arming Save Yes; a Load while the verified erase question waits)",
+      "src/core/radioReceiverSession.test.ts (unchanged existing route audit: no pulsarRecording import in RadioReceiverWindows.tsx)",
+      "tests/radio-receiver-record-save-app.spec.ts (including forced mouse clicks on aria-disabled Choose/Back, reverse ownership, a Load while the verified erase question waits, and a DEFENSIVE HOST INJECTION busy test that is not a user-gesture witness)",
+      "tests/radio-receiver-record-app.spec.ts (Yes and data-support must agree with the test's own saveCapable browser probe)",
+      "tests/radio-receiver-raw-export-app.spec.ts (only the arming Yes check after a Download, with the same probe)"
+    ],
+    "runByAuthor": [],
+    "note": "The implementing agent ran no test, build, typecheck or script in the original checkout (it contains an excluded diagnostic). Aggregate QA is run by the coordinator on a diagnostic-free copy; results are not recorded here."
+  }
+}

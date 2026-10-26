@@ -6,14 +6,19 @@ import {
 } from './radioReceiver';
 import {
  addReceiverWindow,answerRecordIdentify,answerRecordPrompt,answerRecordSave,closeRecordProperties,completeRecordArming,createRadioReceiverSession,dismissRecordFull,
- editRecordIdentify,openReceiverWindow,pressRecord,reassociateReceivers,receiverControlAvailability,requestReceiverClose,stepReceiver,tickReceivers,toggleReceiverMode,
+ editRecordIdentify,leaveRecordSave,openReceiverWindow,openRecordSave,pressRecord,reassociateReceivers,receiverBoxRefusal,receiverControlAvailability,recordDialogOpen,
+ requestReceiverClose,stepReceiver,stepRecordSave,tickReceivers,toggleReceiverMode,
  type RadioReceiverSession,type ReceiverRecordHostRequest,type ReceiverSessionTransition,
 } from './radioReceiverSession';
 import {RADIO_IDENTIFY_POLICY,RADIO_RECORD_FLAGS,RADIO_RECORD_LITERALS,radioCaptureInput,radioIdentifyIssue} from './radioReceiverRecord';
 import {
- INITIAL_PULSAR_CURRENT_DATA,acquirePulsarCaptureLease,commitPulsarCapture,importPulsarRecording,isMemoryData,pulsarDataRows,pulsarDataSaved,pulsarHeaderCells,
- pulsarMemoryRecording,releasePulsarCaptureLease,setPulsarAnalysisActivity,setPulsarCapturePhase,type PulsarCurrentData,
+ INITIAL_PULSAR_CURRENT_DATA,acquirePulsarCaptureLease,claimPulsarOutput,commitPulsarCapture,importPulsarRecording,isMemoryData,pulsarClaimBytes,pulsarCurrentSaved,
+ pulsarDataRows,pulsarDataSaved,pulsarHeaderCells,pulsarMemoryRecording,pulsarOutputClaim,pulsarWrittenCopy,recordPulsarWrittenCopy,releasePulsarCaptureLease,releasePulsarOutput,
+ setPulsarAnalysisActivity,setPulsarCapturePhase,type PulsarCurrentData,type PulsarMemoryRecording,
 } from './pulsarCurrentData';
+import {
+ radioRecordEraseNote,radioRecordSaveAbandoned,radioRecordSaveBegin,radioRecordSaveNoticed,radioRecordSaveSettled,radioRecordSaveStarted,type RadioRecordSave,
+} from './radioRecordSave';
 import {admitPlrRecording,type PlrRecording} from './pulsarRecording';
 
 // [W] contract checks of the chosen R-RX4 implementation (docs/RADIO-RECEIVER-RECORD.md) with synthetic catalog records
@@ -37,7 +42,8 @@ function plr(name='SYNTH',rows=3):PlrRecording{
 /** A test host: the session plus the shared dataset, applying every host request like the presentation does. */
 type World={s:RadioReceiverSession;doc:PulsarCurrentData;opened:number;requests:ReceiverRecordHostRequest[]};
 const world=(s=createRadioReceiverSession(),doc=INITIAL_PULSAR_CURRENT_DATA):World=>({s,doc,opened:0,requests:[]});
-const snap=(w:World)=>({generation:w.doc.generation,rows:pulsarDataRows(w.doc.data),saved:pulsarDataSaved(w.doc.data),analysisBusy:w.doc.analysis.modal||w.doc.analysis.reading,leaseHeld:w.doc.lease!==null});
+/** The presentation's snapshot: +0x97 is the document's (an imported file, or an R-RX15/R-RX16 verified copy). */
+const snap=(w:World)=>({generation:w.doc.generation,rows:pulsarDataRows(w.doc.data),saved:pulsarCurrentSaved(w.doc),analysisBusy:w.doc.analysis.modal||w.doc.analysis.reading,leaseHeld:w.doc.lease!==null});
 function drive(w:World,step:(s:RadioReceiverSession)=>ReceiverSessionTransition):ReceiverSessionTransition{
  let tr=step(w.s);w.s=tr.session;
  const queue=[...(tr.host??[])];
@@ -332,5 +338,182 @@ describe('finish dialogs RC-REC-08 and the commit',()=>{
   expect(m.source).toBe('radio-receiver-model');expect(m.samples).toBeInstanceOf(Float64Array);
   [...m.samples].forEach((v,i)=>expect(Object.is(v,capture.rows[i])).toBe(true));
   expect(pulsarDataSaved(m)).toBe(false);
+ });
+});
+
+// R-RX16 (docs/RADIO-RECORD-SAVE.md): [S] E1 0x5758bb Yes calls the Save wrapper, whose normal return reaches the separate erase
+// prompt 0x5758d5; [W] the Radio Save dialog, its continuation rules and the verified-receipt gate are web policy. The read-back
+// bytes are synthetic stand-ins for a browser read-back (the claim's own bytes, or one flipped byte), not native writer output.
+describe('R-RX16 arming Save Yes: Radio-owned dialog, verified receipt gate, explicit erase',()=>{
+ /** Unsaved memory data (a committed, released capture that the R-RX14 builder accepts) and an open main receiver. */
+ const memory=():PulsarMemoryRecording=>pulsarMemoryRecording({captureId:9,name:'PSR TEST',aperture:100,highestIndex:0,frequencies:[400.125,null,null],gains:[1.125,null,null],
+  start:50000.125,interval:0.015625,rows:[1.125,-2.625,0,0,2.5,3.75],full:false});
+ const unsaved=()=>{
+  const m=memory(),w=open(world(createRadioReceiverSession(),{...INITIAL_PULSAR_CURRENT_DATA,generation:3,data:m}));
+  record(w);expect(w.s.record.prompt).toEqual({kind:'unsaved',generation:3});
+  return {w,m};
+ };
+ const savePrompt=(w:World):RadioRecordSave=>{const p=w.s.record.prompt;if(p?.kind!=='save')throw new Error('no save prompt');return p.save;};
+ const step=(w:World,f:(x:RadioRecordSave)=>RadioRecordSave)=>take(drive(w,s=>stepRecordSave(s,f)));
+ /** The component's path for one attempt: begin and claims, picker started, a read-back committed (or not), cleanup, settled. */
+ function attempt(w:World,token:number,readback:'equal'|'flipped'|'none'){
+  const begun=radioRecordSaveBegin(savePrompt(w),w.doc);if(begun.kind!=='claim')throw new Error('refused');
+  w.doc=claimPulsarOutput(w.doc,'radio',token).doc;
+  step(w,x=>radioRecordSaveStarted(x,token));
+  let committed=false;
+  if(readback!=='none'){
+   const bytes=pulsarClaimBytes(begun.claim);if(readback==='flipped')bytes[0]^=1;
+   const r=recordPulsarWrittenCopy(w.doc,begun.claim,bytes,'copy.PLR');w.doc=r.doc;committed=r.ok;
+   step(w,x=>radioRecordSaveNoticed(x,token,r.ok?{code:'verified',fileName:'copy.PLR'}:{code:'mismatch',fileName:'copy.PLR',reason:r.reason}));
+  }else step(w,x=>radioRecordSaveNoticed(x,token,{code:'picker-cancelled',fileName:null}));
+  w.doc=releasePulsarOutput(w.doc,'radio',token).doc;
+  step(w,x=>radioRecordSaveSettled(x,token));
+  return {committed,byteLength:begun.claim.text.length};
+ }
+
+ it('Yes opens the Save dialog with the byte armed and no host request; every receiver action and every prompt answer is refused',()=>{
+  const {w,m}=unsaved(),before=w.requests.length;
+  const t=drive(w,s=>openRecordSave(s,w.doc));
+  expect(t.outcome).toMatchObject({kind:'ok',action:'record-save-open'});
+  const save=savePrompt(w);
+  expect(w.s.record.prompt).toMatchObject({kind:'save',generation:3});expect(save).toMatchObject({attempt:null,abandoned:false,session:{purpose:'save',generation:3}});
+  expect(save.session.data).toBe(m);
+  expect(w.s.bank.recording.armed).toBe(true);expect(recordDialogOpen(w.s)).toBe(true);expect(receiverBoxRefusal(w.s)).toBe('record-dialog-open');
+  expect(w.requests.length).toBe(before);expect(w.doc.data).toBe(m);expect(w.doc.generation).toBe(3);expect(w.doc.lease).toBeNull();
+  for(const r of [toggleReceiverMode(w.s,{jd:JD,now:now()}),addReceiverWindow(w.s),requestReceiverClose(w.s,0),stepReceiver(w.s,0,'vertical','up'),pressRecord(w.s,snap(w))])
+   expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-dialog-open'});
+  for(const a of ['no','ok','cancel'] as const){
+   const r=answerRecordPrompt(w.s,a,snap(w));
+   expect(r.outcome).toMatchObject({kind:'web-refused',action:'record-prompt',reason:'record-input'});expect(r.session).toBe(w.s);expect(r.host).toBeUndefined();
+  }
+  // A second Yes and a completeRecordArming are refused unchanged.
+  expect(openRecordSave(w.s,w.doc).outcome).toMatchObject({kind:'web-refused',reason:'record-input'});
+  expect(completeRecordArming(w.s,{ok:false,reason:'superseded'}).outcome).toMatchObject({kind:'web-refused',reason:'record-input'});
+ });
+
+ it('a stale Yes (the dataset changed after the press) ends Record with the refresh: nothing erased, no host request, no dialog',()=>{
+  const {w}=unsaved(),before=w.requests.length;
+  w.doc=importPulsarRecording(w.doc,plr('LATER'),w.doc.generation).doc;
+  const t=drive(w,s=>openRecordSave(s,w.doc));
+  expect(t.outcome).toMatchObject({kind:'web-refused',action:'record-save-open',reason:'record-superseded'});
+  expect(t.outcome.kind==='web-refused'&&t.changed).toBe(true);
+  expect(w.s.record.prompt).toBeNull();expect(w.s.bank.recording.armed).toBe(false);expect(main(w).recordLabel).toBe('Off');
+  expect(pulsarDataRows(w.doc.data)).toBe(3);expect(w.doc.lease).toBeNull();expect(w.requests.length).toBe(before);
+  // Without an unsaved prompt Yes is not an action.
+  expect(openRecordSave(w.s,w.doc).outcome).toMatchObject({kind:'web-refused',reason:'record-input'});
+ });
+
+ it('Back is refused while an attempt is pending (also abandoned) and returns to the unsaved prompt with the same generation afterwards',()=>{
+  const {w,m}=unsaved();drive(w,s=>openRecordSave(s,w.doc));
+  const begun=radioRecordSaveBegin(savePrompt(w),w.doc);if(begun.kind!=='claim')throw new Error('refused');
+  w.doc=claimPulsarOutput(w.doc,'radio',5).doc;step(w,x=>radioRecordSaveStarted(x,5));
+  const held=w.s;
+  expect(leaveRecordSave(w.s,{kind:'back'},snap(w)).outcome).toMatchObject({kind:'web-refused',action:'record-save-exit',reason:'record-input'});
+  step(w,radioRecordSaveAbandoned);expect(savePrompt(w)).toMatchObject({attempt:5,abandoned:true,session:{save:{code:'abandoned'}}});
+  expect(leaveRecordSave(w.s,{kind:'back'},snap(w)).outcome).toMatchObject({kind:'web-refused',reason:'record-input'});
+  expect(held.record.prompt?.kind).toBe('save');
+  // The dead attempt's later notice is ignored; its cleanup settles and releases only its own claim.
+  expect(stepRecordSave(w.s,x=>radioRecordSaveNoticed(x,5,{code:'verified',fileName:'late.PLR'})).changed).toBe(false);
+  w.doc=releasePulsarOutput(w.doc,'radio',5).doc;step(w,x=>radioRecordSaveSettled(x,5));expect(pulsarOutputClaim(w.doc)).toBeNull();
+  const back=drive(w,s=>leaveRecordSave(s,{kind:'back'},snap(w)));
+  expect(back.outcome).toMatchObject({kind:'ok',action:'record-save-exit'});expect(back.host).toBeUndefined();
+  expect(w.s.record.prompt).toEqual({kind:'unsaved',generation:3});expect(w.s.bank.recording.armed).toBe(true);
+  // From the unsaved prompt again: No → erase, Cancel keeps everything.
+  drive(w,s=>answerRecordPrompt(s,'no',snap(w)));expect(w.s.record.prompt).toEqual({kind:'erase',generation:3});
+  drive(w,s=>answerRecordPrompt(s,'cancel',snap(w)));
+  expect(w.s.bank.recording.armed).toBe(false);expect(w.doc.data).toBe(m);expect(w.doc.written).toBeNull();expect(w.doc.generation).toBe(3);
+ });
+
+ it("'verified' without a receipt (or for another generation) is refused and changes nothing",()=>{
+  const {w}=unsaved();drive(w,s=>openRecordSave(s,w.doc));
+  const before=w.s;
+  for(const sn of [snap(w),{...snap(w),saved:true,generation:4}]){
+   const r=leaveRecordSave(w.s,{kind:'verified',fileName:'x.PLR',byteLength:10},sn);
+   expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(r.session).toBe(before);expect(r.host).toBeUndefined();
+  }
+ });
+
+ it('claim → write → equal read-back → receipt → the erase prompt with the verified note and no acquire; OK then clears and drops the receipt',()=>{
+  const {w,m}=unsaved();drive(w,s=>openRecordSave(s,w.doc));
+  const before=w.requests.length;
+  const a=attempt(w,1,'equal');
+  expect(a.committed).toBe(true);expect(pulsarWrittenCopy(w.doc)?.fileName).toBe('copy.PLR');expect(pulsarOutputClaim(w.doc)).toBeNull();
+  expect(w.doc.data).toBe(m);expect(w.doc.generation).toBe(3);expect(w.doc.lease).toBeNull();
+  const t=drive(w,s=>leaveRecordSave(s,{kind:'verified',fileName:'copy.PLR',byteLength:a.byteLength},snap(w)));
+  expect(t.outcome).toMatchObject({kind:'ok',action:'record-save-exit'});expect(t.host).toBeUndefined();
+  expect(w.s.record.prompt).toEqual({kind:'erase',generation:3,verified:{fileName:'copy.PLR',byteLength:a.byteLength}});
+  expect(w.requests.length).toBe(before);expect(w.s.bank.recording.armed).toBe(true);
+  // The erase still needs its own OK, which re-checks generation, activity and lease.
+  drive(w,s=>answerRecordPrompt(s,'ok',snap(w)));
+  expect(w.requests.slice(before).map(r=>r.kind)).toEqual(['acquire']);
+  expect(w.doc.generation).toBe(4);expect(w.doc.data).toEqual({origin:'cleared',header:pulsarHeaderCells(m)});
+  expect(w.doc.written).toBeNull();expect(pulsarCurrentSaved(w.doc)).toBe(false);expect(w.doc.lease).toEqual({id:1,phase:'armed'});
+  expect(w.s.bank.recording.armed).toBe(true);expect(main(w).recordLabel).toBe('On');
+ });
+
+ it('after a verified Save, erase Cancel keeps the data and the receipt (Record off); the next press asks only the erase question',()=>{
+  const {w,m}=unsaved();drive(w,s=>openRecordSave(s,w.doc));
+  const a=attempt(w,1,'equal');drive(w,s=>leaveRecordSave(s,{kind:'verified',fileName:'copy.PLR',byteLength:a.byteLength},snap(w)));
+  const t=drive(w,s=>answerRecordPrompt(s,'cancel',snap(w)));
+  expect(t.outcome.kind==='ok'&&t.outcome.events.some(e=>e.kind==='beam')).toBe(true);
+  expect(w.s.bank.recording.armed).toBe(false);expect(main(w).recordLabel).toBe('Off');
+  expect(w.doc.data).toBe(m);expect(pulsarWrittenCopy(w.doc)?.fileName).toBe('copy.PLR');expect(w.doc.lease).toBeNull();
+  record(w);expect(w.s.record.prompt).toEqual({kind:'erase',generation:3});
+  drive(w,s=>answerRecordPrompt(s,'cancel',snap(w)));expect(pulsarWrittenCopy(w.doc)?.fileName).toBe('copy.PLR');
+ });
+
+ it('a Load while the verified erase question waits: the note gate hides the note (origin kept); OK is refused superseded and nothing is erased',()=>{
+  const {w}=unsaved();drive(w,s=>openRecordSave(s,w.doc));
+  const a=attempt(w,1,'equal');drive(w,s=>leaveRecordSave(s,{kind:'verified',fileName:'copy.PLR',byteLength:a.byteLength},snap(w)));
+  const erasePrompt=()=>{const p=w.s.record.prompt;if(p?.kind!=='erase')throw new Error('no erase prompt');return p;};
+  expect(radioRecordEraseNote(erasePrompt().verified,erasePrompt().generation,w.doc)).toEqual({fileName:'copy.PLR',byteLength:a.byteLength});
+  w.doc=importPulsarRecording(w.doc,plr('LATER'),w.doc.generation).doc;
+  const later=w.doc.data,generation=w.doc.generation,before=w.requests.length;
+  expect(radioRecordEraseNote(erasePrompt().verified,erasePrompt().generation,w.doc)).toBeNull();
+  // The prompt still records how it was reached (the presentation keeps Cancel as the web default).
+  expect(erasePrompt()).toEqual({kind:'erase',generation:3,verified:{fileName:'copy.PLR',byteLength:a.byteLength}});
+  const t=drive(w,s=>answerRecordPrompt(s,'ok',snap(w)));
+  expect(t.outcome).toMatchObject({kind:'web-refused',action:'record-arming',reason:'record-superseded'});
+  expect(w.requests.slice(before).map(r=>r.kind)).toEqual(['acquire']);
+  expect(w.s.bank.recording.armed).toBe(false);expect(main(w).recordLabel).toBe('Off');expect(w.s.record.prompt).toBeNull();
+  expect(w.doc.data).toBe(later);expect(w.doc.generation).toBe(generation);expect(w.doc.lease).toBeNull();expect(pulsarDataRows(w.doc.data)).toBe(3);
+ });
+
+ it('no deadlock: an open analysis dialog does not block the Save, but the erase OK is refused analysis-busy with the receipt kept',()=>{
+  const {w,m}=unsaved();drive(w,s=>openRecordSave(s,w.doc));
+  w.doc=setPulsarAnalysisActivity(w.doc,{modal:true,reading:false}).doc;
+  const a=attempt(w,1,'equal');expect(a.committed).toBe(true);
+  drive(w,s=>leaveRecordSave(s,{kind:'verified',fileName:'copy.PLR',byteLength:a.byteLength},snap(w)));
+  expect(w.s.record.prompt?.kind).toBe('erase');
+  const t=drive(w,s=>answerRecordPrompt(s,'ok',snap(w)));
+  expect(t.outcome).toMatchObject({kind:'web-refused',reason:'record-analysis-busy'});
+  expect(w.s.bank.recording.armed).toBe(false);expect(w.doc.data).toBe(m);expect(w.doc.generation).toBe(3);expect(w.doc.lease).toBeNull();
+  expect(pulsarWrittenCopy(w.doc)?.fileName).toBe('copy.PLR');
+  w.doc=setPulsarAnalysisActivity(w.doc,{modal:false,reading:false}).doc;
+  record(w);expect(w.s.record.prompt).toEqual({kind:'erase',generation:3});
+  drive(w,s=>answerRecordPrompt(s,'ok',snap(w)));expect(w.doc.generation).toBe(4);expect(w.doc.written).toBeNull();
+ });
+
+ it('cancelled and mismatched attempts stay in the dialog: no host request, no receipt, generation and data unchanged',()=>{
+  const {w,m}=unsaved();drive(w,s=>openRecordSave(s,w.doc));
+  const before=w.requests.length;
+  attempt(w,1,'none');
+  expect(savePrompt(w)).toMatchObject({attempt:null,session:{save:{code:'picker-cancelled'}}});
+  const b=attempt(w,2,'flipped');
+  expect(b.committed).toBe(false);expect(savePrompt(w)).toMatchObject({attempt:null,session:{save:{code:'mismatch',reason:'readback-bytes'}}});
+  expect(w.s.record.prompt?.kind).toBe('save');expect(w.requests.length).toBe(before);
+  expect(w.doc.data).toBe(m);expect(w.doc.generation).toBe(3);expect(w.doc.written).toBeNull();expect(pulsarOutputClaim(w.doc)).toBeNull();
+  expect(leaveRecordSave(w.s,{kind:'verified',fileName:'copy.PLR',byteLength:b.byteLength},snap(w)).outcome).toMatchObject({kind:'web-refused'});
+  expect(w.s.bank.recording.armed).toBe(true);
+ });
+
+ it('E4 stays gated: the finish Save question refuses a yes answer and the committed lease is not released for it',()=>{
+  const w=open(world());record(w);mode(w);for(let i=0;i<10;i++)tick(w);mode(w);untilFinished(w);
+  take(drive(w,s=>answerRecordIdentify(s,'ok')));take(drive(w,closeRecordProperties));
+  const before=w.requests.length;
+  const r=answerRecordSave(w.s,'yes' as 'no');
+  expect(r.outcome).toMatchObject({kind:'web-refused',reason:'record-input'});expect(r.host).toBeUndefined();
+  expect(openRecordSave(w.s,w.doc).outcome).toMatchObject({kind:'web-refused',reason:'record-input'});
+  expect(w.doc.lease).toEqual({id:1,phase:'committed'});expect(w.requests.length).toBe(before);
  });
 });

@@ -80,9 +80,15 @@ export type PulsarCurrentData = Readonly<{
    * recordPulsarWrittenCopy creates one; every dataset change (bump) drops it. Read it through pulsarWrittenCopy.
    */
   written?: PulsarWrittenCopy | null;
+  /**
+   * R-RX16 (docs/RADIO-RECORD-SAVE.md, WEB-RX16-05): the one browser output attempt of the page, or null/absent. Taken by
+   * the Pulsar Analysis Save or the Radio arming Save before its picker call and released by that owner, with that token,
+   * only after its stream cleanup settled. Kept by every dataset change (bump) and by a receipt; it is not a native flag.
+   */
+  output?: PulsarOutputClaim | null;
 }>;
 export const INITIAL_PULSAR_CURRENT_DATA: PulsarCurrentData = Object.freeze({
-  generation: 0, data: null, lease: null, analysis: Object.freeze({ modal: false, reading: false }), written: null,
+  generation: 0, data: null, lease: null, analysis: Object.freeze({ modal: false, reading: false }), written: null, output: null,
 });
 
 export type PulsarDataRefusal = 'capture-lease' | 'superseded' | 'analysis-busy' | 'lease-mismatch';
@@ -181,7 +187,10 @@ export function pulsarMemoryRecording(c: PulsarCaptureInput): PulsarMemoryRecord
 }
 
 // ---------------------------------------------------------------- transitions
-/** Every dataset change (import, arming erase, capture commit) drops a verified-copy receipt (R-RX15); nothing revives it. */
+/**
+ * Every dataset change (import, arming erase, capture commit) drops a verified-copy receipt (R-RX15); nothing revives it.
+ * The spread keeps the R-RX16 output claim: an attempt in flight still owns it until its own cleanup releases it.
+ */
 const bump = (doc: PulsarCurrentData, data: PulsarCurrentValue | null, lease = doc.lease): PulsarCurrentData =>
   ({ ...doc, generation: doc.generation + 1, data, lease, written: null });
 
@@ -230,6 +239,34 @@ export function releasePulsarCaptureLease(doc: PulsarCurrentData, id: number): P
 export function setPulsarAnalysisActivity(doc: PulsarCurrentData, activity: PulsarAnalysisActivity): PulsarDataStep {
   if (doc.analysis.modal === activity.modal && doc.analysis.reading === activity.reading) return Object.freeze({ doc, ok: true });
   return ok({ ...doc, analysis: Object.freeze({ modal: activity.modal, reading: activity.reading }) });
+}
+
+// ---------------------------------------------------------------- R-RX16 shared output claim
+/*
+ * docs/RADIO-RECORD-SAVE.md WEB-RX16-05 [W]. One browser output attempt at a time across Pulsar Analysis (R-RX15 Save) and the
+ * Radio arming Save (R-RX16): each owner takes the claim with its own attempt token before its synchronous picker call and
+ * releases exactly that (owner, token) once its stream cleanup settled. A newer attempt is never released by an older one.
+ * Not a native flag: the original writer runs inside a modal dialog and has no such state.
+ */
+export type PulsarOutputOwner = 'analysis' | 'radio';
+export type PulsarOutputClaim = Readonly<{ owner: PulsarOutputOwner; token: number }>;
+/** 'output-busy': a claim is held (any owner). 'output-mismatch': not the held (owner, token). 'output-input': bad owner or token. */
+export type PulsarOutputRefusal = 'output-busy' | 'output-mismatch' | 'output-input';
+export type PulsarOutputStep = Readonly<{ doc: PulsarCurrentData; ok: true } | { doc: PulsarCurrentData; ok: false; reason: PulsarOutputRefusal }>;
+/** The held output claim, or null (a document without the optional field has none). */
+export const pulsarOutputClaim = (doc: PulsarCurrentData): PulsarOutputClaim | null => doc.output ?? null;
+const outputInputOk = (owner: unknown, token: unknown) => (owner === 'analysis' || owner === 'radio') && Number.isSafeInteger(token) && (token as number) > 0;
+/** Takes the claim for (owner, token); refused while any claim is held. Nothing else in the document changes. */
+export function claimPulsarOutput(doc: PulsarCurrentData, owner: PulsarOutputOwner, token: number): PulsarOutputStep {
+  if (!outputInputOk(owner, token)) return Object.freeze({ doc, ok: false, reason: 'output-input' });
+  if (pulsarOutputClaim(doc) !== null) return Object.freeze({ doc, ok: false, reason: 'output-busy' });
+  return Object.freeze({ doc: Object.freeze({ ...doc, output: Object.freeze({ owner, token }) }), ok: true });
+}
+/** Releases the claim only when it is exactly (owner, token); otherwise refused and nothing changes. */
+export function releasePulsarOutput(doc: PulsarCurrentData, owner: PulsarOutputOwner, token: number): PulsarOutputStep {
+  const held = pulsarOutputClaim(doc);
+  if (held === null || held.owner !== owner || held.token !== token) return Object.freeze({ doc, ok: false, reason: 'output-mismatch' });
+  return Object.freeze({ doc: Object.freeze({ ...doc, output: null }), ok: true });
 }
 
 // ---------------------------------------------------------------- R-RX15 verified written copy
