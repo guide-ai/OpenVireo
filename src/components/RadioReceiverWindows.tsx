@@ -557,9 +557,10 @@ const boxKeys=(e:KeyboardEvent<HTMLDivElement>,root:HTMLElement|null,escape:()=>
  trapTab(e,root);
 };
 /** RC-REC-03 prompts as application-modal boxes with the recovered captions and texts. unsaved (flags 0x13): Yes is shown
- * disabled with its reason (the Save wrapper 0x56b36c is not recovered); No and Cancel are the recovered paths; WEB default
- * button Cancel (the native default Yes is unavailable). erase (flags 0x41): OK (the native default) and Cancel. Escape is
- * Cancel. Enter activates the focused button (no global Enter). Held keys are ignored. */
+ * disabled with its reason (the Save caller 0x56b36c is read statically since R-RX14, but its dialog and state-changing
+ * Save are not ported); No and Cancel are the recovered paths; WEB default button Cancel (the native default Yes is
+ * unavailable). erase (flags 0x41): OK (the native default) and Cancel. Escape is Cancel. Enter activates the focused
+ * button (no global Enter). Held keys are ignored. */
 function RecordPromptBox({prompt,onAnswer}:Readonly<{prompt:ReceiverRecordPrompt;onAnswer:(a:'no'|'ok'|'cancel')=>void}>){
  const id=useId(),root=useRef<HTMLDivElement>(null),first=useRef<HTMLButtonElement>(null);
  useEffect(()=>{first.current?.focus();},[prompt.kind]);

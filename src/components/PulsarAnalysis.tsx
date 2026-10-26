@@ -34,12 +34,15 @@ import {
   resultsAppendRequest, type ResultsAppendSession,
 } from '../core/pulsarResultsAppend';
 import { admitSavedRows, savedRowsBytes, SAVED_ROWS_LIMITS, type SavedReadResult, type SavedRowField, type SavedRowsErrorCode } from '../core/pulsarSavedRows';
+import {
+  RAW_EXPORT_FILE_NAME, RAW_EXPORT_MEDIA_TYPE, rawExportDownloadFailed, rawExportOpen, rawExportRequest, type RawExportField, type RawExportProblem, type RawExportSession,
+} from '../core/pulsarRawExport';
 import { createPulsarTranslator, type PulsarMessageKey, type PulsarTranslate } from './PulsarMessages';
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
- * panel is inert, an in-flight read is cancelled, a held pan stops and an open record, clear, Review, export or append
- * dialog closes (its session, including Review's staged working copy, the export draft and the append target, is kept;
+ * panel is inert, an in-flight read is cancelled, a held pan stops and an open record, clear, Review, export, append or raw
+ * .PLR download dialog closes (its session, including Review's staged working copy, the export draft and the append target, is kept;
  * a pending append target read is cancelled). The loaded bytes and the confirmed measurement list are kept.
  * A host that hides the panel (CSS, an `inert` ancestor or similar) must pass `active={false}` for as long
  * as it is hidden: the panel does not observe ancestor styles or attributes, so reads, pan timers and
@@ -97,6 +100,12 @@ const APPEND_REJECT: Readonly<Record<SavedRowsErrorCode | 'read', PulsarMessageK
   'row-blank': 'pulsar.append.reject.row-blank', 'row-length': 'pulsar.append.reject.row-length', 'row-quote': 'pulsar.append.reject.row-quote', 'row-columns': 'pulsar.append.reject.row-columns',
   'row-field': 'pulsar.append.reject.row-field',
 };
+/** R-RX14 raw .PLR download: the name of each header field in a loss list or a refusal. */
+const RAW_FIELD_LABEL: Readonly<Record<RawExportField, PulsarMessageKey>> = {
+  frequency1: 'pulsar.rawExport.field.frequency1', frequency2: 'pulsar.rawExport.field.frequency2', frequency3: 'pulsar.rawExport.field.frequency3',
+  gain1: 'pulsar.rawExport.field.gain1', gain2: 'pulsar.rawExport.field.gain2', gain3: 'pulsar.rawExport.field.gain3',
+  start: 'pulsar.rawExport.field.start', interval: 'pulsar.rawExport.field.interval',
+};
 /** While the export dialog is open every core action is refused unchanged, as behind the other modal dialogs ('blocked-modal'). */
 const blockedByExport = (s: PulsarAnalysisState): PulsarTransition => Object.freeze({ state: s, outcome: 'blocked-modal', changed: false, placed: false, evidence: Object.freeze([]) });
 const clampInt = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(v)));
@@ -133,6 +142,9 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const setAppend = (next: ResultsAppendSession | null) => { appendRef.current = next; setAppendSession(next); };
   // Target read tokens. Never reset, so a late result of a closed or earlier session never matches a later one.
   const appendEpoch = useRef(0);
+  // R-RX14 raw .PLR download session of the memory capture (src/core/pulsarRawExport.ts), mirrored in a ref like the export session.
+  const [rawSession, setRawSession] = useState<RawExportSession | null>(null), rawRef = useRef<RawExportSession | null>(null);
+  const setRaw = (next: RawExportSession | null) => { rawRef.current = next; setRawSession(next); };
   const [rejection, setRejection] = useState<string | null>(null);
   const [status, setStatus] = useState('');
   const [primaryAs, setPrimaryAs] = useState<'left' | 'right'>('left');
@@ -148,7 +160,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // Transitions run on the latest committed state, so rapid pointer events are never applied to a stale copy.
   // Which outcome writes the status is the core's pulsarAnnouncement policy.
   const act: Act = fn => {
-    const tr = exportRef.current || appendRef.current ? blockedByExport(current.current) : fn(current.current);
+    const tr = exportRef.current || appendRef.current || rawRef.current ? blockedByExport(current.current) : fn(current.current);
     if (tr.changed) { current.current = tr.state; setS(tr.state); }
     const announced = pulsarAnnouncement(statusOutcome.current, tr);
     if (announced) say(t(`pulsar.outcome.${announced}` as PulsarMessageKey), announced);
@@ -158,8 +170,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   useLayoutEffect(() => { actRef.current = act; });
   // The export dialog is a modal session too: it makes the main region inert, holds pan and newer-data adoption, and is
   // reported to the shared dataset, so receiver arming is refused while it is open (also on a hidden route). The append
-  // dialog (R-RX12) is one too.
-  const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null || appendSession !== null;
+  // dialog (R-RX12) and the raw .PLR download dialog (R-RX14) are too.
+  const rec = s.recording, modal = pulsarModalOpen(s) || exportSession !== null || appendSession !== null || rawSession !== null;
   // WEB pending-read gate (the native load is synchronous): while a chosen file is being read, its contents or
   // its SHA-256, no control opens a modal (Record, Review, Clear, Export, and the Load chooser with its unsaved-data prompt).
   // A modal makes the finished read's load be refused, which would drop the chosen file. The read completes, or the learner
@@ -308,6 +320,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     if (exportRef.current) { say(t('pulsar.export.fileRefused')); return; }
     // R-RX12: likewise while the append dialog is open (its own chooser is a separate input).
     if (appendRef.current) { say(t('pulsar.append.fileRefused')); return; }
+    // R-RX14: likewise while the raw .PLR download dialog is open.
+    if (rawRef.current) { say(t('pulsar.rawExport.fileRefused')); return; }
     // WEB-REC-TXN defence in depth: Load is disabled under a capture lease; a change delivered anyway is refused unread.
     if (shared.current().lease) { setRejection(`${t('pulsar.reject.title', { name: file.name })} ${t('pulsar.reject.capture-lease')}`); return; }
     if (!picked && promptNeeded()) { say(t('pulsar.status.loadPromptFirst')); return; }
@@ -335,7 +349,7 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
       setReading(null);
       const owner = document.activeElement;
       // A modal session (the export dialog included) refuses the load as before ('blocked-modal'); the dataset is not changed then.
-      if (pulsarModalOpen(current.current) || exportRef.current || appendRef.current) { act(st => pulsarLoad(st, admission.recording)); return; }
+      if (pulsarModalOpen(current.current) || exportRef.current || appendRef.current || rawRef.current) { act(st => pulsarLoad(st, admission.recording)); return; }
       const committed = shared.update(d => importPulsarRecording(d, admission.recording, generation));
       if (!committed.ok) { fail(t(committed.reason === 'capture-lease' ? 'pulsar.reject.capture-lease' : 'pulsar.reject.superseded')); return; }
       adopt(committed.doc.generation);
@@ -385,10 +399,11 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null), reviewDialog = useRef<HTMLDialogElement>(null);
   const loadDialog = useRef<HTMLDialogElement>(null), exportDialog = useRef<HTMLDialogElement>(null), exportFirst = useRef<HTMLInputElement>(null), exportButton = useRef<HTMLButtonElement>(null);
   const appendDialog = useRef<HTMLDialogElement>(null), appendFile = useRef<HTMLInputElement>(null), appendButton = useRef<HTMLButtonElement>(null), appendCancelRead = useRef<HTMLButtonElement>(null), appendDownload = useRef<HTMLButtonElement>(null);
+  const rawDialog = useRef<HTMLDialogElement>(null), rawButton = useRef<HTMLButtonElement>(null), rawCancel = useRef<HTMLButtonElement>(null);
   const ownClose = useRef(new WeakSet<HTMLDialogElement>());
   const [syncModal] = useState(() => () => {
-    // The export and append dialogs never coexist with the others: each opens only when none is open, and blocks every core action.
-    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current ?? exportDialog.current ?? appendDialog.current;
+    // The export, append and raw download dialogs never coexist with the others: each opens only when none is open, and blocks every core action.
+    const el = recordDialog.current ?? clearDialog.current ?? reviewDialog.current ?? loadDialog.current ?? exportDialog.current ?? appendDialog.current ?? rawDialog.current;
     if (!el) return;
     if (!activeRef.current) { if (el.open) { ownClose.current.add(el); el.close(); } return; }
     if (el.open) return;
@@ -399,12 +414,12 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     // Review: the open question's default button, else the editor's comment, else the selected row, else Cancel (an empty working copy).
     const review = () => reviewPromptDefault.current ?? reviewEditComment.current ?? el.querySelector<HTMLInputElement>('input[type="radio"]:checked') ?? reviewCancel.current;
     (el === recordDialog.current ? commentInput.current : el === clearDialog.current ? clearDefault.current : el === loadDialog.current ? loadDefault.current
-      : el === exportDialog.current ? exportFirst.current : el === appendDialog.current ? appendFile.current : review())?.focus();
+      : el === exportDialog.current ? exportFirst.current : el === appendDialog.current ? appendFile.current : el === rawDialog.current ? rawCancel.current : review())?.focus();
   });
   useLayoutEffect(() => { syncModal(); });
   useEffect(() => {
     // Another dialog closing may leave this panel's dialog free to open. Our own closes are handled by onClose.
-    const own = [recordDialog, clearDialog, reviewDialog, loadDialog, exportDialog, appendDialog];
+    const own = [recordDialog, clearDialog, reviewDialog, loadDialog, exportDialog, appendDialog, rawDialog];
     const closed = (e: Event) => { if (!own.some(d => e.target === d.current)) syncModal(); };
     if (!modal || !active) return;
     document.addEventListener('close', closed, true);
@@ -485,12 +500,14 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
   // R-RX10 export of the confirmed list (WEB-NWE-01..05). Every guard reads refs when the action runs, so a script action
   // in the same task as another change sees that change. Nothing here touches the analysis state, the list, its saved flag,
   // pending readings, cursors, comments, Review, the shared dataset or any storage.
-  const exportOpenable = () => {
+  /** The common opener conditions of Export, Append and the raw .PLR download: an active, shown panel with no dialog, read, drag, lease or newer data. */
+  const sessionOpenable = () => {
     const panel = root.current, doc = shared.current(), st = current.current;
     return activeRef.current && !!panel && panel.getClientRects().length > 0 && !panel.parentElement?.closest('[inert]') && document.querySelector('dialog:modal') === null
-      && readingRef.current === null && !pulsarModalOpen(st) && exportRef.current === null && appendRef.current === null && st.list.length > 0 && !st.leftDrag && !st.rightDrag
+      && readingRef.current === null && !pulsarModalOpen(st) && exportRef.current === null && appendRef.current === null && rawRef.current === null && !st.leftDrag && !st.rightDrag
       && doc.lease === null && doc.generation === adopted.current;
   };
+  const exportOpenable = () => sessionOpenable() && current.current.list.length > 0;
   const openExport = () => {
     if (exportRef.current) return;
     if (!exportOpenable()) { say(t('pulsar.export.unavailable')); return; }
@@ -695,6 +712,77 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
     return t(`pulsar.append.refusal.${r.code}` as PulsarMessageKey);
   };
 
+  // R-RX14 raw .PLR download of the current memory capture (WEB-RAW-01..06). It opens under the common session conditions
+  // (no measurement is needed) only for the memory capture this panel presents, and shares the single output claim
+  // (exportBusy). These handlers do not change the analysis core state, the shared dataset's data, generation, saved flag,
+  // origin or file name, the imported-file Download or any storage. The open session only feeds `modal`, which the layout
+  // effect above reports as analysis.modal, so receiver arming is refused.
+  const openRaw = () => {
+    if (rawRef.current) return;
+    const st = current.current;
+    if (!sessionOpenable() || !isMemoryData(st.recording) || shared.current().data !== st.recording) { say(t('pulsar.rawExport.unavailable')); return; }
+    setRaw(rawExportOpen(st.recording, adopted.current));
+  };
+  const rawForeignModal = () => [...document.querySelectorAll('dialog:modal')].some(d => d !== rawDialog.current);
+  const closeRaw = () => {
+    if (!rawRef.current || exportBusy.current || rawForeignModal()) return;
+    setRaw(null);
+    focusAfterModal.current = rawButton.current;
+    say(t('pulsar.rawExport.cancelled'));
+  };
+  /**
+   * Download, under the export rules: only while presented, with the session's data still the current object and generation
+   * and no foreign modal. The core rebuilds the bytes from the data now. The output claim is taken before any browser call
+   * and released only after the outcome is handled: a reentrant Download or Cancel from inside the link click does nothing.
+   * A browser error keeps the session for a new request; a requested download ends it.
+   */
+  const requestRaw = () => {
+    const session = rawRef.current, dialogEl = rawDialog.current;
+    if (!session || exportBusy.current || !activeRef.current || !dialogEl?.open || rawForeignModal()) return;
+    const doc = shared.current();
+    const ready = readingRef.current === null && doc.lease === null && !pulsarModalOpen(current.current);
+    const r = rawExportRequest(session, { data: doc.data, generation: doc.generation, ready });
+    if (r.kind === 'refused') { setRaw(r.session); return; }
+    exportBusy.current = true;
+    try {
+      let url: string | null = null, a: HTMLAnchorElement | null = null, failed = false;
+      try {
+        url = URL.createObjectURL(new Blob([r.bytes], { type: RAW_EXPORT_MEDIA_TYPE }));
+        a = document.createElement('a');
+        a.href = url; a.download = RAW_EXPORT_FILE_NAME; a.rel = 'noopener';
+        // Inside the open dialog: the rest of the page is inert while it is shown.
+        dialogEl.append(a); a.click();
+      } catch {
+        failed = true;
+      } finally {
+        try { a?.remove(); } catch { /* already detached */ }
+      }
+      if (failed) {
+        if (url !== null) { const owned = url; try { URL.revokeObjectURL(owned); } catch { /* nothing else to release */ } }
+        setRaw(rawExportDownloadFailed(session));
+        return;
+      }
+      const issued = url as string;
+      setTimeout(() => URL.revokeObjectURL(issued), 1000);
+      setRaw(null);
+      focusAfterModal.current = rawButton.current;
+      say(t('pulsar.rawExport.requested', { name: RAW_EXPORT_FILE_NAME, count: r.rowCount }));
+    } finally {
+      exportBusy.current = false;
+    }
+  };
+  const rawProblemText = (p: RawExportProblem) => t(`pulsar.rawExport.problem.${p.code}` as PulsarMessageKey, {
+    count: 'count' in p ? p.count : '', max: 'max' in p ? p.max : '', position: 'position' in p ? p.position : '', length: 'length' in p ? p.length : '',
+    bytes: 'bytes' in p ? p.bytes : '', field: 'field' in p ? t(RAW_FIELD_LABEL[p.field]) : '', receiver: 'receiver' in p ? p.receiver + 1 : '',
+    row: 'row' in p ? p.row : '', channel: 'channel' in p ? p.channel + 1 : '',
+  });
+  const rawRefusalText = (session: RawExportSession): string => {
+    const r = session.refusal;
+    if (!r) return '';
+    return r.code === 'build' ? rawProblemText(r.problem) : t(`pulsar.rawExport.refusal.${r.code}` as PulsarMessageKey);
+  };
+  const rawDisabled = !active || readPending || modal || s.leftDrag || s.rightDrag || leased || newer;
+
   return (
     <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis" onKeyDownCapture={captureRepeatedEnter}>
       <div className="plr-main" inert={modal}>
@@ -735,6 +823,8 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
                 <dt>{t('pulsar.memory.rows')}</dt><dd data-testid="pulsar-memory-rows">{memoryRec.rowCount}</dd>
                 <dt>{t('pulsar.memory.full')}</dt><dd data-testid="pulsar-memory-full">{t(memoryRec.full ? 'pulsar.memory.fullYes' : 'pulsar.memory.fullNo')}</dd>
               </dl>
+              <p><button type="button" ref={rawButton} onClick={openRaw} disabled={rawDisabled} aria-haspopup="dialog" aria-describedby={`${idPrefix}raw-export-note`} data-testid="pulsar-raw-export">{t('pulsar.rawExport.open')}</button></p>
+              <p className="plr-help" id={`${idPrefix}raw-export-note`} data-testid="pulsar-raw-export-note">{t('pulsar.rawExport.note')}</p>
             </div>
           ) : <p data-testid="pulsar-none">{t('pulsar.file.none')}</p>}
           {fileRec && <p><button type="button" onClick={download} data-testid="pulsar-download">{t('pulsar.file.download')}</button> <span className="plr-help">{t('pulsar.file.downloadNote')}</span></p>}
@@ -955,6 +1045,36 @@ export default function PulsarAnalysis({ translate, idPrefix = 'plr-', active = 
           </div>
         </dialog>
       )}
+      {rawSession && (() => {
+        const d = rawSession.data, p = rawSession.preview, inactive = ([0, 1, 2] as const).filter(i => i > d.highestIndex).map(i => i + 1);
+        return (
+          <dialog ref={rawDialog} aria-labelledby={`${idPrefix}raw-export`} aria-describedby={`${idPrefix}raw-export-scope`} className="plr-modal plr-export" data-testid="pulsar-raw-export-dialog"
+            {...dialogEvents(closeRaw)}>
+            <h3 id={`${idPrefix}raw-export`}>{t('pulsar.rawExport.heading')}</h3>
+            <p className="plr-help" id={`${idPrefix}raw-export-scope`} data-testid="pulsar-raw-export-scope">{t('pulsar.rawExport.scope', { rows: d.rowCount, capture: d.captureId, name: d.name, receivers: d.highestIndex + 1 })}</p>
+            <p className="plr-warning" data-testid="pulsar-raw-export-origin">{t('pulsar.rawExport.origin', { file: RAW_EXPORT_FILE_NAME })}</p>
+            <p className="plr-help" data-testid="pulsar-raw-export-format">{t('pulsar.rawExport.format')}</p>
+            <p className="plr-help" data-testid="pulsar-raw-export-inactive">{inactive.length ? t('pulsar.rawExport.inactive', { list: inactive.join(', ') }) : t('pulsar.rawExport.inactiveNone')}</p>
+            <p className="plr-help" data-testid="pulsar-raw-export-consequence">{t('pulsar.rawExport.consequence')}</p>
+            {p.ok ? (
+              <section aria-labelledby={`${idPrefix}raw-export-loss`} data-testid="pulsar-raw-export-loss">
+                <h4 id={`${idPrefix}raw-export-loss`}>{t('pulsar.rawExport.loss.heading')}</h4>
+                <ul>
+                  <li data-testid="pulsar-raw-export-loss-header">{p.loss.header.length ? t('pulsar.rawExport.loss.header', { fields: p.loss.header.map(f => t(RAW_FIELD_LABEL[f])).join(', ') }) : t('pulsar.rawExport.loss.headerNone')}</li>
+                  <li data-testid="pulsar-raw-export-loss-samples">{t('pulsar.rawExport.loss.samples', { changed: p.loss.samplesChanged, total: p.rowCount * 3, zeroed: p.loss.samplesZeroed })}</li>
+                  <li>{t('pulsar.rawExport.loss.memory')}</li>
+                </ul>
+              </section>
+            ) : <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-raw-export-problem" data-code={p.problem.code}>{rawProblemText(p.problem)}</p>}
+            {rawSession.refusal && <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-raw-export-alert" data-code={rawSession.refusal.code}>{rawRefusalText(rawSession)}</p>}
+            {rawSession.failure && <p role="alert" className="plr-error plr-export-problem" data-testid="pulsar-raw-export-failure">{t('pulsar.rawExport.failure')}</p>}
+            <div className="plr-row">
+              <button type="button" onClick={requestRaw} disabled={!p.ok} data-testid="pulsar-raw-export-download">{t('pulsar.rawExport.download', { name: RAW_EXPORT_FILE_NAME })}</button>
+              <button type="button" ref={rawCancel} onClick={closeRaw} data-testid="pulsar-raw-export-cancel">{t('pulsar.rawExport.cancel')}</button>
+            </div>
+          </dialog>
+        );
+      })()}
     </section>
   );
 }

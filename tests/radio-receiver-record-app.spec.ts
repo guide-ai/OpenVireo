@@ -118,7 +118,7 @@ test('Record → Receive → Stop → Identify (40-char refusal) → modal Prope
  const points=await id(page,'receiver-record-prop-points').textContent();expect(Number(points)).toBeGreaterThan(0);
  await id(page,'receiver-record-properties-ok').click();
  await expect(finish(page)).toHaveAttribute('data-stage','save');await expect(id(page,'receiver-record-save-text')).toContainText('("No" -> Open Analysis Window)');
- await expect(id(page,'receiver-record-save-yes')).toBeDisabled();await expect(id(page,'receiver-record-save-yes-reason')).toContainText('not recovered');
+ await expect(id(page,'receiver-record-save-yes')).toBeDisabled();await expect(id(page,'receiver-record-save-yes-reason')).toContainText('not ported');
  await expect(id(page,'receiver-record-save-cancel')).toBeFocused();
  await id(page,'receiver-record-save-no').click();
  // The existing manual analysis on the memory recording: no file identity, no download or SHA-256.

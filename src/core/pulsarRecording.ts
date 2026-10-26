@@ -87,9 +87,11 @@ class Line {
   remaining(): string { this.skip(); return this.rest; }
 }
 
+/** WEB admission bounds on |value| (not native limits). The interval must also be > 0. The raw export (R-RX14) refuses values outside them. */
+export const PLR_VALUE_BOUNDS = Object.freeze({ frequency: 1e9, gain: 1e6, start: 1e7, sample: 1e9, interval: 1e3 });
 type Bound = Readonly<{ max: number; positive?: boolean }>;
-const FREQ: Bound = { max: 1e9 }, GAIN: Bound = { max: 1e6 }, START: Bound = { max: 1e7 }, SAMPLE: Bound = { max: 1e9 };
-const INTERVAL: Bound = { max: 1e3, positive: true };
+const FREQ: Bound = { max: PLR_VALUE_BOUNDS.frequency }, GAIN: Bound = { max: PLR_VALUE_BOUNDS.gain }, START: Bound = { max: PLR_VALUE_BOUNDS.start }, SAMPLE: Bound = { max: PLR_VALUE_BOUNDS.sample };
+const INTERVAL: Bound = { max: PLR_VALUE_BOUNDS.interval, positive: true };
 
 function float(line: Line, bound: Bound): PlrNumber | PlrRejection {
   const lexeme = line.token();

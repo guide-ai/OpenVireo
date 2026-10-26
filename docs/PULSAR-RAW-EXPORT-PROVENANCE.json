@@ -1,0 +1,62 @@
+{
+  "contract": "R-RX14 raw .PLR download of the current memory capture",
+  "document": "docs/PULSAR-RAW-EXPORT.md",
+  "nativeArtifact": { "name": "CLEA_VEO.exe (VIREO 1.504)", "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c" },
+  "nativeExecution": false,
+  "originalBinaryBytesIncluded": false,
+  "evidenceReceipt": {
+    "path": "/tmp/clea-static-research/radio-rx14-raw-export-20261026/SOURCE-RECEIPT.json",
+    "kind": "eligible previously captured code-only static listings and typed literal decoding; copied unchanged"
+  },
+  "evidence": [
+    {
+      "id": "RAW-WRITE",
+      "path": "/tmp/clea-static-research/radio-rx14-raw-export-20261026/signal-write.asm",
+      "source": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-help-followup/plr-static/signal-write.asm",
+      "sha256": "55069a74c53d6daa29657dbef7768a2b5322a5c6145c8624802dbe303eebef7d",
+      "ranges": ["0x56a518..0x56a8be"],
+      "contracts": ["RAW-WRITE-01", "RAW-WRITE-02", "RAW-WRITE-03"],
+      "tags": ["S"]
+    },
+    {
+      "id": "RAW-LIT",
+      "path": "/tmp/clea-static-research/radio-rx14-raw-export-20261026/requested-literals-and-constants.json",
+      "source": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-help-followup/plr-static/requested-literals-and-constants.json",
+      "sha256": "b4f4a1834181af68c91d696d8f8542dff63e49f4acea853641e47876d1585fb4",
+      "literals": { "0x56a8c0": "'", "0x56a8c4": "',", "0x56a8d0": ",", "0x56a8dc": "0.0" },
+      "contracts": ["RAW-LIT-01"],
+      "tags": ["S"]
+    },
+    {
+      "id": "RAW-FMT",
+      "path": "/tmp/clea-static-research/radio-rx14-raw-export-20261026/formatters-486268-4863a0.asm",
+      "source": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis/formatters-486268-4863a0.asm",
+      "sha256": "50db2de323900f062c37a4e8abd5907c0821c738ef815d202e0587b3bb700db5",
+      "ranges": ["0x486268..0x48628f"],
+      "contracts": ["RAW-FMT-01"],
+      "tags": ["S", "I"],
+      "inference": "0x40cf28 with AL=2, EDX=18, ECX=digits read as FloatToStrF(ffFixed, 18, digits); rounding, separator, signed zero and exponent policy not established"
+    },
+    {
+      "id": "RAW-CALL",
+      "path": "/tmp/clea-static-research/radio-rx14-raw-export-20261026/writer-caller-56b36c.asm",
+      "source": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/pulsar-find-independent/writer-object-binding/writer-caller-56b36c.asm",
+      "sha256": "b56926da8ce354c26b671d94031d3b6656ca378703f716b5cffa2a115640f5be",
+      "ranges": ["0x56b36c..0x56b678"],
+      "contracts": ["RAW-CALL-01"],
+      "tags": ["S"],
+      "unbound": ["0x492708", "0x40b224", "0x40b514", "dialog VMT +0x3c", "dialog byte +0x64 bit 0x80", "literals 0x56b67c 0x56b68c 0x56b6b0 0x56b6cc 0x56b6d4 0x56b6d8 0x56b6dc 0x56b6ec 0x56b798", "0x44d9f4", "0x405e84", "dialog +0x78"],
+      "unboundScope": "selected helpers, fields and literals named in RAW-CALL-01; not an exhaustive callgraph of 0x56b36c..0x56b678",
+      "ported": false
+    }
+  ],
+  "webPolicy": ["WEB-RAW-01", "WEB-RAW-02", "WEB-RAW-03", "WEB-RAW-04", "WEB-RAW-05", "WEB-RAW-06"],
+  "notPorted": ["writer +0x97/+0x9a stores", "0x47b7a8 calls", "file open/close and SEH behavior", "caller 0x56b36c", "receiver Save Yes", "analysis Load Yes"],
+  "gaps": ["G1 list helper bodies", "G2 0x40460c line-end flag", "G3 separator/rounding/signed zero/Extended", "G4 caller literals and dialog properties", "G5 no runtime witness or original writer output", "G6 0x40ac14 identification"],
+  "tests": {
+    "unit": "src/core/pulsarRawExport.test.ts",
+    "browser": "tests/radio-receiver-raw-export-app.spec.ts",
+    "independentFixture": "/tmp/clea-static-research/radio-rx14-raw-export-20261026/INDEPENDENT-ACCEPTANCE.json (FIXED-BYTES)",
+    "claim": "web contract checks with synthetic fixtures; not native oracles"
+  }
+}
