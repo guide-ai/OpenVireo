@@ -3255,5 +3255,7 @@
   "lssLab.reflect.voids": "Are there regions of the wedge with no galaxies at all?",
   "lssLab.reflect.fingers": "Do groups of galaxies look stretched along the line of sight? Why could that happen?",
   "lssLab.reflect.limits": "Which galaxies could not be observed in this version, and how might that bias your map?",
-  "lssLab.close": "Close LSS guide"
+  "lssLab.close": "Close LSS guide",
+  "lssLab.progress": "Your progress",
+  "lssLab.return": "Return to my work"
 }

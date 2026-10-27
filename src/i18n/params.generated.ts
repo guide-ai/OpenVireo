@@ -3257,4 +3257,6 @@ export interface MessageParameters {
   "lssLab.reflect.fingers": never;
   "lssLab.reflect.limits": never;
   "lssLab.close": never;
+  "lssLab.progress": never;
+  "lssLab.return": never;
 }
