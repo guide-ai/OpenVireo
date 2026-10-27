@@ -7,7 +7,8 @@ import field54876 from '../../data/hubble/pinned-galaxy-54876-field.json';
 import fieldPegasus from '../../data/hubble/pinned-pegasus-field.json';
 import exposureVectors from '../../data/hubble/galaxy-exposure-vectors.json';
 import {fieldPackFromSnapshot,decodeFieldPack,FieldPackError,FIELD_PACK_SCHEMA} from './fieldPack';
-import {evaluateField,buildFieldPopulation,admitFieldGalaxies,createFieldExposure,freshFieldArea,FieldEngineError,type FieldTelescope} from './fieldEngine';
+import {lssFieldRows,type LssFieldNumber} from './lssFields';
+import {nativeCursorInsert,evaluateField,buildFieldPopulation,admitFieldGalaxies,createFieldExposure,freshFieldArea,FieldEngineError,type FieldTelescope} from './fieldEngine';
 import {verifiedGalaxyConfiguration,createGalaxyExposure} from './galaxyExposure';
 import {tickJournal,startJournal,activateJournal} from './exposureJournal';
 // The approved original catalogue is read only to feed the engine; assertions compare against the verified builders.
@@ -102,7 +103,23 @@ describe('field engine gates and errors',()=>{
   expect(code({...ok,bands:[{...ok.bands[0],sha256:'abc'}]})).toBe('identity');
   expect(code({...ok,qso:{sha256:null,recordsChecked:1,entries:[{index:4,ra:1,dec:0}]}})).toBe('bounds');
  });
- it('orders equal-position galaxies in reverse read order (insert before equal keys)',()=>{
+ it('0x492728 cursor insert: after equal keys from below, before them from above, after an equal head',()=>{
+  const gt=(a:number[],b:number[])=>a[0]>b[0];
+  const ids=(xs:number[][])=>nativeCursorInsert(xs,gt).map(x=>x[1]);
+  expect(ids([[5,0],[5,1],[5,2]])).toEqual([0,2,1]);// each head tie goes right after the equal head
+  expect(ids([[1,0],[5,1],[5,2]])).toEqual([0,2,1]);// tie arrives from above (cursor = equal): before it
+  expect(ids([[9,0],[5,1],[5,2]])).toEqual([1,2,0]);// backward to an equal head: after the head
+  expect(ids([[5,0],[1,1],[5,2]])).toEqual([1,0,2]);// tie arrives from below (cursor smaller): after equal keys
+  expect(ids([[3,0],[1,1],[2,2],[4,3]])).toEqual([1,2,0,3]);
+ });
+ it('reproduces the four LSS head-of-list tie vectors (independent review 1)',()=>{
+  const at=(field:LssFieldNumber,id:string,records:number[])=>{const r=lssFieldRows(field).find(r=>r.id===id)!;return admitFieldGalaxies(glx,freshFieldArea(r)).galaxies.map(g=>g.recordIndex).filter(i=>records.includes(i));};
+  expect(at(6,'IC 4395A',[17296,17297])).toEqual([17296,17297]);
+  expect(at(7,'NGC 5709',[17752,17753])).toEqual([17752,17753]);
+  expect(at(8,'14520+3025E',[18078,18079])).toEqual([18078,18079]);
+  expect(at(9,'IC 4572',[18707,18708,18709])).toEqual([18707,18709,18708]);
+ });
+ it('orders equal-position galaxies preceded by a smaller one in reverse read order',()=>{
   // 15384+2831 W/S/E share one Double position (records 18707..18709).
   const {galaxies}=admitFieldGalaxies(glx,freshFieldArea({ra:15.674482603095818,dec:28.356417345271815}));
   const tied=galaxies.filter(g=>g.ra===15.674482603095818&&g.dec===28.356417345271815).map(g=>g.recordIndex);

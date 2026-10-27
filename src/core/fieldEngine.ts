@@ -6,9 +6,9 @@
  *  2. regions 0x5977e0/0x5978c0, band order 0x59ae16, per-band seek/read 0x59af80 and admission 0x599e08 from the pack reads;
  *  3. QSO (0x597f90) and photographic-list association: any position inside the area is a typed unavailable gate (not ported);
  *  4. variables: none, or exactly one class-3 record through the recovered false-merge branch (variableMerge.ts); otherwise gated;
- *  5. galaxies: whole-file CLEA_GLX.DAT admission in source order, then the 0x492728 sorted insert with the strict RA/Dec-greater
- *     comparator 0x5969e0, which inserts BEFORE equal keys (generator multi-galaxy-recovery/*\/generate.py: key (RA, Dec,
- *     −recordIndex)); each galaxy then cleans the star list (0x5980cc) in that order;
+ *  5. galaxies: whole-file CLEA_GLX.DAT admission in source order, each inserted by the GLX loader (call 0x599128) through the
+ *     cursor-relative linked-list insert 0x492728 with the strict RA/Dec-greater comparator 0x5969e0 (nativeCursorInsert);
+ *     each galaxy then cleans the star list (0x5980cc) in that order;
  *  6. scene/raster/crop/slit/calibration exactly as galaxyExposure.ts (fresh path), with the selection taken at the frame
  *     centre by the recovered nearest rule (0x59a0fc). A nonzero sub-pixel residual (rounded hot-list pointing) is allowed.
  * Every condition outside the recovered domain is reported as a typed unavailable reason; evidence inconsistencies throw.
@@ -99,21 +99,45 @@ function packStars(pack:FieldPack,area:NativeCatalogRegion,order:readonly string
  }
  return stars;
 }
-/** Whole-file galaxy admission (source order) and the native sorted insert (strict greater comparator, before equal keys). */
+/** 0x492728, a sorted insert into a doubly linked list relative to its cursor (helpers 0x492708 empty, 0x492710/0x49271c
+ * cursor at head/tail, 0x492634 next, 0x492668 prev, 0x492574 insert after cursor, 0x492528 prepend). Every insert leaves the
+ * cursor on the new node; the list starts empty with no cursor (0x4924d4/0x4924fc). If the new key is greater than the cursor,
+ * walk forward past every item not greater than it (so it goes AFTER equal keys); otherwise walk backward to the first item it
+ * is greater than and insert after that one (so it goes BEFORE equal keys) — except that a backward walk reaching a head equal
+ * to the new key inserts after the head, and one reaching a head greater than the new key prepends.
+ * Static evidence: independent review 1 of Front A (analysis/reviews/front-a-review-1.md). Order therefore depends on the read
+ * sequence, not on a fixed tie key. */
+export function nativeCursorInsert<T>(items:readonly T[],greater:(a:T,b:T)=>boolean):readonly T[]{
+ const list:T[]=[];let cursor=-1;
+ for(const item of items){
+  if(cursor<0){list.push(item);cursor=0;continue;}
+  let at:number;
+  if(greater(item,list[cursor])){at=cursor;while(at+1<list.length&&!greater(list[at+1],item))at++;at++;}
+  else{
+   let p=cursor;
+   for(;;){
+    if(p===0){at=greater(list[0],item)?0:1;break;}// head: equal → after the head; head greater → prepend
+    p--;if(greater(item,list[p])){at=p+1;break;}
+   }
+  }
+  list.splice(at,0,item);cursor=at;
+ }
+ return list;
+}
+const galaxyGreater=(a:NativeGalaxy,b:NativeGalaxy)=>a.ra>b.ra||a.ra===b.ra&&a.dec>b.dec;
+/** Whole-file galaxy admission (source order), then the native cursor insert 0x492728 (comparator 0x5969e0). */
 export function admitFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Readonly<{admission:readonly number[];galaxies:readonly NativeGalaxy[]}>{
  if(!(glx instanceof Uint8Array)||glx.byteLength!==GLX_CATALOG.bytes)throw new FieldEngineError('input');
- const view=new DataView(glx.buffer,glx.byteOffset,glx.byteLength),admission:number[]=[],sorted:NativeGalaxy[]=[];
+ const view=new DataView(glx.buffer,glx.byteOffset,glx.byteLength),admission:number[]=[],read:NativeGalaxy[]=[];
  for(let i=0;i<GLX_CATALOG.records;i++){
   const at=i*59,ra=view.getFloat64(at,true),dec=view.getFloat64(at+8,true),magnitude=view.getFloat32(at+24,true);
   if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(magnitude)||ra<0||ra>24||Math.abs(dec)>90)continue;// outside any area: never admitted
   if(!nativeCatalogAdmission({ra,dec,magnitude},area))continue;
   const raw=glx.subarray(at,at+59),r=decodeGlxRecord(raw,i);
   const g:NativeGalaxy=Object.freeze({id:r.id,recordIndex:i,ra:r.ra,dec:r.dec,majorArcminutes:r.majorArcminutes,minorArcminutes:r.minorArcminutes,magnitude:r.magnitude,redshift:r.redshift,positionAngleDegrees:r.positionAngleDegrees,morphology:r.morphology,rawHex:Array.from(raw,b=>b.toString(16).padStart(2,'0')).join('')});
-  admission.push(i);
-  let j=0;while(j<sorted.length&&(g.ra>sorted[j].ra||g.ra===sorted[j].ra&&g.dec>sorted[j].dec))j++;
-  sorted.splice(j,0,g);
+  admission.push(i);read.push(g);
  }
- return Object.freeze({admission:Object.freeze(admission),galaxies:Object.freeze(sorted)});
+ return Object.freeze({admission:Object.freeze(admission),galaxies:Object.freeze(nativeCursorInsert(read,galaxyGreater))});
 }
 /** The recovered class tables and dispatch contract, from the verified Pegasus provenance (HI Peg). */
 const VARIABLE_TABLES=pegasusProvenance.variableContract.tables;

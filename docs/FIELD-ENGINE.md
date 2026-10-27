@@ -8,8 +8,9 @@
 3. QSO merge 0x597f90 and photographic association: these are not ported, so any QSO or photograph inside the area is a typed `unavailable` reason.
 4. Variables: none, or exactly one class-3 record through the false-merge branch (`variableMerge.ts`). Anything else is `variable-merge`.
 5. Galaxies:
-   - Whole-file CLEA_GLX.DAT admission in source order, then the 0x492728 sorted insert with the strict RA/Dec-greater comparator 0x5969e0.
-   - The insert goes *before* equal keys, so tied galaxies end up in reverse read order. This matches the generators and the 54891/54890 pair. The plan's "insert-after" wording disagrees.
+   - Whole-file CLEA_GLX.DAT admission in source order. The GLX loader (call at 0x599128) inserts each galaxy with the cursor-relative linked-list insert 0x492728, using the strict RA/Dec-greater comparator 0x5969e0.
+   - The cursor is the last inserted galaxy. A key greater than the cursor walks forward and goes after equal keys. Otherwise it walks backward and goes before equal keys, except that reaching an equal head inserts right after the head.
+   - Tie order therefore depends on the read sequence. Ties preceded by a smaller galaxy come out in reverse read order (54891/54890, 15384+2831). Head-of-list ties differ, for example F6 IC 4395A, F7 NGC 5709, F8 14520+3025 and F9 IC 4572 (`fieldEngine.test.ts`).
    - Then cleanup 0x5980cc for each galaxy in that order.
 6. Scene, 936² raster, 312² crop, slit level and fraction, and calibration, exactly as `galaxyExposure.ts` (fresh path). The slit selection uses the nearest rule 0x59a0fc, including the star-throughput tie branch.
 7. Zero-axis galaxies (M3, `galaxyCatalogAxes.ts`):

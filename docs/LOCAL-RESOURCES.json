@@ -6544,8 +6544,8 @@
     },
     {
       "path": "data/lss/lss-witnesses.json",
-      "bytes": 82205,
-      "sha256": "dcc12b623745aee5612b35dd37a819b245fedeeae982d30780fef2178bd43c2f"
+      "bytes": 82351,
+      "sha256": "7cf5ab6af454666ab344cf2668998b2a74107499c2d95804fe390d61aa132ddf"
     },
     {
       "path": "public/original/hotlists/LSSFields.LST",
