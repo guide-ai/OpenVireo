@@ -7,6 +7,16 @@ import {OBJECT_X_MEASURE_EN,type ObjectXMeasureMessages} from './objectx/ObjectX
 export type MeasureFrame=Readonly<{label:string;jd:number;image:FitsImage;wcs:TanWcs|null}>;
 type Props=Readonly<{frames:readonly MeasureFrame[];log:MeasurementLog;onLogChange:(log:MeasurementLog)=>void;active?:boolean;messages?:ObjectXMeasureMessages}>;
 
+/** Stretched rasters cached per image and cut (closure N2): cursor moves, marks and blink ticks reuse them. */
+const rasterCache=new WeakMap<FitsImage,{low:number;high:number;canvas:HTMLCanvasElement}>();
+function stretched(im:FitsImage,cut:Readonly<{low:number;high:number}>):HTMLCanvasElement{
+ const hit=rasterCache.get(im);if(hit&&hit.low===cut.low&&hit.high===cut.high)return hit.canvas;
+ const canvas=document.createElement('canvas');canvas.width=im.width;canvas.height=im.height;
+ objectXRasterStats.stretches++;canvas.getContext('2d')?.putImageData(new ImageData(Uint8ClampedArray.from(stretchRaster(measureImageFromFits(im),cut)),im.width,im.height),0,0);
+ rasterCache.set(im,{low:cut.low,high:cut.high,canvas});return canvas;
+}
+/** Test seam: how many rasters were stretched (closure N2). */
+export const objectXRasterStats={stretches:0};
 const utText=(jd:number)=>new Date(Math.round((jd-2440587.5)*86400)*1000).toISOString().slice(0,19).replace('T',' ');
 
 /** E08 web measuring tool (X3): blink, click/keyboard centroid measurement, plate or header-WCS solution, motion. Marks keep
@@ -29,8 +39,7 @@ export function ObjectXMeasure({frames,log,onLogChange,active=true,messages=OBJE
   // While blinking with an alignment, image 2 is drawn in image-1 pixels (x1 = re·x − im·y + dx; pixel centres at p − 0.5).
   const aligned=blinking&&index===1?alignment:null,size=aligned?base:im;
   c.width=size.width;c.height=size.height;const ctx=c.getContext('2d');if(!ctx)return;
-  const off=document.createElement('canvas');off.width=im.width;off.height=im.height;
-  off.getContext('2d')?.putImageData(new ImageData(Uint8ClampedArray.from(stretchRaster(measureImageFromFits(im),cut)),im.width,im.height),0,0);
+  const off=stretched(im,cut);
   ctx.fillStyle='#000';ctx.fillRect(0,0,c.width,c.height);
   if(aligned){const r=aligned.scale*Math.cos(aligned.rotationDeg*Math.PI/180),i=aligned.scale*Math.sin(aligned.rotationDeg*Math.PI/180),k=0.5;ctx.setTransform(r,i,-i,r,r*k-i*k+aligned.dx-k,i*k+r*k+aligned.dy-k);}
   ctx.drawImage(off,0,0);

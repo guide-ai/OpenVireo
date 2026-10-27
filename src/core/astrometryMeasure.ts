@@ -240,11 +240,20 @@ export function targetMotion(log:MeasurementLog,wcsOf:(frame:number)=>TanWcs|nul
  if(t.length<2||t[0].mark.jd===t[t.length-1].mark.jd)return null;
  return motionBetween({...t[0].sky!,jd:t[0].mark.jd},{...t[t.length-1].sky!,jd:t[t.length-1].mark.jd});
 }
-/** Blink alignment of frame `second` onto frame `first` from the first two reference marks of each, or null. */
+/** Catalogue positions closer than this (″) name the same reference star on two frames. */
+export const SAME_STAR_ARCSEC=1;
+/** Blink alignment of frame `second` onto frame `first` from the first two reference stars marked on both frames, paired by
+ * their catalogue coordinates (not by marking order), or null. */
 export function blinkAlignment(log:MeasurementLog,first:number,second:number):Alignment|null{
- const a=log.filter(m=>m.frame===first&&m.role==='reference').slice(0,2),b=log.filter(m=>m.frame===second&&m.role==='reference').slice(0,2);
- if(a.length<2||b.length<2)return null;
- try{return alignFromTwoStars([a[0],a[1]],[b[0],b[1]]);}catch{return null;}
+ const refs=(f:number)=>log.filter(m=>m.frame===f&&m.role==='reference'&&m.catalog);
+ const b=refs(second),pairs:[Measurement,Measurement][]=[];
+ for(const m of refs(first)){
+  const match=b.find(n=>angularSeparationArcsec(m.catalog!,n.catalog!)<SAME_STAR_ARCSEC&&!pairs.some(p=>p[1]===n));
+  if(match&&!pairs.some(p=>angularSeparationArcsec(p[0].catalog!,m.catalog!)<SAME_STAR_ARCSEC))pairs.push([m,match]);
+  if(pairs.length===2)break;
+ }
+ if(pairs.length<2)return null;
+ try{return alignFromTwoStars([pairs[0][0],pairs[1][0]],[pairs[0][1],pairs[1][1]]);}catch{return null;}
 }
 
 /** Display stretch for the measuring view: linear between the centroid cuts (the guide ties the centroid weights to the
