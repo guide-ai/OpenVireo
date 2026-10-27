@@ -46,3 +46,10 @@ html[data-print-scope=hot-list] .ob-print-chrome{display:none!important}
 html[data-print-scope=hot-list] .ob-print-report{border:0!important;max-height:none!important;overflow:visible!important}
 }
 .ob-site-lines{white-space:pre-wrap;font-size:13px;margin:6px 0;overflow-wrap:anywhere}
+/* Host-card overrides: dialogs mounted inside .telescope-motion and other cards inherit block labels and button sizes. */
+.ob-dialog label.ob-row,.ob-dialog label.ob-check{display:flex;margin:0}
+.ob-dialog label.ob-field{display:flex;margin:0}
+.ob-dialog .ob-row input[type=radio],.ob-dialog .ob-check input{flex:none;width:auto;margin:3px 0 0}
+.ob-dialog .secondary-button,.ob-dialog .primary-button,.ob-menu .secondary-button{width:auto;margin:0;min-height:40px;padding:8px 14px;font-size:13px;line-height:1.2}
+.ob-dialog .primary-button{background:#265f4c;color:#fff;border:1px solid #265f4c;border-radius:6px}
+.ob-dialog .ob-field small{font-size:11px;color:#5a6d66}
