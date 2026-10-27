@@ -1,0 +1,8 @@
+.theme-switch{display:flex;gap:2px;margin:0;padding:3px;border:1px solid var(--ov-chrome-border);border-radius:var(--ov-radius-pill);background:rgb(255 255 255 / .04);min-width:0}
+.theme-option{position:relative;display:flex;flex:1;align-items:center;justify-content:center;gap:5px;min-height:30px;padding:0 6px;border-radius:var(--ov-radius-pill);color:var(--ov-chrome-muted);font-size:var(--ov-text-xs);font-weight:600;cursor:pointer;white-space:nowrap;transition:background-color var(--ov-duration),color var(--ov-duration)}
+.theme-option:hover{color:var(--ov-chrome-text);background:var(--ov-chrome-hover)}
+.theme-option input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+.theme-option:has(input:checked){background:var(--ov-chrome-active-bg);color:var(--ov-chrome-active-text)}
+.theme-option:has(input:focus-visible){outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
+.theme-option svg{flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.theme-option:has(input[value=dark]) svg{fill:currentColor;stroke:none}

@@ -6,7 +6,8 @@ const TEXT=["'SYNTHETIC ROUTE',40,1",'430,1420,0','1,2,1','50000.125,0.5',...Arr
 const file=(name='route-control.plr',text=TEXT)=>({name,mimeType:'application/octet-stream',buffer:Buffer.from(text,'ascii')});
 const digest=createHash('sha256').update(TEXT,'ascii').digest('hex');
 const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
-const HEADER_TOOLS=['Observatory','Spectrometer','Spectrum analyzer','Sky exposure','Star exposure','Galaxy exposure','Stellar classification','Pleiades photometry','Cluster database','Radio data','Radio telescope','LSS survey','LSS data','Saved images','Hubble lab guide','LSS guide','Pulsar guide','Pleiades lab guide','Classification guide'];
+// UI redesign: same 19 tools and names, now listed in their header groups (optical, radio, analysis, files, guides).
+const HEADER_TOOLS=['Observatory','Spectrometer','Sky exposure','Star exposure','Galaxy exposure','Pleiades photometry','Radio telescope','Radio data','Spectrum analyzer','Stellar classification','Cluster database','LSS survey','LSS data','Saved images','Hubble lab guide','LSS guide','Pulsar guide','Pleiades lab guide','Classification guide'];
 const TOOLBAR_HELP='Back up supported spectrum/Hubble and classification work, pending edits, photometry, exposure segments, cluster database/comparison/selection, optical/observatory context, and the Radio telescope setup with the current pulsar capture or .PLR and its confirmed measurements. This is not a backup of every tool or view setting. For example, imported program lists, other-source width results, saved-text inspection, native-list receipts, FITS images, observation HR, hot lists, the saved pulsar measurement file viewer and LSS remain separate; follow each tool\'s persistence and export notice. Save downloads a file; the download is not confirmation that it was written. Save stops and releases optical exposures and pauses the observatory clock; a running Radio clock and the Radio panel timers are only held during Save and continue without catching up, and the file stores the Radio clock paused. Restored optical observing tools require activation; Restore starts the Radio telescope paused with its receivers closed.';
 /** Phase 1 item 1.5: Save/Restore investigation keeps the Radio data rows; a page reload without Restore still discards them. */
 const PLR_PERSISTENCE='Save investigation in the toolbar keeps them with the current data, and Restore investigation brings them back.';
@@ -224,7 +225,8 @@ test('all tools remain reachable without document overflow across the navigation
 });
 
 test('toolbar backup caveat and temporary lab examples match visible persistence notices',async({page},info)=>{
- await page.goto('/#observatory');await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();
+ // UI redesign: the caveat is folded one click away under "What a backup includes"; its text is unchanged.
+ await page.goto('/#observatory');await toolbar(page).getByText('What a backup includes',{exact:true}).click();await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();
  // Four lab examples have their own visible notices. Other temporary scopes are covered by classification-program-import,classification-range,selected-source-width,native-text-results,native-result-list and native-result-clear-load specs; this is not a serialization test.
  await nav(page,'Saved images').click();await expect(page.getByText('Investigation and notebook files do not include this temporary image.',{exact:false})).toBeVisible();
  await nav(page,'Cluster database').click();await page.getByText('HR diagram from saved observations').click();await expect(page.getByText('This observation HR workspace is separate from Save investigation.',{exact:false})).toBeVisible();

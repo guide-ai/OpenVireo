@@ -1,4 +1,5 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
+import ResearchNotes from '../components/ResearchNotes';
 import {HtlError,newHtlEditor} from '../core/hotList';
 import {appendAddCurrentEntry,HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
@@ -41,7 +42,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
    <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled}/>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>{setEntryError('');setEntry(hotListEntryDraft(addCurrentPrefill(pointing,objectId)));}}>{E.open}</button>
   </div>
-  <p className="observatory-note">{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p>
+  <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
   <OpticalHotListWindow caption={caption} texts={texts} state={hot} rows={rows} onSelect={i=>setHot(h=>selectOpticalHotListIndex(h,i,rows.length))} onSlew={slew} onClose={()=>setHot(closeOpticalHotList)}
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}
    onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(r,i)=>opticalHotListRowText(r,i+1)))}/>
