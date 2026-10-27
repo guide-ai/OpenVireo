@@ -37,3 +37,13 @@ test('with Limit Slewing on, tracking a setting target turns the drive off at th
  await page.getByTestId('motion-limit-box').getByRole('button',{name:'OK'}).click();
  await expect(page.getByTestId('running-clock-tracking')).toHaveText('Tracking off · RA drifts while clock runs');
 });
+
+test('with Limit Slewing on, the immediate Point shortcuts are refused below the horizon',async({page})=>{
+ await open(page);await coords(page,1,40);const before=await page.getByTestId('pointing-dec').textContent();
+ await limit(page,true);
+ await coords(page,0,-80);
+ const box=page.getByTestId('motion-limit-box');await expect(box.getByRole('heading',{name:'Cannot Perform Slew'})).toBeVisible();
+ await expect(box).toContainText('Target Coordinates are Below the Horizon!');await expect(box).toContainText('-80°');
+ await box.getByRole('button',{name:'OK'}).click();await expect(box).toBeHidden();
+ await expect(page.getByTestId('pointing-dec')).toHaveText(before!);
+});
