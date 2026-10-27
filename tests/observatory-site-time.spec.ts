@@ -1,4 +1,5 @@
 import{test,expect,type Page}from'@playwright/test';
+import{readFile}from'node:fs/promises';
 async function open(page:Page){await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();}
 const runningClock=async(page:Page)=>{if(!await page.getByTestId('horizon-limit').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();};
 
@@ -39,4 +40,20 @@ test('site and date dialogs fit 320px',async({page})=>{
   await page.getByTestId(button).click();const box=await page.getByTestId(dialog).boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(320);await page.keyboard.press('Escape');await expect(page.getByTestId(dialog)).toBeHidden();
  }
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+});
+
+test('a Greenwich site entered with West (a zero longitude) saves and restores (F1)',async({page})=>{
+ await open(page);
+ await page.getByTestId('ob-site-parameters').click();await expect(page.getByTestId('ob-station-ew-1')).toBeChecked();
+ await page.getByTestId('ob-station-name').fill('Greenwich');for(const f of ['lngDeg','lngMin','lngSec'])await page.getByTestId(`ob-station-${f}`).fill('0');
+ await page.getByTestId('ob-station-utLocal').fill('-0');await page.getByTestId('ob-station-ok').click();
+ await expect(page.getByTestId('ob-site-status')).toContainText('Greenwich');
+ const event=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();
+ const bytes=await readFile((await(await event).path())!),v=JSON.parse(bytes.toString());
+ expect(v.version).toBe(26);expect(v.observatory.siteOverrides['0'].longitudeRadians).toBe(0);expect(v.observatory.siteOverrides['0'].utMinusLocalHours).toBe(0);
+ await page.reload();await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
+ await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'g.json',mimeType:'application/json',buffer:bytes});
+ await expect(page.getByRole('status').filter({hasText:/restored/i}).first()).toBeVisible({timeout:15000});
+ await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();await expect(page.getByTestId('ob-site-status')).toContainText('Greenwich');
+ await page.getByTestId('ob-site-information').click();await expect(page.getByTestId('ob-site-info-lines')).toContainText('Longitude:    0°00\'00" E');
 });

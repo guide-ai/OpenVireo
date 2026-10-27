@@ -9,7 +9,8 @@
  * profiles and pinned journals keep the compiled site (they never read this module). Whether native edits reach a running
  * observatory before the next telescope setup is not traced (OB-ST-04). Pure: no React or I/O. */
 import {opticalIndex,opticalProfile,type OpticalIndex} from './opticalTelescope';
-import {formatFixed,parseDelphiFloat,splitSexagesimal} from './radioAntenna';
+import {formatFixed,parseDelphiFloat,roundHalfEven,splitSexagesimal} from './radioAntenna';
+import {decodeSessionNumber} from './sessionNumber';
 
 export type ObservatorySite=Readonly<{name:string;longitudeRadians:number;latitudeRadians:number;horizonRadians:number;heightMetres:number;utMinusLocalHours:number}>;
 export type SiteOverrides=Readonly<Partial<Record<OpticalIndex,ObservatorySite>>>;
@@ -61,17 +62,27 @@ export function parseStationDraft(d:StationDraft):StationResult{
  const name=d.name.slice(0,40);
  if(!/^[\x20-\x7e]*$/.test(name))return Object.freeze({status:'unsupported',field:'name'});
  if(!Number.isFinite(Math.fround(height))||Math.abs(horizon)>90)return Object.freeze({status:'unsupported',field:'horizon'});
- return Object.freeze({status:'ok',site:Object.freeze({name,utMinusLocalHours:Math.fround(ut),heightMetres:Math.fround(height),horizonRadians:horizon*RAD,
-  longitudeRadians:(d.ew===1?-1:1)*lng*RAD,latitudeRadians:(d.ns===1?-1:1)*lat*RAD})});
+ // Zeros are normalized: "-0", 0° West or 0° South give +0 (a −0 would not survive the session number codec).
+ const z=(x:number)=>x===0?0:x;
+ return Object.freeze({status:'ok',site:Object.freeze({name,utMinusLocalHours:z(Math.fround(ut)),heightMetres:z(Math.fround(height)),horizonRadians:z(horizon*RAD),
+  longitudeRadians:z((d.ew===1?-1:1)*lng*RAD),latitudeRadians:z((d.ns===1?-1:1)*lat*RAD)})});
 }
-/** OB-ST-01 Site Information lines (the horizon line only while Limit Slewing is on). Angles: 0x486ca0 with digits 0 and
- * '°', "'", '"' separators, here whole-second rounding of |angle| (web policy). */
+/** OB-ST-01 Site Information lines (the horizon line only while Limit Slewing is on). Angles: 0x486ca0 with digits 0 on
+ * |angle| — a sign slot (' ' here) before IntToStr(degrees) padded to width 4, minutes padded '0' to 2, seconds with a '0'
+ * prefix when they round below 10 — and the separators '°', "'", '"'. Numbers: 0x486268 with one decimal (al = 1) for
+ * altitude, horizon, time zone, aperture and focal length. Web policy as WEB-HL-07 (binary64, toFixed, half-even carry). */
+export function siteInformationAngle(degrees:number):string{
+ const v=Math.abs(degrees);let whole=Math.trunc(v);const f=(v-whole)*60;let minutes=Math.trunc(f),seconds=(f-minutes)*60;
+ if(roundHalfEven(seconds)===60){seconds=0;minutes+=1;if(minutes===60){minutes=0;whole+=1;}}
+ while(whole>=360)whole-=360;
+ return (' '+whole).padStart(4,' ')+'°'+String(minutes).padStart(2,'0')+"'"+(Math.trunc(roundHalfEven(seconds))<10?'0':'')+formatFixed(seconds,0)+'"';
+}
 export function siteInformationLines(site:ObservatorySite,index:OpticalIndex,limitSlewing:boolean):readonly string[]{
  const L=SITE_INFORMATION_LITERALS,p=opticalProfile(index);
- const dms=(radians:number)=>{const total=Math.round(Math.abs(radians/RAD)*3600),d=Math.trunc(total/3600),m=Math.trunc(total%3600/60),s=total%60;return `${String(d).padStart(3,' ')}°${String(m).padStart(2,'0')}'${String(s).padStart(2,'0')}"`;};
+ const dms=(radians:number)=>siteInformationAngle(radians/RAD);
  const lines=[L.name+site.name,L.longitude+dms(site.longitudeRadians)+(site.longitudeRadians<0?L.west:L.east),L.latitude+dms(site.latitudeRadians)+(site.latitudeRadians<0?L.south:L.north),L.altitude+formatFixed(site.heightMetres,1)+L.meters];
  if(limitSlewing)lines.push(L.horizon+formatFixed(site.horizonRadians/RAD,1)+L.degrees);
- lines.push(L.timeZone+formatFixed(site.utMinusLocalHours,1)+(Math.abs(site.utMinusLocalHours)===1?L.hour:L.hours),'',L.telescope+p.name,L.aperture+formatFixed(p.apertureMM,0)+L.mm,L.focal+formatFixed(p.focalLengthMM,0)+L.mm);
+ lines.push(L.timeZone+formatFixed(site.utMinusLocalHours,1)+(Math.abs(site.utMinusLocalHours)===1?L.hour:L.hours),'',L.telescope+p.name,L.aperture+formatFixed(p.apertureMM,1)+L.mm,L.focal+formatFixed(p.focalLengthMM,1)+L.mm);
  return Object.freeze(lines);
 }
 
@@ -86,9 +97,12 @@ export function readSiteOverrides(value:unknown):SiteOverrides{
   if(!['0','1','2'].includes(key)||!raw||typeof raw!=='object'||Array.isArray(raw))throw new Error('Invalid site override');
   const r=raw as Record<string,unknown>,keys=['name','longitudeRadians','latitudeRadians','horizonRadians','heightMetres','utMinusLocalHours'];
   if(Object.keys(r).length!==keys.length||!keys.every(k=>Object.hasOwn(r,k)))throw new Error('Invalid site override');
-  const s=r as unknown as ObservatorySite;
-  if(typeof s.name!=='string'||s.name.length>40||!/^[\x20-\x7e]*$/.test(s.name)||[s.longitudeRadians,s.latitudeRadians,s.horizonRadians,s.heightMetres,s.utMinusLocalHours].some(v=>typeof v!=='number'||!Number.isFinite(v))
-   ||Math.abs(s.longitudeRadians)>Math.PI*(1+1e-15)||Math.abs(s.latitudeRadians)>Math.PI/2*(1+1e-15)||Math.abs(s.horizonRadians)>Math.PI/2*(1+1e-15)||Math.abs(s.utMinusLocalHours)>12||Math.fround(s.heightMetres)!==s.heightMetres||Math.fround(s.utMinusLocalHours)!==s.utMinusLocalHours)throw new Error('Invalid site override');
+  // Numbers go through the session codec ("-0" is −0), then −0 is normalized to 0. Bounds are exact: the dialog never
+  // produces |lon| > π or |lat|, |horizon| > π/2, and localSiderealHours refuses |lon| > π.
+  const num=(k:string)=>{const v=decodeSessionNumber(r[k]);return v===0?0:v;};
+  const s={name:r.name,longitudeRadians:num('longitudeRadians'),latitudeRadians:num('latitudeRadians'),horizonRadians:num('horizonRadians'),heightMetres:num('heightMetres'),utMinusLocalHours:num('utMinusLocalHours')} as ObservatorySite;
+  if(typeof s.name!=='string'||s.name.length>40||!/^[\x20-\x7e]*$/.test(s.name)||[s.longitudeRadians,s.latitudeRadians,s.horizonRadians,s.heightMetres,s.utMinusLocalHours].some(v=>!Number.isFinite(v))
+   ||Math.abs(s.longitudeRadians)>Math.PI||Math.abs(s.latitudeRadians)>Math.PI/2||Math.abs(s.horizonRadians)>Math.PI/2||Math.abs(s.utMinusLocalHours)>12||Math.fround(s.heightMetres)!==s.heightMetres||Math.fround(s.utMinusLocalHours)!==s.utMinusLocalHours)throw new Error('Invalid site override');
   out[Number(key) as OpticalIndex]=Object.freeze({name:s.name,longitudeRadians:s.longitudeRadians,latitudeRadians:s.latitudeRadians,horizonRadians:s.horizonRadians,heightMetres:s.heightMetres,utMinusLocalHours:s.utMinusLocalHours});
  }
  return Object.freeze(out);

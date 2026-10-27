@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {NO_SITE_OVERRIDES,compiledObservatorySite,effectiveObservatorySite,parseStationDraft,portableSiteOverrides,readSiteOverrides,siteInformationLines,stationDraft} from './observatorySite';
+import {siteInformationAngle,NO_SITE_OVERRIDES,compiledObservatorySite,effectiveObservatorySite,parseStationDraft,portableSiteOverrides,readSiteOverrides,siteInformationLines,stationDraft} from './observatorySite';
 import {observatoryDateEntry,observatoryDatePrefill} from './observatoryDateTime';
 import {siteClockReading,siteClockReadingMS} from './siteClock';
 import {currentPointingHorizon,horizonGeometry} from './horizon';
@@ -24,9 +24,13 @@ describe('OB-ST-02/03 Site Parameters dialog',()=>{
   expect(s.status==='ok'&&[s.site.longitudeRadians>0,s.site.latitudeRadians<0,s.site.utMinusLocalHours]).toEqual([true,true,-1]);
   expect(parseStationDraft({...d,horizon:'95'}).status).toBe('unsupported');
  });
+ it('formats 0x486ca0 digits-0 angles with a sign slot to width 4 and a seconds carry',()=>{
+  expect(siteInformationAngle(122.5)).toBe(' 122°30\'00"');expect(siteInformationAngle(-5.25)).toBe('   5°15\'00"');expect(siteInformationAngle(10+59/60+59.6/3600)).toBe('  11°00\'00"');
+ });
  it('lists Site Information with the horizon line only under Limit Slewing',()=>{
   const off=siteInformationLines(compiledObservatorySite(0),0,false),on=siteInformationLines(compiledObservatorySite(0),0,true);
-  expect(off[0]).toBe('Site Name/ID: Gettysburg College Observatory');expect(off[1]).toMatch(/^Longitude: +77°14'26" W$/);expect(off.some(l=>l.startsWith('Horizon Height'))).toBe(false);
+  expect(off.slice(0,4)).toEqual(['Site Name/ID: Gettysburg College Observatory','Longitude:   77°14\'26" W','Latitude:   39°50\'25" N',`Altitude: ${(compiledObservatorySite(0).heightMetres).toFixed(1)} Meters`]);
+  expect(off.slice(-3)).toEqual([`Telescope: ${opticalProfile(0).name}`,`Aperture: ${opticalProfile(0).apertureMM.toFixed(1)} mm`,`Focal Length: ${opticalProfile(0).focalLengthMM.toFixed(1)} mm`]);expect(off.at(-2)).toMatch(/\.\d mm$/);expect(off.some(l=>l.startsWith('Horizon Height'))).toBe(false);
   expect(on).toContain('Horizon Height: 10.0 Degrees');expect(on.length).toBe(off.length+1);
  });
 });
