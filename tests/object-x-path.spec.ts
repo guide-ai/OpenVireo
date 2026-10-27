@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
+import {clickHeaderTool} from './fixtures/header-tools';
 
 // E08 Object X route (#object-x). Every CDS/VizieR request is intercepted with the recorded response
 // tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml (CDS, 2026-10-27; its rows lie off this field, so the images hold the
@@ -72,7 +73,7 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await exposeHere(page,'30');
  expect(await leaks(page)).toEqual([]);
 
- await page.getByRole('navigation').getByRole('button',{name:'Object X',exact:true}).click();
+ await clickHeaderTool(page,'Object X');
  const images=page.getByTestId('objectx-images').locator('li');
  await expect(images).toHaveCount(2);
  await expect(images.first()).toContainText('ObjX-42-01');await expect(images.nth(1)).toContainText('ObjX-42-02');
@@ -127,11 +128,11 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await expect(fresh.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});
 });
 
-test('the radio and spectrometer branches, and the guide, never name the object',async({page})=>{
+test('the radio and spectrometer branches, the guide, and light/dark at desktop and 320 px never name the object',async({page})=>{
  await openLab(page);
  await page.getByTestId('objectx-target').selectOption('X-Z2YY7');
  await expect(page.getByTestId('objectx-spectrum-unavailable')).toContainText('Not available yet');
- await page.getByTestId('objectx-lab-open').click();
+ await clickHeaderTool(page,'Object X guide');
  const guide=page.getByTestId('objectx-guide');await expect(guide).toBeVisible();
  await expect(guide.getByTestId('objectx-guide-step-target')).toHaveAttribute('data-done','true');
  await expect(guide.getByTestId('objectx-guide-step-clock')).toHaveAttribute('data-done','false');
@@ -141,9 +142,18 @@ test('the radio and spectrometer branches, and the guide, never name the object'
  await button(page,'Open the radio telescope').click();
  await expect(page).toHaveURL(/#radio-control$/);
  expect(await leaks(page)).toEqual([]);
- await page.setViewportSize({width:375,height:800});await page.goto('/#object-x');
- await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
- const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
- expect(overflow).toBeLessThanOrEqual(0);
- await page.screenshot({path:test.info().outputPath('object-x-phone.png'),fullPage:false});
+ for(const scheme of ['light','dark'] as const)for(const width of [1440,320]){
+  await page.emulateMedia({colorScheme:scheme});await page.setViewportSize({width,height:900});
+  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+  await clickHeaderTool(page,'Object X');
+  await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
+  await page.getByTestId('objectx-target').selectOption('X-Z2YY7');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${scheme} ${width}px overflow`).toBe(true);
+  // Themed surfaces: the branch cards follow the theme's raised surface.
+  const bg=await page.getByTestId('objectx-branch-radio').evaluate(e=>getComputedStyle(e).backgroundColor);
+  const raised=await page.evaluate(()=>{const p=document.createElement('div');p.style.background='var(--ov-surface-raised)';document.body.append(p);const c=getComputedStyle(p).backgroundColor;p.remove();return c;});
+  expect(bg).toBe(raised);
+  expect(await leaks(page)).toEqual([]);
+  await page.screenshot({path:test.info().outputPath(`object-x-${scheme}-${width}.png`),fullPage:width===320?false:true});
+ }
 });

@@ -156,6 +156,10 @@ Student path, following the original manual (identification, decision D3):
 5. **Your answer**: star / galaxy / quasar / pulsar / asteroid, a free description, then **Reveal the identity** (two clicks,
    only after an answer), which shows the HTL identifier and remark and whether the answer matches.
 
+Header and theme: the route is under **Analysis** (after LSS data) and the guide under **Exercise guides** (after the LSS guide) in
+the grouped navigation; `src/objectx.css` uses the `--ov-*` tokens of `src/theme/tokens.css`, so the route follows the light and
+dark themes (checked at 1440 and 320 px). The measuring canvas and its marks stay a fixed image panel.
+
 Asteroid list (0x519e94): every record through the X2 ephemeris at the list date; kept when V ≤ limit and (near-Earth flag —
 AST byte 0x9c ∈ {1,2,4}, MPC byte 0xa0 ∈ {2,3,4} — or RA within ±3 h of the antisolar point, wrap-aware). The antisolar RA is the
 Sun's geometric longitude + π converted with the mean obliquity of date (0x515df0/0x4b9f44 were not read; a few arcseconds
@@ -207,7 +211,8 @@ before the reveal; no step names an object.
 - Playwright `tests/object-x-path.spec.ts` (2): hidden identity checked in the route, guide and camera before the reveal (M1;
   identifiers everywhere, one-word remarks such as "Star" only outside the camera's shared text); Eros: clock, list, observatory,
   two 30 s live-mode images with the recorded VizieR response, pairs in both, both marks within 4″ of the object, motion, answer,
-  reveal, save v28 and restore in a fresh page; radio and spectrometer branches, guide progress, 375 px without overflow.
+  reveal, save v28 and restore in a fresh page; radio and spectrometer branches, guide progress, and light/dark at 1440 and 320 px
+  without overflow, reached through the header-tools helper (`tests/fixtures/header-tools.ts`).
   `tests/object-x-camera.spec.ts` (1, test-only host `tests/fixtures/object-x-camera-host.ts` with the real CameraControl and
   ObjectXLab wired as in OpenVireo): the camera calls `extraSources(jd, 2)` with the Start values, and an authored pair 80° off
   axis is skipped as `moving-pair-off-detector` and shown in the Object X image list as "Not drawn: 1 far outside the detector.".
