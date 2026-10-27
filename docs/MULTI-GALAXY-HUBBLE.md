@@ -1,6 +1,6 @@
 # Several acquired galaxies and a manual Hubble diagram
 
-**Current bounded set,27 October2026:** five of the original13targets are supported: the earlier three on their verified profiles and CorBor‑1/3 on0.4m through the cached view described below. The phase‑2 minimum is eight; E01 remains incomplete. Earlier three-target sections retain their dated scope.
+**Current bounded set,27 October2026:** the code supports eight of the original13targets: the earlier three on their verified profiles, CorBor‑1/3 on0.4m through the cached view and the three Pegasus galaxies on0.4m (Phase 2 B2 below). E01 remains open until the complete eight-target E2E and review; the status board is unchanged. Earlier sections retain their dated scope.
 
 **Follow-up,19 October2026:** [Mayall4m star and three-galaxy acquisition/full14](MAYALL-ACQUISITION.md) now extend the verified profiles, retaining earlier data/formats and the0.9m star300ms bound. The earlier evidence below retains its dated scope.
 
@@ -67,7 +67,7 @@ All targets retain the explicit nearest-center image scaling, Number/Math neares
 
 ## Phase 2 B1: CorBor – 1 (54875) and CorBor – 3 (54891), 0.4m only
 
-Status: 5 of the 13 original Hubble.HTL targets are supported; the phase-2 exit (at least 8 of 13 plus a complete E2E) is **not** met and E01 stays open. The criteria in STUDENT-EXERCISES.md are unchanged.
+At the B1 checkpoint: 5 of the 13 original Hubble.HTL targets were supported; the phase-2 minimum (at least 8 of 13 plus a complete E2E) was **not** met and E01 stayed open. The criteria in STUDENT-EXERCISES.md are unchanged.
 
 Route B (`data/hubble/corbor-cached-provenance.json`, gate report `hubble-fields-student-phase2-gates.json`). Static bounded disassembly of CLEA_VEO.exe 781bc970…c54c recovered the cached-pan branch: the cache initializer0x53c198/0x53c1c3..0x53c236 stores anchor 936/2 = 468 and zero offsets; the fresh crop stores origin312; the projection0x53c9d4..0x53ca46 sets offset = anchor − projected pointing; the pan0x53a6ca..0x53a723 takes round(origin − offset) and the guard0x53af28 requires the unrounded 0 < left, top < 624; with the same configuration and no forced refresh,0x53a741 skips loader0x53be70 and CopyRect0x53a845..0x53a8dd copies the cached bitmap. `cachedGalaxyViewport.ts` enforces exactly these preconditions and rejects refresh, other configurations, the guard and any source hole.
 
@@ -78,6 +78,18 @@ Spectrum: GLXYSP.LST (0a7a35…166a, 48 NGC####.SP names) has no entry for eithe
 Hubble.HTL: **Load original Hubble.HTL** checks 1118 bytes and SHA-256 02cab4…7986 before parsing; each row reports its status or unavailable reason (`hubbleHotList.ts`). Rounded HTL coordinates cannot activate acquisition; **Use exact catalogue centre** points at the catalogue centre. The KPNO 0.9m and Mayall 4m show an explicit unavailable notice for these targets and the telescope is never switched automatically. Sessions with these targets use the v24 wrapper (unchanged v1..23 base plus the 0.4m banks); their journals are rejected in any earlier version.
 
 Adaptation: CorBor – 1/3 reuse CorBor – 2's nearest-centre raster, Number/Math nearest-even, the fixed 4000–5000 Å interval and browser seed/timing through the recovered cached view, 0.4m only. No native GDI/x87/runtime identity is claimed.
+
+## Phase 2 B2: Pegasus – NGC 7499, NGC 7501, NGC 7503 (0.4m only)
+
+Status: the agreed minimum-eight E01 web student path is technically validated and separately reviewed, with all four unchanged student criteria covered by the actual-App E2E. Build/typecheck, 3105 unit tests and 1289 resource identities passed on the final corrected candidate; the initial 114 distinct browser cases and 19 affected closure reruns passed, without summing repeats. The code supports 8 of the 13 original Hubble.HTL targets; neither the count alone, the unavailable remaining five nor other phase-2 observatory functionality is presented as the complete original exercise. See STUDENT-EXERCISES.md for status and evidence, separate from criteria.
+
+Field (`data/hubble/pinned-pegasus-field.json` 61fc0129…879c, `pegasus-field-provenance.json`, builder `pinnedPegasusField.ts`): the fresh NGC 7501 domain (record 0 only; centre 23.17511111111111 h / 7.588888888888889°, regions 582/583/1161, bands N0000 then N0730, key 231498902). 46 + 98 = 144 admitted stars; CLEA_QSO.DAT (2269 records) and GLIMAGES.LST (183) have no position match. One CLEA_VStrs.dat record matches the area: HI Peg (record 30685, class string `EA/SD`). `variableMerge.ts` reproduces the recovered branch only: nearest merge with reference magnitude 0 (three zero DWORDs 0x598600..0x598604 before 0x598608), exact table classification 0x4bc834 (EA/SD is in no table → class 3), class‑3 dispatch with nonzero period and word48 returning false (0x51ee57/0x51ee7c), restore of the hit record (0x5986c0) and no miss insertion (0x5987a1). The hit star N0000.DAT@1141949 keeps its record and order; nothing is removed or inserted. Classes 0/1/2, zero period/word48, a prune below the saved winner, a null lookup and boundary precision are rejected. Galaxy cleanup (70593, NGC 7499, NGC 7501, NGC 7503 in that order) removes N0730.DAT@1032764 (70593 runner prune), @1033014, @1033088 and @1033201, leaving 140 stars and 4 galaxies. 70593 (morphology 20, supplied axes) is only a painted neighbour, never an acquisition target.
+
+Views (`pegasus-cached-provenance.json`): NGC 7501 is fresh (selection at (468,468), distance 0, radius 5, slit level 74, fraction 0.1369). NGC 7499 and NGC 7503 are cached pans of that verified view at their exact catalogue centres: rectangles (354,321)–(666,633) and (251,339)–(563,651), radii 12 and 8, residuals 0.2486… and 0.3528…, levels 164/114. Source means stay below the existing bound (maxima 1.69, 4.30 and 2.07 < 12 at 1000 ms). GLXYSP.LST has no entry for the three names, so GLXYTMPL.SP is used at 1 + catalogue Single z; all 600 channels lie inside the shifted 3650–7000 Å source. Crops, levels, fractions, amplitudes and bounds are compared with `pegasus-independent-vectors.json`. V references 14.1/14.7/14.4 (Hubble Data.xls Sheet1!C12–C14) are documented inputs, never prefilled.
+
+Hubble.HTL rows 11–13 report these targets on the 0.4m; the KPNO 0.9m and Mayall 4m show an unavailable notice and the telescope is never switched. Sessions with Pegasus targets use the v25 wrapper (an unchanged v1..24 base, so it can enclose the CorBor v24 wrapper, plus the Pegasus 0.4m banks); Pegasus journals, banks or context are rejected in any other file, and base, CorBor and Pegasus journals share the existing 24000-event budget, counted before replay. Archive (12 snapshots) and journal limits are unchanged; eight 120 s acquisitions at the 100 ms tick use 9616 events.
+
+Adaptation: Pegasus: NGC 7501 fresh field and cached views for 7499/7503 on 0.4m; HI Peg variable not modelled (unsupported class, no light curve); browser raster/timing. No native GDI/x87/runtime identity is claimed.
 
 
 ## Feature 5: acquired SSP download and reimport

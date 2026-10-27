@@ -3127,4 +3127,5 @@ export interface MessageParameters {
   "hubblePoint.help": never;
   "galaxyExposure.telescopeUnsupported": "id" | "label" | "telescope";
   "galaxyExposure.cachedAdaptation": never;
+  "galaxyExposure.pegasusAdaptation": never;
 }

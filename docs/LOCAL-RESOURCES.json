@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1283 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged.",
+  "purpose": "Exact identity manifest for the 1289 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged.",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6416,6 +6416,36 @@
       "path": "public/original/hotlists/Hubble.HTL",
       "bytes": 1118,
       "sha256": "02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986"
+    },
+    {
+      "path": "data/hubble/pegasus-cached-provenance.json",
+      "bytes": 3645,
+      "sha256": "ead656d454c4eb38c9efb56e85cad3c32c0e3604f1ea633339d54e258a290b62"
+    },
+    {
+      "path": "data/hubble/pegasus-distance-references.json",
+      "bytes": 549,
+      "sha256": "ddf2c80fbeebbe9c86510057905ddae7c2677a805ae04b29fa128608f9e12b64"
+    },
+    {
+      "path": "data/hubble/pegasus-field-provenance.json",
+      "bytes": 7294,
+      "sha256": "7b12ce1c2a7076e911740d3a00c7de44522d4425d5dd23839037224427748106"
+    },
+    {
+      "path": "data/hubble/pegasus-independent-vectors.json",
+      "bytes": 4908,
+      "sha256": "8754058361d8dd1add391f7db66d21f8845c4fffd84036fbea64f65bf084b069"
+    },
+    {
+      "path": "data/hubble/pegasus-targets.json",
+      "bytes": 1474,
+      "sha256": "296e5ccbc46d2683bdd2ef500bc37511afc9778c9c555e89ff689d56d405accf"
+    },
+    {
+      "path": "data/hubble/pinned-pegasus-field.json",
+      "bytes": 429151,
+      "sha256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c"
     }
   ]
 }

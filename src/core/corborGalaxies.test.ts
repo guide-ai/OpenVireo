@@ -23,7 +23,7 @@ const trajectories:readonly {seed:number;deltas:readonly number[]}[]=[{seed:1,de
 describe('CorBor – 1/3 through the recovered cached-pan view of the verified 54876 field (0.4 m only)',()=>{
  it('registers only verified descriptors and keeps the base field domain unchanged',()=>{
   expect(GALAXY_FIELD_REGISTRY.map(d=>d.id).sort()).toEqual(GALAXY_TARGETS.map(t=>t.id).sort());
-  expect(GALAXY_FIELD_REGISTRY.filter(d=>d.kind==='cached').map(d=>d.kind==='cached'?[d.id,d.baseId,d.recordIndex]:[])).toEqual([['54875','54876',18485],['54891','54876',18493]]);
+  expect(GALAXY_FIELD_REGISTRY.filter(d=>d.kind==='cached'&&['54875','54891'].includes(d.id)).map(d=>d.kind==='cached'?[d.id,d.baseId,d.recordIndex]:[])).toEqual([['54875','54876',18485],['54891','54876',18493]]);
   for(const t of cached.targets){
    expect(()=>galaxyDomainFor(t.id)).toThrow();const d=galaxyDefinition(t.id);
    expect(d.domain.pointing).toEqual(cached.baseFieldCenter);expect(d.domain).toMatchObject({...galaxyDomainFor('54876'),view:{policy:cached.viewPolicy,baseFieldId:'54876'}});

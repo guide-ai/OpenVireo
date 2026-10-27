@@ -7,8 +7,9 @@ import {NATIVE_CLUSTER_POLICY,NATIVE_CLUSTER_SHA256} from '../core/nativeCluster
 import {readClusterDatabaseWorkspace,CLUSTER_DATABASE_POLICY,CLUSTER_DATABASE_SHA256,type ClusterDatabaseWorkspace} from '../core/clusterDatabase';
 import {decodeSessionNumber,encodeSessionNumber} from '../core/sessionNumber';
 import {galaxyTelescopeIndex} from '../core/galaxyTelescope';
-import {OBSERVING_SKY_POLICY,OBSERVING_OPTICAL_POLICY,OBSERVING_GALAXY_POLICY,OBSERVING_MAYALL_POLICY,OBSERVING_CLOCK_POLICY,OBSERVING_DRIVE_POLICY,OBSERVING_ACCESS_POLICY,LIVE_GALAXY_IDS,CACHED_GALAXY_IDS,emptyExposureWorkspace,isCachedGalaxyId,observingUsesCachedGalaxies} from '../core/observingWorkspace';
+import {OBSERVING_SKY_POLICY,OBSERVING_OPTICAL_POLICY,OBSERVING_GALAXY_POLICY,OBSERVING_MAYALL_POLICY,OBSERVING_CLOCK_POLICY,OBSERVING_DRIVE_POLICY,OBSERVING_ACCESS_POLICY,LIVE_GALAXY_IDS,CACHED_GALAXY_IDS,PEGASUS_GALAXY_IDS,emptyExposureWorkspace,isCachedGalaxyId,isPegasusGalaxyId,observingUsesCachedGalaxies,observingUsesPegasusGalaxies} from '../core/observingWorkspace';
 import cachedSource from '../../data/hubble/corbor-cached-provenance.json';
+import pegasusSource from '../../data/hubble/pegasus-cached-provenance.json';
 import {starTelescopeIndex} from '../core/starTelescope';
 import {portableOpticalWorkspace,readOpticalWorkspace,type OpticalWorkspace} from '../core/opticalTelescope';
 import {readEditingWorkspace,EDITING_POLICY,editingWorkspacePolicy,type EditingWorkspace} from '../core/editingWorkspace';
@@ -44,12 +45,20 @@ export type AnalysisSession=Readonly<{
  * cached field policy, the unchanged base field snapshot and binary hashes and the 0.4 m banks of those targets
  * (observing.cachedGalaxies). Acquisitions, banks or context of these targets are rejected in any file outside v24. */
 function acquisitionIsCached(a:AcquisitionObservation){return a.kind==='catalog-galaxy-acquisition'&&isCachedGalaxyId(a.targetId);}
-/** Count ALL v24 replay inputs before any replay. Wrapper metadata does not consume events; archive references
- * are counted once in the archive, while inline old and cached journals each incur their actual replay cost. */
-function checkCombinedCachedReplayBudget(base:unknown,banks:unknown):void{
- let inner=base as Record<string,unknown>;
- for(let depth=0;Number(inner.version)>=19&&Number(inner.version)<=23;depth++){
-  if(depth>=5||!inner.base||typeof inner.base!=='object'||Array.isArray(inner.base))fail('format');
+/** Phase 2 B2 (v25): Pegasus targets (fresh NGC 7501, cached NGC 7499/7503, 0.4 m only). A v25 file wraps an unchanged
+ * v1..24 base (so it combines with the CorBor v24 wrapper) and adds the Pegasus field policy, the NGC 7501 field snapshot and
+ * binary hashes and the 0.4 m banks of these targets (observing.pegasusGalaxies). Acquisitions, banks or context of these
+ * targets are rejected in any file outside v25; a v25 is never nested. */
+function acquisitionIsPegasus(a:AcquisitionObservation){return a.kind==='catalog-galaxy-acquisition'&&isPegasusGalaxyId(a.targetId);}
+/** Count ALL v24/v25 replay inputs before any replay: unwrap 25 → 24 → 19..23 to the base, then the base archive and slots
+ * plus every wrapper bank group against one budget. Wrapper metadata does not consume events; archive references are counted
+ * once in the archive, while inline old, cached and Pegasus journals each incur their actual replay cost. */
+function checkCombinedReplayBudget(wrapper:unknown):void{
+ let inner=wrapper as Record<string,unknown>;const groups:(readonly [readonly string[],unknown])[]=[];
+ for(let depth=0;Number(inner.version)>=19&&Number(inner.version)<=25;depth++){
+  if(depth>=7||!inner.base||typeof inner.base!=='object'||Array.isArray(inner.base))fail('format');
+  if(inner.version===25)groups.push([PEGASUS_GALAXY_IDS,inner.pegasusGalaxies]);
+  if(inner.version===24)groups.push([CACHED_GALAXY_IDS,inner.cachedGalaxies]);
   inner=inner.base as Record<string,unknown>;
  }
  let events=0;
@@ -72,9 +81,10 @@ function checkCombinedCachedReplayBudget(base:unknown,banks:unknown):void{
   for(const key of ['sky','star','sky09','sky4m','star09','star4m'])slot(w[key]);
   for(const key of ['galaxies','galaxies09','galaxies4m']){const group=w[key];if(group&&typeof group==='object')for(const id of LIVE_GALAXY_IDS)slot((group as Record<string,unknown>)[id]);}
  }
- if(banks&&typeof banks==='object')for(const id of CACHED_GALAXY_IDS)slot((banks as Record<string,unknown>)[id]);
+ for(const [ids,banks] of groups)if(banks&&typeof banks==='object')for(const id of ids)slot((banks as Record<string,unknown>)[id]);
 }
 function sessionUsesCached(session:AnalysisSession){return (session.acquisitions??[]).some(acquisitionIsCached)||!!session.observing&&(session.observing.cachedGalaxies!==undefined||observingUsesCachedGalaxies(session.observing));}
+function sessionUsesPegasus(session:AnalysisSession){return (session.acquisitions??[]).some(acquisitionIsPegasus)||!!session.observing&&(session.observing.pegasusGalaxies!==undefined||observingUsesPegasusGalaxies(session.observing));}
 export class AnalysisSessionError extends Error {
   constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
 }
@@ -115,16 +125,27 @@ function measurement(value:unknown,previousId:number,acquisitions:readonly Acqui
   if(row.object!==object||row.zFloat32Hex!==r.zFloat32Hex)fail('measurements');
   return row;
 }
-async function restore(value:unknown,verifySources=true,migrated=false,cached=false):Promise<AnalysisSession> {
+async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false):Promise<AnalysisSession> {
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===25){
+    if(cached||pegasus)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','pegasusFieldPolicy','pegasusBaseFieldSHA256','binarySHA256','pegasusGalaxies']);
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.pegasusFieldPolicy!==pegasusSource.policy||r.pegasusBaseFieldSHA256!==pegasusSource.baseFieldSnapshotSHA256||r.binarySHA256!==pegasusSource.binarySHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>24)fail('format');
+    checkCombinedReplayBudget(value);
+    const base=await restore(r.base,verifySources,true,false,true);
+    if((r.pegasusGalaxies===null)!==!base.observing)fail('state');
+    if(!base.observing)return base;
+    let pegasusGalaxies:NonNullable<ObservingWorkspace['pegasusGalaxies']>;try{pegasusGalaxies=(await import('./observingWorkspace')).restorePegasusGalaxies(r.pegasusGalaxies,base.acquisitions??[]);}catch{fail('state');}
+    return Object.freeze({...base,observing:Object.freeze({...base.observing,pegasusGalaxies})});
+  }
   if(version===24){
     if(cached)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','cachedFieldPolicy','cachedBaseFieldSHA256','binarySHA256','cachedGalaxies']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.cachedFieldPolicy!==cachedSource.policy||r.cachedBaseFieldSHA256!==cachedSource.baseFieldSnapshotSHA256||r.binarySHA256!==cachedSource.binarySHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>23)fail('format');
-    checkCombinedCachedReplayBudget(r.base,r.cachedGalaxies);
-    const base=await restore(r.base,verifySources,true,true);
+    checkCombinedReplayBudget(value);
+    const base=await restore(r.base,verifySources,true,true,pegasus);
     if((r.cachedGalaxies===null)!==!base.observing)fail('state');
     if(!base.observing)return base;
     let cachedGalaxies:NonNullable<ObservingWorkspace['cachedGalaxies']>;try{cachedGalaxies=(await import('./observingWorkspace')).restoreCachedGalaxies(r.cachedGalaxies,base.acquisitions??[]);}catch{fail('state');}
@@ -133,30 +154,30 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   if(version===23){
     const r=record(value,['format','version','numericalPolicy','base','radioPolicy','radioDigestSHA256','radio']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.radioPolicy!==RADIO_INVESTIGATION_POLICY||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>22)fail('format');
-    const base=await restore(r.base,verifySources,true,cached);
+    const base=await restore(r.base,verifySources,true,cached,pegasus);
     let radio:RadioInvestigationRecord;try{radio=await admitRadioInvestigation(r.radio,r.radioDigestSHA256,{verifySources});}catch{fail('state');}
     return Object.freeze({...base,radio});
   }
   if(version===22){
     const r=record(value,['format','version','numericalPolicy','base','motionPolicy','motionProofSHA256','motion']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.motionPolicy!==TELESCOPE_MOTION_POLICY||r.motionProofSHA256!==TELESCOPE_MOTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>21)fail('format');
-    let motion:MotionPreferences;try{motion=readMotionPreferences(r.motion);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached);return Object.freeze({...base,motion});
+    let motion:MotionPreferences;try{motion=readMotionPreferences(r.motion);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached,pegasus);return Object.freeze({...base,motion});
   }
   if(version===21){
     const r=record(value,['format','version','numericalPolicy','base','clusterComparisonPolicy','clusterComparisonSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterSelectionPolicy','clusterSelectionSHA256','clusterSelection']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterComparisonPolicy!==CLUSTER_COMPARISON_POLICY||r.clusterComparisonSHA256!==CLUSTER_COMPARISON_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||r.clusterSelectionPolicy!==CLUSTER_SELECTION_POLICY||r.clusterSelectionSHA256!==CLUSTER_SELECTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
-    const base=await restore(r.base,verifySources,true,cached);let clusterSelection:ClusterSelectionWorkspace;try{clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(r.clusterSelection);}catch{fail('state');}return Object.freeze({...base,clusterSelection});
+    const base=await restore(r.base,verifySources,true,cached,pegasus);let clusterSelection:ClusterSelectionWorkspace;try{clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(r.clusterSelection);}catch{fail('state');}return Object.freeze({...base,clusterSelection});
   }
   if(version===20){
     const r=record(value,['format','version','numericalPolicy','base','clusterComparisonPolicy','clusterComparisonSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterComparison']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterComparisonPolicy!==CLUSTER_COMPARISON_POLICY||r.clusterComparisonSHA256!==CLUSTER_COMPARISON_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
-    let clusterComparison:ClusterComparisonWorkspace;try{clusterComparison=readClusterComparisonWorkspace(r.clusterComparison);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached);if(verifySources){const{loadClusterDataset}=await import('./clusterComparison');await Promise.all(Object.keys(clusterComparison.notebooks).map(id=>loadClusterDataset(id as NonNullable<ClusterComparisonWorkspace['activeId']>)));}return Object.freeze({...base,clusterComparison});
+    let clusterComparison:ClusterComparisonWorkspace;try{clusterComparison=readClusterComparisonWorkspace(r.clusterComparison);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached,pegasus);if(verifySources){const{loadClusterDataset}=await import('./clusterComparison');await Promise.all(Object.keys(clusterComparison.notebooks).map(id=>loadClusterDataset(id as NonNullable<ClusterComparisonWorkspace['activeId']>)));}return Object.freeze({...base,clusterComparison});
   }
   if(version===19){
     const r=record(value,['format','version','numericalPolicy','base','clusterDatabasePolicy','clusterDatabaseSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterDatabase']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterDatabasePolicy!==CLUSTER_DATABASE_POLICY||r.clusterDatabaseSHA256!==CLUSTER_DATABASE_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
     let clusterDatabase:ClusterDatabaseWorkspace;try{clusterDatabase=readClusterDatabaseWorkspace(r.clusterDatabase);}catch{fail('state');}
-    const base=await restore(r.base,verifySources,true,cached);if(verifySources&&clusterDatabase.loaded)await(await import('./clusterDatabase')).loadM67Dataset();return Object.freeze({...base,clusterDatabase});
+    const base=await restore(r.base,verifySources,true,cached,pegasus);if(verifySources&&clusterDatabase.loaded)await(await import('./clusterDatabase')).loadM67Dataset();return Object.freeze({...base,clusterDatabase});
   }
   if(version!==1&&version!==2&&version!==3&&version!==4&&version!==5&&version!==6&&version!==7&&version!==8&&version!==9&&version!==10&&version!==11&&version!==12&&version!==13&&version!==14&&version!==15&&version!==16&&version!==17&&version!==18)fail('format');
   const r=record(value,['format','version','numericalPolicy','observation','adjustment','measurements',...(version>=2?['hubble']:[]),...(version>=3?['acquisitions']:[]),...(version>=4?['classification']:[]),...(version>=8?['photometry']:[]),...(version>=9?['observing']:[]),...(version>=10?['editingPolicy','editing']:[]),...(version>=11?['optical']:[]) ]);
@@ -216,14 +237,24 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   if(version<12&&acquisitions.some(a=>a.kind==='catalog-star-acquisition'&&starTelescopeIndex(a.state)===1))fail('observation');
   if(!cached&&acquisitions.some(acquisitionIsCached))fail('observation');
   if(!cached&&observing&&observingUsesCachedGalaxies(observing))fail('state');
+  if(!pegasus&&acquisitions.some(acquisitionIsPegasus))fail('observation');
+  if(!pegasus&&observing&&observingUsesPegasusGalaxies(observing))fail('state');
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
-async function portable(session:AnalysisSession,wrapped=false):Promise<unknown> {
-  if(!wrapped&&sessionUsesCached(session)){
+/** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
+type Wrapped=Readonly<{cached?:true;pegasus?:true}>;
+async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  if(!wrapped.pegasus&&sessionUsesPegasus(session)){
+    const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
+    if(observing){const {pegasusGalaxies,...plain}=observing;base=plain;banks=(await import('./observingWorkspace')).portablePegasusGalaxies(pegasusGalaxies??Object.fromEntries(PEGASUS_GALAXY_IDS.map(id=>[id,emptyExposureWorkspace()]))as NonNullable<ObservingWorkspace['pegasusGalaxies']>,acquisitions);}
+    const result={format:FORMAT,version:25,numericalPolicy:POLICY,base:await portable({...session,...(base?{observing:base}:{})},{...wrapped,pegasus:true}),pegasusFieldPolicy:pegasusSource.policy,pegasusBaseFieldSHA256:pegasusSource.baseFieldSnapshotSHA256,binarySHA256:pegasusSource.binarySHA256,pegasusGalaxies:banks};
+    checkCombinedReplayBudget(result);return result;
+  }
+  if(!wrapped.cached&&sessionUsesCached(session)){
     const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
     if(observing){const {cachedGalaxies,...plain}=observing;base=plain;banks=(await import('./observingWorkspace')).portableCachedGalaxies(cachedGalaxies??Object.fromEntries(CACHED_GALAXY_IDS.map(id=>[id,emptyExposureWorkspace()]))as NonNullable<ObservingWorkspace['cachedGalaxies']>,acquisitions);}
-    const encodedBase=await portable({...session,...(base?{observing:base}:{})},true);checkCombinedCachedReplayBudget(encodedBase,banks);
-    return {format:FORMAT,version:24,numericalPolicy:POLICY,base:encodedBase,cachedFieldPolicy:cachedSource.policy,cachedBaseFieldSHA256:cachedSource.baseFieldSnapshotSHA256,binarySHA256:cachedSource.binarySHA256,cachedGalaxies:banks};
+    const result={format:FORMAT,version:24,numericalPolicy:POLICY,base:await portable({...session,...(base?{observing:base}:{})},{...wrapped,cached:true}),cachedFieldPolicy:cachedSource.policy,cachedBaseFieldSHA256:cachedSource.baseFieldSnapshotSHA256,binarySHA256:cachedSource.binarySHA256,cachedGalaxies:banks};
+    checkCombinedReplayBudget(result);return result;
   }
   if(session.radio!==undefined){const {radio,digest}=await portableRadioInvestigation(session.radio.snapshot);return {format:FORMAT,version:23,numericalPolicy:POLICY,base:await portable({...session,radio:undefined},wrapped),radioPolicy:RADIO_INVESTIGATION_POLICY,radioDigestSHA256:digest,radio};}
   if(session.motion!==undefined){let motion:MotionPreferences;try{motion=readMotionPreferences(session.motion);}catch{fail('state');}return {format:FORMAT,version:22,numericalPolicy:POLICY,base:await portable({...session,motion:undefined},wrapped),motionPolicy:TELESCOPE_MOTION_POLICY,motionProofSHA256:TELESCOPE_MOTION_SHA256,motion};}

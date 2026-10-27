@@ -1,0 +1,20 @@
+[
+  {
+    "id": "NGC 7499",
+    "apparentV": 14.1,
+    "source": "Hubble Data.xls · Sheet1!C12",
+    "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed"
+  },
+  {
+    "id": "NGC 7501",
+    "apparentV": 14.7,
+    "source": "Hubble Data.xls · Sheet1!C13",
+    "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed"
+  },
+  {
+    "id": "NGC 7503",
+    "apparentV": 14.4,
+    "source": "Hubble Data.xls · Sheet1!C14",
+    "sha256": "09ac2e0bd4499e4a4796cf64981b3958d264f92b710b1ac9e3324340054fc7ed"
+  }
+]

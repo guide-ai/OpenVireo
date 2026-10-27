@@ -19,6 +19,9 @@ const provenance=projectResource(provenanceSource);
 
 import source from '../../data/hubble/galaxy-source.json';
 import cachedSource from '../../data/hubble/corbor-cached-provenance.json';
+import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
+import pegasusCached from '../../data/hubble/pegasus-cached-provenance.json';
+import {buildPinnedPegasusPopulation} from './pinnedPegasusField';
 
 import {buildPinnedGalaxyPopulation,galaxyDomainFor,galaxyFieldDescriptor,GALAXY_DOMAIN as PINNED_GALAXY_DOMAIN,type NativeGalaxy} from './pinnedGalaxyField';
 import {paintAdaptedGalaxy} from './galaxyScene';
@@ -45,12 +48,20 @@ const originalDefinitions=[provenance,provenance1,provenance2];
  * come from galaxy-targets.json and are checked against the base population record at the recorded index. */
 const cachedDefinitions=cachedSource.targets.map(t=>{const identity=galaxyIdentity(t.id),pointing=Object.freeze({ra:identity.ra,dec:identity.dec});
  return Object.freeze({...provenance2,policyId:t.policyId,fieldSnapshotSHA256:cachedSource.baseFieldSnapshotSHA256,target:Object.freeze({id:t.id,recordIndex:t.recordIndex,ra:identity.ra,dec:identity.dec,magnitude:identity.magnitude}),domain:Object.freeze({...provenance2.domain,view:Object.freeze({policy:cachedSource.viewPolicy,baseFieldId:cachedSource.baseFieldId,pointing})})});});
-const definitions=[...originalDefinitions,...originalDefinitions.map(d=>({...d,policyId:kpno09.records.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:1},calibration:{...d.calibration,telescopeCorrection:0,magnitudeShift:0}})),...originalDefinitions.map(d=>({...d,policyId:mayall.galaxies.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:2},calibration:{...d.calibration,telescopeCorrection:3,magnitudeShift:3}})),...cachedDefinitions];
+/** Pegasus (pegasus-field-provenance.json): the fresh NGC 7501 field on telescope record 0 only. It is deliberately not an
+ * original definition, which would also project the 0.9 m/4 m records. NGC 7499/7503 are cached pans of that field with the
+ * same calibration and source; their view pointing is the exact catalogue centre (pegasus-targets.json via galaxyIdentity). */
+const pegasusFresh=Object.freeze({policyId:pegasusProvenance.policyId,fieldSnapshotSHA256:pegasusProvenance.fieldSnapshotSHA256,sourceSnapshotSHA256:pegasusProvenance.sourceSnapshotSHA256,calibration:Object.freeze({...pegasusProvenance.calibration}),target:Object.freeze({...pegasusProvenance.target}),domain:Object.freeze({...pegasusProvenance.domain,pointing:Object.freeze({...pegasusProvenance.domain.pointing})})});
+const pegasusCachedDefinitions=pegasusCached.targets.map(t=>{const identity=galaxyIdentity(t.id),pointing=Object.freeze({ra:identity.ra,dec:identity.dec});
+ return Object.freeze({...pegasusFresh,policyId:t.policyId,fieldSnapshotSHA256:pegasusCached.baseFieldSnapshotSHA256,target:Object.freeze({id:t.id,recordIndex:t.recordIndex,ra:identity.ra,dec:identity.dec,magnitude:identity.magnitude}),domain:Object.freeze({...pegasusFresh.domain,view:Object.freeze({policy:pegasusCached.viewPolicy,baseFieldId:pegasusCached.baseFieldId,pointing})})});});
+const definitions=[...originalDefinitions,...originalDefinitions.map(d=>({...d,policyId:kpno09.records.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:1},calibration:{...d.calibration,telescopeCorrection:0,magnitudeShift:0}})),...originalDefinitions.map(d=>({...d,policyId:mayall.galaxies.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:2},calibration:{...d.calibration,telescopeCorrection:3,magnitudeShift:3}})),...cachedDefinitions,pegasusFresh,...pegasusCachedDefinitions];
 export function galaxyDefinition(id='36773',index:0|1|2=0){galaxyIdentity(id);const d=definitions.find(d=>d.target.id===id&&d.domain.telescopeRecord===index);if(!d)throw new JournalError('proof');return d;}
 export function galaxyPolicyDefinition(policy:unknown){const d=definitions.find(d=>d.policyId===policy);if(!d)throw new JournalError('session');return d;}
 export function galaxyStateDefinition(s:GalaxyState){return galaxyPolicyDefinition(s?.policy);}
-type Calibration=typeof provenance.calibration;
-type PopulationField=ReturnType<typeof buildPinnedGalaxyPopulation>;
+type Calibration=Readonly<{baseZeroPoint:number;telescopeCorrection:number;skyMagnitude:number;magnitudeShift:number}>;
+type PopulationField=ReturnType<typeof buildPinnedGalaxyPopulation>|ReturnType<typeof buildPinnedPegasusPopulation>;
+/** The fresh field builder of a base field: the variable-aware Pegasus builder for NGC 7501, otherwise pinnedGalaxyField. */
+function buildPopulation(fieldId:string,domain:unknown):PopulationField{return fieldId===pegasusCached.baseFieldId?buildPinnedPegasusPopulation(domain):buildPinnedGalaxyPopulation(domain);}
 function paintField(field:PopulationField,scene:NativeSelectionScene,c:Calibration):RgbImage{
  let raster:RgbImage={width:936,height:936,rgb:new Uint8Array(936*936*3)};
  for(let i=0;i<field.galaxies.length;i++){const point=scene.galaxies[i];raster=paintAdaptedGalaxy(raster,field.galaxies[i],{x:roundNearestEven(point.x),y:roundNearestEven(point.y)},c.magnitudeShift).image;}
@@ -76,7 +87,7 @@ function calibrate(target:NativeGalaxy,viewport:RgbImage,c:Calibration,index:0|1
 }
 function prepareFresh(id:string,index:0|1|2){
  const provenance=galaxyDefinition(id,index),GALAXY_DOMAIN=galaxyDomainFor(id,index),GALAXY_TARGET=provenance.target;
- const field=buildPinnedGalaxyPopulation(GALAXY_DOMAIN),frame={width:936,height:936,fieldDegrees:.75,anchorX:468,anchorY:468},c=provenance.calibration;
+ const field=buildPopulation(id,GALAXY_DOMAIN),frame={width:936,height:936,fieldDegrees:.75,anchorX:468,anchorY:468},c=provenance.calibration;
  const scene=createNativeSelectionScene(field.stars,field.galaxies,{width:frame.width,height:frame.height,fieldDegrees:frame.fieldDegrees,center:GALAXY_DOMAIN.pointing,population:{coverage:'complete',provenance:`Pinned galaxy field ${provenance.fieldSnapshotSHA256}; native CRT1 and field table verified`}});
  const selected=selectCatalogObject(scene,468,468),target=field.galaxies.find(s=>s.id===GALAXY_TARGET.id);
  if(!target||selected.kind!=='galaxy'||selected.object.id!==target.id||selected.galaxy.distance!==0||target.rawHex!==(GALAXY_TARGET as {rawHex?:string}).rawHex)throw new JournalError('proof');
@@ -84,17 +95,24 @@ function prepareFresh(id:string,index:0|1|2){
  const viewport=cropNativeFrame(raster,freshNativeViewport(312,312,{x:frame.anchorX,y:frame.anchorY}));
  return Object.freeze({telescopeIndex:index,field,scene,...calibrate(target,viewport,c,index),viewport,view:null});
 }
-/** Route B: initialize the cache from the verified fresh 54876 view, project the exact catalogue centre in that frame, take the
- * recovered cached-pan rectangle and select at its integer slit query (nearest-order radius; a nonzero subpixel residual is
- * accepted, unlike the fresh distance-0 guard). Every recorded integer (rectangle, query, slit level) must match the gate. */
+type Point=Readonly<{x:number;y:number}>;
+type CachedSource=Readonly<{viewPolicy:string;baseFieldId:string;baseRecordIndex:number;baseFieldSnapshotSHA256:string;baseFieldCenter:Readonly<{ra:number;dec:number}>;
+ cache:Readonly<{width:number;height:number;viewport:number;multiplier:number;fieldDegrees:number;anchor:Point;origin:Point;guardExclusiveMaximum:number;slitQueryOffset:number}>;
+ targets:readonly Readonly<{id:string;telescopeRecord:number;rect:Readonly<{left:number;top:number;right:number;bottom:number}>;anchor:Point;selectionRadius:number;pixelLevel:number;fraction:number}>[]}>;
+/** Cached-pan provenance per base field: CorBor (54876) and Pegasus (NGC 7501); the same gates apply to both. */
+const CACHED_SOURCES:readonly CachedSource[]=[cachedSource,pegasusCached];
+/** Route B: initialize the cache from the verified fresh base view (54876 or NGC 7501), project the exact catalogue centre in
+ * that frame, take the recovered cached-pan rectangle and select at its integer slit query (nearest-order radius; a nonzero
+ * subpixel residual is accepted, unlike the fresh distance-0 guard). Every recorded integer (rectangle, query, slit level)
+ * must match the gate. */
 function prepareCached(id:string,index:0|1|2){
- const descriptor=galaxyFieldDescriptor(id),row=cachedSource.targets.find(t=>t.id===id);
- if(index!==0||descriptor.kind!=='cached'||!row||row.telescopeRecord!==index)throw new JournalError('proof');
+ const descriptor=galaxyFieldDescriptor(id),cachedSource=CACHED_SOURCES.find(s=>s.targets.some(t=>t.id===id)),row=cachedSource?.targets.find(t=>t.id===id);
+ if(index!==0||descriptor.kind!=='cached'||!cachedSource||!row||row.telescopeRecord!==index||descriptor.baseId!==cachedSource.baseFieldId)throw new JournalError('proof');
  const provenance=galaxyDefinition(id,index),base=galaxyDefinition(descriptor.baseId,0),baseDomain=galaxyDomainFor(descriptor.baseId,0),c=provenance.calibration,view=(provenance.domain as {view?:{policy:string;baseFieldId:string;pointing:{ra:number;dec:number}}}).view;
  if(!view||view.policy!==cachedSource.viewPolicy||view.baseFieldId!==descriptor.baseId||provenance.fieldSnapshotSHA256!==base.fieldSnapshotSHA256||base.fieldSnapshotSHA256!==cachedSource.baseFieldSnapshotSHA256||provenance.sourceSnapshotSHA256!==base.sourceSnapshotSHA256||JSON.stringify(c)!==JSON.stringify(base.calibration)||baseDomain.pointing.ra!==cachedSource.baseFieldCenter.ra||baseDomain.pointing.dec!==cachedSource.baseFieldCenter.dec)throw new JournalError('proof');
  const k=cachedSource.cache,cache=initializeFieldCache(k.viewport,k.multiplier,`record${index}|${baseDomain.fieldArcminutes}'|x${baseDomain.fieldMultiplier}|${baseDomain.rasterPolicy}`);
  if(cache.width!==k.width||cache.height!==k.height||cache.anchor.x!==k.anchor.x||cache.anchor.y!==k.anchor.y||cache.origin.x!==k.origin.x||cache.origin.y!==k.origin.y||(cache.multiplier-1)*cache.viewport!==k.guardExclusiveMaximum||cache.viewport/2!==k.slitQueryOffset)throw new JournalError('proof');
- const field=buildPinnedGalaxyPopulation(baseDomain),frame={width:cache.width,height:cache.height,fieldDegrees:k.fieldDegrees,center:baseDomain.pointing,population:{coverage:'complete' as const,provenance:`Pinned galaxy field ${base.fieldSnapshotSHA256}; native CRT1 and field table verified; cached pan to ${id}`}};
+ const field=buildPopulation(descriptor.baseId,baseDomain),frame={width:cache.width,height:cache.height,fieldDegrees:k.fieldDegrees,center:baseDomain.pointing,population:{coverage:'complete' as const,provenance:`Pinned galaxy field ${base.fieldSnapshotSHA256}; native CRT1 and field table verified; cached pan to ${id}`}};
  const scene=createNativeSelectionScene(field.stars,field.galaxies,frame);
  // The cache is the verified fresh base view: its own target at the anchor with distance 0, as in the fresh path.
  const initial=selectCatalogObject(scene,cache.anchor.x,cache.anchor.y),baseTarget=field.galaxies.find(g=>g.id===descriptor.baseId);

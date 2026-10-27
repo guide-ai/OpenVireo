@@ -11,3 +11,5 @@ Use Vitest for meaningful scientific/state contracts and Playwright for complete
 ## Multi-agent collaboration
 
 GPT/Codex coordinates work in this repository. Claude Code acts as verifier and may implement assigned features. Codex invokes Claude non-interactively (`claude -p`) with the task, the commit or diff range, and the expected deliverable. Both agents follow every rule in this file and REVIEW.md; none of these rules forbid this collaboration. Avoid editing the same files concurrently: use separate branches or worktrees and let the coordinator merge. Contact the user only for feedback, decisions, or status.
+
+The user additionally approved on 2026-10-27 the static reading of N0000.DAT and N0730.DAT solely to certify the bounded NGC7501 field reused for NGC7499/7503, and publication of only the necessary field records, read witnesses and provenance. This does not authorize publication of either complete band or the full GSC, other resources, or native execution.

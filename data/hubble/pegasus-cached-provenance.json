@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "policy": "OpenVireo-cached-galaxy-workspace-v1",
+  "viewPolicy": "openvireo-cached-pan-v1",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "addresses": {
+    "cacheInitializer": "0x53c198",
+    "anchorWriter": "0x53c1c3..0x53c236",
+    "pointingProjection": "0x53c9d4..0x53ca46",
+    "freshCrop": "0x53a810..0x53a83d",
+    "storedOrigin": "0x53a798..0x53a7f0",
+    "pan": "0x53a6ca..0x53a723",
+    "guard": "0x53af28..0x53afa9",
+    "refreshBranch": "0x53a741",
+    "loader": "0x53be70",
+    "copy": "0x53a845..0x53a8dd",
+    "selection": "0x599f1c/0x59a010/0x59a0fc..0x59a2d1",
+    "spectrumNameLookup": "0x55eb64; 0x55ecda..0x55ed55",
+    "templateFallback": "0x55e5d2..0x55e619",
+    "templateShift": "0x55e55c"
+  },
+  "cache": {
+    "width": 936,
+    "height": 936,
+    "viewport": 312,
+    "multiplier": 3,
+    "fieldDegrees": 0.75,
+    "anchor": {
+      "x": 468,
+      "y": 468
+    },
+    "origin": {
+      "x": 312,
+      "y": 312
+    },
+    "guardExclusiveMinimum": 0,
+    "guardExclusiveMaximum": 624,
+    "slitQueryOffset": 156
+  },
+  "kind": "Derived typed metadata for bounded Pegasus cached views, no raw record bytes",
+  "route": "Fresh verified NGC7501 cache, cached pan NGC7499/7503; no recentered population claim",
+  "baseFieldId": "NGC 7501",
+  "baseRecordIndex": 23041,
+  "baseFieldSnapshotSHA256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c",
+  "baseFieldCenter": {
+    "ra": 23.17511111111111,
+    "dec": 7.588888888888889
+  },
+  "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+  "spectrumSource": {
+    "file": "GLXYSP.LST",
+    "bytes": 576,
+    "rows": 48,
+    "sha256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+    "noExactFilenameMatches": {
+      "NGC 7499": [],
+      "NGC 7501": [],
+      "NGC 7503": []
+    },
+    "nativeKey": "Remove spaces fromidentifier,append.SP;Pos-basedexactlibrarykeyrulefrompreviousG2staticproof",
+    "fallback": "GLXYTMPL.SP",
+    "matched": false,
+    "sourceRanges": [
+      3650,
+      7000
+    ],
+    "noOriginalUpload": true
+  },
+  "targets": [
+    {
+      "id": "NGC 7499",
+      "label": "Peg \u2013 1",
+      "htlRow": 10,
+      "recordIndex": 23036,
+      "policyId": "openvireo-cached-pegasus-7499-v1",
+      "telescopeRecord": 0,
+      "spectrumListMatches": [],
+      "anchor": {
+        "x": 510,
+        "y": 477
+      },
+      "rect": {
+        "left": 354,
+        "top": 321,
+        "right": 666,
+        "bottom": 633
+      },
+      "selectionRadius": 12,
+      "selectionDistance": 0.24857895108443878,
+      "pixelLevel": 164,
+      "fraction": 0.6723999999999999,
+      "sourceAmplitude": 9.295192213434916e-05,
+      "maxSourcePoissonMean": 4.302924247817848,
+      "workbookCell": "Sheet1!C12",
+      "apparentV": 14.1
+    },
+    {
+      "id": "NGC 7503",
+      "label": "Peg \u2013 3",
+      "htlRow": 12,
+      "recordIndex": 23045,
+      "policyId": "openvireo-cached-pegasus-7503-v1",
+      "telescopeRecord": 0,
+      "spectrumListMatches": [],
+      "anchor": {
+        "x": 407,
+        "y": 495
+      },
+      "rect": {
+        "left": 251,
+        "top": 339,
+        "right": 563,
+        "bottom": 651
+      },
+      "selectionRadius": 8,
+      "selectionDistance": 0.3527989954407848,
+      "pixelLevel": 114,
+      "fraction": 0.32489999999999997,
+      "sourceAmplitude": 4.4717755353747363e-05,
+      "maxSourcePoissonMean": 2.070441590331273,
+      "workbookCell": "Sheet1!C14",
+      "apparentV": 14.4
+    }
+  ],
+  "limits": [
+    "Only0.4m; no x87/GDI/native-runtime identity claim"
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "schema": 1,
+  "policyId": "openvireo-pinned-pegasus-7501-v1",
+  "target": {
+    "id": "NGC 7501",
+    "recordIndex": 23041,
+    "ra": 23.17511111111111,
+    "dec": 7.588888888888889,
+    "majorArcminutes": 0.5,
+    "minorArcminutes": 0.5,
+    "magnitude": 14.699999809265137,
+    "redshift": 0.0426628403365612,
+    "positionAngleDegrees": 0,
+    "morphology": -5,
+    "rawHex": "7163ef14d42c3740b0055bb0055b1e400000003f0000003f33336b413bbf2e3d0000fb2020200004373530314357000b4e37353031202020202020"
+  },
+  "domain": {
+    "exercise": "hubble",
+    "exerciseMode": 4,
+    "catalogMode": 1,
+    "telescopeRecord": 0,
+    "options": "compiled-fallback-unmodified",
+    "history": "fresh-process-direct-hubble",
+    "pointing": {
+      "ra": 23.17511111111111,
+      "dec": 7.588888888888889
+    },
+    "fieldArcminutes": 15,
+    "fieldMultiplier": 3,
+    "dynamicContext": "absent",
+    "minimum": 4000,
+    "maximum": 5000,
+    "rasterPolicy": "nearest-center-stretch-v1"
+  },
+  "fieldSnapshotSHA256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c",
+  "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "calibration": {
+    "baseZeroPoint": 6,
+    "telescopeCorrection": -2,
+    "skyMagnitude": 19,
+    "multiplier": 50,
+    "galaxyBankOffset": 6,
+    "magnitudeShift": -2
+  },
+  "sources": [
+    {
+      "archiveMember": "program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "bytes": 31481649,
+      "recordBytes": 27
+    },
+    {
+      "archiveMember": "program files/CLEA/VIREO/Cgsc/GSC/N0730.DAT",
+      "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1",
+      "bytes": 28576611,
+      "recordBytes": 27
+    },
+    {
+      "archiveMember": "program files/CLEA/VIREO/CLEA_VStrs.dat",
+      "bytes": 2865524,
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+      "recordBytes": 92
+    },
+    {
+      "archiveMember": "program files/CLEA/VIREO/CLEA_QSO.DAT",
+      "bytes": 117988,
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "recordBytes": 52
+    },
+    {
+      "archiveMember": "program files/CLEA/VIREO/CLEA_GLX.DAT",
+      "bytes": 1420071,
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+      "recordBytes": 59
+    }
+  ],
+  "variableContract": {
+    "name": "HI Peg",
+    "recordIndex": 30685,
+    "recordBytes": 92,
+    "rawRecordSHA256": "0826c934148befe8fd18f70f329e86467d291ba6a22c1ea9db70d90052d9122e",
+    "offsets": {
+      "name": 0,
+      "raDouble": 11,
+      "decDouble": 19,
+      "classification": 27,
+      "magnitudeSingle": 39,
+      "periodExtended": 62,
+      "word48": 72
+    },
+    "exactClassification": "EA/SD",
+    "classificationResult": 3,
+    "tables": [
+      {
+        "start": "0x5b0b68",
+        "count": 25,
+        "class": 0,
+        "values": [
+          "BCEPS",
+          "BCEP",
+          "CEP(B)",
+          "CEP:",
+          "CEP",
+          "CWA:",
+          "CWB:",
+          "CWA",
+          "CWB",
+          "CW:",
+          "DCEPS(B)",
+          "DCEP(B)",
+          "DCEPS:",
+          "DCEPS",
+          "DCEP:",
+          "DCEP",
+          "DSCTC",
+          "DSCT",
+          "RRAB:",
+          "RRAB",
+          "RR(B)",
+          "RRC:",
+          "RRC",
+          "RR:",
+          "RR"
+        ],
+        "bytesSHA256": "db67e8201b378bc59134bb29c7d6eae7f30b8887bd61fd225a178207b70729e9"
+      },
+      {
+        "start": "0x5b0c7c",
+        "count": 3,
+        "class": 1,
+        "values": [
+          "L",
+          "M",
+          "SR"
+        ],
+        "bytesSHA256": "ed55dfe73ed47ea45398c61f75b5088903571751a5a133f0a23912bd8905cdc0"
+      },
+      {
+        "start": "0x5b0ca0",
+        "count": 7,
+        "class": 2,
+        "values": [
+          "EA:",
+          "EB:",
+          "EW:",
+          "EA",
+          "EB",
+          "EW",
+          "E"
+        ],
+        "bytesSHA256": "a32133f6f851ef1240140af6343155b56bb5f482c0e2eee3f369b3d0425f9e53"
+      }
+    ],
+    "mergeReferenceMagnitude": 0,
+    "hitThresholdArcseconds": 30,
+    "timeUpdateResult": false,
+    "addresses": [
+      "0x406094 reads the shortstring length and advances to its first character, jumps0x405f20",
+      "0x405f20 copies the supplied length using0x403344;no separator/type truncation at this stage",
+      "0x406258 compares character data and stored string lengths;ZF must indicate exact equality, not prefix",
+      "0x4bc834 initializesBL=3, changes only on exact table match;EA/SD is absent,EA is class2 but not equal",
+      "0x51ec95 preservesclass inDL;period!=0 and word48!=0 allowdispatch;DL3\u2192sub1=2\u2192dec=1\u2192jump0x51ee57 withBL0",
+      "No constructor/model/curve phase/evaluation reached on this path;0x51ee7c returnsebx0",
+      "0x5986c0 false restores95bytehitrecord;runnerprunealreadyperformed is not rolled back;0x5987a1 false skipsmissinsertion"
+    ]
+  },
+  "resourceApproval": {
+    "UTC": "2026-10-27T15:22:00Z",
+    "scope": "Only bounded NGC7501 GSC field/search-scan witnesses; not full N0000/N0730 or GSC",
+    "basis": "Explicit user approval, 27 October2026, boundedNGC7501fieldonly"
+  },
+  "sourceGates": {
+    "UTC": "2026-10-27T15:42:11.668554+00:00",
+    "QSO": {
+      "file": "CLEA_QSO.DAT",
+      "recordsChecked": 2269,
+      "allPositionMatches": [],
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+      "offsets": {
+        "RA": "0x12Double",
+        "Dec": "0x1aDouble"
+      },
+      "offsetEvidence": "qso-file-loader.asm0x598974..0x598992",
+      "freshIndependentWholePositionCheck": true
+    },
+    "photographs": {
+      "file": "GLIMAGES.LST",
+      "recordsChecked": 183,
+      "allPositionMatches": [],
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "evidence": "galaxy-acquisition-recovery/candidate-comparison.json",
+      "evidenceSHA256": "0b0de5fdba72d368300239c54e7cefc8f5ab29896bb2b13b09e84adee6fd48d7",
+      "method": "Reusesexistingwhole-sourcecomparisonfortheexactcatalogueNGC7501center;no new rawphoto/imageaccess"
+    },
+    "spectrumMapping": {
+      "file": "GLXYSP.LST",
+      "bytes": 576,
+      "rows": 48,
+      "sha256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+      "noExactFilenameMatches": {
+        "NGC 7499": [],
+        "NGC 7501": [],
+        "NGC 7503": []
+      },
+      "nativeKey": "Remove spaces fromidentifier,append.SP;Pos-basedexactlibrarykeyrulefrompreviousG2staticproof",
+      "fallback": "GLXYTMPL.SP",
+      "matched": false,
+      "sourceRanges": [
+        3650,
+        7000
+      ],
+      "noOriginalUpload": true
+    },
+    "magnitudeReferences": "PEGASUS-MAGNITUDE-REFERENCES.json",
+    "newlyApprovedGSCOnlySubsetSaved": true,
+    "noNewExtraResourcePublication": true
+  },
+  "limits": [
+    "Only0.4m, no variable model or phase invented",
+    "Recovered unsupported EA/SD returns false with95byte rollback; actual runner prune verified none",
+    "Number/Math nearest-even and nearest-centre raster, not x87/GDI/native-runtime equivalence"
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "UTC": "2026-10-27T15:37:22.221170+00:00",
+  "method": "IndependentPythonexistingdeclarednearest-centre/nearest-evenNumberadapter;notnativeoracle",
+  "stars": 140,
+  "galaxies": 4,
+  "geometry": [
+    {
+      "id": "70593",
+      "major": 7,
+      "minor": 6,
+      "angle": 4.537856055182082,
+      "level": 10,
+      "instrumentMagnitude": 14.095848144798346
+    },
+    {
+      "id": "NGC 7499",
+      "major": 12,
+      "minor": 7,
+      "angle": 1.7453292519943295,
+      "level": 10,
+      "instrumentMagnitude": 13.648423324693162
+    },
+    {
+      "id": "NGC 7501",
+      "major": 5,
+      "minor": 5,
+      "angle": 5.585053606380584,
+      "level": 9,
+      "instrumentMagnitude": 12.93257453436066
+    },
+    {
+      "id": "NGC 7503",
+      "major": 8,
+      "minor": 8,
+      "angle": 3.141592653589793,
+      "level": 10,
+      "instrumentMagnitude": 13.65317428926288
+    }
+  ],
+  "targets": [
+    {
+      "id": "NGC 7499",
+      "projectedPoint": [
+        509.75177889464334,
+        477.0133333333325
+      ],
+      "rect": {
+        "left": 354,
+        "top": 321,
+        "right": 666,
+        "bottom": 633
+      },
+      "query": [
+        510,
+        477
+      ],
+      "nearestGalaxyDistance": 0.24857895108443878,
+      "nearestStarDistance": 15.319934031108279,
+      "selectionRadius": 12,
+      "pixelLevel": 164,
+      "fraction": 0.6723999999999999,
+      "instrumentMagnitude": 13.648423324693162,
+      "sourceAmplitude": 9.295192213434916e-05,
+      "maxSourceMean1000ms": 4.302924247817848,
+      "existingMeanGuard12Pass": true,
+      "cropGrayscaleSHA256": "32b678c6540015fd787c11e71d90bf7e267657ac22a0d591f980ba514b733b17",
+      "cropRGBSHA256": "977af7b0853bb7193e281378c4f7011f3091f14dd48c351ffd971f0ea5f668b4"
+    },
+    {
+      "id": "NGC 7501",
+      "projectedPoint": [
+        468.0,
+        468.0
+      ],
+      "rect": {
+        "left": 312,
+        "top": 312,
+        "right": 624,
+        "bottom": 624
+      },
+      "query": [
+        468,
+        468
+      ],
+      "nearestGalaxyDistance": 0.0,
+      "nearestStarDistance": 30.339154759742343,
+      "selectionRadius": 5,
+      "pixelLevel": 74,
+      "fraction": 0.1369,
+      "instrumentMagnitude": 12.93257453436066,
+      "sourceAmplitude": 3.659094572814081e-05,
+      "maxSourceMean1000ms": 1.693991716921556,
+      "existingMeanGuard12Pass": true,
+      "cropGrayscaleSHA256": "2aeecfd3c49d43f1645975f6af3abd5da65191146ac1b40765306c959c085ade",
+      "cropRGBSHA256": "9c59a1b524931cb0fefe18d16f3833f34fee6fee39a25143e8e714d60554b257"
+    },
+    {
+      "id": "NGC 7503",
+      "projectedPoint": [
+        407.17442100429537,
+        494.69333333333304
+      ],
+      "rect": {
+        "left": 251,
+        "top": 339,
+        "right": 563,
+        "bottom": 651
+      },
+      "query": [
+        407,
+        495
+      ],
+      "nearestGalaxyDistance": 0.3527989954407848,
+      "nearestStarDistance": 85.89116738583536,
+      "selectionRadius": 8,
+      "pixelLevel": 114,
+      "fraction": 0.32489999999999997,
+      "instrumentMagnitude": 13.65317428926288,
+      "sourceAmplitude": 4.4717755353747363e-05,
+      "maxSourceMean1000ms": 2.070441590331273,
+      "existingMeanGuard12Pass": true,
+      "cropGrayscaleSHA256": "e39e10fc538cd33084fb34eca4c09109e22eb94c71226f135a0710fd7bc45ab4",
+      "cropRGBSHA256": "e8337f2a8937aad1a40fc284239f02777b5f5d8fdca16a5f506e1acba044d21c"
+    }
+  ],
+  "allSelectionAndMeanGatesPass": true,
+  "productChanged": false,
+  "notActualAppE2E": true,
+  "notModelRepair": true,
+  "referenceCorrectionEvidence": "INDEPENDENT-REFERENCE-CORRECTION.json; V1/V2 and failures preserved, no product fitting",
+  "computedAgainstFieldSnapshotSHA256": "47c6dc0a9453489c408db8978f289db08b26e8bf5c1e690d67cb0f8b98fcb1dd",
+  "fieldSnapshotSHA256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c",
+  "snapshotBinding": {
+    "verifiedUTC": "2026-10-27T16:36:44.554964+00:00",
+    "intermediateFieldSnapshotSHA256": "e1926774e595b351688769d9f05cae9d7f3cf1f03ffa8b71b749662bce1f08dc",
+    "unchangedNumericalPayloadSHA256": "0646df6e8e546b935ef4511ff718bdb2e99d1f1e50d7cd95c7c974a88344448a",
+    "payloadKeys": [
+      "area",
+      "bandOrder",
+      "bands",
+      "domain",
+      "expectedFinalIds",
+      "galaxies",
+      "galaxyRead",
+      "initialStarIds",
+      "mergeWitnesses",
+      "regionIds",
+      "schema",
+      "variableMergeWitness",
+      "variables"
+    ],
+    "changes": "The intermediate snapshot added source/absence certificates only. The final snapshot replaces a local research path with its evidence identifier; all numerical records, read order and merge witnesses are unchanged. The original computation UTC is preserved.",
+    "independentRevalidation": "Three crop/calibration vectors and fifteen new trajectories passed against the final scientific payload; source/raster/Number policy is not a native oracle."
+  }
+}

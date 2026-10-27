@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "scope": "All1283files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26;no executable,installer,archive or additionalGSCfile is included.",
-  "totalFiles": 1283,
-  "totalBytes": 78502080,
+  "scope": "All1289files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC);no executable,installer,archive or additional fullGSCfile is included.",
+  "totalFiles": 1289,
+  "totalBytes": 78949101,
   "extensions": {
-    ".json": 1025,
+    ".json": 1031,
     ".LST": 3,
     ".HTL": 2,
     ".SP": 81,
@@ -30,8 +30,8 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "data/hubble": {
-      "files": 59,
-      "bytes": 3061203,
+      "files": 65,
+      "bytes": 3508224,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
       "usedBy": "Verified star/sky and bounded galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
@@ -148,7 +148,8 @@
     "NASA": "NASA policy applies to NASA-created material with its stated conditions and third-party exceptions;the1279resources are not universally labelled NASA works.",
     "pulsarCatalog": "Pulsars.dat:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Likely derived from the ATNF Pulsar Catalogue(Manchester,Hobbs,Teoh&Hobbs2005,AJ129,1993);this upstream attribution is uncertain and recorded as such.",
     "pleiadesHotList": "PLEIADES.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Original VIREO exercise list;no further upstream attribution is asserted.",
-    "hubbleCatalogAndHotList": "CLEA_GLX.DAT and Hubble.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO catalogue and exercise list,approved2026-10-26;individual upstream catalogue/source-policy identification remains uncertain.No universal open license or native-runtime equivalence is asserted."
+    "hubbleCatalogAndHotList": "CLEA_GLX.DAT and Hubble.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO catalogue and exercise list,approved2026-10-26;individual upstream catalogue/source-policy identification remains uncertain.No universal open license or native-runtime equivalence is asserted.",
+    "pegasusField": "data/hubble/pinned-pegasus-field.json and pegasus-*.json(2026-10-27 approval):bounded compact-GSC N0000/N0730 read witnesses,CLEA_GLX.DAT galaxy records and one CLEA_VStrs.dat record(HI Peg)for the NGC7501 field only,with derived provenance,V references and independent vectors.Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters);GSC source-specific terms remain uncertain.Not the full GSC,not new observations and no native-runtime equivalence is asserted."
   },
   "sourceNotices": [
     {
@@ -242,6 +243,22 @@
     ],
     "meaning": "These files contain developer usernames,workstation/research layout or capture paths as provenance text. No src/tests/scripts consumer resolves those metadata paths at runtime.",
     "publicationTreatment": "Retained with the unchanged resource bytes under the explicit all1279inclusion instruction;the disclosure is recorded here rather than silently rewriting SHA-bound evidence.",
-    "credentialScan": "No high-confidence credential/private-key signatures found;this is a bounded scan,not a universal absence guarantee."
+    "credentialScan": "No high-confidence credential/private-key signatures found;this is a bounded scan,not a universal absence guarantee.",
+    "subsequentReviews": [
+      {
+        "date": "2026-10-27",
+        "scope": [
+          "data/hubble/pegasus-cached-provenance.json",
+          "data/hubble/pegasus-distance-references.json",
+          "data/hubble/pegasus-field-provenance.json",
+          "data/hubble/pegasus-independent-vectors.json",
+          "data/hubble/pegasus-targets.json",
+          "data/hubble/pinned-pegasus-field.json"
+        ],
+        "sourceGrant": "Bounded NGC7501 field and required read witnesses/provenance only; no whole GSC band",
+        "treatment": "Two local research paths replaced with evidence identifiers; an internal approval-message identifier was removed before review. All scientific source bytes, hashes and uncertainty remain.",
+        "boundedScan": "Named six JSON resources checked for local /home paths, internal message identifiers and high-confidence credential/private-key patterns. No such retained fields found. Not a universal absence guarantee."
+      }
+    ]
   }
 }

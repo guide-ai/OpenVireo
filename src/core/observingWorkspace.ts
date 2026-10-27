@@ -20,12 +20,20 @@ export type LiveGalaxyId=typeof LIVE_GALAXY_IDS[number];
 export const CACHED_GALAXY_IDS=['54875','54891']as const;
 export type CachedGalaxyId=typeof CACHED_GALAXY_IDS[number];
 export function isCachedGalaxyId(id:unknown):id is CachedGalaxyId{return typeof id==='string'&&(CACHED_GALAXY_IDS as readonly string[]).includes(id);}
+/** Pegasus targets (fresh NGC 7501 and its cached NGC 7499/7503 views), 0.4 m banks only; carried by the v25 wrapper. */
+export const PEGASUS_GALAXY_IDS=['NGC 7499','NGC 7501','NGC 7503']as const;
+export type PegasusGalaxyId=typeof PEGASUS_GALAXY_IDS[number];
+export function isPegasusGalaxyId(id:unknown):id is PegasusGalaxyId{return typeof id==='string'&&(PEGASUS_GALAXY_IDS as readonly string[]).includes(id);}
 export type ExposureWorkspace=Readonly<{state:JournalState|null;seedText:string}>;
 export type ObservatoryWorkspace=Readonly<{domeOpen:boolean;mode:FieldMode;selectedId:string;pointing:Pointing;raText:string;decText:string;hasPointed:boolean;galaxyTargetId:string}>;
-export type ObservingWorkspace=Readonly<{sky09?:ExposureWorkspace;sky4m?:ExposureWorkspace;operationalAccess?:true;clockDrive?:ClockDriveWorkspace;siteClock?:SiteClockWorkspace;context:ObservatoryWorkspace;sky:ExposureWorkspace;star:ExposureWorkspace;star09?:ExposureWorkspace;star4m?:ExposureWorkspace;galaxies4m?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies09?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;cachedGalaxies?:Readonly<Record<CachedGalaxyId,ExposureWorkspace>>}>;
+export type ObservingWorkspace=Readonly<{sky09?:ExposureWorkspace;sky4m?:ExposureWorkspace;operationalAccess?:true;clockDrive?:ClockDriveWorkspace;siteClock?:SiteClockWorkspace;context:ObservatoryWorkspace;sky:ExposureWorkspace;star:ExposureWorkspace;star09?:ExposureWorkspace;star4m?:ExposureWorkspace;galaxies4m?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies09?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;cachedGalaxies?:Readonly<Record<CachedGalaxyId,ExposureWorkspace>>;pegasusGalaxies?:Readonly<Record<PegasusGalaxyId,ExposureWorkspace>>}>;
 /** Whether the context or a cached bank uses a cached-pan target (so the session must be the v24 wrapper). */
 export function observingUsesCachedGalaxies(w:Pick<ObservingWorkspace,'context'|'cachedGalaxies'>):boolean{
  return isCachedGalaxyId(w.context.galaxyTargetId)||CACHED_GALAXY_IDS.some(id=>w.context.selectedId===id+'-acquisition')||!!w.cachedGalaxies&&CACHED_GALAXY_IDS.some(id=>w.cachedGalaxies![id].state!==null||w.cachedGalaxies![id].seedText!=='1');
+}
+/** Whether the context or a Pegasus bank uses a Pegasus target (so the session must be the v25 wrapper). */
+export function observingUsesPegasusGalaxies(w:Pick<ObservingWorkspace,'context'|'pegasusGalaxies'>):boolean{
+ return isPegasusGalaxyId(w.context.galaxyTargetId)||PEGASUS_GALAXY_IDS.some(id=>w.context.selectedId===id+'-acquisition')||!!w.pegasusGalaxies&&PEGASUS_GALAXY_IDS.some(id=>w.pegasusGalaxies![id].state!==null||w.pegasusGalaxies![id].seedText!=='1');
 }
 export const emptyExposureWorkspace=():ExposureWorkspace=>Object.freeze({state:null,seedText:'1'});
 const ids=new Set([...catalog.map(o=>o.id),'N0000.DAT@14428',...GALAXY_TARGETS.map(o=>o.id+'-acquisition')]);

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "NGC 7499",
+    "label": "Peg \u2013 1",
+    "ra": 23.17286111111111,
+    "dec": 7.581666666666667,
+    "magnitude": 14.100000381469727,
+    "recordIndex": 23036,
+    "policyId": "openvireo-cached-pegasus-7499-v1",
+    "fieldSnapshotSHA256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 140,
+    "galaxies": 4,
+    "sourceFile": "GLXYTMPL.SP"
+  },
+  {
+    "id": "NGC 7501",
+    "label": "Peg \u2013 2",
+    "ra": 23.17511111111111,
+    "dec": 7.588888888888889,
+    "magnitude": 14.699999809265137,
+    "recordIndex": 23041,
+    "policyId": "openvireo-pinned-pegasus-7501-v1",
+    "fieldSnapshotSHA256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 140,
+    "galaxies": 4,
+    "sourceFile": "GLXYTMPL.SP"
+  },
+  {
+    "id": "NGC 7503",
+    "label": "Peg \u2013 3",
+    "ra": 23.17838888888889,
+    "dec": 7.5675,
+    "magnitude": 14.399999618530273,
+    "recordIndex": 23045,
+    "policyId": "openvireo-cached-pegasus-7503-v1",
+    "fieldSnapshotSHA256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 140,
+    "galaxies": 4,
+    "sourceFile": "GLXYTMPL.SP"
+  }
+]
