@@ -33,6 +33,16 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   unnamed:'Unnamed entry',foundMark:'◀ found',found:(position:number)=>`Search found row ${position}. Select it to use it.`,
   adaptation:'Adaptation: the native List/Selection menus are shown as buttons; Edit, Delete, Undo and Save List remain in the “Original hot lists” editor.',
  }),
+ entry:Object.freeze({
+  open:'Add Current Item/Position to List…',
+  openHelp:'Slew ▸ Observation Hot List ▸ Add Current Item/Position: adds the current pointing (and the object there, when the observatory identifies one) to the shared list in memory; save it from “Original hot lists”.',
+  help:'Right Ascension 0–24 h and Declination −90° to +90° (bounds included). A degree entry of “-0” counts as north, as in the original.',
+  raUnsupported:'An RA of exactly 24 h cannot be stored in an HTL file (0 ≤ RA < 24). Enter 0 h instead.',
+  blankId:'Enter an Object ID. The original also accepts a blank ID (“Position added…”), but this version’s HTL writer requires a non-blank ID for new rows.',
+  busy:'The hot list is being read. Wait for it to finish, then add again.',
+  adaptation:'Adaptation: the object is the selected catalog target when the telescope points exactly at it (the original pixel lookup is not recovered); its kind (Star/Galaxy…) is not known here, so Comments start empty.',
+  sexagesimal:'Enter as h/m/s, d/m/s…',sexagesimalHelp:'Opens the original Add/Edit Hot List Entry fields; OK copies the values into this form.',
+ }),
  hotListPrint:Object.freeze({
   title:'Print hot list',help:'Preview of the printed list: the window caption and the rows as shown. Print opens the browser print dialog for this report only.',
   count:(n:number)=>`${n} row${n===1?'':'s'}`,report:'Hot list report',empty:'The list has no rows.',print:'Print…',close:'Close',

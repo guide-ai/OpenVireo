@@ -10,6 +10,16 @@ import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha2
 export type BundledHotListIdentity=Readonly<{path:string;name:string;bytes:number;sha256:string}>;
 export const BUNDLED_PLEIADES_HOT_LIST:BundledHotListIdentity=Object.freeze({path:PLEIADES_HTL.path,name:PLEIADES_HTL.name,bytes:PLEIADES_HTL.bytes,sha256:PLEIADES_HTL.sha256});
 export const BUNDLED_HUBBLE_HOT_LIST:BundledHotListIdentity=Object.freeze({path:HUBBLE_HTL.path,name:HUBBLE_HTL.name,bytes:HUBBLE_HTL.bytes,sha256:HUBBLE_HTL.sha256});
+/** Caption of an exercise-list button or its load error: an existing catalog key, or plain text (for lists added by other
+ * fronts without editing the shared catalog). Keys are resolved by the editor; io stays independent of the catalog. */
+export type BundledHotListText=Readonly<{key:string}|{text:string}>;
+export type BundledExerciseHotList=Readonly<{identity:BundledHotListIdentity;label:BundledHotListText;error:BundledHotListText}>;
+/** The explicit "Load exercise list" buttons of the observatory HTL editor, in display order. Append an entry to offer another
+ * bundled original list; the editor renders and loads every entry the same way (size and SHA-256 first, then parseHtl). */
+export const BUNDLED_EXERCISE_HOT_LISTS:readonly BundledExerciseHotList[]=Object.freeze([
+ Object.freeze({identity:BUNDLED_PLEIADES_HOT_LIST,label:Object.freeze({key:'htl.exerciseLoad'}),error:Object.freeze({key:'htl.exerciseError'})}),
+ Object.freeze({identity:BUNDLED_HUBBLE_HOT_LIST,label:Object.freeze({key:'htl.hubbleLoad'}),error:Object.freeze({key:'htl.hubbleError'})}),
+] as const satisfies readonly BundledExerciseHotList[]);
 
 /** download: the request failed or answered without a body; size: not exactly the recorded byte count; sha256: other bytes. */
 export type BundledHotListFailure='download'|'size'|'sha256';
