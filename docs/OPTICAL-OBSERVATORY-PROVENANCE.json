@@ -470,17 +470,24 @@
   },
   {
    "id": "OB-HL-03",
-   "claim": "Row text choice in the list fill 0x5905e8 (and the edit refresh at 0x5915d1): row formatter 0x590110 when env+0x383f ∈ {5,6} or env+0x2e7e (Edit Mode) ≠ 0 (the edit refresh tests only 6 and Edit Mode); otherwise ordinal formatter 0x590248 with ordinal = cursor index (+0x58d, 0-based, reset −1, incremented by Next 0x492634) + 1. Rows are in list (file/append) order: the loader 0x5903d8 appends each 0x56-byte record with 0x492728.",
+   "claim": "Row text choice in the list fill 0x5905e8 (and the edit refresh at 0x5915d1): row formatter 0x590110 when env+0x383f ∈ {5,6} or env+0x2e7e (Edit Mode) ≠ 0 (the edit refresh tests only 6 and Edit Mode); otherwise ordinal formatter 0x590248 with ordinal = cursor index (+0x58d, 0-based, reset −1, incremented by Next 0x492634) + 1. Rows are in native RA cursor-insertion order (RA-HL-03/04), for both owners of the shared window: FormCreate 0x5903a8 initialises the list at +0x58d with VMT pointer [0x58f3cc] = 0x58f3d8 (0x5903be) and calls 0x4924d4, whose _ObjSetup 0x404c70 stores the VMT at the VMT field offset +0x16; the loader 0x5903d8 inserts every 0x56-byte record with 0x492728 (0x5904bf), which compares through `mov ebp,[eax+0x16]; call [ebp+4]` (0x49275b, 0x492781, 0x492791, 0x4927be, 0x4927d9), i.e. VMT slot +4 = comparator 0x590398 (RA). Add Current's append 0x590588 uses the same 0x492728, so a natively added entry lands in RA order and a native Save List writes that order. The ordinal is the position in that sorted order.",
    "addresses": [
     "0x590654..0x5906c6",
     "0x5915d1..0x591623",
     "0x492628",
     "0x492634",
-    "0x5903d8..0x5904d6"
+    "0x5903a8..0x5903d4",
+    "0x404c70",
+    "0x5903d8..0x5904d6",
+    "0x492728..0x4927e0",
+    "0x58f3cc",
+    "0x58f3d8",
+    "0x590398",
+    "0x590588"
    ],
    "literals": {},
    "status": "recovered",
-   "uncertainty": "The RA comparators 0x590388/0x590398 exist but no caller was traced; order is treated as file order (matches radio WEB-HL)."
+   "uncertainty": "Correction (independent review 1, F4/adjudication 1): the earlier B0 reading 'file order, comparators without a traced caller' was wrong; the comparator is reached through the old-style object VMT. Web adaptation: the observatory HTL editor keeps file order plus append (WEB-HL-04), and the window shows the RA projection of that list; an Add Current entry is appended in file order and shown in RA order."
   },
   {
    "id": "OB-HL-04",
@@ -956,8 +963,10 @@
   "Pixel/tolerance rule of the object lookup 0x59a0fc used by Add Current Item (OB-AC-01).",
   "Whether instructor option/site edits reach the running environment before the next telescope setup (OB-ST-04).",
   "Content of the printed sky image, header and footer (OB-SR-03).",
-  "Meaning of TSpectrometer+0x3172 (OB-SR-02).",
-  "Callers of the RA comparators 0x590388/0x590398 (OB-HL-03)."
+  "Meaning of TSpectrometer+0x3172 (OB-SR-02)."
  ],
- "nonEquivalence": "Decompilation and self-consistent reading only; no claim of equivalence with the original runtime."
+ "nonEquivalence": "Decompilation and self-consistent reading only; no claim of equivalence with the original runtime.",
+ "reviewCorrections": [
+  "2026-10-27 independent review 1: OB-HL-03 order corrected to RA cursor insertion (VMT 0x58f3d8 slot +4 = 0x590398); notRecovered item on comparator callers removed."
+ ]
 }
