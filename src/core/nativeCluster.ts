@@ -30,10 +30,14 @@ export function readNativeClusterDraft(value:unknown):NativeClusterDraft{
  if(typeof r.extinctionCorrected!=='boolean'||!['','0','1','2','3','4','5'].includes(r.modelIndex as string))throw new NativeClusterError();return Object.freeze({...r})as NativeClusterDraft;
 }
 const ticks=(s:string):number=>{const v=decimal(s);if(v===undefined)return NaN;const n=Math.round(v*100);return v===n/100?n+0:NaN;};
+/** Shared exact 0.01 grid text parser(trial text and database sliders);NaN for blank/invalid/off-grid text. Range is the caller's check. */
+export const nativeClusterTextTicks=(s:string):number=>ticks(s);
+/** Grid log-age text→age index(7.80+0.05i);NaN for blank/invalid/off-grid text. Range is the caller's check. */
+export function nativeClusterTextAgeIndex(s:string):number{const age=decimal(s),ai=age===undefined?NaN:Math.round((age*100-780)/5);return age===(780+5*ai)/100?ai+0:NaN;}
 export function nativeClusterDraftFromFit(f?:NativeClusterFit|null):NativeClusterDraft{return Object.freeze({modulus:f?String(f.modulus):'',ebv:f?String(f.ebv):'',logAge:f?String(f.logAge):'',modelIndex:f?String(f.modelIndex):'',offset:f?String(f.offset):'0',extinctionCorrected:f?.extinctionCorrected??false,interpretation:f?.interpretation??''});}
 export function nativeClusterDraftParameters(d:NativeClusterDraft):NativeClusterParameters|null{
- const mt=ticks(d.modulus),et=ticks(d.ebv),ot=ticks(d.offset),age=decimal(d.logAge),ai=age===undefined?NaN:Math.round((age*100-780)/5);
- if(age!==(780+5*ai)/100||!['0','1','2','3','4','5'].includes(d.modelIndex))return null;
+ const mt=ticks(d.modulus),et=ticks(d.ebv),ot=ticks(d.offset),ai=nativeClusterTextAgeIndex(d.logAge);
+ if(Number.isNaN(ai)||!['0','1','2','3','4','5'].includes(d.modelIndex))return null;
  const p={modulusTicks:mt+0,ebvTicks:et+0,ageIndex:ai+0,modelIndex:Number(d.modelIndex),offsetTicks:ot+0,extinctionCorrected:d.extinctionCorrected,interpretation:d.interpretation};return validNativeClusterParameters(p)?Object.freeze(p):null;
 }
 export function nativeZamsDraft(d:NativeClusterDraft):Readonly<{modulus:number;ebv:number}>|null{const mt=ticks(d.modulus),et=ticks(d.ebv);return boundedInt(mt,0,1500)&&boundedInt(et,0,250)?{modulus:mt/100,ebv:et/100}:null;}
