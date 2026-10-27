@@ -1,6 +1,7 @@
 # E08 Object X — orbit files, ephemeris and measuring tool (Front X, X0–X3)
 
-Status: first mergeable set (X0a, X0b, X1, X2, X3). The `#object-x` route, camera insertion of asteroids (X4) and the v28
+Status: first mergeable set (X0a, X0b, X1, X2, X3), revised after independent review 1 (findings H1, M1–M3, L1–L3, L6;
+raw report kept by the coordinator at analysis/reviews/front-x-review-1.md). The `#object-x` route, camera insertion of asteroids (X4) and the v28
 investigation, guide and closure (X5) wait for the camera (Front C, C3). E08 is **not** closed.
 
 Implementation: Claude Code (claude-opus-5-5), medium effort, branch `claude/serene-dubinsky-8d1244`. Independent high-effort
@@ -13,14 +14,23 @@ decompiler provider configured. Nothing was executed or emulated. Research notes
 
 | File | Bytes | SHA-256 | Use |
 |---|---|---|---|
-| public/original/hotlists/ObjectX.HTL | 1462 | fd9e68e4…858243b3 | 17 targets (identifier + coordinates; remarks reveal identity and are never shown before the reveal) |
+| public/original/hotlists/ObjectX.HTL | 1462 | fd9e68e4…858243b3 | 17 targets; only the coordinates are shown before the reveal (the identifier and the remarks both give the answer) |
 | public/original/orbit/ObjX_MPC.CMO | 30989466 | b41e03f1…6802e | original default `ORBIT\OBJX_MPC.CMO` (exe 0x5a2dc4), 191293 records, epoch JD 2455400.5 |
 | public/original/orbit/ObjX_AST.CMO | 4750326 | 341134bf…a12 | 29323 records, epoch JD 2454900.5 |
+| public/original/orbit/ObjX_MPC.CMO.sav | 4798116 | efd665a7…124030 | 29618 records, epoch JD 2455000.5, zip date 2009-08-12; **web default** |
 
-Byte-exact from CLEA_Vireo.zip under the approvals of 2026-10-26 (ObjectX.HTL) and 2026-10-27 (orbit files); manifest 1312 →
-1315 (`docs/LOCAL-RESOURCES.json`, `docs/RESOURCE-PROVENANCE.json` group `public/original/orbit`, `THIRD_PARTY_NOTICES.txt`).
+Byte-exact from CLEA_Vireo.zip under the approvals of 2026-10-26 (ObjectX.HTL), 2026-10-27 (ObjX_MPC.CMO, ObjX_AST.CMO) and the
+later .sav approval recorded in AGENTS.md (e296ae4); manifest 1312 → 1316 (`docs/LOCAL-RESOURCES.json`, `docs/RESOURCE-PROVENANCE.json` group `public/original/orbit`, `THIRD_PARTY_NOTICES.txt`).
 `src/io/bundledOrbitFile.ts` fetches an orbit file lazily from this origin, bounded to and checked for the exact size and
-SHA-256 before parsing. ObjectX.HTL is deliberately **not** added to the observatory's exercise-list buttons (they show remarks).
+SHA-256 before parsing. **Web default: ObjX_MPC.CMO.sav** (coordinator decision): it reproduces the three moving rows of
+ObjectX.HTL at the original default time (table below), while the original options default ObjX_MPC.CMO misses 1994 CC by 0.86°.
+ObjX_MPC.CMO and ObjX_AST.CMO stay bundled and selectable (`SELECTABLE_ORBIT_FILES`). One-line adaptation label: "Orbit file:
+ObjX_MPC.CMO.sav (web default; it reproduces ObjectX.HTL at 2009-06-01 04:00 UT — the original's default is ObjX_MPC.CMO)".
+
+Identity hiding: the HTL identifier ("(433) Eros", "NGC 2403", "3C 273.0", "0329+54", "N6000-00685", …) and the remarks both
+reveal the answer, so neither is shown before the reveal; the student sees an opaque label and the coordinates. Hiding is
+presentation-level only: the file is publicly fetchable from this origin. ObjectX.HTL is deliberately **not** added to the
+observatory's exercise-list buttons. X4 adds a browser test that no HTL identifier or remark is in the DOM before the reveal.
 Hosting note: ObjX_MPC.CMO exceeds a 25 MiB per-asset limit of some static hosts; that is a deployment decision.
 
 ## CMO record (X0a, `src/core/orbitFile.ts`)
@@ -76,26 +86,35 @@ first parabolic Newton loop, both as typed errors. The JD is the program clock (
 ### Independent controls
 
 `src/core/ephemeris.controls.json` is authored by a separate Python program (generator SHA-256 in the file; script kept with
-the research notes): standard rv→coe, universal-variable Kepler propagation straight from the stored state vector, the
-Bretagnon & Simon Earth, a J2000 rotation matrix and the same light-time rule. Agreement (positions < 5e−8 relative, RA/Dec
-< 0.05″) is evidence of the implementation contract only. No external ephemeris service was consulted. The Sun is also within
-10″ of Meeus example 25.b (1992 Oct 13.0). No near-parabolic or hyperbolic orbit exists in ObjX_MPC.CMO; those branches are
-tested on authored synthetic state vectors.
+the research notes). It is independent **for propagation and frame rotation only**: universal-variable Kepler propagation
+straight from the stored state vector, standard rv→coe and a direct J2000 rotation matrix (these check the Kepler/Landgraf
+branches, the d1-reuse step's convergence, P/Q and the precession round trip). It shares with the port the Sun tables and
+formula, the pA polynomial, the ±π/latitude-0 Earth, the light-time rule (Δ = first pass), the H,G formula, the record decoder
+and the constants, and was written by the same implementer from the same notes, so it cannot detect a misreading of the
+binary. Agreement (positions < 5e−8 relative, RA/Dec < 0.05″) is evidence of the implementation contract only. No external
+ephemeris service was consulted.
 
-### Dates at which the ObjectX.HTL asteroid rows match (derived)
+External checks: (1) the ObjectX.HTL moving rows, which CLEA itself wrote, are reproduced from ObjX_MPC.CMO.sav at the
+original default time to 0.04″ (Eros, 1994 CC at Δ ≈ 0.046 AU) and 1.4″ (Pluto, = HTL RA rounding) — a witness for the
+J2000-ecliptic state-vector reading, the light-time rule and the "UT clock, no ΔT" convention; (2) the Sun within 10″ of Meeus
+example 25.b (1992 Oct 13.0). No near-parabolic or hyperbolic orbit exists in the bundled files; those branches are tested on
+authored synthetic state vectors.
 
-The original's Object X default date is **2009/06/01 04:00:00 UT** (TUTTimeDlg 0x4fde9c/0x4fdeb0, X0b).
+### Where the ObjectX.HTL moving rows match (derived)
 
-| Row | ObjX_AST.CMO | ObjX_MPC.CMO (default file) |
-|---|---|---|
-| (433) Eros 22.722017 h −8.03989° | 0.2″ at 2009-06-01 04:00 UT (best 03:59:57 UT, 0.17″) | 25″ at 04:00 (best 03:33 UT, 3″) |
-| (134340) Pluto 18.166972 h −17.631472° | 1.3″ at 04:00 (slow mover; best 03:37 UT, 0.03″) | 3.9″ at 04:00 (best 05:07 UT, 0.5″) |
-| (136617) 1994 CC 12.451553 h −44.033056° | 1.1″ at **06:56 UT** that day; 962″ at 04:00 | never closer than 0.86° (3111″) in 2008–2010 |
+The original's Object X default date is **2009/06/01 04:00:00 UT** (TUTTimeDlg 0x4fde9c/0x4fdeb0, X0b). Separation from each row
+at that time, computed with this port:
 
-Reading: the HTL rows were most likely generated from ObjX_AST.CMO on 2009-06-01 (Eros exactly at 04:00 UT). With the default
-ObjX_MPC.CMO (epoch 2010-07-23), two-body propagation back across 1994 CC's June 2009 close approach (Δ ≈ 0.046 AU on
-June 1) misses its row by 0.86°, so a camera pointed at the 1994 CC row with the default file would not show it. This is the
-original's behaviour as recovered; whether the web exercise should default to ObjX_AST.CMO is an open coordinator question.
+| Row | ObjX_MPC.CMO.sav (epoch 2009-06-18) | ObjX_AST.CMO (epoch 2009-03-09) | ObjX_MPC.CMO (epoch 2010-07-23) |
+|---|---|---|---|
+| (433) Eros 22.722017 h −8.03989° | **0.04″** | 0.18″ | 25.0″ |
+| (134340) Pluto 18.166972 h −17.631472° | **1.37″** (HTL RA rounding 0.1 s ≈ 1.43″) | 1.32″ | 3.9″ |
+| (136617) 1994 CC 12.451553 h −44.033056° | **0.04″** | 962″ | 3112″ (never closer than 0.86° in 2008–2010) |
+
+Reading: the rows were generated at the default time from the orbit set saved as ObjX_MPC.CMO.sav (zip date 2009-08-12, before
+ObjectX.HTL, 2009-08-21). The shipped ObjX_MPC.CMO is a 2010 update; two-body propagation back across 1994 CC's June 2009 close
+approach misses its row by 0.86°, so with the original's options default a camera pointed at the 1994 CC row would not show
+it. ObjX_AST.CMO also misses 1994 CC at 04:00 (16′; it crosses the row near 06:56 UT by coincidence). Hence the web default.
 
 ## Asteroids in the CCD field and the Object X entry (X0b; used by X4)
 
@@ -123,17 +142,23 @@ statically under decision D6; toolkit.exe was not needed and not analysed.
   range (0 below the low cut, 1000 above the high cut, linear between), weights cubed. On authored synthetic Gaussian stars it
   is cursor-insensitive within 5 px and biased by ≤ 0.1 px toward the peak pixel (property of cubed weights).
 - Solution: standard coordinates about the field centre (mean of the references), six plate constants by least squares from
-  ≥ 3 non-collinear reference stars, residuals and plate scale; or the image's TAN WCS when its header carries one (web
-  adaptation for camera images saved by this app).
-- Blink: alternate two images at 10–1000 ms (default 500); two-star similarity alignment is available in the core.
+  ≥ 3 non-collinear reference stars; or the image's TAN WCS when its header carries one (web adaptation for camera images saved
+  by this app). Marks keep pixels only: every target position, the per-frame rms and plate scale, the per-reference residuals
+  and the motion are derived from the current marks at render time, so correcting a reference star re-solves every target.
+- Cuts: the low/high cut sets both the display stretch and the centroid weights (the guide ties them to the displayed range);
+  the 5 %/50 % default of the image range is a labelled web choice.
+- Blink: alternate two images at 10–1000 ms (default 500), aligned on the first two reference marks of each image when both
+  have them, otherwise raw frames (labelled "same pointing assumed"). Measuring is disabled while blinking.
 - Motion: rate (″/h) and position angle (north through east) between the earliest and latest solved target marks.
 - Synthetic fixtures are authored test images, never presented as CLEA observations.
 
-The component is not mounted yet; it is mounted with the `#object-x` route in X4 and verified in the browser there.
+The component is mounted by the `#object-x` route in X4. Until then it is exercised in Chromium through the test-only host
+`tests/fixtures/object-x-measure-host.ts` (`tests/object-x-measure.spec.ts`: keyboard cursor and Enter, click → pixel on the
+shown image, frame attribution, motion, raw → aligned blink, timer alternation, measuring disabled while blinking).
 
 ## Not recovered / open
 
 - Mode 1 apparent positions (nutation) — unused by Object X.
 - The renderer of asteroid pairs, CCD field box source, list sort key, orbit-file creator selection, some flag bits (X0b).
-- Default orbit file for the web exercise given the 1994 CC finding (coordinator decision).
+- X4 list builder: catch ephemeris errors per record (the original continues past a bad record, 0x5159aa → 0x515abd).
 - x87 Extended evaluation is not reproduced; no original-runtime equivalence is claimed.

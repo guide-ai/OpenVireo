@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {parseFitsImage} from './fitsImage';
-import {BLINK_INTERVAL,MeasureError,alignFromTwoStars,angularSeparationArcsec,applyPlate,centroid,centroidWeight,clampBlinkInterval,fromStandardCoordinates,measureImageFromFits,motionBetween,pixelToSky,plateSolution,skyToPixel,standardCoordinates,tanWcsFromCards,addMeasurement,formatSexagesimal,parseSexagesimal,removeMeasurement,solveTarget,targetMotion,MEASUREMENT_LIMIT,type MeasurementLog,type TanWcs} from './astrometryMeasure';
+import {BLINK_INTERVAL,MeasureError,alignFromTwoStars,angularSeparationArcsec,applyPlate,centroid,centroidWeight,clampBlinkInterval,fromStandardCoordinates,measureImageFromFits,motionBetween,pixelToSky,plateSolution,skyToPixel,standardCoordinates,tanWcsFromCards,addMeasurement,blinkAlignment,defaultDisplayRange,deriveTargets,formatSexagesimal,framePlate,parseSexagesimal,removeMeasurement,solveTarget,stretchRaster,targetMotion,MEASUREMENT_LIMIT,type MeasurementLog,type TanWcs} from './astrometryMeasure';
 
 // Authored synthetic FITS fixture (not a CLEA image): 96×80 float32, sky 100 counts, Gaussian stars (σ 1.4 px) at exact
 // sub-pixel positions placed by a TAN WCS centred on Eros' 2009-06-01 position, 1.2″/px, rotated 3°.
@@ -86,28 +86,54 @@ describe('motion and blinking',()=>{
  });
 });
 
-describe('measurement log',()=>{
+describe('measurement log (pixels only; positions derived from the current log)',()=>{
+ const sky=stars.map(s=>pixelToSky(wcs,s.x,s.y)),none=()=>null,header=()=>wcs;
+ const ref=(i:number,frame=0,catalog=sky[i])=>({frame,role:'reference' as const,x:stars[i].x,y:stars[i].y,jd:1,catalog});
  it('solves a target by plate constants once three references are on its frame, else by the header WCS, else not at all',()=>{
-  const sky=stars.map(s=>pixelToSky(wcs,s.x,s.y));let log:MeasurementLog=[];
+  let log:MeasurementLog=[];
   expect(solveTarget(log,0,stars[4].x,stars[4].y,null)).toBeNull();
   expect(solveTarget(log,0,stars[4].x,stars[4].y,wcs)!.method).toBe('wcs');
-  for(const i of [0,1,2])log=addMeasurement(log,{frame:0,role:'reference',x:stars[i].x,y:stars[i].y,jd:1,sky:null,catalog:sky[i]});
+  for(const i of [0,1,2])log=addMeasurement(log,ref(i));
   const s=solveTarget(log,0,stars[4].x,stars[4].y,null)!;expect(s.method).toBe('plate');expect(angularSeparationArcsec(s.sky,sky[4])).toBeLessThan(1e-6);
   expect(solveTarget(log,1,stars[4].x,stars[4].y,null)).toBeNull();
-  expect(removeMeasurement(log,0)).toHaveLength(2);
+  expect(framePlate(removeMeasurement(log,0),0)).toMatchObject({plate:null,reason:'references',references:2});
+  expect(()=>addMeasurement(log,{frame:0,role:'reference',x:1,y:1,jd:1})).toThrow(MeasureError);
+ });
+ it('re-solves targets and motion when a mistyped reference is corrected, and exposes the bad residual',()=>{
+  const typo={...sky[2],raHours:sky[2].raHours+30/3600/15};// 30 s of time in RA
+  const marks=(r2:typeof sky[number]):MeasurementLog=>[ref(0),ref(1),ref(2,0,r2),ref(3),{frame:0,role:'target',x:stars[4].x,y:stars[4].y,jd:2454983.6},
+   ref(0,1),ref(1,1),ref(2,1),ref(3,1),{frame:1,role:'target',x:stars[4].x,y:stars[4].y+2,jd:2454983.7}];
+  const bad=marks(typo),good=marks(sky[2]);
+  const badPlate=framePlate(bad,0).plate!;expect(badPlate.rmsArcsec).toBeGreaterThan(3);// one bad star among four is partly absorbed by six constants
+  expect(Math.max(...framePlate(good,0).plate!.residualsArcsec)).toBeLessThan(1e-6);
+  const before=deriveTargets(bad,none),after=deriveTargets(good,none);
+  expect(angularSeparationArcsec(before[0].sky!,sky[4])).toBeGreaterThan(3);
+  expect(angularSeparationArcsec(after[0].sky!,sky[4])).toBeLessThan(1e-6);
+  expect(targetMotion(bad,none)!.arcsec).not.toBeCloseTo(targetMotion(good,none)!.arcsec,1);
+  expect(targetMotion(good,none)!.arcsec).toBeCloseTo(angularSeparationArcsec(pixelToSky(wcs,stars[4].x,stars[4].y),pixelToSky(wcs,stars[4].x,stars[4].y+2)),6);
  });
  it('reports motion between the earliest and latest solved target marks and bounds the log',()=>{
   let log:MeasurementLog=[];
-  log=addMeasurement(log,{frame:1,role:'target',x:0,y:0,jd:2454983.7,sky:{raHours:22.72,decDeg:-8.0}});
-  expect(targetMotion(log)).toBeNull();
-  log=addMeasurement(log,{frame:0,role:'target',x:0,y:0,jd:2454983.6,sky:{raHours:22.72,decDeg:-8.0-24/3600}});
-  const mo=targetMotion(log)!;expect(mo.rateArcsecPerHour).toBeCloseTo(10,6);expect(mo.positionAngleDeg).toBeCloseTo(0,6);
-  let full:MeasurementLog=[];for(let i=0;i<MEASUREMENT_LIMIT;i++)full=addMeasurement(full,{frame:0,role:'target',x:0,y:0,jd:i,sky:null});
+  log=addMeasurement(log,{frame:1,role:'target',x:48.5,y:40.5+10/1.2,jd:2454983.7});
+  expect(targetMotion(log,header)).toBeNull();
+  log=addMeasurement(log,{frame:0,role:'target',x:48.5,y:40.5,jd:2454983.6});
+  expect(targetMotion(log,none)).toBeNull();
+  const mo=targetMotion(log,header)!;expect(mo.rateArcsecPerHour).toBeCloseTo(10/2.4,3);// 10″ in 0.1 d
+  let full:MeasurementLog=[];for(let i=0;i<MEASUREMENT_LIMIT;i++)full=addMeasurement(full,{frame:0,role:'target',x:0,y:0,jd:i});
   expect(()=>addMeasurement(full,full[0])).toThrow(MeasureError);
+ });
+ it('aligns blinking on the first two reference marks of each frame, or not at all',()=>{
+  expect(blinkAlignment([ref(0),ref(1),ref(0,1)],0,1)).toBeNull();
+  const al=blinkAlignment([ref(0),ref(1),{...ref(0,1),x:stars[0].x+3,y:stars[0].y-2},{...ref(1,1),x:stars[1].x+3,y:stars[1].y-2}],0,1)!;
+  expect(al.dx).toBeCloseTo(-3,9);expect(al.dy).toBeCloseTo(2,9);expect(al.scale).toBeCloseTo(1,12);
+ });
+ it('stretches the display between the cuts and defaults them to 5 % and 50 % of the range',()=>{
+  const r=stretchRaster(image,{low:100,high:200});expect(Array.from(r.subarray(0,4))).toEqual([0,0,0,255]);
+  expect(defaultDisplayRange(100,1100)).toEqual({low:150,high:600});expect(defaultDisplayRange(null,null)).toEqual({low:0,high:1});
  });
  it('parses and formats sexagesimal coordinates',()=>{
   expect(parseSexagesimal('22 43 19.3','ra')).toBeCloseTo(22.722027777,8);expect(parseSexagesimal('-08:02:23','dec')).toBeCloseTo(-8.039722,6);
   expect([parseSexagesimal('24 0 0','ra'),parseSexagesimal('-1 0 0','ra'),parseSexagesimal('10 61 0','dec'),parseSexagesimal('abc','dec')]).toEqual([null,null,null,null]);
-  expect(formatSexagesimal(22.722027777,'ra')).toBe('22 43 19.30');expect(formatSexagesimal(-8.0397222,'dec')).toBe('-08 02 23.0');expect(formatSexagesimal(5.99999999,'ra')).toBe('06 00 00.00');
+  expect(formatSexagesimal(22.722027777,'ra')).toBe('22 43 19.30');expect(formatSexagesimal(-8.0397222,'dec')).toBe('-08 02 23.0');expect(formatSexagesimal(5.99999999,'ra')).toBe('06 00 00.00');expect(formatSexagesimal(23.9999999,'ra')).toBe('00 00 00.00');
  });
 });

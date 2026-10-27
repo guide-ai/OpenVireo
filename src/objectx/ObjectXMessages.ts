@@ -7,7 +7,9 @@ export type ObjectXMeasureMessages=Readonly<{
  roleTarget:string;roleReference:string;roleLegend:string;
  refRa:string;refDec:string;refInvalid:string;
  cursor:(x:number,y:number)=>string;measure:string;viewport:string;keyboardHelp:string;
- rangeLow:string;rangeHigh:string;
+ rangeLow:string;rangeHigh:string;rangeNote:string;
+ blinkAligned:string;blinkRaw:string;
+ plateTitle:string;plateFrame:(n:number,refs:number)=>string;plateNone:(n:number,refs:number)=>string;plateDegenerate:(n:number)=>string;plateRms:(rms:string,scale:string)=>string;colResidual:string;
  table:string;colFrame:string;colRole:string;colX:string;colY:string;colRa:string;colDec:string;colUt:string;colMethod:string;remove:string;
  notSolved:string;methodPlate:string;methodWcs:string;
  motion:(rate:string,pa:string,arcsec:string,hours:string)=>string;motionNone:string;
@@ -24,6 +26,11 @@ export const OBJECT_X_MEASURE_EN:ObjectXMeasureMessages=Object.freeze({
  cursor:(x,y)=>`Cursor x ${x}, y ${y}`,measure:'Measure at cursor',viewport:'Image; arrow keys move the cursor, Enter measures',
  keyboardHelp:'Arrow keys move the cursor by one pixel (Shift: ten). Enter or Space measures.',
  rangeLow:'Low cut',rangeHigh:'High cut',
+ rangeNote:'The cuts set both the display stretch and the centroid weights (web default: 5 % and 50 % of the image range).',
+ blinkAligned:'Blinking aligned on the first two reference stars of each image.',
+ blinkRaw:'Blinking the raw frames (same pointing assumed); mark two reference stars on each image to align them.',
+ plateTitle:'Astrometric solutions',plateFrame:(n,refs)=>`Image ${n}: ${refs} reference stars`,plateNone:(n,refs)=>`Image ${n}: ${refs} reference stars (at least 3 needed)`,
+ plateDegenerate:n=>`Image ${n}: the reference stars are too close to a line.`,plateRms:(rms,scale)=>`rms ${rms}″, scale ${scale}″/pixel`,colResidual:'Residual (″)',
  table:'Measurements',colFrame:'Image',colRole:'Mark',colX:'x',colY:'y',colRa:'RA',colDec:'Dec',colUt:'UT',colMethod:'Solution',remove:'Remove',
  notSolved:'not solved',methodPlate:'plate constants',methodWcs:'header WCS',
  motion:(rate,pa,arcsec,hours)=>`Motion: ${rate}″/h toward position angle ${pa}° (${arcsec}″ in ${hours} h).`,

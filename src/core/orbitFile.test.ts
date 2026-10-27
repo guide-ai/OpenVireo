@@ -4,11 +4,12 @@ import controls from './ephemeris.controls.json';
 import {OrbitFileError,findOrbitRecord,orbitRecordCount,readOrbitRecord,orbitRecordLabel} from './orbitFile';
 
 const load=(name:string)=>new Uint8Array(readFileSync(new URL(`../../public/original/orbit/${name}`,import.meta.url)));
-const files={'ObjX_MPC.CMO':load('ObjX_MPC.CMO'),'ObjX_AST.CMO':load('ObjX_AST.CMO')} as const;
+const files={'ObjX_MPC.CMO':load('ObjX_MPC.CMO'),'ObjX_AST.CMO':load('ObjX_AST.CMO'),'ObjX_MPC.CMO.sav':load('ObjX_MPC.CMO.sav')} as const;
 const code=(f:()=>unknown)=>{try{f();}catch(error){return error instanceof OrbitFileError?error.code:'other';}return 'none';};
 
 describe('CMO orbit files (162-byte records)',()=>{
- it('holds whole records: 191293 in ObjX_MPC.CMO and 29323 in ObjX_AST.CMO',()=>{
+ it('holds whole records: 191293 in ObjX_MPC.CMO, 29323 in ObjX_AST.CMO and 29618 in ObjX_MPC.CMO.sav',()=>{
+  expect(orbitRecordCount(files['ObjX_MPC.CMO.sav'])).toBe(29618);
   expect(orbitRecordCount(files['ObjX_MPC.CMO'])).toBe(191293);
   expect(orbitRecordCount(files['ObjX_AST.CMO'])).toBe(29323);
  });
@@ -19,7 +20,7 @@ describe('CMO orbit files (162-byte records)',()=>{
   expect([r.frame.type,r.frame.sub,r.frame.tag,r.frame.equinoxJd]).toEqual(c.record.frame);
   expect(r.flags).toEqual(c.record.flags);
  });
- it('decodes every record of both files with the J2000 frame header, the Sun as centre and the H,G model',()=>{
+ it('decodes every record of the three files with the J2000 frame header, the Sun as centre and the H,G model',()=>{
   for(const bytes of Object.values(files)){
    const n=orbitRecordCount(bytes);let bad=0;
    for(let i=0;i<n;i++){const r=readOrbitRecord(bytes,i);if(r.frame.type!==2||r.frame.sub!==0||r.frame.tag!==1||r.frame.equinoxJd!==2451545||r.centralBody!==0||r.magnitudeModel!==1||!r.name)bad++;}

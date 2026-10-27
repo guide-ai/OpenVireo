@@ -5,7 +5,8 @@
  *    8 of it, weighted by the display range (below low → 0, above high → 1000, linear in between) with the weights cubed;
  *  - astrometric solution (§VI-3): standard coordinates about a field centre, six plate constants X = ax+by+c, Y = dx+ey+f
  *    by least squares from at least three reference stars, inverse gnomonic projection for the target;
- *  - blinking (Astrometry of Asteroids manual): two images aligned on two stars each, alternated at 10..1000 ms (500 default).
+ *  - blinking (Astrometry of Asteroids manual): two images alternated at 10..1000 ms (500 default), aligned on the first two
+ *    reference marks of each image when both have them (otherwise raw frames from the same pointing, labelled in the UI).
  * Also: inverse TAN WCS from the FITS header (web adaptation for images whose header carries a WCS) and motion rate/position
  * angle between two measured positions. Pixel coordinates are FITS 1-based (pixel centres at integers). Pure. */
 
@@ -196,28 +197,72 @@ export function measureImageFromFits(image:FitsImage):MeasureImage{
  return Object.freeze({width:image.width,height:image.height,value:(x:number,y:number)=>fitsPixel(image,x,y).value});
 }
 
-/** One measured position on a frame: a target mark or a reference star with its catalogue position. */
-export type Measurement=Readonly<{frame:number;role:'target'|'reference';x:number;y:number;jd:number;sky:SkyPosition|null;method?:'plate'|'wcs';catalog?:SkyPosition}>;
+/** One mark on a frame, in pixels only: a target, or a reference star with its catalogue position. Sky positions are never
+ * stored; they are derived from the current log (deriveTargets), so editing reference stars re-solves every target. */
+export type Measurement=Readonly<{frame:number;role:'target'|'reference';x:number;y:number;jd:number;catalog?:SkyPosition}>;
 export type MeasurementLog=readonly Measurement[];
 /** Maximum marks kept per log (web input bound). */
 export const MEASUREMENT_LIMIT=64;
 export function addMeasurement(log:MeasurementLog,m:Measurement):MeasurementLog{
  if(log.length>=MEASUREMENT_LIMIT)return fail('references');
+ if(m.role==='reference'&&!m.catalog)return fail('references');
  return Object.freeze([...log,Object.freeze(m)]);
 }
 export function removeMeasurement(log:MeasurementLog,index:number):MeasurementLog{return Object.freeze(log.filter((_,i)=>i!==index));}
-/** Sky position of a target mark on its frame: the frame's own plate solution when it has ≥3 reference marks, otherwise
- * the frame's TAN WCS when supplied, otherwise null (not measurable yet). */
+const frameReferences=(log:MeasurementLog,frame:number)=>log.filter(m=>m.frame===frame&&m.role==='reference'&&m.catalog).map(m=>({x:m.x,y:m.y,...m.catalog!}));
+/** Plate solution of one frame from its current reference marks (≥3), or null; 'degenerate' geometry also gives null with
+ * the reason. */
+export function framePlate(log:MeasurementLog,frame:number):Readonly<{plate:PlateSolution|null;reason:MeasureErrorCode|null;references:number}>{
+ const refs=frameReferences(log,frame);
+ if(refs.length<3)return Object.freeze({plate:null,reason:'references',references:refs.length});
+ try{return Object.freeze({plate:plateSolution(refs),reason:null,references:refs.length});}
+ catch(e){if(e instanceof MeasureError)return Object.freeze({plate:null,reason:e.code,references:refs.length});throw e;}
+}
+/** Sky position of a pixel on a frame: the frame's current plate solution when it has ≥3 usable references, otherwise the
+ * frame's TAN WCS when supplied, otherwise null (not measurable yet). */
 export function solveTarget(log:MeasurementLog,frame:number,x:number,y:number,wcs:TanWcs|null):Readonly<{sky:SkyPosition;method:'plate'|'wcs'}>|null{
- const refs=log.filter(m=>m.frame===frame&&m.role==='reference'&&m.catalog).map(m=>({x:m.x,y:m.y,...m.catalog!}));
- if(refs.length>=3)return Object.freeze({sky:applyPlate(plateSolution(refs),x,y),method:'plate'});
+ const {plate}=framePlate(log,frame);
+ if(plate)return Object.freeze({sky:applyPlate(plate,x,y),method:'plate'});
  return wcs?Object.freeze({sky:pixelToSky(wcs,x,y),method:'wcs'}):null;
 }
-/** Motion between the earliest and the latest target marks that have a sky position. */
-export function targetMotion(log:MeasurementLog):Motion|null{
- const t=log.filter(m=>m.role==='target'&&m.sky).slice().sort((a,b)=>a.jd-b.jd);
- if(t.length<2||t[0].jd===t[t.length-1].jd)return null;
- return motionBetween({...t[0].sky!,jd:t[0].jd},{...t[t.length-1].sky!,jd:t[t.length-1].jd});
+export type DerivedTarget=Readonly<{index:number;mark:Measurement;sky:SkyPosition|null;method:'plate'|'wcs'|null}>;
+/** Every target mark solved against the CURRENT log; wcsOf gives each frame's header WCS (or null). */
+export function deriveTargets(log:MeasurementLog,wcsOf:(frame:number)=>TanWcs|null):readonly DerivedTarget[]{
+ return Object.freeze(log.flatMap((mark,index)=>{
+  if(mark.role!=='target')return [];
+  const s=solveTarget(log,mark.frame,mark.x,mark.y,wcsOf(mark.frame));
+  return [Object.freeze({index,mark,sky:s?.sky??null,method:s?.method??null})];
+ }));
+}
+/** Motion between the earliest and the latest solved target marks of the current log. */
+export function targetMotion(log:MeasurementLog,wcsOf:(frame:number)=>TanWcs|null):Motion|null{
+ const t=deriveTargets(log,wcsOf).filter(d=>d.sky).slice().sort((a,b)=>a.mark.jd-b.mark.jd);
+ if(t.length<2||t[0].mark.jd===t[t.length-1].mark.jd)return null;
+ return motionBetween({...t[0].sky!,jd:t[0].mark.jd},{...t[t.length-1].sky!,jd:t[t.length-1].mark.jd});
+}
+/** Blink alignment of frame `second` onto frame `first` from the first two reference marks of each, or null. */
+export function blinkAlignment(log:MeasurementLog,first:number,second:number):Alignment|null{
+ const a=log.filter(m=>m.frame===first&&m.role==='reference').slice(0,2),b=log.filter(m=>m.frame===second&&m.role==='reference').slice(0,2);
+ if(a.length<2||b.length<2)return null;
+ try{return alignFromTwoStars([a[0],a[1]],[b[0],b[1]]);}catch{return null;}
+}
+
+/** Display stretch for the measuring view: linear between the centroid cuts (the guide ties the centroid weights to the
+ * displayed range), grey RGBA; non-finite pixels magenta. */
+export function stretchRaster(image:MeasureImage,range:DisplayRange):Uint8ClampedArray{
+ const out=new Uint8ClampedArray(image.width*image.height*4),span=range.high-range.low;
+ for(let y=1;y<=image.height;y++)for(let x=1;x<=image.width;x++){
+  const v=image.value(x,y),at=((y-1)*image.width+x-1)*4;
+  if(v===null){out[at]=190;out[at+1]=20;out[at+2]=120;}
+  else{const g=span>0?Math.round(Math.min(1,Math.max(0,(v-range.low)/span))*255):128;out[at]=out[at+1]=out[at+2]=g;}
+  out[at+3]=255;
+ }
+ return out;
+}
+/** Web default centroid cuts: 5 % and 50 % of the image's finite range. */
+export function defaultDisplayRange(minimum:number|null,maximum:number|null):DisplayRange{
+ if(minimum===null||maximum===null||!(maximum>minimum))return Object.freeze({low:0,high:1});
+ return Object.freeze({low:minimum+(maximum-minimum)*0.05,high:minimum+(maximum-minimum)*0.5});
 }
 
 /** "h m s" / "± d m s" (spaces or colons) → decimal hours/degrees; null when malformed or out of range. */
@@ -234,5 +279,6 @@ export function formatSexagesimal(value:number,kind:'ra'|'dec'):string{
  const sign=value<0?'-':kind==='dec'?'+':'',v=Math.abs(value),decimals=kind==='ra'?2:1;
  let a=Math.floor(v),b=Math.floor((v-a)*60),c=Number(((v-a-b/60)*3600).toFixed(decimals));
  if(c>=60){c=0;b++;}if(b>=60){b=0;a++;}
+ if(kind==='ra'&&a>=24)a-=24;
  return `${sign}${String(a).padStart(2,'0')} ${String(b).padStart(2,'0')} ${c.toFixed(decimals).padStart(3+decimals,'0')}`;
 }

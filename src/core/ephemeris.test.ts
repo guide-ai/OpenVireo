@@ -83,14 +83,15 @@ describe('astrometric position (0x5157b4 mode 2, 0x515b40 and the 0x59940c calle
  const htl=parseHtl(load('hotlists/ObjectX.HTL'));
  const at=(file:string,number:string,id:string,jd:number)=>{const bytes=load(`orbit/${file}`);const p=astrometricPosition(elementsFromState(readOrbitRecord(bytes,findOrbitRecord(bytes,{number})!)),jd);const row=htl.find(r=>r.id===id)!;return separationDegrees(p.raHours,p.decDeg,row.ra,row.dec)*3600;};
  const defaultJd=2454983.6666666665;// 2009/06/01 04:00:00 UT, the original Object X default (TUTTimeDlg)
- it('puts Eros and Pluto on their ObjectX.HTL rows at the original default date',()=>{
-  expect(at('ObjX_AST.CMO','433','(433) Eros',defaultJd)).toBeLessThan(0.5);
-  expect(at('ObjX_AST.CMO','134340','(134340) Pluto',defaultJd)).toBeLessThan(2);
-  expect(at('ObjX_MPC.CMO','433','(433) Eros',defaultJd)).toBeLessThan(30);
-  expect(at('ObjX_MPC.CMO','134340','(134340) Pluto',defaultJd)).toBeLessThan(5);
+ it('reproduces all three ObjectX.HTL moving rows from ObjX_MPC.CMO.sav at the original default 2009-06-01 04:00 UT',()=>{
+  expect(at('ObjX_MPC.CMO.sav','433','(433) Eros',defaultJd)).toBeLessThan(0.1);
+  expect(at('ObjX_MPC.CMO.sav','134340','(134340) Pluto',defaultJd)).toBeLessThan(1.5);// HTL RA rounding 0.1 s ≈ 1.43″ at −17.6°
+  expect(at('ObjX_MPC.CMO.sav','136617','(136617) 1994 CC',defaultJd)).toBeLessThan(0.1);
  });
- it('matches the 1994 CC row with ObjX_AST.CMO at 06:56 UT that day, but not with the default ObjX_MPC.CMO (two-body across its 2009 close approach)',()=>{
-  expect(at('ObjX_AST.CMO','136617','(136617) 1994 CC',2454983.7888)).toBeLessThan(2);
+ it('misses 1994 CC at that time with the shipped ObjX_MPC.CMO (0.86°, two-body across its 2009 close approach) and with ObjX_AST.CMO (16′)',()=>{
   expect(at('ObjX_MPC.CMO','136617','(136617) 1994 CC',defaultJd)).toBeGreaterThan(3000);
+  expect(at('ObjX_AST.CMO','136617','(136617) 1994 CC',defaultJd)).toBeGreaterThan(900);
+  expect(at('ObjX_MPC.CMO','433','(433) Eros',defaultJd)).toBeLessThan(30);
+  expect(at('ObjX_AST.CMO','433','(433) Eros',defaultJd)).toBeLessThan(0.5);
  });
 });
