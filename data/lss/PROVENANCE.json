@@ -22,7 +22,7 @@
  "readWitnessSemantics": {
   "wholeRecord": "54 hex digits: the 27-byte compact record, published only when its position lies inside the area of at least one listed pointing",
   "positionOnly": "16 hex digits: the first 8 bytes (packed Int32 RA, Int32 Dec), for every other record the binary search probes or the sequential scan reads; the engine refuses a position-only witness that falls inside an area",
-  "photographs": "GLIMAGES.LST is not an approved resource: only per-pointing match indices"
+  "photographs": "Per-pointing GLIMAGES.LST match indices; the byte-exact GLIMAGES.LST (approved 2026-10-27, public/original/images) is shipped separately and reproduces these entries (src/core/lssLists.ts packWithPhotographs, lssPacks.test.ts)"
  },
  "fields": [
   {

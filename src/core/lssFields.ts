@@ -6,7 +6,7 @@
  * catalogue record whose identifier equals the row id (case/space folded) within 1 arcsec. 'exact' means the HTL binary64
  * coordinates equal that record's Double RA/Dec; otherwise they are rounded. 'near' lists other catalogue records within
  * 1 arcsec (coincident or blended entries): the slit selection, not the row label, decides which galaxy is observed.
- * Field labels are a web adaptation from the file names; the original LSSFields.LST is not included (not approved). */
+ * The original field names and centres come from the byte-exact LSSFields.LST (lssLists.ts; approved 2026-10-27). */
 import type {HtlFields} from './hotList';
 
 export type LssFieldNumber=1|2|3|4|5|6|7|8|9;

@@ -5,8 +5,8 @@
  *    packed Int32 RA and Dec), which is all the trace and the admission predicate read from a record rejected by position;
  *  - every CLEA_VStrs.dat record whose Double position lies inside the coverage (92-byte raw records);
  *  - every CLEA_QSO.DAT position inside the coverage (index and Double position only);
- *  - per listed pointing, the GLIMAGES.LST record indices whose position lies inside its area (indices only: the photographic
- *    list itself is not an approved resource).
+ *  - per listed pointing, the GLIMAGES.LST record indices whose position lies inside its area (indices only; the byte-exact
+ *    GLIMAGES.LST, approved 2026-10-27, is shipped separately and lssLists.ts can rebuild these entries from it).
  * Completeness of the source lists is an offline witness (whole-source scans, analysis/lss-packs), not something the browser
  * can prove; the pack records the source SHA-256 and record counts those witnesses used. Galaxies are not in the pack: the
  * engine reads the bundled CLEA_GLX.DAT whole. A pack certifies only its listed pointings (exact binary64 equality): its band

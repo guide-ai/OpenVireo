@@ -1,14 +1,14 @@
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import field36773 from '../../data/hubble/pinned-galaxy-field.json';
-import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,LssSurveyError,LSS_LIMITS} from './lssSurvey';
+import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,LssSurveyError,LSS_LIMITS} from './lssSurvey';
 import {hubbleVelocity} from './hubbleVelocity';
 import {evaluateLssRow,lssExposureEngine,lssPolicy,parseLssPolicy,lssCountsCsv} from './lssExposure';
 import {fieldPackFromSnapshot} from './fieldPack';
 import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy} from './galaxyExposure';
 import {EMPTY_WEDGE_WORKSPACE,appendOwnLssRecords,completeWedgeRead,beginWedgeRead,WEDGE_OWN_RECORDS_NAME} from './wedgeWorkspace';
 import {wedgePlot,WEDGE_DEFAULT_OPTIONS} from './wedgePlot';
-import type {LssRow} from './lssFields';
+import {LSS_ROWS,type LssRow} from './lssFields';
 const glx=new Uint8Array(readFileSync(new URL('../../public/original/catalogs/CLEA_GLX.DAT',import.meta.url)));
 const code=(f:()=>unknown)=>{try{f();return 'ok';}catch(e){return e instanceof LssSurveyError?e.code:'other';}};
 const draft={field:2 as const,row:4,telescope:0 as const,object:'NGC 4555',jd:2451545,ra:12.594,dec:26.523,z:.0224,acquisitionPolicy:'openvireo-lss-v1:F2:R5:T0'};
@@ -27,12 +27,14 @@ describe('E02 survey records (Record Z LSS branch, web adaptation)',()=>{
   expect(code(()=>confirmLssRecord(s))).toBe('pending');
  });
  it('bounds text, values and the record count',()=>{
+  expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,{...draft,z:-.99999999}))).toBe('record');// Single rounds to −1
   expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,{...draft,z:-1}))).toBe('record');
   expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,{...draft,ra:24}))).toBe('record');
   const s=openLssRecord(EMPTY_LSS_SURVEY,draft);
   expect(code(()=>editLssDraft(s,{remarks:'x'.repeat(LSS_LIMITS.remarks+1)}))).toBe('record');
   expect(code(()=>editLssDraft(s,{remarks:'a\nb'}))).toBe('record');
   let full={...EMPTY_LSS_SURVEY};for(let i=0;i<LSS_LIMITS.records;i++)full=confirmLssRecord(openLssRecord(full,draft));
+  expect(lssAtLimit(full)).toBe(true);expect(lssAtLimit(EMPTY_LSS_SURVEY)).toBe(false);
   expect(code(()=>confirmLssRecord(openLssRecord(full,draft)))).toBe('limit');
  });
  it('writes a formula-neutral results CSV',()=>{
@@ -41,9 +43,21 @@ describe('E02 survey records (Record Z LSS branch, web adaptation)',()=>{
   expect(csv.split('\r\n')[0]).toMatch(/^schema,id,field,row,/);
   expect(csv).toContain(`"'=HYPERLINK(""x"")"`);expect(csv).toContain(`"'+cmd"`);
  });
+ it('plots every real LSS row at the same pixels as the equivalent Z-column text row (pixel-level claim)',()=>{
+  const fields=['status','dx','dy','cx','cy','boundary'] as const;let compared=0;
+  for(const row of LSS_ROWS)for(const z of [.0008,.0224,.04]){
+   const zs=Math.fround(z),own=appendOwnLssRecords(EMPTY_WEDGE_WORKSPACE,[{object:'x',jd:2451545,ra:row.ra,dec:row.dec,zSingle:zs,remarks:'-'}],{sha256:'a'.repeat(64),bytes:1});
+   const h=Math.trunc(row.ra),m=Math.trunc((row.ra-h)*60),sec=(row.ra-h-m/60)*3600,d=Math.trunc(row.dec),dm=Math.trunc((row.dec-d)*60),ds=(row.dec-d-dm/60)*3600;
+   const line=`Object ID    MJD(Days)      RA           Dec     Z  Comments\nx          51544.5 ${h}h${m}m${sec}s ${d}\u00b0${dm}'${ds}" ${zs} -\n`;
+   const text=completeWedgeRead(beginWedgeRead(EMPTY_WEDGE_WORKSPACE,1,'x.txt'),1,{name:'x.txt',sha256:'b'.repeat(64),bytes:Uint8Array.from([...line].map(c=>c.charCodeAt(0)))});
+   const a=wedgePlot(own.records,WEDGE_DEFAULT_OPTIONS).points[0],b=wedgePlot(text.records,WEDGE_DEFAULT_OPTIONS).points[0];
+   for(const f of fields)expect(a[f]).toEqual(b[f]);compared++;
+  }
+  expect(compared).toBe(657);
+ });
  it('hands only new records to the wedge, with exact values, and plots them like an equivalent Z text row',async()=>{
   let s=confirmLssRecord(openLssRecord(EMPTY_LSS_SURVEY,{...draft,ra:12.5,dec:27.25}));
-  expect(pendingWedgeRecords(s)).toHaveLength(1);s=markLssHandedToWedge(s);expect(pendingWedgeRecords(s)).toHaveLength(0);
+  expect(pendingWedgeRecords(s)).toHaveLength(1);expect(code(()=>markLssHandedToWedge(s,2))).toBe('record');s=markLssHandedToWedge(s,1);expect(pendingWedgeRecords(s)).toHaveLength(0);
   const w=appendOwnLssRecords(EMPTY_WEDGE_WORKSPACE,s.records.map(r=>({object:r.object,jd:r.jd,ra:r.ra,dec:r.dec,zSingle:r.zSingle,remarks:r.remarks})),{sha256:'a'.repeat(64),bytes:10});
   expect(w.receipts[0]).toMatchObject({name:WEDGE_OWN_RECORDS_NAME,action:'first',hasZ:true,rows:1});
   // Same values written as a native Z-column text row (12h30m0s, 27°15'0", z as its shortest decimal).

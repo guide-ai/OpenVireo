@@ -19,13 +19,18 @@ Session persistence (M6, session v27) is not done yet.
 
 Per field on the 0.4 m: F1 13, F2 10, F3 12, F4 8, F5 11, F6 13, F7 20, F8 16, F9 26.
 
+Own records hand over to the wedge at pixel level: the plotted pixel fields equal those of the equivalent Z-column text row for all 219 rows (lssSurvey.test.ts); the angle may differ by about 1e-14 degrees.
+
 Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC 4842, 15384+2831W/S → 15384+2831E). They are shown as such.
 
 ## Adaptations (one line each)
 - The telescope is the student's choice among the three verified profiles; the exercise-mode-5 telescope entry is not recovered.
 - Each pointing builds a fresh field centred on the HTL coordinates; there is no cache pan.
 - The raster is the nearest-centre browser raster, not Windows pixel identity.
-- The range is fixed at 4000–5000 Å with the GLXYTMPL.SP template. Galaxies with their own GLXYSP.LST spectrum (NGC 4670, NGC 4889) stay unavailable; both are also QSO-gated, so NGC4670.SP is not wired yet.
+- The range is fixed at 4000–5000 Å with the GLXYTMPL.SP template. Galaxies with their own GLXYSP.LST spectrum (NGC 4670, NGC 4889) stay unavailable. Both are QSO-gated first, so NGC4670.SP stays unwired: no reachable path could use it. The spectrum-mapping gate (in lssExposure.ts, not the engine: any other engine consumer must apply it too) and the `mapped==[]` assertion in lssPacks.test.ts are kept as a tripwire for when the QSO merge is ported.
+- Pointing a row goes straight to its fresh field: no dome, slew, horizon/time check or tracking.
+- Measured Redshift Data: Object is read-only as in the original; RA/Dec are decimal and fixed; velocity is computed as c·z (original edits RA/Dec h m s and velocity); JD is read when Record Z is clicked.
+- Records are not saved in the investigation file until M6; the page says so.
 - Measurement uses a dedicated panel on the analyser's recovered shift-control contract.
 - Record Z follows the recovered LSS branch, but the creation function 0x57c918 and the dialog bodies are not recovered.
 - Records go to the wedge directly with their exact values, not through the native .TXT writer 0x57af74.

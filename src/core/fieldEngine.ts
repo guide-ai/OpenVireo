@@ -24,7 +24,7 @@ import {decodeNativeVariableRecord,nativeVariableClass,nativeVariableFalseMerge,
 import {decodeGlxRecord,GLX_CATALOG} from './glxCatalog';
 import type {NativeGalaxy} from './pinnedGalaxyField';
 import {galaxyCatalogAxes,catalogGalaxyMagnitude} from './galaxyCatalogAxes';
-import {paintAdaptedGalaxy} from './galaxyScene';
+import {paintAdaptedGalaxy,galaxyStampGeometry} from './galaxyScene';
 import {createNativeSelectionScene,selectCatalogObject,type NativeSelectionScene,type ObjectSelection} from './objectSelection';
 import {cropNativeFrame,freshNativeViewport,paintNativeStar} from './detectorRaster';
 import {prepareNativeStarProfile} from './starProfiles';
@@ -196,8 +196,9 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  const {population,reasons}=buildFieldPopulation(pack,glx,at);
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
  const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
- let raster:RgbImage;
- try{raster=paintField(population,scene,c);}catch(e){if(e instanceof FieldEngineError)throw e;return Object.freeze({...empty,population,scene,reasons:Object.freeze(['stamp-bound' as const])});}
+ // The bounded browser stamp (galaxyScene.ts: 3 ≤ major ≤ 100 px, 1 ≤ minor ≤ major) is the only gate here; any other error throws.
+ for(const g of population.galaxies){try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){if(e instanceof Error&&e.message==='Outside bounded galaxy stamp.')return Object.freeze({...empty,population,scene,reasons:Object.freeze(['stamp-bound' as const])});throw e;}}
+ const raster=paintField(population,scene,c);
  const viewport=cropNativeFrame(raster,freshNativeViewport(FRAME.viewport,FRAME.viewport,{x:FRAME.anchor,y:FRAME.anchor})),pixelLevel=slitPixelLevel(viewport);
  let selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor);
  if(selection.kind==='throughput-required'){

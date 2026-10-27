@@ -2,7 +2,7 @@
  * HTL coordinates, for the selected telescope record; then the same bounded journal as the galaxy exposure. Web adaptations
  * (one line each in docs/LSS-SURVEY.md): a fresh field per pointing; the telescope is the student's choice among the three
  * verified profiles because the exercise-mode-5 telescope entry is not recovered; native timing (no speed-up). */
-import {evaluateField,createFieldExposure,FieldEngineError,type FieldResult,type FieldTelescope,type FieldUnavailableReason} from './fieldEngine';
+import {evaluateField,createFieldExposure,type FieldResult,type FieldTelescope,type FieldUnavailableReason} from './fieldEngine';
 import type {FieldPack} from './fieldPack';
 import {hasLibrarySpectrum} from './lssLists';
 import {lssFieldRows,type LssFieldNumber,type LssRow} from './lssFields';
@@ -24,9 +24,8 @@ export function parseLssPolicy(policy:unknown):Readonly<{field:LssFieldNumber;ro
  * nearest rule selects another catalogue galaxy at (or within 1″ of) the row position; unavailable: typed reasons. */
 export type LssRowStatus=Readonly<{kind:'available'|'neighbour';result:FieldResult;selectedId:string;selectedIndex:number}>|Readonly<{kind:'unavailable';reasons:readonly FieldUnavailableReason[];result:FieldResult|null}>;
 export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescope:FieldTelescope,librarySpectra:ReadonlySet<string>):LssRowStatus{
- let result:FieldResult;
- try{result=evaluateField(pack,glx,{ra:row.ra,dec:row.dec},telescope);}
- catch(e){if(e instanceof FieldEngineError&&e.code==='evidence')return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['outside-pack' as const]),result:null});throw e;}
+ // Evidence inconsistencies (tampered or incomplete pack) throw to the caller; only typed gates become statuses.
+ const result=evaluateField(pack,glx,{ra:row.ra,dec:row.dec},telescope);
  if(result.reasons.length||!result.target)return Object.freeze({kind:'unavailable' as const,reasons:result.reasons,result});
  if(hasLibrarySpectrum(librarySpectra,result.target.id))return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['spectrum-mapping' as const]),result});
  return Object.freeze({kind:result.target.recordIndex===row.catalogIndex?'available' as const:'neighbour' as const,result,selectedId:result.target.id,selectedIndex:result.target.recordIndex});
