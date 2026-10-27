@@ -81,11 +81,21 @@ function packStars(pack:FieldPack,area:NativeCatalogRegion,order:readonly string
  for(const name of order){
   const band=pack.bands.find(b=>b.name===name);if(!band)throw new FieldEngineError('evidence');
   const rows=new Map<number,NativeFieldStar>();
-  const row=(index:number)=>{let r=rows.get(index);if(!r){const hex=band.reads.get(index);if(!hex)throw new FieldEngineError('evidence');r=decodeNativeCompactRecord(hex,name,index);rows.set(index,r);}return r;};
+  const hex=(index:number)=>{const h=band.reads.get(index);if(!h)throw new FieldEngineError('evidence');return h;};
+  const full=(index:number)=>{let r=rows.get(index);if(!r){r=decodeNativeCompactRecord(hex(index),name,index);rows.set(index,r);}return r;};
   let trace;
-  try{trace=traceCompactGscBandRead({recordCount:band.recordCount,readPackedRa(index){return new DataView(hexBytes(row(index).rawHex).buffer).getInt32(0,true);}},key,area.maximumRa,10000);}
+  try{trace=traceCompactGscBandRead({recordCount:band.recordCount,readPackedRa(index){return new DataView(hexBytes(hex(index).slice(0,8)).buffer).getInt32(0,true);}},key,area.maximumRa,10000);}
   catch(e){if(e instanceof FieldEngineError)throw e;throw new FieldEngineError('evidence');}
-  for(const visit of trace.visits){const r=row(visit.recordIndex);if(nativeCatalogAdmission(r,area))stars.push(r);}
+  for(const visit of trace.visits){
+   const h=hex(visit.recordIndex);
+   if(h.length===16){
+    // Position-only witness: same x87-divided Double position as the decoder; it must be rejected by position alone.
+    const v=new DataView(hexBytes(h).buffer),ra=v.getInt32(0,true)/10_000_000,dec=v.getInt32(4,true)/100_000;
+    if(ra>=area.minimumRa&&ra<=area.maximumRa&&dec>=area.minimumDec&&dec<=area.maximumDec)throw new FieldEngineError('evidence');
+    continue;
+   }
+   const r=full(visit.recordIndex);if(nativeCatalogAdmission(r,area))stars.push(r);
+  }
  }
  return stars;
 }
@@ -114,7 +124,7 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  if(!packCovers(pack,pointing,area))return {population:null,reasons:['outside-pack']};
  const regionIds=nativeRegionIds(area),bandOrder=nativeCompactBandOrder(regionIds);
  let stars=packStars(pack,area,bandOrder);const initialStarIds=Object.freeze(stars.map(s=>s.id));
- const qsoMatches=pack.qso.entries.filter(p=>inside(p,area)).map(p=>p.index),photographMatches=pack.photographs.entries.filter(p=>inside(p,area)).map(p=>p.index);
+ const qsoMatches=pack.qso.entries.filter(p=>inside(p,area)).map(p=>p.index),photographMatches=pack.photographs.entries.find(e=>pack.pointings[e.pointing].ra===pointing.ra&&pack.pointings[e.pointing].dec===pointing.dec)?.indices??[];
  if(qsoMatches.length)reasons.push('qso-merge');
  if(photographMatches.length)reasons.push('photographic-image');
  let variables:NativeVariable[];

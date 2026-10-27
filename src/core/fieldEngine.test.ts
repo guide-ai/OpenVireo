@@ -67,10 +67,22 @@ describe('field engine gates and errors',()=>{
   const a=field36773.area,mid={ra:(a.minimumRa+a.maximumRa)/2,dec:(a.minimumDec+a.maximumDec)/2};
   const raw=JSON.parse(JSON.stringify({schema:FIELD_PACK_SCHEMA,id:'gated',coverage:{minimumRa:a.minimumRa,maximumRa:a.maximumRa,minimumDec:a.minimumDec,maximumDec:a.maximumDec},pointings:[field36773.domain.pointing],
    bands:field36773.bands.map(b=>({name:b.name,recordCount:b.recordCount,sha256:null,reads:b.reads.map(r=>[r.index,r.rawHex])})),
-   variables:{sha256:null,recordsChecked:31147,entries:[]},qso:{sha256:null,recordsChecked:2269,entries:[{index:7,...mid}]},photographs:{sha256:null,recordsChecked:183,entries:[{index:3,...mid}]}}));
+   variables:{sha256:null,recordsChecked:31147,entries:[]},qso:{sha256:null,recordsChecked:2269,entries:[{index:7,...mid}]},photographs:{sha256:null,recordsChecked:183,entries:[{pointing:0,indices:[3]}]}}));
   const r=evaluateField(decodeFieldPack(raw),glx,field36773.domain.pointing,0);
   expect(r.reasons).toEqual(['qso-merge','photographic-image']);
   expect(r.population?.qsoMatches).toEqual([7]);
+  expect(r.population?.photographMatches).toEqual([3]);
+ });
+ it('accepts position-only witnesses for records rejected by position, and refuses them for records inside the area',()=>{
+  const a=field36773.area,decode=(h:string)=>{const v=new DataView(Uint8Array.from(h.match(/../g)!,x=>parseInt(x,16)).buffer);return {ra:v.getInt32(0,true)/1e7,dec:v.getInt32(4,true)/1e5};};
+  const snap=JSON.parse(JSON.stringify(field36773));let shortened=0;
+  for(const r of snap.bands[0].reads){const p=decode(r.rawHex);if(!(p.ra>=a.minimumRa&&p.ra<=a.maximumRa&&p.dec>=a.minimumDec&&p.dec<=a.maximumDec)){r.rawHex=r.rawHex.slice(0,16);shortened++;}}
+  expect(shortened).toBeGreaterThan(500);
+  const known=evaluateField(fieldPackFromSnapshot('s',field36773 as Snap),glx,field36773.domain.pointing,0),slim=evaluateField(fieldPackFromSnapshot('s',snap),glx,field36773.domain.pointing,0);
+  expect(slim.population?.stars.map(s=>s.id)).toEqual(known.population?.stars.map(s=>s.id));
+  expect(sha(slim.viewport!.rgb as Uint8Array)).toBe(sha(known.viewport!.rgb as Uint8Array));
+  const inside=snap.bands[0].reads.find((r:{rawHex:string})=>r.rawHex.length===54);inside.rawHex=inside.rawHex.slice(0,16);
+  expect(()=>evaluateField(fieldPackFromSnapshot('s',snap),glx,field36773.domain.pointing,0)).toThrow(FieldEngineError);
  });
  it('throws evidence when a needed band read is missing, never skipping the record',()=>{
   const snap=JSON.parse(JSON.stringify(field36773));snap.bands[0].reads.splice(Math.floor(snap.bands[0].reads.length/2),1);
