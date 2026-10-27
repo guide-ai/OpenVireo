@@ -3,7 +3,7 @@
  "scope": "Bounded compact-GSC read witnesses (N2230, N3000) for the 219 pointings of LSS_Field01..09.HTL, with in-coverage CLEA_VStrs.dat records, CLEA_QSO.DAT positions and GLIMAGES.LST match indices; field engine input (src/core/fieldPack.ts).",
  "approval": {
   "date": "2026-10-27",
-  "text": "AGENTS.md: publication of bounded GSC subsets from the compact bands N2230 and N3000, solely for the LSS survey strip (RA 12-16 h, Dec 26.7-31.8 deg), together with their read witnesses and provenance, on the same terms as the published Hubble fields. Not either complete band, the full GSC, LSSFields.LST, GLXYSP.LST or NGC4670.SP."
+  "text": "AGENTS.md: publication of bounded GSC subsets from the compact bands N2230 and N3000, solely for the LSS survey strip (RA 12-16 h, Dec 26.7-31.8 deg), together with their read witnesses and provenance, on the same terms as the published Hubble fields. Not either complete band, the full GSC, LSSFields.LST, GLXYSP.LST or NGC4670.SP. Extended the same day (AGENTS.md): the whole records that strip pointings near its edges need (their +-0.375 deg areas reach Dec 26.35-32.13 deg; 558 records) and position-only scan and binary-search witnesses outside the strip."
  },
  "archive": {
   "name": "CLEA_Vireo.zip",
@@ -24,7 +24,6 @@
   "positionOnly": "16 hex digits: the first 8 bytes (packed Int32 RA, Int32 Dec), for every other record the binary search probes or the sequential scan reads; the engine refuses a position-only witness that falls inside an area",
   "photographs": "GLIMAGES.LST is not an approved resource: only per-pointing match indices"
  },
- "edgeNote": "Pointing areas extend 0.375 deg beyond the row coordinates, so some whole records lie at Dec 26.35-26.7 and 31.8-32.13 (558 records); scan witnesses span the bands full Dec range in the scanned RA windows and probe witnesses lie at RA 5.4-20.1 h. Their inclusion as read witnesses of strip pointings is pending coordinator confirmation.",
  "fields": [
   {
    "field": 1,
@@ -221,5 +220,88 @@
   "Not the full N2230/N3000 bands or the GSC",
   "Completeness of each pack holds only for its listed pointings",
   "No original-runtime equivalence; Number, not x87"
- ]
+ ],
+ "readCategories": {
+  "wholeInStrip": {
+   "count": 15239,
+   "why": "Whole 27-byte records inside a listed pointing area with Dec 26.7-31.8 deg: candidates the admission predicate reads in full (position, magnitude); admitted stars come from these."
+  },
+  "wholeEdge": {
+   "count": 558,
+   "why": "Whole records inside the area of a pointing near the strip edge, at Dec 26.35-26.7 or 31.8-32.13 deg (edge approval)."
+  },
+  "positionScan": {
+   "count": 99583,
+   "why": "8-byte RA/Dec witnesses of records the sequential scan (0x59b030..0x59b1f7) reads from the search landing to the first record beyond the area RA maximum; the band is sorted by RA only, so these span the band Dec range; each is rejected by position. Of all position-only witnesses 24330 lie inside Dec 26.7-31.8."
+  },
+  "positionProbeOnly": {
+   "count": 345,
+   "why": "8-byte witnesses of binary-search probes (0x59af80..0x59b026) outside every scan; only their packed RA is compared; they lie at RA 5.4-20.1 h."
+  },
+  "perField": {
+   "1": {
+    "wholeInStrip": 902,
+    "wholeEdge": 21,
+    "positionScan": 6521,
+    "positionProbeOnly": 32,
+    "positionInStrip": 1021
+   },
+   "2": {
+    "wholeInStrip": 1558,
+    "wholeEdge": 85,
+    "positionScan": 11267,
+    "positionProbeOnly": 17,
+    "positionInStrip": 2088
+   },
+   "3": {
+    "wholeInStrip": 1195,
+    "wholeEdge": 17,
+    "positionScan": 6452,
+    "positionProbeOnly": 32,
+    "positionInStrip": 1398
+   },
+   "4": {
+    "wholeInStrip": 1381,
+    "wholeEdge": 38,
+    "positionScan": 5050,
+    "positionProbeOnly": 20,
+    "positionInStrip": 1144
+   },
+   "5": {
+    "wholeInStrip": 1678,
+    "wholeEdge": 66,
+    "positionScan": 10888,
+    "positionProbeOnly": 30,
+    "positionInStrip": 3056
+   },
+   "6": {
+    "wholeInStrip": 1768,
+    "wholeEdge": 123,
+    "positionScan": 14525,
+    "positionProbeOnly": 61,
+    "positionInStrip": 4386
+   },
+   "7": {
+    "wholeInStrip": 1708,
+    "wholeEdge": 55,
+    "positionScan": 7618,
+    "positionProbeOnly": 27,
+    "positionInStrip": 1239
+   },
+   "8": {
+    "wholeInStrip": 2519,
+    "wholeEdge": 56,
+    "positionScan": 19363,
+    "positionProbeOnly": 80,
+    "positionInStrip": 5123
+   },
+   "9": {
+    "wholeInStrip": 2530,
+    "wholeEdge": 97,
+    "positionScan": 17899,
+    "positionProbeOnly": 46,
+    "positionInStrip": 4875
+   }
+  }
+ }
 }

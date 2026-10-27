@@ -6494,8 +6494,8 @@
     },
     {
       "path": "data/lss/PROVENANCE.json",
-      "bytes": 5865,
-      "sha256": "d48e74864cc317b507db018c01ea7f819eb6ffd55a78665540971d8d3d5502ab"
+      "bytes": 8079,
+      "sha256": "c5b2aa3f13091cc774d1f5d9147a312ec5c8c1a850673bdbc3f21575ecaa9576"
     },
     {
       "path": "data/lss/lss-field-01.json",
