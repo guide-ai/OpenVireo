@@ -91,11 +91,14 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 **Web adaptations** — The guide is web presentation; browser timing is not a native timing witness.
 
 ## E08 · Object X
-**Criteria**
-1. Image the field with the CCD camera.
-2. Measure positions over several nights.
-3. Identify the moving object and describe its orbit.
+**Criteria** (follow the original manual, OBJXlab; user decision 2026-10-27)
+1. Receive a target as an identifier and coordinates only; its identity stays hidden until revealed.
+2. Observe it with the instruments that can tell the types apart: CCD images at different times, spectra, and the radio telescope.
+3. Decide whether it is a star, galaxy, QSO, pulsar or asteroid, and justify the decision with your own observations.
+4. For an asteroid: measure its positions on several images, derive its motion, and describe its orbit.
+5. Save and restore the investigation.
+6. All five object types in ObjectX.HTL can be investigated; E08 does not close on a subset.
 
-**Status** — Not closed. CCD, astrometry and data files are missing (audit §3); phase 3 work.
+**Status** — Not closed. Needs the CCD camera (VizieR catalogue), orbit files and ephemeris, a web position-measuring tool, and field-engine spectra for stars, QSOs and galaxies with photographs or their own spectra (audit §3; plans in the research root `analysis/front-plans/`).
 
 **Evidence** — None. No closure claimed.
