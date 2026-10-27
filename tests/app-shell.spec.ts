@@ -24,7 +24,7 @@ test('phone Tools menu closes when a guide step changes the page and when the wi
  await guide.getByRole('button',{name:'Go to galaxy exposure',exact:true}).click();
  expect(new URL(page.url()).hash).toBe('#galaxy-exposure');await expect(toggle).toHaveAttribute('aria-expanded','false');await expect(headerTool(page,'Observatory')).toBeHidden();
  await toggle.click();await expect(toggle).toHaveAttribute('aria-expanded','true');
- await page.setViewportSize({width:800,height:844});await expect(toggle).toBeHidden();await page.setViewportSize({width:390,height:844});
+ await page.setViewportSize({width:800,height:844});await expect(toggle).toBeHidden();await expect(page.locator('.portal-header')).not.toHaveClass(/tools-open/);await page.setViewportSize({width:390,height:844});
  await expect(toggle).toHaveAttribute('aria-expanded','false');await expect(headerTool(page,'Observatory')).toBeHidden();
 });
 
