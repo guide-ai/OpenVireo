@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1289 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged.",
+  "purpose": "Exact identity manifest for the 1298 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged.",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6446,6 +6446,51 @@
       "path": "data/hubble/pinned-pegasus-field.json",
       "bytes": 429151,
       "sha256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field01.HTL",
+      "bytes": 1978,
+      "sha256": "4981140366916c6aa410afe7905a165bceb89af47686375c4f0cf60f42acbe9e"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field02.HTL",
+      "bytes": 2150,
+      "sha256": "994bfeb21bcde528faeb3969fb25c24fe7a0c8de8940c33beffec50248b4ec3d"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field03.HTL",
+      "bytes": 2150,
+      "sha256": "1b62cf132edca82187a793b6ed2671eea715b040b884412e6131cf0aa0a2e830"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field04.HTL",
+      "bytes": 1978,
+      "sha256": "d19f8c5b3fc159e991baaa4572c1357bff15bdfdf72e83062fadebd17eb5ea53"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field05.HTL",
+      "bytes": 2064,
+      "sha256": "7c2b82906a816398398ae1d62adb82d030675f28201623563b1bbf0baf90b8fe"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field06.HTL",
+      "bytes": 1806,
+      "sha256": "799d7c24623114f012899ad2b538fe8e128364e5f084816392a4243a822fa253"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field07.HTL",
+      "bytes": 2236,
+      "sha256": "ee4b402123321c5127badb72761e6f766205d5fc19f6877d6c90165def0d3d62"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field08.HTL",
+      "bytes": 2150,
+      "sha256": "ae677d270a1e11cf6a09bafa890716065c81b8a20e267570fa8c9b44599b3b2d"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field09.HTL",
+      "bytes": 2322,
+      "sha256": "b4ab710dd3adb9fe0f6cc980978688faa5c522dba233df972edcd8800d89350e"
     }
   ]
 }
