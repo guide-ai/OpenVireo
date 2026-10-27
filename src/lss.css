@@ -1,0 +1,16 @@
+.lss-main .card{margin-bottom:1rem}
+.lss-controls{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.lss-controls fieldset{display:flex;gap:.75rem;border:0;padding:0;margin:0}
+.lss-rows{width:100%;border-collapse:collapse;font-size:.9rem}
+.lss-rows th,.lss-rows td{border-bottom:1px solid var(--line,#d0d7de);padding:.3rem .4rem;text-align:left;vertical-align:top}
+.lss-rows tr[aria-current="true"]{background:var(--highlight,#eef5ff)}
+.lss-acquire-layout{display:grid;grid-template-columns:minmax(0,312px) minmax(0,1fr);gap:1rem}
+.lss-acquire-layout .sky-actions{display:flex;flex-wrap:wrap;gap:.4rem}
+.lss-acquire-layout .sky-actions button{flex:1 1 9rem;min-width:0}
+.lss-totals{display:grid;grid-template-columns:auto 1fr;gap:.2rem .6rem}
+.lss-measure svg .lss-line{stroke:#ffb347;stroke-width:1.5;stroke-dasharray:5 3}
+.lss-measure svg .lss-line-label{fill:#ffd9a0;font-size:11px}
+.lss-dialog{max-width:min(32rem,calc(100vw - 2rem))}
+.lss-dialog dl{display:grid;grid-template-columns:auto 1fr;gap:.2rem .6rem}
+.lss-main textarea{width:100%;box-sizing:border-box}
+@media (max-width:640px){.lss-acquire-layout{grid-template-columns:minmax(0,1fr)}.lss-rows{display:block;overflow-x:auto}.lss-main canvas{max-width:100%;height:auto}}

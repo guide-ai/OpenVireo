@@ -4,6 +4,7 @@ import{wedgeCsv}from'../core/wedgeExport';
 import type{WedgeRecord}from'../core/wedgeLssText';
 import{wedgeBitsHex,wedgeSingleExact}from'../core/wedgeNumeric';
 import{WEDGE_COLOUR_SCHEMES,wedgePlot,type WedgeColourScheme,type WedgePoint}from'../core/wedgePlot';
+import{appendOwnLssRecords,type WedgeOwnRecord}from'../core/wedgeWorkspace';
 import{EMPTY_WEDGE_WORKSPACE,addWedgePending,beginWedgeRead,cancelWedgeOptions,cancelWedgePending,cancelWedgeRead,clearWedgePending,commitWedgeOptions,completeWedgeRead,confirmWedgeDelete,dismissWedgeNotice,editWedgeOptions,failWedgeRead,openWedgeOptions,plotWedgeData,requestWedgeLoad,selectWedgeRecord,setWedgeSeparator,suspendWedgeWorkspace,type WedgeNotice,type WedgeWorkspace}from'../core/wedgeWorkspace';
 import{WedgeFileError,downloadWedgeText,readWedgeLssFile}from'../io/wedgeLssFile';
 import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
@@ -21,6 +22,8 @@ export type WedgeLabProps=Readonly<{
  disabled?:boolean;
  /** Observe workspace changes; persistence is the host's decision. */
  onWorkspaceChange?:(w:WedgeWorkspace)=>void;
+ /** The student's own E02 records handed over by the LSS survey (appendOwnLssRecords); applied once per token. */
+ ownRecords?:Readonly<{token:number;records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>|null;
 }>;
 type Line=Readonly<{caption:string;text:string}>;
 function noticeLines(n:WedgeNotice,m:WedgeMessageCatalog):readonly Line[]{
@@ -42,7 +45,7 @@ const fmt=(v:number,digits:number)=>Number.isFinite(v)?v.toFixed(digits):String(
 function raCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.ra.status==='value'?fmt(r.ra.hours,6)+' '+m.detail.hours:m.fieldStatus[r.ra.status];}
 function decCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.dec.status==='value'?fmt(r.dec.degrees,5)+m.detail.degrees+(r.dec.signLost?' *':''):m.fieldStatus[r.dec.status];}
 
-export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange}:WedgeLabProps){
+export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,ownRecords=null}:WedgeLabProps){
  const m=useMemo(()=>wedgeMessages(messages),[messages]),C=m.native;
  const[w,setW]=useState<WedgeWorkspace>(EMPTY_WEDGE_WORKSPACE);
  const[scheme,setScheme]=useState<WedgeColourScheme>(0);
@@ -56,6 +59,8 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
   * so a read, and therefore import consent, can never start underneath it. */
  const modal=w.optionsDraft!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
+ const appliedOwn=useRef(0);
+ useEffect(()=>{if(!ownRecords||ownRecords.token===appliedOwn.current)return;appliedOwn.current=ownRecords.token;setW(c=>{try{return appendOwnLssRecords(suspendWedgeWorkspace(c),ownRecords.records,ownRecords);}catch{return c;}});},[ownRecords?.token]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.
  useLayoutEffect(()=>{if(disabled){refocusFile.current=null;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);
