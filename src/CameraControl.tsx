@@ -3,11 +3,12 @@ import './camera.css';
 import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
 import {cameraRequestTransition,createCameraRequestGate,CAMERA_OBSERVE_INTERVAL_MS,type CameraGateEffect,type CameraGateEvent,type CameraRequestGate} from './core/cameraRequestGate';
 import {compiledCameraQueryReference} from './core/cameraQueryReference';
-import {readVizierCatalog,selectVizierCatalog,vizierRouteForCamera,wholeSkySelection,VizierCatalogError,type VizierSelection} from './core/vizierNomad';
-import {composeCameraExposure,type CameraExposure,type CameraExtraSource} from './core/cameraExposure';
+import {vizierRouteForCamera} from './core/vizierNomad';
+import {CAMERA_MAX_SECONDS,type CameraExposure,type CameraExtraSource} from './core/cameraExposure';
+import {exposureFromWorker,type CameraWorkerReply,type CameraWorkerRequest} from './camera/cameraWorkerCore';
 import {cameraDisplayRgba} from './core/cameraDisplay';
 import {INITIAL_CAMERA_PALETTE} from './core/cameraPalette';
-import {loadCameraCatalog,type CameraCatalogMode,type CameraCatalogSource} from './io/cameraCatalog';
+import {CAMERA_EXTRACTS,findCameraExtract,loadCameraCatalog,type CameraCatalogMode,type CameraCatalogSource} from './io/cameraCatalog';
 import type {AccessReason} from './core/instrumentAccess';
 import {writeCameraFits,cameraFitsFileName,type CameraFitsContext} from './core/fitsWriter';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
@@ -26,7 +27,19 @@ export type CameraControlProps=Readonly<{
  seedSource?:()=>number;
 }>;
 type Attempt={ticket:CameraGateEffect['ticket'];controller:AbortController;seconds:number;filter:number;gain:number;mode:CameraCatalogMode;jd:number;seed:number;pointing:Pointing;telescope:OpticalIndex;
- selection:VizierSelection|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string};
+ worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string};
+/** One Worker per attempt; parse and compose run there so Stop stays responsive (review fix H2). */
+function call(a:Attempt,request:CameraWorkerRequest,transfer:Transferable[]=[]):Promise<CameraWorkerReply|null>{
+ if(!a.worker){a.worker=new Worker(new URL('./camera/cameraWorker.ts',import.meta.url),{type:'module'});
+  a.worker.onmessage=e=>{const p=a.pending;a.pending=null;p?.(e.data as CameraWorkerReply);};
+  a.worker.onerror=()=>{const p=a.pending;a.pending=null;p?.(null);};}
+ return new Promise(resolve=>{a.pending=resolve;a.worker!.postMessage(request,transfer);});
+}
+function stopWorker(a:Attempt|null){if(!a)return;a.worker?.terminate();a.worker=null;const p=a.pending;a.pending=null;p?.(null);}
+function cameraQuery(telescope:OpticalIndex,filter:number,pointing:Pointing,jd:number){
+ const reference=compiledCameraQueryReference('ccd',telescope,filter,{centerRAHours:pointing.ra,centerDecDegrees:pointing.dec,selectionMagnitudeLimit:21.5,suppliedDateDouble:jd,dateBias:0});
+ return {reference,route:vizierRouteForCamera('ccd',filter)};
+}
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
 export default function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
@@ -35,7 +48,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
  const [image,setImage]=useState<CameraImage|null>(null);
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
- const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();};},[]);
+ const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
  function stopTimers(){if(timers.current.observe)clearInterval(timers.current.observe);if(timers.current.poll)clearInterval(timers.current.poll);timers.current={};}
  function dispatch(event:CameraGateEvent){
   const transition=cameraRequestTransition(gateRef.current,event);gateRef.current=transition.state;
@@ -52,42 +65,39 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    case 'show-wait':setWaitShown(true);break;
    case 'hide-wait':setWaitShown(false);break;
    case 'initialize-request':void request(a);break;
-   case 'prepare':setMessage(M.statusPreparing);window.setTimeout(()=>prepare(a),0);break;
-   case 'release':a.controller.abort();stopTimers();window.setTimeout(()=>dispatch({type:'released',ticket:effect.ticket,ok:true}),0);break;
+   case 'prepare':setMessage(M.statusPreparing);void prepare(a);break;
+   case 'release':a.controller.abort();stopWorker(a);stopTimers();window.setTimeout(()=>dispatch({type:'released',ticket:effect.ticket,ok:true}),0);break;
    case 'accept-prepared':if(a.prepared){setImage(a.prepared);onImage?.(a.prepared);}break;
   }
  }
+ /** Every outcome ends in a gate event; nothing is rethrown (review fix H1). */
  async function request(a:Attempt){
-  let reference;
-  try{reference=compiledCameraQueryReference('ccd',a.telescope,a.filter,{centerRAHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,selectionMagnitudeLimit:21.5,suppliedDateDouble:a.jd,dateBias:0});}
+  const fail=(failure:string,transportSucceeded:boolean,catalog:'invalid'|'unsupported')=>{if(attempt.current!==a)return;a.failure=failure;dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded,catalog});};
+  let query;
+  try{query=cameraQuery(a.telescope,a.filter,a.pointing,a.jd);}
   catch{a.failure='initialization';dispatch({type:'initialization-failed',ticket:a.ticket});return;}
-  const route=vizierRouteForCamera('ccd',a.filter);a.catalogName=route.catalogName;
-  const result=await loadCameraCatalog({catalog:route.catalog,raHours:a.pointing.ra,decDegrees:a.pointing.dec,radiusDegrees:reference.searchRadiusDegrees},a.mode,{signal:a.controller.signal});
-  if(attempt.current!==a)return;
-  if(!result.ok){
-   if(result.failure==='cancelled')return;
-   a.failure=result.failure;
-   dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded:result.failure==='no-extract'||result.failure==='integrity',catalog:'unsupported'});return;
-  }
-  a.source=result.source;
   try{
-   const catalog=readVizierCatalog(result.bytes,{catalog:route.catalog,band:route.band,epochOffsetYears:reference.epochOffsetYears,queryBrightMagnitude:reference.queryBrightMagnitude,queryFaintMagnitude:reference.queryFaintMagnitude});
-   a.selection=selectVizierCatalog(catalog,wholeSkySelection(reference.selectionMagnitudeLimit));
-   dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded:true,catalog:'valid'});
-  }catch(error){
-   if(!(error instanceof VizierCatalogError))throw error;
-   a.failure=error.code==='overflow'||error.code==='query-status'?error.code:'catalog';
-   dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded:true,catalog:'invalid'});
-  }
+   const {reference,route}=query;a.catalogName=route.catalogName;
+   const result=await loadCameraCatalog({catalog:route.catalog,raHours:a.pointing.ra,decDegrees:a.pointing.dec,radiusDegrees:reference.searchRadiusDegrees},a.mode,{signal:a.controller.signal});
+   if(attempt.current!==a)return;
+   if(!result.ok){if(result.failure!=='cancelled')fail(result.failure,result.failure==='no-extract'||result.failure==='integrity','unsupported');return;}
+   a.source=result.source;
+   const reply=await call(a,{type:'parse',bytes:result.bytes,context:{catalog:route.catalog,band:route.band,epochOffsetYears:reference.epochOffsetYears,queryBrightMagnitude:reference.queryBrightMagnitude,queryFaintMagnitude:reference.queryFaintMagnitude},magnitudeLimit:reference.selectionMagnitudeLimit},[result.bytes.buffer]);
+   if(attempt.current!==a||reply===null&&a.controller.signal.aborted)return;
+   if(reply?.type==='parsed'&&reply.ok){dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded:true,catalog:'valid'});return;}
+   fail(reply?.type==='parsed'&&!reply.ok?reply.code:'catalog',true,'invalid');
+  }catch{fail('catalog',true,'invalid');}
  }
- function prepare(a:Attempt){
+ async function prepare(a:Attempt){
   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
   try{
    const extras=extraSources?.(a.jd)??[];
-   const exposure=composeCameraExposure({camera:'ccd',opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},a.selection!,extras);
-   a.prepared=Object.freeze({exposure,source:a.source!,jd:a.jd,catalogName:a.catalogName});
+   const reply=await call(a,{type:'compose',recipe:{camera:'ccd',opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras});
+   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
+   if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
+   a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName});
    dispatch({type:'prepared',ticket:a.ticket,ok:true});
-  }catch{a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});}
+  }catch{a.failure='preparation';if(attempt.current===a&&gateRef.current.phase==='preparing')dispatch({type:'prepared',ticket:a.ticket,ok:false});}
  }
  // Terminal messages once the gate is back to idle.
  useEffect(()=>{
@@ -95,7 +105,8 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
   const a=attempt.current;
   setMessage(gate.terminal==='completed'?M.statusDone:gate.terminal==='cancelled'?M.statusCancelled:`${M.statusFailed} ${M.failure[a?.failure??'catalog']??''}`);
  },[gate]);
- useEffect(()=>{if(gate.phase==='exposing')setMessage(M.statusExposing(gate.remainingSeconds,gate.requestedSeconds));else if(gate.phase==='waiting')setMessage(M.statusWaiting);},[gate.phase,gate.remainingSeconds,gate.requestedSeconds]);
+ // The live region announces phase changes only; the countdown is a separate, non-live line (review L10).
+ useEffect(()=>{if(gate.phase==='exposing')setMessage(M.statusExposing);else if(gate.phase==='waiting')setMessage(M.statusWaiting);},[gate.phase]);
  // Leaving the view, or the telescope losing its field, stops a running exposure.
  const running=gate.phase!=='idle';
  useEffect(()=>{if(running&&(!active||busy||access!=='ready')&&gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});},[active,busy,access,running]);
@@ -105,15 +116,19 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
  },[image,usePalette]);
 
  const m=/^\d{1,2}$/.test(minutes)?Number(minutes):NaN,s=/^\d{1,2}$/.test(seconds)?Number(seconds):NaN;
- const total=m*60+s,validExposure=Number.isInteger(total)&&m<=60&&s<=59&&total>=1;
+ const total=m*60+s,validExposure=Number.isInteger(total)&&s<=59&&total>=1&&total<=CAMERA_MAX_SECONDS;
  const ready=access==='ready'&&active&&!busy;
+ // Static mode: whether a bundled extract covers this pointing is known before Start (review L6).
+ let staticCovered=true;
+ if(mode==='static'){try{const {reference,route}=cameraQuery(telescopeIndex,filter,pointing,2451545);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
  function start(){
   if(!ready||!validExposure||running)return;
+  if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
   const jd=currentJd(),seed=seedSource()>>>0;
   attempt.current=null;
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
   const ticket=transition.state.ticket!;
-  attempt.current={ticket,controller:new AbortController(),seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,selection:null,source:null,failure:null,prepared:null,catalogName:''};
+  attempt.current={ticket,controller:new AbortController(),seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:''};
   gateRef.current=transition.state;setGate(transition.state);setWaitShown(false);
   for(const effect of transition.effects)apply(effect);
  }
@@ -135,8 +150,9 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    </div>
    <label>{M.gain}<select value={gain} onChange={e=>setGain(Number(e.target.value))}>{[1,2,5].map(g=><option key={g} value={g}>{g}</option>)}</select></label>
    <fieldset className="camera-source"><legend>{M.catalogSource}</legend>
-    <label><input type="radio" name="camera-source" checked={mode==='static'} onChange={()=>setMode('static')}/>{M.sourceStatic}</label>
+    <label><input type="radio" name="camera-source" checked={mode==='static'} onChange={()=>setMode('static')}/>{CAMERA_EXTRACTS.length?M.sourceStatic:M.sourceStaticNone}</label>
     <label><input type="radio" name="camera-source" checked={mode==='live'} onChange={()=>setMode('live')}/>{M.sourceLive}</label>
+    {mode==='static'&&!staticCovered&&<p className="camera-hint" data-testid="camera-static-hint">{M.noExtractHere}</p>}
    </fieldset>
   </fieldset>
   {!validExposure&&<p className="camera-invalid" role="alert">{M.invalidExposure}</p>}
@@ -144,7 +160,8 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    <button className="primary-button" disabled={!ready||!validExposure||running} onClick={start}>{M.start}</button>
    <button className="secondary-button" disabled={!running||gate.phase==='releasing'} onClick={stop}>{M.stop}</button>
   </div>
-  <p role="status" aria-live="polite" data-testid="camera-status">{!ready&&!running?M.statusNotReady(busy||!active?'':M.accessReason[access]??''):message}</p>
+  <p role="status" aria-live="polite" data-testid="camera-status">{!ready&&!running?(busy||!active?M.statusUnavailable:M.statusNotReady(M.accessReason[access]??'')):message}</p>
+  {gate.phase==='exposing'&&<p className="camera-countdown" data-testid="camera-countdown">{M.countdown(gate.remainingSeconds,gate.requestedSeconds)}</p>}
   {shown&&image&&<figure className="camera-image">
    <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.filterPosition),shown.recipe.seconds)} data-testid="camera-canvas"/>
    <figcaption>{M.displayNote}</figcaption>

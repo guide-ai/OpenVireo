@@ -29,9 +29,12 @@ test('the camera waits for a tracked, pointed telescope and explains why',async(
  await expect(page.getByTestId('camera-status')).toContainText('The camera needs the telescope ready');
 });
 test('static mode never contacts CDS; a field without a bundled extract makes no image',async({page})=>{
- const seen=watch(page);await trackedField(page);await exposure(page,'0','1');
+ const seen=watch(page);await trackedField(page);await exposure(page,'0','30');
+ await expect(page.getByTestId('camera-static-hint')).toHaveText('No bundled extract covers this pointing. Choose the live CDS/VizieR option to image it.');
  await button(page,'Start exposure').click();
- await expect(page.getByTestId('camera-status')).toContainText('There is no bundled extract for this field',{timeout:10_000});
+ // Reported at Start, not after the 30 s countdown.
+ await expect(page.getByTestId('camera-status')).toContainText('There is no bundled extract for this field',{timeout:2_000});
+ await expect(camera(page)).toHaveAttribute('data-phase','idle');
  await expect(page.getByTestId('camera-canvas')).toHaveCount(0);
  expect(seen).toHaveLength(0);
 });
@@ -40,7 +43,8 @@ test('live mode sends only RA, DEC and SR and builds an image from the recorded 
  await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','2');
  await button(page,'Start exposure').click();
- await expect(page.getByTestId('camera-status')).toContainText('Exposing…');
+ await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
+ await expect(page.getByTestId('camera-countdown')).toContainText('of 2 s left.');
  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:15_000});
  await expect(page.getByTestId('camera-canvas')).toBeVisible();
  expect(seen).toHaveLength(1);
@@ -77,7 +81,7 @@ test('Stop cancels a long exposure and the pending request; keyboard use at 320 
  let aborted=false;await page.route(CDS,()=>{/* never answer */});page.on('requestfailed',r=>{if(CDS.test(r.url()))aborted=true;});
  await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','30');
  await button(page,'Start exposure').focus();await page.keyboard.press('Enter');
- await expect(page.getByTestId('camera-status')).toContainText('Exposing…');
+ await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
  await expect(camera(page).getByLabel('Seconds')).toBeDisabled();
  await button(page,'Stop').focus();await page.keyboard.press('Enter');
  await expect(page.getByTestId('camera-status')).toHaveText('Exposure stopped. No image was made.');
@@ -100,4 +104,41 @@ test('Save image writes a FITS file that reopens under Saved images with the sam
  await page.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}).setInputFiles({name:d.suggestedFilename(),mimeType:'application/octet-stream',buffer:bytes});
  await expect(page.locator('.fits-lab')).toContainText('1024 × 1024 pixels');
  await expect(page.locator('.fits-lab')).toContainText(createHash('sha256').update(bytes).digest('hex'));
+});
+test('a dense field of 10,001 catalog rows still makes an image, built off the main thread',async({page})=>{
+ await trackedField(page);
+ // AUTHORED grid of 10,001 stars around the current pointing (not VizieR output).
+ await page.route(CDS,route=>{
+  const u=new URL(route.request().url()),ra=Number(u.searchParams.get('RA')),dec=Number(u.searchParams.get('DEC'));
+  const f=['NOMAD1','RAJ2000','DEJ2000','pmRA','pmDE','Bmag','Vmag','Rmag','Jmag','Hmag','Kmag'];
+  const rows=Array.from({length:10001},(_,i)=>`<TR><TD>g${i}</TD><TD>${(ra+((i%101)/101-0.5)*0.25).toFixed(6)}</TD><TD>${(dec+(Math.floor(i/101)/100-0.5)*0.25).toFixed(6)}</TD><TD>0</TD><TD>0</TD><TD/><TD/><TD>${(15+(i%60)/10).toFixed(2)}</TD><TD/><TD/><TD/></TR>`).join('');
+  return route.fulfill({status:200,contentType:'text/xml',body:`<?xml version="1.0"?><VOTABLE version="1.4"><INFO name="MaxTuples" value="50000"/><RESOURCE><TABLE>${f.map(x=>`<FIELD name="${x}"/>`).join('')}<DATA><TABLEDATA>${rows}</TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>`});
+ });
+ await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','1');
+ await button(page,'Start exposure').click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:30_000});
+ await camera(page).getByText('Exposure details').click();
+ await expect(page.getByTestId('camera-detail-rows')).toContainText('10001 / 10001 /');
+});
+test('Stop during image building keeps the page responsive and makes no image',async({page})=>{
+ await trackedField(page);
+ await page.route(CDS,route=>{
+  const u=new URL(route.request().url()),ra=Number(u.searchParams.get('RA')),dec=Number(u.searchParams.get('DEC'));
+  const f=['NOMAD1','RAJ2000','DEJ2000','pmRA','pmDE','Bmag','Vmag','Rmag','Jmag','Hmag','Kmag'];
+  const rows=Array.from({length:40000},(_,i)=>`<TR><TD>g${i}</TD><TD>${(ra+((i%200)/200-0.5)*0.25).toFixed(6)}</TD><TD>${(dec+(Math.floor(i/200)/200-0.5)*0.25).toFixed(6)}</TD><TD>0</TD><TD>0</TD><TD/><TD/><TD>14</TD><TD/><TD/><TD/></TR>`).join('');
+  return route.fulfill({status:200,contentType:'text/xml',body:`<?xml version="1.0"?><VOTABLE version="1.4"><RESOURCE><TABLE>${f.map(x=>`<FIELD name="${x}"/>`).join('')}<DATA><TABLEDATA>${rows}</TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>`});
+ });
+ await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','1');
+ await button(page,'Start exposure').click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Building the image…',{timeout:20_000});
+ const t=Date.now();await button(page,'Stop').click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Exposure stopped. No image was made.');
+ expect(Date.now()-t).toBeLessThan(1500);
+ await expect(page.getByTestId('camera-canvas')).toHaveCount(0);
+});
+test('exposures longer than 60 min are refused in the form',async({page})=>{
+ await trackedField(page);await exposure(page,'60','30');
+ await expect(button(page,'Start exposure')).toBeDisabled();
+ await expect(camera(page).getByRole('alert')).toContainText('between 1 s and 60 min');
+ await exposure(page,'60','0');await expect(button(page,'Start exposure')).toBeEnabled();
 });

@@ -5,7 +5,7 @@
  * stored Single and rejected when 0 or >=30, recovered RA/DEC sorted insertion (nativeNomadOrder.ts).
  * Evidence: NATIVE-CAMERA-FRONT-C-C0-01 (docs/CAMERA-EXPOSURE-PROVENANCE.json) and docs/CAMERA-EXPOSURE.md.
  * Web choices are marked [W]. No URL is fetched here; transport lives in src/io/cameraCatalog.ts. */
-import {orderNativeNomadEntries} from './nativeNomadOrder';
+import {orderNativeNomadEntries,NativeNomadOrderError} from './nativeNomadOrder';
 import {cameraCatalogReference} from './cameraCatalogReference';
 import {nativeNomadCandidateInSelection,type NomadSelection} from './nativeNomadRows';
 
@@ -75,9 +75,9 @@ function attribute(tag:string,name:string):string|null {
  const m=new RegExp(`\\s${name}\\s*=\\s*("([^"]*)"|'([^']*)')`).exec(tag);return m?decode(m[2]??m[3]??''):null;
 }
 const decimal=/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$/;
-/** [W] Blank cells are absent values; VizieR writes no sentinel. */
+/** [W] Blank cells, and the declared VOTable null "NaN", are absent values. */
 function number(cell:string|undefined):number|null {
- const s=(cell??'').trim();if(s==='')return null;
+ const s=(cell??'').trim();if(s===''||s==='NaN')return null;
  if(s.length>64||!decimal.test(s))return Number.NaN;
  return Number(s);
 }
@@ -101,12 +101,15 @@ export function readVizierCatalog(bytes:Uint8Array,context:VizierRowContext):Viz
   if(name==='MaxTuples'&&value!==null&&/^\d{1,9}$/.test(value))maxTuples=Number(value);
   if(name==='matches'&&value!==null&&/^\d{1,9}$/.test(value))matches=Number(value);
  }
- if(queryStatus==='ERROR')throw new VizierCatalogError('query-status','ERROR');
  if(queryStatus==='OVERFLOW')throw new VizierCatalogError('overflow','QUERY_STATUS');
+ if(queryStatus!==null&&queryStatus!=='OK')throw new VizierCatalogError('query-status',queryStatus);
+ // IVOA Simple Cone Search 1.03 signals errors with an INFO or PARAM named "Error".
+ for(const m of text.matchAll(/<(?:INFO|PARAM)\b[^>]*>/g))if(attribute(m[0],'name')==='Error')throw new VizierCatalogError('query-status','Error');
  const tables=[...text.matchAll(/<TABLE\b[^>]*>([\s\S]*?)<\/TABLE>/g)];
  let fieldNames:readonly string[]=[],rows:string[][]=[];
- if(tables.length>1)throw new VizierCatalogError('table-count',String(tables.length));
- if(tables.length===1){
+ // A usable answer has exactly one TABLE; a document without one is never read as an empty field.
+ if(tables.length!==1)throw new VizierCatalogError('table-count',String(tables.length));
+ {
   const body=tables[0][1];
   fieldNames=Object.freeze([...body.matchAll(/<FIELD\b[^>]*>/g)].map(f=>{const n=attribute(f[0],'name');if(!n)throw new VizierCatalogError('malformed','FIELD');return n;}));
   if(new Set(fieldNames).size!==fieldNames.length)throw new VizierCatalogError('malformed','duplicate FIELD');
@@ -124,16 +127,18 @@ export function readVizierCatalog(bytes:Uint8Array,context:VizierRowContext):Viz
  if(rows.length>=maxTuples||(matches!==null&&matches>rows.length))throw new VizierCatalogError('overflow',`${rows.length}/${maxTuples}`);
  const index=(name:string)=>fieldNames.indexOf(name);
  const columns={id:index(shape.id),ra:index(shape.ra),dec:index(shape.dec),pmRA:index(shape.pmRA),pmDE:index(shape.pmDE),band:index(bandColumn)};
- if(rows.length||tables.length){
-  for(const [key,at] of Object.entries(columns))if(key!=='band'&&at<0)throw new VizierCatalogError('missing-field',key);
-  if(columns.band<0)throw new VizierCatalogError('missing-band',bandColumn);
- }
+ for(const [key,at] of Object.entries(columns))if(key!=='band'&&at<0)throw new VizierCatalogError('missing-field',key);
+ if(columns.band<0)throw new VizierCatalogError('missing-band',bandColumn);
  const entries:VizierEntry[]=rows.map((cells,rowIndex)=>Object.freeze({rowIndex,result:readRow(cells,columns,ownedContext)}));
  const candidates=entries.filter((e):e is VizierCandidateEntry=>e.result.kind==='candidate');
  const catalog:VizierCatalog=Object.freeze({catalog:context.catalog,context:ownedContext,fieldNames,queryStatus,maxTuples,matches,
-  entries:Object.freeze(entries),catalogEntries:orderNativeNomadEntries(candidates),
+  entries:Object.freeze(entries),catalogEntries:ordered(candidates),
   rejectedCount:entries.filter(e=>e.result.kind==='rejected').length,invalidCount:entries.filter(e=>e.result.kind==='invalid').length});
  owned.add(catalog);return catalog;
+}
+function ordered(entries:readonly VizierCandidateEntry[]):readonly VizierCandidateEntry[] {
+ try{return orderNativeNomadEntries(entries);}
+ catch(error){if(error instanceof NativeNomadOrderError)throw new VizierCatalogError('row-limit','ordering');throw error;}
 }
 type Columns=Readonly<{id:number;ra:number;dec:number;pmRA:number;pmDE:number;band:number}>;
 function readRow(cells:readonly string[],c:Columns,context:VizierRowContext):VizierRowResult {
@@ -166,7 +171,7 @@ export type VizierSelection=Readonly<{catalog:VizierCatalog;bounds:NomadSelectio
 export function selectVizierCatalog(catalog:VizierCatalog,bounds:NomadSelection):VizierSelection {
  if(!catalog||!owned.has(catalog))throw new VizierCatalogError('context','ownership');
  const ownedBounds=Object.freeze({...bounds});
- const selectedEntries=orderNativeNomadEntries(catalog.catalogEntries.filter(e=>nativeNomadCandidateInSelection(e.result.row,ownedBounds)));
+ const selectedEntries=ordered(catalog.catalogEntries.filter(e=>nativeNomadCandidateInSelection(e.result.row,ownedBounds)));
  let nativeMinimumMagnitude=25,nativeMaximumMagnitude=-2;
  for(const e of selectedEntries){const m=e.result.row.selectedMagnitude;if(m<nativeMinimumMagnitude)nativeMinimumMagnitude=m;if(m>nativeMaximumMagnitude)nativeMaximumMagnitude=m;}
  return Object.freeze({catalog,bounds:ownedBounds,selectedEntries,nativeMinimumMagnitude,nativeMaximumMagnitude});

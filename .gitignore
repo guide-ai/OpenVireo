@@ -45,3 +45,6 @@ playwright-report/
 *.tgz
 *.7z
 *.asm
+
+# Local-only wrapper configs (private Vite cache for worktree previews)
+*.front-c.config.ts

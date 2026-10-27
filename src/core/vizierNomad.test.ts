@@ -57,10 +57,24 @@ describe('VizieR VOTable reader',()=>{
   expect(code(()=>readVizierCatalog(new Uint8Array([0xff,0xfe]),ctx('R')))).toBe('encoding');
   expect(code(()=>readVizierCatalog(enc('<html>error</html>'),ctx('R')))).toBe('not-votable');
   expect(code(()=>readVizierCatalog(synthetic(nomadFields,[['a','1']]),ctx('R')))).toBe('malformed');
+  expect(code(()=>readVizierCatalog(enc('<VOTABLE version="1.4"><RESOURCE type="results"></RESOURCE></VOTABLE>'),ctx('R')))).toBe('table-count');
+  expect(code(()=>readVizierCatalog(enc('<VOTABLE version="1.4"><RESOURCE><INFO name="QUERY_STATUS" value="OK"/></RESOURCE></VOTABLE>'),ctx('R')))).toBe('table-count');
+  expect(code(()=>readVizierCatalog(synthetic(nomadFields,[],'<INFO name="Error" value="Cone search failed"/>'),ctx('R')))).toBe('query-status');
+  expect(code(()=>readVizierCatalog(synthetic(nomadFields,[],'<RESOURCE><PARAM name="Error" value="bad SR" datatype="char"/></RESOURCE>'),ctx('R')))).toBe('query-status');
+  expect(code(()=>readVizierCatalog(synthetic(nomadFields,[],'<INFO name="QUERY_STATUS" value="UNKNOWN"/>'),ctx('R')))).toBe('query-status');
+  expect(code(()=>readVizierCatalog(enc('<VOTABLE><RESOURCE><TABLE><FIELD name="NOMAD1"/></TABLE></RESOURCE></VOTABLE>'),ctx('R')))).toBe('missing-field');
+ });
+ test('dense fields: 10,001 admitted rows are ordered; more than the reader bound is a typed row-limit',()=>{
+  const rows=Array.from({length:10001},(_,i)=>[`r${i}`,String(10+(i%997)/1e4),String(1+Math.floor(i/997)/1e4),'0','0','','','15','','','']);
+  const c=readVizierCatalog(synthetic(nomadFields,rows,'<INFO name="MaxTuples" value="50000"/>'),ctx('R'));
+  expect(c.catalogEntries).toHaveLength(10001);expect(selectVizierCatalog(c,wholeSkySelection(21.5)).selectedEntries).toHaveLength(10001);
+  const NaNcell=readVizierCatalog(synthetic(nomadFields,[['a','10','1','0','0','','','NaN','','','']]),ctx('R'));
+  expect(NaNcell.entries[0].result).toEqual({kind:'rejected',reason:'selected-magnitude'});
  });
  test('empty valid cone is a valid empty catalog, not an error',()=>{
   const c=readVizierCatalog(synthetic(nomadFields,[]),ctx('V'));expect(c.catalogEntries).toEqual([]);
  });
+ // USNO-B1 column mapping is tested only with this authored document until a real I/284 response is recorded.
  test('USNO-B1 I2 reads Imag; NOMAD has no I band',()=>{
   const c=readVizierCatalog(synthetic(['USNO-B1.0','RAJ2000','DEJ2000','pmRA','pmDE','B1mag','R1mag','B2mag','R2mag','Imag'],[['1141-0012345','56.7','24.1','4','-2','','','','','17.25']]),{...ctx('I2'),catalog:'I/284'});
   expect(c.catalogEntries[0].result.row.selectedMagnitude).toBe(Math.fround(17.25));

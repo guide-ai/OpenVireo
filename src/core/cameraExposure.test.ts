@@ -1,7 +1,7 @@
 import {describe,expect,test} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {composeCameraExposure,CameraExposureError,type CameraExposureRecipe} from './cameraExposure';
+import {composeCameraExposure,CameraExposureError,type CameraExposureRecipe,type CameraExtraSource} from './cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from './vizierNomad';
 import {CameraRandomCursor} from './cameraRandom';
 import {randomDraw} from './acquisition';
@@ -42,6 +42,22 @@ describe('CCD exposure composer',()=>{
  test('typed refusals',()=>{
   expect(()=>composeCameraExposure({...recipe,gain:3},selection())).toThrow(CameraExposureError);
   expect(()=>composeCameraExposure({...recipe,seconds:0},selection())).toThrow(CameraExposureError);
-  expect(()=>composeCameraExposure(recipe,selection(),[{raHours:1,decDeg:1,storedMag:10,kind:'pair'}])).toThrow(CameraExposureError);
+  expect(()=>composeCameraExposure(recipe,selection(),[{raHours:1,decDeg:1,storedMag:10,kind:'pair'} as unknown as CameraExtraSource])).toThrow(CameraExposureError);
+ });
+ test('further control cases: NF and B pairs, three B stars, I with an authored USNO-B1 table and an off-detector row',()=>{
+  const usno=selectVizierCatalog(readVizierCatalog(new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/authored-usnob1-control.xml',import.meta.url))),{catalog:'I/284',band:'I2',epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5}),wholeSkySelection(21.5));
+  const pair={raHours:56.744/15,decDeg:24.117,storedMag:14,kind:'pair' as const,end:{raHours:56.7445/15,decDeg:24.1172}};
+  const pin=(x:ReturnType<typeof composeCameraExposure>)=>({sha256:sha(x.plane.pixels),draws:x.drawsConsumed,finalState:x.finalRandomState,records:x.records.length});
+  expect(pin(composeCameraExposure({...recipe,seed:7},selection(),[pair]))).toEqual(controls.cases['nf-pair-catalog']);
+  expect(pin(composeCameraExposure({...recipe,filterPosition:1,seconds:30,gain:1,seed:99},selection('B'),[pair]))).toEqual(controls.cases['b-pair-three-stars']);
+  const i=composeCameraExposure({...recipe,filterPosition:4,seconds:5,gain:5,seed:4242},usno,[pair]);
+  expect(pin(i)).toEqual(controls.cases['i-pair-authored-offdetector']);expect(i.catalog).toEqual({rows:4,selected:4,onDetector:3});
+  expect(i.records[0].magnitude).toBe(Math.fround(14-0.88));
+ });
+ test('a moving pair far off-axis is skipped with a typed reason, after consuming its four draws',()=>{
+  const far={raHours:(56.745/15+6)%24,decDeg:24,storedMag:12,kind:'pair' as const,end:{raHours:(56.745/15+6.01)%24,decDeg:24}};
+  const x=composeCameraExposure(recipe,selection(),[far]),plain=composeCameraExposure(recipe,selection());
+  expect(x.skipped).toEqual([{extraIndex:0,reason:'moving-pair-off-detector'}]);expect(x.records.map(r=>r.origin)).toEqual(['catalog']);
+  expect(x.drawsConsumed).toBe(plain.drawsConsumed+4);
  });
 });

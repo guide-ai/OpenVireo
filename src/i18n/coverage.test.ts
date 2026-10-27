@@ -24,7 +24,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   for(const bad of [{...en,extra:'extra'},{...en,'sky.pointed':'{wrong}'},{...en,'sky.pointed':5}])expect(()=>createI18n(bad as typeof en,'en-US')).toThrow();const missing={...en};delete(missing as Partial<typeof en>)['sky.pointed'];expect(()=>createI18n(missing,'en-US')).toThrow();
  });
  it('keeps all remaining direct render sites confined to reviewed scientific/source-identity tokens',()=>{
-  // 75: CameraControl.tsx (front C) adds the CCD camera window; its strings come from src/camera/CameraMessages.ts.
+  // 75: ObjectXMeasure.tsx (Front X) adds the E08 measuring tool; its strings come from src/objectx/ObjectXMessages.ts.
   // 74: LssLabGuide.tsx adds the E02 guide; it renders only catalog messages and counts.
   // 73: LssSurvey.tsx, LssAcquisition.tsx and LssMeasurement.tsx add the E02 survey route; they render only catalog messages and data fields, so the receipt map is unchanged.
   // 70: Front B adds eight optical observatory views under src/observatory (their strings come from ObservatoryMessages.ts or recovered core literals). 62: OwnObservationResults.tsx adds the phase-1 own results card (61 added ClassificationLineTable.tsx and ClassificationLabGuide.tsx; 59 included PleiadesLabGuide.tsx); it renders only catalog messages, data fields and an em dash, so the reviewed literal receipt map remains unchanged.

@@ -13,3 +13,6 @@
 .camera-details{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;font-size:.88rem;overflow-wrap:anywhere}
 .camera-details dd{margin:0}
 @media (max-width:480px){.camera-settings{flex-direction:column}.camera-exposure input{width:100%}}
+.camera-hint{margin:0;font-size:.88rem}
+.camera-countdown{margin:0;font-variant-numeric:tabular-nums}
+@media (max-width:480px){.camera-source{flex:0 1 auto}}
