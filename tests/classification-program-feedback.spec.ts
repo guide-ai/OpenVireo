@@ -1,5 +1,10 @@
 import{test,expect,type Page}from'@playwright/test';import{readFile}from'node:fs/promises';
 test.use({hasTouch:true});
+// Playwright turns on file-chooser interception asynchronously when the first 'filechooser' listener is added. pick()
+// presses Enter right after waitForEvent, and in about half of runs Chromium opened (and, headless, cancelled) the chooser
+// before interception was active, so no event arrived. A listener added before navigation keeps interception on;
+// each pick() still waits for its own chooser.
+test.beforeEach(({page})=>{page.on('filechooser',()=>{});});
 const region=(p:Page)=>p.locator('.classification-program'),dialog=(p:Page)=>p.getByRole('dialog',{name:'Program List · original practices',exact:true}),open=(p:Page)=>p.getByRole('button',{name:'Program List',exact:true}),choose=(p:Page)=>p.getByLabel('Program-list practice',{exact:true}),confirm=(p:Page)=>p.getByRole('button',{name:'Load selected practice',exact:true}),file=(p:Page)=>p.getByLabel('Import program LST (ASCII, up to 64 KiB)',{exact:true}),original=(p:Page)=>p.getByRole('button',{name:'Use original 25-entry list',exact:true}),importButton=(p:Page)=>p.getByRole('button',{name:'Import program list (.LST)',exact:true}),cancel=(p:Page)=>p.getByRole('button',{name:'Cancel program selection',exact:true});
 const sample="'First' 'A0000021.sp'\n'Repeated' 'A0000021.sp'";
 async function start(p:Page){await p.goto('/#classification');await expect(p.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();}
