@@ -54,7 +54,12 @@ export function confirmLssRecord(s:LssSurveyState):LssSurveyState{
 export function cancelLssRecord(s:LssSurveyState):LssSurveyState{return s.draft?Object.freeze({...s,draft:null}):s;}
 /** Records not yet handed to the wedge, and the state after handing them. */
 export function pendingWedgeRecords(s:LssSurveyState):readonly LssRecord[]{return s.records.slice(s.handedToWedge);}
-export function markLssHandedToWedge(s:LssSurveyState):LssSurveyState{return Object.freeze({...s,handedToWedge:s.records.length});}
+/** After the wedge accepted the records up to `upTo` (the count handed in that batch). */
+export function markLssHandedToWedge(s:LssSurveyState,upTo=s.records.length):LssSurveyState{
+ if(!Number.isInteger(upTo)||upTo<s.handedToWedge||upTo>s.records.length)throw new LssSurveyError('record');
+ return Object.freeze({...s,handedToWedge:upTo});
+}
+export const lssAtLimit=(s:LssSurveyState)=>s.records.length>=LSS_LIMITS.records;
 const cell=(value:string)=>'"'+(/^[\s]*[=+\-@]/.test(value)||/^[\t\r\n]/.test(value)?"'"+value:value).replaceAll('"','""')+'"';
 /** OpenVireo results CSV (a web schema, not the native LSS .TXT writer 0x57af74). Text cells are formula-neutralised. */
 export function lssResultsCsv(records:readonly LssRecord[]):string{

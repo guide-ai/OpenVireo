@@ -24,6 +24,8 @@ export type WedgeLabProps=Readonly<{
  onWorkspaceChange?:(w:WedgeWorkspace)=>void;
  /** The student's own E02 records handed over by the LSS survey (appendOwnLssRecords); applied once per token. */
  ownRecords?:Readonly<{token:number;records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>|null;
+ /** Whether the handed-over records were added (false: refused, e.g. capacity), once per token. */
+ onOwnRecordsResult?:(token:number,accepted:boolean)=>void;
 }>;
 type Line=Readonly<{caption:string;text:string}>;
 function noticeLines(n:WedgeNotice,m:WedgeMessageCatalog):readonly Line[]{
@@ -45,7 +47,7 @@ const fmt=(v:number,digits:number)=>Number.isFinite(v)?v.toFixed(digits):String(
 function raCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.ra.status==='value'?fmt(r.ra.hours,6)+' '+m.detail.hours:m.fieldStatus[r.ra.status];}
 function decCell(r:WedgeRecord,m:WedgeMessageCatalog){return r.dec.status==='value'?fmt(r.dec.degrees,5)+m.detail.degrees+(r.dec.signLost?' *':''):m.fieldStatus[r.dec.status];}
 
-export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,ownRecords=null}:WedgeLabProps){
+export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWorkspaceChange,ownRecords=null,onOwnRecordsResult}:WedgeLabProps){
  const m=useMemo(()=>wedgeMessages(messages),[messages]),C=m.native;
  const[w,setW]=useState<WedgeWorkspace>(EMPTY_WEDGE_WORKSPACE);
  const[scheme,setScheme]=useState<WedgeColourScheme>(0);
@@ -60,7 +62,11 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const modal=w.optionsDraft!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  const appliedOwn=useRef(0);
- useEffect(()=>{if(!ownRecords||ownRecords.token===appliedOwn.current)return;appliedOwn.current=ownRecords.token;setW(c=>{try{return appendOwnLssRecords(suspendWedgeWorkspace(c),ownRecords.records,ownRecords);}catch{return c;}});},[ownRecords?.token]);
+ useEffect(()=>{
+  if(!ownRecords||ownRecords.token===appliedOwn.current)return;appliedOwn.current=ownRecords.token;
+  let next:WedgeWorkspace|null=null;try{next=appendOwnLssRecords(suspendWedgeWorkspace(w),ownRecords.records,ownRecords);}catch{next=null;}
+  if(next)setW(next);onOwnRecordsResult?.(ownRecords.token,!!next&&next.receipts.length>w.receipts.length);
+ },[ownRecords?.token]);
  // Before paint, so a hidden prompt or dialog is never shown or clickable while disabled.
  // Host inactivity also drops a pending focus return: it never pulls focus into the panel.
  useLayoutEffect(()=>{if(disabled){refocusFile.current=null;abort.current?.abort();abort.current=null;setW(suspendWedgeWorkspace);}},[disabled]);

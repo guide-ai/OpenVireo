@@ -3218,5 +3218,14 @@
   "lss.adaptation.csv": "Results are saved in an OpenVireo CSV format, not the original LSS text format.",
   "lss.adaptation.packs": "Stars come from bounded GSC read witnesses for these fields only; arithmetic uses browser numbers, not the original x87 unit.",
   "lss.exposure.elapsed": "{ms} ms",
-  "lss.fieldsError": "The original field list could not be loaded or verified."
+  "lss.fieldsError": "The original field list could not be loaded or verified.",
+  "lss.limitReached": "The survey holds at most {limit} records; save your results before recording more.",
+  "lss.dialog.controlChars": "Remarks cannot contain tabs, line breaks or other control characters.",
+  "lss.dialog.note": "Object, RA, Dec, z and velocity come from your pointing and measurement and cannot be edited here; JD is the site clock when you clicked Record Z.",
+  "lss.wedge.refused": "The wedge did not accept these records (for example, it is full); they can be plotted again.",
+  "lss.results.notSaved": "These records are not saved in the investigation file yet; save the results CSV to keep them.",
+  "lss.adaptation.observatory": "Pointing a row goes straight to its field: there is no dome, slew, horizon/time check or tracking in this path.",
+  "lss.adaptation.dialog": "In Measured Redshift Data, RA/Dec are shown in decimal and velocity is computed as c·z; the original lets you edit RA/Dec (h m s) and velocity.",
+  "lss.adaptation.jd": "JD is read from the site clock when you click Record Z; the original \"Observation Time\" semantics are not recovered.",
+  "lss.adaptation.notSaved": "Records are not saved in the investigation file yet (planned)."
 }
