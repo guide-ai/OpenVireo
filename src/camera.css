@@ -1,13 +1,15 @@
-.camera-control{display:flex;flex-direction:column;gap:12px;min-width:0}
+.camera-control{display:flex;flex-direction:column;gap:var(--ov-space-3);min-width:0;padding:var(--ov-space-5)}
+.camera-control h2{margin:0}
 .camera-settings{display:flex;flex-wrap:wrap;gap:12px 20px;border:0;padding:0;margin:0;min-width:0}
 .camera-settings label{display:flex;flex-direction:column;gap:4px;font-size:.92rem}
 .camera-exposure{display:flex;gap:12px}
 .camera-exposure input{width:4.5em}
-.camera-source{border:1px solid var(--line,#ccd);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 260px}
+.camera-source{border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);padding:8px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 260px}
 .camera-source label{flex-direction:row;align-items:flex-start;gap:8px}
-.camera-invalid{color:var(--danger,#a1262a);margin:0}
+.camera-invalid{color:var(--ov-danger);margin:0}
 .camera-image{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
-.camera-image canvas{width:100%;max-width:640px;aspect-ratio:1;height:auto;background:#000;image-rendering:pixelated;border-radius:4px}
+/* The image area stays black in both themes, like the other fixed sky panels. */
+.camera-image canvas{width:100%;max-width:640px;aspect-ratio:1;height:auto;background:var(--ov-sky-bg,#000);image-rendering:pixelated;border-radius:4px}
 .camera-image figcaption{font-size:.85rem}
 .camera-palette{display:flex;gap:8px;align-items:center;font-size:.9rem}
 .camera-details{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;font-size:.88rem;overflow-wrap:anywhere}
@@ -16,3 +18,7 @@
 .camera-hint{margin:0;font-size:.88rem}
 .camera-countdown{margin:0;font-variant-numeric:tabular-nums}
 @media (max-width:480px){.camera-source{flex:0 1 auto}}
+@media (max-width:600px){.camera-control{padding:var(--ov-space-4)}}
+.camera-control>p,.camera-control>h2{margin:0}
+.camera-control .button-row{display:flex;flex-wrap:wrap;gap:var(--ov-space-2);align-items:center}
+.camera-control .button-row>button{width:auto;flex:0 0 auto;margin:0}
