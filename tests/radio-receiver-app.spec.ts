@@ -360,11 +360,11 @@ test('dropped-log repaint after a test-only unavailable 2D context: the next seg
  expect(batch).toEqual(expected);
 });
 
-// Optional original fixture: run with OPENVIREO_PULSARS_DAT; skipped by name when unset. Invariants only: no counts, rows
+// Original fixture: the bundled byte-exact public/original/radio/Pulsars.dat (approved 2026-10-26, hash in
+// docs/LOCAL-RESOURCES.json); OPENVIREO_PULSARS_DAT overrides it. Invariants only: no counts, rows
 // or values from the file are asserted or embedded.
-test('original Pulsars.dat (OPENVIREO_PULSARS_DAT; skipped when unset): open and receive at the first pointing',async({page})=>{
- test.skip(!env.OPENVIREO_PULSARS_DAT,'OPENVIREO_PULSARS_DAT is not set');
- const bytes=await readFile(env.OPENVIREO_PULSARS_DAT!);
+test('original Pulsars.dat (bundled or OPENVIREO_PULSARS_DAT): open and receive at the first pointing',async({page})=>{
+ const bytes=await readFile(env.OPENVIREO_PULSARS_DAT??'public/original/radio/Pulsars.dat');
  await startApp(page);await radioRoute(page);await switchOnTracking(page);
  await id(page,'pulsar-ref-file').setInputFiles({name:'Pulsars.dat',mimeType:'text/plain',buffer:bytes});await expect(id(page,'pulsar-ref-status')).toHaveText('Catalog loaded.');
  await applyClock(page);await openReceiver(page);

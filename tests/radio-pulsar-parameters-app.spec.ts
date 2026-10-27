@@ -286,11 +286,10 @@ test('390 px: keyboard-only load-to-Find path, no horizontal overflow; screensho
  await page.screenshot({path:info.outputPath('pulsar-find-390.png')});
 });
 
-// Optional original fixture: run with OPENVIREO_PULSARS_DAT; skipped by name when unset. The file is read by the test
-// and handed to the browser chooser only; it is never written into the repository or the report.
-test('original Pulsars.dat (OPENVIREO_PULSARS_DAT; skipped when unset): recorded identity, J2000 Find 1927+18',async({page})=>{
- test.skip(!env.OPENVIREO_PULSARS_DAT,'OPENVIREO_PULSARS_DAT is not set');
- const bytes=await readFile(env.OPENVIREO_PULSARS_DAT!);
+// Original fixture: the bundled byte-exact public/original/radio/Pulsars.dat (approved 2026-10-26, hash in
+// docs/LOCAL-RESOURCES.json); OPENVIREO_PULSARS_DAT overrides it. The file is only handed to the browser chooser.
+test('original Pulsars.dat (bundled or OPENVIREO_PULSARS_DAT): recorded identity, J2000 Find 1927+18',async({page})=>{
+ const bytes=await readFile(env.OPENVIREO_PULSARS_DAT??'public/original/radio/Pulsars.dat');
  await openRadio(page);
  await id(page,'pulsar-ref-file').setInputFiles({name:'Pulsars.dat',mimeType:'text/plain',buffer:bytes});
  await expect(id(page,'pulsar-ref-status')).toHaveText('Catalog loaded.');await expect(id(page,'pulsar-ref-identity')).toHaveAttribute('data-recorded','true');
