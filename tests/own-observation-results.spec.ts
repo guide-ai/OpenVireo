@@ -1,7 +1,8 @@
 import {test,expect,type Download,type Locator,type Page} from '@playwright/test';
+import{paceDownload}from'./fixtures/download-pacing';
 // Phase 1 items 1.12/1.11. Alignment positions and steps below are operator-chosen workflow controls, not expected galaxy redshifts.
 async function bytes(d:Download){const stream=await d.createReadStream(),parts:Buffer[]=[];for await(const p of stream!)parts.push(p);return Buffer.concat(parts);}
-async function download(page:Page,name:string,scope:Page|Locator=page){const wait=page.waitForEvent('download');await scope.getByRole('button',{name,exact:true}).click();const d=await wait;return {name:d.suggestedFilename(),bytes:await bytes(d)};}
+async function download(page:Page,name:string,scope:Page|Locator=page){await paceDownload(page);const wait=page.waitForEvent('download');await scope.getByRole('button',{name,exact:true}).click();const d=await wait;return {name:d.suggestedFilename(),bytes:await bytes(d)};}
 const card=(p:Page)=>p.locator('.own-results-card');
 const restored='Session restored. The current spectrum and measurement arithmetic were checked.';
 const actions=['Download results text','Download results CSV','Print results'];
