@@ -45,3 +45,4 @@ html[data-print-scope=hot-list] .ob-print-root::backdrop{display:none}
 html[data-print-scope=hot-list] .ob-print-chrome{display:none!important}
 html[data-print-scope=hot-list] .ob-print-report{border:0!important;max-height:none!important;overflow:visible!important}
 }
+.ob-site-lines{white-space:pre-wrap;font-size:13px;margin:6px 0;overflow-wrap:anywhere}

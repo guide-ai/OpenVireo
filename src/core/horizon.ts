@@ -1,15 +1,17 @@
 import proof from '../../data/observatory/horizon-provenance.json';
 import {opticalProfile,type OpticalIndex} from './opticalTelescope';
-import {siteClockReadingMS} from './siteClock';
+import {siteClockReadingMS,type ClockSite} from './siteClock';
 import {validatePointing,type Pointing} from './sky';
 export const HORIZON_PROOF_SHA256='ad8f2f48ce69d690682bbf8faf0c1de1b65f7ba3e381866d9c3c404cd6ae67c7',HORIZON_POLICY=proof.policy;
 export type HorizonPosition='above'|'at-or-below'|'precision-boundary';
 /** Current-pointing geometry of optional native0x539290. Original x87 asin
  * is atan2(x,sqrt(1-x*x)); Number/Math and the near-boundary guard are adapters.
  * The compiled native flag is OFF: this readout never adds an access gate. */
-export function horizonGeometry(hourAngleHours:number,decDegrees:number,index:OpticalIndex){
+export type HorizonSite=Readonly<{latitudeRadians:number;horizonRadians:number}>;
+/** `site` (WEB-ST-01): an observatory site override (latitude, horizon); absent, the compiled site. */
+export function horizonGeometry(hourAngleHours:number,decDegrees:number,index:OpticalIndex,site?:HorizonSite){
  if(!Number.isFinite(hourAngleHours)||Math.abs(hourAngleHours)>24||!Number.isFinite(decDegrees)||Math.abs(decDegrees)>90)throw new Error('Unsupported horizon geometry');
- const p=opticalProfile(index),c=proof.constants,phi=Number(p.site.latitude.exactDecimalRadians),limit=Number(p.site.horizon.exactDecimalRadians),dec=decDegrees*c.radiansPerDegree.number,ha=hourAngleHours*c.circleRadians.number/c.hoursPerDay.number;
+ const p=opticalProfile(index),c=proof.constants,phi=site?site.latitudeRadians:Number(p.site.latitude.exactDecimalRadians),limit=site?site.horizonRadians:Number(p.site.horizon.exactDecimalRadians),dec=decDegrees*c.radiansPerDegree.number,ha=hourAngleHours*c.circleRadians.number/c.hoursPerDay.number;
  const sine=Math.sin(dec)*Math.sin(phi)+Math.cos(dec)*Math.cos(ha)*Math.cos(phi);
  if(!Number.isFinite(sine)||Math.abs(sine)>1+proof.browserPolicy.sineClampToleranceEPS*Number.EPSILON)throw new Error('Horizon precision domain');
  const altitudeRadians=Math.asin(Math.max(-1,Math.min(1,sine))),differenceDegrees=(altitudeRadians-limit)/c.radiansPerDegree.number;
@@ -18,6 +20,6 @@ export function horizonGeometry(hourAngleHours:number,decDegrees:number,index:Op
 }
 /** Same applied UT/site/current pointing as the visible observatory. Derived
  * values are recomputed after restoration; no horizon permissions are saved. */
-export function currentPointingHorizon(ms:number,pointing:Pointing,index:OpticalIndex){
- validatePointing(pointing.ra,pointing.dec);const reading=siteClockReadingMS(ms,index);return horizonGeometry(reading.hours-pointing.ra,pointing.dec,index);
+export function currentPointingHorizon(ms:number,pointing:Pointing,index:OpticalIndex,site?:ClockSite&HorizonSite){
+ validatePointing(pointing.ra,pointing.dec);const reading=siteClockReadingMS(ms,index,site);return horizonGeometry(reading.hours-pointing.ra,pointing.dec,index,site);
 }
