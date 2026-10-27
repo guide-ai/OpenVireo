@@ -11,17 +11,12 @@
 - Pure core; React handles presentation. Inputs bounded and validated. Accessible controls and responsive layout. No raw HTML from imported text. Review parsing, file limits, CSV escaping, export behavior, dependencies and network surface.
 - Test meaningful edge cases and user flows. Build/typecheck must pass; browser must be inspected. Record failures and remaining gaps.
 
-## Claude review workflow
-Each programming task uses three separate local Claude launches with model claude-opus-5-5, through `analysis/claude_phase.py` under the research root (never `claude_independent_review.py`, which stays as historical evidence):
-1. `plan` — --effort high, read-only. Produces the implementation plan.
-2. `implement` — --effort medium, edits this project from the approved plan; only build/test/read-only git commands, no commit/push, no writes to research directories. Codex does not edit the same files while it runs.
-3. `review` — --effort high, read-only, over the implemented increment.
+## Work and review workflow
+Claude Code (claude-opus-5-5) coordinates and implements; see AGENTS.md. Every feature goes through three steps:
+1. **Plan** at high effort: student steps, files, evidence needed and the e2e path that will prove it.
+2. **Implement** at medium effort, in the feature's own git worktree and `claude/<front>` branch. Parallel fronts never edit the same files; the coordinator merges into main after review.
+3. **Independent review** at high effort by a reviewer that did not write the code (a separate subagent or session), over the whole feature rather than each micro-increment. Give it direct read access to the project and safe derived research evidence; never credentials or original binary bytes.
 
-Do not raise the implementation phase to high by default; high is reserved for the plan and review phases. Verify effective model in initialization/assistant output and record configured effort per phase honestly. Give direct read access to this complete project and both research directories, without snippets or filtered copies. Do not expose credentials or original binary bytes to the model. Keep raw reports separately from resolved findings.
+Do not run implementation at high effort by default. Record the effective model and effort of each step honestly. Validate review findings against source/evidence, fix confirmed issues, and keep the raw report separate from the resolution in the feature's doc. "Done" follows docs/STUDENT-EXERCISES.md: guide, end-to-end test of the student path, adaptations labelled in one line. Review is not permission to publish or execute CLEA.
 
-Run the native /review command directly on this complete repository, as explicitly requested by the user. Do not use /code-review, PR-only workflows, publication or a custom diff-based substitute. The current user instruction supersedes earlier command preferences. Give direct read access to the actual project and safe derived research evidence while excluding credentials and original binary bytes. Keep the original-runtime and scientific criteria above. Earlier empty /security-review attempts or denied fallback operations are historical, not approvals; do not retry them as an alternative.
-
-Validate findings against source/evidence, fix confirmed issues and retain the review result and resolution. Review is not permission to publish or execute CLEA.
-
-## Verified native command
-The native /code-review was executed successfully on this project directory with Opus 5.5 and high effort, without a PR or publication. It is distinct from the legacy PR-only plugin command. See docs/REVIEW-RESULT.md for the original report, audit and independently validated resolutions. This is historical evidence of that earlier command. The current requested command is native /review directly on the repository; preserve the no-secret and no-original-execution restrictions and the currently authorized publication scope.
+History: Codex-driven launches (`analysis/claude_phase.py`, `claude_independent_review.py`), native /review and /code-review runs, and earlier denied or empty attempts are historical evidence only; see docs/REVIEW-RESULT.md.
