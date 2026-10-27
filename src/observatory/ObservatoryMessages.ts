@@ -64,6 +64,8 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
  }),
  options:Object.freeze({
   open:'Optical Simulation Options…',unavailable:'Not available in OpenVireo',
+  othersHeading:'Other options of the original (not available in OpenVireo; each keeps its compiled state, which is not shown here except where recovered):',
+  fastSlewing:'compiled: checked (programmed-slew rate index 4)',
   help:'Limit Slewing (off by default, as compiled) stops the telescope at the site horizon: programmed slews below it are refused, a manual move stops there and tracking turns off when the target sets. Natively this is an instructor option; the other controls keep their compiled behaviour.',
  }),
  hotListPrint:Object.freeze({

@@ -48,3 +48,10 @@ test('with Limit Slewing on, the immediate Point shortcuts are refused below the
  await expect(page.getByTestId('pointing-dec')).toHaveText(before!);
  await tracking(page);await expect(page.getByTestId('horizon-enforcement')).toContainText('Limit Slewing: on');
 });
+
+test('the Options dialog lists the other original options as text with recovered compiled states (review F8)',async({page})=>{
+ await open(page);await card(page).getByTestId('ob-options').click();
+ const list=page.getByTestId('ob-options-others');await expect(list.getByRole('checkbox')).toHaveCount(0);
+ await expect(list).toContainText('Fast Slewing — compiled: checked');await expect(list.getByRole('listitem')).toHaveCount(15);
+ await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(1);
+});

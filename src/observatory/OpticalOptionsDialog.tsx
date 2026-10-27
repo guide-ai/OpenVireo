@@ -20,7 +20,8 @@ export default function OpticalOptionsDialog({options,onOptions,disabled}:{optio
     <fieldset className="ob-group"><legend className="ob-native">{menuCaptionText(C.options)}</legend>
      <label className="ob-check" title={C.limitSlewingHint}><input type="checkbox" data-testid="ob-options-limit" checked={draft.limitSlewing} onChange={e=>setDraft({limitSlewing:e.target.checked})}/>{C.limitSlewing}</label>
      <small className="ob-note">{C.limitSlewingHint}</small>
-     {C.otherOptions.map(o=><label key={o} className="ob-check"><input type="checkbox" disabled checked={false} onChange={()=>{}}/>{o} <small>— {M.unavailable}</small></label>)}
+     <p className="ob-note">{M.othersHeading}</p>
+     <ul className="ob-option-list" data-testid="ob-options-others">{C.otherOptions.map(o=><li key={o}><span className="ob-native">{o}</span>{o==='Fast Slewing'?<small> — {M.fastSlewing}</small>:null}</li>)}</ul>
     </fieldset>
     <fieldset className="ob-group" disabled><legend className="ob-native">{menuCaptionText(C.parameters)}</legend>{C.parameterLabels.map(l=><span key={l} className="ob-check">{l} <small>— {M.unavailable}</small></span>)}</fieldset>
     <p className="ob-note">{C.otherTabs.map(menuCaptionText).join(', ')}: {M.unavailable}. {M.help}</p>

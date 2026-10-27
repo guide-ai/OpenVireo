@@ -13,7 +13,8 @@ function useModal(ref:RefObject<HTMLDialogElement|null>,open:boolean,focus?:()=>
  useEffect(()=>{const el=ref.current;if(!el)return;if(open&&!el.open){el.showModal();focus?.();}else if(!open&&el.open)el.close();},[open]);
 }
 /** Web presentation of the shared list window [0x5b5998] for the optical View/Select (OB-HL). The List/Selection menu items
- * are shown as buttons; rows are radio options (touch and exact indices) showing the recovered 0x590110 text above the
+ * are shown as buttons; rows are radio options (touch and exact indices) showing the row text the caller formats (the recovered ordinal 0x590248 for the optical
+ * observatory, OB-HL-03) above the
  * decimal values. Search highlights a row without selecting it. Native <dialog> modals; presentation only. */
 export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,onSlew,onClose,onSearch,onSearchEdit,onSearchSubmit,onSearchCancel,onDismiss,onPrint}:{caption:string;texts:readonly string[];state:WindowState;rows:readonly RadioHotListRow[];onSelect:(i:number)=>void;onSlew:()=>void;onClose:()=>void;onSearch:()=>void;onSearchEdit:(q:string,c:boolean)=>void;onSearchSubmit:(m:RadioHotListSearchMode)=>void;onSearchCancel:()=>void;onDismiss:()=>void;onPrint:()=>void}){
  const id=useId(),win=useRef<HTMLDialogElement>(null),find=useRef<HTMLDialogElement>(null),box=useRef<HTMLDialogElement>(null),query=useRef<HTMLInputElement>(null),radios=useRef<(HTMLInputElement|null)[]>([]);
