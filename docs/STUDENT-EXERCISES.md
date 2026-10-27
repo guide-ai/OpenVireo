@@ -25,9 +25,11 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 2. Acquire many galaxies and record their redshifts.
 3. Plot the wedge from your own records and describe the structure.
 
-**Status** — Not closed. Field selection and multi-galaxy acquisition are missing (audit §3); phase 3 work.
+**Status** — Scoped web student path complete, technically validated and separately reviewed on 2026-10-27 (independent review, two fix rounds and closure: research root `analysis/reviews/front-a-review-1.md`). With E01 and E03–E06 this closes 6 of the 7 agreed web exercise paths; E08 Object X remains. Acquirable rows of the 219 in the nine original lists: 129 on the 0.4 m, 69 on the 0.9 m, 130 on the 4 m. The rest show a typed reason (variable star classes 0–2, QSO in the field, galaxy image beyond the bounded raster, photograph in the field, brightness limit). This is not closure of every native branch.
 
-**Evidence** — The wedge only plots a supplied `.TXT`. No closure claimed.
+**Evidence** — Merge `4800b36`. Build/typecheck, 1312 resource identities, the LSS, field-engine, wedge and session Vitest suites, and `tests/lss-survey.spec.ts`, `tests/lss-survey-negative.spec.ts`, `tests/lss-session.spec.ts` and `tests/lss-guide.spec.ts` passed: field choice, acquisition under a controlled clock, Record Z OK/Cancel/Escape, five distinct galaxies, results CSV, own records in the wedge, description, Save v27 and fresh-context Restore that continues observing, tamper/budget rejection, 320px keyboard. The engine reproduces the existing Hubble fields exactly, and the bounded packs are byte-equal to N2230/N3000 under the 2026-10-27 approvals. See `docs/FIELD-ENGINE.md` and `docs/LSS-SURVEY.md`.
+
+**Web adaptations** — The survey route does not go through the observatory (no dome, slew, horizon/time check or tracking); students choose among the three verified telescopes because the exercise-mode telescope entry is not recovered; a fresh field per pointing (native cache/pan history not reproduced); a dedicated measurement panel on the analyser's shift/measure contract; Record Z shows fixed field-centre RA/Dec and a computed velocity, and takes JD at Record Z; own records go to the wedge directly instead of through the native `.TXT` writer; the five-galaxy guide threshold is a web choice; Number arithmetic, not x87.
 
 ## E03 · Stellar classification
 **Criteria**
