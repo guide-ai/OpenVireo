@@ -22,13 +22,16 @@ export function localSiderealHours(jd:number,longitudeRadians:number):number{
  if(hours<0)hours+=c.hoursPerDay.number;else if(hours>c.hoursPerDay.number)hours-=c.hoursPerDay.number;
  return hours;
 }
-export function siteClockReading(utc:string,index:OpticalIndex){
- return siteClockReadingMS(parseClockUTC(utc),index);
+/** `site` (WEB-ST-01): an observatory site override for clocks only; absent, the compiled site of the telescope. */
+export function siteClockReading(utc:string,index:OpticalIndex,site?:ClockSite){
+ return siteClockReadingMS(parseClockUTC(utc),index,site);
 }
-export function siteClockReadingMS(ms:number,index:OpticalIndex){
+export type ClockSite=Readonly<{name:string;longitudeRadians:number;utMinusLocalHours:number}>;
+export function siteClockReadingMS(ms:number,index:OpticalIndex,site?:ClockSite){
  if(!Number.isFinite(ms))throw new Error('Invalid clock instant');
  const profile=opticalProfile(index),jd=2440587.5+ms/86400000;
- return Object.freeze({jd,hours:localSiderealHours(jd,Number(profile.site.longitude.exactDecimalRadians)),localStandard:new Date(ms-profile.site.utMinusLocalStandardHours*3600000).toISOString().slice(0,19),site:profile.site.name});
+ const longitude=site?site.longitudeRadians:Number(profile.site.longitude.exactDecimalRadians),offset=site?site.utMinusLocalHours:profile.site.utMinusLocalStandardHours;
+ return Object.freeze({jd,hours:localSiderealHours(jd,longitude),localStandard:new Date(ms-offset*3600000).toISOString().slice(0,19),site:site?site.name:profile.site.name});
 }
 export function readSiteClock(value:unknown):SiteClockWorkspace{
  if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Invalid site clock workspace');const r=value as Record<string,unknown>;

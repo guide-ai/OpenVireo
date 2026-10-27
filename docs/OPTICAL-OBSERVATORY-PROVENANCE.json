@@ -1,0 +1,972 @@
+{
+ "increment": "Front B B0: optical observatory static evidence pack (Set Coordinates, hot list, Add Current Item, date/time, site, Limit Slewing, spectrometer Save/Print confirmation)",
+ "baseline": "3dedfe41cba9747c097c37e93da994732306ce6b (git main 3dedfe4)",
+ "artifact": {
+  "name": "CLEA_VEO.exe (VIREO 1.504)",
+  "path": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/front-b-optical-20261027/bin/CLEA_VEO.exe",
+  "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "executedOrEmulated": false
+ },
+ "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/front-b-optical-20261027/b0",
+ "method": "Static only: GNU objdump (Intel syntax, no raw bytes in listings), a Python reader of Delphi AnsiString/PChar/ShortString literals and x87 constants, a Delphi 7 VMT/RTTI reader, and the typed DFM decoder. No execution, emulation, or byte dumps in the repository. Hashes below were computed by the B0 author over the evidence files.",
+ "hashPolicy": "sha256 of each evidence file as written in evidenceRoot (also listed in SHA256SUMS.txt there).",
+ "reusedEvidence": [
+  "/home/dobleuber/Documents/Codex/2026-10-18/task-3/photometer-acquisition-recovery/static-full.asm (xref greps only)",
+  "/home/dobleuber/Documents/Codex/2026-10-18/task-3/radio-date-preparation (TUTTimeDlg, UTTIME-DFM.json)",
+  "docs/RADIO-ANTENNA-PROVENANCE.json RA-EP-01..04, RA-09",
+  "data/observatory/telescope-motion-contract.json",
+  "data/observatory/horizon-provenance.json",
+  "i08-a01-recovery/optical-records (site record layout, Site1Click)"
+ ],
+ "files": [
+  {
+   "path": "coordbtnclick-0x5393ec.asm",
+   "role": "TObsrvtry.CoordBtnClick (Slew > Set Coordinates...)",
+   "sha256": "87d0202a3bf2a4f4d5c69c283b5eb4229d1943464af00db1a7ed96177ce4978c",
+   "range": "0x5393ec..0x5395a0"
+  },
+  {
+   "path": "programmedslew-0x5399e8.asm",
+   "role": "TObsrvtry.ProgrammedSlew: test-mode jump, no-slew box, horizon refusal, confirmation, B1950 note, motor start",
+   "sha256": "76bbca068b8899f00de5f93fa6a88f1d84456fefdad4cdbfa34723bcea8be6d4",
+   "range": "0x5399e8..0x53a40c"
+  },
+  {
+   "path": "horizon-guard-0x539290.asm",
+   "role": "horizon/limit predicate 0x539290",
+   "sha256": "c931c4efcbf70eeed2ef990e10f27b85eaebe3564f4986f34187eb7f0ff374b1",
+   "range": "0x539290..0x5393ec"
+  },
+  {
+   "path": "clocktimer-0x5384b0.asm",
+   "role": "ClockTimerTimer incl. guard caller 0x538622 (drive-off message)",
+   "sha256": "024eadb85add8103dfd7d00e77b07d4b0163c01ef190053200d1cddacbd7d6da",
+   "range": "0x5384b0..0x538768"
+  },
+  {
+   "path": "slewtimer-0x538e4c.asm",
+   "role": "SlewTimerTimer (manual) incl. guard caller 0x539000 (direction message)",
+   "sha256": "c82babe7c4e36c98d714c83bf2abaad8cd9cd9e0cc9f461cde23d9766d251d0d",
+   "range": "0x538e4c..0x539290"
+  },
+  {
+   "path": "hotlist-menu-0x53f0fc-0x53f7d0.asm",
+   "role": "AddCurrentItemtoList1Click, SaveUpdatedList1Click, ViewSelectfromList1Click, LoadHotList1Click",
+   "sha256": "4b3b7b709c0604f4e44c16b1a6469392c0bd05a460b8bd99302bf55e262c33a4",
+   "range": "0x53f0fc..0x53f7d0"
+  },
+  {
+   "path": "current-object-0x53ce8c.asm",
+   "role": "object under current pointing (0x53ce8c) used by Add Current Item via 0x53cf94",
+   "sha256": "55cd29b238858994f47f4164532d9b796a75f6507c8af364214a091ecb2e1005",
+   "range": "0x53ce8c..0x53cf94"
+  },
+  {
+   "path": "hoverifydlg-0x4f86f4.asm",
+   "role": "THOVerifyDlg FormCreate/FormDestroy/FormActivate/OKBtnClick",
+   "sha256": "fb94df5e67af0fdd5777deba6d6f371183b5e69f26a5b0d1aed69028b624dda7",
+   "range": "0x4f86f4..0x4f8c80"
+  },
+  {
+   "path": "hotlistform-formatters-0x590110-0x5903a8.asm",
+   "role": "THotListForm1 row formatter 0x590110, ordinal formatter 0x590248, RA comparators 0x590388/0x590398",
+   "sha256": "b9c6866bf67b366bedefe336287465501767aa8a91aac751cdb3f7e75dee90ff",
+   "range": "0x590110..0x5903a8"
+  },
+  {
+   "path": "hotlistform-formcreate-0x5903a8.asm",
+   "role": "THotListForm1.FormCreate and HTL loader 0x5903d8",
+   "sha256": "b531c6e699f825f512b65d7dc0c111cc95d15945e3b839697e3585c590a39df6",
+   "range": "0x5903a8..0x590588"
+  },
+  {
+   "path": "hotlistform-add-fill-0x590588-0x59070c.asm",
+   "role": "append entry 0x590588 and list fill 0x5905e8 (formatter choice)",
+   "sha256": "2c6656f0bab7d1717140e268c50e8003e3ff08d12b5c1995800936c98f8daffb",
+   "range": "0x590588..0x59070c"
+  },
+  {
+   "path": "hotlistform-formshow-0x59070c.asm",
+   "role": "THotListForm1.FormShow (captions by exercise, edit-mode menu enabling)",
+   "sha256": "8868727e992ec78c119f4fa90cd5455f06bd59c4538009f67799584087b493ca",
+   "range": "0x59070c..0x590c14"
+  },
+  {
+   "path": "hotlistform-savelist-0x5919b4.asm",
+   "role": "THotListForm1.SaveList1Click (Edit Mode gate, save dialog, messages)",
+   "sha256": "8ca60ca4b1d7b775bee9c903292204916607a99ff84bed8398f913a892578d95",
+   "range": "0x5919b4..0x591e24"
+  },
+  {
+   "path": "list-cursor-0x492600-0x492760.asm",
+   "role": "linked-list cursor helpers (First 0x492628, Next 0x492634, index at +0)",
+   "sha256": "d5d1e53a6880b3d2fa9b6736e27ffccd68c1d5ae615a1612c5d4287ad598c1d3",
+   "range": "0x492600..0x492760"
+  },
+  {
+   "path": "optionsdlg-formactivate-0x5a56e0.asm",
+   "role": "TOptionsDlg.FormActivate (record -> controls)",
+   "sha256": "aef66df59b252ae6c18135f45ee269463e320d0279583313e35d6a7023b1e1c4",
+   "range": "0x5a56e0..0x5a6068"
+  },
+  {
+   "path": "optionsdlg-okbtnclick-0x5a6068.asm",
+   "role": "TOptionsDlg.OKBtnClick (controls -> record)",
+   "sha256": "330c549cbfa619aae141a285543b83754d3a8bd2726d97ac4587b5138eb8b082",
+   "range": "0x5a6068..0x5a6ccc"
+  },
+  {
+   "path": "options-defaults-0x5a2a00.asm",
+   "role": "compiled option-record defaults",
+   "sha256": "084740c840bd82de02553a29663b9a6ab9a7b7d7aac200060dd5119076fe1501",
+   "range": "0x5a2a00..0x5a2b40"
+  },
+  {
+   "path": "scope-site-setup-0x53df24.asm",
+   "role": "TObsrvtry scope setup copying the selected scope site into the environment",
+   "sha256": "7b5bf7a03a4df3b25d037eed1900d26948e9cbbc497c0de09e0bf9c4f3b1c997",
+   "range": "0x53df24..0x53e178"
+  },
+  {
+   "path": "site1click-0x53e9e4.asm",
+   "role": "File > Site Information... (read-only list)",
+   "sha256": "58cc0f4beaa2f4546b96a489ff2c6991119a2fec8f123fdf6b7fe0da14d761ca",
+   "range": "0x53e9e4..0x53f080"
+  },
+  {
+   "path": "stationdlg-0x592620.asm",
+   "role": "TStationDlg FormCreate/FormActivate/OKBtnClick",
+   "sha256": "b061d0ae1efbbe81955f27c502901955cb48bf629677d686966fe3f612eb7ef6",
+   "range": "0x592620..0x592e78"
+  },
+  {
+   "path": "scopedatadlg-siteprm-0x593c60.asm",
+   "role": "TScopeDataDlg.SitePrmBtn1..3Click",
+   "sha256": "33098571d66b64ff8c6431791a6bc1e98a847813d12ff7cb62315e59ed566357",
+   "range": "0x593c60..0x593df8"
+  },
+  {
+   "path": "env-setdatetime-0x58b2ec.asm",
+   "role": "TEnvironment1.SetDateTime1Click (only TUTTimeDlg creator)",
+   "sha256": "90c761f8a9d7efcd0c34541fda0e04a059eeaa9cff188e5fb9b0ffc98c94c97f",
+   "range": "0x58b2ec..0x58b440"
+  },
+  {
+   "path": "spectrometer-save-0x50fb1c.asm",
+   "role": "TSpectrometer.SaveSpectrum1Click (confirmation only)",
+   "sha256": "bf256a02486ac3122abc2ee317de3dcdbf9f67366c81405486e36958cdf1c495",
+   "range": "0x50fb1c..0x5101ec"
+  },
+  {
+   "path": "spectrometer-print-0x5101ec.asm",
+   "role": "TSpectrometer.PrintSpectrum1Click (head only)",
+   "sha256": "81e0fb92eb59b5fa0a6f055a1768a2460094baf600a59c89a00b09a84c36000a",
+   "range": "0x5101ec..0x5104f0"
+  },
+  {
+   "path": "spectrometer-range-0x510fc8.asm",
+   "role": "TSpectrometer.SpectralRange1Click",
+   "sha256": "2296d0c55c537979564a89c7840b4853b9e9cf6e1465b761d5ec6c917ad1367d",
+   "range": "0x510fc8..0x511100"
+  },
+  {
+   "path": "printskyimage-0x53f934.asm",
+   "role": "TObsrvtry.PrintSkyImage1Click and helpers (head)",
+   "sha256": "867f22791b9964362808991451e22fffa780da9c267c40684dfe979b3aacdd89",
+   "range": "0x53f934..0x540350"
+  },
+  {
+   "path": "RTTI-CLASSES.json",
+   "role": "published methods and fields of the nine classes (VMT scan)",
+   "sha256": "78f430d2e37de60426e1eee0ec4e13fb70c43a582ae622d5b5d1b305a81b7d65"
+  },
+  {
+   "path": "TOPTIONSDLG-DFM.json",
+   "role": "RCDATA TOPTIONSDLG decoded (binary payloads hashed only)",
+   "sha256": "761bf14d92415453830e93eb481c8c49062a68b1601c4ad78aca3e0bad735983"
+  },
+  {
+   "path": "TSTATIONDLG-DFM.json",
+   "role": "RCDATA TSTATIONDLG decoded",
+   "sha256": "cdb4663da6d0f05edf2ec16147a1a218a2e9142c109099a27b452c38e368e155"
+  },
+  {
+   "path": "THOVERIFYDLG-DFM.json",
+   "role": "RCDATA THOVERIFYDLG decoded",
+   "sha256": "32fb202e0c2d8fcc2c6b2fc9ad277f05f6e2bd7917d26f4e38fc3124d208600f"
+  },
+  {
+   "path": "TSKYCOORDSDLG-DFM.json",
+   "role": "RCDATA TSKYCOORDSDLG decoded",
+   "sha256": "0dfa51a62e481c08e60adb627d7ca311e2c80c8122b318bd270c54ba4642ac67"
+  },
+  {
+   "path": "THOTLISTFORM1-DFM.json",
+   "role": "RCDATA THOTLISTFORM1 decoded",
+   "sha256": "9cac864d1899922d101593b388f74102ed15428a902e0d3d647f2f8616e24b2a"
+  },
+  {
+   "path": "TUTTIMEDLG-DFM.json",
+   "role": "RCDATA TUTTIMEDLG decoded",
+   "sha256": "e126f5e294295f17ca568a114cfa0c1d559d40495e8d755940bb90d85e6d1bf7"
+  },
+  {
+   "path": "TSCOPEDATADLG-DFM.json",
+   "role": "RCDATA TSCOPEDATADLG decoded",
+   "sha256": "aaf82812b9624e4cdab195eeab633e24358871096f49808546f5952694aa9be0"
+  },
+  {
+   "path": "TOBSRVTRY-DFM.json",
+   "role": "RCDATA TOBSRVTRY decoded (menus)",
+   "sha256": "c90b8a2a71a90fec2a0618bc8f6ee4d97a4e81ca969decfd1d8b6dc391b2531f"
+  },
+  {
+   "path": "tool-re.py",
+   "role": "objdump wrapper + AnsiString/PChar/float literal annotator (static)",
+   "sha256": "da2900f6aaf1bc373b54a7497196ff4a9d583da4254b92133621333fe37a995c"
+  },
+  {
+   "path": "tool-rtti.py",
+   "role": "Delphi 7 VMT/method/field table reader (static)",
+   "sha256": "7e479419ccd6f92265a9ce2fd876151eaccd1d88349f9e826c0ecca45583c351"
+  },
+  {
+   "path": "tool-dfm.py",
+   "role": "typed binary DFM decoder, adapted from radio-date-preparation/read_date_dfm.py",
+   "sha256": "7801169c370bd403ab7426dd34e0ce64a67770c5d693be70239cd667a005ba5f"
+  }
+ ],
+ "contracts": [
+  {
+   "id": "OB-SC-01",
+   "claim": "Slew > Set Coordinates... (SetCoordinates1, OnClick CoordBtnClick) uses the single shared TSkyCoordsDlg instance [0x5b5e0c] (DFM caption ' Enter Sky Coordinates for Slew'). When no programmed slew is running (+0x64d = 0): if both target globals (RA cell [0x5b5e20], Dec cell [0x5b5604]) are exactly 0.0 they are prefilled with the current pointing (+0x65f RA h, +0x669 Dec deg); EpochGrp (+0x3a0) is ENABLED; ShowModal; ModalResult = 1 calls ProgrammedSlew.",
+   "addresses": [
+    "0x5393ec",
+    "0x5394f9..0x53955d",
+    "0x539561..0x539572 (EpochGrp.Enabled := true)",
+    "0x539575..0x539598"
+   ],
+   "literals": {
+    "dialogCaption": " Enter Sky Coordinates for Slew",
+    "raGroup": "Right Ascension",
+    "raLabels": [
+     "Hours",
+     "Mins",
+     "Secs"
+    ],
+    "raHints": [
+     "0-23",
+     "0-59",
+     "0.00-59.99"
+    ],
+    "decGroup": "Declination",
+    "decLabels": [
+     "Degs",
+     "' ",
+     "\" "
+    ],
+    "decHints": [
+     "89 - -89",
+     "0-59",
+     "0.00-59.99"
+    ],
+    "epochGroup": "Epoch of Input Coordinates",
+    "epochItems": [
+     "J2000.0",
+     "B1950.0"
+    ],
+    "epochItemIndexDFM": 0,
+    "buttons": [
+     "&OK",
+     "&Cancel"
+    ],
+    "menuCaption": "Set &Coordinates..."
+   },
+   "status": "recovered",
+   "uncertainty": "Field validation/precession inside TSkyCoordsDlg is the already-ported radio contract (RA-09, RA-EP-01..04); not re-derived here."
+  },
+  {
+   "id": "OB-SC-02",
+   "claim": "Set Coordinates while a programmed slew is running (+0x64d ≠ 0): SlewTimer2 is disabled and a Yes/No question (MB_YESNO|MB_ICONQUESTION 0x24) is shown. Yes (6): slew terminated (axis-done flags +0x5e8/+0x5ea/+0x5ec := 1, motor sound stop, N/S/E/W buttons re-enabled, previous rate restored, +0x64d := 0); No: SlewTimer2 re-enabled (slew resumes). The coordinates dialog is not opened in either case.",
+   "addresses": [
+    "0x5393f2..0x5394f8"
+   ],
+   "literals": {
+    "text": "Terminate Current Slew?",
+    "caption": "Slew Suspended"
+   },
+   "status": "recovered",
+   "uncertainty": "Sound/motor helpers 0x540480 and 0x53a40c named by effect only."
+  },
+  {
+   "id": "OB-SC-03",
+   "claim": "ProgrammedSlew Test Mode branch: when env+0x2e7c ≠ 0 (TOptionsDlg TestBox1 \"Test Mode\" -> record+0x27c8, compiled default 0) the no-slew check, horizon check and confirmation are all skipped and the telescope jumps instantly to the target (pointing := globals, finder/instrument re-projected, flags set done).",
+   "addresses": [
+    "0x539a1d",
+    "0x539c4c",
+    "0x539cda..0x539e16",
+    "0x5a60be..0x5a60cc (OK write)",
+    "0x5a2ac5 (default 0)"
+   ],
+   "literals": {
+    "optionCaption": "Test Mode",
+    "optionHint": "In Test Mode coordinate settings and CCD exposures are instantaneous"
+   },
+   "status": "recovered",
+   "uncertainty": "Not a student control; port as off."
+  },
+  {
+   "id": "OB-SC-04",
+   "claim": "ProgrammedSlew, normal path, no-slew case: if target RA and Dec are exactly equal (fcompp, x87 Extended) to the current pointing, an information box is shown (MB_ICONEXCLAMATION 0x30) and nothing moves.",
+   "addresses": [
+    "0x539a2a..0x539a7e"
+   ],
+   "literals": {
+    "text": "Telescope is at Target Coordinates!",
+    "caption": "No Slew Needed!"
+   },
+   "status": "recovered",
+   "uncertainty": "Exact equality only, no tolerance."
+  },
+  {
+   "id": "OB-SC-05",
+   "claim": "ProgrammedSlew horizon refusal: hour angle = LST(0x4881ac on clock env+0x37de with longitude env+0x2b86) − target RA; guard 0x539290(target Dec, HA). False -> MB_ICONSTOP (0x10) and no slew. Message = literal + RAfmt(target) + \"\\r\\n\" + \"Dec: \" + DECfmt(target).",
+   "addresses": [
+    "0x539a83..0x539ab8",
+    "0x539ae5 (guard call)",
+    "0x539af2..0x539b81"
+   ],
+   "literals": {
+    "textHead": "Target Coordinates are Below the Horizon!\r\n\r\nRA:  ",
+    "lineBreak": "\r\n",
+    "decHead": "Dec: ",
+    "caption": "Cannot Perform Slew",
+    "raFormat": "0x486ca0(value, digits 2, 'h   ', 'm   ', 's')",
+    "decFormat": "0x486ca0(value, digits 1, '°  ', \"'   \", '\"')"
+   },
+   "status": "recovered",
+   "uncertainty": "0x486ca0 field layout is the one ported in src/core/radioHotListFormat.ts (field()); only the separators differ: RA uses \"h   \",\"m   \" (three spaces) and terminal \"s\"; Dec uses \"°  \" (two spaces), \"'   \" (three spaces) and terminal '\"'."
+  },
+  {
+   "id": "OB-SC-06",
+   "claim": "ProgrammedSlew confirmation (MB_YESNO|MB_ICONQUESTION 0x24): Yes (6) starts the timed slew; No does nothing. Text = head + RAfmt(target J2000 globals) + \"\\r\\n\" + \"Dec: \" + DECfmt(target); when TSkyCoordsDlg+0x3c5 (B1950 flag) ≠ 0 the line \"\\r\\n\\r\\n(Input B1950.0 Coordinates Precessed to J2000.0.)\" is appended. The coordinates shown are the globals, i.e. already precessed to J2000 by TSkyCoordsDlg.OKBtnClick.",
+   "addresses": [
+    "0x539b86..0x539bf3",
+    "0x539bf8..0x539c22 (reads [0x5b5e0c]+0x3c5 at 0x539bff)",
+    "0x539c27..0x539c47"
+   ],
+   "literals": {
+    "textHead": "Slew Telescope to Target Coordinates?\r\n\r\nRA:  ",
+    "decHead": "Dec: ",
+    "b1950Note": "(Input B1950.0 Coordinates Precessed to J2000.0.)",
+    "b1950NoteSeparator": "\r\n\r\n",
+    "caption": "Confirm Slew",
+    "raFormat": "0x486ca0(value, digits 2, 'h   ', 'm   ', 's')",
+    "decFormat": "0x486ca0(value, digits 1, '°  ', \"'   \", '\"')"
+   },
+   "status": "recovered",
+   "uncertainty": "The same literal bytes exist in the radio lab at 0x5672f8 (decoded here; RA-EP-04 left it undecoded): '(Input B1950.0 Coordinates Precessed to J2000.0.)'."
+  },
+  {
+   "id": "OB-SC-07",
+   "claim": "B1950 flag lifecycle for the optical path: the flag is TSkyCoordsDlg+0x3c5 of the shared instance; writers are FormCreate (0), OKBtnClick (:= EpochGrp.ItemIndex = 1, after validation) and the optical hot-list selection (0x53f3e9, := 0, plus EpochGrp disabled) — same as radio RA-EP-04. Set Coordinates re-enables EpochGrp but does NOT reset the flag; FormActivate then shows ItemIndex := flag and converts the globals J2000->B1950 when set (RA-EP-02). ProgrammedSlew only reads it. Precession = src/core/radioEpoch.ts precessSkyCoords (Precess 0x4b9f64).",
+   "addresses": [
+    "0x539561..0x539572",
+    "0x53f3e2..0x53f401",
+    "0x539bff",
+    "0x4f312a",
+    "0x4f36a3..0x4f36b0"
+   ],
+   "literals": {},
+   "status": "recovered",
+   "uncertainty": "Natively the flag and globals are shared between optical and radio labs (one dialog instance); coordinator decision keeps the web flag optical-local."
+  },
+  {
+   "id": "OB-SC-08",
+   "claim": "Slew start (Yes): +0x64d := 1, slew rate slider set to the programmed-rate index env+0x2e63 (TOptionsDlg FastSlwBox \"Fast Slewing\": checked -> 4, unchecked -> 3; compiled record+0x27af default 4), sound \"Emotor.wav\", SlewTimer2 enabled, N/S/E/W buttons and rate slider disabled. Motion contract already in data/observatory/telescope-motion-contract.json.",
+   "addresses": [
+    "0x539c56..0x539cd5",
+    "0x539e1b..0x539f71",
+    "0x5a62b8..0x5a62d3",
+    "0x5a5b61..0x5a5b73",
+    "0x5a2ab0"
+   ],
+   "literals": {
+    "sound": "Emotor.wav",
+    "optionCaption": "Fast Slewing",
+    "optionHint": "Enables fastest (unrealistic) slewing rate."
+   },
+   "status": "recovered",
+   "uncertainty": "Compiled default 4 means FormActivate shows Fast Slewing CHECKED by default."
+  },
+  {
+   "id": "OB-HL-01",
+   "claim": "Slew > Observation Hot List > View/Select from List... (0x53f360): if the list is empty -> info box (MB_ICONINFORMATION 0x40). Otherwise loop: THotListForm1 [0x5b5998] ShowModal; if a row was chosen (+0x5a7 ≠ 0): globals := row RA (+0x5a8) / Dec (+0x5b2), B1950 flag +0x3c5 := 0, EpochGrp disabled, TSkyCoordsDlg ShowModal; OK -> ProgrammedSlew and exit; Cancel -> the hot list is shown AGAIN (loop). Closing the hot list without a selection exits.",
+   "addresses": [
+    "0x53f360..0x53f45d"
+   ],
+   "literals": {
+    "emptyText": "No items in Observation List!",
+    "emptyCaption": "Observation List Empty",
+    "menuCaption": "View/&Select from List...",
+    "submenuCaption": "Observation &Hot List"
+   },
+   "status": "recovered",
+   "uncertainty": "None for the control flow."
+  },
+  {
+   "id": "OB-HL-02",
+   "claim": "THotListForm1 window literals (DFM + FormShow). Caption is replaced in FormShow by exercise byte env+0x383f: 0 -> \"Hot List File: \" + ExtractFileName(current file) (+ \" (Modified)\" when +0x587 = 0) or \"New Hot List File\" when no file; 1 \"Object-X Observation Hot List\"; 2 \"Stellar Spectra Observation Hot List\"; 3 \"Cluster Photometery Observation Hot List\" (sic); 4 \"Hubble Redshift Observation Hot List\"; 5 \"LSS Hot List File: \" + file name; 6 \"Pulsar Observation Hot List\". Edit/Delete/Undo menu items enabled only when env+0x2e7e (Edit Mode) ≠ 0 (in exercise 0 with a file they are enabled unconditionally).",
+   "addresses": [
+    "0x59070c..0x590aa9",
+    "jump table 0x59093a"
+   ],
+   "literals": {
+    "dfmCaption": "Select Object for Observation",
+    "menus": {
+     "List": [
+      "&Search...",
+      "&Print...",
+      "Save &List",
+      "&Close"
+     ],
+     "Selection": [
+      "&Slew to Selection",
+      "&Edit Selection...",
+      "&Delete Selection",
+      "&Undo Edit/Delete"
+     ],
+     "popup": [
+      "&Slew to Selection",
+      "&Edit Selection",
+      "&Delete Selection",
+      "&Undo Edit/Delete"
+     ]
+    },
+    "titles": {
+     "0file": "Hot List File: ",
+     "0modified": " (Modified)",
+     "0none": "New Hot List File",
+     "1": "Object-X Observation Hot List",
+     "2": "Stellar Spectra Observation Hot List",
+     "3": "Cluster Photometery Observation Hot List",
+     "4": "Hubble Redshift Observation Hot List",
+     "5": "LSS Hot List File: ",
+     "6": "Pulsar Observation Hot List"
+    },
+    "openDialog": {
+     "title": "Open Hot List File",
+     "filter": "Hot List Files (*.HTL)|*.HTL|All Files (*.*)|*.*",
+     "defaultExt": "*.HTL"
+    },
+    "saveDialog": {
+     "title": "Save Hot List File",
+     "filter": "Hot List Files (.HTL)|*.HTL",
+     "defaultExt": "*.HTL"
+    }
+   },
+   "status": "recovered",
+   "uncertainty": "Exercise numbering 1..6 is inferred from these titles only. In exercise 0 the edit-menu enabling at 0x5909be..0x5909e0 runs after both branches of the file check."
+  },
+  {
+   "id": "OB-HL-03",
+   "claim": "Row text choice in the list fill 0x5905e8 (and the edit refresh at 0x5915d1): row formatter 0x590110 when env+0x383f ∈ {5,6} or env+0x2e7e (Edit Mode) ≠ 0 (the edit refresh tests only 6 and Edit Mode); otherwise ordinal formatter 0x590248 with ordinal = cursor index (+0x58d, 0-based, reset −1, incremented by Next 0x492634) + 1. Rows are in native RA cursor-insertion order (RA-HL-03/04), for both owners of the shared window: FormCreate 0x5903a8 initialises the list at +0x58d with VMT pointer [0x58f3cc] = 0x58f3d8 (0x5903be) and calls 0x4924d4, whose _ObjSetup 0x404c70 stores the VMT at the VMT field offset +0x16; the loader 0x5903d8 inserts every 0x56-byte record with 0x492728 (0x5904bf), which compares through `mov ebp,[eax+0x16]; call [ebp+4]` (0x49275b, 0x492781, 0x492791, 0x4927be, 0x4927d9), i.e. VMT slot +4 = comparator 0x590398 (RA). Add Current's append 0x590588 uses the same 0x492728, so a natively added entry lands in RA order and a native Save List writes that order. The ordinal is the position in that sorted order.",
+   "addresses": [
+    "0x590654..0x5906c6",
+    "0x5915d1..0x591623",
+    "0x492628",
+    "0x492634",
+    "0x5903a8..0x5903d4",
+    "0x404c70",
+    "0x5903d8..0x5904d6",
+    "0x492728..0x4927e0",
+    "0x58f3cc",
+    "0x58f3d8",
+    "0x590398",
+    "0x590588"
+   ],
+   "literals": {},
+   "status": "recovered",
+   "uncertainty": "Correction (independent review 1, F4/adjudication 1): the earlier B0 reading 'file order, comparators without a traced caller' was wrong; the comparator is reached through the old-style object VMT. Web adaptation: the observatory HTL editor keeps file order plus append (WEB-HL-04), and the window shows the RA projection of that list; an Add Current entry is appended in file order and shown in RA order."
+  },
+  {
+   "id": "OB-HL-04",
+   "claim": "Load Hot List... (0x53f498, exercise ≠ 5): OpenDialog1 DefaultExt := \"*.HTL\", FileName := env ShortString +0x6b4+0xf44 (last file), InitialDir := env path +0x46c when FileExists(path+\"*.HTL\") test passes else +0x26c; on Execute with a name the loader 0x5903d8 runs; success stores ExtractFileName into env+0x15f8 and shows \"Hot list loaded from file \" + full file name (MB_ICONINFORMATION). Always: View/Select enabled := list not empty. Exercise 5 uses an LSS dialog [0x5b5c0c] (Front A).",
+   "addresses": [
+    "0x53f4ba..0x53f70a"
+   ],
+   "literals": {
+    "loadedTextHead": "Hot list loaded from file ",
+    "loadedCaption": "Hot List Loaded",
+    "openError": "Unable to Open Hotlist File!\r\n\r\nFile Name: ",
+    "openErrorCaption": "Hotlist File Error!",
+    "menuCaption": "&Load Hot List..."
+   },
+   "status": "recovered",
+   "uncertainty": "The FileExists-on-wildcard test (0x40b224) semantics are not verified; irrelevant for a browser picker."
+  },
+  {
+   "id": "OB-HL-05",
+   "claim": "Save Updated List (0x53f350 -> THotListForm1.SaveList1Click 0x5919b4): if env+0x2e7e (Edit Mode) = 0 -> refusal box (MB_ICONINFORMATION 0x40) and nothing saved. In Edit Mode: SaveDialog Title \"Save Hot List File\", DefaultExt \"*.HTL\", FileName = current file name; write 0x56-byte records; error box on I/O failure; success marks unmodified (+0x587 := 1) and shows \"Observation list saved in \" + file; SaveUpdatedList1.Enabled := Edit Mode.",
+   "addresses": [
+    "0x53f350",
+    "0x5919f0..0x591c5b"
+   ],
+   "literals": {
+    "editModeRequired": "You must be in Edit Mode to save a new or modified Hot List.\r\nFor information on setting Edit Mode, see the VIREO manual.",
+    "editModeCaption": "Edit Mode Required!",
+    "saveError": "Unable to save Observation List to file!\r\n\r\nFile Name: ",
+    "saveErrorCaption": "Observation List File Error!",
+    "savedTextHead": "Observation list saved in ",
+    "savedCaption": "Observation List File Saved",
+    "menuCaption": "&Save Updated List"
+   },
+   "status": "recovered",
+   "uncertainty": "Edit Mode is an instructor option (default 0): natively a student can add items in memory but cannot save."
+  },
+  {
+   "id": "ordinalFormatter0x590248",
+   "claim": "Ordinal hot-list row formatter, cleanly recovered: s := IntToStr(ordinal); while Length(s) < 4 do Insert(' ', s, 1) (left-pad to width 4); result := s + RA + Dec, with RA = 0x486ca0(rec+0x19, digits 2, 'h ', 'm ', 's ') and Dec = 0x486ca0(rec+0x23, digits 1, '° ', \"' \", '\"  '). No ID and no remarks. RA/Dec fields are exactly formatHotListRa/formatHotListDec of src/core/radioHotListFormat.ts, so row = String(n).padStart(4,' ') + formatHotListRa(ra) + formatHotListDec(dec) (ordinals ≥ 10000 are not padded/truncated).",
+   "addresses": [
+    "0x590248..0x590323",
+    "literals 0x59033c,0x590348,0x590354,0x590360,0x59036c,0x590378,0x590384"
+   ],
+   "literals": {
+    "pad": " ",
+    "raSuffixes": [
+     "h ",
+     "m ",
+     "s "
+    ],
+    "decSuffixes": [
+     "° ",
+     "' ",
+     "\"  "
+    ]
+   },
+   "status": "recovered",
+   "uncertainty": "Delphi Insert (0x4063b0) identified by its (Source, var S, Index=1) call shape; IntToStr 0x40ac14. Same 0x486ca0 caveats as the radio port."
+  },
+  {
+   "id": "OB-AC-01",
+   "claim": "Slew > Observation Hot List > Add Current Item/Position to List... (0x53f0fc): 0x53cf94 identifies the catalogue object under the current pointing (0x53ce8c, pixel lookup 0x59a0fc at the projected finder position; nil when none). The dialog [0x5b5b10] is bound to THOVerifyDlg (CreateForm class cell 0x4f8400 -> VMT 0x4f844c at 0x5ad493..0x5ad4a1). Prefill record (dlg+0x3b0, 86 bytes): ID ShortString[24] := object name (or empty when no object); remarks ShortString[40] := \"\" , but when exercise byte env+0x383f = 0 and an object exists, remarks := its kind: 0 \"Star\", 1 \"Galaxy\", 2 \"Asteroid\", 3 \"QSO\"; RA := current +0x65f, Dec := current +0x669.",
+   "addresses": [
+    "0x53f11a..0x53f1e3",
+    "0x53cf94",
+    "0x53ce8c..0x53cf90",
+    "0x5ad493..0x5ad4a1"
+   ],
+   "literals": {
+    "menuCaption": "&Add Current Item/Position to List...",
+    "kinds": [
+     "Star",
+     "Galaxy",
+     "Asteroid",
+     "QSO"
+    ]
+   },
+   "status": "recovered",
+   "uncertainty": "The object lookup 0x59a0fc (which pixel/tolerance) is not decoded; port as \"object at the reticle when the existing identification finds one\"."
+  },
+  {
+   "id": "OB-AC-02",
+   "claim": "THOVerifyDlg (caption \"Add/Edit Hot List Entry\") FormActivate 0x4f8740: IDEd := ID; RA split by 0x486b20 -> RAHrsEd IntToStr(h), RAMinEd IntToStr(m), RASecEd FloatToStrF(s, ffFixed,18,2); Dec split -> DecDegEd IntToStr(sign*deg) (so a −0° Dec shows \"0\"), DecMinEd, DecSecEd FloatToStrF(…,1); CmntEd1 := remarks.",
+   "addresses": [
+    "0x4f8740..0x4f888a"
+   ],
+   "literals": {
+    "caption": "Add/Edit Hot List Entry",
+    "labels": {
+     "Label10": "Object ID:",
+     "Label4": "Comments/Notes",
+     "Label1": "Right Ascension",
+     "Label2": "Hours",
+     "Label3": "Minutes",
+     "Label5": "Seconds",
+     "Label6": "Declination",
+     "Label7": "Degs",
+     "Label8": "Minutes",
+     "Label9": "Seconds"
+    },
+    "hints": {
+     "IDEd": "(12 Chars. Max)",
+     "CmntEd1": "(40 Chars. Max)",
+     "RAHrsEd": "0-23",
+     "RAMinEd": "0-59",
+     "RASecEd": "0.0-59.99",
+     "DecDegEd": "+89 - -89",
+     "DecMinEd": "0-59",
+     "DecSecEd": "0.0-59.99"
+    },
+    "maxLength": {
+     "IDEd": 16,
+     "CmntEd1": 40,
+     "RAHrsEd": 2,
+     "RAMinEd": 2,
+     "RASecEd": 5,
+     "DecDegEd": 3,
+     "DecMinEd": 2,
+     "DecSecEd": 5
+    },
+    "buttons": "bkOK / bkCancel (no DFM captions: VCL default OK/Cancel)"
+   },
+   "status": "recovered",
+   "uncertainty": "Seconds-field rounding/carry of 0x486b20 not re-derived (radio splitSexagesimal covers 0x486bc0, a sibling)."
+  },
+  {
+   "id": "OB-AC-03",
+   "claim": "THOVerifyDlg.OKBtnClick 0x4f8898: RA := StrToFloat(h) + StrToFloat(m)/60 + StrToFloat(s)/3600; any conversion exception or RA < 0 or RA > 24 -> MessageDlg(mtError, [mbOK]) and ModalResult := 0. Dec: sign := −1 if StrToFloat(deg) < 0 else +1 (so \"-0\" is positive); Dec := deg + sign*min/60 + sign*sec/3600; exception or Dec < −90 or > 90 -> MessageDlg and ModalResult := 0. Success: ID := IDEd truncated to 24, RA, Dec, remarks := CmntEd1 truncated to 40, ModalResult := 1.",
+   "addresses": [
+    "0x4f88d5..0x4f89ba",
+    "0x4f89bf..0x4f8ac6",
+    "0x4f8acb..0x4f8b75",
+    "0x485960 (sign)"
+   ],
+   "literals": {
+    "raError": "Right Ascension is Invalid!",
+    "decError": "Declination is Invalid!"
+   },
+   "status": "recovered",
+   "uncertainty": "Bounds are inclusive (24.0 h and ±90° accepted). Hints ('0-23', '+89 - -89') are not enforced. IDEd MaxLength 16 vs ShortString[24] vs hint 12: keep all three facts."
+  },
+  {
+   "id": "OB-AC-04",
+   "claim": "After OK (ModalResult 1): 0x590588 appends the record to the hot-list linked list (+0x58d, 0x492728), marks it modified (+0x587 := 0), enables THotListForm1.SaveList1 and the observatory menu SaveUpdatedList1 ([0x5b5880]+0x490; radio form in exercise 6). Then MessageBox (MB_OKCANCEL|MB_ICONINFORMATION 0x41, result ignored): \"Object \" + ID + \" added to Observation List.\" when the ID is non-empty, else \"Position added to Observation List.\".",
+   "addresses": [
+    "0x53f1e7..0x53f2a4",
+    "0x590588..0x5905e5"
+   ],
+   "literals": {
+    "withId": [
+     "Object ",
+     " added to Observation List."
+    ],
+    "withoutId": "Position added to Observation List.",
+    "caption": "Observation List"
+   },
+   "status": "recovered",
+   "uncertainty": "ShortString concatenation limits (31 and 58 chars) could truncate long IDs; IDs ≤ 24 fit."
+  },
+  {
+   "id": "OB-DT-01",
+   "claim": "There is no optical-observatory date/time dialog. TUTTimeDlg (class 0x4fd9e0, global [0x5b5d3c]) is created only by TEnvironment1.SetDateTime1Click 0x58b2ec (\"Set Observation &Date/Time, ID...\"), which copies the shared UT record env+0x37de in and back. The optical clocks (ProgrammedSlew LST call 0x4881ac on env+0x37de) read that same record. The dialog is already ported as src/core/radioDateDialog.ts (RC-12..RC-17).",
+   "addresses": [
+    "0x58b2ec..0x58b33e",
+    "0x539a9e..0x539aaa",
+    "xrefs of 0x5b5d3c and 0x4fd9e0: only 0x58b2fb..0x58b432"
+   ],
+   "literals": {
+    "caption": "Set Date/Time, ID",
+    "dateLabel": "Observation Date",
+    "dateFormat": "YYYY/MM/DD",
+    "timeLabel": "Universal Time (UTC) ",
+    "timeFormat": "HH:MM:SS",
+    "idLabel": "ID # of Unknown Object",
+    "idSource": "(From Lab Sheet or Instructor)",
+    "hints": {
+     "DateEd": "Enter full (4 digit) year",
+     "TimeEd": "Use 24 hr format.",
+     "IDEd": "Get ID from lab sheet or instructor"
+    },
+    "unknownId": "UNKNOWN"
+   },
+   "status": "recovered",
+   "uncertainty": "The time entered is UT (not local). Main-window menu, not an observatory menu; any observatory entry point is a web adaptation."
+  },
+  {
+   "id": "OB-ST-01",
+   "claim": "File > Site Information... (Site1Click 0x53e9e4) is read-only: a list form [0x5bcacc] (class 0x59d9a0) captioned \"Current Site & Telescope Parameters\" (print title \"Site Parameters\") with lines, in order: \"Site Name/ID: \"+name; \"Longitude: \"+0x486ca0(|lon°|, digits 0, \"°\",\"'\",\"\\\"\")+(\" W\" if lon<0 else \" E\"); \"Latitude: \"+…+(\" S\" if lat<0 else \" N\"); \"Altitude: \"+FloatToStrF(h,1)+\" Meters\"; only when env+0x2e7d (Limit Slewing) ≠ 0: \"Horizon Height: \"+FloatToStrF(hor°,1)+\" Degrees\"; \"Time Zone (UT-Local Time): \"+FloatToStrF(dt,1)+(\" Hour\" if |dt| = 1 else \" Hours\"); empty line; \"Telescope: \"+name; \"Aperture: \"+FloatToStrF(mm,1)+\" mm\"; \"Focal Length: \"+FloatToStrF(mm,1)+\" mm\". Values come from env site block of the selected scope (+0x2c24+147*idx) and scope record (+0x2be0+147*idx).",
+   "addresses": [
+    "0x53e9e4..0x53eeae"
+   ],
+   "literals": {
+    "caption": "Current Site & Telescope Parameters",
+    "printTitle": "Site Parameters",
+    "labels": [
+     "Site Name/ID: ",
+     "Longitude: ",
+     "Latitude: ",
+     "Altitude: ",
+     "Horizon Height: ",
+     "Time Zone (UT-Local Time): ",
+     "Telescope: ",
+     "Aperture: ",
+     "Focal Length: "
+    ],
+    "suffixes": {
+     "west": " W",
+     "east": " E",
+     "south": " S",
+     "north": " N",
+     "meters": " Meters",
+     "degrees": " Degrees",
+     "hour": " Hour",
+     "hours": " Hours",
+     "mm": " mm"
+    },
+    "dmsSeparators": [
+     "°",
+     "'",
+     "\""
+    ],
+    "menuCaption": "&Site Information..."
+   },
+   "status": "recovered",
+   "uncertainty": "Supersedes the I08 note \"Horizon display conditional on runtimeoptions+0x2e7d\": confirmed, and +0x2e7d is the Limit Slewing flag."
+  },
+  {
+   "id": "OB-ST-02",
+   "claim": "TStationDlg (\"Site Parameters\") is reached only from instructor TScopeDataDlg (\"Telescope Parameters\") SitePrmBtn1/2/3 (0x593c60/0x593ce8/0x593d70), which copy the 79-byte site block of scope record 0/1/2 (+0x2530/+0x25c3/+0x2656 +0x44) into the buffer 0x5bcf4c, create the dialog, and copy back only on ModalResult 1. FormCreate 0x592620 fills: LocEd name; LngDeg/LngMin IntToStr and LngSec FloatToStrF(2) of |lon|°; EWGrp ItemIndex 0 (East) when sign > 0 else 1 (West); same for latitude with NSGrp North/South; UtLtEd FloatToStrF(UT−local,1); AltEd FloatToStrF(height m,1); HorzEd FloatToStrF(horizon°,1). FormActivate 0x5928e8 focuses LocEd.",
+   "addresses": [
+    "0x593c60..0x593ce4",
+    "0x593ce8",
+    "0x593d70",
+    "0x592620..0x5928cb",
+    "0x5928e8..0x592904"
+   ],
+   "literals": {
+    "caption": "Site Parameters",
+    "labels": {
+     "Label1": "Site Name:",
+     "Label2": "Local Time Difference",
+     "Label9": "Altitude",
+     "Label10": "Horizon",
+     "LngGrp": "Longitude",
+     "LatGrp": "Latitude",
+     "dms": [
+      "Deg",
+      "Min",
+      "Sec"
+     ]
+    },
+    "radio": {
+     "EWGrp": [
+      "East",
+      "West"
+     ],
+     "NSGrp": [
+      "North",
+      "South"
+     ]
+    },
+    "hints": {
+     "LocEd": "Name of observatory or site.",
+     "UtLtEd": "UT minus local Standard (not Daylight) Time in hours",
+     "LngDeg": "0-180",
+     "LngMin": "0-59",
+     "LngSec": "0.00-59.99",
+     "LatDeg": "0-90",
+     "LatMin": "0-59",
+     "LatSec": "0.00-59.99",
+     "AltEd": "Meters above sea level",
+     "HorzEd": "Horizon Altitude in Degrees"
+    },
+    "maxLength": {
+     "LocEd": 79,
+     "UtLtEd": 3
+    },
+    "buttons": [
+     "&OK",
+     "&Cancel"
+    ]
+   },
+   "status": "recovered",
+   "uncertainty": "Site block layout: +0 ShortString[40] name, +0x29 lon rad (West negative), +0x33 lat rad, +0x3d horizon rad, +0x47 Single height m, +0x4b Single UT−local h."
+  },
+  {
+   "id": "OB-ST-03",
+   "claim": "TStationDlg.OKBtnClick 0x592908, in order: name := LocEd (ShortString[40]); UT−local := StrToFloat(UtLtEd) (Single), height := StrToFloat(AltEd) (Single), horizon := StrToFloat(HorzEd)*π/180; conversion exception or |UT−local| > 12 -> MB_ICONSTOP box, ModalResult := 0 (name/UT/height/horizon already written to the buffer). Longitude := d + m/60 + s/3600, invalid if exception or < 0 or > 180; West (EWGrp ItemIndex 1) negates. Latitude same with 0..90, South negates. Each failure -> box, ModalResult := 0. Success stores lon/lat radians. No DST handling.",
+   "addresses": [
+    "0x592963..0x592aa6",
+    "0x592aab..0x592bcc",
+    "0x592bd1..0x592cf2",
+    "0x592cf4..0x592d45"
+   ],
+   "literals": {
+    "caption": "Input Error!",
+    "utOrHeight": "Error In Station Altitude or Local Time Difference!",
+    "longitude": "Longitude is Invalid!",
+    "latitude": "Latitude is Invalid!"
+   },
+   "status": "recovered",
+   "uncertainty": "Altitude has no range check (only parse). Bounds inclusive."
+  },
+  {
+   "id": "OB-ST-04",
+   "claim": "The running observatory uses the env site block copied at telescope setup 0x53df24 (called from TEnvironment1 at 0x58b67d/0x58b97c): name -> env+0x2581, lon -> env+0x2b86, lat -> env+0x2b90, height -> env+0x2b9a, horizon -> env+0x2b9e (the guard's horizon). TOptionsDlg HorzEd (\"Horizon Limit\") reads/writes the same options-record field +0x24ea (degrees <-> radians, FloatToStrF 1 decimal) that maps to env+0x2b9e.",
+   "addresses": [
+    "0x53e0dd..0x53e155",
+    "0x5a5719..0x5a5749",
+    "0x5a6343..0x5a637f"
+   ],
+   "literals": {
+    "optionLabel": "Horizon Limit",
+    "optionHint": "Limiting height above horizon (in degrees)."
+   },
+   "status": "partially recovered",
+   "uncertainty": "Whether TStationDlg/TOptionsDlg edits reach a running observatory before the next telescope setup (option-record -> env copy 0x5879b8) is not traced; web plan \"site edits drive clocks and horizon only\" remains an adaptation."
+  },
+  {
+   "id": "OB-LS-01",
+   "claim": "TOptionsDlg (DFM caption \"Optical Simulation Options\") is the instructor options dialog; the only horizon-related controls are SlewBox \"Limit Slewing\" (hint \"If checked, telescope cannot point below Horizon Limit.\") and HorzEd \"Horizon Limit\". There is no separate \"horizon active\" option: OKBtnClick writes SlewBox.Checked to record+0x27c9 -> env+0x2e7d, which is both the guard enable and the Site Information horizon-line switch. FormActivate: SlewBox.Checked := (+0x27c9 ≠ 0 and +0x27ca = 0); SlewBox.Enabled := (+0x27ca = 0) where +0x27ca is EditModeBox (\"Edit Mode\"). Compiled default +0x27c9 = 0 (0x5a2acc).",
+   "addresses": [
+    "0x5a6100..0x5a6111",
+    "0x5a5985..0x5a59bd",
+    "0x5a2acc"
+   ],
+   "literals": {
+    "dialogCaption": "Optical Simulation Options",
+    "generalTab": "&General",
+    "parameters": [
+     "Base Slew Rate",
+     "Horizon Limit",
+     "Finder Field (Degs)",
+     "Instr. Field (Arc Min)",
+     "Field Creation Factor",
+     "Finder Mag Limit"
+    ],
+    "options": [
+     "Edit Mode",
+     "Demonstration Mode",
+     "Limit Slewing",
+     "Fast Slewing",
+     "Show Object ID",
+     "Fast Scope Change",
+     "Restrict Scope Access",
+     "Sound Effects",
+     "Test Mode",
+     "Infrared Camera",
+     "Virtual Observatory",
+     "Write Log File",
+     "Time-Dependent Data",
+     "Print in Color",
+     "Monochrome Displays",
+     "Compute Rdshft Vel."
+    ],
+    "special": "\"Administrator\"",
+    "otherTabs": [
+     "Photo&meter",
+     "Spec&trometer",
+     "CCD and IR tabs (see TOPTIONSDLG-DFM.json)"
+    ],
+    "limitSlewing": "Limit Slewing",
+    "limitSlewingHint": "If checked, telescope cannot point below Horizon Limit."
+   },
+   "status": "recovered",
+   "uncertainty": "Correction: data/observatory/horizon-provenance.json \"Options+0x27cd -> Environment+0x2e7d\" is wrong; +0x27cd is ObjIDBox (\"Show Object ID\"). The correct source is +0x27c9 (record + 0x6b4 = env), as in telescope-motion-contract.json. Both defaults are 0, so no behaviour changes."
+  },
+  {
+   "id": "OB-LS-02",
+   "claim": "Guard 0x539290(dec°, HA h): if env+0x2e7d = 0 return true; else altitude := ArcSin(sin(dec)·sin(lat env+0x2b90) + cos(dec)·cos(HA·2π/24)·cos(lat)); return false when horizon env+0x2b9e ≥ altitude; otherwise return |current Dec +0x669| ≤ 90.",
+   "addresses": [
+    "0x539290..0x5393c6"
+   ],
+   "literals": {},
+   "status": "recovered",
+   "uncertainty": "Already ported as current-pointing readout (src/core/horizon.ts, enforcementEnabled:false)."
+  },
+  {
+   "id": "OB-LS-03",
+   "claim": "Guard caller ClockTimerTimer 0x538622: while the drive is on (+0x64b) and no programmed slew (+0x64d = 0), tested with current Dec and HA = LST − current RA. Blocked -> drive off (+0x64b := 0, DrvOnLed off) and MB_ICONSTOP box.",
+   "addresses": [
+    "0x5385ef..0x538664"
+   ],
+   "literals": {
+    "text": "The Scope Has Reached the Western Limit!\r\n\r\nThe Clock Drive Has Been Turned Off.",
+    "caption": "Horizon Limit Reached!"
+   },
+   "status": "recovered",
+   "uncertainty": "None."
+  },
+  {
+   "id": "OB-LS-04",
+   "claim": "Guard caller SlewTimerTimer 0x539000 (manual N/S/E/W): tested with the candidate Dec/HA of the next step; blocked -> step not applied, motor sound stopped, SlewTimer off, manual flag +0x64c := 0, rate slider/Slew menu/N/S/E/W re-enabled, MB_ICONSTOP box whose text is ShortString \"The Scope Has Reached the \" + direction + \" Horizon Limit!\" with direction by +0x5e7: 0 North, 1 South, 2 East, 3 West.",
+   "addresses": [
+    "0x538fe8..0x539122"
+   ],
+   "literals": {
+    "textHead": "The Scope Has Reached the ",
+    "directions": [
+     "North",
+     "South",
+     "East",
+     "West"
+    ],
+    "textTail": " Horizon Limit!",
+    "caption": "Slew Limit Reached!"
+   },
+   "status": "recovered",
+   "uncertainty": "Direction code mapping 0..3 = order of the jump table; same order as radio MANUAL_DIRECTION_CODE."
+  },
+  {
+   "id": "OB-LS-05",
+   "claim": "Guard caller ProgrammedSlew 0x539ae5: see OB-SC-05 (target Dec, target HA before the confirmation; skipped in Test Mode). No guard during the SlewTimer2 programmed motion itself.",
+   "addresses": [
+    "0x539ae5"
+   ],
+   "literals": {
+    "text": "Target Coordinates are Below the Horizon!",
+    "caption": "Cannot Perform Slew"
+   },
+   "status": "recovered",
+   "uncertainty": "Absence of a guard in SlewTimer2Timer 0x5395cc is from the three-caller inventory, not a full listing review."
+  },
+  {
+   "id": "OB-SR-01",
+   "claim": "Spectrometer Save (SaveSpectrum1Click 0x50fb1c) confirmed as the existing *SpHdr* writer (docs/SPECTRUM-SAVE-CONTRACT.md). Literals: default name \"UNKNOWN\" kept when the session ID is UNKNOWN, otherwise \"ObjX-\" + ID; dialog title \"Save Spectrum File\"; overwrite prompt name + \" Already Exists!\" + \"\\r\\n\\r\\n\" + \"Do You Want to Overwrite It?\" caption \"Replace Existing File?\" (0x24); write error box ending \"Spectrum not saved.\" caption \"Error Writing File\" (0x10).",
+   "addresses": [
+    "0x50fbcd..0x50fc53",
+    "0x50fca0..0x50fce1",
+    "0x50fdcd..0x50fe21"
+   ],
+   "literals": {
+    "title": "Save Spectrum File",
+    "unknown": "UNKNOWN",
+    "prefix": "ObjX-",
+    "exists": " Already Exists!",
+    "overwrite": "Do You Want to Overwrite It?",
+    "overwriteCaption": "Replace Existing File?",
+    "notSaved": "Spectrum not saved.",
+    "errorCaption": "Error Writing File"
+   },
+   "status": "partially recovered",
+   "uncertainty": "Only confirmed, no deep re-derivation (by request). Extension/InitialDir source fields not bound."
+  },
+  {
+   "id": "OB-SR-02",
+   "claim": "Spectrometer File > Spectral Range (SpectralRange1Click 0x510fc8): if self+0x3172 = 0 a warning box (MB_OKCANCEL|MB_ICONSTOP 0x11) is shown; Cancel (2) aborts; otherwise (or when +0x3172 ≠ 0) the shared TSpecRangeDlg [0x5b58bc] is ShowModal'd.",
+   "addresses": [
+    "0x510fc8..0x51101a"
+   ],
+   "literals": {
+    "text": "You will lose the current spectrum if you change the spectral range now!",
+    "caption": "Spectrometer Will Clear!"
+   },
+   "status": "recovered",
+   "uncertainty": "Meaning of +0x3172 (likely \"no spectrum yet\") not established. B9 is out of this round."
+  },
+  {
+   "id": "OB-SR-03",
+   "claim": "File > Print Sky Image... (PrintSkyImage1Click 0x53f934): runs the environment print dialog (env+0x3a8 Execute); on OK sets the hourglass cursor, disables the form, Printer.BeginDoc, prints a header (0x58e860), the sky image (0x53f9e4, scaling factor 1.5) and a footer (0x53fe14), Printer.EndDoc, restores cursor and form.",
+   "addresses": [
+    "0x53f934..0x53f985",
+    "0x53f988..0x53f9e1"
+   ],
+   "literals": {
+    "menuCaption": "&Print Sky Image..."
+   },
+   "status": "partially recovered",
+   "uncertainty": "Named by structure only; image/header content not decoded. Not ported (sky exposure Save/Print stays absent per plan)."
+  }
+ ],
+ "notRecovered": [
+  "Pixel/tolerance rule of the object lookup 0x59a0fc used by Add Current Item (OB-AC-01).",
+  "Whether instructor option/site edits reach the running environment before the next telescope setup (OB-ST-04).",
+  "Content of the printed sky image, header and footer (OB-SR-03).",
+  "Meaning of TSpectrometer+0x3172 (OB-SR-02)."
+ ],
+ "nonEquivalence": "Decompilation and self-consistent reading only; no claim of equivalence with the original runtime.",
+ "reviewCorrections": [
+  "2026-10-27 independent review 1: OB-HL-03 order corrected to RA cursor insertion (VMT 0x58f3d8 slot +4 = 0x590398); notRecovered item on comparator callers removed."
+ ]
+}

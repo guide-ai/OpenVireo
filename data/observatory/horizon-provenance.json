@@ -147,7 +147,7 @@
     "hourAngle": "local sidereal hours minus current RA; radians=hours*stored2pi/24",
     "optionalGuard": "if disabled return true;else altitude>configured horizon AND abs(stored current dec)<=90. Equality at horizon rejects.",
     "compiledEnforcementEnabled": false,
-    "option": "Options+0x27cd=0 -> Environment+0x2e7d",
+    "option": "Options+0x27c9=0 -> Environment+0x2e7d (Limit Slewing; corrected from +0x27cd = Show Object ID, Front B review 1 adjudication 2: OK 0x5a6111 writes SlewBox +0x3bc to +0x27c9, +0x6b4 -> env+0x2e7d, read at 0x5392a0)",
     "siteFields": "Environment+0x2b90 latitudeRadians,+0x2b9e horizonRadians; compiled profiles already pinned.",
     "candidateCaveat": "Native motor guard receives candidate dec/hourAngle but separately tests stored current dec. This readout uses current pointing for both; candidate motor enforcement is not ported."
   },

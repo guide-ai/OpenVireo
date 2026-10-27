@@ -1,5 +1,7 @@
 import{MAX_PROJECT_METADATA_GROWTH,projectBytesFit,projectTextFits}from'../core/projectMetadata';
 import{projectMetadata,projectMarker}from'../core/projectMetadata';
+import {readOpticalOptions,type OpticalOptions} from '../core/opticalOptions';
+import {portableSiteOverrides,readSiteOverrides,type SiteOverrides} from '../core/observatorySite';
 import {readMotionPreferences,TELESCOPE_MOTION_POLICY,TELESCOPE_MOTION_SHA256,type MotionPreferences} from '../core/telescopeMotion';
 import {CLUSTER_SELECTION_POLICY,CLUSTER_SELECTION_SHA256,type ClusterSelectionWorkspace} from '../core/clusterSelection';
 import {readClusterComparisonWorkspace,CLUSTER_COMPARISON_SHA256,CLUSTER_COMPARISON_POLICY,type ClusterComparisonWorkspace} from '../core/clusterComparison';
@@ -40,7 +42,13 @@ export type AnalysisSession=Readonly<{
   reference:keyof typeof REFERENCES; wide:boolean; object:string; rows:readonly Measurement[]; hubble:HubbleWorkspace; acquisitions?:readonly AcquisitionObservation[];classification?:ClassificationWorkspace;photometry?:PhotometerState;observing?:ObservingWorkspace;editing?:EditingWorkspace;optical?:OpticalWorkspace;clusterDatabase?:ClusterDatabaseWorkspace;clusterComparison?:ClusterComparisonWorkspace;clusterSelection?:ClusterSelectionWorkspace;motion?:MotionPreferences;
   /** Phase 1 item 1.5 (v23): the Radio workspace, current pulsar dataset and pulsar measurements. Absent in v1..22 files. */
   radio?:RadioInvestigationRecord;
+  /** Front B (v26): optical observatory options and student site overrides. Absent in v1..25 files (compiled defaults). */
+  observatory?:ObservatorySession;
 }>;
+/** Front B B10 (v26): Optical Simulation Options (Limit Slewing) and per-telescope site overrides (clocks/horizon only,
+ * WEB-ST-01). A v26 file wraps an unchanged v1..25 base, outermost; a v26 is never nested. */
+export type ObservatorySession=Readonly<{options:OpticalOptions;siteOverrides:SiteOverrides}>;
+export const OBSERVATORY_SESSION_POLICY='openvireo-optical-observatory-options-sites-v26';
 /** Phase 2 B1 (v24): cached-pan targets (54875/54891, 0.4 m only). A v24 file wraps an unchanged v1..23 base and adds the
  * cached field policy, the unchanged base field snapshot and binary hashes and the 0.4 m banks of those targets
  * (observing.cachedGalaxies). Acquisitions, banks or context of these targets are rejected in any file outside v24. */
@@ -129,6 +137,13 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===26){
+    if(migrated)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','observatoryPolicy','observatory']);
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.observatoryPolicy!==OBSERVATORY_SESSION_POLICY||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>25)fail('format');
+    let observatory:ObservatorySession;try{const o=record(r.observatory,['options','siteOverrides']);observatory=Object.freeze({options:readOpticalOptions(o.options),siteOverrides:readSiteOverrides(o.siteOverrides)});}catch{fail('state');}
+    const base=await restore(r.base,verifySources,true,false,false);return Object.freeze({...base,observatory});
+  }
   if(version===25){
     if(cached||pegasus)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','pegasusFieldPolicy','pegasusBaseFieldSHA256','binarySHA256','pegasusGalaxies']);
@@ -244,6 +259,10 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
 type Wrapped=Readonly<{cached?:true;pegasus?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  if(session.observatory!==undefined){
+    let observatory:unknown;try{observatory={options:readOpticalOptions(session.observatory.options),siteOverrides:portableSiteOverrides(readSiteOverrides(portableSiteOverrides(session.observatory.siteOverrides)))};}catch{fail('state');}
+    return {format:FORMAT,version:26,numericalPolicy:POLICY,base:await portable({...session,observatory:undefined},wrapped),observatoryPolicy:OBSERVATORY_SESSION_POLICY,observatory};
+  }
   if(!wrapped.pegasus&&sessionUsesPegasus(session)){
     const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
     if(observing){const {pegasusGalaxies,...plain}=observing;base=plain;banks=(await import('./observingWorkspace')).portablePegasusGalaxies(pegasusGalaxies??Object.fromEntries(PEGASUS_GALAXY_IDS.map(id=>[id,emptyExposureWorkspace()]))as NonNullable<ObservingWorkspace['pegasusGalaxies']>,acquisitions);}
