@@ -51,7 +51,7 @@ export const FIELD_MULTIPLIER=base.multiplier;
 /** Why a pointing cannot be acquired in this version (never a fabricated substitute). */
 export type FieldUnavailableReason=
  |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'|'axis-fallback'|'merge-boundary'|'stamp-bound'
- |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound';
+ |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping';
 export type FieldMergeWitness=Readonly<{galaxy:string;removed:readonly string[];savedWinnerIndex:number;runnerIndex:number;winnerId:string|null}>;
 export type FieldPopulation=Readonly<{
  area:NativeCatalogRegion;regionIds:readonly number[];bandOrder:readonly string[];initialStarIds:readonly string[];

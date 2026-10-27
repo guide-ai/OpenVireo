@@ -16,6 +16,11 @@ export function parseLssPolicy(policy:unknown):Readonly<{field:LssFieldNumber;ro
  if(row<0||row>=lssFieldRows(field).length)throw new JournalError('session');
  return Object.freeze({field,row,telescope});
 }
+/** Selected galaxies that have their own library spectrum in GLXYSP.LST (SHA-256 0a7a352d…c0a01, 576 bytes; not an approved
+ * resource, read statically in research only). Native key: identifier without spaces + ".SP", exact match (Pegasus provenance
+ * spectrumMapping). Their spectrum is not the GLXYTMPL.SP template, so they stay unavailable rather than substituted. These are
+ * the only two LSS identifiers with a match. */
+export const LSS_SPECTRUM_MAPPED_IDS:readonly string[]=Object.freeze(['NGC 4670','NGC 4889']);
 /** available: verified on this telescope and the slit selects the row's own catalogue galaxy; neighbour: available, but the
  * nearest rule selects another catalogue galaxy at (or within 1″ of) the row position; unavailable: typed reasons. */
 export type LssRowStatus=Readonly<{kind:'available'|'neighbour';result:FieldResult;selectedId:string;selectedIndex:number}>|Readonly<{kind:'unavailable';reasons:readonly FieldUnavailableReason[];result:FieldResult|null}>;
@@ -24,6 +29,7 @@ export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescop
  try{result=evaluateField(pack,glx,{ra:row.ra,dec:row.dec},telescope);}
  catch(e){if(e instanceof FieldEngineError&&e.code==='evidence')return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['outside-pack' as const]),result:null});throw e;}
  if(result.reasons.length||!result.target)return Object.freeze({kind:'unavailable' as const,reasons:result.reasons,result});
+ if(LSS_SPECTRUM_MAPPED_IDS.includes(result.target.id))return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['spectrum-mapping' as const]),result});
  return Object.freeze({kind:result.target.recordIndex===row.catalogIndex?'available' as const:'neighbour' as const,result,selectedId:result.target.id,selectedIndex:result.target.recordIndex});
 }
 /** Exposure engine for one available row; every operation checks the state's policy. */
