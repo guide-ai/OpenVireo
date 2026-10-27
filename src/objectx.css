@@ -1,0 +1,11 @@
+.objectx-lab .card{margin-block:1rem}
+.objectx-lab label{display:flex;flex-direction:column;gap:.25rem;margin-block:.4rem}
+.objectx-lab fieldset.button-row label,.objectx-lab .button-row label{flex-direction:row;align-items:center}
+.objectx-branches{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+.objectx-branches>section{border:1px solid rgba(128,128,128,.35);border-radius:8px;padding:.75rem}
+.objectx-unavailable{font-style:italic;opacity:.85}
+.objectx-table{overflow-x:auto;max-height:24rem}
+.objectx-table table{border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap}
+.objectx-table th,.objectx-table td{padding:.15rem .5rem;text-align:right}
+.objectx-table td:first-child,.objectx-table th:first-child{text-align:left}
+.objectx-lab textarea{width:100%;max-width:40rem}
