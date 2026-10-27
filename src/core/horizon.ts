@@ -2,7 +2,7 @@ import proof from '../../data/observatory/horizon-provenance.json';
 import {opticalProfile,type OpticalIndex} from './opticalTelescope';
 import {siteClockReadingMS,type ClockSite} from './siteClock';
 import {validatePointing,type Pointing} from './sky';
-export const HORIZON_PROOF_SHA256='ad8f2f48ce69d690682bbf8faf0c1de1b65f7ba3e381866d9c3c404cd6ae67c7',HORIZON_POLICY=proof.policy;
+export const HORIZON_PROOF_SHA256='4210d792c393f8b6754ac9a470ed3b124733dd95d21828b6c5154fe1b3041140',HORIZON_POLICY=proof.policy;
 export type HorizonPosition='above'|'at-or-below'|'precision-boundary';
 /** Current-pointing geometry of optional native0x539290. Original x87 asin
  * is atan2(x,sqrt(1-x*x)); Number/Math and the near-boundary guard are adapters.
