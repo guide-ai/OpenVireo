@@ -4,16 +4,21 @@ import {createHash} from 'node:crypto';
 import witnesses from '../../data/lss/lss-witnesses.json';
 import {decodeFieldPack} from './fieldPack';
 import {buildFieldPopulation} from './fieldEngine';
-import {evaluateLssRow,LSS_SPECTRUM_MAPPED_IDS} from './lssExposure';
+import {evaluateLssRow} from './lssExposure';
+import {parseGlimagesPositions,parseGlxyspNames,packWithPhotographs,hasLibrarySpectrum} from './lssLists';
 import {lssFieldRows,type LssFieldNumber} from './lssFields';
 // Published bounded packs (2026-10-27 approval) against the independent whole-source Python witnesses.
 const glx=new Uint8Array(readFileSync(new URL('../../public/original/catalogs/CLEA_GLX.DAT',import.meta.url)));
 const raw=(f:number)=>readFileSync(new URL(`../../data/lss/lss-field-0${f}.json`,import.meta.url));
 const sha=(s:string|Uint8Array)=>createHash('sha256').update(s).digest('hex');
+const original=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
+const photographs=parseGlimagesPositions(original('images/GLIMAGES.LST')),spectra=parseGlxyspNames(original('spectra/GLXYSP.LST'));
 describe('LSS field packs reproduce the independent witnesses for every row',()=>{
  for(const w of witnesses.fields)it(`field ${w.field}`,()=>{
   const bytes=raw(w.field);expect(sha(bytes)).toBe(w.packSHA256);
-  const pack=decodeFieldPack(JSON.parse(bytes.toString()));
+  const packed=decodeFieldPack(JSON.parse(bytes.toString())),pack=packWithPhotographs(packed,photographs);
+  // The byte-exact GLIMAGES.LST gives the same per-pointing matches the pack was built with.
+  expect(pack.photographs.entries).toEqual(packed.photographs.entries);
   expect(pack.bands.map(b=>b.name).sort()).toEqual(['N2230','N3000']);
   const rows=lssFieldRows(w.field as LssFieldNumber);expect(w.pointings).toHaveLength(rows.length);
   for(const p of w.pointings){
@@ -26,8 +31,9 @@ describe('LSS field packs reproduce the independent witnesses for every row',()=
  });
  it('re-derives the acquirable rows per telescope (0.4 m 129, 0.9 m 69, 4 m 130 of 219, before the spectrum-mapping gate)',()=>{
   const counts=[0,0,0],mapped:string[]=[];
-  for(let f=1;f<=9;f++){const pack=decodeFieldPack(JSON.parse(raw(f).toString()));for(const row of lssFieldRows(f as LssFieldNumber))for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t);if(s.kind!=='unavailable')counts[t]++;else if(s.reasons.includes('spectrum-mapping')){counts[t]++;mapped.push(`${row.id}@${t}`);}}}
+  for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);for(const row of lssFieldRows(f as LssFieldNumber))for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra);if(s.kind!=='unavailable')counts[t]++;else if(s.reasons.includes('spectrum-mapping')){counts[t]++;mapped.push(`${row.id}@${t}`);}}}
   expect(counts).toEqual([129,69,130]);
-  expect([...new Set(mapped.map(m=>m.split('@')[0]))].every(id=>LSS_SPECTRUM_MAPPED_IDS.includes(id))).toBe(true);
+  expect(mapped).toEqual([]);// NGC 4670 and NGC 4889 match GLXYSP.LST but are QSO-gated first
+  expect(['NGC 4670','NGC 4889'].every(id=>hasLibrarySpectrum(spectra,id))).toBe(true);
  },120000);
 });

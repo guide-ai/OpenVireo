@@ -62,12 +62,13 @@ describe('LSS row evaluation and exposure',()=>{
  const pack=fieldPackFromSnapshot('s',field36773 as Parameters<typeof fieldPackFromSnapshot>[1]);
  const row:LssRow={field:1,index:0,id:'36773',remarks:'',ra:field36773.domain.pointing.ra,dec:field36773.domain.pointing.dec,recordSha256:'0'.repeat(64),catalogIndex:12119,exact:true,near:[]};
  it('reports available when the slit selects the row galaxy, neighbour otherwise, and unavailable outside the pack',()=>{
-  expect(evaluateLssRow(pack,glx,row,0).kind).toBe('available');
-  const other=evaluateLssRow(pack,glx,{...row,catalogIndex:1},0);expect(other.kind).toBe('neighbour');
-  expect(evaluateLssRow(pack,glx,{...row,ra:row.ra+.01},0)).toMatchObject({kind:'unavailable',reasons:['outside-pack']});
+  expect(evaluateLssRow(pack,glx,row,0,new Set()).kind).toBe('available');
+  const other=evaluateLssRow(pack,glx,{...row,catalogIndex:1},0,new Set());expect(other.kind).toBe('neighbour');
+  expect(evaluateLssRow(pack,glx,{...row,ra:row.ra+.01},0,new Set())).toMatchObject({kind:'unavailable',reasons:['outside-pack']});
+  expect(evaluateLssRow(pack,glx,row,0,new Set(['36773.SP']))).toMatchObject({kind:'unavailable',reasons:['spectrum-mapping']});
  });
  it('runs the same journal draws as the verified galaxy exposure and checks its policy',()=>{
-  const st=evaluateLssRow(pack,glx,row,0);if(st.kind==='unavailable')throw Error();
+  const st=evaluateLssRow(pack,glx,row,0,new Set());if(st.kind==='unavailable')throw Error();
   const policy=lssPolicy(1,0,0),e=lssExposureEngine(st.result,policy);
   const run=(s:ReturnType<typeof e.create>)=>e.tick(e.start(e.activate(s)),700).exposure.counts;
   expect(run(e.create(7))).toEqual(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(7,'36773',0))),700).exposure.counts);

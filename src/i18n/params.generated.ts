@@ -3135,7 +3135,7 @@ export interface MessageParameters {
   "lss.fieldTitle": never;
   "lss.field": never;
   "lss.chooseField": never;
-  "lss.fieldOption": "n" | "name" | "rows";
+  "lss.fieldOption": "dec" | "label" | "ra" | "rows";
   "lss.telescope": never;
   "lss.load": never;
   "lss.cancelLoad": never;
@@ -3144,7 +3144,7 @@ export interface MessageParameters {
   "lss.loadError": never;
   "lss.loaded": "available" | "name" | "rows" | "telescope";
   "lss.fieldHelp": never;
-  "lss.rowsCaption": "name" | "telescope";
+  "lss.rowsCaption": "label" | "name" | "telescope";
   "lss.col.object": never;
   "lss.col.status": never;
   "lss.col.action": never;
@@ -3210,7 +3210,6 @@ export interface MessageParameters {
   "lss.results.descriptionHelp": never;
   "lss.wedge.nothing": never;
   "lss.limitsTitle": never;
-  "lss.adaptation.field": never;
   "lss.adaptation.telescope": never;
   "lss.adaptation.fresh": never;
   "lss.adaptation.raster": never;
@@ -3220,4 +3219,5 @@ export interface MessageParameters {
   "lss.adaptation.csv": never;
   "lss.adaptation.packs": never;
   "lss.exposure.elapsed": "ms";
+  "lss.fieldsError": never;
 }

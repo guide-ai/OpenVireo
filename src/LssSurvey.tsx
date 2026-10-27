@@ -10,6 +10,7 @@ import {parseHtl} from './core/hotList';
 import {fetchBundledHotList} from './io/bundledHotList';
 import {fetchBundledGlxCatalog} from './io/bundledGlxCatalog';
 import {loadLssPack} from './io/lssPack';
+import {LSS_FIELDS_LST,GLIMAGES_LST,GLXYSP_LST,parseLssFieldsList,parseGlimagesPositions,parseGlxyspNames,packWithPhotographs,type LssFieldEntry} from './core/lssLists';
 import {resourceSha256} from './io/boundedResource';
 import type {JournalState} from './core/exposureJournal';
 import type {WedgeOwnRecord} from './core/wedgeWorkspace';
@@ -28,10 +29,13 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
  const [survey,setSurvey]=useState<LssSurveyState>(EMPTY_LSS_SURVEY),[telescope,setTelescope]=useState<Telescope>(initialTelescope);
  const [loaded,setLoaded]=useState<Loaded|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const [pointed,setPointed]=useState<number|null>(null),[exposure,setExposure]=useState<JournalState|null>(null),[description,setDescription]=useState('');
+ const [fields,setFields]=useState<readonly LssFieldEntry[]|null>(null),lists=useRef<{photographs:ReturnType<typeof parseGlimagesPositions>;spectra:ReadonlySet<string>}|null>(null);
  const glx=useRef<Uint8Array|null>(null),abort=useRef<AbortController|null>(null),dialog=useRef<HTMLDialogElement>(null);
  const heading=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{if(active)heading.current?.focus();else{abort.current?.abort();}},[active]);
  useEffect(()=>{onRecordsChange?.(survey.records);},[survey.records]);
+ // LSSFields.LST (byte-exact, size and SHA-256 checked) supplies the original field names and centres.
+ useEffect(()=>{if(!active||fields)return;const c=new AbortController();fetchBundledHotList(fetch,c.signal,LSS_FIELDS_LST).then(b=>setFields(parseLssFieldsList(b.bytes))).catch(e=>{if(!(e instanceof DOMException&&e.name==='AbortError'))setError(t('lss.fieldsError'));});return()=>c.abort();},[active,fields]);
  useEffect(()=>{const d=dialog.current;if(!d)return;if(survey.draft&&!d.open)d.showModal();else if(!survey.draft&&d.open)d.close();},[survey.draft]);
  async function load(field:LssFieldNumber,scope:Telescope){
   abort.current?.abort();const controller=new AbortController();abort.current=controller;
@@ -41,8 +45,9 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
    const bytes=await fetchBundledHotList(fetch,controller.signal,identity);
    const list=parseHtl(bytes.bytes);if(!isLssFieldList(field,list))throw new Error('list');
    glx.current??=await fetchBundledGlxCatalog(fetch,controller.signal);
-   const pack=await loadLssPack(field),rows=lssFieldRows(field),statuses:LssRowStatus[]=[];
-   for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope));await new Promise(r=>setTimeout(r,0));}
+   if(!lists.current){const [photographs,spectra]=await Promise.all([fetchBundledHotList(fetch,controller.signal,GLIMAGES_LST),fetchBundledHotList(fetch,controller.signal,GLXYSP_LST)]);lists.current={photographs:parseGlimagesPositions(photographs.bytes),spectra:parseGlxyspNames(spectra.bytes)};}
+   const pack=packWithPhotographs(await loadLssPack(field),lists.current.photographs),rows=lssFieldRows(field),statuses:LssRowStatus[]=[];
+   for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope,lists.current.spectra));await new Promise(r=>setTimeout(r,0));}
    if(controller.signal.aborted)return;
    setSurvey(s=>markLssListLoaded(selectLssField(s,field),field));setLoaded(Object.freeze({field,telescope:scope,statuses:Object.freeze(statuses)}));
    setNotice(t('lss.loaded',{name:identity.name,rows:rows.length,available:statuses.filter(s=>s.kind!=='unavailable').length,telescope:opticalProfile(scope).name}));
@@ -61,11 +66,11 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
  const draft=survey.draft;
  return <main className="observatory-main lss-main"><section className="observatory-heading"><div className="eyebrow">{t('lss.eyebrow')}</div><h1 ref={heading} tabIndex={-1}>{t('lss.title')}</h1><p>{t('lss.intro')}</p></section>
   <section className="card" aria-labelledby="lss-field-heading"><h2 id="lss-field-heading">{t('lss.fieldTitle')}</h2>
-   <div className="lss-controls"><label htmlFor="lss-field">{t('lss.field')}</label><select id="lss-field" value={field??''} disabled={loading} onChange={e=>{setSurvey(s=>selectLssField(s,Number(e.target.value)));}}><option value="" disabled>{t('lss.chooseField')}</option>{LSS_FIELD_FILES.map(f=><option key={f.field} value={f.field}>{t('lss.fieldOption',{n:f.field,name:f.name,rows:f.records})}</option>)}</select>
+   <div className="lss-controls"><label htmlFor="lss-field">{t('lss.field')}</label><select id="lss-field" value={field??''} disabled={loading||!fields} onChange={e=>{setSurvey(s=>selectLssField(s,Number(e.target.value)));}}><option value="" disabled>{t('lss.chooseField')}</option>{(fields??[]).map(f=><option key={f.field} value={f.field}>{t('lss.fieldOption',{label:f.label,ra:f.ra,dec:f.dec,rows:LSS_FIELD_FILES[f.field-1].records})}</option>)}</select>
     <label htmlFor="lss-telescope">{t('lss.telescope')}</label><select id="lss-telescope" value={telescope} disabled={loading} onChange={e=>setTelescope(Number(e.target.value) as Telescope)}>{([0,1,2] as const).map(i=><option key={i} value={i}>{opticalProfile(i).name}</option>)}</select>
     <button className="primary-button" disabled={!field||loading} onClick={()=>field&&void load(field,telescope)}>{t('lss.load')}</button>{loading&&<button className="secondary-button" onClick={cancelLoad}>{t('lss.cancelLoad')}</button>}</div>
    <p className="observatory-note">{t('lss.fieldHelp')}</p>
-   {loaded&&<table className="lss-rows" data-testid="lss-rows"><caption>{t('lss.rowsCaption',{name:`LSS_Field0${loaded.field}.HTL`,telescope:opticalProfile(loaded.telescope).name})}</caption><thead><tr><th scope="col">#</th><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.col.status')}</th><th scope="col">{t('lss.col.action')}</th></tr></thead>
+   {loaded&&<table className="lss-rows" data-testid="lss-rows"><caption>{t('lss.rowsCaption',{label:fields?.[loaded.field-1]?.label??'',name:`LSS_Field0${loaded.field}.HTL`,telescope:opticalProfile(loaded.telescope).name})}</caption><thead><tr><th scope="col">#</th><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.col.status')}</th><th scope="col">{t('lss.col.action')}</th></tr></thead>
     <tbody>{rows.map((r,i)=>{const s=loaded.statuses[i];return <tr key={i} data-testid={`lss-row-${i+1}`} aria-current={pointed===i?'true':undefined}><td>{i+1}</td><td>{r.id}</td><td>{statusText(s)}</td><td><button className="secondary-button" disabled={s.kind==='unavailable'||survey.draft!==null} onClick={()=>{setPointed(i);setExposure(null);setNotice(t('lss.pointed',{id:r.id}));}}>{t('lss.point')}</button></td></tr>;})}</tbody></table>}
   </section>
   {row&&live&&loaded&&<LssAcquisition key={lssPolicy(loaded.field,row.index,loaded.telescope)} active={active} result={live.result} row={row} policy={lssPolicy(loaded.field,row.index,loaded.telescope)} onCounts={setExposure}/>}
@@ -83,6 +88,6 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
    <label htmlFor="lss-description">{t('lss.results.description')}</label><textarea id="lss-description" maxLength={4000} rows={4} value={description} onChange={e=>setDescription(e.target.value)}/><p className="observatory-note">{t('lss.results.descriptionHelp')}</p>
   </section>
   <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
-  <section className="scope-note"><h2>{t('lss.limitsTitle')}</h2><ul>{(['field','telescope','fresh','raster','range','measure','wedge','csv','packs'] as const).map(k=><li key={k}>{t(`lss.adaptation.${k}`)}</li>)}</ul></section>
+  <section className="scope-note"><h2>{t('lss.limitsTitle')}</h2><ul>{(['telescope','fresh','raster','range','measure','wedge','csv','packs'] as const).map(k=><li key={k}>{t(`lss.adaptation.${k}`)}</li>)}</ul></section>
  </main>;
 }

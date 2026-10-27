@@ -44,3 +44,6 @@ LSS_Field01.HTL through LSS_Field09.HTL are preserved byte-exact from CLEA_Vireo
 
 Additional approved LSS field packs (27 October 2026)
 data/lss carries bounded compact-GSC N2230/N3000 read witnesses for the 219 LSS survey pointings only (whole records inside a pointing area, 8-byte position witnesses for other records the original search reads), with CLEA_VStrs.dat records, CLEA_QSO.DAT positions and GLIMAGES.LST match indices, independent witnesses and provenance, under the user approval of 27 October 2026. Project CLEA (Gettysburg College) is the originator; NSF and Gettysburg College are supporters. GSC source-specific terms remain uncertain. Not the full GSC or either complete band; no original-runtime equivalence is claimed.
+
+Additional approved VIREO lists (27 October 2026, groups 1 and 2)
+LSSFields.LST, Images/Galaxies/GLIMAGES.LST and Spectra/Galaxies/GLXYSP.LST are preserved byte-exact from CLEA_Vireo.zip under the user approval recorded in AGENTS.md. Project CLEA (Gettysburg College) is the originator; NSF and Gettysburg College are supporters. Recorded CLEA License.rtf terms permit free noncommercial student copies and prohibit distribution for profit. Upstream identification remains uncertain; no original-runtime equivalence is claimed.
