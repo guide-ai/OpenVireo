@@ -6,7 +6,7 @@ import first from '../../data/hubble/galaxy-36747-vectors.json';
 import second from '../../data/hubble/galaxy-54876-vectors.json';
 import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy,pauseGalaxy,verifiedGalaxyConfiguration,galaxyDefinition} from './galaxyExposure';
 import {parseGalaxySession,serializeGalaxySession} from '../io/galaxySession';
-import {galaxyCatalogAxes,catalogGalaxyMagnitude} from './galaxyCatalogAxes';
+import {galaxyCatalogAxes,catalogGalaxyMagnitude,raFractionRatio} from './galaxyCatalogAxes';
 import {galaxyStampGeometry} from './galaxyScene';
 describe('multiple independently pinned original Hubble fields',()=>{
  it('keeps documented V references separate from model shifts and student results',()=>{for(const id of ['36773','36747','54876']){const r=galaxyDistanceReference(id),w=workbook.rows.find(w=>w.targetId===id)!;expect(r.apparentV).toBe(w.apparentV);expect(r.source).toBe(`Hubble Data.xls · Sheet1!C${w.worksheetRow}`);expect(r.sha256).toBe(workbook.sha256);expect(Object.keys(r).sort()).toEqual(['apparentV','id','sha256','source']);}});
@@ -21,6 +21,6 @@ describe('multiple independently pinned original Hubble fields',()=>{
  it('preserves reversed equal-coordinate insertion and the observed zero-axis branch without Single narrowing',()=>{
   const galaxies=verifiedGalaxyConfiguration('54876').field.galaxies;expect(galaxies.slice(-2).map(g=>g.id)).toEqual(['54891','54890']);
   const zero=galaxies.find(g=>g.id==='54868')!;expect(galaxyCatalogAxes(zero)).toEqual({major:.5,minor:.3,ratio:.6,fallback:true});expect(catalogGalaxyMagnitude(zero).minorArcminutes).toBe(.3);expect(catalogGalaxyMagnitude(zero).minorArcminutes).not.toBe(Math.fround(.3));expect(galaxyStampGeometry(zero)).toMatchObject({major:5,minor:3,level:11});
-  expect(()=>galaxyCatalogAxes({...zero,morphology:20})).toThrow();expect(()=>createGalaxyExposure(1,'54890')).toThrow();
+  expect(galaxyCatalogAxes({...zero,morphology:20}).ratio).toBe(raFractionRatio(zero.ra));expect(galaxyCatalogAxes({...zero,morphology:9}).ratio).toBe(1);expect(()=>createGalaxyExposure(1,'54890')).toThrow();
  });
 });
