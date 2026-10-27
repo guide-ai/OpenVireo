@@ -14,6 +14,12 @@ Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the
 
 Save/Restore (session v27, `src/io/lssInvestigation.ts`): the investigation file wraps an unchanged v1–v26 base and stores the field, telescope, every record with its exposure journal (seed + events) and shift control, the description and the committed wedge options. Bounds: 250 records, 150 000 events, 4000-character description. Restore replays every journal on its bundled pack, re-derives z and velocity from the control, checks a SHA-256 over those derivatives and rejects the whole file on any mismatch. Not saved: an open Record Z dialog, the current unrecorded exposure and the wedge's plotted points (records can be plotted again after restore).
 
+## Guide
+The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/lssLab.ts`) lists seven steps: load a list, take a spectrum, record a redshift, repeat (5 records is a guide threshold chosen here, not an original requirement), plot in the wedge, describe, save. Each check is recomputed from the current state; nothing is stored and no redshift is judged. "Save" is checked when the current records were saved or restored.
+
+## Tests
+Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
+
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
 129 / 69 / 130.
 

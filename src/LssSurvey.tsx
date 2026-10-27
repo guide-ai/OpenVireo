@@ -17,6 +17,7 @@ import {resourceSha256} from './io/boundedResource';
 import type {JournalState} from './core/exposureJournal';
 import type {WedgeOwnRecord} from './core/wedgeWorkspace';
 import type {LssInvestigation} from './io/lssInvestigation';
+import type {LssLabSummary} from './core/lssLab';
 import LssAcquisition from './LssAcquisition';
 import LssMeasurement from './LssMeasurement';
 type Telescope=0|1|2;
@@ -29,7 +30,7 @@ function statusText(s:LssRowStatus):string{
  return s.kind==='available'?t('lss.status.available'):t('lss.status.neighbour',{id:s.selectedId});
 }
 /** E02 student route (#lss-survey). Web adaptations are listed in the scope note and docs/LSS-SURVEY.md. */
-export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,restored=null}:{restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
+export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
  const [survey,setSurveyState]=useState<LssSurveyState>(EMPTY_LSS_SURVEY),current=useRef(survey),[dialogError,setDialogError]=useState('');
  /** Every survey transition runs here, outside React's updater: a rejected transition keeps the current state and returns false. */
  function update(fn:(s:LssSurveyState)=>LssSurveyState):boolean{try{const next=fn(current.current);current.current=next;setSurveyState(next);return true;}catch{return false;}}
@@ -48,6 +49,9 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
   update(cancelLssRecord);setDialogError('');dialog.current?.close();
  },[active]);
  useEffect(()=>{onRecordsChange?.(survey.records);},[survey.records]);
+ const [observed,setObserved]=useState(false);
+ useEffect(()=>{if(exposure?.exposure.counts.some(n=>n>0))setObserved(true);},[exposure]);
+ useEffect(()=>{onSummary?.(Object.freeze({listLoaded:loaded!==null,observed,records:survey.records.length,fields:new Set(survey.records.map(r=>r.field)).size,plotted:survey.handedToWedge,described:description.trim()!==''}));},[loaded,observed,survey.records,survey.handedToWedge,description]);
  // Save reads this snapshot; the open dialog and the current (unrecorded) exposure are not part of it.
  useEffect(()=>{onSnapshot?.(Object.freeze({field:survey.field,telescope,records:survey.records,description}));},[survey.field,survey.records,telescope,description]);
  // Restore (v27): records were validated and replayed by the session reader; the list must be loaded again to point.
