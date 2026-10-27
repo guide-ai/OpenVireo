@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 // Actual App flows of File ▸ Set Observation Date/Time, ID before radio activation (docs/RADIO-CONTROL.md, RC-12…RC-17,
 // WEB-DATE-01…04): gate, captions and prefill, the early ID write, error boxes, Cancel, the clock application, the sticky
 // activation latch, modality, route re-entry, a project operation cancelled by route return, the range-end gate closing
@@ -38,7 +39,7 @@ const focusEvents=(page:Page)=>page.evaluate(()=>(window as unknown as{__radioFo
 
 async function openRadio(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
 }
 async function applyUT(page:Page,utc:string){
  await id(page,'radio-clock-utc').fill(utc);await id(page,'radio-clock-apply').click();await expect(id(page,'radio-clock-applied')).toHaveText(`${utc} UT`);

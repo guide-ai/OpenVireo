@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {PLEIADES_ADMITTED_ROWS,PLEIADES_HOT_LIST,PLEIADES_HTL} from '../src/core/pleiadesHotList';
@@ -13,8 +14,8 @@ const loadButton=(page:Page)=>page.getByRole('button',{name:'Load exercise list 
 async function loadExercise(page:Page){await loadButton(page).click();await expect(page.locator('#htl-rows option')).toHaveCount(24);}
 async function pointRow(page:Page,index:number){await page.locator('#htl-rows').selectOption(String(index));await page.getByRole('button',{name:'Point to HTL selection',exact:true}).click();}
 async function toPhotometer(page:Page,clock:boolean,click:()=>Promise<void>){if(clock)await page.clock.resume();await click();await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();if(clock)await pause(page);}
-const navPhotometer=(page:Page)=>page.getByRole('button',{name:'Pleiades photometry',exact:true}).click();
-const navObservatory=async(page:Page)=>{await page.getByRole('button',{name:'Observatory',exact:true}).click();await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();};
+const navPhotometer=(page:Page)=>clickHeaderTool(page,'Pleiades photometry');
+const navObservatory=async(page:Page)=>{await clickHeaderTool(page,'Observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();};
 const activate=(page:Page)=>page.getByRole('button',{name:'Activate Pleiades photometer',exact:true});
 async function readout(page:Page,p:Readonly<{ra:number;dec:number}>){await expect(page.getByTestId('photo-telescope-ra')).toHaveText(String(p.ra));await expect(page.getByTestId('photo-telescope-dec')).toHaveText(String(p.dec));await expect(page.getByTestId('photo-telescope-access')).toHaveAttribute('data-access','ready');}
 async function run(page:Page){await page.getByRole('button',{name:'Start integration',exact:true}).click();await page.clock.runFor(3000);await expect(page.getByTestId('photo-phase')).toHaveText('Integration complete');}
@@ -22,7 +23,7 @@ async function record(page:Page,band:string,value:string){await page.getByRole('
 async function measure(page:Page,band:'V'|'B'){await page.getByLabel('Photometer filter',{exact:true}).selectOption(band);await run(page);const shown=(await page.getByTestId('photo-magnitude').textContent())!;expect(Number.isFinite(Number(shown))).toBe(true);const typed=Number(shown).toFixed(3);await record(page,band,typed);return typed;}
 async function lastOption(page:Page,label:string){return (await page.getByLabel(label,{exact:true}).locator('option').last().getAttribute('value'))!;}
 async function saveInvestigation(page:Page){const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();return readFile((await(await wait).path())!);}
-async function guide(page:Page){await page.getByTestId('pleiades-lab-open').click();await expect(page.getByTestId('pleiades-lab-dialog')).toBeVisible();}
+async function guide(page:Page){await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').click();await expect(page.getByTestId('pleiades-lab-dialog')).toBeVisible();}
 const step=(page:Page,name:string)=>page.getByTestId(`pleiades-lab-step-${name}`);
 
 test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 16 stars with own B/V transcriptions, manual fit and Save/fresh Restore',async({page})=>{
@@ -125,12 +126,12 @@ test('the explicit exercise-list read honours cancel, drafts, navigation and hid
  await page.getByRole('button',{name:'New HTL list',exact:true}).click();
  await page.getByRole('button',{name:'Add HTL target',exact:true}).click();await expect(loadButton(page)).toBeDisabled();await page.getByRole('button',{name:'Cancel HTL edit',exact:true}).click();
  await loadButton(page).click();await expect.poll(()=>hits).toBe(1);await expect(loadButton(page)).toBeDisabled();await page.getByRole('button',{name:'Cancel HTL load',exact:true}).click();release();await expect(loadButton(page)).toBeEnabled();await expect(page.locator('#htl-rows option')).toHaveCount(0);
- await loadButton(page).click();await expect.poll(()=>hits).toBe(2);await page.getByRole('button',{name:'Spectrum analyzer',exact:true}).click();release();await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();await expect(page.locator('#htl-rows option')).toHaveCount(0);await expect(loadButton(page)).toBeEnabled();
+ await loadButton(page).click();await expect.poll(()=>hits).toBe(2);await clickHeaderTool(page,'Spectrum analyzer');release();await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();await expect(page.locator('#htl-rows option')).toHaveCount(0);await expect(loadButton(page)).toBeEnabled();
  await loadButton(page).click();await expect.poll(()=>hits).toBe(3);await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{value:'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));});release();await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{value:'visible',configurable:true});});await expect(loadButton(page)).toBeEnabled();await expect(page.locator('#htl-rows option')).toHaveCount(0);
  await page.unroute('**/original/hotlists/PLEIADES.HTL');await loadExercise(page);
  await page.locator('#htl-rows').focus();await page.keyboard.press('End');await expect(page.locator('#htl-rows')).toHaveValue('23');await expect(page.getByTestId('htl-exercise-row')).toContainText('PLEIADES.HTL entry 24:');
  await page.keyboard.press('Home');await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowDown');await expect(page.getByTestId('htl-exercise-row')).toContainText('not available');
- await page.getByTestId('pleiades-lab-open').focus();await page.keyboard.press('Enter');await expect(page.getByTestId('pleiades-lab-close')).toBeFocused();await expect(page.getByTestId('pleiades-lab-step-list')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-e05')).toBeVisible();await expect(page.getByTestId('pleiades-lab-e05')).not.toContainText('not yet available');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();
+ await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').focus();await page.keyboard.press('Enter');await expect(page.getByTestId('pleiades-lab-close')).toBeFocused();await expect(page.getByTestId('pleiades-lab-step-list')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-e05')).toBeVisible();await expect(page.getByTestId('pleiades-lab-e05')).not.toContainText('not yet available');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();
  await page.keyboard.press('Escape');await expect(page.getByTestId('pleiades-lab-dialog')).toBeHidden();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/pleiades-exercise-mobile.png',fullPage:true});
 });

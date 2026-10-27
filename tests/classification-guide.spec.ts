@@ -1,4 +1,5 @@
 import{test,expect,type Page}from'@playwright/test';import{readFile}from'node:fs/promises';import{readFileSync}from'node:fs';
+import{openHeaderTools}from'./fixtures/header-tools';
 // E03 phase1 items 1.6 + 1.10a/b. Types and reasons typed here are authored workflow trials, never correct answers.
 type Line=Readonly<{wavelength:number;label:string}>;type Practice=Readonly<{id:string;label:string;sha256:string;minimum:number;maximum:number}>;
 const catalog=JSON.parse(readFileSync(new URL('../data/classification/catalog.json',import.meta.url),'utf8'))as{practice:Practice[];lines:Line[];lineListSha256:string;fingerprint:string};
@@ -7,7 +8,7 @@ const lineName=(i:number)=>`${catalog.lines[i].wavelength} Å · ${catalog.lines
 async function practice(p:Page,id:string,label?:string){await expect(card(p)).toHaveAttribute('data-width-source','practice:'+id);await expect(p.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();if(label)await expect(p.getByRole('group',{name:`Original practice spectrum · ${label}`,exact:true})).toBeVisible();}
 async function save(p:Page,name='Save complete investigation'){const d=p.waitForEvent('download');await p.getByRole('button',{name,exact:true}).click();return readFile((await(await d).path())!);}
 async function region(p:Page,values:readonly[string,string,string,string,string]){const labels=['Feature center (Å)','Left shoulder (Å)','Right shoulder (Å)','Left continuum intensity','Right continuum intensity'];for(const[i,label]of labels.entries())await p.getByLabel(label,{exact:true}).fill(values[i]);}
-async function openGuide(p:Page){await p.getByTestId('classification-lab-open').click();await expect(guide(p)).toBeVisible();}
+async function openGuide(p:Page){await openHeaderTools(p);await p.getByTestId('classification-lab-open').click();await expect(guide(p)).toBeVisible();}
 async function closeGuide(p:Page){await p.keyboard.press('Escape');await expect(guide(p)).not.toBeVisible();}
 async function counts(p:Page,done:number,next:string){await openGuide(p);await expect(p.getByTestId('classification-lab-counts')).toHaveText(`${done} of 4 steps done`);await expect(p.getByTestId('classification-lab-next')).toHaveAttribute('data-next',next);await closeGuide(p);}
 async function applyRange(p:Page,min:string,max:string){const d=p.locator('.classification-range');if(await d.getAttribute('open')===null)await d.locator('summary').click();await p.getByLabel('Minimum display wavelength (Å)',{exact:true}).fill(min);await p.getByLabel('Maximum display wavelength (Å)',{exact:true}).fill(max);await p.getByRole('button',{name:'Apply display range',exact:true}).click();await expect(p.getByLabel('Displayed wavelength range',{exact:true})).toHaveText(`${min}–${max} Å · 1×`);}

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 
 test('a beginner can open the sky, point to M82 and inspect original resources without technical input',async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
@@ -37,7 +38,8 @@ test('a beginner can open the sky, point to M82 and inspect original resources w
 
 test('coordinate validation, panning and mobile layout remain explicit',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.goto('/');
-  await expect(page.getByRole('button',{name:'Spectrum analyzer',exact:true})).toBeVisible();
+  // UI redesign: on phones the tools fold behind the Tools menu; open it, then the analyzer tool must be visible.
+  await openHeaderTools(page);await expect(page.getByRole('button',{name:'Spectrum analyzer',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
   await page.getByText('Enter coordinates',{exact:true}).click();
   await page.getByLabel('Right ascension · hours',{exact:true}).fill('24');
@@ -58,7 +60,7 @@ test('reference access follows actual pointing and remains stable when coordinat
   await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
   await page.getByRole('button',{name:'Telescope · 15′',exact:true}).click();
   await page.getByLabel('Target',{exact:true}).selectOption('NGC3034');
-  await page.getByRole('button',{name:'Spectrum analyzer',exact:true}).click();
+  await clickHeaderTool(page,'Spectrum analyzer');
   await expect(page.locator('.library-context')).toHaveCount(0);
   await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();
   await page.getByRole('button',{name:'Point telescope ↗',exact:true}).click();
@@ -66,7 +68,7 @@ test('reference access follows actual pointing and remains stable when coordinat
   await page.getByRole('button',{name:'North',exact:true}).click();
   await expect(page.locator('.reference-card')).toContainText('The selected target is in the field. Center it');
   await expect(page.locator('.reference-card img')).toHaveCount(0);
-  await page.getByRole('button',{name:'Spectrum analyzer',exact:true}).click();
+  await clickHeaderTool(page,'Spectrum analyzer');
   await expect(page.locator('.library-context')).toHaveCount(0);
   await page.getByRole('button',{name:'← Return to observatory',exact:true}).click();
   await page.getByLabel('Target',{exact:true}).selectOption('NGC3031');

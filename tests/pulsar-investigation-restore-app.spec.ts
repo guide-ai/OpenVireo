@@ -1,4 +1,5 @@
 import {test,expect,type Browser,type Locator,type Page,type Route,type TestInfo} from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 // Phase 1 item 1.5 (docs/PULSAR-MANUAL-TIMING.md): Save investigation keeps the Radio workspace, the capture and the confirmed
@@ -11,7 +12,6 @@ import {readFile} from 'node:fs/promises';
 // an equivalence claim with the original program. Helpers are copied from tests/pulsar-exercise-guide-app.spec.ts.
 // Validation runs are executed and recorded by the coordinator, not here.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const toolbar=(page:Page)=>page.locator('.investigation-toolbar');
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
@@ -36,7 +36,7 @@ function keysOf(v:Json,out=new Set<string>()):Set<string>{if(v&&typeof v==='obje
 async function startApp(page:Page,at='2026-10-24T00:00:00Z'){
  await page.clock.install({time:new Date(at)});
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise-start')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise-start')).toBeVisible();
  await page.clock.pauseAt(new Date(new Date(at).getTime()+600_000));await flush(page);
 }
 async function start(page:Page){await id(page,'radio-exercise-start').click();await flush(page);}
@@ -55,7 +55,7 @@ const radioSnapshot=async(page:Page)=>({
 });
 type GuideState={next:string|null;done:Record<string,string|null>;counts:string|null;investigation:string|null};
 async function guide(page:Page):Promise<GuideState>{
- await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
  const done:Record<string,string|null>={};
  for(const step of ['setup','catalog','point','channels','capture','period','delay','investigation','save'])done[step]=await id(page,`pulsar-lab-step-${step}`).getAttribute('data-done');
  const next=await id(page,'pulsar-lab-next').getAttribute('data-next'),counts=await id(page,'pulsar-lab-counts').textContent();
@@ -165,8 +165,8 @@ test.describe('desktop 1440, original catalog',()=>{
   // Guide before Save: seven of eight; the investigation step is the next one (no arbitrary checkmark).
   expect(await guide(page)).toMatchObject({next:'investigation',counts:'7 of 8 pulsar steps done.',done:{investigation:'false',save:'false'},
    investigation:'Not yet for this capture and these rows.'});
-  await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();
-  const radio=await radioSnapshot(page);await nav(page,'Radio data').click();
+  await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();
+  const radio=await radioSnapshot(page);await clickHeaderTool(page,'Radio data');
   const storageBefore=await storage(page);
 
   // Save investigation: inspect the downloaded artifact in Node.
@@ -191,7 +191,7 @@ test.describe('desktop 1440, original catalog',()=>{
   try{
    const p=fresh.page;
    expect(fresh.catalogRequests,'exactly one request: the bundled catalog re-fetched and re-checked').toEqual(['/original/radio/Pulsars.dat']);
-   await nav(p,'Radio telescope').click();await expect(heading(p,'Radio telescope control')).toBeVisible();
+   await clickHeaderTool(p,'Radio telescope');await expect(heading(p,'Radio telescope control')).toBeVisible();
    await expect(id(p,'radio-restored-note')).toBeVisible();await expect(id(p,'radio-restored-adaptation')).toContainText('not a native file format');
    expect(await radioSnapshot(p)).toEqual(radio);
    await expect(id(p,'radio-route-clock')).toHaveAttribute('data-running','false');await expect(id(p,'radio-clock-state')).toContainText('Paused');
@@ -201,7 +201,7 @@ test.describe('desktop 1440, original catalog',()=>{
    await id(p,'pulsar-params-open').click();await expect(id(p,'pulsar-params-field-j2000')).toHaveValue(ORIGINAL.primary);
    await expect(id(p,'pulsar-params-seed')).toHaveAttribute('data-seed','name');await id(p,'pulsar-params-exit').click();
    // Pulsar Analysis: the same capture, rows, view and bytes; never marked as written.
-   await nav(p,'Radio data').click();await expect(heading(p,'Recorded pulsar analysis')).toBeVisible();
+   await clickHeaderTool(p,'Radio data');await expect(heading(p,'Recorded pulsar analysis')).toBeVisible();
    await expect(id(p,'pulsar-memory')).toBeVisible();await expect(id(p,'pulsar-restored-note')).toBeVisible();
    expect(await analysisReadouts(p)).toEqual(readouts);expect(await reviewCells(p)).toEqual(cells);
    await id(p,'pulsar-properties-open').click();await expect(id(p,'pulsar-prop-file')).toHaveText(NOT_WRITTEN);await id(p,'pulsar-properties-close').click();
@@ -221,14 +221,14 @@ test.describe('desktop 1440, original catalog',()=>{
    const second=await restoredContext(browser,info,resavedBytes,{width:1440,height:1050});
    try{
     const s=second.page;
-    await nav(s,'Radio telescope').click();await expect(heading(s,'Radio telescope control')).toBeVisible();
+    await clickHeaderTool(s,'Radio telescope');await expect(heading(s,'Radio telescope control')).toBeVisible();
     expect(await radioSnapshot(s)).toEqual(radio);
     await expect(id(s,'receiver-restored-window-1')).toHaveAttribute('data-frequency','400');await expect(id(s,'receiver-restored-window-2')).toHaveAttribute('data-frequency','500');
-    await nav(s,'Radio data').click();await expect(heading(s,'Recorded pulsar analysis')).toBeVisible();await expect(id(s,'pulsar-memory')).toBeVisible();
+    await clickHeaderTool(s,'Radio data');await expect(heading(s,'Recorded pulsar analysis')).toBeVisible();await expect(id(s,'pulsar-memory')).toBeVisible();
     expect(await analysisReadouts(s)).toEqual(readouts);expect(await reviewCells(s)).toEqual(cells);
     await id(s,'pulsar-raw-export').click();const rawC=await download(s,id(s,'pulsar-raw-export-download'));
     expect(rawC.equals(rawA),'raw .PLR bytes after Restore → re-Save → Restore equal the bytes before the first Save').toBe(true);
-    await nav(s,'Radio telescope').click();await id(s,'antenna-receiver-button').click();await expect(id(s,'receiver-card-0')).toBeVisible();
+    await clickHeaderTool(s,'Radio telescope');await id(s,'antenna-receiver-button').click();await expect(id(s,'receiver-card-0')).toBeVisible();
     await expect(id(s,'receiver-frequency-value-0')).toHaveText('400.00');await expect(s.locator('[data-testid^="receiver-card-"]')).toHaveCount(1);
     const partial:Json=JSON.parse((await saveInvestigation(s)).toString('utf8'));
     expect(partial.radio.workspace.receivers.windows.map((w:Json)=>w?.frequencyMHz??null)).toEqual([400,500,null]);
@@ -240,12 +240,12 @@ test.describe('desktop 1440, original catalog',()=>{
     expect(second.errors).toEqual([]);
    }finally{await second.context.close();}
    // The restored receiver settings apply at the learner's own Open and Add, before any Receive; nothing starts by itself.
-   await nav(p,'Radio telescope').click();await id(p,'antenna-receiver-button').click();await expect(id(p,'receiver-card-0')).toBeVisible();
+   await clickHeaderTool(p,'Radio telescope');await id(p,'antenna-receiver-button').click();await expect(id(p,'receiver-card-0')).toBeVisible();
    await expect(id(p,'receiver-frequency-value-0')).toHaveText('400.00');await expect(id(p,'receiver-heading-0')).toContainText(`Pulsar ${ORIGINAL.legacy}`);
    await id(p,'receiver-add').click();await expect(id(p,'receiver-frequency-value-1')).toHaveText('500.00');
    await expect(id(p,'receiver-workspace')).toHaveAttribute('data-timer','false');await expect(id(p,'receiver-record-disp')).toHaveText('Off');
    // A fourth row: the restored file no longer covers the list, so the investigation step is pending until a new Save.
-   await nav(p,'Radio data').click();
+   await clickHeaderTool(p,'Radio data');
    const w=c1.filter(x=>x>v&&x<limit)[0]??c1.filter(x=>x<limit).at(-2)!;
    await clickPixel(p,1,w,'left');
    await recordAll(p,ORIGINAL.legacy,[{panel:1,frequency:'400.00',reference:ref,vertical:timeText(w),comment:'after restore'}]);
@@ -262,10 +262,10 @@ test.describe('desktop 1440, original catalog',()=>{
    const small=await restoredContext(browser,info,saved,viewport);
    try{
     const p=small.page;
-    await nav(p,'Radio telescope').click();await expect(id(p,'radio-restored-note')).toBeVisible();
+    await clickHeaderTool(p,'Radio telescope');await expect(id(p,'radio-restored-note')).toBeVisible();
     await expect(id(p,'radio-clock-applied')).toHaveText(radio.applied!);await expect(id(p,'antenna-ra')).toHaveAttribute('data-ra-hours',radio.ra!);
     await shot(p,info,`restored-radio-${viewport.width}`);
-    await nav(p,'Radio data').click();await expect(id(p,'pulsar-count')).toHaveText('3 recorded measurements');
+    await clickHeaderTool(p,'Radio data');await expect(id(p,'pulsar-count')).toHaveText('3 recorded measurements');
     await expect(id(p,'pulsar-reference')).toHaveText(readouts.reference!);
     await shot(p,info,`restored-analysis-${viewport.width}`);expect(small.errors).toEqual([]);
    }finally{await small.context.close();}
@@ -277,7 +277,7 @@ test.describe('desktop 1440, original catalog',()=>{
 const SAVED_RADIO_NOTE='A running Radio clock and the Radio panel timers were only held during Save and continue without catching up';
 const savedJson=async(page:Page)=>{const bytes=await saveInvestigation(page);await expect(toolbar(page).getByText('Investigation saved.',{exact:false})).toBeVisible();return {bytes,file:JSON.parse(bytes.toString('utf8')) as Json};};
 async function restoredRadio(page:Page,diameter:string){
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeVisible();await expect(id(page,'radio-restored-note')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeVisible();await expect(id(page,'radio-restored-note')).toBeVisible();
  await expect(id(page,'radio-route-clock')).toHaveAttribute('data-running','false');await expect(id(page,'radio-clock-state')).toContainText('Paused');
  await expect(id(page,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');await expect(id(page,'radio-env-diameter-current')).toHaveText(diameter);
  await expect(page.locator('[data-testid^="receiver-card-"]')).toHaveCount(0);
@@ -328,7 +328,7 @@ test('ordinary environment edits after Start never block Save; a running Radio c
   expect(immediate.file.radio.workspace.environment).toMatchObject({domeByte:0,accessOptionByte:true});
   await restoreInvestigation(q,'immediate.json',immediate.bytes);
   await expect(toolbar(q).getByText('Investigation restored.',{exact:false})).toBeVisible({timeout:30_000});
-  await nav(q,'Radio telescope').click();await expect(id(q,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');await expect(id(q,'radio-env-dome')).toHaveValue('0');
+  await clickHeaderTool(q,'Radio telescope');await expect(id(q,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');await expect(id(q,'radio-env-dome')).toHaveValue('0');
   expect(qErrors).toEqual([]);
  }finally{await other.close();}
 });
@@ -361,7 +361,7 @@ test('protections: unsafe Save is refused; tampered, wrong catalog, failed, canc
  const armedThenSaved:Json=JSON.parse((await saveInvestigation(page)).toString('utf8'));expect(armedThenSaved.version).toBe(23);
  await id(page,'receiver-close-0').click();
  // Setup for the restore checks: a synthetic PLR with one confirmed row, saved as V; then a second row (the state to keep).
- await nav(page,'Radio data').click();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
+ await clickHeaderTool(page,'Radio data');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
  await page.clock.resume();
  await id(page,'pulsar-file').setInputFiles({name:'synthetic-inv.PLR',mimeType:'application/octet-stream',buffer:PLR});
  await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));await id(page,'pulsar-properties-close').click();
@@ -400,10 +400,10 @@ test('protections: unsafe Save is refused; tampered, wrong catalog, failed, canc
  // (g) The v≤22 base extracted from V restores the other tools and leaves Radio and the current rows untouched.
  await restoreInvestigation(page,'base.json',Buffer.from(JSON.stringify(v.base)));
  await expect(toolbar(page).getByText('Investigation restored.',{exact:false})).toBeVisible();await kept(page);
- await nav(page,'Radio telescope').click();await expect(id(page,'radio-restored-note')).toHaveCount(0);await expect(id(page,'radio-exercise-card')).toHaveAttribute('data-setup','true');
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-restored-note')).toHaveCount(0);await expect(id(page,'radio-exercise-card')).toHaveAttribute('data-setup','true');
  // Positive control: V itself restores the one-row state (the catalog re-fetched), with no pending dialog or capture.
  await restoreInvestigation(page,'v.json',V);await expect(toolbar(page).getByText('Investigation restored.',{exact:false})).toBeVisible({timeout:30_000});
- await nav(page,'Radio data').click();await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
+ await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
  await expect(id(page,'pulsar-file-name')).toHaveText('synthetic-inv.PLR');await expect(id(page,'pulsar-sha')).toHaveText(sha(PLR));
  expect(errors).toEqual([]);
 });
@@ -414,5 +414,5 @@ test('legacy: a file without a Radio part (v≤22) still saves and restores as b
  expect(plain.version).toBeLessThanOrEqual(22);expect(keysOf(plain).has('radio')).toBe(false);
  await restoreInvestigation(page,'plain.json',Buffer.from(JSON.stringify(plain)));
  await expect(toolbar(page).getByText('Investigation restored.',{exact:false})).toBeVisible();
- await nav(page,'Radio data').click();await expect(id(page,'pulsar-none')).toBeVisible();await expect(id(page,'pulsar-restored-note')).toHaveCount(0);
+ await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-none')).toBeVisible();await expect(id(page,'pulsar-restored-note')).toHaveCount(0);
 });

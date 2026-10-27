@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // M8: E02 records survive Save (session v27) and a fresh-context Restore that replays every journal; the student then keeps
 // observing. Tampered and over-budget files are refused without changing the current survey.
@@ -15,7 +16,7 @@ async function acquireAndRecord(page:Page,row:number,position:string,remarks:str
  await page.getByRole('button',{name:'Record Z',exact:true}).click();await page.getByLabel('Remarks',{exact:true}).fill(remarks);await page.getByRole('button',{name:'OK',exact:true}).click();
  await page.clock.resume();
 }
-async function survey(page:Page){await page.getByRole('button',{name:'LSS survey',exact:true}).click();await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();}
+async function survey(page:Page){await clickHeaderTool(page,'LSS survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();}
 test('E02 Save (v27) → fresh context Restore → records replayed, description kept, observing continues',async({page,browser})=>{
  test.setTimeout(180000);
  await page.clock.install();await page.goto('/');await survey(page);await load(page,'1');
@@ -51,7 +52,7 @@ test('wedge options restore with the survey; restore drops the wedge’s own LSS
  await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-1').check();await page.getByTestId('wedge-size-3').check();await page.getByTestId('wedge-style-1').check();await page.getByTestId('wedge-options-ok').click();
  const saved=await save(page);expect(JSON.parse(saved.toString()).lss.wedgeOptions).toEqual({grid:1,pointSize:3,pointStyle:1});
  // Same page: restore clears the plotted own points; one re-plot gives one point, not two.
- await restore(page,saved);await expect(page.getByText('Session restored. The current spectrum and measurement arithmetic were checked.')).toBeAttached({timeout:30000});await page.getByRole('button',{name:'LSS data',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 0');
+ await restore(page,saved);await expect(page.getByText('Session restored. The current spectrum and measurement arithmetic were checked.')).toBeAttached({timeout:30000});await clickHeaderTool(page,'LSS data');await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 0');
  await survey(page);await page.getByRole('button',{name:'Plot my records in the wedge',exact:true}).click();await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 1');
  await expect(page.getByTestId('wedge-point-0')).toHaveAttribute('r','3');await expect(page.getByTestId('wedge-point-0')).toHaveClass(/filled/);
  // Fresh context: the options come back with the file.
@@ -64,7 +65,7 @@ test('wedge options restore with the survey; restore drops the wedge’s own LSS
  const plain=JSON.parse(saved.toString());plain.lss.wedgeOptions=null;
  const resaved=await (async()=>{await restore(fresh,Buffer.from(JSON.stringify(plain)));return true;})();expect(resaved).toBe(true);
  await expect(fresh.getByText('Session restored. The current spectrum and measurement arithmetic were checked.')).toBeAttached({timeout:30000});
- await fresh.getByRole('button',{name:'LSS data',exact:true}).click();await fresh.getByTestId('wedge-options-open').click();await expect(fresh.getByTestId('wedge-grid-0')).toBeChecked();await expect(fresh.getByTestId('wedge-size-1')).toBeChecked();
+ await clickHeaderTool(fresh,'LSS data');await fresh.getByTestId('wedge-options-open').click();await expect(fresh.getByTestId('wedge-grid-0')).toBeChecked();await expect(fresh.getByTestId('wedge-size-1')).toBeChecked();
  await context.close();
 });
 test('the description refuses pasted control characters inline and Save keeps working',async({page})=>{

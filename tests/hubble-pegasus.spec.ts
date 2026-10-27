@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // Phase 2 B2: NGC 7499 / 7501 / 7503 (Pegasus) through the original Hubble.HTL, the exact catalogue centre, the fresh NGC 7501
 // field and its cached-pan views (0.4 m only), then all eight supported targets in one investigation. Alignment positions,
@@ -47,9 +48,9 @@ test('Hubble.HTL → exact centre → Pegasus acquisitions, then all eight targe
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await loadHubble(page);
  const sources=new Map<string,string>();
- for(const [i,t] of pegasus.entries()){if(i>0){await page.clock.resume();await page.getByRole('button',{name:'Observatory',exact:true}).click();await openHotList(page);}await toGalaxy(page,t,i===1);sources.set(t.id,await acquire(page,t,i===1));}
+ for(const [i,t] of pegasus.entries()){if(i>0){await page.clock.resume();await clickHeaderTool(page,'Observatory');await openHotList(page);}await toGalaxy(page,t,i===1);sources.set(t.id,await acquire(page,t,i===1));}
  // The five earlier targets through the acquisition selector on the same 0.4 m.
- for(const t of earlier){await page.clock.resume();await page.getByRole('button',{name:'Galaxy exposure',exact:true}).click();await page.getByLabel('Acquisition galaxy',{exact:true}).selectOption(t.id);sources.set(t.id,await acquire(page,t));}
+ for(const t of earlier){await page.clock.resume();await clickHeaderTool(page,'Galaxy exposure');await page.getByLabel('Acquisition galaxy',{exact:true}).selectOption(t.id);sources.set(t.id,await acquire(page,t));}
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(8);for(const t of all)await expect(page.locator('#measurement-log')).toContainText(t.id);
  await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.getByRole('button',{name:'Add saved measurements',exact:true}).click();await page.getByLabel('Distance and summary recipe').selectOption('vireo');
  for(const [i,t] of all.entries()){const n=i+1;await expect(page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true})).toBeEmpty();await expect(page.getByLabel(`Apparent magnitude source · row ${n}`,{exact:true})).toBeEmpty();
@@ -85,9 +86,9 @@ test('Pegasus on other telescopes: explicit notices, no switch; cancelled Hubble
   await page.getByLabel('Telescope profile to inspect or select').selectOption(index);await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
   await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);
   for(const t of pegasus){await pointRow(page,t.row!);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','telescope');await expect(page.getByTestId('hubble-point-telescope')).toContainText('only on the 0.4m telescope');await expect(page.getByTestId('htl-hubble-row')).toContainText('supported only on the 0.4m telescope');}
-  await page.clock.resume();await page.getByRole('button',{name:'Galaxy exposure',exact:true}).click();
+  await page.clock.resume();await clickHeaderTool(page,'Galaxy exposure');
   for(const t of pegasus){await page.getByLabel('Acquisition galaxy').selectOption(t.id);await expect(page.locator(`[data-galaxy-telescope="${index}"]`).getByTestId(`galaxy-telescope-unsupported-${t.id}`)).toBeVisible();await expect(page.locator(`[data-galaxy-telescope="${index}"] [data-galaxy-panel="${t.id}"] button`)).toHaveCount(0);}
-  await page.getByRole('button',{name:'Observatory',exact:true}).click();await expect(page.getByLabel('Telescope profile to inspect or select')).toHaveValue(index);
+  await clickHeaderTool(page,'Observatory');await expect(page.getByLabel('Telescope profile to inspect or select')).toHaveValue(index);
  }
  expect(errors).toEqual([]);
 });

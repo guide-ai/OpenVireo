@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {CONTROL,HEADER,PLR,ROW_A,ROW_B} from './fixtures/pulsar-saved-rows-controls';
@@ -9,7 +10,6 @@ import {CONTROL,HEADER,PLR,ROW_A,ROW_B} from './fixtures/pulsar-saved-rows-contr
 // pre-implementation files (their SHA-256 values below are those files' values, not computed from product code). Receiver
 // recordings are model-generated captures, not observations. A browser download event is not proof that a file was saved.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const file=(name:string,text:string,mimeType='text/plain')=>({name,mimeType,buffer:Buffer.from(text,'latin1')});
 const sha=(text:string|Buffer)=>createHash('sha256').update(typeof text==='string'?Buffer.from(text,'latin1'):text).digest('hex');
@@ -363,7 +363,7 @@ async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.
 async function startReceiver(page:Page){
  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
  await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
  await id(page,'radio-switch').click();await expect(id(page,'antenna-status')).toContainText('initialized');
@@ -377,17 +377,17 @@ const finish=(page:Page)=>id(page,'receiver-record-finish');
 
 test('AP-24: Append is unavailable while a receiver capture holds the dataset (armed, then committed); after Save No it works, and a hidden append session makes Radio Record refuse',async({page})=>{
  await urlProbe(page);await startReceiver(page);
- await nav(page,'Radio data').click();await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await loadPlr(page);await recordManual(page,'held capture');
  const cells=await reviewCells(page);expect(cells).toHaveLength(1);
  const appendButton=id(page,'pulsar-append');await expect(appendButton).toBeEnabled();
- await nav(page,'Radio telescope').click();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-prompt')).toHaveAttribute('data-kind','erase');
  await id(page,'receiver-record-ok').click();await expect(id(page,'receiver-record-armed')).toBeVisible();
- await nav(page,'Radio data').click();await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await expect(id(page,'pulsar-leased')).toHaveAttribute('data-phase','armed');
  await expect(appendButton).toBeDisabled();await appendButton.dispatchEvent('click');await flush(page);await expect(dialog(page)).toHaveCount(0);expect(await urls(page)).toBe(0);
- await nav(page,'Radio telescope').click();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
  await id(page,'receiver-mode').click();await flush(page);await expect(id(page,'receiver-record-capturing')).toBeVisible();
  await advance(page,600);await id(page,'receiver-mode').click();await flush(page);
  for(let i=0;i<80&&await id(page,'receiver-workspace').getAttribute('data-timer')==='true';i++)await advance(page,200);
@@ -397,7 +397,7 @@ test('AP-24: Append is unavailable while a receiver capture holds the dataset (a
  await hash(page,'#pulsar-analysis');await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await expect(id(page,'pulsar-leased')).toHaveAttribute('data-phase','committed');
  await expect(appendButton).toBeDisabled();await appendButton.dispatchEvent('click');await flush(page);await expect(dialog(page)).toHaveCount(0);expect(await urls(page)).toBe(0);
- await nav(page,'Radio telescope').click();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
  await expect(finish(page)).toHaveAttribute('data-stage','save');await id(page,'receiver-record-save-no').click();
  await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await expect(id(page,'pulsar-leased')).toHaveCount(0);await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');expect(await reviewCells(page)).toEqual(cells);

@@ -1,4 +1,5 @@
 import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type RefObject} from 'react';
+import ResearchNotes from './ResearchNotes';
 import {radioWorkspaceSnapshot,type RadioSnapshotResult,type RadioWorkspaceSnapshot,type RestoredRadioWorkspace} from '../core/radioInvestigation';
 import RadioControlPanel,{type RadioClockSource,type RadioReceiverButton,type RadioReceiverButtonReason} from './RadioControlPanel';
 import {INITIAL_RADIO_RECEIVER_SUMMARY,RadioReceiverWorkspace,type RadioReceiverApi,type RadioReceiverSummary} from './RadioReceiverWindows';
@@ -456,7 +457,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   </section>
   <section className="card radio-control radio-control-env radio-route-clock" aria-labelledby={`${id}-clock`} data-testid="radio-route-clock" data-running={scenario.running} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id={`${id}-clock`}>{t('radioRoute.clock.heading')}</h2>
-   <p className="radio-control-note">{t('radioRoute.clock.help',{min:'1900-01-01T00:00:00',max:UT_MAX_TEXT})}</p>
+   <ResearchNotes><p className="radio-control-note">{t('radioRoute.clock.help',{min:'1900-01-01T00:00:00',max:UT_MAX_TEXT})}</p></ResearchNotes>
    <label htmlFor={`${id}-utc`}>{t('radioRoute.clock.utLabel')}</label>
    <input ref={utInputRef} id={`${id}-utc`} data-testid="radio-clock-utc" type="text" autoComplete="off" spellCheck={false} maxLength={RADIO_CLOCK_CONSTANTS.draftMaxLength}
     value={scenario.draftUTC} aria-describedby={`${id}-utc-help`} aria-invalid={clockOutcome==='utc-invalid'}
@@ -483,7 +484,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
   </section>
   <section className="card radio-control radio-control-env radio-route-date" aria-labelledby={`${id}-date`} data-testid="radio-route-date" data-available={dateGate.status==='available'} inert={modal||dateOpen||parameters.presented||behindReceiverBox||behindAccess}>
    <h2 id={`${id}-date`}>{t('radioRoute.date.heading')}</h2>
-   <p className="radio-control-note">{t('radioRoute.date.help')}</p>
+   <ResearchNotes><p className="radio-control-note">{t('radioRoute.date.help')}</p></ResearchNotes>
    <div className="button-row">
     <button ref={dateMenuRef} type="button" className="secondary-button" data-testid="radio-date-menu" disabled={dateGate.status!=='available'} aria-describedby={`${id}-date-reason`}
      onKeyDown={ignoreHeldKey} onClick={openDate}>{DATE_MENU_TEXT}</button>

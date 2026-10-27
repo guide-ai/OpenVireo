@@ -8,9 +8,8 @@
 .plr button,.plr-button{min-height:2.5rem;padding:.35rem .75rem;font:inherit;cursor:pointer}
 .plr-button{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.5rem;border:1px solid currentColor;border-radius:.25rem;max-width:100%}
 .plr-button input{max-width:100%}
-.plr button:disabled{cursor:not-allowed;opacity:.55}
-.plr :focus-visible{outline:3px solid #1a73e8;outline-offset:2px}
-.plr-error{border:2px solid #b3261e;padding:.5rem;margin:.5rem 0;border-radius:.25rem}
+.plr :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
+.plr-error{border:2px solid var(--ov-danger);padding:.5rem;margin:.5rem 0;border-radius:.25rem}
 .plr-identity{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.2rem .75rem;margin:.5rem 0}
 .plr-identity dd{margin:0;overflow-wrap:anywhere}
 .plr-hash{font-family:ui-monospace,monospace;font-size:.85rem}
@@ -19,12 +18,12 @@
 .plr-props dl>div{display:grid;grid-template-columns:minmax(10rem,22rem) minmax(0,1fr);gap:.5rem}
 .plr-props dd{margin:0;overflow-wrap:anywhere}
 .plr-table{border-collapse:collapse;margin:.5rem 0}
-.plr-table th,.plr-table td{border:1px solid #888;padding:.2rem .45rem;text-align:left;white-space:nowrap}
+.plr-table th,.plr-table td{border:1px solid var(--ov-border-strong);padding:.2rem .45rem;text-align:left;white-space:nowrap}
 .plr-scroll{max-width:100%;overflow-x:auto}
-.plr-rates{display:inline-flex;flex-wrap:wrap;gap:.5rem;border:1px solid #888;padding:.2rem .6rem;margin:0}
+.plr-rates{display:inline-flex;flex-wrap:wrap;gap:.5rem;border:1px solid var(--ov-border-strong);padding:.2rem .6rem;margin:0}
 .plr-rates label{display:inline-flex;gap:.25rem;align-items:center;min-height:2.5rem}
 .plr-panels{display:grid;gap:.75rem}
-.plr-panel{border:1px solid #888;border-radius:.25rem;padding:.5rem}
+.plr-panel{border:1px solid var(--ov-border-strong);border-radius:.25rem;padding:.5rem}
 .plr-panel-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(12rem,16rem);gap:.75rem;align-items:start}
 .plr-plot{display:block;width:100%;height:auto;touch-action:none;user-select:none}
 .plr-pan{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -38,11 +37,11 @@
 .plr-factor output{font-family:ui-monospace,monospace;min-width:3.5ch;text-align:center}
 .plr-pending{margin:0;font-weight:600}
 .plr-reference{font-weight:600}
-.plr-reference output{font-family:ui-monospace,monospace;color:#008a00}
+.plr-reference output{font-family:ui-monospace,monospace;color:var(--ov-success)}
 .plr-status{min-height:1.3em;overflow-wrap:anywhere}
-.plr-warning{border-left:4px solid #b26a00;padding:.35rem .6rem;margin:.5rem 0;font-weight:600}
-.plr-modal{background:Canvas;color:CanvasText;width:min(36rem,calc(100% - 2rem));max-width:none;max-height:calc(100% - 2rem);overflow:auto;border:1px solid #888;border-radius:.4rem;padding:1rem}
-.plr-modal::backdrop{background:rgba(0,0,0,.55)}
+.plr-warning{border-left:4px solid var(--ov-warning);padding:.35rem .6rem;margin:.5rem 0;font-weight:600}
+.plr-modal{background:Canvas;color:CanvasText;width:min(36rem,calc(100% - 2rem));max-width:none;max-height:calc(100% - 2rem);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:.4rem;padding:1rem}
+.plr-modal::backdrop{background:var(--ov-backdrop)}
 .plr-modal dl>div{display:grid;grid-template-columns:minmax(8rem,14rem) minmax(0,1fr);gap:.5rem}
 .plr-modal h3{overflow-wrap:anywhere}
 .plr-modal dd{margin:0}
@@ -60,12 +59,12 @@
 .plr-review-body[inert]{opacity:.6}
 .plr-review-prompt{border:2px solid currentColor;border-radius:.25rem;padding:.75rem;margin:.75rem 0}
 .plr-review-prompt h4{margin-top:0}
-.plr-review-edit-group{border:1px solid #888;border-radius:.25rem;padding:.5rem .75rem;margin:.5rem 0;min-width:0}
+.plr-review-edit-group{border:1px solid var(--ov-border-strong);border-radius:.25rem;padding:.5rem .75rem;margin:.5rem 0;min-width:0}
 .plr-review-edit-group legend{font-weight:700;overflow-wrap:anywhere}
 .plr-review-edit-readings-label{margin:.5rem 0 0}
 .plr-review-edit-readings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
 .plr-review-edit-readings label{margin:0}
-.plr-review-edit-readings input[readonly]{background:transparent;border:1px solid #888}
+.plr-review-edit-readings input[readonly]{background:transparent;border:1px solid var(--ov-border-strong)}
 .plr-export{width:min(42rem,calc(100% - 2rem))}
 .plr-export .plr-help,.plr-export h3{overflow-wrap:anywhere}
 .plr-export-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 .75rem}
@@ -73,12 +72,12 @@
 .plr-export-field label{margin:0;font-weight:600}
 .plr-export-field .plr-help{margin:0}
 .plr-export-problem{overflow-wrap:anywhere;font-weight:600}
-.plr-export-field .plr-export-problem{border-left:4px solid #b3261e;padding-left:.4rem}
+.plr-export-field .plr-export-problem{border-left:4px solid var(--ov-danger);padding-left:.4rem}
 .plr-append p,.plr-append dd{overflow-wrap:anywhere}
 .plr-append input[type="file"]{max-width:100%;min-width:0}
 .plr-save p,.plr-save-last p{overflow-wrap:anywhere}
 .plr-load-save p,.plr-load-save h3{overflow-wrap:anywhere}
-.plr-guide{border:1px solid #888;border-radius:.25rem;padding:.5rem;margin:.75rem 0}
+.plr-guide{border:1px solid var(--ov-border-strong);border-radius:.25rem;padding:.5rem;margin:.75rem 0}
 /* R-RX19: explicit px floor; 2.5rem tracks the app root size and can fall below 40px. */
 .plr-guide summary{min-height:44px;display:list-item;padding:.5rem 0;cursor:pointer}
 .plr-guide p,.plr-guide li{overflow-wrap:anywhere}

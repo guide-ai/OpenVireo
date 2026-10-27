@@ -1,48 +1,48 @@
 /* Silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md). The close box reuses .antenna-dialog. */
 .radio-receiver-workspace{display:contents}
 .radio-receiver-setup h2{margin:0 0 6px;font-size:16px}
-.radio-receiver-setup h2:focus-visible,.radio-receiver-caption:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.radio-receiver-setup h2:focus-visible,.radio-receiver-caption:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .radio-receiver-notes{margin:0 0 8px;padding-left:1.2em;font-size:13px;line-height:1.5}
 .radio-receiver-card{min-width:0}
 .radio-receiver-caption{margin:0 0 6px;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
 .radio-receiver-canvas{display:block;width:100%;max-width:401px;aspect-ratio:401/142;height:auto;background:#008080;image-rendering:pixelated}
 /* R-RX3 marks: the overlay covers the base display exactly; only it captures pointers and suppresses page gestures. */
 .radio-receiver-display{position:relative;width:100%;max-width:401px;aspect-ratio:401/142;margin:6px 0}
-.radio-receiver-display:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.radio-receiver-display:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .radio-receiver-overlay{position:absolute;inset:0;width:100%;height:100%;touch-action:none;image-rendering:pixelated;cursor:crosshair}
-.radio-receiver-marks{margin:8px 0;padding:6px 10px;border:1px solid #c9d1cf;border-radius:6px;min-width:0}
+.radio-receiver-marks{margin:8px 0;padding:6px 10px;border:1px solid var(--ov-border);border-radius:6px;min-width:0}
 .radio-receiver-marks legend{font-size:14px;font-weight:600;padding:0 4px}
 .radio-receiver-mark-select{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0}
 .radio-receiver-mark-position{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0}
 .radio-receiver-mark-position input{width:5rem;min-width:0;font-variant-numeric:tabular-nums}
 .radio-receiver-mark-readout dd{overflow-wrap:anywhere}
 .radio-receiver-mark-label{white-space:pre-wrap;font-variant-numeric:tabular-nums}
-.radio-receiver-marks input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.radio-receiver-marks input:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .radio-receiver-controls{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
-.radio-receiver-spin{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border:1px solid #c9d1cf;border-radius:6px;padding:4px 8px;min-width:0}
+.radio-receiver-spin{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border:1px solid var(--ov-border);border-radius:6px;padding:4px 8px;min-width:0}
 .radio-receiver-value{min-width:4.5rem;font-variant-numeric:tabular-nums}
 .radio-receiver-buttons{flex-wrap:wrap}
 .radio-receiver-indicators{margin:6px 0}
-.radio-receiver-alert{margin:6px 0;padding:8px 10px;border-left:4px solid #b03a2e;background:#fdf0ee;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.radio-receiver-alert{margin:6px 0;padding:8px 10px;border-left:4px solid var(--ov-danger);background:var(--ov-danger-soft);font-size:13px;line-height:1.5;overflow-wrap:anywhere}
 /* R-RX17: a card status can hold a chosen file name; it wraps anywhere, nothing is cut or hidden. */
 .radio-receiver-card .radio-control-status{min-width:0;overflow-wrap:anywhere}
-.radio-receiver-card button:focus-visible,.radio-receiver-setup input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.radio-receiver-card button:focus-visible,.radio-receiver-setup input:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .radio-receiver-card [aria-disabled="true"]{opacity:.6;cursor:not-allowed}
 /* R-RX5 window position group and the cue of a channel window stacked under Align (the order itself is the card order). */
-.radio-receiver-window{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:8px 0;padding:6px 10px;border:1px solid #c9d1cf;border-radius:6px;min-width:0}
+.radio-receiver-window{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:8px 0;padding:6px 10px;border:1px solid var(--ov-border);border-radius:6px;min-width:0}
 .radio-receiver-window-legend{font-size:14px;font-weight:600}
 .radio-receiver-window .button-row{flex-wrap:wrap;margin:0}
 .radio-receiver-window .radio-control-note{flex-basis:100%;margin:0;overflow-wrap:anywhere}
 /* R-RX13 web trace audition group (same frame as the window-position group). */
-.radio-receiver-audition{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:8px 0;padding:6px 10px;border:1px solid #c9d1cf;border-radius:6px;min-width:0}
+.radio-receiver-audition{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:8px 0;padding:6px 10px;border:1px solid var(--ov-border);border-radius:6px;min-width:0}
 .radio-receiver-audition .button-row{flex-wrap:wrap;margin:0}
 .radio-receiver-audition .radio-control-note,.radio-receiver-audition .radio-control-status{flex-basis:100%;margin:0;overflow-wrap:anywhere}
 .radio-receiver-audition .radio-control-note:empty{display:none}
-.radio-receiver-card[data-stacked]{border-left:4px solid #23756c}
+.radio-receiver-card[data-stacked]{border-left:4px solid var(--ov-accent)}
 /* R-RX4 Record notes and the finish Properties table (the boxes reuse .antenna-dialog). */
 .radio-receiver-card [data-testid="receiver-record-state"] p{margin:4px 0;overflow-wrap:anywhere}
 .radio-receiver-record-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
-.radio-receiver-record-table th,.radio-receiver-record-table td{border:1px solid #c9d1cf;padding:2px 6px;text-align:left}
+.radio-receiver-record-table th,.radio-receiver-record-table td{border:1px solid var(--ov-border);padding:2px 6px;text-align:left}
 [data-testid="receiver-record-finish"] dl div{display:flex;flex-wrap:wrap;gap:4px 8px}
 /* One label/value pair per row at every width (the global two-column grid is for direct dt/dd children). */
 [data-testid="receiver-record-finish"] dl{grid-template-columns:minmax(0,1fr)}
@@ -54,6 +54,6 @@
 .radio-receiver-save h3,.radio-receiver-save h4,.radio-receiver-save p,.radio-receiver-save li{min-width:0;overflow-wrap:anywhere}
 .radio-receiver-save h4{margin:8px 0 4px;font-size:14px}
 .radio-receiver-save ul{margin:0 0 6px;padding-left:1.2em;font-size:13px;line-height:1.5}
-.radio-receiver-save-warning{border-left:4px solid #a86b00;padding-left:8px}
+.radio-receiver-save-warning{border-left:4px solid var(--ov-warning);padding-left:8px}
 .radio-receiver-save .button-row{flex-wrap:wrap}
 .radio-receiver-save [aria-disabled="true"]{opacity:.6;cursor:not-allowed}

@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page,type TestInfo} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {CONTROL,PLR,ROW_A,ROW_C} from './fixtures/pulsar-saved-rows-controls';
@@ -141,8 +142,8 @@ test('saved-row host ownership: disclosure close, route change and project busy 
  await release(page,'held-one.csv');await settle(page);await toggleDisclosure(page);await expect(id(page,'saved-rows')).toHaveAttribute('data-active','true');
  await unchanged();await expect(status).toHaveText(inactiveCancel('held-one.csv'));
  // Leaving the route does the same.
- await choose(page,'held-two.csv',CONTROL);await held(page,'held-two.csv');await nav(page,'Observatory').click();await expect(id(page,'saved-rows')).toHaveAttribute('data-active','false');
- await release(page,'held-two.csv');await settle(page);await nav(page,'Radio data').click();await expect(status).toHaveText(inactiveCancel('held-two.csv'));await unchanged();
+ await choose(page,'held-two.csv',CONTROL);await held(page,'held-two.csv');await clickHeaderTool(page,'Observatory');await expect(id(page,'saved-rows')).toHaveAttribute('data-active','false');
+ await release(page,'held-two.csv');await settle(page);await clickHeaderTool(page,'Radio data');await expect(status).toHaveText(inactiveCancel('held-two.csv'));await unchanged();
  // A project operation does the same; Cancel ends it and nothing in the viewer changes.
  await choose(page,'held-three.csv',CONTROL);await held(page,'held-three.csv');
  await restore(page,'held-restore.json','{}');await held(page,'held-restore.json');
@@ -159,7 +160,7 @@ test('saved-row host ownership: disclosure close, route change and project busy 
  await page.goForward();await expect(findDialog(page)).toBeVisible();await expect(id(page,'saved-rows-query')).toHaveValue('B1919');await expect(id(page,'saved-rows-query')).toBeFocused();
  await expect(page.locator('dialog:modal')).toHaveCount(1);await expect(heading(page,'Recorded pulsar analysis')).not.toBeFocused();
  // A foreign native dialog (Hubble lab guide) opened elsewhere stays topmost on return; the Find waits, then returns with its draft.
- await page.goBack();await nav(page,'Hubble lab guide').click();await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).toHaveAttribute('open','');
+ await page.goBack();await clickHeaderTool(page,'Hubble lab guide');await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).toHaveAttribute('open','');
  await page.goForward();await expect(id(page,'saved-rows')).toBeVisible();await expect(findDialog(page)).toHaveCount(1);await expect(findDialog(page)).not.toBeVisible();
  await expect(id(page,'saved-rows-session')).toBeVisible();await expect(page.locator('dialog:modal')).toHaveCount(1);
  await page.keyboard.press('Escape');await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).not.toHaveAttribute('open','');
@@ -257,12 +258,12 @@ test('radio telescope route: explicit compiled-default scenario, access, Trackin
 test('radio route: a hidden-route slew arrives in the background without taking focus or inerting another route; pending dialog and box return on Back/Forward; About and Lab guide stay topmost',async({page},info)=>{
  await openRadio(page,info);await setupRadio(page,info);
  // A short slew (0 h / +38.4° → 0.5 h / +35°), then another route while it runs.
- await startSlew(page,['0','30','0','35','0','0']);await nav(page,'Observatory').click();await expect(heading(page,'Start with the sky.')).toBeFocused();
+ await startSlew(page,['0','30','0','35','0','0']);await clickHeaderTool(page,'Observatory');await expect(heading(page,'Start with the sky.')).toBeFocused();
  await expect.poll(()=>id(page,'antenna-ra').textContent()).toBe('0 Hrs 30 Mins 0.00 Secs');// the hidden route kept slewing
  await expect(id(page,'antenna-dec')).toHaveText('+35 Degs 0 Mins 0.0 Secs');
  await expect(notice(page)).toHaveCount(0);await hostReleased(page);await expect(heading(page,'Start with the sky.')).toBeFocused();
  await expect(page.locator('.observatory-main').first()).not.toHaveAttribute('inert');
- await nav(page,'Radio telescope').click();
+ await clickHeaderTool(page,'Radio telescope');
  await expect(notice(page)).toHaveAttribute('data-kind','slew-complete');await expect(id(page,'antenna-notice-ok')).toBeFocused();await hostHeld(page);
  await expect(heading(page,'Radio telescope control')).not.toBeFocused();
  await id(page,'antenna-notice-ok').click();await hostReleased(page);await expect(id(page,'antenna-set-coordinates')).toBeFocused();
@@ -280,7 +281,7 @@ test('radio route: a hidden-route slew arrives in the background without taking 
  await expect(id(page,'antenna-dialog')).toBeVisible();await expect(id(page,'antenna-field-raHours')).toHaveValue('7');await expect(id(page,'antenna-field-raHours')).toBeFocused();await hostHeld(page);
  // An error box over the dialog, then the Hubble lab guide: both radio surfaces wait and return, one layer per Escape.
  await id(page,'antenna-field-raHours').fill('25');await id(page,'antenna-dialog-ok').click();await expect(notice(page)).toHaveAttribute('data-kind','ra-invalid');
- await page.goBack();await nav(page,'Hubble lab guide').click();await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).toHaveAttribute('open','');
+ await page.goBack();await clickHeaderTool(page,'Hubble lab guide');await expect(page.locator('dialog[aria-labelledby="hubble-lab-heading"]')).toHaveAttribute('open','');
  await page.goForward();await expect(id(page,'antenna-dialog')).toHaveCount(0);await expect(notice(page)).toHaveCount(0);
  await page.keyboard.press('Escape');await expect(page.locator('dialog:modal')).toHaveCount(0);
  await expect(notice(page)).toHaveAttribute('data-kind','ra-invalid');await expect(id(page,'antenna-notice-ok')).toBeFocused();await expect(id(page,'antenna-dialog')).toBeVisible();
@@ -341,7 +342,7 @@ test('project operations: Save refuses during a slew and then adds the Radio par
  // Reload: both temporary workspaces start empty, as their notices say.
  await page.reload();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
  await expect(id(page,'saved-rows')).toHaveCount(0);await toggleDisclosure(page);await expect(id(page,'saved-rows-none')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(id(page,'radio-switch')).toBeDisabled();await expect(id(page,'antenna-controls')).toHaveCount(0);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-switch')).toBeDisabled();await expect(id(page,'antenna-controls')).toHaveCount(0);
 });
 
 

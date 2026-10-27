@@ -1,7 +1,8 @@
 import {test,expect,type Page} from '@playwright/test';import {readFile} from 'node:fs/promises';
+import{clickHeaderTool}from'./fixtures/header-tools';
 const restored='Investigation restored. Included tools were validated together. Exposure segments are stopped and deactivated; activate explicitly before continuing.';
 async function open(page:Page){await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
-async function view(page:Page,name:string,heading:string){await page.clock.resume();await page.getByRole('button',{name,exact:true}).click();await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
+async function view(page:Page,name:string,heading:string){await page.clock.resume();await clickHeaderTool(page,name);await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
 async function select(page:Page,index:number){await view(page,'Observatory','Start with the sky.');await page.getByLabel('Telescope profile to inspect or select').selectOption(String(index));if(await page.getByRole('button',{name:'Use this telescope',exact:true}).isEnabled())await page.getByRole('button',{name:'Use this telescope',exact:true}).click();await view(page,'Sky exposure','Sky background exposure');}
 async function download(page:Page,name:string){const wait=page.waitForEvent('download');await page.getByRole('button',{name,exact:true}).click();return readFile((await(await wait).path())!);}
 async function restore(page:Page,b:Buffer,name='sky18.json'){await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name,mimeType:'application/json',buffer:b});}

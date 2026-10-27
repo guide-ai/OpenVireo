@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {PLEIADES_ADMITTED_ROWS,PLEIADES_HTL} from '../src/core/pleiadesHotList';
@@ -18,8 +19,8 @@ const pause=async(page:Page)=>page.clock.pauseAt(await page.evaluate(()=>Date.no
 async function open(page:Page,hash='#observatory'){await page.clock.install();await page.goto('/'+hash);if(hash==='#observatory')await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();else await expect(page.getByRole('heading',{name:'Star-cluster database laboratory',exact:true})).toBeVisible();await pause(page);}
 /** Lazy routes load with the clock running; it is paused again before any integration. */
 async function withClock(page:Page,action:()=>Promise<void>){await page.clock.resume();await action();await pause(page);}
-async function toPhotometer(page:Page,click?:()=>Promise<void>){await withClock(page,async()=>{await(click??(()=>page.getByRole('button',{name:'Pleiades photometry',exact:true}).click()))();await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();});}
-async function toDatabase(page:Page){await withClock(page,async()=>{await page.getByRole('button',{name:'Cluster database',exact:true}).click();await expect(page.getByRole('heading',{name:'Star-cluster database laboratory',exact:true})).toBeVisible();});}
+async function toPhotometer(page:Page,click?:()=>Promise<void>){await withClock(page,async()=>{await(click??(()=>clickHeaderTool(page,'Pleiades photometry')))();await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();});}
+async function toDatabase(page:Page){await withClock(page,async()=>{await clickHeaderTool(page,'Cluster database');await expect(page.getByRole('heading',{name:'Star-cluster database laboratory',exact:true})).toBeVisible();});}
 const ownView=(page:Page)=>page.locator('section[aria-labelledby="own-hr-native-cluster-title"]');
 // The photometer route only (the database laboratory shares the photometer-main layout class).
 const photometerRoute=(page:Page)=>page.locator('main.photometer-main:not(.cluster-database-lab)');
@@ -70,7 +71,7 @@ test('row 1 and all 16 own pairs reach Data from Observations: own (0.25, 9.875)
  }
  await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(32);
  await page.getByLabel('Your vertical shift m−M (mag)',{exact:true}).fill('5.5');await page.getByRole('button',{name:'Confirm manual cluster fit',exact:true}).click();await expect(page.getByTestId('pleiades-distance-pc')).toHaveText('125.892541');
- await page.getByTestId('pleiades-lab-open').click();await expect(page.getByTestId('pleiades-lab-counts')).toHaveText('Guide steps done: 8/8');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();await page.getByTestId('pleiades-lab-close').click();
+ await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').click();await expect(page.getByTestId('pleiades-lab-counts')).toHaveText('Guide steps done: 8/8');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();await page.getByTestId('pleiades-lab-close').click();
  // Explicit handoff: the photometer is released synchronously (no draw), and the own view opens with its summary focused.
  const seed=await page.getByTestId('photo-seed').textContent();await expect(page.getByTestId('photo-phase')).toHaveText('Integration complete');
  await withClock(page,async()=>{await page.getByTestId('photo-open-hr').click();await expect(ownView(page)).toBeVisible();});
@@ -121,7 +122,7 @@ test('a guide link invoked while integrating releases the photometer with no dra
  await expect(page.getByRole('button',{name:'Start integration',exact:true})).toBeDisabled();await expect(page.getByTestId('photo-phase')).not.toHaveText(/Inactive|Integration complete/);
  await expect(page.getByTestId('photo-open-hr')).toBeDisabled();
  // The link releases synchronously; only afterwards does the clock run for the lazy view.
- await page.getByTestId('pleiades-lab-open').click();await page.getByTestId('pleiades-lab-observations').click();await withClock(page,async()=>{await expect(page.getByTestId('own-hr-summary')).toBeVisible();});
+ await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').click();await page.getByTestId('pleiades-lab-observations').click();await withClock(page,async()=>{await expect(page.getByTestId('own-hr-summary')).toBeVisible();});
  await expect(page.getByTestId('pleiades-lab-dialog')).toBeHidden();await expect(page.getByTestId('own-hr-disclosure')).toHaveAttribute('open','');await expect(page.getByTestId('own-hr-summary')).toBeFocused();
  await expect(ownView(page).getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 0 of 16 admitted stars.');await expect(ownView(page).getByTestId('own-hr-empty')).toBeVisible();
  // A later timer cannot draw: the integration was stopped and deactivated before the view changed.

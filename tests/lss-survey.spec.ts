@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // E02 student path on real LSS fields: choose field → load the original list → per-row status → point → acquire under a
 // controlled clock → measure z → Record Z (OK / Cancel / Escape) → results CSV → own records in the wedge. Steps, shifts and
@@ -26,7 +27,7 @@ async function measure(page:Page,position:string){
 test('E02: field list → statuses → acquire → Record Z OK/Cancel/Escape → CSV → own records in the wedge',async({page})=>{
  test.setTimeout(180000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'LSS survey',exact:true}).click();
+ await page.clock.install();await page.goto('/');await clickHeaderTool(page,'LSS survey');
  await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
  await page.clock.resume();await load(page,'1');await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.locator('[data-testid^="lss-row-"]')).toHaveCount(23);
@@ -58,7 +59,7 @@ test('E02: field list → statuses → acquire → Record Z OK/Cancel/Escape →
  await expect(page.getByTestId('wedge-count')).toHaveText('Points Plotted: 2');
  await expect(page.getByTestId('wedge-sources')).toContainText('OpenVireo LSS records');
  // Back on the survey: nothing left to hand over; the description is kept.
- await page.getByRole('button',{name:'LSS survey',exact:true}).click();
+ await clickHeaderTool(page,'LSS survey');
  await expect(page.getByRole('button',{name:'Plot my records in the wedge',exact:true})).toBeDisabled();
  await expect(page.getByLabel('Describe the structure you see (not graded)',{exact:true})).toHaveValue('Two galaxies so far.');
  expect(errors).toEqual([]);

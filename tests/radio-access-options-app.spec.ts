@@ -1,4 +1,5 @@
 import {test,expect,type Browser,type Locator,type Page,type TestInfo} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // Actual App flows of R-RX7 (docs/RADIO-ACCESS-OPTIONS.md): the Preferences gate scenario, the partial Optical/Radio
 // Simulation Options dialogs on one radio options object, the environment copy read by the panel, and the PulsarList1
@@ -8,7 +9,6 @@ import {readFile} from 'node:fs/promises';
 // clicks on controls behind a surface. The catalog is synthetic (no original rows); expected strings are the chosen web
 // contract, not native oracles.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
@@ -48,7 +48,7 @@ async function startApp(page:Page){
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
 }
 async function radioRoute(page:Page){
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 /** The antenna's first activation (radio-switch) and Tracking. radio-access here is the panel's own Access menu (env+0x2e84). */
@@ -216,14 +216,14 @@ test('history: access turned on after the first activation keeps the item hidden
  await demonstration(page);await configure(page,true,'ok');
  await values(page,'true','true','true');await menuIs(page,'hidden');
  // Route hide/show: no new first activation.
- await nav(page,'Radio data').click();await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
- await nav(page,'Radio telescope').click();await expect(id(page,'radio-access-card')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-access-card')).toBeVisible();await flush(page);
  await menuIs(page,'hidden','activation-hidden');
  await loadCatalog(page);await openReceiver(page);await menuIs(page,'hidden','open-disabled');
  await id(page,'radio-access-recipient-radio-lab').check();await closeMain(page);
  await menuIs(page,'hidden-enabled','close-enabled');await expect(id(page,'radio-access-menu-flags')).toHaveText('Enabled: True · Visible: False');await commandIs(page,'absent');
  // Reload resets the whole session.
- await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-access-card')).toBeVisible();
+ await page.clock.resume();await page.reload();await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-access-card')).toBeVisible();
  await values(page,'false','false','unknown');await menuIs(page,'hidden');await expect(id(page,'radio-access-gate')).toHaveAttribute('data-source','not-supplied');
  await expect(id(page,'radio-access-recipient')).toHaveAttribute('data-recipient','environment');
 });

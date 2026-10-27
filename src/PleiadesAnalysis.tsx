@@ -1,4 +1,5 @@
 import {useMemo} from 'react';
+import ResearchNotes from './components/ResearchNotes';
 import PhotometerPlotSettings from './PhotometerPlotSettings';
 import {opticalProfile} from './core/opticalTelescope';
 import {pleiadesPoints,pleiadesDistance,validPleiadesModulus,pleiadesPointVisible,PLEIADES_STANDARDS,PLEIADES_PLOT} from './core/pleiadesAnalysis';
@@ -31,5 +32,5 @@ export default function PleiadesAnalysis({state,busy,onConfirm,draft,onDraft}:{d
  {fit?<section aria-label={t('pa.confirmed')}><h3>{t('pa.confirmed')}</h3><dl className="pleiades-results"><dt>{t('pa.modulus')}</dt><dd data-testid="pleiades-confirmed-modulus">{num(fit.modulus)}</dd><dt>{t('pa.parsecs')}</dt><dd data-testid="pleiades-distance-pc">{num(fit.parsecs)}</dd><dt>{t('pa.lightYears')}</dt><dd data-testid="pleiades-distance-ly">{num(fit.lightYears)}</dd><dt>{t('pa.historical')}</dt><dd data-testid="pleiades-percent">{pct(fit.signedPercentFrom410Ly)}</dd></dl><p>{t('pa.resultHelp',{count:fit.points.length})}</p></section>:<p>{t('pa.unconfirmed')}</p>}
  <details><summary>{t('pa.rows')}</summary><div className="photometer-table"><table className="pleiades-points"><thead><tr>{(['pa.star','pa.pair','pa.manualB','pa.manualV','pa.manualColor','ph.telescopeColumn','ph.apertureColumn']as const).map(k=><th key={k}>{t(k)}</th>)}</tr></thead><tbody>{points.map(p=><tr key={p.targetId}><td>{p.hotlistNumber}</td><td>{p.bReadingId} / {p.vReadingId}</td><td>{num(p.b)}</td><td>{num(p.v)}</td><td>{num(p.bMinusV)}</td><td>{opticalProfile(p.telescopeIndex??0).name}</td><td>{p.apertureSelector??10}</td></tr>)}</tbody></table></div></details>
  <details><summary>{t('pa.standards')}</summary><p>{t('pa.standardHelp')}</p><div className="photometer-table"><table><thead><tr><th>{t('pa.spectral')}</th><th>{t('pa.absoluteV')}</th><th>{t('pa.manualColor')}</th></tr></thead><tbody>{PLEIADES_STANDARDS.map((r,i)=><tr key={i}><td>{r.spectralLabelAsPrinted}</td><td>{num(r.absoluteV)}</td><td>{num(r.bMinusV)}</td></tr>)}</tbody></table></div></details>
- <p className="observatory-note">{t('pa.limits')}</p></section>;
+ <ResearchNotes><p className="observatory-note">{t('pa.limits')}</p></ResearchNotes></section>;
 }

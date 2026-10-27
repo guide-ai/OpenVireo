@@ -1,0 +1,58 @@
+/* Base element styles and shared components on top of tokens.css.
+ * Element defaults use :where() (zero specificity) so every existing class rule still wins. */
+html{background:var(--ov-bg);color:var(--ov-text);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--ov-bg);color:var(--ov-text);font-family:var(--ov-font-sans);font-size:var(--ov-text-md);line-height:1.5;font-synthesis:none;-webkit-font-smoothing:antialiased}
+*,*::before,*::after{box-sizing:border-box}
+::selection{background:var(--ov-accent-soft-border);color:var(--ov-text)}
+:where(h1,h2,h3,h4){color:var(--ov-text);text-wrap:balance}
+:where(p,li,dd){text-wrap:pretty}
+:where(a){color:var(--ov-accent-text);text-underline-offset:3px}
+:where(code,kbd,samp){font-family:var(--ov-font-mono);font-size:.92em}
+:where(:focus-visible){outline:2px solid var(--ov-focus);outline-offset:2px}
+:where(hr){border:0;border-top:1px solid var(--ov-border)}
+
+/* Controls */
+:where(button,input,select,textarea){font:inherit;color:inherit}
+:where(button){display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:7px 14px;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface);color:var(--ov-text);font-size:var(--ov-text-sm);font-weight:550;line-height:1.3;cursor:pointer;transition:background-color var(--ov-duration),border-color var(--ov-duration),color var(--ov-duration)}
+:where(button:hover:not(:disabled)){background:var(--ov-surface-hover)}
+:where(button[aria-pressed=true]){background:var(--ov-accent-soft);border-color:var(--ov-accent-soft-border);color:var(--ov-accent-text)}
+/* Disabled: solid, readable colours instead of a low-contrast opacity fade. */
+:where(input:disabled,select:disabled,textarea:disabled){cursor:not-allowed;opacity:1;background:var(--ov-disabled-bg);border-color:var(--ov-disabled-border);color:var(--ov-disabled-text)}
+/* One disabled look for every button, above component colours (opt out with .ov-own-disabled). */
+button:disabled:not(.ov-own-disabled){cursor:not-allowed;opacity:1;background-color:var(--ov-disabled-bg)!important;background-image:none!important;border-color:var(--ov-disabled-border)!important;color:var(--ov-disabled-text)!important;box-shadow:none!important}
+:where(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color]),select,textarea){min-height:36px;padding:7px 10px;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface);color:var(--ov-text);max-width:100%}
+:where(input[type=checkbox],input[type=radio],input[type=range]){accent-color:var(--ov-accent)}
+:where(input[type=file]){max-width:100%;color:var(--ov-text-muted);font-size:var(--ov-text-sm)}
+:where(input[type=file])::file-selector-button{margin-right:10px;min-height:34px;padding:6px 12px;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface);color:var(--ov-text);font:inherit;font-weight:550;cursor:pointer}
+:where(input[type=file]:disabled)::file-selector-button{background:var(--ov-disabled-bg);color:var(--ov-disabled-text);cursor:not-allowed}
+:where(input[aria-invalid=true],select[aria-invalid=true]){border-color:var(--ov-danger)}
+:where(fieldset){border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);min-width:0}
+:where(legend){color:var(--ov-text-muted)}
+:where(summary){cursor:pointer}
+:where(summary:focus-visible){outline:2px solid var(--ov-focus);outline-offset:2px}
+:where(output){font-variant-numeric:tabular-nums}
+
+/* Tables */
+:where(table){border-color:var(--ov-border)}
+:where(th){color:var(--ov-text-muted)}
+:where(th,td){border-color:var(--ov-border)}
+:where(caption){color:var(--ov-text-muted)}
+
+/* Dialogs */
+:where(dialog){background:var(--ov-surface-raised);color:var(--ov-text);border:1px solid var(--ov-border);border-radius:var(--ov-radius-lg);box-shadow:var(--ov-shadow-lg)}
+:where(dialog)::backdrop{background:var(--ov-backdrop)}
+
+/* Shared components */
+.visually-hidden{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+/* Folded technical notes (audit 1.11). Text inside stays complete and reachable. */
+details.research-notes{margin-top:12px;border-top:1px solid var(--ov-border);padding:4px 0 0}
+details.research-notes>summary{display:flex;align-items:center;gap:8px;min-height:36px;padding:6px 0;color:var(--ov-text-muted);font-size:var(--ov-text-sm);font-weight:600;list-style:none}
+details.research-notes>summary::-webkit-details-marker{display:none}
+details.research-notes>summary::before{content:"";flex:none;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--ov-duration)}
+details.research-notes[open]>summary::before{transform:rotate(45deg)}
+details.research-notes>summary:hover{color:var(--ov-text)}
+details.research-notes>:not(summary){color:var(--ov-text-muted);font-size:var(--ov-text-sm);line-height:1.7}
+
+@media (prefers-reduced-motion:reduce){
+ *,*::before,*::after{transition-duration:0ms!important;animation-duration:0ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
+}

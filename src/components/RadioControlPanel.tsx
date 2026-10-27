@@ -1,4 +1,5 @@
 import {StrictMode,useEffect,useId,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore,type FocusEvent,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
+import ResearchNotes from './ResearchNotes';
 import {createRoot} from 'react-dom/client';
 import {
  INITIAL_RADIO_CONTROL,NATIVE_CAPTIONS,RANDOM_ACCESS_RANGE_MS,clickRadioSwitch,closeRadioPanel,enterRadioPulsarsExercise,menuCaptionText,
@@ -593,7 +594,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const panelRoot=useRef<HTMLElement>(null);
  return <section ref={panelRoot} className="card radio-control" aria-labelledby={`${id}-title`} data-testid="radio-control" data-modal-pending={modalPending} data-modal-presented={presented}>
   <h2 id={`${id}-title`}>{t('radio.title')}</h2>
-  <p>{ta('antenna.scope')}</p>
+  <ResearchNotes><p>{ta('antenna.scope')}</p></ResearchNotes>
   <div className="radio-control-grid" inert={antennaModal||undefined}>
    <section className="radio-control-block" aria-labelledby={`${id}-menu`}>
     <h3 id={`${id}-menu`}>{t('radio.menu.heading')}</h3>
@@ -901,13 +902,13 @@ function RadioOptionsScenario({options,ta,blocked,onApply}:Readonly<{options:Rad
  return <fieldset className="radio-control-block radio-control-env" data-testid="antenna-radio-options" disabled={blocked==='modal'} aria-describedby={`${id}-help`}
   onKeyDown={e=>{if(e.key==='Escape'&&!e.repeat){e.preventDefault();cancel();}}}>
   <legend>{ta('antenna.radioOptions.heading')}</legend>
-  <p id={`${id}-help`} className="radio-control-note">{ta('antenna.radioOptions.help')}</p>
+  <ResearchNotes><p id={`${id}-help`} className="radio-control-note">{ta('antenna.radioOptions.help')}</p></ResearchNotes>
   <p className="radio-control-native" data-testid="antenna-radio-options-caption">{RADIO_OPTIONS_CAPTIONS.form}</p>
   <label className="radio-control-check"><input type="checkbox" data-testid="antenna-radio-options-limit" checked={draft} aria-describedby={`${id}-hint`}
    onChange={e=>{setDraft(e.target.checked);setStatus(null);}}/><span className="radio-control-native">{RADIO_OPTIONS_CAPTIONS.limitSlewing}</span></label>
   <p id={`${id}-hint`} className="radio-control-note">{ta('antenna.radioOptions.limitHint',{hint:RADIO_OPTIONS_CAPTIONS.limitSlewingHint})}</p>
   <p data-testid="antenna-radio-options-horizon" data-radians={h.radians}>{ta('antenna.radioOptions.horizon',{caption:RADIO_OPTIONS_CAPTIONS.horizonLimit,degrees:h.degrees,radians:h.radians,hint:RADIO_OPTIONS_CAPTIONS.horizonLimitHint})}</p>
-  <p className="radio-control-note">{ta('antenna.radioOptions.clockNote')}</p>
+  <ResearchNotes><p className="radio-control-note">{ta('antenna.radioOptions.clockNote')}</p></ResearchNotes>
   <p data-testid="antenna-radio-options-current" data-limits={options.limitsEnabled}>{ta('antenna.radioOptions.current',{limits:yes(options.limitsEnabled)})}</p>
   <div className="button-row">
    <button type="button" className="primary-button" data-testid="antenna-radio-options-apply" disabled={blocked!==null} onClick={apply}>{ta('antenna.radioOptions.apply')}</button>

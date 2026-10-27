@@ -1,7 +1,8 @@
 import {test,expect,type Page} from '@playwright/test';
+import{openHeaderTools}from'./fixtures/header-tools';
 // M7: the E02 guide checklist follows the student's own work and links to the survey and the wedge.
 const step=(page:Page,s:string)=>page.getByTestId(`lss-lab-step-${s}`);
-async function openGuide(page:Page){await page.getByTestId('lss-lab-open').click();await expect(page.getByRole('dialog',{name:'Mapping large-scale structure'})).toBeVisible();}
+async function openGuide(page:Page){await openHeaderTools(page);await page.getByTestId('lss-lab-open').click();await expect(page.getByRole('dialog',{name:'Mapping large-scale structure'})).toBeVisible();}
 async function closeGuide(page:Page){await page.getByRole('dialog').getByRole('button',{name:'Close LSS guide',exact:true}).click();}
 test('E02 guide: steps check off from loading, recording, plotting, describing and saving',async({page})=>{
  test.setTimeout(120000);

@@ -1,4 +1,5 @@
 import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
+import ResearchNotes from './ResearchNotes';
 import './RadioPulsarParameters.css';
 import {menuCaptionText} from '../core/radioControl';
 import {isRadioLabModal,type RadioLabState,type RadioPointing} from '../core/radioAntenna';
@@ -259,7 +260,7 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
   <p className="radio-control-note" data-testid="pulsar-params-persistence">{t('pulsarParameters.persistence')}</p>
   <div className="pulsar-params-reference" data-testid="pulsar-ref">
    <h3 className="pulsar-params-subheading">{t('pulsarParameters.reference.heading')}</h3>
-   <p className="radio-control-note">{t('pulsarParameters.reference.help',{max:PULSAR_REFERENCE_WEB_POLICY.maxBytes})}</p>
+   <ResearchNotes><p className="radio-control-note">{t('pulsarParameters.reference.help',{max:PULSAR_REFERENCE_WEB_POLICY.maxBytes})}</p></ResearchNotes>
    <input ref={fileRef} type="file" hidden data-testid="pulsar-ref-file" aria-label={t('pulsarParameters.reference.fileLabel')}
     onChange={e=>{const file=e.target.files?.[0];e.target.value='';void loadFile(file);}}/>
    <div className="button-row">

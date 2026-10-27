@@ -1,4 +1,5 @@
 import {Fragment,useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
+import ResearchNotes from './ResearchNotes';
 import {menuCaptionText} from '../core/radioControl';
 import {RADIO_OPTIONS_CAPTIONS,type RadioLabOptions,type RadioLabTransition} from '../core/radioAntenna';
 import type {RadioReceiverOptions} from '../core/radioReceiver';
@@ -248,7 +249,7 @@ export function useRadioAccessHost({active,busy,antennaModal,receiverBoxPending,
  const card=(inert:boolean)=><section className="card radio-control radio-control-env radio-access" aria-labelledby={`${id}-title`} data-testid="radio-access-card"
   inert={inert||open||undefined} data-gate={state.gate.open?'open':'closed'}>
   <h2 ref={headingRef} id={`${id}-title`} tabIndex={-1}>{t('radioAccess.heading')}</h2>
-  <p className="radio-control-note">{t('radioAccess.intro')}</p>
+  <ResearchNotes><p className="radio-control-note">{t('radioAccess.intro')}</p></ResearchNotes>
   <p className="radio-control-note" data-testid="radio-access-persistence">{t('radioAccess.persistence')}</p>
   <h3 className="radio-access-subheading">{t('radioAccess.gate.heading')}</h3>
   <p data-testid="radio-access-gate" data-source={state.gate.source} style={{overflowWrap:'anywhere'}}>{state.gate.open?t('radioAccess.gate.open'):t('radioAccess.gate.closed')}</p>

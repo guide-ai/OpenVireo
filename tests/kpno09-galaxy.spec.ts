@@ -1,11 +1,12 @@
 import {test,expect,type Page,type Locator} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 const targets=[{id:'36773',source:'170',sky:'20',V:'15.8',position:'49'},{id:'36747',source:'121',sky:'21',V:'15.6',position:'51'},{id:'54876',source:'124',sky:'22',V:'16.0',position:'68'}];
 const group=(page:Page,index=1)=>page.locator(`[data-galaxy-telescope="${index}"]`);
 const panel=(page:Page,id='36773',index=1)=>group(page,index).locator(`[data-galaxy-panel="${id}"]`);
 const restored='Investigation restored. Included tools were validated together. Exposure segments are stopped and deactivated; activate explicitly before continuing.';
 async function open(page:Page){await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
-async function view(page:Page,name:string,heading:string){await page.clock.resume();await page.getByRole('button',{name,exact:true}).click();await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
+async function view(page:Page,name:string,heading:string){await page.clock.resume();await clickHeaderTool(page,name);await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
 async function select(page:Page,index:string){await view(page,'Observatory','Start with the sky.');await page.getByLabel('Telescope profile to inspect or select').selectOption(index);await page.getByRole('button',{name:'Use this telescope',exact:true}).click();}
 async function expose(page:Page,id='36773',index=1){await page.getByLabel('Acquisition galaxy',{exact:true}).selectOption(id);const p=panel(page,id,index);await p.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();await p.getByRole('button',{name:'Start galaxy exposure',exact:true}).click();await page.clock.runFor(100);await p.getByRole('button',{name:'Pause exposure',exact:true}).click();}
 async function download(page:Page,name:string,scope:Page|Locator=page){const wait=page.waitForEvent('download');await scope.getByRole('button',{name,exact:true}).click();return readFile((await(await wait).path())!);}

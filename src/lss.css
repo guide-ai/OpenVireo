@@ -1,9 +1,10 @@
-.lss-main .card{margin-bottom:1rem}
+.lss-main .card{margin-bottom:1rem;padding:20px 22px}
+.lss-main .card h2{margin:0 0 12px}
 .lss-controls{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
 .lss-controls fieldset{display:flex;gap:.75rem;border:0;padding:0;margin:0}
 .lss-rows{width:100%;border-collapse:collapse;font-size:.9rem}
-.lss-rows th,.lss-rows td{border-bottom:1px solid var(--line,#d0d7de);padding:.3rem .4rem;text-align:left;vertical-align:top}
-.lss-rows tr[aria-current="true"]{background:var(--highlight,#eef5ff)}
+.lss-rows th,.lss-rows td{border-bottom:1px solid var(--line,var(--ov-border));padding:.3rem .4rem;text-align:left;vertical-align:top}
+.lss-rows tr[aria-current="true"]{background:var(--highlight,var(--ov-info-soft))}
 .lss-acquire-layout{display:grid;grid-template-columns:minmax(0,312px) minmax(0,1fr);gap:1rem}
 .lss-acquire-layout .sky-actions{display:flex;flex-wrap:wrap;gap:.4rem}
 .lss-acquire-layout .sky-actions button{flex:1 1 9rem;min-width:0}

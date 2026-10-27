@@ -6,15 +6,15 @@
 .db-hr-label{fill:#203b46;font-size:12px;dominant-baseline:hanging}
 .db-hr-slider{margin:.2rem 0 .6rem}
 .db-hr-slider label{margin:.4rem 0 .2rem!important;font-size:.85rem}
-.db-hr-slider input[type=range]{width:100%;max-width:100%;accent-color:#2b6a55}
-.db-hr-slider output{display:block;font-variant-numeric:tabular-nums;color:#245e51;font-size:.85rem}
-.db-hr-slider input[data-unset]+output{color:#62777c}
-.db-hr-report pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem;background:#f3f8f5;border:1px solid #d8e7df;border-radius:8px;padding:.8rem;margin:.4rem 0}
+.db-hr-slider input[type=range]{width:100%;max-width:100%;accent-color:var(--ov-accent)}
+.db-hr-slider output{display:block;font-variant-numeric:tabular-nums;color:var(--ov-accent-text);font-size:.85rem}
+.db-hr-slider input[data-unset]+output{color:var(--ov-text-muted)}
+.db-hr-report pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem;background:var(--ov-surface-sunken);border:1px solid var(--ov-border);border-radius:8px;padding:.8rem;margin:.4rem 0}
 .db-hr-report-figure{margin:0}
 .db-hr-report-figure figcaption{font-weight:600;margin-top:.4rem}
 .cluster-database-lab .cluster-lab-dialog{width:min(960px,calc(100% - 32px));max-width:none}
-.cluster-lab-next{font-weight:600;color:#285c48}
-.cluster-lab-dialog .lab-steps>li[data-next] h3{color:#285c48}
+.cluster-lab-next{font-weight:600;color:var(--ov-accent-text)}
+.cluster-lab-dialog .lab-steps>li[data-next] h3{color:var(--ov-accent-text)}
 @media(max-width:620px){.cluster-database-lab .cluster-lab-dialog{width:calc(100% - 20px)}}
 @media print{
  html.printing-db-hr body *{visibility:hidden}
@@ -22,3 +22,4 @@
  html.printing-db-hr .db-hr-report-print{position:absolute;left:0;top:0;width:100%}
  html.printing-db-hr .db-hr-report pre{border:none;background:none}
 }
+

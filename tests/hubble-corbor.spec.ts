@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // Phase 2 B1: CorBor – 1 (54875) and CorBor – 3 (54891) through the original Hubble.HTL, the exact catalogue centre and the
 // recovered cached-pan view (0.4 m only). Alignment positions, steps and seeds are operator-chosen workflow inputs, not expected
@@ -40,7 +41,7 @@ test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await loadHubble(page);await pointRow(page,4);await expect(page.getByTestId('hubble-point-unavailable')).toContainText('QSO catalogue merge');await expect(page.getByTestId('hubble-point-card').getByRole('button')).toHaveCount(0);
  const sources:string[]=[];
- for(const [i,t] of targets.entries()){if(i>0){await page.clock.resume();await page.getByRole('button',{name:'Observatory',exact:true}).click();await openHotList(page);}await toGalaxy(page,t,i===1);sources.push(await acquire(page,t,i===1));}
+ for(const [i,t] of targets.entries()){if(i>0){await page.clock.resume();await clickHeaderTool(page,'Observatory');await openHotList(page);}await toGalaxy(page,t,i===1);sources.push(await acquire(page,t,i===1));}
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2);await expect(page.locator('#measurement-log')).toContainText('54875');await expect(page.locator('#measurement-log')).toContainText('54891');
  await page.getByText('Hubble diagram & distances',{exact:true}).click();await page.getByRole('button',{name:'Add saved measurements',exact:true}).click();await page.getByLabel('Distance and summary recipe').selectOption('vireo');
  for(const [i,t] of targets.entries()){const n=i+1;await expect(page.getByLabel(`Apparent V magnitude · row ${n}`,{exact:true})).toBeEmpty();await expect(page.getByLabel(`Apparent magnitude source · row ${n}`,{exact:true})).toBeEmpty();
@@ -69,10 +70,10 @@ test('bundled Hubble.HTL failures keep the current list; cancel ignores a late r
  // KPNO 0.9 m: CorBor – 1 is reported, not acquired, and the telescope is not switched.
  await page.getByLabel('Telescope profile to inspect or select').selectOption('1');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);await pointRow(page,7);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','telescope');await expect(page.getByTestId('hubble-point-telescope')).toContainText('only on the 0.4m telescope');await expect(page.getByTestId('htl-hubble-row')).toContainText('supported only on the 0.4m telescope');
- await page.clock.resume();await page.getByRole('button',{name:'Galaxy exposure',exact:true}).click();await page.getByLabel('Acquisition galaxy').selectOption('54875');
+ await page.clock.resume();await clickHeaderTool(page,'Galaxy exposure');await page.getByLabel('Acquisition galaxy').selectOption('54875');
  await expect(page.locator('[data-galaxy-telescope="1"]').getByTestId('galaxy-telescope-unsupported-54875')).toBeVisible();await expect(page.locator('[data-galaxy-telescope="1"] [data-galaxy-panel="54875"] button')).toHaveCount(0);
  await page.getByLabel('Acquisition galaxy').selectOption('54876');await expect(page.locator('[data-galaxy-telescope="1"] [data-galaxy-panel="54876"]').getByRole('button',{name:'Activate supported galaxy field',exact:true})).toBeVisible();
- await page.getByRole('button',{name:'Observatory',exact:true}).click();await expect(page.getByLabel('Telescope profile to inspect or select')).toHaveValue('1');
+ await clickHeaderTool(page,'Observatory');await expect(page.getByLabel('Telescope profile to inspect or select')).toHaveValue('1');
  expect(errors).toEqual([]);
 });
 test('320 px mobile: Hubble.HTL row to CorBor – 1 acquisition without horizontal scrolling',async({page})=>{

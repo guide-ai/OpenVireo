@@ -1,0 +1,172 @@
+/* OpenVireo design tokens. Plain CSS custom properties, no runtime dependency.
+ * Light values live on :root. Dark values apply when the system prefers dark and the
+ * user has not forced light, or when the user forces dark ([data-theme=dark] on <html>,
+ * set before first paint by index.html and by src/theme/theme.ts). Dark applies to screen only.
+ * Scientific rasters, palettes and plotted traces never read these tokens; chart panels
+ * keep their own fixed colours so they stay readable in both themes. */
+:root{
+ color-scheme:light;
+ /* Surfaces */
+ --ov-bg:#f4f6f7;
+ --ov-surface:#ffffff;
+ --ov-surface-raised:#ffffff;
+ --ov-surface-sunken:#edf1f2;
+ --ov-surface-hover:#e5ecee;
+ --ov-border:#d3dcdf;
+ --ov-border-strong:#7b8d94;
+ /* Text */
+ --ov-text:#13232b;
+ --ov-text-muted:#45585f;
+ --ov-text-subtle:#56696f;
+ /* Accent (brand teal-green) */
+ --ov-accent:#1e6a53;
+ --ov-accent-hover:#16533f;
+ --ov-accent-contrast:#ffffff;
+ --ov-accent-soft:#e2f0ea;
+ --ov-accent-soft-border:#a9cdbd;
+ --ov-accent-text:#1b6450;
+ /* States */
+ --ov-focus:#1f5fd0;
+ --ov-danger:#a3361f;
+ --ov-danger-soft:#fdeceb;
+ --ov-danger-border:#e9b5ab;
+ --ov-warning:#7f5300;
+ --ov-warning-soft:#fff4d9;
+ --ov-warning-border:#e5cf95;
+ --ov-success:#1d6a3f;
+ --ov-success-soft:#e3f2e8;
+ --ov-info:#1b5a86;
+ --ov-info-soft:#e6f0f8;
+ --ov-disabled-bg:#e6ebed;
+ --ov-disabled-border:#cdd6d9;
+ --ov-disabled-text:#56666c;
+ /* App chrome (sidebar/header): navy in both themes */
+ --ov-chrome-bg:#0b2430;
+ --ov-chrome-border:#1f3c48;
+ --ov-chrome-text:#e7f0ee;
+ --ov-chrome-muted:#a8bec5;
+ --ov-chrome-hover:#163542;
+ --ov-chrome-active-bg:#d7efe4;
+ --ov-chrome-active-text:#0b2a20;
+ --ov-chrome-focus:#9cc8ff;
+ /* Fixed chart/sky panels (not themed: scientific chrome drawn for a dark panel) */
+ --ov-plot-bg:#102d3c;
+ --ov-sky-bg:#061a29;
+ /* Overlays */
+ --ov-backdrop:rgb(8 30 40 / .55);
+ /* Typography */
+ --ov-font-sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+ --ov-font-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+ --ov-text-xs:12px;
+ --ov-text-sm:13px;
+ --ov-text-md:14px;
+ --ov-text-lg:17px;
+ --ov-text-xl:21px;
+ --ov-text-2xl:clamp(26px,2.6vw,34px);
+ --ov-leading:1.6;
+ /* Spacing, radius, elevation, motion */
+ --ov-space-1:4px;
+ --ov-space-2:8px;
+ --ov-space-3:12px;
+ --ov-space-4:16px;
+ --ov-space-5:24px;
+ --ov-space-6:32px;
+ --ov-space-7:48px;
+ --ov-radius-sm:6px;
+ --ov-radius-md:10px;
+ --ov-radius-lg:14px;
+ --ov-radius-pill:999px;
+ --ov-shadow-sm:0 1px 2px rgb(16 36 46 / .06);
+ --ov-shadow-md:0 2px 4px rgb(16 36 46 / .04),0 8px 24px rgb(16 36 46 / .06);
+ --ov-shadow-lg:0 24px 64px rgb(4 20 30 / .28);
+ --ov-duration:140ms;
+ --ov-sidebar-width:248px;
+}
+@media screen and (prefers-color-scheme:dark){
+ :root:not([data-theme=light]){
+  color-scheme:dark;
+  --ov-bg:#0d1519;
+  --ov-surface:#141e23;
+  --ov-surface-raised:#19252b;
+  --ov-surface-sunken:#0f181c;
+  --ov-surface-hover:#213038;
+  --ov-border:#2b3b43;
+  --ov-border-strong:#687e88;
+  --ov-text:#e3ecee;
+  --ov-text-muted:#b2c1c6;
+  --ov-text-subtle:#9aabb1;
+  --ov-accent:#5cc49f;
+  --ov-accent-hover:#7fd6b6;
+  --ov-accent-contrast:#04221a;
+  --ov-accent-soft:#16332a;
+  --ov-accent-soft-border:#2f6b57;
+  --ov-accent-text:#7dd6b4;
+  --ov-focus:#8ab8ff;
+  --ov-danger:#ff9f8c;
+  --ov-danger-soft:#3a1c17;
+  --ov-danger-border:#7a3a2e;
+  --ov-warning:#f1c56a;
+  --ov-warning-soft:#33280f;
+  --ov-warning-border:#6b5520;
+  --ov-success:#86dba5;
+  --ov-success-soft:#15301f;
+  --ov-info:#93c9f0;
+  --ov-info-soft:#13283a;
+  --ov-disabled-bg:#1d272c;
+  --ov-disabled-border:#2e3c43;
+  --ov-disabled-text:#93a3a9;
+  --ov-chrome-bg:#091318;
+  --ov-chrome-border:#1d2c33;
+  --ov-chrome-hover:#14252d;
+  --ov-backdrop:rgb(0 0 0 / .62);
+  --ov-shadow-sm:0 1px 2px rgb(0 0 0 / .3);
+  --ov-shadow-md:0 2px 4px rgb(0 0 0 / .25),0 8px 24px rgb(0 0 0 / .3);
+  --ov-shadow-lg:0 24px 64px rgb(0 0 0 / .55);
+ }
+}
+/* Print always uses the light values. */
+@media screen{
+:root[data-theme=dark]{
+ color-scheme:dark;
+ --ov-bg:#0d1519;
+ --ov-surface:#141e23;
+ --ov-surface-raised:#19252b;
+ --ov-surface-sunken:#0f181c;
+ --ov-surface-hover:#213038;
+ --ov-border:#2b3b43;
+ --ov-border-strong:#687e88;
+ --ov-text:#e3ecee;
+ --ov-text-muted:#b2c1c6;
+ --ov-text-subtle:#9aabb1;
+ --ov-accent:#5cc49f;
+ --ov-accent-hover:#7fd6b6;
+ --ov-accent-contrast:#04221a;
+ --ov-accent-soft:#16332a;
+ --ov-accent-soft-border:#2f6b57;
+ --ov-accent-text:#7dd6b4;
+ --ov-focus:#8ab8ff;
+ --ov-danger:#ff9f8c;
+ --ov-danger-soft:#3a1c17;
+ --ov-danger-border:#7a3a2e;
+ --ov-warning:#f1c56a;
+ --ov-warning-soft:#33280f;
+ --ov-warning-border:#6b5520;
+ --ov-success:#86dba5;
+ --ov-success-soft:#15301f;
+ --ov-info:#93c9f0;
+ --ov-info-soft:#13283a;
+ --ov-disabled-bg:#1d272c;
+ --ov-disabled-border:#2e3c43;
+ --ov-disabled-text:#93a3a9;
+ --ov-chrome-bg:#091318;
+ --ov-chrome-border:#1d2c33;
+ --ov-chrome-hover:#14252d;
+ --ov-backdrop:rgb(0 0 0 / .62);
+ --ov-shadow-sm:0 1px 2px rgb(0 0 0 / .3);
+ --ov-shadow-md:0 2px 4px rgb(0 0 0 / .25),0 8px 24px rgb(0 0 0 / .3);
+ --ov-shadow-lg:0 24px 64px rgb(0 0 0 / .55);
+}
+}
+@media (prefers-reduced-motion:reduce){
+ :root{--ov-duration:0ms}
+}
