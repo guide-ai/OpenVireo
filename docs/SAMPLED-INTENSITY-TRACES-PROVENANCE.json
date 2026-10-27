@@ -61,6 +61,7 @@
     "unknown": "500 wavelength samples at minimum+i*step,i0..499;positive visible max0 initialized;intensity/max*Single100;integer height via0x403700;relativepane y125-height;firstvertex0 included.",
     "standard": "Same math in0x508b88 after selected atlas source dispatch; upper and lower baseline passed as arguments;zero source pointer returns without inventing a curve.",
     "flags": "FormCreate initializes+495..498 tofalse. ReverseDisplay writesphoto+495/+497 only;trace+496/+498 remain uninverted under this admitted configuration.",
+    "flagsHistoricalNote": "The flags statement above describes the default configuration (+496/+498 false). reverseBranch (E03 phase1 item 1.10c) records the recovered 1−q branch gated by those same flags. TraceBox→flag delivery and runtime equivalence remain not demonstrated, as listed in reverseBranch.notDemonstrated.",
     "dispatch": "Mode0 paints upper/lower standard traces plus unknown trace;mode2 uses unknown trace below its photo. Difference is a separate branch.",
     "transition": "0x5093e0 selects mode0 without clearing difference. New optional web sampled-trace choice is bracket-only and explicitly distinct from the old printed-coordinate trace/difference adapter."
   },
@@ -80,5 +81,31 @@
       "sha256": "fd25f98687ef72aaa35d2444ef0a884aab8e4a88b6c12adf6f628d74a0d0d3af"
     }
   ],
+  "reverseBranch": {
+    "scope": "E03 phase1 item 1.10c: Reverse Trace Displays. Same binary SHA-256 and the same two byte ranges as VIREO-SAMPLED-TRACE-01/02.",
+    "evidence": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/classification-student-phase1-TRACE-RECOVERED-EVIDENCE.json",
+    "identityBridge": "Independently recaptured byteRangeSHA256 values equal the published ones above: unknown 0x508678–0x5088f4 1963fe7bbbeef5592f37a3b376ecd5267b4a11949070beb39b40f3a96c372fec; standards 0x508b88–0x508dc0 8c0f4ae784bbd311e0c7a2d0b798d04a62f204f52dc940359d0cb76cad1ad257.",
+    "listings": [
+      {"evidenceId": "VIREO-SAMPLED-TRACE-01", "publishedListingSHA256": "31f68376ba9481f4eb178f97a33e1399a0a99c1f11f836e6b6c3f0ad0b618fe8", "newListing": "classification-student-phase1-unknown-trace.asm", "newListingSHA256": "257592ea32bcc186b332d139b8907b86e5bd10f5803f36d2885b5e39bd0c3b34"},
+      {"evidenceId": "VIREO-SAMPLED-TRACE-02", "publishedListingSHA256": "d144db7b650fff7e3e359e0e66b58bb0d3c6f76ec3f14813e97a4837f0b3dcdb", "newListing": "classification-student-phase1-standard-trace.asm", "newListingSHA256": "0a74bdcaf08c057e11f1e1332f29fb7b68c0c2ebe84aa34b3a61787235da9db9"}
+    ],
+    "listingHashNote": "Listing hashes differ by format, not by bytes: the new captures use objdump --no-show-raw-insn (no instruction-byte columns) and a different input-file header path. Both pairs are retained; the byte-range hashes are the identity bridge.",
+    "constants": [
+      {"address": "0x5088b4", "type": "Single", "value": 1.0, "SHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"},
+      {"address": "0x508d88", "type": "Single", "value": 1.0, "SHA256": "e00e5eb9444182f352323374ef4e08ebcb784725fdd4fd612d7730540b3e0c8c"}
+    ],
+    "unknown": "0x508789..0x508792 q=F/positiveVisiblePeak; 0x508796..0x5087ab if byte+0x496: fsubr Single1.0 (1−q); 0x5087af..0x5087c1 ×Single100, rounding helper 0x403700, pane baseline − height.",
+    "standards": "0x508c7a..0x508c86 q=F/positiveVisiblePeak; 0x508c87..0x508c9c if byte+0x498: Single1.0 − q; 0x508ca0..0x508cb0 ×Single100, rounding helper, caller baseline − height.",
+    "caption": "Caption-suffix branches gated by the same flags (0x50884c–0x508875, 0x508d34–0x508d45) support a web 'reversed' caption state; the web wording is i18n and claims no native literal.",
+    "nativeControl": "Options dialog TraceBox (TCheckBox, caption 'Reverse Trace Displays', TabOrder 1) beside GrayBox 'Reverse Grayscale Displays'; OK/Cancel buttons.",
+    "webPolicy": "combinedTrace/sampledIntensityTrace(sampled, reverse=false). Normal expression roundNearestEven(intensity/peak*100) unchanged; reversed roundNearestEven((1−intensity/peak)*100); y=125−height; same peak, int32 guards and source columns; policy IDs unchanged (display branch of the same routine). Independent ephemeral checkbox, sampled/combined traces in bracket mode only; printed traces, difference, sampled-difference preview and printed fallbacks never reverse; photo reverse stays separate. Reversed panes are view-only: no inspection/mark surface, ordinate tick, positive-height cross or shoulder/continuum overlay; selected-line and center wavelength markers remain. Toggling cancels held gestures without changing drafts, records, readouts, RNG or file formats; typed EW inputs remain available.",
+    "notDemonstrated": [
+      "TraceBox→flag OK-handler delivery, native option-dialog event order and repaint.",
+      "Runtime/GDI/x87 equivalence of the reversed ordinate.",
+      "Reverse-difference or reverse printed-coordinate rendering.",
+      "Native reverse-mode mouse, cursor and width behavior."
+    ],
+    "adaptationLine": "The web checkbox directly exposes the recovered sampled-trace inversion; native option-dialog delivery and browser pixels are not reproduced."
+  },
   "rightsAndUncertainty": "Existing Gettysburg College/CLEA notices andsource-specific license uncertainty remain;no new original assets included. Static recovery and mathematical reference checks do not establish original-runtime equivalence."
 }

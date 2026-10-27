@@ -1,5 +1,7 @@
 # Stellar classification: original practice and acquired spectra
 
+Current E03 phase1 follow-up (items 1.6 + 1.10): the header **Classification guide** recomputes choose/compare/inspect/record from the current work (Save is an instruction, never counted; no answers or grading); the **Spectral line table** lists all 26 SPECLNS.LNL rows with the same persisted marker index; equivalent width accepts each source's own grid ∩ 3500–7400Å ([FEATURE-WIDTH.md](FEATURE-WIDTH.md)); **Reverse trace displays** is a view-only sampled/combined trace option ([SAMPLED-INTENSITY-TRACES.md](SAMPLED-INTENSITY-TRACES.md)). Status lives in [STUDENT-EXERCISES.md](STUDENT-EXERCISES.md); E03 is not complete until coordinator QA and the whole-functionality review. Optional native formats, printing/focus and items 1.11/1.12 remain pending.
+
 Current width follow-up: [selected-source manual calculation](SELECTED-SOURCE-WIDTH.md) completes the admitted unknown/upper/lower calculation/result flow. Reference/imported/acquired results are temporary, while original-practice width archives remain unchanged. Earlier calculation exclusions below describe previous slices.
 
 Current photographic extension: [positive/reversed photo comparison](PHOTO-SPECTRUM.md) adds a bounded recovered grayscale renderer. Earlier full-photo exclusions below remain historical for this slice;combined/zoom/pan/photo-event andnativeGDI/x87 fidelity remain open.

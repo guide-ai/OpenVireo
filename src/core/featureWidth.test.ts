@@ -1,6 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import fixtures from '../../data/feature-width/analytic-fixtures.json';
-import {FEATURE_POLICY,EMPTY_FEATURES,emptyFeatureDraft,regionFromDraft,readFeatures,measureFeature} from './featureWidth';
+import {FEATURE_POLICY,EMPTY_FEATURES,FEATURE_ENVELOPE,emptyFeatureDraft,featureDomain,featureRegion,regionFromDraft,readFeatures,measureFeature,recordFeature} from './featureWidth';
+import {INITIAL_CLASSIFICATION,PRACTICE_FEATURE_DOMAINS,readClassificationState} from './classification';
 const flat=(f:number)=>[3900,4200,4500].map(wavelength=>({wavelength,intensity:f}));
 const region={left:4100,center:4150,right:4200,leftContinuum:1,rightContinuum:1};
 describe('bounded recovered equivalent width',()=>{
@@ -25,5 +26,32 @@ describe('bounded recovered equivalent width',()=>{
  });
  it('bounds source-bound manual drafts/records and never accepts a portable computed result',()=>{
   const draft={...emptyFeatureDraft('u1'),center:'4150',left:'4100',right:'4200',leftContinuum:'1',rightContinuum:'1'},r=regionFromDraft(draft),w={policy:FEATURE_POLICY,drafts:[draft],records:[{...r,unknownId:'u1',id:1}]};expect(readFeatures(w,['u1'])).toEqual(w);expect(regionFromDraft({...draft,leftContinuum:'.5'}).leftContinuum).toBe(.5);expect(()=>readFeatures({...w,width:50},['u1'])).toThrow();expect(()=>readFeatures(w,['u2'])).toThrow();expect(()=>readFeatures({...w,drafts:[draft,draft]},['u1','u2'])).toThrow();expect(()=>readFeatures({...w,records:[...w.records,...w.records]},['u1'])).toThrow();expect(()=>regionFromDraft({...draft,center:''})).toThrow();expect(readFeatures(EMPTY_FEATURES,['u1'])).toEqual(EMPTY_FEATURES);
+ });
+});
+describe('source-bound EW domain: own grid ∩ 3500–7400 Å (phase1 item 1.10a)',()=>{
+ // SYNTHETIC flat grid over the whole envelope; not an original or acquired spectrum.
+ const wide=[3500,5450,7400].map(wavelength=>({wavelength,intensity:.5})),beyond={left:4800,center:4860,right:4920,leftContinuum:1,rightContinuum:1};
+ it('accepts regions beyond 4500 Å with the unchanged integrator and rejects the envelope edges',()=>{
+  expect(measureFeature(wide,beyond)).toMatchObject({width:60,centerFlux:.5,converged:true});
+  expect(FEATURE_ENVELOPE).toEqual({minimum:3500,maximum:7400});
+  for(const bad of[{...beyond,left:3499},{...beyond,right:7401}])expect(()=>featureRegion(bad)).toThrow();
+  expect(featureRegion({...beyond,left:3500,right:7400})).toEqual({...beyond,left:3500,right:7400});
+  expect(featureDomain(3510,7427.2)).toEqual({minimum:3510,maximum:7400});expect(featureDomain(3700,4698.33)).toEqual({minimum:3700,maximum:4698.33});expect(()=>featureDomain(7400,7427.2)).toThrow();
+  expect(()=>featureRegion(beyond,{minimum:3700,maximum:4698.33})).toThrow();
+ });
+ it('checks practice records against each practice domain and keeps the old ID-array API',()=>{
+  expect(PRACTICE_FEATURE_DOMAINS.u1).toEqual({minimum:3510,maximum:7400});
+  const r={...beyond,id:1,unknownId:'u1'},w={policy:FEATURE_POLICY,drafts:[],records:[r]};
+  expect(readFeatures(w,['u1'],PRACTICE_FEATURE_DOMAINS)).toEqual(w);expect(readFeatures(w,['u1'])).toEqual(w);
+  expect(()=>readFeatures({...w,records:[{...r,left:3505}]},['u1'],PRACTICE_FEATURE_DOMAINS)).toThrow();
+  expect(()=>readFeatures(w,['u1'],{})).toThrow();
+  expect(recordFeature(EMPTY_FEATURES,'u1',beyond,['u1'],PRACTICE_FEATURE_DOMAINS).records).toEqual([r]);
+  const state=(records:unknown[])=>({...INITIAL_CLASSIFICATION,features:{policy:FEATURE_POLICY,drafts:[],records}});
+  expect(()=>readClassificationState(state([{center:3550,left:3505,leftContinuum:1,right:3600,rightContinuum:1,id:1,unknownId:'u1'}]))).toThrow();
+  expect(readClassificationState(state([{center:6600,left:6500,leftContinuum:1,right:6700,rightContinuum:1,id:1,unknownId:'u1'}])).features!.records).toHaveLength(1);
+ });
+ it('round-trips a legacy narrow 3900–4500 Å workspace byte-for-byte',()=>{
+  const legacy={...INITIAL_CLASSIFICATION,line:4,features:{policy:FEATURE_POLICY,drafts:[{unknownId:'u1',center:'4150',left:'4100',leftContinuum:'1',right:'4200',rightContinuum:'1'}],records:[{center:4150,left:4100,leftContinuum:.9,right:4200,rightContinuum:.8,id:1,unknownId:'u1'},{center:4300,left:3900,leftContinuum:1,right:4500,rightContinuum:1,id:2,unknownId:'u3'}]}};
+  expect(JSON.stringify(readClassificationState(JSON.parse(JSON.stringify(legacy))))).toBe(JSON.stringify(legacy));
  });
 });

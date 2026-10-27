@@ -1,5 +1,5 @@
 import type {ClassificationRange} from './classificationViewport';
-import {featureDraftNumber,FEATURE_WAVELENGTH_MIN,FEATURE_WAVELENGTH_MAX,type FeatureDraft} from './featureWidth';
+import {featureDraftNumber,FEATURE_WAVELENGTH_MIN,FEATURE_WAVELENGTH_MAX,FEATURE_ENVELOPE,type FeatureDomain,type FeatureDraft} from './featureWidth';
 /** Trace-height/manual shoulders:VIREO-EW-ST-07[0x5094cc,0x5096dc),
  * VIREO-EW-ST-08[0x5096dc,0x509f24),with end-exclusive source ranges.
  * These SVG dimensions and six-decimal draft text are authored presentation,
@@ -9,11 +9,13 @@ export type FeatureCursorPoint=Readonly<{wavelength:number;intensity:number}>;
 export type FeatureCursorMode='inspect'|'center'|'shoulder';
 export class FeatureCursorError extends Error{}
 export const DEFAULT_FEATURE_CURSOR:FeatureCursorPoint=Object.freeze({wavelength:(FEATURE_CURSOR_FRAME.minimum+FEATURE_CURSOR_FRAME.maximum)/2,intensity:.5});
-const validPoint=(p:FeatureCursorPoint)=>Number.isFinite(p.wavelength)&&Number.isFinite(p.intensity)&&p.wavelength>=FEATURE_CURSOR_FRAME.minimum&&p.wavelength<=FEATURE_CURSOR_FRAME.maximum&&p.intensity>=0&&p.intensity<=1;
+// FEATURE_CURSOR_FRAME keeps the 3900–4500 default window;validity uses a domain (default 3500–7400 envelope).
+const validPoint=(p:FeatureCursorPoint,d:FeatureDomain=FEATURE_ENVELOPE)=>Number.isFinite(p.wavelength)&&Number.isFinite(p.intensity)&&p.wavelength>=d.minimum&&p.wavelength<=d.maximum&&p.intensity>=0&&p.intensity<=1;
 export type FeatureCursorWindow=ClassificationRange;
 /** Independent manual SVG geometry over the recovered display interval.
  * No native500-column quantization/sentinel is applied to scientific inputs. */
-function checkWindow(view:FeatureCursorWindow){if(!view||!Number.isFinite(view.minimum)||!Number.isFinite(view.maximum)||view.minimum<FEATURE_WAVELENGTH_MIN||view.maximum>FEATURE_WAVELENGTH_MAX||view.minimum>=view.maximum)throw new FeatureCursorError();}
+function checkWindow(view:FeatureCursorWindow){if(!view||!Number.isFinite(view.minimum)||!Number.isFinite(view.maximum)||view.minimum<FEATURE_ENVELOPE.minimum||view.maximum>FEATURE_ENVELOPE.maximum||view.minimum>=view.maximum)throw new FeatureCursorError();}
+function checkDomain(d:FeatureDomain){if(!d||!Number.isFinite(d.minimum)||!Number.isFinite(d.maximum)||d.minimum<FEATURE_ENVELOPE.minimum||d.maximum>FEATURE_ENVELOPE.maximum||d.minimum>=d.maximum)throw new FeatureCursorError();return d;}
 export function featureCursorAnchor(view:FeatureCursorWindow,center:number|null):FeatureCursorPoint{
  checkWindow(view);return Object.freeze({wavelength:center!==null&&Number.isFinite(center)&&center>=view.minimum&&center<=view.maximum?center:(view.minimum+view.maximum)/2,intensity:.5});
 }
@@ -31,16 +33,16 @@ export function moveFeatureCursor(p:FeatureCursorPoint,key:'ArrowLeft'|'ArrowRig
 }
 const decimal=(value:number)=>Number(value.toFixed(6)).toString();
 const draftNumber=(text:string)=>{try{return featureDraftNumber(text);}catch{return NaN;}};
-export function hasFeatureCenter(draft:FeatureDraft):boolean{const center=draftNumber(draft.center);return Number.isFinite(center)&&center>FEATURE_CURSOR_FRAME.minimum&&center<FEATURE_CURSOR_FRAME.maximum;}
+export function hasFeatureCenter(draft:FeatureDraft,domain:FeatureDomain=FEATURE_ENVELOPE):boolean{const d=checkDomain(domain),center=draftNumber(draft.center);return Number.isFinite(center)&&center>d.minimum&&center<d.maximum;}
 /** Original0x5096fd..0x509745 calls the shared guard0x509c50 right first,
  * then left after the right coordinate may have been cleared. In this bounded
  * single-source wavelength adapter,valid pairs stand for present same-panel
  * marks;invalidated X/Y is represented by a blank input pair. Native integer
  * pixels/sentinels and retained Extended scalars are not reproduced.
  * docs/CONDITIONAL-SHOULDERS-PROVENANCE.json. */
-export function retainFeatureShoulders(draft:FeatureDraft,center:number){
- if(!Number.isFinite(center)||center<=FEATURE_CURSOR_FRAME.minimum||center>=FEATURE_CURSOR_FRAME.maximum)throw new FeatureCursorError();
- const pair=(w:string,i:string)=>{const p={wavelength:draftNumber(w),intensity:draftNumber(i)};return validPoint(p)&&p.intensity>0?p:null;};
+export function retainFeatureShoulders(draft:FeatureDraft,center:number,domain:FeatureDomain=FEATURE_ENVELOPE){
+ const d=checkDomain(domain);if(!Number.isFinite(center)||center<=d.minimum||center>=d.maximum)throw new FeatureCursorError();
+ const pair=(w:string,i:string)=>{const p={wavelength:draftNumber(w),intensity:draftNumber(i)};return validPoint(p,d)&&p.intensity>0?p:null;};
  let left=pair(draft.left,draft.leftContinuum),right=pair(draft.right,draft.rightContinuum);
  const valid=(candidate:FeatureCursorPoint|null)=>!!candidate&&(!right||center<right.wavelength)&&(!left||center>left.wavelength);
  if(!valid(right))right=null;
@@ -51,14 +53,14 @@ export function retainFeatureShoulders(draft:FeatureDraft,center:number){
  * retain primary-button touch/keyboard use;inspect keeps its context menu. */
 export function featurePointerAction(mode:FeatureCursorMode,button:number):FeatureCursorMode|null{if(!['inspect','center','shoulder'].includes(mode))return null;return button===0?mode:button===2&&mode!=='inspect'?'shoulder':null;}
 /** Explicit user marks only;confirmed width records are untouched. */
-export function markFeatureDraft(draft:FeatureDraft,mode:'center'|'shoulder',point:FeatureCursorPoint):FeatureDraft{
- if(!validPoint(point))throw new FeatureCursorError();
+export function markFeatureDraft(draft:FeatureDraft,mode:'center'|'shoulder',point:FeatureCursorPoint,domain:FeatureDomain=FEATURE_ENVELOPE):FeatureDraft{
+ const d=checkDomain(domain);if(!validPoint(point,d))throw new FeatureCursorError();
  const wavelength=decimal(point.wavelength),intensity=decimal(point.intensity),w=Number(wavelength),i=Number(intensity);
  if(mode==='center'){
-  if(w<=FEATURE_CURSOR_FRAME.minimum||w>=FEATURE_CURSOR_FRAME.maximum)throw new FeatureCursorError();
-  return Object.freeze({...draft,center:wavelength,...retainFeatureShoulders(draft,w)});
+  if(w<=d.minimum||w>=d.maximum)throw new FeatureCursorError();
+  return Object.freeze({...draft,center:wavelength,...retainFeatureShoulders(draft,w,d)});
  }
- const center=draftNumber(draft.center);if(!hasFeatureCenter(draft)||i<=0||w===center)throw new FeatureCursorError();
+ const center=draftNumber(draft.center);if(!hasFeatureCenter(draft,d)||i<=0||w===center||w<d.minimum||w>d.maximum)throw new FeatureCursorError();
  return Object.freeze(w<center?{...draft,left:wavelength,leftContinuum:intensity}:{...draft,right:wavelength,rightContinuum:intensity});
 }
 export function featureDraftMarkers(draft:FeatureDraft):Readonly<{center:number|null;left:FeatureCursorPoint|null;right:FeatureCursorPoint|null}>{

@@ -12,6 +12,8 @@ Current width follow-up: [selected-source manual calculation](SELECTED-SOURCE-WI
 
 Current range follow-up: [3500–7400Å display endpoints](CLASSIFICATION-RANGE.md) extends source-aware visualization/flux readout while retaining manual-width admission and file schemas. [Remaining contract map](CLASSIFICATION-REMAINING-CONTRACTS.md) reconciles delivered slices and open gates; full native/classroom acceptance remains partial.
 
+Current 1.10 follow-up: E03 phase1 item1.10a admits manual width on each selected source's own grid ∩ 3500–7400Å ([selected-source width](SELECTED-SOURCE-WIDTH.md)); this supersedes the "admitted3900–4500Å profiles" wording above and the bounded-domain wording of outcome8 as historical descriptions. The decision (partial), the ten outcomes and the six remaining gates are unchanged. Student-guide criteria are kept in [student exercises](STUDENT-EXERCISES.md).
+
 Current difference follow-up: [normalized sampled preview](SAMPLED-DIFFERENCE.md) supplements the three source panes for exact-grid upper-standard/unknown pairs. This display-only recovered subtraction does not change the earlier printed-grid difference, manual result records or full N02/E03 acceptance; native layout/event/precision and broader options remain open.
 
 Current display follow-ups:[combined/window](COMBINED-SPECTRUM.md),[cursor/printed window](COMPARISON-INSPECTION.md) and[sampled intensity traces](SAMPLED-INTENSITY-TRACES.md) supersede their earlier bounded exclusions below. Complete native event/option/precision/feature/result contracts andoriginal package acceptance remain partial.

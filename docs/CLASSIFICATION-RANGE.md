@@ -20,6 +20,8 @@ The browser uses explicit **Apply display range** rather than live global writes
 
 Apply starts at1× and clears cursor preview/retained readings rather than relabelling them. Zoom goes to16×; pan uses rounded10% endpoints; **Reset wavelength window** returns to the applied full range. Numeric flux entry uses that full range even while zoomed, with actual source/authority checks. Default read-only core APIs still use3900–4500 unless explicitly supplied a range. Manual equivalent width remains original-practice-only within3900–4500Å.
 
+Historical admission note: the preceding manual-width sentence describes the earlier slice. [Selected-source width](SELECTED-SOURCE-WIDTH.md) supersedes the original-practice-only restriction, and phase-1 item 1.10 admits each selected source’s own grid intersected with 3500–7400 Å; the default display range and native-runtime uncertainty above are unchanged.
+
 ## Source and persistence boundaries
 
 Actual rows/hashes, recovered endpoint/quadratic sampler and500 positions with excluded right endpoint are retained. Visible-maximum scales keep their separate display meanings. Imported bytes remain imported; acquired counts/seeds and source-plus-sky addition do not change.

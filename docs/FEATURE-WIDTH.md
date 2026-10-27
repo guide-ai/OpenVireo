@@ -1,6 +1,8 @@
 # Recovered spectral intensity and equivalent width
 
-Current selected-source follow-up: [upper/unknown/lower calculation and result](SELECTED-SOURCE-WIDTH.md) admits verified reference/imported/acquired sources through the same unchanged integrator. Earlier practice-only calculation exclusions below are historical for this bounded profile. Practice archives/formats and3900–4500Å measurement domain remain unchanged; other-source regions/results are temporary.
+Current selected-source follow-up: [upper/unknown/lower calculation and result](SELECTED-SOURCE-WIDTH.md) admits verified reference/imported/acquired sources through the same unchanged integrator. Earlier practice-only calculation exclusions below are historical for this bounded profile. Practice archives/formats remain unchanged; other-source regions/results are temporary.
+
+Current domain follow-up (E03 phase1 item1.10a): a region is admitted inside the selected source's own grid ∩ the recovered 3500–7400Å Range envelope, with no extrapolation (practice/atlas 3510–7400, acquired 3700–4698.33). The default display stays 3900–4500Å; `VIREO-EW-Number-v1`, the integrator and all schemas are unchanged. Compatibility: old narrow files read and re-save byte-for-byte; files holding wider records need this newer build, and older builds reject such a file as a whole and keep their current work.
 
 Current imported-file extension: [CLASSIFICATION-IMPORT.md](CLASSIFICATION-IMPORT.md)
 adds bounded SP/SSP visual contexts and full v7; earlier pending/version statements

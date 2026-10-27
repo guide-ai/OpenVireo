@@ -1,4 +1,4 @@
-import{readComparisonFlux,type FluxChoice}from'./comparisonProbe';import{featureRegion,measureFeature,type FeatureRegion}from'./featureWidth';
+import{readComparisonFlux,type FluxChoice}from'./comparisonProbe';import{featureDomain,featureRegion,measureFeature,type FeatureDomain,type FeatureRegion}from'./featureWidth';
 /** Original OK0x50670f..0x506819 selects unknown/upper/lower before
  * constructing the same integrand0x506851..0x5068b5. IO owns actual hashes,
  * SP/SSP parsing and acquired replay. This gate checks retained associations;
@@ -13,9 +13,11 @@ export function selectedFeatureSource(choice:FluxChoice){
  else if(choice.external||p.source.kind!==(choice.role==='unknown'?'practice':'standard'))throw new SelectedFeatureSourceError('source');
  // Avoid accidental pairing of a prepared source with another displayed array.
  if(s.samples.length!==p.grid.intensities.length||s.samples[0]?.wavelength!==p.grid.minimum||s.samples.at(-1)?.wavelength!==p.grid.maximum||s.samples.some((row,i)=>row.intensity!==p.grid.intensities[i]))throw new SelectedFeatureSourceError('source');
- try{readComparisonFlux(p,'3900');readComparisonFlux(p,'4500');}catch{throw new SelectedFeatureSourceError('grid');}
- return Object.freeze({sourceId:choice.sourceId,sha256:p.source.sha256,file:p.source.file,label:choice.label,role:choice.role,kind:p.source.kind,samples:s.samples});
+ // Allowed EW interval: own grid ∩ 3500–7400 Å; both ends must read through the source's own rules.
+ let domain:FeatureDomain;
+ try{domain=featureDomain(p.grid.minimum,p.grid.maximum);readComparisonFlux(p,String(domain.minimum),domain);readComparisonFlux(p,String(domain.maximum),domain);}catch{throw new SelectedFeatureSourceError('grid');}
+ return Object.freeze({sourceId:choice.sourceId,sha256:p.source.sha256,file:p.source.file,label:choice.label,role:choice.role,kind:p.source.kind,samples:s.samples,domain});
 }
 /** Same existing pure Number integration;no visible-peak display transfer,
  * continuum fit,automatic region,source change,PRNG or portable output field. */
-export function measureSelectedFeature(choice:FluxChoice,input:FeatureRegion){const source=selectedFeatureSource(choice),region=featureRegion(input),result=measureFeature(source.samples,region);return Object.freeze({source,region,result});}
+export function measureSelectedFeature(choice:FluxChoice,input:FeatureRegion){const source=selectedFeatureSource(choice),region=featureRegion(input,source.domain),result=measureFeature(source.samples,region);return Object.freeze({source,region,result});}

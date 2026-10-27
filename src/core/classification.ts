@@ -1,7 +1,7 @@
 import legacyMain from '../../data/classification/legacy-main-inventory.json';
 import catalog from '../../data/classification/catalog.json';
 import type {Sample} from './spectrum';
-import {readFeatures,type FeatureWorkspace} from './featureWidth';
+import {readFeatures,featureDomain,type FeatureWorkspace,type FeatureDomains} from './featureWidth';
 import {classificationCoverage,classificationImportDifferenceAllowed,checkClassificationImports,type ClassificationImport} from './classificationImport';
 export {classificationCoverage} from './classificationImport';
 export const CLASSIFICATION_CATALOG=catalog;
@@ -14,6 +14,8 @@ export type ClassificationDraft=Readonly<{unknownId:string;atlasId:string;pair:n
 export type ClassificationRecord=ClassificationDraft&Readonly<{id:number}>;
 export type ClassificationState=ClassificationDraft&Readonly<{records:readonly ClassificationRecord[];features?:FeatureWorkspace}>;
 export const INITIAL_CLASSIFICATION:ClassificationState=Object.freeze({unknownId:'u1',atlasId:'main',pair:0,mode:'bracket',line:-1,proposed:'',reason:'',records:Object.freeze([])});
+/** Allowed EW interval of each original practice: its catalog grid ∩ 3500–7400 Å. */
+export const PRACTICE_FEATURE_DOMAINS:FeatureDomains=Object.freeze(Object.fromEntries(catalog.practice.map(p=>[p.id,featureDomain(p.minimum,p.maximum)])));
 export function practiceSpectrum(id:string){const found=catalog.practice.find(p=>p.id===id);if(!found)throw Error('Unknown practice spectrum');return found;}
 export type ClassificationExternalSource=ClassificationAcquisition|ClassificationImport;
 export type ClassificationAcquisition=Readonly<{kind:'catalog-star-acquisition';acquisitionId:string;sha256:string;name:string;samples:readonly Sample[]}>;
@@ -41,7 +43,7 @@ export function readClassificationState(value:unknown,acquisitions:readonly Clas
  const r=object(value,[...keys,'records',...(hasFeatures?['features']:[])]),d=draft(legacyMainOnly?{...r,atlasId:'main'}:r,acquisitions);if(!Array.isArray(r.records)||r.records.length>MAX_CLASSIFICATIONS)throw Error('Classification log limit');
  let last=0;const records=r.records.map(value=>{const v=object(value,[...keys,'id']),record=draft(legacyMainOnly?{...v,atlasId:'main'}:v,acquisitions);if(!Number.isSafeInteger(v.id)||(v.id as number)<=last||(v.id as number)>=Number.MAX_SAFE_INTEGER||!record.proposed.trim()||!record.reason.trim())throw Error('Invalid classification record');last=v.id as number;return Object.freeze({...record,id:last});});
  if(hasFeatures&&(d.unknownId.startsWith('acquired:')||d.unknownId.startsWith('imported:')))throw Error('Acquired feature measurement is unsupported');
- return Object.freeze({...d,records:Object.freeze(records),...(hasFeatures?{features:readFeatures(r.features,catalog.practice.map(p=>p.id))}:{})});
+ return Object.freeze({...d,records:Object.freeze(records),...(hasFeatures?{features:readFeatures(r.features,catalog.practice.map(p=>p.id),PRACTICE_FEATURE_DOMAINS)}:{})});
 }
 /** Manual interpretation only. A reference choice is never an answer or grade. */
 export function classificationRecord(state:ClassificationState,acquisitions:readonly ClassificationExternalSource[]=[]):ClassificationRecord{

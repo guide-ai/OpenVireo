@@ -1,15 +1,16 @@
-import{markFeatureDraft,type FeatureCursorPoint}from'./featureCursor';import type{FeatureDraft}from'./featureWidth';import{comparisonFeatureGeometry}from'./comparisonFeatureGeometry';import{viewportStep,type ClassificationViewport}from'./classificationViewport';import type{InspectionKind}from'./comparisonInspection';
+import{markFeatureDraft,type FeatureCursorPoint}from'./featureCursor';import{FEATURE_ENVELOPE,type FeatureDomain,type FeatureDraft}from'./featureWidth';import{comparisonFeatureGeometry}from'./comparisonFeatureGeometry';import{viewportStep,type ClassificationViewport}from'./classificationViewport';import type{InspectionKind}from'./comparisonInspection';
 export type ComparisonMarkAction='center'|'shoulder';
 export class ComparisonMarkError extends Error{constructor(readonly code:'origin'|'input'|'stale'){super(code);}}
 /** Native0x509c50 same-panel Y guard;0x5096dc clears old shoulders when
  * the new center selects another panel. Ephemeral pane IDs replace global
- * Win32 Y here;numeric/separate-tool inputs have no proven shared origin. */
-export function applyComparisonMark(draft:FeatureDraft,originPane:string|null,pane:string,action:ComparisonMarkAction,point:FeatureCursorPoint){
+ * Win32 Y here;numeric/separate-tool inputs have no proven shared origin.
+ * The domain is the selected source's allowed EW interval (default envelope). */
+export function applyComparisonMark(draft:FeatureDraft,originPane:string|null,pane:string,action:ComparisonMarkAction,point:FeatureCursorPoint,domain:FeatureDomain=FEATURE_ENVELOPE){
  if(typeof pane!=='string'||!pane||pane.length>128||!['center','shoulder'].includes(action))throw new ComparisonMarkError('input');
  if(action==='shoulder'&&originPane!==pane)throw new ComparisonMarkError('origin');
  if(!Number.isFinite(point.wavelength)||!Number.isFinite(point.intensity)||point.intensity<0||point.intensity>1.25)throw new ComparisonMarkError('input');
  const base=action==='center'&&originPane!==pane?{...draft,left:'',right:'',leftContinuum:'',rightContinuum:''}:draft;
- try{return Object.freeze({draft:markFeatureDraft(base,action,action==='center'?{...point,intensity:.5}:point),originPane:pane});}catch{throw new ComparisonMarkError('input');}
+ try{return Object.freeze({draft:markFeatureDraft(base,action,action==='center'?{...point,intensity:.5}:point,domain),originPane:pane});}catch{throw new ComparisonMarkError('input');}
 }
 const empty:FeatureDraft=Object.freeze({unknownId:'',center:'',left:'',right:'',leftContinuum:'',rightContinuum:''});
 export function comparisonMarkPoint(x:number,y:number,kind:InspectionKind,view:ClassificationViewport):FeatureCursorPoint|null{

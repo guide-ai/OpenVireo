@@ -12,8 +12,8 @@ it('hides off-window marks without clamping them to false edges or changing any 
  expect(featureCursorLocation({wavelength:marks.center!,intensity:.5},shifted)).toBeNull();expect(featureCursorLocation(marks.left!,shifted)).toBeNull();expect(featureCursorLocation(marks.right!,shifted)).toBeNull();expect(JSON.stringify(d)).toBe(before);
  expect(featureCursorLocation(marks.left!,window)).not.toBeNull();expect(featureCursorLocation(marks.right!,window)).not.toBeNull();
 });
-it('rejects invalid manual windows rather than extending the width admission domain',()=>{
- for(const v of[{minimum:3500,maximum:4500},{minimum:3900,maximum:4600},{minimum:4200,maximum:4200},{minimum:4300,maximum:4100},{minimum:NaN,maximum:4500},{minimum:3900,maximum:Infinity}]){
+it('rejects invalid and out-of-envelope manual windows',()=>{
+ for(const v of[{minimum:3499,maximum:4500},{minimum:3900,maximum:7401},{minimum:4200,maximum:4200},{minimum:4300,maximum:4100},{minimum:NaN,maximum:4500},{minimum:3900,maximum:Infinity}]){
   expect(()=>featureCursorPoint(490,181,v)).toThrow();expect(()=>featureCursorLocation({wavelength:4200,intensity:.5},v)).toThrow();expect(()=>featureCursorAnchor(v,4200)).toThrow();expect(()=>moveFeatureCursor({wavelength:4200,intensity:.5},'ArrowLeft',false,v)).toThrow();
  }
  expect(featureCursorPoint(59,181,window)).toBeNull();expect(featureCursorPoint(490,307,window)).toBeNull();
@@ -26,3 +26,6 @@ it('reuses the recovered interval policy through a complete zoom/pan sequence wi
  const center=4150;let v=zoomClassification(FULL_CLASSIFICATION_VIEW,'in',center);expect(v).toMatchObject({minimum:4000,maximum:4300,zoom:2});v=zoomClassification(v,'in',center);expect(v).toMatchObject({...window,zoom:4});
  v=panClassification(v,'right');expect(v).toMatchObject({minimum:4090,maximum:4240,zoom:4});expect(featureCursorPoint(490,181,v)).toEqual({wavelength:4165,intensity:.5});expect(center).toBe(4150);
 });
+
+// Plan1.10:the window envelope widens;source-specific admission is separately checked before a mark is committed.
+it('admits the recovered wider window while retaining geometry and keyboard bounds',()=>{const v={minimum:3500,maximum:7400};expect(featureCursorPoint(490,181,v)).toEqual({wavelength:5450,intensity:.5});expect(featureCursorLocation({wavelength:6500,intensity:.5},v)).not.toBeNull();expect(moveFeatureCursor({wavelength:7395,intensity:.5},'ArrowRight',true,v)).toEqual({wavelength:7400,intensity:.5});});

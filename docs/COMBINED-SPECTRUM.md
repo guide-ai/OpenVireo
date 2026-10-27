@@ -4,6 +4,8 @@ The classification laboratory offers **Combined photo and trace**: the upper atl
 
 The [cursor/printed-trace follow-up](COMPARISON-INSPECTION.md) now adds held inspection and retained-window crop zoom for printed traces. The rendering/reset limitations below describe the earlier combined increment;current behavior is documented in that follow-up.
 
+E03 phase1 item1.10 note: the diagnostic marker is now chosen from the full26-row original line table (1.10b), and the manual width tool admits each source's own grid ∩ 3500–7400Å (1.10a, [selected-source width](SELECTED-SOURCE-WIDTH.md)). The "visible diagnostic line" selector wording and the3900–4500 manual-continuum-tool limit below are therefore historical. The reverse trace option (1.10c) is documented in [sampled traces](SAMPLED-INTENSITY-TRACES.md). Recovered contracts, hashes and numerical limits below are unchanged.
+
 ## Recovered contracts and bounded adapters
 
 [Provenance](COMBINED-SPECTRUM-PROVENANCE.json) records the original executable SHA-256, addresses, byte-range/listing hashes and constants. It extends [photo provenance](PHOTO-SPECTRUM-PROVENANCE.json), including original CLEA/Gettysburg College source credits, help/license hashes and source-specific rights uncertainty. All original resource bytes remain unchanged. No original execution or new original asset is used.
@@ -16,7 +18,7 @@ The [cursor/printed-trace follow-up](COMPARISON-INSPECTION.md) now adds held ins
 |VIREO-COMBINED-VIEW-03/05,0x50aab4/0x50ac88/0x5078bd|Pan computes low−10%width or high+10%width, rounds that endpoint, clamps at the full-domain boundary and retains width. Pan resets the cached zoom center to the new midpoint. Extended0.1 is projected to Number0.1.|
 |VIREO-COMBINED-VIEW-04,0x50ae60|Reset restores zoom1 and the full domain.|
 
-The admitted full interval is3900–4500 Å, already aligned to the native full-domain100Å branch. Generic native range expansion is not exposed. Photos and the combined trace resample500 positions at `minimum+i*(maximum−minimum)/500`; the right endpoint is excluded. Each curve normalizes against its own current positive sampled maximum. No visible-peak normalization is applied to source arrays or numerical readout. Reverse recolors photos and leaves the sampled trace untouched.
+The admitted full interval is3900–4500 Å, already aligned to the native full-domain100Å branch. Generic native range expansion is not exposed. Photos and the combined trace resample500 positions at `minimum+i*(maximum−minimum)/500`; the right endpoint is excluded. Each curve normalizes against its own current positive sampled maximum. No visible-peak normalization is applied to source arrays or numerical readout. Reverse recolors photos and leaves the sampled trace untouched; the separate **Reverse trace displays** option (recovered +496 branch) is documented in [sampled traces](SAMPLED-INTENSITY-TRACES.md).
 
 New web adapters: a selected **visible diagnostic line** supplies the zoom marker, snapped with nearest-even to native display columns1..499; otherwise zoom uses the recovered window/cached-center behavior. Native pointer marker gestures remain pending. Controls operate in photo/combined views; printed-coordinate trace/difference views and the separate manual continuum tool retain3900–4500. Moving to trace or difference resets the window. Render mode, reverse, zoom/pan and horizontal scroll are ephemeral and do not alter session JSON. Same-page restoration preserves ephemeral view settings unless it restores difference; reload starts in trace/full interval.
 

@@ -14,14 +14,27 @@ export type FeatureWorkspace=Readonly<{policy:typeof FEATURE_POLICY;drafts:reado
 export const EMPTY_FEATURES:FeatureWorkspace=Object.freeze({policy:FEATURE_POLICY,drafts:Object.freeze([]),records:Object.freeze([])});
 export function emptyFeatureDraft(unknownId:string):FeatureDraft{return {unknownId,center:'',left:'',leftContinuum:'',right:'',rightContinuum:''};}
 export const FEATURE_DRAFT_FIELDS=Object.freeze(['center','left','leftContinuum','right','rightContinuum'] as const);
+/** Default DISPLAY window only (comparison/cursor reset, probe default bounds). */
 export const FEATURE_WAVELENGTH_MIN=3900,FEATURE_WAVELENGTH_MAX=4500;
+export type FeatureDomain=Readonly<{minimum:number;maximum:number}>;
+/** Recovered Range dialog envelope (classificationViewport.ts). An EW region
+ * must lie inside its source's own grid AND this envelope;no extrapolation. */
+export const FEATURE_ENVELOPE:FeatureDomain=Object.freeze({minimum:3500,maximum:7400});
+export function featureDomain(minimum:number,maximum:number):FeatureDomain{
+ const d={minimum:Math.max(minimum,FEATURE_ENVELOPE.minimum),maximum:Math.min(maximum,FEATURE_ENVELOPE.maximum)};
+ if(!Number.isFinite(d.minimum)||!Number.isFinite(d.maximum)||d.minimum>=d.maximum)throw Error('Invalid feature domain');return Object.freeze(d);
+}
 const fields=FEATURE_DRAFT_FIELDS;
 export function featureDraftNumber(text:string):number{if(!/^\+?(?:\d+(?:\.\d*)?|\.\d+)$/.test(text))throw Error('Enter all five manual region values as decimal numbers.');return Number(text);}
 function obj(value:unknown,keys:readonly string[]):Record<string,unknown>{if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==keys.length||keys.some(k=>!Object.hasOwn(value,k)))throw Error('Invalid feature schema');return value as Record<string,unknown>;}
-export function featureRegion(value:FeatureRegion):FeatureRegion{
- if(!fields.every(k=>Number.isFinite(value[k]))||!(FEATURE_WAVELENGTH_MIN<=value.left&&value.left<value.center&&value.center<value.right&&value.right<=FEATURE_WAVELENGTH_MAX)||value.leftContinuum<=0||value.leftContinuum>1||value.rightContinuum<=0||value.rightContinuum>1)throw Error('Mark a center between two shoulders in 3900–4500 Å and positive continuum levels up to 1.');
+export function featureRegion(value:FeatureRegion,domain:FeatureDomain=FEATURE_ENVELOPE):FeatureRegion{
+ const d=featureDomain(domain?.minimum,domain?.maximum);
+ if(!fields.every(k=>Number.isFinite(value[k]))||!(d.minimum<=value.left&&value.left<value.center&&value.center<value.right&&value.right<=d.maximum)||value.leftContinuum<=0||value.leftContinuum>1||value.rightContinuum<=0||value.rightContinuum>1)throw Error('Mark a center between two shoulders inside the allowed interval and positive continuum levels up to 1.');
  return Object.freeze({...value});
 }
+/** Optional per-practice domains;absent map keeps the old ID-array API on the envelope. */
+export type FeatureDomains=Readonly<Record<string,FeatureDomain>>;
+function domainFor(id:string,domains?:FeatureDomains):FeatureDomain{if(!domains)return FEATURE_ENVELOPE;if(!Object.hasOwn(domains,id))throw Error('Feature source has no domain');return domains[id];}
 export function regionFromDraft(draft:FeatureDraft):FeatureRegion{
  const values={} as Record<typeof fields[number],number>;
  for(const k of fields)values[k]=featureDraftNumber(draft[k]);
@@ -29,15 +42,15 @@ export function regionFromDraft(draft:FeatureDraft):FeatureRegion{
 }
 /** Source identity validation is supplied by the fixed practice inventory.
  * No imported computed width is accepted; only manual input is portable. */
-export function readFeatures(value:unknown,practiceIds:readonly string[]):FeatureWorkspace{
+export function readFeatures(value:unknown,practiceIds:readonly string[],domains?:FeatureDomains):FeatureWorkspace{
  const r=obj(value,['policy','drafts','records']);if(r.policy!==FEATURE_POLICY||!Array.isArray(r.drafts)||r.drafts.length>practiceIds.length||!Array.isArray(r.records)||r.records.length>MAX_FEATURE_RECORDS)throw Error('Unsupported feature workspace');
  const seen=new Set<string>();const source=(v:unknown)=>{if(typeof v!=='string'||!practiceIds.includes(v))throw Error('Feature source is not an original practice');return v;};
  const drafts=r.drafts.map(v=>{const d=obj(v,['unknownId',...fields]),unknownId=source(d.unknownId);if(seen.has(unknownId))throw Error('Duplicate feature draft');seen.add(unknownId);const out={unknownId} as Record<string,string>;for(const k of fields){if(typeof d[k]!=='string'||d[k].length>24)throw Error('Invalid feature draft');out[k]=d[k];}return Object.freeze(out) as FeatureDraft;});
- let last=0;const records=r.records.map(v=>{const d=obj(v,['id','unknownId',...fields]);if(!Number.isSafeInteger(d.id)||(d.id as number)<=last||(d.id as number)>=Number.MAX_SAFE_INTEGER)throw Error('Invalid feature record');last=d.id as number;return Object.freeze({...featureRegion(Object.fromEntries(fields.map(k=>[k,d[k]])) as FeatureRegion),id:last,unknownId:source(d.unknownId)});});
+ let last=0;const records=r.records.map(v=>{const d=obj(v,['id','unknownId',...fields]);if(!Number.isSafeInteger(d.id)||(d.id as number)<=last||(d.id as number)>=Number.MAX_SAFE_INTEGER)throw Error('Invalid feature record');last=d.id as number;const unknownId=source(d.unknownId);return Object.freeze({...featureRegion(Object.fromEntries(fields.map(k=>[k,d[k]])) as FeatureRegion,domainFor(unknownId,domains)),id:last,unknownId});});
  return Object.freeze({policy:FEATURE_POLICY,drafts:Object.freeze(drafts),records:Object.freeze(records)});
 }
-export function updateFeatureDraft(w:FeatureWorkspace,draft:FeatureDraft,practiceIds:readonly string[]):FeatureWorkspace{return readFeatures({...w,drafts:w.drafts.some(d=>d.unknownId===draft.unknownId)?w.drafts.map(d=>d.unknownId===draft.unknownId?draft:d):[...w.drafts,draft]},practiceIds);}
-export function recordFeature(w:FeatureWorkspace,unknownId:string,region:FeatureRegion,practiceIds:readonly string[]):FeatureWorkspace{return readFeatures({...w,records:[...w.records,{...region,unknownId,id:(w.records.at(-1)?.id??0)+1}]},practiceIds);}
+export function updateFeatureDraft(w:FeatureWorkspace,draft:FeatureDraft,practiceIds:readonly string[],domains?:FeatureDomains):FeatureWorkspace{return readFeatures({...w,drafts:w.drafts.some(d=>d.unknownId===draft.unknownId)?w.drafts.map(d=>d.unknownId===draft.unknownId?draft:d):[...w.drafts,draft]},practiceIds,domains);}
+export function recordFeature(w:FeatureWorkspace,unknownId:string,region:FeatureRegion,practiceIds:readonly string[],domains?:FeatureDomains):FeatureWorkspace{return readFeatures({...w,records:[...w.records,{...region,unknownId,id:(w.records.at(-1)?.id??0)+1}]},practiceIds,domains);}
 export type FeatureResult=Readonly<{width:number;centerFlux:number;iterations:number;evaluations:number;converged:boolean;lastDelta:number}>;
 /** Shared original headerless-SP endpoint-grid construction,not printed-grid interpolation. */
 export function featureSpectrum(samples:readonly Sample[]){
