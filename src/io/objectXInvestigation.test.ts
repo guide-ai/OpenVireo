@@ -18,10 +18,10 @@ const JD=2454983.5+4/24,EROS={ra:22.722017,dec:-8.03989};
 const list=buildObservableList(sav,1,JD)!;
 function exposure(jd:number,seconds=120){
  return {jd,seconds,filter:2,gain:2,telescope:0 as const,ra:EROS.ra,dec:EROS.dec,seed:12345,catalogMode:'live' as const,catalogSha256:'a'.repeat(64),extractId:null,
-  listJd:JD,pairs:movingPairs(sav,list,EROS,jd,seconds).pairs.length,skipped:0,fitsSha256:'b'.repeat(64)};
+  listJd:JD,pairs:movingPairs(sav,list,EROS,jd,seconds).pairs.length,skipped:[] as readonly ('moving-pair-budget')[],fitsSha256:'b'.repeat(64)};
 }
 function investigation():ObjectXInvestigation{
- const e1=exposure(JD),e2=exposure(JD+1/24);
+ const e1={...exposure(JD),skipped:['moving-pair-budget'] as const},e2=exposure(JD+1/24);
  return {orbitFile:'ObjX_MPC.CMO.sav',id:'42',target:'X-1ABCD',startUtc:'2009-06-01T04:00:00',clockSet:true,listJd:JD,limit:16,exposures:[e1,e2],
   images:[{sha256:e1.fitsSha256,label:'ObjX-42-01',jd:e1.jd,exposure:0},{sha256:'c'.repeat(64),label:'ObjX-42-02',jd:e2.jd,exposure:1}],
   measure:{first:0,second:1},
@@ -50,8 +50,10 @@ describe('v28 Object X investigation',()=>{
   const {objectX,digest}=await portableObjectXInvestigation(investigation());
   await expect(admitObjectXInvestigation(objectX,'0'.repeat(64))).rejects.toMatchObject({code:'digest'});
   const tamper=(f:(o:any)=>void)=>{const o=JSON.parse(JSON.stringify(objectX));f(o);return admitObjectXInvestigation(o,digest);};
-  await expect(tamper(o=>{o.exposures[0].pairs+=1;o.exposures[0].skipped=0;})).rejects.toMatchObject({code:'replay'});
+  await expect(tamper(o=>{o.exposures[0].pairs+=1;})).rejects.toMatchObject({code:'replay'});
   await expect(tamper(o=>{o.exposures[0].jd+=0.5;})).rejects.toMatchObject({code:'digest'});
+  await expect(tamper(o=>{o.exposures[0].skipped=['moving-pair-elsewhere'];})).rejects.toMatchObject({code:'record'});
+  await expect(tamper(o=>{o.exposures[0].skipped=Array(o.exposures[0].pairs+1).fill('moving-pair-budget');})).rejects.toMatchObject({code:'record'});
   await expect(tamper(o=>{o.answer=null;})).rejects.toMatchObject({code:'record'});
   await expect(tamper(o=>{o.log[0].frame=2;})).rejects.toMatchObject({code:'record'});
   await expect(tamper(o=>{o.log[0].catalog={raHours:25,decDeg:0};})).rejects.toMatchObject({code:'record'});

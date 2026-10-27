@@ -76,7 +76,13 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  imagesTitle:'3. Your images',noImages:'No images yet. Images taken with the CCD camera appear here.',
  imageRow:(label:string,ut:string,filter:string,seconds:number)=>`${label}: ${ut} UT, ${filter}, ${seconds} s`,
  datePlaceholder:'2009-06-01T04:00:00',imageRowPlain:(label:string,ut:string)=>`${label}: ${ut} UT`,
- imageMovers:(pairs:number,skipped:number)=>`${pairs} ${pairs===1?'asteroid':'asteroids'} in the field box${skipped?`; ${skipped} fell outside the detector`:''}.`,
+ imageMovers:(pairs:number)=>`${pairs} ${pairs===1?'asteroid':'asteroids'} in the field box.`,
+ /** Moving pairs the camera did not draw, by the composer's typed reason (no names: they could reveal the object). */
+ imageSkipped:(reasons:readonly string[])=>{
+  const text:Readonly<Record<string,string>>={'moving-pair-off-detector':'far outside the detector','moving-pair-geometry':'no measurable motion to draw','moving-pair-budget':'trail too large to draw'};
+  const counts=new Map<string,number>();for(const r of reasons)counts.set(r,(counts.get(r)??0)+1);
+  return `Not drawn: ${[...counts].map(([r,n])=>`${n} ${text[r]??r}`).join(', ')}.`;
+ },
  imageOffTarget:'(not at your object\'s coordinates)',
  imageNotLoaded:'not loaded — open its saved FITS file',
  loadFits:'Open saved FITS images',loadFitsError:(name:string)=>`${name} could not be opened as a camera image.`,
@@ -106,7 +112,7 @@ export const OBJECT_X_GUIDE_EN=Object.freeze({
   clock:['Set the date and time','Set the observatory clock; the original exercise starts on 2009-06-01 at 04:00 UT.'],
   list:['Build the asteroid list','Build the list of observable asteroids for that date so your images include them.'],
   image:['Image the field','Copy the coordinates to the observatory, open the dome, track, point and take a CCD image (no filter and 2 minutes make a faint object easier to see).'],
-  repeat:['Image it again later','Take a second image of the same field 30–60 minutes later (or the next night). Keep exposures short: a fast object trails across long exposures.'],
+  repeat:['Image it again later','Take a second image of the same field 30–60 minutes later (or the next night). A fast object leaves a short trail during a long exposure.'],
   measure:['Blink and measure','Blink the two images. If something moved, measure it on both to get its rate and direction. Objects outside the Solar System do not move.'],
   classify:['Decide what it is','If nothing moved, try the radio telescope for pulses; stars, galaxies and quasars need the spectrometer (not available yet).'],
   describe:['Describe your evidence','Write what you saw with each instrument.'],

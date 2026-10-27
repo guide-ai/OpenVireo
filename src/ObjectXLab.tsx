@@ -19,9 +19,9 @@ import {resourceSha256} from './io/boundedResource';
 import type {ObjectXExposure,ObjectXInvestigation} from './io/objectXInvestigation';
 
 /** What the observatory camera asks of the Object X lab (ComputeMovers inputs and the finished image). */
-/** `pointing` is the observatory pointing of the exposure (RA hours, Dec degrees); `seconds` its length when the camera
- * supplies it (otherwise one position, at the start). */
-export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds?:number)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
+/** `pointing` is the observatory pointing of the exposure (RA hours, Dec degrees); `jd` and `seconds` are the start and the
+ * total length the camera captured at Start (ComputeMovers T and dt). */
+export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
 type Props=Readonly<{
  active:boolean;busy:boolean;
  clockUtc:()=>string;onSetClock:(utc:string)=>void;
@@ -85,7 +85,7 @@ export default function ObjectXLab({active,busy,clockUtc,onSetClock,onPrefill,on
   const sha256=await resourceSha256(bytes.slice().buffer);
   const used=lastPairs.current&&lastPairs.current.jd===image.jd?lastPairs.current:{jd:image.jd,listJd:null,pairs:0};
   const exposure:ObjectXExposure={jd:image.jd,seconds:r.seconds,filter:r.filterPosition,gain:r.gain,telescope:r.opticalIndex as 0|1|2,ra:r.centerRaHours,dec:r.centerDecDegrees,seed:r.seed,
-   catalogMode:image.source.mode,catalogSha256:image.source.sha256,extractId:image.source.extractId,listJd:used.listJd,pairs:used.pairs,skipped:e.skipped.length,fitsSha256:sha256};
+   catalogMode:image.source.mode,catalogSha256:image.source.sha256,extractId:image.source.extractId,listJd:used.listJd,pairs:used.pairs,skipped:e.skipped.map(k=>k.reason),fitsSha256:sha256};
   const fits=parseFitsImage(bytes);
   update(i=>{
    if(i.exposures.length>=64||i.images.length>=16)return i;
@@ -98,7 +98,7 @@ export default function ObjectXLab({active,busy,clockUtc,onSetClock,onPrefill,on
   extraSources:(jd,pointing,seconds)=>{
    const l=listRef.current,o=orbit.current;
    if(!l||!o){lastPairs.current={jd,listJd:null,pairs:0};return [];}
-   const r=movingPairs(o.bytes,l,pointing,jd,seconds??0);
+   const r=movingPairs(o.bytes,l,pointing,jd,seconds);
    lastPairs.current={jd,listJd:l.jd,pairs:r.pairs.length};
    return r.pairs.map(p=>p.source);
   },
@@ -182,7 +182,8 @@ export default function ObjectXLab({active,busy,clockUtc,onSetClock,onPrefill,on
    {!inv.images.length?<p>{M.noImages}</p>:<ol data-testid="objectx-images">{inv.images.map((m,k)=>{const e=m.exposure!==null?inv.exposures[m.exposure]:null;return <li key={m.sha256}>
     {e?M.imageRow(m.label,utOfJd(m.jd),cameraCatalogReference('ccd',e.filter).filter,e.seconds):M.imageRowPlain(m.label,utOfJd(m.jd))}
     {e&&!onTarget(e)&&<> {M.imageOffTarget}</>}
-    {e&&e.listJd!==null&&<> — <span data-testid={`objectx-image-movers-${k}`}>{M.imageMovers(e.pairs,e.skipped)}</span></>}
+    {e&&e.listJd!==null&&<> — <span data-testid={`objectx-image-movers-${k}`}>{M.imageMovers(e.pairs)}</span></>}
+    {e&&e.skipped.length>0&&<> <span data-testid={`objectx-image-skipped-${k}`}>{M.imageSkipped(e.skipped)}</span></>}
     {!loaded.has(m.sha256)&&<> — <em>{M.imageNotLoaded}</em></>}
    </li>;})}</ol>}
    <label className="secondary-button">{M.loadFits}<input type="file" accept=".fit,.fits,application/fits" multiple hidden disabled={disabled} onChange={e=>{void openFits(e.target.files);e.target.value='';}} data-testid="objectx-open-fits"/></label>

@@ -130,7 +130,7 @@ it. ObjX_AST.CMO also misses 1994 CC at 04:00 (16′; it crosses the row near 06
 - CCD Expose 0x5222d4 → 0x522718 → ComputeMovers 0x59940c(T = clock at exposure start, dt = exposure): one record at T and,
   for dt > 0, a second at T + dt ("kind-2 pair"), name "(number) name", V, B−V 0.65, U−B 0.195, spectral code G2V; gnomonic
   projection with optional jitter; band offsets NF −0.54, B +0.65, V 0, R −0.54, I −0.88; no frame-bounds test.
-- Not recovered: how the renderer draws the pair (two images or a trail), the exact source of the CCD field box, the sort key
+- The renderer draws the pair as one trail (recovered by front C, NATIVE-CAMERA-FRONT-C-C0-01). Not recovered: the exact source of the CCD field box, the sort key
   of the observable list, the orbit-file creator's selection rule, and the meaning of AST byte 0x9e/MPC bit 16.
 
 ## The #object-x route (X4, `src/ObjectXLab.tsx`, `src/core/asteroidField.ts`)
@@ -168,13 +168,16 @@ Moving pairs (ComputeMovers 0x59940c): list entries within the field box, each e
 `storedMag` is V at T as a Single (the composer applies NF −0.54, B +0.65, V 0, R −0.54, I −0.88). Web adaptations: the field box is
 2° around the pointing (the original box source is not recovered); at most 128 pairs, brightest first (composer limit 256).
 
-**Exposure length.** `CameraControl` calls `extraSources(jd)` without the exposure length. The lab accepts an optional length
-(`extraSources(jd, pointing, seconds?)`); until the camera passes it, each pair has its end equal to its start (one position at T).
-A one-line change in CameraControl (`extraSources?.(a.jd,a.seconds)`) has been asked of the coordinator; the v28 replay already uses
-each recipe's own length.
+**Camera contract** (front C, main 9af0d29): the camera calls `extraSources(jd, seconds)` with the JD and the total exposure
+length captured at Start, so each pair ends at T + exposure, and the composer draws the pair as one trail between the two
+positions (source loop 0x521a6f..0x521b35 → extended source 0x524a6c; evidence NATIVE-CAMERA-FRONT-C-C0-01,
+docs/CAMERA-EXPOSURE.md). Pairs the composer does not draw arrive in `onImage` as `exposure.skipped` with a typed reason
+(`moving-pair-off-detector`, `moving-pair-geometry`, `moving-pair-budget`); the image list shows them by reason and count, never
+by name (a name could reveal the object), and v28 stores the reasons. Rates at 2009-06-01 04:00 UT from the .sav file: 1994 CC
+0.0907°/h, Eros 0.0152°/h, Pluto 0.0010°/h; front C draws diagonal 600 s trails of 0.15° and 0.5°, so exposure length is no
+longer a practical limit.
 
-Known limits: a long exposure of a fast object can fail in the composer's streak budget (front C); the guide suggests short
-exposures. Eros (V ≈ 13.7 in NF here) is only ~15 ADU above a ~530 ADU background in 30 s on the 0.4 m: it is the brightest pixel
+Known limits: Eros (V ≈ 13.7 in NF here) is only ~15 ADU above a ~530 ADU background in 30 s on the 0.4 m: it is the brightest pixel
 but faint on screen, so the guide suggests NF and about 2 minutes. The observatory's "Switch to telescope view ↗" shortcut re-points
 at the selected catalogue object; after *Point to coordinates* the student must use the plain *Telescope · 15′* view button (front B).
 
@@ -182,7 +185,7 @@ at the selected catalogue object; after *Point to coordinates* the student must 
 
 A v28 file wraps an unchanged v1..27 base, outermost (so it combines with a v27 LSS file); a v28 is never nested. It stores the
 orbit file, ID, object code, start date, whether the clock was set, the list date and limit, one recipe per exposure (JD,
-length, filter, gain, telescope, pointing, seed, catalog mode/SHA-256/extract, list date, pair and skipped counts, SHA-256 of the
+length, filter, gain, telescope, pointing, seed, catalog mode/SHA-256/extract, list date, pair count and the typed reasons of pairs the camera skipped, SHA-256 of the
 FITS the lab wrote), image references (SHA-256, label, JD, exposure), the measuring pair and marks (pixels only), the answer, the
 description and the reveal flag. **Images are not stored**; the student keeps the FITS files and reopens them.
 
@@ -205,6 +208,9 @@ before the reveal; no step names an object.
   identifiers everywhere, one-word remarks such as "Star" only outside the camera's shared text); Eros: clock, list, observatory,
   two 30 s live-mode images with the recorded VizieR response, pairs in both, both marks within 4″ of the object, motion, answer,
   reveal, save v28 and restore in a fresh page; radio and spectrometer branches, guide progress, 375 px without overflow.
+  `tests/object-x-camera.spec.ts` (1, test-only host `tests/fixtures/object-x-camera-host.ts` with the real CameraControl and
+  ObjectXLab wired as in OpenVireo): the camera calls `extraSources(jd, 2)` with the Start values, and an authored pair 80° off
+  axis is skipped as `moving-pair-off-detector` and shown in the Object X image list as "Not drawn: 1 far outside the detector.".
   `tests/object-x-measure.spec.ts` now also checks N1 (reversed marking order), N2 (no re-stretch on cursor moves) and N3 (aligned
   pixel). `recorded-analysis-navigation.spec.ts` lists the two new header buttons.
 
@@ -235,10 +241,9 @@ shown image, frame attribution, motion, raw → aligned blink, timer alternation
 ## Not recovered / open
 
 - Mode 1 apparent positions (nutation) — unused by Object X.
-- The renderer of asteroid pairs, CCD field box source, list sort key, orbit-file creator selection, some flag bits (X0b).
+- CCD field box source, list sort key, orbit-file creator selection, some flag bits (X0b).
 - x87 Extended evaluation is not reproduced; no original-runtime equivalence is claimed.
 - Star, galaxy and quasar branches: the spectrometer at arbitrary coordinates (quasar merge, photographic association, own galaxy
   spectra, star templates) belongs to the later field-engine front; E08 closes only after it.
-- Exposure length for moving pairs: waits for the camera to pass it to `extraSources` (see X4).
 - The radio route is opened but not pointed for the student; there is no coordinate handoff into it yet.
 - The anti-solar RA routine 0x515df0/0x4b9f44 was not read; the web uses geometric longitude + π and the mean obliquity of date.

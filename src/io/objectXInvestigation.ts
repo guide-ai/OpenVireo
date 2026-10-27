@@ -25,8 +25,12 @@ export type ObjectXExposure=Readonly<{
  jd:number;seconds:number;filter:number;gain:number;telescope:0|1|2;ra:number;dec:number;seed:number;
  catalogMode:'static'|'live';catalogSha256:string;extractId:string|null;
  /** Date of the asteroid list whose entries were offered to this exposure, or null when no list was built. */
- listJd:number|null;pairs:number;skipped:number;fitsSha256:string;
+ listJd:number|null;pairs:number;
+ /** Moving pairs the camera skipped, by typed reason (CameraSkippedSource.reason; its extra list holds only the lab's pairs). */
+ skipped:readonly ObjectXSkipReason[];fitsSha256:string;
 }>;
+export const OBJECT_X_SKIP_REASONS=['moving-pair-off-detector','moving-pair-geometry','moving-pair-budget'] as const;
+export type ObjectXSkipReason=(typeof OBJECT_X_SKIP_REASONS)[number];
 export type ObjectXImageRef=Readonly<{sha256:string;label:string;jd:number;exposure:number|null}>;
 export type ObjectXInvestigation=Readonly<{
  orbitFile:BundledOrbitFileId;id:string;target:string|null;startUtc:string;clockSet:boolean;listJd:number|null;limit:number;
@@ -51,6 +55,10 @@ const jd=(v:unknown)=>num(v,2415020.5,2488069.5);
 const hex64=(v:unknown)=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v)?v:fail('record');
 const str=(v:unknown,max:number,lines=false)=>typeof v==='string'&&v.length<=max&&!(lines?/[\u0000-\u0008\u000b-\u001f\u007f]/:/[\u0000-\u001f\u007f]/).test(v)?v:fail('record');
 
+function readSkipped(v:unknown,pairs:number):readonly ObjectXSkipReason[]{
+ if(!Array.isArray(v)||v.length>pairs)return fail('record');
+ return Object.freeze(v.map(r=>OBJECT_X_SKIP_REASONS.includes(r as ObjectXSkipReason)?r as ObjectXSkipReason:fail('record')));
+}
 function readExposure(v:unknown):ObjectXExposure{
  const r=exact(v,['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','pairs','skipped','fitsSha256']);
  if(r.catalogMode!=='static'&&r.catalogMode!=='live')fail('record');
@@ -58,7 +66,7 @@ function readExposure(v:unknown):ObjectXExposure{
  const pairs=int(r.pairs,0,256);
  return Object.freeze({jd:jd(r.jd),seconds:int(r.seconds,1,CAMERA_MAX_SECONDS),filter:int(r.filter,0,4),gain:r.gain as number,telescope:int(r.telescope,0,2) as 0|1|2,
   ra:num(r.ra,0,24),dec:num(r.dec,-90,90),seed:int(r.seed,0,0xffff_ffff),catalogMode:r.catalogMode as 'static'|'live',catalogSha256:hex64(r.catalogSha256),
-  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),pairs,skipped:int(r.skipped,0,pairs),fitsSha256:hex64(r.fitsSha256)});
+  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),pairs,skipped:readSkipped(r.skipped,pairs),fitsSha256:hex64(r.fitsSha256)});
 }
 function readImage(v:unknown,exposures:number):ObjectXImageRef{
  const r=exact(v,['sha256','label','jd','exposure']);
@@ -79,7 +87,7 @@ function readLog(v:unknown,frames:number):MeasurementLog{
 }
 function portablePayload(i:ObjectXInvestigation){
  return {policy:OBJECT_X_INVESTIGATION_POLICY,orbitFile:i.orbitFile,id:i.id,target:i.target,startUtc:i.startUtc,clockSet:i.clockSet,listJd:i.listJd,limit:i.limit,
-  exposures:i.exposures.map(e=>({...e})),images:i.images.map(m=>({...m})),measure:i.measure?{...i.measure}:null,
+  exposures:i.exposures.map(e=>({...e,skipped:[...e.skipped]})),images:i.images.map(m=>({...m})),measure:i.measure?{...i.measure}:null,
   log:i.log.map(m=>({frame:m.frame,role:m.role,x:m.x,y:m.y,jd:m.jd,...(m.catalog?{catalog:{raHours:m.catalog.raHours,decDeg:m.catalog.decDeg}}:{})})),
   answer:i.answer,description:i.description,revealed:i.revealed};
 }
