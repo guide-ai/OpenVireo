@@ -3,6 +3,8 @@
  * (SKY_COORDS_CAPTIONS and friends) and are never translated here; these strings are OpenVireo wording and one-line
  * adaptation labels. English is the default. */
 export const OBSERVATORY_MESSAGES=Object.freeze({
+ /** VCL default button captions (bkOK/bkCancel without DFM captions) and plain box buttons. */
+ common:Object.freeze({ok:'OK',cancel:'Cancel'}),
  skyCoords:Object.freeze({
   open:'Set Coordinates…',
   openHelp:'Slew ▸ Set Coordinates: enter the target in hours/minutes/seconds and degrees/arcminutes/arcseconds, then OK starts the programmed slew confirmation.',

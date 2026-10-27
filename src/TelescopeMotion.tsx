@@ -2,11 +2,12 @@ import{useEffect,useRef,useState,type ReactNode}from'react';
 import{t,formatNumber}from'./i18n';
 import type{Pointing}from'./core/sky';
 import{validateBrowserMotionPointing}from'./core/telescopeMotion';
+import{OBSERVATORY_MESSAGES}from'./observatory/ObservatoryMessages';
 import type{MotionDirection,MotionPreferences,TelescopeMotion as MotionState}from'./core/telescopeMotion';
 export type LimitBox=Readonly<{caption:string;text:string}>;
 /** Native message box for Limit Slewing refusals (OB-LS-03..05). */
 function LimitDialog({box,onClose}:{box:LimitBox;onClose:()=>void}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{const el=ref.current;if(el&&!el.open)el.showModal();},[]);
- return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={box.caption} data-testid="motion-limit-box" onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{box.caption}</h2><p className="ob-native" style={{whiteSpace:'pre-line'}}>{box.text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>OK</button></div></dialog>;}
+ return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={box.caption} data-testid="motion-limit-box" onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{box.caption}</h2><p className="ob-native" style={{whiteSpace:'pre-line'}}>{box.text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div></dialog>;}
 export default function TelescopeMotion({pointing,motion,preferences,enabled,selectedName,selected,raText,decText,onRate,onManual,onProgram,onStop,slewMenu,refuseTarget,limitBox,onLimitDismiss}: {refuseTarget?:(p:Pointing)=>LimitBox|null;limitBox?:LimitBox|null;onLimitDismiss?:()=>void;slewMenu?:(request:(p:Pointing,note?:string)=>void,enabled:boolean)=>ReactNode;pointing:Pointing;motion:MotionState|null;preferences:MotionPreferences|null;enabled:boolean;selectedName:string;selected:Pointing;raText:string;decText:string;onRate:(n:number)=>void;onManual:(d:MotionDirection)=>void;onProgram:(p:Pointing)=>void;onStop:()=>void}){
  const dialog=useRef<HTMLDialogElement>(null),held=useRef<MotionDirection|null>(null),[target,setTarget]=useState<Pointing|null>(null),[invalid,setInvalid]=useState(false),[same,setSame]=useState(false),[note,setNote]=useState(''),[refusal,setRefusal]=useState<LimitBox|null>(null),moving=motion?.phase==='moving';
  const stop=()=>{if(held.current){held.current=null;onStop();}};

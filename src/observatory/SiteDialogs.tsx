@@ -16,7 +16,7 @@ function Modal({open,label,testId,onCancel,children,wide=false}:{open:boolean;la
 function ErrorBox({caption,text,onClose,testId}:{caption:string;text:string;onClose:()=>void;testId:string}){
  const ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(!el)return;if(text&&!el.open)el.showModal();else if(!text&&el.open)el.close();},[text]);
- return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid={testId} onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>OK</button></div></dialog>;
+ return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid={testId} onCancel={e=>{e.preventDefault();onClose();}}><h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div></dialog>;
 }
 
 /** Observatory site & time menu (Front B, B6): Set Date/Time (OB-DT-01, applies the site clock UT), Site Parameters
@@ -39,7 +39,7 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
    <div className="ob-group"><label className="ob-field"><span>{DC.date} ({DC.dateFormat})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={DC.dateHint} data-testid="ob-date-date" value={date?.date??''} onChange={e=>setDate(d=>d&&{...d,date:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label>
     <label className="ob-field"><span>{DC.time} ({DC.timeFormat})</span><input type="text" maxLength={RADIO_DATE_WEB_LIMITS.fieldMaxLength} title={DC.timeHint} data-testid="ob-date-time" value={date?.time??''} onChange={e=>setDate(d=>d&&{...d,time:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();dateOk();}}}/></label></div>
    <p className="ob-note">{M.dateHelp}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-date-ok" onClick={dateOk}>OK</button><button type="button" className="secondary-button" onClick={()=>setDate(null)}>Cancel</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ob-date-ok" onClick={dateOk}>{OBSERVATORY_MESSAGES.common.ok}</button><button type="button" className="secondary-button" onClick={()=>setDate(null)}>{OBSERVATORY_MESSAGES.common.cancel}</button></div>
    <ErrorBox caption={M.errorTitle} text={dateError} onClose={()=>setDateError('')} testId="ob-date-error"/>
   </Modal>
   <Modal open={station!==null} label={SC.form} testId="ob-station-dialog" onCancel={()=>setStation(null)}>
@@ -57,7 +57,7 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
   <Modal open={info} label={SITE_INFORMATION_LITERALS.caption} testId="ob-site-info" onCancel={()=>setInfo(false)}>
    <h2 className="ob-native">{SITE_INFORMATION_LITERALS.caption}</h2>
    <pre className="ob-native ob-site-lines" data-testid="ob-site-info-lines">{siteInformationLines(site,index,limitSlewing).join('\n')}</pre>
-   <div className="ob-actions"><button type="button" className="primary-button" onClick={()=>setInfo(false)}>OK</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" onClick={()=>setInfo(false)}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
   </Modal>
  </div>;
 }

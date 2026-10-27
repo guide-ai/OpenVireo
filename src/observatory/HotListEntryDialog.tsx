@@ -20,11 +20,11 @@ export default function HotListEntryDialog({draft,error,onEdit,onOk,onCancel,onD
    <fieldset className="ob-group"><legend className="ob-native">{C.raGroup}</legend>{field('raHours',C.hours)}{field('raMinutes',C.minutes)}{field('raSeconds',C.seconds)}</fieldset>
    <fieldset className="ob-group"><legend className="ob-native">{C.decGroup}</legend>{field('decDegrees',C.degrees)}{field('decMinutes',C.minutes)}{field('decSeconds',C.seconds)}</fieldset>
    <p className="ob-note">{M.help}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" data-testid={`${testId}-ok`} onClick={onOk}>OK</button><button type="button" className="secondary-button" data-testid={`${testId}-cancel`} onClick={onCancel}>Cancel</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" data-testid={`${testId}-ok`} onClick={onOk}>{OBSERVATORY_MESSAGES.common.ok}</button><button type="button" className="secondary-button" data-testid={`${testId}-cancel`} onClick={onCancel}>{OBSERVATORY_MESSAGES.common.cancel}</button></div>
   </>}
   <dialog ref={box} className="ob-dialog ob-box" role="alertdialog" aria-labelledby={`${id}-box`} data-testid={`${testId}-error`} onCancel={e=>{e.preventDefault();onDismiss();}}>
    <h2 id={`${id}-box`}>{OBSERVATORY_MESSAGES.skyCoords.errorTitle}</h2><p className="ob-native">{error}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" onClick={onDismiss}>OK</button></div>
+   <div className="ob-actions"><button type="button" className="primary-button" onClick={onDismiss}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
   </dialog>
  </dialog>;
 }

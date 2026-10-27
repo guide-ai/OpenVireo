@@ -58,6 +58,6 @@ function InfoBox({caption,text,onClose}:{caption:string;text:string;onClose:()=>
  const ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open)el.showModal();},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" role="alertdialog" aria-label={caption} data-testid="ob-info-box" onCancel={e=>{e.preventDefault();onClose();}}>
-  <h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>OK</button></div>
+  <h2 className="ob-native">{caption}</h2><p className="ob-native">{text}</p><div className="ob-actions"><button type="button" className="primary-button" onClick={onClose}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
  </dialog>;
 }
