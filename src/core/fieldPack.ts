@@ -5,7 +5,8 @@
  *  - every CLEA_QSO.DAT and GLIMAGES.LST position inside the coverage (indices and positions only; no other content).
  * Completeness of the source lists is an offline witness (whole-source scans, analysis/lss-packs), not something the browser
  * can prove; the pack records the source SHA-256 and record counts those witnesses used. Galaxies are not in the pack: the
- * engine reads the bundled CLEA_GLX.DAT whole. The four existing verified fields are adapted from their stored snapshots
+ * engine reads the bundled CLEA_GLX.DAT whole. A pack certifies only its listed pointings (exact binary64 equality): its band
+ * reads are the probes and scans of exactly those pointings, so any other pointing is outside the pack. The four existing verified fields are adapted from their stored snapshots
  * (fieldPackFromSnapshot), unchanged. Nothing is repaired, sorted or deduplicated; invalid input is a typed error. */
 import type {NativeCatalogRegion} from './catalogPopulation';
 
@@ -13,14 +14,14 @@ export class FieldPackError extends Error{
  constructor(readonly code:'schema'|'bounds'|'record'|'order'|'identity'){super(`Field pack: ${code}`);this.name='FieldPackError';}
 }
 export const FIELD_PACK_SCHEMA='openvireo-field-pack-v1';
-export const FIELD_PACK_LIMITS=Object.freeze({bands:24,readsPerBand:400_000,variables:200,qso:2000,photographs:200});
+export const FIELD_PACK_LIMITS=Object.freeze({pointings:500,bands:24,readsPerBand:400_000,variables:200,qso:2000,photographs:200});
 const GSC_BANDS=/^([NS])(0000|0730|1500|2230|3000|3730|4500|5230|6000|6730|7500|8230)$/;
 export type FieldPackRect=Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>;
 export type FieldPackBand=Readonly<{name:string;recordCount:number;sha256:string|null;reads:ReadonlyMap<number,string>}>;
 export type FieldPackPosition=Readonly<{index:number;ra:number;dec:number}>;
 export type FieldPackSource<T>=Readonly<{sha256:string|null;recordsChecked:number;entries:readonly T[]}>;
 export type FieldPack=Readonly<{
- schema:typeof FIELD_PACK_SCHEMA;id:string;coverage:FieldPackRect;bands:readonly FieldPackBand[];
+ schema:typeof FIELD_PACK_SCHEMA;id:string;coverage:FieldPackRect;pointings:readonly Readonly<{ra:number;dec:number}>[];bands:readonly FieldPackBand[];
  variables:FieldPackSource<Readonly<{recordIndex:number;rawHex:string}>>;qso:FieldPackSource<FieldPackPosition>;photographs:FieldPackSource<FieldPackPosition>;
 }>;
 const isObject=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
@@ -70,11 +71,13 @@ export function decodeFieldPack(value:unknown):FieldPack{
   if(!isObject(e)||typeof e.rawHex!=='string'||!/^[a-f0-9]{184}$/.test(e.rawHex))return fail('record');
   const recordIndex=count(e.recordIndex);if(recordIndex<=last)return fail('order');return Object.freeze({recordIndex,rawHex:e.rawHex});
  });
- return Object.freeze({schema:FIELD_PACK_SCHEMA,id:value.id,coverage:rect(value.coverage),bands:Object.freeze(bands),variables,
+ if(!Array.isArray(value.pointings)||value.pointings.length<1||value.pointings.length>FIELD_PACK_LIMITS.pointings)return fail('bounds');
+ const pointings=value.pointings.map(p=>{if(!isObject(p)||typeof p.ra!=='number'||typeof p.dec!=='number'||!Number.isFinite(p.ra)||!Number.isFinite(p.dec)||p.ra<0||p.ra>=24||Math.abs(p.dec)>90)return fail('record');return Object.freeze({ra:p.ra,dec:p.dec});});
+ return Object.freeze({schema:FIELD_PACK_SCHEMA,id:value.id,coverage:rect(value.coverage),pointings:Object.freeze(pointings),bands:Object.freeze(bands),variables,
   qso:source(value.qso,FIELD_PACK_LIMITS.qso,position),photographs:source(value.photographs,FIELD_PACK_LIMITS.photographs,position)});
 }
 type Snapshot=Readonly<{
- area:NativeCatalogRegion;bands:readonly Readonly<{name:string;recordCount:number;sha256?:string;reads:readonly Readonly<{index:number;rawHex:string}>[]}>[];
+ domain:Readonly<{pointing:Readonly<{ra:number;dec:number}>}>;area:NativeCatalogRegion;bands:readonly Readonly<{name:string;recordCount:number;sha256?:string;reads:readonly Readonly<{index:number;rawHex:string}>[]}>[];
  absenceCertificates:readonly Readonly<{file:string;recordsChecked:number;allPositionMatches:readonly number[];sha256?:string}>[];
  variables?:readonly Readonly<{recordIndex:number;rawHex:string}>[];variableSourceAdmission?:Readonly<{recordsChecked:number;allPositionMatches:readonly number[];sha256:string}>;
  sources:readonly Readonly<{path?:string;archiveMember?:string;sha256:string}>[];
@@ -90,10 +93,11 @@ export function fieldPackFromSnapshot(id:string,snapshot:Snapshot):FieldPack{
  const variables=absent('CLEA_VStrs.dat')??(vs&&snapshot.variables&&vs.allPositionMatches.join()===snapshot.variables.map(v=>v.recordIndex).join()?{sha256:vs.sha256,recordsChecked:vs.recordsChecked,entries:snapshot.variables.map(v=>({recordIndex:v.recordIndex,rawHex:v.rawHex}))}:fail('identity'));
  const qso=absent('CLEA_QSO.DAT')??fail('identity'),photographs=absent('GLIMAGES.LST')??fail('identity');
  const a=snapshot.area;
- return decodeFieldPack({schema:FIELD_PACK_SCHEMA,id,coverage:{minimumRa:a.minimumRa,maximumRa:a.maximumRa,minimumDec:a.minimumDec,maximumDec:a.maximumDec},
+ return decodeFieldPack({schema:FIELD_PACK_SCHEMA,id,coverage:{minimumRa:a.minimumRa,maximumRa:a.maximumRa,minimumDec:a.minimumDec,maximumDec:a.maximumDec},pointings:[snapshot.domain.pointing],
   bands:snapshot.bands.map(b=>({name:b.name,recordCount:b.recordCount,sha256:b.sha256??file(`${b.name}.DAT`),reads:b.reads.map(r=>[r.index,r.rawHex])})),variables,qso,photographs});
 }
-/** Inclusive containment of an area in the pack coverage (the pack's certificates speak only for its coverage). */
-export function packCovers(pack:FieldPack,area:FieldPackRect):boolean{
- const c=pack.coverage;return area.minimumRa>=c.minimumRa&&area.maximumRa<=c.maximumRa&&area.minimumDec>=c.minimumDec&&area.maximumDec<=c.maximumDec;
+/** A listed pointing whose area lies inside the pack coverage (the pack's certificates speak only for its coverage). */
+export function packCovers(pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,area:FieldPackRect):boolean{
+ const c=pack.coverage;
+ return pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec)&&area.minimumRa>=c.minimumRa&&area.maximumRa<=c.maximumRa&&area.minimumDec>=c.minimumDec&&area.maximumDec<=c.maximumDec;
 }

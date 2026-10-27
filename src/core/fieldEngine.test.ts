@@ -65,7 +65,7 @@ describe('field engine gates and errors',()=>{
  });
  it('reports qso, photograph and variable gates from pack positions inside the area',()=>{
   const a=field36773.area,mid={ra:(a.minimumRa+a.maximumRa)/2,dec:(a.minimumDec+a.maximumDec)/2};
-  const raw=JSON.parse(JSON.stringify({schema:FIELD_PACK_SCHEMA,id:'gated',coverage:{minimumRa:a.minimumRa,maximumRa:a.maximumRa,minimumDec:a.minimumDec,maximumDec:a.maximumDec},
+  const raw=JSON.parse(JSON.stringify({schema:FIELD_PACK_SCHEMA,id:'gated',coverage:{minimumRa:a.minimumRa,maximumRa:a.maximumRa,minimumDec:a.minimumDec,maximumDec:a.maximumDec},pointings:[field36773.domain.pointing],
    bands:field36773.bands.map(b=>({name:b.name,recordCount:b.recordCount,sha256:null,reads:b.reads.map(r=>[r.index,r.rawHex])})),
    variables:{sha256:null,recordsChecked:31147,entries:[]},qso:{sha256:null,recordsChecked:2269,entries:[{index:7,...mid}]},photographs:{sha256:null,recordsChecked:183,entries:[{index:3,...mid}]}}));
   const r=evaluateField(decodeFieldPack(raw),glx,field36773.domain.pointing,0);
@@ -78,9 +78,10 @@ describe('field engine gates and errors',()=>{
  });
  it('rejects malformed packs with typed errors',()=>{
   const code=(v:unknown)=>{try{decodeFieldPack(v);return 'ok';}catch(e){return e instanceof FieldPackError?e.code:'other';}};
-  const ok={schema:FIELD_PACK_SCHEMA,id:'x',coverage:{minimumRa:1,maximumRa:2,minimumDec:0,maximumDec:1},bands:[{name:'N2230',recordCount:10,sha256:null,reads:[[1,'0'.repeat(54)],[2,'0'.repeat(54)]]}],variables:{sha256:null,recordsChecked:1,entries:[]},qso:{sha256:null,recordsChecked:1,entries:[]},photographs:{sha256:null,recordsChecked:1,entries:[]}};
+  const ok={schema:FIELD_PACK_SCHEMA,id:'x',coverage:{minimumRa:1,maximumRa:2,minimumDec:0,maximumDec:1},pointings:[{ra:1.5,dec:.5}],bands:[{name:'N2230',recordCount:10,sha256:null,reads:[[1,'0'.repeat(54)],[2,'0'.repeat(54)]]}],variables:{sha256:null,recordsChecked:1,entries:[]},qso:{sha256:null,recordsChecked:1,entries:[]},photographs:{sha256:null,recordsChecked:1,entries:[]}};
   expect(code(ok)).toBe('ok');
   expect(code({...ok,schema:'v0'})).toBe('schema');
+  expect(code({...ok,pointings:[]})).toBe('bounds');
   expect(code({...ok,bands:[{...ok.bands[0],reads:[[2,'0'.repeat(54)],[1,'0'.repeat(54)]]}]})).toBe('order');
   expect(code({...ok,bands:[{...ok.bands[0],reads:[[10,'0'.repeat(54)]]}]})).toBe('bounds');
   expect(code({...ok,bands:[{...ok.bands[0],reads:[[1,'zz'.repeat(27)]]}]})).toBe('record');

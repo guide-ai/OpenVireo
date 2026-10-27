@@ -111,7 +111,7 @@ function axesSupported(g:NativeGalaxy):boolean{try{galaxyCatalogAxes(g);catalogG
 /** Population stages 1–5. Gates are collected; stages that cannot run under a gate are skipped. */
 export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
  const area=freshFieldArea(pointing),reasons:FieldUnavailableReason[]=[];
- if(!packCovers(pack,area))return {population:null,reasons:['outside-pack']};
+ if(!packCovers(pack,pointing,area))return {population:null,reasons:['outside-pack']};
  const regionIds=nativeRegionIds(area),bandOrder=nativeCompactBandOrder(regionIds);
  let stars=packStars(pack,area,bandOrder);const initialStarIds=Object.freeze(stars.map(s=>s.id));
  const qsoMatches=pack.qso.entries.filter(p=>inside(p,area)).map(p=>p.index),photographMatches=pack.photographs.entries.filter(p=>inside(p,area)).map(p=>p.index);
