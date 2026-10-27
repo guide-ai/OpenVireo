@@ -15,13 +15,18 @@ import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
 
+export type CameraExtraSourceProvider=(jd:number,seconds:number)=>readonly CameraExtraSource[];
+/** The one place the camera asks its caller for moving pairs. */
+export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number):readonly CameraExtraSource[]{return provider?.(jd,seconds)??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string}>;
 export type CameraControlProps=Readonly<{
  active:boolean;busy:boolean;telescopeIndex:OpticalIndex;pointing:Pointing;access:AccessReason;
  /** Julian date of the observatory clock at the moment Start is pressed. */
  currentJd:()=>number;
- /** Extra sources (moving objects) evaluated at the exposure's JD; supplied by front X. */
- extraSources?:(jd:number)=>readonly CameraExtraSource[];
+ /** Moving pairs for this exposure, supplied by front X: called with the JD at Start and the exposure length in seconds
+  * (the pair's end is the position at JD + seconds, as ComputeMovers 0x59940c uses dt = exposure). */
+ extraSources?:CameraExtraSourceProvider;
+ /** Receives every finished image; image.exposure.skipped lists moving pairs that were not drawn, with a typed reason. */
  onImage?:(image:CameraImage)=>void;
  /** Test seam: fixed seed instead of crypto.getRandomValues. */
  seedSource?:()=>number;
@@ -91,7 +96,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
  async function prepare(a:Attempt){
   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
   try{
-   const extras=extraSources?.(a.jd)??[];
+   const extras=cameraExtras(extraSources,a.jd,a.seconds);
    const reply=await call(a,{type:'compose',recipe:{camera:'ccd',opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
@@ -174,6 +179,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
     <dt>{M.detailJd}</dt><dd>{image.jd.toFixed(5)}</dd>
     <dt>{M.detailSeed}</dt><dd data-testid="camera-detail-seed">{shown.recipe.seed}</dd>
     <dt>{M.detailDraws}</dt><dd>{shown.drawsConsumed}</dd>
+    {shown.skipped.length>0&&<><dt>{M.detailSkipped}</dt><dd data-testid="camera-detail-skipped">{shown.skipped.map(k=>M.skippedReason[k.reason]).join(' ')}</dd></>}
    </dl></details>
   </figure>}
   <p className="observatory-note">{M.adaptation}</p>

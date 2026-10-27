@@ -17,7 +17,7 @@ import {compiledCameraProjection,projectCameraSource,type CameraProjectionContex
 import {cameraBackgroundStage,compiledCameraBackgroundParameters} from './cameraBackground';
 import {compiledCameraSourceCalibration,cameraPointParametersFromCalibration} from './cameraSourceCalibration';
 import {cameraPointPlan,type CameraPointPlan} from './cameraPointSource';
-import {cameraExtendedPlan,type CameraExtendedPlan} from './cameraExtendedSource';
+import {cameraExtendedPlan,CameraExtendedError,CAMERA_STREAK_VISIT_LIMIT,type CameraExtendedPlan} from './cameraExtendedSource';
 import {cameraScalarJitter} from './cameraBackground';
 import {compiledCameraFinalParameters,finalizeCameraPlane,type CameraFinalStage} from './cameraFinal';
 import {cameraCatalogReference} from './cameraCatalogReference';
@@ -40,9 +40,11 @@ export class CameraExposureError extends Error {
 }
 export type CameraFieldRecord=Readonly<{
  origin:'moving-start'|'moving-end'|'catalog';kind:0|2;
+ /** Index into the caller's extras for moving records, else null. */
+ extraIndex:number|null;
  identifier:string|null;raHours:number;decDegrees:number;magnitude:number;pixelX:number;pixelY:number;
 }>;
-export type CameraSkippedSource=Readonly<{extraIndex:number;reason:'moving-pair-off-detector'}>;
+export type CameraSkippedSource=Readonly<{extraIndex:number;reason:'moving-pair-off-detector'|'moving-pair-geometry'|'moving-pair-budget'}>;
 export type CameraExposure=Readonly<{
  recipe:CameraExposureRecipe;plane:CameraFinalStage;records:readonly CameraFieldRecord[];skipped:readonly CameraSkippedSource[];
  drawsConsumed:number;finalRandomState:number;
@@ -57,6 +59,7 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'whole-sky-selection: the region bounds at [0x5b5b30] are not recovered; selection keeps the magnitude limit',
  'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
+ 'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
  'number-arithmetic: Number/Math with Single stores replaces x87 Extended',
 ]);
 export const CAMERA_EXPOSURE_UNRECOVERED=Object.freeze([
@@ -109,7 +112,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   const magnitude=Math.fround(Math.fround(e.storedMag)-MOVING_OFFSET[recipe.filterPosition]),pair:CameraFieldRecord[]=[];
   for(const [origin,c] of [['moving-start',{raHours:e.raHours,decDegrees:e.decDeg}],['moving-end',{raHours:e.end.raHours,decDegrees:e.end.decDeg}]] as const){
    const p=projectCameraSource(context,c,[stream.next(),stream.next()]);
-   pair.push(Object.freeze({origin,kind:2 as const,identifier:null,raHours:c.raHours,decDegrees:c.decDegrees,magnitude,...pixel(context,p.planeX,p.planeY)}));
+   pair.push(Object.freeze({origin,kind:2 as const,extraIndex,identifier:null,raHours:c.raHours,decDegrees:c.decDegrees,magnitude,...pixel(context,p.planeX,p.planeY)}));
   }
   if(pair.every(placeable))records.push(...pair);else skipped.push(Object.freeze({extraIndex,reason:'moving-pair-off-detector' as const}));
  });
@@ -118,7 +121,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  for(const entry of selection.selectedEntries){
   const row=entry.result.row,p=projectCameraSource(context,{raHours:row.raHours,decDegrees:row.decDegrees},[stream.next(),stream.next()]);
   if(!p.inside)continue;onDetector++;
-  records.push(Object.freeze({origin:'catalog' as const,kind:0 as const,identifier:row.identifier,raHours:row.raHours,decDegrees:row.decDegrees,magnitude:row.selectedMagnitude,pixelX:p.pixelX!,pixelY:p.pixelY!}));
+  records.push(Object.freeze({origin:'catalog' as const,kind:0 as const,extraIndex:null,identifier:row.identifier,raHours:row.raHours,decDegrees:row.decDegrees,magnitude:row.selectedMagnitude,pixelX:p.pixelX!,pixelY:p.pixelY!}));
  }
  // 3. Background.
  const background=compiledCameraBackgroundParameters('ccd',recipe.seconds,recipe.gain);
@@ -130,10 +133,14 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   const calibration=compiledCameraSourceCalibration('ccd',recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);
   if(r.kind===2){
    const end=records[i+1];
-   let plan;
-   try{plan=cameraExtendedPlan({width:calibration.width,height:calibration.height,x1:r.pixelX,y1:r.pixelY,x2:end.pixelX,y2:end.pixelY,sigmaX:calibration.sigmaX,sigmaY:calibration.sigmaY,referencePeak:calibration.referencePeak,exposureScale:calibration.exposureScale});}
-   catch(e){throw new CameraExposureError('source-geometry',`${i} ${(e as Error).message}`);}
-   applyPlan(plane,plan,stream);i++;
+   let plan:CameraExtendedPlan|null=null;
+   try{plan=cameraExtendedPlan({width:calibration.width,height:calibration.height,x1:r.pixelX,y1:r.pixelY,x2:end.pixelX,y2:end.pixelY,sigmaX:calibration.sigmaX,sigmaY:calibration.sigmaY,referencePeak:calibration.referencePeak,exposureScale:calibration.exposureScale},CAMERA_STREAK_VISIT_LIMIT);}
+   catch(e){
+    if(!(e instanceof CameraExtendedError))throw e;
+    // [W] Only this pair is skipped (no draws consumed for it); the native code has no such guard.
+    skipped.push(Object.freeze({extraIndex:r.extraIndex!,reason:e.code==='budget'?'moving-pair-budget' as const:'moving-pair-geometry' as const}));
+   }
+   if(plan)applyPlan(plane,plan,stream);i++;
   }else applyPlan(plane,cameraPointPlan(cameraPointParametersFromCalibration(calibration,r.pixelX,r.pixelY)),stream);
  }
  const final=finalizeCameraPlane({phase:'point-sources-before-clipping',width:initial.width,height:initial.height,localDrawsConsumed:0,pixels:Array.from(plane),histogram:initial.histogram},compiledCameraFinalParameters('ccd',recipe.gain));

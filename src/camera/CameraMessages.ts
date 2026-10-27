@@ -57,6 +57,8 @@ export const CAMERA_MESSAGES=Object.freeze({
  detailSeed:'Random seed',
  detailJd:'Julian date',
  detailDraws:'Random draws',
+ detailSkipped:'Moving objects not drawn',
+ skippedReason:{'moving-pair-off-detector':'One moving object lies far outside the field.','moving-pair-geometry':'One moving object has no measurable motion to draw.','moving-pair-budget':'One moving object trail is too large to draw.'} as Readonly<Record<string,string>>,
  sourceStaticLabel:(id:string,date:string)=>`Bundled extract ${id} (recorded ${date})`,
  sourceLiveLabel:'Live CDS/VizieR query',
  sourceWithHash:(label:string,sha256:string)=>`${label} · SHA-256 ${sha256.slice(0,16)}…`,

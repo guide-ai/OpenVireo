@@ -17,8 +17,12 @@ export type CameraExtendedPlan=Readonly<{
 export type CameraExtendedStage=Readonly<Omit<CameraBackgroundStage,'phase'>&{phase:'extended-sources-before-clipping'}>;
 export type CameraSourcePlane=CameraBackgroundStage|CameraPointStage|CameraExtendedStage|CameraOverlayStage;
 export const CAMERA_EXTENDED_VISIT_LIMIT=65_536;
+/** Largest clipped Gaussian rectangle (the 1024^2 plane) plus a cross pass. */
+export const CAMERA_STREAK_VISIT_LIMIT=1024*1024+65_536;
 
-export function cameraExtendedPlan(p:CameraExtendedParameters):CameraExtendedPlan {
+/** visitLimit [W]: web guard on ordered visits (default 65,536). The composer passes a plane-sized limit for moving
+ * streaks, because the recovered Gaussian rectangle is clipped to the plane (front C review 2). */
+export function cameraExtendedPlan(p:CameraExtendedParameters,visitLimit:number=CAMERA_EXTENDED_VISIT_LIMIT):CameraExtendedPlan {
  if(!p||typeof p!=='object')throw new CameraExtendedError('parameters');
  const {width,height,x1,y1,x2,y2,sigmaX,sigmaY,referencePeak,exposureScale}=p;
  if(!Number.isInteger(width)||width<1||width>1024||!Number.isInteger(height)||height<1||height>1024||
@@ -34,12 +38,13 @@ export function cameraExtendedPlan(p:CameraExtendedParameters):CameraExtendedPla
  const indices:number[]=[],means:number[]=[],time=exposureScale/scale,peak=time*referencePeak;
  const visit=(px:number,py:number,mean:number)=>{
   if(!Number.isFinite(mean)||mean<0)throw new CameraExtendedError('geometry');
-  if(indices.length===CAMERA_EXTENDED_VISIT_LIMIT)throw new CameraExtendedError('budget');
+  if(indices.length===visitLimit)throw new CameraExtendedError('budget');
   indices.push(py*width+px);means.push(mean);
  };
  const bounds=(rX:number,rY:number)=>({x0:Math.max(0,cx-rX),x1:Math.min(width-1,cx+rX),y0:Math.max(0,cy-rY),y1:Math.min(height-1,cy+rY)});
  const g=bounds(rx,ry);
- if(Math.max(0,g.x1-g.x0+1)*Math.max(0,g.y1-g.y0+1)>CAMERA_EXTENDED_VISIT_LIMIT)throw new CameraExtendedError('budget');
+ if(!Number.isInteger(visitLimit)||visitLimit<1||visitLimit>CAMERA_STREAK_VISIT_LIMIT)throw new CameraExtendedError('parameters');
+ if(Math.max(0,g.x1-g.x0+1)*Math.max(0,g.y1-g.y0+1)>visitLimit)throw new CameraExtendedError('budget');
  for(let py=g.y0;py<=g.y1;py++)for(let px=g.x0;px<=g.x1;px++){
   const ax=(px-x1)/sigmaX,ay=(py-y1)/sigmaY,bx=(px-x2)/sigmaX,by=(py-y2)/sigmaY;
   const a=ax*ax+ay*ay,b=bx*bx+by*by,t=(d*d+(b-a))/(2*d);
