@@ -1,12 +1,12 @@
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import field36773 from '../../data/hubble/pinned-galaxy-field.json';
-import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,LssSurveyError,LSS_LIMITS} from './lssSurvey';
+import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,LssSurveyError,LSS_LIMITS} from './lssSurvey';
 import {hubbleVelocity} from './hubbleVelocity';
 import {evaluateLssRow,lssExposureEngine,lssPolicy,parseLssPolicy,lssCountsCsv} from './lssExposure';
 import {fieldPackFromSnapshot} from './fieldPack';
 import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy} from './galaxyExposure';
-import {EMPTY_WEDGE_WORKSPACE,appendOwnLssRecords,completeWedgeRead,beginWedgeRead,WEDGE_OWN_RECORDS_NAME} from './wedgeWorkspace';
+import {EMPTY_WEDGE_WORKSPACE,appendOwnLssRecords,completeWedgeRead,beginWedgeRead,addWedgePending,removeOwnLssRecords,WEDGE_OWN_RECORDS_NAME} from './wedgeWorkspace';
 import {wedgePlot,WEDGE_DEFAULT_OPTIONS} from './wedgePlot';
 import {LSS_ROWS,type LssRow} from './lssFields';
 const glx=new Uint8Array(readFileSync(new URL('../../public/original/catalogs/CLEA_GLX.DAT',import.meta.url)));
@@ -38,6 +38,22 @@ describe('E02 survey records (Record Z LSS branch, web adaptation)',()=>{
   let full={...EMPTY_LSS_SURVEY};for(let i=0;i<LSS_LIMITS.records;i++)full=confirmLssRecord(openLssRecord(full,draft));
   expect(lssAtLimit(full)).toBe(true);expect(lssAtLimit(EMPTY_LSS_SURVEY)).toBe(false);
   expect(code(()=>confirmLssRecord(openLssRecord(full,draft)))).toBe('limit');
+ });
+ it('refuses Record Z past the event budget, counting a shared exposure once',()=>{
+  const big={seedAtReset:3,events:Array.from({length:12000},()=>({kind:'tick' as const,deltaMs:100}))};
+  let st=EMPTY_LSS_SURVEY;for(let i=0;i<12;i++)st=confirmLssRecord(openLssRecord(st,{...draft,journal:{...big,seedAtReset:i}}));
+  expect(lssEventTotal(st.records)).toBe(144000);
+  // The same exposure again costs nothing; a new 12 000-event exposure would pass 150 000.
+  st=confirmLssRecord(openLssRecord(st,{...draft,journal:{...big,seedAtReset:0}}));expect(lssEventTotal(st.records)).toBe(144000);
+  expect(code(()=>openLssRecord(st,{...draft,journal:{...big,seedAtReset:99}}))).toBe('events');
+ });
+ it('removes only the own LSS points from the wedge on restore',()=>{
+  const own=appendOwnLssRecords(EMPTY_WEDGE_WORKSPACE,[{object:'x',jd:1,ra:13,dec:28,zSingle:Math.fround(.01),remarks:''}],{sha256:'c'.repeat(64),bytes:1});
+  const line='Object ID    MJD(Days)      RA           Dec     Z  Comments\nfile       51544.5 12h0m0s 27\u00b00\'0" 0.02 -\n';
+  const both=completeWedgeRead(beginWedgeRead(own,1,'x.txt'),1,{name:'x.txt',sha256:'b'.repeat(64),bytes:Uint8Array.from([...line].map(c=>c.charCodeAt(0)))});
+  const w=both.pending?addWedgePending(both):both;expect(w.records).toHaveLength(2);
+  const cleaned=removeOwnLssRecords(w);expect(cleaned.records.map(r=>r.objectId)).toEqual(['file']);expect(cleaned.records[0].source).toBe(0);expect(cleaned.receipts.map(r=>r.name)).toEqual(['x.txt']);
+  expect(removeOwnLssRecords(cleaned)).toBe(cleaned);
  });
  it('writes a formula-neutral results CSV',()=>{
   const s=confirmLssRecord(editLssDraft(openLssRecord(EMPTY_LSS_SURVEY,{...draft,object:'=HYPERLINK("x")'}),{remarks:'+cmd'}));

@@ -5,7 +5,7 @@ import {t} from './i18n';
 import './sky-exposure.css';
 import './lss.css';
 import {LSS_FIELD_FILES,lssFieldRows,isLssFieldList,type LssFieldNumber} from './core/lssFields';
-import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,restoredLssSurvey,LSS_LIMITS,type LssRecord,type LssSurveyState} from './core/lssSurvey';
+import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,restoredLssSurvey,LSS_LIMITS,type LssRecord,type LssSurveyState} from './core/lssSurvey';
 import {evaluateLssRow,lssPolicy,type LssRowStatus} from './core/lssExposure';
 import {opticalProfile} from './core/opticalTelescope';
 import {parseHtl} from './core/hotList';
@@ -38,7 +38,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
  useEffect(()=>{const h=handoff.current;if(!wedgeAck||!h||wedgeAck.token!==h.token)return;handoff.current=null;if(wedgeAck.accepted)update(s=>markLssHandedToWedge(s,h.upTo));else setNotice(t('lss.wedge.refused'));},[wedgeAck]);
  const [telescope,setTelescope]=useState<Telescope>(initialTelescope);
  const [loaded,setLoaded]=useState<Loaded|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
- const [pointed,setPointed]=useState<number|null>(null),[exposure,setExposure]=useState<JournalState|null>(null),[description,setDescription]=useState('');
+ const [pointed,setPointed]=useState<number|null>(null),[exposure,setExposure]=useState<JournalState|null>(null),[description,setDescription]=useState(''),[descriptionError,setDescriptionError]=useState('');
  const [fields,setFields]=useState<readonly LssFieldEntry[]|null>(null),lists=useRef<{photographs:ReturnType<typeof parseGlimagesPositions>;spectra:ReadonlySet<string>}|null>(null);
  const glx=useRef<Uint8Array|null>(null),abort=useRef<AbortController|null>(null),dialog=useRef<HTMLDialogElement>(null);
  const heading=useRef<HTMLHeadingElement>(null);
@@ -51,7 +51,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
  useEffect(()=>{onRecordsChange?.(survey.records);},[survey.records]);
  const [observed,setObserved]=useState(false);
  useEffect(()=>{if(exposure?.exposure.counts.some(n=>n>0))setObserved(true);},[exposure]);
- useEffect(()=>{onSummary?.(Object.freeze({listLoaded:loaded!==null,observed,records:survey.records.length,fields:new Set(survey.records.map(r=>r.field)).size,plotted:survey.handedToWedge,described:description.trim()!==''}));},[loaded,observed,survey.records,survey.handedToWedge,description]);
+ useEffect(()=>{onSummary?.(Object.freeze({listLoaded:loaded!==null,observed,records:survey.records.length,galaxies:new Set(survey.records.map(r=>r.object)).size,fields:new Set(survey.records.map(r=>r.field)).size,plotted:survey.handedToWedge,described:description.trim()!==''}));},[loaded,observed,survey.records,survey.handedToWedge,description]);
  // Save reads this snapshot; the open dialog and the current (unrecorded) exposure are not part of it.
  useEffect(()=>{onSnapshot?.(Object.freeze({field:survey.field,telescope,records:survey.records,description}));},[survey.field,survey.records,telescope,description]);
  // Restore (v27): records were validated and replayed by the session reader; the list must be loaded again to point.
@@ -86,7 +86,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
  function cancelLoad(){abort.current?.abort();abort.current=null;setLoading(false);setNotice(t('lss.loadCancelled'));}
  const field=survey.field,rows=loaded?lssFieldRows(loaded.field):[],row=pointed!==null&&loaded?rows[pointed]:null,status=pointed!==null&&loaded?loaded.statuses[pointed]:null;
  const live=status&&status.kind!=='unavailable'?status:null;
- function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));}
+ function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));}
  function confirm(){if(update(confirmLssRecord)){setDialogError('');setNotice(t('lss.recorded'));}else setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));}
  function remarks(text:string){if(!update(s=>editLssDraft(s,{remarks:text})))setDialogError(t('lss.dialog.controlChars'));else setDialogError('');}
  async function plot(){
@@ -118,7 +118,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
   <section className="card" aria-labelledby="lss-results-heading"><h2 id="lss-results-heading">{t('lss.results.title')}</h2><p data-testid="lss-record-count" role="status">{t('lss.results.count',{count:survey.records.length})}</p>
    {survey.records.length>0&&<table className="lss-rows" data-testid="lss-results"><thead><tr><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.dialog.jd')}</th><th scope="col">{t('lss.dialog.ra')}</th><th scope="col">{t('lss.dialog.dec')}</th><th scope="col">{t('lss.dialog.z')}</th><th scope="col">{t('lss.col.velocity')}</th><th scope="col">{t('lss.dialog.remarks')}</th></tr></thead><tbody>{survey.records.map(r=><tr key={r.id}><td>{r.object}</td><td>{r.jd.toFixed(5)}</td><td>{r.ra}</td><td>{r.dec}</td><td>{r.zSingle}</td><td>{r.velocitySingle}</td><td>{r.remarks}</td></tr>)}</tbody></table>}
    <div className="sky-actions"><button className="secondary-button" disabled={!survey.records.length} onClick={()=>download(lssResultsCsv(survey.records),'openvireo-lss-results.csv')}>{t('lss.results.csv')}</button><button className="primary-button" disabled={!pendingWedgeRecords(survey).length} onClick={()=>void plot()}>{t('lss.results.plot')}</button></div>
-   <label htmlFor="lss-description">{t('lss.results.description')}</label><textarea id="lss-description" maxLength={4000} rows={4} value={description} onChange={e=>setDescription(e.target.value)}/><p className="observatory-note">{t('lss.results.descriptionHelp')}</p>
+   <label htmlFor="lss-description">{t('lss.results.description')}</label><textarea id="lss-description" maxLength={LSS_LIMITS.description} rows={4} value={description} aria-invalid={descriptionError?true:undefined} aria-describedby={descriptionError?'lss-description-error':undefined} onChange={e=>{const v=e.target.value;if(/[\u0000-\u0008\u000b-\u001f\u007f]/.test(v)){setDescriptionError(t('lss.descriptionInvalid'));return;}setDescriptionError('');setDescription(v);}}/>{descriptionError&&<p id="lss-description-error" role="alert">{descriptionError}</p>}<p className="observatory-note">{t('lss.results.descriptionHelp')}</p>
   </section>
   <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
   <section className="scope-note"><h2>{t('lss.limitsTitle')}</h2><ul>{(['observatory','telescope','fresh','raster','range','measure','dialog','jd','wedge','csv','packs'] as const).map(k=><li key={k}>{t(`lss.adaptation.${k}`)}</li>)}</ul></section>

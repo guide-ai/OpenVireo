@@ -132,3 +132,13 @@ export function appendOwnLssRecords(w:WedgeWorkspace,records:readonly WedgeOwnRe
  const receipt:WedgeReceipt=Object.freeze({name:WEDGE_OWN_RECORDS_NAME,sha256:identity.sha256,bytes:identity.bytes,rows:rows.length,hasZ:true,separator:'.',action});
  return next(w,{records:Object.freeze([...w.records,...rows]),listLoaded:true,receipts:Object.freeze([...w.receipts,receipt]),notice:{kind:'loaded',name:WEDGE_OWN_RECORDS_NAME,rows:rows.length,action}});
 }
+/** Investigation restore: drop the student's own LSS records (their receipts and rows; other sources keep their order and
+ * are re-indexed) so a re-plot of the restored survey does not duplicate them. Loaded text files are untouched. */
+export function removeOwnLssRecords(w:WedgeWorkspace):WedgeWorkspace{
+ const own=new Set(w.receipts.map((r,i)=>r.name===WEDGE_OWN_RECORDS_NAME?i:-1).filter(i=>i>=0));
+ if(!own.size)return w;
+ const remap=new Map<number,number>();let k=0;w.receipts.forEach((_r,i)=>{if(!own.has(i))remap.set(i,k++);});
+ const records=Object.freeze(w.records.filter(r=>!own.has(r.source)).map(r=>Object.freeze({...r,source:remap.get(r.source)!})));
+ const receipts=Object.freeze(w.receipts.filter((_r,i)=>!own.has(i)));
+ return next(w,{records,receipts,listLoaded:receipts.length>0,selected:null,notice:null});
+}

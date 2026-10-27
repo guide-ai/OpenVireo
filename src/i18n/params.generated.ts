@@ -3232,7 +3232,7 @@ export interface MessageParameters {
   "lssLab.eyebrow": never;
   "lssLab.title": never;
   "lssLab.intro": never;
-  "lssLab.counts": "done" | "fields" | "plotted" | "records" | "total";
+  "lssLab.counts": "done" | "fields" | "galaxies" | "plotted" | "records" | "total";
   "lssLab.done": never;
   "lssLab.todo": never;
   "lssLab.step.load": never;
@@ -3259,4 +3259,7 @@ export interface MessageParameters {
   "lssLab.close": never;
   "lssLab.progress": never;
   "lssLab.return": never;
+  "lss.saveError": never;
+  "lss.eventLimit": "limit";
+  "lss.descriptionInvalid": never;
 }

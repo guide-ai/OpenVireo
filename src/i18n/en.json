@@ -3231,7 +3231,7 @@
   "lssLab.eyebrow": "Exercise E02 guide",
   "lssLab.title": "Mapping large-scale structure",
   "lssLab.intro": "Measure redshifts of the galaxies in one survey strip and plot them in a wedge diagram to see how galaxies are arranged in space. The steps below update as you work; they never judge whether a redshift is right.",
-  "lssLab.counts": "{done} of {total} steps · {records} records from {fields} fields · {plotted} plotted in the wedge",
+  "lssLab.counts": "{done} of {total} steps · {records} records of {galaxies} galaxies from {fields} fields · {plotted} plotted in the wedge",
   "lssLab.done": "(done)",
   "lssLab.todo": "(to do)",
   "lssLab.step.load": "Choose a field and load its list",
@@ -3244,7 +3244,7 @@
   "lssLab.help.load": "In the LSS survey, pick a survey field and a telescope, then load the list. Rows that this version cannot observe say why.",
   "lssLab.help.observe": "Point at an observable row, activate the spectrometer and expose until the spectrum stands out from the noise; then pause.",
   "lssLab.help.record": "Set a z step, move the shift until the Ca II K and H lines and the G band match the absorption features, then Record Z and click OK.",
-  "lssLab.help.repeat": "Record at least {n} galaxies so the wedge shows a pattern; more, and more fields, make the structure clearer.",
+  "lssLab.help.repeat": "Record at least {n} different galaxies so the wedge shows a pattern (a guide suggestion in this version, not an original requirement); more, and more fields, make the structure clearer.",
   "lssLab.help.wedge": "Click Plot my records in the wedge; in the wedge, adjust the grid and point options if you like.",
   "lssLab.help.describe": "Write in your own words what the wedge shows: clusters, walls, empty regions.",
   "lssLab.help.save": "Use Save investigation in the toolbar; Restore brings back your records, description and wedge options, and you can keep observing.",
@@ -3257,5 +3257,8 @@
   "lssLab.reflect.limits": "Which galaxies could not be observed in this version, and how might that bias your map?",
   "lssLab.close": "Close LSS guide",
   "lssLab.progress": "Your progress",
-  "lssLab.return": "Return to my work"
+  "lssLab.return": "Return to my work",
+  "lss.saveError": "Could not save: the LSS survey part is over its limits or did not verify. Save your results CSV, then try again; the rest of your work is unchanged.",
+  "lss.eventLimit": "This survey already holds {limit} exposure events; save your results before recording another exposure.",
+  "lss.descriptionInvalid": "The description cannot contain control characters other than line breaks and tabs."
 }

@@ -4,7 +4,7 @@ import{wedgeCsv}from'../core/wedgeExport';
 import type{WedgeRecord}from'../core/wedgeLssText';
 import{wedgeBitsHex,wedgeSingleExact}from'../core/wedgeNumeric';
 import{WEDGE_COLOUR_SCHEMES,wedgePlot,type WedgeOptions,type WedgeColourScheme,type WedgePoint}from'../core/wedgePlot';
-import{appendOwnLssRecords,type WedgeOwnRecord}from'../core/wedgeWorkspace';
+import{appendOwnLssRecords,removeOwnLssRecords,type WedgeOwnRecord}from'../core/wedgeWorkspace';
 import{EMPTY_WEDGE_WORKSPACE,addWedgePending,beginWedgeRead,cancelWedgeOptions,cancelWedgePending,cancelWedgeRead,clearWedgePending,commitWedgeOptions,completeWedgeRead,confirmWedgeDelete,dismissWedgeNotice,editWedgeOptions,failWedgeRead,openWedgeOptions,plotWedgeData,requestWedgeLoad,selectWedgeRecord,setWedgeSeparator,suspendWedgeWorkspace,type WedgeNotice,type WedgeWorkspace}from'../core/wedgeWorkspace';
 import{WedgeFileError,downloadWedgeText,readWedgeLssFile}from'../io/wedgeLssFile';
 import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
@@ -26,7 +26,7 @@ export type WedgeLabProps=Readonly<{
  ownRecords?:Readonly<{token:number;records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>|null;
  /** Whether the handed-over records were added (false: refused, e.g. capacity), once per token. */
  onOwnRecordsResult?:(token:number,accepted:boolean)=>void;
- /** Committed plot options restored from an investigation file (v27), applied once per token. */
+ /** Investigation restore, once per token: drop own LSS points and set the committed options (the file's, or defaults). */
  restoredOptions?:Readonly<{token:number;options:WedgeOptions}>|null;
 }>;
 type Line=Readonly<{caption:string;text:string}>;
@@ -64,7 +64,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const modal=w.optionsDraft!==null;
  useEffect(()=>{onWorkspaceChange?.(w);},[w,onWorkspaceChange]);
  const appliedOwn=useRef(0),appliedOptions=useRef(0);
- useEffect(()=>{if(!restoredOptions||restoredOptions.token===appliedOptions.current)return;appliedOptions.current=restoredOptions.token;setW(c=>{try{return commitWedgeOptions(editWedgeOptions(openWedgeOptions(cancelWedgeOptions(c)),restoredOptions.options));}catch{return c;}});},[restoredOptions?.token]);
+ useEffect(()=>{if(!restoredOptions||restoredOptions.token===appliedOptions.current)return;appliedOptions.current=restoredOptions.token;setW(c=>{try{return commitWedgeOptions(editWedgeOptions(openWedgeOptions(cancelWedgeOptions(removeOwnLssRecords(c))),restoredOptions.options));}catch{return c;}});},[restoredOptions?.token]);
  useEffect(()=>{
   if(!ownRecords||ownRecords.token===appliedOwn.current)return;appliedOwn.current=ownRecords.token;
   let next:WedgeWorkspace|null=null;try{next=appendOwnLssRecords(suspendWedgeWorkspace(w),ownRecords.records,ownRecords);}catch{next=null;}

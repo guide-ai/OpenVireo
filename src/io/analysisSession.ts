@@ -29,7 +29,7 @@ import {acquisitionObjectId,acquisitionJournalText,restoreAcquisitionObservation
 import {EMPTY_HUBBLE,readHubbleWorkspace,type HubbleWorkspace} from '../core/hubbleAnalysis';
 import { createMeasurement, currentZ, type Measurement, type ShiftControl } from '../core/spectrum';
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
-import {LSS_INVESTIGATION_POLICY,admitLssInvestigation,portableLssInvestigation,type LssInvestigation} from './lssInvestigation';
+import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,portableLssInvestigation,type LssInvestigation} from './lssInvestigation';
 import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
@@ -272,7 +272,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
 type Wrapped=Readonly<{cached?:true;pegasus?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
   if(session.lss!==undefined){
-    let lss:unknown,digest:string;try{({lss,digest}=await portableLssInvestigation(session.lss));}catch{fail('state');}
+    let lss:unknown,digest:string;try{({lss,digest}=await portableLssInvestigation(session.lss));}catch(e){if(e instanceof LssSessionError)throw e;fail('state');}
     return {format:FORMAT,version:27,numericalPolicy:POLICY,base:await portable({...session,lss:undefined},wrapped),lssPolicy:LSS_INVESTIGATION_POLICY,lssDigestSHA256:digest,lss};
   }
   if(session.observatory!==undefined){

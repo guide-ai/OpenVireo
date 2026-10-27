@@ -7,8 +7,8 @@ import {decodeFieldPack} from '../core/fieldPack';
 import {lssFieldRows,type LssFieldNumber} from '../core/lssFields';
 import {GLIMAGES_LST,GLXYSP_LST,packWithPhotographs,parseGlimagesPositions,parseGlxyspNames} from '../core/lssLists';
 import {evaluateLssRow,lssExposureEngine,lssPolicy} from '../core/lssExposure';
-import {EMPTY_LSS_SURVEY,openLssRecord,confirmLssRecord,editLssDraft,type LssRecord} from '../core/lssSurvey';
-import {LSS_INVESTIGATION_POLICY,LSS_SESSION_LIMITS,admitLssInvestigation,portableLssInvestigation,setLssResources,type LssInvestigation} from './lssInvestigation';
+import {EMPTY_LSS_SURVEY,openLssRecord,confirmLssRecord,editLssDraft,encodeLssEvents,decodeLssEvents,lssEventTotal,type LssRecord} from '../core/lssSurvey';
+import {LssSessionError,LSS_INVESTIGATION_POLICY,LSS_SESSION_LIMITS,admitLssInvestigation,portableLssInvestigation,setLssResources,type LssInvestigation} from './lssInvestigation';
 import {OBSERVATORY_SESSION_POLICY,readAnalysisSession,serializeAnalysisSession,type AnalysisSession} from './analysisSession';
 // Repository files feed the restore path in place of the same-origin fetches.
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../'+p,import.meta.url)));
@@ -39,30 +39,54 @@ describe('v27 LSS investigation',()=>{
   // Older files are untouched: no lss part.
   expect((await read(JSON.stringify(plain))).lss).toBeUndefined();
  },60000);
+ it('stores one compact journal per exposure: two records of one exposure share it',async()=>{
+  const a=acquiredRecord(7,20,'first'),b={...acquiredRecord(7,22,'again'),id:2};
+  const {lss}=await portableLssInvestigation(investigation([a,b]));const p=lss as {journals:{events:string}[];records:{journal:number}[]};
+  expect(p.journals).toHaveLength(1);expect(p.records.map(r=>r.journal)).toEqual([0,0]);expect(p.journals[0].events).toBe('s 100*20 p');
+  expect(lssEventTotal([a,b])).toBe(a.journal.events.length);
+ },60000);
+ it('keeps the full event budget far inside the 16 MiB cap even when every tick differs',()=>{
+  const events=Array.from({length:12000},(_,i)=>({kind:'tick' as const,deltaMs:90+(i%23)}));
+  const text=encodeLssEvents([{kind:'start'},...events,{kind:'pause'}]);
+  expect(decodeLssEvents(text,12002)).toHaveLength(12002);
+  // 150 000 events at this worst-case spelling: under the 4 MiB E02 cap.
+  expect(text.length*150000/12002).toBeLessThan(LSS_SESSION_LIMITS.bytes);
+  for(const bad of ['x','s 100*1','s 0100','s 100*0','s 1e3'])expect(()=>decodeLssEvents(bad,100)).toThrow();
+  expect(()=>decodeLssEvents('s 100*101',100)).toThrow();
+ });
  it('rejects tampered journals, z, digest, policy, nesting and bounds atomically',async()=>{
   const v=JSON.parse(await serializeAnalysisSession({...base,lss:investigation([acquiredRecord()])}));
-  const rec=v.lss.records[0];
+  const rec=v.lss.records[0],j=v.lss.journals[0];
   const bad=[
    {...v,lssDigestSHA256:'0'.repeat(64)},{...v,lssPolicy:'x'},{...v,base:v},
-   {...v,lss:{...v.lss,records:[{...rec,journal:{...rec.journal,seedAtReset:rec.journal.seedAtReset+1}}]}},
-   {...v,lss:{...v.lss,records:[{...rec,journal:{...rec.journal,events:rec.journal.events.slice(0,-3)}}]}},
+   {...v,lss:{...v.lss,journals:[{...j,seedAtReset:j.seedAtReset+1}]}},
+   {...v,lss:{...v.lss,journals:[{...j,events:'s 100*19 p'}]}},
+   {...v,lss:{...v.lss,journals:[{...j,events:'s 100 100*19 p'}]}},
+   {...v,lss:{...v.lss,journals:[j,j]}},
+   {...v,lss:{...v.lss,records:[{...rec,journal:1}]}},
    {...v,lss:{...v.lss,records:[{...rec,zHex:'3d000000'}]}},
    {...v,lss:{...v.lss,records:[{...rec,control:{...rec.control,position:21}}]}},
    {...v,lss:{...v.lss,records:[{...rec,object:'NGC 4080'}]}},
    {...v,lss:{...v.lss,records:[{...rec,remarks:'a\tb'}]}},
    {...v,lss:{...v.lss,records:[{...rec,ra:rec.ra+1e-9}]}},
    {...v,lss:{...v.lss,description:'x'.repeat(LSS_SESSION_LIMITS.description+1)}},
+   {...v,lss:{...v.lss,description:'bad\u0001'}},
    {...v,lss:{...v.lss,extra:1}},
   ];
   for(const b of bad)await expect(read(JSON.stringify(b))).rejects.toBeTruthy();
  },60000);
  it('enforces the record and event budgets before any replay',async()=>{
   const {lss,digest}=await portableLssInvestigation(investigation([acquiredRecord()]));
-  const rec=(lss as {records:unknown[]}).records[0] as {journal:{events:unknown[]}};
-  const many={...(lss as object),records:Array.from({length:LSS_SESSION_LIMITS.records+1},(_,i)=>({...rec,id:i+1}))};
+  const p=lss as {records:{id:number}[];journals:{policy:string;seedAtReset:number;events:string}[]};
+  const many={...p,records:Array.from({length:LSS_SESSION_LIMITS.records+1},(_,i)=>({...p.records[0],id:i+1}))};
   await expect(admitLssInvestigation(many,digest)).rejects.toMatchObject({code:'bounds'});
-  const heavy={...(lss as object),records:Array.from({length:13},(_,i)=>({...rec,id:i+1,journal:{...rec.journal,events:Array.from({length:12000},()=>({kind:'tick',deltaMs:100}))}}))};
+  const heavy={...p,records:Array.from({length:13},(_,i)=>({...p.records[0],id:i+1,journal:i})),journals:Array.from({length:13},(_,i)=>({...p.journals[0],seedAtReset:i,events:'s 100*11998 p'}))};
   await expect(admitLssInvestigation(heavy,digest)).rejects.toMatchObject({code:'bounds'});
   expect(await admitLssInvestigation(lss,digest)).toMatchObject({field:1,telescope:0});
+ },60000);
+ it('save refuses an over-budget survey with its own error type',async()=>{
+  const r=acquiredRecord(),evs=Array.from({length:12000},()=>({kind:'tick' as const,deltaMs:100}));
+  const records=Array.from({length:13},(_,i)=>({...r,id:i+1,journal:{seedAtReset:i,events:evs}}));
+  await expect(serializeAnalysisSession({...base,lss:investigation(records)})).rejects.toBeInstanceOf(LssSessionError);
  },60000);
 });

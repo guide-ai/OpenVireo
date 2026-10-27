@@ -11,9 +11,10 @@ import {currentZ,type ShiftControl} from './spectrum';
 import type {JournalEvent} from './exposureJournal';
 import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
 
-export const LSS_LIMITS=Object.freeze({records:250,object:24,remarks:40});
+/** events: total journal events over the DISTINCT exposures behind the records (records from one exposure share it). */
+export const LSS_LIMITS=Object.freeze({records:250,object:24,remarks:40,events:150_000,description:4000});
 export class LssSurveyError extends Error{
- constructor(readonly code:'field'|'record'|'limit'|'pending'){super(`LSS survey: ${code}`);this.name='LssSurveyError';}
+ constructor(readonly code:'field'|'record'|'limit'|'events'|'pending'){super(`LSS survey: ${code}`);this.name='LssSurveyError';}
 }
 export type LssRecord=Readonly<{
  id:number;field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;
@@ -39,6 +40,7 @@ export function markLssListLoaded(s:LssSurveyState,field:LssFieldNumber):LssSurv
 /** Record Z: opens the dialog with the measured z. One dialog at a time. */
 export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'>):LssSurveyState{
  if(s.draft)throw new LssSurveyError('pending');
+ if(d.journal&&Array.isArray(d.journal.events)&&lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
  return Object.freeze({...s,draft:Object.freeze({...d,object:text(d.object,LSS_LIMITS.object),remarks:'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
@@ -48,9 +50,36 @@ export function editLssDraft(s:LssSurveyState,change:Readonly<{object?:string;re
  return Object.freeze({...s,draft:Object.freeze({...s.draft,object:change.object===undefined?s.draft.object:text(change.object,LSS_LIMITS.object),remarks:change.remarks===undefined?s.draft.remarks:text(change.remarks,LSS_LIMITS.remarks)})});
 }
 /** OK: appends exactly one record. */
+/** Compact journal text (session v27): 's' start, 'p' pause, a tick as its deltaMs, and n equal ticks as delta*n. */
+export function encodeLssEvents(events:readonly JournalEvent[]):string{
+ const out:string[]=[];let run:number|null=null,count=0;
+ const flush=()=>{if(run!==null)out.push(count>1?`${run}*${count}`:String(run));run=null;count=0;};
+ for(const e of events){if(e.kind==='tick'){if(e.deltaMs===run)count++;else{flush();run=e.deltaMs;count=1;}}else{flush();out.push(e.kind==='start'?'s':'p');}}
+ flush();return out.join(' ');
+}
+const TICK=/^(\d{1,7}(?:\.\d{1,17})?)(?:\*(\d{1,5}))?$/;
+/** Inverse of encodeLssEvents; rejects anything else and more than `max` events. */
+export function decodeLssEvents(text:string,max:number):readonly JournalEvent[]{
+ if(typeof text!=='string'||text.length>max*12)throw new LssSurveyError('record');
+ const events:JournalEvent[]=[];
+ for(const token of text?text.split(' '):[]){
+  if(token==='s'||token==='p'){events.push(Object.freeze({kind:token==='s'?'start' as const:'pause' as const}));}
+  else{const m=TICK.exec(token);if(!m)throw new LssSurveyError('record');const deltaMs=Number(m[1]),n=m[2]===undefined?1:Number(m[2]);if(!Number.isFinite(deltaMs)||n<2&&m[2]!==undefined||String(deltaMs)!==m[1])throw new LssSurveyError('record');for(let i=0;i<n;i++)events.push(Object.freeze({kind:'tick' as const,deltaMs}));}
+  if(events.length>max)throw new LssSurveyError('events');
+ }
+ return Object.freeze(events);
+}
+export const lssJournalKey=(policy:string,j:LssJournal)=>`${policy}|${j.seedAtReset}|${encodeLssEvents(j.events)}`;
+/** Events over distinct exposures, optionally with one more. */
+export function lssEventTotal(records:readonly Pick<LssRecord,'acquisitionPolicy'|'journal'>[],extra?:Pick<LssRecord,'acquisitionPolicy'|'journal'>):number{
+ const seen=new Set<string>();let total=0;
+ for(const r of extra?[...records,extra]:records){const k=lssJournalKey(r.acquisitionPolicy,r.journal);if(!seen.has(k)){seen.add(k);total+=r.journal.events.length;}}
+ return total;
+}
 export function confirmLssRecord(s:LssSurveyState):LssSurveyState{
  const d=s.draft;if(!d)throw new LssSurveyError('pending');
  if(s.records.length>=LSS_LIMITS.records)throw new LssSurveyError('limit');
+ if(lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  const v=hubbleVelocity(d.z),zSingle=Math.fround(d.z);
  const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle,zHex:hex32(zSingle),velocitySingle:v.storedKmS,velocityHex:v.storedHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control});
  return Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])});

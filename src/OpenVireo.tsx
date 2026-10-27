@@ -10,8 +10,6 @@ import {NO_SITE_OVERRIDES,effectiveObservatorySite,type SiteOverrides} from './c
 import {COMPILED_OPTICAL_OPTIONS,type OpticalOptions} from './core/opticalOptions';
 import {SLEW_LIMIT_LITERALS,manualLimitText,slewLimitAllows} from './core/slewLimit';
 import {OPTICAL_SLEW_LITERALS,opticalSlewBelowText} from './core/opticalSkyCoords';
-import {clockDriveUTMS} from './core/clockDrive';
-import {parseClockUTC} from './core/siteClock';
 import{readMotionPreferences,type MotionDirection,type MotionPreferences}from'./core/telescopeMotion';
 import type {ClusterSelectionWorkspace} from './core/clusterSelection';
 import type {ClusterComparisonWorkspace} from './core/clusterComparison';
@@ -22,10 +20,10 @@ import RunningClock from './RunningClock';
 import {useObservatoryClock} from './useObservatoryClock';
 import type {LssWedgeHandoff,LssSnapshot} from './LssSurvey';
 import type {LssInvestigation} from './io/lssInvestigation';
-import {siteClockReadingMS} from './core/siteClock';
-import {clockDrivePointing,createClockDrive,repointClockDrive} from './core/clockDrive';
+import {WEDGE_DEFAULT_OPTIONS} from './core/wedgePlot';
+import {clockDriveUTMS,clockDrivePointing,createClockDrive,repointClockDrive} from './core/clockDrive';
 import SiteClock from './SiteClock';
-import {INITIAL_SITE_CLOCK,type SiteClockWorkspace} from './core/siteClock';
+import {INITIAL_SITE_CLOCK,parseClockUTC,siteClockReadingMS,type SiteClockWorkspace} from './core/siteClock';
 import {galaxyTelescopeIndex,galaxyTargetTelescopeSupported} from './core/galaxyTelescope';
 import {hubblePointing,hubbleRowIdentity,hubbleRowStatus,type HubbleHotListRow} from './core/hubbleHotList';
 import {starTelescopeIndex} from './core/starTelescope';
@@ -200,9 +198,12 @@ export default function OpenVireo(){
   const lssPendingRestoreCount=useRef<number|null>(null);
   function restoreLss(lss:LssInvestigation|null){
    lssPendingRestoreCount.current=lss?lss.records.length:null;
+   const token=++lssToken.current;
+   // The wedge (if open, or if the file has options) loses its own LSS points and takes the file's options or the defaults.
+   if(lss?.wedgeOptions)setWedgeVisited(true);
+   setWedgeOptionsRestore({token,options:lss?.wedgeOptions??WEDGE_DEFAULT_OPTIONS});
    if(!lss&&!lssCurrent.current)return;
-   if(lss)setLssVisited(true);setLssRestore({token:++lssToken.current,investigation:lss});
-   if(lss?.wedgeOptions){setWedgeVisited(true);setWedgeOptionsRestore({token:lssToken.current,options:lss.wedgeOptions});}
+   if(lss)setLssVisited(true);setLssRestore({token,investigation:lss});
   }
   const [wedgeOwn,setWedgeOwn]=useState<(LssWedgeHandoff&{token:number})|null>(null),[wedgeAck,setWedgeAck]=useState<{token:number;accepted:boolean}|null>(null);
   // LSS Options is an aria-modal draft; its backdrop already blocks pointer hits, so the App only makes

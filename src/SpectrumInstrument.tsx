@@ -24,7 +24,7 @@ import { useEffect, useImperativeHandle, useMemo, useRef, useState, type ChangeE
 import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTROL, MAX_FILE_BYTES, measurementCsv, moveControl, parseLines, parseSpectrum, rebase, shiftedWavelength, type Measurement, type Sample } from './core/spectrum';
 import { readImportedSpectrum } from './io/spectrumFiles';
 import { MAX_SESSION_ROWS, readInvestigationSession, serializeAnalysisSession, type SessionObservation, type ObservatorySession } from './io/analysisSession';
-import type {LssInvestigation} from './io/lssInvestigation';
+import {LssSessionError,type LssInvestigation} from './io/lssInvestigation';
 import { formatFloat32, formatZ, spectrumPoints } from './view/spectrum';
 import type { RadioInvestigation, RadioRestoreBlock, RadioSaveBlock } from './core/radioInvestigation';
 import type { RadioInvestigationRecord } from './io/radioInvestigation';
@@ -144,7 +144,7 @@ export default function SpectrumInstrument({onPrepareLss,onRestoreLss,onPrepareR
       const saved=await serializeAnalysisSession({...(lss?{lss}:{}),...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(observatory?{observatory}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...(classificationWorkspaceUsed(classification)?{classification}:{}),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
       download(saved,'openvireo-session.json','application/json;charset=utf-8');if(radio.kind==='ready')radio.onSaved();setNotice(t('session.saved'));return true;
-    } catch {if(ticket===generation.current)setError(t('session.exportError'));return false;}
+    } catch(e) {if(ticket===generation.current)setError(e instanceof LssSessionError?t('lss.saveError'):t('session.exportError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
   async function importSession(event:ChangeEvent<HTMLInputElement>) {
