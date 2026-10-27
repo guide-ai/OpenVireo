@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1289 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged.",
+  "purpose": "Exact identity manifest for the 1312 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2).",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6446,6 +6446,121 @@
       "path": "data/hubble/pinned-pegasus-field.json",
       "bytes": 429151,
       "sha256": "61fc01293cab0c0eb1ec5f4247acfcda8393291cbf1284fc5fa1097ed89f879c"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field01.HTL",
+      "bytes": 1978,
+      "sha256": "4981140366916c6aa410afe7905a165bceb89af47686375c4f0cf60f42acbe9e"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field02.HTL",
+      "bytes": 2150,
+      "sha256": "994bfeb21bcde528faeb3969fb25c24fe7a0c8de8940c33beffec50248b4ec3d"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field03.HTL",
+      "bytes": 2150,
+      "sha256": "1b62cf132edca82187a793b6ed2671eea715b040b884412e6131cf0aa0a2e830"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field04.HTL",
+      "bytes": 1978,
+      "sha256": "d19f8c5b3fc159e991baaa4572c1357bff15bdfdf72e83062fadebd17eb5ea53"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field05.HTL",
+      "bytes": 2064,
+      "sha256": "7c2b82906a816398398ae1d62adb82d030675f28201623563b1bbf0baf90b8fe"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field06.HTL",
+      "bytes": 1806,
+      "sha256": "799d7c24623114f012899ad2b538fe8e128364e5f084816392a4243a822fa253"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field07.HTL",
+      "bytes": 2236,
+      "sha256": "ee4b402123321c5127badb72761e6f766205d5fc19f6877d6c90165def0d3d62"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field08.HTL",
+      "bytes": 2150,
+      "sha256": "ae677d270a1e11cf6a09bafa890716065c81b8a20e267570fa8c9b44599b3b2d"
+    },
+    {
+      "path": "public/original/hotlists/LSS_Field09.HTL",
+      "bytes": 2322,
+      "sha256": "b4ab710dd3adb9fe0f6cc980978688faa5c522dba233df972edcd8800d89350e"
+    },
+    {
+      "path": "data/lss/PROVENANCE.json",
+      "bytes": 8232,
+      "sha256": "8f627ee5b0815bb4c45d943b565885678c16f1895549f6aecffdf559485a56f3"
+    },
+    {
+      "path": "data/lss/lss-field-01.json",
+      "bytes": 250660,
+      "sha256": "21b46f92dcadc0c16b651becd1243338dd9a4a4a246e12ec76d19442835de1c4"
+    },
+    {
+      "path": "data/lss/lss-field-02.json",
+      "bytes": 433010,
+      "sha256": "cfd944fb4a1a9726aaaae21aa1126ad3ec94d6999fef103c7fdc52359d7a7adf"
+    },
+    {
+      "path": "data/lss/lss-field-03.json",
+      "bytes": 268287,
+      "sha256": "881839bab6ead62cc74e3d8b10b6b5aecc1441727cf03536dbb60f1656794f62"
+    },
+    {
+      "path": "data/lss/lss-field-04.json",
+      "bytes": 241350,
+      "sha256": "056e86b8ce817a9eb42db579adfb012256b3abd81ffe2a8b496f171af02c3d60"
+    },
+    {
+      "path": "data/lss/lss-field-05.json",
+      "bytes": 427096,
+      "sha256": "8b243edcda3ac3064bfa17c0b38f3a6c4253edec9c3510f48aa862e1ff912341"
+    },
+    {
+      "path": "data/lss/lss-field-06.json",
+      "bytes": 540229,
+      "sha256": "4963c08eae1a71b267fe2feb8424a8c9a1a8df78c5ba3a0b2981aa3d56bf2644"
+    },
+    {
+      "path": "data/lss/lss-field-07.json",
+      "bytes": 332816,
+      "sha256": "b7d0c5c4d3a7c3e72df0a550a91d53ad13788ddb10c444fd1a1fc3f62b8c4c97"
+    },
+    {
+      "path": "data/lss/lss-field-08.json",
+      "bytes": 719064,
+      "sha256": "9f7687e1f2c55d2e91c7cd3041addcf8cf7c41123a92eb83cdfe4f2ba9cfef4b"
+    },
+    {
+      "path": "data/lss/lss-field-09.json",
+      "bytes": 680122,
+      "sha256": "7ebf9f9f19d6dffe14c96bcad7c99369d1cf8cf77ba5a65eb975ecaac141ab54"
+    },
+    {
+      "path": "data/lss/lss-witnesses.json",
+      "bytes": 82351,
+      "sha256": "7cf5ab6af454666ab344cf2668998b2a74107499c2d95804fe390d61aa132ddf"
+    },
+    {
+      "path": "public/original/hotlists/LSSFields.LST",
+      "bytes": 460,
+      "sha256": "1c9cdcc56bd3b5cd801f519104e95bb671b2305818afb47ad8369f04af64070f"
+    },
+    {
+      "path": "public/original/images/GLIMAGES.LST",
+      "bytes": 10103,
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01"
+    },
+    {
+      "path": "public/original/spectra/GLXYSP.LST",
+      "bytes": 576,
+      "sha256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a"
     }
   ]
 }

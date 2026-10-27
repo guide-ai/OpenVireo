@@ -1,0 +1,307 @@
+{
+ "schema": 1,
+ "scope": "Bounded compact-GSC read witnesses (N2230, N3000) for the 219 pointings of LSS_Field01..09.HTL, with in-coverage CLEA_VStrs.dat records, CLEA_QSO.DAT positions and GLIMAGES.LST match indices; field engine input (src/core/fieldPack.ts).",
+ "approval": {
+  "date": "2026-10-27",
+  "text": "AGENTS.md: publication of bounded GSC subsets from the compact bands N2230 and N3000, solely for the LSS survey strip (RA 12-16 h, Dec 26.7-31.8 deg), together with their read witnesses and provenance, on the same terms as the published Hubble fields. Not either complete band, the full GSC, LSSFields.LST, GLXYSP.LST or NGC4670.SP. Extended the same day (AGENTS.md): the whole records that strip pointings near its edges need (their +-0.375 deg areas reach Dec 26.35-32.13 deg; 558 records) and position-only scan and binary-search witnesses outside the strip."
+ },
+ "archive": {
+  "name": "CLEA_Vireo.zip",
+  "sha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b"
+ },
+ "sources": {
+  "CLEA_VEO.exe": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "CLEA_GLX.DAT": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+  "CLEA_VStrs.dat": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+  "CLEA_QSO.DAT": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+  "GLIMAGES.LST": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+  "REGIONS.BIN": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05",
+  "CLEA_GLX.NDX": "312fe73d57da2ce0abfc89c78a852e81f17b0a81706bc4295af51a5585144134"
+ },
+ "generator": "analysis/lss-packs/scripts/build_packs.py (research root; static reads of extracted archive members, never CLEA execution)",
+ "readWitnessSemantics": {
+  "wholeRecord": "54 hex digits: the 27-byte compact record, published only when its position lies inside the area of at least one listed pointing",
+  "positionOnly": "16 hex digits: the first 8 bytes (packed Int32 RA, Int32 Dec), for every other record the binary search probes or the sequential scan reads; the engine refuses a position-only witness that falls inside an area",
+  "photographs": "Per-pointing GLIMAGES.LST match indices; the byte-exact GLIMAGES.LST (approved 2026-10-27, public/original/images) is shipped separately and reproduces these entries (src/core/lssLists.ts packWithPhotographs, lssPacks.test.ts)"
+ },
+ "fields": [
+  {
+   "field": 1,
+   "path": "data/lss/lss-field-01.json",
+   "bytes": 250660,
+   "sha256": "21b46f92dcadc0c16b651becd1243338dd9a4a4a246e12ec76d19442835de1c4",
+   "rows": 23,
+   "pointings": 23,
+   "reads": {
+    "N2230": [
+     4172,
+     654
+    ],
+    "N3000": [
+     3304,
+     269
+    ]
+   },
+   "variables": 17,
+   "qso": 9,
+   "photographs": 4
+  },
+  {
+   "field": 2,
+   "path": "data/lss/lss-field-02.json",
+   "bytes": 433010,
+   "sha256": "cfd944fb4a1a9726aaaae21aa1126ad3ec94d6999fef103c7fdc52359d7a7adf",
+   "rows": 25,
+   "pointings": 25,
+   "reads": {
+    "N2230": [
+     9159,
+     1315
+    ],
+    "N3000": [
+     3768,
+     328
+    ]
+   },
+   "variables": 26,
+   "qso": 13,
+   "photographs": 3
+  },
+  {
+   "field": 3,
+   "path": "data/lss/lss-field-03.json",
+   "bytes": 268287,
+   "sha256": "881839bab6ead62cc74e3d8b10b6b5aecc1441727cf03536dbb60f1656794f62",
+   "rows": 25,
+   "pointings": 25,
+   "reads": {
+    "N2230": [
+     5864,
+     1115
+    ],
+    "N3000": [
+     1832,
+     97
+    ]
+   },
+   "variables": 19,
+   "qso": 9,
+   "photographs": 1
+  },
+  {
+   "field": 4,
+   "path": "data/lss/lss-field-04.json",
+   "bytes": 241350,
+   "sha256": "056e86b8ce817a9eb42db579adfb012256b3abd81ffe2a8b496f171af02c3d60",
+   "rows": 23,
+   "pointings": 23,
+   "reads": {
+    "N2230": [
+     4803,
+     1229
+    ],
+    "N3000": [
+     1686,
+     190
+    ]
+   },
+   "variables": 15,
+   "qso": 10,
+   "photographs": 0
+  },
+  {
+   "field": 5,
+   "path": "data/lss/lss-field-05.json",
+   "bytes": 427096,
+   "sha256": "8b243edcda3ac3064bfa17c0b38f3a6c4253edec9c3510f48aa862e1ff912341",
+   "rows": 24,
+   "pointings": 24,
+   "reads": {
+    "N2230": [
+     6990,
+     866
+    ],
+    "N3000": [
+     5672,
+     878
+    ]
+   },
+   "variables": 17,
+   "qso": 9,
+   "photographs": 0
+  },
+  {
+   "field": 6,
+   "path": "data/lss/lss-field-06.json",
+   "bytes": 540229,
+   "sha256": "4963c08eae1a71b267fe2feb8424a8c9a1a8df78c5ba3a0b2981aa3d56bf2644",
+   "rows": 21,
+   "pointings": 21,
+   "reads": {
+    "N2230": [
+     10575,
+     1352
+    ],
+    "N3000": [
+     5902,
+     539
+    ]
+   },
+   "variables": 21,
+   "qso": 10,
+   "photographs": 0
+  },
+  {
+   "field": 7,
+   "path": "data/lss/lss-field-07.json",
+   "bytes": 332816,
+   "sha256": "b7d0c5c4d3a7c3e72df0a550a91d53ad13788ddb10c444fd1a1fc3f62b8c4c97",
+   "rows": 26,
+   "pointings": 26,
+   "reads": {
+    "N2230": [
+     4186,
+     840
+    ],
+    "N3000": [
+     5222,
+     923
+    ]
+   },
+   "variables": 1,
+   "qso": 2,
+   "photographs": 0
+  },
+  {
+   "field": 8,
+   "path": "data/lss/lss-field-08.json",
+   "bytes": 719064,
+   "sha256": "9f7687e1f2c55d2e91c7cd3041addcf8cf7c41123a92eb83cdfe4f2ba9cfef4b",
+   "rows": 25,
+   "pointings": 24,
+   "reads": {
+    "N2230": [
+     10790,
+     1431
+    ],
+    "N3000": [
+     11228,
+     1144
+    ]
+   },
+   "variables": 10,
+   "qso": 9,
+   "photographs": 0
+  },
+  {
+   "field": 9,
+   "path": "data/lss/lss-field-09.json",
+   "bytes": 680122,
+   "sha256": "7ebf9f9f19d6dffe14c96bcad7c99369d1cf8cf77ba5a65eb975ecaac141ab54",
+   "rows": 27,
+   "pointings": 25,
+   "reads": {
+    "N2230": [
+     12729,
+     1752
+    ],
+    "N3000": [
+     7843,
+     875
+    ]
+   },
+   "variables": 9,
+   "qso": 5,
+   "photographs": 0
+  }
+ ],
+ "witnesses": "data/lss/lss-witnesses.json",
+ "limits": [
+  "Not the full N2230/N3000 bands or the GSC",
+  "Completeness of each pack holds only for its listed pointings",
+  "No original-runtime equivalence; Number, not x87"
+ ],
+ "readCategories": {
+  "wholeInStrip": {
+   "count": 15239,
+   "why": "Whole 27-byte records inside a listed pointing area with Dec 26.7-31.8 deg: candidates the admission predicate reads in full (position, magnitude); admitted stars come from these."
+  },
+  "wholeEdge": {
+   "count": 558,
+   "why": "Whole records inside the area of a pointing near the strip edge, at Dec 26.35-26.7 or 31.8-32.13 deg (edge approval)."
+  },
+  "positionScan": {
+   "count": 99583,
+   "why": "8-byte RA/Dec witnesses of records the sequential scan (0x59b030..0x59b1f7) reads from the search landing to the first record beyond the area RA maximum; the band is sorted by RA only, so these span the band Dec range; each is rejected by position. Of all position-only witnesses 24330 lie inside Dec 26.7-31.8."
+  },
+  "positionProbeOnly": {
+   "count": 345,
+   "why": "8-byte witnesses of binary-search probes (0x59af80..0x59b026) outside every scan; only their packed RA is compared; they lie at RA 5.4-20.1 h."
+  },
+  "perField": {
+   "1": {
+    "wholeInStrip": 902,
+    "wholeEdge": 21,
+    "positionScan": 6521,
+    "positionProbeOnly": 32,
+    "positionInStrip": 1021
+   },
+   "2": {
+    "wholeInStrip": 1558,
+    "wholeEdge": 85,
+    "positionScan": 11267,
+    "positionProbeOnly": 17,
+    "positionInStrip": 2088
+   },
+   "3": {
+    "wholeInStrip": 1195,
+    "wholeEdge": 17,
+    "positionScan": 6452,
+    "positionProbeOnly": 32,
+    "positionInStrip": 1398
+   },
+   "4": {
+    "wholeInStrip": 1381,
+    "wholeEdge": 38,
+    "positionScan": 5050,
+    "positionProbeOnly": 20,
+    "positionInStrip": 1144
+   },
+   "5": {
+    "wholeInStrip": 1678,
+    "wholeEdge": 66,
+    "positionScan": 10888,
+    "positionProbeOnly": 30,
+    "positionInStrip": 3056
+   },
+   "6": {
+    "wholeInStrip": 1768,
+    "wholeEdge": 123,
+    "positionScan": 14525,
+    "positionProbeOnly": 61,
+    "positionInStrip": 4386
+   },
+   "7": {
+    "wholeInStrip": 1708,
+    "wholeEdge": 55,
+    "positionScan": 7618,
+    "positionProbeOnly": 27,
+    "positionInStrip": 1239
+   },
+   "8": {
+    "wholeInStrip": 2519,
+    "wholeEdge": 56,
+    "positionScan": 19363,
+    "positionProbeOnly": 80,
+    "positionInStrip": 5123
+   },
+   "9": {
+    "wholeInStrip": 2530,
+    "wholeEdge": 97,
+    "positionScan": 17899,
+    "positionProbeOnly": 46,
+    "positionInStrip": 4875
+   }
+  }
+ }
+}

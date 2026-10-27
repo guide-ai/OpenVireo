@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "scope": "All1289files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC);no executable,installer,archive or additional fullGSCfile is included.",
-  "totalFiles": 1289,
-  "totalBytes": 78949101,
+  "scope": "All1312files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2);no executable,installer,archive or additional fullGSCfile is included.",
+  "totalFiles": 1312,
+  "totalBytes": 82962291,
   "extensions": {
-    ".json": 1031,
-    ".LST": 3,
-    ".HTL": 2,
+    ".json": 1042,
+    ".LST": 6,
+    ".HTL": 11,
     ".SP": 81,
     ".dat": 1,
     ".png": 170,
@@ -86,19 +86,19 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/hotlists": {
-      "files": 2,
-      "bytes": 3182,
+      "files": 12,
+      "bytes": 22476,
       "materialClass": "unchanged-original-binary-resource",
-      "description": "1unchanged original hot list:PLEIADES.HTL from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b),entry program files/CLEA/VIREO/PLEIADES.HTL;file SHA-256 f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2;24records of86bytes;also byte-exact Hubble.HTL from the same archive,program files/CLEA/VIREO/Hubble.HTL,SHA-25602cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986;13records of86bytes",
-      "usedBy": "Explicit observatory Hot List Load exercise list(same-origin fetch,size and SHA-256 checked before parsing);supplies E04 identities and coordinates only,16rows map to existing admitted photometer targets and8remain unavailable;original Hubble list with separately declared supported exact-center acquisition entries and unavailable rows",
+      "description": "1unchanged original hot list:PLEIADES.HTL from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b),entry program files/CLEA/VIREO/PLEIADES.HTL;file SHA-256 f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2;24records of86bytes;also byte-exact Hubble.HTL from the same archive,program files/CLEA/VIREO/Hubble.HTL,SHA-25602cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986;13records of86bytes;also nine byte-exact LSS survey lists LSS_Field01..09.HTL from the same archive,program files/CLEA/VIREO/LSS_Field0N.HTL(N=1..9),219records of86bytes in total(23,25,25,23,24,21,26,25,27);each file size and SHA-256 recorded in LOCAL-RESOURCES.json and src/core/lssFields.ts;also byte-exact LSSFields.LST(program files/CLEA/VIREO/LSSFields.LST,460bytes,9 LSS field rows: list file,centre RA h,centre Dec deg,label),SHA-256 1c9cdcc56bd3b5cd801f519104e95bb671b2305818afb47ad8369f04af64070f",
+      "usedBy": "Explicit observatory Hot List Load exercise list(same-origin fetch,size and SHA-256 checked before parsing);supplies E04 identities and coordinates only,16rows map to existing admitted photometer targets and8remain unavailable;original Hubble list with separately declared supported exact-center acquisition entries and unavailable rows;LSS_Field01..09.HTL:E02 Large-Scale Structure survey field lists(identities and rounded coordinates only;acquisition availability is decided separately per row);E02 field picker: original field names and centres",
       "upstreamStatus": "Included under the second user approval(2026-10-26,AGENTS.md)on the basis of the recorded CLEA License.rtf terms(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     },
     "public/original/images": {
-      "files": 170,
-      "bytes": 2079004,
+      "files": 171,
+      "bytes": 2089107,
       "materialClass": "lossless-image-conversion",
-      "description": "170PNG conversions of original BMPs;verified RGB preservation",
-      "usedBy": "Runtime galaxy reference-image cards",
+      "description": "170PNG conversions of original BMPs;verified RGB preservation;also byte-exact GLIMAGES.LST(program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST,10103bytes,183 photographic-list rows;only positions are read),SHA-256 fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
+      "usedBy": "Runtime galaxy reference-image cards;Field engine photographic-image gate (positions only;no image is loaded)",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/radio": {
@@ -118,11 +118,11 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/spectra": {
-      "files": 23,
-      "bytes": 664520,
+      "files": 24,
+      "bytes": 665096,
       "materialClass": "unchanged-original-text-resource",
-      "description": "23unchanged original SP files",
-      "usedBy": "Runtime galaxy library and template spectra",
+      "description": "23unchanged original SP files;also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+      "usedBy": "Runtime galaxy library and template spectra;LSS spectrum-mapping gate: a selected galaxy with its own library spectrum is not given the template",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/catalogs": {
@@ -132,6 +132,14 @@
       "description": "Byte-exact CLEA_GLX.DAT from CLEA_Vireo.zip SHA-25658dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b,program files/CLEA/VIREO/CLEA_GLX.DAT;SHA-2564c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753;24069records of59bytes",
       "usedBy": "Pure original catalog decoder and bounded Hubble target source-identity controls;not a complete stellar background or full-sky acquisition claim",
       "upstreamStatus": "Included under the explicit second user approval(2026-10-26,AGENTS.md),based on CLEA License.rtf free noncommercial student copies/no distribution for profit.Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.Source-specific upstream terms/identification remain uncertain;no universal open license or original-runtime equivalence is asserted."
+    },
+    "data/lss": {
+      "files": 11,
+      "bytes": 3983217,
+      "materialClass": "bounded-original-read-witness-and-derived-provenance",
+      "description": "Nine bounded field packs (compact GSC N2230/N3000 whole records inside listed pointing areas and 8-byte position witnesses for other read records, in-coverage CLEA_VStrs.dat records, CLEA_QSO.DAT positions, GLIMAGES.LST match indices), independent Python witnesses and provenance for the 219 LSS_Field01..09.HTL pointings",
+      "usedBy": "E02 LSS survey: src/io/lssPack.ts -> src/core/fieldEngine.ts",
+      "upstreamStatus": "Included under the user approval of 2026-10-27 (AGENTS.md). Project CLEA, Gettysburg College (originator); NSF and Gettysburg College (supporters); GSC source-specific terms remain uncertain. Not the full GSC or either complete band; no original-runtime equivalence."
     }
   },
   "authoredExamples": [
@@ -149,7 +157,10 @@
     "pulsarCatalog": "Pulsars.dat:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Likely derived from the ATNF Pulsar Catalogue(Manchester,Hobbs,Teoh&Hobbs2005,AJ129,1993);this upstream attribution is uncertain and recorded as such.",
     "pleiadesHotList": "PLEIADES.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Original VIREO exercise list;no further upstream attribution is asserted.",
     "hubbleCatalogAndHotList": "CLEA_GLX.DAT and Hubble.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO catalogue and exercise list,approved2026-10-26;individual upstream catalogue/source-policy identification remains uncertain.No universal open license or native-runtime equivalence is asserted.",
-    "pegasusField": "data/hubble/pinned-pegasus-field.json and pegasus-*.json(2026-10-27 approval):bounded compact-GSC N0000/N0730 read witnesses,CLEA_GLX.DAT galaxy records and one CLEA_VStrs.dat record(HI Peg)for the NGC7501 field only,with derived provenance,V references and independent vectors.Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters);GSC source-specific terms remain uncertain.Not the full GSC,not new observations and no native-runtime equivalence is asserted."
+    "pegasusField": "data/hubble/pinned-pegasus-field.json and pegasus-*.json(2026-10-27 approval):bounded compact-GSC N0000/N0730 read witnesses,CLEA_GLX.DAT galaxy records and one CLEA_VStrs.dat record(HI Peg)for the NGC7501 field only,with derived provenance,V references and independent vectors.Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters);GSC source-specific terms remain uncertain.Not the full GSC,not new observations and no native-runtime equivalence is asserted.",
+    "lssHotLists": "LSS_Field01..09.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO LSS exercise lists,included under the second user approval of2026-10-26.Each row names a CLEA_GLX.DAT galaxy;upstream catalogue identification remains uncertain.LSSFields.LST(the original field labels)is NOT included;field labels in the web app are a labelled adaptation from these file names.",
+    "lssFieldPacks": "data/lss(2026-10-27 approval):bounded compact-GSC N2230/N3000 read witnesses for the LSS strip pointings only,with CLEA_VStrs.dat records,CLEA_QSO.DAT positions and GLIMAGES.LST match indices.Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters);GSC source-specific terms remain uncertain.Not the full GSC,not new observations and no native-runtime equivalence is asserted.",
+    "lssListsAndGalaxyLists": "LSSFields.LST,GLIMAGES.LST and GLXYSP.LST:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO lists approved2026-10-27(groups1 and2);upstream source identification remains uncertain.No universal open license or native-runtime equivalence is asserted."
   },
   "sourceNotices": [
     {
