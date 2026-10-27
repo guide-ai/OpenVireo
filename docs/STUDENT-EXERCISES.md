@@ -11,7 +11,9 @@
 
 **Status** — Not closed. Only 3 of 13 galaxies can be acquired (audit §3); phase 2 work.
 
-**Evidence** — Existing Hubble guide; audit §3. No closure claimed.
+**Evidence** — Existing Hubble guide; audit §3. Phase-1 item 1.12 is technically validated and reviewed (2026-10-27): confirmed analyser z and derived velocity reach own Observational Results, deterministic text/CSV downloads and scoped browser printing; five actual-App cases include acquisition, confirmation/cancel, provenance/status, Unicode labels, Save/fresh Restore and append. Research notes on the necessary analyser/Hubble pages are folded while critical model and identity limits stay visible (1.11). Build/typecheck, 3049 unit tests, 1281 resource hashes and 90 distinct E2E cases passed; desktop/mobile visual inspection and separate high functionality review/closure completed. `tests/own-observation-results.spec.ts` and `src/core/ownObservationResults.test.ts` preserve executable evidence. Hubble acquisition remains 3 of 13; E01 is not closed.
+
+**Web adaptations** — Observational Results in the analyser lists only your confirmed z with a derived v = c z (float32, Number arithmetic) as a browser table with text/CSV downloads and browser printing; no native results file, record layout or printing equivalence is claimed.
 
 ## E02 · Large-scale structure (LSS)
 **Criteria**
@@ -33,7 +35,7 @@
 - S6. Save the investigation, reload, and Restore it in a fresh context with the same classification, line and width.
 - S7. View the sampled/combined traces reversed with Reverse trace displays (view-only).
 
-**Status** — Scoped web student path complete, technically validated and reviewed on 2026-10-27 (guide 1.6 and tools 1.10a/b/c). Together with E04, E05 and E06 this closes 4 of the 7 agreed web exercise paths. Items 1.11 (student-mode notes) and 1.12 (own results to Observational Results) remain later phase-1 work; this status does not close every native classification branch.
+**Status** — Scoped web student path complete, technically validated and reviewed on 2026-10-27 (guide 1.6 and tools 1.10a/b/c). Together with E04, E05 and E06 this closes 4 of the 7 agreed web exercise paths. Phase-1 item 1.12 now delivers confirmed analyser redshift results, and item 1.11 folds technical notes on the necessary analyser/Hubble pages; other contexts remain outside that bounded change. This status does not close every native classification branch.
 
 **Evidence** — Build/typecheck passed; 3039 unit tests across 246 files and all 1281 resource size/SHA checks passed. All 13 actual-App guide/reverse-trace cases passed, including all 25 practice loads, a wide equivalent width, keyboard/source changes, errors/cancellation and exact Save/fresh-context Restore; 141 affected browser regressions and two desktop/mobile visual cases passed without skips or retries. Three independent analytic/default-output probes passed on the earlier identical numerical runtime. Separate Opus 5.5 high whole-functionality review and closure review completed; both confirmed guide defects were independently reproduced and corrected before closure. Executable evidence: `tests/classification-guide.spec.ts`, `tests/classification-reverse-trace.spec.ts`, `src/core/classificationLab.test.ts`, `src/core/sampledTraceReverse.test.ts` and the width/cursor tests. No native-runtime equivalence or answer grading is claimed.
 

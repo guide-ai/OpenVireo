@@ -15,7 +15,7 @@ export default function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRe
    <li><h3>{t('lab.acquireTitle')}</h3><p>{t('lab.acquireHelp')}</p><p>{t('lab.acquisitionTime')}</p><button className="secondary-button" onClick={()=>go('galaxy-exposure')}>{t('lab.goExposure')}</button></li>
    <li><h3>{t('lab.measureTitle')}</h3><p>{t('lab.measureHelp')}</p><p>{t('lab.stepHelp')}</p><button className="secondary-button" onClick={()=>go('spectrum')}>{t('lab.goAnalyzer')}</button></li>
    <li><h3>{t('lab.hubbleTitle')}</h3><p>{t('lab.hubbleHelp')}</p><p>{t('lab.recipeHelp')}</p><button className="secondary-button" onClick={()=>go('hubble')}>{t('lab.goHubble')}</button></li>
-   <li><h3>{t('lab.saveTitle')}</h3><p>{t('lab.saveHelp')}</p><p>{t('lab.sspHelp')}</p></li>
+   <li><h3>{t('lab.saveTitle')}</h3><p>{t('lab.saveHelp')}</p><p>{t('lab.resultsHelp')}</p><p>{t('lab.sspHelp')}</p></li>
    <li><h3>{t('lab.interpretTitle')}</h3><p>{t('lab.interpretHelp')}</p><ul>{(['data','fit','errors','environment']as const).map(key=><li key={key}>{t(`lab.reflect.${key}`)}</li>)}</ul></li>
   </ol>
   <section aria-labelledby="lab-targets-heading"><h3 id="lab-targets-heading">{t('lab.targets')}</h3><p>{t('lab.referencesHelp')}</p><ul className="lab-targets">{progress.targets.map(p=>{const identity=galaxyIdentity(p.id),reference=galaxyDistanceReference(p.id);return <li key={p.id} data-testid={`lab-target-${p.id}`}><h4>{p.id} · {identity.label}</h4><dl>{(['archived','measured','inHubble']as const).map(key=><div key={key}><dt>{t(`lab.status.${key}`)}</dt><dd>{t(p[key]?'lab.yes':'lab.no')}</dd></div>)}</dl><p>{t('lab.magnitude',{value:formatNumber(reference.apparentV,{minimumFractionDigits:1,maximumFractionDigits:1}),source:reference.source})}</p></li>;})}</ul></section>

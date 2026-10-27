@@ -23,6 +23,6 @@ export default function VelocityAnalysis({rows:allRows,draft,onChange}:{rows:rea
     <div className="velocity-check"><label className="field-label" htmlFor="velocity-record">{t('velocity.measurement')}</label><select id="velocity-record" value={current?String(current.row.id):''} onChange={e=>onChange({measurementId:Number(e.target.value),answerText:'',checked:false})}>{rows.map(row=><option key={row.id} value={row.id}>{row.id} · {row.object}</option>)}</select>
     <label className="field-label" htmlFor="velocity-answer">{t('velocity.answer')}</label><input id="velocity-answer" type="text" inputMode="decimal" maxLength={80} value={draft.answerText} onChange={e=>onChange({...draft,answerText:e.target.value,checked:false})}/><button className="secondary-button" onClick={()=>onChange({...draft,checked:true})}>{t('velocity.check')}</button>
     <p className="velocity-feedback" role="status">{feedback}</p>{error&&<p role="alert" className="error">{error}</p>}</div></>:<p>{t(allRows.some(r=>r.origin?.kind==='catalog-star-acquisition')?'continuity.velocityExcluded':'velocity.empty')}</p>}
-    <p className="velocity-boundary">{t('velocity.scope')}</p>
+    <p className="velocity-boundary">{t('velocity.scope')}</p><details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('velocity.persistence')}</p></details>
   </div></details>;
 }
