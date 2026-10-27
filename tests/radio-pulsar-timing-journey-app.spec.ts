@@ -1,4 +1,5 @@
 import {test,expect,type FileChooser,type Locator,type Page,type TestInfo} from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 // R-RX24 (docs/RADIO-PULSAR-TIMING-JOURNEY.md): one connected learner journey in the actual App. Exercise, options and an
@@ -18,7 +19,6 @@ import {readFile} from 'node:fs/promises';
 // native oracles. Helpers are copied from tests/radio-receiver-record-app.spec.ts, tests/radio-receiver-app.spec.ts,
 // tests/radio-receiver-record-save-app.spec.ts, tests/pulsar-load-save-app.spec.ts and tests/pulsar-manual-timing-app.spec.ts.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
@@ -112,7 +112,7 @@ const timeText=(px:number)=>`${Math.floor(px/100)}.${String(px%100).padStart(2,'
 async function startApp(page:Page){
  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 /** Phase 1 composition: the synthetic catalog and this journey's UT are supplied FIRST, then Start pulsar exercise runs the
@@ -133,7 +133,7 @@ async function setupRadio(page:Page){
 type GuideState={next:string|null;done:Record<string,string|null>};
 /** Opens the Pulsar guide from the header, reads every step's state (recomputed from the App state), and closes it. */
 async function guide(page:Page):Promise<GuideState>{
- await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
  const done:Record<string,string|null>={};
  for(const step of ['setup','catalog','point','channels','capture','period','delay','investigation','save'])done[step]=await id(page,`pulsar-lab-step-${step}`).getAttribute('data-done');
  const next=await id(page,'pulsar-lab-next').getAttribute('data-next');
@@ -375,7 +375,7 @@ async function journey(page:Page,info:TestInfo,input:Input){
  // verified .PLR copy is optional and not counted.
  const recorded=await guide(page);
  expect(recorded).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
- await id(page,'pulsar-lab-open').click();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();
  await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 pulsar steps done.');
  await expect(id(page,'pulsar-lab-status-period')).toHaveText('Reading recorded (not checked for correctness)');
  await expect(id(page,'pulsar-lab-status-investigation')).toHaveText('Not yet for this capture and these rows.');

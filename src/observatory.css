@@ -23,7 +23,7 @@
 
 @media(min-width:1100px){
  .portal-header{position:fixed;inset:0 auto 0 0;width:var(--ov-sidebar-width);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
- #root{padding-left:var(--ov-sidebar-width)}
+ body{padding-left:var(--ov-sidebar-width)}
 }
 @media(max-width:1099.98px){
  .portal-header{border-right:0;border-bottom:1px solid var(--ov-chrome-border);display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top theme" "nav nav";align-items:center;gap:12px 16px;padding:12px max(16px,calc((100vw - 1500px)/2))}
@@ -34,12 +34,24 @@
  .nav-group-items{flex-direction:row;flex-wrap:wrap;gap:4px}
  .portal-header nav button{width:auto;min-height:36px;padding:6px 12px;background:rgb(255 255 255 / .06)}
 }
+/* Phones: the groups and theme switch fold behind the "Tools" disclosure button. */
+.tools-toggle{display:none}
+.portal-panel{display:contents}
 @media(max-width:599.98px){
- .portal-header{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "theme" "nav";padding:12px}
+ .portal-header{display:block;padding:10px 12px}
+ .portal-top{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px}
  .portal-status{display:none}
+ .tools-toggle{display:inline-flex;min-height:40px;padding:6px 14px;gap:8px;border:1px solid var(--ov-chrome-border);border-radius:var(--ov-radius-pill);background:var(--ov-chrome-hover);color:var(--ov-chrome-text);font-weight:600}
+ .tools-toggle:hover:not(:disabled){background:var(--ov-chrome-hover);border-color:var(--ov-chrome-muted);color:var(--ov-chrome-text)}
+ .tools-toggle:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
+ .tools-toggle svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+ .tools-toggle[aria-expanded=true],.tools-toggle[aria-expanded=true]:hover:not(:disabled){background:var(--ov-chrome-active-bg);color:var(--ov-chrome-active-text);border-color:var(--ov-chrome-active-bg)}
+ .portal-panel{display:none}
+ .tools-open .portal-panel{display:flex;flex-direction:column;gap:12px;padding-top:12px}
  .portal-header nav{display:flex;flex-direction:column;gap:10px}
  .nav-group-items{display:grid;grid-template-columns:1fr 1fr;gap:4px}
  .portal-header nav button{width:100%;min-height:40px;justify-content:flex-start}
+ .portal-footer{margin:0;padding:0}
  .theme-switch{width:100%}
 }
 
@@ -275,6 +287,6 @@
 
 /* ── Print: app chrome is never printed ── */
 @media print{
- #root{padding-left:0!important}
+ body{padding-left:0!important}
  .portal-header,.investigation-toolbar{display:none!important}
 }

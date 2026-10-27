@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 // Actual App flows of R-RX4 (docs/RADIO-RECEIVER-RECORD.md): Record → Receive → Stop → Identify → modal Properties → Save
@@ -8,7 +9,6 @@ import {readFile} from 'node:fs/promises';
 // App, browser history, the browser clock control and the test-only read hold. The catalog and the PLR text are synthetic;
 // recordings are model-generated captures, not observations; expected strings are the chosen web contract, not native oracles.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
@@ -53,7 +53,7 @@ const UT='2026-10-24T12:00:00';
 async function startApp(page:Page){
  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 async function setupReceiver(page:Page){
@@ -68,8 +68,8 @@ async function setupReceiver(page:Page){
 async function openReceiver(page:Page){
  await id(page,'antenna-receiver-button').click();await expect(id(page,'receiver-card-0')).toBeVisible();await expect(id(page,'receiver-record-disp')).toHaveText('Off');
 }
-const toAnalysis=async(page:Page)=>{await nav(page,'Radio data').click();await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);};
-const toRadio=async(page:Page)=>{await nav(page,'Radio telescope').click();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);};
+const toAnalysis=async(page:Page)=>{await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);};
+const toRadio=async(page:Page)=>{await clickHeaderTool(page,'Radio telescope');await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);};
 async function untilFinished(page:Page){
  for(let i=0;i<80&&await id(page,'receiver-workspace').getAttribute('data-timer')==='true';i++)await advance(page,200);
  await expect(id(page,'receiver-workspace')).toHaveAttribute('data-timer','false');

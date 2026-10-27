@@ -1,7 +1,7 @@
 /* OpenVireo design tokens. Plain CSS custom properties, no runtime dependency.
  * Light values live on :root. Dark values apply when the system prefers dark and the
  * user has not forced light, or when the user forces dark ([data-theme=dark] on <html>,
- * set before first paint by index.html and by src/theme/theme.ts).
+ * set before first paint by index.html and by src/theme/theme.ts). Dark applies to screen only.
  * Scientific rasters, palettes and plotted traces never read these tokens; chart panels
  * keep their own fixed colours so they stay readable in both themes. */
 :root{
@@ -82,7 +82,7 @@
  --ov-duration:140ms;
  --ov-sidebar-width:248px;
 }
-@media (prefers-color-scheme:dark){
+@media screen and (prefers-color-scheme:dark){
  :root:not([data-theme=light]){
   color-scheme:dark;
   --ov-bg:#0d1519;
@@ -124,6 +124,8 @@
   --ov-shadow-lg:0 24px 64px rgb(0 0 0 / .55);
  }
 }
+/* Print always uses the light values. */
+@media screen{
 :root[data-theme=dark]{
  color-scheme:dark;
  --ov-bg:#0d1519;
@@ -163,6 +165,7 @@
  --ov-shadow-sm:0 1px 2px rgb(0 0 0 / .3);
  --ov-shadow-md:0 2px 4px rgb(0 0 0 / .25),0 8px 24px rgb(0 0 0 / .3);
  --ov-shadow-lg:0 24px 64px rgb(0 0 0 / .55);
+}
 }
 @media (prefers-reduced-motion:reduce){
  :root{--ov-duration:0ms}

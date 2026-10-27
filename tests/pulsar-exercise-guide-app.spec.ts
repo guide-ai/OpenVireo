@@ -1,4 +1,5 @@
 import {test,expect,type Browser,type Locator,type Page,type Route,type TestInfo} from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 // Phase 1 student pulsar exercise (docs/PULSAR-MANUAL-TIMING.md, "Student pulsar exercise"): Start pulsar exercise, the bundled
@@ -12,7 +13,6 @@ import {readFile} from 'node:fs/promises';
 // downloaded bytes and drives where the manual cursors go; it is not a product feature. Helpers are copied from
 // tests/radio-pulsar-timing-journey-app.spec.ts. Written, not run, by the implementer.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 const storage=(page:Page)=>page.evaluate(()=>[Object.keys(localStorage).sort(),Object.keys(sessionStorage).sort()]);
@@ -52,7 +52,7 @@ const F_LOW=400,F_HIGH=500;
 async function startApp(page:Page,at='2026-10-24T00:00:00Z'){
  await page.clock.install({time:new Date(at)});
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise-start')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise-start')).toBeVisible();
  await page.clock.pauseAt(new Date(new Date(at).getTime()+600_000));await flush(page);
 }
 async function start(page:Page){await id(page,'radio-exercise-start').click();await flush(page);}
@@ -77,7 +77,7 @@ const radioSnapshot=async(page:Page)=>({
 });
 type GuideState={next:string|null;done:Record<string,string|null>};
 async function guide(page:Page):Promise<GuideState>{
- await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();const dialog=id(page,'pulsar-lab-dialog');await expect(dialog).toBeVisible();
  const done:Record<string,string|null>={};
  for(const step of ['setup','catalog','point','channels','capture','period','delay','investigation','save'])done[step]=await id(page,`pulsar-lab-step-${step}`).getAttribute('data-done');
  const next=await id(page,'pulsar-lab-next').getAttribute('data-next');
@@ -147,7 +147,7 @@ for(const [label,viewport] of [['desktop 1440',{width:1440,height:1050}],['mobil
    await notes.locator('summary').click();await expect(id(page,'radio-route-scenario-gates')).toBeHidden();
 
    // Guide by keyboard: Enter on the header button opens it with Close focused; Escape closes it.
-   await id(page,'pulsar-lab-open').focus();await page.keyboard.press('Enter');
+   await openHeaderTools(page);await id(page,'pulsar-lab-open').focus();await page.keyboard.press('Enter');
    await expect(id(page,'pulsar-lab-dialog')).toBeVisible();await expect(id(page,'pulsar-lab-close')).toBeFocused();
    // Phase 1 item 1.5: the backup is available (no "not complete" claim) and the counts have eight required steps.
    await expect(id(page,'pulsar-lab-backup')).toHaveAttribute('data-backup','available');await expect(id(page,'pulsar-lab-counts')).toHaveText('2 of 8 pulsar steps done.');
@@ -156,7 +156,7 @@ for(const [label,viewport] of [['desktop 1440',{width:1440,height:1050}],['mobil
    await shot(page,info,`guide-${viewport.width}`);
    await page.keyboard.press('Escape');await expect(id(page,'pulsar-lab-dialog')).toBeHidden();
    // The PLR route text no longer says radio acquisition is unavailable.
-   await nav(page,'Radio data').click();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
+   await clickHeaderTool(page,'Radio data');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
    const plrScope=page.locator('.observatory-heading p').filter({hasText:'Measure a pulsar recording by hand'});
    await expect(plrScope).toBeVisible();await expect(page.getByText('Radio acquisition is not available here.')).toHaveCount(0);
    expect(await storage(page)).toEqual(before);
@@ -231,9 +231,9 @@ test('bundled catalog: a hash failure is shown with a retry; cancel and a route 
 
  // 3. A held request and a route change: hiding the route cancels it; the late response is discarded.
  await id(page,'pulsar-ref-bundled').click();await expect(id(page,'radio-exercise-catalog')).toHaveAttribute('data-catalog','reading');
- await nav(page,'Radio data').click();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
+ await clickHeaderTool(page,'Radio data');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
  release();await flush(page);await page.waitForTimeout(300);
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await flush(page);
  await expect(id(page,'pulsar-ref-status')).toHaveAttribute('data-kind','cancelled');await expect(id(page,'pulsar-ref-none')).toBeVisible();
  await page.unroute(BUNDLED_PATH);
 
@@ -257,11 +257,11 @@ test('Add disarms Record: the warning appears only while Record is armed and the
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-disp')).toHaveText('On');
  const note=id(page,'receiver-add-disarms');await expect(note).toBeVisible();
  const describedBy=(await id(page,'receiver-add').getAttribute('aria-describedby'))!;expect(describedBy).toBe(await note.getAttribute('id'));
- await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-armed')).toBeVisible();await id(page,'pulsar-lab-close').click();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-armed')).toBeVisible();await id(page,'pulsar-lab-close').click();
  await shot(page,info,'add-disarms');
  await id(page,'receiver-add').click();await expect(id(page,'receiver-card-1')).toBeVisible();
  await expect(id(page,'receiver-record-disp')).toHaveText('Off');await expect(note).toHaveCount(0);
- await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-armed')).toHaveCount(0);await id(page,'pulsar-lab-close').click();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-armed')).toHaveCount(0);await id(page,'pulsar-lab-close').click();
 });
 
 test('Start after a manual Radio switch keeps Tracking off, says setup is incomplete and names Tracking; Tracking alone then completes setup',async({page})=>{
@@ -280,7 +280,7 @@ test('Start after a manual Radio switch keeps Tracking off, says setup is incomp
  await expect(id(page,'radio-exercise-card')).toHaveAttribute('data-setup','false');
  await expect(id(page,'radio-clock-applied')).toHaveText(`${SCENARIO_UT} UT`);
  const g=await guide(page);expect(g.next).toBe('setup');expect(g.done).toMatchObject({setup:'false',catalog:'true'});
- await id(page,'pulsar-lab-open').click();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();
  await expect(id(page,'pulsar-lab-next')).toHaveAttribute('data-tracking-off','true');await expect(id(page,'pulsar-lab-next')).toContainText('press Tracking in the control panel');
  await id(page,'pulsar-lab-close').click();
  // Tracking alone completes setup; no second Start is needed.
@@ -288,7 +288,7 @@ test('Start after a manual Radio switch keeps Tracking off, says setup is incomp
  await expect(id(page,'radio-exercise-card')).toHaveAttribute('data-setup','true');
  await expect(status).toHaveAttribute('data-kind','started');await expect(status).toHaveText('Setup complete. Next: point the telescope at a pulsar (see Pulsar guide).');
  expect(await guide(page)).toMatchObject({next:'point',done:{setup:'true'}});
- await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-next')).not.toHaveAttribute('data-tracking-off',/.*/);await id(page,'pulsar-lab-close').click();
+ await openHeaderTools(page);await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-next')).not.toHaveAttribute('data-tracking-off',/.*/);await id(page,'pulsar-lab-close').click();
  // Tracking turned off again: Start changes nothing and still names Tracking.
  await id(page,'antenna-tracking').click();await flush(page);await expect(id(page,'antenna-tracking-state')).not.toHaveText('Tracking on');
  await expect(id(page,'radio-exercise-reason')).toContainText('press Tracking');
@@ -432,17 +432,17 @@ test.describe('desktop 1440 (mouse), original catalog',()=>{
   // Guide: readings recorded (not judged); Save investigation is the eighth required step and is not done yet (Phase 1 item 1.5).
   const g=await guide(page);
   expect(g).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'true',channels:'true',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
-  await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-status-delay')).toHaveText('Reading recorded (not checked for correctness)');
+  await openHeaderTools(page);await id(page,'pulsar-lab-open').click();await expect(id(page,'pulsar-lab-status-delay')).toHaveText('Reading recorded (not checked for correctness)');
   await expect(id(page,'pulsar-lab-counts')).toHaveText('7 of 8 pulsar steps done.');
   await expect(id(page,'pulsar-lab-investigation-note')).toHaveAttribute('data-investigation','none');
   await expect(id(page,'pulsar-lab-status-investigation')).toHaveText('Not yet for this capture and these rows.');
   await shot(page,info,'original-guide');await id(page,'pulsar-lab-close').click();
 
   // Closing the receivers un-checks pointing and channels, but the recorded capture and readings keep Next forward.
-  await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();
+  await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();
   await id(page,'receiver-close-0').click();await expect(page.locator('[data-testid^="receiver-card-"]')).toHaveCount(0);
   expect(await guide(page)).toEqual({next:'investigation',done:{setup:'true',catalog:'true',point:'false',channels:'false',capture:'true',period:'true',delay:'true',investigation:'false',save:'false'}});
-  await nav(page,'Radio data').click();await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
+  await clickHeaderTool(page,'Radio data');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
   await expect(id(page,'pulsar-count')).toHaveText('3 recorded measurements');
 
   // Clear un-checks period and delay; the capture stays.

@@ -3,21 +3,21 @@
 .radio-control h3{margin:12px 0 6px;font-size:14px}
 .radio-control p{line-height:1.6}
 .radio-control-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
-.radio-control-block{border:1px solid #e1e7e5;border-radius:8px;padding:12px 14px;margin-top:12px;min-width:0}
+.radio-control-block{border:1px solid var(--ov-border);border-radius:8px;padding:12px 14px;margin-top:12px;min-width:0}
 .radio-control-menu{display:flex;flex-wrap:wrap;gap:8px}
 .radio-control .secondary-button{width:auto;min-height:40px;font-size:12px;margin-top:0}
 .radio-control .primary-button{width:auto;flex:0 0 auto;min-height:40px}
 .radio-control .button-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .radio-control button:disabled{opacity:.55;cursor:not-allowed}
-.radio-control button:focus-visible,.radio-control select:focus-visible,.radio-control input:focus-visible,.radio-control summary:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.radio-control button:focus-visible,.radio-control select:focus-visible,.radio-control input:focus-visible,.radio-control summary:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .radio-control-native{font-family:"MS Sans Serif",Tahoma,ui-sans-serif,sans-serif;font-weight:600}
-.radio-control-note{font-size:12px;color:#53686f}
+.radio-control-note{font-size:12px;color:var(--ov-text-muted)}
 .radio-switch-row{display:flex;align-items:center;gap:12px}
-.radio-switch{display:inline-flex;align-items:center;gap:8px;min-width:88px;min-height:40px;padding:6px 12px;border:2px solid #6b7780;border-radius:6px;background:#eef1f0;color:#162b38;font-size:13px;font-weight:600}
-.radio-switch-led{width:12px;height:12px;border-radius:50%;background:#7a8a87;border:1px solid #445}
+.radio-switch{display:inline-flex;align-items:center;gap:8px;min-width:88px;min-height:40px;padding:6px 12px;border:2px solid var(--ov-border-strong);border-radius:6px;background:var(--ov-surface-sunken);color:var(--ov-text);font-size:13px;font-weight:600}
+.radio-switch-led{width:12px;height:12px;border-radius:50%;background:#7a8a87;border:1px solid var(--ov-border-strong)}
 .radio-switch[aria-checked="true"] .radio-switch-led{background:#2fb35a}
-.radio-control-id{display:inline-block;border:2px inset #c9d1cf;padding:6px 12px;min-width:min(100%,260px);background:#f7f9f8;overflow-wrap:anywhere}
-.radio-panel-window{border:2px solid #265f4c;border-radius:8px;padding:12px 14px;margin-top:16px;background:#f6fbf9}
+.radio-control-id{display:inline-block;border:2px inset var(--ov-border);padding:6px 12px;min-width:min(100%,260px);background:var(--ov-surface-sunken);overflow-wrap:anywhere}
+.radio-panel-window{border:2px solid var(--ov-accent);border-radius:8px;padding:12px 14px;margin-top:16px;background:var(--ov-accent-soft)}
 .radio-control-status{min-height:1.6em;font-weight:550}
 .radio-control-env{display:grid;gap:6px}
 .radio-control-env legend{font-weight:600}
@@ -37,13 +37,13 @@
 .antenna-manual p{margin:0;overflow-wrap:anywhere}
 .antenna-manual-pad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);grid-template-areas:". n ." "e . w" ". s .";gap:6px;justify-content:start}
 .antenna-manual-north{grid-area:n}.antenna-manual-south{grid-area:s}.antenna-manual-east{grid-area:e}.antenna-manual-west{grid-area:w}
-.radio-control .antenna-manual-button{width:48px;height:48px;min-width:44px;min-height:44px;margin:0;padding:0;border:2px solid #6b7780;border-radius:6px;background:#eef1f0;color:#162b38;font-family:"MS Sans Serif",Tahoma,ui-sans-serif,sans-serif;font-size:16px;font-weight:700;line-height:1;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.radio-control .antenna-manual-button[data-held]{background:#23756c;border-color:#174d47;color:#fff}
-.antenna-backdrop{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(18,32,38,.35);overflow:auto}
+.radio-control .antenna-manual-button{width:48px;height:48px;min-width:44px;min-height:44px;margin:0;padding:0;border:2px solid var(--ov-border-strong);border-radius:6px;background:var(--ov-surface-sunken);color:var(--ov-text);font-family:"MS Sans Serif",Tahoma,ui-sans-serif,sans-serif;font-size:16px;font-weight:700;line-height:1;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.radio-control .antenna-manual-button[data-held]{background:var(--ov-accent);border-color:var(--ov-accent);color:var(--ov-accent-contrast)}
+.antenna-backdrop{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:12px;background:var(--ov-backdrop);overflow:auto}
 .antenna-backdrop-top{z-index:41}
-.antenna-dialog{width:min(100%,30rem);max-height:calc(100vh - 24px);overflow:auto;background:#fff;border:2px solid #265f4c;border-radius:8px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.antenna-dialog{width:min(100%,30rem);max-height:calc(100vh - 24px);overflow:auto;background:var(--ov-surface);border:2px solid var(--ov-accent);border-radius:8px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .antenna-dialog h3{margin:0 0 6px;font-size:15px}
-.antenna-group{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #c9d1cf;border-radius:6px;padding:8px 10px;margin:8px 0}
+.antenna-group{display:flex;flex-wrap:wrap;gap:8px;border:1px solid var(--ov-border);border-radius:6px;padding:8px 10px;margin:8px 0}
 .antenna-group legend{padding:0 4px}
 .antenna-field{display:flex;flex-direction:column;gap:2px;flex:1 1 5.5rem;min-width:0}
 .antenna-field input{min-height:36px;width:100%;box-sizing:border-box;font-variant-numeric:tabular-nums}
@@ -51,7 +51,7 @@
 .antenna-notice p{line-height:1.5}
 .radio-control .antenna-dialog .button-row{align-items:stretch}
 .radio-control .antenna-dialog .primary-button,.radio-control .antenna-dialog .secondary-button{min-width:88px;min-height:40px;margin:0;padding:8px 16px;font-size:13px;line-height:1.2}
-.antenna-dialog button:focus-visible,.antenna-dialog input:focus-visible{outline:3px solid #23756c;outline-offset:2px}
+.antenna-dialog button:focus-visible,.antenna-dialog input:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 /* R-RX9 Radio configuration numeric section and the full Radio Simulation Options form (scoped). */
 .radio-access-numeric{min-width:0;overflow-wrap:anywhere}
 .radio-access-numeric h4{margin:10px 0 4px;font-size:14px}
@@ -65,30 +65,30 @@
 .radio-options-full .antenna-group{min-width:0}
 .radio-options-full .antenna-group label{overflow-wrap:anywhere}
 .radio-options-failure-layer{z-index:42}
-.antenna-profile{border-color:#b5651d;border-left-width:4px;background:#fff8f0}
+.antenna-profile{border-color:var(--ov-warning);border-left-width:4px;background:var(--ov-warning-soft)}
 .antenna-profile ul{margin:6px 0 0;padding-left:1.2em}
 .antenna-profile li{line-height:1.5;overflow-wrap:anywhere}
-.antenna-modal-limit>div{margin:8px 0;padding:6px 10px;border:1px solid #b5651d;border-left-width:4px;border-radius:6px;background:#fff8f0;font-size:13px}
+.antenna-modal-limit>div{margin:8px 0;padding:6px 10px;border:1px solid var(--ov-warning);border-left-width:4px;border-radius:6px;background:var(--ov-warning-soft);font-size:13px}
 .antenna-modal-limit p{margin:0}
 .antenna-modal-limit ul{margin:6px 0 0;padding-left:1.2em}
 .antenna-modal-limit li{line-height:1.5;overflow-wrap:anywhere}
 .antenna-hotlist-menu{flex-basis:100%;display:grid;gap:4px;min-width:0}
 .antenna-hotlist-menu p{margin:0;overflow-wrap:anywhere}
 .antenna-hotlist-rows{display:grid;gap:4px;margin:6px 0;max-height:min(50vh,22rem);overflow:auto}
-.antenna-hotlist-row{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 8px;border:1px solid #c9d1cf;border-radius:6px;cursor:pointer;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
-.antenna-hotlist-row[data-checked]{border-color:#23756c;background:#eaf5f2}
+.antenna-hotlist-row{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 8px;border:1px solid var(--ov-border);border-radius:6px;cursor:pointer;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.antenna-hotlist-row[data-checked]{border-color:var(--ov-accent);background:var(--ov-accent-soft)}
 .antenna-hotlist-row input{width:20px;height:20px;flex:0 0 auto;margin:0}
 /* R-RX20 recovered row text (RA-HL-08): monospace, whitespace kept, may wrap as needed instead of scrolling. */
 .antenna-dialog.antenna-hotlist{width:min(100%,56rem)}
 .antenna-hotlist-row-text{display:grid;gap:2px;min-width:0;flex:1 1 auto}
 .antenna-hotlist-native{font-family:ui-monospace,"Cascadia Mono",Consolas,"Liberation Mono","Courier New",monospace;font-size:12px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
-.antenna-hotlist-decimal{font-size:12px;color:#53686f}
+.antenna-hotlist-decimal{font-size:12px;color:var(--ov-text-muted)}
 /* R-RX22 Search highlight (WEB-HL-11): dashed amber, distinct from the checked (selected) style; a found row's radio always
    shows its focus ring, also after the programmatic focus of a hit. */
-.antenna-hotlist-row[data-found]{border-style:dashed;border-color:#b5651d;box-shadow:inset 0 0 0 1px #b5651d}
-.antenna-hotlist-row[data-found]:not([data-checked]){background:#fff8f0}
-.antenna-hotlist-row[data-found] input:focus{outline:3px solid #23756c;outline-offset:2px}
-.antenna-hotlist-found-mark{flex:0 0 auto;padding:0 6px;border:1px solid #b5651d;border-radius:4px;color:#7a3f0d;font-size:12px;font-weight:600}
+.antenna-hotlist-row[data-found]{border-style:dashed;border-color:var(--ov-warning);box-shadow:inset 0 0 0 1px var(--ov-warning)}
+.antenna-hotlist-row[data-found]:not([data-checked]){background:var(--ov-warning-soft)}
+.antenna-hotlist-row[data-found] input:focus{outline:3px solid var(--ov-focus);outline-offset:2px}
+.antenna-hotlist-found-mark{flex:0 0 auto;padding:0 6px;border:1px solid var(--ov-warning);border-radius:4px;color:var(--ov-warning);font-size:12px;font-weight:600}
 .antenna-dialog.antenna-hotlist-search{width:min(100%,28rem)}
 .antenna-hotlist-search .antenna-field input{min-height:44px}
 .antenna-hotlist-search .antenna-hotlist-search-case{min-height:44px}
@@ -98,4 +98,4 @@
 .antenna-notice[data-kind="hot-list-search-miss"]>p[id$="-body"]{white-space:pre-wrap;overflow-wrap:anywhere}
 .radio-control .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media (max-width:600px){.radio-control{padding:16px}.radio-control-state{grid-template-columns:1fr}.radio-control-state dd{margin-bottom:6px}.antenna-readout{grid-template-columns:1fr}}
-.radio-route{max-width:1100px}.radio-route-scenario{padding:18px 22px;margin-bottom:16px}.radio-route-scenario h2{margin:0 0 8px;font-size:16px}.radio-route-scenario ul{margin:0;padding-left:1.2em}.radio-route-scenario li{font-size:13px;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.radio-route-persistence{margin:10px 0 0;padding:8px 10px;border-left:4px solid #b5651d;background:#fff8f0;font-size:13px;line-height:1.5}
+.radio-route{max-width:1100px}.radio-route-scenario{padding:18px 22px;margin-bottom:16px}.radio-route-scenario h2{margin:0 0 8px;font-size:16px}.radio-route-scenario ul{margin:0;padding-left:1.2em}.radio-route-scenario li{font-size:13px;line-height:1.55;margin:4px 0;overflow-wrap:anywhere}.radio-route-persistence{margin:10px 0 0;padding:8px 10px;border-left:4px solid var(--ov-warning);background:var(--ov-warning-soft);font-size:13px;line-height:1.5}

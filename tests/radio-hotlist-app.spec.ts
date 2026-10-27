@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // Actual App flows of the radio Slew ▸ Hot List (docs/RADIO-ANTENNA.md "Hot list"): the HTL document shared with the
 // observatory editor, radio Load, the RA insertion-order projection, View/Select → coordinate dialog → Cancel back to
@@ -38,7 +39,7 @@ const clickPress:Press=target=>target.click();
 const tapPress:Press=target=>target.tap();
 /** Radio route, compiled defaults, access tick, switch On and Tracking on (the Slew menu is enabled with Tracking). */
 async function setupRadio(page:Page,press:Press=clickPress){
- await press(nav(page,'Radio telescope'));await expect(heading(page,'Radio telescope control')).toBeFocused();
+ await openHeaderTools(page);await press(nav(page,'Radio telescope'));await expect(heading(page,'Radio telescope control')).toBeFocused();
  await press(id(page,'radio-exercise'));await press(id(page,'radio-env-compiled'));
  await press(id(page,'radio-access'));await press(id(page,'radio-timer-deliver'));await expect(id(page,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');
  await press(id(page,'radio-switch'));await expect(id(page,'antenna-status')).toContainText('initialized');
@@ -109,7 +110,7 @@ test('the observatory list and its edit appear in RA insertion order; file order
  expect(await id(page,'radio-panel-window').evaluate(el=>(el as HTMLElement).inert)).toBe(true);
  await id(page,'antenna-hotlist-close').click();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);await expect(id(page,'antenna-hotlist-open')).toBeFocused();
  await expect(id(page,'antenna-status')).toHaveText('Hot list closed; nothing changed.');
- await nav(page,'Observatory').click();
+ await clickHeaderTool(page,'Observatory');
  await expect(opticalRows(page)).toHaveText(['1 · Zeta · edited','2 · High · raw','3 · Twin · pair','4 · Twin · pair','5 · Mid · middle']);
  await expect(page.getByRole('button',{name:'Undo last HTL change',exact:true})).toBeEnabled();expect(await saveOptical(page)).toEqual(edited);
  await expect(id(page,'pointing-ra')).toHaveText(pointing!);await expect(page.getByLabel('Target',{exact:true})).toHaveValue(target);
@@ -127,18 +128,18 @@ test('radio Load replaces the shared list like Open; invalid files keep it; an o
  await expect(id(page,'antenna-hotlist-error')).toHaveText('Invalid HTL layout: expected a headerless sequence of 86-byte records. The current list was kept.');
  const nan=Buffer.from(SHORT);nan.writeUInt16LE(0x7fff,33);await id(page,'antenna-hotlist-file').setInputFiles(htlFile('nan.htl',nan));
  await expect(id(page,'antenna-hotlist-error')).toContainText('HTL row 1:');await expect(id(page,'antenna-hotlist-source')).toHaveText('Shared list: radio.htl, 2 rows.');
- await nav(page,'Observatory').click();
+ await clickHeaderTool(page,'Observatory');
  await expect(opticalRows(page)).toHaveText(['1 · Alpha · a','2 · Beta · b']);await expect(page.getByText('Opened file: radio.htl',{exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Undo last HTL change',exact:true})).toBeDisabled();expect(await saveOptical(page)).toEqual(SHORT);
  // An open Edit draft locks radio Load (declared web policy); Cancel unlocks it. The draft survives the route change.
  await page.getByRole('button',{name:'Edit HTL selection',exact:true}).click();await page.getByLabel('HTL remarks',{exact:true}).fill('draft');
- await nav(page,'Radio telescope').click();
+ await clickHeaderTool(page,'Radio telescope');
  await expect(id(page,'antenna-hotlist-load')).toBeDisabled();await expect(id(page,'antenna-hotlist-load-blocked')).toHaveAttribute('data-reason','draft');
  await id(page,'antenna-hotlist-file').setInputFiles(htlFile('other.htl',FIXTURE));
  await expect(id(page,'antenna-hotlist-status')).toHaveText('Apply or Cancel the observatory Hot List edit first; nothing was loaded.');
- await nav(page,'Observatory').click();await expect(page.getByLabel('HTL remarks',{exact:true})).toHaveValue('draft');
+ await clickHeaderTool(page,'Observatory');await expect(page.getByLabel('HTL remarks',{exact:true})).toHaveValue('draft');
  await page.getByRole('button',{name:'Cancel HTL edit',exact:true}).click();await expect(opticalRows(page)).toHaveCount(2);
- await nav(page,'Radio telescope').click();await expect(id(page,'antenna-hotlist-load')).toBeEnabled();await expect(id(page,'antenna-hotlist-load-blocked')).toHaveCount(0);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'antenna-hotlist-load')).toBeEnabled();await expect(id(page,'antenna-hotlist-load-blocked')).toHaveCount(0);
  // Reload clears the temporary document on both views.
  await page.reload();await expect(heading(page,'Radio telescope control')).toBeVisible();
  await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();await id(page,'radio-switch').click();
@@ -153,8 +154,8 @@ test('late reads after Cancel, a route change, an antenna dialog or a hidden pag
  await id(page,'antenna-hotlist-cancel-load').click();await expect(id(page,'antenna-hotlist-status')).toHaveText('Hot list load cancelled; the current list was kept.');
  await release(page,'held-1.htl');await expect(id(page,'antenna-hotlist-source')).toHaveText(none);
  await id(page,'antenna-hotlist-file').setInputFiles(htlFile('held-2.htl',FIXTURE));await held(page,'held-2.htl');
- await nav(page,'Observatory').click();await release(page,'held-2.htl');await expect(opticalRows(page)).toHaveCount(0);
- await nav(page,'Radio telescope').click();await expect(id(page,'antenna-hotlist-source')).toHaveText(none);
+ await clickHeaderTool(page,'Observatory');await release(page,'held-2.htl');await expect(opticalRows(page)).toHaveCount(0);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'antenna-hotlist-source')).toHaveText(none);
  await id(page,'antenna-hotlist-file').setInputFiles(htlFile('held-3.htl',FIXTURE));await held(page,'held-3.htl');
  await id(page,'antenna-set-coordinates').click();await expect(id(page,'antenna-dialog')).toBeVisible();await release(page,'held-3.htl');
  await id(page,'antenna-dialog-cancel').click();await expect(id(page,'antenna-hotlist-source')).toHaveText(none);
@@ -197,7 +198,7 @@ test('View/Select → second duplicate → Cancel back to the list → OK → Ye
  await id(page,'antenna-set-coordinates').click();await expect(id(page,'antenna-dialog')).toBeVisible();await expect(id(page,'antenna-dialog-hotlist-origin')).toHaveCount(0);
  await expect(id(page,'antenna-epoch-0')).toBeEnabled();await expect(id(page,'antenna-epoch-1')).toBeEnabled();
  await id(page,'antenna-dialog-cancel').click();await expect(id(page,'antenna-dialog')).toHaveCount(0);
- await nav(page,'Observatory').click();
+ await clickHeaderTool(page,'Observatory');
  await expect(id(page,'pointing-ra')).toHaveText(pointing!);await expect(page.getByLabel('Target',{exact:true})).toHaveValue(target);
  await expect(page.locator('#htl-rows')).toHaveValue('4');expect(await saveOptical(page)).toEqual(bytes);
 });
@@ -243,7 +244,7 @@ test('browser history hides the open list; an optical Remove appears on return a
  await id(page,'antenna-dialog-cancel').click();await expect(id(page,'antenna-hotlist-dialog')).toBeVisible();
  await id(page,'antenna-hotlist-close').click();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);
  await expect(id(page,'antenna-ra')).toHaveAttribute('data-ra-hours',ra!);await expect(id(page,'antenna-dec')).toHaveAttribute('data-dec-degrees',dec!);
- await nav(page,'Observatory').click();await expect(opticalRows(page)).toHaveCount(4);await expect(undo).toBeEnabled();
+ await clickHeaderTool(page,'Observatory');await expect(opticalRows(page)).toHaveCount(4);await expect(undo).toBeEnabled();
 });
 
 test('empty list box, a shorter list after a selection and held Enter/Escape',async({page})=>{
@@ -311,7 +312,7 @@ test('recovered row text: exact padding, 24h display, dialog re-splits the impor
  expect(await native(page,3)).toBe(FORMAT_ROWS[2]);
  await id(page,'antenna-hotlist-close').click();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);await expect(id(page,'antenna-hotlist-open')).toBeFocused();
  await expect(id(page,'antenna-hotlist-add')).toBeDisabled();await expect(id(page,'antenna-hotlist-menu')).not.toContainText('Save Updated');
- await nav(page,'Observatory').click();expect(await saveOptical(page)).toEqual(FORMAT);
+ await clickHeaderTool(page,'Observatory');expect(await saveOptical(page)).toEqual(FORMAT);
 });
 
 test.describe('touch 320',()=>{

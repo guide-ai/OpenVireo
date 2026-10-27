@@ -1,8 +1,9 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 const restored='Investigation restored. Included tools were validated together. Exposure segments are stopped and deactivated; activate explicitly before continuing.';
 async function open(page:Page){await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
-async function view(page:Page,name:string,heading:string){await page.clock.resume();await page.getByRole('button',{name,exact:true}).click();await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
+async function view(page:Page,name:string,heading:string){await page.clock.resume();await clickHeaderTool(page,name);await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));}
 async function choose(page:Page,index:string){await page.getByLabel('Telescope profile to inspect or select',{exact:true}).selectOption(index);}
 async function apply(page:Page,index:string){await choose(page,index);await page.getByRole('button',{name:'Use this telescope',exact:true}).click();}
 async function save(page:Page){const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();return readFile((await(await wait).path())!);}

@@ -1,4 +1,5 @@
 import {test,expect,type Browser,type CDPSession,type Locator,type Page,type TestInfo} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 // Actual App flows of the manual receiver marks (docs/RADIO-RECEIVER-MARKS.md, R-RX3) on the #radio-control route. Only the
@@ -8,7 +9,6 @@ import {createHash} from 'node:crypto';
 // OS multitouch; no native-runtime reproduction is claimed. The catalog is synthetic; expected strings are the chosen web
 // contract (declared binary64/dot policy), not native oracles; canvas pixels are checked only for presence.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
@@ -63,7 +63,7 @@ async function startApp(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
 }
 async function radioRoute(page:Page){
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 async function switchOnTracking(page:Page){
@@ -370,6 +370,6 @@ test('viewports 1440/390/375/320: no overflow; edge presses reach columns 0 and 
  await page.setViewportSize({width:1440,height:1050});
  // Lifetime: closing the main and reopening starts unset; a reload resets everything.
  await id(page,'receiver-close-0').click();await openReceiver(page);await expectMarks(page,0,-1,-1);
- await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-control')).toBeVisible();
+ await page.clock.resume();await page.reload();await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-control')).toBeVisible();
  await expect(page.locator('[data-testid^="receiver-card-"]')).toHaveCount(0);
 });

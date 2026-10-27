@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{openHeaderTools}from'./fixtures/header-tools';
 // Actual App flows of the Set Coordinates epoch choice (docs/RADIO-ANTENNA.md "Epoch of Input Coordinates", RA-EP-01..04):
 // B1950.0 entry → recovered fixed-epoch conversion → J2000 stored target → confirmation note → slew/arrival, the converting
 // reopen, Cancel drift, error boxes, browser history and the hot-list reset. Expected display fields of V1–V3 are the
@@ -19,7 +20,7 @@ async function expectFields(page:Page,values:Fields){for(const [i,name] of FIELD
 /** Radio route, compiled defaults, access tick, switch On and Tracking on. */
 async function setupRadio(page:Page,press:Press=clickPress){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await press(nav(page,'Radio telescope'));await expect(heading(page,'Radio telescope control')).toBeFocused();
+ await openHeaderTools(page);await press(nav(page,'Radio telescope'));await expect(heading(page,'Radio telescope control')).toBeFocused();
  await press(id(page,'radio-exercise'));await press(id(page,'radio-env-compiled'));
  await press(id(page,'radio-access'));await press(id(page,'radio-timer-deliver'));await expect(id(page,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');
  await press(id(page,'radio-switch'));await expect(id(page,'antenna-status')).toContainText('initialized');

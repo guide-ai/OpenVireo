@@ -1,4 +1,5 @@
 import {test,expect,type FileChooser,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 // Actual App flows of R-RX18 (docs/PULSAR-LOAD-SAVE.md): a receiver capture → Save No → Pulsar Analysis → Load → the unsaved
 // question (E9) → Yes → the verified web Save → a separate Load choice → a fresh Choose click → the dedicated chooser → the strict
@@ -14,7 +15,6 @@ import {createHash} from 'node:crypto';
 // Test-only hooks: a hold of File.arrayBuffer for files named held-* (released normally or by a test-owned rejection), and a
 // one-shot hold of crypto.subtle.digest.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 const textFits=(page:Page,testId:string)=>expect.poll(()=>id(page,testId).evaluate(el=>{
@@ -119,7 +119,7 @@ const plrFile=(name:string,buffer=PLR)=>({name,mimeType:'application/octet-strea
 async function startApp(page:Page){
  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 async function setupReceiver(page:Page){

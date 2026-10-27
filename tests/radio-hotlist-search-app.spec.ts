@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // Actual App flows of the radio hot-list Search (R-RX22, RA-HL-09, WEB-HL-09..11; docs/RADIO-ANTENNA.md "Hot list"). No
 // harness. Synthetic HTL files written here byte by byte; no original HTL data. Expected rows were derived by hand from the
@@ -44,7 +45,7 @@ const clickPress:Press=target=>target.click();
 const tapPress:Press=target=>target.tap();
 /** Radio route, compiled defaults, access tick, switch On and Tracking on (the Slew menu is enabled with Tracking). */
 async function setupRadio(page:Page,press:Press=clickPress){
- await press(nav(page,'Radio telescope'));await expect(heading(page,'Radio telescope control')).toBeFocused();
+ await openHeaderTools(page);await press(nav(page,'Radio telescope'));await expect(heading(page,'Radio telescope control')).toBeFocused();
  await press(id(page,'radio-exercise'));await press(id(page,'radio-env-compiled'));
  await press(id(page,'radio-access'));await press(id(page,'radio-timer-deliver'));await expect(id(page,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');
  await press(id(page,'radio-switch'));await expect(id(page,'antenna-status')).toContainText('initialized');
@@ -125,7 +126,7 @@ test('a hit is highlighted, focused and not selected; Slew uses the remembered r
  // its bytes and the observatory view are untouched and no request left the origin.
  await expect(id(page,'antenna-ra')).toHaveAttribute('data-ra-hours',ra!);await expect(id(page,'antenna-dec')).toHaveAttribute('data-dec-degrees',dec!);
  await expect(id(page,'antenna-hotlist-source')).toHaveText('Shared list: search.htl, 5 rows.');
- await nav(page,'Observatory').click();await expect(opticalRows(page)).toHaveCount(5);
+ await clickHeaderTool(page,'Observatory');await expect(opticalRows(page)).toHaveCount(5);
  await expect(id(page,'pointing-ra')).toHaveText(pointing!);expect(await saveOptical(page)).toEqual(bytes);
  const origin=new URL(page.url()).origin;expect(requests.filter(url=>!url.startsWith(origin)&&!url.startsWith('blob:')&&!url.startsWith('data:'))).toEqual([]);
 });
@@ -250,7 +251,7 @@ test('browser history: the Find draft is re-presented; a stale highlight is igno
  // Next from the remembered row 1 starts at row 2: 'next' is found there.
  await search(page,'next',{mode:'next'});await expectFound(page,2);
  await id(page,'antenna-hotlist-close').click();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);
- await nav(page,'Observatory').click();await expect(page.getByRole('button',{name:'Undo last HTL change',exact:true})).toBeEnabled();
+ await clickHeaderTool(page,'Observatory');await expect(page.getByRole('button',{name:'Undo last HTL change',exact:true})).toBeEnabled();
 });
 
 test('browser history: a retained hit behind a re-presented Find draft or miss box is not a new hit; Search keeps focus (R3)',async({page})=>{

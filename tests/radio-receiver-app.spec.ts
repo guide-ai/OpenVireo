@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {env} from 'node:process';
 // Actual App flows of the silent receiver monitor (docs/RADIO-RECEIVER-MONITOR.md, R-RX2) on the #radio-control route:
@@ -9,7 +10,6 @@ import {env} from 'node:process';
 // recorded segments); no normal-use or native-runtime reproduction is claimed. The catalog is synthetic (no original rows); expected strings are the chosen web contract, not
 // native oracles, and canvas pixels are checked only for presence (no pixel parity is claimed).
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
@@ -62,7 +62,7 @@ async function startApp(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
 }
 async function radioRoute(page:Page){
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 /** Exercise, compiled defaults, the manual access tick, switch On (first FormActivate) and Tracking on. */
@@ -302,7 +302,7 @@ test('catalog lock, project operation (timer cancelled, no catch-up), route hide
  await page.setViewportSize({width:1440,height:1050});
  await id(page,'receiver-close-0').click();await expect(id(page,'pulsar-ref-load')).toBeEnabled();await expect(id(page,'pulsar-ref-load-reason')).toHaveText('');
  // Reload: nothing persists.
- await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-control')).toBeVisible();
+ await page.clock.resume();await page.reload();await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-control')).toBeVisible();
  await expect(page.locator('[data-testid^="receiver-card-"]')).toHaveCount(0);await expect(id(page,'receiver-seed')).toHaveValue('1');await expect(id(page,'pulsar-ref-none')).toBeVisible();
 });
 

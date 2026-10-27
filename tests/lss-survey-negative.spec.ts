@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 // E02 negatives and dialog edge cases (review 1: F1, F2, F9).
 const delay=(page:Page,file:string,ms:number)=>page.route(`**/original/hotlists/${file}`,async r=>{await new Promise(done=>setTimeout(done,ms));await r.continue().catch(()=>{});});
 async function open(page:Page){await page.goto('/#lss-survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();await expect(page.getByLabel('Survey field',{exact:true})).toBeEnabled();}
@@ -32,8 +33,8 @@ test('the 0.9 m names its brightness limit per row; leaving mid-load does not le
  await open(page);await page.getByLabel('Telescope',{exact:true}).selectOption({label:'KPNO 0.9m (36") Telescope'});await load(page,'1');
  await expect(page.locator('[data-testid^="lss-row-"]')).toHaveCount(23,{timeout:30000});
  expect(await page.locator('[data-testid^="lss-row-"]',{hasText:"too bright for this telescope's verified exposure range"}).count()).toBeGreaterThan(0);
- await delay(page,'LSS_Field05.HTL',1500);await load(page,'5');await page.getByRole('button',{name:'Observatory',exact:true}).click();
- await page.getByRole('button',{name:'LSS survey',exact:true}).click();await expect(page.getByText('Loading cancelled; nothing changed.')).toBeVisible();
+ await delay(page,'LSS_Field05.HTL',1500);await load(page,'5');await clickHeaderTool(page,'Observatory');
+ await clickHeaderTool(page,'LSS survey');await expect(page.getByText('Loading cancelled; nothing changed.')).toBeVisible();
  await expect(page.getByText('Loading the field list, catalogue and field evidence…')).toHaveCount(0);
 });
 test('Record Z: a pasted Tab is refused inline, the app survives, Object is read-only, and leaving the route closes the dialog',async({page})=>{

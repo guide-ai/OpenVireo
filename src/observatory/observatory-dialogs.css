@@ -1,26 +1,26 @@
 /* Optical observatory dialogs (Front B). Native <dialog> modals; phone-width safe. */
-.ob-dialog{width:min(calc(100vw - 32px),32rem);max-height:calc(100vh - 32px);overflow:auto;border:2px solid #265f4c;border-radius:8px;padding:14px 16px;background:#fff;color:#17202a;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-.ob-dialog::backdrop{background:rgba(18,32,38,.35)}
+.ob-dialog{width:min(calc(100vw - 32px),32rem);max-height:calc(100vh - 32px);overflow:auto;border:2px solid var(--ov-accent);border-radius:8px;padding:14px 16px;background:var(--ov-surface);color:var(--ov-text);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.ob-dialog::backdrop{background:var(--ov-backdrop)}
 .ob-dialog h2{margin:0 0 6px;font-size:16px}
 .ob-dialog.ob-wide{width:min(calc(100vw - 32px),58rem)}
 .ob-box{width:min(calc(100vw - 48px),24rem)}
 .ob-native{font-family:Tahoma,Verdana,sans-serif}
 .ob-note{font-size:13px;line-height:1.45;margin:6px 0}
-.ob-group{border:1px solid #b8c6c0;border-radius:6px;margin:8px 0;padding:6px 10px 10px;display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+.ob-group{border:1px solid var(--ov-border-strong);border-radius:6px;margin:8px 0;padding:6px 10px 10px;display:flex;flex-wrap:wrap;gap:8px;min-width:0}
 .ob-group legend{padding:0 4px;font-size:13px}
 .ob-field{display:flex;flex-direction:column;gap:2px;font-size:13px;flex:1 1 5.5rem;min-width:0}
 .ob-field input,.ob-field select{width:100%;min-height:36px;font:inherit;padding:4px 6px;box-sizing:border-box}
 .ob-check{display:flex;align-items:center;gap:6px;font-size:13px;min-height:32px}
 .ob-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .ob-actions button{min-height:40px;min-width:88px;width:auto}
-.ob-dialog :focus-visible{outline:3px solid #23756c;outline-offset:2px}
-.ob-list{max-height:min(50vh,22rem);overflow:auto;border:1px solid #b8c6c0;border-radius:6px;padding:4px;margin:8px 0}
+.ob-dialog :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
+.ob-list{max-height:min(50vh,22rem);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:6px;padding:4px;margin:8px 0}
 .ob-row{display:flex;align-items:flex-start;gap:8px;padding:4px 6px;border-radius:4px;cursor:pointer}
-.ob-row[data-checked]{background:#dceee7}
-.ob-row[data-found]{outline:2px dashed #b87328}
+.ob-row[data-checked]{background:var(--ov-accent-soft)}
+.ob-row[data-found]{outline:2px dashed var(--ov-focus)}
 .ob-row-text{display:flex;flex-direction:column;min-width:0}
 .ob-row-native{font-family:"Courier New",monospace;font-size:12px;white-space:pre;overflow-x:auto;max-width:100%}
-.ob-row-decimal{font-size:12px;color:#4b5a55;overflow-wrap:anywhere}
+.ob-row-decimal{font-size:12px;color:var(--ov-text-muted);overflow-wrap:anywhere}
 .ob-menu{display:flex;flex-wrap:wrap;gap:8px;margin:.6rem 0}
 .ob-menu button{min-height:44px}
 @media(max-width:600px){.ob-dialog{padding:12px}.ob-actions{flex-direction:column;align-items:stretch}.ob-actions button{width:100%}}
@@ -35,7 +35,7 @@ html[data-print-scope=star-spectrum] body :has(.ob-spectrum-save){display:block!
 html[data-print-scope=star-spectrum] .ob-spectrum-save .ob-print-hide,html[data-print-scope=star-spectrum] .ob-spectrum-save .observatory-note{display:none!important}
 html[data-print-scope=star-spectrum] .ob-spectrum-print{display:block!important}
 }
-.ob-print-report{border:1px solid #b8c6c0;border-radius:6px;padding:8px;max-height:min(55vh,26rem);overflow:auto}
+.ob-print-report{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px;max-height:min(55vh,26rem);overflow:auto}
 .ob-print-report h3{margin:0 0 6px;font-size:14px}
 .ob-print-lines{list-style:none;margin:0;padding:0;font-family:"Courier New",Courier,monospace;font-size:12px;white-space:pre;overflow-x:auto}
 @media print{
@@ -51,6 +51,6 @@ html[data-print-scope=hot-list] .ob-print-report{border:0!important;max-height:n
 .ob-dialog label.ob-field{display:flex;margin:0}
 .ob-dialog .ob-row input[type=radio],.ob-dialog .ob-check input{flex:none;width:auto;margin:3px 0 0}
 .ob-dialog .secondary-button,.ob-dialog .primary-button,.ob-menu .secondary-button{width:auto;margin:0;min-height:40px;padding:8px 14px;font-size:13px;line-height:1.2}
-.ob-dialog .primary-button{background:#265f4c;color:#fff;border:1px solid #265f4c;border-radius:6px}
-.ob-dialog .ob-field small{font-size:11px;color:#5a6d66}
+.ob-dialog .primary-button{background:var(--ov-accent);color:var(--ov-accent-contrast);border:1px solid var(--ov-accent);border-radius:6px}
+.ob-dialog .ob-field small{font-size:11px;color:var(--ov-text-muted)}
 .ob-option-list{margin:4px 0 0;padding-left:1.2rem;font-size:13px;line-height:1.5;flex-basis:100%}

@@ -291,3 +291,15 @@ dialog dd{margin:0;color:var(--ov-text-muted);line-height:1.6}
 @media(max-width:430px){.camera-information-dialog dl{grid-template-columns:minmax(0,1fr);gap:.3rem}
  .camera-information-dialog dd{margin-bottom:.6rem}
 }
+
+/* HR charts draw dark axes and points on a transparent background: keep a fixed light paper panel in both themes. */
+.pleiades-chart-scroll{background:#fff;color:#203b46;border:1px solid var(--ov-border);border-radius:8px;color-scheme:light}
+
+/* Route-level card disclosures (cluster database HR workspaces, saved pulsar rows). */
+:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure){width:calc(100% - 60px);max-width:1140px;margin:16px auto;padding:0}
+:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>summary{padding:14px 20px;font-size:var(--ov-text-md);font-weight:650;color:var(--ov-text)}
+:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>summary:hover{background:var(--ov-surface-hover)}
+:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)[open]>summary{border-bottom:1px solid var(--ov-border)}
+:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>:not(summary){margin-left:20px;margin-right:20px}
+.observatory-main>details.saved-rows-disclosure{width:100%}
+@media(max-width:520px){#root>div>details.card{width:calc(100% - 24px)}:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>summary{padding:12px 14px}:is(#root>div>details.card,.observatory-main>details.saved-rows-disclosure)>:not(summary){margin-left:12px;margin-right:12px}}

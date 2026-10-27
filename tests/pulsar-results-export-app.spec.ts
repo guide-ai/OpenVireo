@@ -1,4 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {HEADER,PLR} from './fixtures/pulsar-saved-rows-controls';
@@ -9,7 +10,6 @@ import {HEADER,PLR} from './fixtures/pulsar-saved-rows-controls';
 // The PLR text and the catalog are synthetic; receiver recordings are model-generated captures, not observations. Expected
 // strings are the chosen web contract, not native oracles; a browser download event is not proof that a file was saved.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const file=(name:string,text:string,mimeType='text/plain')=>({name,mimeType,buffer:Buffer.from(text,'latin1')});
 const sha=(text:string)=>createHash('sha256').update(Buffer.from(text,'latin1')).digest('hex');
@@ -312,7 +312,7 @@ async function advance(page:Page,ms:number){for(let t=0;t<ms;t+=200){await page.
 async function startReceiver(page:Page){
  await page.clock.install({time:new Date('2026-10-24T00:00:00Z')});
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();await expect(id(page,'pulsar-none')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
  await id(page,'radio-exercise').click();await id(page,'radio-env-compiled').click();await id(page,'radio-access').click();await id(page,'radio-timer-deliver').click();
  await id(page,'radio-switch').click();await expect(id(page,'antenna-status')).toContainText('initialized');
@@ -374,21 +374,21 @@ test('RX10 receiver flow: memory capture → Identify → Properties → No → 
 test('RX10 capture lease: an imported confirmed row cannot be exported while a receiver capture holds the dataset (armed, then committed at the Save question); after Save No releases it the same list exports',async({page})=>{
  await urlProbe(page);await startReceiver(page);
  // An imported 12-column confirmed row, recorded before arming. The clock stays paused, so only MessageChannel flushes are used.
- await nav(page,'Radio data').click();await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await loadPlr(page);await recordManual(page,'held capture');
  const cells=await reviewCells(page);expect(cells).toHaveLength(1);expect(cells[0][11]).toBe('synthetic-e2e.plr');
  const exportButton=id(page,'pulsar-export');await expect(exportButton).toBeEnabled();
  // Arming through the real receiver UI: the imported file asks only the erase question; OK takes the capture lease (armed).
- await nav(page,'Radio telescope').click();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
  await id(page,'receiver-record').click();await expect(id(page,'receiver-record-prompt')).toHaveAttribute('data-kind','erase');
  await id(page,'receiver-record-ok').click();await expect(id(page,'receiver-record-disp')).toHaveText('On');await expect(id(page,'receiver-record-armed')).toBeVisible();
  // Armed lease: the confirmed list is retained, Export is disabled, and a stale script click opens no session and builds no artifact.
- await nav(page,'Radio data').click();await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio data');await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await expect(id(page,'pulsar-leased')).toHaveAttribute('data-phase','armed');await expect(id(page,'pulsar-count')).toHaveText('1 recorded measurements');
  await expect(exportButton).toBeDisabled();await exportButton.dispatchEvent('click');await flush(page);
  await expect(dialog(page)).toHaveCount(0);expect(await urls(page)).toBe(0);
  // Receive → Stop → Identify → Properties → the Save question; the committed lease is still held.
- await nav(page,'Radio telescope').click();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
  await id(page,'receiver-mode').click();await flush(page);await expect(id(page,'receiver-record-capturing')).toBeVisible();
  await advance(page,600);await id(page,'receiver-mode').click();await flush(page);
  for(let i=0;i<80&&await id(page,'receiver-workspace').getAttribute('data-timer')==='true';i++)await advance(page,200);
@@ -401,7 +401,7 @@ test('RX10 capture lease: an imported confirmed row cannot be exported while a r
  await expect(exportButton).toBeDisabled();await exportButton.dispatchEvent('click');await flush(page);
  await expect(dialog(page)).toHaveCount(0);expect(await urls(page)).toBe(0);
  // Genuine release by the existing Save No: the analysis opens, Load and Export are usable, and the same retained row exports.
- await nav(page,'Radio telescope').click();await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'receiver-workspace')).toBeVisible();await flush(page);
  await expect(finish(page)).toHaveAttribute('data-stage','save');await id(page,'receiver-record-save-no').click();
  await expect(id(page,'pulsar-analysis')).toBeVisible();await flush(page);
  await expect(id(page,'pulsar-leased')).toHaveCount(0);await expect(id(page,'pulsar-file')).toBeEnabled();

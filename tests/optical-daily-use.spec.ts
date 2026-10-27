@@ -1,4 +1,5 @@
 import{test,expect,type Page}from'@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import{readFile}from'node:fs/promises';
 const card=(p:Page)=>p.locator('.telescope-motion');
 async function save(page:Page){const event=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();return readFile((await(await event).path())!);}
@@ -31,7 +32,7 @@ test('daily use: date, site, options, hot list slew, add current, Save and fresh
  await page.clock.resume();await page.reload();await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
  await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'day.json',mimeType:'application/json',buffer:bytes});
  await expect(page.getByRole('status').filter({hasText:/restored/i}).first()).toBeVisible({timeout:15000});
- await page.getByRole('button',{name:'Observatory',exact:true}).click();const dome=page.getByRole('button',{name:'Open dome ↗',exact:true});if(await dome.isVisible())await dome.click();
+ await clickHeaderTool(page,'Observatory');const dome=page.getByRole('button',{name:'Open dome ↗',exact:true});if(await dome.isVisible())await dome.click();
  await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();await expect(page.getByTestId('ob-site-status')).toContainText('Classroom roof');
  await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-limit')).toBeChecked();await page.keyboard.press('Escape');
  // A file without v26 resets to the compiled defaults.

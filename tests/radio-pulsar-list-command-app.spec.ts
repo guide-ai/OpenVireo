@@ -1,4 +1,5 @@
 import {test,expect,type Browser,type Locator,type Page,type TestInfo} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // Actual App flows of R-RX8 File ▸ Pulsar List... (docs/RADIO-PULSAR-PARAMETERS.md WEB-PP-LIST-04, docs/RADIO-ACCESS-OPTIONS.md
 // WEB-ACC-LIST-01; acceptance cases C01–C25 of /tmp/clea-static-research/radio-rx8-list-command-20261025). No harness and no
@@ -11,7 +12,6 @@ import {readFile} from 'node:fs/promises';
 // error, C21 stale or missing owners, the date dialog under C17 (no App path to it with the item shown was exercised), and the
 // exact limit/tie/RA-wrap vectors of C09/C10 (src/core/radioPulsarListCommand.test.ts and the selector tests).
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
@@ -83,7 +83,7 @@ async function startApp(page:Page){
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
 }
 async function radioRoute(page:Page){
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 async function switchOnTracking(page:Page){
@@ -197,7 +197,7 @@ test('C01/C05/C20/C23/C24: the command writes and activates; the reference Open 
  expect(saved.version).toBe(23);expect(saved.base).toEqual(JSON.parse(before.toString('utf8')));
  expect(saved.radio.workspace.receivers.sourceBuffer.record.primaryName).toBe('J0016+3824');
  expect(saved.radio.workspace.access.menu).toEqual({enabled:true,visible:true,activationSeen:true});expect(saved.radio.workspace.access.env).toEqual({accessPulsarList:true});
- await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'radio-access-card')).toBeVisible();
+ await page.clock.resume();await page.reload();await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-access-card')).toBeVisible();
  await expect(command(page)).toHaveCount(0);await expect(id(page,'radio-access-menu')).toHaveAttribute('data-availability','hidden');
  await expect(id(page,'pulsar-ref-none')).toBeVisible();await expect(win(page)).toHaveCount(0);
 });

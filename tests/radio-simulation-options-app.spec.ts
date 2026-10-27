@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page,type TestInfo} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 // Actual App flows of R-RX9 (docs/RADIO-SIMULATION-OPTIONS.md): the explicit compiled numeric branch, the full Radio
 // Simulation Options form (nine numbers, ordered OK, failure prefix, whole Cancel), the projection at the Preferences close
@@ -7,7 +8,6 @@ import {readFile} from 'node:fs/promises';
 // no product debug hook. The catalog is synthetic (no original rows); expected strings are the chosen web contract, not
 // native oracles.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const noOverflow=(page:Page)=>expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 async function download(page:Page,target:Locator){const next=page.waitForEvent('download');await target.click();return readFile((await(await next).path())!);}
@@ -37,7 +37,7 @@ async function startApp(page:Page){
  await page.goto('/#pulsar-analysis');await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
 }
 async function radioRoute(page:Page){
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-exercise')).toBeVisible();
  await page.clock.pauseAt(new Date('2026-10-24T00:10:00Z'));await flush(page);
 }
 async function switchOnTracking(page:Page){
@@ -167,7 +167,7 @@ test('keyboard opt-in: a refusal keeps the focused button; an applied opt-in mov
  await page.keyboard.press('Shift+Tab');await expect(id(page,'radio-access-recipient').locator(':focus')).toHaveCount(1);
  // Route hide/show: the one-shot request was consumed; route entry focuses the page heading as before.
  await page.evaluate(()=>{location.hash='#pulsar-analysis';});await expect(heading(page,'Recorded pulsar analysis')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();
  await flush(page);await expect(sectionHeading).not.toBeFocused();
 });
 
@@ -352,7 +352,7 @@ test('Sound Sync clamps to 1.00000, the Word keeps its low bits, no sound is pro
  await expect(field(page,'soundSync91e')).toHaveValue('1.00000');await expect(field(page,'sampleRate922')).toHaveValue('4464');await expect(field(page,'beamWidth92c')).toHaveValue('0.12');
  await id(page,'radio-access-child-cancel').click();await id(page,'radio-access-parent-cancel').click();
  expect(await page.evaluate(()=>(window as unknown as {__audio:number}).__audio)).toBe(0);
- await page.clock.resume();await page.reload();await nav(page,'Radio telescope').click();await expect(numeric(page)).toHaveAttribute('data-authority','absent');
+ await page.clock.resume();await page.reload();await clickHeaderTool(page,'Radio telescope');await expect(numeric(page)).toHaveAttribute('data-authority','absent');
  await expect(id(page,'antenna-radio-options')).toBeVisible();await expect(id(page,'radio-env-diameter')).toBeEnabled();
 });
 
@@ -454,7 +454,7 @@ test('Phase 1 item 1.5: numeric preferences keep the applied slew rate; Save and
   await p.goto('/#pulsar-analysis');await expect(heading(p,'Recorded pulsar analysis')).toBeVisible();
   await p.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'rate.json',mimeType:'application/json',buffer:bytes});
   await expect(p.locator('.investigation-toolbar').getByText('Investigation restored.',{exact:false})).toBeVisible({timeout:30_000});
-  await nav(p,'Radio telescope').click();await expect(heading(p,'Radio telescope control')).toBeVisible();
+  await clickHeaderTool(p,'Radio telescope');await expect(heading(p,'Radio telescope control')).toBeVisible();
   await expect(id(p,'antenna-rate')).toHaveText(rateText);
   await expect(id(p,'radio-id-caption')).toHaveText('100 Meter Radio Telescope');await expect(id(p,'radio-env-diameter-current')).toHaveText('200');
   await expect(id(p,'antenna-options')).toContainText('rate base 60');

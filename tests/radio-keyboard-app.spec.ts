@@ -1,4 +1,5 @@
 import {test,expect,type CDPSession,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 // Actual App flows of the RA-19 keyboard table (FormKeyDown/FormKeyUp, WEB-KEY-02/03; docs/RADIO-ANTENNA.md). No harness
@@ -7,7 +8,6 @@ import {createHash} from 'node:crypto';
 // oracles. Playwright key presses, CDP key events, synthetic window blur/visibilitychange and a foreign <dialog> are browser
 // stimuli, not physical-keyboard, Windows or native witnesses. The key log only observes (a window bubble listener).
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 async function flushTasks(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 async function advance(page:Page,count:number,stepMs=100){for(let i=0;i<count;i++){await page.clock.runFor(stepMs);await flushTasks(page);}}
@@ -52,7 +52,7 @@ const tracking=(page:Page)=>id(page,'antenna-tracking');
 
 async function openRadio(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
 }
 /** Compiled defaults, manual access tick, switch On (first FormActivate: Tracking off, index 4, rate 500). */
 async function setupRadio(page:Page){
@@ -325,7 +325,7 @@ test('cancellation without resume: Tab out of the scope, window blur and a hidde
 test('cancellation without resume: a foreign dialog, Back and a held restore; Save keeps the pointing but no key or hold state',async({page})=>{
  // `before` (v≤22, no Radio part) is the held Restore fixture: restoring it never replaces the Radio state.
  await holdReads(page);await page.goto('/#observatory');const before=await save(page);
- await nav(page,'Radio telescope').click();await setupRadio(page);await trackingOn(page);await controlledClock(page);
+ await clickHeaderTool(page,'Radio telescope');await setupRadio(page);await trackingOn(page);await controlledClock(page);
  const n=500*K;let d=await dec(page);
  // Foreign <dialog>: showModal moves focus out of the scope synchronously, before the dialog observer: both are cancellations.
  await tracking(page).focus();await keyDown(page,'n');await advance(page,1);d+=n;

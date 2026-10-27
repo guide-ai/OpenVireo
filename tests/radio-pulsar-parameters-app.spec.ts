@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {env} from 'node:process';
@@ -10,7 +11,6 @@ import {env} from 'node:process';
 // yielding test, Playwright's controlled clock.
 // The catalog below is synthetic (no original rows); expected strings are the chosen web contract, not native oracles.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const header=(page:Page)=>page.locator('.portal-header'),toolbar=(page:Page)=>page.locator('.investigation-toolbar');
 const layer=(page:Page)=>id(page,'pulsar-params-layer');
@@ -67,7 +67,7 @@ async function flushTasks(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=
 
 async function openRadio(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
 }
 async function applyClock(page:Page,utc:string){
  await id(page,'radio-clock-utc').fill(utc);await id(page,'radio-clock-apply').click();await expect(id(page,'radio-clock-applied')).toHaveText(`${utc} UT`);
@@ -85,7 +85,7 @@ async function openWindow(page:Page){
 
 test('admission, read-only window, Prev/Next ends, Update partial store and Reset, Exit/reopen; Save bytes unchanged; reload empties',async({page},info)=>{
  await page.goto('/#observatory');const before=await save(page);
- await nav(page,'Radio telescope').click();await expect(id(page,'radio-control')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(id(page,'radio-control')).toBeVisible();
  await expect(id(page,'pulsar-params-open')).toBeDisabled();await expect(id(page,'pulsar-params-open-reason')).toHaveText('Load a reference catalog first.');
  await expect(id(page,'pulsar-ref-none')).toBeVisible();
  // Phase 1 item 1.5 (intentional change): Save investigation keeps the loaded catalog, never the window.
@@ -156,7 +156,7 @@ test('admission, read-only window, Prev/Next ends, Update partial store and Rese
  await expect(id(page,'radio-clock-applied')).toHaveText('2000-01-01T12:00:00 UT');await expect(id(page,'radio-switch')).toBeDisabled();
  await noOverflow(page);await page.screenshot({path:info.outputPath('pulsar-params-desktop.png'),fullPage:true});
  await id(page,'pulsar-params-card').screenshot({path:info.outputPath('pulsar-params-card-desktop.png')});
- await page.reload();await nav(page,'Radio telescope').click();await expect(id(page,'pulsar-ref-none')).toBeVisible();
+ await page.reload();await clickHeaderTool(page,'Radio telescope');await expect(id(page,'pulsar-ref-none')).toBeVisible();
  await expect(id(page,'pulsar-params-window')).toHaveCount(0);await expect(id(page,'pulsar-params-open')).toBeDisabled();
 });
 

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 
 test('pointed Coma1 reaches source preparation with explicit continuation and preserves the observation gate',async({page})=>{
   await page.goto('/');
@@ -31,7 +32,7 @@ test('pointed Coma1 reaches source preparation with explicit continuation and pr
   await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeFocused();
   await expect(page.getByLabel('Target',{exact:true})).toHaveValue('NGC4874');
   await page.getByRole('button',{name:'Close dome',exact:true}).click();
-  await page.getByRole('button',{name:'Spectrometer',exact:true}).click();
+  await clickHeaderTool(page,'Spectrometer');
   await expect(page.getByRole('heading',{name:'Point the telescope to begin',exact:true})).toBeVisible();await expect(curve).toHaveCount(0);
 });
 
@@ -39,7 +40,8 @@ test('source integrity failure leaves no curve or acquired counts; mobile naviga
   await page.setViewportSize({width:390,height:844});
   await page.route('**/original/spectra/GLXYTMPL.SP',route=>route.fulfill({status:200,body:'0 1\n1 1\n2 1\n',contentType:'text/plain'}));
   await page.goto('/');
-  await expect(page.getByRole('button',{name:'Spectrometer',exact:true})).toBeVisible();
+  // UI redesign: on phones the tools fold behind the Tools menu; open it, then the Spectrometer tool must be visible.
+  await openHeaderTools(page);await expect(page.getByRole('button',{name:'Spectrometer',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
   await page.getByLabel('Target',{exact:true}).selectOption('NGC4874');
   await page.getByRole('button',{name:'Switch to telescope view ↗',exact:true}).click();

@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 // Actual App flows of the RA-12 altitude limit (WEB-ALT-01..03; docs/RADIO-ANTENNA.md "Altitude limit (RA-12)"). Only the
@@ -7,7 +8,6 @@ import {createHash} from 'node:crypto';
 // comments are closed forms of the native formula (HA ≈ 0: alt = 90° − |lat − Dec|, lat ≈ 38.43°); they are the chosen web
 // contract, not native oracles. Synthetic browser stimuli are not Windows or native witnesses.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 async function flushTasks(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
 async function advance(page:Page,count:number,stepMs=100){for(let i=0;i<count;i++){await page.clock.runFor(stepMs);await flushTasks(page);}}
@@ -36,7 +36,7 @@ const notice=(page:Page)=>id(page,'antenna-notice');
 
 async function openRadio(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
 }
 /** Compiled defaults, manual access tick, switch On (first FormActivate: Tracking off, RA 0, Dec = latitude). */
 async function setupRadio(page:Page){
@@ -77,7 +77,7 @@ async function untilArrival(page:Page){
 
 test('radio options scenario: draft, Cancel/Escape, the hold and dialog guards, Apply; limits without a clock refuse requests and manual steps; Save keeps them only in the Radio part, a reload does not',async({page})=>{
  await page.goto('/#observatory');const before=await save(page);
- await nav(page,'Radio telescope').click();await setupRadio(page);await trackingOn(page);
+ await clickHeaderTool(page,'Radio telescope');await setupRadio(page);await trackingOn(page);
  await expect(id(page,'radio-route-scenario-options')).toContainText('Limit Slewing off');
  await expect(id(page,'antenna-radio-options-caption')).toHaveText('Radio Simulation Options');
  await expect(id(page,'antenna-radio-options-horizon')).toContainText('10.000000°');
@@ -109,7 +109,7 @@ test('radio options scenario: draft, Cancel/Escape, the hold and dialog guards, 
  // unmoved pointing in its Radio part; nothing is stored in the browser, so a reload without Restore returns to the defaults.
  const saved=radioPart(await save(page),before).workspace;
  expect(saved.options.limitsEnabled).toBe(true);expect(saved.antenna).toMatchObject({activated:true,tracking:true,target:{ra:3,dec:20},pointing:{dec:d0}});
- await page.reload();await page.goto('/#observatory');await nav(page,'Radio telescope').click();await setupRadio(page);
+ await page.reload();await page.goto('/#observatory');await clickHeaderTool(page,'Radio telescope');await setupRadio(page);
  await expect(id(page,'antenna-radio-options-current')).toHaveAttribute('data-limits','false');await expect(id(page,'antenna-options')).toContainText('Limit Slewing off');
 });
 

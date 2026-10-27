@@ -1,4 +1,5 @@
 import{test,expect,type Page}from'@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import{readFile}from'node:fs/promises';
 test.use({hasTouch:true});
 const main='openvireo.observation-notebook.v1',rec='openvireo.observation-deletion-recovery.v1';
@@ -25,7 +26,7 @@ test('selected edit confirm reload and undo preserve exact codes notes identity 
 test('selected cancel invalid no-op closed and obsolete confirmations never create recovery;normal reuse and append stay separate',async({page})=>{
  await start(page);await record(page,'G2V','kept');const before=await save(page);await edit(page);await page.keyboard.press('Escape');expect(await save(page)).toEqual(before);expect(await stored(page,rec)).toBeNull();await edit(page,'😀','bad draft');await confirm(page).click();await expect(editor(page).getByRole('alert')).toContainText('Windows-1252');expect(await stored(page,main)).toBe(before.toString());expect(await stored(page,rec)).toBeNull();await cancel(page).click();
  await edit(page,'G2V','kept');await confirm(page).click();await expect(card(page)).toContainText('No recovery copy or additional write was needed');expect(await stored(page,rec)).toBeNull();expect(await save(page)).toEqual(before);
- await edit(page);const closed=await confirm(page).elementHandle();await editor(page).evaluate(n=>(n as HTMLDialogElement).close());await closed!.evaluate(n=>(n as HTMLButtonElement).click());expect(await save(page)).toEqual(before);await edit(page);const stale=await confirm(page).elementHandle();await page.evaluate(()=>location.hash='#spectrum');await stale!.evaluate(n=>(n as HTMLButtonElement).click());await page.getByRole('button',{name:'Stellar classification',exact:true}).click();await ready(page);expect(await save(page)).toEqual(before);expect(await stored(page,rec)).toBeNull();
+ await edit(page);const closed=await confirm(page).elementHandle();await editor(page).evaluate(n=>(n as HTMLDialogElement).close());await closed!.evaluate(n=>(n as HTMLButtonElement).click());expect(await save(page)).toEqual(before);await edit(page);const stale=await confirm(page).elementHandle();await page.evaluate(()=>location.hash='#spectrum');await stale!.evaluate(n=>(n as HTMLButtonElement).click());await clickHeaderTool(page,'Stellar classification');await ready(page);expect(await save(page)).toEqual(before);expect(await stored(page,rec)).toBeNull();
  await record(page,'B1III','existing first-object reuse');expect(await stored(page,rec)).toBeNull();await expect(rows(page)).toHaveCount(1);await page.getByRole('checkbox',{name:'Create a separate observation on each confirmation',exact:true}).check();await record(page,'A1V','separate confirmation');await expect(rows(page)).toHaveCount(2);expect(await stored(page,rec)).toBeNull();
 });
 

@@ -1,11 +1,13 @@
 import{test,expect,type Page}from'@playwright/test';
+import{clickHeaderTool,openHeaderTools}from'./fixtures/header-tools';
 import{createHash}from'node:crypto';
 import{readFile}from'node:fs/promises';
 // Synthetic format/control vector. No original recording, acquisition or writer witness.
 const TEXT=["'SYNTHETIC ROUTE',40,1",'430,1420,0','1,2,1','50000.125,0.5',...Array.from({length:120},(_,i)=>`${i%20},10,0`)].join('\r\n')+'\r\n';
 const file=(name='route-control.plr',text=TEXT)=>({name,mimeType:'application/octet-stream',buffer:Buffer.from(text,'ascii')});
 const digest=createHash('sha256').update(TEXT,'ascii').digest('hex');
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
+// includeHidden: assertion-only uses (enabled/inert checks) also run at phone widths while the Tools menu is folded.
+const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true,includeHidden:true});
 // UI redesign: same 19 tools and names, now listed in their header groups (optical, radio, analysis, files, guides).
 const HEADER_TOOLS=['Observatory','Spectrometer','Sky exposure','Star exposure','Galaxy exposure','Pleiades photometry','Radio telescope','Radio data','Spectrum analyzer','Stellar classification','Cluster database','LSS survey','LSS data','Saved images','Hubble lab guide','LSS guide','Pulsar guide','Pleiades lab guide','Classification guide'];
 const TOOLBAR_HELP='Back up supported spectrum/Hubble and classification work, pending edits, photometry, exposure segments, cluster database/comparison/selection, optical/observatory context, and the Radio telescope setup with the current pulsar capture or .PLR and its confirmed measurements. This is not a backup of every tool or view setting. For example, imported program lists, other-source width results, saved-text inspection, native-list receipts, FITS images, observation HR, hot lists, the saved pulsar measurement file viewer and LSS remain separate; follow each tool\'s persistence and export notice. Save downloads a file; the download is not confirmation that it was written. Save stops and releases optical exposures and pauses the observatory clock; a running Radio clock and the Radio panel timers are only held during Save and continue without catching up, and the file stores the Radio clock paused. Restored optical observing tools require activation; Restore starts the Radio telescope paused with its receivers closed.';
@@ -20,8 +22,8 @@ async function record(page:Page,comment:string){await page.getByTestId('pulsar-p
 test('actual Radio data route retains manual records across navigation and copies original bytes; reload matches visible persistence warning',async({page},info)=>{
  await open(page);await load(page);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_PERSISTENCE);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_RELOAD);await record(page,'kept across navigation');
  await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
- await nav(page,'Observatory').click();await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await expect(page.getByTestId('pulsar-analysis')).toHaveAttribute('data-active','false');
- await nav(page,'Radio data').click();await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis'})).toBeFocused();
+ await clickHeaderTool(page,'Observatory');await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await expect(page.getByTestId('pulsar-analysis')).toHaveAttribute('data-active','false');
+ await clickHeaderTool(page,'Radio data');await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis'})).toBeFocused();
  await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');
  await page.getByTestId('pulsar-review').click();await expect(page.getByTestId('pulsar-entry-1')).toContainText('kept across navigation');await expect(page.getByTestId('pulsar-entry-1')).toContainText('0.500000');
  await page.getByTestId('pulsar-review-cancel').click();await expect(page.getByTestId('pulsar-review-dialog')).toHaveCount(0);
@@ -33,26 +35,26 @@ test('real route deactivation stops held pan and a late file read while keeping 
  await page.addInitScript(()=>{const original=Blob.prototype.arrayBuffer;Blob.prototype.arrayBuffer=function(this:Blob){return this instanceof File&&this.name.includes('slow')?new Promise<ArrayBuffer>(resolve=>setTimeout(()=>resolve(original.call(this)),700)):original.call(this);};});
  await open(page);await load(page);await record(page,'stable before hiding');await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);await page.getByTestId('pulsar-rate-1').check();
  const button=page.getByTestId('pulsar-pan-right'),box=(await button.boundingBox())!;await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.clock.runFor(100);await expect(page.getByTestId('pulsar-window-start')).toHaveText('1.000');
- await page.evaluate(()=>{location.hash='observatory';});await expect(page.getByTestId('pulsar-analysis')).toHaveAttribute('data-active','false');await page.clock.runFor(800);await page.mouse.up();await nav(page,'Radio data').click();await page.clock.runFor(500);await expect(page.getByTestId('pulsar-window-start')).toHaveText('1.000');
+ await page.evaluate(()=>{location.hash='observatory';});await expect(page.getByTestId('pulsar-analysis')).toHaveAttribute('data-active','false');await page.clock.runFor(800);await page.mouse.up();await clickHeaderTool(page,'Radio data');await page.clock.runFor(500);await expect(page.getByTestId('pulsar-window-start')).toHaveText('1.000');
  // The held read cannot resolve before runFor: the paused fake clock owns its 700 ms timer.
- await page.getByTestId('pulsar-file').setInputFiles(file('slow-route.plr',TEXT.replace('SYNTHETIC ROUTE','LATE ROUTE')));await expect(page.getByTestId('pulsar-reading')).toBeVisible();await nav(page,'Observatory').click();
+ await page.getByTestId('pulsar-file').setInputFiles(file('slow-route.plr',TEXT.replace('SYNTHETIC ROUTE','LATE ROUTE')));await expect(page.getByTestId('pulsar-reading')).toBeVisible();await clickHeaderTool(page,'Observatory');
  await expect(page.getByTestId('pulsar-status')).toHaveText('Reading cancelled. The current analysis is unchanged.');
  await page.clock.runFor(800);
  // Observes at least one of the two discard guards for a valid stale file; the separate invalid-file case isolates the earlier guard.
- await expect(page.getByTestId('pulsar-status')).toHaveText(PLR_LATE);await nav(page,'Radio data').click();
+ await expect(page.getByTestId('pulsar-status')).toHaveText(PLR_LATE);await clickHeaderTool(page,'Radio data');
  await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-file-name')).toHaveText('route-control.plr');await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');await expect(page.getByTestId('pulsar-reading')).toHaveCount(0);await expect(page.getByTestId('pulsar-status')).toHaveText(PLR_LATE);
 });
 
 test('an invalid stale Radio file is discarded before admission can replace errors or confirmed work',async({page})=>{
  await page.addInitScript(()=>{const original=Blob.prototype.arrayBuffer;Blob.prototype.arrayBuffer=function(this:Blob){return this instanceof File&&this.name==='invalid-slow.plr'?new Promise<ArrayBuffer>(resolve=>setTimeout(()=>resolve(original.call(this)),700)):original.call(this);};});
  await open(page);await load(page);await record(page,'kept before invalid late input');await page.clock.install();await page.clock.pauseAt(Date.now()+60_000);
- await page.getByTestId('pulsar-file').setInputFiles(file('invalid-slow.plr','not a recording'));await expect(page.getByTestId('pulsar-reading')).toBeVisible();await nav(page,'Observatory').click();
+ await page.getByTestId('pulsar-file').setInputFiles(file('invalid-slow.plr','not a recording'));await expect(page.getByTestId('pulsar-reading')).toBeVisible();await clickHeaderTool(page,'Observatory');
  await expect(page.getByTestId('pulsar-status')).toHaveText('Reading cancelled. The current analysis is unchanged.');await page.clock.runFor(800);await expect(page.getByTestId('pulsar-status')).toHaveText(PLR_LATE);
- await nav(page,'Radio data').click();await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');await expect(page.getByTestId('pulsar-rejection')).toHaveCount(0);
+ await clickHeaderTool(page,'Radio data');await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');await expect(page.getByTestId('pulsar-rejection')).toHaveCount(0);
 });
 
 test('mobile browser back/forward preserves an unconfirmed record draft and restores modal focus; cancel and clear remain reversible',async({page},info)=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await nav(page,'Radio data').click();await load(page);
+ await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await clickHeaderTool(page,'Radio data');await load(page);
  await page.getByTestId('pulsar-plot-1').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');await expect(page.getByTestId('pulsar-vertical-value-1')).toHaveText('0.500000');await page.getByTestId('pulsar-record').click();await page.getByTestId('pulsar-comment').fill('draft before history');
  await page.goBack();await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await page.goForward();await expect(page.getByTestId('pulsar-record-dialog')).toBeVisible();await expect(page.getByTestId('pulsar-comment')).toHaveValue('draft before history');await expect(page.getByTestId('pulsar-comment')).toBeFocused();
  await expect(page.locator('dialog:modal')).toHaveCount(1);await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis',includeHidden:true})).not.toBeFocused();
@@ -63,7 +65,7 @@ test('mobile browser back/forward preserves an unconfirmed record draft and rest
 
 test('desktop Radio history return leaves focus with the reopened native dialog and focuses the route heading without one',async({page},info)=>{
  await open(page);await load(page);await record(page,'confirmed desktop');
- await nav(page,'Observatory').click();await nav(page,'Radio data').click();await expect(page.locator('dialog:modal')).toHaveCount(0);await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis'})).toBeFocused();
+ await clickHeaderTool(page,'Observatory');await clickHeaderTool(page,'Radio data');await expect(page.locator('dialog:modal')).toHaveCount(0);await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis'})).toBeFocused();
  await page.getByTestId('pulsar-clear').click();await expect(page.getByTestId('pulsar-clear-cancel')).toBeVisible();
  await page.goBack();await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await expect(page.locator('dialog:modal')).toHaveCount(0);
  await page.goForward();await expect(page.getByTestId('pulsar-clear-cancel')).toBeFocused();await expect(page.locator('dialog:modal')).toHaveCount(1);
@@ -107,7 +109,7 @@ const SUSPENDED='Loading slow-route.txt stopped because this panel became inacti
 test('actual LSS data route retains confirmed plot, options, row and source receipt across navigation; reload follows warning',async({page},info)=>{
  await openWedge(page);await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);
  await page.getByTestId('wedge-row-0').getByRole('button').click();await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-1').check();await page.getByTestId('wedge-size-3').check();await page.getByTestId('wedge-options-ok').click();
- await expect(page.getByTestId('wedge-persistence')).toContainText('not included in Save investigation');await nav(page,'Radio data').click();await nav(page,'LSS data').click();
+ await expect(page.getByTestId('wedge-persistence')).toContainText('not included in Save investigation');await clickHeaderTool(page,'Radio data');await clickHeaderTool(page,'LSS data');
  await expect(page.getByRole('heading',{level:1,name:'Large-scale structure wedge'})).toBeFocused();await expect(rows(page)).toHaveCount(1);await expect(page.getByTestId('wedge-details')).toContainText('ROUTE-A');await expect(page.getByTestId('wedge-point-0')).toHaveAttribute('r','3');
  const download=page.waitForEvent('download');await page.getByTestId('wedge-export').click();const d=await download,csv=await readFile((await d.path())!,'utf8');expect(csv).toContain(createHash('sha256').update(lss().buffer).digest('hex'));expect(csv).toContain(',false,route,plotted,');await expect(page.getByTestId('wedge-details')).toContainText('route synthetic');
  await page.screenshot({path:info.outputPath('integrated-lss-desktop.png'),fullPage:true});await page.reload();await expect(page.getByTestId('wedge-status')).toHaveText('No LSS data loaded.');
@@ -125,21 +127,21 @@ test('positive control: a held LSS read released on the active route reaches con
 test('actual LSS navigation cancels late reads, import consent and option drafts without losing confirmed rows',async({page},info)=>{
  await holdSlowReads(page);await openWedge(page);await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);
  await page.getByTestId('wedge-file').setInputFiles(lss('slow-route.txt','LATE'));await expect(page.getByTestId('wedge-cancel-read')).toBeVisible();expect((await gate(page)).started).toBe(1);
- await nav(page,'Observatory').click();await expect(page.getByTestId('wedge-lab')).toBeHidden();
+ await clickHeaderTool(page,'Observatory');await expect(page.getByTestId('wedge-lab')).toBeHidden();
  await expect(page.getByTestId('wedge-notice')).toHaveAttribute('data-cause','suspended');await expect(page.getByTestId('wedge-notice')).toContainText(SUSPENDED);
  const before=(await gate(page)).digests;await releaseHeld(page);
  const hidden=await now(page);expect(hidden).toMatchObject({prompt:0,rows:1,status:'1 record from 1 file.',notice:'not-loaded/suspended'});expect(hidden.noticeText).toContain(SUSPENDED);
  // Coverage label only: whether the abort stopped the released read before hashing. The state checks decide pass/fail.
  info.annotations.push({type:'late-read-path',description:(await gate(page)).digests===before?'aborted before hashing':'hashed after release (abort did not stop it)'});
  // A discrete click commits synchronously, so a stale pending consent would already render here.
- await nav(page,'LSS data').click();const shown=await now(page);expect(shown).toMatchObject({prompt:0,rows:1,status:'1 record from 1 file.',notice:'not-loaded/suspended'});
+ await clickHeaderTool(page,'LSS data');const shown=await now(page);expect(shown).toMatchObject({prompt:0,rows:1,status:'1 record from 1 file.',notice:'not-loaded/suspended'});
  await expect(page.getByTestId('wedge-row-0')).toContainText('ROUTE-A');
- await page.getByTestId('wedge-file').setInputFiles(lss('second.txt','ROUTE-B'));await expect(page.getByTestId('wedge-prompt')).toBeVisible();await nav(page,'Observatory').click();await nav(page,'LSS data').click();await expect(page.getByTestId('wedge-prompt')).toHaveCount(0);await expect(rows(page)).toHaveCount(1);
- await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-size-5').check();await page.evaluate(()=>{location.hash='observatory';});await expect(page.getByTestId('wedge-lab')).toBeHidden();await nav(page,'LSS data').click();await expect(page.getByTestId('wedge-options')).toHaveCount(0);await page.getByTestId('wedge-options-open').click();await expect(page.getByTestId('wedge-size-1')).toBeChecked();await page.keyboard.press('Escape');
+ await page.getByTestId('wedge-file').setInputFiles(lss('second.txt','ROUTE-B'));await expect(page.getByTestId('wedge-prompt')).toBeVisible();await clickHeaderTool(page,'Observatory');await clickHeaderTool(page,'LSS data');await expect(page.getByTestId('wedge-prompt')).toHaveCount(0);await expect(rows(page)).toHaveCount(1);
+ await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-size-5').check();await page.evaluate(()=>{location.hash='observatory';});await expect(page.getByTestId('wedge-lab')).toBeHidden();await clickHeaderTool(page,'LSS data');await expect(page.getByTestId('wedge-options')).toHaveCount(0);await page.getByTestId('wedge-options-open').click();await expect(page.getByTestId('wedge-size-1')).toBeChecked();await page.keyboard.press('Escape');
 });
 
 test('mobile LSS history and keyboard options remain usable and cancel replacement preserves source data',async({page},info)=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await nav(page,'LSS data').click();await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);
+ await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await clickHeaderTool(page,'LSS data');await page.getByTestId('wedge-file').setInputFiles(lss());await expect(rows(page)).toHaveCount(1);
  await page.getByTestId('wedge-options-open').click();await page.getByTestId('wedge-grid-2').check();await page.getByTestId('wedge-options-ok').click();await page.getByTestId('wedge-options-open').click();await page.keyboard.press('Shift+Tab');await expect(page.getByTestId('wedge-options').locator(':focus')).toHaveCount(1);await page.keyboard.press('Escape');
  await page.goBack();await expect(page.getByTestId('wedge-lab')).toBeHidden();await page.goForward();await expect(rows(page)).toHaveCount(1);
  await page.getByTestId('wedge-file').setInputFiles(lss('replacement.txt','ROUTE-B'));await page.getByTestId('wedge-prompt-no').click();await expect(page.getByTestId('wedge-prompt')).toHaveAttribute('data-stage','confirm-delete');await page.keyboard.press('Escape');await expect(rows(page)).toHaveCount(1);await expect(page.getByTestId('wedge-file')).toBeFocused();
@@ -214,7 +216,9 @@ test('all tools remain reachable without document overflow across the navigation
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
  const buttons=page.locator('.portal-header nav button');await expect(buttons).toHaveText(HEADER_TOOLS);
  for(const width of[1440,1251,1250,780,600,521,520,360,320]){
+  // UI redesign: below 600px the tools fold behind the "Tools" disclosure; open it, then require every tool fully in view.
   await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await openHeaderTools(page);
   for(const name of HEADER_TOOLS){
    const button=nav(page,name);await expect(button,`${name} at ${width}px`).toBeInViewport({ratio:1});
    const box=(await button.boundingBox())!;
@@ -228,16 +232,16 @@ test('toolbar backup caveat and temporary lab examples match visible persistence
  // UI redesign: the caveat is folded one click away under "What a backup includes"; its text is unchanged.
  await page.goto('/#observatory');await toolbar(page).getByText('What a backup includes',{exact:true}).click();await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();
  // Four lab examples have their own visible notices. Other temporary scopes are covered by classification-program-import,classification-range,selected-source-width,native-text-results,native-result-list and native-result-clear-load specs; this is not a serialization test.
- await nav(page,'Saved images').click();await expect(page.getByText('Investigation and notebook files do not include this temporary image.',{exact:false})).toBeVisible();
- await nav(page,'Cluster database').click();await page.getByText('HR diagram from saved observations').click();await expect(page.getByText('This observation HR workspace is separate from Save investigation.',{exact:false})).toBeVisible();
- await nav(page,'Radio data').click();await load(page);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_PERSISTENCE);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_RELOAD);
- await nav(page,'LSS data').click();await expect(page.getByTestId('wedge-persistence')).toContainText('not included in Save investigation');
+ await clickHeaderTool(page,'Saved images');await expect(page.getByText('Investigation and notebook files do not include this temporary image.',{exact:false})).toBeVisible();
+ await clickHeaderTool(page,'Cluster database');await page.getByText('HR diagram from saved observations').click();await expect(page.getByText('This observation HR workspace is separate from Save investigation.',{exact:false})).toBeVisible();
+ await clickHeaderTool(page,'Radio data');await load(page);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_PERSISTENCE);await expect(page.getByTestId('pulsar-persistence')).toContainText(PLR_RELOAD);
+ await clickHeaderTool(page,'LSS data');await expect(page.getByTestId('wedge-persistence')).toContainText('not included in Save investigation');
  await page.setViewportSize({width:390,height:844});await expect(toolbar(page).getByText(TOOLBAR_HELP,{exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await toolbar(page).screenshot({path:info.outputPath('toolbar-scope-mobile.png')});
 });
 
 test('actual mobile Radio Review preserves staged deletion and inner question across history; Cancel restores confirmed bytes and rows',async({page},info)=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await nav(page,'Radio data').click();await load(page);await record(page,'kept after staged deletion');
+ await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');await clickHeaderTool(page,'Radio data');await load(page);await record(page,'kept after staged deletion');
  await page.getByTestId('pulsar-review').click();await page.getByTestId('pulsar-review-delete').click();await page.getByTestId('pulsar-review-yes').click();await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();
  await page.goBack();await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await expect(page.locator('dialog:modal')).toHaveCount(0);
  await page.goForward();await expect(page.getByTestId('pulsar-review-dialog')).toBeVisible();await expect(page.getByTestId('pulsar-review-empty')).toBeVisible();await expect(page.getByTestId('pulsar-review-cancel')).toBeFocused();await expect(page.getByRole('heading',{level:1,name:'Recorded pulsar analysis',includeHidden:true})).not.toBeFocused();
@@ -250,12 +254,12 @@ test('actual mobile Radio Review preserves staged deletion and inner question ac
 
 // Original comment-only Edit; web history/inline-dialog ownership,not VCL activation equivalence.
 for(const size of[{name:'desktop',width:1440,height:1050},{name:'mobile-layout',width:390,height:844}])test(`actual Radio comment Edit ${size.name}:history preserves draft,innerCancel keeps row,outerCancel restores andouterOk commits`,async({page},info)=>{
- await page.setViewportSize({width:size.width,height:size.height});await page.goto('/#observatory');await nav(page,'Radio data').click();await load(page);await record(page,'confirmed before edit');await page.getByTestId('pulsar-review').click();const dialog=page.getByTestId('pulsar-review-dialog'),row=page.getByTestId('pulsar-entry-1'),before=(await row.textContent())!;
+ await page.setViewportSize({width:size.width,height:size.height});await page.goto('/#observatory');await clickHeaderTool(page,'Radio data');await load(page);await record(page,'confirmed before edit');await page.getByTestId('pulsar-review').click();const dialog=page.getByTestId('pulsar-review-dialog'),row=page.getByTestId('pulsar-entry-1'),before=(await row.textContent())!;
  await page.getByTestId('pulsar-review-edit').click();const editor=page.getByTestId('pulsar-review-editor'),comment=page.getByTestId('pulsar-review-edit-comment');await expect(comment).toBeFocused();await comment.fill('draft across browser history');await page.goBack();await expect(page.getByTestId('pulsar-analysis')).toBeHidden();await expect(page.locator('dialog:modal')).toHaveCount(0);await page.goForward();await expect(editor).toBeVisible();await expect(comment).toHaveValue('draft across browser history');await expect(comment).toBeFocused();await expect(page.locator('dialog:modal')).toHaveCount(1);await expect(page.getByTestId('pulsar-review-edit-vertical')).toHaveValue('0.500000');await expect(page.getByTestId('pulsar-review-edit-vertical')).not.toBeEditable();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:info.outputPath(`integrated-comment-editor-${size.name}.png`),fullPage:true});
  await page.getByTestId('pulsar-review-edit-cancel').click();await expect(row).toHaveText(before);await expect(page.getByTestId('pulsar-review-edit')).toBeFocused();
  // Actual App ownership across repeated command keys,not only the isolated workbench.
  await page.getByTestId('pulsar-review-edit').click();await comment.fill('held enter staged');await page.evaluate(()=>{(window as any).__appPlrKeys=[];document.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='Escape')(window as any).__appPlrKeys.push({key:e.key,repeat:e.repeat});},true);});const enterStates:number[]=[],enterFocus:(string|null)[]=[];try{for(let i=0;i<5;i++){await page.keyboard.down('Enter');enterStates.push(await editor.count());enterFocus.push(await page.evaluate(()=>document.activeElement?.getAttribute('data-testid')??null));}}finally{await page.keyboard.up('Enter');}expect(enterStates).toEqual([0,0,0,0,0]);expect(enterFocus).toEqual(Array(5).fill('pulsar-review-edit'));await expect(dialog).toBeVisible();await expect(row).toHaveText(before.replace('confirmed before edit','held enter staged'));
  await page.getByTestId('pulsar-review-edit').click();await comment.fill('held escape discarded inner');const escapeStates:number[]=[],escapeEditors:number[]=[],escapeFocus:(string|null)[]=[];try{for(let i=0;i<5;i++){await page.keyboard.down('Escape');escapeStates.push(await dialog.count());escapeEditors.push(await editor.count());escapeFocus.push(await page.evaluate(()=>document.activeElement?.getAttribute('data-testid')??null));}}finally{await page.keyboard.up('Escape');}expect(escapeStates).toEqual([1,1,1,1,1]);expect(escapeEditors).toEqual([0,0,0,0,0]);expect(escapeFocus).toEqual(Array(5).fill('pulsar-review-edit'));await expect(editor).toHaveCount(0);await expect(row).toHaveText(before.replace('confirmed before edit','held enter staged'));const keyEvents=await page.evaluate(()=>(window as any).__appPlrKeys);await info.attach('actual-App-PLR-command-keys',{body:JSON.stringify({enterStates,enterFocus,escapeStates,escapeEditors,escapeFocus,keyEvents}),contentType:'application/json'});for(const key of['Enter','Escape']){const events=keyEvents.filter((e:any)=>e.key===key);expect(events.map((e:any)=>e.repeat)).toEqual([false,true,true,true,true]);}await page.getByTestId('pulsar-review-cancel').click();await page.getByTestId('pulsar-review').click();await expect(row).toHaveText(before);
  await page.getByTestId('pulsar-review-edit').click();await comment.fill('staged but discarded');await page.getByTestId('pulsar-review-edit-ok').click();await expect(editor).toHaveCount(0);await expect(row).toHaveText(before.replace('confirmed before edit','staged but discarded'));await page.goBack();await page.goForward();await expect(dialog).toBeVisible();await expect(page.getByTestId('pulsar-review-select-1')).toBeFocused();await expect(row).toHaveText(before.replace('confirmed before edit','staged but discarded'));await page.getByTestId('pulsar-review-cancel').click();
- await page.getByTestId('pulsar-review').click();await expect(row).toHaveText(before);await page.getByTestId('pulsar-review-edit').click();await comment.fill('committed after history');await page.getByTestId('pulsar-review-edit-ok').click();await page.getByTestId('pulsar-review-ok').click();await nav(page,'Observatory').click();await nav(page,'Radio data').click();await page.getByTestId('pulsar-review').click();await expect(row).toHaveText(before.replace('confirmed before edit','committed after history'));await page.getByTestId('pulsar-review-cancel').click();await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');const promise=page.waitForEvent('download');await page.getByTestId('pulsar-download').click();const download=await promise;expect(await readFile((await download.path())!)).toEqual(Buffer.from(TEXT,'ascii'));
+ await page.getByTestId('pulsar-review').click();await expect(row).toHaveText(before);await page.getByTestId('pulsar-review-edit').click();await comment.fill('committed after history');await page.getByTestId('pulsar-review-edit-ok').click();await page.getByTestId('pulsar-review-ok').click();await clickHeaderTool(page,'Observatory');await clickHeaderTool(page,'Radio data');await page.getByTestId('pulsar-review').click();await expect(row).toHaveText(before.replace('confirmed before edit','committed after history'));await page.getByTestId('pulsar-review-cancel').click();await expect(page.getByTestId('pulsar-sha')).toHaveText(digest);await expect(page.getByTestId('pulsar-count')).toHaveText('1 recorded measurements');const promise=page.waitForEvent('download');await page.getByTestId('pulsar-download').click();const download=await promise;expect(await readFile((await download.path())!)).toEqual(Buffer.from(TEXT,'ascii'));
 });

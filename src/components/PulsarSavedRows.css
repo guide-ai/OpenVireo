@@ -4,15 +4,15 @@
 .psr h3{margin:1rem 0 .5rem;font-size:1.1rem}
 .psr h4{margin:.25rem 0;font-size:1rem}
 .psr-note{font-size:.9rem;opacity:.85;margin:.25rem 0}
-.psr-warning{border-left:4px solid #b26a00;padding:.35rem .6rem;opacity:1;font-weight:600}
+.psr-warning{border-left:4px solid var(--ov-warning);padding:.35rem .6rem;opacity:1;font-weight:600}
 .psr-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.35rem 0}
 .psr button,.psr-button{min-height:2.5rem;padding:.35rem .75rem;font:inherit;cursor:pointer}
 .psr-button{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.5rem;border:1px solid currentColor;border-radius:.25rem;max-width:100%}
 .psr-button input{max-width:100%}
 .psr button:disabled{cursor:not-allowed;opacity:.55}
-.psr :focus-visible{outline:3px solid #1a73e8;outline-offset:2px}
+.psr :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .psr-status{min-height:1.3em;margin:.25rem 0}
-.psr-error{border:2px solid #b3261e;padding:.5rem;margin:.5rem 0;border-radius:.25rem;overflow-wrap:anywhere}
+.psr-error{border:2px solid var(--ov-danger);padding:.5rem;margin:.5rem 0;border-radius:.25rem;overflow-wrap:anywhere}
 .psr-candidate{border:2px solid currentColor;border-radius:.25rem;padding:.75rem;margin:.75rem 0}
 .psr-identity{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.2rem .75rem;margin:.5rem 0}
 .psr-identity dd{margin:0;overflow-wrap:anywhere}
@@ -21,11 +21,11 @@
 .psr-meta>div{display:grid;grid-template-columns:minmax(7rem,10rem) minmax(0,1fr);gap:.5rem}
 .psr-meta dd{margin:0;overflow-wrap:anywhere}
 .psr-meta code{white-space:pre-wrap;overflow-wrap:anywhere}
-.psr-scroll{max-width:100%;max-height:min(24rem,60vh);overflow:auto;border:1px solid #888}
+.psr-scroll{max-width:100%;max-height:min(24rem,60vh);overflow:auto;border:1px solid var(--ov-border-strong)}
 .psr-scroll:focus-visible{outline-offset:-3px}
 .psr-table{border-collapse:collapse;margin:0}
 .psr-table caption{text-align:left;font-size:.9rem;padding:.25rem .45rem}
-.psr-table th,.psr-table td{border:1px solid #888;padding:.2rem .45rem;text-align:left;white-space:pre}
+.psr-table th,.psr-table td{border:1px solid var(--ov-border-strong);padding:.2rem .45rem;text-align:left;white-space:pre}
 .psr-table thead th{position:sticky;top:0;background:Canvas;color:CanvasText}
 /* Mounted in the App: the global th style would show the recovered column names in capitals ("FREQ (MHZ)"). */
 .psr-table th{text-transform:none;letter-spacing:normal;font-size:inherit;font-weight:600}
@@ -33,9 +33,9 @@
 .psr-table input[type="radio"]{width:1.25rem;height:1.25rem;margin:0;cursor:pointer}
 .psr-selected{background:Highlight;color:HighlightText}
 .psr-absent{font-style:italic;opacity:.75;font-family:inherit}
-.psr-raw{white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid #888;padding:.5rem;margin:.25rem 0}
-.psr-modal{background:Canvas;color:CanvasText;width:min(32rem,calc(100% - 2rem));max-width:none;max-height:calc(100% - 2rem);overflow:auto;border:1px solid #888;border-radius:.4rem;padding:1rem}
-.psr-modal::backdrop{background:rgba(0,0,0,.55)}
+.psr-raw{white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid var(--ov-border-strong);padding:.5rem;margin:.25rem 0}
+.psr-modal{background:Canvas;color:CanvasText;width:min(32rem,calc(100% - 2rem));max-width:none;max-height:calc(100% - 2rem);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:.4rem;padding:1rem}
+.psr-modal::backdrop{background:var(--ov-backdrop)}
 .psr-modal h3{margin-top:0}
 .psr-modal label{display:grid;gap:.25rem;margin:.5rem 0}
 .psr-modal input[type="text"]{font:inherit;min-height:2.5rem;width:100%}

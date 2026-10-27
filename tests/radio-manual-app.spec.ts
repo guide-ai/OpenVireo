@@ -1,4 +1,5 @@
 import {test,expect,type Locator,type Page} from '@playwright/test';
+import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 // Actual App flows of the manual N/S/E/W hold (RA-16..RA-18, WEB-MANUAL-01..04; docs/RADIO-ANTENNA.md). No harness and no
@@ -8,7 +9,6 @@ import {createHash} from 'node:crypto';
 // releasePointerCapture) are browser stimuli, not Windows or native witnesses. The pointer log only observes. The controlled clock is installed after the lazy route loaded and
 // does not run React's MessageChannel scheduler, so time advances one interval at a time with a flush after each.
 const id=(page:Page,testId:string)=>page.getByTestId(testId);
-const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true});
 const heading=(page:Page,name:string)=>page.getByRole('heading',{level:1,name,includeHidden:true});
 const toolbar=(page:Page)=>page.locator('.investigation-toolbar');
 async function flushTasks(page:Page){for(let i=0;i<3;i++)await page.evaluate(()=>new Promise<void>(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=()=>{ch.port1.close();ch.port2.close();resolve();};ch.port2.postMessage(0);}));}
@@ -52,7 +52,7 @@ const pad=(page:Page,d:'north'|'south'|'east'|'west')=>id(page,`antenna-manual-$
 
 async function openRadio(page:Page){
  await page.goto('/#observatory');await expect(heading(page,'Start with the sky.')).toBeVisible();
- await nav(page,'Radio telescope').click();await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
+ await clickHeaderTool(page,'Radio telescope');await expect(heading(page,'Radio telescope control')).toBeFocused();await expect(id(page,'radio-control')).toBeVisible();
 }
 /** Compiled defaults, manual access tick, switch On (first FormActivate: Tracking off, index 4, rate 500). */
 async function setupRadio(page:Page){
@@ -187,7 +187,7 @@ test('window blur and a hidden page cancel the hold without resume, even with th
 test('a project operation cancels the hold; it does not resume after Cancel; Save keeps the reached pointing, no hold, and reload has no latch',async({page})=>{
  // `before` (v≤22, no Radio part) is the held Restore fixture: restoring it never replaces the Radio state.
  await holdReads(page);await page.goto('/#observatory');const before=await save(page);
- await nav(page,'Radio telescope').click();await setupRadio(page);await trackingOn(page);await controlledClock(page);
+ await clickHeaderTool(page,'Radio telescope');await setupRadio(page);await trackingOn(page);await controlledClock(page);
  await holdMouse(page,pad(page,'east'));await advance(page,2);
  await restore(page,'held-manual.json',before.toString('utf8'));await held(page,'held-manual.json');await flushTasks(page);
  await expect(id(page,'antenna-manual-cancelled')).toHaveAttribute('data-reason','host-busy');
