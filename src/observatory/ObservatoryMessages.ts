@@ -44,9 +44,8 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   openHelp:'Slew ▸ Observation Hot List ▸ Add Current Item/Position: adds the current pointing (and the object there, when the observatory identifies one) to the shared list in memory; save it from “Original hot lists”.',
   help:'Right Ascension 0–24 h and Declination −90° to +90° (bounds included). A degree entry of “-0” counts as north, as in the original.',
   raUnsupported:'An RA of exactly 24 h cannot be stored in an HTL file (0 ≤ RA < 24). Enter 0 h instead.',
-  blankId:'Enter an Object ID. The original also accepts a blank ID (“Position added…”), but this version’s HTL writer requires a non-blank ID for new rows.',
   busy:'The hot list is being read. Wait for it to finish, then add again.',
-  adaptation:'Adaptation: the object is the selected catalog target when the telescope points exactly at it (the original pixel lookup is not recovered); its kind (Star/Galaxy…) is not known here, so Comments start empty.',
+  adaptation:'Adaptation: the object is the selected target’s original catalog ID when the telescope points exactly at it (the original pixel lookup is not recovered; web-only keys such as the supported star’s FILE@offset are not proposed); its kind (Star/Galaxy…) is not known here, so Comments start empty. A blank Object ID is allowed here (“Position added…”, as in the original); the list editor’s Add/Edit still requires one (OpenVireo HTL editor rule).',
   sexagesimal:'Enter as h/m/s, d/m/s…',sexagesimalHelp:'Opens the original Add/Edit Hot List Entry fields; OK copies the values into this form.',
  }),
  site:Object.freeze({

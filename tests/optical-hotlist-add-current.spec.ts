@@ -8,9 +8,9 @@ test('Add Current Item/Position adds the identified object or the position to th
  await page.getByRole('button',{name:'Point telescope ↗',exact:true}).click();
  await card(page).getByTestId('ob-add-current').click();
  const dialog=page.getByTestId('ob-entry');await expect(dialog.getByRole('heading',{name:'Add/Edit Hot List Entry'})).toBeVisible();
- const id=await page.getByTestId('ob-entry-id').inputValue();expect(id).not.toBe('');
+ const id=await page.getByTestId('ob-entry-id').inputValue();expect(id).not.toMatch(/-acquisition$|@/);
  await page.getByTestId('ob-entry-ok').click();
- await expect(page.getByTestId('ob-info-box')).toContainText(`Object ${id.slice(0,24)} added to Observation List.`);
+ await expect(page.getByTestId('ob-info-box')).toContainText(id?`Object ${id.slice(0,24)} added to Observation List.`:'Position added to Observation List.');
  await page.getByTestId('ob-info-box').getByRole('button',{name:'OK'}).click();
  // A plain position: no object, so the ID starts empty and must be entered here.
  await coords(page,'3.25','-20.5');
@@ -19,9 +19,8 @@ test('Add Current Item/Position adds the identified object or the position to th
  await page.getByTestId('ob-entry-raHours').fill('25');await page.getByTestId('ob-entry-ok').click();
  await expect(page.getByTestId('ob-entry-error')).toContainText('Right Ascension is Invalid!');await page.getByTestId('ob-entry-error').getByRole('button',{name:'OK'}).click();
  await page.getByTestId('ob-entry-raHours').fill('3');await page.getByTestId('ob-entry-ok').click();
- await expect(page.getByTestId('ob-entry-error')).toContainText('Enter an Object ID');await page.getByTestId('ob-entry-error').getByRole('button',{name:'OK'}).click();
- await page.getByTestId('ob-entry-id').fill('MyField');await page.getByTestId('ob-entry-ok').click();
- await expect(page.getByTestId('ob-info-box')).toContainText('Object MyField added to Observation List.');await page.getByTestId('ob-info-box').getByRole('button',{name:'OK'}).click();
+ // A blank ID is allowed for Add Current (native "Position added…").
+ await expect(page.getByTestId('ob-info-box')).toContainText('Position added to Observation List.');await page.getByTestId('ob-info-box').getByRole('button',{name:'OK'}).click();
  // Both rows are in the shared list (window and editor).
  await card(page).getByTestId('ob-view-select').click();await expect(page.getByTestId('ob-hotlist').getByRole('heading',{name:'New Hot List File'})).toBeVisible();
  await expect(page.getByTestId('ob-hotlist-rows').getByRole('radio')).toHaveCount(2);await page.keyboard.press('Escape');
@@ -43,4 +42,12 @@ test('Add Current fits 320px',async({page})=>{
  await page.setViewportSize({width:320,height:720});await open(page);await card(page).getByTestId('ob-add-current').click();
  const box=await page.getByTestId('ob-entry').boundingBox();expect(box!.x+box!.width).toBeLessThanOrEqual(320);
  await page.getByTestId('ob-entry-cancel').click();await expect(page.getByTestId('ob-entry')).toBeHidden();
+});
+
+test('Add Current proposes the original catalog ID, never a web key (review F6)',async({page})=>{
+ await open(page);await page.getByText('Original hot lists',{exact:true}).click();await page.getByRole('button',{name:'Load original Hubble.HTL',exact:true}).click();await expect(page.getByText('HTL rows loaded: 13.')).toBeVisible();
+ await page.locator('#htl-rows').selectOption('1');await page.getByRole('button',{name:'Point to HTL selection',exact:true}).click();
+ await page.getByRole('button',{name:'Use exact catalogue centre',exact:true}).click();
+ await card(page).getByTestId('ob-add-current').click();await expect(page.getByTestId('ob-entry-id')).toHaveValue('36773');
+ await page.getByTestId('ob-entry-cancel').click();
 });

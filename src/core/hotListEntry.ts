@@ -6,7 +6,7 @@
  * Web policy: StrToFloat is the radio grammar parseDelphiFloat (finite binary64, '.' decimal separator); the split uses the
  * ported sibling 0x486bc0 (splitSexagesimal) because 0x486b20's seconds rounding/carry is not re-derived; RA exactly 24 h
  * (natively accepted) is refused because the HTL codec stores 0 ≤ RA < 24. Pure: no React or I/O. */
-import type {HtlFields} from './hotList';
+import {HTL_MAX_RECORDS,HtlError,addHtlRow,parseHtl,serializeHtl,updateHtlRecord,type HtlEditor,type HtlFields} from './hotList';
 import {formatFixed,parseDelphiFloat,splitSexagesimal} from './radioAntenna';
 import type {Pointing} from './sky';
 
@@ -30,6 +30,14 @@ export function hotListEntryDraft(record:HtlFields):HotListEntryDraft{
  return Object.freeze({id:record.id,remarks:record.remarks,raHours:String(ra.whole),raMinutes:String(ra.minutes),raSeconds:formatFixed(ra.seconds,2),
   decDegrees:String(deg===0?0:deg),decMinutes:String(dec.minutes),decSeconds:formatFixed(dec.seconds,1)});
 }
+/** Original catalog ID of a web target for the Add Current prefill (review F6): catalog.json objects keep their original
+ * names (e.g. NGC3031); galaxy acquisition targets "<id>-acquisition" give the CLEA_GLX id; web keys of the form FILE@offset
+ * (the supported GSC star) are not object names and give null, as do empty ids. */
+export function originalCatalogId(webId:string):string|null{
+ if(typeof webId!=='string'||!webId)return null;
+ const id=webId.endsWith('-acquisition')?webId.slice(0,-'-acquisition'.length):webId;
+ return id&&!id.includes('@')?id:null;
+}
 /** OB-AC-01 prefill. `objectId` is the object the observatory identifies at the pointing (null when none). */
 export function addCurrentPrefill(pointing:Pointing,objectId:string|null,kind:string=''):HtlFields{
  return Object.freeze({id:objectId??'',remarks:objectId?kind:'',ra:pointing.ra,dec:pointing.dec});
@@ -51,4 +59,18 @@ export function parseHotListEntry(d:HotListEntryDraft):HotListEntryResult{
 /** OB-AC-04 confirmation box text. */
 export function hotListEntryAddedText(id:string):string{
  const C=HOT_LIST_ENTRY_CAPTIONS;return id?C.addedHead+id+C.addedTail:C.positionAdded;
+}
+
+/** OB-AC-04 append (0x590588) for Add Current (review F7). A non-blank ID goes through the reviewed web editor rule (addHtlRow).
+ * A blank ID — the native "Position added to Observation List." path — is allowed for Add Current only: the record is
+ * written by the codec with the remarks and coordinates, its ID ShortString is emptied (length 0, zero bytes), and it is
+ * re-read through parseHtl, which admits blank IDs as in original lists. Undo and selection follow addHtlRow. The web editor's
+ * Add/Edit keeps its non-blank rule (docs/HTL-CONTRACT.md §4). */
+export function appendAddCurrentEntry(editor:HtlEditor,fields:HtlFields):HtlEditor{
+ if(fields.id.trim())return addHtlRow(editor,fields);
+ if(editor.list.length>=HTL_MAX_RECORDS)throw new HtlError('limit',0);
+ const bytes=serializeHtl([updateHtlRecord(null,{...fields,id:'?'},editor.list.length+1)]);
+ bytes.fill(0,0,25);
+ const record=parseHtl(bytes)[0];
+ return Object.freeze({list:Object.freeze([...editor.list,record]),selected:editor.list.length,previous:Object.freeze({list:editor.list,selected:editor.selected})});
 }

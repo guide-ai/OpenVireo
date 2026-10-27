@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {HtlError,addHtlRow,newHtlEditor} from '../core/hotList';
-import {HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
+import {HtlError,newHtlEditor} from '../core/hotList';
+import {appendAddCurrentEntry,HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import {t} from '../i18n';
@@ -30,9 +30,8 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
  function ok(){const step=confirmOpticalSkyCoords(sky);setSky(step.state);if(step.slew){const {target,conversion}=step.slew;request(target,opticalSlewConfirmText(target,conversion!==null));}}
  function cancel(){const fromList=sky.dialog?.origin==='hot-list';setSky(cancelOpticalSkyCoords);if(fromList)setHot(reopenOpticalHotList);}
  function addEntry(){if(!entry)return;const r=parseHotListEntry(entry);if(r.status!=='ok'){setEntryError(r.status==='ra-invalid'?HOT_LIST_ENTRY_CAPTIONS.raError:r.status==='dec-invalid'?HOT_LIST_ENTRY_CAPTIONS.decError:E.raUnsupported);return;}
-  if(!r.fields.id.trim()){setEntryError(E.blankId);return;}
   if(hotList.current().read){setEntryError(E.busy);return;}
-  try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRow(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
+  try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
   setEntry(null);setInfo({caption:HOT_LIST_ENTRY_CAPTIONS.addedCaption,text:hotListEntryAddedText(r.fields.id)});}
  function slew(){const step=slewToOpticalHotListSelection(hot,rows);setHot(step.window);if(step.row)setSky(s=>openOpticalSkyCoordsFromHotList(s,step.row!));}
  return <div className="ob-slew-menu">

@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from './hotListEntry';
+import {appendAddCurrentEntry,originalCatalogId,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from './hotListEntry';
 
 // Chosen implementation contract (OB-AC-01..04); not a native runtime oracle.
 const d=(raHours:string,raMinutes:string,raSeconds:string,decDegrees:string,decMinutes:string,decSeconds:string,id='X',remarks=''):HotListEntryDraft=>({id,remarks,raHours,raMinutes,raSeconds,decDegrees,decMinutes,decSeconds});
@@ -30,4 +30,21 @@ describe('OB-AC-03 OK',()=>{
 });
 describe('OB-AC-04 confirmation',()=>{
  it('names the object or the position',()=>{expect(hotListEntryAddedText('M82')).toBe('Object M82 added to Observation List.');expect(hotListEntryAddedText('')).toBe('Position added to Observation List.');});
+});
+describe('F6 original catalog IDs only',()=>{
+ it('strips the web acquisition suffix and refuses file@offset keys',()=>{
+  expect(originalCatalogId('36773-acquisition')).toBe('36773');expect(originalCatalogId('NGC3031')).toBe('NGC3031');
+  expect(originalCatalogId('N0000.DAT@14428')).toBeNull();expect(originalCatalogId('')).toBeNull();expect(originalCatalogId('-acquisition')).toBeNull();
+ });
+});
+describe('F7 blank ID for Add Current only',()=>{
+ it('appends a blank-ID position that survives the codec, keeps Undo, and leaves the editor rule for named rows',async()=>{
+  const {newHtlEditor,serializeHtl,parseHtl,undoHtl,addHtlRow}=await import('./hotList');
+  const e=appendAddCurrentEntry(newHtlEditor(),{id:'',remarks:'',ra:3.25,dec:-20.5});
+  expect(e.list[0]).toMatchObject({id:'',remarks:'',ra:3.25,dec:-20.5});expect(e.selected).toBe(0);
+  expect(parseHtl(serializeHtl(e.list))[0]).toMatchObject({id:'',ra:3.25,dec:-20.5});
+  expect(undoHtl(e).list).toHaveLength(0);
+  expect(appendAddCurrentEntry(e,{id:'M82',remarks:'',ra:1,dec:2}).list[1].id).toBe('M82');
+  expect(()=>addHtlRow(newHtlEditor(),{id:'',remarks:'',ra:1,dec:2})).toThrow();// editor rule unchanged
+ });
 });
