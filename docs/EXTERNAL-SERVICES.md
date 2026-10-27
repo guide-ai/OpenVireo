@@ -55,6 +55,8 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 
 ## 5. Recursos originales que faltan aprobar
 
+**Estado:** los grupos 1 y 2 quedaron aprobados por el usuario el 27 oct 2026, con los términos exactos en `AGENTS.md`. De las plantillas jspect2 solo entran las que pidan las estrellas de los campos publicados.
+
 Para el inventario se compararon los 698 archivos de `CLEA_Vireo.zip` (todos con SHA-256) con el manifiesto y las aprobaciones, y con las cadenas de nombres de archivo de `CLEA_VEO.exe`. La lista completa por archivo está en la carpeta de investigación (`resource-inventory/members.tsv`). Solo se incluye lo que las fases 1–3 necesitan.
 
 ### Grupo 1 — archivos pequeños (~145 KB en total), byte a byte
