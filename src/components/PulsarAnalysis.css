@@ -8,7 +8,6 @@
 .plr button,.plr-button{min-height:2.5rem;padding:.35rem .75rem;font:inherit;cursor:pointer}
 .plr-button{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.5rem;border:1px solid currentColor;border-radius:.25rem;max-width:100%}
 .plr-button input{max-width:100%}
-.plr button:disabled{cursor:not-allowed;opacity:.55}
 .plr :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .plr-error{border:2px solid var(--ov-danger);padding:.5rem;margin:.5rem 0;border-radius:.25rem}
 .plr-identity{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.2rem .75rem;margin:.5rem 0}
@@ -38,7 +37,7 @@
 .plr-factor output{font-family:ui-monospace,monospace;min-width:3.5ch;text-align:center}
 .plr-pending{margin:0;font-weight:600}
 .plr-reference{font-weight:600}
-.plr-reference output{font-family:ui-monospace,monospace;color:#008a00}
+.plr-reference output{font-family:ui-monospace,monospace;color:var(--ov-success)}
 .plr-status{min-height:1.3em;overflow-wrap:anywhere}
 .plr-warning{border-left:4px solid var(--ov-warning);padding:.35rem .6rem;margin:.5rem 0;font-weight:600}
 .plr-modal{background:Canvas;color:CanvasText;width:min(36rem,calc(100% - 2rem));max-width:none;max-height:calc(100% - 2rem);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:.4rem;padding:1rem}

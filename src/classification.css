@@ -24,7 +24,7 @@
 
 .combined-trace-strip{width:500px!important;max-width:none;height:125px;margin-left:20px}.combined-trace figcaption{overflow-wrap:anywhere}
 
-.class-viewport button[aria-disabled="true"]{opacity:.5;cursor:default}
+.class-viewport button[aria-disabled="true"]{cursor:default;background:var(--ov-disabled-bg);border-color:var(--ov-disabled-border);color:var(--ov-disabled-text)}
 
 .comparison-inspection-surface{cursor:crosshair;touch-action:auto}.comparison-inspection-surface.inspection-touch-enabled{touch-action:none}.comparison-inspection-surface:focus-visible{outline:2px solid var(--ov-focus);outline-offset:-2px}.comparison-inspection{overflow-wrap:anywhere}
 

@@ -16,6 +16,18 @@ test('phone Tools menu is a keyboard disclosure: Escape returns focus, choosing 
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
+test('phone Tools menu closes when a guide step changes the page and when the window widens',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/#observatory');
+ const toggle=page.locator('.portal-header').getByRole('button',{name:'Tools',exact:true});
+ await toggle.click();await headerTool(page,'Hubble lab guide').click();
+ const guide=page.getByRole('dialog',{name:'Your Hubble investigation',exact:true});await expect(guide).toBeVisible();await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await guide.getByRole('button',{name:'Go to galaxy exposure',exact:true}).click();
+ expect(new URL(page.url()).hash).toBe('#galaxy-exposure');await expect(toggle).toHaveAttribute('aria-expanded','false');await expect(headerTool(page,'Observatory')).toBeHidden();
+ await toggle.click();await expect(toggle).toHaveAttribute('aria-expanded','true');
+ await page.setViewportSize({width:800,height:844});await expect(toggle).toBeHidden();await page.setViewportSize({width:390,height:844});
+ await expect(toggle).toHaveAttribute('aria-expanded','false');await expect(headerTool(page,'Observatory')).toBeHidden();
+});
+
 test('wide screens show every tool group without a Tools button',async({page})=>{
  for(const width of[1440,800]){await page.setViewportSize({width,height:900});await page.goto('/#observatory');
   await expect(page.locator('.portal-header').getByRole('button',{name:'Tools',exact:true})).toBeHidden();

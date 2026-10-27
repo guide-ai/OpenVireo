@@ -218,7 +218,7 @@ test('all tools remain reachable without document overflow across the navigation
  for(const width of[1440,1251,1250,780,600,521,520,360,320]){
   // UI redesign: below 600px the tools fold behind the "Tools" disclosure; open it, then require every tool fully in view.
   await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await openHeaderTools(page);
+  await openHeaderTools(page);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`no horizontal scroll with the Tools menu open at ${width}px`).toBe(true);
   for(const name of HEADER_TOOLS){
    const button=nav(page,name);await expect(button,`${name} at ${width}px`).toBeInViewport({ratio:1});
    const box=(await button.boundingBox())!;

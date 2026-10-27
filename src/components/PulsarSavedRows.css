@@ -9,7 +9,6 @@
 .psr button,.psr-button{min-height:2.5rem;padding:.35rem .75rem;font:inherit;cursor:pointer}
 .psr-button{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.5rem;border:1px solid currentColor;border-radius:.25rem;max-width:100%}
 .psr-button input{max-width:100%}
-.psr button:disabled{cursor:not-allowed;opacity:.55}
 .psr :focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
 .psr-status{min-height:1.3em;margin:.25rem 0}
 .psr-error{border:2px solid var(--ov-danger);padding:.5rem;margin:.5rem 0;border-radius:.25rem;overflow-wrap:anywhere}

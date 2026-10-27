@@ -1,12 +1,23 @@
-import{useId,useRef,useState,type KeyboardEvent,type MouseEvent,type ReactNode}from'react';
+import{useEffect,useId,useRef,useState,type KeyboardEvent,type MouseEvent,type ReactNode}from'react';
 import ThemeSwitch from'./ThemeSwitch';
 import{APP_SHELL_MESSAGES as M}from'./AppShellMessages';
 
+const PHONE_QUERY='(max-width: 599.98px)';
+
 /** App header. On phones (<600px, CSS) the tool groups and theme switch fold behind a "Tools"
  * disclosure button; on wider screens they are always shown and the button is hidden.
- * Escape closes the open menu and returns focus to its button; choosing a route closes it. */
-export default function PortalHeader({inert,brand,navLabel,children}:{inert:boolean;brand:ReactNode;navLabel:string;children:ReactNode}){
+ * Escape closes the open menu and returns focus to its button. The menu also closes whenever
+ * the current view or the URL hash changes (header tools, guide steps, history) and when the
+ * window widens past the phone breakpoint, so it never reopens unexpectedly. */
+export default function PortalHeader({inert,view,brand,navLabel,children}:{inert:boolean;view:string;brand:ReactNode;navLabel:string;children:ReactNode}){
  const [open,setOpen]=useState(false),toggle=useRef<HTMLButtonElement>(null),panel=useId();
+ useEffect(()=>{setOpen(false);},[view]);
+ useEffect(()=>{
+  const close=()=>setOpen(false);
+  const phone=window.matchMedia(PHONE_QUERY),onWidth=(e:MediaQueryListEvent)=>{if(!e.matches)close();};
+  window.addEventListener('hashchange',close);phone.addEventListener('change',onWidth);
+  return()=>{window.removeEventListener('hashchange',close);phone.removeEventListener('change',onWidth);};
+ },[]);
  function onKeyDown(e:KeyboardEvent){if(e.key==='Escape'&&open){e.stopPropagation();setOpen(false);toggle.current?.focus();}}
  function onNavClick(e:MouseEvent){if((e.target as Element).closest('button[data-route]'))setOpen(false);}
  return <header className={open?'portal-header tools-open':'portal-header'} inert={inert} onKeyDown={onKeyDown}>
