@@ -21,6 +21,6 @@ describe('multiple independently pinned original Hubble fields',()=>{
  it('preserves reversed equal-coordinate insertion and the observed zero-axis branch without Single narrowing',()=>{
   const galaxies=verifiedGalaxyConfiguration('54876').field.galaxies;expect(galaxies.slice(-2).map(g=>g.id)).toEqual(['54891','54890']);
   const zero=galaxies.find(g=>g.id==='54868')!;expect(galaxyCatalogAxes(zero)).toEqual({major:.5,minor:.3,ratio:.6,fallback:true});expect(catalogGalaxyMagnitude(zero).minorArcminutes).toBe(.3);expect(catalogGalaxyMagnitude(zero).minorArcminutes).not.toBe(Math.fround(.3));expect(galaxyStampGeometry(zero)).toMatchObject({major:5,minor:3,level:11});
-  expect(()=>galaxyCatalogAxes({...zero,morphology:20})).toThrow();expect(()=>createGalaxyExposure(1,'54891')).toThrow();
+  expect(()=>galaxyCatalogAxes({...zero,morphology:20})).toThrow();expect(()=>createGalaxyExposure(1,'54890')).toThrow();
  });
 });

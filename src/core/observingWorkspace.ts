@@ -16,9 +16,17 @@ export const OBSERVING_OPTICAL_POLICY='OpenVireo-stopped-observing-workspace-v2'
 export const OBSERVING_POLICY='OpenVireo-stopped-observing-workspace-v1';
 export const LIVE_GALAXY_IDS=['36747','36773','54876']as const;
 export type LiveGalaxyId=typeof LIVE_GALAXY_IDS[number];
+/** Cached-pan targets (corbor-cached-provenance.json), 0.4 m banks only; carried by the v24 analysis-session wrapper. */
+export const CACHED_GALAXY_IDS=['54875','54891']as const;
+export type CachedGalaxyId=typeof CACHED_GALAXY_IDS[number];
+export function isCachedGalaxyId(id:unknown):id is CachedGalaxyId{return typeof id==='string'&&(CACHED_GALAXY_IDS as readonly string[]).includes(id);}
 export type ExposureWorkspace=Readonly<{state:JournalState|null;seedText:string}>;
 export type ObservatoryWorkspace=Readonly<{domeOpen:boolean;mode:FieldMode;selectedId:string;pointing:Pointing;raText:string;decText:string;hasPointed:boolean;galaxyTargetId:string}>;
-export type ObservingWorkspace=Readonly<{sky09?:ExposureWorkspace;sky4m?:ExposureWorkspace;operationalAccess?:true;clockDrive?:ClockDriveWorkspace;siteClock?:SiteClockWorkspace;context:ObservatoryWorkspace;sky:ExposureWorkspace;star:ExposureWorkspace;star09?:ExposureWorkspace;star4m?:ExposureWorkspace;galaxies4m?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies09?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>}>;
+export type ObservingWorkspace=Readonly<{sky09?:ExposureWorkspace;sky4m?:ExposureWorkspace;operationalAccess?:true;clockDrive?:ClockDriveWorkspace;siteClock?:SiteClockWorkspace;context:ObservatoryWorkspace;sky:ExposureWorkspace;star:ExposureWorkspace;star09?:ExposureWorkspace;star4m?:ExposureWorkspace;galaxies4m?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies09?:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;galaxies:Readonly<Record<LiveGalaxyId,ExposureWorkspace>>;cachedGalaxies?:Readonly<Record<CachedGalaxyId,ExposureWorkspace>>}>;
+/** Whether the context or a cached bank uses a cached-pan target (so the session must be the v24 wrapper). */
+export function observingUsesCachedGalaxies(w:Pick<ObservingWorkspace,'context'|'cachedGalaxies'>):boolean{
+ return isCachedGalaxyId(w.context.galaxyTargetId)||CACHED_GALAXY_IDS.some(id=>w.context.selectedId===id+'-acquisition')||!!w.cachedGalaxies&&CACHED_GALAXY_IDS.some(id=>w.cachedGalaxies![id].state!==null||w.cachedGalaxies![id].seedText!=='1');
+}
 export const emptyExposureWorkspace=():ExposureWorkspace=>Object.freeze({state:null,seedText:'1'});
 const ids=new Set([...catalog.map(o=>o.id),'N0000.DAT@14428',...GALAXY_TARGETS.map(o=>o.id+'-acquisition')]);
 export function workspaceRecord(value:unknown,keys:readonly string[]):Record<string,unknown>{

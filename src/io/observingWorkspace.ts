@@ -4,7 +4,7 @@ import {portableClockDrive,readClockDrive,clockDrivePointing,type ClockDriveWork
 import {portableSiteClock,readSiteClock} from '../core/siteClock';
 import {galaxyTelescopeIndex} from '../core/galaxyTelescope';
 import {starTelescopeIndex} from '../core/starTelescope';
-import {OBSERVING_SKY_POLICY,OBSERVING_EDITION,OBSERVING_POLICY,OBSERVING_OPTICAL_POLICY,OBSERVING_GALAXY_POLICY,OBSERVING_MAYALL_POLICY,OBSERVING_CLOCK_POLICY,OBSERVING_DRIVE_POLICY,OBSERVING_ACCESS_POLICY,LIVE_GALAXY_IDS,workspaceRecord,readObservatoryWorkspace,seedDraft,type ExposureWorkspace,type ObservingWorkspace} from '../core/observingWorkspace';
+import {OBSERVING_SKY_POLICY,OBSERVING_EDITION,OBSERVING_POLICY,OBSERVING_OPTICAL_POLICY,OBSERVING_GALAXY_POLICY,OBSERVING_MAYALL_POLICY,OBSERVING_CLOCK_POLICY,OBSERVING_DRIVE_POLICY,OBSERVING_ACCESS_POLICY,LIVE_GALAXY_IDS,CACHED_GALAXY_IDS,workspaceRecord,readObservatoryWorkspace,seedDraft,type CachedGalaxyId,type ExposureWorkspace,type ObservingWorkspace} from '../core/observingWorkspace';
 import {MAX_ARCHIVE_EVENTS} from '../core/acquisitionArchive';
 import type {JournalState} from '../core/exposureJournal';
 import {acquisitionJournalText,type AcquisitionObservation} from './acquisitionObservation';
@@ -54,4 +54,27 @@ export function restoreObservingWorkspace(value:unknown,archive:readonly Acquisi
   return Object.freeze({state,seedText:draft});
  }
  return Object.freeze({...(hasSky?{sky09:slot(r.sky09,'sky','kpno09'),sky4m:slot(r.sky4m,'sky','mayall')}:{}),...(operationalAccess?{operationalAccess}:{}),...(clockDrive?{clockDrive}:{}),...(siteClock?{siteClock}:{}),...(galaxies4m?{star4m:slot(r.star4m,'star','mayall'),galaxies4m:Object.freeze(Object.fromEntries(LIVE_GALAXY_IDS.map(id=>[id,slot(galaxies4m[id],'galaxy',id,2)]))as NonNullable<ObservingWorkspace['galaxies4m']>)}:{}),...(galaxies09?{galaxies09:Object.freeze(Object.fromEntries(LIVE_GALAXY_IDS.map(id=>[id,slot(galaxies09[id],'galaxy',id,1)]))as NonNullable<ObservingWorkspace['galaxies09']>)}:{}),...(has09?{star09:slot(r.star09,'star','kpno09')}:{}),context,sky:slot(r.sky,'sky'),star:slot(r.star,'star'),galaxies:Object.freeze(Object.fromEntries(LIVE_GALAXY_IDS.map(id=>[id,slot(galaxies[id],'galaxy',id)]))as ObservingWorkspace['galaxies'])});
+}
+type CachedBanks=Readonly<Record<CachedGalaxyId,ExposureWorkspace>>;
+/** v24 cached-pan 0.4 m banks: the same stopped-journal/archive-reference slot contract as the 0.4 m galaxy banks, keyed by
+ * the cached target identifiers only. Each journal must replay to its own target on telescope record 0. Raw journals of
+ * these banks are counted with the archive against the same replay budget before any replay. */
+export function portableCachedGalaxies(value:CachedBanks,archive:readonly AcquisitionObservation[]):unknown{
+ let events=archive.reduce((n,a)=>n+a.state.events.length,0);if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');
+ return Object.fromEntries(CACHED_GALAXY_IDS.map(id=>{const w=value[id],draft=seedDraft(w.seedText);if(!w.state)return [id,{seedText:draft,source:{kind:'empty'}}];
+  const s=stopped(w.state),text=serializeGalaxySession(s);if(galaxyStateDefinition(s).target.id!==id||galaxyTelescopeIndex(s)!==0)throw new Error('Wrong exposure target');
+  const same=archive.find(a=>matches(a,'galaxy',id,0)&&acquisitionJournalText(a)===text);if(same)return [id,{seedText:draft,source:{kind:'archive',acquisitionId:same.acquisitionId}}];
+  events+=s.events.length;if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');return [id,{seedText:draft,source:{kind:'journal',journal:JSON.parse(text)}}];}));
+}
+export function restoreCachedGalaxies(value:unknown,archive:readonly AcquisitionObservation[]):CachedBanks{
+ const r=workspaceRecord(value,CACHED_GALAXY_IDS);let events=archive.reduce((n,a)=>n+a.state.events.length,0);if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');
+ for(const id of CACHED_GALAXY_IDS){const w=workspaceRecord(r[id],['seedText','source']);if(w.source&&typeof w.source==='object'&&(w.source as {kind?:unknown}).kind==='journal'){const journal=workspaceRecord(w.source,['kind','journal']).journal as {events?:unknown};if(!journal||!Array.isArray(journal.events))throw new Error('Invalid segment journal');events+=journal.events.length;if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');}}
+ return Object.freeze(Object.fromEntries(CACHED_GALAXY_IDS.map(id=>{
+  const w=workspaceRecord(r[id],['seedText','source']),draft=seedDraft(w.seedText);if(!w.source||typeof w.source!=='object')throw new Error('Invalid segment source');const type=(w.source as {kind?:unknown}).kind;let state:JournalState|null=null;
+  if(type==='empty')workspaceRecord(w.source,['kind']);
+  else if(type==='archive'){const a=workspaceRecord(w.source,['kind','acquisitionId']),entry=archive.find(s=>s.acquisitionId===a.acquisitionId&&matches(s,'galaxy',id,0));if(!entry)throw new Error('Invalid segment archive reference');state=stopped(entry.state);}
+  else if(type==='journal'){const a=workspaceRecord(w.source,['kind','journal']);if(new TextEncoder().encode(JSON.stringify(a.journal)).length>MAX_GALAXY_SESSION_BYTES)throw new Error('Segment byte limit');state=stopped(parseGalaxySession(a.journal));serializeGalaxySession(state);if(galaxyStateDefinition(state).target.id!==id||galaxyTelescopeIndex(state)!==0)throw new Error('Wrong exposure target');}
+  else throw new Error('Unsupported segment source');
+  return [id,Object.freeze({state,seedText:draft})];
+ }))as CachedBanks);
 }

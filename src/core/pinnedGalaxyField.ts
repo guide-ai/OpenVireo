@@ -1,15 +1,35 @@
 import newField1 from '../../data/hubble/pinned-galaxy-36747-field.json';
 import newField2 from '../../data/hubble/pinned-galaxy-54876-field.json';
 import defaultSnapshot from '../../data/hubble/pinned-galaxy-field.json';
+import cachedSource from '../../data/hubble/corbor-cached-provenance.json';
 import {decodeNativeCompactRecord,nativeRegionIds,nativeCompactBandOrder,NativeFieldError,type NativeFieldStar} from './pinnedNativeField';
 import {nativeCatalogAdmission} from './catalogPopulation';
 import {traceCompactGscBandRead} from './compactGscReadOrder';
 import {catalogMergeDistance,cleanNativeGalaxy} from './catalogMerge';
 import {roundNearestEven} from './numericPolicy';
+import {decodeGlxRecord} from './glxCatalog';
 export const GALAXY_DOMAIN=Object.freeze({...defaultSnapshot.domain,pointing:Object.freeze({...defaultSnapshot.domain.pointing})});
 export type NativeGalaxy=Readonly<{id:string;recordIndex:number;ra:number;dec:number;majorArcminutes:number;minorArcminutes:number;magnitude:number;redshift:number;positionAngleDegrees:number;morphology:number;rawHex:string}>;
 const snapshots=[defaultSnapshot,newField1,newField2];
-export function galaxyDomainFor(id:string,telescopeIndex:0|1|2=0){if(telescopeIndex!==0&&telescopeIndex!==1&&telescopeIndex!==2)throw new NativeFieldError('unsupported-domain');const s=id==='36773'?defaultSnapshot:id==='36747'?newField1:id==='54876'?newField2:null;if(!s)throw new NativeFieldError('unsupported-domain');return Object.freeze({...s.domain,telescopeRecord:telescopeIndex,pointing:Object.freeze({...s.domain.pointing})});}
+/** Verified field descriptors only (no full-sky claim). 'fresh': an independently generated, whole-source-checked population
+ * centred on the target. 'cached': the recovered cached-pan branch over an explicitly initialized fresh base field (route B,
+ * corbor-cached-provenance.json); the base population, its snapshot and its centre are reused unchanged, never recentred or
+ * relabelled, and the target is the base galaxy at the recorded catalogue index. Any other identifier is unsupported. */
+export type GalaxyFieldDescriptor=Readonly<{kind:'fresh';id:string}|{kind:'cached';id:string;baseId:string;recordIndex:number;telescopeRecords:readonly 0[]}>;
+const FRESH_FIELDS=Object.freeze({'36773':defaultSnapshot,'36747':newField1,'54876':newField2});
+export const GALAXY_FIELD_REGISTRY:readonly GalaxyFieldDescriptor[]=Object.freeze([
+ ...Object.keys(FRESH_FIELDS).map(id=>Object.freeze({kind:'fresh' as const,id})),
+ ...cachedSource.targets.map(t=>Object.freeze({kind:'cached' as const,id:t.id,baseId:cachedSource.baseFieldId,recordIndex:t.recordIndex,telescopeRecords:Object.freeze([0 as const])})),
+]);
+export function galaxyFieldDescriptor(id:string):GalaxyFieldDescriptor{const d=GALAXY_FIELD_REGISTRY.find(d=>d.id===id);if(!d)throw new NativeFieldError('unsupported-domain');return d;}
+/** The fresh population domain of a target. A cached target has no population domain of its own; use its base field's. */
+export function galaxyDomainFor(id:string,telescopeIndex:0|1|2=0){if(telescopeIndex!==0&&telescopeIndex!==1&&telescopeIndex!==2)throw new NativeFieldError('unsupported-domain');const d=galaxyFieldDescriptor(id);if(d.kind!=='fresh'||!Object.hasOwn(FRESH_FIELDS,d.id))throw new NativeFieldError('unsupported-domain');const s=FRESH_FIELDS[d.id as keyof typeof FRESH_FIELDS];return Object.freeze({...s.domain,telescopeRecord:telescopeIndex,pointing:Object.freeze({...s.domain.pointing})});}
+/** Same decoded object (key order included) as the stored snapshot galaxy, from its approved 59-byte record. */
+function decodedGalaxy(g:Readonly<{recordIndex:number;rawHex:string}>):NativeGalaxy{
+ const raw=Uint8Array.from(g.rawHex.match(/../g)!,v=>parseInt(v,16));let r;
+ try{r=decodeGlxRecord(raw,g.recordIndex);}catch{throw new NativeFieldError('evidence');}
+ return {id:r.id,recordIndex:g.recordIndex,ra:r.ra,dec:r.dec,majorArcminutes:r.majorArcminutes,minorArcminutes:r.minorArcminutes,magnitude:r.magnitude,redshift:r.redshift,positionAngleDegrees:r.positionAngleDegrees,morphology:r.morphology,rawHex:g.rawHex};
+}
 /** Only the three independently generated, whole-source-checked populations in their explicit compiled record0/record1/record2 domains are
  * accepted. Navigation tiles and imported means cannot certify this field. */
 export function buildPinnedGalaxyPopulation(domain:unknown){
@@ -25,9 +45,7 @@ export function buildPinnedGalaxyPopulation(domain:unknown){
  }
  if(stars.map(s=>s.id).join()!==snapshot.initialStarIds.join())throw new NativeFieldError('evidence');
  const galaxies=snapshot.galaxies.map(g=>{
-  const raw=Uint8Array.from(g.rawHex.match(/../g)!,v=>parseInt(v,16)),v=new DataView(raw.buffer);
-  const name=raw[38]<2?(raw[38]===0?'NGC ':'IC ')+new TextDecoder().decode(raw.slice(40,40+raw[39])).trim():new TextDecoder().decode(raw.slice(48,48+raw[47])).trim();
-  const decoded={id:name,recordIndex:g.recordIndex,ra:v.getFloat64(0,true),dec:v.getFloat64(8,true),majorArcminutes:v.getFloat32(16,true),minorArcminutes:v.getFloat32(20,true),magnitude:v.getFloat32(24,true),redshift:v.getFloat32(28,true),positionAngleDegrees:v.getInt16(32,true),morphology:v.getInt8(34),rawHex:g.rawHex};
+  const decoded=decodedGalaxy(g);
   if(JSON.stringify(decoded)!==JSON.stringify(g)||!nativeCatalogAdmission(decoded,area)||!((decoded.majorArcminutes>0&&decoded.minorArcminutes>0)||(decoded.majorArcminutes===0&&decoded.minorArcminutes===0&&decoded.morphology===0)))throw new NativeFieldError('evidence');
   return Object.freeze(decoded);
  });

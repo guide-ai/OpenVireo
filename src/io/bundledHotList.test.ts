@@ -1,8 +1,9 @@
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
-import {BUNDLED_PLEIADES_HOT_LIST,BundledHotListError,fetchBundledHotList,verifyBundledHotList} from './bundledHotList';
+import {BUNDLED_HUBBLE_HOT_LIST,BUNDLED_PLEIADES_HOT_LIST,BundledHotListError,fetchBundledHotList,verifyBundledHotList} from './bundledHotList';
 import {parseHtl} from '../core/hotList';
 import {isPleiadesExerciseList} from '../core/pleiadesHotList';
+import {isHubbleExerciseList} from '../core/hubbleHotList';
 // The original is read only to feed the loader; assertions use sizes, hashes and parsed identities, never raw byte diffs.
 const original=()=>{const b=readFileSync(new URL('../../public/original/hotlists/PLEIADES.HTL',import.meta.url));return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength) as ArrayBuffer;};
 function fetcher(body:ArrayBuffer|null,log:{path?:string;credentials?:RequestCredentials}={},status=200):typeof fetch{
@@ -32,5 +33,22 @@ describe('bundled PLEIADES.HTL loader: same origin, exact size and SHA-256 befor
   const during=new AbortController();
   const late=(async(_input:RequestInfo|URL,init?:RequestInit)=>{during.abort();if(init?.signal?.aborted)throw new DOMException('aborted','AbortError');return new Response(original());}) as typeof fetch;
   expect(await code(fetchBundledHotList(late,during.signal))).toBe('AbortError');
+ });
+});
+const hubble=()=>{const b=readFileSync(new URL('../../public/original/hotlists/Hubble.HTL',import.meta.url));return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength) as ArrayBuffer;};
+describe('bundled Hubble.HTL loader: same adapter, its own recorded identity',()=>{
+ it('fetches /original/hotlists/Hubble.HTL and verifies 1118 bytes and its SHA-256 before parsing into the 13-entry list',async()=>{
+  const log:{path?:string;credentials?:RequestCredentials}={};const result=await fetchBundledHotList(fetcher(hubble(),log),new AbortController().signal,BUNDLED_HUBBLE_HOT_LIST);
+  expect(log.path).toBe('/original/hotlists/Hubble.HTL');expect(log.credentials).toBe('same-origin');expect(BUNDLED_HUBBLE_HOT_LIST).toMatchObject({name:'Hubble.HTL',bytes:1118,sha256:'02cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986'});
+  expect(result.sha256).toBe(BUNDLED_HUBBLE_HOT_LIST.sha256);expect(isHubbleExerciseList(parseHtl(result.bytes))).toBe(true);
+ });
+ it('rejects the PLEIADES list, other sizes, altered bytes, failed responses and aborts',async()=>{
+  const signal=()=>new AbortController().signal;
+  expect(await code(fetchBundledHotList(fetcher(original()),signal(),BUNDLED_HUBBLE_HOT_LIST))).toBe('size');
+  expect(await code(fetchBundledHotList(fetcher(hubble().slice(0,1032)),signal(),BUNDLED_HUBBLE_HOT_LIST))).toBe('size');
+  const altered=new Uint8Array(hubble());altered[0]^=1;expect(await code(fetchBundledHotList(fetcher(altered.buffer),signal(),BUNDLED_HUBBLE_HOT_LIST))).toBe('sha256');
+  expect(await code(fetchBundledHotList(fetcher(hubble(),{},500),signal(),BUNDLED_HUBBLE_HOT_LIST))).toBe('download');
+  expect(await code(fetchBundledHotList(fetcher(hubble()),signal()))).toBe('size');
+  const aborted=new AbortController();aborted.abort();expect(await code(fetchBundledHotList(fetcher(hubble()),aborted.signal,BUNDLED_HUBBLE_HOT_LIST))).toBe('AbortError');
  });
 });

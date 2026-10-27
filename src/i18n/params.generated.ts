@@ -473,7 +473,7 @@ export interface MessageParameters {
   "lab.return": never;
   "lab.intro": never;
   "lab.progress": never;
-  "lab.counts": "archived" | "measured" | "rows";
+  "lab.counts": "archived" | "measured" | "rows" | "total";
   "lab.progressHelp": never;
   "lab.next.acquire": never;
   "lab.next.measure": never;
@@ -3104,4 +3104,27 @@ export interface MessageParameters {
   "ownResults.printBusy": never;
   "ownResults.adaptation": never;
   "lab.resultsHelp": never;
+  "lab.coverage": "original" | "supported";
+  "htl.hubbleLoad": never;
+  "htl.hubbleHelp": never;
+  "htl.hubbleError": never;
+  "htl.hubbleAvailable": "id" | "number";
+  "htl.hubbleTelescope": "id" | "number" | "telescope";
+  "htl.hubbleUnavailable": "number" | "reason";
+  "htl.hubbleOther": never;
+  "hubbleHtl.reason.photographic-image": never;
+  "hubbleHtl.reason.qso-merge": never;
+  "hubbleHtl.reason.variable-qso-merge": never;
+  "hubbleHtl.reason.variable-merge": never;
+  "hubblePoint.eyebrow": never;
+  "hubblePoint.title": "label" | "number" | "remarks";
+  "hubblePoint.htl": "id";
+  "hubblePoint.exact": "id";
+  "hubblePoint.elsewhere": "id";
+  "hubblePoint.useExact": never;
+  "hubblePoint.unavailable": "reason";
+  "hubblePoint.telescope": "id" | "telescope";
+  "hubblePoint.help": never;
+  "galaxyExposure.telescopeUnsupported": "id" | "label" | "telescope";
+  "galaxyExposure.cachedAdaptation": never;
 }

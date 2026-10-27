@@ -1,0 +1,30 @@
+[
+  {
+    "id": "54875",
+    "label": "CorBor – 1",
+    "ra": 15.3735,
+    "dec": 27.738888888888887,
+    "magnitude": 16.899999618530273,
+    "recordIndex": 18485,
+    "policyId": "openvireo-cached-galaxy-54875-v1",
+    "fieldSnapshotSHA256": "7413ecaf083338c6d4a052299228c1b973f5433baa1b8f827a83703a6c163ce1",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 141,
+    "galaxies": 6,
+    "sourceFile": "GLXYTMPL.SP"
+  },
+  {
+    "id": "54891",
+    "label": "CorBor – 3",
+    "ra": 15.3785,
+    "dec": 27.6725,
+    "magnitude": 16.299999237060547,
+    "recordIndex": 18493,
+    "policyId": "openvireo-cached-galaxy-54891-v1",
+    "fieldSnapshotSHA256": "7413ecaf083338c6d4a052299228c1b973f5433baa1b8f827a83703a6c163ce1",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 141,
+    "galaxies": 6,
+    "sourceFile": "GLXYTMPL.SP"
+  }
+]

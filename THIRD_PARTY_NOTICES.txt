@@ -32,3 +32,6 @@ https://gsss.stsci.edu/Acknowledgements/DataCopyrights.htm
 https://www.nasa.gov/nasa-brand-center/images-and-media/
 
 No general license for new authored code has been selected. Public visibility and this inclusion instruction do not establish a universal asset license or original-runtime equivalence.
+
+Additional approved Hubble resources (26 October 2026)
+CLEA_GLX.DAT and Hubble.HTL are preserved byte-exact from CLEA_Vireo.zip under the explicit second resource approval. See docs/LOCAL-RESOURCES.json for file SHA-256 and docs/RESOURCE-PROVENANCE.json for archive identity and limits. Project CLEA (Gettysburg College) is the originator; NSF and Gettysburg College are supporters. Recorded CLEA License.rtf terms permit free noncommercial student copies and prohibit distribution for profit. Source-specific upstream identification/terms remain uncertain. These reference catalogues are not new student observations; no original-runtime equivalence is claimed. Full GSC and other unapproved originals remain excluded.

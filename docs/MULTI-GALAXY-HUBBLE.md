@@ -1,5 +1,7 @@
 # Several acquired galaxies and a manual Hubble diagram
 
+**Current bounded set,27 October2026:** five of the original13targets are supported: the earlier three on their verified profiles and CorBor‑1/3 on0.4m through the cached view described below. The phase‑2 minimum is eight; E01 remains incomplete. Earlier three-target sections retain their dated scope.
+
 **Follow-up,19 October2026:** [Mayall4m star and three-galaxy acquisition/full14](MAYALL-ACQUISITION.md) now extend the verified profiles, retaining earlier data/formats and the0.9m star300ms bound. The earlier evidence below retains its dated scope.
 
 **Follow-up,19 October2026:** [Three KPNO0.9m galaxy acquisitions and investigation13](KPNO09-GALAXIES.md) now add independent galaxy profile/target journals and verified manual Hubble continuity. The earlier bounded evidence below retains its dated scope.
@@ -62,6 +64,20 @@ Raw 54890/54891 records share identical Double coordinates. Comparator0x5969e0 a
 Not enabled: UM-I3's photographic field; Coma's broader QSO/zero-axis composition; Boötes's variable/QSO fields; Pegasus variable-star phase/context; unregistered Corona Borealis targets. CorBor1 shares the recovered field but is intentionally outside this small enabled set. The incomplete paths are not filled with invented images, spectra, amplitudes or measured results.
 
 All targets retain the explicit nearest-center image scaling, Number/Math nearest-even, browser seed/timing policy and 4000–5000 Å domain. Native GDI device/palette/kernel behavior, x87 equality and original runtime trajectories remain unverified. No original execution, emulator, installation, Claude, Windows, public upload or push was used. External reviews remain pending under the existing restriction.
+
+## Phase 2 B1: CorBor – 1 (54875) and CorBor – 3 (54891), 0.4m only
+
+Status: 5 of the 13 original Hubble.HTL targets are supported; the phase-2 exit (at least 8 of 13 plus a complete E2E) is **not** met and E01 stays open. The criteria in STUDENT-EXERCISES.md are unchanged.
+
+Route B (`data/hubble/corbor-cached-provenance.json`, gate report `hubble-fields-student-phase2-gates.json`). Static bounded disassembly of CLEA_VEO.exe 781bc970…c54c recovered the cached-pan branch: the cache initializer0x53c198/0x53c1c3..0x53c236 stores anchor 936/2 = 468 and zero offsets; the fresh crop stores origin312; the projection0x53c9d4..0x53ca46 sets offset = anchor − projected pointing; the pan0x53a6ca..0x53a723 takes round(origin − offset) and the guard0x53af28 requires the unrounded 0 < left, top < 624; with the same configuration and no forced refresh,0x53a741 skips loader0x53be70 and CopyRect0x53a845..0x53a8dd copies the cached bitmap. `cachedGalaxyViewport.ts` enforces exactly these preconditions and rejects refresh, other configurations, the guard and any source hole.
+
+The web explicitly initializes the verified complete 54876 field (141 stars, 6 galaxies, snapshot 7413ec…3ce1, centre 15.3735 h / 27.72222222222222°) and pans it to the exact catalogue centre of the target (54875: 15.3735 h / 27.738888888888887°, record18485; 54891: 15.3785 h / 27.6725°, record18493). The field centre stays distinct from the telescope pointing (`domain.view`); the field is never recentred, extended or relabelled, and the original process history is not inferred. Rectangles: 54875 (312,291)–(624,603), 54891 (229,374)–(541,686). The slit query is the integer crop origin + 156: the recovered nearest selection (radius3) accepts the subpixel residuals 0.2 and 0.1189…; 54891 precedes 54890 at identical coordinates, so it is chosen without sorting or deduplication. The old three keep their fresh distance-0 guard. Slit levels 39/25 give fractions 0.038025/0.015625.
+
+Spectrum: GLXYSP.LST (0a7a35…166a, 48 NGC####.SP names) has no entry for either identifier, so the existing GLXYTMPL.SP fallback at 1 + catalogue Single z applies; all 600 channels of 4000–4998.33 Å stay inside the shifted 3650–7000 Å template, with no continuation. Catalogue z is internal to generation only; manual z starts unconfigured. Hubble V references are the workbook values 16.9 (Sheet1!C10) and 16.3 (Sheet1!C11), shown as references and never prefilled.
+
+Hubble.HTL: **Load original Hubble.HTL** checks 1118 bytes and SHA-256 02cab4…7986 before parsing; each row reports its status or unavailable reason (`hubbleHotList.ts`). Rounded HTL coordinates cannot activate acquisition; **Use exact catalogue centre** points at the catalogue centre. The KPNO 0.9m and Mayall 4m show an explicit unavailable notice for these targets and the telescope is never switched automatically. Sessions with these targets use the v24 wrapper (unchanged v1..23 base plus the 0.4m banks); their journals are rejected in any earlier version.
+
+Adaptation: CorBor – 1/3 reuse CorBor – 2's nearest-centre raster, Number/Math nearest-even, the fixed 4000–5000 Å interval and browser seed/timing through the recovered cached view, 0.4m only. No native GDI/x87/runtime identity is claimed.
 
 
 ## Feature 5: acquired SSP download and reimport

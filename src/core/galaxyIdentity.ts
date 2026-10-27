@@ -1,8 +1,11 @@
 import{projectResource}from'./projectMetadata';
-import references from '../../data/hubble/galaxy-distance-references.json';
+import oldReferences from '../../data/hubble/galaxy-distance-references.json';
+import addedReferences from '../../data/hubble/corbor-distance-references.json';
+const references=[...oldReferences,...addedReferences];
 
 import targetsSource from '../../data/hubble/galaxy-targets.json';
-const targets=projectResource(targetsSource);
+import addedTargets from '../../data/hubble/corbor-targets.json';
+const targets=projectResource([...targetsSource,...addedTargets]);
 
 export const GALAXY_TARGETS=Object.freeze(targets.map(t=>Object.freeze({...t})));
 export function knownGalaxyTarget(id:unknown):id is string{return typeof id==='string'&&GALAXY_TARGETS.some(t=>t.id===id);}

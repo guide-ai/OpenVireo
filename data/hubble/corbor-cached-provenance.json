@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "kind": "derived typed metadata for the bounded native cached-pan branch; contains no original catalogue, GSC, HTL or binary bytes",
+  "route": "B: explicitly initialized verified 54876 field cache, bounded native cached-pan branch to 54875/54891; no recentred population claim",
+  "gateReport": "hubble-fields-student-phase2-gates.json (2026-10-27T08:54:45Z, baseline 80f392b0641034ba3503a305a557ffee73c97514)",
+  "policy": "OpenVireo-cached-galaxy-workspace-v1",
+  "viewPolicy": "openvireo-cached-pan-v1",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "baseFieldId": "54876",
+  "baseRecordIndex": 18484,
+  "baseFieldSnapshotSHA256": "7413ecaf083338c6d4a052299228c1b973f5433baa1b8f827a83703a6c163ce1",
+  "baseFieldCenter": {
+    "ra": 15.3735,
+    "dec": 27.72222222222222
+  },
+  "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+  "addresses": {
+    "cacheInitializer": "0x53c198",
+    "anchorWriter": "0x53c1c3..0x53c236",
+    "pointingProjection": "0x53c9d4..0x53ca46",
+    "freshCrop": "0x53a810..0x53a83d",
+    "storedOrigin": "0x53a798..0x53a7f0",
+    "pan": "0x53a6ca..0x53a723",
+    "guard": "0x53af28..0x53afa9",
+    "refreshBranch": "0x53a741",
+    "loader": "0x53be70",
+    "copy": "0x53a845..0x53a8dd",
+    "selection": "0x599f1c/0x59a010/0x59a0fc..0x59a2d1",
+    "spectrumNameLookup": "0x55eb64; 0x55ecda..0x55ed55",
+    "templateFallback": "0x55e5d2..0x55e619",
+    "templateShift": "0x55e55c"
+  },
+  "cache": {
+    "width": 936,
+    "height": 936,
+    "viewport": 312,
+    "multiplier": 3,
+    "fieldDegrees": 0.75,
+    "anchor": {
+      "x": 468,
+      "y": 468
+    },
+    "origin": {
+      "x": 312,
+      "y": 312
+    },
+    "guardExclusiveMinimum": 0,
+    "guardExclusiveMaximum": 624,
+    "slitQueryOffset": 156
+  },
+  "spectrumSource": {
+    "list": "GLXYSP.LST",
+    "listSHA256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+    "listBytes": 576,
+    "listRows": 48,
+    "allFilenamesNGC4digitsSP": true,
+    "file": "GLXYTMPL.SP",
+    "matched": false,
+    "wavelengthFactor": "1 + catalogue Single z",
+    "templateRange": [
+      3650.0,
+      7000.0
+    ]
+  },
+  "targets": [
+    {
+      "id": "54875",
+      "label": "CorBor – 1",
+      "htlRow": 7,
+      "htlRecordSHA256": "d17030ebae9408e3ce1b08b2c7a3f2d62ea9ff94ac63b5438feb9bd7134b6cde",
+      "recordIndex": 18485,
+      "policyId": "openvireo-cached-galaxy-54875-v1",
+      "telescopeRecord": 0,
+      "spectrumListMatches": [],
+      "anchor": {
+        "x": 468,
+        "y": 447
+      },
+      "rect": {
+        "left": 312,
+        "top": 291,
+        "right": 624,
+        "bottom": 603
+      },
+      "selectionRadius": 3,
+      "selectionDistance": 0.20000000000118234,
+      "pixelLevel": 39,
+      "fraction": 0.038025,
+      "sourceAmplitude": 8.373740337710039e-06,
+      "maxSourcePoissonMean": 0.3877305120496507,
+      "workbookCell": "Sheet1!C10",
+      "apparentV": 16.9
+    },
+    {
+      "id": "54891",
+      "label": "CorBor – 3",
+      "htlRow": 9,
+      "htlRecordSHA256": "f4c2e7a14197d885d47c74d945e7907fe934808291679fc95d36515addf4c7b7",
+      "recordIndex": 18493,
+      "policyId": "openvireo-cached-galaxy-54891-v1",
+      "telescopeRecord": 0,
+      "spectrumListMatches": [],
+      "anchor": {
+        "x": 385,
+        "y": 530
+      },
+      "rect": {
+        "left": 229,
+        "top": 374,
+        "right": 541,
+        "bottom": 686
+      },
+      "selectionRadius": 3,
+      "selectionDistance": 0.1189141454441689,
+      "pixelLevel": 25,
+      "fraction": 0.015625,
+      "sourceAmplitude": 1.195915352676166e-05,
+      "maxSourcePoissonMean": 0.5536907150876308,
+      "workbookCell": "Sheet1!C11",
+      "apparentV": 16.3
+    }
+  ],
+  "limits": [
+    "No original execution, x87 or GDI oracle; Number/Math nearest-even and the nearest-centre raster remain declared browser policies",
+    "Not an independently recentred field: the complete 54876 population (141 stars, 6 galaxies) is the explicitly initialized cache",
+    "No arbitrary pointing or unknown cache context; same configuration and no forced refresh are preconditions",
+    "0.4 m (telescope record 0) only; KPNO 0.9 m and Mayall 4 m are not claimed for these targets"
+  ]
+}

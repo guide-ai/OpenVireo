@@ -1,11 +1,14 @@
 import {GALAXY_TARGETS,measurementGalaxyTarget} from './galaxyIdentity';
 import {analyzeHubble,type HubbleWorkspace} from './hubbleAnalysis';
+import {HUBBLE_HOT_LIST} from './hubbleHotList';
 import type {Measurement} from './spectrum';
 
 export type LabArchiveEntry=Readonly<{acquisitionId:string;targetId:string;sha256:string}>;
+/** total: supported acquisition targets in this version; original: the 13 entries of the original Hubble.HTL. Both are
+ * reported so the reduced denominator is never presented as the original exercise. */
 export type HubbleLabProgress=Readonly<{
  targets:readonly Readonly<{id:string;archived:boolean;measured:boolean;inHubble:boolean}>[];
- archived:number;measured:number;inHubble:number;duplicateTargets:boolean;
+ archived:number;measured:number;inHubble:number;duplicateTargets:boolean;total:number;original:number;
  next:'acquire'|'measure'|'dataset'|'recipe'|'inputs'|'interpret';
 }>;
 /** New UI workflow summary, not an original scientific calculation or grade.
@@ -23,5 +26,5 @@ export function hubbleLabProgress(archive:readonly LabArchiveEntry[],measurement
  const targets=GALAXY_TARGETS.map(({id})=>Object.freeze({id,archived:archive.some(a=>a.targetId===id),measured:bound.some(m=>measurementGalaxyTarget(m.origin)===id),inHubble:includedTargets.filter(t=>t===id).length===1&&result.rows.some(r=>r.acquiredTargetId===id&&!r.issues.length)}));
  const archived=targets.filter(t=>t.archived).length,measured=targets.filter(t=>t.measured).length,inHubble=targets.filter(t=>t.inHubble).length;
  const next=archived<targets.length?'acquire':measured<targets.length?'measure':included.some(m=>!m)?'dataset':workspace.recipeId!=='vireo'?'recipe':inHubble<targets.length||workspace.rows.length!==targets.length||result.value===undefined?'inputs':'interpret';
- return Object.freeze({targets:Object.freeze(targets),archived,measured,inHubble,duplicateTargets,next});
+ return Object.freeze({targets:Object.freeze(targets),archived,measured,inHubble,duplicateTargets,total:targets.length,original:HUBBLE_HOT_LIST.length,next});
 }

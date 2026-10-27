@@ -1,15 +1,16 @@
 {
   "schema": 1,
-  "scope": "All1281files from LOCAL-RESOURCES.json included with byte-identical contents by explicit instruction:the original1279plus Pulsars.dat and PLEIADES.HTL under the second user approval of2026-10-26;no executable,installer or downloaded archive is among them.",
-  "totalFiles": 1281,
-  "totalBytes": 77080891,
+  "scope": "All1283files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26;no executable,installer,archive or additionalGSCfile is included.",
+  "totalFiles": 1283,
+  "totalBytes": 78502080,
   "extensions": {
     ".json": 1025,
     ".LST": 3,
-    ".HTL": 1,
+    ".HTL": 2,
     ".SP": 81,
     ".dat": 1,
-    ".png": 170
+    ".png": 170,
+    ".DAT": 1
   },
   "groups": {
     "data/classification": {
@@ -33,7 +34,7 @@
       "bytes": 3061203,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
-      "usedBy": "Star/sky/three-galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
+      "usedBy": "Verified star/sky and bounded galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "data/observatory": {
@@ -85,11 +86,11 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/hotlists": {
-      "files": 1,
-      "bytes": 2064,
+      "files": 2,
+      "bytes": 3182,
       "materialClass": "unchanged-original-binary-resource",
-      "description": "1unchanged original hot list:PLEIADES.HTL from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b),entry program files/CLEA/VIREO/PLEIADES.HTL;file SHA-256 f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2;24records of86bytes",
-      "usedBy": "Explicit observatory Hot List Load exercise list(same-origin fetch,size and SHA-256 checked before parsing);supplies E04 identities and coordinates only,16rows map to existing admitted photometer targets and8remain unavailable",
+      "description": "1unchanged original hot list:PLEIADES.HTL from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b),entry program files/CLEA/VIREO/PLEIADES.HTL;file SHA-256 f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2;24records of86bytes;also byte-exact Hubble.HTL from the same archive,program files/CLEA/VIREO/Hubble.HTL,SHA-25602cab4d0d036778535a33e0dd7fe66b78fc0371da75dc32e0b26ee48513f7986;13records of86bytes",
+      "usedBy": "Explicit observatory Hot List Load exercise list(same-origin fetch,size and SHA-256 checked before parsing);supplies E04 identities and coordinates only,16rows map to existing admitted photometer targets and8remain unavailable;original Hubble list with separately declared supported exact-center acquisition entries and unavailable rows",
       "upstreamStatus": "Included under the second user approval(2026-10-26,AGENTS.md)on the basis of the recorded CLEA License.rtf terms(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     },
     "public/original/images": {
@@ -123,6 +124,14 @@
       "description": "23unchanged original SP files",
       "usedBy": "Runtime galaxy library and template spectra",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
+    },
+    "public/original/catalogs": {
+      "files": 1,
+      "bytes": 1420071,
+      "materialClass": "unchanged-original-binary-resource",
+      "description": "Byte-exact CLEA_GLX.DAT from CLEA_Vireo.zip SHA-25658dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b,program files/CLEA/VIREO/CLEA_GLX.DAT;SHA-2564c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753;24069records of59bytes",
+      "usedBy": "Pure original catalog decoder and bounded Hubble target source-identity controls;not a complete stellar background or full-sky acquisition claim",
+      "upstreamStatus": "Included under the explicit second user approval(2026-10-26,AGENTS.md),based on CLEA License.rtf free noncommercial student copies/no distribution for profit.Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.Source-specific upstream terms/identification remain uncertain;no universal open license or original-runtime equivalence is asserted."
     }
   },
   "authoredExamples": [
@@ -132,13 +141,14 @@
   ],
   "authoredMaterialNote": "Other files mix our contract descriptions,analytic vectors and previous web-writer captures with original scientific inputs or raw-byte witnesses. They are not all original observations or subject to one blanket license.",
   "credits": {
-    "ProjectCLEA": "Project CLEA,Gettysburg College;NSF support. Copyright1992\u20132012 notice retained in THIRD_PARTY_NOTICES.txt.",
-    "catalogFamilies": "VIREO manual pp60\u201380: NASAADC distribution included multiple-author catalogs;GSC-ACT/ProjectPluto andSTScI policies are product/version-specific. NASA hosting alone is not NASA authorship.",
+    "ProjectCLEA": "Project CLEA,Gettysburg College;NSF support. Copyright1992–2012 notice retained in THIRD_PARTY_NOTICES.txt.",
+    "catalogFamilies": "VIREO manual pp60–80: NASAADC distribution included multiple-author catalogs;GSC-ACT/ProjectPluto andSTScI policies are product/version-specific. NASA hosting alone is not NASA authorship.",
     "imageFamilies": "VIREO manual describes galaxy BMP sources chiefly from the1961Carnegie HubbleAtlas. PNG conversion preserves RGB pixels;individual image credits have not all been independently matched.",
     "spectralFamilies": "VIREO manual credits Jacoby/Hunter/Christian andKennicutt spectral resources,and some CLEA synthetic inputs. Individual file/source-policy mapping remains incomplete.",
     "NASA": "NASA policy applies to NASA-created material with its stated conditions and third-party exceptions;the1279resources are not universally labelled NASA works.",
     "pulsarCatalog": "Pulsars.dat:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Likely derived from the ATNF Pulsar Catalogue(Manchester,Hobbs,Teoh&Hobbs2005,AJ129,1993);this upstream attribution is uncertain and recorded as such.",
-    "pleiadesHotList": "PLEIADES.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Original VIREO exercise list;no further upstream attribution is asserted."
+    "pleiadesHotList": "PLEIADES.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Original VIREO exercise list;no further upstream attribution is asserted.",
+    "hubbleCatalogAndHotList": "CLEA_GLX.DAT and Hubble.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO catalogue and exercise list,approved2026-10-26;individual upstream catalogue/source-policy identification remains uncertain.No universal open license or native-runtime equivalence is asserted."
   },
   "sourceNotices": [
     {
@@ -153,7 +163,7 @@
       "name": "Copyright.txt",
       "bytes": 152,
       "sha256": "50d051f0f501a85401f167e331502482c6f80df8f84fae32a561a4d0d6919952",
-      "attribution": "CLEA Exercises and Software,1992\u20132012,Contemporary Laboratory Experiences in Astronomy,Gettysburg College."
+      "attribution": "CLEA Exercises and Software,1992–2012,Contemporary Laboratory Experiences in Astronomy,Gettysburg College."
     }
   ],
   "references": [
@@ -166,7 +176,7 @@
   "currentPublicationPolicy": "Resources are included as requested with provenance/uncertainty retained;not a new license grant or blanket prohibition. Historical local-research-only stamps inside hash-bound packets describe their earlier operational boundary.",
   "preservedProducerBytes": "Captured regression journals and source packets retain exact historical producer bytes required by their identities;current UI,authored code and new exports use OpenVireo.",
   "privacyReview": {
-    "scope": "Initial historical review:the original1279byte-bound resources checked for known credential signatures and path metadata;all source blob hashes verified. The later authorized additions Pulsars.dat and PLEIADES.HTL (second user approval of2026-10-26) are tracked separately by their own groups and manifest size/SHA-256 entries;this initial review,including credentialScan below,is not claimed to cover them.",
+    "scope": "Initial historical review:the original1279byte-bound resources checked for known credential signatures and path metadata;all source blob hashes verified. The later authorized additions Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL (second user approval of2026-10-26) are tracked separately by their own groups and manifest size/SHA-256 entries;this initial review,including credentialScan below,is not claimed to cover them.",
     "localPathMetadataFiles": [
       "data/classification/import-provenance.json",
       "data/classification/provenance.json",

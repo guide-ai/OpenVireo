@@ -2,11 +2,14 @@
 // public/original/hotlists; second user approval of 2026-10-26 in AGENTS.md). Web adapter, not an original contract: the
 // original opens hot lists from its own file dialog. The bytes are fetched only from this origin, bounded to and checked for
 // the exact recorded size and SHA-256 BEFORE the caller parses them with the existing parseHtl. Identities only, never photons.
+// The same adapter serves the original Hubble.HTL (13 entries, same approval and manifest group).
 import {PLEIADES_HTL} from '../core/pleiadesHotList';
+import {HUBBLE_HTL} from '../core/hubbleHotList';
 import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha256} from './boundedResource';
 
 export type BundledHotListIdentity=Readonly<{path:string;name:string;bytes:number;sha256:string}>;
 export const BUNDLED_PLEIADES_HOT_LIST:BundledHotListIdentity=Object.freeze({path:PLEIADES_HTL.path,name:PLEIADES_HTL.name,bytes:PLEIADES_HTL.bytes,sha256:PLEIADES_HTL.sha256});
+export const BUNDLED_HUBBLE_HOT_LIST:BundledHotListIdentity=Object.freeze({path:HUBBLE_HTL.path,name:HUBBLE_HTL.name,bytes:HUBBLE_HTL.bytes,sha256:HUBBLE_HTL.sha256});
 
 /** download: the request failed or answered without a body; size: not exactly the recorded byte count; sha256: other bytes. */
 export type BundledHotListFailure='download'|'size'|'sha256';

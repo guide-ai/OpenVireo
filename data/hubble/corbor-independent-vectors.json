@@ -1,0 +1,178 @@
+{
+  "schema": 1,
+  "kind": "authored-baseline-reuse-regression-vectors",
+  "baselineCommit": "80f392b0641034ba3503a305a557ffee73c97514",
+  "policy": "Computed independently on the immutable pre-implementation source field/raster/calibration/journal helpers; not original runtime observations or an x87/GDI oracle. Initial and final seeds are distinct.",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "fieldSnapshotSHA256": "7413ecaf083338c6d4a052299228c1b973f5433baa1b8f827a83703a6c163ce1",
+  "targets": [
+    {
+      "id": "54875",
+      "telescope": 0,
+      "cropSHA256": "1113085f3e6654b89fb463b27aa3e6626a83adcdc95f5179fd943ab14c80bd61",
+      "pixelLevel": 39,
+      "fraction": 0.038025,
+      "sourceAmplitude": 8.373740337710039e-06,
+      "trajectories": [
+        {
+          "initialSeed": 1,
+          "deltas": [
+            1000
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 150,
+          "skyTotal": 29,
+          "seed": 1910881596,
+          "draws": 1379,
+          "countsJsonSHA256": "0c2559774317debeccd1e3ab81593fc6146b1c5cccd0386603faf6f404938ae9"
+        },
+        {
+          "initialSeed": 1,
+          "deltas": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 129,
+          "skyTotal": 27,
+          "seed": 3624820917,
+          "draws": 12156,
+          "countsJsonSHA256": "06a407b849fb8a84f182e823a0fac72763db00fccd2a65b3af1434d76eb6c4e2"
+        },
+        {
+          "initialSeed": 123456789,
+          "deltas": [
+            250,
+            750
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 142,
+          "skyTotal": 25,
+          "seed": 2028590076,
+          "draws": 2567,
+          "countsJsonSHA256": "8922bfe5dfea2aa217ad9be33420ff1aaa14ed1e88927fad054b8c9b2cd44749"
+        },
+        {
+          "initialSeed": 0,
+          "deltas": [
+            500,
+            500
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 131,
+          "skyTotal": 31,
+          "seed": 1322371590,
+          "draws": 2562,
+          "countsJsonSHA256": "ea126ea4e54e0b3d4ee74826132793ba14211cbfacf3047e2a5045a84fd713ef"
+        },
+        {
+          "initialSeed": 4294967295,
+          "deltas": [
+            0,
+            100,
+            400,
+            500
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 131,
+          "skyTotal": 25,
+          "seed": 1334966579,
+          "draws": 4956,
+          "countsJsonSHA256": "ef15576a7bb7ff3293e2c8d9fb758d6ec4f587ae5586929ad7c48411d010d1b6"
+        }
+      ]
+    },
+    {
+      "id": "54891",
+      "telescope": 0,
+      "cropSHA256": "f1d1e95b15d50f86d69cf8033f01d434b78a1070364c140f73de6b1982f72b36",
+      "pixelLevel": 25,
+      "fraction": 0.015625,
+      "sourceAmplitude": 1.195915352676166e-05,
+      "trajectories": [
+        {
+          "initialSeed": 1,
+          "deltas": [
+            1000
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 227,
+          "skyTotal": 30,
+          "seed": 1321600470,
+          "draws": 1457,
+          "countsJsonSHA256": "99bf243cbedff41532a1ca99774f3bbd3eea9db4272992582757230e4950df46"
+        },
+        {
+          "initialSeed": 1,
+          "deltas": [
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100,
+            100
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 201,
+          "skyTotal": 24,
+          "seed": 164319814,
+          "draws": 12225,
+          "countsJsonSHA256": "d1f6044d530727b2da1f34eb03a2a1c7d251baf4a6f7bd93a3f295225aae7953"
+        },
+        {
+          "initialSeed": 123456789,
+          "deltas": [
+            250,
+            750
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 208,
+          "skyTotal": 30,
+          "seed": 3251085399,
+          "draws": 2638,
+          "countsJsonSHA256": "345f03ddd7ce349c7424f912ddeabd43578d0795a9440de95fd0c71a03c671f5"
+        },
+        {
+          "initialSeed": 0,
+          "deltas": [
+            500,
+            500
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 207,
+          "skyTotal": 29,
+          "seed": 3379635284,
+          "draws": 2636,
+          "countsJsonSHA256": "2fd127ad86351b22ced92fa5fb30e238c601db2a81b864483616b47d4356084a"
+        },
+        {
+          "initialSeed": 4294967295,
+          "deltas": [
+            0,
+            100,
+            400,
+            500
+          ],
+          "elapsedMs": 1000,
+          "sourceTotal": 188,
+          "skyTotal": 26,
+          "seed": 3446821481,
+          "draws": 5014,
+          "countsJsonSHA256": "c70a3ae980120d0381ad64f9accbaa41dd27f58e13cac0333b7b90310b1aabc9"
+        }
+      ]
+    }
+  ]
+}
