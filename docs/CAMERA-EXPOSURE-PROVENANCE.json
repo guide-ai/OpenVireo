@@ -1,0 +1,192 @@
+{
+ "evidenceId": "NATIVE-CAMERA-FRONT-C-C0-01",
+ "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+ "method": "objdump static disassembly and byte reads; no execution, emulation or microemulation",
+ "evidenceDirectory": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-front-c (capture: scripts/capture.py; listings *.asm; control: scripts/exposure_control.py)",
+ "captures": [
+  {
+   "name": "ccd-initialize-clears-field-list",
+   "start": "0x5220f4",
+   "endExclusive": "0x522294",
+   "bytesSHA256": "817d3569ec2ee981e15224e05f576fbdbc9c71e3bd29782faf0d1f400bcf6d2a",
+   "listingSHA256": "3028f9100f2f762c3561c02f6c683f1dc31a1935ae03559150439e194c4dd8ed"
+  },
+  {
+   "name": "ccd-select-region-copy-and-moving-insert-call",
+   "start": "0x5222d4",
+   "endExclusive": "0x522450",
+   "bytesSHA256": "4ce4949cf2e6fee6e3fa396c8f285a328b83eb69c08d5ca5607f622a18447124",
+   "listingSHA256": "b29fabf21cd9c949d2bb753d5157079e8c3f9f0b14706e0edc4c87b3a074f6c5"
+  },
+  {
+   "name": "ccd-update-catalog-projection-kind0",
+   "start": "0x522454",
+   "endExclusive": "0x52255e",
+   "bytesSHA256": "b899581be4658b9ceec61efd4874cb8afd897555a8236945957f1b2ba848eba6",
+   "listingSHA256": "661b58cb5d2ba6791575ab2f45cfd05c2ed536885a20378ac435f5a49882662d"
+  },
+  {
+   "name": "projection-two-random-draws",
+   "start": "0x522560",
+   "endExclusive": "0x522683",
+   "bytesSHA256": "b29c272f56be0be249c2765c33a0a686974eb9f4915e58dbaa46de2e7211f415",
+   "listingSHA256": "5e5fe5f69db8ab71cb5dd6d6f8ec3541119c0749bf3cf96a7d5cbb59d1624195"
+  },
+  {
+   "name": "projection-inclusive-bounds",
+   "start": "0x522698",
+   "endExclusive": "0x522716",
+   "bytesSHA256": "d80063e2549a0e867c834336c38b8e86ec3030352db32cc373cbca77b033d26f",
+   "listingSHA256": "4c0f44c74176a2d3b0b992527419819a8aea5d8931da9e045659589e2c7405bc"
+  },
+  {
+   "name": "moving-kind2-insert-filter-offsets",
+   "start": "0x522718",
+   "endExclusive": "0x5228b7",
+   "bytesSHA256": "9647a5fc4515364cc6a5620a7e70090aab1f9106478a260a83eb1a4a68810d37",
+   "listingSHA256": "dac47741f6da911be3647ce123f83f56a067c9df3efd74e3fba4d2924bc1d09a"
+  },
+  {
+   "name": "field-object-kind0-insert",
+   "start": "0x5228dc",
+   "endExclusive": "0x522a18",
+   "bytesSHA256": "25e24389b58feaf5d902657673b30efc2427bf2519613187286657fde4a456ba",
+   "listingSHA256": "d95f8d117905c8401705ade5558dbd06d226ad75515c906e87213b3b7f414651"
+  },
+  {
+   "name": "field-object-nearest-match",
+   "start": "0x522a18",
+   "endExclusive": "0x522b5e",
+   "bytesSHA256": "5b5ab7abe4487e4bf778535b675f41c2b8f879292c8805c22e169025c244a7c6",
+   "listingSHA256": "bd80378d86bcad917c4505d956e57c82fa8fb1f821c7ec997550bcade5346e54"
+  },
+  {
+   "name": "ccd-preparation-source-loop",
+   "start": "0x52154c",
+   "endExclusive": "0x521c65",
+   "bytesSHA256": "debae804d2a6f83bb0aec5cd9b1ff0b383375ba8c9df8901997d0b2979ce21e2",
+   "listingSHA256": "5658f4d69b96d91b94d0a887a490518150788dffc9d71490f0b13dfb120dccad"
+  },
+  {
+   "name": "list-insert-after-cursor",
+   "start": "0x492574",
+   "endExclusive": "0x4925d9",
+   "bytesSHA256": "f9261e620d6bb93972d4f185b5afb63bf06334a8f5427182552f8ff33bc06606",
+   "listingSHA256": "ef44a058215202e72ea519c3bf14b4d2ef4ae003fd7c13fc5ee8420f6059271c"
+  },
+  {
+   "name": "list-insert-head",
+   "start": "0x492528",
+   "endExclusive": "0x492573",
+   "bytesSHA256": "7ab1e730871a9a0935b61642e536681dc908e75631d11ef3789722d55cc322af",
+   "listingSHA256": "ca3e141583019b5e7322bd967b97f7c1862e8396e81935327261ff646263e9bb"
+  },
+  {
+   "name": "list-reset-next-attail-isempty",
+   "start": "0x492628",
+   "endExclusive": "0x492726",
+   "bytesSHA256": "39d456c4f5c9da3125cc6bcb15a242d643a9994ae5de3cd7be25dc68c9e21e8d",
+   "listingSHA256": "2ba52510dfd58d7095e12b7be43ce8608d6dfc1670ea5b1f431505f2db3744c9"
+  },
+  {
+   "name": "catalog-initialize-mode-labels",
+   "start": "0x59c45c",
+   "endExclusive": "0x59c5de",
+   "bytesSHA256": "ca0a627dc65f5f3914593e38cb72bcac280693732dfb84a95af13032b16aaa2e",
+   "listingSHA256": "29efc69aa5891d53b55100ad3dbccde275b0d90f5ea7ff271128cfe287070560"
+  },
+  {
+   "name": "selection-predicate",
+   "start": "0x59cf58",
+   "endExclusive": "0x59d030",
+   "bytesSHA256": "3400e8e48999ee3be0b51ec40bf23962a71fa155ae49c0174bbf53139ae10f57",
+   "listingSHA256": "5bba8f086f71bb17284a5455c4fb64679fa0b323042292aa849cd763b5e21dec"
+  },
+  {
+   "name": "options-default-urls",
+   "start": "0x5a26d7",
+   "endExclusive": "0x5a2742",
+   "bytesSHA256": "bca370f93dd3de21e4e7d823385298fb0e70fd47225eba572d70f16bcde39f27",
+   "listingSHA256": "6c7975d6559aeadb70a32bd044aeb71dd1a5ab3331dbfbfe6e5aba9e4493e04d"
+  },
+  {
+   "name": "menu-2mass-catalog-click",
+   "start": "0x58ec84",
+   "endExclusive": "0x58ecc8",
+   "bytesSHA256": "00af2596ccbcb7617fdb13a8d5a510753c239630491db37062e2d2be0d42fdd4",
+   "listingSHA256": "3321870b50391dc1669644290537d606128a2f7bf3906068f4e01b0f75989128"
+  }
+ ],
+ "constants": {
+  "movingOffsetNFandR": {
+   "address": "0x5228b8",
+   "decimal20": "0.54000000000000003553",
+   "type": "Extended"
+  },
+  "movingOffsetB": {
+   "address": "0x5228c4",
+   "decimal20": "0.6500000000000000222",
+   "type": "Extended"
+  },
+  "movingOffsetI": {
+   "address": "0x5228d0",
+   "decimal20": "0.88000000000000000444",
+   "type": "Extended"
+  },
+  "nfAdjustment": {
+   "address": "0x521c80",
+   "value": 0.25,
+   "type": "Single"
+  },
+  "hoursToDegrees": {
+   "address": "0x522684",
+   "value": 15.0,
+   "type": "Single"
+  },
+  "halfUniform": {
+   "address": "0x522694",
+   "value": 0.5,
+   "type": "Single"
+  },
+  "radiansPerDegree": {
+   "address": "0x522688",
+   "decimal20": "0.017453292519943295474",
+   "type": "Extended"
+  },
+  "queryFaintMagnitude": {
+   "address": "0x5223fc",
+   "immediate": "0x41ac0000",
+   "value": 21.5,
+   "type": "Single"
+  }
+ },
+ "strings": {
+  "catalogLabelTable": {
+   "address": "0x59c5e8",
+   "text": "\\5NOMAD\\0\\0\\7USNO-B1\\2B2\\0\\2R2\\0\\2I2\\0\\7USNO-A2"
+  },
+  "queryTail": {
+   "address": "0x59c434",
+   "text": "&cftype=ASCII&skey=RA&slf=hh.hhh/dd.ddd"
+  },
+  "xenaUrl": {
+   "address": "0x5a2e80",
+   "text": "http://xena.harvard.edu/software/catalogs/tmpsc.html"
+  },
+  "nofsUrl": {
+   "address": "0x5a2eb8",
+   "text": "http://www.nofs.navy.mil/cgi-bin/vo_cone.cgi?"
+  }
+ },
+ "findings": {
+  "fieldList": "Initialize 0x5220f4 clears field+4 (0x4924fc at 0x522103). Select 0x5222d4 copies region [0x5b5b30] (36 B: four Doubles min/max RA hours, min/max DEC degrees, Single magnitude) into [0x5b5de8], raises +0x20 to 21.5 when lower, then (when [0x5b5838] is set) calls 0x522718.",
+  "movingRecords": "0x522718 drops the leading kind-2 run of field+4, asks 0x59940c (front X territory) to refresh the global object list, then copies each leading kind-2 record of [0x5b56ac]+5, projects it with 0x522560 (two Random draws, no bounds test), applies the filter switch (pos0 mag-0.54, pos1 mag+0.65, pos2 none, pos3 mag-0.54, pos4 mag-0.88; result fstp Single) and appends it with 0x492574.",
+  "catalogRecords": "Update 0x522454 (catalog virtual+4 false -> nothing), virtual+8 selection with [0x5b5de8]; for each selected record: 0x522698 = 0x522560 + inclusive bounds; inside -> record with name, RA/DEC Doubles +0x19/+0x21, Single magnitude +0x29 (catalog +0x35), kind +0x3d = 0, pixel X/Y Doubles +0x47/+0x4f = (plane - origin)/step; appended after the cursor.",
+  "fieldObjects": "After the catalog, if [0x5b56ac]+0x4b is non-empty, 0x5228dc projects kind-0 global objects with +0x5b set via 0x522698, magnitude = record +0x29 minus colour term 0x51ef38 (spectral-type dependent, not recovered), and either overwrites the magnitude of the record returned by 0x522a18 or appends a copy. 0x522a18 returns the last iterated record (ebx), not the closest one; not ported.",
+  "sourceLoop": "0x52154c calls field virtual+8 (update) at 0x52158e before the background loop 0x521635 (one 0x520ec0 draw per pixel, row-major). The source loop 0x521a6f..0x521b35 walks field+4: magnitude +0x29 minus Single 0.25 when filter position 0 (0x521a8d); kind 2 consumes the next record (0x492634) and calls 0x524a6c with both pixel positions; otherwise 0x5245d0.",
+  "seeing": "CCD compiled record byte +0x5a = 1 (0x5a2bd8); initialize 0x5221be enables the seeing jitter width when it is non-zero.",
+  "usnoB1Labels": "Catalog initialize 0x59c45c: mode 0 NOMAD (labels B,V,R,J,H,K), mode 1 USNO-B1 (B slot 'B2', R slot 'R2', I slot 'I2'), mode 2 USNO-A2 (B, R). String table 0x59c5e8.",
+  "xena": "Options default 0x5a26ee copies http://xena.harvard.edu/software/catalogs/tmpsc.html to options+0x20cd; main form +0x2781 (= options base +0x6b4 +0x20cd) is opened by N2MASSCatalog1Click 0x58ec84 via 0x58ebe0. It is the Help > Websites > 2MASS Catalog link, not a camera data source. IR J/H/K come from NOMAD.",
+  "regionWriter": "The writer of the region record [0x5b5b30] was not located; the web uses whole-sky bounds (selection = magnitude limit)."
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "evidenceId": "CAMERA-EXPOSURE-CONTROL-01",
+ "synthetic": "Recipes are authored test inputs; the catalog is the recorded CDS response tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml. Not an observation.",
+ "control": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-front-c/scripts/exposure_control.py (stdlib Python, independent of the TypeScript)",
+ "policy": "binary64 + float32 stores (nearest/even); libm vs V8 transcendental differences would show as hash mismatches",
+ "cases": {
+  "nf-catalog": {
+   "sha256": "e22dfd7ccf00d66b8f91e1846377916a62fbc1e2c9d5a57f11d063e75440ca98",
+   "draws": 1049721,
+   "finalState": 1874365496,
+   "records": 1
+  },
+  "v-pair-catalog": {
+   "sha256": "5d4f954deab03d8ba4d8f8002b686db69a052322b9e96b1fe61c5184855b8054",
+   "draws": 1051052,
+   "finalState": 183400711,
+   "records": 3
+  }
+ }
+}
