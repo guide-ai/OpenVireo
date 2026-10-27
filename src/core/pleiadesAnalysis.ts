@@ -25,6 +25,16 @@ export function pleiadesPoints(s:PhotometerState):readonly PleiadesPoint[]{
   return [Object.freeze({targetId:t.catalogId,hotlistNumber:t.hotlistRecord+1,bReadingId:b.readingId,vReadingId:v.readingId,...(br.telescopeIndex!==undefined||vr.telescopeIndex!==undefined?{telescopeIndex:br.telescopeIndex??0}:{}),...(br.apertureSelector!==undefined||vr.apertureSelector!==undefined?{apertureSelector:br.apertureSelector??10}:{}),b:b.value,v:v.value,bMinusV:photometricBMinusV(b.value,v.value)})];
  }));
 }
+/** Ephemeral source binding for an own-observation confirmation(no persisted generation). The live photometer keeps
+ * the same frozen readings/entries/colors collections across stop/deactivate/target/fit events,while a color event
+ * replaces colors and Restore/replay/New build new collections. So an identical Restore or a recalculated pair is a
+ * different source even when every number matches. Both states must also yield the same validated pair fields. */
+export function samePleiadesPairSource(a:PhotometerState,b:PhotometerState):boolean{
+ if(a.readings!==b.readings||a.entries!==b.entries||a.colors!==b.colors||a.seedAtStart!==b.seedAtStart)return false;
+ try{const p=pleiadesPoints(a),q=pleiadesPoints(b);
+  return p.length===q.length&&p.every((x,i)=>{const y=q[i]!;return x.targetId===y.targetId&&x.hotlistNumber===y.hotlistNumber&&x.bReadingId===y.bReadingId&&x.vReadingId===y.vReadingId&&x.telescopeIndex===y.telescopeIndex&&x.apertureSelector===y.apertureSelector&&Object.is(x.b,y.b)&&Object.is(x.v,y.v)&&Object.is(x.bMinusV,y.bMinusV);});
+ }catch{return false;}
+}
 export function validPleiadesModulus(value:number):boolean{return Number.isFinite(value)&&value>=-25&&value<=40&&value===Math.round(value*10)/10;}
 export function pleiadesDistance(modulus:number){
  if(!validPleiadesModulus(modulus))throw new PleiadesAnalysisError();

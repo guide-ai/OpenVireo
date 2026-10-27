@@ -3,8 +3,8 @@ import {photometerTargetUnavailableReason,photometerTelescope,photometerTelescop
 import {opticalProfile,type OpticalIndex} from './core/opticalTelescope';
 import {PHOTOMETER_APERTURES,photometerApertureGeometry} from './core/photometerAperture';
 import NativeClusterAnalysis from './NativeClusterAnalysis';
-import {NativeClusterError,type NativeClusterDraft} from './core/nativeCluster';
-import {PleiadesAnalysisError} from './core/pleiadesAnalysis';
+import {NativeClusterError,type NativeClusterDraft,type NativeClusterParameters} from './core/nativeCluster';
+import {PleiadesAnalysisError,samePleiadesPairSource} from './core/pleiadesAnalysis';
 import PleiadesAnalysis from './PleiadesAnalysis';
 import {AcquisitionError} from './core/acquisition';
 import {PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,LEGACY_PHOTOMETER_TIMING,requiredPhotometerCallbacks,admitPhotometerCallback,MAX_PHOTOMETER_GAP_MS,PHOTOMETER_CALLBACK_MS,PhotometerIntegrationError} from './core/photometerIntegration';
@@ -22,15 +22,20 @@ import {formatNumber,t} from './i18n';
 import './photometer.css';
 const num=(value:number)=>formatNumber(value,{maximumFractionDigits:9,useGrouping:false});
 function download(text:string){const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='openvireo-pleiades-photometer.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-export type PhotometerController=Readonly<{snapshot:()=>PhotometerState|null;replace:(s:PhotometerState|null)=>void}>;
+/** Own-observation confirmation result: "refused" when a guard (stale source, pending read, busy or running work) declines
+ * with nothing changed; "failed" when the core rejected the existing nativeClusterFit event (journal limit or other error). */
+export type NativeClusterConfirmation=Readonly<{status:'confirmed';state:PhotometerState}|{status:'refused'}|{status:'failed';reason:'limit'|'error'}>;
+/** confirmNativeCluster: the own-observation HR view's confirmation. It returns the canonical state after the existing
+ * nativeClusterFit event, or a refusal/failure (nothing changes, no Photometer alert) for the view to report itself. */
+export type PhotometerController=Readonly<{snapshot:()=>PhotometerState|null;replace:(s:PhotometerState|null)=>void;confirmNativeCluster:(expected:PhotometerState|null,p:NativeClusterParameters)=>NativeClusterConfirmation}>;
 /** WEB orchestration (not a recovered native photometer rule): the App owns the actual telescope point; Activate and target or
  * Sky/Object changes prepare this bench's verified field through onPreparePoint, and Start/callbacks require that point. An
  * embedding without a telescope (no `telescope` prop) keeps the earlier bench-only behaviour. */
 export type PhotometerTelescopeLink=Readonly<{pointing:Pointing;domeOpen:boolean;mode:FieldMode;moving:boolean;onPreparePoint:(p:Pointing)=>void}>;
 const unavailableReason=(row:PleiadesHotListRow)=>row.admitted?'':t(row.reason==='mixed-variable-field'?'ph.unavailableMixed':'ph.unavailableAssociation');
-export default function Photometer({active,initialState=null,controllerRef,onStateChange,investigationBusy=false,drafts,onDraftsChange,configurationAvailable=true,telescopeIndex=0,telescope,onExerciseSummary}:{telescopeIndex?:OpticalIndex;configurationAvailable?:boolean;drafts:PhotometryDraft;onDraftsChange:(d:PhotometryDraft)=>void;active:boolean;initialState?:PhotometerState|null;controllerRef?:Ref<PhotometerController>;onStateChange?:(s:PhotometerState)=>void;investigationBusy?:boolean;telescope?:PhotometerTelescopeLink;onExerciseSummary?:(s:PleiadesExerciseSummary)=>void}){
+export default function Photometer({active,initialState=null,controllerRef,onStateChange,investigationBusy=false,drafts,onDraftsChange,configurationAvailable=true,telescopeIndex=0,telescope,onExerciseSummary,onPairSource,onOpenHr}:{telescopeIndex?:OpticalIndex;configurationAvailable?:boolean;drafts:PhotometryDraft;onDraftsChange:(d:PhotometryDraft)=>void;active:boolean;initialState?:PhotometerState|null;controllerRef?:Ref<PhotometerController>;onStateChange?:(s:PhotometerState)=>void;investigationBusy?:boolean;telescope?:PhotometerTelescopeLink;onExerciseSummary?:(s:PleiadesExerciseSummary)=>void;onPairSource?:(s:PhotometerState|null)=>void;onOpenHr?:()=>void}){
  const [state,setState]=useState<PhotometerState|null>(initialState),[notice,setNotice]=useState(''),[error,setError]=useState(''),[localBusy,setBusy]=useState(false);
- const busy=localBusy||investigationBusy;
+ const busy=localBusy||investigationBusy,busyNow=useRef(busy);busyNow.current=busy;
  const apertureDialog=useRef<HTMLDialogElement>(null),apertureButton=useRef<HTMLButtonElement>(null),apertureCancel=useRef<HTMLButtonElement>(null);
  const [apertureDraft,setApertureDraft]=useState(10);
  const aperture=state?.apertureSelector??10,geometry=photometerApertureGeometry(aperture);
@@ -54,7 +59,20 @@ export default function Photometer({active,initialState=null,controllerRef,onSta
  function release(){closeAperture();const cancelled=pendingLoad.current;pendingLoad.current=false;stopClock();loadEpoch.current++;setBusy(false);if(current.current)commit(releasePhotometer(current.current));if(cancelled)setNotice(t('ph.cancelledLoad'));return cancelled;}
  function snapshot(){release();dialog.current?.close();setDraft(null);return current.current;}
  function replace(s:PhotometerState|null){closeAperture();pendingLoad.current=false;stopClock();loadEpoch.current++;setBusy(false);dialog.current?.close();setDraft(null);current.current=s;setState(s);if(s)onStateChange?.(s);setError('');setNotice(t(s?'project.photometryRestored':'project.photometryCleared'));}
- useImperativeHandle(controllerRef,()=>({snapshot,replace}));
+ /** Own-observation confirmation: the latest canonical state, no pending file read, no busy or running work, and the same
+  * source identity as the view's expectation (samePleiadesPairSource). The core still checks two pairs and the journal budget. */
+ function confirmNativeCluster(expected:PhotometerState|null,p:NativeClusterParameters):NativeClusterConfirmation{
+  const s=current.current;
+  if(!s||!expected||pendingLoad.current||busyNow.current||s.phase==='running'||clock.current!==null||!samePleiadesPairSource(expected,s))return {status:'refused'};
+  // Not act(): a failure is reported by the visible own view, never as an alert on this hidden route.
+  setError('');
+  try{commit(photometerEvent(s,{type:'nativeClusterFit',...p}));return {status:'confirmed',state:current.current!};}
+  catch(e){return {status:'failed',reason:e instanceof PhotometerError&&e.code==='limit'?'limit':'error'};}
+ }
+ useImperativeHandle(controllerRef,()=>({snapshot,replace,confirmNativeCluster}));
+ // Live pair source for the own HR view: reported only when pairs, readings, fit, phase or seed change (not per callback).
+ const pairSource=useRef(onPairSource);pairSource.current=onPairSource;
+ useEffect(()=>{pairSource.current?.(current.current);},[state?.colors,state?.entries,state?.readings,state?.nativeClusterFit,state?.phase,state?.seedAtStart,state===null]);
  useEffect(()=>{if(active)heading.current?.focus();else{release();dialog.current?.close();}},[active]);
  useEffect(()=>{if(current.current?.armed&&(current.current.telescopeIndex??0)!==telescopeIndex){release();setNotice(t('ph.released'));}},[telescopeIndex]);
  useEffect(()=>{const hide=()=>{if(document.visibilityState==='hidden'){if(!release())setNotice(t('ph.released'));}};document.addEventListener('visibilitychange',hide);return()=>{document.removeEventListener('visibilitychange',hide);stopClock();loadEpoch.current++;};},[]);
@@ -138,7 +156,8 @@ export default function Photometer({active,initialState=null,controllerRef,onSta
  <label htmlFor="photo-v-reading">{t('ph.vReading')}</label><select id="photo-v-reading" value={vReading} disabled={running||busy} onChange={e=>onDraftsChange({...drafts,vReadingId:e.target.value?Number(e.target.value):null})}><option value="">{t('ph.chooseReading')}</option>{entriesForTarget.filter(e=>readingFor(e.readingId)?.filter==='V').map(e=><option key={e.readingId} value={e.readingId}>{t('ph.telescopeReadingOption',{id:e.readingId,value:num(e.value),selector:readingFor(e.readingId)?.apertureSelector??10,telescope:opticalProfile(readingFor(e.readingId)?.telescopeIndex??0).name})}</option>)}</select>
  <button className="secondary-button" disabled={!bReading||!vReading||running||busy} onClick={()=>act({type:'color',bReadingId:Number(bReading),vReadingId:Number(vReading)})}>{t('ph.calculateColor')}</button>
  {state?.color?<><p>{t('ph.colorSource',{b:state.color.bReadingId,v:state.color.vReadingId,target:photometerTarget(state.color.targetId).hotlistLabel})} {t('ph.readingTelescope',{telescope:opticalProfile(state.color.telescopeIndex??0).name})}</p><div className="photometer-readout"><span>{t('ph.acquiredColor')}<output data-testid="photo-acquired-bv">{num(state.color.acquired)}</output></span><span>{t('ph.manualColor')}<output data-testid="photo-manual-bv">{num(state.color.transcribed)}</output></span></div></>:<p>{t('ph.colorMissing')}</p>}</section>
- <div className="sky-actions"><button className="secondary-button" disabled={!state||busy} onClick={save}>{t('ph.save')}</button><label className="photometer-upload" htmlFor="photo-file">{t('ph.restore')}<input id="photo-file" type="file" accept=".json,application/json" disabled={busy} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void restore(file);}}/></label>{localBusy&&<button onClick={()=>{pendingLoad.current=false;loadEpoch.current++;setBusy(false);setNotice(t('ph.cancelledLoad'));}}>{t('ph.cancelLoad')}</button>}</div><p>{t('ph.saveHelp')}</p></section>
+ <div className="sky-actions"><button className="secondary-button" disabled={!state||busy} onClick={save}>{t('ph.save')}</button><label className="photometer-upload" htmlFor="photo-file">{t('ph.restore')}<input id="photo-file" type="file" accept=".json,application/json" disabled={busy} onChange={e=>{const file=e.target.files?.[0];e.target.value='';if(file)void restore(file);}}/></label>{localBusy&&<button onClick={()=>{pendingLoad.current=false;loadEpoch.current++;setBusy(false);setNotice(t('ph.cancelledLoad'));}}>{t('ph.cancelLoad')}</button>}</div><p>{t('ph.saveHelp')}</p>
+ {onOpenHr&&<div className="photometer-open-hr"><div className="sky-actions"><button className="secondary-button" data-testid="photo-open-hr" disabled={running||busy} onClick={onOpenHr}>{t('ph.openHr')}</button></div><p>{t('ph.openHrHelp')}</p></div>}</section>
  <PleiadesAnalysis state={state} busy={busy} draft={drafts.clusterModulusText??null} onDraft={setClusterText} onConfirm={modulus=>act({type:'clusterFit',modulus})}/>
  <NativeClusterAnalysis state={state} busy={busy} draft={drafts.nativeClusterDraft??null} onDraft={setNativeDraft} onConfirm={p=>act({type:'nativeClusterFit',...p})}/>
  <section className="scope-note"><h2>{t('ph.limitsTitle')}</h2><p>{t('ph.limits')}</p><details><summary>{t('ph.evidence')}</summary><p>{t('ph.evidenceHelp')}</p><p>{t('ph.nativeModal')}</p></details></section>

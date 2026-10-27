@@ -5,7 +5,8 @@ import {PLEIADES_HTL} from './core/pleiadesHotList';
 import './hubble-lab.css';
 import './pulsar-lab.css';
 import './pleiades-lab.css';
-export type PleiadesLabDestination='observatory'|'photometer';
+/** 'observations' opens the own-pairs Data from Observations view (phase1 item1.9); it is a link, not a counted step. */
+export type PleiadesLabDestination='observatory'|'photometer'|'observations';
 /** Where each step is carried out. */
 const STEP_DESTINATION:Readonly<Record<PleiadesLabStep,PleiadesLabDestination>>={list:'observatory',point:'observatory',activate:'photometer',
  measure:'photometer',record:'photometer',color:'photometer',sample:'photometer',distance:'photometer',save:'photometer'};
@@ -30,6 +31,7 @@ export default function PleiadesLabGuide({dialogRef,progress,onNavigate}:{dialog
    <p data-testid="pleiades-lab-coverage">{t('pleiadesLab.coverage',{count:progress.colorTargets,total:progress.sampleTargets})}</p>
    <p className="pulsar-lab-next" data-testid="pleiades-lab-next" data-next={progress.next}>{t(`pleiadesLab.next.${progress.next}`)}</p>
    <p className="lab-recovery" data-testid="pleiades-lab-e05">{t('pleiadesLab.e05')}</p>
+   <button className="secondary-button" data-testid="pleiades-lab-observations" onClick={()=>go('observations')}>{t('pleiadesLab.goObservations')}</button>
    <button className="secondary-button" data-testid="pleiades-lab-continue" onClick={()=>go(STEP_DESTINATION[progress.next])}>{t('pleiadesLab.continue')}</button>
    <details className="lab-progress-help"><summary>{t('pleiadesLab.progressMeaning')}</summary><p>{t('pleiadesLab.progressHelp')}</p></details>
   </section>

@@ -1,13 +1,23 @@
 /** WEB-CLUSTER-GUIDE-01: progress of the cluster HR (E05, database route) student guide, recomputed from the current
  * state on every render. "Done" means an observable action or a currently visible result(dataset loaded, values
  * inspected, valid trial with its model shown, confirmation present, report opened); it never grades a fit. Saving is
- * listed as instructions only: no saved mark without a genuine download/restore witness. Pure: no React, i18n or I/O. */
+ * listed as instructions only: no saved mark without a genuine download/restore witness. The own-observation route is a
+ * separate status(clusterOwnStatus), not a counted step. Pure: no React, i18n or I/O. */
 import type{ClusterDatasetId}from'./clusterComparison';
 
 export type ClusterLabStep='load'|'inspect'|'trial'|'confirm'|'report';
 export const CLUSTER_LAB_STEPS:readonly ClusterLabStep[]=Object.freeze(['load','inspect','trial','confirm','report']);
-/** Pending dependencies of the full E05 exercise(phase1 items1.7 and1.9);never counted or ticked here. */
-export const CLUSTER_LAB_PENDING=Object.freeze(['pointing','ownPlot']as const);
+/** Own-observation route(phase1 item1.9):the learner's confirmed photometer B/V pairs plotted in the separate
+ * Data from Observations view. Reported as status only;it is never one of the counted database steps above. The web
+ * sample coverage(all admitted stars) and the technical two-pair fit minimum stay two separate facts. */
+export const CLUSTER_OWN_FIT_MINIMUM=2;
+export type ClusterOwnStatus=Readonly<{pairs:number;total:number;canFit:boolean;sampleComplete:boolean;confirmed:boolean}>;
+export function clusterOwnStatus(pairs:number,total:number,confirmed:boolean):ClusterOwnStatus{
+ if(!Number.isSafeInteger(pairs)||!Number.isSafeInteger(total)||pairs<0||total<1||pairs>total)throw new RangeError('own pairs');
+ const canFit=pairs>=CLUSTER_OWN_FIT_MINIMUM;
+ // A confirmation without enough current pairs cannot exist in the photometer core;it is never reported here.
+ return Object.freeze({pairs,total,canFit,sampleComplete:pairs===total,confirmed:canFit&&confirmed});
+}
 export type ClusterLabSummary=Readonly<{
  /** The active dataset is verified and shown. */
  loaded:boolean;

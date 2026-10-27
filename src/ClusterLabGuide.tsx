@@ -1,12 +1,13 @@
 import type {RefObject} from 'react';
 import {t} from './i18n';
-import {CLUSTER_LAB_PENDING,CLUSTER_LAB_STEPS,type ClusterLabProgress,type ClusterLabStep} from './core/clusterLab';
+import {CLUSTER_LAB_STEPS,type ClusterLabProgress,type ClusterLabStep,type ClusterOwnStatus} from './core/clusterLab';
 import './hubble-lab.css';
 
 /** WEB-CLUSTER-GUIDE-01: the cluster HR (E05) guide for the database route, with the HubbleLabGuide layout. Every check
  * mark is recomputed from the current state by clusterLabProgress; nothing is stored. Saving is listed as instructions
- * without a check mark, and the observation steps of E05 stay explicitly pending (phase1 items1.7/1.9). */
-export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClusterLabProgress;cluster:string|null;onNavigate:(step:ClusterLabStep)=>void}){
+ * without a check mark. The own-observation route (phase1 item1.9) is shown as separate live status with a link; it is
+ * never one of the counted database steps and never marks the whole E05 exercise complete. */
+export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate,own,onOpenOwn}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:ClusterLabProgress;cluster:string|null;onNavigate:(step:ClusterLabStep)=>void;own:ClusterOwnStatus;onOpenOwn?:()=>void}){
  function go(step:ClusterLabStep){dialogRef.current?.close();onNavigate(step);}
  return <dialog ref={dialogRef} className="hubble-lab-dialog cluster-lab-dialog" aria-labelledby="cluster-lab-heading" aria-describedby="cluster-lab-intro" data-testid="cluster-lab-dialog">
   <div className="lab-heading"><div><div className="eyebrow">{t('clusterLab.eyebrow')}</div><h2 id="cluster-lab-heading">{t('clusterLab.title')}</h2></div>
@@ -32,9 +33,13 @@ export default function ClusterLabGuide({dialogRef,progress,cluster,onNavigate}:
    <h3 id="cluster-lab-preserve-heading">{t('clusterLab.preserve.heading')}</h3>
    <p>{t('clusterLab.preserve.save')}</p><p>{t('clusterLab.preserve.restore')}</p>
   </section>
-  <section aria-labelledby="cluster-lab-pending-heading" data-testid="cluster-lab-pending">
-   <h3 id="cluster-lab-pending-heading">{t('clusterLab.pending.heading')}</h3>
-   <ul>{CLUSTER_LAB_PENDING.map(k=><li key={k} data-testid={`cluster-lab-pending-${k}`}>{t(`clusterLab.pending.${k}`)}</li>)}</ul>
+  <section aria-labelledby="cluster-lab-own-heading" data-testid="cluster-lab-own">
+   <h3 id="cluster-lab-own-heading">{t('clusterLab.own.heading')}</h3>
+   <p>{t('clusterLab.own.help')}</p>
+   <p data-testid="cluster-lab-own-pairs">{t('clusterLab.own.pairs',{count:own.pairs,total:own.total})}</p>
+   <p data-testid="cluster-lab-own-fit" data-confirmed={own.confirmed}>{t(own.confirmed?'clusterLab.own.confirmed':own.canFit?'clusterLab.own.canFit':'clusterLab.own.tooFew')}</p>
+   <p className="lab-recovery" data-testid="cluster-lab-own-minimum">{t('clusterLab.own.minimum')}</p>
+   {onOpenOwn&&<button className="secondary-button" data-testid="cluster-lab-own-open" onClick={()=>{dialogRef.current?.close();onOpenOwn();}}>{t('clusterLab.own.open')}</button>}
    <p className="lab-recovery">{t('clusterLab.limits')}</p>
   </section>
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('clusterLab.return')}</button>

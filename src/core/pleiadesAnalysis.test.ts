@@ -3,7 +3,7 @@ import {it,expect} from 'vitest';
 import {createHash} from 'node:crypto';import {readFileSync}from'node:fs';
 import vectors from '../../data/photometry/pleiades-distance-vectors.json';
 
-import {PLEIADES_ANALYSIS_SHA256,PLEIADES_STANDARDS,pleiadesPoints,pleiadesDistance,confirmPleiadesFit,pleiadesPointVisible} from './pleiadesAnalysis';
+import {PLEIADES_ANALYSIS_SHA256,PLEIADES_STANDARDS,pleiadesPoints,pleiadesDistance,confirmPleiadesFit,pleiadesPointVisible,samePleiadesPairSource} from './pleiadesAnalysis';
 import {createPhotometer,photometerEvent as event,releasePhotometer} from './photometer';
 import {PLEIADES_PHOTOMETER_TARGETS} from './photometerField';
 import {parsePhotometerSession,serializePhotometerSession}from'../io/photometerSession';
@@ -23,4 +23,28 @@ it('owner5 observing histories remain canonical and return only derived scientif
 
 it('preserves exact captured pre-analysis owner5 bytes and manual entries/color',()=>{expect(createHash('sha256').update(owner5.text).digest('hex')).toBe(owner5.sha256);expect(serializePhotometerSession(parsePhotometerSession(JSON.parse(owner5.text)))).toBe(projectSessionText(owner5.text));});
 
+// Own-observation source binding(phase1 item1.9):an identical replayed clone or a recalculated pair is a new source.
+const ownFit={type:'nativeClusterFit',modulusTicks:550,ebvTicks:4,ageIndex:4,modelIndex:4,offsetTicks:0,extinctionCorrected:true,interpretation:'Own trial'}as const;
+it('own source binding survives stop/deactivate/release,target and native-fit confirmation without copying collections',()=>{
+ const s=sample();expect(samePleiadesPairSource(s,s)).toBe(true);
+ const released=releasePhotometer(s);expect(released).not.toBe(s);expect(released.readings).toBe(s.readings);expect(released.entries).toBe(s.entries);expect(released.colors).toBe(s.colors);expect(samePleiadesPairSource(s,released)).toBe(true);
+ const fitted=event(s,ownFit);expect(fitted.nativeClusterFit?.points).toHaveLength(2);expect(samePleiadesPairSource(s,fitted)).toBe(true);expect(samePleiadesPairSource(released,releasePhotometer(fitted))).toBe(true);
+ const moved=event(s,{type:'target',targetId:PLEIADES_PHOTOMETER_TARGETS[0]!.catalogId});expect(samePleiadesPairSource(s,moved)).toBe(true);
+ for(const e of [{type:'filter',filter:'V'},{type:'point',kind:'sky'}]as const)expect(samePleiadesPairSource(s,event(s,e))).toBe(true);
+});
+it('own source binding refuses an identical replay/Restore clone,an identical recalculation and any new reading,entry,pair or seed',()=>{
+ const s=releasePhotometer(sample()),clone=parsePhotometerSession(JSON.parse(serializePhotometerSession(s)));
+ // Same numbers,same events:still a different source object graph,so a stale expectation is refused.
+ expect(clone).toEqual(s);expect(pleiadesPoints(clone)).toEqual(pleiadesPoints(s));expect(samePleiadesPairSource(s,clone)).toBe(false);expect(samePleiadesPairSource(clone,s)).toBe(false);
+ const armed=event(sample(),{type:'target',targetId:PLEIADES_PHOTOMETER_TARGETS[1]!.catalogId}),recalculated=event(armed,{type:'color',bReadingId:armed.color!.bReadingId,vReadingId:armed.color!.vReadingId});
+ expect(pleiadesPoints(recalculated)).toEqual(pleiadesPoints(armed));expect(samePleiadesPairSource(armed,recalculated)).toBe(false);
+ // A fit confirmed before the recalculation is cleared by the existing core(not by this helper).
+ expect(event(event(armed,ownFit),{type:'color',bReadingId:armed.color!.bReadingId,vReadingId:armed.color!.vReadingId}).nativeClusterFit).toBeNull();
+ expect(samePleiadesPairSource(sample(2),sample(3))).toBe(false);
+ expect(samePleiadesPairSource(s,{...s,seedAtStart:s.seedAtStart+1})).toBe(false);
+ // The same collections must still validate:an inconsistent pair is never a confirmable source.
+ const inconsistent={...s,entries:Object.freeze(s.entries.slice(1))};expect(()=>pleiadesPoints(inconsistent)).toThrow();expect(samePleiadesPairSource(inconsistent,inconsistent)).toBe(false);
+ // New readings or entries are new sources even before a color is recalculated.
+ expect(samePleiadesPairSource(s,{...s,entries:Object.freeze([...s.entries])})).toBe(false);expect(samePleiadesPairSource(s,{...s,readings:Object.freeze([...s.readings])})).toBe(false);
+});
 it('normalizes negative zero before recording so live/replay/JSON equality holds;duplicate confirmation is a true no-op',()=>{const a=event(sample(),{type:'clusterFit',modulus:-0});expect(Object.is(a.clusterFit!.modulus,-0)).toBe(false);expect(Object.is((a.events.at(-1)as{modulus:number}).modulus,-0)).toBe(false);expect(event(a,{type:'clusterFit',modulus:0})).toBe(a);expect(event(a,{type:'clusterFit',modulus:-0})).toBe(a);const text=serializePhotometerSession(releasePhotometer(a));expect(parsePhotometerSession(JSON.parse(text))).toEqual(releasePhotometer(a));expect(Object.is(pleiadesDistance(-0).modulus,0)).toBe(true);});

@@ -1,9 +1,9 @@
 import{it,expect}from'vitest';
-import{addClusterLabWitness,clusterLabProgress,retainClusterLabWitness,CLUSTER_LAB_PENDING,CLUSTER_LAB_STEPS,EMPTY_CLUSTER_LAB_WITNESS,type ClusterLabSummary}from'./clusterLab';
+import{addClusterLabWitness,clusterLabProgress,clusterOwnStatus,retainClusterLabWitness,CLUSTER_LAB_STEPS,CLUSTER_OWN_FIT_MINIMUM,EMPTY_CLUSTER_LAB_WITNESS,type ClusterLabSummary}from'./clusterLab';
 const none:ClusterLabSummary={loaded:false,inspected:false,validTrial:false,confirmed:false,reportOpened:false};
 
 it('counts only observable database actions;nothing is done without a loaded dataset and saving is never a step',()=>{
- expect(CLUSTER_LAB_STEPS).toEqual(['load','inspect','trial','confirm','report']);expect(CLUSTER_LAB_STEPS).not.toContain('save');expect(CLUSTER_LAB_PENDING).toEqual(['pointing','ownPlot']);
+ expect(CLUSTER_LAB_STEPS).toEqual(['load','inspect','trial','confirm','report']);expect(CLUSTER_LAB_STEPS).not.toContain('save');expect(CLUSTER_LAB_STEPS).not.toContain('own');
  expect(clusterLabProgress(none)).toEqual({done:{load:false,inspect:false,trial:false,confirm:false,report:false},doneCount:0,next:'load'});
  // Stale witnesses of an unloaded dataset never tick.
  expect(clusterLabProgress({...none,inspected:true,validTrial:true,confirmed:true,reportOpened:true}).doneCount).toBe(0);
@@ -19,4 +19,17 @@ it('per-dataset witnesses are idempotent(same object,no render loop)and dropped 
  const a=addClusterLabWitness(EMPTY_CLUSTER_LAB_WITNESS,'inspect','m67');expect(a.inspect).toEqual(['m67']);expect(a.report).toEqual([]);expect(addClusterLabWitness(a,'inspect','m67')).toBe(a);
  const b=addClusterLabWitness(addClusterLabWitness(a,'report','m67'),'inspect','hyades');expect(b).toEqual({inspect:['m67','hyades'],report:['m67']});
  expect(retainClusterLabWitness(b,{m67:{},hyades:{}})).toBe(b);expect(retainClusterLabWitness(b,{hyades:{}})).toEqual({inspect:['hyades'],report:[]});expect(retainClusterLabWitness(b,{})).toEqual(EMPTY_CLUSTER_LAB_WITNESS);
+});
+
+it('own-observation status keeps the16-star coverage and the two-pair technical minimum separate and never counts as a step',()=>{
+ expect(CLUSTER_OWN_FIT_MINIMUM).toBe(2);
+ expect(clusterOwnStatus(0,16,false)).toEqual({pairs:0,total:16,canFit:false,sampleComplete:false,confirmed:false});
+ expect(clusterOwnStatus(1,16,false).canFit).toBe(false);
+ expect(clusterOwnStatus(2,16,true)).toEqual({pairs:2,total:16,canFit:true,sampleComplete:false,confirmed:true});
+ expect(clusterOwnStatus(16,16,false)).toEqual({pairs:16,total:16,canFit:true,sampleComplete:true,confirmed:false});
+ // A confirmation is never reported without enough current pairs.
+ expect(clusterOwnStatus(1,16,true).confirmed).toBe(false);
+ for(const[p,n]of[[-1,16],[17,16],[1.5,16],[0,0],[NaN,16]])expect(()=>clusterOwnStatus(p!,n!,false)).toThrow(RangeError);
+ // Own status never changes the five counted database steps.
+ expect(clusterLabProgress({loaded:false,inspected:false,validTrial:false,confirmed:false,reportOpened:false}).doneCount).toBe(0);
 });
