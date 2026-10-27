@@ -1,11 +1,12 @@
 {
   "schema": 1,
-  "scope": "All1280files from LOCAL-RESOURCES.json included with byte-identical contents by explicit instruction:the original1279plus Pulsars.dat under the second user approval of2026-10-26;no executable,installer or downloaded archive is among them.",
-  "totalFiles": 1280,
-  "totalBytes": 77078827,
+  "scope": "All1281files from LOCAL-RESOURCES.json included with byte-identical contents by explicit instruction:the original1279plus Pulsars.dat and PLEIADES.HTL under the second user approval of2026-10-26;no executable,installer or downloaded archive is among them.",
+  "totalFiles": 1281,
+  "totalBytes": 77080891,
   "extensions": {
     ".json": 1025,
     ".LST": 3,
+    ".HTL": 1,
     ".SP": 81,
     ".dat": 1,
     ".png": 170
@@ -83,6 +84,14 @@
       "usedBy": "Runtime fetched stellar practice/atlas spectra",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
+    "public/original/hotlists": {
+      "files": 1,
+      "bytes": 2064,
+      "materialClass": "unchanged-original-binary-resource",
+      "description": "1unchanged original hot list:PLEIADES.HTL from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b),entry program files/CLEA/VIREO/PLEIADES.HTL;file SHA-256 f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2;24records of86bytes",
+      "usedBy": "Explicit observatory Hot List Load exercise list(same-origin fetch,size and SHA-256 checked before parsing);supplies E04 identities and coordinates only,16rows map to existing admitted photometer targets and8remain unavailable",
+      "upstreamStatus": "Included under the second user approval(2026-10-26,AGENTS.md)on the basis of the recorded CLEA License.rtf terms(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
+    },
     "public/original/images": {
       "files": 170,
       "bytes": 2079004,
@@ -128,7 +137,8 @@
     "imageFamilies": "VIREO manual describes galaxy BMP sources chiefly from the1961Carnegie HubbleAtlas. PNG conversion preserves RGB pixels;individual image credits have not all been independently matched.",
     "spectralFamilies": "VIREO manual credits Jacoby/Hunter/Christian andKennicutt spectral resources,and some CLEA synthetic inputs. Individual file/source-policy mapping remains incomplete.",
     "NASA": "NASA policy applies to NASA-created material with its stated conditions and third-party exceptions;the1279resources are not universally labelled NASA works.",
-    "pulsarCatalog": "Pulsars.dat:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Likely derived from the ATNF Pulsar Catalogue(Manchester,Hobbs,Teoh&Hobbs2005,AJ129,1993);this upstream attribution is uncertain and recorded as such."
+    "pulsarCatalog": "Pulsars.dat:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Likely derived from the ATNF Pulsar Catalogue(Manchester,Hobbs,Teoh&Hobbs2005,AJ129,1993);this upstream attribution is uncertain and recorded as such.",
+    "pleiadesHotList": "PLEIADES.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Original VIREO exercise list;no further upstream attribution is asserted."
   },
   "sourceNotices": [
     {
@@ -156,7 +166,7 @@
   "currentPublicationPolicy": "Resources are included as requested with provenance/uncertainty retained;not a new license grant or blanket prohibition. Historical local-research-only stamps inside hash-bound packets describe their earlier operational boundary.",
   "preservedProducerBytes": "Captured regression journals and source packets retain exact historical producer bytes required by their identities;current UI,authored code and new exports use OpenVireo.",
   "privacyReview": {
-    "scope": "All1279byte-bound resources checked for known credential signatures and path metadata;all source blob hashes verified.",
+    "scope": "Initial historical review:the original1279byte-bound resources checked for known credential signatures and path metadata;all source blob hashes verified. The later authorized additions Pulsars.dat and PLEIADES.HTL (second user approval of2026-10-26) are tracked separately by their own groups and manifest size/SHA-256 entries;this initial review,including credentialScan below,is not claimed to cover them.",
     "localPathMetadataFiles": [
       "data/classification/import-provenance.json",
       "data/classification/provenance.json",

@@ -24,8 +24,8 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   for(const bad of [{...en,extra:'extra'},{...en,'sky.pointed':'{wrong}'},{...en,'sky.pointed':5}])expect(()=>createI18n(bad as typeof en,'en-US')).toThrow();const missing={...en};delete(missing as Partial<typeof en>)['sky.pointed'];expect(()=>createI18n(missing,'en-US')).toThrow();
  });
  it('keeps all remaining direct render sites confined to reviewed scientific/source-identity tokens',()=>{
-  // 58: ClusterLabGuide.tsx adds the cluster HR student guide (57 included PulsarLabGuide.tsx); the reviewed literal receipt map remains unchanged.
-  const audit=auditUi(root);expect(audit.files.length).toBe(58);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  // 59: PleiadesLabGuide.tsx adds the Pleiades photometry (E04) student guide (58 included ClusterLabGuide.tsx); the reviewed literal receipt map remains unchanged.
+  const audit=auditUi(root);expect(audit.files.length).toBe(59);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

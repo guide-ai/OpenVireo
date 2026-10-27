@@ -1,0 +1,4 @@
+.pleiades-lab-mark{display:inline-block;min-width:1.2em;color:#285c48}.pleiades-lab-mark::before{content:"\25CB"}.pleiades-lab-mark[data-done=true]::before{content:"\2713"}.pleiades-lab-steps>li[data-counted=false]{opacity:.92}
+.pleiades-point-card{padding:1.2rem;min-width:0;overflow-wrap:anywhere}.pleiades-point-card button{max-width:100%;white-space:normal}
+.photometer-telescope{margin:1rem 0;padding:1rem;background:#f0f6f3;border-radius:.65rem;overflow-wrap:anywhere}.photometer-telescope h3{margin-top:0}.photometer-telescope .photometer-readout{margin:.6rem 0}.photometer-telescope [data-access=ready]{color:#245e51;font-weight:600}
+@media(max-width:480px){.photometer-telescope .photometer-readout{grid-template-columns:1fr}}
