@@ -7,6 +7,8 @@
  * telescope pointing (the HTL row coordinates) and JD comes from the shared site clock. Records are in-memory student
  * observations (persistence is M6); nothing here invents a measurement. */
 import {hubbleVelocity} from './hubbleVelocity';
+import {currentZ,type ShiftControl} from './spectrum';
+import type {JournalEvent} from './exposureJournal';
 import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
 
 export const LSS_LIMITS=Object.freeze({records:250,object:24,remarks:40});
@@ -16,9 +18,12 @@ export class LssSurveyError extends Error{
 export type LssRecord=Readonly<{
  id:number;field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;
  zSingle:number;zHex:string;velocitySingle:number;velocityHex:string;remarks:string;acquisitionPolicy:string;
+ /** The exposure behind the measurement (replayed on restore) and the shift control that gave z. */
+ journal:LssJournal;control:ShiftControl;
 }>;
+export type LssJournal=Readonly<{seedAtReset:number;events:readonly JournalEvent[]}>;
 /** The open "Measured Redshift Data" dialog: values fixed from the measurement, only Remarks (and the object label) editable. */
-export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string}>;
+export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl}>;
 export type LssSurveyState=Readonly<{field:LssFieldNumber|null;loaded:LssFieldNumber|null;records:readonly LssRecord[];draft:LssDraft|null;handedToWedge:number}>;
 export const EMPTY_LSS_SURVEY:LssSurveyState=Object.freeze({field:null,loaded:null,records:Object.freeze([]),draft:null,handedToWedge:0});
 const hex32=(v:number)=>{const b=new DataView(new ArrayBuffer(4));b.setFloat32(0,v,false);return b.getUint32(0,false).toString(16).padStart(8,'0');};
@@ -34,9 +39,9 @@ export function markLssListLoaded(s:LssSurveyState,field:LssFieldNumber):LssSurv
 /** Record Z: opens the dialog with the measured z. One dialog at a time. */
 export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'>):LssSurveyState{
  if(s.draft)throw new LssSurveyError('pending');
- if(!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
+ if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
- return Object.freeze({...s,draft:Object.freeze({...d,object:text(d.object,LSS_LIMITS.object),remarks:''})});
+ return Object.freeze({...s,draft:Object.freeze({...d,object:text(d.object,LSS_LIMITS.object),remarks:'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
 }
 export function editLssDraft(s:LssSurveyState,change:Readonly<{object?:string;remarks?:string}>):LssSurveyState{
  if(!s.draft)throw new LssSurveyError('pending');
@@ -47,7 +52,7 @@ export function confirmLssRecord(s:LssSurveyState):LssSurveyState{
  const d=s.draft;if(!d)throw new LssSurveyError('pending');
  if(s.records.length>=LSS_LIMITS.records)throw new LssSurveyError('limit');
  const v=hubbleVelocity(d.z),zSingle=Math.fround(d.z);
- const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle,zHex:hex32(zSingle),velocitySingle:v.storedKmS,velocityHex:v.storedHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy});
+ const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle,zHex:hex32(zSingle),velocitySingle:v.storedKmS,velocityHex:v.storedHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control});
  return Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])});
 }
 /** Cancel / Escape: adds nothing. */
@@ -65,4 +70,9 @@ const cell=(value:string)=>'"'+(/^[\s]*[=+\-@]/.test(value)||/^[\t\r\n]/.test(va
 export function lssResultsCsv(records:readonly LssRecord[]):string{
  const header='schema,id,field,row,telescope_record,object,jd,ra_hours,dec_degrees,z_float32,z_float32_hex,velocity_float32_km_s,velocity_float32_hex,remarks,acquisition_policy,numerical_policy';
  return header+'\r\n'+records.map(r=>[1,r.id,r.field,r.row+1,r.telescope,cell(r.object),r.jd,r.ra,r.dec,r.zSingle,r.zHex,r.velocitySingle,r.velocityHex,cell(r.remarks),cell(r.acquisitionPolicy),'Number_x87_equivalence_unvalidated'].join(',')).join('\r\n')+'\r\n';
+}
+/** A restored survey: records already validated and replayed by the session reader; nothing is handed to the wedge yet. */
+export function restoredLssSurvey(field:LssFieldNumber|null,records:readonly LssRecord[]):LssSurveyState{
+ if(records.length>LSS_LIMITS.records||records.some((r,i)=>r.id!==i+1))throw new LssSurveyError('record');
+ return Object.freeze({field,loaded:null,records:Object.freeze([...records]),draft:null,handedToWedge:0});
 }

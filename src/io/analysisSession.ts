@@ -29,6 +29,7 @@ import {acquisitionObjectId,acquisitionJournalText,restoreAcquisitionObservation
 import {EMPTY_HUBBLE,readHubbleWorkspace,type HubbleWorkspace} from '../core/hubbleAnalysis';
 import { createMeasurement, currentZ, type Measurement, type ShiftControl } from '../core/spectrum';
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
+import {LSS_INVESTIGATION_POLICY,admitLssInvestigation,portableLssInvestigation,type LssInvestigation} from './lssInvestigation';
 import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
@@ -44,6 +45,8 @@ export type AnalysisSession=Readonly<{
   radio?:RadioInvestigationRecord;
   /** Front B (v26): optical observatory options and student site overrides. Absent in v1..25 files (compiled defaults). */
   observatory?:ObservatorySession;
+  /** Front A M6 (v27): the E02 LSS survey (lssInvestigation.ts). Absent in v1..26 files. */
+  lss?:LssInvestigation;
 }>;
 /** Front B B10 (v26): Optical Simulation Options (Limit Slewing) and per-telescope site overrides (clocks/horizon only,
  * WEB-ST-01). A v26 file wraps an unchanged v1..25 base, outermost; a v26 is never nested. */
@@ -133,12 +136,21 @@ function measurement(value:unknown,previousId:number,acquisitions:readonly Acqui
   if(row.object!==object||row.zFloat32Hex!==r.zFloat32Hex)fail('measurements');
   return row;
 }
-async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false):Promise<AnalysisSession> {
+async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false):Promise<AnalysisSession> {
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
-  if(version===26){
+  if(version===27){
+    // Front A M6: an E02 wrapper over an unchanged v1..26 base, outermost; a v27 is never nested.
     if(migrated)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','lssPolicy','lssDigestSHA256','lss']);
+    const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.lssPolicy!==LSS_INVESTIGATION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>26)fail('format');
+    let lss:LssInvestigation;try{lss=await admitLssInvestigation(r.lss,r.lssDigestSHA256);}catch{fail('state');}
+    const base=await restore(r.base,verifySources,true,false,false,true);return Object.freeze({...base,lss});
+  }
+  if(version===26){
+    if(migrated&&!underLss)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','observatoryPolicy','observatory']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.observatoryPolicy!==OBSERVATORY_SESSION_POLICY||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>25)fail('format');
     let observatory:ObservatorySession;try{const o=record(r.observatory,['options','siteOverrides']);observatory=Object.freeze({options:readOpticalOptions(o.options),siteOverrides:readSiteOverrides(o.siteOverrides)});}catch{fail('state');}
@@ -259,6 +271,10 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
 type Wrapped=Readonly<{cached?:true;pegasus?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  if(session.lss!==undefined){
+    let lss:unknown,digest:string;try{({lss,digest}=await portableLssInvestigation(session.lss));}catch{fail('state');}
+    return {format:FORMAT,version:27,numericalPolicy:POLICY,base:await portable({...session,lss:undefined},wrapped),lssPolicy:LSS_INVESTIGATION_POLICY,lssDigestSHA256:digest,lss};
+  }
   if(session.observatory!==undefined){
     let observatory:unknown;try{observatory={options:readOpticalOptions(session.observatory.options),siteOverrides:portableSiteOverrides(readSiteOverrides(portableSiteOverrides(session.observatory.siteOverrides)))};}catch{fail('state');}
     return {format:FORMAT,version:26,numericalPolicy:POLICY,base:await portable({...session,observatory:undefined},wrapped),observatoryPolicy:OBSERVATORY_SESSION_POLICY,observatory};

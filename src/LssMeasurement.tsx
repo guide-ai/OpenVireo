@@ -6,7 +6,7 @@ import {formatZ} from './view/spectrum';
 const LINES=parseLines(galaxyText);
 /** Dedicated LSS measurement panel on the same shift-control contract as the analyser (spectrum.ts 0x584424..0x5844e8):
  * the student supplies the z step, moves the control and aligns the GLXYLNS.LST lines with the raw counts. */
-export default function LssMeasurement({counts,wavelengths,onRecord,disabled}:{counts:readonly number[];wavelengths:readonly number[];onRecord:(z:number)=>void;disabled:boolean}){
+export default function LssMeasurement({counts,wavelengths,onRecord,disabled}:{counts:readonly number[];wavelengths:readonly number[];onRecord:(control:ShiftControl)=>void;disabled:boolean}){
  const [control,setControl]=useState<ShiftControl>(INITIAL_CONTROL),[stepText,setStepText]=useState(''),[error,setError]=useState('');
  const z=currentZ(control),min=wavelengths[0],max=wavelengths[wavelengths.length-1],peak=Math.max(1,...counts);
  const x=(w:number)=>60+(w-min)/(max-min)*860;
@@ -21,7 +21,7 @@ export default function LssMeasurement({counts,wavelengths,onRecord,disabled}:{c
    <label htmlFor="lss-shift">{t('lss.measure.shift')}</label><input id="lss-shift" type="range" min={-100} max={100} step={1} value={control.position} disabled={disabled||control.step<=0} onChange={e=>apply(()=>moveControl(control,Number(e.target.value)))}/>
    <fieldset disabled={disabled||control.step<=0}><legend>{t('lss.measure.factor')}</legend>{([1,10] as const).map(f=><label key={f}><input type="radio" name="lss-factor" checked={control.factor===f} onChange={()=>apply(()=>changeFactor(control,f))}/>×{f}</label>)}</fieldset>
    <p data-testid="lss-current-z" role="status">{control.step>0?t('lss.measure.z',{z:formatZ(z)}):t('lss.measure.noStep')}</p>
-   <button className="primary-button" disabled={disabled||control.step<=0||!counts.some(n=>n>0)} onClick={()=>onRecord(z)}>{t('lss.measure.record')}</button>
+   <button className="primary-button" disabled={disabled||control.step<=0||!counts.some(n=>n>0)} onClick={()=>onRecord(control)}>{t('lss.measure.record')}</button>
   </div>{error&&<p role="alert">{error}</p>}
  </section>;
 }

@@ -46,7 +46,6 @@ test('Record Z: a pasted Tab is refused inline, the app survives, Object is read
  await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
  await page.getByLabel('Remarks',{exact:true}).fill('clean');await page.getByRole('button',{name:'OK',exact:true}).click();
  await expect(page.getByTestId('lss-record-count')).toHaveText('1 records');await expect(page.getByTestId('lss-results')).toContainText('clean');
- await expect(page.getByTestId('lss-not-saved')).toBeVisible();
  // Open the dialog again, then leave by history: the dialog closes, adds nothing and the app stays usable.
  await page.getByRole('button',{name:'Record Z',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();
  await page.evaluate(()=>{location.hash='#observatory';});await expect(page.getByRole('dialog')).toHaveCount(0);

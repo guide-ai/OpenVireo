@@ -3224,9 +3224,8 @@ export interface MessageParameters {
   "lss.dialog.controlChars": never;
   "lss.dialog.note": never;
   "lss.wedge.refused": never;
-  "lss.results.notSaved": never;
   "lss.adaptation.observatory": never;
   "lss.adaptation.dialog": never;
   "lss.adaptation.jd": never;
-  "lss.adaptation.notSaved": never;
+  "lss.restored": "count";
 }

@@ -11,7 +11,8 @@ import {wedgePlot,WEDGE_DEFAULT_OPTIONS} from './wedgePlot';
 import {LSS_ROWS,type LssRow} from './lssFields';
 const glx=new Uint8Array(readFileSync(new URL('../../public/original/catalogs/CLEA_GLX.DAT',import.meta.url)));
 const code=(f:()=>unknown)=>{try{f();return 'ok';}catch(e){return e instanceof LssSurveyError?e.code:'other';}};
-const draft={field:2 as const,row:4,telescope:0 as const,object:'NGC 4555',jd:2451545,ra:12.594,dec:26.523,z:.0224,acquisitionPolicy:'openvireo-lss-v1:F2:R5:T0'};
+const draft={field:2 as const,row:4,telescope:0 as const,object:'NGC 4555',jd:2451545,ra:12.594,dec:26.523,z:.0224,acquisitionPolicy:'openvireo-lss-v1:F2:R5:T0',journal:{seedAtReset:1,events:[]},control:{base:.0224,position:0,factor:1 as const,step:.001}};
+const withZ=(z:number)=>({...draft,z,control:{...draft.control,base:z}});
 describe('E02 survey records (Record Z LSS branch, web adaptation)',()=>{
  it('selects a field, requires the loaded list to be the selected one, and keeps loaded on reselect',()=>{
   let s=selectLssField(EMPTY_LSS_SURVEY,2);expect(s.loaded).toBeNull();
@@ -27,8 +28,9 @@ describe('E02 survey records (Record Z LSS branch, web adaptation)',()=>{
   expect(code(()=>confirmLssRecord(s))).toBe('pending');
  });
  it('bounds text, values and the record count',()=>{
-  expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,{...draft,z:-.99999999}))).toBe('record');// Single rounds to −1
-  expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,{...draft,z:-1}))).toBe('record');
+  expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,withZ(-.99999999)))).toBe('record');// Single rounds to −1
+  expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,{...draft,z:.03}))).toBe('record');// z must come from the control
+  expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,withZ(-1)))).toBe('record');
   expect(code(()=>openLssRecord(EMPTY_LSS_SURVEY,{...draft,ra:24}))).toBe('record');
   const s=openLssRecord(EMPTY_LSS_SURVEY,draft);
   expect(code(()=>editLssDraft(s,{remarks:'x'.repeat(LSS_LIMITS.remarks+1)}))).toBe('record');

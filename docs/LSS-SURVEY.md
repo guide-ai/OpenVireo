@@ -12,7 +12,7 @@ Route `#lss-survey` (`src/LssSurvey.tsx`). Field names and centres come from the
 9. Plot your own records in the wedge (`#lss-wedge`).
 10. Write a free-text description (not graded).
 
-Session persistence (M6, session v27) is not done yet.
+Save/Restore (session v27, `src/io/lssInvestigation.ts`): the investigation file wraps an unchanged v1–v26 base and stores the field, telescope, every record with its exposure journal (seed + events) and shift control, the description and the committed wedge options. Bounds: 250 records, 150 000 events, 4000-character description. Restore replays every journal on its bundled pack, re-derives z and velocity from the control, checks a SHA-256 over those derivatives and rejects the whole file on any mismatch. Not saved: an open Record Z dialog, the current unrecorded exposure and the wedge's plotted points (records can be plotted again after restore).
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
 129 / 69 / 130.
@@ -30,7 +30,6 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - The range is fixed at 4000–5000 Å with the GLXYTMPL.SP template. Galaxies with their own GLXYSP.LST spectrum (NGC 4670, NGC 4889) stay unavailable. Both are QSO-gated first, so NGC4670.SP stays unwired: no reachable path could use it. The spectrum-mapping gate (in lssExposure.ts, not the engine: any other engine consumer must apply it too) and the `mapped==[]` assertion in lssPacks.test.ts are kept as a tripwire for when the QSO merge is ported.
 - Pointing a row goes straight to its fresh field: no dome, slew, horizon/time check or tracking.
 - Measured Redshift Data: Object is read-only as in the original; RA/Dec are decimal and fixed; velocity is computed as c·z (original edits RA/Dec h m s and velocity); JD is read when Record Z is clicked.
-- Records are not saved in the investigation file until M6; the page says so.
 - Measurement uses a dedicated panel on the analyser's recovered shift-control contract.
 - Record Z follows the recovered LSS branch, but the creation function 0x57c918 and the dialog bodies are not recovered.
 - Records go to the wedge directly with their exact values, not through the native .TXT writer 0x57af74.
