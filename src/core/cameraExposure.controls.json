@@ -1,0 +1,38 @@
+{
+ "evidenceId": "CAMERA-EXPOSURE-CONTROL-01",
+ "synthetic": "Recipes are authored test inputs. Catalogs: the recorded CDS response tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml (R and B bands) and the AUTHORED document tests/fixtures/vizier/authored-usnob1-control.xml (I band, one off-detector row). Not observations.",
+ "control": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-front-c/scripts/exposure_control.py: a separate stdlib Python re-implementation, line by line, of the declared policy by the same author as the TypeScript. It checks composition and draw order, not readings shared with the earlier stage documents.",
+ "policy": "binary64 + float32 stores (nearest/even); libm vs V8 transcendental differences would show as hash mismatches; seeds reproduce these hashes on V8",
+ "cases": {
+  "nf-catalog": {
+   "sha256": "e22dfd7ccf00d66b8f91e1846377916a62fbc1e2c9d5a57f11d063e75440ca98",
+   "draws": 1049721,
+   "finalState": 1874365496,
+   "records": 1
+  },
+  "v-pair-catalog": {
+   "sha256": "5d4f954deab03d8ba4d8f8002b686db69a052322b9e96b1fe61c5184855b8054",
+   "draws": 1051052,
+   "finalState": 183400711,
+   "records": 3
+  },
+  "nf-pair-catalog": {
+   "sha256": "fbe0149264510c63c73be928d0efc6dc511ef84c16ecff0607aefc131721f045",
+   "draws": 1051052,
+   "finalState": 350641579,
+   "records": 3
+  },
+  "b-pair-three-stars": {
+   "sha256": "dc8b75b2a1c969c282c6fe29da2c3994f715399e31dcf617734439759cd4c705",
+   "draws": 1053342,
+   "finalState": 1225970629,
+   "records": 5
+  },
+  "i-pair-authored-offdetector": {
+   "sha256": "eb2c7a26e1e1c442466e1faeefb45e3733a2c9bda4c0de6983b76c295971c6c2",
+   "draws": 1053344,
+   "finalState": 2136321266,
+   "records": 5
+  }
+ }
+}

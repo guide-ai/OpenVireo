@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AUTHORED TEST DOCUMENT (front C control), not VizieR output and not an observation.
+     Shaped like an I/284 cone-search table: three stars inside the 0.4 m field centred at RA 56.745, Dec 24.118
+     and one row 0.5 deg away (projected, then rejected by the detector bounds). -->
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+<RESOURCE type="results"><TABLE>
+<FIELD name="USNO-B1.0" datatype="char" arraysize="12"/><FIELD name="RAJ2000" datatype="double"/><FIELD name="DEJ2000" datatype="double"/>
+<FIELD name="pmRA" datatype="int"/><FIELD name="pmDE" datatype="int"/><FIELD name="B1mag" datatype="float"/><FIELD name="R1mag" datatype="float"/>
+<FIELD name="B2mag" datatype="float"/><FIELD name="R2mag" datatype="float"/><FIELD name="Imag" datatype="float"/>
+<DATA><TABLEDATA>
+<TR><TD>1141-0000001</TD><TD>56.7400000</TD><TD>24.1100000</TD><TD>0</TD><TD>0</TD><TD/><TD/><TD/><TD/><TD>15.50</TD></TR>
+<TR><TD>1141-0000002</TD><TD>56.7500000</TD><TD>24.1250000</TD><TD>-4</TD><TD>6</TD><TD/><TD/><TD/><TD/><TD>17.25</TD></TR>
+<TR><TD>1141-0000003</TD><TD>56.7480000</TD><TD>24.1150000</TD><TD>0</TD><TD>0</TD><TD/><TD/><TD/><TD/><TD>19.00</TD></TR>
+<TR><TD>1141-0000004</TD><TD>57.2450000</TD><TD>24.1180000</TD><TD>0</TD><TD>0</TD><TD/><TD/><TD/><TD/><TD>12.00</TD></TR>
+</TABLEDATA></DATA></TABLE></RESOURCE>
+</VOTABLE>

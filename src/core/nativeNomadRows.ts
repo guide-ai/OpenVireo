@@ -86,7 +86,7 @@ export function readNativeNomadRow(layout:NomadLayout,line:string,context:NomadR
 
 /** 0x59cf58..0x59d030. Explicit bounds only,not a field/cache certificate.
  * Equality of RA endpoints follows the original wrapping branch. */
-export function nativeNomadCandidateInSelection(row:NomadRowCandidate,bounds:NomadSelection):boolean {
+export function nativeNomadCandidateInSelection(row:Readonly<Pick<NomadRowCandidate,'raHours'|'decDegrees'|'selectedMagnitude'>>,bounds:NomadSelection):boolean {
  if(!row||![row.raHours,row.decDegrees,row.selectedMagnitude].every(Number.isFinite)||!Object.is(row.selectedMagnitude,Math.fround(row.selectedMagnitude)))throw new NativeNomadError('row');
  if(!bounds||![bounds.minRAHours,bounds.maxRAHours,bounds.minDecDegrees,bounds.maxDecDegrees,bounds.magnitudeLimit].every(Number.isFinite)||!Object.is(bounds.magnitudeLimit,Math.fround(bounds.magnitudeLimit)))throw new NativeNomadError('context');
  const ra=bounds.minRAHours<bounds.maxRAHours
