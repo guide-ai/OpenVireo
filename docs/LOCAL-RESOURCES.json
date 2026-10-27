@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1312 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2).",
+  "purpose": "Exact identity manifest for the 1315 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27).",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6561,6 +6561,21 @@
       "path": "public/original/spectra/GLXYSP.LST",
       "bytes": 576,
       "sha256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a"
+    },
+    {
+      "path": "public/original/hotlists/ObjectX.HTL",
+      "bytes": 1462,
+      "sha256": "fd9e68e4c1cd1c89584581be329c157af1edf139aabc7591f397fd49858243b3"
+    },
+    {
+      "path": "public/original/orbit/ObjX_MPC.CMO",
+      "bytes": 30989466,
+      "sha256": "b41e03f14dcef5a54dea67e156e0e7cf2b654432a85bf6d10611ed8e6d25802e"
+    },
+    {
+      "path": "public/original/orbit/ObjX_AST.CMO",
+      "bytes": 4750326,
+      "sha256": "341134bf9033989fa2c7fa9008551fa8ef015ee158ec5a25c04754696e58ba12"
     }
   ]
 }
