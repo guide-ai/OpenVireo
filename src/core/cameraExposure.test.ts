@@ -60,4 +60,18 @@ describe('CCD exposure composer',()=>{
   expect(x.skipped).toEqual([{extraIndex:0,reason:'moving-pair-off-detector'}]);expect(x.records.map(r=>r.origin)).toEqual(['catalog']);
   expect(x.drawsConsumed).toBe(plain.drawsConsumed+4);
  });
+ test.each([0.15,0.5])('a %s deg diagonal moving streak (600 s) is drawn, not refused',degrees=>{
+  // 1994 CC moves 0.091 deg/h at the ObjectX default date (2009-06-01 04:00 UT, ObjX_MPC.CMO.sav), so these exceed it.
+  const dec0=recipe.centerDecDegrees,ra0=recipe.centerRaHours,half=degrees/2/Math.SQRT2;
+  const pair={raHours:ra0-half/15/Math.cos(dec0*Math.PI/180),decDeg:dec0-half,storedMag:13,kind:'pair' as const,end:{raHours:ra0+half/15/Math.cos(dec0*Math.PI/180),decDeg:dec0+half}};
+  const t=performance.now(),x=composeCameraExposure({...recipe,seconds:600,filterPosition:2},selection(),[pair]);
+  expect(performance.now()-t).toBeLessThan(5000);
+  expect(x.skipped).toEqual([]);expect(x.records.filter(r=>r.kind===2).map(r=>r.extraIndex)).toEqual([0,0]);
+  const length=Math.hypot(x.records[1].pixelX-x.records[0].pixelX,x.records[1].pixelY-x.records[0].pixelY);
+  expect(length).toBeGreaterThan(degrees*3600/1.1);
+  // The streak brightens pixels along its middle relative to the same exposure without it.
+  const plain=composeCameraExposure({...recipe,seconds:600,filterPosition:2},selection());
+  const mid=Math.round((x.records[0].pixelY+x.records[1].pixelY)/2)*1024+Math.round((x.records[0].pixelX+x.records[1].pixelX)/2);
+  expect(x.plane.pixels[mid]).toBeGreaterThan(plain.plane.pixels[mid]);
+ });
 });

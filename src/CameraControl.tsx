@@ -22,6 +22,7 @@ export type CameraControlProps=Readonly<{
  currentJd:()=>number;
  /** Extra sources (moving objects) evaluated at the exposure's JD; supplied by front X. */
  extraSources?:(jd:number)=>readonly CameraExtraSource[];
+ /** Receives every finished image; image.exposure.skipped lists moving pairs that were not drawn, with a typed reason. */
  onImage?:(image:CameraImage)=>void;
  /** Test seam: fixed seed instead of crypto.getRandomValues. */
  seedSource?:()=>number;
@@ -174,6 +175,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
     <dt>{M.detailJd}</dt><dd>{image.jd.toFixed(5)}</dd>
     <dt>{M.detailSeed}</dt><dd data-testid="camera-detail-seed">{shown.recipe.seed}</dd>
     <dt>{M.detailDraws}</dt><dd>{shown.drawsConsumed}</dd>
+    {shown.skipped.length>0&&<><dt>{M.detailSkipped}</dt><dd data-testid="camera-detail-skipped">{shown.skipped.map(k=>M.skippedReason[k.reason]).join(' ')}</dd></>}
    </dl></details>
   </figure>}
   <p className="observatory-note">{M.adaptation}</p>
