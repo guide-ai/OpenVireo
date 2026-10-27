@@ -24,7 +24,7 @@ test('Set Date/Time and Site Parameters drive the clocks and the horizon only; S
  await expect(page.getByTestId('ob-site-status')).toContainText('Greenwich test');
  await expect(page.getByTestId('site-clock-local')).toHaveText('2026-10-27 03:00:00');expect(await page.getByTestId('site-clock-local').textContent()).not.toBe(local);
  expect(await page.getByTestId('site-clock-sidereal').textContent()).not.toBe(lst);
- await expect(page.getByTestId('horizon-limit')).toHaveText('5.000000°');
+ await expect(page.getByTestId('horizon-limit')).toHaveText('5.000000°');await expect(page.getByTestId('horizon-site')).toContainText('Greenwich test');await expect(page.getByTestId('horizon-enforcement')).toContainText('Limit Slewing: off');
  // The telescope profile (used by acquisitions) still shows the compiled site.
  await page.getByText('Site information & optics',{exact:true}).click();
  await expect(page.locator('[data-optical-field="site"]')).toHaveText('Gettysburg College Observatory');await page.getByText('Site information & optics',{exact:true}).click();

@@ -46,4 +46,5 @@ test('with Limit Slewing on, the immediate Point shortcuts are refused below the
  await expect(box).toContainText('Target Coordinates are Below the Horizon!');await expect(box).toContainText('-80°');
  await box.getByRole('button',{name:'OK'}).click();await expect(box).toBeHidden();
  await expect(page.getByTestId('pointing-dec')).toHaveText(before!);
+ await tracking(page);await expect(page.getByTestId('horizon-enforcement')).toContainText('Limit Slewing: on');
 });

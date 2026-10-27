@@ -5,6 +5,10 @@
 export const OBSERVATORY_MESSAGES=Object.freeze({
  /** VCL default button captions (bkOK/bkCancel without DFM captions) and plain box buttons. */
  common:Object.freeze({ok:'OK',cancel:'Cancel'}),
+ horizon:Object.freeze({
+  enforcementOn:'Limit Slewing: on. Pointing shortcuts and programmed slews below this horizon are refused, manual moves stop at it and tracking turns off when the target sets. Instrument Activate field jumps and acquisitions are not blocked.',
+  siteOverride:(name:string)=>`Site in use: your override “${name}” (clocks and horizon only).`,
+ }),
  skyCoords:Object.freeze({
   open:'Set Coordinates…',
   openHelp:'Slew ▸ Set Coordinates: enter the target in hours/minutes/seconds and degrees/arcminutes/arcseconds, then OK starts the programmed slew confirmation.',
