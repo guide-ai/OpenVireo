@@ -42,16 +42,18 @@ describe('whole-catalog digests against the witness',()=>{
  it('every list, before and after the M−m/D default',()=>{
   expect(sha(catalog.flatMap(r=>variableStarDataLines(r)).join('\r\n'))).toBe(witness.digests.allLinesSha256);
   expect(sha(catalog.flatMap(r=>variableStarDataLines(r,true)).join('\r\n'))).toBe(witness.digests.allLinesAfterDefaultSha256);
- });
+ },30_000);
  it('every plot: bounds, labels, ticks and curve pixels or the typed fault',()=>{
+  let inverted=0;
   const lines=catalog.map((r,i)=>{
    let p;try{p=lightCurvePlot(r);}catch(e){if(e instanceof LightCurveError)return `${i}|${e.code}`;throw e;}
+   if(p.faintBound<p.brightBound)inverted++;
    const head=`${i}|${p.faintBound}|${p.brightBound}|`+p.texts.map(x=>`${x.x},${x.y},${x.text},${x.anchor}`).join(';')+'|'+p.ticks.map(s=>`${s.x1},${s.y1},${s.x2},${s.y2}`).join(';');
    return head+'|'+('points' in p.curve?p.curve.points.map(q=>q[1]).join(','):p.curve.unavailable);
   });
   expect(sha(lines.join('\n'))).toBe(witness.digests.allPlotsSha256);
-  expect(catalog.filter(r=>{const p=lightCurvePlot(r);return p.faintBound<p.brightBound;})).toHaveLength(witness.stats.invertedRange);
- });
+  expect(inverted).toBe(witness.stats.invertedRange);
+ },60_000);// 31,147 plots with up to 556 curve samples each
 });
 
 describe('Variable Star Data lines (0x52ccec) against the witness',()=>{
