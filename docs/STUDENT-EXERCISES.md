@@ -99,6 +99,6 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 5. Save and restore the investigation.
 6. All five object types in ObjectX.HTL can be investigated; E08 does not close on a subset.
 
-**Status** — Not closed. Needs the CCD camera (VizieR catalogue), orbit files and ephemeris, a web position-measuring tool, and field-engine spectra for stars, QSOs and galaxies with photographs or their own spectra (audit §3; plans in the research root `analysis/front-plans/`).
+**Status** — Not closed. Asteroid and pulsar investigations work with hidden identity (merges `66a4f38`, `9af0d29`, `121c835`, `724418a`, `0c8bbdf`; independent reviews and closures in the research root `analysis/reviews/front-c-review-1.md` and `front-x-review-1.md`): the CCD camera on CDS/VizieR, orbit files and the recovered ephemeris (ObjX_MPC.CMO.sav by default), the measuring tool with blink and residuals, the radio hand-off, v28 Save/Restore and the guide. Still missing: star, galaxy and QSO spectra at the target coordinates (field-engine front: QSO merge, photographic association, own spectra, star templates), then an end-to-end hidden-identity check for each of those three types. Camera static extracts are still pending because CDS has not answered.
 
-**Evidence** — None. No closure claimed.
+**Evidence** — `tests/object-x-path.spec.ts`, `object-x-identity.spec.ts`, `object-x-radio.spec.ts`, `object-x-camera.spec.ts`, `object-x-measure.spec.ts`, `object-x-static-replay.spec.ts`, `camera-exposure.spec.ts` and the Object X/camera Vitest suites. No closure claimed.
