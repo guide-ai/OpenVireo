@@ -21,8 +21,8 @@ describe('PLEIADES.HTL identity table against the bundled original',()=>{
   }
   expect(isPleiadesExerciseList(list)).toBe(true);
  });
- it('16 admitted rows equal the existing photometer targets; the 8 others keep their recorded reasons',()=>{
-  expect(PLEIADES_ADMITTED_ROWS.length).toBe(16);expect(PLEIADES_PHOTOMETER_TARGETS.length).toBe(16);expect(PLEIADES_PHOTOMETER_CHOICES.length).toBe(24);
+ it('19 admitted rows equal the photometer targets (rows 3, 5, 10 since the recovered variable merge of 2026-10-28); the 5 others keep their reasons',()=>{
+  expect(PLEIADES_ADMITTED_ROWS.length).toBe(19);expect(PLEIADES_PHOTOMETER_TARGETS.length).toBe(19);expect(PLEIADES_PHOTOMETER_CHOICES.length).toBe(24);
   for(const row of PLEIADES_HOT_LIST){
    const choice=PLEIADES_PHOTOMETER_CHOICES.find(c=>c.hotlistRecord===row.index)!;
    expect(choice.hotlistLabel).toBe(row.id);
@@ -35,7 +35,8 @@ describe('PLEIADES.HTL identity table against the bundled original',()=>{
     expect(pleiadesStarAt(object)?.index).toBe(row.index);expect(pleiadesStarAt(sky)).toBeNull();
    }else{expect(choice.targetId).toBeNull();expect(choice.reason).toBe(row.reason);}
   }
-  expect(PLEIADES_HOT_LIST.filter(r=>!r.admitted).map(r=>r.index)).toEqual([2,3,5,7,10,12,14,22]);
+  expect(PLEIADES_HOT_LIST.filter(r=>!r.admitted).map(r=>r.index)).toEqual([2,7,12,14,22]);
+  expect(PLEIADES_HOT_LIST.filter(r=>!r.admitted).every(r=>!r.admitted&&r.reason==='unvalidated-pointing-association')).toBe(true);
   expect(new Set(PLEIADES_HOT_LIST.map(r=>`${r.ra}/${r.dec}`)).size).toBe(24);
  });
  it('identity is exact: no native-prefix aliasing, case/space folding or 1-ulp coordinate tolerance',()=>{

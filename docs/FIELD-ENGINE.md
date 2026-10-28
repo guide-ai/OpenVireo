@@ -13,9 +13,11 @@
    - The engine trusts the caller's `qsoCatalog.sha256`: hashing is asynchronous, so the io adapter (`io/bundledQsoCatalog.ts`) checks size and SHA-256 before the bytes reach the engine (tested); the engine then cross-checks the bytes against the pack's own QSO positions.
    - Photographic association: by default any photograph inside the area is a typed `unavailable` reason. With the `photographs`
      option (Object X) the association 0x5990a3, rescale 0x597290 and draw 0x597470 are ported (docs/OBJECT-X-SPECTRA.md).
-   - Variables: `variableDispatch: 'recovered'` (Object X) lets one variable whose dispatch 0x51ec48 returns false without side
-     effects (zero period, zero word unless class 1, or class 3) take the HI Peg false-merge branch; the default keeps class 3 only.
-4. Variables: none, or exactly one class-3 record through the false-merge branch (`variableMerge.ts`). Anything else is `variable-merge`.
+   - Variables (default `variableDispatch: 'recovered'`, coordinator decision of 2026-10-28): every variable whose dispatch
+     0x51ec48 returns false without side effects (zero period, zero word unless class 1, or class 3) takes the HI Peg
+     false-merge branch, one after another in file order; any other variable keeps the typed `variable-merge` reason (Boo – 1/2
+     use the outside-view rule). `'class-3'` keeps the earlier one-variable contract for comparison.
+4. Variables: none, or records whose dispatch 0x51ec48 returns false without side effects, merged one after another in file order through the false-merge branch (`variableMerge.ts`). Anything else is `variable-merge` (Boo – 1/2: outside-view).
 5. Galaxies:
    - Whole-file CLEA_GLX.DAT admission in source order. The GLX loader (call at 0x599128) inserts each galaxy with the cursor-relative linked-list insert 0x492728, using the strict RA/Dec-greater comparator 0x5969e0.
    - The cursor is the last inserted galaxy. A key greater than the cursor walks forward and goes after equal keys. Otherwise it walks backward and goes before equal keys, except that reaching an equal head inserts right after the head.

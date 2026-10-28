@@ -21,9 +21,16 @@ The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/ls
 Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
-129 / 69 / 130.
+140 / 76 / 141 (129 / 69 / 130 before the recovered variable dispatch of 2026-10-28).
 
-Per field on the 0.4 m: F1 13, F2 10, F3 12, F4 8, F5 11, F6 13, F7 20, F8 16, F9 26.
+Per field on the 0.4 m: F1 14, F2 14, F3 12, F4 8, F5 12, F6 13, F7 20, F8 20, F9 27.
+
+Variables (2026-10-28, coordinator decision): every CLEA_VStrs.dat variable whose time update the dispatch 0x51ec48 returns
+false without side effects (period 0, word 0 unless class 1, or class 3) takes the false-merge branch, one after another in
+file order (fieldEngine.ts `variableDispatch: 'recovered'`, now the default). Eleven rows became acquirable (F1R6, F2R12, F2R15,
+F2R17, F2R25, F5R20, F8R1, F8R2, F8R3, F8R24, F9R22); F2R16, F3R5, F4R3 and F4R5 now stay unavailable only for the QSO merge.
+The 45 changed M0 entries are listed in data/hubble/existing-target-fingerprints.json (`updates`). Rows with a variable of
+another class keep the typed variable-merge reason.
 
 Own records hand over to the wedge at pixel level: the plotted pixel fields equal those of the equivalent Z-column text row for all 219 rows (lssSurvey.test.ts); the angle may differ by about 1e-14 degrees.
 
@@ -43,4 +50,4 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - Stars come from bounded GSC read witnesses (`data/lss`); arithmetic uses Number, not x87.
 
 ## Not recovered
-QSO merge 0x597f90/0x5987e4, photographic association, variable classes 0–2, the exercise-mode-5 entry, 0x57c918 / TLSSRsltsDlg1 FormActivate and OK, TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format), and the wedge .TXT writer.
+QSO merge 0x597f90/0x5987e4, photographic association, variable classes 0–2 whose dispatch reaches a light curve, the exercise-mode-5 entry, 0x57c918 / TLSSRsltsDlg1 FormActivate and OK, TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format), and the wedge .TXT writer.

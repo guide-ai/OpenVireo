@@ -29,10 +29,10 @@ describe('LSS field packs reproduce the independent witnesses for every row',()=
    expect(q.variables.map(v=>v.recordIndex)).toEqual(p.variables);expect(q.qsoMatches).toEqual(p.qso);expect(q.photographMatches).toEqual(p.photographs);
   }
  });
- it('re-derives the acquirable rows per telescope (0.4 m 129, 0.9 m 69, 4 m 130 of 219, before the spectrum-mapping gate)',()=>{
+ it('re-derives the acquirable rows per telescope (0.4 m 140, 0.9 m 76, 4 m 141 of 219, before the spectrum-mapping gate; 129/69/130 before the recovered variable dispatch)',()=>{
   const counts=[0,0,0],mapped:string[]=[];
   for(let f=1;f<=9;f++){const pack=packWithPhotographs(decodeFieldPack(JSON.parse(raw(f).toString())),photographs);for(const row of lssFieldRows(f as LssFieldNumber))for(const t of [0,1,2] as const){const s=evaluateLssRow(pack,glx,row,t,spectra);if(s.kind!=='unavailable')counts[t]++;else if(s.reasons.includes('spectrum-mapping')){counts[t]++;mapped.push(`${row.id}@${t}`);}}}
-  expect(counts).toEqual([129,69,130]);
+  expect(counts).toEqual([140,76,141]);
   expect(mapped).toEqual([]);// NGC 4670 and NGC 4889 match GLXYSP.LST but are QSO-gated first
   expect(['NGC 4670','NGC 4889'].every(id=>hasLibrarySpectrum(spectra,id))).toBe(true);
  },120000);

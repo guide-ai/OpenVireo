@@ -112,11 +112,11 @@ photograph is ever loaded for it).
   distance, first on ties); no palette is invented or altered. NGC2403.BMP has a non-gray 256-entry palette, the others gray
   palettes of 226–230 entries.
 
-## Variable dispatch (`variableDispatch: 'recovered'`, Object X only)
+## Variable dispatch (`variableDispatch: 'recovered'`, the default)
 The time-update dispatch 0x51ec48 returns false at 0x51ee57 with no side effect for a zero period (0x51ec9a fcomp 0 / je), a zero
 word with a class other than 1, or class 3 (`nativeVariableDispatchFalse`); such a variable takes the same false-merge branch as
-HI Peg. AQ CVn (CLEA_VStrs.dat 9631, class '*', period 0) hits N3000.DAT@482829 at 27.66″: the record is restored. Existing
-exercises keep the verified class-3 contract (`'class-3'`), so LSS and Hubble gates are unchanged.
+HI Peg. AQ CVn (CLEA_VStrs.dat 9631, class '*', period 0) hits N3000.DAT@482829 at 27.66″: the record is restored. The
+rule is the field engine's default for every exercise since 2026-10-28 (docs/LSS-SURVEY.md lists what changed in E02; Hubble is unchanged).
 Object X does not use `variables: 'outside-view'` (review 2 finding 10: that rule is for Boo – 1/2 only); the frozen record shows
 no row needed it.
 

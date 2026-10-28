@@ -2,6 +2,19 @@
 
 The photometer at **http://127.0.0.1:5173/#photometer** now admits16 of the24 original PLEIADES.HTL positions. All24 are listed in original order; eight are disabled with their actual remaining contract: four mixed variable-source fields and four unvalidated exact pointing associations. This expands the existing observation workflow by13 complete original fields. It adds no new astronomy model, arbitrary target, catalog answer, HR fit, reddening or distance.
 
+
+## Update 2026-10-28: nineteen targets (rows 3, 5, 10)
+By the coordinator decision of 2026-10-28 the recovered variable stage is applied to the photometer fields. In rows 3
+(01799-00306, NZ Tau), 5 (01803-00156, V0443 Tau and V0855 Tau) and 10 (01800-02089, V0447 Tau and V0641 Tau) every CLEA_VStrs.dat
+record is class 3 with period 0 and word 0, so its time update 0x51ec48 returns false without side effects: each variable is
+merged in file order (0x598608, reference 0), a hit record is restored (0x5986c0) and a miss inserts nothing (0x5987a1). The only
+change to a field is a runner the nearest merge prunes: in row 10's object field V0447 Tau's merge removes N2230.DAT@149084. The
+fields, their merge witnesses (independent Python model) and independent UBV means are in `data/photometry/pleiades-variable-fields.json`
+and `pleiades-variable-vectors.json`; a history that names one of these targets is saved as owner 11
+(`OpenVireo-Pleiades-variable-field-targets-v11`, with the field SHA-256). Row 12 (N2230-01627) is not admitted: its variable is
+also a no-effect miss, but its PLEIADES.HTL coordinates are not the record's exact stored ones, so it joins the unvalidated
+associations. The 0.4 m now admits 19 of the 24 positions (KPNO 0.9 m 14 and Mayall 10 unchanged); five remain disabled, all
+unvalidated associations.
 ## Try a newly admitted star
 
 1. Save current work before a new seed42 session. Release the photometer, open **Raw counts & reproducibility**, enter42 and choose **New seeded session**. Activate and choose **01803-01554 · original hotlist entry7**. This keeps its native identity `N2230.DAT@148460`.

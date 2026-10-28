@@ -8,7 +8,8 @@
  *     gate; 'merge' runs the recovered loader 0x5987e4 and merge 0x597f90 (qsoMerge.ts) on the bundled CLEA_QSO.DAT, after the
  *     variable stage and before the galaxies, and the galaxy cleanup then also takes its type-3 branches (keep both, or delete
  *     the galaxy). Photographic-list association: a typed unavailable gate, or with the photographs option the ported draw;
- *  4. variables: none, or exactly one class-3 record through the recovered false-merge branch (variableMerge.ts); otherwise gated;
+ *  4. variables: none, or each record whose dispatch 0x51ec48 returns false without side effects, merged one after another in file
+ *     order through the recovered false-merge branch (variableMerge.ts); any other class/period/word combination is gated;
  *  5. galaxies: whole-file CLEA_GLX.DAT admission in source order, each inserted by the GLX loader (call 0x599128) through the
  *     cursor-relative linked-list insert 0x492728 with the strict RA/Dec-greater comparator 0x5969e0 (nativeCursorInsert);
  *     each galaxy then cleans the star list (0x5980cc) in that order;
@@ -83,9 +84,11 @@ export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:r
  * could become is visible, and no galaxy or QSO near enough to read the overwritten magnitude exists. Used for the Boötes rows
  * only (coordinator decision); Object X uses variableDispatch 'recovered' instead. */
 export type FieldVariableMode='gate'|'outside-view';
-/** 'class-3' (default): the verified HI Peg dispatch only. 'recovered' (Front F, Object X): one variable whose time update the
- * dispatch 0x51ec48 returns false for without side effects (zero period, zero word unless class 1, or class 3:
- * variableMerge.ts nativeVariableDispatchFalse) takes the same false-merge branch. Existing exercises keep 'class-3'. */
+/** 'recovered' (default since the coordinator decision of 2026-10-28): every variable whose time update the dispatch 0x51ec48
+ * returns false for without side effects (zero period, zero word unless class 1, or class 3: variableMerge.ts
+ * nativeVariableDispatchFalse) takes the false-merge branch, one after another in file order; any other variable keeps the
+ * typed variable-merge reason (or the Boo outside-view rule). 'class-3': the earlier verified HI Peg contract only (one class-3
+ * variable with nonzero period and word), kept for comparison and tests. */
 export type FieldVariableDispatch='class-3'|'recovered';
 /** A selected merged QSO record (type 3) is observed only when the caller supplies the decoded QSOSpect.dat (qsoSpectrum.ts)
  * and the spectrometer interval explicitly (the active range env+0x2bd4/0x2bd8; see objectXSpectrometer.ts). Without it a QSO
@@ -270,7 +273,7 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  try{variables=pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>inside(v,area));}catch{throw new FieldEngineError('evidence');}
  let variableRemoved:string[]=[];
  let outsideViewVariable:FieldOutsideViewVariable|undefined;
- const dispatch=options.variableDispatch??'class-3',falseDispatch=(v:NativeVariable)=>dispatch==='recovered'?nativeVariableDispatchFalse(v,VARIABLE_TABLES):nativeVariableClass(v.classification,VARIABLE_TABLES)===3;
+ const dispatch=options.variableDispatch??'recovered',falseDispatch=(v:NativeVariable)=>dispatch==='recovered'?nativeVariableDispatchFalse(v,VARIABLE_TABLES):nativeVariableClass(v.classification,VARIABLE_TABLES)===3;
  if(variables.length===1&&options.variables==='outside-view'&&!falseDispatch(variables[0])){
   const v=variables[0];
   try{
@@ -281,11 +284,17 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
     outsideViewVariable=Object.freeze({variable:v.recordIndex,name:v.name,classification:v.classification,hitId:trace.winner!.id,resolvedId:target.id,hitArcseconds:arcseconds,removedRunner:trace.removedRunner?.id??null});}
   }catch(e){if(e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
  }
- else if(variables.length>1||variables.some(v=>!falseDispatch(v)))reasons.push('variable-merge');
- else if(variables.length===1){
+ else if(variables.some(v=>!falseDispatch(v))||variables.length>1&&dispatch!=='recovered')reasons.push('variable-merge');
+ else if(variables.length){
+  // The variable stage 0x59859c..0x5987d9 reads CLEA_VStrs.dat in file order and merges each variable as it is read (0x598608),
+  // so several no-effect variables are sequential false merges over the current list: each may prune a runner (kept pruned),
+  // and each hit record is restored (0x5986c0).
+  if(variables.some((v,i)=>i&&variables[i-1].recordIndex>=v.recordIndex))throw new FieldEngineError('evidence');
   try{
-   const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(variables[0],s)})),variables[0],VARIABLE_TABLES,dispatch);
-   const kept=new Set(merged.rows.map(r=>r.id));variableRemoved=stars.filter(s=>!kept.has(s.id)).map(s=>s.id);stars=stars.filter(s=>kept.has(s.id));
+   for(const v of variables){
+    const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),v,VARIABLE_TABLES,dispatch);
+    const kept=new Set(merged.rows.map(r=>r.id));variableRemoved.push(...stars.filter(s=>!kept.has(s.id)).map(s=>s.id));stars=stars.filter(s=>kept.has(s.id));
+   }
   }catch(e){if(e instanceof VariableMergeError||e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
  }
  let qsoStage:FieldPopulation['qsoStage'];

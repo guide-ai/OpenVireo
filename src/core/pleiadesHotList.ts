@@ -13,28 +13,30 @@ export const PLEIADES_HTL=Object.freeze({
  sha256:'f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2',recordBytes:86,records:24,
  archiveSha256:'58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b',archiveMember:'program files/CLEA/VIREO/PLEIADES.HTL',
 });
+/** 'mixed-variable-field' no longer applies to any row (2026-10-28: rows 3, 5 and 10 take the recovered no-effect variable merge;
+ * row 12 is an unvalidated pointing association); the reason is kept for older files and messages. */
 export type PleiadesUnavailableReason='unvalidated-pointing-association'|'mixed-variable-field';
 type Common=Readonly<{index:number;id:string;ra:number;dec:number;recordSha256:string}>;
 export type PleiadesAdmittedRow=Common&Readonly<{admitted:true;catalogId:string;nativeName:string}>;
 export type PleiadesUnavailableRow=Common&Readonly<{admitted:false;reason:PleiadesUnavailableReason}>;
 export type PleiadesHotListRow=PleiadesAdmittedRow|PleiadesUnavailableRow;
 
-const U='unvalidated-pointing-association',M='mixed-variable-field';
+const U='unvalidated-pointing-association';
 // [id, RA hours, Dec degrees, record SHA-256, admitted catalog id or null, native name or unavailable reason], file order.
 const SOURCE:readonly (readonly [string,number,number,string,string|null,string])[]=[
  ['01799-01442',3.6883333,23.96667,'e676290f8fdf391da43df201250c1d2fbf7bfa8d058797dfbf0b48a551ad6f88','N2230.DAT@144496','N2230-01442'],
  ['01803-00478',3.715302,24.49326,'578a42de134147765951e24eee6f68fbc07c37cfd2ca29e254cd465c1a6f5dae','N2230.DAT@145877','N2230-00478'],
  ['01799-00526',3.735152,24.33662,'0267c152089e1a34c77af8bc5eafdd99ccd1aef11ae8df2783c4f49fc097ed47',null,U],
- ['01799-00306',3.7518127,24.26375,'bd12675002e092ca524d3b18195f64a861b2b3c68d7ebd7e8fdac2cc4fa73192',null,M],
+ ['01799-00306',3.7518127,24.26375,'bd12675002e092ca524d3b18195f64a861b2b3c68d7ebd7e8fdac2cc4fa73192','N2230.DAT@147896','N2230-00306'],
  ['01803-01585',3.7534747,24.46719,'29a1c8b4e08d6e5ebddb797ec634a2ed5361d686066047055e48350bbae0e51a','N2230.DAT@147993','N2230-01585'],
- ['01803-00156',3.761156,24.62744,'8f9f0213bd2b1714668d615cb1963df9f6fd674d84d950181a3ca3b04989d155',null,M],
+ ['01803-00156',3.761156,24.62744,'8f9f0213bd2b1714668d615cb1963df9f6fd674d84d950181a3ca3b04989d155','N2230.DAT@148417','N2230-00156'],
  ['01803-01554',3.761788,25.05727,'2533f25134a9b4c94ea8e2b7b7544f7c1691e4a4a6ef1d5363996650f3894ecf','N2230.DAT@148460','N2230-01554'],
  ['01799-00319',3.7620113,24.2702,'131fe3d607cf45100de90c3ecb915bf36d6d623b4dfddf9b7e83417cf4a89116',null,U],
  ['01803-00990',3.7634487,24.87849,'cedd188db2d16cb81d6cf7ce9ba49f4c6944b95cb15ebdd5c97d3fb6b48887ad','N2230.DAT@148546','N2230-00990'],
  ['01800-01908',3.7742382,24.25502,'a4f11acc766cb7f4840a904035c8888bb0b68eab969b2b2a0c807fe6bc07cebf','N2230.DAT@149142','N2230-01908'],
- ['01800-02089',3.77438,23.59295,'5b6f8bd3e7211ea53f93ad061c685ed1c42b145500c91f6c0830d8a7d0f864d5',null,M],
+ ['01800-02089',3.77438,23.59295,'5b6f8bd3e7211ea53f93ad061c685ed1c42b145500c91f6c0830d8a7d0f864d5','N2230.DAT@149159','N2230-02089'],
  ['01800-01621',3.77616,23.62423,'cdccba7cf7629f7293ea19def66052817363dd1178ef86d340a651491625c3c9','N2230.DAT@149260','N2230-01621'],
- ['N2230-01627',3.7806972222222224,23.23938888888889,'2b5849fbf65c1cb6395f3d5369daa9208249ba8fb9cc0e8ce9bc46e67a76134c',null,M],
+ ['N2230-01627',3.7806972222222224,23.23938888888889,'2b5849fbf65c1cb6395f3d5369daa9208249ba8fb9cc0e8ce9bc46e67a76134c',null,U],
  ['01804-02081',3.7831517,24.52006,'a7ef9a5e05ce427d830ad155449d7d3a7ffe93c8d227f22c7e20bf139c0a2750','N2230.DAT@149656','N2230-02081'],
  ['01800-01820',3.7837313,24.37326,'f540a74410131f311cd9c822596c59975214b7fc2098d5b4bbd85c61bb1544de',null,U],
  ['01800-02202',3.7914087,24.10514,'5f18d707d32b03753f87896aebf8760c471b93ee0185847f38e6bf3d6868bf1b','N2230.DAT@150112','N2230-02202'],

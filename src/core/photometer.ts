@@ -4,7 +4,7 @@ import {confirmNativeCluster,validNativeClusterParameters,sameNativeCluster,type
 import {confirmPleiadesFit,type PleiadesFit} from './pleiadesAnalysis';
 import {TIMED_PHOTOMETER_POLICY,PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,MAX_PHOTOMETER_CALLBACKS_PER_READING,LEGACY_PHOTOMETER_TIMING,photometerTiming,requiredPhotometerCallbacks,createPhotometerIntegration,advancePhotometerIntegration,photometerReplayCallbacks,MAX_PHOTOMETER_CALLBACKS,PHOTOMETER_CALLBACK_MS,type PhotometerTiming,type PhotometerIntegration} from './photometerIntegration';
 import {randomDraw} from './acquisition';
-import {PINNED_PLEIADES_V_TARGET,isExpandedPhotometerTarget,isPhotometerTarget,type PleiadesFieldKind} from './photometerField';
+import {PINNED_PLEIADES_V_TARGET,isExpandedPhotometerTarget,isVariableFieldPhotometerTarget,isPhotometerTarget,type PleiadesFieldKind} from './photometerField';
 import {drawPinnedPleiadesUbv,isPhotometerFilter,type PhotometerFilter} from './photometerUbvField';
 import {reducePhotometerSky,reducePhotometerObject,photometricBMinusV} from './photometryReduction';
 import {photometerJournalFits,EXPANDED_PHOTOMETER_POLICY,PHOTOMETER_POLICY} from './photometerJournal';
@@ -61,7 +61,7 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
  else if(e.type==='target'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   if(!isPhotometerTelescopeTarget(e.targetId,s.telescopeIndex??0))throw new PhotometerError('event');
-  next={...s,policy:isExpandedPhotometerTarget(e.targetId)?EXPANDED_PHOTOMETER_POLICY:s.policy,targetId:e.targetId,pointing:'object',current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[e.targetId]??null};
+  next={...s,policy:isExpandedPhotometerTarget(e.targetId)||isVariableFieldPhotometerTarget(e.targetId)?EXPANDED_PHOTOMETER_POLICY:s.policy,targetId:e.targetId,pointing:'object',current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[e.targetId]??null};
  }else if(e.type==='filter'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   next={...s,filter:e.filter,sky:s.skies[e.filter],current:null,phase:'idle',...(s.timing?{work:null}:{})};

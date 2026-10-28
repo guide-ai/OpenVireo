@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "scope": "All1346files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
-  "totalFiles": 1346,
-  "totalBytes": 127547516,
+  "totalFiles": 1348,
+  "totalBytes": 127802678,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
@@ -59,8 +59,8 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "data/photometry": {
-      "files": 75,
-      "bytes": 6139853,
+      "files": 77,
+      "bytes": 6379277,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed catalog/model tables, source fields, analytic tests, proof metadata and earlier web-writer fixtures",
       "usedBy": "UBV photometry, clusters/ZAMS/isochrones, compatibility and scientific tests",
@@ -398,6 +398,16 @@
           "data/objectx/frozen-observations.json"
         ],
         "sourceGrant": "Derived regression record (review 2 finding 11): per Object X spectroscopy row and telescope the status, typed reasons, populations, photograph files, crop digest, slit level, fraction, source file and a digest of the source means; no original bytes.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-27",
+        "scope": [
+          "data/photometry/pleiades-variable-fields.json",
+          "data/photometry/pleiades-variable-vectors.json"
+        ],
+        "sourceGrant": "Coordinator decision of 2026-10-28 (Front F follow-up): bounded N2230 photometer fields for PLEIADES.HTL rows 3, 5 and 10 with their CLEA_VStrs.dat records (CLEA_VStrs.dat is already published) and the recovered no-effect variable merges, plus independent UBV means; same terms as the existing Pleiades field packets.",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }
