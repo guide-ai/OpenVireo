@@ -1,0 +1,39 @@
+{
+ "schema": 1,
+ "kind": "independent Python control of the UM-I - 3 cached-pan geometry (not an original runtime observation)",
+ "glxSHA256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+ "baseRecord": 12119,
+ "targetRecord": 12127,
+ "baseCentre": {
+  "ra": 11.789361111111111,
+  "dec": 55.68888888888889
+ },
+ "target": {
+  "ra": 11.796,
+  "dec": 55.77194444444444,
+  "majorArcminutes": 0.8999999761581421
+ },
+ "projected": {
+  "x": 398.09395404760517,
+  "y": 364.3466666666693
+ },
+ "offset": {
+  "x": 69.90604595239483,
+  "y": 103.65333333333069
+ },
+ "unrounded": {
+  "left": 242.09395404760517,
+  "top": 208.3466666666693
+ },
+ "rect": {
+  "left": 242,
+  "top": 208,
+  "right": 554,
+  "bottom": 520
+ },
+ "query": {
+  "x": 398,
+  "y": 364
+ },
+ "selectionDistance": 0.3591728564925284
+}

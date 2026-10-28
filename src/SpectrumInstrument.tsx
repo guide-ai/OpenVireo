@@ -13,7 +13,7 @@ import {loadClassificationSources} from './io/classificationSources';
 import {classificationWorkspaceUsed,readClassificationWorkspace,EMPTY_CLASSIFICATION_WORKSPACE,type ClassificationWorkspace} from './core/classification';
 import type {StarObservation} from './io/starObservation';
 import {hubbleLabProgress,type HubbleLabProgress} from './core/hubbleLab';
-import {MAX_ACQUISITION_ARCHIVE,MAX_ARCHIVE_EVENTS} from './core/acquisitionArchive';
+import {EXTENDED_MAX_ACQUISITION_ARCHIVE,MAX_ARCHIVE_EVENTS} from './core/acquisitionArchive';
 import { t, formatNumber, fixed, scientific } from './i18n';
 import {acquisitionObjectId,acquisitionReference,acquiredSpectrumBytes,type AcquisitionObservation} from './io/acquisitionObservation';
 import VelocityAnalysis from './VelocityAnalysis';
@@ -73,7 +73,8 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
     if(busy)throw errorFor('continuity.busy');
     if(observation?.kind&&observation.acquisitionId===packet.acquisitionId){setError('');setNotice(t('continuity.sameSnapshot'));return;}
     const next=acquisitions.some(a=>a.acquisitionId===packet.acquisitionId)?acquisitions:[...acquisitions,packet];
-    if(next.length>MAX_ACQUISITION_ARCHIVE||next.reduce((n,a)=>n+a.state.events.length,0)>MAX_ARCHIVE_EVENTS)throw errorFor('continuity.archiveFull');
+    // Front F: more than 12 acquisitions are saved only in the v29 wrapper (analysisSession.ts).
+    if(next.length>EXTENDED_MAX_ACQUISITION_ARCHIVE||next.reduce((n,a)=>n+a.state.events.length,0)>MAX_ARCHIVE_EVENTS)throw errorFor('continuity.archiveFull');
     generation.current++;recordDialog.current?.close();setConfirm(false);setDraft(null);
     setAcquisitions(next);setObservation(packet);setObject(acquisitionObjectId(packet));setReference(acquisitionReference(packet));setWide(false);setControl(INITIAL_CONTROL);setStepInput('');setError('');setNotice(t(packet.kind==='catalog-star-acquisition'?'continuity.received':'galaxyExposure.received'));
   }

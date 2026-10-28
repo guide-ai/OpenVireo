@@ -12,6 +12,7 @@ import {parseSkySession,serializeSkySession,MAX_SKY_SESSION_BYTES} from './skySe
 import {parseStarSession,serializeStarSession,MAX_STAR_SESSION_BYTES} from './starSession';
 import {parseGalaxySession,serializeGalaxySession,MAX_GALAXY_SESSION_BYTES} from './galaxySession';
 import {galaxyStateDefinition} from '../core/galaxyExposure';
+import {HUBBLE_EXTENDED_BANKS,parseExtendedBankKey} from '../core/hubbleEngineTargets';
 const specifications={sky:{read:parseSkySession,write:serializeSkySession,limit:MAX_SKY_SESSION_BYTES},star:{read:parseStarSession,write:serializeStarSession,limit:MAX_STAR_SESSION_BYTES},galaxy:{read:parseGalaxySession,write:serializeGalaxySession,limit:MAX_GALAXY_SESSION_BYTES}};
 function checkDrive(d:ClockDriveWorkspace|undefined,w:Pick<ObservingWorkspace,'siteClock'|'context'>){if(!d)return;const p=clockDrivePointing(d);if(!w.siteClock||w.siteClock.utc!==d.utc||!Object.is(p.ra,w.context.pointing.ra)||!Object.is(p.dec,w.context.pointing.dec))throw new Error('Unbound clock drive');}
 type Slot='sky'|'star'|'galaxy';
@@ -84,3 +85,25 @@ export function portableCachedGalaxies(value:CachedBanks,archive:readonly Acquis
 export function restoreCachedGalaxies(value:unknown,archive:readonly AcquisitionObservation[]):CachedBanks{return restoreGalaxyBankGroup(CACHED_GALAXY_IDS,value,archive) as CachedBanks;}
 export function portablePegasusGalaxies(value:PegasusBanks,archive:readonly AcquisitionObservation[]):unknown{return portableGalaxyBankGroup(PEGASUS_GALAXY_IDS,value,archive);}
 export function restorePegasusGalaxies(value:unknown,archive:readonly AcquisitionObservation[]):PegasusBanks{return restoreGalaxyBankGroup(PEGASUS_GALAXY_IDS,value,archive) as PegasusBanks;}
+/** Front F (v29): the extended-target banks, one per (telescope, target) key of hubbleEngineTargets.ts, with the same
+ * stopped-journal/archive-reference slot contract as the other galaxy banks. Each journal must replay to its own target on its
+ * own telescope record. Raw journals are counted with the archive against the replay budget before any replay. */
+export function portableExtendedGalaxies(value:Readonly<Record<string,ExposureWorkspace>>,archive:readonly AcquisitionObservation[]):unknown{
+ let events=archive.reduce((n,a)=>n+a.state.events.length,0);if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');
+ return Object.fromEntries(HUBBLE_EXTENDED_BANKS.map(key=>{const {id,telescope}=parseExtendedBankKey(key),w=value[key];if(!w)throw new Error('Missing extended bank');const draft=seedDraft(w.seedText);if(!w.state)return [key,{seedText:draft,source:{kind:'empty'}}];
+  const s=stopped(w.state),text=serializeGalaxySession(s);if(galaxyStateDefinition(s).target.id!==id||galaxyTelescopeIndex(s)!==telescope)throw new Error('Wrong exposure target');
+  const same=archive.find(a=>matches(a,'galaxy',id,telescope)&&acquisitionJournalText(a)===text);if(same)return [key,{seedText:draft,source:{kind:'archive',acquisitionId:same.acquisitionId}}];
+  events+=s.events.length;if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');return [key,{seedText:draft,source:{kind:'journal',journal:JSON.parse(text)}}];}));
+}
+export function restoreExtendedGalaxies(value:unknown,archive:readonly AcquisitionObservation[]):Readonly<Record<string,ExposureWorkspace>>{
+ const r=workspaceRecord(value,HUBBLE_EXTENDED_BANKS);let events=archive.reduce((n,a)=>n+a.state.events.length,0);if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');
+ for(const key of HUBBLE_EXTENDED_BANKS){const w=workspaceRecord(r[key],['seedText','source']);if(w.source&&typeof w.source==='object'&&(w.source as {kind?:unknown}).kind==='journal'){const journal=workspaceRecord(w.source,['kind','journal']).journal as {events?:unknown};if(!journal||!Array.isArray(journal.events))throw new Error('Invalid segment journal');events+=journal.events.length;if(events>MAX_ARCHIVE_EVENTS)throw new Error('Project replay budget');}}
+ return Object.freeze(Object.fromEntries(HUBBLE_EXTENDED_BANKS.map(key=>{
+  const {id,telescope}=parseExtendedBankKey(key),w=workspaceRecord(r[key],['seedText','source']),draft=seedDraft(w.seedText);if(!w.source||typeof w.source!=='object')throw new Error('Invalid segment source');const type=(w.source as {kind?:unknown}).kind;let state:JournalState|null=null;
+  if(type==='empty')workspaceRecord(w.source,['kind']);
+  else if(type==='archive'){const a=workspaceRecord(w.source,['kind','acquisitionId']),entry=archive.find(s=>s.acquisitionId===a.acquisitionId&&matches(s,'galaxy',id,telescope));if(!entry)throw new Error('Invalid segment archive reference');state=stopped(entry.state);}
+  else if(type==='journal'){const a=workspaceRecord(w.source,['kind','journal']);if(new TextEncoder().encode(JSON.stringify(a.journal)).length>MAX_GALAXY_SESSION_BYTES)throw new Error('Segment byte limit');state=stopped(parseGalaxySession(a.journal));serializeGalaxySession(state);if(galaxyStateDefinition(state).target.id!==id||galaxyTelescopeIndex(state)!==telescope)throw new Error('Wrong exposure target');}
+  else throw new Error('Unsupported segment source');
+  return [key,Object.freeze({state,seedText:draft})];
+ })));
+}

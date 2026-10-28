@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "kind": "derived typed metadata for the bounded native cached-pan branch over the verified 36773 (UM-I - 2) field; contains no original catalogue, GSC, HTL or binary bytes",
+  "route": "Front F M1 (coordinator decision 2026-10-27): explicitly initialized verified 36773 field cache on the 0.4 m, bounded native cached-pan branch to 36805 (UM-I - 3); no fresh 36805 field and no recentred population claim",
+  "policy": "OpenVireo-umi-cached-galaxy-workspace-v1",
+  "viewPolicy": "openvireo-cached-pan-v1",
+  "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "baseFieldId": "36773",
+  "baseRecordIndex": 12119,
+  "baseFieldSnapshotSHA256": "cbe1f9aae57ab325095a074499d185bb469e9f6730997cc21e87359d27e26eca",
+  "baseFieldCenter": {
+    "ra": 11.789361111111111,
+    "dec": 55.68888888888889
+  },
+  "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+  "addresses": {
+    "cacheInitializer": "0x53c198",
+    "anchorWriter": "0x53c1c3..0x53c236",
+    "pointingProjection": "0x53c9d4..0x53ca46",
+    "freshCrop": "0x53a810..0x53a83d",
+    "storedOrigin": "0x53a798..0x53a7f0",
+    "pan": "0x53a6ca..0x53a723",
+    "guard": "0x53af28..0x53afa9",
+    "refreshBranch": "0x53a741",
+    "loader": "0x53be70",
+    "copy": "0x53a845..0x53a8dd",
+    "selection": "0x599f1c/0x59a010/0x59a0fc..0x59a2d1",
+    "spectrumNameLookup": "0x55eb64; 0x55ecda..0x55ed55",
+    "templateFallback": "0x55e5d2..0x55e619",
+    "templateShift": "0x55e55c"
+  },
+  "cache": {
+    "width": 936,
+    "height": 936,
+    "viewport": 312,
+    "multiplier": 3,
+    "fieldDegrees": 0.75,
+    "anchor": {
+      "x": 468,
+      "y": 468
+    },
+    "origin": {
+      "x": 312,
+      "y": 312
+    },
+    "guardExclusiveMinimum": 0,
+    "guardExclusiveMaximum": 624,
+    "slitQueryOffset": 156
+  },
+  "spectrumSource": {
+    "list": "GLXYSP.LST",
+    "listSHA256": "0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+    "listBytes": 576,
+    "listRows": 48,
+    "allFilenamesNGC4digitsSP": true,
+    "file": "GLXYTMPL.SP",
+    "matched": false,
+    "wavelengthFactor": "1 + catalogue Single z",
+    "templateRange": [
+      3650.0,
+      7000.0
+    ]
+  },
+  "baseAbsenceCertificates": {
+    "CLEA_VStrs.dat": {
+      "recordsChecked": 31147,
+      "allPositionMatches": []
+    },
+    "CLEA_QSO.DAT": {
+      "recordsChecked": 2269,
+      "allPositionMatches": []
+    },
+    "GLIMAGES.LST": {
+      "recordsChecked": 183,
+      "allPositionMatches": []
+    }
+  },
+  "freshFieldBlocker": "A fresh field centred on 36805 contains GLIMAGES.LST row 82 (NGC 3898 photograph, ~264/390 px from centre): photographic association 0x598e3b..0x598e52/0x599128 is not ported. The cached view reuses the 36773 field, whose whole-list GLIMAGES.LST check has no position match.",
+  "targets": [
+    {
+      "id": "36805",
+      "label": "UM-I – 3",
+      "htlRow": 2,
+      "htlRecordSHA256": "d7e7cab363a46f3557ee7f3947b357964ffbcc8b6653cc69d87a7859cd0c0e7e",
+      "recordIndex": 12127,
+      "policyId": "openvireo-cached-umi-36805-v1",
+      "telescopeRecord": 0,
+      "spectrumListMatches": [],
+      "anchor": {
+        "x": 398,
+        "y": 364
+      },
+      "rect": {
+        "left": 242,
+        "top": 208,
+        "right": 554,
+        "bottom": 520
+      },
+      "unroundedPan": {
+        "left": 242.09395404760517,
+        "top": 208.3466666666693
+      },
+      "selectionRadius": 9,
+      "selectionDistance": 0.3591728564925284,
+      "pixelLevel": 97,
+      "fraction": 0.235225,
+      "workbookCell": "Sheet1!C4",
+      "apparentV": 15.4,
+      "sourceAmplitude": 1.3093423582566676e-05,
+      "maxSourcePoissonMean": 0.6063240845719516
+    }
+  ],
+  "limits": [
+    "No original execution, x87 or GDI oracle; Number/Math nearest-even and the nearest-centre raster remain declared browser policies",
+    "Not an independently recentred field: the complete 36773 population (114 stars, 6 galaxies) is the explicitly initialized cache",
+    "No arbitrary pointing or unknown cache context; same configuration and no forced refresh are preconditions",
+    "0.4 m (telescope record 0) only; KPNO 0.9 m and Mayall 4 m are not claimed for this target",
+    "A fresh 36805 route (photographic association) is out of scope (front-h M7)"
+  ]
+}

@@ -21,6 +21,7 @@ import source from '../../data/hubble/galaxy-source.json';
 import cachedSource from '../../data/hubble/corbor-cached-provenance.json';
 import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
 import pegasusCached from '../../data/hubble/pegasus-cached-provenance.json';
+import umiCached from '../../data/hubble/umi-cached-provenance.json';
 import {buildPinnedPegasusPopulation} from './pinnedPegasusField';
 
 import {buildPinnedGalaxyPopulation,galaxyDomainFor,galaxyFieldDescriptor,GALAXY_DOMAIN as PINNED_GALAXY_DOMAIN,type NativeGalaxy} from './pinnedGalaxyField';
@@ -54,7 +55,11 @@ const cachedDefinitions=cachedSource.targets.map(t=>{const identity=galaxyIdenti
 const pegasusFresh=Object.freeze({policyId:pegasusProvenance.policyId,fieldSnapshotSHA256:pegasusProvenance.fieldSnapshotSHA256,sourceSnapshotSHA256:pegasusProvenance.sourceSnapshotSHA256,calibration:Object.freeze({...pegasusProvenance.calibration}),target:Object.freeze({...pegasusProvenance.target}),domain:Object.freeze({...pegasusProvenance.domain,pointing:Object.freeze({...pegasusProvenance.domain.pointing})})});
 const pegasusCachedDefinitions=pegasusCached.targets.map(t=>{const identity=galaxyIdentity(t.id),pointing=Object.freeze({ra:identity.ra,dec:identity.dec});
  return Object.freeze({...pegasusFresh,policyId:t.policyId,fieldSnapshotSHA256:pegasusCached.baseFieldSnapshotSHA256,target:Object.freeze({id:t.id,recordIndex:t.recordIndex,ra:identity.ra,dec:identity.dec,magnitude:identity.magnitude}),domain:Object.freeze({...pegasusFresh.domain,view:Object.freeze({policy:pegasusCached.viewPolicy,baseFieldId:pegasusCached.baseFieldId,pointing})})});});
-const definitions=[...originalDefinitions,...originalDefinitions.map(d=>({...d,policyId:kpno09.records.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:1},calibration:{...d.calibration,telescopeCorrection:0,magnitudeShift:0}})),...originalDefinitions.map(d=>({...d,policyId:mayall.galaxies.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:2},calibration:{...d.calibration,telescopeCorrection:3,magnitudeShift:3}})),...cachedDefinitions,pegasusFresh,...pegasusCachedDefinitions];
+/** Front F M1 (umi-cached-provenance.json): 36805 as a cached pan of the verified 36773 fresh 0.4 m definition, built exactly as
+ * route B over 54876; the view pointing is the exact catalogue centre (umi-targets.json via galaxyIdentity). */
+const umiCachedDefinitions=umiCached.targets.map(t=>{const identity=galaxyIdentity(t.id),pointing=Object.freeze({ra:identity.ra,dec:identity.dec});
+ return Object.freeze({...provenance,policyId:t.policyId,fieldSnapshotSHA256:umiCached.baseFieldSnapshotSHA256,target:Object.freeze({id:t.id,recordIndex:t.recordIndex,ra:identity.ra,dec:identity.dec,magnitude:identity.magnitude}),domain:Object.freeze({...provenance.domain,view:Object.freeze({policy:umiCached.viewPolicy,baseFieldId:umiCached.baseFieldId,pointing})})});});
+const definitions=[...originalDefinitions,...originalDefinitions.map(d=>({...d,policyId:kpno09.records.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:1},calibration:{...d.calibration,telescopeCorrection:0,magnitudeShift:0}})),...originalDefinitions.map(d=>({...d,policyId:mayall.galaxies.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:2},calibration:{...d.calibration,telescopeCorrection:3,magnitudeShift:3}})),...cachedDefinitions,pegasusFresh,...pegasusCachedDefinitions,...umiCachedDefinitions];
 export function galaxyDefinition(id='36773',index:0|1|2=0){galaxyIdentity(id);const d=definitions.find(d=>d.target.id===id&&d.domain.telescopeRecord===index);if(!d)throw new JournalError('proof');return d;}
 export function galaxyPolicyDefinition(policy:unknown){const d=definitions.find(d=>d.policyId===policy);if(!d)throw new JournalError('session');return d;}
 export function galaxyStateDefinition(s:GalaxyState){return galaxyPolicyDefinition(s?.policy);}
@@ -100,7 +105,7 @@ type CachedSource=Readonly<{viewPolicy:string;baseFieldId:string;baseRecordIndex
  cache:Readonly<{width:number;height:number;viewport:number;multiplier:number;fieldDegrees:number;anchor:Point;origin:Point;guardExclusiveMaximum:number;slitQueryOffset:number}>;
  targets:readonly Readonly<{id:string;telescopeRecord:number;rect:Readonly<{left:number;top:number;right:number;bottom:number}>;anchor:Point;selectionRadius:number;pixelLevel:number;fraction:number}>[]}>;
 /** Cached-pan provenance per base field: CorBor (54876) and Pegasus (NGC 7501); the same gates apply to both. */
-const CACHED_SOURCES:readonly CachedSource[]=[cachedSource,pegasusCached];
+const CACHED_SOURCES:readonly CachedSource[]=[cachedSource,pegasusCached,umiCached as unknown as CachedSource];
 /** Route B: initialize the cache from the verified fresh base view (54876 or NGC 7501), project the exact catalogue centre in
  * that frame, take the recovered cached-pan rectangle and select at its integer slit query (nearest-order radius; a nonzero
  * subpixel residual is accepted, unlike the fresh distance-0 guard). Every recorded integer (rectangle, query, slit level)

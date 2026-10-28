@@ -11,7 +11,7 @@ import {lssFieldRows,type LssFieldNumber} from './lssFields';
 /** Front F M0: the 14 existing (target, telescope) pairs and the 219×3 LSS evaluations, frozen at the Front F base (main 612e846)
  * before any engine change. Regenerate only with OPENVIREO_FREEZE_FINGERPRINTS=1 on an unchanged engine; a diff here means an
  * existing exercise changed. */
-const sha=(v:string|Uint8Array)=>createHash('sha256').update(v).digest('hex');
+const sha=(v:string|NodeJS.ArrayBufferView)=>createHash('sha256').update(v).digest('hex');
 const f64=(values:readonly number[])=>sha(new Uint8Array(Float64Array.from(values).buffer));
 export const EXISTING_PAIRS:readonly (readonly [string,0|1|2])[]=[
  ['36773',0],['36773',1],['36773',2],['36747',0],['36747',1],['36747',2],['54876',0],['54876',1],['54876',2],

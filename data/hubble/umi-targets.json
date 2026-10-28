@@ -1,0 +1,16 @@
+[
+  {
+    "id": "36805",
+    "label": "UM-I – 3",
+    "ra": 11.796,
+    "dec": 55.77194444444444,
+    "magnitude": 15.399999618530273,
+    "recordIndex": 12127,
+    "policyId": "openvireo-cached-umi-36805-v1",
+    "fieldSnapshotSHA256": "cbe1f9aae57ab325095a074499d185bb469e9f6730997cc21e87359d27e26eca",
+    "sourceSnapshotSHA256": "fe18d9e24e6d4b7fd7ec5ce7c69b97c4cd900b3b018c75fd475750f71a472787",
+    "stars": 114,
+    "galaxies": 6,
+    "sourceFile": "GLXYTMPL.SP"
+  }
+]

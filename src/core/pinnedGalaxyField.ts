@@ -4,6 +4,7 @@ import defaultSnapshot from '../../data/hubble/pinned-galaxy-field.json';
 import cachedSource from '../../data/hubble/corbor-cached-provenance.json';
 import pegasusCached from '../../data/hubble/pegasus-cached-provenance.json';
 import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
+import umiCached from '../../data/hubble/umi-cached-provenance.json';
 import {decodeNativeCompactRecord,nativeRegionIds,nativeCompactBandOrder,NativeFieldError,type NativeFieldStar} from './pinnedNativeField';
 import {nativeCatalogAdmission} from './catalogPopulation';
 import {traceCompactGscBandRead} from './compactGscReadOrder';
@@ -26,6 +27,8 @@ export const GALAXY_FIELD_REGISTRY:readonly GalaxyFieldDescriptor[]=Object.freez
  ...cachedSource.targets.map(t=>Object.freeze({kind:'cached' as const,id:t.id,baseId:cachedSource.baseFieldId,recordIndex:t.recordIndex,telescopeRecords:Object.freeze([0 as const])})),
  Object.freeze({kind:'fresh' as const,id:pegasusCached.baseFieldId}),
  ...pegasusCached.targets.map(t=>Object.freeze({kind:'cached' as const,id:t.id,baseId:pegasusCached.baseFieldId,recordIndex:t.recordIndex,telescopeRecords:Object.freeze([0 as const])})),
+ // Front F M1: UM-I – 3 as a cached pan of the verified 36773 field (umi-cached-provenance.json), record 0 only.
+ ...umiCached.targets.map(t=>Object.freeze({kind:'cached' as const,id:t.id,baseId:umiCached.baseFieldId,recordIndex:t.recordIndex,telescopeRecords:Object.freeze([0 as const])})),
 ]);
 export function galaxyFieldDescriptor(id:string):GalaxyFieldDescriptor{const d=GALAXY_FIELD_REGISTRY.find(d=>d.id===id);if(!d)throw new NativeFieldError('unsupported-domain');return d;}
 /** The fresh population domain of a target. A cached target has no population domain of its own; use its base field's.

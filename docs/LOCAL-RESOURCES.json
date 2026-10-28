@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1316 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4).",
+  "purpose": "Exact identity manifest for the 1321 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only.",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6581,6 +6581,31 @@
       "path": "public/original/orbit/ObjX_MPC.CMO.sav",
       "bytes": 4798116,
       "sha256": "efd665a75dbd1d8afeb68b4c7b947d82304ffe2b6355cd2c7e74e58347124030"
+    },
+    {
+      "path": "data/hubble/existing-target-fingerprints.json",
+      "bytes": 110738,
+      "sha256": "d0670bd6e070157274fb59620b5ed2587b1aef57d03ec1c65270e9821adffeec"
+    },
+    {
+      "path": "data/hubble/umi-cached-provenance.json",
+      "bytes": 4311,
+      "sha256": "998dbe571d833475d0e5902291b8ec59987145f9080e9a2da518c959b4030c73"
+    },
+    {
+      "path": "data/hubble/umi-targets.json",
+      "bytes": 478,
+      "sha256": "eae25002fe6c52fa6c1bff0ee964597439c74efcdb4d93270688ff10f1c06980"
+    },
+    {
+      "path": "data/hubble/umi-distance-references.json",
+      "bytes": 181,
+      "sha256": "3373466c5fb6e8e3363178cbb94a8749d219b99eb00095ad7751adcf76e30ecc"
+    },
+    {
+      "path": "data/hubble/umi-independent-vectors.json",
+      "bytes": 810,
+      "sha256": "74a070cbb4f8b70a357e6ab67a8b230f2bdfecdc0b337f1f608c5f20e63dfda8"
     }
   ]
 }

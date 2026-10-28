@@ -3262,4 +3262,7 @@ export interface MessageParameters {
   "lss.saveError": never;
   "lss.eventLimit": "limit";
   "lss.descriptionInvalid": never;
+  "galaxyExposure.umiAdaptation": never;
+  "lab.next.interpretSupported": "original" | "supported";
+  "lab.limitsExtended": never;
 }

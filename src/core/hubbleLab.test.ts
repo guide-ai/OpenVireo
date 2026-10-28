@@ -2,7 +2,7 @@ import {describe,it,expect} from 'vitest';
 import {hubbleLabProgress,type LabArchiveEntry} from './hubbleLab';
 import {EMPTY_HUBBLE,measurementHubbleRow,workbookExampleRows,type HubbleWorkspace} from './hubbleAnalysis';
 import {createMeasurement,type Measurement} from './spectrum';
-const ids=['36747','36773','54876','54875','54891','NGC 7499','NGC 7501','NGC 7503'];
+const ids=['36747','36773','54876','54875','54891','NGC 7499','NGC 7501','NGC 7503','36805'];
 // Synthetic workflow fixtures, not acquired spectra, native replay or answers.
 const archive:readonly LabArchiveEntry[]=ids.map((targetId,i)=>({targetId,acquisitionId:String(i+1).repeat(64),sha256:(i+4).toString(16).repeat(64)}));
 const records=archive.map((a,i)=>createMeasurement(i+1,'Edited label','synthetic.sp',a.sha256,{base:0,position:i+1,factor:1,step:.001},'GLXYLNS.LST',{kind:'catalog-galaxy-acquisition',acquisitionId:a.acquisitionId,targetId:a.targetId}));
@@ -11,10 +11,10 @@ describe('bounded Hubble lab workflow progress',()=>{
  it('starts empty and counts unique targets rather than repeat snapshots or labels',()=>{
   expect(hubbleLabProgress([],[],EMPTY_HUBBLE)).toMatchObject({archived:0,measured:0,inHubble:0,next:'acquire'});
   expect(hubbleLabProgress([archive[0],archive[0]],[],EMPTY_HUBBLE)).toMatchObject({archived:1,measured:0,next:'acquire'});
-  expect(hubbleLabProgress(archive.slice(0,3),[],EMPTY_HUBBLE)).toMatchObject({archived:3,total:8,original:13,next:'acquire'});
-  expect(hubbleLabProgress(archive.slice(0,5),[],EMPTY_HUBBLE)).toMatchObject({archived:5,total:8,next:'acquire'});
-  expect(hubbleLabProgress(archive,[],EMPTY_HUBBLE)).toMatchObject({archived:8,measured:0,total:8,original:13,next:'measure'});
-  expect(hubbleLabProgress(archive,[],EMPTY_HUBBLE).targets.map(t=>t.id)).toEqual(['36773','36747','54876','54875','54891','NGC 7499','NGC 7501','NGC 7503']);
+  expect(hubbleLabProgress(archive.slice(0,3),[],EMPTY_HUBBLE)).toMatchObject({archived:3,total:9,original:13,next:'acquire'});
+  expect(hubbleLabProgress(archive.slice(0,5),[],EMPTY_HUBBLE)).toMatchObject({archived:5,total:9,next:'acquire'});
+  expect(hubbleLabProgress(archive,[],EMPTY_HUBBLE)).toMatchObject({archived:9,measured:0,total:9,original:13,next:'measure'});
+  expect(hubbleLabProgress(archive,[],EMPTY_HUBBLE).targets.map(t=>t.id)).toEqual(['36773','36747','54876','54875','54891','NGC 7499','NGC 7501','NGC 7503','36805']);
  });
  it('requires the archive identity, curve digest and bound target; generic/stellar claims do not count',()=>{
   const generic=createMeasurement(20,'54876','claimed.ssp','a'.repeat(64),{base:0,position:3,factor:1,step:.001},'GLXYLNS.LST');
@@ -23,9 +23,9 @@ describe('bounded Hubble lab workflow progress',()=>{
   expect(hubbleLabProgress(archive,altered,EMPTY_HUBBLE).measured).toBe(0);
   expect(hubbleLabProgress([],records,EMPTY_HUBBLE).measured).toBe(0);
  });
- it('reaches readiness only with all eight currently supported sourced rows (a workflow state, not E01 closure) and the manual origin recipe',()=>{
+ it('reaches readiness only with all currently supported sourced rows (a workflow state, not E01 closure) and the manual origin recipe',()=>{
   const w=workspace(),before=JSON.stringify({archive,records,w});
-  expect(hubbleLabProgress(archive,records,w)).toMatchObject({archived:8,measured:8,inHubble:8,total:8,next:'interpret'});
+  expect(hubbleLabProgress(archive,records,w)).toMatchObject({archived:9,measured:9,inHubble:9,total:9,next:'interpret'});
   expect(hubbleLabProgress(archive,records,{...w,rows:w.rows.slice(0,5)})).toMatchObject({inHubble:5,next:'inputs'});
   expect(hubbleLabProgress(archive,records,{...w,recipeId:'workbook'}).next).toBe('recipe');
   expect(hubbleLabProgress(archive,records,EMPTY_HUBBLE).next).toBe('recipe');
@@ -38,10 +38,10 @@ describe('bounded Hubble lab workflow progress',()=>{
  it('source deletion and repeated targets revoke readiness without deleting measurements',()=>{
   const w=workspace(),row=w.rows[0];if(row.input.kind!=='measurement')throw Error();
   const missing={...w,rows:[{...row,input:{...row.input,magnitudeSource:''}},...w.rows.slice(1)]};
-  expect(hubbleLabProgress(archive,records,missing)).toMatchObject({measured:8,inHubble:7,next:'inputs'});
+  expect(hubbleLabProgress(archive,records,missing)).toMatchObject({measured:9,inHubble:8,next:'inputs'});
   const extra={...records[0],id:9};
   const repeated={...w,rows:[...w.rows,{id:9,input:{...row.input,measurementId:9}}]};
-  expect(hubbleLabProgress(archive,[...records,extra],repeated)).toMatchObject({measured:8,inHubble:7,duplicateTargets:true,next:'inputs'});
+  expect(hubbleLabProgress(archive,[...records,extra],repeated)).toMatchObject({measured:9,inHubble:8,duplicateTargets:true,next:'inputs'});
  });
  it('retains the original 36773 provenance schema without a targetId',()=>{
   const legacy={...records[1],origin:{kind:'catalog-galaxy-acquisition' as const,acquisitionId:archive[1].acquisitionId}};

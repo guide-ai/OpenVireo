@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "scope": "All1316files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included.",
-  "totalFiles": 1316,
-  "totalBytes": 123501661,
+  "totalFiles": 1321,
+  "totalBytes": 123618179,
   "extensions": {
     ".json": 1042,
     ".LST": 6,
@@ -32,8 +32,8 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "data/hubble": {
-      "files": 65,
-      "bytes": 3508224,
+      "files": 70,
+      "bytes": 3624742,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
       "usedBy": "Verified star/sky and bounded galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
@@ -281,6 +281,19 @@
         "sourceGrant": "Bounded NGC7501 field and required read witnesses/provenance only; no whole GSC band",
         "treatment": "Two local research paths replaced with evidence identifiers; an internal approval-message identifier was removed before review. All scientific source bytes, hashes and uncertainty remain.",
         "boundedScan": "Named six JSON resources checked for local /home paths, internal message identifiers and high-confidence credential/private-key patterns. No such retained fields found. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-27",
+        "scope": [
+          "data/hubble/existing-target-fingerprints.json",
+          "data/hubble/umi-cached-provenance.json",
+          "data/hubble/umi-targets.json",
+          "data/hubble/umi-distance-references.json",
+          "data/hubble/umi-independent-vectors.json"
+        ],
+        "sourceGrant": "Front F M0/M1: derived metadata over the already-published 36773 field and CLEA_GLX.DAT; no new original bytes",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }
     ]
   }

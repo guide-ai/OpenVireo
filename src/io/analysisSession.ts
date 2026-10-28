@@ -32,6 +32,10 @@ import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFil
 import {OBJECT_X_INVESTIGATION_POLICY,ObjectXSessionError,admitObjectXInvestigation,portableObjectXInvestigation,type ObjectXInvestigation} from './objectXInvestigation';
 import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,portableLssInvestigation,type LssInvestigation} from './lssInvestigation';
 import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
+import {HUBBLE_EXTENDED_BANKS,isHubbleExtendedId} from '../core/hubbleEngineTargets';
+import {EXTENDED_MAX_ACQUISITION_ARCHIVE} from '../core/acquisitionArchive';
+import {observingUsesExtendedGalaxies} from '../core/observingWorkspace';
+import umiCached from '../../data/hubble/umi-cached-provenance.json';
 
 /** New portable browser format, not the original CLEA saved-spectrum format. */
 export const SESSION_PAYLOAD_BYTES=16*1024*1024,MAX_SESSION_BYTES=SESSION_PAYLOAD_BYTES+MAX_PROJECT_METADATA_GROWTH;
@@ -51,6 +55,13 @@ export type AnalysisSession=Readonly<{
   /** Front X X5 (v28): the E08 Object X investigation (objectXInvestigation.ts). Absent in v1..27 files. */
   objectX?:ObjectXInvestigation;
 }>;
+/** Front F (v29): the extended Hubble.HTL targets (hubbleEngineTargets.ts). A v29 file wraps an unchanged v1..28 base,
+ * outermost, and carries the extended-target policy, the binary hash and the banks of every (telescope, target) key in table
+ * order (observing.extendedGalaxies). Only inside a v29 may the base archive hold more than 12 (up to 16) acquisitions, and
+ * acquisitions, banks or context of extended targets are rejected in any file outside v29; a v29 is never nested. */
+export const HUBBLE_EXTENDED_SESSION_POLICY='openvireo-hubble-extended-targets-v29';
+function acquisitionIsExtended(a:AcquisitionObservation){return a.kind==='catalog-galaxy-acquisition'&&isHubbleExtendedId(a.targetId);}
+function sessionUsesExtended(session:AnalysisSession){const a=session.acquisitions??[];return a.length>MAX_ACQUISITION_ARCHIVE||a.some(acquisitionIsExtended)||!!session.observing&&(session.observing.extendedGalaxies!==undefined||observingUsesExtendedGalaxies(session.observing));}
 /** Front B B10 (v26): Optical Simulation Options (Limit Slewing) and per-telescope site overrides (clocks/horizon only,
  * WEB-ST-01). A v26 file wraps an unchanged v1..25 base, outermost; a v26 is never nested. */
 export type ObservatorySession=Readonly<{options:OpticalOptions;siteOverrides:SiteOverrides}>;
@@ -67,10 +78,12 @@ function acquisitionIsPegasus(a:AcquisitionObservation){return a.kind==='catalog
 /** Count ALL v24/v25 replay inputs before any replay: unwrap 25 → 24 → 19..23 to the base, then the base archive and slots
  * plus every wrapper bank group against one budget. Wrapper metadata does not consume events; archive references are counted
  * once in the archive, while inline old, cached and Pegasus journals each incur their actual replay cost. */
-function checkCombinedReplayBudget(wrapper:unknown):void{
+function checkCombinedReplayBudget(wrapper:unknown,extended=false):void{
  let inner=wrapper as Record<string,unknown>;const groups:(readonly [readonly string[],unknown])[]=[];
- for(let depth=0;Number(inner.version)>=19&&Number(inner.version)<=25;depth++){
-  if(depth>=7||!inner.base||typeof inner.base!=='object'||Array.isArray(inner.base))fail('format');
+ // v26..v29 carry no galaxy banks of their own except v29's extended group; they are walked through to the base.
+ for(let depth=0;Number(inner.version)>=19&&Number(inner.version)<=29;depth++){
+  if(depth>=11||!inner.base||typeof inner.base!=='object'||Array.isArray(inner.base))fail('format');
+  if(inner.version===29){extended=true;groups.push([HUBBLE_EXTENDED_BANKS,inner.extendedGalaxies]);}
   if(inner.version===25)groups.push([PEGASUS_GALAXY_IDS,inner.pegasusGalaxies]);
   if(inner.version===24)groups.push([CACHED_GALAXY_IDS,inner.cachedGalaxies]);
   inner=inner.base as Record<string,unknown>;
@@ -81,7 +94,7 @@ function checkCombinedReplayBudget(wrapper:unknown):void{
   events+=((value as {events:unknown[]}).events.length);if(events>MAX_ARCHIVE_EVENTS)fail('size');
  }
  if(inner.acquisitions!==undefined){
-  if(!Array.isArray(inner.acquisitions)||inner.acquisitions.length>MAX_ACQUISITION_ARCHIVE)fail('observation');
+  if(!Array.isArray(inner.acquisitions)||inner.acquisitions.length>(extended?EXTENDED_MAX_ACQUISITION_ARCHIVE:MAX_ACQUISITION_ARCHIVE))fail('observation');
   for(const a of inner.acquisitions){if(!a||typeof a!=='object')fail('observation');journal((a as {journal?:unknown}).journal);}
  }
  function slot(value:unknown){
@@ -139,41 +152,54 @@ function measurement(value:unknown,previousId:number,acquisitions:readonly Acqui
   if(row.object!==object||row.zFloat32Hex!==r.zFloat32Hex)fail('measurements');
   return row;
 }
-async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false):Promise<AnalysisSession> {
+async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false):Promise<AnalysisSession> {
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
-  if(version===28){
-    // Front X X5: an E08 wrapper over an unchanged v1..27 base, outermost; a v28 is never nested.
+  if(version===29){
+    // Front F: the extended Hubble targets over an unchanged v1..28 base, outermost; a v29 is never nested.
     if(migrated)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','extendedPolicy','binarySHA256','extendedGalaxies']);
+    const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.extendedPolicy!==HUBBLE_EXTENDED_SESSION_POLICY||r.binarySHA256!==umiCached.binarySHA256||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>28)fail('format');
+    checkCombinedReplayBudget(value,true);
+    const base=await restore(r.base,verifySources,true,false,false,true,true,true);
+    if((r.extendedGalaxies===null)!==!base.observing)fail('state');
+    if(!base.observing)return base;
+    let extendedGalaxies:NonNullable<ObservingWorkspace['extendedGalaxies']>;try{extendedGalaxies=(await import('./observingWorkspace')).restoreExtendedGalaxies(r.extendedGalaxies,base.acquisitions??[]);}catch{fail('state');}
+    return Object.freeze({...base,observing:Object.freeze({...base.observing,extendedGalaxies})});
+  }
+  if(version===28){
+    // Front X X5: an E08 wrapper over an unchanged v1..27 base; nested only directly under a v29 (Front F).
+    if(migrated&&!extended)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','objectXPolicy','objectXDigestSHA256','objectX']);
     const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.objectXPolicy!==OBJECT_X_INVESTIGATION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>27)fail('format');
     let objectX:ObjectXInvestigation;try{objectX=await admitObjectXInvestigation(r.objectX,r.objectXDigestSHA256);}catch{fail('state');}
-    const base=await restore(r.base,verifySources,true,false,false,true,true);return Object.freeze({...base,objectX});
+    const base=await restore(r.base,verifySources,true,false,false,true,true,extended);return Object.freeze({...base,objectX});
   }
   if(version===27){
     // Front A M6: an E02 wrapper over an unchanged v1..26 base; nested only directly under a v28.
-    if(migrated&&!underObjectX)fail('format');
+    if(migrated&&!underObjectX&&!extended)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','lssPolicy','lssDigestSHA256','lss']);
     const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.lssPolicy!==LSS_INVESTIGATION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>26)fail('format');
     let lss:LssInvestigation;try{lss=await admitLssInvestigation(r.lss,r.lssDigestSHA256);}catch{fail('state');}
-    const base=await restore(r.base,verifySources,true,false,false,true);return Object.freeze({...base,lss});
+    const base=await restore(r.base,verifySources,true,false,false,true,false,extended);return Object.freeze({...base,lss});
   }
   if(version===26){
-    if(migrated&&!underLss)fail('format');
+    if(migrated&&!underLss&&!extended)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','observatoryPolicy','observatory']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.observatoryPolicy!==OBSERVATORY_SESSION_POLICY||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>25)fail('format');
     let observatory:ObservatorySession;try{const o=record(r.observatory,['options','siteOverrides']);observatory=Object.freeze({options:readOpticalOptions(o.options),siteOverrides:readSiteOverrides(o.siteOverrides)});}catch{fail('state');}
-    const base=await restore(r.base,verifySources,true,false,false);return Object.freeze({...base,observatory});
+    const base=await restore(r.base,verifySources,true,false,false,false,false,extended);return Object.freeze({...base,observatory});
   }
   if(version===25){
     if(cached||pegasus)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','pegasusFieldPolicy','pegasusBaseFieldSHA256','binarySHA256','pegasusGalaxies']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.pegasusFieldPolicy!==pegasusSource.policy||r.pegasusBaseFieldSHA256!==pegasusSource.baseFieldSnapshotSHA256||r.binarySHA256!==pegasusSource.binarySHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>24)fail('format');
-    checkCombinedReplayBudget(value);
-    const base=await restore(r.base,verifySources,true,false,true);
+    checkCombinedReplayBudget(value,extended);
+    const base=await restore(r.base,verifySources,true,false,true,false,false,extended);
     if((r.pegasusGalaxies===null)!==!base.observing)fail('state');
     if(!base.observing)return base;
     let pegasusGalaxies:NonNullable<ObservingWorkspace['pegasusGalaxies']>;try{pegasusGalaxies=(await import('./observingWorkspace')).restorePegasusGalaxies(r.pegasusGalaxies,base.acquisitions??[]);}catch{fail('state');}
@@ -183,8 +209,8 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     if(cached)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','cachedFieldPolicy','cachedBaseFieldSHA256','binarySHA256','cachedGalaxies']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.cachedFieldPolicy!==cachedSource.policy||r.cachedBaseFieldSHA256!==cachedSource.baseFieldSnapshotSHA256||r.binarySHA256!==cachedSource.binarySHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>23)fail('format');
-    checkCombinedReplayBudget(value);
-    const base=await restore(r.base,verifySources,true,true,pegasus);
+    checkCombinedReplayBudget(value,extended);
+    const base=await restore(r.base,verifySources,true,true,pegasus,false,false,extended);
     if((r.cachedGalaxies===null)!==!base.observing)fail('state');
     if(!base.observing)return base;
     let cachedGalaxies:NonNullable<ObservingWorkspace['cachedGalaxies']>;try{cachedGalaxies=(await import('./observingWorkspace')).restoreCachedGalaxies(r.cachedGalaxies,base.acquisitions??[]);}catch{fail('state');}
@@ -193,30 +219,30 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   if(version===23){
     const r=record(value,['format','version','numericalPolicy','base','radioPolicy','radioDigestSHA256','radio']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.radioPolicy!==RADIO_INVESTIGATION_POLICY||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>22)fail('format');
-    const base=await restore(r.base,verifySources,true,cached,pegasus);
+    const base=await restore(r.base,verifySources,true,cached,pegasus,false,false,extended);
     let radio:RadioInvestigationRecord;try{radio=await admitRadioInvestigation(r.radio,r.radioDigestSHA256,{verifySources});}catch{fail('state');}
     return Object.freeze({...base,radio});
   }
   if(version===22){
     const r=record(value,['format','version','numericalPolicy','base','motionPolicy','motionProofSHA256','motion']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.motionPolicy!==TELESCOPE_MOTION_POLICY||r.motionProofSHA256!==TELESCOPE_MOTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>21)fail('format');
-    let motion:MotionPreferences;try{motion=readMotionPreferences(r.motion);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached,pegasus);return Object.freeze({...base,motion});
+    let motion:MotionPreferences;try{motion=readMotionPreferences(r.motion);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached,pegasus,false,false,extended);return Object.freeze({...base,motion});
   }
   if(version===21){
     const r=record(value,['format','version','numericalPolicy','base','clusterComparisonPolicy','clusterComparisonSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterSelectionPolicy','clusterSelectionSHA256','clusterSelection']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterComparisonPolicy!==CLUSTER_COMPARISON_POLICY||r.clusterComparisonSHA256!==CLUSTER_COMPARISON_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||r.clusterSelectionPolicy!==CLUSTER_SELECTION_POLICY||r.clusterSelectionSHA256!==CLUSTER_SELECTION_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
-    const base=await restore(r.base,verifySources,true,cached,pegasus);let clusterSelection:ClusterSelectionWorkspace;try{clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(r.clusterSelection);}catch{fail('state');}return Object.freeze({...base,clusterSelection});
+    const base=await restore(r.base,verifySources,true,cached,pegasus,false,false,extended);let clusterSelection:ClusterSelectionWorkspace;try{clusterSelection=await(await import('./clusterSelection')).admitClusterSelection(r.clusterSelection);}catch{fail('state');}return Object.freeze({...base,clusterSelection});
   }
   if(version===20){
     const r=record(value,['format','version','numericalPolicy','base','clusterComparisonPolicy','clusterComparisonSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterComparison']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterComparisonPolicy!==CLUSTER_COMPARISON_POLICY||r.clusterComparisonSHA256!==CLUSTER_COMPARISON_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
-    let clusterComparison:ClusterComparisonWorkspace;try{clusterComparison=readClusterComparisonWorkspace(r.clusterComparison);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached,pegasus);if(verifySources){const{loadClusterDataset}=await import('./clusterComparison');await Promise.all(Object.keys(clusterComparison.notebooks).map(id=>loadClusterDataset(id as NonNullable<ClusterComparisonWorkspace['activeId']>)));}return Object.freeze({...base,clusterComparison});
+    let clusterComparison:ClusterComparisonWorkspace;try{clusterComparison=readClusterComparisonWorkspace(r.clusterComparison);}catch{fail('state');}const base=await restore(r.base,verifySources,true,cached,pegasus,false,false,extended);if(verifySources){const{loadClusterDataset}=await import('./clusterComparison');await Promise.all(Object.keys(clusterComparison.notebooks).map(id=>loadClusterDataset(id as NonNullable<ClusterComparisonWorkspace['activeId']>)));}return Object.freeze({...base,clusterComparison});
   }
   if(version===19){
     const r=record(value,['format','version','numericalPolicy','base','clusterDatabasePolicy','clusterDatabaseSHA256','nativeClusterPolicy','nativeClusterContractSHA256','clusterDatabase']);
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.clusterDatabasePolicy!==CLUSTER_DATABASE_POLICY||r.clusterDatabaseSHA256!==CLUSTER_DATABASE_SHA256||r.nativeClusterPolicy!==NATIVE_CLUSTER_POLICY||r.nativeClusterContractSHA256!==NATIVE_CLUSTER_SHA256||!r.base||typeof r.base!=='object'||!Number.isInteger((r.base as {version?:unknown}).version)||Number((r.base as {version?:unknown}).version)<1||Number((r.base as {version?:unknown}).version)>18)fail('format');
     let clusterDatabase:ClusterDatabaseWorkspace;try{clusterDatabase=readClusterDatabaseWorkspace(r.clusterDatabase);}catch{fail('state');}
-    const base=await restore(r.base,verifySources,true,cached,pegasus);if(verifySources&&clusterDatabase.loaded)await(await import('./clusterDatabase')).loadM67Dataset();return Object.freeze({...base,clusterDatabase});
+    const base=await restore(r.base,verifySources,true,cached,pegasus,false,false,extended);if(verifySources&&clusterDatabase.loaded)await(await import('./clusterDatabase')).loadM67Dataset();return Object.freeze({...base,clusterDatabase});
   }
   if(version!==1&&version!==2&&version!==3&&version!==4&&version!==5&&version!==6&&version!==7&&version!==8&&version!==9&&version!==10&&version!==11&&version!==12&&version!==13&&version!==14&&version!==15&&version!==16&&version!==17&&version!==18)fail('format');
   const r=record(value,['format','version','numericalPolicy','observation','adjustment','measurements',...(version>=2?['hubble']:[]),...(version>=3?['acquisitions']:[]),...(version>=4?['classification']:[]),...(version>=8?['photometry']:[]),...(version>=9?['observing']:[]),...(version>=10?['editingPolicy','editing']:[]),...(version>=11?['optical']:[]) ]);
@@ -228,7 +254,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   if(version>=9){const policy=r.observing&&typeof r.observing==='object'?(r.observing as {policy?:unknown}).policy:null;if(version===18?policy!==OBSERVING_SKY_POLICY:version===17?policy!==OBSERVING_ACCESS_POLICY:version===16?policy!==OBSERVING_DRIVE_POLICY:version===15?policy!==OBSERVING_CLOCK_POLICY:version===14?policy!==OBSERVING_MAYALL_POLICY:version===13?policy!==OBSERVING_GALAXY_POLICY:version===12?policy!==OBSERVING_OPTICAL_POLICY:policy===OBSERVING_OPTICAL_POLICY||policy===OBSERVING_GALAXY_POLICY||policy===OBSERVING_MAYALL_POLICY||policy===OBSERVING_CLOCK_POLICY||policy===OBSERVING_DRIVE_POLICY||policy===OBSERVING_ACCESS_POLICY||policy===OBSERVING_SKY_POLICY)fail('state');}
   const acquisitions:AcquisitionObservation[]=[];
   if(version>=3){
-    if(!Array.isArray(r.acquisitions)||r.acquisitions.length>(version>=14?MAX_ACQUISITION_ARCHIVE:LEGACY_MAX_ACQUISITION_ARCHIVE))fail('observation');
+    if(!Array.isArray(r.acquisitions)||r.acquisitions.length>(extended?EXTENDED_MAX_ACQUISITION_ARCHIVE:version>=14?MAX_ACQUISITION_ARCHIVE:LEGACY_MAX_ACQUISITION_ARCHIVE))fail('observation');
     let eventCount=0;
     for(const value of r.acquisitions){
       const a=record(value,['id','journal']);
@@ -278,11 +304,20 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   if(!cached&&observing&&observingUsesCachedGalaxies(observing))fail('state');
   if(!pegasus&&acquisitions.some(acquisitionIsPegasus))fail('observation');
   if(!pegasus&&observing&&observingUsesPegasusGalaxies(observing))fail('state');
+  if(!extended&&acquisitions.some(acquisitionIsExtended))fail('observation');
+  if(!extended&&observing&&observingUsesExtendedGalaxies(observing))fail('state');
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
-type Wrapped=Readonly<{cached?:true;pegasus?:true}>;
+type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  if(!wrapped.extended&&sessionUsesExtended(session)){
+    const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
+    if(acquisitions.length>EXTENDED_MAX_ACQUISITION_ARCHIVE)fail('observation');
+    if(observing){const {extendedGalaxies,...plain}=observing;base=plain;banks=(await import('./observingWorkspace')).portableExtendedGalaxies(extendedGalaxies??Object.fromEntries(HUBBLE_EXTENDED_BANKS.map(key=>[key,emptyExposureWorkspace()])),acquisitions);}
+    const result={format:FORMAT,version:29,numericalPolicy:POLICY,base:await portable({...session,...(base?{observing:base}:{})},{...wrapped,extended:true}),extendedPolicy:HUBBLE_EXTENDED_SESSION_POLICY,binarySHA256:umiCached.binarySHA256,extendedGalaxies:banks};
+    checkCombinedReplayBudget(result);return result;
+  }
   if(session.objectX!==undefined){
     let objectX:unknown,digest:string;try{({objectX,digest}=await portableObjectXInvestigation(session.objectX));}catch(e){if(e instanceof ObjectXSessionError)throw e;fail('state');}
     return {format:FORMAT,version:28,numericalPolicy:POLICY,base:await portable({...session,objectX:undefined},wrapped),objectXPolicy:OBJECT_X_INVESTIGATION_POLICY,objectXDigestSHA256:digest,objectX};
@@ -299,13 +334,13 @@ async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unkn
     const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
     if(observing){const {pegasusGalaxies,...plain}=observing;base=plain;banks=(await import('./observingWorkspace')).portablePegasusGalaxies(pegasusGalaxies??Object.fromEntries(PEGASUS_GALAXY_IDS.map(id=>[id,emptyExposureWorkspace()]))as NonNullable<ObservingWorkspace['pegasusGalaxies']>,acquisitions);}
     const result={format:FORMAT,version:25,numericalPolicy:POLICY,base:await portable({...session,...(base?{observing:base}:{})},{...wrapped,pegasus:true}),pegasusFieldPolicy:pegasusSource.policy,pegasusBaseFieldSHA256:pegasusSource.baseFieldSnapshotSHA256,binarySHA256:pegasusSource.binarySHA256,pegasusGalaxies:banks};
-    checkCombinedReplayBudget(result);return result;
+    checkCombinedReplayBudget(result,!!wrapped.extended);return result;
   }
   if(!wrapped.cached&&sessionUsesCached(session)){
     const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
     if(observing){const {cachedGalaxies,...plain}=observing;base=plain;banks=(await import('./observingWorkspace')).portableCachedGalaxies(cachedGalaxies??Object.fromEntries(CACHED_GALAXY_IDS.map(id=>[id,emptyExposureWorkspace()]))as NonNullable<ObservingWorkspace['cachedGalaxies']>,acquisitions);}
     const result={format:FORMAT,version:24,numericalPolicy:POLICY,base:await portable({...session,...(base?{observing:base}:{})},{...wrapped,cached:true}),cachedFieldPolicy:cachedSource.policy,cachedBaseFieldSHA256:cachedSource.baseFieldSnapshotSHA256,binarySHA256:cachedSource.binarySHA256,cachedGalaxies:banks};
-    checkCombinedReplayBudget(result);return result;
+    checkCombinedReplayBudget(result,!!wrapped.extended);return result;
   }
   if(session.radio!==undefined){const {radio,digest}=await portableRadioInvestigation(session.radio.snapshot);return {format:FORMAT,version:23,numericalPolicy:POLICY,base:await portable({...session,radio:undefined},wrapped),radioPolicy:RADIO_INVESTIGATION_POLICY,radioDigestSHA256:digest,radio};}
   if(session.motion!==undefined){let motion:MotionPreferences;try{motion=readMotionPreferences(session.motion);}catch{fail('state');}return {format:FORMAT,version:22,numericalPolicy:POLICY,base:await portable({...session,motion:undefined},wrapped),motionPolicy:TELESCOPE_MOTION_POLICY,motionProofSHA256:TELESCOPE_MOTION_SHA256,motion};}
