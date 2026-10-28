@@ -7,6 +7,17 @@ import {OBJECT_X_MEASURE_EN,type ObjectXMeasureMessages} from './objectx/ObjectX
 export type MeasureFrame=Readonly<{label:string;jd:number;image:FitsImage;wcs:TanWcs|null}>;
 type Props=Readonly<{frames:readonly MeasureFrame[];log:MeasurementLog;onLogChange:(log:MeasurementLog)=>void;active?:boolean;messages?:ObjectXMeasureMessages}>;
 
+/** Stretched rasters cached per image and cut (closure N2): cursor moves, marks and blink ticks reuse them. */
+const rasterCache=new WeakMap<FitsImage,{low:number;high:number;canvas:HTMLCanvasElement}>();
+function stretched(im:FitsImage,cut:Readonly<{low:number;high:number}>):HTMLCanvasElement{
+ const hit=rasterCache.get(im);if(hit&&hit.low===cut.low&&hit.high===cut.high)return hit.canvas;
+ const canvas=document.createElement('canvas');canvas.width=im.width;canvas.height=im.height;
+ rasterBuilds++;canvas.getContext('2d')?.putImageData(new ImageData(Uint8ClampedArray.from(stretchRaster(measureImageFromFits(im),cut)),im.width,im.height),0,0);
+ rasterCache.set(im,{low:cut.low,high:cut.high,canvas});return canvas;
+}
+/** Rasters stretched so far in this page; written to the canvas as data-raster-builds (closure N2, a check that cursor moves
+ * and blink ticks reuse the cache). */
+let rasterBuilds=0;
 const utText=(jd:number)=>new Date(Math.round((jd-2440587.5)*86400)*1000).toISOString().slice(0,19).replace('T',' ');
 
 /** E08 web measuring tool (X3): blink, click/keyboard centroid measurement, plate or header-WCS solution, motion. Marks keep
@@ -29,8 +40,7 @@ export function ObjectXMeasure({frames,log,onLogChange,active=true,messages=OBJE
   // While blinking with an alignment, image 2 is drawn in image-1 pixels (x1 = re·x − im·y + dx; pixel centres at p − 0.5).
   const aligned=blinking&&index===1?alignment:null,size=aligned?base:im;
   c.width=size.width;c.height=size.height;const ctx=c.getContext('2d');if(!ctx)return;
-  const off=document.createElement('canvas');off.width=im.width;off.height=im.height;
-  off.getContext('2d')?.putImageData(new ImageData(Uint8ClampedArray.from(stretchRaster(measureImageFromFits(im),cut)),im.width,im.height),0,0);
+  const off=stretched(im,cut);c.dataset.rasterBuilds=String(rasterBuilds);
   ctx.fillStyle='#000';ctx.fillRect(0,0,c.width,c.height);
   if(aligned){const r=aligned.scale*Math.cos(aligned.rotationDeg*Math.PI/180),i=aligned.scale*Math.sin(aligned.rotationDeg*Math.PI/180),k=0.5;ctx.setTransform(r,i,-i,r,r*k-i*k+aligned.dx-k,i*k+r*k+aligned.dy-k);}
   ctx.drawImage(off,0,0);
@@ -88,12 +98,12 @@ export function ObjectXMeasure({frames,log,onLogChange,active=true,messages=OBJE
   </div>
   <div className="button-row"><span role="status" data-testid="objectx-cursor">{m.cursor(cursor.x,cursor.y)}</span><button disabled={!active||blinking} onClick={()=>measure()}>{m.measure}</button></div>
   {error&&<p role="alert">{error}</p>}
-  <table className="objectx-measurements" data-testid="objectx-measurements"><caption>{m.table}</caption><thead><tr><th>{m.colFrame}</th><th>{m.colRole}</th><th>{m.colX}</th><th>{m.colY}</th><th>{m.colRa}</th><th>{m.colDec}</th><th>{m.colUt}</th><th>{m.colMethod}</th><th>{m.colResidual}</th><th/></tr></thead>
+  <div className="objectx-measurements-wrap"><table className="objectx-measurements" data-testid="objectx-measurements"><caption>{m.table}</caption><thead><tr><th>{m.colFrame}</th><th>{m.colRole}</th><th>{m.colX}</th><th>{m.colY}</th><th>{m.colRa}</th><th>{m.colDec}</th><th>{m.colUt}</th><th>{m.colMethod}</th><th>{m.colResidual}</th><th/></tr></thead>
    <tbody>{log.map((mk,i)=>{
     const d=derived.get(i),pos=mk.role==='reference'?mk.catalog:d?.sky;
     const plate=plates[mk.frame]?.plate,refIndex=mk.role==='reference'?log.slice(0,i+1).filter(r=>r.frame===mk.frame&&r.role==='reference').length-1:-1;
     const residual=plate&&refIndex>=0?plate.residualsArcsec[refIndex]?.toFixed(2):'';
-    return <tr key={i}><td>{mk.frame+1}</td><td>{mk.role==='target'?m.roleTarget:m.roleReference}</td><td>{mk.x.toFixed(2)}</td><td>{mk.y.toFixed(2)}</td><td>{pos?formatSexagesimal(pos.raHours,'ra'):'—'}</td><td>{pos?formatSexagesimal(pos.decDeg,'dec'):'—'}</td><td>{utText(mk.jd)}</td><td>{mk.role==='target'?(d?.method==='plate'?m.methodPlate:d?.method==='wcs'?m.methodWcs:m.notSolved):''}</td><td>{residual}</td><td><button onClick={()=>onLogChange(removeMeasurement(log,i))}>{m.remove}</button></td></tr>;})}</tbody></table>
+    return <tr key={i}><td>{mk.frame+1}</td><td>{mk.role==='target'?m.roleTarget:m.roleReference}</td><td>{mk.x.toFixed(2)}</td><td>{mk.y.toFixed(2)}</td><td>{pos?formatSexagesimal(pos.raHours,'ra'):'—'}</td><td>{pos?formatSexagesimal(pos.decDeg,'dec'):'—'}</td><td>{utText(mk.jd)}</td><td>{mk.role==='target'?(d?.method==='plate'?m.methodPlate:d?.method==='wcs'?m.methodWcs:m.notSolved):''}</td><td>{residual}</td><td><button onClick={()=>onLogChange(removeMeasurement(log,i))}>{m.remove}</button></td></tr>;})}</tbody></table></div>
   {plates.some(p=>p.references)&&<h3>{m.plateTitle}</h3>}
   <ul data-testid="objectx-plates">{plates.map((p,f)=>p.references?<li key={f}>{p.plate?<>{m.plateFrame(f+1,p.references)} — {m.plateRms(p.plate.rmsArcsec.toFixed(2),p.plate.scaleArcsecPerPixel.toFixed(3))}</>:p.reason==='degenerate'?m.plateDegenerate(f+1):m.plateNone(f+1,p.references)}</li>:null)}</ul>
   <p role="status" data-testid="objectx-motion">{motion?m.motion(motion.rateArcsecPerHour.toFixed(2),motion.positionAngleDeg.toFixed(1),motion.arcsec.toFixed(2),motion.hours.toFixed(3)):m.motionNone}</p>

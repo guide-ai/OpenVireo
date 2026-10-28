@@ -127,6 +127,14 @@ describe('measurement log (pixels only; positions derived from the current log)'
   const al=blinkAlignment([ref(0),ref(1),{...ref(0,1),x:stars[0].x+3,y:stars[0].y-2},{...ref(1,1),x:stars[1].x+3,y:stars[1].y-2}],0,1)!;
   expect(al.dx).toBeCloseTo(-3,9);expect(al.dy).toBeCloseTo(2,9);expect(al.scale).toBeCloseTo(1,12);
  });
+ it('pairs blink reference stars by catalogue coordinates, not by marking order (closure N1)',()=>{
+  const shifted=(i:number)=>({...ref(i,1),x:stars[i].x+3,y:stars[i].y-2});
+  // Frame 2 marks star 2 first, then star 1, then star 0: order differs from frame 1.
+  const al=blinkAlignment([ref(0),ref(1),shifted(2),shifted(1),shifted(0)],0,1)!;
+  expect(al.dx).toBeCloseTo(-3,9);expect(al.dy).toBeCloseTo(2,9);expect(al.scale).toBeCloseTo(1,12);expect(al.rotationDeg).toBeCloseTo(0,9);
+  // No common star on both frames: no alignment.
+  expect(blinkAlignment([ref(0),ref(1),shifted(2),shifted(3)],0,1)).toBeNull();
+ });
  it('stretches the display between the cuts and defaults them to 5 % and 50 % of the range',()=>{
   const r=stretchRaster(image,{low:100,high:200});expect(Array.from(r.subarray(0,4))).toEqual([0,0,0,255]);
   expect(defaultDisplayRange(100,1100)).toEqual({low:150,high:600});expect(defaultDisplayRange(null,null)).toEqual({low:0,high:1});

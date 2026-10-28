@@ -1,8 +1,10 @@
-# E08 Object X — orbit files, ephemeris and measuring tool (Front X, X0–X3)
+# E08 Object X — the quest for Object X (Front X, X0–X5)
 
-Status: first mergeable set (X0a, X0b, X1, X2, X3), revised after independent review 1 (findings H1, M1–M3, L1–L3, L6;
-raw report kept by the coordinator at analysis/reviews/front-x-review-1.md). The `#object-x` route, camera insertion of asteroids (X4) and the v28
-investigation, guide and closure (X5) wait for the camera (Front C, C3). E08 is **not** closed.
+Status: X0–X3 merged at 121c835 after review 1 and the closure check. X4 (route, camera asteroids, asteroid list) and X5
+(v28 investigation, guide) are implemented on branch `claude/serene-dubinsky-8d1244`; review 2 (no-go on H1, H2) and its fixes
+are recorded in the section "Review 2 fixes" below. E08 is
+**not** closed: the star, galaxy and quasar branches need the spectrometer at arbitrary coordinates, which is typed "not
+available yet" until the field-engine front lands.
 
 Implementation: Claude Code (claude-opus-5-5), medium effort, branch `claude/serene-dubinsky-8d1244`. Independent high-effort
 review by the coordinator is pending. Static analysis only: objdump on exact address ranges of CLEA_VEO.exe
@@ -105,7 +107,7 @@ authored synthetic state vectors.
 The original's Object X default date is **2009/06/01 04:00:00 UT** (TUTTimeDlg 0x4fde9c/0x4fdeb0, X0b). Separation from each row
 at that time, computed with this port:
 
-| Row | ObjX_MPC.CMO.sav (epoch 2009-06-18) | ObjX_AST.CMO (epoch 2009-03-09) | ObjX_MPC.CMO (epoch 2010-07-23) |
+| Row | ObjX_MPC.CMO.sav (epoch 2009-06-18) | ObjX_AST.CMO (epoch 2009-03-10) | ObjX_MPC.CMO (epoch 2010-07-23) |
 |---|---|---|---|
 | (433) Eros 22.722017 h −8.03989° | **0.04″** | 0.18″ | 25.0″ |
 | (134340) Pluto 18.166972 h −17.631472° | **1.37″** (HTL RA rounding 0.1 s ≈ 1.43″) | 1.32″ | 3.9″ |
@@ -129,8 +131,137 @@ it. ObjX_AST.CMO also misses 1994 CC at 04:00 (16′; it crosses the row near 06
 - CCD Expose 0x5222d4 → 0x522718 → ComputeMovers 0x59940c(T = clock at exposure start, dt = exposure): one record at T and,
   for dt > 0, a second at T + dt ("kind-2 pair"), name "(number) name", V, B−V 0.65, U−B 0.195, spectral code G2V; gnomonic
   projection with optional jitter; band offsets NF −0.54, B +0.65, V 0, R −0.54, I −0.88; no frame-bounds test.
-- Not recovered: how the renderer draws the pair (two images or a trail), the exact source of the CCD field box, the sort key
+- The renderer draws the pair as one trail (recovered by front C, NATIVE-CAMERA-FRONT-C-C0-01). Not recovered: the exact source of the CCD field box, the sort key
   of the observable list, the orbit-file creator's selection rule, and the meaning of AST byte 0x9e/MPC bit 16.
+
+## The #object-x route (X4, `src/ObjectXLab.tsx`, `src/core/asteroidField.ts`)
+
+Student path, following the original manual (identification, decision D3):
+
+1. **Your object.** ID # (≤ 18 characters, TUTTimeDlg IDEd; it only labels data as `ObjX-<ID>`, or `UNKNOWN`) and an
+   **object code**. Codes are `X-` + 5 base-36 characters of FNV-1a over the HTL identifier, listed sorted by code, so neither the
+   file order (grouped by kind) nor any identifier or remark is shown (decision D5). "Assign me one at random" is a web
+   convenience. Date and time default to the original 2009-06-01 04:00:00 UT; **Set the observatory clock** applies it.
+2. **Investigate**, three instrument branches on one page:
+   - **CCD camera** (asteroids, any object): orbit file (default ObjX_MPC.CMO.sav, with the one-line label; MPC and AST
+     selectable), limiting magnitude (16), **Build the asteroid list for the observatory date**, and **Copy the coordinates to
+     the observatory** (it fills the observatory's RA/Dec fields; the student points with *Point to coordinates*). The observatory
+     camera then asks the lab for moving pairs at each exposure and hands it each image.
+   - **Radio telescope** (pulsars): opens the radio route, which shows the object's code and coordinates in the six fields of
+     *Set Coordinates* (documented manual entry); the student starts the pulsar setup, slews and opens the Receiver.
+   - **Spectrometer** (stars, galaxies, quasars): typed "Not available yet" with the same text for every object, so it reveals nothing.
+3. **Your images**: one line per camera image (`ObjX-<ID>-NN`, UT, filter, length, asteroids in the field box and how many
+   fell off the detector — the composer's `moving-pair-off-detector` reason), and **Open saved FITS images** to load images back.
+4. **Compare and measure**: two images into the X3 measuring tool (blink, centroid, header WCS or plate constants, motion).
+   The **Current observable asteroids** list (original 0x51a614 columns: name, RA, Dec, V, Δ, notes (1)–(4) with the per-file
+   legend) is rendered only when opened, sorted by RA.
+5. **Your answer**: star / galaxy / quasar / pulsar / asteroid, a free description, then **Reveal the identity** (two clicks,
+   only after an answer), which shows the HTL identifier and remark and whether the answer matches.
+
+Header and theme: the route is under **Analysis** (after LSS data) and the guide under **Exercise guides** (after the LSS guide) in
+the grouped navigation; `src/objectx.css` uses the `--ov-*` tokens of `src/theme/tokens.css`, so the route follows the light and
+dark themes (checked at 1440 and 320 px). The measuring canvas and its marks stay a fixed image panel.
+
+Asteroid list (0x519e94): every record through the X2 ephemeris at the list date; kept when V ≤ limit and (near-Earth flag —
+AST byte 0x9c ∈ {1,2,4}, MPC byte 0xa0 ∈ {2,3,4} — or RA within ±3 h of the antisolar point, wrap-aware). The antisolar RA is the
+Sun's geometric longitude + π converted with the mean obliquity of date (0x515df0/0x4b9f44 were not read; a few arcseconds
+do not matter against a ±3 h window). **Closure L5:** a record whose decoding or ephemeris fails is skipped with a typed reason
+(`record` or `ephemeris` + the EphemerisError code) and the scan continues; the count is shown. The scan runs in 4000-record
+slices (0.22 s for the .sav file, 1.3 s for ObjX_MPC.CMO in Node), so no Worker is needed. At 2009-06-01 04:00 UT the .sav file
+gives 533 asteroids (11 near-Earth, 522 near opposition), Eros among them at 0.04″ from its HTL row.
+
+Moving pairs (ComputeMovers 0x59940c): list entries within the field box, each evaluated at T (exposure start) and T + exposure;
+`storedMag` is V at T as a Single (the composer applies NF −0.54, B +0.65, V 0, R −0.54, I −0.88). Web adaptations: the field box is
+2° around the pointing (the original box source is not recovered); at most 128 pairs, brightest first (composer limit 256).
+
+**Camera contract** (front C, main 9af0d29): the camera calls `extraSources(jd, seconds)` with the JD and the total exposure
+length captured at Start, so each pair ends at T + exposure, and the composer draws the pair as one trail between the two
+positions (source loop 0x521a6f..0x521b35 → extended source 0x524a6c; evidence NATIVE-CAMERA-FRONT-C-C0-01,
+docs/CAMERA-EXPOSURE.md). Pairs the composer does not draw arrive in `onImage` as `exposure.skipped` with a typed reason
+(`moving-pair-off-detector`, `moving-pair-geometry`, `moving-pair-budget`); the image list shows them by reason and count, never
+by name (a name could reveal the object), and v28 stores the reasons. Rates at 2009-06-01 04:00 UT from the .sav file: 1994 CC
+0.0907°/h, Eros 0.0152°/h, Pluto 0.0010°/h; front C draws diagonal 600 s trails of 0.15° and 0.5°, so exposure length is no
+longer a practical limit.
+
+Known limits: Eros (V ≈ 13.7 in NF here) is only ~15 ADU above a ~530 ADU background in 30 s on the 0.4 m: it is the brightest pixel
+but faint on screen, so the guide suggests NF and about 2 minutes. The observatory's "Switch to telescope view ↗" shortcut re-points
+at the selected catalogue object; after *Point to coordinates* the student must use the plain *Telescope · 15′* view button (front B).
+
+## Investigation file v28 (X5, `src/io/objectXInvestigation.ts`)
+
+A v28 file wraps an unchanged v1..27 base, outermost (so it combines with a v27 LSS file); a v28 is never nested. It stores the
+orbit file, ID, object code, start date, whether the clock was set, the current list date and limit, one recipe per exposure (JD,
+length, filter, gain, telescope, pointing, seed, catalog mode/SHA-256/extract, the date, orbit file and limit of the list it used,
+pair count and the typed reasons of pairs the camera skipped, SHA-256 of the
+FITS the lab wrote), image references (SHA-256, label, JD, exposure), the measuring pair and marks (pixels only), the answer, the
+description and the reveal flag. **Images are not stored**; the student keeps the FITS files and reopens them.
+
+Restore replays: each orbit file an exposure used is fetched and checked (size and SHA-256); each distinct (orbit file, date,
+limit) list is rebuilt in slices that yield to the page; every exposure's pairs are re-derived with its own list and must match
+the stored count; an exposure whose catalogue came from a bundled static extract is recomposed (camera Worker core, same query,
+reader and composer) and must give its stored FITS SHA-256. **Live-catalogue exposures cannot be replayed offline** (the VizieR
+response is not stored): their pairs are replayed, their images are not, and the image list labels them so. A SHA-256 over those
+derivatives and over the student's own state (ID, object code, answer, reveal flag, description, measuring pair and marks) must
+equal the stored digest, so an edited file is rejected. Bounds: 64 exposures, 16 images, 8 lists, 64 marks, 4000-character
+description, 1 MiB. Any failure rejects the whole file.
+
+## Guide (X5, `src/ObjectXLabGuide.tsx`, `src/core/objectXLab.ts`)
+
+Ten steps recomputed from the lab on every render: object, clock, list, image (an image within 0.25° of the object), repeat
+(two such images), measure (a motion, or a non-moving answer), classify, describe, reveal, save. Nothing judges the answer
+before the reveal; no step names an object.
+
+## Tests (X4–X5)
+
+- Vitest: `objectXLab.test.ts` (4: distinct opaque codes with no identifier or remark, reveal, ObjX- label, progress), `asteroidField.test.ts` (8: file type, label, antisolar window, list contract on the .sav file, chunked = whole, L5
+  per-record errors, Eros pair, 0 s exposure), `objectXInvestigation.test.ts` (3: v28 round trip also over v27, no orbit fetch
+  without asteroid exposures, tamper/digest/replay/bounds), `astrometryMeasure.test.ts` +1 (N1 catalogue pairing).
+- Playwright `tests/object-x-path.spec.ts` (2): hidden identity checked in the route, guide and camera before the reveal (M1;
+  identifiers everywhere, one-word remarks such as "Star" only outside the camera's shared text); Eros: clock, list, observatory,
+  two 30 s live-mode images with the recorded VizieR response, pairs in both, both marks within 4″ of the object, motion, answer,
+  reveal, save v28 and restore in a fresh page; radio and spectrometer branches, guide progress, and light/dark at 1440 and 320 px
+  without overflow, reached through the header-tools helper (`tests/fixtures/header-tools.ts`).
+  `tests/object-x-camera.spec.ts` (1, test-only host `tests/fixtures/object-x-camera-host.ts` with the real CameraControl and
+  ObjectXLab wired as in OpenVireo): the camera calls `extraSources(jd, 2)` with the Start values, and an authored pair 80° off
+  axis is skipped as `moving-pair-off-detector` and shown in the Object X image list as "Not drawn: 1 far outside the detector.".
+  `tests/object-x-measure.spec.ts` now also checks N1 (reversed marking order), N2 (no re-stretch on cursor moves) and N3 (aligned
+  pixel). `recorded-analysis-navigation.spec.ts` lists the two new header buttons.
+
+## Review 2 fixes (no-go H1, H2; then M1–M5, L1–L5)
+
+- **H1 hidden identity in every instrument.** While an Object X code is chosen and not revealed, the lab reports the target's
+  position, code and `ObjX-<ID>` label. Any catalogue object within 2° (`OBJECT_X_HIDE_DEGREES`, [W]; the finder field is 2.5°) is
+  drawn unnamed in the sky map and cannot be selected there; a selected object near it shows "Name hidden during Object X" in the
+  target card, the telescope-motion card and pointing notices, its library spectrum line is hidden and the spectrometer is
+  disabled for it; the field toolbar says "Names hidden during Object X." In the radio route, while the antenna points within 2°,
+  the receiver heading, the profile source, the Identify draft, the Properties object and the .PLR header use `ObjX-<ID>` — the
+  original labels its radio receivers "ObjX-<ID>" in Object X (0x5733af, 0x57383f, 0x574794; X0b). Names return after the reveal.
+- **H2 per-exposure lists.** Each exposure stores the orbit file and limiting magnitude of the list it used and is replayed with
+  them; changing either input later no longer blocks Save, and the file names the orbit file each image actually used.
+- **M1 automatic list.** Setting the clock in Object X builds the list (as the original after Set Date/Time); an observatory clock
+  change elsewhere rebuilds it when the date moves more than 0.1 day ([W]); changing the orbit file or limit rebuilds it. An image
+  whose JD is more than 0.5 day ([W]) from the list, or taken with no list, says "asteroids not computed", and a list for its date
+  is built for the next image.
+- **M2** the answer is frozen at the reveal (the radio buttons are disabled; the digest covers it); "an asteroid".
+- **M3** static-catalogue images are recomposed and checked by FITS SHA-256; live ones are labelled not replayable offline; the
+  digest covers the student's state.
+- **M4 pulsar branch**: coordinate hand-off (documented manual entry) and receiver labels as above; `tests/object-x-radio.spec.ts`.
+- **M5** the path spec takes two 60 s images 45 min apart, predicts Eros' pixel on each saved image from the orbit file and its
+  header, measures there and checks rate and position angle against the ephemeris (54.7″/h at the default date; ±6″/h, ±8°).
+- **L1** the raster-cache count is a canvas attribute (`data-raster-builds`), not a product export. **L2** a notice when the image
+  or exposure limit is reached; a confirm before changing measured images clears marks. **L3** save/restore build lists in slices
+  that yield (the toolbar's Cancel discards the result; the computation itself is not interrupted). **L4** each image can be saved
+  as `ObjX-<ID>-NN.FIT` from the Object X page (the camera's own Save keeps its name). **L5** the guide says a later night needs the
+  rebuilt list and that a fast near-Earth asteroid will have left the field (no asteroid is named, to keep the identity hidden).
+
+Review 2 tests: `objectXInvestigation.test.ts` +4 (H2 limit change and orbit-file change both save and replay with each
+exposure's own list, a forged orbit file is rejected; M3 digest over answer/reveal/marks/code/ID/description; M3 static-catalogue
+recompose and FITS SHA-256 on an authored extract). Playwright: `object-x-identity.spec.ts` (5: one target of each kind pointed in
+the observatory, finder and telescope views and the spectrometer, no HTL identifier, remark or catalogue name within 2°; names
+return after the reveal; with hiding disabled the galaxy case fails on "NGC 4631"), `object-x-radio.spec.ts` (4: the three HTL
+pulsars, from the coordinates on the radio page through Set Coordinates, receiver and Record, fold to z = 26.2, 6.0 and 9.6 at
+their catalogue periods with the receivers labelled ObjX-42 and no name in the radio route; NGC 4631 shows "No Pulsar in Beam!"
+and z ≈ 2.1), and the path spec now checks the 45-minute motion against the ephemeris and the reopened FITS files.
 
 ## Measuring tool (X3, `src/core/astrometryMeasure.ts`, `src/ObjectXMeasure.tsx`)
 
@@ -147,18 +278,21 @@ statically under decision D6; toolkit.exe was not needed and not analysed.
   and the motion are derived from the current marks at render time, so correcting a reference star re-solves every target.
 - Cuts: the low/high cut sets both the display stretch and the centroid weights (the guide ties them to the displayed range);
   the 5 %/50 % default of the image range is a labelled web choice.
-- Blink: alternate two images at 10–1000 ms (default 500), aligned on the first two reference marks of each image when both
-  have them, otherwise raw frames (labelled "same pointing assumed"). Measuring is disabled while blinking.
+- Blink: alternate two images at 10–1000 ms (default 500), aligned on the first two reference stars marked on both images,
+  paired by catalogue position within 1″ (closure N1), otherwise raw frames (labelled "same pointing assumed"). Measuring is disabled while blinking.
 - Motion: rate (″/h) and position angle (north through east) between the earliest and latest solved target marks.
 - Synthetic fixtures are authored test images, never presented as CLEA observations.
 
-The component is mounted by the `#object-x` route in X4. Until then it is exercised in Chromium through the test-only host
+The component is mounted by the `#object-x` route (X4). It is also exercised in Chromium through the test-only host
 `tests/fixtures/object-x-measure-host.ts` (`tests/object-x-measure.spec.ts`: keyboard cursor and Enter, click → pixel on the
 shown image, frame attribution, motion, raw → aligned blink, timer alternation, measuring disabled while blinking).
 
 ## Not recovered / open
 
 - Mode 1 apparent positions (nutation) — unused by Object X.
-- The renderer of asteroid pairs, CCD field box source, list sort key, orbit-file creator selection, some flag bits (X0b).
-- X4 list builder: catch ephemeris errors per record (the original continues past a bad record, 0x5159aa → 0x515abd).
+- CCD field box source, list sort key, orbit-file creator selection, some flag bits (X0b).
 - x87 Extended evaluation is not reproduced; no original-runtime equivalence is claimed.
+- Star, galaxy and quasar branches: the spectrometer at arbitrary coordinates (quasar merge, photographic association, own galaxy
+  spectra, star templates) belongs to the later field-engine front; E08 closes only after it.
+- The radio hand-off is a documented manual entry (the coordinates shown in the dialog's fields), not an automatic pointing.
+- The anti-solar RA routine 0x515df0/0x4b9f44 was not read; the web uses geometric longitude + π and the mean obliquity of date.

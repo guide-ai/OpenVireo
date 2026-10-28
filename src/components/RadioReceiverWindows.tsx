@@ -112,7 +112,12 @@ type Props=Readonly<{
  /** Phase 1 item 1.5: the idle session and window settings restored from an investigation file (read once, at mount). Each
   * window's settings are applied once, right after the learner's own Open (main) or Add (channel) creates it. */
  restored?:Readonly<{session:RadioReceiverSession;windows:readonly [ReceiverWindowConfiguration|null,ReceiverWindowConfiguration|null,ReceiverWindowConfiguration|null]}>|null;
+ /** E08 Object X (review 2 H1/M4): for the current antenna pointing, the label that replaces catalogue pulsar names while an
+  * unrevealed Object X target is near, or null. The original labels these windows "ObjX-<ID>" in Object X (X0b). */
+ hiddenName?:(pointing:RadioPointing)=>string|null;
 }>;
+/** Replaces the source name of a "Pulsar <name>   Aperture: …" caption. */
+const maskCaption=(caption:string,label:string|null)=>label!==null&&caption.startsWith(PULSAR_TITLE_PREFIX)?PULSAR_TITLE_PREFIX+label+caption.slice(PULSAR_TITLE_PREFIX.length).replace(/^.*?(?=\s{2,}|$)/,''):caption;
 
 /** Browser interval host for the receiver Timer1 registration (WEB-RX-CAD-01). */
 const BROWSER_TIMER:RadioTimerHost={setInterval:(callback,ms)=>window.setInterval(callback,ms),clearInterval:handle=>window.clearInterval(handle as number)};
@@ -233,7 +238,8 @@ type CardAudition=Readonly<{phase:'idle'|'starting'|'playing';available:boolean;
  * first admitted press and which never steps the session.
  */
 export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parametersPresented,configurationOpen=false,catalogNow,pointingNow,readClockJD,perfNow,apiRef,receiverButtonRef,onSummaryChange,
- pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage,restored=null}:Props){
+ pulsarData,onOpenPulsarAnalysis,onSourcePicker,onReceiverOpened,onMainCloseMessage,restored=null,hiddenName}:Props){
+ const maskedName=hiddenName?.(pointingNow())??null;
  const id=useId();
  const [session,setSession]=useState<RadioReceiverSession>(()=>restored?.session??createRadioReceiverSession());
  // Phase 1 item 1.5: restored window settings not yet applied (each one is used once, by the Open or Add that creates it).
@@ -494,6 +500,9 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
  };
  const recordIdentify=(answer:'ok'|'cancel')=>{recordStep(s=>answerRecordIdentify(s,answer));};
  const recordProperties=()=>{recordStep(closeRecordProperties);};
+ // Object X: an untouched Identify draft (the catalogue name) becomes the hidden-object label before it is shown.
+ const finishNow=session.record?.finish??null;
+ useEffect(()=>{if(maskedName!==null&&finishNow&&finishNow.stage==='identify'&&finishNow.draft===finishNow.name&&finishNow.draft!==maskedName)recordDraft(maskedName);},[maskedName,finishNow?.stage,finishNow?.draft]);
  const recordSave=(answer:'no'|'cancel')=>{
   const r=recordStep(s=>answerRecordSave(s,answer),()=>t(answer==='no'?'radioReceiver.record.status.analysis':'radioReceiver.record.status.kept'));
   if(r?.outcome.kind==='ok'&&answer==='cancel')requestFocus('record',0);
@@ -787,7 +796,7 @@ export function RadioReceiverWorkspace({active,busy,antennaModal,dateOpen,parame
   </section>
   {/* WEB-RX-ALIGN-NOREMOUNT: keyed by slot in one parent, so a reorder moves the same card instances (no Paint, no overlay
      reset, canvas bitmaps kept). */}
-  {order.map(slot=>{const r=session.bank.slots[slot];return r&&<ReceiverCard key={slot} r={r} session={session} log={session.canvases[slot]} overlay={session.markOverlays[slot]}
+  {order.map(slot=>{const r=session.bank.slots[slot];return r&&<ReceiverCard key={slot} maskedName={maskedName} r={r} session={session} log={session.canvases[slot]} overlay={session.markOverlays[slot]}
    inert={cardsInert} notice={notice&&notice.slot===slot?noticeText(notice):''} headingRef={el=>{headings.current[slot]=el;}} closeRef={el=>{closes.current[slot]=el;}}
    addRef={slot===0?addRef:undefined} onStep={step} onAdd={add} onMode={mode} onClose={close} onPaint={paint} marks={markHandlers}
    recordHost={!!pulsarData} recordRef={slot===0?recordButton:undefined} onRecord={record}
@@ -989,7 +998,7 @@ type MarkHandlers=Readonly<{
  place:(slot:number,selector:ReceiverMarkSelector,text:string)=>ReceiverSessionTransition|null;step:(slot:number,selector:ReceiverMarkSelector,delta:1|-1)=>void;
  clear:(slot:number)=>void;overlayRef:(slot:number,el:HTMLCanvasElement|null)=>void;displayRef:(slot:number,el:HTMLDivElement|null)=>void;
 }>;
-type CardProps=Readonly<{r:RadioReceiver;session:RadioReceiverSession;log:ReceiverCanvasLog|null;overlay:ReceiverMarkOverlay|null;inert:boolean;notice:string;
+type CardProps=Readonly<{maskedName:string|null;r:RadioReceiver;session:RadioReceiverSession;log:ReceiverCanvasLog|null;overlay:ReceiverMarkOverlay|null;inert:boolean;notice:string;
  headingRef:(el:HTMLHeadingElement|null)=>void;closeRef:(el:HTMLButtonElement|null)=>void;addRef?:RefObject<HTMLButtonElement|null>;
  onStep:(slot:number,control:RadioReceiverControl,direction:'down'|'up')=>void;onAdd:()=>void;onMode:(slot:number)=>void;onClose:(slot:number)=>void;onPaint:(slot:number)=>void;
  marks:MarkHandlers;recordHost:boolean;recordRef?:RefObject<HTMLButtonElement|null>;onRecord:()=>void;
@@ -997,7 +1006,7 @@ type CardProps=Readonly<{r:RadioReceiver;session:RadioReceiverSession;log:Receiv
  audition:CardAudition;onAudition:(slot:number)=>void}>;
 /** One TRcvr_Form1 as a card: the native caption, the display and the controls in DFM TabOrder, then the web mark controls,
  * the R-RX5 window-position group and the R-RX13 web trace audition group. */
-function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks,recordHost,recordRef,onRecord,
+function ReceiverCard({maskedName,r,session,log,overlay,inert,notice,headingRef,closeRef,addRef,onStep,onAdd,onMode,onClose,onPaint,marks,recordHost,recordRef,onRecord,
  alignRef,onAlign,onMove,moveRef,audition,onAudition}:CardProps){
  const id=useId(),slot=r.index,main=slot===0,labels=receiverLabels(r),avail=receiverControlAvailability(session,slot);
  // R-RX5: AlignDisp is the stored caption; after a FormCreate reset it can say No while Align is on (WEB-RX-ALIGN-LABEL-01).
@@ -1007,7 +1016,7 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
   aria-label={t(dir==='up'?'radioReceiver.window.upLabel':'radioReceiver.window.downLabel',{n:slot+1})} aria-disabled={moves[dir]!=='enabled'||undefined}
   aria-describedby={`${id}-window-help`} onKeyDown={ignoreHeldKey} onClick={()=>onMove(slot,dir)}>{t(dir==='up'?'radioReceiver.window.up':'radioReceiver.window.down')}</button>;
  const [selected,setSelected]=useState<ReceiverMarkSelector>(0);
- const caption=receiverCaption(r.title,r.apertureText),finishing=r.stopPending===true&&session.bank.timerEnabled;
+ const caption=maskCaption(String(receiverCaption(r.title,r.apertureText)),maskedName),finishing=r.stopPending===true&&session.bank.timerEnabled;
  const error=session.tickError;
  const spin=(control:RadioReceiverControl,caption:string,value:string,down:PlainMessageKey,up:PlainMessageKey,state:ReceiverControlState)=>
   <div className="radio-receiver-spin" role="group" aria-labelledby={`${id}-${control}`} data-testid={`receiver-${control}-${slot}`}>
@@ -1063,7 +1072,7 @@ function ReceiverCard({r,session,log,overlay,inert,notice,headingRef,closeRef,ad
   </dl>
   <p id={`${id}-sweep`} data-testid={`receiver-sweep-${slot}`} data-position={r.position??''} data-receiving={r.receiving} data-stop-pending={r.stopPending===true} data-timer={session.bank.timerEnabled}>
    {r.position===null?t('radioReceiver.card.sweepNone'):finishing?t('radioReceiver.card.finishing',{position:r.position,width:r.sweepWidth}):t('radioReceiver.card.sweep',{position:r.position,width:r.sweepWidth})}</p>
-  {main&&<p data-testid="receiver-source">{r.identifiedName===null?t('radioReceiver.card.sourceNone'):t('radioReceiver.card.source',{name:r.identifiedName})}</p>}
+  {main&&<p data-testid="receiver-source">{r.identifiedName===null?t('radioReceiver.card.sourceNone'):t('radioReceiver.card.source',{name:r.identifiedName&&maskedName!==null?maskedName:r.identifiedName})}</p>}
   {main&&error?<p role="alert" className="radio-receiver-alert" data-testid="receiver-tick-error" data-kind={error.kind}>{t('radioReceiver.tickError',{reason:t(`radioReceiver.error.${error.kind}`)})}</p>:null}
   <ReceiverMarks slot={slot} r={r} overlay={overlay} availability={receiverMarkAvailability(session,slot)} selected={selected} onSelect={setSelected} marks={marks}/>
   <div className="radio-receiver-window" role="group" aria-labelledby={`${id}-window`} data-testid={`receiver-window-${slot}`} data-rank={rank} data-count={count}>

@@ -1,0 +1,20 @@
+/* E08 Object X route and measuring tool. Colours, spacing and type come from src/theme/tokens.css (light and dark); the
+   measuring canvas and its marks are a fixed image panel, like the other plot panels. */
+.objectx-lab .card{margin-block:var(--ov-space-4)}
+.objectx-lab label{display:flex;flex-direction:column;gap:var(--ov-space-1);margin-block:var(--ov-space-2);color:var(--ov-text)}
+.objectx-lab fieldset.button-row label,.objectx-lab .button-row label{flex-direction:row;align-items:center;gap:var(--ov-space-2)}
+.objectx-lab input:not([type=radio]):not([type=checkbox]),.objectx-lab select,.objectx-lab textarea{max-width:100%;min-width:0}
+.objectx-branches{display:grid;gap:var(--ov-space-4);grid-template-columns:repeat(auto-fit,minmax(min(16rem,100%),1fr))}
+.objectx-branches>section{border:1px solid var(--ov-border);border-radius:var(--ov-radius-md);padding:var(--ov-space-3);background:var(--ov-surface-raised)}
+.objectx-branches h3{margin-top:0;font-size:var(--ov-text-lg)}
+.objectx-unavailable{font-style:italic;color:var(--ov-text-muted);background:var(--ov-warning-soft);border:1px solid var(--ov-warning-border);border-radius:var(--ov-radius-sm);padding:var(--ov-space-2) var(--ov-space-3)}
+.objectx-lab [data-testid=objectx-reveal]{background:var(--ov-info-soft);border-radius:var(--ov-radius-sm);padding:var(--ov-space-2) var(--ov-space-3)}
+.objectx-table,.objectx-measure .objectx-measurements-wrap{overflow-x:auto;max-width:100%}
+.objectx-table{max-height:24rem}
+.objectx-table table,.objectx-measurements{border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:var(--ov-text-sm)}
+.objectx-table th,.objectx-table td,.objectx-measurements th,.objectx-measurements td{padding:var(--ov-space-1) var(--ov-space-2);text-align:right;border-bottom:1px solid var(--ov-border)}
+.objectx-table td:first-child,.objectx-table th:first-child{text-align:left}
+.objectx-lab textarea{width:100%;max-width:40rem}
+.objectx-measure .fits-viewport{background:var(--ov-plot-bg);border-radius:var(--ov-radius-sm);overflow:hidden}
+.objectx-measure .fits-viewport:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
+.objectx-measure canvas{display:block}

@@ -1,3 +1,4 @@
+import type {RadioPointing} from '../core/radioAntenna';
 import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type RefObject} from 'react';
 import ResearchNotes from './ResearchNotes';
 import {radioWorkspaceSnapshot,type RadioSnapshotResult,type RadioWorkspaceSnapshot,type RestoredRadioWorkspace} from '../core/radioInvestigation';
@@ -78,6 +79,8 @@ export type RadioTelescopeRouteProps=Readonly<{
  restored?:RestoredRadioWorkspace|null;
  /** Phase 1 item 1.5: Save investigation reads the workspace through this controller (latest refs; refuses while unsafe). */
  controllerRef?:MutableRefObject<RadioRouteController|null>;
+ /** E08 Object X: the label that replaces pulsar names for a pointing near an unrevealed target, or null (forwarded to the receivers). */
+ hiddenName?:(pointing:RadioPointing)=>string|null;
 }>;
 export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<RadioWorkspaceSnapshot>}>;
 
@@ -103,7 +106,7 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. Phase 1
  * item 1.5: Save investigation reads this workspace through controllerRef, and a restore mounts it from `restored`.
  */
-export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef}:RadioTelescopeRouteProps){
+export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName}:RadioTelescopeRouteProps){
  const [initial]=useState(()=>restored);
  const [state,setState]=useState<RadioControlState>(()=>initial?.control??INITIAL_RADIO_CONTROL);
  // Latest accepted control state, read by Start pulsar exercise.
@@ -508,7 +511,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
     antenna={antenna} onAntennaTransition={commitAntenna} antennaOptions={options} onAntennaOptionsChange={optionsManaged?undefined:applyOptions} managedDiameter={optionsManaged}
     active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}/>
   </div>
-  <RadioReceiverWorkspace active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented} configurationOpen={access.open}
+  <RadioReceiverWorkspace hiddenName={hiddenName} active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented} configurationOpen={access.open}
    onReceiverOpened={access.receiverOpened} onMainCloseMessage={access.mainCloseMessage}
    catalogNow={parameters.currentCatalog} pointingNow={()=>antennaRef.current.pointing} readClockJD={readClockJD} perfNow={perfNow}
    apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary} pulsarData={pulsarData} onOpenPulsarAnalysis={onOpenPulsarAnalysis}
