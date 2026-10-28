@@ -39,7 +39,8 @@ async function acquire(page:Page,t:typeof targets[number],keyboard=false){
 test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and – 3 → manual z → Hubble → Save, fresh Restore, resume',async({page})=>{
  test.setTimeout(120000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
- await loadHubble(page);await pointRow(page,5);await expect(page.getByTestId('hubble-point-unavailable')).toContainText('random spectral continuation');await expect(page.getByTestId('hubble-point-card').getByRole('button')).toHaveCount(0);
+ await loadHubble(page);// Front F: all 13 rows are now supported (Boötes through the general field engine), so no row is unavailable.
+ await pointRow(page,5);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','available');await expect(page.getByTestId('hubble-point-unavailable')).toHaveCount(0);
  const sources:string[]=[];
  for(const [i,t] of targets.entries()){if(i>0){await page.clock.resume();await clickHeaderTool(page,'Observatory');await openHotList(page);}await toGalaxy(page,t,i===1);sources.push(await acquire(page,t,i===1));}
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2);await expect(page.locator('#measurement-log')).toContainText('54875');await expect(page.locator('#measurement-log')).toContainText('54891');
