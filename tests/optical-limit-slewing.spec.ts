@@ -52,6 +52,7 @@ test('with Limit Slewing on, the immediate Point shortcuts are refused below the
 test('the Options dialog lists the other original options as text with recovered compiled states (review F8)',async({page})=>{
  await open(page);await card(page).getByTestId('ob-options').click();
  const list=page.getByTestId('ob-options-others');await expect(list.getByRole('checkbox')).toHaveCount(0);
- await expect(list).toContainText('Fast Slewing — compiled: checked');await expect(list.getByRole('listitem')).toHaveCount(15);
- await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(1);
+ // Front O: Edit Mode is a live (non-persisted) check box, so 14 of the 15 other options remain listed as text.
+ await expect(list).toContainText('Fast Slewing — compiled: checked');await expect(list.getByRole('listitem')).toHaveCount(14);await expect(list).not.toContainText('Edit Mode');
+ await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(2);await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();
 });
