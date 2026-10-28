@@ -8,7 +8,8 @@ import {evaluateObjectXSpectrum,objectXSpectrumEngine,type ObjectXSpectrumEngine
 import type {FieldTelescope} from '../core/fieldEngine';
 import type {ObjectXSpectrometerResources} from './objectXSpectrometerInputs';
 import type {ObjectXSpectrometerWorkerRequest} from './objectXSpectrometerWorker';
-import {WORKER_REPLY_TIMEOUT_MS,workerFailureKind,type WorkerFailureKind} from './workerFailure';
+import {workerFailureKind,type WorkerFailureKind} from './workerFailure';
+import {workerClient} from './workerClient';
 
 export type {ObjectXSpectrometerResources,ObjectXSpectrumReveal};
 export type ObjectXSpectrumView=
@@ -25,22 +26,13 @@ const cache=new Map<string,Promise<ObjectXSpectrumEvaluation>>();
 /** Test seam: recorded local bytes evaluated in process; null restores the browser Worker path. */
 export function setObjectXSpectrometerResources(r:ObjectXSpectrometerResources|null){resources=r;inputs=null;cache.clear();}
 
-let worker:Worker|null=null,ticket=0;
-const waiting=new Map<number,(m:{ok:boolean;kind?:WorkerFailureKind;evaluation?:ObjectXSpectrumEvaluation})=>void>();
-function dropWorker(){for(const w of waiting.values())w({ok:false,kind:'load'});waiting.clear();worker?.terminate();worker=null;}
-function viaWorker(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumEvaluation>{
- if(!worker){
-  worker=new Worker(new URL('./objectXSpectrometerWorker.ts',import.meta.url),{type:'module'});
-  worker.onmessage=e=>{const w=waiting.get(e.data.ticket);waiting.delete(e.data.ticket);w?.(e.data);};
-  worker.onerror=dropWorker;
- }
- const mine=++ticket;
- return new Promise((resolve,reject)=>{
-  // A silent Worker is evicted after the timeout: the request rejects as a retryable load failure and its cache entry is removed.
-  const timer=setTimeout(()=>{if(waiting.has(mine))dropWorker();},WORKER_REPLY_TIMEOUT_MS);
-  waiting.set(mine,m=>{clearTimeout(timer);if(m.ok&&m.evaluation)resolve(m.evaluation);else reject(m.kind==='evidence'?new ObjectXSpectrometerEvidenceError():new ObjectXSpectrometerLoadError());});
-  worker!.postMessage({ticket:mine,pointing:{ra:pointing.ra,dec:pointing.dec},telescope} satisfies ObjectXSpectrometerWorkerRequest);
- });
+// A Worker silent for the inactivity timeout is evicted with every request it holds: each rejects as a retryable load failure
+// and its cache entry is removed (io/workerClient.ts).
+const ask=workerClient(()=>new Worker(new URL('./objectXSpectrometerWorker.ts',import.meta.url),{type:'module'}));
+async function viaWorker(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumEvaluation>{
+ const m=await ask({pointing:{ra:pointing.ra,dec:pointing.dec},telescope} satisfies Omit<ObjectXSpectrometerWorkerRequest,'ticket'>);
+ if(m.ok&&m.evaluation)return m.evaluation as ObjectXSpectrumEvaluation;
+ throw m.kind==='evidence'?new ObjectXSpectrometerEvidenceError():new ObjectXSpectrometerLoadError();
 }
 async function inProcess(r:ObjectXSpectrometerResources,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrumEvaluation>{
  inputs??=import('./objectXSpectrometerInputs').then(m=>m.loadObjectXSpectrometerInputs(r)).catch(e=>{inputs=null;throw e;});

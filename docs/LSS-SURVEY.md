@@ -27,7 +27,7 @@ Per field on the 0.4 m: F1 14, F2 14, F3 12, F4 8, F5 12, F6 13, F7 20, F8 20, F
 
 Variables (2026-10-28, coordinator decision): every CLEA_VStrs.dat variable whose time update the dispatch 0x51ec48 returns
 false without side effects (period 0, word 0 unless class 1, or class 3) takes the false-merge branch, one after another in
-file order (fieldEngine.ts `variableDispatch: 'recovered'`, now the default). Eleven rows became acquirable (F1R6, F2R12, F2R15,
+the stage's (RA, Dec) order (0x492728 under 0x4bc950; fieldEngine.ts `variableDispatch: 'recovered'`, now the default). Eleven rows became acquirable (F1R6, F2R12, F2R15,
 F2R17, F2R25, F5R20, F8R1, F8R2, F8R3, F8R24, F9R22); F2R16, F3R5, F4R3 and F4R5 now stay unavailable only for the QSO merge.
 The 45 changed M0 entries are listed in data/hubble/existing-target-fingerprints.json (`updates`). Rows with a variable of
 another class keep the typed variable-merge reason.

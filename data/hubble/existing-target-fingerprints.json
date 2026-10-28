@@ -1591,7 +1591,7 @@
  "updates": [
   {
    "date": "2026-10-28",
-   "reason": "Coordinator decision of 2026-10-28: the recovered variable dispatch (0x51ec48 returns false without side effects for period 0, word 0 unless class 1, or class 3) is applied everywhere, with sequential false merges in file order. Measured beforehand in the shared note front-f-dispatch-measurement.md (39 single-variable entries); the 6 further entries are rows F2R16 and F5R20, whose two variables are both no-effect false and now merge one after another. No other LSS entry and no Hubble pair changes.",
+   "reason": "Coordinator decision of 2026-10-28: the recovered variable dispatch (0x51ec48 returns false without side effects for period 0, word 0 unless class 1, or class 3) is applied everywhere, with sequential false merges in the variable stage's (RA, Dec) order (0x492728 under 0x4bc950; corrected from \"file order\" in review 4). Measured beforehand in the shared note front-f-dispatch-measurement.md (39 single-variable entries); the 6 further entries are rows F2R16 and F5R20, whose two variables are both no-effect false and now merge one after another. No other LSS entry and no Hubble pair changes.",
    "changedEntries": 45,
    "changes": [
     {

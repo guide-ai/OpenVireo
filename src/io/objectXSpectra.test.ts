@@ -3,7 +3,7 @@ import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {observeObjectXSpectrum,setObjectXSpectrometerResources} from './objectXSpectrometer';
 import {OBJECT_X_SPECTRA_LIMITS,admitObjectXSpectra,portableObjectXSpectra,readObjectXSpectra,setObjectXSpectraSources,type ObjectXSpectrumRecord} from './objectXSpectra';
-import {readAnalysisSession,serializeAnalysisSession,AnalysisSessionError,type AnalysisSession} from './analysisSession';
+import {readAnalysisSession,readInvestigationSession,serializeAnalysisSession,AnalysisSessionError,type AnalysisSession} from './analysisSession';
 import {parseHtl} from '../core/hotList';
 import {objectXCode} from '../core/objectXLab';
 import {INITIAL_CONTROL} from '../core/spectrum';
@@ -42,6 +42,14 @@ describe('kept Object X spectra (v29)',()=>{
   const back=await read(text);expect(back.objectX?.spectra).toEqual(spectra);
   // A session without kept spectra stays v28.
   expect(JSON.parse(await serializeAnalysisSession({...base,objectX:inv(spectra[0].code)})).version).toBe(28);
+ });
+ it('a restore that prepares fields says so once (review 4 item 8); a session without them does not',async()=>{
+  const spectra=[await kept(9,2,'ObjX-7-S01')];
+  const withFields=await serializeAnalysisSession({...base,objectX:inv(spectra[0].code,spectra)}),without=await serializeAnalysisSession({...base,objectX:inv(spectra[0].code)});
+  for(const [text,calls] of [[withFields,1],[without,0]] as const){
+   let n=0;const back=await readInvestigationSession(new File([text],'objx.json'),{onPreparingFields:()=>{n++;}});
+   expect(back.kind).toBe('analysis');expect(n).toBe(calls);
+  }
  });
  it('restore replays: an altered journal, an unknown code or a code without a spectrum rejects the file',async()=>{
   const good=await kept(9,2,'ObjX-7-S01'),text=await serializeAnalysisSession({...base,objectX:inv(good.code,[good])});

@@ -6594,8 +6594,8 @@
     },
     {
       "path": "data/hubble/existing-target-fingerprints.json",
-      "bytes": 126476,
-      "sha256": "a4e1a65c7306de9e970909450a888c58030d65bb5639eeaedfeb978177557c70"
+      "bytes": 126571,
+      "sha256": "65c18707f6ab06e548e592a4308fb4dee288c9b74309cef57b8139ef94605be5"
     },
     {
       "path": "data/hubble/umi-cached-provenance.json",
@@ -6734,23 +6734,23 @@
     },
     {
       "path": "data/photometry/pleiades-variable-fields.json",
-      "bytes": 234446,
-      "sha256": "01beaebf71b1ce5e22b2f7ceb150cab6cc932d31cb6edb30e70429fd093bd579"
+      "bytes": 234859,
+      "sha256": "b0d3ebfe664eb64118460e6a7ae8b8d3ff217c026e70e66699c38b2f7f73ee53"
     },
     {
       "path": "data/photometry/pleiades-variable-vectors.json",
       "bytes": 3616,
-      "sha256": "e038a593506b8b7aec0785b540f3d76a7e505cd7b46ab4c4e95b397f37a9dd33"
+      "sha256": "4998f190634df7c17b2e5ca9d9e95dfe301bf70109ba04832564c00f479b6398"
     },
     {
       "path": "data/photometry/pleiades-pointing-fields.json",
-      "bytes": 412066,
-      "sha256": "b8cd2f82f561c4d7e7c2f15768db7d4895b52a22eb2cb167d5bc169b5ebc1fd1"
+      "bytes": 412635,
+      "sha256": "349526ad08dc9b48393620e65f96bcf0b4cf2975a70dc6bc95288f3a6f6cdad8"
     },
     {
       "path": "data/photometry/pleiades-pointing-vectors.json",
       "bytes": 6942,
-      "sha256": "8854e6fa6f98301e8fbedcee056e9fa58d5314659b9dcf807e83b2d4c2f52a3a"
+      "sha256": "b28fe0df2ba7be3aeafa015b9fca3535e0c515f69babfd9b110b96bf18cd7dde"
     }
   ]
 }

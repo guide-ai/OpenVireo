@@ -2,7 +2,7 @@
   "schema": 1,
   "policy": "OpenVireo-Pleiades-variable-field-targets-v11",
   "kind": "Bounded original catalog fields with recovered no-effect variable merges, not observations",
-  "variableRule": "0x598608 nearest merge (reference 0, runner prune 0x59a2e0) per CLEA_VStrs.dat record in file order; 0x51ec48 returns false at 0x51ee57 without side effects (period 0, or word 0 with class not 1, or class 3); 0x5986c0 restores the hit record; nothing is inserted.",
+  "variableRule": "0x598608 nearest merge (reference 0, runner prune 0x59a2e0) per CLEA_VStrs.dat record kept by the loader (inside the area, Single magnitude within the limit 0x598572) in the variable stage order (kept variables are inserted with 0x492728 under comparator 0x4bc950: RA, then Dec); 0x51ec48 returns false at 0x51ee57 without side effects (period 0, or word 0 with class not 1, or class 3); 0x5986c0 restores the hit record; nothing is inserted.",
   "targets": [
     {
       "target": {
@@ -72,6 +72,7 @@
               "rawHex": "064e5a2054617500000000a13d548be2000e4028299b3b4b403840025556000000000000000020cdcc7c4120cdccac4102552000000000000000c0034020000000000000000000000000000000000000000000000000000000000000"
             }
           ],
+          "faintVariablesSkipped": [],
           "variableMerges": [
             {
               "variable": 2079,
@@ -1135,6 +1136,7 @@
               "rawHex": "064e5a2054617500000000a13d548be2000e4028299b3b4b403840025556000000000000000020cdcc7c4120cdccac4102552000000000000000c0034020000000000000000000000000000000000000000000000000000000000000"
             }
           ],
+          "faintVariablesSkipped": [],
           "variableMerges": [
             {
               "variable": 2079,
@@ -2222,6 +2224,7 @@
               "rawHex": "09563038353520546175008d8ea7aac7160e40a997afa2fba038400342593a00000000000000200000204128295c0f3d02562000000000000000c0034020000000000000000000000000000000000000000000000000000000000000"
             }
           ],
+          "faintVariablesSkipped": [],
           "variableMerges": [
             {
               "variable": 2116,
@@ -3381,6 +3384,7 @@
               "rawHex": "09563038353520546175008d8ea7aac7160e40a997afa2fba038400342593a00000000000000200000204128295c0f3d02562000000000000000c0034020000000000000000000000000000000000000000000000000000000000000"
             }
           ],
+          "faintVariablesSkipped": [],
           "variableMerges": [
             {
               "variable": 2116,
@@ -4564,6 +4568,7 @@
               "rawHex": "0956303634312054617500ff1fbc3d01320e40f64f4a83d09737400555562b4259000000000020cdcc544120cdcc644102422000000000000000c0034020000000000000000000000000034b32560000000000000000000000000000"
             }
           ],
+          "faintVariablesSkipped": [],
           "variableMerges": [
             {
               "variable": 2165,
@@ -5572,6 +5577,7 @@
               "rawHex": "0956303634312054617500ff1fbc3d01320e40f64f4a83d09737400555562b4259000000000020cdcc544120cdcc644102422000000000000000c0034020000000000000000000000000034b32560000000000000000000000000000"
             }
           ],
+          "faintVariablesSkipped": [],
           "variableMerges": [
             {
               "variable": 2166,
@@ -6530,7 +6536,7 @@
   ],
   "generator": {
     "path": "analysis/front-f-hubble-objectx/scripts/pleiades_variable_fields.py",
-    "sha256": "5a21dc047766007d0217d155094f5d833e635ab70fbc1cfc6a96b576ac24cb88"
+    "sha256": "5577a75a4f7ba3d32b417203e091832d4ae2f4cc612c827c933d8a7a5fb97e3d"
   },
   "uncertainty": "Number/Math geometry and seeded Poisson remain adaptations. The false-merge chain is the recovered static branch; no light curve is involved. Complete fields only at these 6 fixed object/sky pointings."
 }

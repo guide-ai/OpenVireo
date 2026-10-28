@@ -86,7 +86,8 @@ export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:r
 export type FieldVariableMode='gate'|'outside-view';
 /** 'recovered' (default since the coordinator decision of 2026-10-28): every variable whose time update the dispatch 0x51ec48
  * returns false for without side effects (zero period, zero word unless class 1, or class 3: variableMerge.ts
- * nativeVariableDispatchFalse) takes the false-merge branch, one after another in file order; any other variable keeps the
+ * nativeVariableDispatchFalse) takes the false-merge branch, one after another in the stage's (RA, Dec) order (0x492728 under
+ * 0x4bc950); any other variable keeps the
  * typed variable-merge reason (or the Boo outside-view rule). 'class-3': the earlier verified HI Peg contract only (one class-3
  * variable with nonzero period and word), kept for comparison and tests. */
 export type FieldVariableDispatch='class-3'|'recovered';
@@ -214,6 +215,10 @@ export function nativeCursorInsert<T>(items:readonly T[],greater:(a:T,b:T)=>bool
  return list;
 }
 const galaxyGreater=(a:NativeGalaxy,b:NativeGalaxy)=>a.ra>b.ra||a.ra===b.ra&&a.dec>b.dec;
+/** 0x4bc950: strict RA greater, or equal RA and Dec greater (the variable list's comparator). */
+const variableGreater=(a:NativeVariable,b:NativeVariable)=>a.ra!==b.ra?a.ra>b.ra:a.dec>b.dec;
+/** Variable loader predicate (…0x598572): inside the area and Single magnitude <= the limiting magnitude. */
+export function fieldVariableAdmitted(v:Readonly<{ra:number;dec:number;magnitude:number}>,area:NativeCatalogRegion):boolean{return inside(v,area)&&Math.fround(v.magnitude)<=area.limitingMagnitude;}
 /** Whole-file galaxy admission (source order), then the native cursor insert 0x492728 (comparator 0x5969e0). */
 export function admitFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Readonly<{admission:readonly number[];galaxies:readonly NativeGalaxy[]}>{
  if(!(glx instanceof Uint8Array)||glx.byteLength!==GLX_CATALOG.bytes)throw new FieldEngineError('input');
@@ -270,7 +275,10 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  if(qsoMatches.length&&mode==='gate')reasons.push('qso-merge');
  if(photographMatches.length&&!options.photographs)reasons.push('photographic-image');
  let variables:NativeVariable[];
- try{variables=pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>inside(v,area));}catch{throw new FieldEngineError('evidence');}
+ // Variable loader: a record is kept when it lies inside the area and its magnitude is within the limiting magnitude (0x598572
+ // setbe: Single magnitude <= limit); kept records are inserted with the cursor insert 0x492728 under the strict RA-then-Dec
+ // greater comparator 0x4bc950, and the variable stage 0x59859c iterates that sorted list (review 4 items 4 and 5).
+ try{variables=[...nativeCursorInsert(pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>fieldVariableAdmitted(v,area)),variableGreater)];}catch(e){if(e instanceof FieldEngineError)throw e;throw new FieldEngineError('evidence');}
  let variableRemoved:string[]=[];
  let outsideViewVariable:FieldOutsideViewVariable|undefined;
  const dispatch=options.variableDispatch??'recovered',falseDispatch=(v:NativeVariable)=>dispatch==='recovered'?nativeVariableDispatchFalse(v,VARIABLE_TABLES):nativeVariableClass(v.classification,VARIABLE_TABLES)===3;
@@ -286,10 +294,10 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  }
  else if(variables.some(v=>!falseDispatch(v))||variables.length>1&&dispatch!=='recovered')reasons.push('variable-merge');
  else if(variables.length){
-  // The variable stage 0x59859c..0x5987d9 reads CLEA_VStrs.dat in file order and merges each variable as it is read (0x598608),
-  // so several no-effect variables are sequential false merges over the current list: each may prune a runner (kept pruned),
-  // and each hit record is restored (0x5986c0).
-  if(variables.some((v,i)=>i&&variables[i-1].recordIndex>=v.recordIndex))throw new FieldEngineError('evidence');
+  // The variable stage 0x59859c..0x5987d9 iterates the RA/Dec-sorted variable list (reset/next 0x5985cb/0x5985d8) and merges each
+  // variable in turn (0x598608): several no-effect variables are sequential false merges over the current star list; each may
+  // prune a runner (kept pruned) and each hit record is restored (0x5986c0). A failure part-way (an unsafe saved index or a merge
+  // boundary) gates the whole field with variable-merge, so the partly merged list is never used and needs no rollback.
   try{
    for(const v of variables){
     const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),v,VARIABLE_TABLES,dispatch);
@@ -372,8 +380,12 @@ function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Cali
  }
  return raster;
 }
+export const FIELD_EVALUATION_MARK='openvireo:field-evaluation';
 /** Complete fresh-field evaluation for one pointing and telescope record. */
 export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,options:FieldOptions={}):FieldResult{
+ // A per-thread marker (performance marks belong to the timeline of the thread that makes them): tests use it to prove that a
+ // page delegates field evaluation to a Worker. No state or result depends on it.
+ if(typeof performance!=='undefined'&&typeof performance.mark==='function')performance.mark(FIELD_EVALUATION_MARK);
  if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
  const c=FIELD_CALIBRATIONS[telescope],at=Object.freeze({ra:pointing.ra,dec:pointing.dec});
  const empty={pointing:at,telescope,scene:null,viewport:null,selection:null,target:null,calibration:null};

@@ -162,7 +162,10 @@ async function withObjectXSpectra(base:AnalysisSession,list:readonly ObjectXSpec
   try{spectra=await (await import('./objectXSpectra')).admitObjectXSpectra(list);}catch(e){if(e instanceof Error&&(e as {code?:string}).code==='resources')fail('resources');fail('state');}
   return Object.freeze({...base,objectX:Object.freeze({...base.objectX!,spectra:spectra!})});
 }
-async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false):Promise<AnalysisSession> {
+/** Review 4 item 8: lets the page say that a restore is preparing fields (engine Hubble fields or kept Object X spectra, both in
+ * Workers) before the base replays; called at most once, only by the outermost v29 wrapper. */
+export type RestoreHooks=Readonly<{onPreparingFields?:()=>void}>;
+async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false,hooks:RestoreHooks={}):Promise<AnalysisSession> {
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
@@ -184,6 +187,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     // Only the (target, telescope) fields whose policies the file names are prepared (review 2 findings 1 and 9): a transient
     // preparation failure is the retryable 'resources' error, never an invalid-session verdict.
     const text=JSON.stringify(value),needed=HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').flatMap(t=>t.telescopes.filter(i=>{const p=t.policies[i];return p!==undefined&&text.includes(JSON.stringify(p));}).map(i=>[t.id,i] as const));
+    if(needed.length||keptSpectra)hooks.onPreparingFields?.();
     if(needed.length){const io=await import('./hubbleEngineTargets');try{await io.ensureHubbleEngineTargets(needed);}catch(e){if(e instanceof io.HubbleEngineLoadError)fail('resources');fail('state');}}
     const base=await withObjectXSpectra(await restore(r.base,verifySources,true,false,false,true,true,true),keptSpectra);
     if((r.extendedGalaxies===null)!==!base.observing)fail('state');
@@ -399,12 +403,12 @@ export async function readAnalysisSession(file:File):Promise<AnalysisSession> {
 /** One UI entry can restore a complete analysis or merge a supported legacy
  * practice-only file. The caller applies practice-only state without replacing
  * acquisitions/measurements; unknown formats never gain partial acceptance. */
-export async function readInvestigationSession(file:File):Promise<{kind:'analysis';session:AnalysisSession}|{kind:'practice';state:ClassificationState}>{
+export async function readInvestigationSession(file:File,hooks:RestoreHooks={}):Promise<{kind:'analysis';session:AnalysisSession}|{kind:'practice';state:ClassificationState}>{
  if(file.size>MAX_SESSION_BYTES)fail('size');const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_SESSION_BYTES)fail('size');
  let value:unknown;try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{fail('format');}
  try{if(!projectBytesFit(bytes.byteLength,value,SESSION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}
  if(value&&typeof value==='object'&&projectMarker((value as {format:unknown}).format)==='OpenVireo stellar classification session'){
   if(bytes.byteLength>MAX_CLASSIFICATION_BYTES)fail('size');try{if(!projectBytesFit(bytes.byteLength,value,CLASSIFICATION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}return {kind:'practice',state:parseClassificationSession(value)};
  }
- return {kind:'analysis',session:await restore(value)};
+ return {kind:'analysis',session:await restore(value,true,false,false,false,false,false,false,hooks)};
 }

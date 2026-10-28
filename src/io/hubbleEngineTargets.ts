@@ -9,7 +9,7 @@ import {continuationSourcePreparer,type FieldContinuationSource} from '../core/f
 import type {HubbleEngineResources,PreparedEngineEntry} from './hubbleEngineEntry';
 import type {HubbleEngineWorkerRequest} from './hubbleEngineWorker';
 import {resourceSha256} from './boundedResource';
-import {WORKER_REPLY_TIMEOUT_MS,type WorkerFailureKind} from './workerFailure';
+import {workerClient,type WorkerReply} from './workerClient';
 
 export type {HubbleEngineResources};
 /** 'error': retryable (load); 'invalid': deterministic evidence mismatch, final. */
@@ -25,28 +25,14 @@ export function setHubbleEngineResources(r:HubbleEngineResources|null){resources
 export function hubbleEngineTargetStatus(id:string,t:ExtendedTelescope):HubbleEngineStatus{return status.get(key(id,t))??'idle';}
 export function subscribeHubbleEngineTargets(listener:()=>void):()=>void{listeners.add(listener);return()=>{listeners.delete(listener);};}
 
-let worker:Worker|null=null,ticket=0;
-const waiting=new Map<number,(m:{ok:boolean;kind?:WorkerFailureKind;definition?:PreparedEngineEntry['definition'];configuration?:Omit<PreparedEngineEntry['configuration'],'sourcePreparer'>})=>void>();
-function dropWorker(){for(const w of waiting.values())w({ok:false,kind:'load'});waiting.clear();worker?.terminate();worker=null;}
-function viaWorker(id:string,telescope:ExtendedTelescope):Promise<PreparedEngineEntry>{
- if(!worker){
-  worker=new Worker(new URL('./hubbleEngineWorker.ts',import.meta.url),{type:'module'});
-  worker.onmessage=e=>{const w=waiting.get(e.data.ticket);waiting.delete(e.data.ticket);w?.(e.data);};
-  worker.onerror=dropWorker;
- }
- const mine=++ticket;
- return new Promise((resolve,reject)=>{
-  // A silent Worker is evicted after the timeout (with every request it holds) as a retryable load failure.
-  const timer=setTimeout(()=>{if(waiting.has(mine))dropWorker();},WORKER_REPLY_TIMEOUT_MS);
-  waiting.set(mine,m=>{
-   clearTimeout(timer);
-   if(!m.ok||!m.definition||!m.configuration){reject(m.kind==='evidence'?new HubbleEngineError('evidence'):new HubbleEngineLoadError());return;}
-   const c=m.configuration as PreparedEngineEntry['configuration']&{continuationSource?:FieldContinuationSource};
-   const configuration=Object.freeze({...c,...(c.continuationSource?{sourcePreparer:continuationSourcePreparer(c.continuationSource)}:{})}) as PreparedEngineEntry['configuration'];
-   resolve(Object.freeze({definition:m.definition,configuration}));
-  });
-  worker!.postMessage({ticket:mine,id,telescope} satisfies HubbleEngineWorkerRequest);
- });
+// A Worker silent for the inactivity timeout is evicted with every request it holds, as a retryable load failure (io/workerClient.ts).
+const ask=workerClient(()=>new Worker(new URL('./hubbleEngineWorker.ts',import.meta.url),{type:'module'}));
+async function viaWorker(id:string,telescope:ExtendedTelescope):Promise<PreparedEngineEntry>{
+ const m=await ask({id,telescope} satisfies Omit<HubbleEngineWorkerRequest,'ticket'>) as WorkerReply&{definition?:PreparedEngineEntry['definition'];configuration?:Omit<PreparedEngineEntry['configuration'],'sourcePreparer'>};
+ if(!m.ok||!m.definition||!m.configuration)throw m.kind==='evidence'?new HubbleEngineError('evidence'):new HubbleEngineLoadError();
+ const c=m.configuration as PreparedEngineEntry['configuration']&{continuationSource?:FieldContinuationSource};
+ const configuration=Object.freeze({...c,...(c.continuationSource?{sourcePreparer:continuationSourcePreparer(c.continuationSource)}:{})}) as PreparedEngineEntry['configuration'];
+ return Object.freeze({definition:m.definition,configuration});
 }
 async function prepare(id:string,telescope:ExtendedTelescope):Promise<void>{
  const target=HUBBLE_EXTENDED_TARGETS.find(t=>t.route==='engine'&&t.id===id);
@@ -55,8 +41,13 @@ async function prepare(id:string,telescope:ExtendedTelescope):Promise<void>{
  try{entry=resources?await (await import('./hubbleEngineEntry')).prepareEngineEntry(id,telescope,resources):await viaWorker(id,telescope);}
  catch(e){if(e instanceof HubbleEngineError)throw e;throw new HubbleEngineLoadError();}
  const recorded=(HUBBLE_ENGINE_RECORD.targets.find(t=>t.id===id)!.telescopes as readonly {telescope:number;cropSHA256?:string}[]).find(x=>x.telescope===telescope);
- if(!recorded||entry.definition.domain.telescopeRecord!==telescope||await resourceSha256(entry.configuration.viewport.rgb as Uint8Array<ArrayBuffer>)!==recorded.cropSHA256)throw new HubbleEngineError('evidence');
- (await import('../core/galaxyExposure')).registerEngineGalaxy(entry.definition,entry.configuration);
+ if(!recorded||entry.definition.domain.telescopeRecord!==telescope)throw new HubbleEngineError('evidence');
+ // Review 4 item 6: hashing (crypto.subtle) and the lazy galaxyExposure chunk can fail transiently after the reply; those are
+ // retryable load failures. Only a digest that was computed and differs is final evidence.
+ let digest:string,exposure:typeof import('../core/galaxyExposure');
+ try{digest=await resourceSha256(entry.configuration.viewport.rgb as Uint8Array<ArrayBuffer>);exposure=await import('../core/galaxyExposure');}catch{throw new HubbleEngineLoadError();}
+ if(digest!==recorded.cropSHA256)throw new HubbleEngineError('evidence');
+ exposure.registerEngineGalaxy(entry.definition,entry.configuration);
 }
 /** Resolves when this (target, telescope) is registered; rejects with a typed error (and allows a retry) otherwise. */
 export function ensureHubbleEngineTarget(id:string,telescope:ExtendedTelescope):Promise<void>{

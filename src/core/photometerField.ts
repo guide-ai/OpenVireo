@@ -57,9 +57,9 @@ export const LEGACY_PLEIADES_PHOTOMETER_TARGETS=Object.freeze([evidence.target,.
 export const EXPANDED_PHOTOMETER_FIELDS_SHA256='86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40';
 /** Rows 3, 5 and 10 (coordinator decision of 2026-10-28): their CLEA_VStrs.dat variables take the recovered no-effect false merge
  * (data/photometry/pleiades-variable-fields.json, generator analysis/front-f-hubble-objectx/scripts/pleiades_variable_fields.py). */
-export const VARIABLE_PHOTOMETER_FIELDS_SHA256='01beaebf71b1ce5e22b2f7ceb150cab6cc932d31cb6edb30e70429fd093bd579';
+export const VARIABLE_PHOTOMETER_FIELDS_SHA256='b0d3ebfe664eb64118460e6a7ae8b8d3ff217c026e70e66699c38b2f7f73ee53';
 /** Rows 2, 7, 12, 14, 22: the recovered native selection at the exact HTL pointing (pleiades-pointing-fields.json). */
-export const POINTING_PHOTOMETER_FIELDS_SHA256='b8cd2f82f561c4d7e7c2f15768db7d4895b52a22eb2cb167d5bc169b5ebc1fd1';
+export const POINTING_PHOTOMETER_FIELDS_SHA256='349526ad08dc9b48393620e65f96bcf0b4cf2975a70dc6bc95288f3a6f6cdad8';
 export const PLEIADES_PHOTOMETER_TARGETS=Object.freeze([...LEGACY_PLEIADES_PHOTOMETER_TARGETS,...[...expanded.targets,...variableFields.targets,...pointingFields.targets].map(t=>Object.freeze({...t.target,pointing:Object.freeze({...t.target.pointing})}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord));
 export const PLEIADES_PHOTOMETER_CHOICES=Object.freeze([...PLEIADES_PHOTOMETER_TARGETS.map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:t.catalogId,reason:null as string|null})),...expandedProof.unavailable.filter(t=>![...variableFields.targets,...pointingFields.targets].some(v=>v.target.hotlistRecord===t.hotlistRecord)).map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:null,reason:t.reason}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord).map(t=>Object.freeze(t)));
 export function isLegacyPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&LEGACY_PLEIADES_PHOTOMETER_TARGETS.some(t=>t.catalogId===id);}
@@ -97,13 +97,17 @@ type Certificate=Readonly<{file:string;recordsChecked:number;allPositionMatches:
 type VariableFixture=Readonly<{positionCertificates:readonly Certificate[];variables:readonly Readonly<{recordIndex:number;rawHex:string}>[];
  variableMerges:readonly Readonly<{variable:number;hit:boolean;winnerId:string|null;savedWinnerIndex:number;removed:readonly string[]}>[];mergedIds:readonly string[]}>;
 /** The recovered variable stage over a photometer field (coordinator decision of 2026-10-28): each CLEA_VStrs.dat record inside the
- * area, in file order, is merged with reference 0 (0x598608 → 0x59a2e0, which may prune a runner); its time update 0x51ec48
+ * area and within the limiting magnitude, in (RA, Dec) order, is merged with reference 0 (0x598608 → 0x59a2e0, which may prune a runner); its time update 0x51ec48
  * must return false without side effects (nativeVariableDispatchFalse: period 0, word 0 unless class 1, or class 3), so a hit
  * record is restored (0x5986c0) and a miss inserts nothing (0x5987a1). Any other variable is not modelled (evidence error). The
  * independent Python witness (variableMerges, mergedIds) must match exactly. */
 function mergeNoEffectVariables(stars:readonly NamedStar[],fixture:VariableFixture):readonly NamedStar[]{
  const tables=pegasusProvenance.variableContract.tables;let current=[...stars];
- if(fixture.variables.length!==fixture.variableMerges.length||fixture.variables.some((v,i)=>i&&fixture.variables[i-1].recordIndex>=v.recordIndex))throw new PhotometerFieldError('evidence');
+ if(fixture.variables.length!==fixture.variableMerges.length)throw new PhotometerFieldError('evidence');
+ // Loader order and admission (review 4 items 4 and 5): magnitude within the limit (0x598572) and the RA-then-Dec cursor-insert
+ // order of 0x492728 with comparator 0x4bc950, in which the variable stage merges them.
+ const decoded=fixture.variables.map(v=>{try{return decodeNativeVariableRecord(v.rawHex,v.recordIndex);}catch{throw new PhotometerFieldError('evidence');}});
+ if(decoded.some(v=>!(Math.fround(v.magnitude)<=20))||decoded.some((v,i)=>i&&!(v.ra>decoded[i-1].ra||v.ra===decoded[i-1].ra&&v.dec>decoded[i-1].dec)))throw new PhotometerFieldError('evidence');
  for(const [i,stored] of fixture.variables.entries()){
   let v;try{v=decodeNativeVariableRecord(stored.rawHex,stored.recordIndex);}catch{throw new PhotometerFieldError('evidence');}
   if(!nativeVariableDispatchFalse(v,tables))throw new PhotometerFieldError('evidence');

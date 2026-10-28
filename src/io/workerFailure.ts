@@ -8,5 +8,3 @@ export function workerFailureKind(e:unknown):WorkerFailureKind{
  if(e.name==='ObjectXSpectrometerError')return (e as {code?:string}).code==='pack'?'evidence':'load';
  return DETERMINISTIC.has(e.name)?'evidence':'load';
 }
-/** How long a page waits for one Worker reply before evicting the request (and the Worker) as a retryable load failure. */
-export const WORKER_REPLY_TIMEOUT_MS=60_000;
