@@ -6,7 +6,11 @@ The photometer at **http://127.0.0.1:5173/#photometer** now admits16 of the24 or
 
 
 ## Update 2026-10-28: all twenty-four targets (rows 3, 5, 10, then 2, 7, 12, 14, 22)
-By the coordinator decision of 2026-10-28 the recovered variable stage is applied to the photometer fields. In rows 3
+Resources: the user approval of 2026-10-28 (AGENTS.md) covers bounded N2230 subsets for the photometer fields of the 24
+PLEIADES.HTL positions, with their read witnesses and provenance. Each field publishes whole 27-byte records only inside its own
+area; every other band read (binary-search probe or Dec-strip scan row) is an 8-byte position-only witness (packed RA and Dec),
+which is all the trace and the admission predicate read from a record rejected by position. Design: by the coordinator decision
+of 2026-10-28 the recovered variable stage is applied to the photometer fields. In rows 3
 (01799-00306, NZ Tau), 5 (01803-00156, V0443 Tau and V0855 Tau) and 10 (01800-02089, V0447 Tau and V0641 Tau) every CLEA_VStrs.dat
 record is class 3 with period 0 and word 0, so its time update 0x51ec48 returns false without side effects: each variable is
 merged in the stage's (RA, Dec) order (inserted with 0x492728 under 0x4bc950; 0x598608, reference 0), a hit record is restored (0x5986c0) and a miss inserts nothing (0x5987a1). The only

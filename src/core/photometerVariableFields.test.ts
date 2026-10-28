@@ -9,7 +9,7 @@ import {buildPinnedPleiadesUbvField} from './photometerUbvField';
 import {createPhotometer,photometerEvent as event,releasePhotometer,replayPhotometer} from './photometer';
 import {serializePhotometerSession,parsePhotometerSession} from '../io/photometerSession';
 import {VARIABLE_FIELD_PHOTOMETER_POLICY} from './photometerJournal';
-// Coordinator decision of 2026-10-28: PLEIADES.HTL rows 3, 5 and 10 join through the recovered no-effect variable merge
+// Design: coordinator decision of 2026-10-28; resources: user approval of 2026-10-28 (AGENTS.md). PLEIADES.HTL rows 3, 5 and 10 join through the recovered no-effect variable merge
 // (generator analysis/front-f-hubble-objectx/scripts/pleiades_variable_fields.py; independent means pleiades_variable_vectors.py).
 const sha=(p:string)=>createHash('sha256').update(readFileSync(new URL(p,import.meta.url))).digest('hex');
 const TARGETS=fields.targets.map(t=>t.target.catalogId);
@@ -64,3 +64,15 @@ describe('Pleiades pointing-association targets (recovered native selection at t
  });
 });
 
+describe('published N2230 reads stay inside the 24 photometer fields (user approval of 2026-10-28)',()=>{
+ it('a whole 27-byte record only inside its own field area; every other read is an 8-byte position witness outside it',()=>{
+  type Field={kind:string;area:{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number};band:{reads:{index:number;rawHex:string}[]}};
+  let whole=0,witnesses=0;
+  for(const file of [fields,pointing])for(const t of file.targets as unknown as {fields:Field[]}[])for(const f of t.fields)for(const r of f.band.reads){
+   const b=Buffer.from(r.rawHex,'hex'),ra=b.readInt32LE(0)/10_000_000,dec=b.readInt32LE(4)/100_000,a=f.area;
+   const inside=ra>=a.minimumRa&&ra<=a.maximumRa&&dec>=a.minimumDec&&dec<=a.maximumDec;
+   expect([r.index,f.kind,r.rawHex.length]).toEqual([r.index,f.kind,inside?54:16]);inside?whole++:witnesses++;
+  }
+  expect(whole).toBeGreaterThan(0);expect(witnesses).toBeGreaterThan(whole);
+ });
+});
