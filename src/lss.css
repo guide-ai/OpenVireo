@@ -5,6 +5,7 @@
 .lss-rows{width:100%;border-collapse:collapse;font-size:.9rem}
 .lss-rows th,.lss-rows td{border-bottom:1px solid var(--line,var(--ov-border));padding:.3rem .4rem;text-align:left;vertical-align:top}
 .lss-rows tr[aria-current="true"]{background:var(--highlight,var(--ov-info-soft))}
+.lss-rows[data-stale]{opacity:.45}/* a reload is in flight: the previous list (and its frozen JD) is stale */
 .lss-acquire-layout{display:grid;grid-template-columns:minmax(0,312px) minmax(0,1fr);gap:1rem}
 .lss-acquire-layout .sky-actions{display:flex;flex-wrap:wrap;gap:.4rem}
 .lss-acquire-layout .sky-actions button{flex:1 1 9rem;min-width:0}

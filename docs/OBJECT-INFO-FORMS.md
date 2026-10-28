@@ -117,7 +117,7 @@ At a certified pointing in Edit Mode, the Telescope view shows the engine's own 
   - Size `major[xminor]` with 1 decimal.
 - **Field, LED and colour table:** FormActivate `0x56005c`, then the Telescope view pass. Assigned values light the LED red
   (yellow is never shown, [D]). TypeEd is magenta for non-stellar objects.
-- **GCVS:** enabled only for a type-0 star carrying a variable record (`0x56034e`). Since Front T (2026-10-28) a TRUE-dispatch star carries one: `fieldStarVariable` (src/core/variableDispatch.ts) fills the record's `variable` slot, the dialog shows its GCVS ID and "Variable Star", and GCVS opens Variable Star Data through `onOpenVariable` (with the 0.50 word when Cepheid Init defaulted it). Field Information freezes the observatory-clock JD when it builds the field; without one the values are typed `variable-values-unavailable`. Every other star keeps `gcvs-no-variable-record`.
+- **GCVS:** enabled only for a type-0 star carrying a variable record (`0x56034e`). Since Front T (2026-10-28) a TRUE-dispatch star carries one: `fieldStarVariable` (src/core/variableDispatch.ts) fills the record's `variable` slot, the dialog shows its GCVS ID and "Variable Star", and GCVS opens Variable Star Data through `onOpenVariable` (with the 0.50 word when Cepheid Init defaulted it). Edit Mode's Catalog Object and the Star Data List each freeze the observatory-clock JD when they build the field (one helper, `frozenObservatoryTime`); without one the values are typed `variable-values-unavailable`. Every other star keeps `gcvs-no-variable-record`.
 - **Not ported:**
   - **Update** (`update-master-catalog`): `0x59a54c` rewrites `GSC\<band>.DAT`.
   - **OK write-back** (`record-edit-unavailable`).
