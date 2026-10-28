@@ -57,6 +57,10 @@ describe('kept Object X spectra (v29)',()=>{
   expect(()=>readObjectXSpectra(Array(OBJECT_X_SPECTRA_LIMITS.spectra+1).fill((portableObjectXSpectra([good]) as object[])[0]))).toThrow();
   expect(()=>readObjectXSpectra([{...(portableObjectXSpectra([good]) as object[])[0],label:'x'.repeat(41)}])).toThrow();
   expect(()=>readObjectXSpectra([{...(portableObjectXSpectra([good]) as object[])[0],extra:1}])).toThrow();
+  // Combined budget before replay: 8 journals of 3001 events each (24008 > 24000) are refused without any replay.
+  const heavy={...(portableObjectXSpectra([good]) as object[])[0],events:[{kind:'start'},...Array.from({length:2999},()=>({kind:'tick',deltaMs:1})),{kind:'pause'}]};
+  let observed=0;setObjectXSpectraSources({hotList:async()=>htl,observe:async(...a)=>{observed++;return observeObjectXSpectrum(...a);}});
+  try{await expect(admitObjectXSpectra(Array(8).fill(heavy))).rejects.toMatchObject({code:'format'});expect(observed).toBe(0);}finally{setObjectXSpectraSources({hotList:async()=>htl,observe:observeObjectXSpectrum});}
   expect(await admitObjectXSpectra(portableObjectXSpectra([good]))).toEqual([good]);
  });
 });

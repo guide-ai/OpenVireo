@@ -21,7 +21,8 @@ Front F supplies the field-engine side of the Object X spectrometer and, since F
 
 ## Kept spectra (save and restore)
 The student keeps a stopped exposure (`ObjX-<ID>-Snn`, at most 8). A record holds the label, the opaque target code, the telescope,
-the seed at reset and the journal events — nothing that names the object. Kept spectra are saved in the v29 wrapper
+the seed at reset and the journal events — nothing that names the object. Before any replay the file is bounded: at most 8 records, each journal
+within the exposure journal's event limit, and at most 24000 events over all of them. Kept spectra are saved in the v29 wrapper
 (`objectXSpectra`, only when present; the v28 Object X section is unchanged) and restored by re-evaluating each record and
 replaying its journal (`io/objectXSpectra.ts`); a record that does not replay rejects the file, a loading failure is the retryable
 `resources` error. A kept spectrum's CSV (`wavelength_A,counts`, 600 rows) is rebuilt identically after a restore.

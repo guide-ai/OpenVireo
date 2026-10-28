@@ -11,8 +11,9 @@ import {objectXCode} from '../core/objectXLab';
 import type {FieldTelescope} from '../core/fieldEngine';
 
 export const OBJECT_X_SPECTRA_POLICY='openvireo-objectx-spectra-v29';
-/** Own bounds: 8 kept spectra, 40-character labels, each journal within the exposure journal's own event limit. */
-export const OBJECT_X_SPECTRA_LIMITS=Object.freeze({spectra:8,label:40});
+/** Own bounds: 8 kept spectra, 40-character labels, each journal within the exposure journal's own event limit, and at most
+ * 24000 events over all kept spectra (the same combined replay budget as the observing banks), checked before any replay. */
+export const OBJECT_X_SPECTRA_LIMITS=Object.freeze({spectra:8,label:40,events:24000});
 export type ObjectXSpectrumRecord=Readonly<{label:string;code:string;telescope:FieldTelescope;seedAtReset:number;events:readonly JournalEvent[]}>;
 export class ObjectXSpectraError extends Error{constructor(readonly code:'format'|'replay'|'resources'){super(`Object X spectra: ${code}`);this.name='ObjectXSpectraError';}}
 const fail=(code:ObjectXSpectraError['code']):never=>{throw new ObjectXSpectraError(code);};
@@ -27,9 +28,11 @@ function readEvents(v:unknown):readonly JournalEvent[]{
   return fail('format');
  }));
 }
-/** Shape check only (no replay). */
+/** Shape and budget check only (no replay): the event budget is counted on the raw arrays before anything is decoded. */
 export function readObjectXSpectra(value:unknown):readonly ObjectXSpectrumRecord[]{
  if(!Array.isArray(value)||value.length<1||value.length>OBJECT_X_SPECTRA_LIMITS.spectra)return fail('format');
+ let events=0;for(const r of value){const e=isObject(r)?r.events:null;if(!Array.isArray(e))return fail('format');events+=e.length;}
+ if(events>OBJECT_X_SPECTRA_LIMITS.events)return fail('format');
  return Object.freeze(value.map(r=>{
   if(!isObject(r)||Object.keys(r).length!==5)return fail('format');
   const {label,code,telescope,seedAtReset,events}=r;
