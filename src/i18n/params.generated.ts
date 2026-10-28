@@ -3273,4 +3273,5 @@ export interface MessageParameters {
   "hubbleHtl.reason.spectrum-continuation": never;
   "galaxyExposure.catalogueReference": "value" | "workbook";
   "galaxyExposure.continuationAdaptation": never;
+  "session.restoreResourcesError": never;
 }

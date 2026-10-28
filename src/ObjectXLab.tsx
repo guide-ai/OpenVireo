@@ -208,7 +208,7 @@ export default function ObjectXLab({active,busy,clockUtc,clockApplied,onSetClock
     </section>
     <section data-testid="objectx-branch-radio"><h3>{M.radioTitle}</h3><p>{M.radioHelp}</p>
      <div className="button-row"><button className="secondary-button" disabled={disabled} onClick={onOpenRadio}>{M.openRadio}</button></div></section>
-    <ObjectXSpectrum target={target} label={objectXDataLabel(inv.id)} disabled={disabled}/>
+    <ObjectXSpectrum target={target} label={objectXDataLabel(inv.id)} disabled={disabled} spectra={inv.spectra??[]} pointingOf={code=>targets.find(t=>t.code===code)??null} onKeep={r=>update(i=>({...i,spectra:[...(i.spectra??[]),r]}))}/>
    </div>
   </section>
 

@@ -40,7 +40,8 @@ condition for wiring the API into the Object X UI). The kind-neutral `telescope`
 The normal spectrometer's: the active range (env+0x2bd4/0x2bd8 = general record +0x2520/+0x2524) is copied from the configured
 range +0x2518/+0x251c at startup (0x5a2a5c..0x5a2a6e), after the options file (0x5a3f70..0x5a3f88) and from the options dialogs
 (0x50cb66..0x50cb78, 0x588980..0x588992); its compiled default is 3700–4700 Å (0x5a2a1e/0x5a2a28), the interval the verified star
-exposure already uses. No Object X specific interval exists on that path. Adaptation: no options file and no range control, so
+exposure already uses. The QSO preparation reads the same global range (0x50e821..0x50e853 pass [cfg+0x6b4+0x2520]/[+0x2524] and the
+QSO's z to 0x55e330), as do the other spectrum paths (0x510555, 0x526e7f). No Object X specific interval exists. Adaptation: no options file and no range control, so
 the default is used (`OBJECT_X_SPECTRAL_INTERVAL`).
 
 ## Photographic list as the original keeps it (`src/core/photographicList.ts`)

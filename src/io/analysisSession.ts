@@ -29,6 +29,7 @@ import {acquisitionObjectId,acquisitionJournalText,restoreAcquisitionObservation
 import {EMPTY_HUBBLE,readHubbleWorkspace,type HubbleWorkspace} from '../core/hubbleAnalysis';
 import { createMeasurement, currentZ, type Measurement, type ShiftControl } from '../core/spectrum';
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
+import type {ObjectXSpectrumRecord} from './objectXSpectra';
 import {OBJECT_X_INVESTIGATION_POLICY,ObjectXSessionError,admitObjectXInvestigation,portableObjectXInvestigation,type ObjectXInvestigation} from './objectXInvestigation';
 import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,portableLssInvestigation,type LssInvestigation} from './lssInvestigation';
 import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
@@ -61,7 +62,7 @@ export type AnalysisSession=Readonly<{
  * acquisitions, banks or context of extended targets are rejected in any file outside v29; a v29 is never nested. */
 export const HUBBLE_EXTENDED_SESSION_POLICY='openvireo-hubble-extended-targets-v29';
 function acquisitionIsExtended(a:AcquisitionObservation){return a.kind==='catalog-galaxy-acquisition'&&isHubbleExtendedId(a.targetId);}
-function sessionUsesExtended(session:AnalysisSession){const a=session.acquisitions??[];return a.length>MAX_ACQUISITION_ARCHIVE||a.some(acquisitionIsExtended)||!!session.observing&&(session.observing.extendedGalaxies!==undefined||observingUsesExtendedGalaxies(session.observing));}
+function sessionUsesExtended(session:AnalysisSession){if(session.objectX?.spectra?.length)return true;const a=session.acquisitions??[];return a.length>MAX_ACQUISITION_ARCHIVE||a.some(acquisitionIsExtended)||!!session.observing&&(session.observing.extendedGalaxies!==undefined||observingUsesExtendedGalaxies(session.observing));}
 /** Front B B10 (v26): Optical Simulation Options (Limit Slewing) and per-telescope site overrides (clocks/horizon only,
  * WEB-ST-01). A v26 file wraps an unchanged v1..25 base, outermost; a v26 is never nested. */
 export type ObservatorySession=Readonly<{options:OpticalOptions;siteOverrides:SiteOverrides}>;
@@ -113,7 +114,7 @@ function checkCombinedReplayBudget(wrapper:unknown,extended=false):void{
 function sessionUsesCached(session:AnalysisSession){return (session.acquisitions??[]).some(acquisitionIsCached)||!!session.observing&&(session.observing.cachedGalaxies!==undefined||observingUsesCachedGalaxies(session.observing));}
 function sessionUsesPegasus(session:AnalysisSession){return (session.acquisitions??[]).some(acquisitionIsPegasus)||!!session.observing&&(session.observing.pegasusGalaxies!==undefined||observingUsesPegasusGalaxies(session.observing));}
 export class AnalysisSessionError extends Error {
-  constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
+  constructor(readonly code:'size'|'format'|'state'|'measurements'|'observation'|'resources') {super(`Analysis session: ${code}`);this.name='AnalysisSessionError';}
 }
 function fail(code:AnalysisSessionError['code']):never {throw new AnalysisSessionError(code);}
 function record(value:unknown,keys:readonly string[]):Record<string,unknown> {
@@ -152,6 +153,13 @@ function measurement(value:unknown,previousId:number,acquisitions:readonly Acqui
   if(row.object!==object||row.zFloat32Hex!==r.zFloat32Hex)fail('measurements');
   return row;
 }
+/** E08 kept spectra admitted from a v29 wrapper are attached to the restored Object X investigation (which must exist). */
+async function withObjectXSpectra(base:AnalysisSession,value:unknown):Promise<AnalysisSession>{
+  if(value===null)return base;if(!base.objectX)fail('state');
+  let spectra:readonly ObjectXSpectrumRecord[];
+  try{spectra=await (await import('./objectXSpectra')).admitObjectXSpectra(value);}catch(e){if(e instanceof Error&&(e as {code?:string}).code==='resources')fail('resources');fail('state');}
+  return Object.freeze({...base,objectX:Object.freeze({...base.objectX!,spectra:spectra!})});
+}
 async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false):Promise<AnalysisSession> {
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
@@ -159,13 +167,18 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   if(version===29){
     // Front F: the extended Hubble targets over an unchanged v1..28 base, outermost; a v29 is never nested.
     if(migrated)fail('format');
-    const r=record(value,['format','version','numericalPolicy','base','extendedPolicy','binarySHA256','extendedGalaxies']);
+    // E08 kept spectra (objectXSpectra.ts) ride in the v29 wrapper under objectXSpectra; a v29 without them has no such key.
+    const withSpectra=!!value&&typeof value==='object'&&!Array.isArray(value)&&Object.hasOwn(value,'objectXSpectra');
+    const r=record(value,['format','version','numericalPolicy','base','extendedPolicy','binarySHA256','extendedGalaxies',...(withSpectra?['objectXSpectra']:[])]);
     const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.extendedPolicy!==HUBBLE_EXTENDED_SESSION_POLICY||r.binarySHA256!==umiCached.binarySHA256||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>28)fail('format');
     checkCombinedReplayBudget(value,true);
     // Engine targets need their asynchronous, hash-checked field preparation before any of their journals can replay.
-    const text=JSON.stringify(value);if(HUBBLE_EXTENDED_TARGETS.some(t=>t.route==='engine'&&Object.values(t.policies).some(p=>text.includes(JSON.stringify(p)))))try{await (await import('./hubbleEngineTargets')).ensureHubbleEngineTargets();}catch{fail('state');}
-    const base=await restore(r.base,verifySources,true,false,false,true,true,true);
+    // Only the (target, telescope) fields whose policies the file names are prepared (review 2 findings 1 and 9): a transient
+    // preparation failure is the retryable 'resources' error, never an invalid-session verdict.
+    const text=JSON.stringify(value),needed=HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').flatMap(t=>t.telescopes.filter(i=>{const p=t.policies[i];return p!==undefined&&text.includes(JSON.stringify(p));}).map(i=>[t.id,i] as const));
+    if(needed.length){const io=await import('./hubbleEngineTargets');try{await io.ensureHubbleEngineTargets(needed);}catch(e){if(e instanceof io.HubbleEngineLoadError)fail('resources');fail('state');}}
+    const base=await withObjectXSpectra(await restore(r.base,verifySources,true,false,false,true,true,true),withSpectra?(r.objectXSpectra===null?fail('format'):r.objectXSpectra):null);
     if((r.extendedGalaxies===null)!==!base.observing)fail('state');
     if(!base.observing)return base;
     let extendedGalaxies:NonNullable<ObservingWorkspace['extendedGalaxies']>;try{extendedGalaxies=(await import('./observingWorkspace')).restoreExtendedGalaxies(r.extendedGalaxies,base.acquisitions??[]);}catch{fail('state');}
@@ -317,7 +330,8 @@ async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unkn
     const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
     if(acquisitions.length>EXTENDED_MAX_ACQUISITION_ARCHIVE)fail('observation');
     if(observing){const {extendedGalaxies,...plain}=observing;base=plain;banks=(await import('./observingWorkspace')).portableExtendedGalaxies(extendedGalaxies??Object.fromEntries(HUBBLE_EXTENDED_BANKS.map(key=>[key,emptyExposureWorkspace()])),acquisitions);}
-    const result={format:FORMAT,version:29,numericalPolicy:POLICY,base:await portable({...session,...(base?{observing:base}:{})},{...wrapped,extended:true}),extendedPolicy:HUBBLE_EXTENDED_SESSION_POLICY,binarySHA256:umiCached.binarySHA256,extendedGalaxies:banks};
+    const result={format:FORMAT,version:29,numericalPolicy:POLICY,base:await portable({...session,...(base?{observing:base}:{})},{...wrapped,extended:true}),extendedPolicy:HUBBLE_EXTENDED_SESSION_POLICY,binarySHA256:umiCached.binarySHA256,extendedGalaxies:banks,
+      ...(session.objectX?.spectra?.length?{objectXSpectra:(await import('./objectXSpectra')).portableObjectXSpectra(session.objectX.spectra)}:{})};
     checkCombinedReplayBudget(result);return result;
   }
   if(session.objectX!==undefined){

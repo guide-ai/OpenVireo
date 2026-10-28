@@ -3271,5 +3271,6 @@
   "galaxyExposure.modelLimitOwnSpectrum": "{id} · browser simulation using an adapted raster and this galaxy’s own original library spectrum ({file}), which the original uses unshifted (matched branch). Measured z comes solely from your alignment controls.",
   "hubbleHtl.reason.spectrum-continuation": "its field is prepared, but at its redshift the galaxy template no longer covers 4000 Å and the original’s random spectral continuation is not yet tied to the exposure, so no acquisition is offered",
   "galaxyExposure.catalogueReference": "The galaxy catalogue (CLEA_GLX.DAT) gives V {value}, while the workbook gives {workbook}. Both are original sources; neither is chosen for you, so say which one you use and why.",
-  "galaxyExposure.continuationAdaptation": "This galaxy’s template does not cover the whole 4000–5000 Å interval at its redshift, so, as in the original, the missing part is continued from a modelled continuum with a small random factor drawn when each exposure starts."
+  "galaxyExposure.continuationAdaptation": "This galaxy’s template does not cover the whole 4000–5000 Å interval at its redshift, so, as in the original, the missing part is continued from a modelled continuum with a small random factor drawn when each exposure starts.",
+  "session.restoreResourcesError": "Could not prepare the Hubble fields this session needs (a loading problem, not a problem with the file). The current analysis was kept; restore the same file again to retry."
 }

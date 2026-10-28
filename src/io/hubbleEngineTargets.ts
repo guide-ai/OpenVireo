@@ -1,46 +1,70 @@
-// Front F: asynchronous, hash-checked preparation of the general-field-engine Hubble targets (core/hubbleEngineTargets.ts,
-// core/hubbleEnginePrepare.ts). Loads the bounded derived packs (lazily imported modules), the bundled CLEA_GLX.DAT and
-// CLEA_QSO.DAT (size and SHA-256 checked) and each target's own library spectrum (SHA-256 checked), prepares every recorded
-// telescope, checks the crop digest against data/hubble/engine-targets.json and only then registers the definitions into
-// core/galaxyExposure.ts. One shared attempt; a failure is reported and a later call retries. Nothing is persisted or sent.
-import {decodeFieldPack,type FieldPack} from '../core/fieldPack';
-import {HUBBLE_ENGINE_RECORD,HUBBLE_EXTENDED_TARGETS,HubbleEngineError} from '../core/hubbleEngineTargets';
-import type {FieldQsoCatalog,FieldLibrarySpectrum} from '../core/fieldEngine';
+// Front F: asynchronous, hash-checked, lazy preparation of the general-field-engine Hubble targets (core/hubbleEngineTargets.ts,
+// core/hubbleEnginePrepare.ts). Review 2 finding 1: a field is prepared only when its (target, telescope) is needed, one at a
+// time, in a Worker (io/hubbleEngineWorker.ts) so the page never blocks; recorded-unavailable telescopes are never evaluated at
+// runtime (their recorded reasons are verified by the tests). The crop digest is checked against data/hubble/engine-targets.json
+// before the definition is registered into core/galaxyExposure.ts. The status is shared by every panel (one subscription), and a
+// failure is reported and retryable. Nothing is persisted or sent anywhere.
+import {HUBBLE_ENGINE_RECORD,HUBBLE_EXTENDED_TARGETS,HubbleEngineError,type ExtendedTelescope} from '../core/hubbleEngineTargets';
+import {continuationSourcePreparer,type FieldContinuationSource} from '../core/fieldContinuation';
+import type {HubbleEngineResources,PreparedEngineEntry} from './hubbleEngineEntry';
+import type {HubbleEngineWorkerRequest} from './hubbleEngineWorker';
 import {resourceSha256} from './boundedResource';
 
-const PACKS:Record<string,()=>Promise<{default:unknown}>>={
- 'hubble-engine-coma':()=>import('../../data/hubble/engine-coma.json'),
- 'hubble-engine-bootes':()=>import('../../data/hubble/engine-bootes.json'),
-};
-export type HubbleEngineResources=Readonly<{glx:()=>Promise<Uint8Array>;qso:()=>Promise<FieldQsoCatalog>;spectrum:(file:string,sha256:string)=>Promise<FieldLibrarySpectrum['samples']>}>;
-const browserResources:HubbleEngineResources={
- glx:async()=>(await import('./bundledGlxCatalog')).fetchBundledGlxCatalog(fetch,new AbortController().signal),
- qso:async()=>(await import('./bundledQsoCatalog')).fetchBundledQsoCatalog(fetch,new AbortController().signal),
- spectrum:async(file,sha256)=>(await (await import('./spectrumFiles')).loadVerifiedLibrarySpectrum({url:`/original/spectra/${file}`,sha256})).samples,
-};
-let resources:HubbleEngineResources=browserResources,pending:Promise<void>|null=null,done=false;
-/** Test seam (recorded local bytes instead of same-origin fetches); null restores the browser loaders. */
-export function setHubbleEngineResources(r:HubbleEngineResources|null){resources=r??browserResources;pending=null;done=false;}
-export function hubbleEngineTargetsReady():boolean{return done;}
-async function run():Promise<void>{
- // Only targets enabled on some telescope are prepared (a recorded-unavailable target, e.g. Boötes, needs no field here).
- const targets=HUBBLE_ENGINE_RECORD.targets.filter(t=>HUBBLE_EXTENDED_TARGETS.some(x=>x.route==='engine'&&x.id===t.id));
- const packs=new Map<string,FieldPack>();
- for(const id of new Set(targets.map(t=>t.pack))){const load=PACKS[id];if(!load)throw new HubbleEngineError('pack');const p=decodeFieldPack((await load()).default);if(p.id!==id)throw new HubbleEngineError('pack');packs.set(id,p);}
- const [glx,qsoCatalog,{prepareHubbleEngineTarget},{registerEngineGalaxy}]=await Promise.all([resources.glx(),resources.qso(),import('../core/hubbleEnginePrepare'),import('../core/galaxyExposure')]);
- const librarySpectra=new Map<string,FieldLibrarySpectrum['samples']>();
- for(const t of targets)if(t.librarySpectrum)librarySpectra.set(t.librarySpectrum.file,await resources.spectrum(t.librarySpectrum.file,t.librarySpectrum.sha256));
- const prepared=targets.map(t=>prepareHubbleEngineTarget(t.id,{packs,glx,qsoCatalog,librarySpectra}));
- for(const p of prepared)for(const e of p.entries){
-  const recorded=(HUBBLE_ENGINE_RECORD.targets.find(t=>t.id===p.id)!.telescopes as readonly {telescope:number;cropSHA256?:string}[]).find(x=>x.telescope===e.definition.domain.telescopeRecord);
-  if(!recorded||await resourceSha256(e.configuration.viewport.rgb as Uint8Array<ArrayBuffer>)!==recorded.cropSHA256)throw new HubbleEngineError('evidence');
+export type {HubbleEngineResources};
+export type HubbleEngineStatus='idle'|'loading'|'ready'|'error';
+/** A preparation that failed for a transient reason (network, worker): the caller may offer a retry. */
+export class HubbleEngineLoadError extends Error{constructor(){super('Hubble engine field could not be prepared');this.name='HubbleEngineLoadError';}}
+let resources:HubbleEngineResources|null=null;// null: the browser path (Worker)
+const status=new Map<string,HubbleEngineStatus>(),pending=new Map<string,Promise<void>>(),listeners=new Set<()=>void>();
+const key=(id:string,t:ExtendedTelescope)=>`${id}:${t}`;
+function set(k:string,s:HubbleEngineStatus){status.set(k,s);for(const l of listeners)l();}
+/** Test seam (recorded local bytes, prepared in process); null restores the browser Worker path. Clears statuses, not registrations. */
+export function setHubbleEngineResources(r:HubbleEngineResources|null){resources=r;pending.clear();status.clear();for(const l of listeners)l();}
+export function hubbleEngineTargetStatus(id:string,t:ExtendedTelescope):HubbleEngineStatus{return status.get(key(id,t))??'idle';}
+export function subscribeHubbleEngineTargets(listener:()=>void):()=>void{listeners.add(listener);return()=>{listeners.delete(listener);};}
+
+let worker:Worker|null=null,ticket=0;
+const waiting=new Map<number,(m:{ok:boolean;definition?:PreparedEngineEntry['definition'];configuration?:Omit<PreparedEngineEntry['configuration'],'sourcePreparer'>})=>void>();
+function viaWorker(id:string,telescope:ExtendedTelescope):Promise<PreparedEngineEntry>{
+ if(!worker){
+  worker=new Worker(new URL('./hubbleEngineWorker.ts',import.meta.url),{type:'module'});
+  worker.onmessage=e=>{const w=waiting.get(e.data.ticket);waiting.delete(e.data.ticket);w?.(e.data);};
+  worker.onerror=()=>{for(const w of waiting.values())w({ok:false});waiting.clear();worker?.terminate();worker=null;};
  }
- for(const p of prepared)for(const e of p.entries)registerEngineGalaxy(e.definition,e.configuration);
- done=true;
+ const mine=++ticket;
+ return new Promise((resolve,reject)=>{
+  waiting.set(mine,m=>{
+   if(!m.ok||!m.definition||!m.configuration){reject(new HubbleEngineLoadError());return;}
+   const c=m.configuration as PreparedEngineEntry['configuration']&{continuationSource?:FieldContinuationSource};
+   const configuration=Object.freeze({...c,...(c.continuationSource?{sourcePreparer:continuationSourcePreparer(c.continuationSource)}:{})}) as PreparedEngineEntry['configuration'];
+   resolve(Object.freeze({definition:m.definition,configuration}));
+  });
+  worker!.postMessage({ticket:mine,id,telescope} satisfies HubbleEngineWorkerRequest);
+ });
 }
-/** Resolves when every engine target is registered; rejects with a typed error (and allows a retry) otherwise. */
-export function ensureHubbleEngineTargets():Promise<void>{
- if(done)return Promise.resolve();
- pending??=run().catch(e=>{pending=null;throw e;});
- return pending;
+async function prepare(id:string,telescope:ExtendedTelescope):Promise<void>{
+ const target=HUBBLE_EXTENDED_TARGETS.find(t=>t.route==='engine'&&t.id===id);
+ if(!target||!target.telescopes.includes(telescope))throw new HubbleEngineError('evidence');// only recorded-available telescopes
+ let entry:PreparedEngineEntry;
+ try{entry=resources?await (await import('./hubbleEngineEntry')).prepareEngineEntry(id,telescope,resources):await viaWorker(id,telescope);}
+ catch(e){if(e instanceof HubbleEngineError)throw e;throw new HubbleEngineLoadError();}
+ const recorded=(HUBBLE_ENGINE_RECORD.targets.find(t=>t.id===id)!.telescopes as readonly {telescope:number;cropSHA256?:string}[]).find(x=>x.telescope===telescope);
+ if(!recorded||entry.definition.domain.telescopeRecord!==telescope||await resourceSha256(entry.configuration.viewport.rgb as Uint8Array<ArrayBuffer>)!==recorded.cropSHA256)throw new HubbleEngineError('evidence');
+ (await import('../core/galaxyExposure')).registerEngineGalaxy(entry.definition,entry.configuration);
+}
+/** Resolves when this (target, telescope) is registered; rejects with a typed error (and allows a retry) otherwise. */
+export function ensureHubbleEngineTarget(id:string,telescope:ExtendedTelescope):Promise<void>{
+ const k=key(id,telescope);if(status.get(k)==='ready')return Promise.resolve();
+ let p=pending.get(k);
+ if(!p){
+  set(k,'loading');
+  p=prepare(id,telescope).then(()=>{pending.delete(k);set(k,'ready');},e=>{pending.delete(k);set(k,'error');throw e;});
+  pending.set(k,p);
+ }
+ return p;
+}
+/** Every listed (target, telescope), sequentially; with no list, every recorded-available one (tests and full restores). */
+export async function ensureHubbleEngineTargets(keys?:readonly (readonly [string,ExtendedTelescope])[]):Promise<void>{
+ const all=keys??HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').flatMap(t=>t.telescopes.map(i=>[t.id,i] as const));
+ for(const [id,t] of all)await ensureHubbleEngineTarget(id,t);
 }

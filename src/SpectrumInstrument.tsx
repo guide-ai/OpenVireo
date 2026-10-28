@@ -24,7 +24,7 @@ import {EMPTY_HUBBLE,type HubbleWorkspace} from './core/hubbleAnalysis';
 import { useEffect, useImperativeHandle, useMemo, useRef, useState, type ChangeEvent, type Ref } from 'react';
 import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTROL, MAX_FILE_BYTES, measurementCsv, moveControl, parseLines, parseSpectrum, rebase, shiftedWavelength, type Measurement, type Sample } from './core/spectrum';
 import { readImportedSpectrum } from './io/spectrumFiles';
-import { MAX_SESSION_ROWS, readInvestigationSession, serializeAnalysisSession, type SessionObservation, type ObservatorySession } from './io/analysisSession';
+import { AnalysisSessionError, MAX_SESSION_ROWS, readInvestigationSession, serializeAnalysisSession, type SessionObservation, type ObservatorySession } from './io/analysisSession';
 import {LssSessionError,type LssInvestigation} from './io/lssInvestigation';
 import {ObjectXSessionError,type ObjectXInvestigation} from './io/objectXInvestigation';
 import {OBJECT_X_SESSION_EN} from './objectx/ObjectXMessages';
@@ -194,7 +194,7 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
       setAcquisitions(saved.acquisitions??[]);setObservation(saved.observation);setControl(saved.control);setStepInput(saved.stepInput);setReference(saved.reference);
       setObject(saved.object);setRows(saved.rows);setHubble(saved.hubble);setWide(saved.wide);nextId.current=(saved.rows.at(-1)?.id??0)+1;
       setNotice(t('session.restored'));return true;
-    } catch {if(ticket===generation.current)setError(t('session.restoreError'));return false;}
+    } catch(e) {if(ticket===generation.current)setError(t(e instanceof AnalysisSessionError&&e.code==='resources'?'session.restoreResourcesError':'session.restoreError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
   function cancelSessionOperation(){generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}

@@ -1,12 +1,12 @@
 import {galaxyTelescopeIndex,isCachedGalaxyTarget,isPegasusGalaxyTarget} from './core/galaxyTelescope';
 import {opticalProfile} from './core/opticalTelescope';
 import {hubbleExtendedTarget,isHubbleEngineId,hubbleEngineRecord} from './core/hubbleEngineTargets';
-import {ensureHubbleEngineTargets,hubbleEngineTargetsReady} from './io/hubbleEngineTargets';
+import {ensureHubbleEngineTarget,hubbleEngineTargetStatus,subscribeHubbleEngineTargets} from './io/hubbleEngineTargets';
 import type {ExposureWorkspace} from './core/observingWorkspace';
 import type {ExposureController} from './useBoundedExposure';
 import {displayError,errorFor} from './i18n/errors';
 import {galaxyIdentity,galaxyDistanceReference} from './core/galaxyIdentity';
-import {useEffect,useRef,useState,useMemo,useImperativeHandle,type Ref} from 'react';
+import {useEffect,useRef,useState,useMemo,useImperativeHandle,useSyncExternalStore,type Ref} from 'react';
 import {t,fixed} from './i18n';
 import {useBoundedExposure} from './useBoundedExposure';
 import {activateGalaxy,cancelGalaxy,createGalaxyExposure,deactivateGalaxy,pauseGalaxy,resetGalaxy,galaxyCountsCsv,startGalaxy,tickGalaxy,galaxyDefinition,verifiedGalaxyConfiguration} from './core/galaxyExposure';
@@ -44,13 +44,14 @@ function GalaxyExposurePanel({active,fieldMatches,onActivate,onStart,canIntegrat
  <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div><section className="scope-note"><h2>{t('galaxyExposure.limitsTitle')}</h2><button disabled>{t('galaxyExposure.otherObjects')}</button><p>{t('galaxyExposure.limits')}</p><details><summary>{t('skyExposure.calibrationTimingAndEvidence')}</summary><p>{t('galaxyExposure.evidence',{stars:identity.stars,galaxies:identity.galaxies})}</p><p>{t('galaxyExposure.numericPolicy')}</p><p>{t('galaxyExposure.savePolicy')}</p><p>{t('skyExposure.segmentSeed')}<output data-testid={active?'galaxy-seed-at-reset':'galaxy-seed-at-reset-'+targetId}>{state?.seedAtReset??'—'}</output> · {t('galaxyExposure.currentSeed')} <output data-testid={active?'galaxy-current-seed':'galaxy-current-seed-'+targetId}>{e?.seed??'—'}</output></p></details></section></main>;
 }
 type PanelProps=Parameters<typeof GalaxyExposurePanel>[0];
-/** Front F: an engine target (hubbleEngineTargets.ts) is shown only after its asynchronous, hash-checked field preparation; a
- * failure is an explicit, retryable notice and never a substitute field. */
+/** Front F: an engine target (hubbleEngineTargets.ts) is shown only after its asynchronous, hash-checked field preparation, which
+ * starts only when its panel is the active one (review 2 finding 1) and runs off the main thread; the status is shared by every
+ * panel. A failure is an explicit, retryable notice and never a substitute field. */
 export default function GalaxyExposure(props:PanelProps){
- const engine=isHubbleEngineId(props.targetId);
- const [state,setState]=useState<'ready'|'loading'|'error'>(()=>!engine||hubbleEngineTargetsReady()?'ready':'loading');
- const [attempt,setAttempt]=useState(0);
- useEffect(()=>{if(!engine||hubbleEngineTargetsReady()){setState('ready');return;}let live=true;setState('loading');ensureHubbleEngineTargets().then(()=>{if(live)setState('ready');},()=>{if(live)setState('error');});return()=>{live=false;};},[engine,attempt]);
- if(state==='ready')return <GalaxyExposurePanel {...props}/>;
- return <main className="observatory-main sky-exposure-main"><section className="card scope-note">{state==='loading'?<p role="status" data-testid="galaxy-engine-loading">{t('galaxyExposure.engineLoading')}</p>:<><p role="alert" data-testid="galaxy-engine-error">{t('galaxyExposure.engineError')}</p><button className="secondary-button" onClick={()=>setAttempt(n=>n+1)}>{t('galaxyExposure.engineRetry')}</button></>}</section></main>;
+ const id=props.targetId??'36773',engine=isHubbleEngineId(id),telescope=(props.telescopeIndex??0) as 0|1|2;
+ const status=useSyncExternalStore(subscribeHubbleEngineTargets,()=>engine?hubbleEngineTargetStatus(id,telescope):'ready');
+ const recorded=!engine||hubbleExtendedTarget(id)!.telescopes.includes(telescope);
+ useEffect(()=>{if(engine&&recorded&&props.active&&status==='idle')void ensureHubbleEngineTarget(id,telescope).catch(()=>{});},[engine,recorded,props.active,status,id,telescope]);
+ if(!engine||status==='ready'||!recorded)return <GalaxyExposurePanel {...props}/>;
+ return <main className="observatory-main sky-exposure-main"><section className="card scope-note">{status!=='error'?<p role="status" data-testid="galaxy-engine-loading">{t('galaxyExposure.engineLoading')}</p>:<><p role="alert" data-testid="galaxy-engine-error">{t('galaxyExposure.engineError')}</p><button className="secondary-button" onClick={()=>void ensureHubbleEngineTarget(id,telescope).catch(()=>{})}>{t('galaxyExposure.engineRetry')}</button></>}</section></main>;
 }

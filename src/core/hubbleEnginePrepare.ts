@@ -13,13 +13,14 @@ export type HubbleEngineDefinition=Readonly<{policyId:string;fieldSnapshotSHA256
 export type HubbleEngineConfiguration=ReturnType<typeof configurationOf>;
 function configurationOf(r:FieldResult,telescope:ExtendedTelescope){
  const c=r.calibration!,p=r.population!;
- return Object.freeze({...(c.sourcePreparer?{sourcePreparer:c.sourcePreparer}:{}),telescopeIndex:telescope,field:Object.freeze({stars:p.stars,galaxies:p.galaxies}),scene:r.scene!,zeroPoint:c.zeroPoint,pixelLevel:c.pixelLevel,fraction:c.fraction,amplitude:c.amplitude,instrumentMagnitude:c.instrumentMagnitude,sourceMeans:c.sourceMeans,sourceValues:c.sourceValues,wavelengths:c.wavelengths,viewport:r.viewport!,view:null});
+ return Object.freeze({...(c.sourcePreparer?{sourcePreparer:c.sourcePreparer,continuationSource:c.continuationSource!}:{}),telescopeIndex:telescope,field:Object.freeze({stars:p.stars,galaxies:p.galaxies}),scene:r.scene!,zeroPoint:c.zeroPoint,pixelLevel:c.pixelLevel,fraction:c.fraction,amplitude:c.amplitude,instrumentMagnitude:c.instrumentMagnitude,sourceMeans:c.sourceMeans,sourceValues:c.sourceValues,wavelengths:c.wavelengths,viewport:r.viewport!,view:null});
 }
 export type HubbleEngineInputs=Readonly<{packs:ReadonlyMap<string,FieldPack>;glx:Uint8Array;qsoCatalog:FieldQsoCatalog;librarySpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>}>;
 export type PreparedEngineTarget=Readonly<{id:string;entries:readonly Readonly<{definition:HubbleEngineDefinition;configuration:HubbleEngineConfiguration}>[]}>;
 /** Pure preparation of one engine target on every recorded telescope; recorded integers and statuses must match exactly. The
  * crop digest is checked by the caller (an asynchronous hash), never skipped. */
-export function prepareHubbleEngineTarget(id:string,inputs:HubbleEngineInputs):PreparedEngineTarget{
+/** `only`: prepare just that recorded-available telescope (lazy loading); the others are neither evaluated nor returned. */
+export function prepareHubbleEngineTarget(id:string,inputs:HubbleEngineInputs,only?:ExtendedTelescope):PreparedEngineTarget{
  const rec=hubbleEngineRecord(id),pack=inputs.packs.get(rec.pack);if(!pack||pack.id!==rec.pack)throw new HubbleEngineError('pack');
  const pointing=Object.freeze({ra:rec.pointing.ra,dec:rec.pointing.dec});
  if(!pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec))throw new HubbleEngineError('pack');
@@ -29,6 +30,8 @@ export function prepareHubbleEngineTarget(id:string,inputs:HubbleEngineInputs):P
  const packRecord=(engineTargets.packs as Record<string,{sha256:string}>)[rec.pack];
  const entries=[];
  for(const t of rec.telescopes as readonly RecordedTelescope[]){
+  if(only!==undefined&&t.telescope!==only)continue;
+  if(only!==undefined&&t.status!=='available')throw new HubbleEngineError('evidence');
   const telescope=t.telescope as ExtendedTelescope,r=evaluateField(pack,inputs.glx,pointing,telescope,options);
   if(t.status!=='available'){if(r.reasons.join()!==(t.reasons??[]).join())throw new HubbleEngineError('evidence');continue;}
   if(r.reasons.length||!r.target||!r.calibration||r.target.recordIndex!==rec.glxIndex||r.target.id!==id||r.selection?.kind!=='galaxy'||r.selection.galaxy.distance!==0)throw new HubbleEngineError('evidence');
