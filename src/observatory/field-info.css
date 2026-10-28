@@ -1,0 +1,51 @@
+/* Front O: Field Information windows, Catalog Object, Edit Mode overlay and Naked Eye sky. Tokens only (src/theme/tokens.css);
+   original colours used as data (LEDs, pick marker) are named in the components. Phone-width safe (320 px). */
+.fi-area{display:flex;flex-direction:column;gap:var(--ov-space-3);min-width:0}
+.fi-window{min-width:0;padding:var(--ov-space-4);display:flex;flex-direction:column;gap:var(--ov-space-2)}
+.fi-window h2{margin:0;font-size:var(--ov-text-lg)}
+.fi-menubar{display:flex;flex-wrap:wrap;gap:var(--ov-space-2)}
+.fi-menu{position:relative}
+.fi-menu>button{min-height:40px;padding:0 var(--ov-space-3);border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);color:var(--ov-text);font:inherit;cursor:pointer}
+.fi-menu-list{position:absolute;z-index:5;top:calc(100% + 4px);left:0;min-width:min(18rem,calc(100vw - 48px));max-width:calc(100vw - 32px);display:flex;flex-direction:column;padding:var(--ov-space-1);background:var(--ov-surface);border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-md);box-shadow:var(--ov-shadow-md)}
+.fi-menu-list button{min-height:40px;text-align:left;padding:0 var(--ov-space-3);border:0;background:none;color:var(--ov-text);font:inherit;cursor:pointer;border-radius:var(--ov-radius-sm)}
+.fi-menu-list button:hover:not(:disabled){background:var(--ov-surface-hover)}
+.fi-menu-list button:disabled{color:var(--ov-disabled-text);cursor:not-allowed}
+.fi-menu-list hr{border:0;border-top:1px solid var(--ov-border);margin:var(--ov-space-1) 0;width:100%}
+.fi-submenu{display:flex;flex-direction:column;padding-left:var(--ov-space-4)}
+.fi-menu :focus-visible,.fi-lines:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
+.fi-lines{max-height:min(55vh,28rem);overflow:auto;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-sunken);padding:var(--ov-space-1) 0;font-family:"Courier New",Courier,var(--ov-font-mono);font-size:13px;font-weight:700}
+.fi-line{white-space:pre;padding:1px var(--ov-space-2);cursor:default;width:max-content;min-width:100%;box-sizing:border-box}
+.fi-line[aria-selected=true]{background:var(--ov-accent);color:var(--ov-accent-contrast)}
+.fi-note,.fi-status{font-size:var(--ov-text-sm);color:var(--ov-text-muted);margin:0;line-height:1.45}
+.fi-unavailable{font-size:var(--ov-text-sm);margin:0;padding:var(--ov-space-2) var(--ov-space-3);border:1px solid var(--ov-warning-border);background:var(--ov-warning-soft);color:var(--ov-text);border-radius:var(--ov-radius-sm)}
+.fi-box-text{white-space:pre-wrap}
+.fi-file-menu{display:flex;flex-wrap:wrap;gap:var(--ov-space-2);align-items:flex-start}
+/* Catalog Object (TRefInfoForm1, 348×154 client) */
+.co-grid{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 8px;align-items:center;font-size:13px}
+.co-grid label{text-align:right;font-weight:700}
+.co-grid input{min-height:32px;font:inherit;padding:2px 6px;min-width:0;width:100%;box-sizing:border-box}
+.co-grid input[readonly]{background:var(--ov-surface-sunken)}
+.co-led{display:inline-flex;align-items:center;gap:4px;font-size:var(--ov-text-xs);color:var(--ov-text-muted);white-space:nowrap}
+.co-led i{width:12px;height:12px;border-radius:50%;border:1px solid var(--ov-border-strong);display:inline-block}
+/* Edit Mode overlay over the Telescope view (.sky-frame is position:relative) */
+.em-layer{position:absolute;inset:0;z-index:2}
+.em-layer svg{width:100%;height:100%;display:block;cursor:crosshair}
+.em-layer svg:focus-visible{outline:3px solid var(--ov-focus);outline-offset:-3px}
+.em-caption{position:absolute;left:8px;right:8px;bottom:8px;margin:0;padding:4px 8px;font-size:var(--ov-text-xs);background:var(--ov-surface);color:var(--ov-text);border-radius:var(--ov-radius-sm);opacity:.92}
+.em-status{margin:var(--ov-space-2) 0 0;font-size:var(--ov-text-sm)}
+/* Naked-eye dome sky */
+.ne-sky{position:relative;width:100%;max-width:640px;aspect-ratio:1;background:var(--ov-sky-bg);border-radius:var(--ov-radius-md);overflow:hidden}
+.ne-sky svg{width:100%;height:100%;display:block}
+.ne-sky svg:focus-visible{outline:3px solid var(--ov-focus);outline-offset:-3px}
+@media(max-width:600px){.fi-window{padding:var(--ov-space-3)}.fi-lines{font-size:12px}.co-grid{grid-template-columns:auto minmax(0,1fr)}.co-led{grid-column:2}}
+.fi-print-report{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px;max-height:min(55vh,26rem);overflow:auto}
+.fi-print-header{margin:0 0 8px;font-family:"Courier New",Courier,monospace;font-size:12px}
+.fi-print-lines{margin:0;font-family:"Courier New",Courier,monospace;font-size:12px;white-space:pre;overflow-x:auto}
+@media print{
+html[data-print-scope=field-info] body>:not(.fi-print-root){display:none!important}
+html[data-print-scope=field-info] .fi-print-root{position:static!important;display:block!important;border:0!important;box-shadow:none!important;max-height:none!important;overflow:visible!important;width:auto!important;padding:0!important}
+html[data-print-scope=field-info] .fi-print-root::backdrop{display:none}
+html[data-print-scope=field-info] .fi-print-chrome{display:none!important}
+html[data-print-scope=field-info] .fi-print-report{border:0!important;max-height:none!important;overflow:visible!important}
+html[data-print-scope=field-info] .fi-print-lines{white-space:pre-wrap}
+}

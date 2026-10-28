@@ -1,0 +1,42 @@
+/** Web texts of the Front O forms (docs/OBJECT-INFO-FORMS.md). Original literals stay in the core modules and are never
+ * translated; these are the labelled web adaptations, notices and typed reasons. */
+export const FIELD_INFO_MESSAGES=Object.freeze({
+ editModeLabel:'Edit Mode (instructor, VIREO)',
+ editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here it is a plain check box, off by default and not saved. It only enables the Telescope-view click (Catalog Object) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
+ fileMenu:'File',
+ menuHelp:'Instructor tools (Edit Mode): lists of the objects in the current field. Close Optical Simulation Options with Edit Mode off to hide them again.',
+ printAdaptation:'Web adaptation: Print opens a print preview of the page body (date and time in your browser’s format, the window caption and the list). Printer page layout and fonts differ.',
+ saveAdaptation:'Web adaptation: Save Text downloads the list as a text file (one line per row, CRLF, Latin-1) instead of a save dialog; the download name is a web choice.',
+ modelessNote:'This list stays open while the telescope moves; reopen it from the menu to refresh it for the new field.',
+ close:'Close',ok:'OK',cancel:'Cancel',yes:'Yes',no:'No',
+ noSelection:'Select a star row first.',
+ slewBusy:'Slew to Selection is not available while the telescope moves or the dome is closed.',
+ startNewAdaptation:'Web adaptation: this site does not track whether the hot list was changed, so it asks whenever the current list has rows; Yes downloads the current list as an .HTL file before it is replaced.',
+ busy:'A hot-list file is being read; try again when it finishes.',
+ unavailable:Object.freeze({
+  'field-not-certified':'Not available here: the complete catalogue records (identifiers, colours, spectral types) exist on this site only for the certified exercise fields (the LSS survey pointings, the Hubble engine and pinned galaxy fields). The Telescope view elsewhere shows a preview of star positions and V magnitudes only.',
+  'finder-catalog-unavailable':'Not available in the Finder view: VIREO picks from its finder star catalogue, which is not on this site. Switch to the Telescope view.',
+  'object-x-hidden':'Not available near an unrevealed Object X target: the record would show its identity before the exercise reveals it.',
+  'asteroids-not-modelled':'Not available: this field may contain asteroids, which the field engine does not model.',
+  'population':'Not available: the field engine cannot rebuild this field exactly (reason: {reason}).',
+  'gcvs-no-variable-record':'GCVS is disabled: VIREO enables it only for a star that carries a modelled variable record.',
+  'gcvs-merge-unmodelled':'GCVS is disabled: VIREO links a variable record to this star through a merge that this site does not reproduce yet. Use Field Information › Variable Stars › Get Selection Data instead.',
+  'record-edit-unavailable':'Values are read-only here: VIREO’s OK writes edited values back into the in-memory field, which this site does not do.',
+  'update-master-catalog':'Update is not available: in VIREO it rewrites the master star catalogue file on disk.',
+  'galaxy-colour-residue':'Colours not shown: for this morphological type VIREO leaves uninitialised values.',
+  'galaxy-type-fault':'Type not shown: VIREO’s type text routine fails for this morphology code.',
+  'spectral-code-unformattable':'This list cannot be shown: a record’s spectral code has no recovered text.',
+  'csv-row-short':'Comma Delimit is not available: a row is shorter than the recovered column positions.',
+  'starlist-hotlist-cluster-bank':'Not available: in VIREO these commands read the cluster list (0x552a7c reads the cluster bank 0x5bca88/0x5bcaa4) instead of the selected field row, which is probably an original defect.',
+  'modeled-uninitialised':'Not available: which variables VIREO lists in this mode depends on memory the original never initialises, so the list cannot be reproduced. Use “All GCVS variables in region.”.',
+  'ra-wrap-scan-untraced':'Not available: this field crosses 0h of right ascension, a case of VIREO’s catalogue search that has not been recovered.',
+  'polar-area':'Not available: this field is too close to a celestial pole.',
+  'variable-csv-not-available':'Comma Delimit is disabled for this list in VIREO.',
+  'naked-eye-geometry-unrecovered':'The naked-eye sky drawing has not been recovered from VIREO yet.',
+  'naked-eye-file':'The naked-eye star file could not be loaded or did not match its recorded size and SHA-256.',
+  'loading':'Loading catalogue data…',
+  'load-error':'The catalogue data could not be loaded or did not match its recorded size and SHA-256.',
+ }),
+});
+export type FieldInfoReason=keyof typeof FIELD_INFO_MESSAGES.unavailable;
+export const fieldInfoReasonText=(reason:FieldInfoReason,detail='')=>FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',detail);

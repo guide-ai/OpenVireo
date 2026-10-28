@@ -24,7 +24,9 @@ function download(bytes:Uint8Array,name:string){
 
 /** Front V route: catalog search (web) → Variable Star Data (TVStarListForm1) → Simulated Light Curve (TLtCrvDsplyForm1).
  * State is a browsing aid only; it is not saved with the investigation. */
-export default function VariableStarsRoute({active}:{active:boolean}){
+/** `openRequest` (Front O): Field Information › Variable Stars › Get Selection Data (0x530130) opens Variable Star Data on a
+ * CLEA_VStrs.dat record index; each new token opens once the catalog is loaded. */
+export default function VariableStarsRoute({active,openRequest=null}:{active:boolean;openRequest?:Readonly<{token:number;index:number}>|null}){
  const id=useId(),[load,setLoad]=useState<LoadState>({status:'loading'}),[name,setName]=useState(''),[type,setType]=useState('');
  const [session,setSession]=useState<VariableStarSession>(INITIAL_VARIABLE_STAR_SESSION);
  const [menu,setMenu]=useState<'data'|'save'|'file'|null>(null),[notice,setNotice]=useState('');
@@ -57,6 +59,12 @@ export default function VariableStarsRoute({active}:{active:boolean}){
   if(!list)return;setMenu(null);setSession(s=>sessionDisplayCurve(s,list.record));
   requestAnimationFrame(()=>curveHeading.current?.focus());
  }
+ const handledRequest=useRef(0);
+ useEffect(()=>{
+  if(!openRequest||openRequest.token===handledRequest.current||!records)return;
+  handledRequest.current=openRequest.token;
+  const r=records[openRequest.index];if(r)openRecord(r);
+ });
  function closeList(){setMenu(null);setNotice('');setSession(closeVariableStarList);}
  function saveText(){
   if(!list)return;setMenu(null);
