@@ -10,7 +10,9 @@ import './cluster-hr.css';
 /** TClstrStrForm1 "Possible Cluster Member" (0x5408ac): a modeless window over the plot (VIREO: fsStayOnTop). Its Item menu
  * keeps VIREO's order; Remove asks VIREO's question (0x540b90) and then applies the existing exclusion. Exit and Escape close
  * it (FormClose 0x54088c hides the marker). Fields VIREO fills from unpublished per-star data stay empty with a note. */
-export default function PossibleMemberWindow({clusterName,point,detail,removed,busy,onRemove,onClose}:{clusterName:string;point:ClusterReferencePoint;detail:ClusterPointDetail|null;removed:boolean;busy:boolean;onRemove:()=>void;onClose:()=>void}){
+export default function PossibleMemberWindow({clusterName,point,detail,removed,busy,onRemove,onClose,onAddHotList,notice}:{clusterName:string;point:ClusterReferencePoint;detail:ClusterPointDetail|null;removed:boolean;busy:boolean;onRemove:()=>void;onClose:()=>void;
+ /** Item › Add to Hot List (0x540ccc); absent: shown disabled. */ onAddHotList?:()=>void;
+ /** The Observation List confirmation text after an addition. */ notice?:string}){
  const id=useId(),heading=useRef<HTMLHeadingElement>(null),trigger=useRef<HTMLButtonElement>(null),[menu,setMenu]=useState(false),[asking,setAsking]=useState(false),[status,setStatus]=useState('');
  const f=possibleMemberFields(clusterName,point);
  // From the approved sidecar: ID, U−B (FloatToStrF 3 when below 30) and the spectral text 0x55d4f4.
@@ -23,7 +25,7 @@ export default function PossibleMemberWindow({clusterName,point,detail,removed,b
   <div className="cluster-hr-menubar"><div className="cluster-hr-menu">
    <button type="button" ref={trigger} aria-expanded={menu} aria-controls={`${id}-m`} data-testid="cluster-member-menu" onClick={()=>setMenu(!menu)}>{M.memberItemMenu}</button>
    {menu&&<div id={`${id}-m`} role="group" aria-label={M.memberItemMenu} className="cluster-hr-menu-list">
-    <button type="button" disabled title={M.memberHotListUnavailable}>{M.memberAddHotList}</button>
+    <button type="button" data-testid="cluster-member-add-hot-list" disabled={!onAddHotList||busy} title={onAddHotList?undefined:M.memberHotListUnavailable} onClick={()=>{setMenu(false);onAddHotList?.();}}>{M.memberAddHotList}</button>
     <button type="button" data-testid="cluster-member-remove" disabled={busy||removed} onClick={()=>{setMenu(false);setAsking(true);}}>{M.memberRemove}</button>
     <hr/>
     <button type="button" data-testid="cluster-member-exit" onClick={onClose}>{M.memberExit}</button>
@@ -39,7 +41,7 @@ export default function PossibleMemberWindow({clusterName,point,detail,removed,b
    <h4 id={`${id}-q`}>{CLUSTER_REMOVE_CAPTION}</h4><p id={`${id}-qd`} className="cluster-hr-message">{CLUSTER_REMOVE_QUESTION}</p>
    <div className="ob-actions"><button type="button" className="primary-button" autoFocus onClick={()=>{setAsking(false);onRemove();setStatus(M.memberRemoved);}}>{M.yes}</button><button type="button" className="secondary-button" onClick={()=>setAsking(false)}>{M.no}</button></div>
   </div>}
-  <p role="status" className="cluster-hr-note" data-testid="cluster-member-status">{removed&&!status?M.memberAlreadyRemoved:status}</p>
+  <p role="status" className="cluster-hr-note" data-testid="cluster-member-status">{notice||(removed&&!status?M.memberAlreadyRemoved:status)}</p>
   {!detail&&<p className="cluster-hr-note">{M.memberDataNote}</p>}
   <p className="cluster-hr-note">{M.memberRemoveNote}</p>
  </section>;

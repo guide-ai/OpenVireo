@@ -66,3 +66,39 @@ test('Possible Cluster Member shows the star\'s catalogue ID, U−B and spectral
  await panel(page).getByTestId('cluster-display-data').click();
  await expect(page.getByTestId('cluster-report-lines').getByRole('option',{name:new RegExp('^'+PROBE_DETAIL[0]+'\\*')})).toHaveCount(1);
 });
+
+test('Possible Cluster Member › Add to Hot List prefills VIREO\'s entry and appends it to the shared observation hot list',async({page})=>{
+ await page.goto('/#cluster-database');
+ await panel(page).getByLabel('Reference cluster dataset',{exact:true}).selectOption('m67');
+ await panel(page).getByRole('button',{name:'Load selected dataset',exact:true}).click();
+ const svg=page.getByTestId('db-hr-plot');await svg.scrollIntoViewIfNeeded();const box=(await svg.boundingBox())!;
+ await svg.click({button:'right',position:{x:0.5*box.width/496,y:414.5*box.height/506}});
+ const m=page.getByTestId('cluster-member');await expect(m.getByTestId('cluster-member-id')).toHaveText(PROBE_DETAIL[0]);
+ await m.getByTestId('cluster-member-menu').click();await m.getByTestId('cluster-member-add-hot-list').click();
+ await expect(page.getByTestId('cluster-entry-id')).toHaveValue(PROBE_DETAIL[0]);
+ await expect(page.getByTestId('cluster-entry-remarks')).toHaveValue('M 67 (NGC 2682)');
+ await expect(page.getByTestId('cluster-entry-raHours')).toHaveValue('8');
+ await page.getByTestId('cluster-entry-ok').click();
+ await expect(m.getByTestId('cluster-member-status')).toHaveText(`Observation List: Object ${PROBE_DETAIL[0]} added to Observation List.`);
+ await page.evaluate(()=>{location.hash='#observatory';});
+ await expect(page.locator('#htl-rows option')).toHaveCount(1);
+ await expect(page.locator('#htl-rows option').first()).toContainText(PROBE_DETAIL[0]);
+});
+
+test('a touch held still on the plot opens Possible Cluster Member without a contextmenu event (iOS)',async({page})=>{
+ await page.goto('/#cluster-database');
+ await panel(page).getByLabel('Reference cluster dataset',{exact:true}).selectOption('m67');
+ await panel(page).getByRole('button',{name:'Load selected dataset',exact:true}).click();
+ const svg=page.getByTestId('db-hr-plot');await svg.scrollIntoViewIfNeeded();const box=(await svg.boundingBox())!;
+ const at={clientX:box.x+0.5*box.width/496,clientY:box.y+414.5*box.height/506,pointerId:7,pointerType:'touch',isPrimary:true,bubbles:true};
+ // A short tap does nothing.
+ await svg.dispatchEvent('pointerdown',at);await page.waitForTimeout(100);await svg.dispatchEvent('pointerup',at);await page.waitForTimeout(600);
+ await expect(page.getByTestId('cluster-member')).toHaveCount(0);
+ // A press that moves (a scroll) does nothing.
+ await svg.dispatchEvent('pointerdown',at);await svg.dispatchEvent('pointermove',{...at,clientY:at.clientY+30});await page.waitForTimeout(700);
+ await expect(page.getByTestId('cluster-member')).toHaveCount(0);await svg.dispatchEvent('pointerup',at);
+ // Held still for 500 ms: the same star as the right click.
+ await svg.dispatchEvent('pointerdown',at);await page.waitForTimeout(700);
+ await expect(page.getByTestId('cluster-member').getByTestId('cluster-member-id')).toHaveText(PROBE_DETAIL[0]);
+ await svg.dispatchEvent('pointerup',at);
+});

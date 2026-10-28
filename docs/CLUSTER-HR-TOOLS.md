@@ -1,6 +1,6 @@
 # Cluster HR tools closer to VIREO (Front V2, E05)
 
-Status: implemented on branch `claude/front-v2-cluster-hr` (milestones M1–M6 of the plan); the coordinator's independent
+Status: implemented on branch `claude/front-v2-cluster-hr` (milestones M1–M7 of the plan; M8 deferred by the coordinator); the coordinator's independent
 high-effort review is pending. Plan (high effort, planner subagent, no code in that pass):
 `analysis/front-plans/front-v2-cluster-hr.md` in the research root. Recovery notes: `analysis/front-v2-cluster-hr/RECOVERY.md`,
 `RECOVERY-help.md`, `RECOVERY-dialogs.md`. Implementation: Claude Code (claude-opus-5-5), medium effort.
@@ -82,6 +82,13 @@ coordinator to remove at merge, to keep en.json untouched).
   leaves the window open. Exit/Escape close the window (FormClose hides the marker; the web keeps the chosen record).
 - The right click writes the existing `picked` field through `chooseClusterPoint`, exactly like the record chooser, so the
   investigation formats are unchanged.
+- Touch: iOS Safari fires no `contextmenu` on a long press, so a touch held still for 500 ms (moving more than 10 px cancels
+  it, so scrolling still works) picks the same star [W]; a `contextmenu` that Android may send afterwards is ignored. The
+  record chooser stays the keyboard path.
+- **Add to Hot List** 0x540ccc (M7): the shared "Add/Edit Hot List Entry" dialog (`HotListEntryDialog`, imported) prefilled
+  with ID := the star's catalogue ID, remarks := the cluster name (40 characters), RA/Dec := the star's; OK appends to the
+  page's shared observation hot list (`appendAddCurrentEntry`, 0x590588) and shows `Object <ID> added to Observation List.`
+  The hot list is passed to the cluster view by one prop in `src/OpenVireo.tsx` (coordinator decision Q2).
 
 ## Print (M4)
 
@@ -139,7 +146,8 @@ Both are in LOCAL-RESOURCES.json, the RESOURCE-PROVENANCE group `data/clusters` 
 - Playwright: `tests/cluster-hr-help.spec.ts` (help flows, tampered file, 320 px dark; Hyades off-picture marking),
   `tests/cluster-hr-select.spec.ts` (right click, Remove question, removed-star hit, 320 px dark),
   `tests/cluster-hr-print.spec.ts` (page body, layouts, print scope), `tests/cluster-hr-data.spec.ts` (Clusters for Study,
-  Plot, list print; CLEA Cluster Data lines and text download; member ID/U−B/Sp; excluded star starred), plus the updated
+  Plot, list print; CLEA Cluster Data lines and text download; member ID/U−B/Sp; excluded star starred; Add to Hot List into
+  the observatory hot list; touch long press without contextmenu), plus the updated
   `tests/cluster-database-hr.spec.ts`.
 
 ## Not done (follow-ups)
@@ -148,8 +156,6 @@ Both are in LOCAL-RESOURCES.json, the RESOURCE-PROVENANCE group `data/clusters` 
 - The Cluster Data dialog and its list (TClstrDlgForm1, TClstrListForm1: centre coordinates, Use Telescope Coordinates, Type of
   Listing, Sort By, View/Select, Add Cluster to List, the hot-list rows) — plan milestone M8, not done: its finding list for an
   arbitrary centre needs GSC data that is not published, and Use Telescope Coordinates needs the observatory pointing.
-- **Add to Hot List** from Possible Cluster Member (needs the shared hot list passed to the cluster view in `src/OpenVireo.tsx`,
-  coordinator decision Q2).
 - Right-click in the saved-observation (DAT) view opens VIREO's "Observational Data" dialog; not ported.
 - VIREO's report page for View/Print Parameters (0x59e4c0) and TClstrPrmForm1 (Edit Cluster Parameters, out of scope).
 - No original-runtime equivalence is claimed; fonts, GDI pixels and x87 evaluation are not reproduced.

@@ -50,12 +50,15 @@ export const CLUSTER_HR_EN=Object.freeze({
  memberName:'Cluster Name:',memberId:'ID #:',memberRa:'RA:',memberDec:'Dec:',memberV:'V:',memberBmV:'B-V:',memberUmB:'U-B:',memberSp:'Spectral Type:',// VIREO
  memberNotPublished:'not published',
  memberDataNote:'Loading the star\'s catalogue ID, U−B and spectral type…',
- memberHotListUnavailable:'Add to Hot List is not available on this page yet.',
+ memberHotListUnavailable:'Add to Hot List is not available here.',
+ memberHotListBusy:'The observation hot list is busy (a file is being read). Try again in a moment.',
+ memberHotListRaUnsupported:'A right ascension of exactly 24 h cannot be stored in a hot list.',
  memberRemoveNote:'In VIREO, Remove from HR Diagram appears only in its Edit Mode (an instructor setting, off by default). OpenVireo keeps it as your own exclusion, which you can restore.',
  memberRemoved:'Removed from the HR diagram. Restore it with "Restore all excluded points".',
  memberAlreadyRemoved:'This star is already removed from the plot.',
  rightClickNote:'Like VIREO, right-click a star on the plot (or press and hold on a touch screen) to open "Possible Cluster Member". You can also choose a record from the list below.',
  yes:'Yes',no:'No',
+ exclusionEditModeNote:'In VIREO, removing points from the HR diagram is an Edit Mode tool (an instructor setting, off by default); OpenVireo lets you exclude and restore points yourself.',
  // HR Print (0x542f44)
  hrPrint:'Print',// VIREO (File › Print)
  hrPrintCaption:'Color-Magnitude Diagram',// VIREO
