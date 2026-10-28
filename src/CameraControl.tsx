@@ -174,7 +174,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    <label className="camera-palette"><input type="checkbox" checked={usePalette} onChange={e=>setUsePalette(e.target.checked)}/>{M.palette}</label>
    <details><summary>{M.details}</summary><dl className="camera-details">
     <dt>{M.detailCatalog}</dt><dd data-testid="camera-detail-catalog">{image.catalogName}</dd>
-    <dt>{M.detailSource}</dt><dd data-testid="camera-detail-source">{M.sourceWithHash(image.source.mode==='static'?M.sourceStaticLabel(image.source.extractId??'',image.source.recordedAt??''):M.sourceLiveLabel,image.source.sha256)}</dd>
+    <dt>{M.detailSource}</dt><dd data-testid="camera-detail-source">{M.sourceWithHash(image.source.mode==='static'?M.sourceStaticLabel(image.source.extractId??'',image.source.recordedAt??'',image.source.host):M.sourceLiveLabel(image.source.host),image.source.sha256)}</dd>
     <dt>{M.detailRows}</dt><dd data-testid="camera-detail-rows">{M.rowCounts(shown.catalog.rows,shown.catalog.selected,shown.catalog.onDetector)}</dd>
     <dt>{M.detailJd}</dt><dd>{image.jd.toFixed(5)}</dd>
     <dt>{M.detailSeed}</dt><dd data-testid="camera-detail-seed">{shown.recipe.seed}</dd>

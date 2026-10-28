@@ -53,7 +53,7 @@ test('live mode sends only RA, DEC and SR and builds an image from the recorded 
  expect([...url.searchParams.keys()]).toEqual(['RA','DEC','SR']);expect(url.searchParams.get('SR')).toBe('0.23');
  await camera(page).getByText('Exposure details').click();
  await expect(page.getByTestId('camera-detail-catalog')).toHaveText('NOMAD');
- await expect(page.getByTestId('camera-detail-source')).toContainText('Live CDS/VizieR query');
+ await expect(page.getByTestId('camera-detail-source')).toContainText('Live VizieR query answered by vizier.cds.unistra.fr');
  await expect(page.getByTestId('camera-detail-rows')).toHaveText('4 / 1 / 0');
  await page.screenshot({path:test.info().outputPath('camera-live.png'),fullPage:false});
 });
