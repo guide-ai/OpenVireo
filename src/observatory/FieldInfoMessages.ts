@@ -8,6 +8,9 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
  printAdaptation:'Web adaptation: Print opens a print preview of the page body (date and time in your browser’s format, the window caption and the list). Printer page layout and fonts differ.',
  saveAdaptation:'Web adaptation: Save Text downloads the list as a text file (one line per row, CRLF, Latin-1) instead of a save dialog; the download name is a web choice.',
  modelessNote:'This list stays open while the telescope moves; reopen it from the menu to refresh it for the new field.',
+ editLayerLabel:'Telescope view, Edit Mode: click an object, or move the cursor with the arrow keys (Shift for larger steps) and press Enter, to open Catalog Object.',
+ editLayerCaption:(pack:string,stars:number,galaxies:number)=>`Edit Mode · certified field ${pack}: ${stars} stars and QSOs, ${galaxies} galaxies of the loaded 0.75° field (the view shows its central 15′). Drawing style is a web choice.`,
+ catalogObjectAdaptation:'Web adaptation: VIREO opens this box only in Edit Mode; values are shown, not edited.',
  close:'Close',ok:'OK',cancel:'Cancel',yes:'Yes',no:'No',
  noSelection:'Select a star row first.',
  slewBusy:'Slew to Selection is not available while the telescope moves or the dome is closed.',
@@ -24,7 +27,7 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
   'record-edit-unavailable':'Values are read-only here: VIREO’s OK writes edited values back into the in-memory field, which this site does not do.',
   'update-master-catalog':'Update is not available: in VIREO it rewrites the master star catalogue file on disk.',
   'galaxy-colour-residue':'Colours not shown: for this morphological type VIREO leaves uninitialised values.',
-  'galaxy-type-fault':'Type not shown: VIREO’s type text routine fails for this morphology code.',
+  'galaxy-type-fault':'Type not shown: for this morphology code VIREO’s type text routine fails or reads outside its recovered table.',
   'spectral-code-unformattable':'This list cannot be shown: a record’s spectral code has no recovered text.',
   'csv-row-short':'Comma Delimit is not available: a row is shorter than the recovered column positions.',
   'starlist-hotlist-cluster-bank':'Not available: in VIREO these commands read the cluster list (0x552a7c reads the cluster bank 0x5bca88/0x5bcaa4) instead of the selected field row, which is probably an original defect.',
@@ -39,3 +42,14 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
 });
 export type FieldInfoReason=keyof typeof FIELD_INFO_MESSAGES.unavailable;
 export const fieldInfoReasonText=(reason:FieldInfoReason,detail='')=>FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',detail);
+/** Naked Eye Star (student path). */
+export const NAKED_EYE_MESSAGES=Object.freeze({
+ eyebrow:'Dome open',title:'Naked-eye sky',
+ help:'The bright stars (V ≤ 5.5) you would see by eye through the open dome, as VIREO draws them: about 31° wide and 40° high, centred 45° above the horizon in the direction the telescope points. Right-click a star (or move the cursor with the arrow keys and press Enter) to see its data.',
+ skyLabel:'Naked-eye sky through the dome. Right-click a star, or use the arrow keys and Enter, to open Naked Eye Star.',
+ loading:'Loading the naked-eye star file…',
+ fileError:'The naked-eye star file (NkdEye.dat) could not be loaded or did not match its recorded size and SHA-256.',
+ caption:(site:string,utc:string,count:number)=>`${site} · ${utc} UT (the moment the dome opened; close and reopen the dome to redraw) · ${count} stars in view.`,
+ adaptation:'Web adaptation: stars are drawn as discs by VIREO’s brightness level instead of its star sprites, and the dome shutters are not drawn. Positions, the visible region (including VIREO’s quirk that drops many stars just west of the centre line when facing south) and the right-click pick follow the original.',
+ magNote:'As in VIREO, V Mag can be typed in but nothing is saved.',
+});

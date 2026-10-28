@@ -1,4 +1,4 @@
-import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
+import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from '../core/radioControl';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
@@ -10,6 +10,13 @@ import type {Pointing} from '../core/sky';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import FieldInfoListWindow,{MessageBox,downloadText,type FieldInfoBox} from './FieldInfoListWindow';
 import {FIELD_INFO_MESSAGES as M,fieldInfoReasonText,type FieldInfoReason} from './FieldInfoMessages';
+import {OBJECT_X_HIDE_DEGREES,objectXMasks} from '../core/objectXLab';
+import {separationDegrees} from '../core/ephemeris';
+import {freshFieldArea} from '../core/fieldEngine';
+import {catalogRecords} from '../core/catalogObject';
+import {FIELD_STAR_LITERALS as FL,FIELD_STAR_SAVE_NAMES,fieldStarCsvLines,fieldStarReport,type FieldStarReport} from '../core/fieldStarReport';
+import {variableStarSaveText} from '../core/variableStars';
+import {findCertifiedPopulation} from '../io/fieldInfoPacks';
 import './field-info.css';
 
 let variableCatalog:Promise<readonly VariableStarRecord[]>|null=null;
@@ -25,21 +32,34 @@ export type FieldInformationProps=Readonly<{
  view:VariableFieldView;
  /** Opens the Variable stars page on a CLEA_VStrs.dat record index (Get Selection Data). */
  onOpenVariable:(index:number)=>void;
- /** The Star Data List window (certified fields), rendered by the host. */
- starList?:(close:()=>void)=>ReactNode;
+ /** An unrevealed Object X target (E08): both lists are masked near it. */
+ hidden?:Pointing|null;
 }>;
-type VariableWindow=Readonly<{mode:VariableFieldMode;list:VariableFieldList}|{mode:VariableFieldMode;loading:true}|{mode:VariableFieldMode;error:true}>;
+type StarWindow=Readonly<{report:FieldStarReport}|{loading:true}|{reason:FieldInfoReason;detail?:string}>;
+type VariableWindow=Readonly<{mode:VariableFieldMode;list:VariableFieldList}|{mode:VariableFieldMode;loading:true}|{mode:VariableFieldMode;error:true}|{mode:VariableFieldMode;hidden:true}>;
 
 /** File › Field Information (FO-EM, FO-VF; docs/OBJECT-INFO-FORMS.md). Shown only in Edit Mode; turning Edit Mode off closes the
  * windows. The windows are modeless and keep their lines until reopened from the menu (every Show refills, 0x52e464). */
 export default function FieldInformationMenu({info,pointing,enabled,hotList,onSlew}:{info:FieldInformationProps;pointing:Pointing;enabled:boolean;hotList:SharedHotListHandle;onSlew:(p:Pointing)=>void}){
  const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|null>(null),trigger=useRef<HTMLButtonElement>(null);
- const [variable,setVariable]=useState<VariableWindow|null>(null),[star,setStar]=useState(false),[box,setBox]=useState<FieldInfoBox|null>(null);
+ const [variable,setVariable]=useState<VariableWindow|null>(null),[star,setStar]=useState<StarWindow|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[starBox,setStarBox]=useState<FieldInfoBox|null>(null);
  const [confirm,setConfirm]=useState<VariableStarRecord|null>(null);
- useEffect(()=>{if(!info.editMode){setMenu(null);setVariable(null);setStar(false);setBox(null);setConfirm(null);}},[info.editMode]);
+ useEffect(()=>{if(!info.editMode){setMenu(null);setVariable(null);setStar(null);setBox(null);setConfirm(null);}},[info.editMode]);
  if(!info.editMode)return null;
+ /** StarList1Click 0x5404e0 → 0x534e18: the instrument (NewGSC) field at the current pointing, in either view. */
+ function openStars(){
+  setMenu(null);setStarBox(null);const at=pointing;
+  if(objectXMasks(info.hidden??null,at)){setStar({reason:'object-x-hidden'});return;}
+  setStar({loading:true});
+  findCertifiedPopulation(at).then(r=>{
+   if(r.status!=='ready'){setStar(r.reason==='population'?{reason:'population',detail:r.detail}:{reason:r.reason});return;}
+   setStar({report:fieldStarReport(freshFieldArea(at),at,catalogRecords(r.population).stars)});
+  }).catch(()=>setStar({reason:'load-error'}));
+ }
  function openVariables(mode:VariableFieldMode){
   setMenu(null);setBox(null);const at=pointing,view=info.view;
+  const reach=OBJECT_X_HIDE_DEGREES+(view==='finder'?3.75:.375)*1.5;
+  if(info.hidden&&separationDegrees(at.ra,at.dec,info.hidden.ra,info.hidden.dec)<=reach){setVariable({mode,hidden:true});return;}
   setVariable({mode,loading:true});
   loadFieldVariables().then(records=>setVariable(v=>v&&v.mode===mode?{mode,list:variableFieldList(records,at,view,mode)}:v)).catch(()=>setVariable(v=>v&&v.mode===mode?{mode,error:true}:v));
  }
@@ -76,7 +96,7 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
     {menu&&<div id={menuId} role="group" aria-label={M.fileMenu} className="fi-menu-list">
      <button type="button" aria-expanded={menu==='field'||menu==='variables'} data-testid="fi-field-information" onClick={()=>setMenu(m=>m==='file'?'field':'file')}>{menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation)} ›</button>
      {(menu==='field'||menu==='variables')&&<div role="group" aria-label={menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation)} className="fi-submenu">
-      <button type="button" data-testid="fi-star-list" onClick={()=>{setMenu(null);setStar(true);}}>{menuCaptionText(EDIT_MODE_CAPTIONS.starList)}</button>
+      <button type="button" data-testid="fi-star-list" onClick={openStars}>{menuCaptionText(EDIT_MODE_CAPTIONS.starList)}</button>
       <button type="button" aria-expanded={menu==='variables'} data-testid="fi-variable-stars" onClick={()=>setMenu(m=>m==='variables'?'field':'variables')}>{menuCaptionText(VL.menu.variableStars)} ›</button>
       {menu==='variables'&&<div role="group" aria-label={menuCaptionText(VL.menu.variableStars)} className="fi-submenu">
        <button type="button" data-testid="fi-variables-gcvs" onClick={()=>openVariables('gcvs')}>{menuCaptionText(VL.menu.gcvs)}</button>
@@ -87,7 +107,18 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
    </div>
    <p className="fi-note">{M.menuHelp}</p>
   </div>
-  {star&&info.starList?.(()=>setStar(false))}
+  {star&&('report' in star?<FieldInfoListWindow testId="fi-slist" caption={star.report.caption} lines={star.report.lines} first={star.report.first} last={star.report.last}
+    notice={<>{star.report.reason&&<p className="fi-unavailable" role="status" data-testid="fi-slist-reason" data-reason={star.report.reason}>{fieldInfoReasonText(star.report.reason)}</p>}<p className="fi-note">{M.modelessNote} {M.printAdaptation} {M.saveAdaptation}</p></>}
+    selectionItems={[
+     {key:'add',label:FL.menu.add,onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
+     {key:'start',label:FL.menu.start,onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
+     {key:'entire',label:FL.menu.entire,onClick:()=>{},unavailable:fieldInfoReasonText('starlist-hotlist-cluster-bank')},
+    ]}
+    saveName={FIELD_STAR_SAVE_NAMES.text}
+    csv={{disabled:false,bytes:()=>{const l=fieldStarCsvLines(star.report.lines);return l?{bytes:variableStarSaveText(l),name:FIELD_STAR_SAVE_NAMES.csv}:{caption:FL.csvTitle,text:fieldInfoReasonText('csv-row-short')};}}}
+    onClose={()=>setStar(null)} box={starBox} onBox={setStarBox}/>
+   :<section className="card fi-window" data-testid="fi-slist-status"><h2 className="ob-native">{FL.caption}</h2><p role="status" className={'loading' in star?'fi-note':'fi-unavailable'} data-reason={'reason' in star?star.reason:'loading'}>{'reason' in star?fieldInfoReasonText(star.reason,star.detail):fieldInfoReasonText('loading')}</p>
+    <button type="button" className="secondary-button" onClick={()=>setStar(null)}>{M.close}</button></section>)}
   {variable&&('list' in variable?<FieldInfoListWindow testId="fi-vlist" caption={variable.list.caption} lines={variable.list.lines} first={variable.list.first} last={variable.list.last}
     notice={<>{reason&&<p className="fi-unavailable" role="status" data-testid="fi-vlist-reason" data-reason={reason}>{fieldInfoReasonText(reason as FieldInfoReason)}</p>}<p className="fi-note">{M.modelessNote} {M.printAdaptation} {M.saveAdaptation}</p></>}
     selectionItems={[
@@ -99,7 +130,8 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
     onActivate={slew} saveName={VARIABLE_FIELD_SAVE_NAME}
     csv={{disabled:true,unavailable:{caption:VL.csvCaption,text:VL.csvText}}}
     onClose={()=>setVariable(null)} box={box} onBox={setBox}/>
-   :<section className="card fi-window" data-testid="fi-vlist-loading"><p role="status" className={'error' in variable?'fi-unavailable':'fi-note'}>{fieldInfoReasonText('error' in variable?'load-error':'loading')}</p></section>)}
+   :<section className="card fi-window" data-testid="fi-vlist-status"><p role="status" className={'loading' in variable?'fi-note':'fi-unavailable'} data-reason={'hidden' in variable?'object-x-hidden':'error' in variable?'load-error':'loading'}>{fieldInfoReasonText('hidden' in variable?'object-x-hidden':'error' in variable?'load-error':'loading')}</p>
+    <button type="button" className="secondary-button" onClick={()=>setVariable(null)}>{M.close}</button></section>)}
   {confirm&&<MessageBox box={{caption:VL.unsavedCaption,text:VL.unsavedText}} onClose={()=>setConfirm(null)} actions={<>
    <button type="button" className="primary-button" data-testid="fi-unsaved-yes" onClick={()=>startNew(confirm,true)}>{M.yes}</button>
    <button type="button" className="secondary-button" data-testid="fi-unsaved-no" onClick={()=>startNew(confirm,false)}>{M.no}</button></>}/>}

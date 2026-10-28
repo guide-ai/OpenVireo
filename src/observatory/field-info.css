@@ -34,7 +34,7 @@
 .em-caption{position:absolute;left:8px;right:8px;bottom:8px;margin:0;padding:4px 8px;font-size:var(--ov-text-xs);background:var(--ov-surface);color:var(--ov-text);border-radius:var(--ov-radius-sm);opacity:.92}
 .em-status{margin:var(--ov-space-2) 0 0;font-size:var(--ov-text-sm)}
 /* Naked-eye dome sky */
-.ne-sky{position:relative;width:100%;max-width:640px;aspect-ratio:1;background:var(--ov-sky-bg);border-radius:var(--ov-radius-md);overflow:hidden}
+.ne-sky{position:relative;width:100%;max-width:380px;aspect-ratio:240/305;margin:0 auto;background:var(--ov-sky-bg);border-radius:var(--ov-radius-md);overflow:hidden}
 .ne-sky svg{width:100%;height:100%;display:block}
 .ne-sky svg:focus-visible{outline:3px solid var(--ov-focus);outline-offset:-3px}
 @media(max-width:600px){.fi-window{padding:var(--ov-space-3)}.fi-lines{font-size:12px}.co-grid{grid-template-columns:auto minmax(0,1fr)}.co-led{grid-column:2}}
@@ -49,3 +49,5 @@ html[data-print-scope=field-info] .fi-print-chrome{display:none!important}
 html[data-print-scope=field-info] .fi-print-report{border:0!important;max-height:none!important;overflow:visible!important}
 html[data-print-scope=field-info] .fi-print-lines{white-space:pre-wrap}
 }
+.ne-card{margin:8px 22px 20px;padding:var(--ov-space-4);display:flex;flex-direction:column;gap:var(--ov-space-2);min-width:0}
+@media(max-width:600px){.ne-card{margin:8px 14px 16px;padding:var(--ov-space-3)}}
