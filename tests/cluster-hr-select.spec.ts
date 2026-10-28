@@ -32,7 +32,7 @@ test('a right click selects the nearest star in V-bank order and opens Possible 
  await expect(w.getByTestId('cluster-member-ra')).toHaveText(/^ {3}8h \d\dm \d\d\.\d\ds$/);
  await expect(w.getByTestId('cluster-member-dec')).toHaveText(/^ {2}11° \d\d' \d\d\.\d"$/);
  await expect(w.getByTestId('cluster-member-v')).toHaveText(/^\d+\.\d{3}$/);
- await expect(w.getByTestId('cluster-member-id')).toHaveText('not published');
+ await expect(w.getByTestId('cluster-member-id')).toHaveText(/^N0730-\S+$/);// from data/clusters/cluster-reference-detail.json (M6)
  await expect(page.getByTestId('db-hr-marker')).toHaveCount(1);
  // Remove from HR Diagram: VIREO's question; No keeps the star, Yes removes it and hides the marker; the window stays.
  await w.getByTestId('cluster-member-menu').click();await w.getByTestId('cluster-member-remove').click();
