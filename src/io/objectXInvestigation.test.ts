@@ -103,7 +103,7 @@ describe('v28 review 2 fixes',()=>{
   // AUTHORED extract over the recorded VizieR response (tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml); not a bundled extract.
   const xml=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
   const sha=createHash('sha256').update(xml).digest('hex');
-  const extract:CameraExtract={id:'test-pleiades',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'authored test extract'};
+  const extract:CameraExtract={id:'test-pleiades',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out?RA=56.75&DEC=24.12&SR=1',host:'vizier.cds.unistra.fr'};
   const catalog={extracts:[extract],extractBase:'/',fetchImpl:(async()=>new Response(xml)) as unknown as typeof fetch};
   setObjectXResources({orbit:async()=>sav,catalog});
   const recipe={camera:'ccd' as const,opticalIndex:0 as const,filterPosition:2,seconds:5,gain:2,centerRaHours:56.75/15,centerDecDegrees:24.12,seed:99};
@@ -125,7 +125,7 @@ describe.runIf(process.env.OBJX_SAVE_TIMING)('v28 Save timing',()=>{
  it('64 static exposures',async()=>{
   const xml=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
   const sha=createHash('sha256').update(xml).digest('hex');
-  const extract:CameraExtract={id:'test-pleiades',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'authored test extract'};
+  const extract:CameraExtract={id:'test-pleiades',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out?RA=56.75&DEC=24.12&SR=1',host:'vizier.cds.unistra.fr'};
   const catalog={extracts:[extract],extractBase:'/',fetchImpl:(async()=>new Response(xml)) as unknown as typeof fetch};
   setObjectXResources({orbit:async()=>sav,catalog});
   const exposures=[];
