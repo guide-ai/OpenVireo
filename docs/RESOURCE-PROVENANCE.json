@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "scope": "All1323files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
-  "totalFiles": 1327,
-  "totalBytes": 123921175,
+  "totalFiles": 1337,
+  "totalBytes": 124389943,
   "extensions": {
     ".json": 1042,
     ".LST": 6,
@@ -120,8 +120,8 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/spectra": {
-      "files": 24,
-      "bytes": 665096,
+      "files": 25,
+      "bytes": 714602,
       "materialClass": "unchanged-original-text-resource",
       "description": "23unchanged original SP files;also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
       "usedBy": "Runtime galaxy library and template spectra;LSS spectrum-mapping gate: a selected galaxy with its own library spectrum is not given the template",
@@ -150,6 +150,14 @@
       "description": "Byte-exact original VIREO Object X orbit files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/Orbit/ObjX_MPC.CMO(30989466bytes,191293records of162bytes,the original default ORBIT\\OBJX_MPC.CMO),SHA-256 b41e03f14dcef5a54dea67e156e0e7cf2b654432a85bf6d10611ed8e6d25802e;and Orbit/ObjX_AST.CMO(4750326bytes,29323records of162bytes),SHA-256 341134bf9033989fa2c7fa9008551fa8ef015ee158ec5a25c04754696e58ba12;and Orbit/ObjX_MPC.CMO.sav(4798116bytes,29618records of162bytes,epoch JD2455000.5,zip date2009-08-12),SHA-256 efd665a75dbd1d8afeb68b4c7b947d82304ffe2b6355cd2c7e74e58347124030.Every other file is excluded.",
       "usedBy": "E08 Object X:lazy same-origin fetch(size and SHA-256 checked before parsing);heliocentric state vectors propagated by the recovered ephemeris(docs/OBJECT-X.md).Web default ObjX_MPC.CMO.sav(it reproduces the three ObjectX.HTL moving rows at the original default 2009-06-01 04:00 UT);ObjX_MPC.CMO(the original options default)and ObjX_AST.CMO selectable",
       "upstreamStatus": "Included under the user approvals of2026-10-27 and the later ObjX_MPC.CMO.sav approval(AGENTS.md)on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The state vectors were likely computed by CLEA from Minor Planet Center(MPCORB)and Lowell Observatory(ASTORB)orbits(inference from tool strings and file names;uncertain).No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
+    },
+    "data/objectx": {
+      "files": 9,
+      "bytes": 419262,
+      "materialClass": "mixed-derived-and-authored",
+      "description": "Bounded derived GSC field packs (whole records only inside ObjectX.HTL spectroscopy target areas; position witnesses otherwise), their provenance and independent Python witnesses",
+      "usedBy": "Object X spectrometer branch (core/objectXSpectrometer.ts) through the general field engine",
+      "upstreamStatus": "Included under the user approval of 2026-10-27 (AGENTS.md, group 2), based on CLEA License.rtf free noncommercial student copies/no distribution for profit. Originator Project CLEA, Gettysburg College; supporters NSF and Gettysburg College. GSC source-specific terms remain uncertain; not the full GSC or any complete band."
     }
   },
   "authoredExamples": [
@@ -322,6 +330,24 @@
           "data/hubble/bootes-witnesses.json"
         ],
         "sourceGrant": "Front F M5: LSS-strip whole records 512620/512802 for the Boötes targets (2026-10-27 approval)",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-27",
+        "scope": [
+          "data/objectx/spectra-he0353.json",
+          "data/objectx/spectra-ngc2403.json",
+          "data/objectx/spectra-ngc4262.json",
+          "data/objectx/spectra-ngc4449.json",
+          "data/objectx/spectra-3c273.json",
+          "data/objectx/spectra-ngc4631.json",
+          "data/objectx/spectra-hs1603.json",
+          "data/objectx/witnesses.json",
+          "data/objectx/PROVENANCE.json",
+          "public/original/spectra/QSOSpect.dat"
+        ],
+        "sourceGrant": "Front F Object X: bounded GSC subsets for the ObjectX.HTL spectroscopy targets (2026-10-27, group 2) and QSOSpect.dat (group 1)",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }

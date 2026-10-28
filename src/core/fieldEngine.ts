@@ -37,6 +37,7 @@ import {prepareGalaxyProfile} from './galaxySpectrum';
 import {roundNearestEven} from './numericPolicy';
 import {createJournalExposure,type JournalState} from './exposureJournal';
 import {packCovers,type FieldPack} from './fieldPack';
+import {prepareQsoProfile,QsoSpectrumError,type QsoSpectrumFile} from './qsoSpectrum';
 import {loadNativeQsoList,nativeQsoMerge,QsoMergeError,QSO_CATALOG,type NativeQso,type QsoMergeWitness} from './qsoMerge';
 
 export class FieldEngineError extends Error{
@@ -71,7 +72,11 @@ export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:r
  * position. Its light curve (0x51ec95 class dispatch) is not modelled: the hit record keeps its place in the list, is not
  * painted and is reported; nothing it could become is visible or reaches another merge. */
 export type FieldVariableMode='gate'|'outside-view';
-export type FieldOptions=Readonly<{qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode}>;
+/** A selected merged QSO record (type 3) is observed only when the caller supplies the decoded QSOSpect.dat (qsoSpectrum.ts)
+ * and the spectrometer interval (default the 4000–5000 Å domain of every web acquisition; the Object X exercise's own interval is
+ * not recovered). Without it a QSO selection stays the typed qso-selected reason. */
+export type FieldQsoObservation=Readonly<{file:QsoSpectrumFile;minimum?:number;maximum?:number}>;
+export type FieldOptions=Readonly<{qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation}>;
 /** hitId: the nearest record (the merge winner); resolvedId: the record at the unrepaired saved index that the unmodelled update
  * would act on (a runner pruned below the winner shifts it onto another record); removedRunner: pruned as natively. */
 export type FieldOutsideViewVariable=Readonly<{variable:number;name:string;classification:string;hitId:string;resolvedId:string;hitArcseconds:number;removedRunner:string|null}>;
@@ -91,6 +96,8 @@ export type FieldResult=Readonly<{
  /** 'outside-view' only: galaxies outside the browser stamp bound that were not painted because they miss the crop. */
  outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
  pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];population:FieldPopulation|null;
+ /** The selected QSO record when a QSO observation was prepared (qsoObservation option). */
+ qsoTarget?:NativeQso;
  scene:NativeSelectionScene|null;viewport:RgbImage|null;selection:ObjectSelection|null;target:NativeGalaxy|null;calibration:FieldCalibration|null;
 }>;
 const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,viewport:312});
@@ -306,6 +313,20 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor,nativeObjectSlitFraction({objectPresent:true,objectType:star.type,pixelLevel,object:{raHours:star.ra,decDegrees:star.dec},pointing:{raHours:at.ra,decDegrees:at.dec}}));
  }
  const base={...empty,population,scene,viewport,selection,...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})};
+ if(selection.kind==='star'&&population.stars[selection.star.index].type===3&&options.qsoObservation){
+  // 0x50e7b0/0x55e330/0x55e52c: QSOSpect.dat at the QSO's own Single z; point-source throughput as the star path (type 3).
+  const q=population.stars[selection.star.index] as NativeQso;
+  const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:3,pixelLevel,object:{raHours:q.ra,decDegrees:q.dec},pointing:{raHours:at.ra,decDegrees:at.dec}});
+  if(fraction<=0)return Object.freeze({...base,qsoTarget:q,reasons:Object.freeze(['slit-empty' as const])});
+  const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
+  const amplitude=photonAmplitudes(q.magnitude,c.skyMagnitude,zeroPoint,fraction);
+  let profile;try{profile=prepareQsoProfile(options.qsoObservation.file,q.redshift,options.qsoObservation.minimum??4000,options.qsoObservation.maximum??5000);}
+  catch(e){if(e instanceof QsoSpectrumError)return Object.freeze({...base,qsoTarget:q,reasons:Object.freeze(['spectrum-range' as const])});throw e;}
+  const sourceMeans=Object.freeze(profile.values.map(v=>v*amplitude.source));
+  const calibration=Object.freeze({sourceFile:'QSOSpect.dat',zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:q.magnitude,sourceMeans,sourceValues:profile.values,wavelengths:profile.wavelengths});
+  if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,qsoTarget:q,calibration,reasons:Object.freeze(['mean-bound' as const])});
+  return Object.freeze({...base,qsoTarget:q,calibration,reasons:Object.freeze([])});
+ }
  if(selection.kind!=='galaxy')return Object.freeze({...base,reasons:Object.freeze([selection.kind==='star'?population.stars[selection.star.index].type===3?'qso-selected' as const:'star-selected' as const:'no-galaxy-selected' as const])});
  const target=population.galaxies[selection.galaxy.index];
  const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:1,pixelLevel});
