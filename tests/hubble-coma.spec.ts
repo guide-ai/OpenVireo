@@ -59,6 +59,9 @@ test('Coma – 1 on the 4 m is acquirable; on the KPNO 0.9 m it is reported (mea
  await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','telescope');
  await page.clock.resume();await clickHeaderTool(page,'Galaxy exposure');await page.getByLabel('Acquisition galaxy').selectOption('NGC 4874');
  await expect(page.locator('[data-galaxy-telescope="1"]').getByTestId('galaxy-telescope-unsupported-NGC 4874')).toBeVisible();
+ // Review 2 finding 5: the note names the recorded telescopes and the brightness bound, not "0.4m only".
+ await expect(page.locator('[data-galaxy-telescope="1"]').getByTestId('galaxy-telescope-unsupported-NGC 4874')).toContainText('the existing brightness bound');
+ await expect(page.locator('[data-galaxy-telescope="1"]').getByTestId('galaxy-telescope-unsupported-NGC 4874')).not.toContainText('0.4m telescope only');
  await clickHeaderTool(page,'Observatory');await page.getByLabel('Telescope profile to inspect or select').selectOption('2');await page.getByRole('button',{name:'Use this telescope',exact:true}).click();
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await openHotList(page);await pointRow(page,3);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','available');
  await toGalaxyFromCard(page);await acquire(page);await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText('NGC 4874');

@@ -1,28 +1,38 @@
 # E08 Object X — spectrometer branch (Front F)
 
-Front F supplies the field-engine side of the Object X spectrometer. Front X owns the route and UI (`src/ObjectX*.tsx`,
-`src/objectx/**`, `objectXInvestigation.ts`); this document is the interface for it.
+Front F supplies the field-engine side of the Object X spectrometer and, since Front X finished, its UI wiring
+(`src/ObjectXSpectrum.tsx` in the `#object-x` route).
 
-## API (`src/io/objectXSpectrometer.ts`, pure core `src/core/objectXSpectrometer.ts`)
-`observeObjectXSpectrum(pointing, telescope) → ObjectXSpectrometerResult`
-- `pointing` must be exactly the ObjectX.HTL coordinates of a spectroscopy row (what "Copy the coordinates to the observatory"
-  gives); anything else is `{status:'unavailable', reason:'not-a-target'}` (no field is generated at arbitrary coordinates).
-- `available`: `targetKey` (the ObjectX.HTL row), `telescope`, `wavelengths` (600 channels), `pixelLevel`, and `engine` — the same
-  bounded exposure journal as every acquisition (`create/activate/start/tick/pause/deactivate/reset/cancel/replay`), policy
-  `openvireo-objectx-spectrum-v1:R<row>:T<telescope>` (`parseObjectXSpectrumPolicy`).
-- `unavailable`: `reason` ∈ `not-recovered` | `telescope` (the existing brightness bound; another telescope may work) | `no-object`
-  | `not-a-target`.
-- Hidden identity (D5): no display field names the object, its kind or a catalogue record. `revealDetail` (kind and record, or
-  the engine's typed reasons) is for after the reveal only.
-- Loading is asynchronous and hash-checked (packs, CLEA_GLX.DAT, CLEA_QSO.DAT, QSOSpect.dat, GLIMAGES.LST, ObjectX.HTL, JSPEC2.SPI,
-  GLXYSP.LST, the four star templates, three galaxy spectra and four photographs), all up front; a failure rejects and the next
-  call retries.
+## API (`src/io/objectXSpectrometer.ts`; pure core `src/core/objectXSpectrometer.ts`)
+- `observeObjectXSpectrum(pointing, telescope)` → what the display may show before the reveal (D5, review 2 finding 4):
+  `{status:'available', telescope, wavelengths (600 channels), engine}` or `{status:'unavailable', telescope}` — no row, kind,
+  record or reason, so every unavailable case (brightness bound, no field at a pulsar's or asteroid's coordinates, any typed
+  branch) reads the same. `engine` is the bounded exposure journal of every acquisition
+  (`create/activate/start/tick/pause/deactivate/reset/cancel/replay`), policy `openvireo-objectx-spectrum-v2:<code>:T<telescope>`
+  with the opaque target code, never the ObjectX.HTL row (`parseObjectXSpectrumPolicy`).
+- `revealObjectXSpectrum(pointing, telescope)` → the separate reveal data: `row`, `kind`, `recordId`, typed `reasons`
+  (`not-a-target` when the pointing is not a spectroscopy row's exact coordinates), `pixelLevel`. For use after the reveal only.
+- Evaluation runs in a Worker (`io/objectXSpectrometerWorker.ts`), never on the main thread; inputs are loaded once and
+  hash-checked (`io/objectXSpectrometerInputs.ts`: the seven packs against the file SHA-256 in `data/objectx/PROVENANCE.json`,
+  CLEA_GLX.DAT, CLEA_QSO.DAT, QSOSpect.dat, GLIMAGES.LST, ObjectX.HTL, JSPEC2.SPI, GLXYSP.LST, four star templates, three galaxy
+  spectra and four photographs). A failure rejects; the next call retries.
+- Regression record: `data/objectx/frozen-observations.json` (every row × telescope: status, reasons, populations, photographs,
+  crop digest, slit level, fraction, source file, source-means digest), checked by `src/io/objectXFrozen.test.ts`.
+
+## Kept spectra (save and restore)
+The student keeps a stopped exposure (`ObjX-<ID>-Snn`, at most 8). A record holds the label, the opaque target code, the telescope,
+the seed at reset and the journal events — nothing that names the object. Kept spectra are saved in the v29 wrapper
+(`objectXSpectra`, only when present; the v28 Object X section is unchanged) and restored by re-evaluating each record and
+replaying its journal (`io/objectXSpectra.ts`); a record that does not replay rejects the file, a loading failure is the retryable
+`resources` error. A kept spectrum's CSV (`wavelength_A,counts`, 600 rows) is rebuilt identically after a restore.
 
 ## Status per spectroscopy row
+Reveal-side outcomes (`telescope` = the existing brightness bound, `mean-bound`; the display shows only available/unavailable).
+
 | Row | Kind | 0.4 m | 0.9 m | 4 m | Why |
 |---|---|---|---|---|---|
 | 1 HE 0353-3919 | QSO | available | available | available | QSO 522 selected; QSO 517 also in the field (both ordered inserts) |
-| 10 3C 273 | QSO | telescope | telescope | available | QSO 1356 **replaces** its own GSC record N0000@550801 (within 30″ and 1 mag); bright: mean bound on 0.4/0.9 m |
+| 10 3C 273 | QSO | telescope | telescope | available | QSO 1356 **replaces** its own GSC record N0000@550801 (within 30″ and 1 mag); bright: mean bound on 0.4/0.9 m. The replacement is a 95-byte copy over the GSC record, so the stack-residue uncertainty documented in qsoMerge.ts applies to this acquirable result (review 2 finding 12) |
 | 13 HS 1603+3820 | QSO | available | available | available | QSO 1785 inserted |
 | 8 NGC 4449 | galaxy | telescope | telescope | available | its GLIMAGES.LST row is dropped by the original parser (below), so no photograph; own NGC4449.SP (GLXYSP Pos lookup, matched branch) |
 | 9 N3730-01103 | star | telescope | telescope | available | slit selects N3730.DAT@513845 (V 9.47), spectral index 50105000 → A0000044.sp (JSPEC2.SPI) |
@@ -34,7 +44,7 @@ Front F supplies the field-engine side of the Object X spectrometer. Front X own
 | 12 N3000-01915 | star | telescope | telescope | available | N3000.DAT@483032, 50305000 → A0000046.sp (bundled); NGC4656.BMP in the field; AQ CVn as row 11 |
 
 Every spectroscopy row is now observable on at least the 4 m, so all three kinds can be investigated (the coordinator's
-condition for wiring the API into the Object X UI). The kind-neutral `telescope` message covers the smaller telescopes.
+condition for wiring the API into the Object X UI). Before the reveal every unavailable case shows the same neutral message.
 
 ## Spectral interval
 The normal spectrometer's: the active range (env+0x2bd4/0x2bd8 = general record +0x2520/+0x2524) is copied from the configured
@@ -94,6 +104,8 @@ The time-update dispatch 0x51ec48 returns false at 0x51ee57 with no side effect 
 word with a class other than 1, or class 3 (`nativeVariableDispatchFalse`); such a variable takes the same false-merge branch as
 HI Peg. AQ CVn (CLEA_VStrs.dat 9631, class '*', period 0) hits N3000.DAT@482829 at 27.66″: the record is restored. Existing
 exercises keep the verified class-3 contract (`'class-3'`), so LSS and Hubble gates are unchanged.
+Object X does not use `variables: 'outside-view'` (review 2 finding 10: that rule is for Boo – 1/2 only); the frozen record shows
+no row needed it.
 
 ## QSO observation (recovered)
 - Selection: the merged QSO record (type 3) under the slit (0x59a0fc), point-source throughput with the QSO's own position and the
@@ -103,18 +115,19 @@ exercises keep the verified class-3 contract (`'class-3'`), so LSS and Hubble ga
   count Round(restMax − restMin) + 1; 0x55df2c grid with lastIndex = count (count + 1 slots, the last never read and 0; step =
   (restMax − restMin)/count); values divided by the window maximum. Sampler 0x55e52c: 0x55dfe0 at λ/(1+z). `src/core/qsoSpectrum.ts`.
 
-## Not recovered (typed `not-recovered`)
-No spectroscopy row needs it now; the reason family stays for any future pointing whose field holds an unmodelled branch.
+## Typed branches not modelled
+No spectroscopy row hits one now; such a branch would stay a typed reveal-side reason (the display reads like any unavailable case).
+The GLXYSP guard (review 2 finding 2): a selected galaxy that GLXYSP.LST names is observed only with its own spectrum, else the
+typed `spectrum-mapping`; every own spectrum the Object X rows need (NGC4262.SP, NGC4449.SP, NGC4631.SP) is already published, so
+no further .SP file is required (NGC 2403 has no GLXYSP.LST line and keeps GLXYTMPL.SP, as natively).
 
-## UI (`src/ObjectXSpectrum.tsx`, spectrometer branch of `#object-x`)
-Wired under D5 once every spectroscopy row's kind was observable (coordinator decision of 2026-10-27). The student chooses a
-telescope and places the slit on the object at its catalogue coordinates (web adaptation, stated on the page); the exposure uses
-the bounded journal (start / stop / clear, 250 ms ticks; the exposure model's signal-to-noise stop disables Start until Clear), a
-counts-per-channel plot from 3700 to 4700 Å, and a CSV of the counts named `ObjX-<ID>-spectrum.csv`. Spectra are not stored in
-the saved investigation (stated on the page). Nothing displayed reads `revealDetail`; unavailable results show one message per
-reason family, the same for every kind (`no-object` and `not-a-target` share one text). End-to-end:
-`tests/object-x-spectrum.spec.ts` (star, galaxy and QSO on the 4.0 m with no identifier, record, template or photograph name in
-the page; identical unavailable text and markup on the 0.4 m; a pulsar's coordinates give the shared "nothing measurable" text).
+## UI (`src/ObjectXSpectrum.tsx`)
+Telescope choice, "Place the slit on the object" at the catalogue coordinates (web adaptation, stated on the page), Start / Stop /
+Clear spectrum (250 ms ticks; the exposure model's signal-to-noise stop disables Start until Clear), a counts plot, Keep, the kept
+list (Show rebuilds a kept spectrum from its journal) and a CSV per spectrum. One neutral message for every unavailable case.
+End-to-end `tests/object-x-spectrum.spec.ts`: a star, a galaxy and a QSO observed, kept, downloaded, saved (v29) and restored from
+the student path with no identifier, remark, record, template, photograph or kind word in the page, the CSVs or the Object X
+parts of the saved file; identical unavailable markup for star, galaxy, QSO and pulsar; 320 px and dark mode.
 
 ## Evidence
 `data/objectx/spectra-*.json` (seven bounded packs; N6000, N0730, N1500, N3730, N3000, N0000, S3730 — N1500 because the NGC 4262 /

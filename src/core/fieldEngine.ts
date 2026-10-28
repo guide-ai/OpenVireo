@@ -74,9 +74,14 @@ export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:r
 /** Variable stage: 'gate' (default) keeps classes 0/1/2 as the typed variable-merge reason. 'outside-view' (Front F, coordinator
  * decision for RS Boo) accepts exactly one class 0/1/2 variable whose nearest merge (0x59a2e0, reference 0) hits a catalogue
  * star strictly inside 30″ with a safe saved index, when the 99×99 star footprint at both the variable's and the hit star's
- * projected positions lies wholly outside the 312² view and no galaxy or QSO lies within the 2′ merge radius of either
- * position. Its light curve (0x51ec95 class dispatch) is not modelled: the hit record keeps its place in the list, is not
- * painted and is reported; nothing it could become is visible or reaches another merge. */
+ * projected positions lies wholly outside the 312² view and no galaxy or QSO lies within the guard radius of either position:
+ * 2′ + 0.006° (review 2 finding 10: 0x59a2e0 starts the runner at 1° and prunes it when |second − best| ≤ 0.006°, so a record up
+ * to about 2.36′ away can be pruned even with no winner). The native update (0x59864d..0x59869b) overwrites the resolved
+ * record's name (0x403c5c, 0x18), its magnitude +0x29 (from the variable +0x27), +0x5b (the variable pointer) and the flags
+ * +0x39..+0x3c = 1, keeping its position; for a class 0/1/2 variable the dispatch then reaches a light-curve constructor, which
+ * is not modelled. So the hit and resolved records keep their place in the list, are not painted and are reported; nothing they
+ * could become is visible, and no galaxy or QSO near enough to read the overwritten magnitude exists. Used for the Boötes rows
+ * only (coordinator decision); Object X uses variableDispatch 'recovered' instead. */
 export type FieldVariableMode='gate'|'outside-view';
 /** 'class-3' (default): the verified HI Peg dispatch only. 'recovered' (Front F, Object X): one variable whose time update the
  * dispatch 0x51ec48 returns false for without side effects (zero period, zero word unless class 1, or class 3:
@@ -314,7 +319,7 @@ type Calibration=(typeof FIELD_CALIBRATIONS)[number];
 /** Same paint order and levels as galaxyExposure.ts: galaxies first (rounded projected centres), then stars by stored level. */
 /** The 'outside-view' conditions that need the projected scene: both footprints outside the 312² crop (every pixel of the 99×99
  * stamp around the rounded centre lies outside rows/columns 312..623), and no galaxy or QSO within the 2′ merge radius. */
-export const OUTSIDE_VIEW=Object.freeze({stampHalf:49,crop:Object.freeze({first:FRAME.anchor-FRAME.viewport/2,last:FRAME.anchor+FRAME.viewport/2-1}),mergeRadiusDegrees:0.03333333333333333});
+export const OUTSIDE_VIEW=Object.freeze({stampHalf:49,crop:Object.freeze({first:FRAME.anchor-FRAME.viewport/2,last:FRAME.anchor+FRAME.viewport/2-1}),mergeRadiusDegrees:0.03333333333333333+0.006});
 export function outsideViewMargin(p:Readonly<{x:number;y:number}>):number{
  const x=roundNearestEven(p.x),y=roundNearestEven(p.y),{first,last}=OUTSIDE_VIEW.crop,h=OUTSIDE_VIEW.stampHalf;
  return Math.max(first-(x+h),x-h-last,first-(y+h),y-h-last);// > 0: the whole stamp misses the crop by that many pixels

@@ -480,7 +480,6 @@ export interface MessageParameters {
   "lab.next.dataset": never;
   "lab.next.recipe": never;
   "lab.next.inputs": never;
-  "lab.next.interpret": never;
   "lab.duplicate": never;
   "lab.acquireTitle": never;
   "lab.acquireHelp": never;
@@ -3274,4 +3273,5 @@ export interface MessageParameters {
   "galaxyExposure.catalogueReference": "value" | "workbook";
   "galaxyExposure.continuationAdaptation": never;
   "session.restoreResourcesError": never;
+  "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
 }

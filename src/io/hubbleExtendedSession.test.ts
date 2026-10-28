@@ -13,6 +13,7 @@ import {EMPTY_HUBBLE} from '../core/hubbleAnalysis';
 import {emptyExposureWorkspace,type ObservingWorkspace} from '../core/observingWorkspace';
 import {HUBBLE_EXTENDED_BANKS,extendedBankKey} from '../core/hubbleEngineTargets';
 import {EXTENDED_MAX_ACQUISITION_ARCHIVE,MAX_ACQUISITION_ARCHIVE} from '../core/acquisitionArchive';
+import en from '../i18n/en.json';
 beforeEach(()=>vi.stubGlobal('crypto',webcrypto));afterEach(()=>vi.unstubAllGlobals());
 const read=(s:string)=>readAnalysisSession(new File([s],'extended.json'));
 const acquire=(id:string,seed=1)=>createGalaxyObservation(pauseGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(seed,id))),1000)));
@@ -48,6 +49,8 @@ describe('v29 sessions for the extended Hubble.HTL targets (Front F)',()=>{
  it('more than 12 (up to 16) acquisitions only inside v29; 17 is refused',async()=>{
   const thirteen=await session(Array.from({length:13},(_,i)=>['36773',i+1] as const),false),data=JSON.parse(await serializeAnalysisSession(thirteen));
   expect(MAX_ACQUISITION_ARCHIVE).toBe(12);expect(EXTENDED_MAX_ACQUISITION_ARCHIVE).toBe(16);
+  // Review 2 finding 6: the student texts state the real limit (16, with the v29 format above 12).
+  for(const k of ['continuity.archiveFull','lab.recover.limits'] as const){expect(en[k]).toContain('16 snapshots');expect(en[k]).toContain('more than 12');expect(en[k]).not.toMatch(/(supports|full \() ?12 ?snapshots/);}
   expect(data.version).toBe(29);expect(data.base.acquisitions).toHaveLength(13);expect((await read(JSON.stringify(data))).acquisitions).toHaveLength(13);
   await expect(read(JSON.stringify(data.base))).rejects.toThrow();
   const seventeen=await session(Array.from({length:17},(_,i)=>['36773',i+1] as const),false);await expect(serializeAnalysisSession(seventeen)).rejects.toThrow();

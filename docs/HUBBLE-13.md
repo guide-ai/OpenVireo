@@ -69,9 +69,13 @@ See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`;
   `variables: 'outside-view'`: the nearest merge (reference 0) hits N3000@513122 at 1.86″, but the runner N3000@513119 (14.3″) is
   pruned first, so the unrepaired saved index resolves to a third record, N3000@513131 — the record the unrecovered class-0 update
   would act on. All three positions' 99×99 footprints miss the 312² crop (margins recorded in the test), no galaxy or QSO is within
-  2′ of them, the runner is removed as natively, and the winner and the resolved record are not painted. The crop is therefore
-  independent of the unmodelled light curve.
-- New adaptation (needs coordinator acknowledgement): neighbour 14299+3148 (zero-axis, morphology 4) has a minor axis that rounds to
+  2′ + 0.006° of them (the reach of the 0x59a2e0 runner pruning, about 2.36′; review 2 finding 10), the runner is removed as
+  natively, and the winner and the resolved record are not painted. The native update (0x59864d..0x59869b) is a recovered
+  overwrite of the resolved record's name, magnitude (+0x29 from the variable's +0x27), variable pointer (+0x5b) and flags
+  (+0x39..+0x3c = 1), position kept; the class-0 light curve that follows is not modelled. The crop is therefore independent of
+  both. Real data: QSO 1656 is 14.2–19.3′ from RS Boo, 513122 and 513131, and no CLEA_GLX galaxy is near them. The rule is used
+  for Boo – 1/2 only (Object X uses the recovered zero-period dispatch instead, docs/OBJECT-X-SPECTRA.md).
+- Adaptation (acknowledged by the coordinator, 2026-10-27): neighbour 14299+3148 (zero-axis, morphology 4) has a minor axis that rounds to
   0 px (browser stamp bound). Under the same rule, a galaxy outside the stamp bound whose largest footprint misses the crop is
   recorded and not painted; otherwise `stamp-bound` stays.
 - QSO 1656 (HS 1431+3144, V 17.3) is an ordered insert (position 65) and lies inside both crops: it is painted as a type-3 point.

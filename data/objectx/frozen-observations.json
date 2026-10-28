@@ -1,0 +1,536 @@
+{
+ "schema": 1,
+ "kind": "frozen Object X spectrometer observations (regression record of this implementation; not original runtime observations)",
+ "records": [
+  {
+   "row": 1,
+   "telescope": 0,
+   "status": "available",
+   "reasons": [],
+   "stars": 121,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "3f79cc7b18eb282705ef3d37c4b7be4d8e1f34819f2523bb0a228d276a14cd94",
+   "pixelLevel": 41,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "cedae815449cec81bffe91a56991eb54c292c1e8d7816fddc8c24627e26bcb40"
+  },
+  {
+   "row": 1,
+   "telescope": 1,
+   "status": "available",
+   "reasons": [],
+   "stars": 121,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "40d723fc397d5313717936c6ae94e825d85b388b10d22d5293ff1b699cdee793",
+   "pixelLevel": 41,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "6034b4e3e3829091663647883cef926334e303397e41bf508225447ffdc778ad"
+  },
+  {
+   "row": 1,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 121,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "0f4340467efcabef744963ade0e457e4d5000b7542beba3c631ac5bea52c3532",
+   "pixelLevel": 121,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "ef2202d5a0d23dd0b53e2093308b5ac07f15b75fe0f4afbe619deb3c183ea14d"
+  },
+  {
+   "row": 3,
+   "telescope": 0,
+   "status": "available",
+   "reasons": [],
+   "stars": 337,
+   "galaxies": 2,
+   "photographs": [
+    "NGC2403.BMP"
+   ],
+   "cropSHA256": "78d35c990b4a454e068104bf51b54db831dcc544dc66fa7ff8e658835318bcee",
+   "pixelLevel": 365,
+   "fraction": 1,
+   "sourceFile": "GLXYTMPL.SP",
+   "sourceMeansSHA256": "39697352dd4a54796ab8db5c6933615702ff75ff732c54ca182364a6bf2dae39"
+  },
+  {
+   "row": 3,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 337,
+   "galaxies": 2,
+   "photographs": [
+    "NGC2403.BMP"
+   ],
+   "cropSHA256": "6a34243df808ccc641a5657aedd3a3538e106f458eb0d4d5f87c89f7466a627e",
+   "pixelLevel": 444,
+   "fraction": 1,
+   "sourceFile": "GLXYTMPL.SP",
+   "sourceMeansSHA256": "35efdf72cc24bbf6645c557aebf7243bc23942ea9f410214d79ab2305ea68b0e"
+  },
+  {
+   "row": 3,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 337,
+   "galaxies": 2,
+   "photographs": [
+    "NGC2403.BMP"
+   ],
+   "cropSHA256": "c8a73e99ab3cacef25921fd6fcceaf31d75c1b496fcc5d10af5958899d415416",
+   "pixelLevel": 625,
+   "fraction": 1,
+   "sourceFile": "GLXYTMPL.SP",
+   "sourceMeansSHA256": "cc1bbd97938024d1bec16eeeb37c9357518b817df3a801247e32dd105ad2bd4c"
+  },
+  {
+   "row": 4,
+   "telescope": 0,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 351,
+   "galaxies": 2,
+   "photographs": [
+    "NGC2403.BMP"
+   ],
+   "cropSHA256": "90b7a0cf29e84b08b39cb696ae76b5574ec36ec9d649ce74a406c524d90767a4",
+   "pixelLevel": 123,
+   "fraction": 1,
+   "sourceFile": "A0000018.SP",
+   "sourceMeansSHA256": "6c15a07231348ded9e996d0b505024969d721a2df3465218b1275d577b914215"
+  },
+  {
+   "row": 4,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 351,
+   "galaxies": 2,
+   "photographs": [
+    "NGC2403.BMP"
+   ],
+   "cropSHA256": "3cd1781e60a2c3ccf4ff9a60333658083d5c52badd76c4a8fa9971900cc1f5ee",
+   "pixelLevel": 264,
+   "fraction": 1,
+   "sourceFile": "A0000018.SP",
+   "sourceMeansSHA256": "55474f9e5f0664041fb4f8706763302ab80b8749312d339116ed277ea1920d4a"
+  },
+  {
+   "row": 4,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 351,
+   "galaxies": 2,
+   "photographs": [
+    "NGC2403.BMP"
+   ],
+   "cropSHA256": "08e83b963f8e42828da37c533ee7743ae8d022ed36b1e3a69aec06da429c1f97",
+   "pixelLevel": 586,
+   "fraction": 1,
+   "sourceFile": "A0000018.SP",
+   "sourceMeansSHA256": "bb45620859b67b6fc5f1b4031c8659b67f86b5c151f050aac6f152855b41356f"
+  },
+  {
+   "row": 5,
+   "telescope": 0,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 96,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4262.BMP"
+   ],
+   "cropSHA256": "12af2251d25ec8b0280a9e896fbb397468cc5035bdeb1f60b388143d02e8025d",
+   "pixelLevel": 203,
+   "fraction": 1,
+   "sourceFile": "A0000052.SP",
+   "sourceMeansSHA256": "4125b7140fd790c02c108279be55a046e0f29402a50b3ccb23302a856bbb1ddd"
+  },
+  {
+   "row": 5,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 96,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4262.BMP"
+   ],
+   "cropSHA256": "6480b49b4dc802ca47fc71ba5a0f804f2630057bdef62484357a6396c5dd03db",
+   "pixelLevel": 314,
+   "fraction": 1,
+   "sourceFile": "A0000052.SP",
+   "sourceMeansSHA256": "84129a90e3d81f459c592ee25484a839e97504c14ac42bc82d0f82d2a07775a8"
+  },
+  {
+   "row": 5,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 96,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4262.BMP"
+   ],
+   "cropSHA256": "ac600f06aa1199f349ebf89da8d1c93d9bfd8c64b650e7c46ed1563de27fbe8a",
+   "pixelLevel": 651,
+   "fraction": 1,
+   "sourceFile": "A0000052.SP",
+   "sourceMeansSHA256": "825953b56b9aa130991a556bfc74a0d7300ef19376f9b904fef0933237a3d003"
+  },
+  {
+   "row": 6,
+   "telescope": 0,
+   "status": "available",
+   "reasons": [],
+   "stars": 89,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4262.BMP"
+   ],
+   "cropSHA256": "85bd8f4f9f1bb113f779bdcf00b1c335275d49a7ed6273b18c9306ab2db339f6",
+   "pixelLevel": 304,
+   "fraction": 1,
+   "sourceFile": "NGC4262.SP",
+   "sourceMeansSHA256": "db2157cf89a4327e63ada4a175e782d3cba818606d38b29232f1634f3b98f665"
+  },
+  {
+   "row": 6,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 89,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4262.BMP"
+   ],
+   "cropSHA256": "767232711ae470343e479346acdf276d1646a5f6375aed48d13897b6ee99020d",
+   "pixelLevel": 370,
+   "fraction": 1,
+   "sourceFile": "NGC4262.SP",
+   "sourceMeansSHA256": "6e407929b63d4a38731ac391bda9e9c184ad5c8bb52e8589854af69097122554"
+  },
+  {
+   "row": 6,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 89,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4262.BMP"
+   ],
+   "cropSHA256": "a63918d512666f886fc3965c962c2b8e03aeda922698de60b188113f72740d17",
+   "pixelLevel": 522,
+   "fraction": 1,
+   "sourceFile": "NGC4262.SP",
+   "sourceMeansSHA256": "7dddb2de70ded8cf05ef4b6a5516c414ae015ece29c7aa9e08fd0fcd39a6c42d"
+  },
+  {
+   "row": 8,
+   "telescope": 0,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 106,
+   "galaxies": 4,
+   "photographs": [],
+   "cropSHA256": "afb809dcb64e10565942edf9fd86e6351506948f7c971b2d1320468219c88e9d",
+   "pixelLevel": 314,
+   "fraction": 1,
+   "sourceFile": "NGC4449.SP",
+   "sourceMeansSHA256": "02efeab2b6112ff12a0ece04f527fac3e3466d74a2540d7ff8e3dd2c28b0a3bb"
+  },
+  {
+   "row": 8,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 106,
+   "galaxies": 4,
+   "photographs": [],
+   "cropSHA256": "5551012209dc7739f8ebec7f90096d818caa9a8be5d39a605902dee87039a188",
+   "pixelLevel": 355,
+   "fraction": 1,
+   "sourceFile": "NGC4449.SP",
+   "sourceMeansSHA256": "4a9f99f696fdea6e0803794d63cd0ea23ba36051d9930e93abcc4968742fd01a"
+  },
+  {
+   "row": 8,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 106,
+   "galaxies": 4,
+   "photographs": [],
+   "cropSHA256": "8156eb3373af31b47756dc9a9089a38b3ef585e34e2c05982abbc0a2a160c698",
+   "pixelLevel": 482,
+   "fraction": 1,
+   "sourceFile": "NGC4449.SP",
+   "sourceMeansSHA256": "0a2f49e0a010c19da255ec2bf7c25f580cc07b15d4532a580611d9fbc16e27b9"
+  },
+  {
+   "row": 9,
+   "telescope": 0,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 98,
+   "galaxies": 5,
+   "photographs": [],
+   "cropSHA256": "4013392274270c28b8c67799d688a6794b2fee290c626b99df83f6097b86ac46",
+   "pixelLevel": 262,
+   "fraction": 1,
+   "sourceFile": "A0000044.SP",
+   "sourceMeansSHA256": "a6514a051de9b6b8a60267aa5adfb6658bf8dd63f49daff568e5056cd5bc881d"
+  },
+  {
+   "row": 9,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 98,
+   "galaxies": 5,
+   "photographs": [],
+   "cropSHA256": "594c28e8a007d763b3c3a7bc80ddc9e32f643d93f1cd153b48cb48dad407979a",
+   "pixelLevel": 507,
+   "fraction": 1,
+   "sourceFile": "A0000044.SP",
+   "sourceMeansSHA256": "f11e9c8ab138cd9359d9704365227bc2ffbccd6fe66cecbec67d067dd4926a25"
+  },
+  {
+   "row": 9,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 98,
+   "galaxies": 5,
+   "photographs": [],
+   "cropSHA256": "1886c05245b929d0fa8a7db565b16b307fe4bca578b63e971d1c44981a91fab7",
+   "pixelLevel": 710,
+   "fraction": 1,
+   "sourceFile": "A0000044.SP",
+   "sourceMeansSHA256": "65ddf221e62b06af93cc74ebe2035221420f904d84e667cff05f774b4c32292b"
+  },
+  {
+   "row": 10,
+   "telescope": 0,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 123,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "fc07f23c19d1c45f0767f66863b4b6eab3cb2a422f5884bb338ea280eb2ddc1b",
+   "pixelLevel": 41,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "ff0d176b174a0c04dbe507ba69c27bb8ee37f6f59baa8ee7d6217dc749242f4d"
+  },
+  {
+   "row": 10,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 123,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "4f3bb32f26c63aa6163d5c483fc5eeaa4a54e6da492be32008c48c7fa494329a",
+   "pixelLevel": 121,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "8c2e460d99b1ce73cd5335420fd334518fbea87651993a74269f883b264307c0"
+  },
+  {
+   "row": 10,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 123,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "7b6e037813ad37109c8d9dff5b12afd86dd76be91f82e912e19a2ce72812e313",
+   "pixelLevel": 314,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "0b263ea7bd308e16d96b90bc89c2fb03be7fb05449393a79a375515d91d86421"
+  },
+  {
+   "row": 11,
+   "telescope": 0,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 83,
+   "galaxies": 2,
+   "photographs": [
+    "NGC4631.BMP"
+   ],
+   "cropSHA256": "55536c46b8b310fde13feb99d7a083e98b8c921b39ede9812684bcb49518dde0",
+   "pixelLevel": 356,
+   "fraction": 1,
+   "sourceFile": "NGC4631.SP",
+   "sourceMeansSHA256": "79a8874ff2168eb6903959f40d50bbf8d5b1362b605dcae04d3b87027c9adc9c"
+  },
+  {
+   "row": 11,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 83,
+   "galaxies": 2,
+   "photographs": [
+    "NGC4631.BMP"
+   ],
+   "cropSHA256": "d60272a63102d65a4a303749296f1b45da687c93ce1bb63940d30148c082622b",
+   "pixelLevel": 433,
+   "fraction": 1,
+   "sourceFile": "NGC4631.SP",
+   "sourceMeansSHA256": "a5558d33f3464e0146a9f4fef94d749d81d8b671ebe5b8134e6cb041accc2963"
+  },
+  {
+   "row": 11,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 83,
+   "galaxies": 2,
+   "photographs": [
+    "NGC4631.BMP"
+   ],
+   "cropSHA256": "4e00d6d9bf3d7f26f34039461112b25f6e5edafe301f10e39b7028b6121e005f",
+   "pixelLevel": 611,
+   "fraction": 1,
+   "sourceFile": "NGC4631.SP",
+   "sourceMeansSHA256": "f56a616196409ee66218b906d6037980e51b519e6c04fc6d29933cf65621a7b2"
+  },
+  {
+   "row": 12,
+   "telescope": 0,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 89,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4656.BMP"
+   ],
+   "cropSHA256": "1e03c630024c4a07b3a5c72ea5c536ece254de1b29b6b42a41400d5c3d9c3759",
+   "pixelLevel": 203,
+   "fraction": 1,
+   "sourceFile": "A0000046.SP",
+   "sourceMeansSHA256": "a1c50afe442eb2d2c66b699d3a08f335c0d52f6b81eb72809f5b670927e4936d"
+  },
+  {
+   "row": 12,
+   "telescope": 1,
+   "status": "unavailable",
+   "reasons": [
+    "mean-bound"
+   ],
+   "stars": 89,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4656.BMP"
+   ],
+   "cropSHA256": "93981d816a32277976b7ea3f9e9957a5e12bd40241bde2f72ac4805a54b55311",
+   "pixelLevel": 314,
+   "fraction": 1,
+   "sourceFile": "A0000046.SP",
+   "sourceMeansSHA256": "277701948a15c90ee3e56b7bfb641d8ce63eed60501d06edab0cc2323fe7fbb2"
+  },
+  {
+   "row": 12,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 89,
+   "galaxies": 1,
+   "photographs": [
+    "NGC4656.BMP"
+   ],
+   "cropSHA256": "ef11105e60efe18c7b46324ca02ec332b09aa6e597feba096589d0349a4e6ad9",
+   "pixelLevel": 651,
+   "fraction": 1,
+   "sourceFile": "A0000046.SP",
+   "sourceMeansSHA256": "7ede31434fdae1991826d253bf25b22e821b23176428c8337fe81afb39dd84dd"
+  },
+  {
+   "row": 13,
+   "telescope": 0,
+   "status": "available",
+   "reasons": [],
+   "stars": 141,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "cbd1eb1bbbd7362c27b262edc69e7b53c1fb0a35fb526bcb3ed883585dcbee4d",
+   "pixelLevel": 41,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "987be287a7507f4c1b0b0f5424cdb4392be214f79fa131325236935be2f0f119"
+  },
+  {
+   "row": 13,
+   "telescope": 1,
+   "status": "available",
+   "reasons": [],
+   "stars": 141,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "d41ea3ce3282315e16287a4ef7466a961188cb83b052af7a6dc62651a6b21e73",
+   "pixelLevel": 41,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "fa2f07b6b7ed22c981b10caa34c07ddc4d5adb97ff864ac7b9e91e08174e87e1"
+  },
+  {
+   "row": 13,
+   "telescope": 2,
+   "status": "available",
+   "reasons": [],
+   "stars": 141,
+   "galaxies": 0,
+   "photographs": [],
+   "cropSHA256": "c62fcfcee78276702322ce2290c1add09cff16ab37ba09c51862ce75a132fa11",
+   "pixelLevel": 121,
+   "fraction": 1,
+   "sourceFile": "QSOSpect.dat",
+   "sourceMeansSHA256": "88358e03f08b1f75aa8ba5cc8ce6f82bb10d305f346b69adf53803a47994871d"
+  }
+ ]
+}

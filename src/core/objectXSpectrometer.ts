@@ -10,7 +10,7 @@
  * Fields: the general field engine at the exact ObjectX.HTL coordinates (the coordinates the student is given), QSO 'merge',
  * variables 'outside-view', photographs from GLIMAGES.LST (association, rescale and draw ported; photographDraw.ts), the QSO observation through
  * QSOSpect.dat. Journals use the same bounded exposure journal as every acquisition. */
-import {evaluateField,glxyspLookup,FIELD_MULTIPLIER,type FieldOptions,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
+import {evaluateField,glxyspLookup,FIELD_MULTIPLIER,type FieldOptions,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
 import {continuationSourcePreparer,type FieldContinuationSource} from './fieldContinuation';
 import type {FieldPack} from './fieldPack';
 import type {QsoSpectrumFile} from './qsoSpectrum';
@@ -67,12 +67,10 @@ export function objectXSpectrumEngine(d:Extract<ObjectXSpectrumDisplay,{status:'
   pause:(s:JournalState)=>pauseJournal(check(s)),deactivate:(s:JournalState)=>deactivateJournal(check(s)),reset:(s:JournalState)=>resetJournal(check(s)),cancel:(s:JournalState)=>cancelJournal(check(s)),
   replay:(seed:number,events:readonly JournalEvent[])=>replayJournal(create,seed,events)});
 }
-/** The spectrometer for a pointing and telescope. A pointing that is not exactly a spectroscopy row's coordinates has no field in
- * this version (reveal reason 'not-a-target'; the display reads like every other unavailable case). */
-export function evaluateObjectXSpectrum(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):ObjectXSpectrumEvaluation{
- const unavailable=Object.freeze({status:'unavailable' as const,telescope});
+/** The field behind an evaluation (also used by the frozen-record test), or null when the pointing is not a spectroscopy row. */
+export function objectXField(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Readonly<{row:Readonly<{row:number;pack:string}>;code:string;result:FieldResult}>|null{
  const row=OBJECT_X_SPECTRUM_ROWS.find(r=>{const p=inputs.rowPointings.get(r.row);return !!p&&p.ra===pointing.ra&&p.dec===pointing.dec;});
- if(!row)return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,reasons:Object.freeze(['not-a-target' as const]),pixelLevel:null})});
+ if(!row)return null;
  const pack=inputs.packs.get(row.pack),code=inputs.rowCodes.get(row.row);if(!pack||!code)throw new JournalError('proof');
  const at={ra:pointing.ra,dec:pointing.dec};
  const starObservation={templateFor:(index:number)=>{const file=lookupStarTemplate(inputs.starIndex,index);const spectrum=file?inputs.starTemplates.get(file):undefined;return file&&spectrum?{file,spectrum}:null;}};
@@ -82,6 +80,15 @@ export function evaluateObjectXSpectrum(inputs:ObjectXSpectrometerInputs,pointin
  // spectrum that is not bundled keeps the engine's typed spectrum-mapping reason (no fallback template).
  const own=r.target?glxyspLookup(inputs.glxyspLines,r.target.id):null;
  if(r.target&&own&&r.reasons.includes('spectrum-mapping')&&inputs.galaxySpectra.has(own))r=evaluateField(pack,inputs.glx,at,telescope,{...options,librarySpectrum:{targetId:r.target.id,file:own,samples:inputs.galaxySpectra.get(own)!}});
+ return Object.freeze({row,code,result:r});
+}
+/** The spectrometer for a pointing and telescope. A pointing that is not exactly a spectroscopy row's coordinates has no field in
+ * this version (reveal reason 'not-a-target'; the display reads like every other unavailable case). */
+export function evaluateObjectXSpectrum(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):ObjectXSpectrumEvaluation{
+ const unavailable=Object.freeze({status:'unavailable' as const,telescope});
+ const f=objectXField(inputs,pointing,telescope);
+ if(!f)return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,reasons:Object.freeze(['not-a-target' as const]),pixelLevel:null})});
+ const {row,code,result:r}=f;
  const kind=r.qsoTarget?'qso' as const:r.starTarget?'star' as const:r.target?'galaxy' as const:null,recordId=r.qsoTarget?.id??r.starTarget?.id??r.target?.id??null;
  const reveal=Object.freeze({row:row.row,kind,recordId,reasons:Object.freeze([...r.reasons]),pixelLevel:r.calibration?.pixelLevel??null});
  if(r.reasons.length||!r.calibration)return Object.freeze({display:unavailable,reveal});

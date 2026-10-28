@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "scope": "All1338files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
-  "totalFiles": 1343,
-  "totalBytes": 124667281,
+  "scope": "All1343files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
+  "totalFiles": 1344,
+  "totalBytes": 124681249,
   "extensions": {
     ".json": 1061,
     ".LST": 6,
@@ -34,7 +34,7 @@
     },
     "data/hubble": {
       "files": 75,
-      "bytes": 3807886,
+      "bytes": 3815830,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
       "usedBy": "Verified star/sky and bounded galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
@@ -42,7 +42,7 @@
     },
     "data/observatory": {
       "files": 14,
-      "bytes": 160766,
+      "bytes": 160942,
       "materialClass": "mixed-derived-and-authored",
       "description": "Authored recovered-contract packets and reference vectors with original operand/provenance bindings",
       "usedBy": "Optical profiles, access, UT/site/tracking/horizon/motion and tests",
@@ -123,8 +123,8 @@
     "public/original/spectra": {
       "files": 27,
       "bytes": 773750,
-      "materialClass": "unchanged-original-text-resource",
-      "description": "23unchanged original SP files;also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a;also jspect2/A0000046.SP (55980 bytes, SHA-256 ed50d12a757da8eb063188e6f2da3c7e7842a68b21c4eb4e35c5a1cff654414c), byte-exact from program files/CLEA/VIREO/Spectra/jspect2/ (user approval of 2026-10-27, group 1), required by the Object X row-12 star N3000.DAT@483032 (spectral index 50305000, exact JSPEC2.SPI match); the other Object X stars use templates already published in public/original/classification (row 9 N3730.DAT@513845 → A0000044.SP exact, row 5 N0730.DAT@472049 → A0000052.SP exact, row 4 N6000.DAT@209199 index 30005000 → A0000018.SP by the 0x50d660 walk-back), each byte-identical to its jspect2 original",
+      "materialClass": "unchanged-original-resources-text-and-binary",
+      "description": "24 unchanged original SP files (text, including jspect2/A0000046.SP);also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a;also jspect2/A0000046.SP (55980 bytes, SHA-256 ed50d12a757da8eb063188e6f2da3c7e7842a68b21c4eb4e35c5a1cff654414c), byte-exact from program files/CLEA/VIREO/Spectra/jspect2/ (user approval of 2026-10-27, group 1), required by the Object X row-12 star N3000.DAT@483032 (spectral index 50305000, exact JSPEC2.SPI match); the other Object X stars use templates already published in public/original/classification (row 9 N3730.DAT@513845 → A0000044.SP exact, row 5 N0730.DAT@472049 → A0000052.SP exact, row 4 N6000.DAT@209199 index 30005000 → A0000018.SP by the 0x50d660 walk-back), each byte-identical to its jspect2 original;also binary QSOSpect.dat (program files/CLEA/VIREO/QSOSpect.dat, 49506 bytes, 8251 six-byte records, SHA-256 7ab662914042f0cf9213b3e988834fc61d68f57751f89f9d69e46f06e7d7a9cd) and text JSPEC2.SPI (3168 bytes, SHA-256 5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa), both byte-exact under the user approval of 2026-10-27 (group 1)",
       "usedBy": "Runtime galaxy library and template spectra;LSS spectrum-mapping gate: a selected galaxy with its own library spectrum is not given the template",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
@@ -153,8 +153,8 @@
       "upstreamStatus": "Included under the user approvals of2026-10-27 and the later ObjX_MPC.CMO.sav approval(AGENTS.md)on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The state vectors were likely computed by CLEA from Minor Planet Center(MPCORB)and Lowell Observatory(ASTORB)orbits(inference from tool strings and file names;uncertain).No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     },
     "data/objectx": {
-      "files": 9,
-      "bytes": 419262,
+      "files": 10,
+      "bytes": 435480,
       "materialClass": "mixed-derived-and-authored",
       "description": "Bounded derived GSC field packs (whole records only inside ObjectX.HTL spectroscopy target areas; position witnesses otherwise), their provenance and independent Python witnesses",
       "usedBy": "Object X spectrometer branch (core/objectXSpectrometer.ts) through the general field engine",
@@ -379,6 +379,15 @@
           "public/original/spectra/jspect2/A0000046.SP"
         ],
         "sourceGrant": "User approval of 2026-10-27 group 1 (AGENTS.md): byte-exact jspect2 templates that stars in published fields require through JSPEC2.SPI; A0000046.SP (55980 bytes) is required by the Object X row-12 star N3000.DAT@483032 (spectral index 50305000, exact JSPEC2.SPI match).",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/objectx/frozen-observations.json"
+        ],
+        "sourceGrant": "Derived regression record (review 2 finding 11): per Object X spectroscopy row and telescope the status, typed reasons, populations, photograph files, crop digest, slit level, fraction, source file and a digest of the source means; no original bytes.",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }
