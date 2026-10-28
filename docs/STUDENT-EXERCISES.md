@@ -25,7 +25,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 2. Acquire many galaxies and record their redshifts.
 3. Plot the wedge from your own records and describe the structure.
 
-**Status** — Scoped web student path complete, technically validated and separately reviewed on 2026-10-27 (independent review, two fix rounds and closure: research root `analysis/reviews/front-a-review-1.md`). With E01 and E03–E06 this closes 6 of the 7 agreed web exercise paths; E08 Object X remains. Acquirable rows of the 219 in the nine original lists: 129 on the 0.4 m, 69 on the 0.9 m, 130 on the 4 m. The rest show a typed reason (variable star classes 0–2, QSO in the field, galaxy image beyond the bounded raster, photograph in the field, brightness limit). This is not closure of every native branch.
+**Status** — Scoped web student path complete, technically validated and separately reviewed on 2026-10-27 (independent review, two fix rounds and closure: research root `analysis/reviews/front-a-review-1.md`). With E01 and E03–E06 this closes 6 of the 7 agreed web exercise paths; E08 Object X remains. Acquirable rows of the 219 in the nine original lists: 140 on the 0.4 m, 76 on the 0.9 m, 141 on the 4 m (up from 129/69/130, after the recovered zero-period variable dispatch 0x51ec48 was applied on 2026-10-28; merge `c7ba82c`, research root `analysis/reviews/front-f-review-{4,5}.md`). The rest show a typed reason: variable stars whose recovered merge changes brightness, QSO in the field, galaxy image beyond the bounded raster, photograph in the field, or brightness limit. This is not closure of every native branch.
 
 **Evidence** — Merge `4800b36`. Build/typecheck, 1312 resource identities, the LSS, field-engine, wedge and session Vitest suites, and `tests/lss-survey.spec.ts`, `tests/lss-survey-negative.spec.ts`, `tests/lss-session.spec.ts` and `tests/lss-guide.spec.ts` passed: field choice, acquisition under a controlled clock, Record Z OK/Cancel/Escape, five distinct galaxies, results CSV, own records in the wedge, description, Save v27 and fresh-context Restore that continues observing, tamper/budget rejection, 320px keyboard. The engine reproduces the existing Hubble fields exactly, and the bounded packs are byte-equal to N2230/N3000 under the 2026-10-27 approvals. See `docs/FIELD-ENGINE.md` and `docs/LSS-SURVEY.md`.
 
@@ -59,7 +59,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 5. Fit the cluster sequence manually and estimate the distance.
 6. Save and restore the investigation.
 
-**Status** — Scoped web path complete (16 admitted stars).
+**Status** — Scoped web path complete. All 24 PLEIADES.HTL positions are admitted on the 0.4 m (2026-10-28, merge `c7ba82c`), up from 16. Each field is pointed at the exact HTL coordinates, and the star is chosen by the recovered photometer selection (0x53ce8c/0x59a0fc, nearest star, offset-dependent aperture fraction 0x500568). Rows 3, 5 and 10 also need the recovered zero-period variable dispatch. The KPNO 0.9 m and Mayall domains are unchanged. A full 24-star B/V sample needs 251 photometer events; the web session bound is 512.
 
 **Evidence** — `b1db397` plus QA3: all 16 transcribed B/V pairs, manual fit, Save and fresh-context Restore.
 
