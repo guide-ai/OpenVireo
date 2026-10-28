@@ -6776,6 +6776,16 @@
       "path": "public/original/cluster-help/HRAnalHlp.TXT",
       "bytes": 7557,
       "sha256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b"
+    },
+    {
+      "path": "data/clusters/cluster-comments.json",
+      "bytes": 2188,
+      "sha256": "ed6c491539d02eccc65a0f7ad6760fc5d9d8542ae9635952def0eb2ff3179bce"
+    },
+    {
+      "path": "data/clusters/cluster-reference-detail.json",
+      "bytes": 147038,
+      "sha256": "759336e4902a3fa14aaeb64d1f8f708f689e889b5ee151a073aaf179e9022487"
     }
   ]
 }

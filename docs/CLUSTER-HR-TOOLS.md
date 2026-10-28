@@ -1,6 +1,6 @@
 # Cluster HR tools closer to VIREO (Front V2, E05)
 
-Status: implemented on branch `claude/front-v2-cluster-hr` (milestones M1–M4 of the plan); the coordinator's independent
+Status: implemented on branch `claude/front-v2-cluster-hr` (milestones M1–M6 of the plan); the coordinator's independent
 high-effort review is pending. Plan (high effort, planner subagent, no code in that pass):
 `analysis/front-plans/front-v2-cluster-hr.md` in the research root. Recovery notes: `analysis/front-v2-cluster-hr/RECOVERY.md`,
 `RECOVERY-help.md`, `RECOVERY-dialogs.md`. Implementation: Claude Code (claude-opus-5-5), medium effort.
@@ -19,6 +19,8 @@ Static analysis only: GNU objdump on exact address ranges of CLEA_VEO.exe (SHA-2
 | Right-click a plotted star → **Possible Cluster Member** | Right-click (or press and hold) the database plot → Possible Cluster Member with RA, Dec, V, B−V in VIREO's formats and the magenta marker; the record chooser stays as the keyboard path | [D]; marker size [W] |
 | Possible Cluster Member › Remove from HR Diagram (Edit Mode only), with VIREO's question | Kept as the pupil's own exclusion, with VIREO's question; labelled as an Edit-Mode tool in VIREO | [D] text; availability [W] |
 | File › **Print** | Print preview of the recovered page body, portrait or landscape, then a black-on-white copy of the diagram | [D] page body; image [W] |
+| File › Load/Plot › **Select Cluster Data…** → "Clusters for Study" | Same window: VIREO's 16 rows with comments, Selection › Plot / double-click, Print; Search does nothing and Save List is disabled, as in VIREO | [D] |
+| File › **Display/Print Data** → "CLEA Cluster Data" | Same listing for the loaded cluster (V bank, removed stars starred) with Search, Print, Save Text and Comma Delimit | [D]; downloads [W] |
 
 ## Help (M1)
 
@@ -73,8 +75,8 @@ coordinator to remove at merge, to keep en.json untouched).
 - **Hit test** 0x544304: over the whole bank, removed stars included; integer d², strict `<` (ties keep the first in bank
   order), 1000 px cap. 2,816 probe pixels (16 datasets × 16 × 11) equal the witness.
 - **Possible Cluster Member** 0x5408ac: Cluster Name, RA `FmtSexagesimal(2,'h ','m ','s')`, Dec `(1,'° ',"' ",'"')`, V and B−V
-  `FloatToStrF(ffFixed,18,3)` when below 30. ID #, U−B and Spectral Type need per-star data the site does not publish
-  (approval A3), so they read "not published". The Edit-Mode LEDs are not shown (VIREO hides them by default).
+  `FloatToStrF(ffFixed,18,3)` when below 30; ID #, U−B and Spectral Type (text 0x55d4f4) from the derived sidecar below. The
+  Edit-Mode LEDs are not shown (VIREO hides them by default).
 - **Remove from HR Diagram** 0x540b90: `Are you sure you want to remove this star from the HR diagram?` … `(Restore via
   "File"->"Restore Removed Points")`, caption `Verify Removal from Plot`; Yes applies the existing exclusion, hides the marker and
   leaves the window open. Exit/Escape close the window (FormClose hides the marker; the web keeps the chosen record).
@@ -91,6 +93,31 @@ VIREO prints a capture of its whole window (GetFormImage); the preview prints a 
 The existing "Print this report" (View/Print Parameters) is unchanged; its note now says that VIREO's own report page
 (TInfoListForm1 0x59e4c0) is not reproduced.
 
+## Derived cluster data (approval of 2026-10-28)
+
+`analysis/front-v2-cluster-hr/tools/cluster_sidecar.py` reads CLEA_Vireo.zip as data and writes:
+- `data/clusters/cluster-comments.json`: only the 16 comment strings of CLUSTERS.DAT (ShortString[40] at +0x3d; 1632 B,
+  `bec9dfb5…45ff2`), matched to the contract by name, RA, Dec and E(B−V). Not the file, not its distance or age columns.
+- `data/clusters/cluster-reference-detail.json`: for each of the 2,873 published points, `[native ID, U−B Int16, flag bits,
+  spectral code]` from its 27-byte compact GSC record (ID = band + `-` + the 5-character name, reader 0x59b125; flags byte
+  +0x14 bits 1/2/4/8 → spectral/luminosity/B−V/U−B assigned; code Int32 +8), with the source band hashes. Every record
+  reproduces its published RA, Dec, V and B−V exactly; no new record is published.
+Both are in LOCAL-RESOURCES.json, the RESOURCE-PROVENANCE group `data/clusters` and THIRD_PARTY_NOTICES.txt.
+`src/io/clusterDetail.ts` loads them lazily and validates every entry.
+
+## Select Cluster Data and Display/Print Data (M5, M6)
+
+- `src/core/clusterList.ts` (TClstrListForm2, fill 0x545de8, row 0x546094): RA order (0x492728 on Double RA), four instruction
+  lines, header and units (° at the recovered column), rows `name(25) hh mm ss.s   ±dd mm ss    Diam(4)    comment`; empty list
+  text; the no-selection Plot box. Plot loads the dataset through the existing Load path. VIREO's Plot also rebuilds the bank,
+  so removed points come back; the web keeps the pupil's per-dataset exclusions (labelled). Print uses the list page body
+  (date + laboratory line, student placeholder, caption, lines; the job title is not page text).
+- `src/core/clusterReport.ts` (TClstrRptForm1 0x534680 with the HR route's Type of Listing 0 and Sort By V): header lines
+  (name; star count; V, B−V and U−B ranges with `+` above 0 and the U−B count, from 0x5359a4/0x5359e4 over every star), notes,
+  the column header, then one row per star in V-bank order (Front O's `fieldStarRow`, 0x5354e8) with `*` after the ID of a
+  star the pupil excluded. Search, Print, Save Text (`<cluster>.TXT`) and Comma Delimit (`<cluster>.CSV`, 0x552ad8) come from
+  Front O's list window; its Selection menu is empty because VIREO hides it from the HR route (AL = 0).
+
 ## Evidence
 
 - `src/core/cleaHelp.test.ts` (14): bundled bytes/manifest/witness hashes; the 18 rows and kinds; token/indent/separator rules;
@@ -100,21 +127,27 @@ The existing "Print this report" (View/Print Parameters) is unchanged; its note 
   ZAMS/isochrone node rules; the "Set E(B-V)" gate arithmetic for all 16.
 - `src/core/clusterHrSelect.test.ts` (5): V/RA bank digests, 2,816 hit probes, synthetic cursor rules, ties, cap, member fields.
 - `src/core/clusterHrPrint.test.ts` (3): portrait/landscape page bodies and the ZAMS-block gate.
+- `src/core/clusterReport.test.ts` (4): the sidecar covers exactly the 2,873 points; for all 16 datasets header lines 0–3
+  equal the witness, the U−B line equals a separate Python Decimal computation (`tools/cluster_report_check.py`), every row
+  formats and converts to CSV; removed-star marking; flag decoding.
+- `src/core/clusterList.test.ts` (3): the 16 rows equal the witness's student-mode rows with Form2's spacing; negative
+  declination; empty list.
 - Witnesses: `tools/help_witness.py` (SHA-256 `64fb755f…9e073a9e`) and `tools/hr_witness.py`
   (`bf571685…aa3b85c`), pinned by the tests. They are the planner's second reading of the same disassembly: they check the port,
   not the reading. Compact derived fixtures (`src/core/cleaHelp.witness.json`, `src/core/clusterHr.witness.json`) hold the
   expected values and SHA-256 digests; no original bytes other than the approved help files.
 - Playwright: `tests/cluster-hr-help.spec.ts` (help flows, tampered file, 320 px dark; Hyades off-picture marking),
   `tests/cluster-hr-select.spec.ts` (right click, Remove question, removed-star hit, 320 px dark),
-  `tests/cluster-hr-print.spec.ts` (page body, layouts, print scope), plus the updated `tests/cluster-database-hr.spec.ts`.
+  `tests/cluster-hr-print.spec.ts` (page body, layouts, print scope), `tests/cluster-hr-data.spec.ts` (Clusters for Study,
+  Plot, list print; CLEA Cluster Data lines and text download; member ID/U−B/Sp; excluded star starred), plus the updated
+  `tests/cluster-database-hr.spec.ts`.
 
 ## Not done (follow-ups)
 
-- **Display/Print Data** (database: the native "CLEA Cluster Data" listing 0x534680) and the ID/U−B/spectral fields of
-  Possible Cluster Member need per-star data not yet published (approval **A3**: native ID, U−B, flag bits, spectral code for the
-  same 2,873 points). Observation-mode Display/Print Data needs the RsltsListForm1 row writer 0x5486a8 (not recovered).
-- **Select Cluster Data** list (TClstrListForm2) and the Cluster Data dialog/list (TClstrDlgForm1, TClstrListForm1) — the list rows
-  need the 16 CLUSTERS.DAT comments (approval **A2**); the dialog's arbitrary-field query is not possible with the published data.
+- Observation-mode Display/Print Data needs the RsltsListForm1 row writer 0x5486a8 (not recovered).
+- The Cluster Data dialog and its list (TClstrDlgForm1, TClstrListForm1: centre coordinates, Use Telescope Coordinates, Type of
+  Listing, Sort By, View/Select, Add Cluster to List, the hot-list rows) — plan milestone M8, not done: its finding list for an
+  arbitrary centre needs GSC data that is not published, and Use Telescope Coordinates needs the observatory pointing.
 - **Add to Hot List** from Possible Cluster Member (needs the shared hot list passed to the cluster view in `src/OpenVireo.tsx`,
   coordinator decision Q2).
 - Right-click in the saved-observation (DAT) view opens VIREO's "Observational Data" dialog; not ported.

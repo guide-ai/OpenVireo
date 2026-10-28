@@ -1,0 +1,112 @@
+{
+ "schema": "openvireo-cluster-comments-v1",
+ "source": {
+  "archive": "CLEA_Vireo.zip",
+  "archiveSha256": "58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+  "member": "program files/CLEA/VIREO/CLUSTERS.DAT",
+  "bytes": 1632,
+  "sha256": "bec9dfb53969ba3828dff98962d9c80c3c7b5e51646f2a88ef70bcf634545ff2",
+  "field": "ShortString[40] at record offset 0x3d (102-byte records)",
+  "approval": "user approval of 2026-10-28 (AGENTS.md): only the 16 comment strings, not the file or its distance/age columns",
+  "tool": "analysis/front-v2-cluster-hr/tools/cluster_sidecar.py",
+  "toolSha256": "90f69e7be1d1fabce4cb7941f2c29ff389da3273be57f1da8b838b06198834c0"
+ },
+ "clusters": [
+  {
+   "id": "ngc752",
+   "record": 0,
+   "name": "NGC 752",
+   "comment": "Old cluster"
+  },
+  {
+   "id": "m34",
+   "record": 1,
+   "name": "M 34 (NGC 1039)",
+   "comment": ""
+  },
+  {
+   "id": "mel20",
+   "record": 2,
+   "name": "Mel 20 (Alpha-Per)",
+   "comment": ""
+  },
+  {
+   "id": "pleiades",
+   "record": 3,
+   "name": "M 45 (Pleiades)",
+   "comment": ""
+  },
+  {
+   "id": "hyades",
+   "record": 4,
+   "name": "Hyades",
+   "comment": ""
+  },
+  {
+   "id": "30dor",
+   "record": 5,
+   "name": "30 Doradus (LMC)",
+   "comment": "Many(!) OB *s & SGs"
+  },
+  {
+   "id": "m41",
+   "record": 6,
+   "name": "M 41 (NGC 2287)",
+   "comment": ""
+  },
+  {
+   "id": "m44",
+   "record": 7,
+   "name": "M 44 (NGC 2632)",
+   "comment": "Praesepe, \"Beehive\""
+  },
+  {
+   "id": "ic2391",
+   "record": 8,
+   "name": "IC 2391",
+   "comment": ""
+  },
+  {
+   "id": "m67",
+   "record": 9,
+   "name": "M 67 (NGC 2682)",
+   "comment": "Old cluster"
+  },
+  {
+   "id": "mel111",
+   "record": 10,
+   "name": "Mel 111 (Coma)",
+   "comment": ""
+  },
+  {
+   "id": "ic4665",
+   "record": 11,
+   "name": "IC 4665",
+   "comment": ""
+  },
+  {
+   "id": "m7",
+   "record": 12,
+   "name": "M 7 (NGC 6475)",
+   "comment": ""
+  },
+  {
+   "id": "m16",
+   "record": 13,
+   "name": "M 16 (NGC 6611)",
+   "comment": "Young cluster"
+  },
+  {
+   "id": "cygob2",
+   "record": 14,
+   "name": "Cyg OB2",
+   "comment": "OB Association"
+  },
+  {
+   "id": "m39",
+   "record": 15,
+   "name": "M 39 (NGC 7092)",
+   "comment": ""
+  }
+ ]
+}

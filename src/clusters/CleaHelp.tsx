@@ -22,7 +22,7 @@ type Search=Readonly<{query:string;matchCase:boolean}>;
 type Topic=Readonly<{index:number;body:HelpTopicBody;selected:number}>;
 
 /** A ListBox: one selected row, arrow keys/Home/End move, Enter or double-click activates. */
-function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean}){
+export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean}){
  const id=useId(),list=useRef<HTMLUListElement>(null);
  useEffect(()=>{list.current?.querySelector<HTMLElement>(`[data-row="${selected}"]`)?.scrollIntoView({block:'nearest'});},[selected]);
  function key(e:KeyboardEvent<HTMLUListElement>){

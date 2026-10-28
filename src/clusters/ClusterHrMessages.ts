@@ -49,7 +49,7 @@ export const CLUSTER_HR_EN=Object.freeze({
  memberExit:'Exit',// VIREO
  memberName:'Cluster Name:',memberId:'ID #:',memberRa:'RA:',memberDec:'Dec:',memberV:'V:',memberBmV:'B-V:',memberUmB:'U-B:',memberSp:'Spectral Type:',// VIREO
  memberNotPublished:'not published',
- memberDataNote:'VIREO also shows the star\'s catalogue ID, U−B and spectral type. That per-star data is not published on this site yet, so those fields are empty.',
+ memberDataNote:'Loading the star\'s catalogue ID, U−B and spectral type…',
  memberHotListUnavailable:'Add to Hot List is not available on this page yet.',
  memberRemoveNote:'In VIREO, Remove from HR Diagram appears only in its Edit Mode (an instructor setting, off by default). OpenVireo keeps it as your own exclusion, which you can restore.',
  memberRemoved:'Removed from the HR diagram. Restore it with "Restore all excluded points".',
@@ -64,6 +64,19 @@ export const CLUSTER_HR_EN=Object.freeze({
  portrait:'Portrait',landscape:'Landscape',
  hrPrintImage:'Color-magnitude diagram, print copy',
  reportPrintNote:'Browser printing of the report lines (a web adaptation). VIREO prints this report from its list window (0x59e4c0) with the date, student lines and caption; that page layout is not reproduced here.',
+ // Select Cluster Data (TClstrListForm2) and Display/Print Data (TClstrRptForm1)
+ selectCluster:'Select Cluster Data...',// VIREO
+ listMenu:'List',searchItem:'Search...',printItem:'Print...',saveList:'Save List...',closeItem:'Close',selectionMenu:'Selection',plotItem:'Plot',// VIREO
+ listSearchNote:'In VIREO this Search item is not connected to anything, so it does nothing; Save List stays disabled.',
+ listPlotNote:'Plot loads the dataset as "Load selected dataset" does. In VIREO a new Plot also restores removed points; OpenVireo keeps your exclusions for each dataset.',
+ listCaptionNote:'VIREO\'s cluster list (CLUSTERS.DAT), with the comments published on this site; the distance and age columns stay hidden as in VIREO\'s student view.',
+ noticeCaption:'Information',
+ displayData:'Display/Print Data',// VIREO
+ detailLoading:'Loading the cluster star details…',
+ detailError:'The cluster star details could not be loaded. Try again.',
+ reportUnavailable:'This listing needs a spectral type that VIREO cannot format for one of the stars, so it is not shown.',
+ reportNote:'VIREO\'s "CLEA Cluster Data" listing (0x534680) for this dataset, sorted by V as the Plot route sorts it. Stars you excluded carry "*" after their ID, as VIREO marks removed stars. Text and CSV files are downloaded through your browser.',
+ listPrintNote:'Print preview of VIREO\'s list printout: the date and time (here in your browser\'s format), the laboratory-table line, the student lines entered in VIREO (a placeholder here), the window caption and every list line. VIREO\'s print-job title is not printed on the page. Fonts and page layout are not reproduced.',
  // print preview (shared)
  printTitle:(caption:string)=>`Print — ${caption}`,
  printButton:'Print…',
