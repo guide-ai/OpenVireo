@@ -3271,4 +3271,6 @@ export interface MessageParameters {
   "galaxyExposure.engineRetry": never;
   "galaxyExposure.modelLimitOwnSpectrum": "file" | "id";
   "hubbleHtl.reason.spectrum-continuation": never;
+  "galaxyExposure.catalogueReference": "value" | "workbook";
+  "galaxyExposure.continuationAdaptation": never;
 }

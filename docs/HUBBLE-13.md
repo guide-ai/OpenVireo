@@ -16,8 +16,8 @@ selected record, crop digest and calibration. Regeneration needs `OPENVIREO_FREE
 | 3 | 36805 UM-I – 3 | cached pan of the verified 36773 field (M1) | 0.4 m | available |
 | 4 | NGC 4874 Coma – 1 | engine, QSO merge (M3) | 0.4 m, 4 m (0.9 m: mean bound) | available |
 | 5 | NGC 4889 Coma – 2 | engine, QSO merge, own NGC4889.SP (M4) | 0.4 m, 4 m (0.9 m: mean bound) | available |
-| 6 | 51976 Boo – 1 | engine (M5): field prepared | — | spectrum-continuation (not offered) |
-| 7 | 51975 Boo – 2 | engine (M5): field prepared | — | spectrum-continuation (not offered) |
+| 6 | 51976 Boo – 1 | engine, QSO merge, RS Boo outside view, start-time continuation (M5) | 0.4 m, 0.9 m, 4 m | available |
+| 7 | 51975 Boo – 2 | engine, QSO merge, RS Boo outside view, start-time continuation (M5) | 0.4 m, 0.9 m, 4 m | available |
 
 ## M1 — UM-I – 3 (36805)
 A fresh field centred on 36805 contains GLIMAGES.LST row 82 (the NGC 3898 photograph), and photographic association
@@ -62,7 +62,7 @@ See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`;
 - Adaptations: fresh field at the exact catalogue centre (not the rounded HTL coordinates), no cached pan from these fields;
   field preparation is asynchronous (a few seconds; a load or identity failure is an explicit, retryable notice).
 
-## M5 — Boötes – 1/2 (51976, 51975): field prepared, acquisition not offered
+## M5 — Boötes – 1/2 (51976, 51975)
 - Pack `data/hubble/engine-bootes.json` (both centres, N3000). Against the published LSS reads it
   adds exactly the whole records N3000 512620 and 512802 (approved 2026-10-27); everything else is byte-equal or a position prefix.
 - RS Boo (CLEA_VStrs.dat record 10908, RRAB, class 0) — coordinator rule "footprint outside the view". Engine option
@@ -81,3 +81,17 @@ See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`;
   continuation (galaxyContinuum.ts, 0x55e97c) draws one uniform per out-of-range channel; how those draws are ordered against the
   exposure's own random stream at Go (0x50f484) is not recovered, so no acquisition is offered (`spectrum-continuation`). Both
   Boötes V references (catalogue 17.9/18.5, workbook 18.5/17.6) will be shown once the target is enabled.
+
+### Start-time continuation (coordinator condition, 2026-10-27)
+- Writers of +0x312b (static): reset 0x50e2a0 and Go 0x50f5e5 zero it; the timer 0x50f98d adds each integrated interval. Go
+  0x50f4f4..0x50f5c9 re-prepares the 600 channel means from the current global random state when [+0x416]==0 and +0x312b==0,
+  i.e. when nothing was integrated since the previous Go or reset, then starts the timer (0x510ed0).
+- Web: `JournalSourcePreparer` (exposureJournal.ts). A start with no positive tick since the previous start or reset calls it
+  with the exposure's seed; its means, seed and uniform draws replace the current ones. It is attached only where draws can
+  occur (the galaxy continuation, fieldEngine option `continuation: 'start-time'`), so every existing exposure is unchanged:
+  the M0 fingerprints and all v1–v28 session tests pass unmodified.
+- Availability uses the deterministic upper bound of the continuation (every uniform → 1) against the existing mean bound:
+  both Boötes targets are faint (max Poisson mean 0.07/0.65/18.7 and 0.02/0.14/3.5 on the 0.4/0.9/4 m) and available everywhere.
+  The recorded crop and slit level are image-only and independent of the draws.
+- V references: workbook 18.5 / 17.6 (Sheet1!C7/C8) is the reference row; the catalogue values 17.9 / 18.5 (CLEA_GLX.DAT) are
+  shown beside it on the exposure page; neither is chosen for the student.

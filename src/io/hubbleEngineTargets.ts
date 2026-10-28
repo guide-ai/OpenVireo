@@ -10,6 +10,7 @@ import {resourceSha256} from './boundedResource';
 
 const PACKS:Record<string,()=>Promise<{default:unknown}>>={
  'hubble-engine-coma':()=>import('../../data/hubble/engine-coma.json'),
+ 'hubble-engine-bootes':()=>import('../../data/hubble/engine-bootes.json'),
 };
 export type HubbleEngineResources=Readonly<{glx:()=>Promise<Uint8Array>;qso:()=>Promise<FieldQsoCatalog>;spectrum:(file:string,sha256:string)=>Promise<FieldLibrarySpectrum['samples']>}>;
 const browserResources:HubbleEngineResources={

@@ -13,7 +13,7 @@ export type HubbleEngineDefinition=Readonly<{policyId:string;fieldSnapshotSHA256
 export type HubbleEngineConfiguration=ReturnType<typeof configurationOf>;
 function configurationOf(r:FieldResult,telescope:ExtendedTelescope){
  const c=r.calibration!,p=r.population!;
- return Object.freeze({telescopeIndex:telescope,field:Object.freeze({stars:p.stars,galaxies:p.galaxies}),scene:r.scene!,zeroPoint:c.zeroPoint,pixelLevel:c.pixelLevel,fraction:c.fraction,amplitude:c.amplitude,instrumentMagnitude:c.instrumentMagnitude,sourceMeans:c.sourceMeans,sourceValues:c.sourceValues,wavelengths:c.wavelengths,viewport:r.viewport!,view:null});
+ return Object.freeze({...(c.sourcePreparer?{sourcePreparer:c.sourcePreparer}:{}),telescopeIndex:telescope,field:Object.freeze({stars:p.stars,galaxies:p.galaxies}),scene:r.scene!,zeroPoint:c.zeroPoint,pixelLevel:c.pixelLevel,fraction:c.fraction,amplitude:c.amplitude,instrumentMagnitude:c.instrumentMagnitude,sourceMeans:c.sourceMeans,sourceValues:c.sourceValues,wavelengths:c.wavelengths,viewport:r.viewport!,view:null});
 }
 export type HubbleEngineInputs=Readonly<{packs:ReadonlyMap<string,FieldPack>;glx:Uint8Array;qsoCatalog:FieldQsoCatalog;librarySpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>}>;
 export type PreparedEngineTarget=Readonly<{id:string;entries:readonly Readonly<{definition:HubbleEngineDefinition;configuration:HubbleEngineConfiguration}>[]}>;
@@ -25,7 +25,7 @@ export function prepareHubbleEngineTarget(id:string,inputs:HubbleEngineInputs):P
  if(!pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec))throw new HubbleEngineError('pack');
  let librarySpectrum:FieldLibrarySpectrum|undefined;
  if(rec.librarySpectrum){const samples=inputs.librarySpectra.get(rec.librarySpectrum.file);if(!samples)throw new HubbleEngineError('spectrum');librarySpectrum=Object.freeze({targetId:id,file:rec.librarySpectrum.file,samples});}
- const options:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(librarySpectrum?{librarySpectrum}:{}),...((rec as {variables?:string}).variables==='outside-view'?{variables:'outside-view' as const}:{})};
+ const options:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(librarySpectrum?{librarySpectrum}:{}),...((rec as {variables?:string}).variables==='outside-view'?{variables:'outside-view' as const}:{}),...((rec as {continuation?:string}).continuation==='start-time'?{continuation:'start-time' as const}:{})};
  const packRecord=(engineTargets.packs as Record<string,{sha256:string}>)[rec.pack];
  const entries=[];
  for(const t of rec.telescopes as readonly RecordedTelescope[]){

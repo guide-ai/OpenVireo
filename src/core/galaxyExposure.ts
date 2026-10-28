@@ -38,7 +38,7 @@ import {photonAmplitudes,slitPixelLevel,telescopeZeroPoint,type RgbImage} from '
 import {nativeObjectSlitFraction} from './slitThroughput';
 import {roundNearestEven} from './numericPolicy';
 import {isHubbleEngineId,hubbleExtendedPolicyTelescope,type HubbleEngineDefinition,type HubbleEngineConfiguration} from './hubbleEngineTargets';
-import {activateJournal,cancelJournal,createJournalExposure,deactivateJournal,JournalError,pauseJournal,resetJournal,replayJournal,startJournal,tickJournal,type JournalState,type JournalEvent} from './exposureJournal';
+import {activateJournal,cancelJournal,createJournalExposure,deactivateJournal,JournalError,pauseJournal,resetJournal,replayJournal,startJournal,tickJournal,type JournalState,type JournalEvent,type JournalSourcePreparer} from './exposureJournal';
 export const GALAXY_FIELD_SHA256=provenance.fieldSnapshotSHA256,GALAXY_SOURCE_SHA256=provenance.sourceSnapshotSHA256;
 export const GALAXY_POLICY_ID=provenance.policyId,GALAXY_TARGET=Object.freeze({...provenance.target}),GALAXY_DOMAIN=PINNED_GALAXY_DOMAIN;
 export type GalaxyState=JournalState;
@@ -147,7 +147,7 @@ function prepareCached(id:string,index:0|1|2){
 function prepare(id:string,index:0|1|2){if(isHubbleEngineId(id))throw new JournalError('proof');return galaxyFieldDescriptor(id).kind==='cached'?prepareCached(id,index):prepareFresh(id,index);}
 export function verifiedGalaxyConfiguration(id='36773',index:0|1|2=0){const key=id+':'+index;let c=prepared.get(key);if(!c){c=prepare(id,index);prepared.set(key,c);}return c;}
 function checked(s:GalaxyState){galaxyStateDefinition(s);}
-export function createGalaxyExposure(seed:number,id='36773',index:0|1|2=0){const c=verifiedGalaxyConfiguration(id,index);return createJournalExposure(galaxyDefinition(id,index).policyId,c.sourceMeans,c.amplitude.sky,50,seed);}
+export function createGalaxyExposure(seed:number,id='36773',index:0|1|2=0){const c=verifiedGalaxyConfiguration(id,index);return createJournalExposure(galaxyDefinition(id,index).policyId,c.sourceMeans,c.amplitude.sky,50,seed,(c as {sourcePreparer?:JournalSourcePreparer}).sourcePreparer);}
 export function activateGalaxy(s:GalaxyState){checked(s);verifiedGalaxyConfiguration(galaxyStateDefinition(s).target.id,galaxyTelescopeIndex(s));return activateJournal(s);}
 export function startGalaxy(s:GalaxyState){checked(s);return startJournal(s);}
 export function tickGalaxy(s:GalaxyState,delta:number){checked(s);return tickJournal(s,delta);}

@@ -18,14 +18,13 @@ describe('original Hubble.HTL: 13 identities, status and no acquisition from rou
   const moved=updateHtlRecord(list[7],{...list[7],ra:list[7].ra+1e-9});expect(hubbleRowIdentity(moved)).toBeNull();
  });
  it('maps exactly the supported rows (eight frozen plus Front F extended) to acquisition targets and keeps every other reason explicit',()=>{
-  expect(HUBBLE_SUPPORTED_ROWS.map(r=>[r.index,r.targetId,r.route])).toEqual([[0,'36747','fresh'],[1,'36773','fresh'],[2,'36805','cached'],[3,'NGC 4874','engine'],[4,'NGC 4889','engine'],[7,'54875','cached'],[8,'54876','fresh'],[9,'54891','cached'],[10,'NGC 7499','cached'],[11,'NGC 7501','fresh'],[12,'NGC 7503','cached']]);
+  expect(HUBBLE_SUPPORTED_ROWS.map(r=>[r.index,r.targetId,r.route])).toEqual([[0,'36747','fresh'],[1,'36773','fresh'],[2,'36805','cached'],[3,'NGC 4874','engine'],[4,'NGC 4889','engine'],[5,'51976','engine'],[6,'51975','engine'],[7,'54875','cached'],[8,'54876','fresh'],[9,'54891','cached'],[10,'NGC 7499','cached'],[11,'NGC 7501','fresh'],[12,'NGC 7503','cached']]);
   expect(new Set(HUBBLE_SUPPORTED_ROWS.map(r=>r.targetId))).toEqual(new Set(GALAXY_TARGETS.map(t=>t.id)));
-  expect(HUBBLE_HOT_LIST.filter(r=>!r.supported).map(r=>r.supported?'':r.reason)).toEqual(['spectrum-continuation','spectrum-continuation']);
+  expect(HUBBLE_HOT_LIST.filter(r=>!r.supported).map(r=>r.supported?'':r.reason)).toEqual([]);
   for(const t of cached.targets){const r=HUBBLE_HOT_LIST[t.htlRow];expect(r.recordSha256).toBe(t.htlRecordSHA256);expect(r.catalogIndex).toBe(t.recordIndex);expect(hubbleRowStatus(r,0)).toBe('available');expect(hubbleRowStatus(r,1)).toBe('telescope');expect(hubbleRowStatus(r,2)).toBe('telescope');}
   for(const row of [HUBBLE_HOT_LIST[0],HUBBLE_HOT_LIST[1],HUBBLE_HOT_LIST[8]])for(const i of [0,1,2])expect(hubbleRowStatus(row,i)).toBe('available');
   for(const row of [HUBBLE_HOT_LIST[10],HUBBLE_HOT_LIST[11],HUBBLE_HOT_LIST[12]]){expect(hubbleRowStatus(row,0)).toBe('available');expect(hubbleRowStatus(row,1)).toBe('telescope');expect(hubbleRowStatus(row,2)).toBe('telescope');}
   expect([0,1,2].map(i=>hubbleRowStatus(HUBBLE_HOT_LIST[2],i))).toEqual(['available','telescope','telescope']);
-  expect(hubbleRowStatus(HUBBLE_HOT_LIST[5],0)).toBe('unavailable');
  });
  it('the rounded HTL pointing is distinct from the exact catalogue centre for the new targets',()=>{
   for(const row of HUBBLE_SUPPORTED_ROWS.filter(r=>r.route==='cached')){

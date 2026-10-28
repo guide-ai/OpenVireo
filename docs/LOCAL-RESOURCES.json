@@ -6624,8 +6624,8 @@
     },
     {
       "path": "data/hubble/engine-targets.json",
-      "bytes": 6224,
-      "sha256": "b7338a3145a75301b3cf095a4c93e4980cab3053c3c4a0e461465fcae1f6a469"
+      "bytes": 12304,
+      "sha256": "07f99881b82d1e8bf84091b3d70e9820a4a4cdb913618a13e95699ccd8c952b7"
     },
     {
       "path": "data/hubble/engine-bootes.json",

@@ -159,6 +159,7 @@
    "id": "51976",
    "label": "Boo – 1",
    "variables": "outside-view",
+   "continuation": "start-time",
    "htlRow": 5,
    "htlRecordSHA256": "e9ab7d6b43540c5ba8602b02848211d35f1f5ef3a4a121c649bc7dca0d19f69b",
    "glxIndex": 17656,
@@ -176,23 +177,137 @@
    "telescopes": [
     {
      "telescope": 0,
-     "status": "unavailable",
-     "reasons": [
-      "spectrum-range"
+     "status": "available",
+     "outsideViewGalaxies": [
+      {
+       "galaxy": "14299+3148",
+       "margin": 25
+      }
+     ],
+     "outsideViewVariable": {
+      "variable": 10908,
+      "name": "RS Boo",
+      "classification": "RRAB",
+      "hitId": "N3000.DAT@513122",
+      "resolvedId": "N3000.DAT@513131",
+      "hitArcseconds": 1.8629649295038204,
+      "removedRunner": "N3000.DAT@513119",
+      "variableMargin": 33,
+      "hitMargin": 33,
+      "resolvedMargin": 139
+     },
+     "qsoInView": [
+      {
+       "id": "CLEA_QSO.DAT@1656",
+       "x": 327.92997755275144,
+       "y": 517.5733333333355,
+       "margin": -65
+      }
+     ],
+     "policyId": "openvireo-engine-galaxy-51976-r0-v1",
+     "cropSHA256": "700fedabbff6657c924c1ea0ed663139be20849bbc349f4ea50c56bde33147be",
+     "pixelLevel": 28,
+     "fraction": 0.019600000000000003,
+     "stars": 103,
+     "galaxies": 5,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 0.06642382248728076,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1656",
+       "insert",
+       65
+      ]
      ]
     },
     {
      "telescope": 1,
-     "status": "unavailable",
-     "reasons": [
-      "spectrum-range"
+     "status": "available",
+     "outsideViewGalaxies": [
+      {
+       "galaxy": "14299+3148",
+       "margin": 25
+      }
+     ],
+     "outsideViewVariable": {
+      "variable": 10908,
+      "name": "RS Boo",
+      "classification": "RRAB",
+      "hitId": "N3000.DAT@513122",
+      "resolvedId": "N3000.DAT@513131",
+      "hitArcseconds": 1.8629649295038204,
+      "removedRunner": "N3000.DAT@513119",
+      "variableMargin": 33,
+      "hitMargin": 33,
+      "resolvedMargin": 139
+     },
+     "qsoInView": [
+      {
+       "id": "CLEA_QSO.DAT@1656",
+       "x": 327.92997755275144,
+       "y": 517.5733333333355,
+       "margin": -65
+      }
+     ],
+     "policyId": "openvireo-engine-galaxy-51976-r1-v1",
+     "cropSHA256": "cb876c00c5ed7bb9d90ba7e962f97e08ce325cb2f56d423b6d2f26366bf11b94",
+     "pixelLevel": 35,
+     "fraction": 0.030624999999999996,
+     "stars": 103,
+     "galaxies": 5,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 0.6548531038562252,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1656",
+       "insert",
+       65
+      ]
      ]
     },
     {
      "telescope": 2,
-     "status": "unavailable",
-     "reasons": [
-      "spectrum-range"
+     "status": "available",
+     "outsideViewGalaxies": [
+      {
+       "galaxy": "14299+3148",
+       "margin": 25
+      }
+     ],
+     "outsideViewVariable": {
+      "variable": 10908,
+      "name": "RS Boo",
+      "classification": "RRAB",
+      "hitId": "N3000.DAT@513122",
+      "resolvedId": "N3000.DAT@513131",
+      "hitArcseconds": 1.8629649295038204,
+      "removedRunner": "N3000.DAT@513119",
+      "variableMargin": 33,
+      "hitMargin": 33,
+      "resolvedMargin": 139
+     },
+     "qsoInView": [
+      {
+       "id": "CLEA_QSO.DAT@1656",
+       "x": 327.92997755275144,
+       "y": 517.5733333333355,
+       "margin": -65
+      }
+     ],
+     "policyId": "openvireo-engine-galaxy-51976-r2-v1",
+     "cropSHA256": "484c5b3c0d800094e482eee85e27675efa6b2ea4aaba469a4ec2066459e9d9a6",
+     "pixelLevel": 47,
+     "fraction": 0.055224999999999996,
+     "stars": 103,
+     "galaxies": 5,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 18.715589779898384,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1656",
+       "insert",
+       65
+      ]
      ]
     }
    ]
@@ -201,6 +316,7 @@
    "id": "51975",
    "label": "Boo – 2",
    "variables": "outside-view",
+   "continuation": "start-time",
    "htlRow": 6,
    "htlRecordSHA256": "fbffdb6104dc83d657a2567e9b74710bb1bce1bb32bddc0cb505bc69e98414ae",
    "glxIndex": 17657,
@@ -218,23 +334,137 @@
    "telescopes": [
     {
      "telescope": 0,
-     "status": "unavailable",
-     "reasons": [
-      "spectrum-range"
+     "status": "available",
+     "outsideViewGalaxies": [
+      {
+       "galaxy": "14299+3148",
+       "margin": 25
+      }
+     ],
+     "outsideViewVariable": {
+      "variable": 10908,
+      "name": "RS Boo",
+      "classification": "RRAB",
+      "hitId": "N3000.DAT@513122",
+      "resolvedId": "N3000.DAT@513131",
+      "hitArcseconds": 1.8629649295038204,
+      "removedRunner": "N3000.DAT@513119",
+      "variableMargin": 10,
+      "hitMargin": 11,
+      "resolvedMargin": 97
+     },
+     "qsoInView": [
+      {
+       "id": "CLEA_QSO.DAT@1656",
+       "x": 327.92997755275144,
+       "y": 559.1733333333332,
+       "margin": -65
+      }
+     ],
+     "policyId": "openvireo-engine-galaxy-51975-r0-v1",
+     "cropSHA256": "73092274eb308cb56e3e0127d16937621b9df2e4bc70feebbb62a134609b169f",
+     "pixelLevel": 36,
+     "fraction": 0.0324,
+     "stars": 104,
+     "galaxies": 5,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 0.01516592035728043,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1656",
+       "insert",
+       65
+      ]
      ]
     },
     {
      "telescope": 1,
-     "status": "unavailable",
-     "reasons": [
-      "spectrum-range"
+     "status": "available",
+     "outsideViewGalaxies": [
+      {
+       "galaxy": "14299+3148",
+       "margin": 25
+      }
+     ],
+     "outsideViewVariable": {
+      "variable": 10908,
+      "name": "RS Boo",
+      "classification": "RRAB",
+      "hitId": "N3000.DAT@513122",
+      "resolvedId": "N3000.DAT@513131",
+      "hitArcseconds": 1.8629649295038204,
+      "removedRunner": "N3000.DAT@513119",
+      "variableMargin": 10,
+      "hitMargin": 11,
+      "resolvedMargin": 97
+     },
+     "qsoInView": [
+      {
+       "id": "CLEA_QSO.DAT@1656",
+       "x": 327.92997755275144,
+       "y": 559.1733333333332,
+       "margin": -65
+      }
+     ],
+     "policyId": "openvireo-engine-galaxy-51975-r1-v1",
+     "cropSHA256": "bd8cebfeb4d6c010d341b92515a7f4364c23de59166360f40d3c32960bc5ad3c",
+     "pixelLevel": 43,
+     "fraction": 0.046224999999999995,
+     "stars": 104,
+     "galaxies": 5,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 0.13652138345938367,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1656",
+       "insert",
+       65
+      ]
      ]
     },
     {
      "telescope": 2,
-     "status": "unavailable",
-     "reasons": [
-      "spectrum-range"
+     "status": "available",
+     "outsideViewGalaxies": [
+      {
+       "galaxy": "14299+3148",
+       "margin": 25
+      }
+     ],
+     "outsideViewVariable": {
+      "variable": 10908,
+      "name": "RS Boo",
+      "classification": "RRAB",
+      "hitId": "N3000.DAT@513122",
+      "resolvedId": "N3000.DAT@513131",
+      "hitArcseconds": 1.8629649295038204,
+      "removedRunner": "N3000.DAT@513119",
+      "variableMargin": 10,
+      "hitMargin": 11,
+      "resolvedMargin": 97
+     },
+     "qsoInView": [
+      {
+       "id": "CLEA_QSO.DAT@1656",
+       "x": 327.92997755275144,
+       "y": 559.1733333333332,
+       "margin": -65
+      }
+     ],
+     "policyId": "openvireo-engine-galaxy-51975-r2-v1",
+     "cropSHA256": "e208d674628115ffc768f74a8046a39ca52ba41af6c5a76a1345c8b94d15e209",
+     "pixelLevel": 55,
+     "fraction": 0.07562500000000001,
+     "stars": 104,
+     "galaxies": 5,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 3.539884959936212,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1656",
+       "insert",
+       65
+      ]
      ]
     }
    ]

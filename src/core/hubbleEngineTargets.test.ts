@@ -54,7 +54,7 @@ describe('Front F M3/M4: Coma – 1 and Coma – 2 through the general field eng
  });
  it('workbook V references and the extended table',()=>{
   expect(galaxyDistanceReference('NGC 4874')).toMatchObject({apparentV:12.9,source:'Hubble Data.xls · Sheet1!C5'});expect(galaxyDistanceReference('NGC 4889')).toMatchObject({apparentV:12.5,source:'Hubble Data.xls · Sheet1!C6'});
-  expect(HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').map(t=>[t.id,t.telescopes])).toEqual([['NGC 4874',[0,2]],['NGC 4889',[0,2]]]);
+  expect(HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').map(t=>[t.id,t.telescopes])).toEqual([['NGC 4874',[0,2]],['NGC 4889',[0,2]],['51976',[0,1,2]],['51975',[0,1,2]]]);
   expect(hubbleExtendedTarget('NGC 4874')!.policies).toEqual({0:'openvireo-engine-galaxy-NGC4874-r0-v1',2:'openvireo-engine-galaxy-NGC4874-r2-v1'});
  });
 });
