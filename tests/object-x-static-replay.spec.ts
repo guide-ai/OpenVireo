@@ -10,7 +10,7 @@ const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|cdsarc|unistra\.fr
 
 test('replayStaticExposure gives the camera static path\'s FITS bytes for the same recipe',async({page})=>{
  const xml=await xmlPromise,sha=createHash('sha256').update(xml).digest('hex');
- const extract={id:'synthetic-pleiades-test',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'synthetic-pleiades-test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'synthetic test extract over the recorded response'};
+ const extract={id:'synthetic-pleiades-test',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'synthetic-pleiades-test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out?RA=56.75&DEC=24.12&SR=1',host:'vizier.cds.unistra.fr'};
  await page.route('**/data/camera/extracts.json?import*',route=>route.fulfill({status:200,contentType:'application/javascript',body:`export const extracts=${JSON.stringify([extract])};export default {about:'synthetic test index',extracts};`}));
  await page.route('**/camera/vizier/synthetic-pleiades-test.xml',route=>route.fulfill({status:200,contentType:'text/xml',body:xml}));
  const cds:string[]=[];page.on('request',r=>{if(CDS.test(r.url()))cds.push(r.url());});
