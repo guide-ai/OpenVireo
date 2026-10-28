@@ -1,16 +1,17 @@
 {
   "schema": 1,
-  "scope": "All1316files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included.",
-  "totalFiles": 1316,
-  "totalBytes": 123501661,
+  "scope": "All1316files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact CLEA_VStrs.dat(second approval of2026-10-26)and VarTypeHlp.TXT(approval of2026-10-27,group1)in public/original/variables;no executable,installer,archive or additional fullGSCfile is included.",
+  "totalFiles": 1318,
+  "totalBytes": 126368104,
   "extensions": {
     ".json": 1042,
     ".LST": 6,
     ".HTL": 12,
     ".SP": 81,
-    ".dat": 1,
+    ".dat": 2,
     ".png": 170,
     ".DAT": 1,
+    ".TXT": 1,
     ".CMO": 2,
     ".sav": 1
   },
@@ -150,6 +151,14 @@
       "description": "Byte-exact original VIREO Object X orbit files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/Orbit/ObjX_MPC.CMO(30989466bytes,191293records of162bytes,the original default ORBIT\\OBJX_MPC.CMO),SHA-256 b41e03f14dcef5a54dea67e156e0e7cf2b654432a85bf6d10611ed8e6d25802e;and Orbit/ObjX_AST.CMO(4750326bytes,29323records of162bytes),SHA-256 341134bf9033989fa2c7fa9008551fa8ef015ee158ec5a25c04754696e58ba12;and Orbit/ObjX_MPC.CMO.sav(4798116bytes,29618records of162bytes,epoch JD2455000.5,zip date2009-08-12),SHA-256 efd665a75dbd1d8afeb68b4c7b947d82304ffe2b6355cd2c7e74e58347124030.Every other file is excluded.",
       "usedBy": "E08 Object X:lazy same-origin fetch(size and SHA-256 checked before parsing);heliocentric state vectors propagated by the recovered ephemeris(docs/OBJECT-X.md).Web default ObjX_MPC.CMO.sav(it reproduces the three ObjectX.HTL moving rows at the original default 2009-06-01 04:00 UT);ObjX_MPC.CMO(the original options default)and ObjX_AST.CMO selectable",
       "upstreamStatus": "Included under the user approvals of2026-10-27 and the later ObjX_MPC.CMO.sav approval(AGENTS.md)on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The state vectors were likely computed by CLEA from Minor Planet Center(MPCORB)and Lowell Observatory(ASTORB)orbits(inference from tool strings and file names;uncertain).No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
+    },
+    "public/original/variables": {
+      "files": 2,
+      "bytes": 2866267,
+      "materialClass": "unchanged-original-binary-and-text-resource",
+      "description": "Byte-exact original VIREO variable-star files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/CLEA_VStrs.dat(2865524bytes,31147records of92bytes,sorted by RA),SHA-256 55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de;and program files/CLEA/VIREO/VarTypeHlp.TXT(743bytes,CRLF text,the variable-type help sections),SHA-256 d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445.VarTypeHlp.LST(the original help index)and every other file are excluded.",
+      "usedBy": "Variable Star Data and Simulated Light Curve(docs/VARIABLE-STARS.md):lazy same-origin fetch,size and SHA-256 checked before parsing;records decoded by src/core/variableStars.ts,light curve by src/core/lightCurve.ts",
+      "upstreamStatus": "Included under the user approvals of2026-10-26(CLEA_VStrs.dat)and2026-10-27(VarTypeHlp.TXT,group1)recorded in AGENTS.md,on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The records follow the General Catalogue of Variable Stars(GCVS,Samus et al.)field layout(ID,type,max/min magnitudes and flags,magnitude system,epoch,period,M-m/D,spectrum);that upstream identification is an inference from the form captions and values and remains uncertain.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     }
   },
   "authoredExamples": [
@@ -171,6 +180,7 @@
     "lssHotLists": "LSS_Field01..09.HTL:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO LSS exercise lists,included under the second user approval of2026-10-26.Each row names a CLEA_GLX.DAT galaxy;upstream catalogue identification remains uncertain.LSSFields.LST(the original field labels)is NOT included;field labels in the web app are a labelled adaptation from these file names.",
     "lssFieldPacks": "data/lss(2026-10-27 approval):bounded compact-GSC N2230/N3000 read witnesses for the LSS strip pointings only,with CLEA_VStrs.dat records,CLEA_QSO.DAT positions and GLIMAGES.LST match indices.Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters);GSC source-specific terms remain uncertain.Not the full GSC,not new observations and no native-runtime equivalence is asserted.",
     "lssListsAndGalaxyLists": "LSSFields.LST,GLIMAGES.LST and GLXYSP.LST:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO lists approved2026-10-27(groups1 and2);upstream source identification remains uncertain.No universal open license or native-runtime equivalence is asserted.",
+    "variableStarFiles": "CLEA_VStrs.dat and VarTypeHlp.TXT:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO files approved2026-10-26 and2026-10-27(AGENTS.md).The catalogue content appears to derive from the General Catalogue of Variable Stars(GCVS;Samus N.N. et al.,Sternberg Astronomical Institute);that attribution is an inference and remains uncertain.No universal open license or native-runtime equivalence is asserted.",
     "objectXFiles": "ObjectX.HTL,ObjX_MPC.CMO,ObjX_MPC.CMO.sav and ObjX_AST.CMO:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO files approved2026-10-26(ObjectX.HTL)and2026-10-27 and later(orbit files,AGENTS.md);state vectors likely computed from the Minor Planet Center MPCORB and Lowell Observatory ASTORB catalogues(uncertain inference).No universal open license or native-runtime equivalence is asserted.",
     "VizieRCameraCatalogs": "Camera catalog data (web adaptation, not CLEA resources): CDS/VizieR, doi:10.26093/cds/vizier; NOMAD (I/297), Zacharias N. et al. 2004, AAS 205, 48.15 (2004AAS...205.4815Z); USNO-B1.0 (I/284), Monet D.G. et al. 2003, AJ 125, 984. VizieR declares no explicit licence for these catalogs (rights_uri https://cds.unistra.fr/vizier-org/licences_vizier.html); probably US-government USNO works, uncertain. Published as recorded test responses (tests/fixtures/vizier) and bounded extracts (public/camera/vizier, data/camera/EXTRACTS-PROVENANCE.json) under the user decision of 27 October 2026."
   },

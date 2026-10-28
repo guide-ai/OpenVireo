@@ -1,0 +1,22 @@
+**Pulsating Variable Types**
+DCEP/CEP    Classical Cepheids + those of uncertain type
+CW          W Virginis stars + BL Herculis stars
+RR          RR Lyrae Stars
+DSCT        delta Scuti stars (some called dwarf Cepheids)
+SXPHE       SX Phe variables, pop.II del Sct variables
+BCEP        beta Cephei stars = beta Canis Majoris Stars
+ZZ          ZZ Ceti variables
+RV          RV Tauri stars
+SR          Semiregular (sometimes called LPV) variables
+L           Slow irregular (sometimes called LPV) variables
+M           Mira stars (sometimes called LPV)
+RCB         R Coronae Borealis stars
+
+**Rotating Variable Types**
+
+**Eruptive Variable Types**
+
+**Explosive/Cataclysmic Variable Types**
+
+**Eclipsing Variable Types**
+
