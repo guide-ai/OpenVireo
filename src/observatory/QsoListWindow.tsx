@@ -85,14 +85,17 @@ export default function QsoListWindow({request,editMode,hotList,hidden}:{request
 }
 
 /** TQSOListDlg "Options for QSO List " (227×213, bsDialog): FormActivate 0x57836c, OKBtnClick 0x578430. OK is the Default
- * button (Enter); Escape is Cancel. An invalid limit shows `Invalid Magnitude Limit` / `Numeric Error!` and keeps the dialog. */
+ * button (Enter); Escape is Cancel. An invalid limit shows `Invalid Magnitude Limit` / `Numeric Error!`, keeps the dialog and
+ * still stores the sort (see ok). */
 function QsoOptionsDialog({editMode,onOk,onCancel}:{editMode:boolean;onOk:(o:QsoListOptions)=>void;onCancel:()=>void}){
  const id=useId(),ref=useRef<HTMLDialogElement>(null),input=useRef<HTMLInputElement>(null);
  const [activated]=useState(()=>qsoOptionsActivate(sessionOptions,editMode));
  const [text,setText]=useState(activated.limitText),[sort,setSort]=useState<QsoSort>(activated.options.sort),[invalid,setInvalid]=useState(false);
  useEffect(()=>{sessionOptions=activated.options;const el=ref.current;if(el&&!el.open){el.showModal();input.current?.focus();input.current?.select();}},[activated]);
  const D=QL.dialog;
- function ok(){const limit=parseQsoMagnitudeLimit(text);if(limit===null){setInvalid(true);return;}onOk({limit,sort});}
+ /** OKBtnClick 0x578430: a bad limit shows the box inside the except block, sets ModalResult := 0 and leaves it through
+  * _DoneExcept (0x405840), so execution continues and stores the sort (0x5784b4..0x5784c4) while the limit keeps its old value. */
+ function ok(){const limit=parseQsoMagnitudeLimit(text);if(limit===null){sessionOptions={...sessionOptions,sort};setInvalid(true);return;}onOk({limit,sort});}
  return <dialog ref={ref} className="ob-dialog ob-box qso-options" aria-labelledby={`${id}-t`} data-testid="qso-options" onCancel={e=>{e.preventDefault();onCancel();}}>
   <h2 id={`${id}-t`} className="ob-native">{D.caption}</h2>
   <form method="dialog" onSubmit={e=>{e.preventDefault();ok();}}>

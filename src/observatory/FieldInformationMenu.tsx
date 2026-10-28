@@ -27,6 +27,9 @@ export function loadFieldVariables():Promise<readonly VariableStarRecord[]>{
 export type FieldInfoRequest=Readonly<{kind:FieldInfoRequestKind;token:number}>;
 export type FieldInformationProps=Readonly<{
  editMode:boolean;
+ /** Front O2 review 1 L1: the File and Tools menus are disabled only while a project is read or written (VIREO's main menu
+  * does not depend on the dome or on motion). */
+ busy?:boolean;
  /** Telescope view slider: finder or instrument (telescope). */
  view:VariableFieldView;
  /** Opens the Variable stars page on a CLEA_VStrs.dat record index (Get Selection Data). */

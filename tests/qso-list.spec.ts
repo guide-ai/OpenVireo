@@ -8,16 +8,31 @@ async function open(page:Page){
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
 }
-async function editMode(page:Page,on:boolean){
- await card(page).getByTestId('ob-options').click();const box=page.getByTestId('ob-options-edit-mode');
+async function option(page:Page,id:'ob-options-edit-mode'|'ob-options-virtual-observatory',on:boolean){
+ await card(page).getByTestId('ob-options').click();const box=page.getByTestId(id);
  if(on)await box.check();else await box.uncheck();await page.getByTestId('ob-options-ok').click();
 }
+const editMode=(page:Page,on:boolean)=>option(page,'ob-options-edit-mode',on);
+const virtualObservatory=(page:Page,on:boolean)=>option(page,'ob-options-virtual-observatory',on);
 async function qsoMenu(page:Page){await page.getByTestId('fi-file-menu').click();await page.getByTestId('qso-menu').click();await expect(page.getByTestId('qso-options')).toBeVisible();}
 async function download(page:Page,click:()=>Promise<void>){await paceDownload(page);const d=page.waitForEvent('download');await click();const e=await d;return {name:e.suggestedFilename(),bytes:await readFile((await e.path())!)};}
 const box=(p:Page)=>p.getByTestId('fi-box');
 
+test('File › QSO List appears only with Virtual Observatory on (VObsBox, default off; review 1 M1)',async({page})=>{
+ await open(page);
+ await expect(page.getByTestId('fi-file-menu')).toHaveCount(0);
+ await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
+ await expect(page.getByTestId('ob-options-virtual-observatory-note')).toContainText('not saved');await expect(page.getByTestId('ob-options-others')).not.toContainText('Virtual Observatory');
+ await page.getByRole('button',{name:'Cancel',exact:true}).click();
+ await editMode(page,true);await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('fi-field-information')).toBeVisible();await expect(page.getByTestId('qso-menu')).toHaveCount(0);
+ await page.getByTestId('fi-file-menu').click();await editMode(page,false);
+ await virtualObservatory(page,true);await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('qso-menu')).toBeVisible();await expect(page.getByTestId('fi-field-information')).toHaveCount(0);
+ // The menu does not depend on the dome (review 1 L1).
+ await page.getByTestId('fi-file-menu').click();await page.getByRole('button',{name:'Close dome',exact:true}).click();await expect(page.getByTestId('fi-file-menu')).toBeEnabled();await expect(page.getByTestId('ob-tools-menu')).toBeEnabled();
+});
+
 test('student path: options defaults, invalid limit, list without z or Object X rows, Search, Save Text, Print, hot list',async({page})=>{
- await open(page);await qsoMenu(page);
+ await open(page);await virtualObservatory(page,true);await qsoMenu(page);
  const dialog=page.getByTestId('qso-options');
  await expect(dialog.getByRole('heading',{name:'Options for QSO List'})).toBeVisible();
  await expect(page.getByTestId('qso-limit')).toHaveValue('20.00');await expect(page.getByTestId('qso-sort-1')).toBeDisabled();await expect(page.getByTestId('qso-sort-0')).toBeChecked();
@@ -54,7 +69,7 @@ test('student path: options defaults, invalid limit, list without z or Object X 
 });
 
 test('Edit Mode: Sort Options enabled, Z and colour columns; leaving Edit Mode resets the sort',async({page})=>{
- await open(page);await editMode(page,true);await qsoMenu(page);
+ await open(page);await virtualObservatory(page,true);await editMode(page,true);await qsoMenu(page);
  await expect(page.getByTestId('qso-sort-1')).toBeEnabled();await page.getByTestId('qso-sort-2').check();await page.getByTestId('qso-ok').click();
  await expect(page.getByTestId('qso-list-line-0')).toHaveText('2266 QSOs to magnitude 17.50, sorted by Z(descending).',{timeout:20000});
  await expect(page.getByTestId('qso-list-line-2')).toHaveText('"(...)" indicates an assigned mean color.');
@@ -64,26 +79,42 @@ test('Edit Mode: Sort Options enabled, Z and colour columns; leaving Edit Mode r
  // RA sort appends nothing after "sorted by" (as in VIREO).
  await qsoMenu(page);await page.getByTestId('qso-sort-3').check();await page.getByTestId('qso-ok').click();
  await expect(page.getByTestId('qso-list-line-0')).toHaveText('2266 QSOs to magnitude 17.50, sorted by ');
+ // An invalid limit still stores the sort (_DoneExcept, review 1 L2).
+ await qsoMenu(page);await page.getByTestId('qso-sort-1').check();await page.getByTestId('qso-limit').fill('x');await page.getByTestId('qso-ok').click();
+ await box(page).getByRole('button',{name:'OK'}).click();await page.getByTestId('qso-cancel').click();
+ await qsoMenu(page);await expect(page.getByTestId('qso-sort-1')).toBeChecked();await page.getByTestId('qso-cancel').click();
  await editMode(page,false);await qsoMenu(page);
  await expect(page.getByTestId('qso-sort-1')).toBeDisabled();await expect(page.getByTestId('qso-sort-0')).toBeChecked();await page.getByTestId('qso-cancel').click();
  await expect(page.getByTestId('qso-options')).toHaveCount(0);
 });
 
-test('Tools › HST Image Archive: typed reason with the recovered URL, no request to it',async({page})=>{
- const requests:string[]=[];page.on('request',r=>{if(/hubblesite|stsci/i.test(r.url()))requests.push(r.url());});
- await open(page);await page.getByTestId('ob-tools-menu').click();await page.getByTestId('hst-menu').click();
- const b=page.getByTestId('hst-box');await expect(b).toHaveAttribute('data-reason','external-site-not-approved');
- await expect(page.getByTestId('hst-reason')).toContainText('http://hubblesite.org/newscenter/archive/browse/');await expect(b.getByRole('link')).toHaveCount(0);
- await b.getByRole('button',{name:'OK'}).click();await expect(page.getByTestId('ob-tools-menu')).toBeFocused();expect(requests).toEqual([]);
+test('Tools › HST Image Archive: an external link to the current archive page, requested only on click',async({page,context})=>{
+ const requests:string[]=[];context.on('request',r=>{if(/hubblesite|nasa\.gov|stsci/i.test(r.url()))requests.push(r.url());});
+ await context.route(/hubblesite\.org|science\.nasa\.gov/,r=>r.fulfill({status:200,contentType:'text/html',body:'<title>stub</title>'}));
+ await open(page);await page.getByTestId('ob-tools-menu').click();
+ const link=page.getByTestId('hst-menu');
+ await expect(link).toHaveAttribute('href','https://hubblesite.org/resource-gallery/images');await expect(link).toHaveAttribute('target','_blank');await expect(link).toHaveAttribute('rel','noopener noreferrer');
+ await expect(page.getByTestId('hst-note')).toContainText('http://hubblesite.org/newscenter/archive/browse/');
+ expect(requests).toEqual([]);
+ const popup=context.waitForEvent('page');await link.click();const tab=await popup;await tab.waitForLoadState();
+ expect(tab.url()).toBe('https://hubblesite.org/resource-gallery/images');expect(requests).toEqual(['https://hubblesite.org/resource-gallery/images']);
+ expect(await tab.evaluate(()=>window.opener)).toBeNull();
 });
 
-test('QSO List and HST box at 320 px in dark mode: no horizontal page scroll',async({page})=>{
+test('fail closed: without ObjectX.HTL the QSO list is not shown',async({page})=>{
+ await page.route('**/original/hotlists/ObjectX.HTL',r=>r.abort());
+ await open(page);await virtualObservatory(page,true);await qsoMenu(page);await page.getByTestId('qso-ok').click();
+ await expect(page.getByTestId('qso-list-status').locator('[data-reason=object-x-positions]')).toBeVisible({timeout:20000});
+ await expect(page.getByTestId('qso-list')).toHaveCount(0);expect(await page.locator('body').innerText()).not.toContain('QSOs to magnitude');
+});
+
+test('QSO List and HST menu at 320 px in dark mode: no horizontal page scroll',async({page})=>{
  await page.emulateMedia({colorScheme:'dark'});await page.setViewportSize({width:320,height:800});
- await open(page);await qsoMenu(page);
+ await open(page);await virtualObservatory(page,true);await qsoMenu(page);
  const d=await page.getByTestId('qso-options').boundingBox();expect(d!.x).toBeGreaterThanOrEqual(0);expect(d!.x+d!.width).toBeLessThanOrEqual(320);
  await page.getByTestId('qso-ok').click();await expect(page.getByTestId('qso-list-line-0')).toBeVisible({timeout:20000});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
- await page.getByTestId('ob-tools-menu').click();await page.getByTestId('hst-menu').click();
- const h=await page.getByTestId('hst-box').boundingBox();expect(h!.x+h!.width).toBeLessThanOrEqual(320);
- expect(await page.getByTestId('hst-box').evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true);
+ await page.getByTestId('ob-tools-menu').click();
+ const h=await page.getByTestId('hst-note').boundingBox();expect(h!.x).toBeGreaterThanOrEqual(0);expect(h!.x+h!.width).toBeLessThanOrEqual(320);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });

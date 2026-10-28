@@ -74,10 +74,14 @@ describe('Object X and exercise answers (web rules W2/W3)',()=>{
   expect(l.lines[0]).toBe('2266 QSOs to magnitude 17.50, sorted by magnitude.');
   expect(l.lines.join('\n')).not.toMatch(/3C 273\.0|HE 0353-3919|HS 1603\+3820/);
  });
- it('no listed QSO lies within 2′ of a Hubble or LSS target, so the Edit Mode z is not an exercise answer',()=>{
+ it('no Hubble or LSS answer is a QSO z: the nearest QSO to any of the 232 targets is 3.78′ away (KUV 13060+2839 to NGC 4983)',()=>{
+  // Every E01/E02 answer is a galaxy redshift and E02 rows with a QSO in the field are typed unavailable; the distance only
+  // documents that no QSO coincides with a target (review 1 I4).
   const targets=['Hubble.HTL',...[1,2,3,4,5,6,7,8,9].map(i=>`LSS_Field0${i}.HTL`)].flatMap(htl);
   expect(targets.length).toBe(232);
-  expect(records.filter(q=>targets.some(t=>separationDegrees(q.ra,q.dec,t.ra,t.dec)<=2/60))).toEqual([]);
+  let best={d:Infinity,q:'',t:''};
+  for(const q of records)for(const t of targets){const d=separationDegrees(q.ra,q.dec,t.ra,t.dec)*60;if(d<best.d)best={d,q:q.name,t:t.id.trim()};}
+  expect(best.q).toBe('KUV 13060+2839');expect(best.t).toMatch(/4983/);expect(best.d).toBeCloseTo(3.78,2);
  });
 });
 

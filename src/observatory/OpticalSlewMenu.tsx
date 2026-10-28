@@ -31,6 +31,8 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
  fieldInfo?:FieldInformationProps&Readonly<{onEditMode:(on:boolean)=>void}>}){
  const [sky,setSky]=useState<OpticalSkyCoordsState>(INITIAL_OPTICAL_SKY_COORDS),[hot,setHot]=useState<HotListState>(INITIAL_OPTICAL_HOT_LIST),[print,setPrint]=useState<HotListPrintSnapshot|null>(null),[entry,setEntry]=useState<HotListEntryDraft|null>(null),[entryError,setEntryError]=useState(''),[info,setInfo]=useState<Readonly<{caption:string;text:string}>|null>(null);
  const [fieldRequest,setFieldRequest]=useState<FieldInfoRequest|null>(null),[qsoRequest,setQsoRequest]=useState(0);
+ // Front O2 review 1 M1: VIREO's VObsBox (options+0x27d5, default off), the only student route to File › QSO List; not persisted.
+ const [virtualObservatory,setVirtualObservatory]=useState(false);
  const editMode=fieldInfo?.editMode??false;
  // A request made in an earlier Edit Mode session must not reopen windows when Edit Mode is switched on again.
  useEffect(()=>{if(!editMode)setFieldRequest(null);},[editMode]);
@@ -50,10 +52,10 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
   <div className="ob-menu">
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-set-coordinates" onClick={()=>setSky(s=>openOpticalSkyCoords(s,pointing))}>{M.open}</button>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
-   <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode}/>
+   <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined}/>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>{setEntryError('');setEntry(hotListEntryDraft(addCurrentPrefill(pointing,objectId)));}}>{E.open}</button>
   </div>
-  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} disabled={!enabled} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)}/>}
+  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
   <OpticalHotListWindow caption={caption} texts={texts} state={hot} rows={rows} onSelect={i=>setHot(h=>selectOpticalHotListIndex(h,i,rows.length))} onSlew={slew} onClose={()=>setHot(closeOpticalHotList)}
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}
