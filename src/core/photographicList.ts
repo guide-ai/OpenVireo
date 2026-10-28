@@ -1,7 +1,7 @@
 /** The photographic list as the original keeps it (Front F, static reading of CLEA_VEO.exe 781bc970…c54c).
  *
  * Loader 0x596bd0 (called from the population assembler at 0x597b61 the first time the global list 0x61fd00 is created) reads
- * GLIMAGES.LST line by line and parses each row with 0x596da8 inside try…except (handler table 0x59719a: class Exception →
+ * GLIMAGES.LST line by line and parses each row with 0x596da8 inside try…except (handler table 0x59719a: class EConvertError, VMT 0x409cac →
  * 0x5971a6 sets the result false). The integer columns 7..10 (width, height, centre x, centre y → record +0x7f/+0x81/+0x83/+0x85)
  * go through StrToInt 0x40ad50, which raises EConvertError for an empty field (Val 0x4042e4 returns code 1 on a nil string,
  * 0x40435a). The caller (0x596ce8) inserts only rows that parsed, so a malformed row is dropped silently: in the approved
@@ -13,7 +13,25 @@
  * This parser reproduces the keep/drop decision for the evident CSV format (other columns are the existing lssLists.ts parse). */
 import {parseGlimagesPositions} from './lssLists';
 
-const INTEGER=/^\s*[+-]?(\d+|\$[0-9a-fA-F]+|0[xX][0-9a-fA-F]+)\s*$/;
+/** Val 0x4042e4 as StrToInt 0x40ad50 uses it: leading spaces (0x20 only) skipped; one '+' or '-'; '$', 'x', 'X' or '0x'/'0X'
+ * starts hexadecimal (at least one digit; pre-shift bound 0x0FFFFFFF, the 32-bit result wraps and is negated after '-');
+ * otherwise decimal digits (pre-multiply bound 0x0CCCCCCC; the result must stay a non-negative Int32, or ≥ −2^31 after '-');
+ * anything else, including a trailing space or an empty field, is an error (StrToInt raises EConvertError). */
+export function nativeVal(text:string):number|null{
+ let i=0;while(text[i]===' ')i++;
+ let negative=false;if(text[i]==='-'||text[i]==='+'){negative=text[i]==='-';i++;}
+ const rest=text.slice(i);
+ const hex=/^(\$|x|X|0x|0X)/.exec(rest);
+ if(hex){
+  const digits=rest.slice(hex[0].length);if(!/^[0-9a-fA-F]+$/.test(digits))return null;
+  let v=0;for(const d of digits){if(v>0x0fffffff)return null;v=v*16+parseInt(d,16);}
+  v|=0;return negative?(-v)|0:v;
+ }
+ if(!/^[0-9]+$/.test(rest))return null;
+ let v=0;for(const d of rest){if(v>0x0ccccccc)return null;v=v*10+(d.charCodeAt(0)-48);if(v>0xffffffff)v%=0x1_0000_0000;}
+ if(negative)return v<=0x8000_0000?(v===0?0:-v):null;
+ return v<=0x7fff_ffff?v:null;
+}
 export type PhotographRow=Readonly<{index:number;name:string;ra:number;dec:number;file:string;width:number;height:number;centreX:number;centreY:number}>;
 function lines(bytes:Uint8Array):string[]{let text='';for(const b of bytes)text+=String.fromCharCode(b);const rows=text.replace(/\x1a$/,'').split('\r\n');if(rows[rows.length-1]==='')rows.pop();return rows;}
 /** 0x596dfa..0x596f78: the photograph record's name from columns 1 and 2. */
@@ -25,8 +43,9 @@ export function nativePhotographName(column1:string,column2:string):string{
 export function nativePhotographRows(bytes:Uint8Array):readonly PhotographRow[]{
  const positions=parseGlimagesPositions(bytes),rows=lines(bytes),out:PhotographRow[]=[];
  for(const p of positions){
-  const cols=rows[p.index].split(',');if(cols.length<10||!cols.slice(6,10).every(c=>INTEGER.test(c)))continue;
-  const [width,height,centreX,centreY]=cols.slice(6,10).map(c=>Number.parseInt(c,10));
+  const cols=rows[p.index].split(',');if(cols.length<10)continue;
+  const ints=cols.slice(6,10).map(nativeVal);if(ints.some(v=>v===null))continue;
+  const [width,height,centreX,centreY]=ints as number[];
   out.push(Object.freeze({index:p.index,name:nativePhotographName(cols[0],cols[1]),ra:p.ra,dec:p.dec,file:cols[5],width,height,centreX,centreY}));
  }
  return Object.freeze(out);

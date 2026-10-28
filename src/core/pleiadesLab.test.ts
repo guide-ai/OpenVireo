@@ -24,10 +24,10 @@ describe('Pleiades E04 guide progress is derived only from real photometer state
   const released=releasePhotometer(firstStar().colored),p=progress(released,{access:'pointing'});
   expect(p.done).toMatchObject({list:false,point:false,activate:false,measure:true});expect(p.next).toBe('sample');
  });
- it('a two-star fit is technically allowed but the sample counts only all 16 admitted stars; a new color clears the fit',()=>{
+ it('a two-star fit is technically allowed but the sample counts only all 24 admitted stars; a new color clears the fit',()=>{
   let s=firstStar().colored;s=step(s,{type:'target',targetId:B});s=complete(s);s=step(s,{type:'record',readingId:5,value:10.758,note:''});s=step(s,{type:'filter',filter:'V'});s=complete(s);s=step(s,{type:'record',readingId:6,value:8.996,note:''});s=step(s,{type:'color',bReadingId:5,vReadingId:6});
   s=step(s,{type:'clusterFit',modulus:5.5});const fitted=progress(s);
-  expect(fitted.colorTargets).toBe(2);expect(PLEIADES_SAMPLE_TARGETS).toBe(16);expect(fitted.done).toMatchObject({sample:false,distance:true});expect(fitted.next).toBe('sample');
+  expect(fitted.colorTargets).toBe(2);expect(PLEIADES_SAMPLE_TARGETS).toBe(24);expect(fitted.done).toMatchObject({sample:false,distance:true});expect(fitted.next).toBe('sample');
   s=step(s,{type:'target',targetId:A});s=step(s,{type:'color',bReadingId:4,vReadingId:2});expect(progress(s).done.distance).toBe(false);
  });
  it('summaries compare by value so the photometer reports only changes',()=>{

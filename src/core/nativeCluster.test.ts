@@ -11,7 +11,7 @@ import evidence from '../../data/photometry/native-cluster-evidence.json';
 
 import legacy from '../../data/photometry/pre-native-cluster-fixtures.json';
 
-import{nativeClusterValues,nativeZamsDraft,nativeClusterDraftParameters,nativeClusterDraftFromFit,confirmNativeCluster,readNativeClusterDraft,NATIVE_CLUSTER_SHA256}from'./nativeCluster';import{nativeZamsMagnitude,nativeZamsWindow,nativeZamsCurve,nativeIsochroneCurve,type NativeModelCurves}from'./nativeClusterCurves';import{parsePhotometerSession,serializePhotometerSession}from'../io/photometerSession';import{createPhotometer,photometerEvent as event,releasePhotometer}from'./photometer';
+import{nativeClusterValues,nativeZamsDraft,nativeClusterDraftParameters,nativeClusterDraftFromFit,confirmNativeCluster,readNativeClusterDraft,NATIVE_CLUSTER_SHA256}from'./nativeCluster';import{nativeZamsMagnitude,nativeZamsWindow,nativeZamsCurve,nativeIsochroneCurve,type NativeModelCurves}from'./nativeClusterCurves';import{parsePhotometerSession,serializePhotometerSession}from'../io/photometerSession';import{createPhotometer,photometerEvent as event,releasePhotometer,MAX_PHOTOMETER_EVENTS}from'./photometer';
 const base={modulusTicks:550,ebvTicks:4,ageIndex:4,modelIndex:4,offsetTicks:0,extinctionCorrected:true,interpretation:'My chosen model fit,not a catalog answer'};
 const hash=(p:string)=>createHash('sha256').update(readFileSync(new URL('../../'+p,import.meta.url))).digest('hex');
 const model=(index:number)=>JSON.parse(readFileSync(new URL('../../data/photometry/'+contract.models[index]!.file,import.meta.url),'utf8'))as NativeModelCurves;
@@ -44,8 +44,8 @@ it('reports invalid replay phases as a session error for both native and paper c
 });
 it('uses only confirmation plus release slots near the timed event limit and preserves replayability',()=>{
  let s=parsePhotometerSession(JSON.parse(legacy.raw6.text));expect(s.timing).toBeDefined();s=event(s,{type:'nativeClusterFit',...base});
- let n=0;while(s.events.length<251)s=event(s,{type:'nativeClusterFit',...base,interpretation:'revision '+n++});
- s=event(s,{type:'activate'});expect(s.events).toHaveLength(252);s=event(s,{type:'clusterFit',modulus:5.6});s=event(s,{type:'nativeClusterFit',...base,interpretation:'next'});s=event(s,{type:'nativeClusterFit',...base,interpretation:'last'});expect(s.events).toHaveLength(255);
- expect(()=>event(s,{type:'nativeClusterFit',...base,interpretation:'too late while armed'})).toThrow();s=releasePhotometer(s);expect(s.events).toHaveLength(256);expect(parsePhotometerSession(JSON.parse(serializePhotometerSession(s)))).toEqual(s);
- let t=parsePhotometerSession(JSON.parse(legacy.raw6.text));while(t.events.length<255)t=event(t,{type:'nativeClusterFit',...base,interpretation:'inactive '+n++});t=event(t,{type:'nativeClusterFit',...base,interpretation:'final inactive'});expect(t.events).toHaveLength(256);expect(parsePhotometerSession(JSON.parse(serializePhotometerSession(t)))).toEqual(t);
+ let n=0;while(s.events.length<MAX_PHOTOMETER_EVENTS-5)s=event(s,{type:'nativeClusterFit',...base,interpretation:'revision '+n++});
+ s=event(s,{type:'activate'});expect(s.events).toHaveLength(MAX_PHOTOMETER_EVENTS-4);s=event(s,{type:'clusterFit',modulus:5.6});s=event(s,{type:'nativeClusterFit',...base,interpretation:'next'});s=event(s,{type:'nativeClusterFit',...base,interpretation:'last'});expect(s.events).toHaveLength(MAX_PHOTOMETER_EVENTS-1);
+ expect(()=>event(s,{type:'nativeClusterFit',...base,interpretation:'too late while armed'})).toThrow();s=releasePhotometer(s);expect(s.events).toHaveLength(MAX_PHOTOMETER_EVENTS);expect(parsePhotometerSession(JSON.parse(serializePhotometerSession(s)))).toEqual(s);
+ let t=parsePhotometerSession(JSON.parse(legacy.raw6.text));while(t.events.length<MAX_PHOTOMETER_EVENTS-1)t=event(t,{type:'nativeClusterFit',...base,interpretation:'inactive '+n++});t=event(t,{type:'nativeClusterFit',...base,interpretation:'final inactive'});expect(t.events).toHaveLength(MAX_PHOTOMETER_EVENTS);expect(parsePhotometerSession(JSON.parse(serializePhotometerSession(t)))).toEqual(t);
 });

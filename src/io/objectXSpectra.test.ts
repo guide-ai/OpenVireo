@@ -3,12 +3,13 @@ import {readFileSync} from 'node:fs';
 import {createHash,webcrypto} from 'node:crypto';
 import {observeObjectXSpectrum,setObjectXSpectrometerResources} from './objectXSpectrometer';
 import {OBJECT_X_SPECTRA_LIMITS,admitObjectXSpectra,portableObjectXSpectra,readObjectXSpectra,setObjectXSpectraSources,type ObjectXSpectrumRecord} from './objectXSpectra';
-import {readAnalysisSession,serializeAnalysisSession,AnalysisSessionError,type AnalysisSession} from './analysisSession';
+import {readAnalysisSession,readInvestigationSession,serializeAnalysisSession,AnalysisSessionError,type AnalysisSession} from './analysisSession';
 import {parseHtl} from '../core/hotList';
 import {objectXCode} from '../core/objectXLab';
 import {INITIAL_CONTROL} from '../core/spectrum';
 import {EMPTY_HUBBLE} from '../core/hubbleAnalysis';
-import type {ObjectXInvestigation} from './objectXInvestigation';
+import {setObjectXResources,type ObjectXInvestigation} from './objectXInvestigation';
+import {buildObservableList,movingPairs} from '../core/asteroidField';
 vi.setConfig({testTimeout:120000});
 // E08 kept spectra in the v29 wrapper: replayed on restore, never naming the object (D5).
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
@@ -42,6 +43,14 @@ describe('kept Object X spectra (v29)',()=>{
   // A session without kept spectra stays v28.
   expect(JSON.parse(await serializeAnalysisSession({...base,objectX:inv(spectra[0].code)})).version).toBe(28);
  });
+ it('a restore that prepares fields says so once (review 4 item 8); a session without them does not',async()=>{
+  const spectra=[await kept(9,2,'ObjX-7-S01')];
+  const withFields=await serializeAnalysisSession({...base,objectX:inv(spectra[0].code,spectra)}),without=await serializeAnalysisSession({...base,objectX:inv(spectra[0].code)});
+  for(const [text,calls] of [[withFields,1],[without,0]] as const){
+   let n=0;const back=await readInvestigationSession(new File([text],'objx.json'),{onPreparingFields:()=>{n++;}});
+   expect(back.kind).toBe('analysis');expect(n).toBe(calls);
+  }
+ });
  it('restore replays: an altered journal, an unknown code or a code without a spectrum rejects the file',async()=>{
   const good=await kept(9,2,'ObjX-7-S01'),text=await serializeAnalysisSession({...base,objectX:inv(good.code,[good])});
   const variant=(f:(r:Record<string,unknown>)=>void)=>{const v=JSON.parse(text);f(v.objectXSpectra[0]);return JSON.stringify(v);};
@@ -62,5 +71,20 @@ describe('kept Object X spectra (v29)',()=>{
   let observed=0;setObjectXSpectraSources({hotList:async()=>htl,observe:async(...a)=>{observed++;return observeObjectXSpectrum(...a);}});
   try{await expect(admitObjectXSpectra(Array(8).fill(heavy))).rejects.toMatchObject({code:'format'});expect(observed).toBe(0);}finally{setObjectXSpectraSources({hotList:async()=>htl,observe:observeObjectXSpectrum});}
   expect(await admitObjectXSpectra(portableObjectXSpectra([good]))).toEqual([good]);
+ });
+ it('a tampered over-limit file is refused before the base is replayed (bounds right after the combined budget)',async()=>{
+  // The base holds an Object X investigation with a camera exposure: restoring it replays the asteroid list from the orbit file.
+  const sav=new Uint8Array(readFileSync(new URL('../../public/original/orbit/ObjX_MPC.CMO.sav',import.meta.url))),JD=2454983.5+4/24,EROS={ra:22.722017,dec:-8.03989};
+  const list=buildObservableList(sav,1,JD)!,pairs=movingPairs(sav,list,EROS,JD,120).pairs.length;
+  let orbitReads=0;setObjectXResources({orbit:async()=>{orbitReads++;return sav;}});
+  try{
+   const good=await kept(9,2,'ObjX-7-S01');
+   const investigation:ObjectXInvestigation={...inv(good.code,[good]),clockSet:true,listJd:JD,exposures:[{jd:JD,seconds:120,filter:2,gain:2,telescope:0,ra:EROS.ra,dec:EROS.dec,seed:12345,catalogMode:'live',catalogSha256:'a'.repeat(64),extractId:null,listJd:JD,orbitFile:'ObjX_MPC.CMO.sav',limit:16,pairs,skipped:[],fitsSha256:'b'.repeat(64)}],images:[{sha256:'b'.repeat(64),label:'ObjX-7-01',jd:JD,exposure:0}]};
+   const text=await serializeAnalysisSession({...base,objectX:investigation});
+   expect((await read(text)).objectX?.spectra).toEqual([good]);expect(orbitReads).toBeGreaterThan(0);// a valid file replays the base
+   const nine=JSON.parse(text);nine.objectXSpectra=Array(9).fill(nine.objectXSpectra[0]);
+   const heavy=JSON.parse(text);heavy.objectXSpectra[0].events=[{kind:'start'},...Array.from({length:24000},()=>({kind:'tick',deltaMs:1})),{kind:'pause'}];
+   for(const t of [nine,heavy]){orbitReads=0;await expect(read(JSON.stringify(t))).rejects.toMatchObject({code:'format'});expect(orbitReads).toBe(0);}
+  }finally{setObjectXResources(null);}
  });
 });
