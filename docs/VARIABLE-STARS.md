@@ -164,9 +164,12 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
   Stars), both reachable in Edit Mode as in VIREO (options byte +0x2e7e, compiled default 0 at 0x5a2ad3). Get Selection Data
   opens this page on the record. Front T (2026-10-28) ported the TRUE dispatch that sets +0x5b: at a certified pointing whose
   field holds a TRUE variable, Catalog Object shows the GCVS ID, the type "Variable Star" and an enabled GCVS button
-  (`fieldStarVariable`, `variableDispatch.ts`), which opens this page on the record. Field Information builds its field with the observatory-clock JD frozen at that moment (without
+  (`fieldStarVariable`, `variableDispatch.ts`), which opens this page on the record. Edit Mode's Catalog Object and File › Field Information › Star Data List each build their field with the observatory-clock JD
+  frozen at that moment (without
   one, Catalog Object and the Star Data List show `variable-values-unavailable`). When the dispatch's Cepheid Init replaced a zero
-  M−m/D word (0x51f2d8 [D]), the page shows 0.50 for that record (WY Boo) [I: FormShow rebuilds the list from the field-list copy].
+  M−m/D word (0x51f2d8 [D]), the page shows 0.50 for that record (WY Boo) [I: FormShow rebuilds the list from the field-list copy]. The page then
+  keeps 0.50 for that record until it is reloaded, also when the record is opened again from its own list [W: one page-local set;
+  natively the field-list copy and the catalogue copy are separate records, so a list opened from the catalogue would show 0.00].
   Classes 0/1/2 use the CepheidTypeObj,
   LPVTypeObj (Cepheid Mag, constant colours) and VarStarObj models; the camera's own consumer (0x51ef38, Front C) is not ported.
 - **Pleiades "mixed-variable-field" stars** (PLEIADES.HTL rows 3, 5, 10, 12): every GCVS record within 12′ of those

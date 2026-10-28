@@ -3,7 +3,7 @@ import {TELESCOPE_FRAME,catalogScene,pickCatalogObject,type CatalogRecord,type C
 import {objectXMasked} from '../io/objectXMask';
 import type {FieldMode,Pointing} from '../core/sky';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
-import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
+import {frozenObservatoryTime} from '../core/fieldEngine';
 import CatalogObjectDialog from './CatalogObjectDialog';
 import {FIELD_INFO_MESSAGES as M,fieldInfoReasonText,type FieldInfoReason} from './FieldInfoMessages';
 import './field-info.css';
@@ -11,7 +11,6 @@ import './field-info.css';
 type State=Readonly<{status:'loading'}|{status:'ready';packId:string;scene:CatalogScene}|{status:'unavailable';reason:FieldInfoReason;detail?:string}|{status:'error'}>;
 const SIZE=700,F=TELESCOPE_FRAME,toWeb=(raster:number)=>(raster-F.cropOrigin)*SIZE/F.crop,toControl=(web:number)=>web*F.crop/SIZE;
 const PX_PER_ARCMIN=SIZE/15;
-function frozenJd(currentJd?:()=>number):number|undefined{if(!currentJd)return undefined;try{const jd=currentJd();return Number.isFinite(jd)&&jd>=FIELD_VARIABLE_JD_DOMAIN.minimum&&jd<=FIELD_VARIABLE_JD_DOMAIN.maximum?jd:undefined;}catch{return undefined;}}
 
 /** Edit Mode Telescope-view click (FO-CO): in Edit Mode only. At a certified pointing (io/fieldInfoPacks.ts) the view shows the
  * engine's own field (the population Catalog Object reads; drawing style [W]) and a click, or the keyboard cursor + Enter, picks
@@ -27,7 +26,7 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
   let current=true;setState({status:'loading'});setRecord(null);setMarked(null);
   objectXMasked(hidden,pointing).then(async masked=>{
    if(masked){if(current)setState({status:'unavailable',reason:'object-x-hidden'});return;}
-   const jd=frozenJd(currentJd),r=await findCertifiedPopulation(pointing,jd===undefined?undefined:{jd,source:'observatory-clock'});if(!current)return;
+   const r=await findCertifiedPopulation(pointing,frozenObservatoryTime(currentJd));if(!current)return;
    if(r.status==='ready')setState({status:'ready',packId:r.packId,scene:catalogScene(r.population,pointing,`Field pack ${r.packId}; certified pointing`)});
    else setState(r.reason==='population'?{status:'unavailable',reason:'population',detail:r.detail}:{status:'unavailable',reason:r.reason});
   }).catch(()=>{if(current)setState({status:'error'});});

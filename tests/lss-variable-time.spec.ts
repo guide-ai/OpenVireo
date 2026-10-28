@@ -28,6 +28,7 @@ async function loadF8(page:import('@playwright/test').Page){
  await clickHeaderTool(page,'LSS survey');
  await page.getByLabel('Survey field',{exact:true}).selectOption('8');await page.getByRole('button',{name:'Load selected list',exact:true}).click();
  await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:60000});
+ await expect(page.getByTestId('lss-rows')).not.toHaveAttribute('aria-busy','true',{timeout:60000});// the reload finished
 }
 test('E02: a changed observatory clock freezes a different JD',async({page})=>{
  test.setTimeout(180000);

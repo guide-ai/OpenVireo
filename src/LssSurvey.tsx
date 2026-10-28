@@ -7,7 +7,7 @@ import './lss.css';
 import {LSS_FIELD_FILES,lssFieldRows,isLssFieldList,type LssFieldNumber} from './core/lssFields';
 import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,restoredLssSurvey,LSS_LIMITS,type LssRecord,type LssSurveyState} from './core/lssSurvey';
 import {evaluateLssRow,lssPolicy,type LssRowStatus} from './core/lssExposure';
-import {FIELD_VARIABLE_JD_DOMAIN} from './core/fieldEngine';
+import {frozenObservatoryTime} from './core/fieldEngine';
 import {opticalProfile} from './core/opticalTelescope';
 import {parseHtl} from './core/hotList';
 import {fetchBundledHotList} from './io/bundledHotList';
@@ -25,7 +25,6 @@ type Telescope=0|1|2;
 /** fieldJd: the observatory-clock JD frozen when this list was built (Front T: the variable stage's time); undefined when the
  * clock gave no finite JD, so rows whose field needs the time stay unavailable (variable-time-required). */
 type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[];fieldJd:number|undefined}>;
-function frozenFieldJd(currentJd:()=>number):number|undefined{try{const jd=currentJd();return Number.isFinite(jd)&&jd>=FIELD_VARIABLE_JD_DOMAIN.minimum&&jd<=FIELD_VARIABLE_JD_DOMAIN.maximum?jd:undefined;}catch{return undefined;}}
 export type LssSnapshot=Omit<LssInvestigation,'wedgeOptions'>;
 export type LssWedgeHandoff=Readonly<{records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>;
 function download(text:string,name:string){const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -80,7 +79,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
    glx.current??=await fetchBundledGlxCatalog(fetch,controller.signal);
    if(!lists.current){const [photographs,spectra]=await Promise.all([fetchBundledHotList(fetch,controller.signal,GLIMAGES_LST),fetchBundledHotList(fetch,controller.signal,GLXYSP_LST)]);lists.current={photographs:parseGlimagesPositions(photographs.bytes),spectra:parseGlxyspNames(spectra.bytes)};}
    const pack=packWithPhotographs(await loadLssPack(field),lists.current.photographs),rows=lssFieldRows(field),statuses:LssRowStatus[]=[];
-   const fieldJd=frozenFieldJd(currentJd),variableTime=fieldJd===undefined?undefined:{jd:fieldJd,source:'observatory-clock' as const};
+   const variableTime=frozenObservatoryTime(currentJd),fieldJd=variableTime?.jd;
    for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope,lists.current.spectra,variableTime));await new Promise(r=>setTimeout(r,0));}
    if(controller.signal.aborted)return;
    update(s=>markLssListLoaded(selectLssField(s,field),field));setLoaded(Object.freeze({field,telescope:scope,statuses:Object.freeze(statuses),fieldJd}));
@@ -108,7 +107,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
     <label htmlFor="lss-telescope">{t('lss.telescope')}</label><select id="lss-telescope" value={telescope} disabled={loading} onChange={e=>setTelescope(Number(e.target.value) as Telescope)}>{([0,1,2] as const).map(i=><option key={i} value={i}>{opticalProfile(i).name}</option>)}</select>
     <button className="primary-button" disabled={!field||loading} onClick={()=>field&&void load(field,telescope)}>{t('lss.load')}</button>{loading&&<button className="secondary-button" onClick={cancelLoad}>{t('lss.cancelLoad')}</button>}</div>
    <p className="observatory-note">{t('lss.fieldHelp')}</p>
-   {loaded&&<table className="lss-rows" data-testid="lss-rows"><caption>{t('lss.rowsCaption',{label:fields?.[loaded.field-1]?.label??'',name:`LSS_Field0${loaded.field}.HTL`,telescope:opticalProfile(loaded.telescope).name})}{loaded.fieldJd!==undefined&&<small data-testid="lss-field-jd"> {t('lss.fieldJd',{jd:loaded.fieldJd.toFixed(5)})}</small>}</caption><thead><tr><th scope="col">#</th><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.col.status')}</th><th scope="col">{t('lss.col.action')}</th></tr></thead>
+   {loaded&&<table className="lss-rows" data-testid="lss-rows" aria-busy={loading||undefined} data-stale={loading||undefined}><caption>{t('lss.rowsCaption',{label:fields?.[loaded.field-1]?.label??'',name:`LSS_Field0${loaded.field}.HTL`,telescope:opticalProfile(loaded.telescope).name})}{loaded.fieldJd!==undefined&&!loading&&<small data-testid="lss-field-jd"> {t('lss.fieldJd',{jd:loaded.fieldJd.toFixed(5)})}</small>}</caption><thead><tr><th scope="col">#</th><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.col.status')}</th><th scope="col">{t('lss.col.action')}</th></tr></thead>
     <tbody>{rows.map((r,i)=>{const s=loaded.statuses[i];return <tr key={i} data-testid={`lss-row-${i+1}`} aria-current={pointed===i?'true':undefined}><td>{i+1}</td><td>{r.id}</td><td>{statusText(s)}</td><td><button className="secondary-button" disabled={s.kind==='unavailable'||survey.draft!==null} onClick={()=>{setPointed(i);setExposure(null);setNotice(t('lss.pointed',{id:r.id}));}}>{t('lss.point')}</button></td></tr>;})}</tbody></table>}
   </section>
   {row&&live&&loaded&&<LssAcquisition key={`${lssPolicy(loaded.field,row.index,loaded.telescope)}@${loaded.fieldJd??'none'}`} active={active} result={live.result} row={row} policy={lssPolicy(loaded.field,row.index,loaded.telescope)} onCounts={setExposure}/>}

@@ -165,3 +165,10 @@ describe('Front T review 1: stage gates never certify a population (M1); colours
   expect(timed.values.status).toBe('computed');
  });
 });
+import {frozenObservatoryTime} from './fieldEngine';
+describe('frozenObservatoryTime (one helper for LSS, Edit Mode and the Star Data List)',()=>{
+ it('freezes a finite in-domain clock JD; anything else gives no time',()=>{
+  expect(frozenObservatoryTime(()=>2451545)).toEqual({jd:2451545,source:'observatory-clock'});
+  for(const f of [undefined,()=>NaN,()=>Infinity,()=>2400000,()=>2500000,()=>{throw new Error('clock domain');}])expect(frozenObservatoryTime(f as (()=>number)|undefined)).toBeUndefined();
+ });
+});

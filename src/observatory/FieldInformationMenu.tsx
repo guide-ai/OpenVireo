@@ -11,7 +11,7 @@ import type {SharedHotListHandle} from '../useSharedHotList';
 import FieldInfoListWindow,{MessageBox,downloadText,type FieldInfoBox} from './FieldInfoListWindow';
 import {FIELD_INFO_MESSAGES as M,fieldInfoReasonText,type FieldInfoReason} from './FieldInfoMessages';
 import {objectXListedNear,objectXMasked} from '../io/objectXMask';
-import {freshFieldArea} from '../core/fieldEngine';
+import {freshFieldArea,frozenObservatoryTime} from '../core/fieldEngine';
 import {catalogRecords} from '../core/catalogObject';
 import {FIELD_STAR_LITERALS as FL,FIELD_STAR_SAVE_NAMES,fieldStarCsvLines,fieldStarReport,type FieldStarReport} from '../core/fieldStarReport';
 import {variableStarSaveText} from '../core/variableStars';
@@ -30,7 +30,9 @@ export type FieldInformationProps=Readonly<{
  /** Telescope view slider: finder or instrument (telescope). */
  view:VariableFieldView;
  /** Opens the Variable stars page on a CLEA_VStrs.dat record index (Get Selection Data). */
- onOpenVariable:(index:number)=>void;
+ onOpenVariable:(index:number,riseWordDefaulted?:boolean)=>void;
+ /** Front T: the observatory clock; the Star Data List freezes its JD when the field is built. */
+ currentJd?:()=>number;
  /** An unrevealed Object X target (E08): both lists are masked near it. */
  hidden?:Pointing|null;
 }>;
@@ -47,11 +49,11 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
  if(!info.editMode)return null;
  /** StarList1Click 0x5404e0 → 0x534e18: the instrument (NewGSC) field at the current pointing, in either view. */
  function openStars(){
-  setMenu(null);setStarBox(null);const at=pointing;
+  setMenu(null);setStarBox(null);const at=pointing,variableTime=frozenObservatoryTime(info.currentJd);
   setStar({loading:true});
   objectXMasked(info.hidden??null,at).then(async masked=>{
    if(masked){setStar({reason:'object-x-hidden'});return;}
-   const r=await findCertifiedPopulation(at);
+   const r=await findCertifiedPopulation(at,variableTime);
    if(r.status!=='ready'){setStar(r.reason==='population'?{reason:'population',detail:r.detail}:{reason:r.reason});return;}
    setStar({report:fieldStarReport(freshFieldArea(at),at,catalogRecords(r.population).stars)});
   }).catch(()=>setStar({reason:'load-error'}));

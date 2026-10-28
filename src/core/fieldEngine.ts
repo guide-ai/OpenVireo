@@ -99,6 +99,12 @@ export type FieldVariableTime=Readonly<{jd:number;source:'observatory-clock'}>;
 /** Site-clock JD domain (1900-01-01 … 2099-12-31, as the observatory clock). */
 /** The one JD domain for frozen field times (= the site clock's domain, siteClock.ts; review 1 N1). */
 export const FIELD_VARIABLE_JD_DOMAIN=Object.freeze({minimum:2415020.5,maximum:2488069.5});
+/** The observatory-clock time frozen when a field is built (LSS list load, Edit Mode field, Star Data List): the clock's JD when it
+ * is finite and inside the domain, otherwise undefined (time-dependent variable values stay typed). Native: host Now + offset. */
+export function frozenObservatoryTime(currentJd?:()=>number):FieldVariableTime|undefined{
+ if(!currentJd)return undefined;
+ try{const jd=currentJd();return Number.isFinite(jd)&&jd>=FIELD_VARIABLE_JD_DOMAIN.minimum&&jd<=FIELD_VARIABLE_JD_DOMAIN.maximum?Object.freeze({jd,source:'observatory-clock' as const}):undefined;}catch{return undefined;}
+}
 /** 'recovered' (default since the coordinator decision of 2026-10-28): every variable whose time update the dispatch 0x51ec48
  * returns false for without side effects (zero period, zero word unless class 1, or class 3: variableMerge.ts
  * nativeVariableDispatchFalse) takes the false-merge branch, one after another in the stage's (RA, Dec) order (0x492728 under

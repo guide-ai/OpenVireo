@@ -205,4 +205,10 @@ test('Front T: an enabled GCVS button at a TRUE variable star opens its Variable
  await page.getByTestId('co-gcvs').click();
  await expect(page).toHaveURL(/#variable-stars$/);
  await expect(page.getByTestId('vstar-lines')).toContainText('EP Com',{timeout:30000});
+ // The Star Data List of the same field is built at the frozen observatory-clock JD too: EP Com has a row and no typed reason.
+ await page.evaluate(()=>{location.hash='#observatory';});
+ await fieldMenu(page,'fi-star-list');
+ const list=page.getByTestId('fi-slist');await expect(list.getByRole('heading',{name:'CLEA Star Field Data'})).toBeVisible({timeout:30000});
+ await expect(page.getByTestId('fi-slist-reason')).toHaveCount(0);
+ await expect(list.locator('[data-testid^="fi-slist-line-"]').filter({hasText:/^EP Com /})).toHaveCount(1);
 });
