@@ -25,7 +25,7 @@ async function openRecord(page:Page,name:string){
 test('search, open a record and display its simulated light curve',async({page})=>{
  await openRoute(page);
  await expect(page.getByTestId('variable-adaptation')).toContainText('Catalog Object');
- await page.getByTestId('variable-type').selectOption('DCEP');
+ await page.getByTestId('variable-type').selectOption('=DCEP');
  await expect(page.getByTestId('variable-count')).toContainText('Showing the first 100 of 440');
  await page.getByTestId('variable-type').selectOption({label:'(blank) — 428'});
  await expect(page.getByTestId('variable-count')).toContainText('Showing the first 100 of 428');
