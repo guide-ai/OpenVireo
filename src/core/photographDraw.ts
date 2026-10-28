@@ -14,9 +14,12 @@
  * Draw 0x597470 (called by the compositor 0x53b5d5..0x53b61c instead of the synthetic stamp, with the galaxy's cached projected
  * Double position): left = Round(x) − centreX, top = Round(y) − centreY (GLIMAGES columns 9/10, record +0x83/+0x85);
  * TCanvas.Draw copies the bitmap unscaled (SRCCOPY: it overwrites, unlike the synthetic stamp's larger-red replacement).
- * Declared adaptations / uncertainty: 8-bit palettized BMPs only; GetPixel returns the palette colour and SetPixel on the 8-bit
- * bitmap is modelled as the nearest palette entry (squared RGB distance, first on ties) — GDI's mapping is not measured; Round is
- * nearest-even (FISTP under the session control word is not measured); the cached raster is 24-bit RGB. */
+ * The written colour is a plain COLORREF RGB(v,v,v) (0x5973f5..0x597404: v | v<<8 | v<<16, no PALETTERGB flag) through
+ * TCanvas.Pixels (0x42ced4 → Windows SetPixel). How GDI maps it onto the 8-bit bitmap's colour table happens inside Windows, not
+ * in CLEA_VEO.exe, so it cannot be traced statically. Web adaptation (declared, not invented data): the nearest entry of the
+ * bitmap's own palette (squared RGB distance, first on ties); no palette is added or changed. Other adaptations: 8-bit
+ * palettized BMPs only; Round is nearest-even (FISTP under the session control word is not measured); the cached raster is 24-bit
+ * RGB. */
 import {roundNearestEven} from './numericPolicy';
 import type {RgbImage} from './photons';
 

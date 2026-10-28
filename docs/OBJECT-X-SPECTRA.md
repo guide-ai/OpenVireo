@@ -81,9 +81,12 @@ photograph is ever loaded for it).
   column 0 stay unscaled; Round(red × factor), clamped to 255, written as gray.
 - Draw 0x597470 from the compositor 0x53b5d5..0x53b61c (instead of the synthetic stamp): left = Round(x) − centreX,
   top = Round(y) − centreY (GLIMAGES columns 9/10), unscaled TCanvas.Draw — it overwrites, unlike the synthetic larger-red rule.
-- Tested on synthetic bitmaps and on the four originals inside the engine. Open: GDI's colour mapping when SetPixel writes gray
-  into an 8-bit palettized bitmap (modelled as the nearest palette entry; NGC2403.BMP has a non-gray 256-entry palette, the others
-  gray palettes of 226–230 entries).
+- Tested on synthetic bitmaps and on the four originals inside the engine.
+- Palette mapping (web adaptation): the rescale writes a plain RGB(v,v,v) COLORREF (0x5973f5..0x597404, no PALETTERGB flag)
+  through TCanvas.Pixels (0x42ced4 → Windows SetPixel). The mapping onto the 8-bit colour table is done by GDI inside Windows, not
+  by CLEA_VEO.exe, and cannot be traced statically. The web uses the nearest entry of the bitmap's own palette (squared RGB
+  distance, first on ties); no palette is invented or altered. NGC2403.BMP has a non-gray 256-entry palette, the others gray
+  palettes of 226–230 entries.
 
 ## Variable dispatch (`variableDispatch: 'recovered'`, Object X only)
 The time-update dispatch 0x51ec48 returns false at 0x51ee57 with no side effect for a zero period (0x51ec9a fcomp 0 / je), a zero
