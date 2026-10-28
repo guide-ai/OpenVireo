@@ -1321,7 +1321,7 @@
       "path": "NkdEye.dat",
       "bytes": 57740,
       "sha256": "1d2f10450b8f72ca3dd2a84e83ac0c5df739646374d421aa4084308e9333bddd",
-      "contract": "Candidate <double RA hours,double Dec degrees,float magnitude> x 2887; range checked. Not used until its original reader contract is independently recovered."
+      "contract": "20-byte records <Double RA hours, Double Dec degrees, Single V> x 2887, recovered from the CLEA_VEO.exe loader 0x554e78 (keeps V <= 5.5); bundled byte-exact as public/original/nakedeye/NkdEye.dat under the user approval of 2026-10-28 and decoded by src/core/nakedEye.ts. See docs/OBJECT-INFO-FORMS.md."
     }
   ],
   "derived": [

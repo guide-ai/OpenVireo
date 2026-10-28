@@ -5,7 +5,7 @@ export const VARIABLE_STARS_EN=Object.freeze({
  nav:'Variable stars',
  title:'Variable stars and light curves',
  scope:'Look up a star in the VIREO variable-star catalog (CLEA_VStrs.dat, 31,147 records), read its catalog data and display the light curve that VIREO simulates for it.',
- adaptation:'Web adaptation: in VIREO you reach a star\'s variable data by clicking it in the Telescope view and pressing GCVS in the Catalog Object box. That box is not available on this site yet, so this page lets you search the catalog directly. The Variable Star Data and Simulated Light Curve windows follow the original.',
+ adaptation:'Web adaptation: in VIREO this data is an instructor path (Edit Mode): GCVS in the Catalog Object box, or Field Information › Variable Stars › Get Selection Data in the Telescope control panel. Both exist on this site with Edit Mode on (Optical Simulation Options); this page also lets anyone search the catalog directly. The Variable Star Data and Simulated Light Curve windows follow the original.',
  guideTitle:'How to use this tool',
  guide:[
   'Type part of a star name (for example "del Cep" or "RR Lyr") or choose a variability type, then press Open on a row.',

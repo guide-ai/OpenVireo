@@ -19,7 +19,7 @@ witness scripts are outside the repository: `/home/dobleuber/Documents/Codex/202
 
 | Step | Web | Original | Tag |
 |---|---|---|---|
-| 1 | Analysis › **Variable stars**: search CLEA_VStrs.dat by name and/or variability type, press Open | Click a star in the Telescope view, then **GCVS** in the Catalog Object box (shown only for stars with a variable record, Telescope view only) | **adaptation** |
+| 1 | Analysis › **Variable stars**: search CLEA_VStrs.dat by name and/or variability type, press Open; or, with Edit Mode on, Field Information › Variable Stars › Get Selection Data (Front O) | Instructor path (Edit Mode): **GCVS** in the Catalog Object box (Telescope view, stars with a variable record) or Field Information › Variable Stars › Get Selection Data | **adaptation** |
 | 2 | **Variable Star Data** window with eleven lines | TVStarListForm1 (same lines) | original |
 | 3 | Data › **Display Light Curve...** | same | original |
 | 4 | **Simulated Light Curve**: 1.5 cycles from the epoch, VIREO layout and colours | TLtCrvDsplyForm1 | original (fonts differ) |
@@ -160,10 +160,9 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
 
 ## Not done (follow-ups)
 
-- **Catalog Object dialog** for arbitrary observatory stars and the GCVS button path (needs the field engine to carry variable
-  records; Front F).
-- **TVarFldLstForm1** (Field Information › Variable Stars: "All GCVS variables in region" / "VIREO-modeled varibles in region");
-  its menu is shown only when options byte +0x2e7e is set, whose default was not traced.
+- Done by Front O (docs/OBJECT-INFO-FORMS.md): the Catalog Object dialog and TVarFldLstForm1 (Field Information › Variable
+  Stars), both reachable in Edit Mode as in VIREO (options byte +0x2e7e, compiled default 0 at 0x5a2ad3). Get Selection Data
+  opens this page on the record. The GCVS button stays disabled until a later true-dispatch front ports the variable merge that sets +0x5b.
 - **Pleiades "mixed-variable-field" stars** (PLEIADES.HTL rows 3, 5, 10, 12): every GCVS record within 12′ of those
   pointings is class 3 (UV, BY, UV+BY, RS:) with period 0 and M−m/D 0 (e.g. V0855 Tau, V0641 Tau). The block is therefore
   the untraced zero-period/zero-word branch of 0x51ec95, which `variableMerge.ts` rejects as `dispatch-unsupported` — not

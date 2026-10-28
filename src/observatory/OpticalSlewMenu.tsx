@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react';
 import ResearchNotes from '../components/ResearchNotes';
 import {HtlError,newHtlEditor} from '../core/hotList';
 import {appendAddCurrentEntry,HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
@@ -16,12 +16,17 @@ import HotListPrintPreview from './HotListPrintPreview';
 import OpticalHotListWindow from './OpticalHotListWindow';
 import OpticalSkyCoordsDialog from './OpticalSkyCoordsDialog';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
+import type {FieldInformationProps} from './FieldInformationMenu';
+const FieldInformationMenu=lazy(()=>import('./FieldInformationMenu'));
+import {openOpticalSkyCoordsAt} from '../core/opticalSkyCoords';
 const M=OBSERVATORY_MESSAGES.skyCoords,H=OBSERVATORY_MESSAGES.hotList,E=OBSERVATORY_MESSAGES.entry;
 
 /** Optical Slew menu (Front B): Set Coordinates (OB-SC) and Hot List ▸ View/Select (OB-HL) with Search and Print. The
  * confirmed J2000 target goes to the existing programmed-slew confirmation through `request`; a disabled menu (telescope
  * moving, dome closed, other route) closes every open window without committing. */
-export default function OpticalSlewMenu({pointing,enabled,request,hotList,objectId,options,onOptions}:{pointing:Pointing;enabled:boolean;request:(p:Pointing,note?:string)=>void;hotList:SharedHotListHandle;objectId:string|null;options:OpticalOptions;onOptions:(o:OpticalOptions)=>void}){
+export default function OpticalSlewMenu({pointing,enabled,request,hotList,objectId,options,onOptions,fieldInfo}:{pointing:Pointing;enabled:boolean;request:(p:Pointing,note?:string)=>void;hotList:SharedHotListHandle;objectId:string|null;options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;
+ /** Front O: Edit Mode (not persisted) and File › Field Information. Absent: the menu is exactly as before. */
+ fieldInfo?:FieldInformationProps&Readonly<{onEditMode:(on:boolean)=>void}>}){
  const [sky,setSky]=useState<OpticalSkyCoordsState>(INITIAL_OPTICAL_SKY_COORDS),[hot,setHot]=useState<HotListState>(INITIAL_OPTICAL_HOT_LIST),[print,setPrint]=useState<HotListPrintSnapshot|null>(null),[entry,setEntry]=useState<HotListEntryDraft|null>(null),[entryError,setEntryError]=useState(''),[info,setInfo]=useState<Readonly<{caption:string;text:string}>|null>(null);
  const list=hotList.doc.editor?.list??null,fileName=hotList.doc.name;
  const rows=useMemo(()=>opticalHotListRows(list),[list]),texts=useMemo(()=>rows.map((r,i)=>opticalHotListRowText(r.record,i+1)),[rows]),caption=opticalHotListCaption(fileName);
@@ -39,7 +44,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
   <div className="ob-menu">
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-set-coordinates" onClick={()=>setSky(s=>openOpticalSkyCoords(s,pointing))}>{M.open}</button>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
-   <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled}/>
+   <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode}/>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>{setEntryError('');setEntry(hotListEntryDraft(addCurrentPrefill(pointing,objectId)));}}>{E.open}</button>
   </div>
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
@@ -48,6 +53,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
    onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(r,i)=>opticalHotListRowText(r,i+1)))}/>
   <OpticalSkyCoordsDialog state={sky} onEdit={(f,text)=>setSky(s=>editOpticalSkyCoordsField(s,f,text))} onEpoch={i=>setSky(s=>selectOpticalSkyCoordsEpoch(s,i))} onOk={ok} onCancel={cancel} onDismiss={()=>setSky(dismissOpticalSkyCoordsNotice)}/>
   <HotListEntryDialog draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={addEntry} onCancel={()=>setEntry(null)} onDismiss={()=>setEntryError('')}/>
+  {fieldInfo?.editMode&&<Suspense fallback={null}><FieldInformationMenu info={fieldInfo} pointing={pointing} enabled={enabled} hotList={hotList} onSlew={target=>setSky(s=>openOpticalSkyCoordsAt(s,target))}/></Suspense>}
   {info&&<InfoBox caption={info.caption} text={info.text} onClose={()=>setInfo(null)}/>}
   {print&&<HotListPrintPreview snapshot={print} onClose={()=>setPrint(null)}/>}
  </div>;
