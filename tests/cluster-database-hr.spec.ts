@@ -23,7 +23,7 @@ test('30 Doradus native frame draws606 of609, lists3 outside rows separately fro
  expect(dor).toHaveLength(609);expect(dor.filter(p=>!inFrame(p)).map(p=>p.id)).toEqual(OUTSIDE_30DOR);
  await open(page);await counts(page,0);await expect(guide(page).getByTestId('cluster-lab-step-load')).toHaveAttribute('data-next','true');
  // Item1.9: the own-observation route is live status with a link, never a pending text and never a counted step.
- await expect(guide(page).getByTestId('cluster-lab-pending')).toHaveCount(0);await expect(guide(page).getByTestId('cluster-lab-own-pairs')).toHaveText('Your confirmed photometer pairs: 0 of 19 admitted stars.');
+ await expect(guide(page).getByTestId('cluster-lab-pending')).toHaveCount(0);await expect(guide(page).getByTestId('cluster-lab-own-pairs')).toHaveText('Your confirmed photometer pairs: 0 of 24 admitted stars.');
  await expect(guide(page).getByTestId('cluster-lab-own-fit')).toHaveAttribute('data-confirmed','false');await expect(guide(page).getByTestId('cluster-lab-own-open')).toBeVisible();await expect(guide(page).getByTestId('cluster-lab-step-save')).toHaveCount(0);await expect(guide(page).getByTestId('cluster-lab-step-own')).toHaveCount(0);
  await guide(page).getByTestId('cluster-lab-continue').click();await expect(guide(page)).toBeHidden();await expect(panel(page).getByLabel('Reference cluster dataset',{exact:true})).toBeFocused();
  const c=info('30dor'),b=panel(page);await load(page,'30dor');

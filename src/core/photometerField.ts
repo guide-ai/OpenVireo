@@ -11,6 +11,9 @@ const additional=projectResource(additionalSource);
 import variableSource from '../../data/photometry/pleiades-variable-fields.json';
 const variableFields=projectResource(variableSource);
 
+import pointingSource from '../../data/photometry/pleiades-pointing-fields.json';
+const pointingFields=projectResource(pointingSource);
+
 import evidenceSource from '../../data/photometry/pinned-pleiades-v.json';
 const evidence=projectResource(evidenceSource);
 
@@ -54,12 +57,17 @@ export const LEGACY_PLEIADES_PHOTOMETER_TARGETS=Object.freeze([evidence.target,.
 export const EXPANDED_PHOTOMETER_FIELDS_SHA256='86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40';
 /** Rows 3, 5 and 10 (coordinator decision of 2026-10-28): their CLEA_VStrs.dat variables take the recovered no-effect false merge
  * (data/photometry/pleiades-variable-fields.json, generator analysis/front-f-hubble-objectx/scripts/pleiades_variable_fields.py). */
-export const VARIABLE_PHOTOMETER_FIELDS_SHA256='9230d115b0e1fcfe6c9fa1621082c209003f21583d71c7789ed55680aaa08121';
-export const PLEIADES_PHOTOMETER_TARGETS=Object.freeze([...LEGACY_PLEIADES_PHOTOMETER_TARGETS,...[...expanded.targets,...variableFields.targets].map(t=>Object.freeze({...t.target,pointing:Object.freeze({...t.target.pointing})}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord));
-export const PLEIADES_PHOTOMETER_CHOICES=Object.freeze([...PLEIADES_PHOTOMETER_TARGETS.map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:t.catalogId,reason:null as string|null})),...expandedProof.unavailable.filter(t=>!variableFields.targets.some(v=>v.target.hotlistRecord===t.hotlistRecord)).map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:null,reason:variableFields.unavailableUpdates.find(u=>u.hotlistRecord===t.hotlistRecord)?.reason??t.reason}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord).map(t=>Object.freeze(t)));
+export const VARIABLE_PHOTOMETER_FIELDS_SHA256='01beaebf71b1ce5e22b2f7ceb150cab6cc932d31cb6edb30e70429fd093bd579';
+/** Rows 2, 7, 12, 14, 22: the recovered native selection at the exact HTL pointing (pleiades-pointing-fields.json). */
+export const POINTING_PHOTOMETER_FIELDS_SHA256='b8cd2f82f561c4d7e7c2f15768db7d4895b52a22eb2cb167d5bc169b5ebc1fd1';
+export const PLEIADES_PHOTOMETER_TARGETS=Object.freeze([...LEGACY_PLEIADES_PHOTOMETER_TARGETS,...[...expanded.targets,...variableFields.targets,...pointingFields.targets].map(t=>Object.freeze({...t.target,pointing:Object.freeze({...t.target.pointing})}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord));
+export const PLEIADES_PHOTOMETER_CHOICES=Object.freeze([...PLEIADES_PHOTOMETER_TARGETS.map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:t.catalogId,reason:null as string|null})),...expandedProof.unavailable.filter(t=>![...variableFields.targets,...pointingFields.targets].some(v=>v.target.hotlistRecord===t.hotlistRecord)).map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:null,reason:t.reason}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord).map(t=>Object.freeze(t)));
 export function isLegacyPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&LEGACY_PLEIADES_PHOTOMETER_TARGETS.some(t=>t.catalogId===id);}
 export function isExpandedPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&expanded.targets.some(t=>t.target.catalogId===id);}
 export function isVariableFieldPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&variableFields.targets.some(t=>t.target.catalogId===id);}
+export function isPointingFieldPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&pointingFields.targets.some(t=>t.target.catalogId===id);}
+/** Targets added on 2026-10-28 (owner 11): the variable-field rows and the pointing-association rows. */
+export function isAddedPhotometerTarget(id:unknown):id is string{return isVariableFieldPhotometerTarget(id)||isPointingFieldPhotometerTarget(id);}
 export function photometerTarget(id:string){const target=PLEIADES_PHOTOMETER_TARGETS.find(t=>t.catalogId===id);if(!target)throw new PhotometerFieldError('domain');return target;}
 export function isPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&PLEIADES_PHOTOMETER_TARGETS.some(t=>t.catalogId===id);}
 
@@ -110,7 +118,11 @@ function mergeNoEffectVariables(stars:readonly NamedStar[],fixture:VariableFixtu
 /** Reconstructs only the two pinned fields from original compact records and
  * original read/admission order. Full-file absence/whole-band proofs are static
  * evidence, not inferred from a supplied small list or navigation tiles. */
-function buildCompleteField(target:typeof evidence.target,fixtures:typeof evidence.fields,kind:PleiadesFieldKind,provenanceFile:string):PinnedPleiadesField{
+/** nativeSelection (pleiades-pointing-fields.json): the field is pointed at the exact HTL coordinates and the photometer takes the star
+ * the recovered selection returns (FormActivate 0x4ff8b0 → 0x53cf94 → 0x53ce8c: pointing projected and rounded, nearest star below
+ * 350 px in 0x59a0fc); in the object field that is the target (possibly a fraction of a pixel away), in the sky field any star
+ * (its aperture fraction must be 0). The aperture fraction follows the real offset (0x500568 with 0x59a49c). */
+function buildCompleteField(target:typeof evidence.target,fixtures:typeof evidence.fields,kind:PleiadesFieldKind,provenanceFile:string,nativeSelection=false):PinnedPleiadesField{
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
  assertPhotometerCoverageLayout(fixtures);
  const fixture=fixtures.find(f=>f.kind===kind)!;
@@ -134,9 +146,13 @@ function buildCompleteField(target:typeof evidence.target,fixtures:typeof eviden
  if(!equal(neighbors.map(s=>s.id),fixture.neighborIds))throw new PhotometerFieldError('evidence');
  const scene=createNativeSelectionScene(stars,[],{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:`${provenanceFile}; complete original Pleiades field: ${target.catalogId}; fresh mode3, no generated context`}});
  const selection=selectCatalogObject(scene,468,468);
- if(selection.kind!=='star'||selection.object.id!==target.catalogId)throw new PhotometerFieldError('selection');
+ const fixtureSelected=(fixtures.find(f=>f.kind===kind) as unknown as {selectedId?:string}).selectedId;
+ const expectedId=nativeSelection?(kind==='object'?target.catalogId:fixtureSelected):target.catalogId;
+ if(nativeSelection&&kind==='object'&&fixtureSelected!==target.catalogId)throw new PhotometerFieldError('evidence');
+ if(selection.kind!=='star'||selection.object.id!==expectedId)throw new PhotometerFieldError('selection');
  const selected=stars.find(s=>s.id===selection.object.id)!;
- if(selected.nativeName!==target.nativeName||selected.ra!==target.pointing.ra||selected.dec!==target.pointing.dec)throw new PhotometerFieldError('evidence');
+ const starAt=nativeSelection?(target as unknown as {starPointing:Pointing}).starPointing:target.pointing;
+ if(!nativeSelection||kind==='object'){if(selected.nativeName!==target.nativeName||selected.ra!==starAt.ra||selected.dec!==starAt.dec)throw new PhotometerFieldError('evidence');}
  const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
  const centralFraction=fraction(selected),supplied=(s:NamedStar)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:fraction(s)});
  // This exact sky field has a nearest star inside350 pixels, zero aperture
@@ -159,8 +175,10 @@ export function buildPhotometerTargetField(targetId:string,kind:PleiadesFieldKin
  const packet=expanded.targets.find(p=>p.target.catalogId===targetId);
  if(packet)return buildCompleteField(target,packet.fields,kind,'pleiades-expanded-fields.json');
  const variablePacket=variableFields.targets.find(p=>p.target.catalogId===targetId);
- if(!variablePacket)throw new PhotometerFieldError('evidence');
- return buildCompleteField(target,variablePacket.fields as unknown as typeof evidence.fields,kind,'pleiades-variable-fields.json');
+ if(variablePacket)return buildCompleteField(target,variablePacket.fields as unknown as typeof evidence.fields,kind,'pleiades-variable-fields.json');
+ const pointingPacket=pointingFields.targets.find(p=>p.target.catalogId===targetId);
+ if(!pointingPacket)throw new PhotometerFieldError('evidence');
+ return buildCompleteField(target,pointingPacket.fields as unknown as typeof evidence.fields,kind,'pleiades-pointing-fields.json',true);
 }
 
 function callback(field:PinnedPleiadesField,seed:number){
