@@ -48,6 +48,16 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 
 ## 4. Decisiones que necesito
 
+**Decidido por el usuario el 27 oct 2026:**
+
+- **Cuentas:** sí habrá creación de cuentas, así que el producto tendrá backend (autenticación y base de datos). Aún no está definido qué se guarda por usuario; hasta entonces no se implementa nada del backend.
+- **Proveedor:** Cloudflare (sitio estático, y Workers, D1 y R2 cuando haga falta backend).
+- **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
+- **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
+
+Preguntas que siguen abiertas:
+
+
 1. **Público y cuentas:** ¿quién usará el sitio (universidades, secundaria, público general)? ¿Hacen falta cuentas o funciones para docentes en la primera versión? De eso depende si el primer despliegue incluye backend.
 2. **Proveedor:** ¿Cloudflare (recomendado), GitHub Pages u otro? ¿Bajo qué cuenta u organización, y con qué dominio?
 3. **Despliegue:** `AGENTS.md` prohíbe hoy el alojamiento público y el despliegue. Para publicar hace falta tu aprobación explícita de ese cambio.
