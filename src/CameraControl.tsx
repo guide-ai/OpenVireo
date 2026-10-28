@@ -15,16 +15,17 @@ import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
 
-export type CameraExtraSourceProvider=(jd:number,seconds:number)=>readonly CameraExtraSource[];
+export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
-export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number):readonly CameraExtraSource[]{return provider?.(jd,seconds)??[];}
+export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string}>;
 export type CameraControlProps=Readonly<{
  active:boolean;busy:boolean;telescopeIndex:OpticalIndex;pointing:Pointing;access:AccessReason;
  /** Julian date of the observatory clock at the moment Start is pressed. */
  currentJd:()=>number;
  /** Moving pairs for this exposure, supplied by front X: called with the JD at Start and the exposure length in seconds
-  * (the pair's end is the position at JD + seconds, as ComputeMovers 0x59940c uses dt = exposure). */
+  * (the pair's end is the position at JD + seconds, as ComputeMovers 0x59940c uses dt = exposure), and the camera kind
+  * (IR images draw moving objects too, but must not change Object X state). */
  extraSources?:CameraExtraSourceProvider;
  /** Receives every finished CCD image; image.exposure.skipped lists moving pairs that were not drawn, with a typed reason.
   * IR images are not passed on: they stay out of the Object X investigation and its replay (coordinator, 2026-10-28). */
@@ -97,7 +98,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
  async function prepare(a:Attempt){
   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
   try{
-   const extras=cameraExtras(extraSources,a.jd,a.seconds);
+   const extras=cameraExtras(extraSources,a.jd,a.seconds,a.camera);
    const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
@@ -139,14 +140,14 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
   for(const effect of transition.effects)apply(effect);
  }
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
- function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,camera:i.exposure.recipe.camera,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
+ function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
  function save(){
   if(!image)return;const context=fitsContext(image),bytes=writeCameraFits(image.exposure,context);
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
-  a.href=url;a.download=cameraFitsFileName(context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
+  a.href=url;a.download=cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
  const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
- const shown=image?.exposure,filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
+ const shown=image?.exposure,showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
  /** Switching camera resets the filter and keeps the gain when the other camera offers it (gain 2 exists on both). */
  function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
  return <section className="card camera-control" aria-labelledby="camera-control-title" data-testid="camera-control" data-phase={gate.phase} data-terminal={gate.terminal}>
@@ -190,8 +191,8 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    </dl></details>
   </figure>}
   <p className="observatory-note">{M.adaptation}</p>
-  {camera==='ir'&&<p className="observatory-note" data-testid="camera-ir-adaptation">{M.adaptationIr}</p>}
+  {showIrNotes&&<p className="observatory-note" data-testid="camera-ir-adaptation">{M.adaptationIr}</p>}
   <p className="observatory-note">{M.citation}</p>
-  {camera==='ir'&&<p className="observatory-note" data-testid="camera-ir-citation">{M.citationIr}</p>}
+  {showIrNotes&&<p className="observatory-note" data-testid="camera-ir-citation">{M.citationIr}</p>}
  </section>;
 }

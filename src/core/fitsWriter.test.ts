@@ -1,5 +1,6 @@
 import {describe,expect,test} from 'vitest';
 import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {composeCameraExposure} from './cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from './vizierNomad';
 import {parseFitsImage,fitsPixel} from './fitsImage';
@@ -30,20 +31,25 @@ describe('camera FITS writer',()=>{
   expect(Math.abs(Number(get('CDELT1'))*3600)).toBeCloseTo(206264.806*0.024/4627.5,3);
   expect(get('CAMSEED')).toBe('20261027');expect(get('CATSHA')?.startsWith("'da65f767")).toBe(true);
   expect(get('CATHOST')).toBe(`'${new URL(context.source.url).hostname}'`);
-  expect(cameraFitsFileName(context)).toBe('OpenVireo-CCD-20261027-180000-NF.fit');
+  expect(cameraFitsFileName(exposure,context)).toBe('OpenVireo-CCD-20261027-180000-NF.fit');
   expect(jdToIso(2451545)).toBe('2000-01-01T12:00:00.000');
+ });
+ test('CCD FITS bytes are pinned to the C6 output (81c0d5c): IR and review fixes leave CCD files unchanged',()=>{
+  // Once static extracts are published, Object X replay compares fitsSha256, so any CCD card change needs a session bump.
+  expect(createHash('sha256').update(writeCameraFits(exposure,context)).digest('hex')).toBe('f08ce9f2537d91de8603d8e499c2bd3b426431c1b70267339f4f04e6e3a0eaeb');
  });
  test('IR exposure (C6): 512 square, INSTRUME IR, 2MASS credit and IR file name; CCD cards carry none of these',()=>{
   const jhk=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url)));
   const k=selectVizierCatalog(readVizierCatalog(jhk,{catalog:'I/297',band:'K',epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5}),wholeSkySelection(21.5));
   const ir=composeCameraExposure({camera:'ir',opticalIndex:0,filterPosition:2,seconds:1,gain:4,centerRaHours:56.745/15,centerDecDegrees:24.118,seed:5},k);
-  const irContext:CameraFitsContext={...context,camera:'ir',filterName:'K'};
+  const irContext:CameraFitsContext={...context,filterName:'K'};
   const cards=cameraFitsCards(ir,irContext),ccd=cameraFitsCards(exposure,context);
   expect(cards).toContain("INSTRUME= 'IR      '".padEnd(80));expect(ccd).toContain("INSTRUME= 'CCD     '".padEnd(80));
   expect(cards.some(c=>c.startsWith('COMMENT J/H/K: 2MASS via NOMAD (Skrutskie et al. 2006'))).toBe(true);
   expect(ccd.some(c=>c.includes('2MASS'))).toBe(false);
   expect(cards.length).toBe(ccd.length+2);
   const image=parseFitsImage(writeCameraFits(ir,irContext));expect([image.width,image.height]).toEqual([512,512]);
-  expect(cameraFitsFileName(irContext)).toBe('OpenVireo-IR-20261027-180000-K.fit');expect(cameraFitsFileName(context)).toMatch(/^OpenVireo-CCD-/);
+  // The camera in the name follows the exposure recipe (as INSTRUME does), whatever the context says.
+  expect(cameraFitsFileName(ir,irContext)).toBe('OpenVireo-IR-20261027-180000-K.fit');expect(cameraFitsFileName(exposure,irContext)).toMatch(/^OpenVireo-CCD-/);
  });
 });

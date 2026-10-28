@@ -81,7 +81,7 @@ describe('IR exposure composer (C6)',()=>{
  const ir:CameraExposureRecipe={...recipe,camera:'ir',gain:4};
  const pin=(x:ReturnType<typeof composeCameraExposure>)=>({sha256:sha(x.plane.pixels),draws:x.drawsConsumed,finalState:x.finalRandomState,records:x.records.length});
  const pair={raHours:56.744/15,decDeg:24.117,storedMag:14,kind:'pair' as const,end:{raHours:56.7445/15,decDeg:24.1172}};
- test('J field: 512x512 plane, three stars on the detector, matches the independent control',()=>{
+ test('J field: 512x512 plane, three stars on the detector, matches the Python control',()=>{
   const x=composeCameraExposure(ir,irSelection('J'));
   expect(x.plane.width).toBe(512);expect(x.plane.height).toBe(512);
   expect(x.catalog).toEqual({rows:4,selected:4,onDetector:3});
@@ -93,6 +93,11 @@ describe('IR exposure composer (C6)',()=>{
   expect(x.records.map(r=>r.origin)).toEqual(['moving-start','moving-end','catalog','catalog']);
   expect(x.records[0].magnitude).toBe(cameraMovingMagnitude('ir',2,14));
   expect(pin(x)).toEqual(controls.cases['ir-k-pair-catalog']);
+ });
+ test('H field with a moving pair: H offset on the pair, matches the control',()=>{
+  const x=composeCameraExposure({...ir,filterPosition:1,seconds:20,gain:2,seed:53},irSelection('H'),[pair]);
+  expect(x.records[0].origin).toBe('moving-start');expect(x.records[0].magnitude).toBe(cameraMovingMagnitude('ir',1,14));
+  expect(pin(x)).toEqual(controls.cases['ir-h-pair-catalog']);
  });
  test('IR moving offsets 0x51e110 are cumulative steps of 1.13, 0.29 and 0.07, stored Single; no NF -0.25',()=>{
   expect(cameraMovingMagnitude('ir',0,14)).toBe(Math.fround(14-1.13));

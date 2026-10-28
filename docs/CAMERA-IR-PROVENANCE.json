@@ -121,7 +121,9 @@
   "Constructor 0x51dd10 = CCD 0x5220f4 with the IR record; byte-identical constants (86400 at 0x51dec0 / 0x5222a4).",
   "Region: max(options 0x6d6, 0x6da) / Single 2.0 (fdiv 0x51dfbb), as the CCD (0x52239c).",
   "Moving copy 0x51e110: refresh 0x59940c, deletes the leading kind-2 run of its own list, copies the leading kind-2 run of [0x5b56ac]+5, projects with 0x522560 (2 draws, no bounds), magnitude J m-1.13, H (m-1.13)-0.29, K ((m-1.13)-0.29)-0.07 (fsubr/fsubp, Single store), inserts with 0x492574.",
-  "Update 0x51e035..0x51e0d4: catalog rows through 0x522698 (2 draws + inclusive bounds), kind 0.",
+  "Catalog update: the inherited CCD update 0x522454 (IR field VMT 0x51dc40 = [0x51dd10, 0x51def0, 0x522454], slot 2 at 0x51dc48, called by preparation at 0x51e46e via call [ecx+8]); catalog rows through 0x522698 (2 draws + inclusive bounds), kind 0. Corrected after review 2 (M1); docs/CAMERA-PIPELINE-AUTHORITY.md already records this slot.",
+  "Inert in-select loop (INFERENCE): 0x51e035..0x51e0d4 inside select 0x51def0 walks B1CatObj +0x1e before the moving copy (call 0x51e110 at 0x51e0fc). That list is empty there: virtual0 0x59c45c clears the parsed list +0x43 (0x59c488..0x59c4a6, 0x59c494) and virtual8 0x59cc88 clears +0x1e and rebuilds it from +0x43 (0x59cd9c..0x59ce3d, 0x59cdab/0x59ce3d); the parse (virtual4) runs only later, from 0x522454. So it adds no records and no draws.",
+  "No overlay in IR preparation 0x51e43c..0x51e712: the background loop ends at 0x51e553 and the source loop starts at 0x51e555, with no overlay branch (the CCD preparation has form+0x412). Recovered for preparation; PLAUSIBLE for the IR form itself, whose controls were not inspected.",
   "Background 0x51e4f3 reads the CCD record (options+0x2d99 = +0x6b4+0x26e5): read +0x31, dark +0x35 only when CCD +0x59 == 0, bias +0x45; one 0x520ec0 draw per pixel; IR gain form +0x406.",
   "Source loop 0x51e567..0x51e604: no NF adjustment; kind 2 -> extended 0x524a6c with the next record, else point 0x5245d0. Shared calibration 0x52455c reads the CCD record (+0x26e5) for pixel size (0x524571).",
   "Final 0x51e60a: IR record (+0x2df4) well +0x55 and 2^(+0x51) via 0x4270c0, IR gain.",
@@ -129,7 +131,6 @@
  ],
  "unrecovered": [
   "IR exposure-time limit and controls beyond filter and gain: web uses CAMERA_MAX_SECONDS (adaptation ir-like-ccd).",
-  "Whether the IR window has an overlay branch: none offered (adaptation ir-like-ccd).",
   "Region writer [0x5b5b30] and global random prefix, as for the CCD."
  ]
 }

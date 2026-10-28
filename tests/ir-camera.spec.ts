@@ -28,7 +28,7 @@ test('the IR camera offers J/H/K and gains 1/2/4/8, credits 2MASS, and static mo
  expect(await options(page,'Filter')).toEqual(['J','H','K']);
  expect(await options(page,'Gain (e⁻/ADU)')).toEqual(['1','2','4','8']);
  await expect(camera(page).getByTestId('camera-ir-citation')).toContainText('Two Micron All Sky Survey (2MASS; Skrutskie et al. 2006)');
- await expect(camera(page).getByTestId('camera-ir-adaptation')).toContainText('same 60-minute limit as the CCD and offers no overlay');
+ await expect(camera(page).getByTestId('camera-ir-adaptation')).toContainText('same 60-minute limit as the CCD');
  // The unrecovered IR exposure limit follows the CCD web bound.
  await camera(page).getByLabel('Minutes').fill('60');await camera(page).getByLabel('Seconds').fill('1');
  await expect(camera(page).getByRole('alert')).toContainText('between 1 s and 60 min');await expect(button(page,'Start exposure')).toBeDisabled();
@@ -70,6 +70,18 @@ test('a live K exposure asks NOMAD with the IR radius, makes a 512² image and s
  await page.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}).setInputFiles({name:d.suggestedFilename(),mimeType:'application/octet-stream',buffer:bytes});
  await expect(page.locator('.fits-lab')).toContainText('512 × 512 pixels');
  await expect(page.locator('.fits-lab')).toContainText(createHash('sha256').update(bytes).digest('hex'));
+});
+test('the 2MASS credit and IR note stay while an IR image is shown, even after choosing the CCD camera',async({page})=>{
+ await trackedField(page);const body=await jhk;
+ await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
+ await camera(page).getByLabel('IR camera (J, H, K)').check();await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();
+ await camera(page).getByLabel('Minutes').fill('0');await camera(page).getByLabel('Seconds').fill('1');
+ await button(page,'Start exposure').click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:15_000});
+ await camera(page).getByLabel('CCD camera',{exact:true}).check();
+ await expect(page.getByTestId('camera-canvas')).toHaveAttribute('aria-label',/^IR image, filter J/);
+ await expect(camera(page).getByTestId('camera-ir-citation')).toContainText('Two Micron All Sky Survey');
+ await expect(camera(page).getByTestId('camera-ir-adaptation')).toBeVisible();
 });
 test('at 320 px the camera choice works from the keyboard without horizontal scrolling',async({page})=>{
  await page.setViewportSize({width:320,height:800});await trackedField(page);

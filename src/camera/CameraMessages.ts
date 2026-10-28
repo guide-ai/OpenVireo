@@ -12,7 +12,7 @@ export const CAMERA_MESSAGES=Object.freeze({
  filter:'Filter',
  filterNames:['NF (no filter)','B','V','R','I'] as const,
  filterNamesIr:['J','H','K'] as const,
- adaptationIr:'IR web adaptation: the original IR window\'s exposure-time limit and any overlay option are not recovered, so the IR camera uses the same 60-minute limit as the CCD and offers no overlay.',
+ adaptationIr:'IR web adaptation: the original IR window\'s exposure-time limit is not recovered, so the IR camera uses the same 60-minute limit as the CCD. The original IR camera has no overlay option.',
  exposure:'Exposure',
  minutes:'Minutes',
  seconds:'Seconds',

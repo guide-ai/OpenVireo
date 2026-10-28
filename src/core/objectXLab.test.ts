@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parseHtl} from './hotList';
-import {INITIAL_OBJECT_X_LAB_SUMMARY,OBJECT_X_KINDS,OBJECT_X_LAB_STEPS,OBJECT_X_ROW_KINDS,objectXCode,objectXDataLabel,objectXLabProgress,objectXTargets,revealObjectX} from './objectXLab';
+import {INITIAL_OBJECT_X_LAB_SUMMARY,OBJECT_X_KINDS,OBJECT_X_LAB_STEPS,OBJECT_X_ROW_KINDS,objectXCameraListUse,objectXCode,objectXDataLabel,objectXLabProgress,objectXTargets,revealObjectX} from './objectXLab';
 
 const list=parseHtl(new Uint8Array(readFileSync('public/original/hotlists/ObjectX.HTL')));
 describe('Object X targets (hidden identity)',()=>{
@@ -32,5 +32,16 @@ describe('Object X guide progress',()=>{
   expect(objectXLabProgress(s,'pulsar').done.measure).toBe(true);
   expect(objectXLabProgress({...s,motionMeasured:true},'asteroid').done).toMatchObject({target:true,clock:true,list:true,image:true,repeat:true,measure:true,classify:true,describe:false});
   expect(OBJECT_X_LAB_STEPS).toHaveLength(10);
+ });
+});
+
+describe('camera exposures and the Object X list',()=>{
+ it('IR images read a current list but never build one, so they leave the Object X session unchanged',()=>{
+  for(const clockSet of [false,true])for(const hasList of [false,true]){
+   expect(objectXCameraListUse({camera:'ir',listCurrent:false,clockSet,hasList})).toBe('none');
+   expect(objectXCameraListUse({camera:'ccd',listCurrent:false,clockSet,hasList})).toBe(clockSet||hasList?'build':'none');
+   expect(objectXCameraListUse({camera:'ir',listCurrent:true,clockSet,hasList:true})).toBe('use');
+   expect(objectXCameraListUse({camera:'ccd',listCurrent:true,clockSet,hasList:true})).toBe('use');
+  }
  });
 });

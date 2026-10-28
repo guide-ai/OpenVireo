@@ -13,8 +13,6 @@ export class FitsWriterError extends Error {
 }
 export type CameraFitsContext=Readonly<{
  jd:number;filterName:string;catalogName:string;
- /** Camera for the file name (default CCD). */
- camera?:'ccd'|'ir';
  source:Readonly<{mode:'static'|'live';sha256:string;extractId:string|null;url:string}>;
 }>;
 type Card=readonly [key:string,value:string|number|boolean|null,comment?:string];
@@ -92,6 +90,7 @@ export function writeCameraFits(exposure:CameraExposure,context:CameraFitsContex
  }
  return out;
 }
-export function cameraFitsFileName(context:CameraFitsContext):string {
- return `OpenVireo-${context.camera==='ir'?'IR':'CCD'}-${jdToIso(context.jd).slice(0,19).replace(/[-:]/g,'').replace('T','-')}-${context.filterName.replace(/[^A-Za-z0-9]/g,'')}.fit`;
+/** File name; the camera comes from the exposure recipe, as the INSTRUME card does. */
+export function cameraFitsFileName(exposure:CameraExposure,context:CameraFitsContext):string {
+ return `OpenVireo-${exposure.recipe.camera==='ir'?'IR':'CCD'}-${jdToIso(context.jd).slice(0,19).replace(/[-:]/g,'').replace('T','-')}-${context.filterName.replace(/[^A-Za-z0-9]/g,'')}.fit`;
 }

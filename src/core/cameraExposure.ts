@@ -1,8 +1,10 @@
 /** CCD/IR exposure composer (fronts C2, C6): recipe + catalog selection + extra sources -> final Single plane.
  * The IR path (window 0x53f850, form 0x5b5f08) has the same stage order with its own owners (docs/CAMERA-IR.md):
  * select 0x51def0 (J/H/K = NOMAD selectors 3/4/5), moving copy 0x51e110 (offsets J 1.13, H +0.29, K +0.07, applied
- * cumulatively), update 0x51e035 (0x522698), background 0x51e4f3 (CCD noise record), source loop 0x51e567 (no NF
- * adjustment) and final 0x51e60a (IR record). CCD order:
+ * cumulatively), catalog update = the inherited CCD update 0x522454 (IR VMT 0x51dc40 slot 2, called at 0x51e46e;
+ * 0x522698 per row), background 0x51e4f3 (CCD noise record), no overlay branch, source loop 0x51e567 (no NF
+ * adjustment) and final 0x51e60a (IR record). The loop 0x51e035..0x51e0d4 inside select is inert (inference: its
+ * list is empty there). CCD order:
  * Order recovered statically (NATIVE-CAMERA-FRONT-C-C0-01, docs/CAMERA-EXPOSURE.md):
  *  1. Field initialize 0x5220f4 clears the field source list. Select 0x5222d4 then calls 0x522718, which projects the
  *     moving-object (kind-2) records with 0x522560 (2 draws each, no bounds test), applies the filter offset table
@@ -74,7 +76,7 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'fresh-field-list: the list is rebuilt per exposure (initialize -> select -> update), and moving records are projected in the same stream just before catalog rows',
  'whole-sky-selection: the region bounds at [0x5b5b30] are not recovered; selection keeps the magnitude limit',
  'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered',
- 'ir-like-ccd: the IR window\'s exposure-time limit and any overlay option are not recovered; IR uses the CCD web bound (CAMERA_MAX_SECONDS) and offers no overlay',
+ 'ir-like-ccd: the IR window\'s exposure-time limit is not recovered; IR uses the CCD web bound (CAMERA_MAX_SECONDS). (No overlay is recovered: IR preparation 0x51e43c has no overlay branch.)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
  'number-arithmetic: Number/Math with Single stores replaces x87 Extended',
