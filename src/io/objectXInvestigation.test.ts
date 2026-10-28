@@ -118,3 +118,26 @@ describe('v28 review 2 fixes',()=>{
   await expect(admitObjectXInvestigation(o,digest)).rejects.toMatchObject({code:'replay'});
  },30_000);
 });
+
+// Review 3 L2 timing (opt-in, slow by design): Save of a v28 part with 64 static-catalogue exposures recomposes all 64 images.
+// Run with OBJX_SAVE_TIMING=1; the measured time is reported in docs/OBJECT-X.md.
+describe.runIf(process.env.OBJX_SAVE_TIMING)('v28 Save timing',()=>{
+ it('64 static exposures',async()=>{
+  const xml=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
+  const sha=createHash('sha256').update(xml).digest('hex');
+  const extract:CameraExtract={id:'test-pleiades',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'authored test extract'};
+  const catalog={extracts:[extract],extractBase:'/',fetchImpl:(async()=>new Response(xml)) as unknown as typeof fetch};
+  setObjectXResources({orbit:async()=>sav,catalog});
+  const exposures=[];
+  for(let k=0;k<64;k++){
+   const recipe={camera:'ccd' as const,opticalIndex:0 as const,filterPosition:2,seconds:60,gain:2,centerRaHours:56.75/15,centerDecDegrees:24.12,seed:1000+k};
+   const jd=2454983.7+k/1440,made=await replayStaticExposure(recipe,jd,[],catalog);if(!made.ok)throw Error(made.reason);
+   exposures.push({jd,seconds:60,filter:2,gain:2,telescope:0 as const,ra:recipe.centerRaHours,dec:24.12,seed:recipe.seed,catalogMode:'static' as const,catalogSha256:sha,extractId:'test-pleiades',
+    listJd:null,orbitFile:null,limit:null,pairs:0,skipped:[],fitsSha256:createHash('sha256').update(made.fits).digest('hex')});
+  }
+  const inv={...investigation(),exposures,images:[],measure:null,log:[]};
+  const t0=performance.now();await portableObjectXInvestigation(inv);const ms=performance.now()-t0;
+  process.stderr.write(`OBJX_SAVE_TIMING 64 static exposures: ${(ms/1000).toFixed(1)} s (${(ms/64).toFixed(0)} ms each)\n`);
+  expect(ms).toBeGreaterThan(0);
+ },600_000);
+});

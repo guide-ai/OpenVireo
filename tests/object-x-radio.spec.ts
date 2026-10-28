@@ -60,8 +60,21 @@ async function observe(page:Page,htlId:string){
  await id(page,'radio-exercise-start').click();await flush(page);
  await expect(id(page,'radio-exercise-status')).toHaveAttribute('data-kind','started',{timeout:15_000});
  await expect(id(page,'pulsar-ref-name')).toHaveText('Pulsars.dat');
+ // R3-L1: the radio Slew ▸ Hot List shows rows near the object under the hidden label only. Worst case: the student loads
+ // ObjectX.HTL itself (it is fetchable from this origin), which names every object.
+ const pulsarsHtl=readFileSync(new URL('../public/original/hotlists/ObjectX.HTL',import.meta.url));
+ await id(page,'antenna-hotlist-file').setInputFiles({name:'ObjectX.HTL',mimeType:'application/octet-stream',buffer:pulsarsHtl});
+ await id(page,'antenna-hotlist-open').click();await expect(id(page,'antenna-hotlist-rows')).toBeVisible();
+ const rowsText=(await id(page,'antenna-hotlist-rows').textContent())??'';
+ const htlNear=parseHtl(new Uint8Array(pulsarsHtl)).filter(r=>separationDegrees(r.ra,r.dec,row(htlId).ra,row(htlId).dec)<=OBJECT_X_HIDE_DEGREES).map(r=>r.id.trim());
+ // Identifiers and catalogue names only: a remark can be shared with a distant row (two galaxies have the same one).
+ const remark=row(htlId).remarks.trim();
+ expect([...secrets(htlId).names.filter(n=>n!==remark),...htlNear].filter(s=>word(s).test(rowsText)),'hot-list rows').toEqual([]);
+ expect(htlNear).toContain(htlId);expect(rowsText).toContain('ObjX-42');
+ await id(page,'antenna-hotlist-close').click();await expect(id(page,'antenna-hotlist-dialog')).toHaveCount(0);
  await id(page,'antenna-set-coordinates').click();await expect(id(page,'antenna-dialog')).toBeVisible();
- for(const [i,name] of ['raHours','raMinutes','raSeconds','decDegrees','decMinutes','decSeconds'].entries())await id(page,`antenna-field-${name}`).fill(values[i]);
+ // R3-L3: the dialog opens pre-filled with the object's coordinates (the same values the card shows).
+ for(const [i,name] of ['raHours','raMinutes','raSeconds','decDegrees','decMinutes','decSeconds'].entries())await expect(id(page,`antenna-field-${name}`)).toHaveValue(values[i]);
  await id(page,'antenna-dialog-ok').click();await flush(page);
  await expect(id(page,'antenna-notice')).toHaveAttribute('data-kind','confirm-slew');await id(page,'antenna-notice-yes').click();await flush(page);
  for(let i=0;i<600&&await id(page,'antenna-notice').count()===0;i++)await advance(page,200);

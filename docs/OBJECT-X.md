@@ -147,8 +147,8 @@ Student path, following the original manual (identification, decision D3):
      selectable), limiting magnitude (16), **Build the asteroid list for the observatory date**, and **Copy the coordinates to
      the observatory** (it fills the observatory's RA/Dec fields; the student points with *Point to coordinates*). The observatory
      camera then asks the lab for moving pairs at each exposure and hands it each image.
-   - **Radio telescope** (pulsars): opens the radio route, which shows the object's code and coordinates in the six fields of
-     *Set Coordinates* (documented manual entry); the student starts the pulsar setup, slews and opens the Receiver.
+   - **Radio telescope** (pulsars): opens the radio route, which shows the object's code and coordinates; *Set Coordinates*
+     opens pre-filled with them (R3-L3); the student starts the pulsar setup, confirms the slew and opens the Receiver.
    - **Spectrometer** (stars, galaxies, quasars): typed "Not available yet" with the same text for every object, so it reveals nothing.
 3. **Your images**: one line per camera image (`ObjX-<ID>-NN`, UT, filter, length, asteroids in the field box and how many
    fell off the detector — the composer's `moving-pair-off-detector` reason), and **Open saved FITS images** to load images back.
@@ -263,6 +263,26 @@ pulsars, from the coordinates on the radio page through Set Coordinates, receive
 their catalogue periods with the receivers labelled ObjX-42 and no name in the radio route; NGC 4631 shows "No Pulsar in Beam!"
 and z ≈ 2.1), and the path spec now checks the 45-minute motion against the ephemeris and the reopened FITS files.
 
+## Closure follow-ups (review 3, R3-L1–L3)
+
+- **Hiding is presentation-level (R3-L1).** It changes what the pages show, not what the browser can read: ObjectX.HTL is
+  fetchable from this origin, and a student can load it (or any hot list) by hand. Within that limit, while a target is
+  unrevealed: the observatory target picker leaves out every catalogue entry within 2° of it (a disabled entry would point at the
+  target; a missing one is far weaker), and a current selection among them reads "Name hidden during Object X"; the radio
+  Slew ▸ Hot List shows rows within 2° under the `ObjX-<ID>` label with no remark, and its Find compares those masked texts, so
+  a name search does not locate the target. Rows elsewhere keep their names and remarks (remarks are generic kind words that may
+  also describe other objects).
+- **Static replay equivalence (R3-L2).** `tests/object-x-static-replay.spec.ts` routes the dev server's extract index to one
+  synthetic extract over the recorded VizieR response, lets the real camera (Worker composer, static mode) take and save an
+  image, and requires `replayStaticExposure` on the same recipe to give the same FITS bytes (SHA-256 and length): it does. Save
+  time with 64 static exposures (Vitest, `OBJX_SAVE_TIMING=1`, Node on this machine, load ≈ 7): **31.8 s, about 0.5 s per
+  exposure**, each recompose blocking the page for about that long between yields. Acceptable while no extracts ship; if many
+  static exposures become common, the replay should move to the camera Worker or reuse a verified result per recipe.
+- **Radio pre-fill (R3-L3).** The hand-off stores the hidden object's J2000 coordinates as the radio's stored target, as a
+  hot-list selection does (`seedObjectXTarget`, a [W] web path; RA-07 seeds the dialog from a non-zero target), again after the
+  antenna is activated, so *Set Coordinates* opens with them; nothing is opened or slewed by the hand-off. The card on the radio
+  page still shows the same values.
+
 ## Measuring tool (X3, `src/core/astrometryMeasure.ts`, `src/ObjectXMeasure.tsx`)
 
 The original sends images to external programs (Toolkit, CLEA_AST.EXE, DS9) that are neither ported nor run. The web tool is
@@ -294,5 +314,5 @@ shown image, frame attribution, motion, raw → aligned blink, timer alternation
 - x87 Extended evaluation is not reproduced; no original-runtime equivalence is claimed.
 - Star, galaxy and quasar branches: the spectrometer at arbitrary coordinates (quasar merge, photographic association, own galaxy
   spectra, star templates) belongs to the later field-engine front; E08 closes only after it.
-- The radio hand-off is a documented manual entry (the coordinates shown in the dialog's fields), not an automatic pointing.
+- The radio hand-off pre-fills Set Coordinates; it never slews by itself.
 - The anti-solar RA routine 0x515df0/0x4b9f44 was not read; the web uses geometric longitude + π and the mean obliquity of date.

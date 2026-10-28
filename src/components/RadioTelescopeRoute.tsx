@@ -5,7 +5,7 @@ import {radioWorkspaceSnapshot,type RadioSnapshotResult,type RadioWorkspaceSnaps
 import RadioControlPanel,{type RadioClockSource,type RadioReceiverButton,type RadioReceiverButtonReason} from './RadioControlPanel';
 import {INITIAL_RADIO_RECEIVER_SUMMARY,RadioReceiverWorkspace,type RadioReceiverApi,type RadioReceiverSummary} from './RadioReceiverWindows';
 import {INITIAL_RADIO_CONTROL,RANDOM_ACCESS_RANGE_MS,menuCaptionText,type RadioControlState,type RadioEnvironment} from '../core/radioControl';
-import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,RADIO_LAB_CONSTANTS,isRadioLabModal,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from '../core/radioAntenna';
+import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,RADIO_LAB_CONSTANTS,isRadioLabModal,seedObjectXTarget,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from '../core/radioAntenna';
 import {PULSAR_EXERCISE_SCENARIO,UNSUPPLIED_RADIO_ENVIRONMENT,pulsarSetupComplete,startPulsarExercise,type PulsarSetupStep} from '../core/pulsarExerciseStart';
 import {sameRadioExerciseSummary,type RadioExerciseSummary} from '../core/pulsarLab';
 import {
@@ -81,6 +81,8 @@ export type RadioTelescopeRouteProps=Readonly<{
  controllerRef?:MutableRefObject<RadioRouteController|null>;
  /** E08 Object X: the label that replaces pulsar names for a pointing near an unrevealed target, or null (forwarded to the receivers). */
  hiddenName?:(pointing:RadioPointing)=>string|null;
+ /** E08 Object X hand-off: coordinates the next Set Coordinates opens with (J2000), or null. */
+ prefillTarget?:RadioPointing|null;
 }>;
 export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<RadioWorkspaceSnapshot>}>;
 
@@ -106,7 +108,7 @@ export type RadioRouteController=Readonly<{snapshot:()=>RadioSnapshotResult<Radi
  * (projectOptions), the panel's Limit Slewing scenario is withdrawn and legacy diameter writes are shielded here. Phase 1
  * item 1.5: Save investigation reads this workspace through controllerRef, and a restore mounts it from `restored`.
  */
-export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName}:RadioTelescopeRouteProps){
+export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,hotList,pulsarData,onOpenPulsarAnalysis,onExerciseProgress,restored=null,controllerRef,hiddenName,prefillTarget=null}:RadioTelescopeRouteProps){
  const [initial]=useState(()=>restored);
  const [state,setState]=useState<RadioControlState>(()=>initial?.control??INITIAL_RADIO_CONTROL);
  // Latest accepted control state, read by Start pulsar exercise.
@@ -117,6 +119,8 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
  // Latest accepted antenna state (committed or handed over by the panel in this task), read by the receiver handlers.
  const antennaRef=useRef(antenna);
  useLayoutEffect(()=>{antennaRef.current=antenna;},[antenna]);
+ // E08 hand-off: seeded again once the antenna is activated (the exercise setup may start from fresh state).
+ useEffect(()=>{if(!prefillTarget)return;const next=seedObjectXTarget(antennaRef.current,prefillTarget);if(next!==antennaRef.current){antennaRef.current=next;setAntenna(next);}},[prefillTarget?.ra,prefillTarget?.dec,antenna.activated]);
  // ---- Silent receiver monitor (R-RX2): the workspace owns its session; the route owns the button and the gates.
  const receiverApiRef=useRef<RadioReceiverApi|null>(null),receiverButtonRef=useRef<HTMLButtonElement>(null);
  const [receiverSummary,setReceiverSummary]=useState<RadioReceiverSummary>(INITIAL_RADIO_RECEIVER_SUMMARY);
@@ -506,7 +510,7 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
       meanwhile takes over: the utility's surface, the receiver box and the configuration surfaces yield to it. A
       configuration that has yielded (open, not presented) must not make the panel, and so that antenna box, inert. */}
   <div style={{display:'contents'}} inert={dateOpen||parameters.presented||behindReceiverBox||panelBehindAccess} data-testid="radio-route-panel-wrapper">
-   <RadioControlPanel state={state} environment={environment}
+   <RadioControlPanel hotListMask={hiddenName?(ra,dec)=>hiddenName({ra,dec}):undefined} state={state} environment={environment}
     onTransition={tr=>commitControl(tr.state)} onEnvironmentChange={changeEnvironment}
     antenna={antenna} onAntennaTransition={commitAntenna} antennaOptions={options} onAntennaOptionsChange={optionsManaged?undefined:applyOptions} managedDiameter={optionsManaged}
     active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}/>

@@ -35,6 +35,8 @@ import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeN
 import './RadioControlPanel.css';
 
 export type RadioControlPanelProps=Readonly<{
+ /** E08 Object X: label that replaces a hot-list row's identifier and remark near an unrevealed target, or null. */
+ hotListMask?:(ra:number,dec:number)=>string|null;
  /** Controlled recovered control state; apply `transition.state` in onTransition. */
  state:RadioControlState;
  /** Inputs owned outside this slice (dome byte, option byte, diameter, other Window items). */
@@ -227,7 +229,7 @@ const domKey=(e:KeyboardEvent<HTMLElement>):BrowserKeyInput=>({key:e.key,code:e.
 const KEY_SCOPE='[data-antenna-key-scope]';
 
 export default function RadioControlPanel({state,environment,onTransition,onEnvironmentChange,translate=englishRadio,autoScopeTimer=true,
- antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList,receiver,managedDiameter=false}:RadioControlPanelProps){
+ antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList,receiver,managedDiameter=false,hotListMask}:RadioControlPanelProps){
  const t=translate,ta=antennaTranslate,id=useId();
  const managedRef=useRef(managedDiameter);
  useLayoutEffect(()=>{managedRef.current=managedDiameter;});
@@ -323,8 +325,10 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  });
  // ---- Slew ▸ Hot List (RA-HL-05..07, WEB-HL-01..07). Rows are the RA projection of the shared file-order list; event
  // handlers read the latest shared document, never the rendered one.
- const hotRows=useMemo<readonly RadioHotListRow[]>(()=>{const list=hotList?.doc.editor?.list;return list?attempt(()=>radioHotListProjection(list).rows)??[]:[];},[hotList?.doc.editor?.list]);
- const currentHotRows=():readonly RadioHotListRow[]=>{const list=latest.current.hotList?.current().editor?.list;return list?radioHotListProjection(list).rows:[];};
+ // E08: rows near an unrevealed Object X target show the hidden label instead of their identifier and remark (coordinates unchanged).
+ const maskRows=(rows:readonly RadioHotListRow[]):readonly RadioHotListRow[]=>hotListMask?rows.map(r=>{const label=hotListMask(r.record.ra,r.record.dec);return label===null?r:{...r,record:{...r.record,id:label,remarks:''}};}):rows;
+ const hotRows=useMemo<readonly RadioHotListRow[]>(()=>{const list=hotList?.doc.editor?.list;return list?maskRows(attempt(()=>radioHotListProjection(list).rows)??[]):[];},[hotList?.doc.editor?.list,hotListMask]);
+ const currentHotRows=():readonly RadioHotListRow[]=>{const list=latest.current.hotList?.current().editor?.list;return list?maskRows(radioHotListProjection(list).rows):[];};
  /** RA-HL-09: the row texts Search compares, from the latest shared document at the submit. */
  const currentHotTexts=():readonly string[]=>currentHotRows().map(r=>formatRadioHotListRow(r.record));
  const hotSearchRef=useRef<HTMLButtonElement>(null);

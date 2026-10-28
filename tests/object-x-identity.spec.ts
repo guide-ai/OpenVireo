@@ -52,6 +52,9 @@ for(const [kind,id] of Object.entries(KINDS)){
   if(kind==='galaxy'){expect(nearby).toContain('NGC 4631');await expect(page.getByTestId('sky-names-hidden')).toHaveText('Names hidden during Object X.');}
   await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
   expect(await leaks(),'telescope').toEqual([]);
+  // R3-L1: the target picker leaves out every catalogue entry near the hidden object.
+  const options=(await page.locator('#target option').allTextContents()).join('\n');
+  expect(strong.filter(s=>s!==id&&word(s).test(options)),'target picker').toEqual([]);
   await page.locator('.sky-view').first().screenshot({path:test.info().outputPath(`identity-${kind}.png`)});
   // Point the catalogue picker's own target too, if it is near (the target card and notices hide its name).
   await clickHeaderTool(page,'Spectrometer');

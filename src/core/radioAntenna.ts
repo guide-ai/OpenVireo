@@ -851,6 +851,15 @@ export function slewToHotListSelection(s:RadioLabState,options:RadioLabOptions,r
  const target={ra:row.ra,dec:row.dec};
  return done(s,{...s,target,hotListShown:false,skyCoordsB1950:false,targetHoldsB1950:false,dialog:{fields:skyCoordsFieldsFor(target),epochIndex:0,epochEnabled:false,origin:'hot-list'}},'hot-list-selected',['RA-HL-05','RA-HL-07','RA-08']);
 }
+/** [W] E08 Object X hand-off (web, not a native path): stores the hidden object's J2000 coordinates as the stored target, as a
+ * hot-list selection does (RA-HL-05), so the next Set Coordinates opens with them (RA-07 seeds from a non-zero
+ * target). Nothing is opened, slewed or shown; a modal surface or a slew leaves the state unchanged. */
+export function seedObjectXTarget(s:RadioLabState,target:RadioPointing):RadioLabState{
+ const k=RADIO_LAB_CONSTANTS;
+ if(!Number.isFinite(target.ra)||!Number.isFinite(target.dec)||target.ra<k.raMinHours||target.ra>=k.raMaxHours||target.dec<k.decMinDegrees||target.dec>k.decMaxDegrees)return s;
+ if(modal(s)||s.slewing||(s.target.ra===target.ra&&s.target.dec===target.dec&&!s.targetHoldsB1950))return s;
+ return freezeState({...s,target:{ra:target.ra,dec:target.dec},targetHoldsB1950:false});
+}
 /** WEB-HL-02: closing the list without a selection always ends View/Select. Natively FormActivate 0x590c6a resets
  * +0x5a7, so PListSelectClick 0x567b5e jumps to the BL test 0x567bfb. Static reading only: on the first pass BL is
  * uninitialized; after a coordinate-dialog Cancel BL is a known 0 (0x567bf9), so 0x567bfd `je 0x567b4b` would show the
