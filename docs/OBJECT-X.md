@@ -1,7 +1,8 @@
 # E08 Object X — the quest for Object X (Front X, X0–X5)
 
 Status: X0–X3 merged at 121c835 after review 1 and the closure check. X4 (route, camera asteroids, asteroid list) and X5
-(v28 investigation, guide) are implemented on branch `claude/serene-dubinsky-8d1244` and await independent review. E08 is
+(v28 investigation, guide) are implemented on branch `claude/serene-dubinsky-8d1244`; review 2 (no-go on H1, H2) and its fixes
+are recorded in the section "Review 2 fixes" below. E08 is
 **not** closed: the star, galaxy and quasar branches need the spectrometer at arbitrary coordinates, which is typed "not
 available yet" until the field-engine front lands.
 
@@ -146,7 +147,8 @@ Student path, following the original manual (identification, decision D3):
      selectable), limiting magnitude (16), **Build the asteroid list for the observatory date**, and **Copy the coordinates to
      the observatory** (it fills the observatory's RA/Dec fields; the student points with *Point to coordinates*). The observatory
      camera then asks the lab for moving pairs at each exposure and hands it each image.
-   - **Radio telescope** (pulsars): opens the radio route; the student enters the coordinates there.
+   - **Radio telescope** (pulsars): opens the radio route, which shows the object's code and coordinates in the six fields of
+     *Set Coordinates* (documented manual entry); the student starts the pulsar setup, slews and opens the Receiver.
    - **Spectrometer** (stars, galaxies, quasars): typed "Not available yet" with the same text for every object, so it reveals nothing.
 3. **Your images**: one line per camera image (`ObjX-<ID>-NN`, UT, filter, length, asteroids in the field box and how many
    fell off the detector — the composer's `moving-pair-off-detector` reason), and **Open saved FITS images** to load images back.
@@ -188,14 +190,20 @@ at the selected catalogue object; after *Point to coordinates* the student must 
 ## Investigation file v28 (X5, `src/io/objectXInvestigation.ts`)
 
 A v28 file wraps an unchanged v1..27 base, outermost (so it combines with a v27 LSS file); a v28 is never nested. It stores the
-orbit file, ID, object code, start date, whether the clock was set, the list date and limit, one recipe per exposure (JD,
-length, filter, gain, telescope, pointing, seed, catalog mode/SHA-256/extract, list date, pair count and the typed reasons of pairs the camera skipped, SHA-256 of the
+orbit file, ID, object code, start date, whether the clock was set, the current list date and limit, one recipe per exposure (JD,
+length, filter, gain, telescope, pointing, seed, catalog mode/SHA-256/extract, the date, orbit file and limit of the list it used,
+pair count and the typed reasons of pairs the camera skipped, SHA-256 of the
 FITS the lab wrote), image references (SHA-256, label, JD, exposure), the measuring pair and marks (pixels only), the answer, the
 description and the reveal flag. **Images are not stored**; the student keeps the FITS files and reopens them.
 
-Restore replays: the bundled orbit file is fetched and checked (size and SHA-256), each list is rebuilt at its date, every
-exposure's pairs are re-derived and must match the stored count, and a SHA-256 over the derivatives must equal the stored digest.
-Bounds: 64 exposures, 16 images, 8 list dates, 64 marks, 4000-character description, 1 MiB. Any failure rejects the whole file.
+Restore replays: each orbit file an exposure used is fetched and checked (size and SHA-256); each distinct (orbit file, date,
+limit) list is rebuilt in slices that yield to the page; every exposure's pairs are re-derived with its own list and must match
+the stored count; an exposure whose catalogue came from a bundled static extract is recomposed (camera Worker core, same query,
+reader and composer) and must give its stored FITS SHA-256. **Live-catalogue exposures cannot be replayed offline** (the VizieR
+response is not stored): their pairs are replayed, their images are not, and the image list labels them so. A SHA-256 over those
+derivatives and over the student's own state (ID, object code, answer, reveal flag, description, measuring pair and marks) must
+equal the stored digest, so an edited file is rejected. Bounds: 64 exposures, 16 images, 8 lists, 64 marks, 4000-character
+description, 1 MiB. Any failure rejects the whole file.
 
 ## Guide (X5, `src/ObjectXLabGuide.tsx`, `src/core/objectXLab.ts`)
 
@@ -218,6 +226,42 @@ before the reveal; no step names an object.
   axis is skipped as `moving-pair-off-detector` and shown in the Object X image list as "Not drawn: 1 far outside the detector.".
   `tests/object-x-measure.spec.ts` now also checks N1 (reversed marking order), N2 (no re-stretch on cursor moves) and N3 (aligned
   pixel). `recorded-analysis-navigation.spec.ts` lists the two new header buttons.
+
+## Review 2 fixes (no-go H1, H2; then M1–M5, L1–L5)
+
+- **H1 hidden identity in every instrument.** While an Object X code is chosen and not revealed, the lab reports the target's
+  position, code and `ObjX-<ID>` label. Any catalogue object within 2° (`OBJECT_X_HIDE_DEGREES`, [W]; the finder field is 2.5°) is
+  drawn unnamed in the sky map and cannot be selected there; a selected object near it shows "Name hidden during Object X" in the
+  target card, the telescope-motion card and pointing notices, its library spectrum line is hidden and the spectrometer is
+  disabled for it; the field toolbar says "Names hidden during Object X." In the radio route, while the antenna points within 2°,
+  the receiver heading, the profile source, the Identify draft, the Properties object and the .PLR header use `ObjX-<ID>` — the
+  original labels its radio receivers "ObjX-<ID>" in Object X (0x5733af, 0x57383f, 0x574794; X0b). Names return after the reveal.
+- **H2 per-exposure lists.** Each exposure stores the orbit file and limiting magnitude of the list it used and is replayed with
+  them; changing either input later no longer blocks Save, and the file names the orbit file each image actually used.
+- **M1 automatic list.** Setting the clock in Object X builds the list (as the original after Set Date/Time); an observatory clock
+  change elsewhere rebuilds it when the date moves more than 0.1 day ([W]); changing the orbit file or limit rebuilds it. An image
+  whose JD is more than 0.5 day ([W]) from the list, or taken with no list, says "asteroids not computed", and a list for its date
+  is built for the next image.
+- **M2** the answer is frozen at the reveal (the radio buttons are disabled; the digest covers it); "an asteroid".
+- **M3** static-catalogue images are recomposed and checked by FITS SHA-256; live ones are labelled not replayable offline; the
+  digest covers the student's state.
+- **M4 pulsar branch**: coordinate hand-off (documented manual entry) and receiver labels as above; `tests/object-x-radio.spec.ts`.
+- **M5** the path spec takes two 60 s images 45 min apart, predicts Eros' pixel on each saved image from the orbit file and its
+  header, measures there and checks rate and position angle against the ephemeris (54.7″/h at the default date; ±6″/h, ±8°).
+- **L1** the raster-cache count is a canvas attribute (`data-raster-builds`), not a product export. **L2** a notice when the image
+  or exposure limit is reached; a confirm before changing measured images clears marks. **L3** save/restore build lists in slices
+  that yield (the toolbar's Cancel discards the result; the computation itself is not interrupted). **L4** each image can be saved
+  as `ObjX-<ID>-NN.FIT` from the Object X page (the camera's own Save keeps its name). **L5** the guide says a later night needs the
+  rebuilt list and that a fast near-Earth asteroid will have left the field (no asteroid is named, to keep the identity hidden).
+
+Review 2 tests: `objectXInvestigation.test.ts` +4 (H2 limit change and orbit-file change both save and replay with each
+exposure's own list, a forged orbit file is rejected; M3 digest over answer/reveal/marks/code/ID/description; M3 static-catalogue
+recompose and FITS SHA-256 on an authored extract). Playwright: `object-x-identity.spec.ts` (5: one target of each kind pointed in
+the observatory, finder and telescope views and the spectrometer, no HTL identifier, remark or catalogue name within 2°; names
+return after the reveal; with hiding disabled the galaxy case fails on "NGC 4631"), `object-x-radio.spec.ts` (4: the three HTL
+pulsars, from the coordinates on the radio page through Set Coordinates, receiver and Record, fold to z = 26.2, 6.0 and 9.6 at
+their catalogue periods with the receivers labelled ObjX-42 and no name in the radio route; NGC 4631 shows "No Pulsar in Beam!"
+and z ≈ 2.1), and the path spec now checks the 45-minute motion against the ephemeris and the reopened FITS files.
 
 ## Measuring tool (X3, `src/core/astrometryMeasure.ts`, `src/ObjectXMeasure.tsx`)
 
@@ -250,5 +294,5 @@ shown image, frame attribution, motion, raw → aligned blink, timer alternation
 - x87 Extended evaluation is not reproduced; no original-runtime equivalence is claimed.
 - Star, galaxy and quasar branches: the spectrometer at arbitrary coordinates (quasar merge, photographic association, own galaxy
   spectra, star templates) belongs to the later field-engine front; E08 closes only after it.
-- The radio route is opened but not pointed for the student; there is no coordinate handoff into it yet.
+- The radio hand-off is a documented manual entry (the coordinates shown in the dialog's fields), not an automatic pointing.
 - The anti-solar RA routine 0x515df0/0x4b9f44 was not read; the web uses geometric longitude + π and the mean obliquity of date.

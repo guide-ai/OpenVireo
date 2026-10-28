@@ -19,7 +19,7 @@ function Host(){
    extraSources:(jd:number,seconds:number)=>{setCalls(JSON.stringify([jd,seconds]));return [...(controller.current?.extraSources(jd,POINTING,seconds)??[]),FAR];},
    onImage:image=>controller.current?.acceptImage(image)}),
   h('output',{'data-testid':'host-extra-calls'},calls),
-  h(ObjectXLab,{active:true,busy:false,controllerRef:controller,restored:null,clockUtc:()=>'2009-06-01T04:00:00',onSetClock:()=>{},onPrefill:()=>{},onOpenRadio:()=>{},onSnapshot:()=>{},onSummary:()=>{}}));
+  h(ObjectXLab,{active:true,busy:false,controllerRef:controller,restored:null,clockUtc:()=>'2009-06-01T04:00:00',onSetClock:()=>{},onPrefill:()=>{},onOpenRadio:()=>{},onSnapshot:()=>{},onSummary:()=>{},onHiddenTarget:()=>{},clockApplied:'2009-06-01T04:00:00'}));
 }
 export function mountObjectXCameraHost():void{
  const container=document.createElement('div');container.setAttribute('data-testid',CAMERA_HOST_TEST_ID);

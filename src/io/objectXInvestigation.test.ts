@@ -3,22 +3,26 @@ import {readFileSync} from 'node:fs';
 import {webcrypto} from 'node:crypto';
 import {INITIAL_CONTROL} from '../core/spectrum';
 import {EMPTY_HUBBLE} from '../core/hubbleAnalysis';
-import {buildObservableList,movingPairs} from '../core/asteroidField';
+import {buildObservableList,movingPairs,type ObservableList} from '../core/asteroidField';
+import {createHash} from 'node:crypto';
+import {replayStaticExposure} from './objectXImage';
+import type {CameraExtract} from './cameraCatalog';
 import {ObjectXSessionError,OBJECT_X_INVESTIGATION_POLICY,admitObjectXInvestigation,portableObjectXInvestigation,setObjectXResources,type ObjectXInvestigation} from './objectXInvestigation';
 import {readAnalysisSession,serializeAnalysisSession,type AnalysisSession} from './analysisSession';
 import {LSS_INVESTIGATION_POLICY} from './lssInvestigation';
 
-const sav=new Uint8Array(readFileSync(new URL('../../public/original/orbit/ObjX_MPC.CMO.sav',import.meta.url)));
+const orbitBytes=(id:string)=>new Uint8Array(readFileSync(new URL(`../../public/original/orbit/${id}`,import.meta.url)));
+const sav=orbitBytes('ObjX_MPC.CMO.sav'),ast=orbitBytes('ObjX_AST.CMO');
 const fetched:string[]=[];
-beforeEach(()=>{vi.stubGlobal('crypto',webcrypto);fetched.length=0;setObjectXResources({orbit:async id=>{fetched.push(id);if(id!=='ObjX_MPC.CMO.sav')throw Error('not in test');return sav;}});});
+beforeEach(()=>{vi.stubGlobal('crypto',webcrypto);fetched.length=0;setObjectXResources({orbit:async id=>{fetched.push(id);if(id==='ObjX_MPC.CMO.sav')return sav;if(id==='ObjX_AST.CMO')return ast;throw Error('not in test');}});});
 afterEach(()=>{vi.unstubAllGlobals();setObjectXResources(null);});
 const read=(text:string)=>readAnalysisSession(new File([text],'objx.json'));
 const base:AnalysisSession={observation:null,control:INITIAL_CONTROL,stepInput:'',reference:'galaxy',wide:false,object:'',rows:[],hubble:EMPTY_HUBBLE};
 const JD=2454983.5+4/24,EROS={ra:22.722017,dec:-8.03989};
 const list=buildObservableList(sav,1,JD)!;
-function exposure(jd:number,seconds=120){
+function exposure(jd:number,seconds=120,orbit:{id:'ObjX_MPC.CMO.sav'|'ObjX_AST.CMO';bytes:Uint8Array;list:ObservableList;limit:number}={id:'ObjX_MPC.CMO.sav',bytes:sav,list,limit:16}){
  return {jd,seconds,filter:2,gain:2,telescope:0 as const,ra:EROS.ra,dec:EROS.dec,seed:12345,catalogMode:'live' as const,catalogSha256:'a'.repeat(64),extractId:null,
-  listJd:JD,pairs:movingPairs(sav,list,EROS,jd,seconds).pairs.length,skipped:[] as readonly ('moving-pair-budget')[],fitsSha256:'b'.repeat(64)};
+  listJd:JD,orbitFile:orbit.id,limit:orbit.limit,pairs:movingPairs(orbit.bytes,orbit.list,EROS,jd,seconds).pairs.length,skipped:[] as readonly ('moving-pair-budget')[],fitsSha256:'b'.repeat(64)};
 }
 function investigation():ObjectXInvestigation{
  const e1={...exposure(JD),skipped:['moving-pair-budget'] as const},e2=exposure(JD+1/24);
@@ -64,4 +68,53 @@ describe('v28 Object X investigation',()=>{
   await expect(read(JSON.stringify({...v,base:v}))).rejects.toThrow();
   await expect(read(JSON.stringify({...v,objectXDigestSHA256:'f'.repeat(64)}))).rejects.toThrow();
  });
+});
+
+describe('v28 review 2 fixes',()=>{
+ it('H2: changing the limiting magnitude after an exposure keeps Save working and replays the exposure with its own limit',async()=>{
+  const inv={...investigation(),limit:12};// the student lowered the limit after imaging Eros (V 14.2) at 16
+  expect(inv.exposures[0].pairs).toBeGreaterThan(0);
+  const v=JSON.parse(await serializeAnalysisSession({...base,objectX:inv}));
+  expect(v.objectX.limit).toBe(12);expect(v.objectX.exposures[0].limit).toBe(16);
+  expect((await read(JSON.stringify(v))).objectX).toEqual(inv);
+ });
+ it('H2: changing the orbit file after an exposure keeps Save working and the file names the orbit file each image used',async()=>{
+  const astList=buildObservableList(ast,0,JD)!;
+  const e=exposure(JD,120,{id:'ObjX_AST.CMO',bytes:ast,list:astList,limit:16});
+  const inv={...investigation(),orbitFile:'ObjX_MPC.CMO.sav' as const,exposures:[e,investigation().exposures[1]]};
+  const v=JSON.parse(await serializeAnalysisSession({...base,objectX:inv}));
+  expect(v.objectX.exposures.map((x:{orbitFile:string})=>x.orbitFile)).toEqual(['ObjX_AST.CMO','ObjX_MPC.CMO.sav']);
+  expect((await read(JSON.stringify(v))).objectX).toEqual(inv);expect(fetched).toContain('ObjX_AST.CMO');
+  // Claiming the other orbit file for that image changes the replayed pairs: the digest no longer matches.
+  const forged=JSON.parse(JSON.stringify(v));forged.objectX.exposures[0].orbitFile='ObjX_MPC.CMO.sav';
+  await expect(read(JSON.stringify(forged))).rejects.toThrow();
+  // A list is date, orbit file and limit together, or nothing.
+  const half=JSON.parse(JSON.stringify(v));half.objectX.exposures[0].limit=null;
+  await expect(read(JSON.stringify(half))).rejects.toThrow();
+ });
+ it('M3: the answer, reveal flag, marks, object code and ID are in the digest',async()=>{
+  const {objectX,digest}=await portableObjectXInvestigation(investigation());
+  for(const edit of [(o:any)=>{o.answer='star';},(o:any)=>{o.revealed=false;},(o:any)=>{o.log[1].x+=5;},(o:any)=>{o.target='X-ZZZZZ';},(o:any)=>{o.id='99';},(o:any)=>{o.description='edited';}]){
+   const o=JSON.parse(JSON.stringify(objectX));edit(o);
+   await expect(admitObjectXInvestigation(o,digest)).rejects.toMatchObject({code:'digest'});
+  }
+ });
+ it('M3: a static-catalogue exposure is recomposed on restore and must give its FITS SHA-256',async()=>{
+  // AUTHORED extract over the recorded VizieR response (tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml); not a bundled extract.
+  const xml=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
+  const sha=createHash('sha256').update(xml).digest('hex');
+  const extract:CameraExtract={id:'test-pleiades',catalog:'I/297',raDegrees:56.75,decDegrees:24.12,radiusDegrees:1,file:'test.xml',sha256:sha,bytes:xml.length,recordedAt:'2026-10-27',request:'authored test extract'};
+  const catalog={extracts:[extract],extractBase:'/',fetchImpl:(async()=>new Response(xml)) as unknown as typeof fetch};
+  setObjectXResources({orbit:async()=>sav,catalog});
+  const recipe={camera:'ccd' as const,opticalIndex:0 as const,filterPosition:2,seconds:5,gain:2,centerRaHours:56.75/15,centerDecDegrees:24.12,seed:99};
+  const jd=2454983.7,made=await replayStaticExposure(recipe,jd,[],catalog);if(!made.ok)throw Error(made.reason);
+  const fitsSha256=createHash('sha256').update(made.fits).digest('hex');
+  const e={jd,seconds:5,filter:2,gain:2,telescope:0 as const,ra:recipe.centerRaHours,dec:24.12,seed:99,catalogMode:'static' as const,catalogSha256:sha,extractId:'test-pleiades',
+   listJd:null,orbitFile:null,limit:null,pairs:0,skipped:[],fitsSha256};
+  const inv={...investigation(),exposures:[e],images:[{sha256:fitsSha256,label:'ObjX-42-01',jd,exposure:0}],measure:null,log:[]};
+  const {objectX,digest}=await portableObjectXInvestigation(inv);
+  expect(await admitObjectXInvestigation(objectX,digest)).toEqual(inv);
+  const o=JSON.parse(JSON.stringify(objectX));o.exposures[0].seed=100;
+  await expect(admitObjectXInvestigation(o,digest)).rejects.toMatchObject({code:'replay'});
+ },30_000);
 });

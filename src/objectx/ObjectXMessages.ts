@@ -41,6 +41,7 @@ export const OBJECT_X_MEASURE_EN:ObjectXMeasureMessages=Object.freeze({
 /** #object-x route and E08 guide. No string names or describes a particular target. */
 export const OBJECT_X_LAB_EN=Object.freeze({
  nav:'Object X',guideNav:'Object X guide',
+ hiddenName:'Name hidden during Object X',namesHidden:'Names hidden during Object X.',
  title:'The quest for Object X',
  scope:'You receive only an identifier and sky coordinates. Decide with the instruments whether the object is a star, a galaxy, a quasar, a pulsar or an asteroid.',
  startTitle:'1. Your object',
@@ -64,11 +65,14 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  listBuilt:(n:number,nea:number,opp:number,date:string)=>`Observable asteroids on ${date} UT: ${n} (${nea} near-Earth, ${opp} near opposition). New images include those near the pointing.`,
  listErrors:(n:number)=>`${n} records could not be computed and were skipped.`,
  listError:'The orbit file could not be loaded.',
- noList:'No asteroid list yet: images will show catalogue stars only.',
+ noList:'No asteroid list yet: it is built when you set the observatory clock.',
  pointObservatory:'Copy the coordinates to the observatory',
  pointHelp:'In the observatory: open the dome, use Point to coordinates under Enter coordinates, choose the Telescope field of view, start the clock, turn tracking on and use the CCD camera.',
+ radioCardTitle:(code:string)=>`Object X ${code}`,
+ radioCardHelp:'Start the pulsar exercise setup, then use Set Coordinates with these values (J2000) and open the Receiver. Pulsar names stay hidden near your object; receivers are labelled with your ObjX ID, as in the original.',
+ radioCardCoordinates:(h:string,m:string,s:string,d:string,dm:string,ds:string)=>`RA ${h} h ${m} m ${s} s · Dec ${d}° ${dm}′ ${ds}″`,
  radioTitle:'Radio telescope',
- radioHelp:'A pulsar shows regular pulses. Enter the coordinates above in the radio telescope and listen.',
+ radioHelp:'A pulsar shows regular pulses. The radio telescope page shows your object\'s coordinates in the fields of its Set Coordinates dialog.',
  openRadio:'Open the radio telescope',
  spectrumTitle:'Spectrometer',
  spectrumHelp:'Stars, galaxies and quasars are told apart by their spectra.',
@@ -76,6 +80,11 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  imagesTitle:'3. Your images',noImages:'No images yet. Images taken with the CCD camera appear here.',
  imageRow:(label:string,ut:string,filter:string,seconds:number)=>`${label}: ${ut} UT, ${filter}, ${seconds} s`,
  datePlaceholder:'2009-06-01T04:00:00',imageRowPlain:(label:string,ut:string)=>`${label}: ${ut} UT`,
+ imageNoAsteroids:'asteroids not computed (no asteroid list for this date)',
+ imageLive:'(live catalogue: this image cannot be rebuilt offline)',
+ saveFits:(label:string)=>`Save ${label}.FIT`,
+ imagesFull:(images:number,exposures:number)=>`Image limit reached (${images} images, ${exposures} exposures per investigation): new images are not added.`,
+ confirmClearMarks:'Changing the images removes your marks on them. Continue?',
  imageMovers:(pairs:number)=>`${pairs} ${pairs===1?'asteroid':'asteroids'} in the field box.`,
  /** Moving pairs the camera did not draw, by the composer's typed reason (no names: they could reveal the object). */
  imageSkipped:(reasons:readonly string[])=>{
@@ -97,7 +106,8 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  describeLabel:'Describe your evidence',
  reveal:'Reveal the identity',revealConfirm:'Reveal now? Your answer stays as it is.',revealNeedAnswer:'Choose an answer before revealing.',
  revealed:(id:string,remarks:string)=>`Object: ${id} — ${remarks}`,
- verdict:(right:boolean,kind:string)=>right?`Your answer is right: it is a ${kind}.`:`It is a ${kind}.`,
+ verdict:(right:boolean,kind:string)=>{const a=/^[aeiou]/i.test(kind)?'an':'a';return right?`Your answer is right: it is ${a} ${kind}.`:`It is ${a} ${kind}.`;},
+ answerFrozen:'Your answer was recorded when you revealed the object; it can no longer be changed.',
  progress:'Your progress',
 });
 export type ObjectXLabMessages=typeof OBJECT_X_LAB_EN;
@@ -112,7 +122,7 @@ export const OBJECT_X_GUIDE_EN=Object.freeze({
   clock:['Set the date and time','Set the observatory clock; the original exercise starts on 2009-06-01 at 04:00 UT.'],
   list:['Build the asteroid list','Build the list of observable asteroids for that date so your images include them.'],
   image:['Image the field','Copy the coordinates to the observatory, open the dome, track, point and take a CCD image (no filter and 2 minutes make a faint object easier to see).'],
-  repeat:['Image it again later','Take a second image of the same field 30–60 minutes later (or the next night). A fast object leaves a short trail during a long exposure.'],
+  repeat:['Image it again later','Take a second image of the same field 30–60 minutes later; a fast object leaves a short trail during a long exposure. On a later night the asteroid list is rebuilt for the new date when you set the clock, and a fast near-Earth asteroid (more than 2° a day) will have left the field: look for it around its first position.'],
   measure:['Blink and measure','Blink the two images. If something moved, measure it on both to get its rate and direction. Objects outside the Solar System do not move.'],
   classify:['Decide what it is','If nothing moved, try the radio telescope for pulses; stars, galaxies and quasars need the spectrometer (not available yet).'],
   describe:['Describe your evidence','Write what you saw with each instrument.'],

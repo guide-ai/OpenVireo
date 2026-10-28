@@ -4,10 +4,18 @@
 // the SHA-256 of the FITS the app wrote), the measuring marks (pixels only), the answer, the description and whether the
 // identity was revealed. Images are not stored: the student keeps the saved FITS and reopens them to see the marks again.
 //
-// Restore never trusts stored results: the bundled orbit file is fetched and checked, every asteroid list is rebuilt at its
-// date, the moving pairs of every exposure are re-derived and must give the stored pair count, and a SHA-256 over those
-// derivatives must equal the stored digest. Any failure rejects the whole file (the caller applies nothing).
-import {buildObservableList,movingPairs,orbitFileType,type ObservableList} from '../core/asteroidField';
+// Restore never trusts stored results. Each exposure names the orbit file and limiting magnitude of the list it used (review 2
+// H2); every distinct (orbit file, list date, limit) list is rebuilt from the bundled, size/SHA-checked file, the moving pairs of
+// every exposure are re-derived and must give the stored pair count, and an exposure whose catalogue came from a bundled
+// static extract is recomposed and must give its stored FITS SHA-256 (review 2 M3). Live-catalogue exposures cannot be
+// replayed offline: their pairs are, their images are not. A SHA-256 over those derivatives AND over the student's own state
+// (ID, object code, answer, reveal flag, description and marks) must equal the stored digest, so an edited file is rejected.
+// Any failure rejects the whole file (the caller applies nothing). Lists are scanned in slices that yield to the page.
+import {finishObservableList,movingPairs,newObservableScan,orbitFileType,scanObservable,type ObservableList} from '../core/asteroidField';
+import {orbitRecordCount} from '../core/orbitFile';
+import type {CameraCatalogOptions} from './cameraCatalog';
+import type {CameraExtraSource} from '../core/cameraExposure';
+import {replayStaticExposure} from './objectXImage';
 import {MEASUREMENT_LIMIT,addMeasurement,type Measurement,type MeasurementLog} from '../core/astrometryMeasure';
 import {OBJECT_X_ID_MAX,OBJECT_X_KINDS,type ObjectXKind} from '../core/objectXLab';
 import {parseClockUTC} from '../core/siteClock';
@@ -16,7 +24,8 @@ import {BUNDLED_ORBIT_FILES,SELECTABLE_ORBIT_FILES,fetchBundledOrbitFile,type Bu
 import {resourceSha256} from './boundedResource';
 
 export const OBJECT_X_INVESTIGATION_POLICY='openvireo-objectx-investigation-v28';
-/** Own bounds: 64 exposures, 16 image references, 8 distinct list dates, 4000-character description, 1 MiB serialized. */
+/** Own bounds: 64 exposures, 16 image references, 8 distinct lists (orbit file, date, limit), 4000-character description,
+ * 1 MiB serialized. */
 export const OBJECT_X_SESSION_LIMITS=Object.freeze({exposures:64,images:16,lists:8,description:4000,bytes:1024*1024});
 export class ObjectXSessionError extends Error{
  constructor(readonly code:'format'|'bounds'|'record'|'replay'|'digest'){super(`Object X investigation: ${code}`);this.name='ObjectXSessionError';}
@@ -24,8 +33,9 @@ export class ObjectXSessionError extends Error{
 export type ObjectXExposure=Readonly<{
  jd:number;seconds:number;filter:number;gain:number;telescope:0|1|2;ra:number;dec:number;seed:number;
  catalogMode:'static'|'live';catalogSha256:string;extractId:string|null;
- /** Date of the asteroid list whose entries were offered to this exposure, or null when no list was built. */
- listJd:number|null;pairs:number;
+ /** The asteroid list whose entries were offered to this exposure: its date, orbit file and limiting magnitude, or all null
+  * when no current list existed ("asteroids not computed"). */
+ listJd:number|null;orbitFile:BundledOrbitFileId|null;limit:number|null;pairs:number;
  /** Moving pairs the camera skipped, by typed reason (CameraSkippedSource.reason; its extra list holds only the lab's pairs). */
  skipped:readonly ObjectXSkipReason[];fitsSha256:string;
 }>;
@@ -38,9 +48,18 @@ export type ObjectXInvestigation=Readonly<{
  answer:ObjectXKind|null;description:string;revealed:boolean;
 }>;
 /** Where restore gets the orbit file (browser: same-origin, size/SHA-checked; tests: the repository files). */
-export type ObjectXResources=Readonly<{orbit:(id:BundledOrbitFileId)=>Promise<Uint8Array>}>;
+export type ObjectXResources=Readonly<{orbit:(id:BundledOrbitFileId)=>Promise<Uint8Array>;catalog?:CameraCatalogOptions}>;
 function browserResources():ObjectXResources{
  return {orbit:async id=>(await fetchBundledOrbitFile(fetch,new AbortController().signal,id)).bytes};
+}
+const yieldToPage=()=>new Promise<void>(r=>setTimeout(r,0));
+const LIST_SLICE=4000;
+/** The observable list scanned in slices that yield between them (review 2 L3). */
+export async function buildObservableListInSlices(bytes:Uint8Array,id:BundledOrbitFileId,jd:number,limit:number,onProgress?:(done:number,total:number)=>void,cancelled?:()=>boolean):Promise<ObservableList|null>{
+ const type=orbitFileType(id);if(type===2)return null;
+ const n=orbitRecordCount(bytes),scan=newObservableScan();
+ for(let i=0;i<n;i+=LIST_SLICE){if(cancelled?.())return null;onProgress?.(i,n);scanObservable(bytes,type,jd,limit,i,Math.min(n,i+LIST_SLICE),scan);await yieldToPage();}
+ return finishObservableList(bytes,type,jd,limit,scan);
 }
 let resources:ObjectXResources|null=null;
 /** Test seam: replace the resource source. */
@@ -60,13 +79,16 @@ function readSkipped(v:unknown,pairs:number):readonly ObjectXSkipReason[]{
  return Object.freeze(v.map(r=>OBJECT_X_SKIP_REASONS.includes(r as ObjectXSkipReason)?r as ObjectXSkipReason:fail('record')));
 }
 function readExposure(v:unknown):ObjectXExposure{
- const r=exact(v,['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','pairs','skipped','fitsSha256']);
+ const r=exact(v,['jd','seconds','filter','gain','telescope','ra','dec','seed','catalogMode','catalogSha256','extractId','listJd','orbitFile','limit','pairs','skipped','fitsSha256']);
+ // A list is all three of date, orbit file and limit, or none of them.
+ if((r.listJd===null)!==(r.orbitFile===null)||(r.listJd===null)!==(r.limit===null))fail('record');
+ if(r.orbitFile!==null&&!SELECTABLE_ORBIT_FILES.includes(r.orbitFile as BundledOrbitFileId))fail('record');
  if(r.catalogMode!=='static'&&r.catalogMode!=='live')fail('record');
  if(![1,2,5].includes(r.gain as number))fail('record');
  const pairs=int(r.pairs,0,256);
  return Object.freeze({jd:jd(r.jd),seconds:int(r.seconds,1,CAMERA_MAX_SECONDS),filter:int(r.filter,0,4),gain:r.gain as number,telescope:int(r.telescope,0,2) as 0|1|2,
   ra:num(r.ra,0,24),dec:num(r.dec,-90,90),seed:int(r.seed,0,0xffff_ffff),catalogMode:r.catalogMode as 'static'|'live',catalogSha256:hex64(r.catalogSha256),
-  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),pairs,skipped:readSkipped(r.skipped,pairs),fitsSha256:hex64(r.fitsSha256)});
+  extractId:r.extractId===null?null:str(r.extractId,80),listJd:r.listJd===null?null:jd(r.listJd),orbitFile:r.orbitFile as BundledOrbitFileId|null,limit:r.limit===null?null:num(r.limit,-5,30),pairs,skipped:readSkipped(r.skipped,pairs),fitsSha256:hex64(r.fitsSha256)});
 }
 function readImage(v:unknown,exposures:number):ObjectXImageRef{
  const r=exact(v,['sha256','label','jd','exposure']);
@@ -85,10 +107,11 @@ function readLog(v:unknown,frames:number):MeasurementLog{
  }
  return log;
 }
+const portableLog=(log:MeasurementLog)=>log.map(m=>({frame:m.frame,role:m.role,x:m.x,y:m.y,jd:m.jd,...(m.catalog?{catalog:{raHours:m.catalog.raHours,decDeg:m.catalog.decDeg}}:{})}));
 function portablePayload(i:ObjectXInvestigation){
  return {policy:OBJECT_X_INVESTIGATION_POLICY,orbitFile:i.orbitFile,id:i.id,target:i.target,startUtc:i.startUtc,clockSet:i.clockSet,listJd:i.listJd,limit:i.limit,
   exposures:i.exposures.map(e=>({...e,skipped:[...e.skipped]})),images:i.images.map(m=>({...m})),measure:i.measure?{...i.measure}:null,
-  log:i.log.map(m=>({frame:m.frame,role:m.role,x:m.x,y:m.y,jd:m.jd,...(m.catalog?{catalog:{raHours:m.catalog.raHours,decDeg:m.catalog.decDeg}}:{})})),
+  log:portableLog(i.log),
   answer:i.answer,description:i.description,revealed:i.revealed};
 }
 type Derived=Readonly<{investigation:ObjectXInvestigation;digest:string}>;
@@ -114,22 +137,37 @@ async function derive(value:unknown):Promise<Derived>{
  const answer=v.answer===null?null:OBJECT_X_KINDS.includes(v.answer as ObjectXKind)?v.answer as ObjectXKind:fail('record');
  const description=str(v.description,OBJECT_X_SESSION_LIMITS.description,true);
  if(v.revealed&&answer===null)fail('record');// the reveal comes after the answer
- // Replay: rebuild each list and re-derive each exposure's moving pairs.
- const dates=[...new Set(exposures.map(e=>e.listJd).filter((d):d is number=>d!==null))];
- if(dates.length>OBJECT_X_SESSION_LIMITS.lists)fail('bounds');
+ // Replay: rebuild each distinct list with the orbit file and limit that exposure used, re-derive each exposure's pairs and
+ // recompose static-catalogue images.
+ const key=(e:ObjectXExposure)=>`${e.orbitFile}|${e.listJd}|${e.limit}`;
+ const used=[...new Map(exposures.filter(e=>e.listJd!==null).map(e=>[key(e),e])).values()];
+ if(used.length>OBJECT_X_SESSION_LIMITS.lists)fail('bounds');
  const derivatives:unknown[]=[];
- if(dates.length){
-  const src=resources??(resources=browserResources());
-  let bytes:Uint8Array;try{bytes=await src.orbit(orbitFile);}catch{return fail('replay');}
-  const lists=new Map<number,ObservableList>();
-  for(const d of dates){const l=buildObservableList(bytes,orbitFileType(BUNDLED_ORBIT_FILES[orbitFile].id),d,limit);if(!l)return fail('replay');lists.set(d,l);}
-  for(const [i,e] of exposures.entries()){
-   if(e.listJd===null){if(e.pairs)fail('replay');derivatives.push({i,pairs:[]});continue;}
-   const r=movingPairs(bytes,lists.get(e.listJd)!,{ra:e.ra,dec:e.dec},e.jd,e.seconds);
-   if(r.pairs.length!==e.pairs)fail('replay');
-   derivatives.push({i,list:lists.get(e.listJd)!.entries.length,pairs:r.pairs.map(p=>[p.index,p.source.raHours,p.source.decDeg,p.source.storedMag,p.source.end.raHours,p.source.end.decDeg])});
-  }
+ const src=resources??(resources=browserResources());
+ const files=new Map<BundledOrbitFileId,Uint8Array>(),lists=new Map<string,ObservableList>();
+ for(const e of used){
+  const file=e.orbitFile!;
+  if(!files.has(file)){try{files.set(file,await src.orbit(file));}catch{return fail('replay');}}
+  const l=await buildObservableListInSlices(files.get(file)!,BUNDLED_ORBIT_FILES[file].id,e.listJd!,e.limit!);if(!l)return fail('replay');
+  lists.set(key(e),l);
  }
+ for(const [i,e] of exposures.entries()){
+  let extras:readonly CameraExtraSource[]=[],pairs:unknown[]=[];
+  if(e.listJd!==null){
+   const l=lists.get(key(e))!,r=movingPairs(files.get(e.orbitFile!)!,l,{ra:e.ra,dec:e.dec},e.jd,e.seconds);
+   if(r.pairs.length!==e.pairs)fail('replay');
+   extras=r.pairs.map(p=>p.source);pairs=r.pairs.map(p=>[p.index,p.source.raHours,p.source.decDeg,p.source.storedMag,p.source.end.raHours,p.source.end.decDeg]);
+  }else if(e.pairs)fail('replay');
+  let image='live-not-replayable';
+  if(e.catalogMode==='static'){
+   const r=await replayStaticExposure({camera:'ccd',opticalIndex:e.telescope,filterPosition:e.filter,seconds:e.seconds,gain:e.gain,centerRaHours:e.ra,centerDecDegrees:e.dec,seed:e.seed},e.jd,extras,src.catalog);
+   if(!r.ok||r.catalogSha256!==e.catalogSha256||r.extractId!==e.extractId||await resourceSha256(r.fits.slice().buffer)!==e.fitsSha256)return fail('replay');
+   image='static-replayed';await yieldToPage();
+  }
+  derivatives.push({i,list:e.listJd===null?null:lists.get(key(e))!.entries.length,pairs,image,fitsSha256:e.fitsSha256});
+ }
+ // The student's own state is in the digest too, so editing the answer, the reveal or the marks is detected.
+ derivatives.push({state:{id,target,answer,revealed:v.revealed,description,log:portableLog(log),measure}});
  const digest=await resourceSha256(new TextEncoder().encode(JSON.stringify({policy:OBJECT_X_INVESTIGATION_POLICY,derivatives})));
  const result=Object.freeze({investigation:Object.freeze({orbitFile,id,target,startUtc,clockSet:v.clockSet as boolean,listJd,limit,exposures,images,measure,log,answer,description,revealed:v.revealed as boolean}),digest});
  lastVerified={text,result};return result;

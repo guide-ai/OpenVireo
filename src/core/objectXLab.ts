@@ -6,6 +6,7 @@
  * reveals it. The kind of each row below is read from the row's own remarks ("Very strong pulse!", "QSO - Z = …", "Galaxy",
  * "Star", "Asteroid", "Fast Moving Asteroid", "TNO - Dwarf Planet", "The 1st pulsar!"); it is used only after the reveal. */
 import type {HtlList} from './hotList';
+import {separationDegrees} from './ephemeris';
 
 export const OBJECT_X_KINDS=['star','galaxy','qso','pulsar','asteroid'] as const;
 export type ObjectXKind=(typeof OBJECT_X_KINDS)[number];
@@ -63,3 +64,10 @@ export function objectXLabProgress(s:ObjectXLabSummary,answer:ObjectXKind|null=n
 export const sameObjectXLabSummary=(a:ObjectXLabSummary,b:ObjectXLabSummary)=>(Object.keys(a) as (keyof ObjectXLabSummary)[]).every(k=>a[k]===b[k]);
 /** Field radius (degrees) within which an image counts as "of the target": half the 0.4 m field diagonal is ~0.2°. */
 export const OBJECT_X_ON_TARGET_DEGREES=0.25;
+
+/** [W] Radius around an unrevealed target inside which no instrument names a catalogue object (review 2 H1): the finder field
+ * is 2.5°, so any object an observatory view can show next to the target is covered. */
+export const OBJECT_X_HIDE_DEGREES=2;
+export function objectXMasks(hidden:Readonly<{ra:number;dec:number}>|null,p:Readonly<{ra:number;dec:number}>):boolean{
+ return !!hidden&&separationDegrees(p.ra,p.dec,hidden.ra,hidden.dec)<=OBJECT_X_HIDE_DEGREES;
+}

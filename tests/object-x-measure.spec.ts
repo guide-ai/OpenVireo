@@ -47,7 +47,7 @@ test('blinking alternates the images, aligned on reference stars paired by catal
  await mark(79,20,'22 43 06','-08 02 10');await mark(23,14,'22 43 21','-08 02 15');
  await expect(host.getByTestId('objectx-blink-mode')).toContainText('aligned on the first two reference stars');
  // Closure N2: cursor moves reuse the cached stretched raster.
- const stretches=()=>page.evaluate(`import('/src/ObjectXMeasure.tsx').then(m=>m.objectXRasterStats.stretches)`) as Promise<number>;
+ const stretches=async()=>Number(await canvas.getAttribute('data-raster-builds'));
  const before=await stretches();
  await host.getByTestId('objectx-measure-viewport').focus();for(let i=0;i<5;i++)await page.keyboard.press('ArrowRight');
  await expect(host.getByTestId('objectx-cursor')).toHaveText(/Cursor x \d+/);

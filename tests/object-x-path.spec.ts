@@ -2,11 +2,16 @@ import {test,expect,type Page} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {clickHeaderTool} from './fixtures/header-tools';
+import {parseFitsImage} from '../src/core/fitsImage';
+import {angularSeparationArcsec,skyToPixel,tanWcsFromCards} from '../src/core/astrometryMeasure';
+import {findOrbitRecord,readOrbitRecord} from '../src/core/orbitFile';
+import {astrometricPosition,elementsFromState} from '../src/core/ephemeris';
 
 // E08 Object X route (#object-x). Every CDS/VizieR request is intercepted with the recorded response
 // tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml (CDS, 2026-10-27; its rows lie off this field, so the images hold the
-// background, the asteroids placed by the ephemeris and noise). Exposures are a few seconds long: a long exposure of a fast
-// object currently fails in the composer (known limit, front C).
+// background, the asteroids placed by the ephemeris and noise). The motion check (review 2 M5) predicts the target's pixel on
+// each saved image from the bundled orbit file and the image's own header, then compares the measured rate and position angle
+// with the ephemeris.
 const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|cdsarc|unistra\.fr/;
 const recorded=readFile(new URL('./fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
@@ -32,12 +37,12 @@ async function openLab(page:Page){
  await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
  await expect(page.getByTestId('objectx-target').locator('option')).toHaveCount(18);
 }
-async function exposeHere(page:Page,seconds:string){
+async function exposeHere(page:Page,seconds:string,minutes='0'){
  const camera=page.getByTestId('camera-control');
- await camera.getByLabel(/Ask CDS\/VizieR live/).check();await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill(seconds);
+ await camera.getByLabel(/Ask CDS\/VizieR live/).check();await camera.getByLabel('Minutes').fill(minutes);await camera.getByLabel('Seconds').fill(seconds);
  await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
  await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
- await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:60_000});
+ await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});
 }
 
 test('hidden identity, two images of the target with asteroids, measure, answer, reveal, save and restore',async({page})=>{
@@ -51,7 +56,7 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await expect(page.getByTestId('objectx-coordinates')).toHaveText('X-UZOBN — Coordinates (J2000): RA 22 43 19.26, Dec -08 02 23.6');
  await button(page,'Set the observatory clock').click();
  await expect(page.getByText('Observatory clock set to 2009-06-01 04:00:00 UT.')).toBeVisible();
- await button(page,'Build the asteroid list for the observatory date').click();
+ // As the original after Set Date/Time, the asteroid list is built by itself (review 2 M1).
  await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});
  expect(await leaks(page)).toEqual([]);
  await page.screenshot({path:test.info().outputPath('object-x-start.png'),fullPage:true});
@@ -65,12 +70,15 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  // The plain view switch keeps the typed coordinates ("Switch to telescope view ↗" points at the selected catalogue object).
  await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
  await expect(page.locator('.pointing-readout').first()).toContainText('22.72202');
- if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
- await button(page,'Start observatory clock').click();
- await button(page,'Turn tracking on').click();
- // 30 s: the target (V ≈ 14 here) stands out of the noise on the 0.4 m.
- await exposeHere(page,'30');
- await exposeHere(page,'30');
+ const startClock=async()=>{if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();await button(page,'Start observatory clock').click();};
+ await startClock();await button(page,'Turn tracking on').click();
+ await exposeHere(page,'0','1');
+ // 45 minutes later: the student sets the clock again; the list is rebuilt for the new time and tracking stays on.
+ await clickHeaderTool(page,'Object X');
+ await page.getByLabel('Observation date and time (UT)').fill('2009-06-01T04:45:00');await button(page,'Set the observatory clock').click();
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:45:00 UT',{timeout:20_000});
+ await clickHeaderTool(page,'Observatory');await startClock();
+ await exposeHere(page,'0','1');
  expect(await leaks(page)).toEqual([]);
 
  await clickHeaderTool(page,'Object X');
@@ -78,41 +86,60 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await expect(images).toHaveCount(2);
  await expect(images.first()).toContainText('ObjX-42-01');await expect(images.nth(1)).toContainText('ObjX-42-02');
  await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
+ await expect(page.getByTestId('objectx-image-movers-1')).toContainText(/[1-9]\d* asteroids? in the field box/);
+ // Save both images as the original names them (review 2 L4) and read their headers in Node.
+ const fits:Buffer[]=[];
+ for(const label of ['ObjX-42-01','ObjX-42-02']){
+  const d=page.waitForEvent('download');await button(page,`Save ${label}.FIT`).click();const dl=await d;
+  expect(dl.suggestedFilename()).toBe(`${label}.FIT`);fits.push(await readFile((await dl.path())!));
+ }
+ // Prediction from the bundled orbit file at mid-exposure, through each image's own WCS.
+ const sav=new Uint8Array(readFileSync(new URL('../public/original/orbit/ObjX_MPC.CMO.sav',import.meta.url)));
+ const eros=elementsFromState(readOrbitRecord(sav,findOrbitRecord(sav,{number:'433'})!));
+ const predicted=fits.map(bytes=>{
+  const image=parseFitsImage(new Uint8Array(bytes)),card=(k:string)=>Number(image.cards.find(c=>c.startsWith(k.padEnd(8)+'='))!.slice(10).split('/')[0]);
+  const jd=card('MJD-OBS')+2400000.5,mid=jd+card('EXPTIME')/2/86400,p=astrometricPosition(eros,mid);
+  return {jd,sky:{raHours:p.raHours,decDeg:p.decDeg},pixel:skyToPixel(tanWcsFromCards(image.cards),{raHours:p.raHours,decDeg:p.decDeg})};
+ });
+ const hours=(predicted[1].jd-predicted[0].jd)*24;expect(hours).toBeGreaterThan(0.7);
+ const rate=angularSeparationArcsec(predicted[0].sky,predicted[1].sky)/hours;
+ expect(rate).toBeGreaterThan(50);expect(rate).toBeLessThan(60);// Eros ≈ 54.7″/h at the default date
+ const dRa=(predicted[1].sky.raHours-predicted[0].sky.raHours)*15*3600*Math.cos(predicted[0].sky.decDeg*Math.PI/180),dDec=(predicted[1].sky.decDeg-predicted[0].sky.decDeg)*3600;
+ const pa=(Math.atan2(dRa,dDec)*180/Math.PI+360)%360;
+
  await button(page,'Measure positions').click();
  const canvas=page.getByTestId('objectx-measure-canvas');await expect(canvas).toBeVisible();
- // The target sits at the field centre (pointed at its own coordinates): measure it on both images through the header WCS.
  const viewport=page.getByTestId('objectx-measure-viewport');
- for(const frame of ['Image 1: ObjX-42-01','Image 2: ObjX-42-02']){
-  await page.getByRole('button',{name:frame}).click();await viewport.focus();
-  const at=async()=>(await page.getByTestId('objectx-cursor').textContent())??'';
-  // Move the cursor once from (1,1) to (513,513); it stays there on the second image.
-  if(frame.startsWith('Image 1')){
-   for(let i=0;i<51;i++){await page.keyboard.press('Shift+ArrowRight');await page.keyboard.press('Shift+ArrowDown');}
-   for(let i=0;i<2;i++){await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowDown');}
+ const cursor=async()=>{const m=/x (\d+), y (\d+)/.exec((await page.getByTestId('objectx-cursor').textContent())??'')!;return {x:Number(m[1]),y:Number(m[2])};};
+ async function moveTo(x:number,y:number){
+  for(const [axis,plus,minus] of [['x','ArrowRight','ArrowLeft'],['y','ArrowDown','ArrowUp']] as const){
+   let d=Math.round(axis==='x'?x:y)-(await cursor())[axis];
+   while(Math.abs(d)>=10){await page.keyboard.press(`Shift+${d>0?plus:minus}`);d-=Math.sign(d)*10;}
+   while(d!==0){await page.keyboard.press(d>0?plus:minus);d-=Math.sign(d);}
   }
-  expect(await at()).toBe('Cursor x 513, y 513');
-  await page.keyboard.press('Enter');
  }
- await expect(page.getByTestId('objectx-measurements').locator('tbody tr')).toHaveCount(2);
- await expect(page.getByTestId('objectx-measurements').locator('tbody tr').first()).toContainText('header WCS');
- await expect(page.getByTestId('objectx-motion')).toContainText('″/h toward position angle');
- // Both marks are on the target (the object's coordinates, 22 43 19.26 −08 02 23.6), not on a noise peak.
+ for(const [k,frame] of ['Image 1: ObjX-42-01','Image 2: ObjX-42-02'].entries()){
+  await page.getByRole('button',{name:frame}).click();await viewport.focus();
+  await moveTo(predicted[k].pixel.x,predicted[k].pixel.y);await page.keyboard.press('Enter');
+ }
  const rows=page.getByTestId('objectx-measurements').locator('tbody tr');
- for(const i of [0,1]){
-  const cells=await rows.nth(i).locator('td').allTextContents();
-  const [h,m,sec]=cells[4].split(' ').map(Number),[d,dm,ds]=cells[5].replace('-','').split(' ').map(Number);
-  const dra=((h*3600+m*60+sec)-(22*3600+43*60+19.26))*15*Math.cos(8.04*Math.PI/180),ddec=-(d*3600+dm*60+ds)+(8*3600+2*60+23.6);
-  expect(Math.hypot(dra,ddec)).toBeLessThan(4);
- }
+ await expect(rows).toHaveCount(2);await expect(rows.first()).toContainText('header WCS');
+ const motion=/Motion: ([\d.]+)″\/h toward position angle ([\d.]+)°/.exec((await page.getByTestId('objectx-motion').textContent())??'');
+ expect(motion).not.toBeNull();
+ // Tolerance: a centroid within about 1 px (1.07″) on each image over 0.75 h is about ±3″/h; allowed ±6″/h and ±8°.
+ expect(Math.abs(Number(motion![1])-rate)).toBeLessThan(6);
+ const dpa=Math.abs(((Number(motion![2])-pa)+540)%360-180);expect(dpa).toBeLessThan(8);
  await page.screenshot({path:test.info().outputPath('object-x-measure.png'),fullPage:true});
 
  // Answer and reveal.
  await page.getByTestId('objectx-answer').getByLabel('asteroid').check();
- await page.getByLabel('Describe your evidence').fill('A source at the centre moved between the two images.');
+ await page.getByLabel('Describe your evidence').fill('A source near the centre moved about 55″ per hour between the two images.');
  expect(await leaks(page)).toEqual([]);
  await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
  await expect(page.getByTestId('objectx-reveal')).toContainText('Object: (433) Eros — Asteroid');
- await expect(page.getByTestId('objectx-reveal')).toContainText('Your answer is right: it is a asteroid.');
+ await expect(page.getByTestId('objectx-reveal')).toContainText('Your answer is right: it is an asteroid.');
+ // The answer is frozen at the reveal (review 2 M2).
+ await expect(page.getByTestId('objectx-answer').getByLabel('star')).toBeDisabled();
  await page.screenshot({path:test.info().outputPath('object-x-reveal.png'),fullPage:true});
 
  // Save (v28) and restore in a fresh page.
@@ -125,7 +152,11 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
  await expect(fresh.getByTestId('objectx-images').locator('li')).toHaveCount(2,{timeout:20_000});
  await expect(fresh.getByTestId('objectx-images').locator('li').first()).toContainText('not loaded — open its saved FITS file');
  await expect(fresh.getByTestId('objectx-reveal')).toContainText('(433) Eros');
- await expect(fresh.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});
+ await expect(fresh.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:45:00 UT',{timeout:20_000});
+ // Reopening the saved files binds them back by SHA-256, and the marks and motion come back.
+ await fresh.getByTestId('objectx-open-fits').setInputFiles(fits.map((buffer,i)=>({name:`ObjX-42-0${i+1}.FIT`,mimeType:'application/fits',buffer})));
+ await expect(fresh.getByTestId('objectx-motion')).toContainText('″/h toward position angle');
+ expect(json.objectX.exposures.map((e:{orbitFile:string})=>e.orbitFile)).toEqual(['ObjX_MPC.CMO.sav','ObjX_MPC.CMO.sav']);
 });
 
 test('the radio and spectrometer branches, the guide, and light/dark at desktop and 320 px never name the object',async({page})=>{
