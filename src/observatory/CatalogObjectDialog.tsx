@@ -10,7 +10,8 @@ function Led({led,label,hint}:{led:LedView;label:string;hint:string}){
  return <span className="co-led" title={hint} data-active={led.active||undefined}><i style={{background:led.colour}} aria-hidden="true"/>{led.active?M.ledAssigned(label):M.ledCatalogue(label)}</span>;
 }
 /** TRefInfoForm1 "Catalog Object" (modal, ShowModal 0x53d558): the original fields in the DFM order. Every value is read-only
- * here (record-edit-unavailable); Update (master catalogue write 0x59a54c) and GCVS (no variable record) are disabled with their
+ * here (record-edit-unavailable); Update (master catalogue write 0x59a54c) is disabled, and GCVS is enabled only for a star whose
+ * record carries a variable (Front T: fieldStarVariable, +0x5b ≠ nil; otherwise disabled), both with their
  * typed reasons. OK and Cancel close (they also close a visible Variable Star Data window natively; that window lives on its
  * own page here). Escape = Cancel [W]. */
 export default function CatalogObjectDialog({record,onClose,onGcvs}:{record:CatalogRecord;onClose:()=>void;onGcvs?:()=>void}){

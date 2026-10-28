@@ -21,10 +21,13 @@ export type LssRecord=Readonly<{
  zSingle:number;zHex:string;velocitySingle:number;velocityHex:string;remarks:string;acquisitionPolicy:string;
  /** The exposure behind the measurement (replayed on restore) and the shift control that gave z. */
  journal:LssJournal;control:ShiftControl;
+ /** Front T: the observatory-clock JD frozen when the field list was built (the variable stage's time, 0x487bcc); absent when
+  * the record was restored from a file older than v30 or the clock was unavailable. */
+ fieldJd?:number;
 }>;
 export type LssJournal=Readonly<{seedAtReset:number;events:readonly JournalEvent[]}>;
 /** The open "Measured Redshift Data" dialog: values fixed from the measurement, only Remarks (and the object label) editable. */
-export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl}>;
+export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl;fieldJd?:number}>;
 export type LssSurveyState=Readonly<{field:LssFieldNumber|null;loaded:LssFieldNumber|null;records:readonly LssRecord[];draft:LssDraft|null;handedToWedge:number}>;
 export const EMPTY_LSS_SURVEY:LssSurveyState=Object.freeze({field:null,loaded:null,records:Object.freeze([]),draft:null,handedToWedge:0});
 const hex32=(v:number)=>{const b=new DataView(new ArrayBuffer(4));b.setFloat32(0,v,false);return b.getUint32(0,false).toString(16).padStart(8,'0');};
@@ -41,7 +44,7 @@ export function markLssListLoaded(s:LssSurveyState,field:LssFieldNumber):LssSurv
 export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'>):LssSurveyState{
  if(s.draft)throw new LssSurveyError('pending');
  if(d.journal&&Array.isArray(d.journal.events)&&lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
- if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
+ if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||(d.fieldJd!==undefined&&!Number.isFinite(d.fieldJd))||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
  return Object.freeze({...s,draft:Object.freeze({...d,object:text(d.object,LSS_LIMITS.object),remarks:'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
 }
@@ -81,7 +84,7 @@ export function confirmLssRecord(s:LssSurveyState):LssSurveyState{
  if(s.records.length>=LSS_LIMITS.records)throw new LssSurveyError('limit');
  if(lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  const v=hubbleVelocity(d.z),zSingle=Math.fround(d.z);
- const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle,zHex:hex32(zSingle),velocitySingle:v.storedKmS,velocityHex:v.storedHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control});
+ const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle,zHex:hex32(zSingle),velocitySingle:v.storedKmS,velocityHex:v.storedHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{})});
  return Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])});
 }
 /** Cancel / Escape: adds nothing. */

@@ -31,7 +31,8 @@ import { createMeasurement, currentZ, type Measurement, type ShiftControl } from
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
 import type {ObjectXSpectrumRecord} from './objectXSpectra';
 import {OBJECT_X_INVESTIGATION_POLICY,ObjectXSessionError,admitObjectXInvestigation,portableObjectXInvestigation,type ObjectXInvestigation} from './objectXInvestigation';
-import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,portableLssInvestigation,type LssInvestigation} from './lssInvestigation';
+import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
+import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,lssFieldJdsOf,portableLssInvestigation,type LssFieldJds,type LssInvestigation} from './lssInvestigation';
 import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
 import {HUBBLE_EXTENDED_BANKS,HUBBLE_EXTENDED_TARGETS,isHubbleExtendedId} from '../core/hubbleEngineTargets';
 import {EXTENDED_MAX_ACQUISITION_ARCHIVE} from '../core/acquisitionArchive';
@@ -81,9 +82,9 @@ function acquisitionIsPegasus(a:AcquisitionObservation){return a.kind==='catalog
  * once in the archive, while inline old, cached and Pegasus journals each incur their actual replay cost. */
 function checkCombinedReplayBudget(wrapper:unknown,extended=false):void{
  let inner=wrapper as Record<string,unknown>;const groups:(readonly [readonly string[],unknown])[]=[];
- // v26..v29 carry no galaxy banks of their own except v29's extended group; they are walked through to the base.
- for(let depth=0;Number(inner.version)>=19&&Number(inner.version)<=29;depth++){
-  if(depth>=11||!inner.base||typeof inner.base!=='object'||Array.isArray(inner.base))fail('format');
+ // v26..v30 carry no galaxy banks of their own except v29's extended group; they are walked through to the base.
+ for(let depth=0;Number(inner.version)>=19&&Number(inner.version)<=30;depth++){
+  if(depth>=12||!inner.base||typeof inner.base!=='object'||Array.isArray(inner.base))fail('format');
   if(inner.version===29){extended=true;groups.push([HUBBLE_EXTENDED_BANKS,inner.extendedGalaxies]);}
   if(inner.version===25)groups.push([PEGASUS_GALAXY_IDS,inner.pegasusGalaxies]);
   if(inner.version===24)groups.push([CACHED_GALAXY_IDS,inner.cachedGalaxies]);
@@ -164,11 +165,35 @@ async function withObjectXSpectra(base:AnalysisSession,list:readonly ObjectXSpec
 }
 /** Review 4 item 8: lets the page say that a restore is preparing fields (engine Hubble fields or kept Object X spectra, both in
  * Workers) before the base replays; called at most once, only by the outermost v29 wrapper. */
-export type RestoreHooks=Readonly<{onPreparingFields?:()=>void}>;
+export type RestoreHooks=Readonly<{onPreparingFields?:()=>void;
+ /** Front T (v30): the per-record frozen field JDs for the LSS layer, and a flag the v27 layer sets when it consumed them. */
+ variableTime?:Readonly<{lssFieldJds:LssFieldJds;consumed:{done:boolean}}>}>;
+/** Front T (v30): the observatory-clock JD frozen when each LSS record's field list was built (the variable stage's time, recovered
+ * 0x487bcc; the original reads host Now + the user offset, which is not deterministic, so the web freezes the observatory clock at
+ * field build and the file records it). A v30 file wraps an unchanged v1..29 base that must contain the v27 LSS layer; it is never
+ * nested. Older files carry no JD: a row whose field needs one fails closed on restore (variable-time-required). */
+export const VARIABLE_TIME_SESSION_POLICY='openvireo-variable-time-v30';
 async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false,hooks:RestoreHooks={}):Promise<AnalysisSession> {
- if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
+ if(!migrated&&!hooks.variableTime){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===30){
+    if(migrated||hooks.variableTime)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','variableTimePolicy','lssFieldJds']);
+    const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.variableTimePolicy!==VARIABLE_TIME_SESSION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<27||Number(baseVersion)>29)fail('format');
+    // [[record id, JD], …] with strictly increasing ids; each JD finite and inside the site clock's JD domain.
+    if(!Array.isArray(r.lssFieldJds)||r.lssFieldJds.length<1||r.lssFieldJds.length>MAX_SESSION_ROWS)fail('format');
+    const lssFieldJds=new Map<number,number>();let last=0;
+    for(const e of r.lssFieldJds as unknown[]){
+     if(!Array.isArray(e)||e.length!==2||!Number.isInteger(e[0])||e[0]<=last||typeof e[1]!=='number'||!Number.isFinite(e[1])||e[1]<FIELD_VARIABLE_JD_DOMAIN.minimum||e[1]>FIELD_VARIABLE_JD_DOMAIN.maximum)fail('format');
+     lssFieldJds.set(e[0],e[1]);last=e[0];
+    }
+    const consumed={done:false};
+    const base=await restore(r.base,verifySources,false,false,false,false,false,false,{...hooks,variableTime:{lssFieldJds,consumed}});
+    if(!consumed.done)fail('format');// the JDs must belong to the LSS layer of this file
+    return base;
+  }
   if(version===29){
     // Front F: the extended Hubble targets over an unchanged v1..28 base, outermost; a v29 is never nested.
     if(migrated)fail('format');
@@ -189,7 +214,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     const text=JSON.stringify(value),needed=HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').flatMap(t=>t.telescopes.filter(i=>{const p=t.policies[i];return p!==undefined&&text.includes(JSON.stringify(p));}).map(i=>[t.id,i] as const));
     if(needed.length||keptSpectra)hooks.onPreparingFields?.();
     if(needed.length){const io=await import('./hubbleEngineTargets');try{await io.ensureHubbleEngineTargets(needed);}catch(e){if(e instanceof io.HubbleEngineLoadError)fail('resources');fail('state');}}
-    const base=await withObjectXSpectra(await restore(r.base,verifySources,true,false,false,true,true,true),keptSpectra);
+    const base=await withObjectXSpectra(await restore(r.base,verifySources,true,false,false,true,true,true,{variableTime:hooks.variableTime}),keptSpectra);
     if((r.extendedGalaxies===null)!==!base.observing)fail('state');
     if(!base.observing)return base;
     let extendedGalaxies:NonNullable<ObservingWorkspace['extendedGalaxies']>;try{extendedGalaxies=(await import('./observingWorkspace')).restoreExtendedGalaxies(r.extendedGalaxies,base.acquisitions??[]);}catch{fail('state');}
@@ -202,7 +227,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.objectXPolicy!==OBJECT_X_INVESTIGATION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>27)fail('format');
     let objectX:ObjectXInvestigation;try{objectX=await admitObjectXInvestigation(r.objectX,r.objectXDigestSHA256);}catch{fail('state');}
-    const base=await restore(r.base,verifySources,true,false,false,true,true,extended);return Object.freeze({...base,objectX});
+    const base=await restore(r.base,verifySources,true,false,false,true,true,extended,{variableTime:hooks.variableTime});return Object.freeze({...base,objectX});
   }
   if(version===27){
     // Front A M6: an E02 wrapper over an unchanged v1..26 base; nested only directly under a v28.
@@ -210,7 +235,8 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     const r=record(value,['format','version','numericalPolicy','base','lssPolicy','lssDigestSHA256','lss']);
     const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.lssPolicy!==LSS_INVESTIGATION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>26)fail('format');
-    let lss:LssInvestigation;try{lss=await admitLssInvestigation(r.lss,r.lssDigestSHA256);}catch{fail('state');}
+    const variableTime=hooks.variableTime;if(variableTime)variableTime.consumed.done=true;
+    let lss:LssInvestigation;try{lss=await admitLssInvestigation(r.lss,r.lssDigestSHA256,variableTime?.lssFieldJds);}catch{fail('state');}
     const base=await restore(r.base,verifySources,true,false,false,true,false,extended);return Object.freeze({...base,lss});
   }
   if(version===26){
@@ -335,8 +361,12 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
-type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true}>;
+type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  if(!wrapped.variableTime&&session.lss!==undefined){
+    const jds=lssFieldJdsOf(session.lss);
+    if(jds.size)return {format:FORMAT,version:30,numericalPolicy:POLICY,base:await portable(session,{...wrapped,variableTime:true}),variableTimePolicy:VARIABLE_TIME_SESSION_POLICY,lssFieldJds:[...jds].sort((a,b)=>a[0]-b[0])};
+  }
   if(!wrapped.extended&&sessionUsesExtended(session)){
     const observing=session.observing,acquisitions=session.acquisitions??[];let banks:unknown=null,base:ObservingWorkspace|undefined;
     if(acquisitions.length>EXTENDED_MAX_ACQUISITION_ARCHIVE)fail('observation');

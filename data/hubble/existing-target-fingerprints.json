@@ -928,7 +928,7 @@
   }
  ],
  "lssRows": 657,
- "lssSHA256": "8132f5ecd05a90f85b6b99f42725c8b93bc48f12696a56b0c0c2e23345959241",
+ "lssSHA256": "c84d74757cc2200c5d85788b6262547845620b0905c3ffd5c06773a9051df5db",
  "lss": [
   "F1R1T0|available|12632|a64d745d92aaddf33c3078a01afcc2ba1e6e7d98140d4662822c01d5f347039f|125/0.390625/97e3ed64500642053df25b17dfc48da0beefe3991fb62766328ffe2858126315",
   "F1R1T1|unavailable|mean-bound|d5f6b7f98e7a2e595435d865e48f300468d0f041cb76bdf9499598486b0c196e|146/0.5328999999999999/fcc9979677d3088f33b23ab964d22cf7af38177074af5981c80b7cf6e20c86c3",
@@ -936,9 +936,9 @@
   "F1R2T0|available|12640|c15e087be1ff768b7e4b0806dff6f3b0f969266b9948609ca2e0c3472b35c21d|92/0.2116/612bde0019b685df4f107beff39f110c5d118d885882670adfd8a6759d6409fb",
   "F1R2T1|unavailable|mean-bound|4d9e49c063f5439d23cec23cb55e9105d994067d5c2f58ceff5c54a77ecfa9c0|109/0.29702500000000004/67e2e287c1ed25d3d6340ca556932f79207b568fac0d80790c295b1ac8f6b6fd",
   "F1R2T2|available|12640|c3046f5eb04596cc469017a3fa54b4db6df701bb20cc524dca7eb2461882390e|142/0.5041/7bfceab86aa8aa0f1735f96c20a9d3bec92294d17a4ea6a5906d4f4bab8dfb47",
-  "F1R3T0|unavailable|qso-merge+variable-merge|-|-",
-  "F1R3T1|unavailable|qso-merge+variable-merge|-|-",
-  "F1R3T2|unavailable|qso-merge+variable-merge|-|-",
+  "F1R3T0|unavailable|qso-merge|-|-",
+  "F1R3T1|unavailable|qso-merge|-|-",
+  "F1R3T2|unavailable|qso-merge|-|-",
   "F1R4T0|available|12779|032c9951085b9c302e72c879d88e450fe8a85fa6b3a0bc87883ee068076d5efb|107/0.286225/08e820e1e354ea1ce7ca2b3464a706884ddd5c7c52dd3e3cd98a7dcce94ac373",
   "F1R4T1|unavailable|mean-bound|8ff940344acc00ee0edd053cc31d35f41379843a858838daf0845dd05c11ff4e|126/0.39690000000000003/f51ff4089711c5ff346af4ec71fc7bad59eaba814605eb68b8fc949005d0ebfd",
   "F1R4T2|available|12779|540f4b2c08b069a9c67ea8c1226237ae1dda727ad3fce3dce00f108b798c9e01|161/0.6480250000000001/5066e5b0474d0af96212cffbc4609e18de1fa43a830e7576dffdcfb959c07ca0",
@@ -981,18 +981,18 @@
   "F1R17T0|available|13093|75d7b3d26ddcf2dbea1dda267ed29d3a1b45b3c9fa1adca86d537a897a4a483b|281/1/91a5bace9d554735ea2e652aa667aea9737b3f5f12af442385dcd79c2e5e5d8b",
   "F1R17T1|unavailable|mean-bound|d70aeb2e93cfe87e5dc61554cb83f18aa12c280f773858d09fa8e24cf2dc612c|319/1/e06a6421e318721feffe502ff7e8fdb3b4ea1b286611e208e3b0c2f414ca2c2e",
   "F1R17T2|available|13093|9dbbffd2e490cfbdf398197638c2fbb310e5e580be4f9e9449dff19ae1705b4f|405/1/1013b3cb0da941ec20d6373dff8a3ebf41370cdf70b036e9e35c34729c918689",
-  "F1R18T0|unavailable|variable-merge|-|-",
-  "F1R18T1|unavailable|variable-merge|-|-",
-  "F1R18T2|unavailable|variable-merge|-|-",
+  "F1R18T0|available|13110|bdccf8c042cd41ec110bad952cc29e54d589e57bb72b421df64163c54e7f4ee5|272/1/235c99c4e3925e88ccb0f48be1d008df4dd1a7a56badd56104a82ce01bbe2754",
+  "F1R18T1|unavailable|mean-bound|1d91911e246bf4ff429193b42792b803642792fcb04415ad57c7fd02632bbc32|309/1/ce022926a67379e90b6c2c9a7d8a9fca2fc7f21c67c40308b0209630fb3ac341",
+  "F1R18T2|available|13110|a5bdfb5bddc01fa00aea7c6dc9b706a5e1b8924e19c1ab24c527e5e89254f3b5|389/1/99b4f060e959d006f28d75261f100d07374abb65b59d143a205c84b0b28fab54",
   "F1R19T0|unavailable|photographic-image|-|-",
   "F1R19T1|unavailable|photographic-image|-|-",
   "F1R19T2|unavailable|photographic-image|-|-",
-  "F1R20T0|unavailable|variable-merge|-|-",
-  "F1R20T1|unavailable|variable-merge|-|-",
-  "F1R20T2|unavailable|variable-merge|-|-",
-  "F1R21T0|unavailable|variable-merge|-|-",
-  "F1R21T1|unavailable|variable-merge|-|-",
-  "F1R21T2|unavailable|variable-merge|-|-",
+  "F1R20T0|unavailable|variable-time-required|-|-",
+  "F1R20T1|unavailable|variable-time-required|-|-",
+  "F1R20T2|unavailable|variable-time-required|-|-",
+  "F1R21T0|available|13191|bd5d0689fcf9bef76bdb9a7f203e50ccdb3ee4615fc2863c337a10bcfc8c4f84|142/0.5041/5e441e3984ccd595787552dada4cc0b8ad88c2bf88989cdc488d47f967b9fe0a",
+  "F1R21T1|unavailable|mean-bound|0a7fe30e46a49b7c5f688ec3087bbe70e73a148c71482fca510c0651a780dc20|167/0.697225/c31d3d6773ef4973bd77d123d52ed457c812de6d6cb8b321c1f948c0e5386fd8",
+  "F1R21T2|available|13191|bbffdd1175432c7d03ab3c2445553d78c67ee4aa1fe72e4d7169fcecaec8829a|217/1/f8969040a9affb701a810e75f0fc4b57b3d2507e689bdae0672426c4e866a4e2",
   "F1R22T0|unavailable|photographic-image|-|-",
   "F1R22T1|unavailable|photographic-image|-|-",
   "F1R22T2|unavailable|photographic-image|-|-",
@@ -1026,9 +1026,9 @@
   "F2R9T0|available|13392|581706e5f76a944941966431b1a2ce0095f3e858e71276998af79a9788064234|215/1/bb0ed53010619bb9cd75072afd7b02f62c489f527791c8a765ec76fd14bc0ca5",
   "F2R9T1|unavailable|mean-bound|3878ecb395c53997212a72b951771c0555d30b412f6c6e04c8da16d7af23c153|249/1/5546c4ec6e64e697f77d62277b65a46c63c5b9ea28f0c795470990059ddd5d35",
   "F2R9T2|available|13392|d38e7b6103f9f60fe107c587f482238d5e0f3f097eaa808f01e3bf5c529d52ae|314/1/04f2066dad0c23d1ebfde23267dea30794508068a6b0a6003812f0ccd76dd69e",
-  "F2R10T0|unavailable|variable-merge|-|-",
-  "F2R10T1|unavailable|variable-merge|-|-",
-  "F2R10T2|unavailable|variable-merge|-|-",
+  "F2R10T0|available|13441|2afce62ad5f9284e07876dce807f253bc40bd5baf7a8665cef4048ca0d3fb3ab|246/1/f1f1ace973c6d9310349fb0caa260daa329825e8b95cedb7ca0f82aadf85903e",
+  "F2R10T1|available|13441|5310e3a8c1a538bc1f81710253a493fa80c831bf669fa7eb41c9ba97da798b3f|281/1/23190ebf8655ae49822e9a7d8f3a1fad9bcf6178eadc2ebbca17a86516b3bffd",
+  "F2R10T2|available|13441|906812e2bb9c10801a35df83b933c53d1a90abe8926d78f8c796c44518c2a7d4|339/1/652e3f105025948f72b235fe24154263659b110fef4806e05144071c5657bc92",
   "F2R11T0|unavailable|mean-bound|6ae075faed63e948b1b56030872e4974b28c0eb08765c70d701ca2f19589079d|298/1/2d563601ce120a2840278c566c7f3414ba1d806f12f894d18a3b50a40f431de7",
   "F2R11T1|unavailable|mean-bound|0df929a7b78df71a1747d267c2f2303bc184da7e77a676ad98dcc66e56d9535c|338/1/a75c3a40abadd8d217a41c81386d75638c405fba4630519e1e91127f462232de",
   "F2R11T2|available|13471|2cb8e372692ce08de714896266d1bda22dd92421763d8c9a62ba98f8e862b246|445/1/8cdaaebfba3923e0d86f1387b13cec9b765a176418f7ee39a21f665cffb9c43d",
@@ -1068,9 +1068,9 @@
   "F2R23T0|unavailable|stamp-bound|-|-",
   "F2R23T1|unavailable|stamp-bound|-|-",
   "F2R23T2|unavailable|stamp-bound|-|-",
-  "F2R24T0|unavailable|variable-merge|-|-",
-  "F2R24T1|unavailable|variable-merge|-|-",
-  "F2R24T2|unavailable|variable-merge|-|-",
+  "F2R24T0|available|14109|8e5e1153ababd59ce44be66dcab8414f8100c1b8871326d29e8742a37611a14f|65/0.10562500000000001/5fbdc51fb6263e597fde48f70a275586002bdfb212b8fb876b9962d3cfbf9b48",
+  "F2R24T1|available|14109|5d1cfee3091648276068492791090c131f30c917e67ebe7415459a4beb0b64c0|77/0.148225/c467f13e35464c3fa260d821bfd514baab09f5498fbd38780e9d8c68ceb1513c",
+  "F2R24T2|available|14109|96cae5209c4e6217b0794ff8d65c6e15f6c9b2baec556246aa2c83743cedab97|100/0.25/deb9e936acbea76af6116e7883ab349ff1efbabd5306250fcf93e3753687aa57",
   "F2R25T0|available|14170|aebf982b852d1edb64aae90a7b8502362fb112df90ec7cb8e5ee5e6a27f72e91|61/0.093025/152d39167a4aa39732354ef9495097e14b3697c2d86868b71335b58ae34a4dd0",
   "F2R25T1|available|14170|d41752625cd1b7b5066267c2e9b733544b91bbe72c75e67389af769e1620c5a9|72/0.1296/e40b6aca113650b379e01592512e03bf7d8f3533f31e642964bd8c874694d8fe",
   "F2R25T2|available|14170|431809e87ea13fdb7e1a8e7a5201beec795a25ab19d29ca486f1e0230e061cd8|94/0.22089999999999999/558e37e3ddfdf6130c9a5c106686363d2c160aa471b5107d1c71104b2896da71",
@@ -1080,9 +1080,9 @@
   "F3R2T0|unavailable|qso-merge|-|-",
   "F3R2T1|unavailable|qso-merge|-|-",
   "F3R2T2|unavailable|qso-merge|-|-",
-  "F3R3T0|unavailable|qso-merge+variable-merge|-|-",
-  "F3R3T1|unavailable|qso-merge+variable-merge|-|-",
-  "F3R3T2|unavailable|qso-merge+variable-merge|-|-",
+  "F3R3T0|unavailable|qso-merge|-|-",
+  "F3R3T1|unavailable|qso-merge|-|-",
+  "F3R3T2|unavailable|qso-merge|-|-",
   "F3R4T0|unavailable|qso-merge|-|-",
   "F3R4T1|unavailable|qso-merge|-|-",
   "F3R4T2|unavailable|qso-merge|-|-",
@@ -1122,45 +1122,45 @@
   "F3R16T0|neighbour|14851|736045962519556a980cd25eb1515935897fa13c9e5205dfd698255068055a7f|76/0.1444/f64f89b9381870b17b1c7f581133d6a751326b6e95dd6662b3905ea67bb2d474",
   "F3R16T1|neighbour|14851|0035ad48b7b6fa4c8de029875377aaab1ad59d941a5e6f9af70481dd9d9d8485|90/0.2025/8b10d487fba87ac1131ffb202ae0e8f5c4e7a6ebf8397d45c756423fd476f882",
   "F3R16T2|neighbour|14851|4b5a81ca3fd85ab5c0607a49ef80742f179e773c50332dc4841e35b487025dea|118/0.34809999999999997/eb432532757732386547e500aea7909e00cbe2aca4cba77e03127ee0799a9328",
-  "F3R17T0|unavailable|variable-merge|-|-",
-  "F3R17T1|unavailable|variable-merge|-|-",
-  "F3R17T2|unavailable|variable-merge|-|-",
-  "F3R18T0|unavailable|variable-merge|-|-",
-  "F3R18T1|unavailable|variable-merge|-|-",
-  "F3R18T2|unavailable|variable-merge|-|-",
-  "F3R19T0|unavailable|variable-merge|-|-",
-  "F3R19T1|unavailable|variable-merge|-|-",
-  "F3R19T2|unavailable|variable-merge|-|-",
+  "F3R17T0|available|14863|d6066d38de16978b57acd51945327ed45d9e7ae8e736609ebe31aa9cf2b56e26|224/1/63e2171e7c13b0c81d9de6e05f31c222cf90a73ba113acb47463f7c0a55e53f1",
+  "F3R17T1|available|14863|ef5a6d6384dd812a096df9049dcba25186c3995b5ecac220c31a9baec91c4ff0|258/1/3b2b4b29e64a9e24aa9c7281be33b3571eed801b663ccdeb523ecb2e67a29b58",
+  "F3R17T2|available|14863|c0f70cbcd146ef36a6c46c0790057a978aef80bf6cfe000d13d5ff94ede56f55|318/1/92031112df66830ffd009c5df40422dd09fd81917485b75609e5d131e587076f",
+  "F3R18T0|available|14865|178f0e16ca0720c22278ea208d157bb59572657ead217d0ab237daf5d0c008a6|205/1/7fec2f9c44d9147cefb6229a50a66786e8754fa35edbf68455998437323e5bfd",
+  "F3R18T1|unavailable|mean-bound|3ab31bac1bf5ceb3ed8a3b98f9fd132998031751d1e746da8f624e6af18b1bd3|241/1/1c54d65570f0b44e71fbab4993dc56ff8c8c9fa9c1189a2a40f6a16a23bf1384",
+  "F3R18T2|available|14865|97144a5e7eb8480bcda5ebc9cbecdacd674eee94cc2b9bfa80526a5e58fa0b4b|305/1/e6383551766f1b9fe59e6497630d51abbe7405901c9f5bb72a42b370cb1f3aa8",
+  "F3R19T0|unavailable|variable-time-required|-|-",
+  "F3R19T1|unavailable|variable-time-required|-|-",
+  "F3R19T2|unavailable|variable-time-required|-|-",
   "F3R20T0|available|14947|024d064b727167c7e3f600b56f7cb98c2b81491579e8294d173524f44f8fcfee|57/0.08122499999999999/44029b44a5b4ef8ff4ed0bad9413d10662a955caf6564da2c16ad6c8ecf72d51",
   "F3R20T1|available|14947|647ac2a722c23430b089b4a4d69ac321f4e922ab3f94e77e529e243523d0f086|68/0.11560000000000002/fa43e2f0c56e803c558aeb84a5f145bbc65a3fb32a15b5f4e80ac64e1afc6d97",
   "F3R20T2|available|14947|3d6ae1e92a05eb143b5ccd7989819432c90e182adf33f0b87037ecea0bf827d0|89/0.198025/7e902f70861556a6523190cab7ba79fe8cb8f8eefee5b31e9b3546022168e719",
   "F3R21T0|available|14955|2f9d999df2dbb8e3f9aba471a28f969535b6e3b79162d6822980c190754709ff|110/0.30250000000000005/1104229a0f0c8758bf5c3830fe2ad5b0a4fffdb814612b0fe12617894b8fe415",
   "F3R21T1|unavailable|mean-bound|d6b40d87863883e651475835889b1631ee7ce83cffe6b08a5051d34e57a00dc4|130/0.42250000000000004/ed51c8e60aacefd2fccd974639c165058f91d18ec982dfe46ffc04ea253799d5",
   "F3R21T2|available|14955|875d65ce46c171ea63abd9d200d35c5d1972c04f1ecc7f709be0358d19b624b2|168/0.7055999999999999/1d5566a2b129eb5a7811c4ddb1492b589fcc6bfbf13b5f4629d160c89c37b198",
-  "F3R22T0|unavailable|variable-merge|-|-",
-  "F3R22T1|unavailable|variable-merge|-|-",
-  "F3R22T2|unavailable|variable-merge|-|-",
-  "F3R23T0|unavailable|qso-merge+variable-merge|-|-",
-  "F3R23T1|unavailable|qso-merge+variable-merge|-|-",
-  "F3R23T2|unavailable|qso-merge+variable-merge|-|-",
+  "F3R22T0|available|14992|b34268435e7eb99da30b623eb0135e94a61164066a2d3c09c9475dd27b2c7efd|115/0.33062499999999995/9dc330fe917224753c0f3dcca59ec2ae307040fde6239523f075b86ac2daebaa",
+  "F3R22T1|unavailable|mean-bound|6a01a99746bbfce6577b01fed0f3333b1a2b70c52e6c39a385546fb6c90b47d5|138/0.4760999999999999/5cb58bec12c128179a99b1ee40b643209ef09b0a6edcedba4eaaadf3b12a4b3a",
+  "F3R22T2|available|14992|9650f3c16b4a3d162e6cb79b8b4b3665abb1ca77144bf0343bc2cd6a75bb799c|176/0.7744/5c02810b1abd40cc4ead376eb90b4bf1e79690aa06fe20e94012541dd1e32a99",
+  "F3R23T0|unavailable|qso-merge|-|-",
+  "F3R23T1|unavailable|qso-merge|-|-",
+  "F3R23T2|unavailable|qso-merge|-|-",
   "F3R24T0|available|15034|2c2a0d3ccd1672ce719ba55d9406a652cca76bea75ae61a4326d34bdbbeebcdc|163/0.664225/0910454ed2bec5da29641e5bd1a4f50a498c0aa477e14af0a04d9d8204664af4",
   "F3R24T1|unavailable|mean-bound|c1cf86a0777bbbf690a3ba197d17a48204a35c8975cf7c25eca4700e23ed08bc|191/0.912025/3e96c8dfaa6c9428516c536a4f55a6933a3fba6c6c57c6cc364757c5f7fe8bca",
   "F3R24T2|available|15034|d73e637adae091c3b8aec97dacfc1cc63cd6fcd453841857bddbb5877c1fb433|240/1/ca55742cabb0444ad571233b82039f738a8262429803e6c8d710e6284d4c295f",
   "F3R25T0|unavailable|qso-merge|-|-",
   "F3R25T1|unavailable|qso-merge|-|-",
   "F3R25T2|unavailable|qso-merge|-|-",
-  "F4R1T0|unavailable|variable-merge|-|-",
-  "F4R1T1|unavailable|variable-merge|-|-",
-  "F4R1T2|unavailable|variable-merge|-|-",
+  "F4R1T0|available|15067|1bdb88d5d93e7550f72e631dcfe40d37eb746eb74a35454394f161da557dc708|126/0.39690000000000003/0bb7c20025a2636e262f3107878811b5b181b5c6ca7e524ec56ee44b3ad0a779",
+  "F4R1T1|unavailable|mean-bound|5ba6568633dc6781415703cccf0c98a06a6dd06ef9a1c49973937ca53a74fddf|150/0.5625/eed8ad011089d3a81c53d4af3fc9ccf6651e3c0871210154f5e2da15ad37d5ce",
+  "F4R1T2|available|15067|85a3e2d80015671548f29ac49f26ed1e293c02dbb7f8398a763d4a791f4d535d|191/0.912025/99fbb60410d98b1681d6cecc262fef404270c4f057ff28180044fdc2f59de9a7",
   "F4R2T0|unavailable|qso-merge|-|-",
   "F4R2T1|unavailable|qso-merge|-|-",
   "F4R2T2|unavailable|qso-merge|-|-",
   "F4R3T0|unavailable|qso-merge|-|-",
   "F4R3T1|unavailable|qso-merge|-|-",
   "F4R3T2|unavailable|qso-merge|-|-",
-  "F4R4T0|unavailable|variable-merge|-|-",
-  "F4R4T1|unavailable|variable-merge|-|-",
-  "F4R4T2|unavailable|variable-merge|-|-",
+  "F4R4T0|available|15113|b86aff2f4c633b18187d688b03d222616bdccd4ce52687679a5302bf0ee84dec|100/0.25/d84317a01023e3656fd58c370e9be4347855852a038dfbe4095c810d4c32fdea",
+  "F4R4T1|available|15113|bda300c19c62930a4bdafae544fc52d588642a9e96342c40fdeae6e4c699e8d2|118/0.34809999999999997/502eb8fd06be15cd570e7f9e13fc6bcc81c04283b475d2989933eb8f909b0db2",
+  "F4R4T2|available|15113|62f9d50a182ee4c7a3a39772419ec854916526d422f17a65138b7c696deed584|151/0.570025/7ccbd43c996347394318d7d658abc39787e3b570bd61f328652c2b217523d55c",
   "F4R5T0|unavailable|qso-merge|-|-",
   "F4R5T1|unavailable|qso-merge|-|-",
   "F4R5T2|unavailable|qso-merge|-|-",
@@ -1203,9 +1203,9 @@
   "F4R18T0|unavailable|qso-merge|-|-",
   "F4R18T1|unavailable|qso-merge|-|-",
   "F4R18T2|unavailable|qso-merge|-|-",
-  "F4R19T0|unavailable|qso-merge+variable-merge|-|-",
-  "F4R19T1|unavailable|qso-merge+variable-merge|-|-",
-  "F4R19T2|unavailable|qso-merge+variable-merge|-|-",
+  "F4R19T0|unavailable|qso-merge|-|-",
+  "F4R19T1|unavailable|qso-merge|-|-",
+  "F4R19T2|unavailable|qso-merge|-|-",
   "F4R20T0|unavailable|qso-merge|-|-",
   "F4R20T1|unavailable|qso-merge|-|-",
   "F4R20T2|unavailable|qso-merge|-|-",
@@ -1215,9 +1215,9 @@
   "F4R22T0|available|15569|ea6eb1357979d9fc70937f4e8d5f387bccaab02aebadb50295a87c88fe7b3459|243/1/e9f86b8130825b399a7516708ac35d66e8c95db36e6f041263c0ca4882cdabff",
   "F4R22T1|unavailable|mean-bound|f9b8bf1e3bc099121e00dddb05ffecc6b87e112df7b651a495271861455663bb|278/1/c6581db03e5cd93285de6760f1522d461e35bf71cec2543a884d8ac81dd30121",
   "F4R22T2|available|15569|cbd8c132050eadee8f1f2174fbe9f294871818813777ed6779630a095e0209b4|349/1/73f04d755e21f20dd8ae5466383ce742750a5fe15464a16189c1bf24c80d02b7",
-  "F4R23T0|unavailable|variable-merge|-|-",
-  "F4R23T1|unavailable|variable-merge|-|-",
-  "F4R23T2|unavailable|variable-merge|-|-",
+  "F4R23T0|available|15597|13523147cfa054591d9c9e8fc756ff3e6b5c13e6437be13cf5fc338bb828a8b3|223/1/4ebceca6b583ff5ba8497d850ed787f31c4251abb9e0d4f34399a6e38d57449c",
+  "F4R23T1|unavailable|mean-bound|9be6f62150580e600ad3b2736e1974a24651255bee27153f6e95fd697524253b|257/1/b041b107077c459f694f2b36375a897468051c408bf679cbfa07b97859b3ab8c",
+  "F4R23T2|available|15597|dbcacb2e03d8abab217763a74daa25f46e3210e521f60d2151f3f29a68bbccd4|317/1/aa01389dd20c71b444cef7bead79b44589c116ebc8af2ff5a11680883ea30706",
   "F5R1T0|available|15625|f40b5636592835766241b03002ff487f5752cc0f225cf63ff551ba285903870f|186/0.8649000000000001/76099e2fbcd79aa2a2689b144fa5189365606bab02874d84a91c948a4e161ad4",
   "F5R1T1|unavailable|mean-bound|445bccc68c2ea2a6ce4d37efbdfaa1c372551ce8463187c2a83cfd4e39fe82b3|220/1/776726912e15126703110ea30fcd90a1a08f1266c5529e32189908f8647855d0",
   "F5R1T2|available|15625|63caf94c8cab1343af5c855f05db0aa80380fc35078d6bc794f82cb7bb7fa508|282/1/a95af632c1ffba9b97d777bc31aed97522e6ae7ef75f154976b1e490b3e8bab0",
@@ -1272,24 +1272,24 @@
   "F5R18T0|unavailable|stamp-bound|-|-",
   "F5R18T1|unavailable|stamp-bound|-|-",
   "F5R18T2|unavailable|stamp-bound|-|-",
-  "F5R19T0|unavailable|variable-merge|-|-",
-  "F5R19T1|unavailable|variable-merge|-|-",
-  "F5R19T2|unavailable|variable-merge|-|-",
+  "F5R19T0|available|16311|4974379c1af0f8defea048237495fb6b1fb79599f38a50b02c69c2c7fe586647|98/0.24009999999999998/94bf5bd48bfae818303400540aba52033ed467dd1152916f15a343e5fa9c6837",
+  "F5R19T1|unavailable|mean-bound|0bc9920e5f546b6f271be80cadf0aa4c73cb15f52644dfb70e29e821120e14c2|115/0.33062499999999995/b6f71af11369cca6544f3abbfa8744bb8b580adeb39f9e87c9baad771c7e9650",
+  "F5R19T2|available|16311|866209e5c75e01051bfadc7a02c6257293c8b4f9b0dbdc1635e4f47c39e3e6e2|149/0.555025/0afc6489b1f6dbd0069f100d7b42713912856ed2a95ed0a346c7ae0adec56d52",
   "F5R20T0|available|16385|e110fe74e1022f2e13c528a787940ff90c6494ce0ba9a4e4b870679303581bd3|63/0.09922500000000001/ff5b8d7575cef8d573761c5022f68f04adc0622b77fe62d4d7cb23a94846adf7",
   "F5R20T1|available|16385|407bb03156bfc9d8a6a83a738d04c31c6f324b94a5cc380f7a599a46fd598689|75/0.140625/54e72f94d6193e867bda35d2b3771938d0aa043e950039cd85c80548a97c6596",
   "F5R20T2|available|16385|d7204849f15f0f5070ccc5373bdfe594b347108d9f8482dd61b5c30523f02f6d|97/0.235225/1110559ca79fc2cbfb12be3fb216f04cbfa93081cc73809fbd33f600e5929a4a",
-  "F5R21T0|unavailable|qso-merge+variable-merge|-|-",
-  "F5R21T1|unavailable|qso-merge+variable-merge|-|-",
-  "F5R21T2|unavailable|qso-merge+variable-merge|-|-",
-  "F5R22T0|unavailable|variable-merge|-|-",
-  "F5R22T1|unavailable|variable-merge|-|-",
-  "F5R22T2|unavailable|variable-merge|-|-",
+  "F5R21T0|unavailable|qso-merge|-|-",
+  "F5R21T1|unavailable|qso-merge|-|-",
+  "F5R21T2|unavailable|qso-merge|-|-",
+  "F5R22T0|available|16454|6e6ca184ef1e0c0b73a64c84e42270592349e9ac7eee60710dbe5ae06d91ef31|72/0.1296/e9be8f8ab0ab0de9a28eb0d559f08475cd3b35efffbdf75bafbd56ba6bc06a84",
+  "F5R22T1|available|16454|4eb183476625776201ef4184a17d05071926390d6b9bd694b0bb4b44e929ee1d|86/0.18489999999999998/0821204bc9170115f30ee148f7ed427443604681b5e0c64a27cba29fcfc98807",
+  "F5R22T2|available|16454|b8f76b59ce25b76071620ad60e7c7f7dec724dd16078be608fb9f8f853b9883f|113/0.3192249999999999/f15eba9aebfcc6a00c1e8fdfccfaf0e0005e0bd2c9b1af44ea9290a12d5003e1",
   "F5R23T0|available|16457|43ac33a256b51d44c588427d1833511d9fefe40083ec39f64c73ab9c7d9c99fd|172/0.7395999999999999/c2738686a134070e3e5da0fd6bf4cc157bc001d20255cf2c42935fc2190bd891",
   "F5R23T1|unavailable|mean-bound|7621f01d4acbbd7f6846e73044d7fce5f031da8cd59ca320e9c5bc7dde8b3a72|201/1/440569d22d0929f27349085358c0d520a592ce3dc68d0dfa2897630775d26946",
   "F5R23T2|available|16457|671d5c8485ae418cbfb178fa5544d176d1d27a9055ee2711b7c813658e42cfc2|259/1/2975abbad24a277d7ab24676a89c246e2d51fe08071cf197aa0925444cb74379",
-  "F5R24T0|unavailable|variable-merge|-|-",
-  "F5R24T1|unavailable|variable-merge|-|-",
-  "F5R24T2|unavailable|variable-merge|-|-",
+  "F5R24T0|available|16461|157ea20118fb6f93db37782b3c108458a3ec9aa2cd174d5abf880810a16a6781|195/0.9506249999999999/35d6cdd1f51d965148e38e22cdc0566dbf1c1d465a47dacc0d154d800abc897f",
+  "F5R24T1|available|16461|6ea72973cf66e0baa254e05b589521ce81001e5de3b70872c5c45fae0b757f2d|228/1/3f077682c00f3fafca0cc7693573f303e95dbec9d5c621757cba2cbe194194dc",
+  "F5R24T2|available|16461|6f520f1a88405913e5042e3f382dedb0087e3cebd345de8bad43c162f116da23|280/1/ffc31654b61c24cb58fc0b75ead60dd6e7b5f1e6a6cfc3b8057d4fae7f293894",
   "F6R1T0|unavailable|qso-merge|-|-",
   "F6R1T1|unavailable|qso-merge|-|-",
   "F6R1T2|unavailable|qso-merge|-|-",
@@ -1305,27 +1305,27 @@
   "F6R5T0|available|16828|4707aff42ff949fae3784b229c1cae525f3634a4207906ccc397c3806f440edb|65/0.10562500000000001/6194e654dae4ffa34c4e309a3f76546e6d64babb7b10dd64c563f533f232baec",
   "F6R5T1|available|16828|9823106158a5a107f5851853b6b2c049013c3639761fc33cf9b564bfdbe832cb|78/0.1521/54f05094a1984967466cd0144aac02c146b22b599d2f03584aed0a7acb0a4cbd",
   "F6R5T2|available|16828|ab67cfd37fb82ef82221e8705b35667ade8bf9615cef5e0892ecf62d13552ffa|100/0.25/ffe6c53e6c56538385b6232c916d70c9d7f0aee4e55c443b8196de704eb56f7d",
-  "F6R6T0|unavailable|variable-merge|-|-",
-  "F6R6T1|unavailable|variable-merge|-|-",
-  "F6R6T2|unavailable|variable-merge|-|-",
+  "F6R6T0|available|16865|2a66cd38467bbf3c9a4fdcfd5578285b8a34d06546b6e0129974a79ccbec314b|146/0.5328999999999999/a6446e91e04ae5351d08a402b3e41ec975a8becbefcfd42aa06b8fd09975f00c",
+  "F6R6T1|available|16865|655dc582c0688a8648e9c0d0568a7f4457e38d699af36fd64ad8b3c58df968ba|173/0.748225/4974e5be4ba6c24fa248ad021935ce793ecfd4b9812dc9e692e6c320d6a56fe8",
+  "F6R6T2|available|16865|ce6fd7934e12f0ae4c21b8bc7dd36905fc9784c42b334bd0d6746cfe42f5a973|226/1/bd624e6fcae9a9098f8a2a9eccb421bd48f20cd5c578ba7e9ac58c318eaf1ce9",
   "F6R7T0|available|16892|0e5bcaa634d75c98c6da68f2b1db075bedbeed774ca73018d47dba4d72a79998|50/0.0625/83381359d1c9960fa353e9f58b5d87a0dfb642604f167fabb6896135162534da",
   "F6R7T1|unavailable|mean-bound|7b105d0c2deb645ca975a2c91a0d4f1e0d9f3db2cb9e2813aee593a14388329c|58/0.0841/fc11c985d3a98d05db07a75fdce3ea92958e0c6c42c94d83bfab7edce035c1d0",
   "F6R7T2|available|16892|7e44ed485255a8985e95425df796f15d0a2224fa13e5edc452275b3043d96065|79/0.15602500000000002/be4bac30eb74dfb4d8bf9b1cfa553c2d13aa4df381c4b1bf2852db4a09843308",
-  "F6R8T0|unavailable|variable-merge|-|-",
-  "F6R8T1|unavailable|variable-merge|-|-",
-  "F6R8T2|unavailable|variable-merge|-|-",
-  "F6R9T0|unavailable|variable-merge|-|-",
-  "F6R9T1|unavailable|variable-merge|-|-",
-  "F6R9T2|unavailable|variable-merge|-|-",
-  "F6R10T0|unavailable|variable-merge|-|-",
-  "F6R10T1|unavailable|variable-merge|-|-",
-  "F6R10T2|unavailable|variable-merge|-|-",
-  "F6R11T0|unavailable|variable-merge|-|-",
-  "F6R11T1|unavailable|variable-merge|-|-",
-  "F6R11T2|unavailable|variable-merge|-|-",
-  "F6R12T0|unavailable|qso-merge+variable-merge|-|-",
-  "F6R12T1|unavailable|qso-merge+variable-merge|-|-",
-  "F6R12T2|unavailable|qso-merge+variable-merge|-|-",
+  "F6R8T0|unavailable|variable-time-required|-|-",
+  "F6R8T1|unavailable|variable-time-required|-|-",
+  "F6R8T2|unavailable|variable-time-required|-|-",
+  "F6R9T0|unavailable|variable-time-required|-|-",
+  "F6R9T1|unavailable|variable-time-required|-|-",
+  "F6R9T2|unavailable|variable-time-required|-|-",
+  "F6R10T0|available|16975|f7d67d8bd651b4e4fab90e5807539c6fbd444086541c71f21694b3b20b7b58c3|46/0.0529/ae0c7ff437cb337e50c63193337e35246330619f5e922ea614aa201276261e17",
+  "F6R10T1|available|16975|2568aecf0e79f6092fcda2c1b10799beaa6896be388cc27edfe1abc0dcba585c|53/0.07022500000000001/43fe1a186b791754e80a4373eb74daf7034ea5472a136ea6f03fe9e90d9e05f2",
+  "F6R10T2|available|16975|d2ef90479b685a34c81311658daf4cc3674460a6672b353de44c1aca843bde4e|66/0.10890000000000001/a57b0d49b9d620681392cebd34a06887d17d120693df4e7686fe2c2c9dad264e",
+  "F6R11T0|available|17037|0ba3c3dffabed0efe55a654231dd769b6616a58818bd279aedffc28bff018c04|72/0.1296/71fcd4fce7ef98bb7e7036a535ba7b2fa85955bd492dc8bfec26b78982d8a977",
+  "F6R11T1|available|17037|18a76243a113abaaa88b2e3b615d94681f28d7e35ea12c6a66f6deb49b23ecf7|86/0.18489999999999998/06e31a08ccd80d61870fea8218c0d019fded1bc1bd1640025fbfeba790226f2b",
+  "F6R11T2|available|17037|3f57778de5f559ab07fd9827742f2493ecefe4bd814fb25ea3dd5c11110c9bd8|113/0.3192249999999999/0585a65666acb884eca7118be12525d38e3a91b9f70d568df0c8045e76ab5d9c",
+  "F6R12T0|unavailable|qso-merge|-|-",
+  "F6R12T1|unavailable|qso-merge|-|-",
+  "F6R12T2|unavailable|qso-merge|-|-",
   "F6R13T0|available|17206|d04ee05c8f1643254ccb96075f123779ec7b0b6de275c0d0bdfffee90204ca3a|134/0.4489000000000001/d68efa8d2ca8ea331401a4ab82fd47f7183aa21098089a0add2868060fe1e912",
   "F6R13T1|available|17206|c299d1b821707eeeeb1e0976925b4f71e3f11cf4ce0e53c5cf3157e01e1a0c96|158/0.6241000000000001/0b7ddb95404a5d546f8357a557f452e231abcf2701dae11df2ad84d73554dea2",
   "F6R13T2|available|17206|1be4c0d8e8786c590261f538813fae9a2089867b8d54c50d74d0cd640a4bdb8b|205/1/bcfa94c415cad3ae40dcc3a81deab6c3c5ccffbf70bb022b176e9d6db5b69472",
@@ -1404,18 +1404,18 @@
   "F7R17T0|available|17645|9d8c6c3813b588a169f91ff4d832d80191b8164a12fbd647896b90b93672dd26|20/0.010000000000000002/4544fe5d4c19accf7f96f026376f189e9ac6ebb20ca73adfdd9acdff1b624a89",
   "F7R17T1|available|17645|d4ff44f873647ea21b0384c61ac563f954eaaf10d9bb84eeaf949c8a13e9c51b|24/0.0144/f3b6e5f6702b378da10af2c4b795e6b894c51baace093ce0e21368ffc03132f5",
   "F7R17T2|available|17645|2abebb5bfad261c961493e1ff07c6f14eb8cade58380905b15e960f7735f64d7|30/0.0225/ff91af5255a46374b663fce185d24bb4b9cf7edb0926c137c09973ca505adffa",
-  "F7R18T0|unavailable|qso-merge+variable-merge|-|-",
-  "F7R18T1|unavailable|qso-merge+variable-merge|-|-",
-  "F7R18T2|unavailable|qso-merge+variable-merge|-|-",
+  "F7R18T0|unavailable|qso-merge|-|-",
+  "F7R18T1|unavailable|qso-merge|-|-",
+  "F7R18T2|unavailable|qso-merge|-|-",
   "F7R19T0|available|17672|b3be5826098ec2772e83a8174504044089b014838acaf1a9724630864f33605f|65/0.10562500000000001/6c551a5097277a7295c4b8864f424485d1ed819e6583e275a8963741bc840731",
   "F7R19T1|available|17672|9ce5f719ee1bf692299a35f63691fcc958c55dae9206fdb186f97882f200ea04|76/0.1444/6ddb4b436f3d805b3f9e17d8502a62c2d614652acda4c6ac61c1efa226b34f1d",
   "F7R19T2|available|17672|cf5969eede32293d71e00ecc7556fcc139265576b186fd2ff236e5a5c91a5803|98/0.24009999999999998/c577b5081895710fd40a281039aff462b9042e0d380c722f263bda34d672a797",
   "F7R20T0|available|17679|8f4a00eb5f80c84fd555603a95973dbb2556a0c2101911a34f57123d7e1d0d18|57/0.08122499999999999/747604774acecdae4a9db5dfdf6dada6bf1f2e3945bf053d3772686c2fd0aee4",
   "F7R20T1|available|17679|d68ab8fb4adbbbc4d417db3f29019d0fca9685a8a315cf8db0cf92cda8a696c3|68/0.11560000000000002/c363e23cfe0f36b4015a68f69df02b3a17f84d901f3391cafdd1c032e9ea198e",
   "F7R20T2|available|17679|e5c7b5f9d648c3b1213c43b25233f9f588c7908046e4c8fd48683d7c45904d6e|88/0.1936/a1ea49f951a9e0493181216cf20b4862fa89b0a98aea86a7dc775dac700d3278",
-  "F7R21T0|unavailable|qso-merge+variable-merge|-|-",
-  "F7R21T1|unavailable|qso-merge+variable-merge|-|-",
-  "F7R21T2|unavailable|qso-merge+variable-merge|-|-",
+  "F7R21T0|unavailable|qso-merge|-|-",
+  "F7R21T1|unavailable|qso-merge|-|-",
+  "F7R21T2|unavailable|qso-merge|-|-",
   "F7R22T0|unavailable|stamp-bound|-|-",
   "F7R22T1|unavailable|stamp-bound|-|-",
   "F7R22T2|unavailable|stamp-bound|-|-",
@@ -1488,15 +1488,15 @@
   "F8R19T0|available|18422|3091d8f6d73d7551ff6a016fde4ac0054e60ce8b648b5a54893c2d094c6ba167|139/0.4830249999999999/92496a0e09b35feb016488c6dd60db7b8a6f5345ad6c9c3d83ade3474a7492b9",
   "F8R19T1|available|18422|b7a34e62880efc6323a6b783e9d9fa1b56778d8035f729b149a324577fa3289b|167/0.697225/01426c0acf6a4050ab4ffea98750acfe735a07dda6ce226cb2e404c7e75a1ec4",
   "F8R19T2|available|18422|1b9eaf31d9e2b8aabca2c1e44d2738c2886d01ace415db5c0a9441103faba4da|214/1/26d116f67921df36be404192e3a971f6993d38270611e757a83c51cf2c11942e",
-  "F8R20T0|unavailable|variable-merge|-|-",
-  "F8R20T1|unavailable|variable-merge|-|-",
-  "F8R20T2|unavailable|variable-merge|-|-",
+  "F8R20T0|available|18444|f32f2edae6ae67b75e1af064c680a81c572a47a00a2d17d5c2392b5cb13f62be|58/0.0841/8e27edb3a360ec63963aff45eca06c7ffca9a9dd74c39cb3004ff59957616e38",
+  "F8R20T1|available|18444|02045d88dff86187d48f2d331f6f157f4bc2633a3bf52d1b026548b63983991a|70/0.12249999999999998/486aa2c82537bf6c13f905adc7f154ee89a7bd4ce7da96ad90b7e617924642fe",
+  "F8R20T2|available|18444|44242af442e44fcc5cc239c6f7a54b9e402656c7966dad5f0ba33a28950e321b|91/0.20702500000000001/e14aea5060d4df2a9ffbcd85dcb56c35c71739309a825c5c7f317bf49881c020",
   "F8R21T0|available|18455|1cde7cdfb945fc248b0b3d1b4c7b6638738aa5f968d005e192a088f572715ce9|116/0.3364/7b117c86883ff7e7ebf45befdd966068d6d947dc9f54537a2d6356687ce39483",
   "F8R21T1|available|18455|2ffc0e8c31c58380daa804a06eb16d511321da60f6a0fe83fc7172c59a7bfc9e|138/0.4760999999999999/23eb1896dea9cfb8501c3d174305fe4e836b643aa594840adf548b0b70ac12c0",
   "F8R21T2|available|18455|ab4b596d89e71bede64dea36eb271d3563938d077efebf2432502d38a1200c62|177/0.7832250000000001/8a7d06524a8316b3104908fd846a229b4d4966a4c2755fb238e1345132461cbd",
-  "F8R22T0|unavailable|variable-merge|-|-",
-  "F8R22T1|unavailable|variable-merge|-|-",
-  "F8R22T2|unavailable|variable-merge|-|-",
+  "F8R22T0|unavailable|variable-time-required|-|-",
+  "F8R22T1|unavailable|variable-time-required|-|-",
+  "F8R22T2|unavailable|variable-time-required|-|-",
   "F8R23T0|available|18494|cea1a6422ba2e183eb711f033fd9e594690cb5577ac4ee6e89e756c096705c49|100/0.25/6ea266e3b8a30a7f5fff5f64ac810ec98968d3d58d7bd8662528669f180caae4",
   "F8R23T1|available|18494|5f532c1b2351014598a3b78cb90048ad00664fa76153b834484c4d8f4dec4b3a|118/0.34809999999999997/da2cd124153fb5c0cd27a2325aa773e290a6382a394f5c67870d327c8827bd36",
   "F8R23T2|available|18494|3b0d3b21d0b195866634d77c2b7c268e9beb87be3fbe9b3a31240c2538df5049|151/0.570025/91139839f6cb1fd9cdd5dda854a661aa5488c54daa41e4eb161e9cd868ffe271",
@@ -1818,6 +1818,463 @@
      "entry": "F9R22T2",
      "before": "F9R22T2|unavailable|variable-merge|-|-",
      "after": "F9R22T2|available|18799|9523e304d9d8a53daf0fe8fa83f40f61d7425902b4de7ac29ad10711eeed4dd9|220/1/27afe8f0aa321b60bc6393944f088e1942ff8735844d46fc4e0cd005af952470"
+    }
+   ]
+  },
+  {
+   "date": "2026-10-28",
+   "reason": "Front T M2 (TRUE branch of the variable dispatch 0x51ec48, plan analysis/front-plans/front-t-true-dispatch.md §3.3/§4): with no variable time, a TRUE-dispatch variable (class 0/1) modifies its hit star or inserts its miss star and gates the field only when that star's 99×99 stamp reaches the 312² crop, it lies within the merge guard radius of a galaxy or QSO, or it is selected. 17 rows become available (pixel-identical to the same rows painted with a synthetic JD), 5 in-view rows change from variable-merge to variable-time-required, and 8 QSO-gated rows lose only variable-merge. No Hubble pair changes.",
+   "changedEntries": 90,
+   "changes": [
+    {
+     "entry": "F1R3T0",
+     "before": "F1R3T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F1R3T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F1R3T1",
+     "before": "F1R3T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F1R3T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F1R3T2",
+     "before": "F1R3T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F1R3T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F1R18T0",
+     "before": "F1R18T0|unavailable|variable-merge|-|-",
+     "after": "F1R18T0|available|13110|bdccf8c042cd41ec110bad952cc29e54d589e57bb72b421df64163c54e7f4ee5|272/1/235c99c4e3925e88ccb0f48be1d008df4dd1a7a56badd56104a82ce01bbe2754"
+    },
+    {
+     "entry": "F1R18T1",
+     "before": "F1R18T1|unavailable|variable-merge|-|-",
+     "after": "F1R18T1|unavailable|mean-bound|1d91911e246bf4ff429193b42792b803642792fcb04415ad57c7fd02632bbc32|309/1/ce022926a67379e90b6c2c9a7d8a9fca2fc7f21c67c40308b0209630fb3ac341"
+    },
+    {
+     "entry": "F1R18T2",
+     "before": "F1R18T2|unavailable|variable-merge|-|-",
+     "after": "F1R18T2|available|13110|a5bdfb5bddc01fa00aea7c6dc9b706a5e1b8924e19c1ab24c527e5e89254f3b5|389/1/99b4f060e959d006f28d75261f100d07374abb65b59d143a205c84b0b28fab54"
+    },
+    {
+     "entry": "F1R20T0",
+     "before": "F1R20T0|unavailable|variable-merge|-|-",
+     "after": "F1R20T0|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F1R20T1",
+     "before": "F1R20T1|unavailable|variable-merge|-|-",
+     "after": "F1R20T1|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F1R20T2",
+     "before": "F1R20T2|unavailable|variable-merge|-|-",
+     "after": "F1R20T2|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F1R21T0",
+     "before": "F1R21T0|unavailable|variable-merge|-|-",
+     "after": "F1R21T0|available|13191|bd5d0689fcf9bef76bdb9a7f203e50ccdb3ee4615fc2863c337a10bcfc8c4f84|142/0.5041/5e441e3984ccd595787552dada4cc0b8ad88c2bf88989cdc488d47f967b9fe0a"
+    },
+    {
+     "entry": "F1R21T1",
+     "before": "F1R21T1|unavailable|variable-merge|-|-",
+     "after": "F1R21T1|unavailable|mean-bound|0a7fe30e46a49b7c5f688ec3087bbe70e73a148c71482fca510c0651a780dc20|167/0.697225/c31d3d6773ef4973bd77d123d52ed457c812de6d6cb8b321c1f948c0e5386fd8"
+    },
+    {
+     "entry": "F1R21T2",
+     "before": "F1R21T2|unavailable|variable-merge|-|-",
+     "after": "F1R21T2|available|13191|bbffdd1175432c7d03ab3c2445553d78c67ee4aa1fe72e4d7169fcecaec8829a|217/1/f8969040a9affb701a810e75f0fc4b57b3d2507e689bdae0672426c4e866a4e2"
+    },
+    {
+     "entry": "F2R10T0",
+     "before": "F2R10T0|unavailable|variable-merge|-|-",
+     "after": "F2R10T0|available|13441|2afce62ad5f9284e07876dce807f253bc40bd5baf7a8665cef4048ca0d3fb3ab|246/1/f1f1ace973c6d9310349fb0caa260daa329825e8b95cedb7ca0f82aadf85903e"
+    },
+    {
+     "entry": "F2R10T1",
+     "before": "F2R10T1|unavailable|variable-merge|-|-",
+     "after": "F2R10T1|available|13441|5310e3a8c1a538bc1f81710253a493fa80c831bf669fa7eb41c9ba97da798b3f|281/1/23190ebf8655ae49822e9a7d8f3a1fad9bcf6178eadc2ebbca17a86516b3bffd"
+    },
+    {
+     "entry": "F2R10T2",
+     "before": "F2R10T2|unavailable|variable-merge|-|-",
+     "after": "F2R10T2|available|13441|906812e2bb9c10801a35df83b933c53d1a90abe8926d78f8c796c44518c2a7d4|339/1/652e3f105025948f72b235fe24154263659b110fef4806e05144071c5657bc92"
+    },
+    {
+     "entry": "F2R24T0",
+     "before": "F2R24T0|unavailable|variable-merge|-|-",
+     "after": "F2R24T0|available|14109|8e5e1153ababd59ce44be66dcab8414f8100c1b8871326d29e8742a37611a14f|65/0.10562500000000001/5fbdc51fb6263e597fde48f70a275586002bdfb212b8fb876b9962d3cfbf9b48"
+    },
+    {
+     "entry": "F2R24T1",
+     "before": "F2R24T1|unavailable|variable-merge|-|-",
+     "after": "F2R24T1|available|14109|5d1cfee3091648276068492791090c131f30c917e67ebe7415459a4beb0b64c0|77/0.148225/c467f13e35464c3fa260d821bfd514baab09f5498fbd38780e9d8c68ceb1513c"
+    },
+    {
+     "entry": "F2R24T2",
+     "before": "F2R24T2|unavailable|variable-merge|-|-",
+     "after": "F2R24T2|available|14109|96cae5209c4e6217b0794ff8d65c6e15f6c9b2baec556246aa2c83743cedab97|100/0.25/deb9e936acbea76af6116e7883ab349ff1efbabd5306250fcf93e3753687aa57"
+    },
+    {
+     "entry": "F3R3T0",
+     "before": "F3R3T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F3R3T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F3R3T1",
+     "before": "F3R3T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F3R3T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F3R3T2",
+     "before": "F3R3T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F3R3T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F3R17T0",
+     "before": "F3R17T0|unavailable|variable-merge|-|-",
+     "after": "F3R17T0|available|14863|d6066d38de16978b57acd51945327ed45d9e7ae8e736609ebe31aa9cf2b56e26|224/1/63e2171e7c13b0c81d9de6e05f31c222cf90a73ba113acb47463f7c0a55e53f1"
+    },
+    {
+     "entry": "F3R17T1",
+     "before": "F3R17T1|unavailable|variable-merge|-|-",
+     "after": "F3R17T1|available|14863|ef5a6d6384dd812a096df9049dcba25186c3995b5ecac220c31a9baec91c4ff0|258/1/3b2b4b29e64a9e24aa9c7281be33b3571eed801b663ccdeb523ecb2e67a29b58"
+    },
+    {
+     "entry": "F3R17T2",
+     "before": "F3R17T2|unavailable|variable-merge|-|-",
+     "after": "F3R17T2|available|14863|c0f70cbcd146ef36a6c46c0790057a978aef80bf6cfe000d13d5ff94ede56f55|318/1/92031112df66830ffd009c5df40422dd09fd81917485b75609e5d131e587076f"
+    },
+    {
+     "entry": "F3R18T0",
+     "before": "F3R18T0|unavailable|variable-merge|-|-",
+     "after": "F3R18T0|available|14865|178f0e16ca0720c22278ea208d157bb59572657ead217d0ab237daf5d0c008a6|205/1/7fec2f9c44d9147cefb6229a50a66786e8754fa35edbf68455998437323e5bfd"
+    },
+    {
+     "entry": "F3R18T1",
+     "before": "F3R18T1|unavailable|variable-merge|-|-",
+     "after": "F3R18T1|unavailable|mean-bound|3ab31bac1bf5ceb3ed8a3b98f9fd132998031751d1e746da8f624e6af18b1bd3|241/1/1c54d65570f0b44e71fbab4993dc56ff8c8c9fa9c1189a2a40f6a16a23bf1384"
+    },
+    {
+     "entry": "F3R18T2",
+     "before": "F3R18T2|unavailable|variable-merge|-|-",
+     "after": "F3R18T2|available|14865|97144a5e7eb8480bcda5ebc9cbecdacd674eee94cc2b9bfa80526a5e58fa0b4b|305/1/e6383551766f1b9fe59e6497630d51abbe7405901c9f5bb72a42b370cb1f3aa8"
+    },
+    {
+     "entry": "F3R19T0",
+     "before": "F3R19T0|unavailable|variable-merge|-|-",
+     "after": "F3R19T0|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F3R19T1",
+     "before": "F3R19T1|unavailable|variable-merge|-|-",
+     "after": "F3R19T1|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F3R19T2",
+     "before": "F3R19T2|unavailable|variable-merge|-|-",
+     "after": "F3R19T2|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F3R22T0",
+     "before": "F3R22T0|unavailable|variable-merge|-|-",
+     "after": "F3R22T0|available|14992|b34268435e7eb99da30b623eb0135e94a61164066a2d3c09c9475dd27b2c7efd|115/0.33062499999999995/9dc330fe917224753c0f3dcca59ec2ae307040fde6239523f075b86ac2daebaa"
+    },
+    {
+     "entry": "F3R22T1",
+     "before": "F3R22T1|unavailable|variable-merge|-|-",
+     "after": "F3R22T1|unavailable|mean-bound|6a01a99746bbfce6577b01fed0f3333b1a2b70c52e6c39a385546fb6c90b47d5|138/0.4760999999999999/5cb58bec12c128179a99b1ee40b643209ef09b0a6edcedba4eaaadf3b12a4b3a"
+    },
+    {
+     "entry": "F3R22T2",
+     "before": "F3R22T2|unavailable|variable-merge|-|-",
+     "after": "F3R22T2|available|14992|9650f3c16b4a3d162e6cb79b8b4b3665abb1ca77144bf0343bc2cd6a75bb799c|176/0.7744/5c02810b1abd40cc4ead376eb90b4bf1e79690aa06fe20e94012541dd1e32a99"
+    },
+    {
+     "entry": "F3R23T0",
+     "before": "F3R23T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F3R23T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F3R23T1",
+     "before": "F3R23T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F3R23T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F3R23T2",
+     "before": "F3R23T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F3R23T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F4R1T0",
+     "before": "F4R1T0|unavailable|variable-merge|-|-",
+     "after": "F4R1T0|available|15067|1bdb88d5d93e7550f72e631dcfe40d37eb746eb74a35454394f161da557dc708|126/0.39690000000000003/0bb7c20025a2636e262f3107878811b5b181b5c6ca7e524ec56ee44b3ad0a779"
+    },
+    {
+     "entry": "F4R1T1",
+     "before": "F4R1T1|unavailable|variable-merge|-|-",
+     "after": "F4R1T1|unavailable|mean-bound|5ba6568633dc6781415703cccf0c98a06a6dd06ef9a1c49973937ca53a74fddf|150/0.5625/eed8ad011089d3a81c53d4af3fc9ccf6651e3c0871210154f5e2da15ad37d5ce"
+    },
+    {
+     "entry": "F4R1T2",
+     "before": "F4R1T2|unavailable|variable-merge|-|-",
+     "after": "F4R1T2|available|15067|85a3e2d80015671548f29ac49f26ed1e293c02dbb7f8398a763d4a791f4d535d|191/0.912025/99fbb60410d98b1681d6cecc262fef404270c4f057ff28180044fdc2f59de9a7"
+    },
+    {
+     "entry": "F4R4T0",
+     "before": "F4R4T0|unavailable|variable-merge|-|-",
+     "after": "F4R4T0|available|15113|b86aff2f4c633b18187d688b03d222616bdccd4ce52687679a5302bf0ee84dec|100/0.25/d84317a01023e3656fd58c370e9be4347855852a038dfbe4095c810d4c32fdea"
+    },
+    {
+     "entry": "F4R4T1",
+     "before": "F4R4T1|unavailable|variable-merge|-|-",
+     "after": "F4R4T1|available|15113|bda300c19c62930a4bdafae544fc52d588642a9e96342c40fdeae6e4c699e8d2|118/0.34809999999999997/502eb8fd06be15cd570e7f9e13fc6bcc81c04283b475d2989933eb8f909b0db2"
+    },
+    {
+     "entry": "F4R4T2",
+     "before": "F4R4T2|unavailable|variable-merge|-|-",
+     "after": "F4R4T2|available|15113|62f9d50a182ee4c7a3a39772419ec854916526d422f17a65138b7c696deed584|151/0.570025/7ccbd43c996347394318d7d658abc39787e3b570bd61f328652c2b217523d55c"
+    },
+    {
+     "entry": "F4R19T0",
+     "before": "F4R19T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F4R19T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F4R19T1",
+     "before": "F4R19T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F4R19T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F4R19T2",
+     "before": "F4R19T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F4R19T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F4R23T0",
+     "before": "F4R23T0|unavailable|variable-merge|-|-",
+     "after": "F4R23T0|available|15597|13523147cfa054591d9c9e8fc756ff3e6b5c13e6437be13cf5fc338bb828a8b3|223/1/4ebceca6b583ff5ba8497d850ed787f31c4251abb9e0d4f34399a6e38d57449c"
+    },
+    {
+     "entry": "F4R23T1",
+     "before": "F4R23T1|unavailable|variable-merge|-|-",
+     "after": "F4R23T1|unavailable|mean-bound|9be6f62150580e600ad3b2736e1974a24651255bee27153f6e95fd697524253b|257/1/b041b107077c459f694f2b36375a897468051c408bf679cbfa07b97859b3ab8c"
+    },
+    {
+     "entry": "F4R23T2",
+     "before": "F4R23T2|unavailable|variable-merge|-|-",
+     "after": "F4R23T2|available|15597|dbcacb2e03d8abab217763a74daa25f46e3210e521f60d2151f3f29a68bbccd4|317/1/aa01389dd20c71b444cef7bead79b44589c116ebc8af2ff5a11680883ea30706"
+    },
+    {
+     "entry": "F5R19T0",
+     "before": "F5R19T0|unavailable|variable-merge|-|-",
+     "after": "F5R19T0|available|16311|4974379c1af0f8defea048237495fb6b1fb79599f38a50b02c69c2c7fe586647|98/0.24009999999999998/94bf5bd48bfae818303400540aba52033ed467dd1152916f15a343e5fa9c6837"
+    },
+    {
+     "entry": "F5R19T1",
+     "before": "F5R19T1|unavailable|variable-merge|-|-",
+     "after": "F5R19T1|unavailable|mean-bound|0bc9920e5f546b6f271be80cadf0aa4c73cb15f52644dfb70e29e821120e14c2|115/0.33062499999999995/b6f71af11369cca6544f3abbfa8744bb8b580adeb39f9e87c9baad771c7e9650"
+    },
+    {
+     "entry": "F5R19T2",
+     "before": "F5R19T2|unavailable|variable-merge|-|-",
+     "after": "F5R19T2|available|16311|866209e5c75e01051bfadc7a02c6257293c8b4f9b0dbdc1635e4f47c39e3e6e2|149/0.555025/0afc6489b1f6dbd0069f100d7b42713912856ed2a95ed0a346c7ae0adec56d52"
+    },
+    {
+     "entry": "F5R21T0",
+     "before": "F5R21T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F5R21T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F5R21T1",
+     "before": "F5R21T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F5R21T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F5R21T2",
+     "before": "F5R21T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F5R21T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F5R22T0",
+     "before": "F5R22T0|unavailable|variable-merge|-|-",
+     "after": "F5R22T0|available|16454|6e6ca184ef1e0c0b73a64c84e42270592349e9ac7eee60710dbe5ae06d91ef31|72/0.1296/e9be8f8ab0ab0de9a28eb0d559f08475cd3b35efffbdf75bafbd56ba6bc06a84"
+    },
+    {
+     "entry": "F5R22T1",
+     "before": "F5R22T1|unavailable|variable-merge|-|-",
+     "after": "F5R22T1|available|16454|4eb183476625776201ef4184a17d05071926390d6b9bd694b0bb4b44e929ee1d|86/0.18489999999999998/0821204bc9170115f30ee148f7ed427443604681b5e0c64a27cba29fcfc98807"
+    },
+    {
+     "entry": "F5R22T2",
+     "before": "F5R22T2|unavailable|variable-merge|-|-",
+     "after": "F5R22T2|available|16454|b8f76b59ce25b76071620ad60e7c7f7dec724dd16078be608fb9f8f853b9883f|113/0.3192249999999999/f15eba9aebfcc6a00c1e8fdfccfaf0e0005e0bd2c9b1af44ea9290a12d5003e1"
+    },
+    {
+     "entry": "F5R24T0",
+     "before": "F5R24T0|unavailable|variable-merge|-|-",
+     "after": "F5R24T0|available|16461|157ea20118fb6f93db37782b3c108458a3ec9aa2cd174d5abf880810a16a6781|195/0.9506249999999999/35d6cdd1f51d965148e38e22cdc0566dbf1c1d465a47dacc0d154d800abc897f"
+    },
+    {
+     "entry": "F5R24T1",
+     "before": "F5R24T1|unavailable|variable-merge|-|-",
+     "after": "F5R24T1|available|16461|6ea72973cf66e0baa254e05b589521ce81001e5de3b70872c5c45fae0b757f2d|228/1/3f077682c00f3fafca0cc7693573f303e95dbec9d5c621757cba2cbe194194dc"
+    },
+    {
+     "entry": "F5R24T2",
+     "before": "F5R24T2|unavailable|variable-merge|-|-",
+     "after": "F5R24T2|available|16461|6f520f1a88405913e5042e3f382dedb0087e3cebd345de8bad43c162f116da23|280/1/ffc31654b61c24cb58fc0b75ead60dd6e7b5f1e6a6cfc3b8057d4fae7f293894"
+    },
+    {
+     "entry": "F6R6T0",
+     "before": "F6R6T0|unavailable|variable-merge|-|-",
+     "after": "F6R6T0|available|16865|2a66cd38467bbf3c9a4fdcfd5578285b8a34d06546b6e0129974a79ccbec314b|146/0.5328999999999999/a6446e91e04ae5351d08a402b3e41ec975a8becbefcfd42aa06b8fd09975f00c"
+    },
+    {
+     "entry": "F6R6T1",
+     "before": "F6R6T1|unavailable|variable-merge|-|-",
+     "after": "F6R6T1|available|16865|655dc582c0688a8648e9c0d0568a7f4457e38d699af36fd64ad8b3c58df968ba|173/0.748225/4974e5be4ba6c24fa248ad021935ce793ecfd4b9812dc9e692e6c320d6a56fe8"
+    },
+    {
+     "entry": "F6R6T2",
+     "before": "F6R6T2|unavailable|variable-merge|-|-",
+     "after": "F6R6T2|available|16865|ce6fd7934e12f0ae4c21b8bc7dd36905fc9784c42b334bd0d6746cfe42f5a973|226/1/bd624e6fcae9a9098f8a2a9eccb421bd48f20cd5c578ba7e9ac58c318eaf1ce9"
+    },
+    {
+     "entry": "F6R8T0",
+     "before": "F6R8T0|unavailable|variable-merge|-|-",
+     "after": "F6R8T0|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F6R8T1",
+     "before": "F6R8T1|unavailable|variable-merge|-|-",
+     "after": "F6R8T1|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F6R8T2",
+     "before": "F6R8T2|unavailable|variable-merge|-|-",
+     "after": "F6R8T2|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F6R9T0",
+     "before": "F6R9T0|unavailable|variable-merge|-|-",
+     "after": "F6R9T0|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F6R9T1",
+     "before": "F6R9T1|unavailable|variable-merge|-|-",
+     "after": "F6R9T1|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F6R9T2",
+     "before": "F6R9T2|unavailable|variable-merge|-|-",
+     "after": "F6R9T2|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F6R10T0",
+     "before": "F6R10T0|unavailable|variable-merge|-|-",
+     "after": "F6R10T0|available|16975|f7d67d8bd651b4e4fab90e5807539c6fbd444086541c71f21694b3b20b7b58c3|46/0.0529/ae0c7ff437cb337e50c63193337e35246330619f5e922ea614aa201276261e17"
+    },
+    {
+     "entry": "F6R10T1",
+     "before": "F6R10T1|unavailable|variable-merge|-|-",
+     "after": "F6R10T1|available|16975|2568aecf0e79f6092fcda2c1b10799beaa6896be388cc27edfe1abc0dcba585c|53/0.07022500000000001/43fe1a186b791754e80a4373eb74daf7034ea5472a136ea6f03fe9e90d9e05f2"
+    },
+    {
+     "entry": "F6R10T2",
+     "before": "F6R10T2|unavailable|variable-merge|-|-",
+     "after": "F6R10T2|available|16975|d2ef90479b685a34c81311658daf4cc3674460a6672b353de44c1aca843bde4e|66/0.10890000000000001/a57b0d49b9d620681392cebd34a06887d17d120693df4e7686fe2c2c9dad264e"
+    },
+    {
+     "entry": "F6R11T0",
+     "before": "F6R11T0|unavailable|variable-merge|-|-",
+     "after": "F6R11T0|available|17037|0ba3c3dffabed0efe55a654231dd769b6616a58818bd279aedffc28bff018c04|72/0.1296/71fcd4fce7ef98bb7e7036a535ba7b2fa85955bd492dc8bfec26b78982d8a977"
+    },
+    {
+     "entry": "F6R11T1",
+     "before": "F6R11T1|unavailable|variable-merge|-|-",
+     "after": "F6R11T1|available|17037|18a76243a113abaaa88b2e3b615d94681f28d7e35ea12c6a66f6deb49b23ecf7|86/0.18489999999999998/06e31a08ccd80d61870fea8218c0d019fded1bc1bd1640025fbfeba790226f2b"
+    },
+    {
+     "entry": "F6R11T2",
+     "before": "F6R11T2|unavailable|variable-merge|-|-",
+     "after": "F6R11T2|available|17037|3f57778de5f559ab07fd9827742f2493ecefe4bd814fb25ea3dd5c11110c9bd8|113/0.3192249999999999/0585a65666acb884eca7118be12525d38e3a91b9f70d568df0c8045e76ab5d9c"
+    },
+    {
+     "entry": "F6R12T0",
+     "before": "F6R12T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F6R12T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F6R12T1",
+     "before": "F6R12T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F6R12T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F6R12T2",
+     "before": "F6R12T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F6R12T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F7R18T0",
+     "before": "F7R18T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F7R18T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F7R18T1",
+     "before": "F7R18T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F7R18T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F7R18T2",
+     "before": "F7R18T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F7R18T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F7R21T0",
+     "before": "F7R21T0|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F7R21T0|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F7R21T1",
+     "before": "F7R21T1|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F7R21T1|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F7R21T2",
+     "before": "F7R21T2|unavailable|qso-merge+variable-merge|-|-",
+     "after": "F7R21T2|unavailable|qso-merge|-|-"
+    },
+    {
+     "entry": "F8R20T0",
+     "before": "F8R20T0|unavailable|variable-merge|-|-",
+     "after": "F8R20T0|available|18444|f32f2edae6ae67b75e1af064c680a81c572a47a00a2d17d5c2392b5cb13f62be|58/0.0841/8e27edb3a360ec63963aff45eca06c7ffca9a9dd74c39cb3004ff59957616e38"
+    },
+    {
+     "entry": "F8R20T1",
+     "before": "F8R20T1|unavailable|variable-merge|-|-",
+     "after": "F8R20T1|available|18444|02045d88dff86187d48f2d331f6f157f4bc2633a3bf52d1b026548b63983991a|70/0.12249999999999998/486aa2c82537bf6c13f905adc7f154ee89a7bd4ce7da96ad90b7e617924642fe"
+    },
+    {
+     "entry": "F8R20T2",
+     "before": "F8R20T2|unavailable|variable-merge|-|-",
+     "after": "F8R20T2|available|18444|44242af442e44fcc5cc239c6f7a54b9e402656c7966dad5f0ba33a28950e321b|91/0.20702500000000001/e14aea5060d4df2a9ffbcd85dcb56c35c71739309a825c5c7f317bf49881c020"
+    },
+    {
+     "entry": "F8R22T0",
+     "before": "F8R22T0|unavailable|variable-merge|-|-",
+     "after": "F8R22T0|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F8R22T1",
+     "before": "F8R22T1|unavailable|variable-merge|-|-",
+     "after": "F8R22T1|unavailable|variable-time-required|-|-"
+    },
+    {
+     "entry": "F8R22T2",
+     "before": "F8R22T2|unavailable|variable-merge|-|-",
+     "after": "F8R22T2|unavailable|variable-time-required|-|-"
     }
    ]
   }

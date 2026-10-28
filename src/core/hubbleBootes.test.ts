@@ -36,8 +36,10 @@ describe('Front F M5: Boötes – 1/2 fields (RS Boo outside the view, QSO 1656 
   const full=evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog,variables:'outside-view',continuation:'start-time'});
   expect(full.reasons).toEqual([]);expect(full.target!.recordIndex).toBe(w.glxIndex);
   const rec=record.targets.find(t=>t.glxIndex===w.glxIndex)!.telescopes[0] as {cropSHA256:string;pixelLevel:number};expect(sha(full.viewport!.rgb)).toBe(rec.cropSHA256);expect(full.calibration!.pixelLevel).toBe(rec.pixelLevel);
-  // Without the rule the field stays the typed variable gate.
-  expect(evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog}).reasons).toEqual(['variable-merge']);
+  // With the earlier gate the field stays the typed variable gate. Under the default Front T TRUE branch RS Boo no longer gates
+  // (outside the view); the galaxy 14299+3148 beyond the browser stamp bound does, since only the outside-view rule exempts it.
+  expect(evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog,variables:'gate'}).reasons).toEqual(['variable-merge']);
+  expect(evaluateField(pack,glx,w.pointing,0,{qso:'merge',qsoCatalog}).reasons).toEqual(['stamp-bound']);
  });
  it('recorded available on every telescope; the hot-list rows are engine targets',()=>{
   for(const id of ['51976','51975']){const t=record.targets.find(t=>t.id===id)!;expect(t.telescopes.map(x=>x.status)).toEqual(['available','available','available']);expect(isHubbleExtendedId(id)).toBe(true);}

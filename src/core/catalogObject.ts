@@ -16,7 +16,8 @@ import {delphiFixed} from './variableStars';
 import type {NativeFieldStar} from './pinnedNativeField';
 import type {NativeQso} from './qsoMerge';
 import type {NativeGalaxy} from './pinnedGalaxyField';
-import type {FieldPopulation} from './fieldEngine';
+import type {FieldPopulation,FieldVariableInsertedStar} from './fieldEngine';
+import {fieldStarVariable,type FieldStarVariable} from './variableDispatch';
 
 export const CATALOG_OBJECT_LITERALS=Object.freeze({
  caption:'Catalog Object',type:'Type:',id:'ID #:',ra:'RA:',dec:'Dec:',mag:'V Mag:',bv:'B-V:',ub:'U-B:',spectral:'Spectral Type:',z:'Z:',size:'Size:',sizeHint:'Arc Minutes',
@@ -32,10 +33,15 @@ export const LED_COLOURS=Object.freeze({inactive:'#00ff00',active:'#ff0000'});
 export const TYPE_COLOURS=Object.freeze({highlight:'#ff00ff',window:null});
 
 export type CatalogStarRecord=Readonly<{kind:'star';id:string;type:0|3;ra:number;dec:number;v:number;bv:number;ub:number;aux:number;
- flags:Readonly<{spectral:boolean;luminosity:boolean;bv:boolean;ub:boolean}>;code:number;variable:null}>;
+ flags:Readonly<{spectral:boolean;luminosity:boolean;bv:boolean;ub:boolean}>;code:number;variable:CatalogVariable|null}>;
+/** Front T: the variable record (+0x5b) a TRUE dispatch left on this star (variableDispatch.ts fieldStarVariable); `valuesAvailable`
+ * false when the field was built without an observatory-clock JD (variable-time-required). */
+export type CatalogVariable=Readonly<{recordIndex:number;gcvsId:string;valuesAvailable:boolean;
+ /** Cepheid Init (classes 0/1) wrote 50 into a zero M−m/D word of the field-list copy +0x5b points to (0x51f2d8). */
+ riseWordDefaulted:boolean}>;
 export type CatalogGalaxyRecord=Readonly<{kind:'galaxy';id:string;ra:number;dec:number;v:number;major:number;minor:number;z:number;morphology:number;bar:string;luminosity:string;ring:string}>;
 export type CatalogRecord=CatalogStarRecord|CatalogGalaxyRecord;
-export type CatalogObjectReason='galaxy-colour-residue'|'galaxy-type-fault'|'spectral-code-unformattable'|'instructor-value-masked';
+export type CatalogObjectReason='variable-values-unavailable'|'galaxy-colour-residue'|'galaxy-type-fault'|'spectral-code-unformattable'|'instructor-value-masked';
 export class CatalogObjectError extends Error{constructor(readonly code:'record'){super(`Catalog object: ${code}`);this.name='CatalogObjectError';}}
 
 const bytesOf=(hex:string)=>Uint8Array.from(hex.match(/../g)!,x=>parseInt(x,16));
@@ -47,6 +53,16 @@ export function catalogRecordFromStar(s:NativeFieldStar):CatalogStarRecord{
  const q=s.qualityByte;
  return Object.freeze({kind:'star',id:`${s.band}-${name}`,type:0,ra:s.ra,dec:s.dec,v:s.magnitude,bv:s.photometry2Single,ub:s.photometry3Single,aux:s.auxiliarySingle,
   flags:Object.freeze({spectral:(q&1)!==0,luminosity:(q&2)!==0,bv:(q&4)!==0,ub:(q&8)!==0}),code:compactSpectralIndex(s.rawHex),variable:null});
+}
+/** Front T, a star the TRUE dispatch kept (0x59864d / 0x59873e, then 0x51ec48): its name is the GCVS ID (0x403c5c), V, B−V,
+ * U−B and the spectral code are the model's at the field's frozen JD, the flags are the dispatch's (+0x39/+0x3a := 0 with a code,
+ * +0x3b/+0x3c := 0 when a colour was assigned), and +0x5b is the record. A miss-path star has no GSC record. Without a JD the
+ * values are not shown (typed variable-values-unavailable). */
+export function catalogRecordFromVariableStar(s:NativeFieldStar|FieldVariableInsertedStar,variable:FieldStarVariable):CatalogStarRecord{
+ const gsc='rawHex' in s?catalogRecordFromStar(s):null,values=variable.values,computed=values.status==='computed'?values:null;
+ return Object.freeze({kind:'star',id:variable.gcvsId,type:0,ra:s.ra,dec:s.dec,v:computed?computed.v:30,bv:computed?computed.bMinusV:30,ub:computed?computed.uMinusB:30,aux:gsc?gsc.aux:0,
+  flags:Object.freeze(computed?{spectral:computed.flags.spectral,luminosity:computed.flags.luminosity,bv:computed.flags.bMinusV,ub:computed.flags.uMinusB}:{spectral:true,luminosity:true,bv:true,ub:true}),
+  code:computed?computed.spectralCode:0,variable:Object.freeze({recordIndex:variable.recordIndex,gcvsId:variable.gcvsId,valuesAvailable:!!computed,riseWordDefaulted:variable.riseWordDefaulted})});
 }
 /** 0x5987e4: a merged QSO (type 3, code 99, +0x35 = z, B−V/U−B flags from the record). */
 export function catalogRecordFromQso(q:NativeQso):CatalogStarRecord{
@@ -63,7 +79,11 @@ export function catalogRecordFromGalaxy(g:NativeGalaxy,name:string=g.id):Catalog
 export function catalogRecords(p:FieldPopulation):Readonly<{stars:readonly CatalogStarRecord[];galaxies:readonly CatalogGalaxyRecord[]}>{
  const renames=new Map((p.photographAssociations??[]).map(a=>[a.recordIndex,a.name]));
  return Object.freeze({
-  stars:Object.freeze(p.stars.map(s=>s.type===3?catalogRecordFromQso(s as NativeQso):catalogRecordFromStar(s as NativeFieldStar))),
+  stars:Object.freeze(p.stars.map(s=>{
+   if(s.type===3)return catalogRecordFromQso(s as NativeQso);
+   const variable=fieldStarVariable(p,s.id);
+   return variable?catalogRecordFromVariableStar(s as NativeFieldStar|FieldVariableInsertedStar,variable):catalogRecordFromStar(s as NativeFieldStar);
+  })),
   galaxies:Object.freeze(p.galaxies.map(g=>catalogRecordFromGalaxy(g,renames.get(g.recordIndex)??g.id))),
  });
 }
@@ -128,7 +148,8 @@ export function catalogObjectView(r:CatalogRecord,format:(v:number,d:1|2,s:reado
  }
  if(r.type===3)return Object.freeze({type:L.nonStellar,typeHighlight:true,id:r.id,ra,dec,mag:blank30(r.v),bv:blank30(r.bv),ub:blank30(r.ub),spLabel:L.spectrum,sp:L.redshiftedQso,
   zEnabled:true,z:F3(r.aux),sizeEnabled:false,size:'',bvLed:led(r.flags.bv),ubLed:led(r.flags.ub),spLed:led(false),gcvsEnabled:false,reasons:Object.freeze([])});
- const sp=nativeSpectralText(r.code);if(sp===null)reasons.push('spectral-code-unformattable');
+ const unavailable=r.variable!==null&&!r.variable.valuesAvailable;if(unavailable)reasons.push('variable-values-unavailable');
+ const sp=unavailable?'':nativeSpectralText(r.code);if(sp===null)reasons.push('spectral-code-unformattable');
  return Object.freeze({type:r.variable?L.variableStar:L.star,typeHighlight:!!r.variable,id:r.id,ra,dec,mag:blank30(r.v),bv:blank30(r.bv),ub:blank30(r.ub),spLabel:L.spectral,sp:sp??'',
   zEnabled:false,z:'',sizeEnabled:false,size:'',bvLed:led(r.flags.bv),ubLed:led(r.flags.ub),spLed:led(r.flags.spectral||r.flags.luminosity),
   gcvsEnabled:r.type===0&&r.variable!==null,reasons:Object.freeze(reasons)});

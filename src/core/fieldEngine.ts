@@ -8,8 +8,11 @@
  *     gate; 'merge' runs the recovered loader 0x5987e4 and merge 0x597f90 (qsoMerge.ts) on the bundled CLEA_QSO.DAT, after the
  *     variable stage and before the galaxies, and the galaxy cleanup then also takes its type-3 branches (keep both, or delete
  *     the galaxy). Photographic-list association: a typed unavailable gate, or with the photographs option the ported draw;
- *  4. variables: none, or each record whose dispatch 0x51ec48 returns false without side effects, merged one after another in file
- *     order through the recovered false-merge branch (variableMerge.ts); any other class/period/word combination is gated;
+ *  4. variables, one after another in the stage's (RA, Dec) order: a dispatch 0x51ec48 that returns false without side effects takes
+ *     the recovered false-merge branch (variableMerge.ts); by default (Front T) a dispatch that reaches a model takes the TRUE
+ *     branch (variableDispatch.ts): a hit modifies the star at the saved index, a miss inserts a type-0 star at the RA cursor. Without
+ *     options.variableTime the class 0/1 values are unavailable (variable-time-required) and such a star gates the field only when
+ *     its stamp reaches the crop, it is near a galaxy or QSO, or it is selected. variables 'gate' keeps the earlier gate;
  *  5. galaxies: whole-file CLEA_GLX.DAT admission in source order, each inserted by the GLX loader (call 0x599128) through the
  *     cursor-relative linked-list insert 0x492728 with the strict RA/Dec-greater comparator 0x5969e0 (nativeCursorInsert);
  *     each galaxy then cleans the star list (0x5980cc) in that order;
@@ -24,7 +27,8 @@ import {decodeNativeCompactRecord,nativeRegionIds,nativeCompactBandOrder,type Na
 import {nativeCatalogAdmission,nativeStellarPaintLevel,nativeStoredStellarLevel,type NativeCatalogRegion} from './catalogPopulation';
 import {traceCompactGscBandRead} from './compactGscReadOrder';
 import {catalogMergeDistance,cleanNativeGalaxy,nativeMergeNearest,CatalogMergeError} from './catalogMerge';
-import {decodeNativeVariableRecord,nativeVariableClass,nativeVariableDispatchFalse,nativeVariableFalseMerge,VariableMergeError,type NativeVariable} from './variableMerge';
+import {decodeNativeVariableRecord,nativeVariableClass,nativeVariableDispatchFalse,nativeVariableFalseMerge,nativeVariableSpectrum,nativeVariableTrueMerge,VariableMergeError,type NativeVariable} from './variableMerge';
+import {variableDispatchAt,variableModelStatic,variableRecordFromHex,VariableDispatchError,type VariableDispatchReason,type VariableDispatchStar,type VariableDispatchFlags} from './variableDispatch';
 import {decodeGlxRecord,GLX_CATALOG} from './glxCatalog';
 import type {NativeGalaxy} from './pinnedGalaxyField';
 import {galaxyCatalogAxes,catalogGalaxyMagnitude} from './galaxyCatalogAxes';
@@ -65,7 +69,11 @@ export type FieldUnavailableReason=
  |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'|'axis-fallback'|'merge-boundary'|'stamp-bound'
  |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping'
  /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
- |'qso-selected';
+ |'qso-selected'
+ /** Front T (variableDispatch.ts): a TRUE-dispatch star whose values are unavailable is in view, near a galaxy or QSO, or
+  * selected (or, for indeterminate/fault cases, anywhere in the field). */
+ |FieldVariableUnavailable;
+export type FieldVariableUnavailable=VariableDispatchReason;
 /** QSO stage: 'gate' (default) or the recovered merge on the caller-verified bundled catalogue (bytes and their SHA-256). */
 export type FieldQsoMode='gate'|'merge';
 export type FieldQsoCatalog=Readonly<{bytes:Uint8Array;sha256:string}>;
@@ -84,6 +92,13 @@ export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:r
  * could become is visible, and no galaxy or QSO near enough to read the overwritten magnitude exists. Used for the Boötes rows
  * only (coordinator decision); Object X uses variableDispatch 'recovered' instead. */
 export type FieldVariableMode='gate'|'outside-view';
+/** Front T: the time of the variable stage. The original reads the observatory clock (host Now + the user's offset, 0x487bcc on
+ * env+0x37de) once per variable; the web passes the observatory clock's UT JD frozen with the field. Absent: every time-dependent
+ * value is unavailable (variable-time-required). */
+export type FieldVariableTime=Readonly<{jd:number;source:'observatory-clock'}>;
+/** Site-clock JD domain (1900-01-01 … 2099-12-31, as the observatory clock). */
+/** The one JD domain for frozen field times (= the site clock's domain, siteClock.ts; review 1 N1). */
+export const FIELD_VARIABLE_JD_DOMAIN=Object.freeze({minimum:2415020.5,maximum:2488069.5});
 /** 'recovered' (default since the coordinator decision of 2026-10-28): every variable whose time update the dispatch 0x51ec48
  * returns false for without side effects (zero period, zero word unless class 1, or class 3: variableMerge.ts
  * nativeVariableDispatchFalse) takes the false-merge branch, one after another in the stage's (RA, Dec) order (0x492728 under
@@ -125,11 +140,25 @@ export function glxyspLookup(lines:readonly string[],id:string):string|null{cons
 export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a selected galaxy that has an own spectrum there is
  * observed only with that spectrum supplied as librarySpectrum; otherwise the typed spectrum-mapping reason (never the
  * GLXYTMPL.SP fallback). Without this option the caller vouches for the mapping (Hubble targets: recorded per target). */
- glxyspLines?:readonly string[];variableDispatch?:FieldVariableDispatch;photographs?:FieldPhotographs;spectralInterval?:FieldSpectralInterval;starObservation?:FieldStarObservation;continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation}>;
+ glxyspLines?:readonly string[];variableDispatch?:FieldVariableDispatch;photographs?:FieldPhotographs;spectralInterval?:FieldSpectralInterval;starObservation?:FieldStarObservation;continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation;
+ /** Front T: with variableDispatch 'recovered' and no `variables` option, the TRUE branch of 0x51ec48 runs (hit modifies the
+  * resolved star, miss inserts at the RA cursor). 'gate' keeps the earlier variable-merge gate; 'outside-view' the RS Boo rule. */
+ variableTime?:FieldVariableTime}>;
 /** hitId: the nearest record (the merge winner); resolvedId: the record at the unrepaired saved index that the unmodelled update
  * would act on (a runner pruned below the winner shifts it onto another record); removedRunner: pruned as natively. */
 export type FieldOutsideViewVariable=Readonly<{variable:number;name:string;classification:string;hitId:string;resolvedId:string;hitArcseconds:number;removedRunner:string|null}>;
-export type FieldStar=NativeFieldStar|NativeQso;
+/** A star inserted by a TRUE miss (0x5987a9 → 0x492574): type 0 at the variable's position. Its magnitude and colours are the
+ * dispatch values, or, when those are unavailable, the pre-dispatch magnitude (+0x29 := record max, 0x598762) and NaN colours,
+ * which no reader consumes under the Front T gate (evaluateField). */
+export type FieldVariableInsertedStar=Readonly<{id:string;band:'CLEA_VStrs.dat';recordIndex:number;ra:number;dec:number;magnitude:number;photometry2Single:number;photometry3Single:number;type:0;variableInserted:true}>;
+export type FieldStar=NativeFieldStar|NativeQso|FieldVariableInsertedStar;
+export type FieldVariableValues=
+ Readonly<{status:'computed';jd:number|null;v:number;bMinusV:number;uMinusB:number;spectralCode:number;spectralText:string;flags:VariableDispatchFlags}>|
+ Readonly<{status:'unavailable';reason:FieldVariableUnavailable}>;
+/** One star the TRUE dispatch kept (+0x5b ≠ nil): hit (the resolved GSC record, keeping its position; winnerId when the unrepaired
+ * saved index resolved another record than the nearest) or miss (an inserted star). nearGalaxyOrQso: a galaxy (before cleanup) or a
+ * QSO position within the merge guard radius (OUTSIDE_VIEW.mergeRadiusDegrees) of the star. */
+export type FieldVariableStar=Readonly<{starId:string;recordIndex:number;gcvsId:string;path:'hit'|'miss';winnerId?:string;ra:number;dec:number;riseWordDefaulted:boolean;values:FieldVariableValues;nearGalaxyOrQso:boolean}>;
 export type FieldMergeWitness=Readonly<{galaxy:string;removed:readonly string[];savedWinnerIndex:number;runnerIndex:number;winnerId:string|null;galaxyDeleted?:true}>;
 export type FieldPopulation=Readonly<{
  area:NativeCatalogRegion;regionIds:readonly number[];bandOrder:readonly string[];initialStarIds:readonly string[];
@@ -141,6 +170,10 @@ export type FieldPopulation=Readonly<{
  outsideViewVariable?:FieldOutsideViewVariable;
  /** 'photographs' option only: one entry per galaxy that took a photograph, in admission order. */
  photographAssociations?:readonly FieldPhotographAssociation[];
+ /** Front T: every star the TRUE dispatch kept, in stage order (a later variable hitting the same star replaces its entry). */
+ variableStars?:readonly FieldVariableStar[];
+ /** The variable-stage time used, when one was supplied. */
+ variableTime?:FieldVariableTime;
 }>;
 export type FieldCalibration=Readonly<{sourcePreparer?:JournalSourcePreparer;continuationSource?:FieldContinuationSource;continuationDraws?:'start-time';sourceFile:string;zeroPoint:number;pixelLevel:number;fraction:number;amplitude:PhotonAmplitudes;instrumentMagnitude:number;sourceMeans:readonly number[];sourceValues:readonly number[];wavelengths:readonly number[]}>;
 export type FieldResult=Readonly<{
@@ -281,7 +314,9 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  try{variables=[...nativeCursorInsert(pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>fieldVariableAdmitted(v,area)),variableGreater)];}catch(e){if(e instanceof FieldEngineError)throw e;throw new FieldEngineError('evidence');}
  let variableRemoved:string[]=[];
  let outsideViewVariable:FieldOutsideViewVariable|undefined;
- const dispatch=options.variableDispatch??'recovered',falseDispatch=(v:NativeVariable)=>dispatch==='recovered'?nativeVariableDispatchFalse(v,VARIABLE_TABLES):nativeVariableClass(v.classification,VARIABLE_TABLES)===3;
+ const variableTime=checkedVariableTime(options.variableTime);
+ let variableEntries:VariableEntry[]|null=null;
+ const dispatch=options.variableDispatch??'recovered',trueDispatch=dispatch==='recovered'&&options.variables===undefined,falseDispatch=(v:NativeVariable)=>dispatch==='recovered'?nativeVariableDispatchFalse(v,VARIABLE_TABLES):nativeVariableClass(v.classification,VARIABLE_TABLES)===3;
  if(variables.length===1&&options.variables==='outside-view'&&!falseDispatch(variables[0])){
   const v=variables[0];
   try{
@@ -291,6 +326,10 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
    else{const kept=new Set(trace.rows.map(r=>r.id));variableRemoved=stars.filter(s=>!kept.has(s.id)).map(s=>s.id);stars=stars.filter(s=>kept.has(s.id));
     outsideViewVariable=Object.freeze({variable:v.recordIndex,name:v.name,classification:v.classification,hitId:trace.winner!.id,resolvedId:target.id,hitArcseconds:arcseconds,removedRunner:trace.removedRunner?.id??null});}
   }catch(e){if(e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
+ }
+ else if(trueDispatch&&variables.length){
+  const stage=runTrueVariableStage(stars,variables,options.variableTime?.jd??null);
+  if(stage.reason)reasons.push(stage.reason);else{stars=stage.stars;variableRemoved.push(...stage.removed);variableEntries=stage.entries;}
  }
  else if(variables.some(v=>!falseDispatch(v))||variables.length>1&&dispatch!=='recovered')reasons.push('variable-merge');
  else if(variables.length){
@@ -306,7 +345,8 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
   }catch(e){if(e instanceof VariableMergeError||e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
  }
  let qsoStage:FieldPopulation['qsoStage'];
- if(qsoCatalog&&!reasons.includes('variable-merge')){
+ const variableGate=reasons.some(r=>r==='variable-merge'||r==='variable-spectrum-indeterminate'||r==='variable-model-fault');
+ if(qsoCatalog&&!variableGate){
   const load=loadNativeQsoList(qsoCatalog,area);
   if(load.qsos.map(q=>q.recordIndex).join()!==qsoMatches.join())throw new FieldEngineError('evidence');// the scan and the pack agree
   if(load.qsos.length){
@@ -331,12 +371,92 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  }
  if(galaxies.some(g=>!axesSupported(g)))reasons.push('axis-fallback');
  const mergeWitnesses:FieldMergeWitness[]=[];
- if(!reasons.includes('variable-merge')&&!reasons.includes('merge-boundary')){
+ // Front T guard: a galaxy (before cleanup) or a QSO position near a TRUE star.
+ const guardPositions:Readonly<{ra:number;dec:number}>[]=[...admitted,...pack.qso.entries.filter(p=>inside(p,area))];
+ // Review 1 N1: entries are kept when a later QSO replacement or galaxy cleanup deletes their star. Such a star lies within the
+ // merge guard of that QSO or galaxy, so with unavailable values it still gates the field (conservative: whether a time-dependent
+ // miss star exists can change the cleanup's runner pruning); fieldStarVariable returns null for a star no longer present.
+ const variableStars=variableEntries?Object.freeze(variableEntries.map(e=>Object.freeze({...e,nearGalaxyOrQso:guardPositions.some(p=>catalogMergeDistance(p,e)<OUTSIDE_VIEW.mergeRadiusDegrees)}))):undefined;
+ if(!variableGate&&!reasons.includes('merge-boundary')){
   const cleaned=cleanFieldGalaxies(stars,galaxies,mode);stars=cleaned.stars;galaxies=cleaned.galaxies;mergeWitnesses.push(...cleaned.witnesses);
   if(cleaned.boundary)reasons.push('merge-boundary');
  }
- return {reasons,population:Object.freeze({area,regionIds,bandOrder,initialStarIds,variables:Object.freeze(variables),variableRemoved:Object.freeze(variableRemoved),galaxies,galaxyAdmissionIds:admission,mergeWitnesses:Object.freeze(mergeWitnesses),stars:Object.freeze(stars),qsoMatches:Object.freeze(qsoMatches),photographMatches:Object.freeze(photographMatches),...(qsoStage?{qsoStage}:{}),...(outsideViewVariable?{outsideViewVariable}:{}),...(photographAssociations?{photographAssociations:Object.freeze(photographAssociations)}:{})})};
+ return {reasons,population:Object.freeze({area,regionIds,bandOrder,initialStarIds,variables:Object.freeze(variables),variableRemoved:Object.freeze(variableRemoved),galaxies,galaxyAdmissionIds:admission,mergeWitnesses:Object.freeze(mergeWitnesses),stars:Object.freeze(stars),qsoMatches:Object.freeze(qsoMatches),photographMatches:Object.freeze(photographMatches),...(qsoStage?{qsoStage}:{}),...(outsideViewVariable?{outsideViewVariable}:{}),...(photographAssociations?{photographAssociations:Object.freeze(photographAssociations)}:{}),...(variableStars?{variableStars}:{}),...(variableTime?{variableTime}:{})})};
 }
+function checkedVariableTime(t:FieldVariableTime|undefined):FieldVariableTime|undefined{
+ if(t===undefined)return undefined;
+ if(!t||typeof t!=='object'||t.source!=='observatory-clock'||typeof t.jd!=='number'||!Number.isFinite(t.jd)||t.jd<FIELD_VARIABLE_JD_DOMAIN.minimum||t.jd>FIELD_VARIABLE_JD_DOMAIN.maximum)throw new FieldEngineError('input');
+ return Object.freeze({jd:t.jd,source:t.source});
+}
+type VariableEntry=Omit<FieldVariableStar,'nearGalaxyOrQso'>;
+/** Reasons that leave the star's existence (and so the later merges) undetermined: the whole field is gated. */
+export const FIELD_VARIABLE_STAGE_GATES:readonly FieldVariableUnavailable[]=Object.freeze(['variable-spectrum-indeterminate','variable-model-fault']);
+const STAGE_GATES:ReadonlySet<FieldVariableUnavailable>=new Set(FIELD_VARIABLE_STAGE_GATES);
+type DispatchOutcome=Readonly<{kind:'false'}>|Readonly<{kind:'computed';values:Extract<FieldVariableValues,{status:'computed'}>;riseWordDefaulted:boolean}>|Readonly<{kind:'unavailable';reason:FieldVariableUnavailable;riseWordDefaulted:boolean}>;
+function dispatchOutcome(rawHex:string,recordIndex:number,jd:number|null,star:VariableDispatchStar):DispatchOutcome{
+ const record=variableRecordFromHex(rawHex,recordIndex),s=variableModelStatic(record),word=s.riseWordDefaulted;
+ const unavailable=(reason:FieldVariableUnavailable)=>Object.freeze({kind:'unavailable' as const,reason,riseWordDefaulted:word});
+ if(jd===null&&s.class!==2){
+  // Without the time, the outcome is still decided when the spectral code is fixed (FALSE when 0); a range spectrum is TRUE at
+  // every time only when no reachable letter leaves the table.
+  if(s.spectrum.kind==='fixed'&&s.spectrum.code===0)return Object.freeze({kind:'false' as const});
+  if(s.spectrum.kind==='unavailable')return unavailable(s.spectrum.reason);
+  if(s.spectrum.kind==='range'&&!s.spectrum.everyTime)return unavailable('variable-spectrum-indeterminate');
+  if('unavailable' in s.colours)return unavailable(s.colours.unavailable);
+  if(!s.system)return unavailable('variable-model-fault');
+  return unavailable('variable-time-required');
+ }
+ try{
+  const o=variableDispatchAt(record,jd,star);
+  if(!o.result)return Object.freeze({kind:'false' as const});
+  return Object.freeze({kind:'computed' as const,riseWordDefaulted:word,values:Object.freeze({status:'computed' as const,jd,v:o.v,bMinusV:o.bMinusV,uMinusB:o.uMinusB,spectralCode:o.spectralCode,spectralText:o.spectralText,flags:o.flags})});
+ }catch(e){if(e instanceof VariableDispatchError&&e.code!=='input')return unavailable(e.code);throw e;}
+}
+/** Front T stage 4 (0x59859c..0x5987d9) with the TRUE branch: every variable in the stage's (RA, Dec) order; a FALSE dispatch takes
+ * the recovered false merge (restore / no insert); a TRUE dispatch modifies the star at the saved index (hit, name := GCVS ID,
+ * +0x29/+0x2d/+0x31/+0x43 from the model, +0x5b := record) or inserts a type-0 star after the RA cursor walk (miss). */
+function runTrueVariableStage(initial:readonly FieldStar[],variables:readonly NativeVariable[],jd:number|null):Readonly<{stars:FieldStar[];removed:string[];entries:VariableEntry[];reason?:undefined}>|Readonly<{reason:FieldUnavailableReason}>{
+ let stars=[...initial];const removed:string[]=[],entries=new Map<string,VariableEntry>();
+ const timeDependentColours=new Set<string>();// stars whose colours a no-JD class-0/1 dispatch replaced (review 1 L4)
+ const prune=(rows:readonly Readonly<{id:string}>[])=>{const kept=new Set(rows.map(r=>r.id));for(const s of stars)if(!kept.has(s.id)){removed.push(s.id);entries.delete(s.id);}stars=stars.filter(s=>kept.has(s.id));};
+ try{
+  for(const v of variables){
+   const spectrum=nativeVariableSpectrum(v.rawHex),withSpectrum={...v,spectrum};
+   if(nativeVariableDispatchFalse(withSpectrum,VARIABLE_TABLES)){
+    prune(nativeVariableFalseMerge(stars.map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),withSpectrum,VARIABLE_TABLES,'recovered').rows);continue;
+   }
+   const merge=nativeVariableTrueMerge(stars.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(v,s),ra:s.ra})),v);
+   prune(merge.rows);
+   const target=merge.path==='hit'?stars[merge.targetIndex] as NativeFieldStar|FieldVariableInsertedStar:null;
+   if(merge.path==='hit'&&target!.id!==merge.target.id)throw new FieldEngineError('evidence');
+   if(target&&target.type!==0)continue;// 0x51ec6b: +0x3d ≠ 0 → FALSE, the 0x5f-byte backup is restored
+   const colours:VariableDispatchStar=target&&Number.isFinite(target.photometry2Single)&&Number.isFinite(target.photometry3Single)?{bMinusV:target.photometry2Single,uMinusB:target.photometry3Single}:'residue';
+   let outcome=dispatchOutcome(v.rawHex,v.recordIndex,jd,colours);
+   // Review 1 L4: a class-0/1 hit without a JD left this star's +0x2d/+0x31 at the model's (unknown) colours; a later TRUE dispatch
+   // on it reads them, so its values need the time too (never the catalogue colours).
+   if(target&&outcome.kind==='computed'&&timeDependentColours.has(target.id))outcome=Object.freeze({kind:'unavailable' as const,reason:'variable-time-required' as const,riseWordDefaulted:outcome.riseWordDefaulted});
+   if(outcome.kind==='false')continue;
+   if(outcome.kind==='unavailable'&&STAGE_GATES.has(outcome.reason))return Object.freeze({reason:outcome.reason});
+   const values:FieldVariableValues=outcome.kind==='computed'?outcome.values:Object.freeze({status:'unavailable' as const,reason:outcome.reason});
+   const computed=values.status==='computed'?values:null,magnitude=computed?computed.v:Math.fround(v.magnitude);
+   let starId:string,winnerId:string|undefined,ra:number,dec:number;
+   if(target){
+    const t=target;if(values.status==='unavailable'||timeDependentColours.has(t.id))timeDependentColours.add(t.id);
+    stars[(merge as Extract<typeof merge,{path:'hit'}>).targetIndex]=Object.freeze({...t,magnitude,photometry2Single:computed?computed.bMinusV:t.photometry2Single,photometry3Single:computed?computed.uMinusB:t.photometry3Single}) as FieldStar;
+    starId=t.id;ra=t.ra;dec=t.dec;if(merge.trace.winner&&merge.trace.winner.id!==t.id)winnerId=merge.trace.winner.id;
+   }else{
+    const id=`CLEA_VStrs.dat@${v.recordIndex}`;if(stars.some(s=>s.id===id))throw new FieldEngineError('evidence');
+    const inserted:FieldVariableInsertedStar=Object.freeze({id,band:'CLEA_VStrs.dat' as const,recordIndex:v.recordIndex,ra:v.ra,dec:v.dec,magnitude,photometry2Single:computed?computed.bMinusV:NaN,photometry3Single:computed?computed.uMinusB:NaN,type:0 as const,variableInserted:true as const});
+    stars.splice((merge as Extract<typeof merge,{path:'miss'}>).insertAt,0,inserted);starId=id;ra=v.ra;dec=v.dec;
+   }
+   entries.delete(starId);
+   entries.set(starId,Object.freeze({starId,recordIndex:v.recordIndex,gcvsId:v.name,path:merge.path,...(winnerId?{winnerId}:{}),ra,dec,riseWordDefaulted:outcome.riseWordDefaulted,values}));
+  }
+ }catch(e){if(e instanceof VariableMergeError||e instanceof CatalogMergeError||e instanceof QsoMergeError)return Object.freeze({reason:'variable-merge' as const});throw e;}
+ return Object.freeze({stars,removed,entries:[...entries.values()]});
+}
+/** Front T §3.6: implemented in variableDispatch.ts (the module Front O imports); re-exported for the engine's callers. */
+export {fieldStarVariable,type FieldStarVariable} from './variableDispatch';
 type Calibration=(typeof FIELD_CALIBRATIONS)[number];
 /** Same paint order and levels as galaxyExposure.ts: galaxies first (rounded projected centres), then stars by stored level. */
 /** The 'outside-view' conditions that need the projected scene: both footprints outside the 312² crop (every pixel of the 99×99
@@ -358,7 +478,7 @@ function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene)
  }
  return true;
 }
-function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,unpainted:ReadonlySet<number>=new Set(),photographs?:Readonly<{telescope:FieldTelescope;options:FieldPhotographs}>):RgbImage{
+function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,unpainted:ReadonlySet<number>=new Set(),photographs?:Readonly<{telescope:FieldTelescope;options:FieldPhotographs}>,unpaintedStars:ReadonlySet<string>=new Set()):RgbImage{
  let raster:RgbImage={width:FRAME.width,height:FRAME.height,rgb:new Uint8Array(FRAME.width*FRAME.height*3)};
  const taken=new Map((population.photographAssociations??[]).map(a=>[a.recordIndex,a]));
  for(let i=0;i<population.galaxies.length;i++){if(unpainted.has(i))continue;const p=scene.galaxies[i],a=taken.get(population.galaxies[i].recordIndex);
@@ -373,6 +493,7 @@ function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Cali
  for(let i=0;i<population.stars.length;i++){
   const record=population.stars[i],p=scene.stars[i];
   if(record.id===population.outsideViewVariable?.hitId||record.id===population.outsideViewVariable?.resolvedId)continue;// unmodelled variable update, wholly outside the view (outsideViewHolds)
+  if(unpaintedStars.has(record.id))continue;// Front T: values unavailable, stamp wholly outside the crop (checked by the caller)
   const stored=nativeStoredStellarLevel(record.magnitude,1,'round');
   const level=nativeStellarPaintLevel(record.type,stored,c.magnitudeShift);if(level===null)throw new FieldEngineError('evidence');
   if(!profiles.has(level))profiles.set(level,prepareNativeStarProfile(level));
@@ -405,7 +526,15 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   unpainted.add(i);outsideViewGalaxies.push({galaxy:g.id,margin});
  }}
  if(population.outsideViewVariable&&!outsideViewHolds(population,scene))return Object.freeze({...empty,population,scene,reasons:Object.freeze(['variable-merge' as const])});
- const raster=paintField(population,scene,c,unpainted,options.photographs?{telescope,options:options.photographs}:undefined);
+ // Front T: a TRUE star whose values are unavailable gates the field only when its 99×99 stamp reaches the 312² crop or a galaxy or
+ // QSO lies within the merge guard radius; otherwise it is not painted (pixel-identical: the whole stamp misses the crop).
+ const pendingVariables=(population.variableStars??[]).filter(e=>e.values.status==='unavailable');
+ for(const e of pendingVariables){
+  const p=createNativeSelectionScene([{id:'variable',ra:e.ra,dec:e.dec}],[],scene.frame).stars[0];
+  if(e.nearGalaxyOrQso||outsideViewMargin(p)<=0)return Object.freeze({...empty,population,scene,reasons:Object.freeze([(e.values as Extract<FieldVariableValues,{status:'unavailable'}>).reason])});
+ }
+ const pendingIds=new Set(pendingVariables.map(e=>e.starId));
+ const raster=paintField(population,scene,c,unpainted,options.photographs?{telescope,options:options.photographs}:undefined,pendingIds);
  const viewport=cropNativeFrame(raster,freshNativeViewport(FRAME.viewport,FRAME.viewport,{x:FRAME.anchor,y:FRAME.anchor})),pixelLevel=slitPixelLevel(viewport);
  let selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor);
  if(selection.kind==='throughput-required'){
@@ -414,6 +543,10 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor,nativeObjectSlitFraction({objectPresent:true,objectType:star.type,pixelLevel,object:{raHours:star.ra,decDegrees:star.dec},pointing:{raHours:at.ra,decDegrees:at.dec}}));
  }
  const base={...empty,population,scene,viewport,selection,...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})};
+ if(selection.kind==='star'&&pendingIds.has(population.stars[selection.star.index].id)){
+  const e=pendingVariables.find(x=>x.starId===population.stars[selection.star.index].id)!;
+  return Object.freeze({...base,reasons:Object.freeze([(e.values as Extract<FieldVariableValues,{status:'unavailable'}>).reason])});
+ }
  if(selection.kind==='star'&&population.stars[selection.star.index].type===3&&options.qsoObservation){
   // 0x50e7b0/0x55e330/0x55e52c: QSOSpect.dat at the QSO's own Single z; point-source throughput as the star path (type 3).
   const q=population.stars[selection.star.index] as NativeQso;
@@ -430,7 +563,9 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  }
  if(selection.kind==='star'&&population.stars[selection.star.index].type===0&&options.starObservation){
   // Star path (starExposure.ts generalized): template by spectral index, point-source throughput with the star's own position.
-  const st=population.stars[selection.star.index] as NativeFieldStar,raw=Uint8Array.from(st.rawHex.match(/../g)!,x=>parseInt(x,16)),spectralIndex=new DataView(raw.buffer).getInt32(8,true);
+  // A TRUE-dispatch star's spectral code is +0x43 written by v2 (Front T), not the GSC record's own index.
+  const st=population.stars[selection.star.index] as NativeFieldStar,variable=population.variableStars?.find(e=>e.starId===st.id);
+  const spectralIndex=variable?.values.status==='computed'?variable.values.spectralCode:new DataView(Uint8Array.from(st.rawHex.match(/../g)!,x=>parseInt(x,16)).buffer).getInt32(8,true);
   const template=options.starObservation.templateFor(spectralIndex);
   if(!template)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['star-selected' as const])});
   const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:0,pixelLevel,object:{raHours:st.ra,decDegrees:st.dec},pointing:{raHours:at.ra,decDegrees:at.dec}});

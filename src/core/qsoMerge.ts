@@ -68,6 +68,15 @@ export type QsoMergeable=Readonly<{id:string;type:number;magnitude:number;ra:num
 export type QsoMergeWitness=Readonly<{qso:string;winnerId:string|null;savedWinnerIndex:number;removedRunner:string|null;bestArcseconds:number;operation:'replace'|'insert';replacedId:string|null;position:number}>;
 /** Conservative support exclusion near a strict comparison (not a measured x87 error bound), as catalogMerge.ts. */
 function awayFromBoundary(value:number,boundary:number){if(Math.abs(value-boundary)<=8*Number.EPSILON*Math.max(1,Math.abs(value),Math.abs(boundary)))throw new QsoMergeError('precision-required');}
+/** The RA cursor walk shared by the QSO insert (0x597f90..) and the variable miss insert (0x5986f8..0x59873c): from the cursor,
+ * forward while the cursor RA ≤ the new RA and not at the tail (0x49271c), then backward while the cursor RA > the new RA and
+ * not at the head (0x492710); the new item goes after the cursor (0x492574). Returns that insertion index. */
+export function nativeRaCursorInsertPosition(ras:readonly number[],cursor:number,ra:number):number{
+ if(!ras.length||!Number.isInteger(cursor)||cursor<0||cursor>=ras.length||!Number.isFinite(ra))throw new QsoMergeError('input');
+ while(!(ras[cursor]>ra)&&cursor<ras.length-1)cursor++;
+ while(ras[cursor]>ra&&cursor>0)cursor--;
+ return cursor+1;
+}
 /** 0x597f90 over an ordered star list (GSC stars after the variable stage). Returns the new ordered list and one witness per QSO. */
 export function nativeQsoMerge<T extends QsoMergeable>(stars:readonly T[],qsos:readonly NativeQso[]):Readonly<{rows:readonly (T|NativeQso)[];witnesses:readonly QsoMergeWitness[]}>{
  if(!Array.isArray(stars)||!Array.isArray(qsos))throw new QsoMergeError('input');
@@ -83,10 +92,9 @@ export function nativeQsoMerge<T extends QsoMergeable>(stars:readonly T[],qsos:r
    awayFromBoundary(arcseconds,30);
    if(arcseconds<30){replacedId=rows[cursor].id;rows[cursor]=q;witnesses.push(Object.freeze({qso:q.id,winnerId:trace.winner.id,savedWinnerIndex:trace.savedWinnerIndex,removedRunner:trace.removedRunner?.id??null,bestArcseconds:arcseconds,operation:'replace',replacedId,position:cursor}));continue;}
   }else{if(!rows.length)throw new QsoMergeError('empty-star-list');cursor=0;}
-  while(!(rows[cursor].ra>q.ra)&&cursor<rows.length-1)cursor++;
-  while(rows[cursor].ra>q.ra&&cursor>0)cursor--;
-  rows.splice(cursor+1,0,q);
-  witnesses.push(Object.freeze({qso:q.id,winnerId:trace.winner?.id??null,savedWinnerIndex:trace.savedWinnerIndex,removedRunner:trace.removedRunner?.id??null,bestArcseconds:arcseconds,operation:'insert',replacedId,position:cursor+1}));
+  const position=nativeRaCursorInsertPosition(rows.map(r=>r.ra),cursor,q.ra);
+  rows.splice(position,0,q);
+  witnesses.push(Object.freeze({qso:q.id,winnerId:trace.winner?.id??null,savedWinnerIndex:trace.savedWinnerIndex,removedRunner:trace.removedRunner?.id??null,bestArcseconds:arcseconds,operation:'insert',replacedId,position}));
  }
  return Object.freeze({rows:Object.freeze(rows),witnesses:Object.freeze(witnesses)});
 }

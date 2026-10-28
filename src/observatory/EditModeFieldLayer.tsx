@@ -3,6 +3,7 @@ import {TELESCOPE_FRAME,catalogScene,pickCatalogObject,type CatalogRecord,type C
 import {objectXMasked} from '../io/objectXMask';
 import type {FieldMode,Pointing} from '../core/sky';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
+import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
 import CatalogObjectDialog from './CatalogObjectDialog';
 import {FIELD_INFO_MESSAGES as M,fieldInfoReasonText,type FieldInfoReason} from './FieldInfoMessages';
 import './field-info.css';
@@ -10,12 +11,15 @@ import './field-info.css';
 type State=Readonly<{status:'loading'}|{status:'ready';packId:string;scene:CatalogScene}|{status:'unavailable';reason:FieldInfoReason;detail?:string}|{status:'error'}>;
 const SIZE=700,F=TELESCOPE_FRAME,toWeb=(raster:number)=>(raster-F.cropOrigin)*SIZE/F.crop,toControl=(web:number)=>web*F.crop/SIZE;
 const PX_PER_ARCMIN=SIZE/15;
+function frozenJd(currentJd?:()=>number):number|undefined{if(!currentJd)return undefined;try{const jd=currentJd();return Number.isFinite(jd)&&jd>=FIELD_VARIABLE_JD_DOMAIN.minimum&&jd<=FIELD_VARIABLE_JD_DOMAIN.maximum?jd:undefined;}catch{return undefined;}}
 
 /** Edit Mode Telescope-view click (FO-CO): in Edit Mode only. At a certified pointing (io/fieldInfoPacks.ts) the view shows the
  * engine's own field (the population Catalog Object reads; drawing style [W]) and a click, or the keyboard cursor + Enter, picks
  * with the recovered 350 px rule and opens Catalog Object with a lime 15×15 marker. Elsewhere only a status line with the typed
  * reason is shown and clicks reach the normal sky view (target selection) unchanged. */
-export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden}:{editMode:boolean;active:boolean;mode:FieldMode;pointing:Pointing;hidden:Pointing|null}){
+export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden,onOpenVariable,currentJd}:{editMode:boolean;active:boolean;mode:FieldMode;pointing:Pointing;hidden:Pointing|null;onOpenVariable?:(recordIndex:number,riseWordDefaulted:boolean)=>void;
+ /** Front T: the observatory clock; its JD is frozen when the field is built (as the LSS list does). */
+ currentJd?:()=>number}){
  const [state,setState]=useState<State>({status:'loading'}),[record,setRecord]=useState<CatalogRecord|null>(null),[marked,setMarked]=useState<CatalogRecord|null>(null),[cursor,setCursor]=useState({x:SIZE/2,y:SIZE/2});
  const svg=useRef<SVGSVGElement>(null);
  useEffect(()=>{
@@ -23,7 +27,7 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
   let current=true;setState({status:'loading'});setRecord(null);setMarked(null);
   objectXMasked(hidden,pointing).then(async masked=>{
    if(masked){if(current)setState({status:'unavailable',reason:'object-x-hidden'});return;}
-   const r=await findCertifiedPopulation(pointing);if(!current)return;
+   const jd=frozenJd(currentJd),r=await findCertifiedPopulation(pointing,jd===undefined?undefined:{jd,source:'observatory-clock'});if(!current)return;
    if(r.status==='ready')setState({status:'ready',packId:r.packId,scene:catalogScene(r.population,pointing,`Field pack ${r.packId}; certified pointing`)});
    else setState(r.reason==='population'?{status:'unavailable',reason:'population',detail:r.detail}:{status:'unavailable',reason:r.reason});
   }).catch(()=>{if(current)setState({status:'error'});});
@@ -58,6 +62,6 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
    <g stroke="var(--ov-focus)" strokeWidth="1.5" opacity=".9" aria-hidden="true"><path d={`M${cursor.x-12} ${cursor.y}h9m6 0h9M${cursor.x} ${cursor.y-12}v9m0 6v9`}/></g>
   </svg>
   <p className="em-caption" id="em-layer-help" data-testid="em-caption">{M.editLayerCaption(state.packId,scene.stars.length,scene.galaxies.length)}</p>
-  {record&&<CatalogObjectDialog record={record} onClose={()=>{setRecord(null);requestAnimationFrame(()=>svg.current?.focus());}}/>}
+  {record&&<CatalogObjectDialog record={record} onGcvs={record.kind==='star'&&record.variable&&onOpenVariable?()=>onOpenVariable(record.variable!.recordIndex,record.variable!.riseWordDefaulted):undefined} onClose={()=>{setRecord(null);requestAnimationFrame(()=>svg.current?.focus());}}/>}
  </div>;
 }

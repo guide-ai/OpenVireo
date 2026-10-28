@@ -21,7 +21,8 @@ The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/ls
 Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
-140 / 76 / 141 (129 / 69 / 130 before the recovered variable dispatch of 2026-10-28).
+157 / 86 / 158 without a clock time (Front T, TRUE variable dispatch, 2026-10-28); 140 / 76 / 141 before it, 129 / 69 / 130 before
+the recovered FALSE dispatch. Five more rows are acquirable with the frozen observatory-clock time (below).
 
 Per field on the 0.4 m: F1 14, F2 14, F3 12, F4 8, F5 12, F6 13, F7 20, F8 20, F9 27.
 
@@ -31,6 +32,23 @@ the stage's (RA, Dec) order (0x492728 under 0x4bc950; fieldEngine.ts `variableDi
 F2R17, F2R25, F5R20, F8R1, F8R2, F8R3, F8R24, F9R22); F2R16, F3R5, F4R3 and F4R5 now stay unavailable only for the QSO merge.
 The 45 changed M0 entries are listed in data/hubble/existing-target-fingerprints.json (`updates`). Rows with a variable of
 another class keep the typed variable-merge reason.
+
+TRUE dispatch (Front T, 2026-10-28; plan analysis/front-plans/front-t-true-dispatch.md, `variableDispatch.ts`): a variable whose
+dispatch returns true (classes 0/1/2, period ≠ 0, word ≠ 0 or class 1) modifies the star at the saved index (hit, < 30″) or is
+inserted after the RA cursor walk (miss), with the model's V, colours and spectral code at the field's time. 22 TRUE variables
+lie in 30 LSS rows:
+- 17 rows become acquirable without a time, because every modified or inserted star's 99×99 stamp misses the 312² crop and no
+  galaxy is within the merge guard: F1 r17, r20; F2 r9, r23; F3 r16, r17, r21; F4 r0, r3, r22; F5 r18, r21, r23; F6 r5, r9,
+  r10; F8 r19 (0-based row indices).
+- 5 rows need the time (a variable star is in view): F1 r19, F3 r18, F6 r7, F6 r8, F8 r21. Without it they are
+  `variable-time-required`.
+- 8 rows stay QSO-gated: F1 r2, F3 r2, F3 r22, F4 r18, F5 r20, F6 r11, F7 r17, F7 r20.
+An independent Python witness (data/variables/lss-true-dispatch-witness.json) gives the same row classes, hit/miss and stars. It is
+narrower than the engine (post-cleanup galaxies, no QSO positions in the guard, no FALSE/indeterminate/fault outcomes) and does not
+vouch for the OK/mean-bound statuses or the counts, which come from the TypeScript engine only.
+The 90 changed M0 LSS entries are listed in data/hubble/existing-target-fingerprints.json (`updates`); no Hubble pair changed.
+
+Time (Front T, recovered 0x487bcc; adaptation): VIREO reads the variable stage's time from the observatory clock, host Now + the user's offset (0x5384b0, 0x58b2ec), which is not deterministic. The web freezes the observatory-clock JD (siteClock/clockDrive) when the list's fields are built, shows it in the list caption, stores it per record and saves it in the v30 investigation wrapper (`lssFieldJds`), so a restore replays the same magnitudes. Without a clock time, or from a file older than v30, a row whose field needs the time stays unavailable (`variable-time-required`) and a record on such a row does not restore.
 
 Own records hand over to the wedge at pixel level: the plotted pixel fields equal those of the equivalent Z-column text row for all 219 rows (lssSurvey.test.ts); the angle may differ by about 1e-14 degrees.
 

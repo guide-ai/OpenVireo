@@ -185,3 +185,24 @@ test.describe('touch',()=>{
   await expect(page.getByTestId('ne-dialog')).toBeVisible();await page.getByTestId('ne-ok').tap();await expect(page.getByTestId('ne-dialog')).toHaveCount(0);
  });
 });
+
+test('Front T: an enabled GCVS button at a TRUE variable star opens its Variable Star Data (EP Com in the NGC 4848 field)',async({page})=>{
+ test.setTimeout(120000);
+ await open(page);await tracking(page);
+ // LSS field 3, row 19 (NGC 4848): the exact LSS_Field03.HTL coordinates (shortest round-trip decimals), so the field is certified.
+ await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill('12.96825');await page.locator('#point-dec').fill('28.244722222222222');
+ await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
+ await expect(page.getByTestId('pointing-dec')).toHaveText(/^28\.24/,{timeout:30000});
+ await editMode(page,true);await page.getByRole('button',{name:/^Telescope/}).click();
+ await expect(page.getByTestId('em-caption')).toContainText('lss-field-03',{timeout:30000});
+ // EP Com (CLEA_VStrs.dat 9810, a miss: inserted by the TRUE dispatch) projects to about (224, 99) of the 312-px view
+ // (data/variables/lss-true-dispatch-witness.json pointing and position, projection 0x53c9d4).
+ const sky=page.getByTestId('em-sky');await sky.scrollIntoViewIfNeeded();const box=(await sky.boundingBox())!;
+ await sky.click({position:{x:box.width*223.87/312,y:box.height*99.43/312}});
+ await expect(page.getByTestId('co-id')).toHaveValue('EP Com');await expect(page.getByTestId('co-type')).toHaveValue('Variable Star');
+ await expect(page.getByTestId('co-gcvs-reason')).toHaveCount(0);await expect(page.getByTestId('co-reason')).toHaveCount(0);// values at the frozen clock JD
+ await page.getByTestId('co-gcvs').click();
+ await expect(page).toHaveURL(/#variable-stars$/);
+ await expect(page.getByTestId('vstar-lines')).toContainText('EP Com',{timeout:30000});
+});

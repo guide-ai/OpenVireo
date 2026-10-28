@@ -162,7 +162,13 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
 
 - Done by Front O (docs/OBJECT-INFO-FORMS.md): the Catalog Object dialog and TVarFldLstForm1 (Field Information › Variable
   Stars), both reachable in Edit Mode as in VIREO (options byte +0x2e7e, compiled default 0 at 0x5a2ad3). Get Selection Data
-  opens this page on the record. The GCVS button stays disabled until a later true-dispatch front ports the variable merge that sets +0x5b.
+  opens this page on the record. Front T (2026-10-28) ported the TRUE dispatch that sets +0x5b: at a certified pointing whose
+  field holds a TRUE variable, Catalog Object shows the GCVS ID, the type "Variable Star" and an enabled GCVS button
+  (`fieldStarVariable`, `variableDispatch.ts`), which opens this page on the record. Field Information builds its field with the observatory-clock JD frozen at that moment (without
+  one, Catalog Object and the Star Data List show `variable-values-unavailable`). When the dispatch's Cepheid Init replaced a zero
+  M−m/D word (0x51f2d8 [D]), the page shows 0.50 for that record (WY Boo) [I: FormShow rebuilds the list from the field-list copy].
+  Classes 0/1/2 use the CepheidTypeObj,
+  LPVTypeObj (Cepheid Mag, constant colours) and VarStarObj models; the camera's own consumer (0x51ef38, Front C) is not ported.
 - **Pleiades "mixed-variable-field" stars** (PLEIADES.HTL rows 3, 5, 10, 12): every GCVS record within 12′ of those
   pointings is class 3 (UV, BY, UV+BY, RS:) with period 0 and M−m/D 0 (e.g. V0855 Tau, V0641 Tau). The block is therefore
   the untraced zero-period/zero-word branch of 0x51ec95, which `variableMerge.ts` rejects as `dispatch-unsupported` — not

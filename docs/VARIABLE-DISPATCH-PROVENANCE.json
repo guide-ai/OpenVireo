@@ -1,0 +1,347 @@
+{
+ "policy": "OpenVireo-variable-dispatch-true-v1",
+ "scope": "Front T: the TRUE branch of the variable dispatch 0x51ec48 in the field variable stage, its class models, time source and readers.",
+ "artifact": {
+  "name": "CLEA_VEO.exe (VIREO 1.504)",
+  "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "note": "Never executed or emulated; objdump listings and pe.py data reads only."
+ },
+ "plan": "analysis/front-plans/front-t-true-dispatch.md",
+ "review": "analysis/reviews/front-t-review-1.md",
+ "generator": {
+  "path": "analysis/front-t-true-dispatch/tools/variable_dispatch_provenance.py",
+  "sha256": "6db3757f37e85ac0b88d789df61df0ded5fe5fc17c6b0dac494e77a56ff8c482"
+ },
+ "derivedEvidence": [
+  {
+   "id": "VT-L-cepheid-init-mag-51f298",
+   "path": "analysis/front-t-true-dispatch/dossiers/cepheid-init-mag-51f298.asm",
+   "sha256": "d773c62337ee648d9fa1d291528a704dade1c9e75a3778618a151954c7e6e8cf",
+   "addresses": "0x51f298..0x51f4a7",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-cepheid-subtype-520188-parse-520248",
+   "path": "analysis/front-t-true-dispatch/dossiers/cepheid-subtype-520188-parse-520248.asm",
+   "sha256": "1ed7b8fee298e167a42e7647b1cd174cc84f01be938771c98abd24c4eb742784",
+   "addresses": "0x520188..0x52060d",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-cepheid-v2-spectrum-51f4a8-type-51f754-lum-51f8c4",
+   "path": "analysis/front-t-true-dispatch/dossiers/cepheid-v2-spectrum-51f4a8-type-51f754-lum-51f8c4.asm",
+   "sha256": "e7d5c259a07fa2d836c7965cdaf7d7f09077cc64f2c300225f3be9e9ea45d19d",
+   "addresses": "0x51f4a8..0x51fb53",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-cepheid-v3-v6-51fb58",
+   "path": "analysis/front-t-true-dispatch/dossiers/cepheid-v3-v6-51fb58.asm",
+   "sha256": "227d888855bb30e5986978fa20c24a835a909a9bbd61ee94b572284ca29f274a",
+   "addresses": "0x51fb58..0x520187",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-class-4bc834",
+   "path": "analysis/front-t-true-dispatch/dossiers/class-4bc834.asm",
+   "sha256": "ddbb110ff317f42f53aeeef5cb28f41c950d053edb710f9b47589d3bb57777f4",
+   "addresses": "0x4bc834..0x4bc94d",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-dispatch-51ec48",
+   "path": "analysis/front-t-true-dispatch/dossiers/dispatch-51ec48.asm",
+   "sha256": "8b7848bda3e98e7300ebf18ff54e9efa791141383803bfe4e57bd4f97cb38125",
+   "addresses": "0x51ec48..0x51ee8f",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-env-clock-init-587bed",
+   "path": "analysis/front-t-true-dispatch/dossiers/env-clock-init-587bed.asm",
+   "sha256": "b232d1f9d7539a7618b8ab50e00ae071488e9cedfbfba508f9047200c83ae6bf",
+   "addresses": "0x587bed..0x587c1b",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-env-setdatetime-58b2ec",
+   "path": "analysis/front-t-true-dispatch/dossiers/env-setdatetime-58b2ec.asm",
+   "sha256": "841975400cd331fcf56c65c62058facf2feb688cc45d9378e3f465a324a6a93b",
+   "addresses": "0x58b2ec..0x58b3af",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-interp-485d6c",
+   "path": "analysis/front-t-true-dispatch/dossiers/interp-485d6c.asm",
+   "sha256": "5e80b6dcac41c9f1dc38c3c044d98c40d6e6208760b8de43ffed502467a39d25",
+   "addresses": "0x485d6c..0x485fdf",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-list-insert-copy-492574",
+   "path": "analysis/front-t-true-dispatch/dossiers/list-insert-copy-492574.asm",
+   "sha256": "ee33a112bc69bc03eb156779d7c2a69e970c4d973b4250ea06b06dad8a06afed",
+   "addresses": "0x492574..0x4925d9",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-lpv-520610",
+   "path": "analysis/front-t-true-dispatch/dossiers/lpv-520610.asm",
+   "sha256": "d7831a3d3da6710b66b1adb3c4ee3a94077d6a07b057acb1352a5374ee462266",
+   "addresses": "0x520610..0x520c7f",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-lum-token-51ee90",
+   "path": "analysis/front-t-true-dispatch/dossiers/lum-token-51ee90.asm",
+   "sha256": "2ee7c282284374d52456a1c60748a89fa51ac55298956d261c7b3ed5fa903bb1",
+   "addresses": "0x51ee90..0x51f094",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-moving-list-build-522454",
+   "path": "analysis/front-t-true-dispatch/dossiers/moving-list-build-522454.asm",
+   "sha256": "19b37917083f66ee45a38e039b586e73a7d8d9fe277f5838d9ee53e4a4cd266c",
+   "addresses": "0x522454..0x52255e",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-obsrvtry-clocktimer-5384b0",
+   "path": "analysis/front-t-true-dispatch/dossiers/obsrvtry-clocktimer-5384b0.asm",
+   "sha256": "30304599f8bab1b3d88eb20d56f209441b9931de6ff48b7550a395cfa4a07339",
+   "addresses": "0x5384b0..0x53852f",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-rtl-log10-42702c",
+   "path": "analysis/front-t-true-dispatch/dossiers/rtl-log10-42702c.asm",
+   "sha256": "b77d1e46867bc6603b4a64940bda797c50b3dd12efe295cccb287e589d4ff30a",
+   "addresses": "0x42702c..0x42705f",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-spectrum-lookup-55d840",
+   "path": "analysis/front-t-true-dispatch/dossiers/spectrum-lookup-55d840.asm",
+   "sha256": "0628f5a04fd021345aa15a66f511bb0502174de5d9575e2d981604edbc493295",
+   "addresses": "0x55d840..0x55dbfb",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-time-487bcc",
+   "path": "analysis/front-t-true-dispatch/dossiers/time-487bcc.asm",
+   "sha256": "c4415fad9f6150eb9be5926b5a6b79af701b8a9081f9ef4432fab86c3de0ff35",
+   "addresses": "0x487bcc..0x487c3f",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-variable-band-offset-51ef38",
+   "path": "analysis/front-t-true-dispatch/dossiers/variable-band-offset-51ef38.asm",
+   "sha256": "530770aa2c1ef0ee577c87af0ae69285ccb4cca5a0e8c32c8ec1d0db915f380f",
+   "addresses": "0x51ef38..0x51f094",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-variable-camera-list-5228dc",
+   "path": "analysis/front-t-true-dispatch/dossiers/variable-camera-list-5228dc.asm",
+   "sha256": "2cb41579e6e9bf84649b535a639ada048b064bdc8783a7df2f89b5bb643bd5ab",
+   "addresses": "0x5228dc..0x522a17",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-variable-stage-59859c",
+   "path": "analysis/front-t-true-dispatch/dossiers/variable-stage-59859c.asm",
+   "sha256": "043754418732305c23384fb16c5852c2c187147f1aca821f013ad9da1d0b3286",
+   "addresses": "0x59859c..0x5987df",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VT-L-varstarobj-base",
+   "path": "analysis/front-t-true-dispatch/dossiers/varstarobj-base.asm",
+   "sha256": "5120223d1e21187898d0d764886257b3a926ad06f51f5087490ad120ee928088",
+   "addresses": "0x51f0f8..0x51f295",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  }
+ ],
+ "contracts": [
+  {
+   "id": "VT-01",
+   "title": "Dispatch 0x51ec48: FALSE conditions, model by class, sequence, system correction",
+   "ranges": [
+    "0x51ec48..0x51ee84"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-dispatch-51ec48"
+   ],
+   "observed": "FALSE (no side effect) when +0x3d≠0, +0x5b=nil, period=0, word=0 with class≠1, or class 3; class 0/1/2 → CepheidTypeObj/LPVTypeObj/VarStarObj; v0 Init, v1 Mag(t) as Single, v2 spectral code (0 → FALSE) when +0x39/+0x3a, v3/v4 colours when +0x3b/+0x3c or ≥30, +0x29 := m with B/P −B−V, R +V−R, I +V−R+R−I (each only <30); model freed; TRUE."
+  },
+  {
+   "id": "VT-02",
+   "title": "Class tables 0x4bc834",
+   "ranges": [
+    "0x4bc834..0x4bc915",
+    "0x5b0b68 (25)",
+    "0x5b0c7c (3)",
+    "0x5b0ca0 (7)"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-class-4bc834"
+   ]
+  },
+  {
+   "id": "VT-03",
+   "title": "VarStarObj (class 2): Init bright/faint, Mag = bright, v2 cut at \"-\" then 0x55d840, v3..v6 = 30.0",
+   "ranges": [
+    "0x51f0f8..0x51f25c"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-varstarobj-base",
+    "VT-L-spectrum-lookup-55d840"
+   ]
+  },
+  {
+   "id": "VT-04",
+   "title": "CepheidTypeObj (class 0): Init (word 0→50 at 0x51f2d8), Mag 0x51f33c (Front V)",
+   "ranges": [
+    "0x51f298..0x51f4a7"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-cepheid-init-mag-51f298"
+   ]
+  },
+  {
+   "id": "VT-05",
+   "title": "Cepheid v2: default spectra by type prefix; 0x520248 split (last type token is t2); 0x51f754 type interpolation by magnitude; 0x51f8c4 luminosity",
+   "ranges": [
+    "0x51f4a8..0x51fb57",
+    "0x520248..0x52060f",
+    "0x51ee90"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-cepheid-v2-spectrum-51f4a8-type-51f754-lum-51f8c4",
+    "VT-L-cepheid-subtype-520188-parse-520248",
+    "VT-L-lum-token-51ee90"
+   ],
+   "note": "Review 1 M2 recheck: 0x520306..0x520318 select t1 only while it is empty, otherwise t2 ([ebp+0x10]); 0x520389..0x520398 Copy overwrites t2, so the last type token is t2 [D]."
+  },
+  {
+   "id": "VT-06",
+   "title": "Cepheid v3..v6 colours: polint 0x485d6c over the subtype period–colour table (log10 0x42702c), colour tables A 0x5b43f0 / B 0x5b469c",
+   "ranges": [
+    "0x51fb58..0x5201a7",
+    "0x485d6c",
+    "0x42702c"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-cepheid-v3-v6-51fb58",
+    "VT-L-interp-485d6c",
+    "VT-L-rtl-log10-42702c"
+   ]
+  },
+  {
+   "id": "VT-07",
+   "title": "LPVTypeObj (class 1): Init calls Cepheid Init then 0x520b2c; v2 defaults/split; v3..v6 constants 1.65/1.6/2.18/1.96",
+   "ranges": [
+    "0x520610..0x520b8f"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-lpv-520610"
+   ]
+  },
+  {
+   "id": "VT-08",
+   "title": "Variable stage 0x59859c: hit (backup, name := GCVS ID, +0x29 := max, +0x5b, flags := 1, dispatch, FALSE → restore) and miss (stack object, RA cursor walk, insert copy on TRUE)",
+   "ranges": [
+    "0x59859c..0x5987d9",
+    "0x492574"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-variable-stage-59859c",
+    "VT-L-list-insert-copy-492574"
+   ],
+   "note": "Miss object bytes never written (+0x2d/+0x31 for class 2, +0x35, +0x3e..+0x42, +0x47..+0x5a) are stack residue [D]; no student-path reader of +0x35/+0x3e..+0x42/+0x57 is known [I]."
+  },
+  {
+   "id": "VT-09",
+   "title": "Time: JD = E[clock+0x2a] + D[clock+6] + 2415018.5; clock = host Now + user offset",
+   "ranges": [
+    "0x487bcc",
+    "0x587bed",
+    "0x5384b0",
+    "0x58b2ec"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-time-487bcc",
+    "VT-L-env-clock-init-587bed",
+    "VT-L-obsrvtry-clocktimer-5384b0",
+    "VT-L-env-setdatetime-58b2ec"
+   ],
+   "note": "The 0x5bad48 base (2415018.5) is set at run time (not in the file image); value from Front O RECOVERY-D [I for the value]."
+  },
+  {
+   "id": "VT-10",
+   "title": "Camera consumer (Front C, not ported): 0x522454 → 0x5228dc → 0x51ef38 per-filter offsets; class 1 uses VarStarObj (30/60 mag offsets, original bug)",
+   "ranges": [
+    "0x522454",
+    "0x5228dc",
+    "0x51ef38"
+   ],
+   "tag": "D",
+   "evidence": [
+    "VT-L-moving-list-build-522454",
+    "VT-L-variable-camera-list-5228dc",
+    "VT-L-variable-band-offset-51ef38"
+   ]
+  },
+  {
+   "id": "VT-11",
+   "title": "Variable Star Data via GCVS shows the field-list copy (word 50 after Cepheid Init)",
+   "ranges": [
+    "0x561244",
+    "0x51f2d8"
+   ],
+   "tag": "I",
+   "evidence": [
+    "VT-L-cepheid-init-mag-51f298"
+   ],
+   "note": "The write is [D]; that FormShow rebuilds the list from that copy after the field load is [I]."
+  }
+ ],
+ "webPolicies": [
+  {
+   "id": "VT-W1",
+   "tag": "W",
+   "title": "Frozen observatory-clock JD",
+   "rule": "The web freezes the observatory-clock JD (siteClock/clockDrive) when a field is built (LSS list load, Field Information build), records it per LSS record and in the v30 wrapper (lssFieldJds); without it time-dependent values are typed variable-time-required."
+  },
+  {
+   "id": "VT-W2",
+   "tag": "W",
+   "title": "Gate without a JD",
+   "rule": "A TRUE star with unavailable values gates the field only when its 99×99 stamp reaches the 312² crop or a galaxy/QSO lies within the merge guard; otherwise it is not painted (pixel-identical)."
+  },
+  {
+   "id": "VT-W3",
+   "tag": "W",
+   "title": "Numeric policy",
+   "rule": "binary64 Number/Math for x87 Extended; Singles through Math.fround; Round half-even; Frac = x − trunc(x)."
+  }
+ ],
+ "uncertainty": [
+  "A range spectrum whose interpolation leaves the letter table or overflows the subclass (≥ 100) at some magnitudes is typed variable-spectrum-indeterminate without a JD (review 1 M2).",
+  "Cepheid v2 with a \"C\" spectrum returns the freed model object as the code (variable-spectrum-dangling); empty t1, span 0, empty l1 with non-empty l2 and emptied strings are typed variable-spectrum-indeterminate.",
+  "x87 vs binary64 at the Round in 0x51f754: exact half-subclass phases differ only at measure-zero times.",
+  "No jspect2 templates are included: a route that lets the spectrometer select a TRUE variable star stays typed."
+ ],
+ "witnesses": [
+  "src/core/variableDispatch.controls.json (variable_dispatch_controls.py + true_dispatch_witness.py)",
+  "data/variables/lss-true-dispatch-witness.json (lss_rows_true_dispatch_witness.py; classifies rows only, not OK/mean-bound statuses or counts)"
+ ]
+}
