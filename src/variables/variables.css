@@ -1,0 +1,52 @@
+/* Front V variable stars. Colours, spacing and type come from src/theme/tokens.css (light and dark); the light-curve
+   display keeps VIREO's fixed navy/white/yellow panel, like the other plot panels. */
+.variable-stars .card{margin-block:var(--ov-space-4);padding:var(--ov-space-3) var(--ov-space-4);overflow:visible}
+.variable-stars h2{margin:0 0 var(--ov-space-2);font-size:var(--ov-text-lg)}
+.variable-stars h2:focus-visible,.variable-stars h1:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
+.variable-note{color:var(--ov-text-muted);font-size:var(--ov-text-sm);max-width:60rem}
+.variable-unavailable{font-style:italic;color:var(--ov-text);background:var(--ov-warning-soft);border:1px solid var(--ov-warning-border);border-radius:var(--ov-radius-sm);padding:var(--ov-space-2) var(--ov-space-3)}
+.variable-guide summary{cursor:pointer;font-weight:600}
+.variable-guide ol{padding-inline-start:1.4rem}
+.variable-search{display:flex;flex-wrap:wrap;gap:var(--ov-space-3)}
+.variable-search label{display:flex;flex-direction:column;gap:var(--ov-space-1);color:var(--ov-text);min-width:0;flex:1 1 14rem}
+.variable-search input,.variable-search select{max-width:100%;min-width:0}
+.variable-table{overflow-x:auto;max-width:100%;max-height:26rem}
+.variable-table table{border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:var(--ov-text-sm)}
+.variable-table th,.variable-table td{padding:var(--ov-space-1) var(--ov-space-2);text-align:right;border-bottom:1px solid var(--ov-border)}
+.variable-table th:first-child,.variable-table td:nth-child(2){text-align:left}
+.variable-table thead th{position:sticky;top:0;background:var(--ov-surface)}
+.variable-menubar{display:flex;flex-wrap:wrap;gap:var(--ov-space-1);align-items:flex-start;border-bottom:1px solid var(--ov-border);padding-bottom:var(--ov-space-1);margin-bottom:var(--ov-space-2)}
+.variable-menubar button{background:var(--ov-surface);border:1px solid transparent;border-radius:var(--ov-radius-sm);color:var(--ov-text);padding:4px 10px;font-size:var(--ov-text-sm);text-align:left}
+.variable-menubar button:hover:not(:disabled){background:var(--ov-surface-hover)}
+.variable-menubar button[aria-expanded=true]{border-color:var(--ov-border-strong)}
+.variable-menubar button:disabled{color:var(--ov-disabled-text)}
+.variable-menubar button:focus-visible{outline:2px solid var(--ov-focus);outline-offset:1px}
+.variable-menu{display:flex;flex-direction:column;min-width:0}
+.variable-menu-list,.variable-submenu{display:flex;flex-direction:column;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);padding:var(--ov-space-1);margin-top:var(--ov-space-1);min-width:min(16rem,calc(100vw - 64px))}
+.variable-submenu{margin-inline-start:var(--ov-space-3)}
+.variable-menu-list hr{border:0;border-top:1px solid var(--ov-border);margin:2px 0;width:100%}
+.variable-menubar [aria-pressed=true]::before{content:"✓ "}
+.variable-menubar [aria-pressed=false]::before{content:"\00a0\00a0\00a0"}
+/* The list keeps the original Courier New bold ListBox text. */
+.variable-lines{font-family:"Courier New",Courier,var(--ov-font-mono);font-weight:700;font-size:var(--ov-text-md);white-space:pre;overflow-x:auto;max-width:100%;margin:0;padding:var(--ov-space-2);background:var(--ov-surface-sunken);border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);color:var(--ov-text)}
+.variable-lines:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
+.variable-help{margin-top:var(--ov-space-3)}
+.variable-help h3{margin:0;font-size:var(--ov-text-md)}
+.variable-help h4{margin:var(--ov-space-2) 0 var(--ov-space-1);font-size:var(--ov-text-sm)}
+.variable-help-text{font-family:var(--ov-font-mono);font-size:var(--ov-text-sm);white-space:pre-wrap;margin:0}
+.lc-panel{max-width:654px;border-radius:var(--ov-radius-sm);overflow:hidden;background:#000080}
+.lc-svg{display:block;width:100%;height:auto}
+.variable-print-report{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px;max-height:min(60vh,34rem);overflow:auto}
+.variable-print-header{font-family:"MS Sans Serif",Arial,sans-serif;font-size:13px;margin:0 0 8px}
+.variable-print-page{max-width:654px;break-before:page}
+.variable-print-placeholder{font-style:italic}
+@media print{
+html[data-print-scope=variable-stars] body>:not(.variable-print-root){display:none!important}
+html[data-print-scope=variable-stars] .variable-print-root{position:static!important;display:block!important;border:0!important;box-shadow:none!important;max-height:none!important;overflow:visible!important;width:auto!important;padding:0!important;background:#fff!important;color:#000!important}
+html[data-print-scope=variable-stars] .variable-print-root::backdrop{display:none}
+html[data-print-scope=variable-stars] .variable-print-chrome{display:none!important}
+html[data-print-scope=variable-stars] .variable-print-report{border:0!important;max-height:none!important;overflow:visible!important}
+html[data-print-scope=variable-stars] .variable-lines{background:#fff!important;color:#000!important;border:0!important}
+}
+/* GCVS IDs keep their catalog case (global table header styles uppercase th). */
+.variable-table tbody th{text-transform:none;letter-spacing:normal;font-size:inherit;font-weight:600;color:var(--ov-text)}
