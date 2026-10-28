@@ -163,7 +163,7 @@ export default function CleaHelp({testId='cluster-help'}:{testId?:string}){
   {searching&&<SearchDialog caption={searching==='topic'?M.findTopicCaption:M.findItemCaption} search={search} onSubmit={submitSearch} onCancel={()=>setSearching(null)}/>}
   {message&&<MessageBox message={message} onClose={()=>setMessage(null)}/>}
   {printing&&loaded&&topic&&(()=>{const caption=helpTopicCaption(loaded.rows[topic.index].title);
-   return <ClusterPrintPreview caption={caption} note={M.helpPrintNote} onClose={()=>setPrinting(false)} testId={`${testId}-print`}>
+   return <ClusterPrintPreview caption={caption} note={M.helpPrintNote} onClose={()=>{setPrinting(false);requestAnimationFrame(()=>topicHeading.current?.focus());}} testId={`${testId}-print`}>
     {helpPrintPage(new Date().toLocaleString(),caption,topic.body.rows).map((l,i)=>l.kind==='students'
      ?<p key={i} className="cluster-print-line cluster-print-placeholder">{M.printPlaceholder}</p>
      :<p key={i} className={`cluster-print-line${l.indent?' cluster-print-indent':''}`}>{l.kind==='title'?<>{l.text}<span className="cluster-print-placeholder">{M.printPlaceholder}</span></>:l.text}</p>)}

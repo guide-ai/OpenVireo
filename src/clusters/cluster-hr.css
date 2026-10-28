@@ -44,3 +44,12 @@ html[data-print-scope=cluster-hr] .cluster-print-report{border:0!important;max-h
 .cluster-member-question h4{margin:0 0 var(--ov-space-1)}
 .cluster-member-grid>.cluster-member-field:first-child{grid-column:1/-1}
 .cluster-member-field output[data-missing]{white-space:normal}
+.cluster-print-orientation{display:flex;flex-wrap:wrap;gap:var(--ov-space-3);border:0;padding:0;margin:0 0 var(--ov-space-2)}
+.cluster-print-body{font-family:"MS Sans Serif",Arial,sans-serif}
+.cluster-print-image{max-width:520px;background:#fff;margin-top:var(--ov-space-2)}
+.cluster-print-image svg{display:block;width:100%;height:auto;background:#fff}
+.cluster-print-image circle,.cluster-print-image ellipse{fill:#000;stroke:#000}
+.cluster-print-image text,.cluster-print-image line,.cluster-print-image polyline{color:#000;stroke:#000}
+.cluster-print-image text{fill:#000;stroke:none}
+.cluster-print-image polyline[fill=none]{fill:none}
+.cluster-print-body .cluster-print-line{font-family:"MS Sans Serif",Arial,sans-serif;font-weight:700}
