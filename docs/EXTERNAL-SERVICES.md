@@ -92,7 +92,7 @@ Para el inventario se compararon los 698 archivos de `CLEA_Vireo.zip` (todos con
 
 ### Grupo 2 — subconjuntos acotados del GSC (±0,375° por objetivo, como en LSS)
 
-- **Object X**: un subconjunto por cada objetivo de espectroscopía de `ObjectX.HTL`. Afecta a las bandas N6000 (NGC 2403), N0730 a 12,3 h (NGC 4262), N3730 (NGC 4449 y HS 1603+3820), N3000 a Dec 32,3–32,5° (NGC 4631, fuera de lo aprobado para LSS), N0000 a 12,48 h (3C 273) y S3730 (HE 0353-3919). Si el telescopio construye campos de asteroides, que dependen de la fecha, harán falta más.
+- **Object X**: un subconjunto por cada objetivo de espectroscopía de `ObjectX.HTL`. Afecta a las bandas N6000 (NGC 2403), N0730 a 12,3 h (NGC 4262), N3730 (NGC 4449 y HS 1603+3820), N3000 a Dec 32,3–32,5° (NGC 4631, fuera de lo aprobado para LSS), N0000 a 12,48 h (3C 273) y S3730 (HE 0353-3919). Además, N1500, porque las áreas de NGC 4262 y N0730-00120 cruzan +15°; está cubierta, ya que la aprobación es por área de objetivo y no por banda (coordinador, 27 oct 2026). Si el telescopio construye campos de asteroides, que dependen de la fecha, harán falta más.
 - **Hubble UM-I-3** (objetivo 36805, banda N5230): queda a unos 5′ de los campos ya publicados y probablemente lee otros registros.
 - **Reutilizar los registros de la franja LSS para Hubble**: Coma-1/2 y Boötes-1/2 caen dentro de los paquetes LSS, pero la aprobación dice "solo para la franja LSS". Pido permiso para usar esos mismos registros en esos objetivos, sin añadir datos nuevos.
 
