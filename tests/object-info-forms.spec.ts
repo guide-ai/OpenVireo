@@ -71,6 +71,10 @@ test('Star Data List at 36773: lines, Search, Save Text, Comma Delimit, Print pr
  await page.getByTestId('fi-slist-list-menu').click();await page.getByTestId('fi-slist-search').click();
  await page.getByTestId('fi-find-query').fill('ZZZ');await page.getByTestId('fi-find-top').click();
  await expect(page.getByTestId('fi-box-text')).toHaveText('"zzz" Not Found.');await page.getByTestId('fi-box').getByRole('button',{name:'OK'}).click();
+ // The galaxy redshift (4.899E-02, z 0.04899) is not searchable in the list (review 1 M2).
+ for(const z of ['4.899E-02','0.0489']){await page.getByTestId('fi-slist-list-menu').click();await page.getByTestId('fi-slist-search').click();
+  await page.getByTestId('fi-find-query').fill(z);await page.getByTestId('fi-find-top').click();
+  await expect(page.getByTestId('fi-box-text')).toHaveText(`"${z.toLowerCase()}" Not Found.`);await page.getByTestId('fi-box').getByRole('button',{name:'OK'}).click();}
  // Save Text and Comma Delimit.
  const text=await download(page,async()=>{await page.getByTestId('fi-slist-list-menu').click();await page.getByTestId('fi-slist-save-menu').click();await page.getByTestId('fi-slist-save-displayed').click();});
  expect(text.name).toBe('CLEA_Field1.TXT');const lines=text.bytes.toString('latin1').split('\r\n');expect(lines[19]).toBe('N5230-00946       11 44 42.9   +55 22 43   14.19  +1.15* +1.08* K6V*#');expect(lines[18].charCodeAt(32)).toBe(0xb0);
@@ -81,7 +85,9 @@ test('Star Data List at 36773: lines, Search, Save Text, Comma Delimit, Print pr
  await page.getByTestId('fi-box').getByRole('button',{name:'OK'}).click();
  // Print preview.
  await page.getByTestId('fi-slist-list-menu').click();await page.getByTestId('fi-slist-print').click();
- await expect(page.getByTestId('fi-print-lines')).toContainText('N5230-00946');await page.getByTestId('fi-print-close').click();
+ await expect(page.getByTestId('fi-print-lines')).toContainText('N5230-00946');
+ for(const z of ['4.899E-02','0.0489'])expect(await page.getByTestId('fi-print-preview').innerText()).not.toContain(z);
+ await page.getByTestId('fi-print-close').click();
  // Selection: the hot-list commands are unavailable with the documented reason.
  await page.getByTestId('fi-slist-line-19').click();await page.getByTestId('fi-slist-selection-menu').click();
  await expect(page.getByTestId('fi-slist-add')).toBeDisabled();await expect(page.getByTestId('fi-slist-selection-reason')).toContainText('cluster');
@@ -132,7 +138,7 @@ test('Naked Eye Star: right-click a star in the dome sky (no Edit Mode) at 320 p
  const dialog=page.getByTestId('ne-dialog');await expect(dialog).toBeVisible();await expect(dialog.getByRole('heading',{name:'Naked Eye Star'})).toBeVisible();
  await expect(page.getByTestId('ne-ra')).toHaveValue(/^ {1,3}\d{1,2}h \d\dm \d\d\.\d\ds$/);await expect(page.getByTestId('ne-mag')).toHaveValue(/^-?\d\.\d{3}$/);
  await expect(page.getByTestId('ne-marker')).toBeVisible();
- await page.getByTestId('ne-ok').click();await expect(dialog).toHaveCount(0);
+ await page.getByTestId('ne-ok').click();await expect(dialog).toHaveCount(0);await expect(sky).toBeFocused();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
  // Left click does nothing (the original picks with the right button).
  await page.mouse.click(b.x+b.width/2,b.y+b.height/2);await expect(dialog).toHaveCount(0);
@@ -153,11 +159,12 @@ test('Catalog Object at 320 px in dark mode: every row fits and keeps its label 
 
 test('Object X positions mask the Edit Mode forms without the Object X lab (review 1)',async({page})=>{
  await open(page);await tracking(page);
- // NGC 2403, an ObjectX.HTL row, pointed by coordinates; the Object X route is never opened.
+ // NGC 4631, an ObjectX.HTL row, pointed by coordinates; the Object X route is never opened. Its finder field lists AQ CVn,
+ // within 0.25° of the ObjectX.HTL star N3000-01915, so the Variable Stars list is masked too (closure N2 radius).
  await page.getByText('Enter coordinates',{exact:true}).click();
- await page.locator('#point-ra').fill('7.6142');await page.locator('#point-dec').fill('65.6025');
+ await page.locator('#point-ra').fill('12.7022');await page.locator('#point-dec').fill('32.5408');
  await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
- await expect(page.getByTestId('pointing-dec')).toHaveText(/^65\.6/,{timeout:30000});
+ await expect(page.getByTestId('pointing-dec')).toHaveText(/^32\.54/,{timeout:30000});
  await editMode(page,true);
  await page.getByRole('button',{name:/^Telescope/}).click();
  await expect(page.getByTestId('em-status')).toHaveAttribute('data-reason','object-x-hidden',{timeout:20000});

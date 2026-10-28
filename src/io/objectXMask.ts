@@ -3,7 +3,7 @@
 // come from the bundled, hash-checked ObjectX.HTL (moving rows at their listed positions). A failed read masks everything.
 import {parseHtl} from '../core/hotList';
 import {separationDegrees} from '../core/ephemeris';
-import {OBJECT_X_HIDE_DEGREES} from '../core/objectXLab';
+import {OBJECT_X_HIDE_DEGREES,OBJECT_X_ON_TARGET_DEGREES} from '../core/objectXLab';
 import type {Pointing} from '../core/sky';
 
 let positions:Promise<readonly Pointing[]>|null=null;
@@ -18,4 +18,12 @@ export function objectXNear(list:readonly Pointing[],hidden:Pointing|null,p:Poin
 /** Resolves to true (masked) or false; a failed ObjectX.HTL read masks (fail closed). */
 export async function objectXMasked(hidden:Pointing|null,p:Pointing,reach=0):Promise<boolean>{
  try{return objectXNear(await loadObjectXPositions(),hidden,p,reach);}catch{return true;}
+}
+/** Variable Stars list (review 1 closure N2): the risk is a listed variable that an Object X camera or spectrometer image would
+ * contain, so the list is masked only when one of its rows lies within OBJECT_X_ON_TARGET_DEGREES (0.25°, about half the largest
+ * camera field diagonal; the spectrometer field is smaller) of an Object X position or of the lab's hidden target. Fail closed. */
+export async function objectXListedNear(hidden:Pointing|null,rows:readonly Pointing[]):Promise<boolean>{
+ let list:readonly Pointing[];try{list=await loadObjectXPositions();}catch{return true;}
+ const targets=[...list,...(hidden?[hidden]:[])];
+ return rows.some(r=>targets.some(q=>separationDegrees(r.ra,r.dec,q.ra,q.dec)<=OBJECT_X_ON_TARGET_DEGREES));
 }

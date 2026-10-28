@@ -54,3 +54,5 @@ html[data-print-scope=field-info] .fi-print-lines{white-space:pre-wrap}
 .ne-card{margin:8px 22px 20px;padding:var(--ov-space-4);display:flex;flex-direction:column;gap:var(--ov-space-2);min-width:0}
 @media(max-width:600px){.ne-card{margin:8px 14px 16px;padding:var(--ov-space-3)}}
 .fi-guide{font-size:var(--ov-text-sm)}.fi-guide summary{cursor:pointer;min-height:32px}.fi-guide ol{margin:var(--ov-space-2) 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:var(--ov-space-1)}
+.co-row.ne-row{grid-template-columns:4.5rem minmax(0,1fr)}
+@media(max-width:600px){.co-row.ne-row{grid-template-columns:4.5rem minmax(0,1fr)}}
