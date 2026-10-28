@@ -18,7 +18,7 @@ const umi=umiCached.targets.map(t=>Object.freeze({id:t.id,route:'cached-umi' as 
 export type Recorded=(typeof engineTargets.targets)[number];
 export type RecordedTelescope=Readonly<{telescope:number;status:string;policyId?:string;reasons?:readonly string[];cropSHA256?:string;pixelLevel?:number;fraction?:number;stars?:number;galaxies?:number;sourceFile?:string}>;
 const available=(t:Recorded)=>(t.telescopes as readonly RecordedTelescope[]).filter(x=>x.status==='available');
-const engine=engineTargets.targets.map(t=>Object.freeze({id:t.id,route:'engine' as const,telescopes:Object.freeze(available(t).map(x=>x.telescope as ExtendedTelescope)),policies:Object.freeze(Object.fromEntries(available(t).map(x=>[x.telescope,x.policyId!])))}));
+const engine=engineTargets.targets.filter(t=>available(t).length).map(t=>Object.freeze({id:t.id,route:'engine' as const,telescopes:Object.freeze(available(t).map(x=>x.telescope as ExtendedTelescope)),policies:Object.freeze(Object.fromEntries(available(t).map(x=>[x.telescope,x.policyId!])))}));
 export const HUBBLE_EXTENDED_TARGETS:readonly HubbleExtendedTarget[]=Object.freeze([...umi,...engine]);
 export const HUBBLE_EXTENDED_IDS:readonly string[]=Object.freeze(HUBBLE_EXTENDED_TARGETS.map(t=>t.id));
 export function hubbleExtendedTarget(id:unknown):HubbleExtendedTarget|null{return HUBBLE_EXTENDED_TARGETS.find(t=>t.id===id)??null;}

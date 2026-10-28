@@ -25,7 +25,7 @@ export function prepareHubbleEngineTarget(id:string,inputs:HubbleEngineInputs):P
  if(!pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec))throw new HubbleEngineError('pack');
  let librarySpectrum:FieldLibrarySpectrum|undefined;
  if(rec.librarySpectrum){const samples=inputs.librarySpectra.get(rec.librarySpectrum.file);if(!samples)throw new HubbleEngineError('spectrum');librarySpectrum=Object.freeze({targetId:id,file:rec.librarySpectrum.file,samples});}
- const options:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(librarySpectrum?{librarySpectrum}:{})};
+ const options:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(librarySpectrum?{librarySpectrum}:{}),...((rec as {variables?:string}).variables==='outside-view'?{variables:'outside-view' as const}:{})};
  const packRecord=(engineTargets.packs as Record<string,{sha256:string}>)[rec.pack];
  const entries=[];
  for(const t of rec.telescopes as readonly RecordedTelescope[]){

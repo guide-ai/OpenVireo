@@ -22,7 +22,7 @@ import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
 import {decodeNativeCompactRecord,nativeRegionIds,nativeCompactBandOrder,type NativeFieldStar} from './pinnedNativeField';
 import {nativeCatalogAdmission,nativeStellarPaintLevel,nativeStoredStellarLevel,type NativeCatalogRegion} from './catalogPopulation';
 import {traceCompactGscBandRead} from './compactGscReadOrder';
-import {catalogMergeDistance,cleanNativeGalaxy,CatalogMergeError} from './catalogMerge';
+import {catalogMergeDistance,cleanNativeGalaxy,nativeMergeNearest,CatalogMergeError} from './catalogMerge';
 import {decodeNativeVariableRecord,nativeVariableClass,nativeVariableFalseMerge,VariableMergeError,type NativeVariable} from './variableMerge';
 import {decodeGlxRecord,GLX_CATALOG} from './glxCatalog';
 import type {NativeGalaxy} from './pinnedGalaxyField';
@@ -64,7 +64,17 @@ export type FieldQsoCatalog=Readonly<{bytes:Uint8Array;sha256:string}>;
 /** A selected galaxy's own library spectrum (GLXYSP.LST match, lookup 0x55eb64): used only when the slit selects that target,
  * through the matched branch of 0x55e55c (wavelength factor 1); any other selection keeps the GLXYTMPL.SP fallback. */
 export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:readonly Readonly<{wavelength:number;intensity:number}>[]}>;
-export type FieldOptions=Readonly<{qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum}>;
+/** Variable stage: 'gate' (default) keeps classes 0/1/2 as the typed variable-merge reason. 'outside-view' (Front F, coordinator
+ * decision for RS Boo) accepts exactly one class 0/1/2 variable whose nearest merge (0x59a2e0, reference 0) hits a catalogue
+ * star strictly inside 30″ with a safe saved index, when the 99×99 star footprint at both the variable's and the hit star's
+ * projected positions lies wholly outside the 312² view and no galaxy or QSO lies within the 2′ merge radius of either
+ * position. Its light curve (0x51ec95 class dispatch) is not modelled: the hit record keeps its place in the list, is not
+ * painted and is reported; nothing it could become is visible or reaches another merge. */
+export type FieldVariableMode='gate'|'outside-view';
+export type FieldOptions=Readonly<{qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode}>;
+/** hitId: the nearest record (the merge winner); resolvedId: the record at the unrepaired saved index that the unmodelled update
+ * would act on (a runner pruned below the winner shifts it onto another record); removedRunner: pruned as natively. */
+export type FieldOutsideViewVariable=Readonly<{variable:number;name:string;classification:string;hitId:string;resolvedId:string;hitArcseconds:number;removedRunner:string|null}>;
 export type FieldStar=NativeFieldStar|NativeQso;
 export type FieldMergeWitness=Readonly<{galaxy:string;removed:readonly string[];savedWinnerIndex:number;runnerIndex:number;winnerId:string|null;galaxyDeleted?:true}>;
 export type FieldPopulation=Readonly<{
@@ -73,9 +83,13 @@ export type FieldPopulation=Readonly<{
  mergeWitnesses:readonly FieldMergeWitness[];stars:readonly FieldStar[];qsoMatches:readonly number[];photographMatches:readonly number[];
  /** Present in 'merge' mode only: records read by the ordered QSO scan and one witness per merged QSO. */
  qsoStage?:Readonly<{recordsRead:number;witnesses:readonly QsoMergeWitness[]}>;
+ /** 'outside-view' only: the accepted variable and the star record it hit (not painted). */
+ outsideViewVariable?:FieldOutsideViewVariable;
 }>;
 export type FieldCalibration=Readonly<{sourceFile:string;zeroPoint:number;pixelLevel:number;fraction:number;amplitude:PhotonAmplitudes;instrumentMagnitude:number;sourceMeans:readonly number[];sourceValues:readonly number[];wavelengths:readonly number[]}>;
 export type FieldResult=Readonly<{
+ /** 'outside-view' only: galaxies outside the browser stamp bound that were not painted because they miss the crop. */
+ outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
  pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];population:FieldPopulation|null;
  scene:NativeSelectionScene|null;viewport:RgbImage|null;selection:ObjectSelection|null;target:NativeGalaxy|null;calibration:FieldCalibration|null;
 }>;
@@ -183,7 +197,18 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  let variables:NativeVariable[];
  try{variables=pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>inside(v,area));}catch{throw new FieldEngineError('evidence');}
  let variableRemoved:string[]=[];
- if(variables.length>1||variables.some(v=>nativeVariableClass(v.classification,VARIABLE_TABLES)!==3))reasons.push('variable-merge');
+ let outsideViewVariable:FieldOutsideViewVariable|undefined;
+ if(variables.length===1&&options.variables==='outside-view'&&nativeVariableClass(variables[0].classification,VARIABLE_TABLES)!==3){
+  const v=variables[0];
+  try{
+   const trace=nativeMergeNearest(stars.map(s=>({record:{id:s.id,type:s.type,magnitude:s.magnitude},distanceDegrees:catalogMergeDistance(v,s)})),0),arcseconds=trace.bestDistanceDegrees*3600;
+   const target=trace.resolvedSavedIndex;
+   if(arcseconds>=30||!target||!trace.winner)reasons.push('variable-merge');
+   else{const kept=new Set(trace.rows.map(r=>r.id));variableRemoved=stars.filter(s=>!kept.has(s.id)).map(s=>s.id);stars=stars.filter(s=>kept.has(s.id));
+    outsideViewVariable=Object.freeze({variable:v.recordIndex,name:v.name,classification:v.classification,hitId:trace.winner!.id,resolvedId:target.id,hitArcseconds:arcseconds,removedRunner:trace.removedRunner?.id??null});}
+  }catch(e){if(e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
+ }
+ else if(variables.length>1||variables.some(v=>nativeVariableClass(v.classification,VARIABLE_TABLES)!==3))reasons.push('variable-merge');
  else if(variables.length===1){
   try{
    const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(variables[0],s)})),variables[0],VARIABLE_TABLES);
@@ -216,16 +241,37 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
   }
   if(kept.length!==galaxies.length)galaxies=Object.freeze(kept);
  }
- return {reasons,population:Object.freeze({area,regionIds,bandOrder,initialStarIds,variables:Object.freeze(variables),variableRemoved:Object.freeze(variableRemoved),galaxies,galaxyAdmissionIds:admission,mergeWitnesses:Object.freeze(mergeWitnesses),stars:Object.freeze(stars),qsoMatches:Object.freeze(qsoMatches),photographMatches:Object.freeze(photographMatches),...(qsoStage?{qsoStage}:{})})};
+ return {reasons,population:Object.freeze({area,regionIds,bandOrder,initialStarIds,variables:Object.freeze(variables),variableRemoved:Object.freeze(variableRemoved),galaxies,galaxyAdmissionIds:admission,mergeWitnesses:Object.freeze(mergeWitnesses),stars:Object.freeze(stars),qsoMatches:Object.freeze(qsoMatches),photographMatches:Object.freeze(photographMatches),...(qsoStage?{qsoStage}:{}),...(outsideViewVariable?{outsideViewVariable}:{})})};
 }
 type Calibration=(typeof FIELD_CALIBRATIONS)[number];
 /** Same paint order and levels as galaxyExposure.ts: galaxies first (rounded projected centres), then stars by stored level. */
-function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration):RgbImage{
+/** The 'outside-view' conditions that need the projected scene: both footprints outside the 312² crop (every pixel of the 99×99
+ * stamp around the rounded centre lies outside rows/columns 312..623), and no galaxy or QSO within the 2′ merge radius. */
+export const OUTSIDE_VIEW=Object.freeze({stampHalf:49,crop:Object.freeze({first:FRAME.anchor-FRAME.viewport/2,last:FRAME.anchor+FRAME.viewport/2-1}),mergeRadiusDegrees:0.03333333333333333});
+export function outsideViewMargin(p:Readonly<{x:number;y:number}>):number{
+ const x=roundNearestEven(p.x),y=roundNearestEven(p.y),{first,last}=OUTSIDE_VIEW.crop,h=OUTSIDE_VIEW.stampHalf;
+ return Math.max(first-(x+h),x-h-last,first-(y+h),y-h-last);// > 0: the whole stamp misses the crop by that many pixels
+}
+function outsideViewHolds(population:FieldPopulation,scene:NativeSelectionScene):boolean{
+ const o=population.outsideViewVariable!,v=population.variables.find(x=>x.recordIndex===o.variable)!,project=(p:Readonly<{ra:number;dec:number}>)=>createNativeSelectionScene([{id:'position',ra:p.ra,dec:p.dec}],[],scene.frame).stars[0];
+ const affected:Readonly<{ra:number;dec:number}>[]=[v];
+ for(const id of [o.hitId,o.resolvedId]){const i=population.stars.findIndex(s=>s.id===id);if(i<0)return false;affected.push(population.stars[i]);}
+ if(o.removedRunner){const r=population.initialStarIds.indexOf(o.removedRunner);if(r<0)return false;}
+ if(affected.some(p=>outsideViewMargin(project(p))<=0))return false;
+ for(const p of affected){
+  if(population.galaxies.some(g=>catalogMergeDistance(g,p)<OUTSIDE_VIEW.mergeRadiusDegrees))return false;
+  if(population.stars.some(s=>s.type===3&&catalogMergeDistance(s,p)<OUTSIDE_VIEW.mergeRadiusDegrees))return false;
+ }
+ return true;
+}
+function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Calibration,unpainted:ReadonlySet<number>=new Set()):RgbImage{
  let raster:RgbImage={width:FRAME.width,height:FRAME.height,rgb:new Uint8Array(FRAME.width*FRAME.height*3)};
- for(let i=0;i<population.galaxies.length;i++){const p=scene.galaxies[i];raster=paintAdaptedGalaxy(raster,population.galaxies[i],{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift).image;}
+ for(let i=0;i<population.galaxies.length;i++){if(unpainted.has(i))continue;const p=scene.galaxies[i];raster=paintAdaptedGalaxy(raster,population.galaxies[i],{x:roundNearestEven(p.x),y:roundNearestEven(p.y)},c.magnitudeShift).image;}
  const profiles=new Map<number,Uint8Array>();
  for(let i=0;i<population.stars.length;i++){
-  const record=population.stars[i],p=scene.stars[i],stored=nativeStoredStellarLevel(record.magnitude,1,'round');
+  const record=population.stars[i],p=scene.stars[i];
+  if(record.id===population.outsideViewVariable?.hitId||record.id===population.outsideViewVariable?.resolvedId)continue;// unmodelled variable update, wholly outside the view (outsideViewHolds)
+  const stored=nativeStoredStellarLevel(record.magnitude,1,'round');
   const level=nativeStellarPaintLevel(record.type,stored,c.magnitudeShift);if(level===null)throw new FieldEngineError('evidence');
   if(!profiles.has(level))profiles.set(level,prepareNativeStarProfile(level));
   raster=paintNativeStar(raster,profiles.get(level)!,{x:roundNearestEven(p.x),y:roundNearestEven(p.y)});
@@ -241,8 +287,17 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
  const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
  // The bounded browser stamp (galaxyScene.ts: 3 ≤ major ≤ 100 px, 1 ≤ minor ≤ major) is the only gate here; any other error throws.
- for(const g of population.galaxies){try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){if(e instanceof Error&&e.message==='Outside bounded galaxy stamp.')return Object.freeze({...empty,population,scene,reasons:Object.freeze(['stamp-bound' as const])});throw e;}}
- const raster=paintField(population,scene,c);
+ // 'outside-view' only: a galaxy outside the browser stamp bound whose largest footprint (rounded centre ± (rounded radius + 1),
+ // radius ≤ 100 px) misses the 312² crop is recorded and not painted; anything else stays the typed stamp-bound reason.
+ const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
+ for(const [i,g] of population.galaxies.entries()){try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){
+  if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
+  const radius=roundNearestEven(Math.max(3,galaxyCatalogAxes(g).major*(FRAME.width/FRAME.fieldDegrees/60)/2)),margin=outsideViewMargin(scene.galaxies[i])+OUTSIDE_VIEW.stampHalf-(radius+1);
+  if(options.variables!=='outside-view'||radius>100||margin<=0)return Object.freeze({...empty,population,scene,reasons:Object.freeze(['stamp-bound' as const])});
+  unpainted.add(i);outsideViewGalaxies.push({galaxy:g.id,margin});
+ }}
+ if(population.outsideViewVariable&&!outsideViewHolds(population,scene))return Object.freeze({...empty,population,scene,reasons:Object.freeze(['variable-merge' as const])});
+ const raster=paintField(population,scene,c,unpainted);
  const viewport=cropNativeFrame(raster,freshNativeViewport(FRAME.viewport,FRAME.viewport,{x:FRAME.anchor,y:FRAME.anchor})),pixelLevel=slitPixelLevel(viewport);
  let selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor);
  if(selection.kind==='throughput-required'){
@@ -250,7 +305,7 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   const star=population.stars[selection.star.index];
   selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor,nativeObjectSlitFraction({objectPresent:true,objectType:star.type,pixelLevel,object:{raHours:star.ra,decDegrees:star.dec},pointing:{raHours:at.ra,decDegrees:at.dec}}));
  }
- const base={...empty,population,scene,viewport,selection};
+ const base={...empty,population,scene,viewport,selection,...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})};
  if(selection.kind!=='galaxy')return Object.freeze({...base,reasons:Object.freeze([selection.kind==='star'?population.stars[selection.star.index].type===3?'qso-selected' as const:'star-selected' as const:'no-galaxy-selected' as const])});
  const target=population.galaxies[selection.galaxy.index];
  const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:1,pixelLevel});

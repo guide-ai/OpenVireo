@@ -16,8 +16,8 @@ selected record, crop digest and calibration. Regeneration needs `OPENVIREO_FREE
 | 3 | 36805 UM-I – 3 | cached pan of the verified 36773 field (M1) | 0.4 m | available |
 | 4 | NGC 4874 Coma – 1 | engine, QSO merge (M3) | 0.4 m, 4 m (0.9 m: mean bound) | available |
 | 5 | NGC 4889 Coma – 2 | engine, QSO merge, own NGC4889.SP (M4) | 0.4 m, 4 m (0.9 m: mean bound) | available |
-| 6 | 51976 Boo – 1 | engine (M5) | — | variable-qso-merge (pending) |
-| 7 | 51975 Boo – 2 | engine (M5) | — | variable-qso-merge (pending) |
+| 6 | 51976 Boo – 1 | engine (M5): field prepared | — | spectrum-continuation (not offered) |
+| 7 | 51975 Boo – 2 | engine (M5): field prepared | — | spectrum-continuation (not offered) |
 
 ## M1 — UM-I – 3 (36805)
 A fresh field centred on 36805 contains GLIMAGES.LST row 82 (the NGC 3898 photograph), and photographic association
@@ -61,3 +61,23 @@ See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`;
 - Workbook V: 12.9 (Sheet1!C5), 12.5 (Sheet1!C6).
 - Adaptations: fresh field at the exact catalogue centre (not the rounded HTL coordinates), no cached pan from these fields;
   field preparation is asynchronous (a few seconds; a load or identity failure is an explicit, retryable notice).
+
+## M5 — Boötes – 1/2 (51976, 51975): field prepared, acquisition not offered
+- Pack `data/hubble/engine-bootes.json` (both centres, N3000). Against the published LSS reads it
+  adds exactly the whole records N3000 512620 and 512802 (approved 2026-10-27); everything else is byte-equal or a position prefix.
+- RS Boo (CLEA_VStrs.dat record 10908, RRAB, class 0) — coordinator rule "footprint outside the view". Engine option
+  `variables: 'outside-view'`: the nearest merge (reference 0) hits N3000@513122 at 1.86″, but the runner N3000@513119 (14.3″) is
+  pruned first, so the unrepaired saved index resolves to a third record, N3000@513131 — the record the unrecovered class-0 update
+  would act on. All three positions' 99×99 footprints miss the 312² crop (margins recorded in the test), no galaxy or QSO is within
+  2′ of them, the runner is removed as natively, and the winner and the resolved record are not painted. The crop is therefore
+  independent of the unmodelled light curve.
+- New adaptation (needs coordinator acknowledgement): neighbour 14299+3148 (zero-axis, morphology 4) has a minor axis that rounds to
+  0 px (browser stamp bound). Under the same rule, a galaxy outside the stamp bound whose largest footprint misses the crop is
+  recorded and not painted; otherwise `stamp-bound` stays.
+- QSO 1656 (HS 1431+3144, V 17.3) is an ordered insert (position 65) and lies inside both crops: it is painted as a type-3 point.
+- Independent Python witness `data/hubble/bootes-witnesses.json` (winner, resolved record, runner, QSO operation, final star order,
+  galaxy order) is reproduced exactly.
+- Blocker: at z ≈ 0.13 the GLXYTMPL.SP fallback shifted by 1+z starts above 4000 Å (`spectrum-range`). The recovered blue
+  continuation (galaxyContinuum.ts, 0x55e97c) draws one uniform per out-of-range channel; how those draws are ordered against the
+  exposure's own random stream at Go (0x50f484) is not recovered, so no acquisition is offered (`spectrum-continuation`). Both
+  Boötes V references (catalogue 17.9/18.5, workbook 18.5/17.6) will be shown once the target is enabled.

@@ -4,7 +4,7 @@
 // telescope, checks the crop digest against data/hubble/engine-targets.json and only then registers the definitions into
 // core/galaxyExposure.ts. One shared attempt; a failure is reported and a later call retries. Nothing is persisted or sent.
 import {decodeFieldPack,type FieldPack} from '../core/fieldPack';
-import {HUBBLE_ENGINE_RECORD,HubbleEngineError} from '../core/hubbleEngineTargets';
+import {HUBBLE_ENGINE_RECORD,HUBBLE_EXTENDED_TARGETS,HubbleEngineError} from '../core/hubbleEngineTargets';
 import type {FieldQsoCatalog,FieldLibrarySpectrum} from '../core/fieldEngine';
 import {resourceSha256} from './boundedResource';
 
@@ -22,13 +22,14 @@ let resources:HubbleEngineResources=browserResources,pending:Promise<void>|null=
 export function setHubbleEngineResources(r:HubbleEngineResources|null){resources=r??browserResources;pending=null;done=false;}
 export function hubbleEngineTargetsReady():boolean{return done;}
 async function run():Promise<void>{
+ // Only targets enabled on some telescope are prepared (a recorded-unavailable target, e.g. Boötes, needs no field here).
+ const targets=HUBBLE_ENGINE_RECORD.targets.filter(t=>HUBBLE_EXTENDED_TARGETS.some(x=>x.route==='engine'&&x.id===t.id));
  const packs=new Map<string,FieldPack>();
- for(const [id,load] of Object.entries(PACKS)){const p=decodeFieldPack((await load()).default);if(p.id!==id)throw new HubbleEngineError('pack');packs.set(id,p);}
- if(Object.keys(HUBBLE_ENGINE_RECORD.packs).some(id=>!packs.has(id)))throw new HubbleEngineError('pack');
+ for(const id of new Set(targets.map(t=>t.pack))){const load=PACKS[id];if(!load)throw new HubbleEngineError('pack');const p=decodeFieldPack((await load()).default);if(p.id!==id)throw new HubbleEngineError('pack');packs.set(id,p);}
  const [glx,qsoCatalog,{prepareHubbleEngineTarget},{registerEngineGalaxy}]=await Promise.all([resources.glx(),resources.qso(),import('../core/hubbleEnginePrepare'),import('../core/galaxyExposure')]);
  const librarySpectra=new Map<string,FieldLibrarySpectrum['samples']>();
- for(const t of HUBBLE_ENGINE_RECORD.targets)if(t.librarySpectrum)librarySpectra.set(t.librarySpectrum.file,await resources.spectrum(t.librarySpectrum.file,t.librarySpectrum.sha256));
- const prepared=HUBBLE_ENGINE_RECORD.targets.map(t=>prepareHubbleEngineTarget(t.id,{packs,glx,qsoCatalog,librarySpectra}));
+ for(const t of targets)if(t.librarySpectrum)librarySpectra.set(t.librarySpectrum.file,await resources.spectrum(t.librarySpectrum.file,t.librarySpectrum.sha256));
+ const prepared=targets.map(t=>prepareHubbleEngineTarget(t.id,{packs,glx,qsoCatalog,librarySpectra}));
  for(const p of prepared)for(const e of p.entries){
   const recorded=(HUBBLE_ENGINE_RECORD.targets.find(t=>t.id===p.id)!.telescopes as readonly {telescope:number;cropSHA256?:string}[]).find(x=>x.telescope===e.definition.domain.telescopeRecord);
   if(!recorded||await resourceSha256(e.configuration.viewport.rgb as Uint8Array<ArrayBuffer>)!==recorded.cropSHA256)throw new HubbleEngineError('evidence');

@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1325 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata.",
+  "purpose": "Exact identity manifest for the 1327 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata, plus the derived Boötes engine pack (with the approved whole N3000 records 512620/512802) and its independent witness.",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6624,8 +6624,18 @@
     },
     {
       "path": "data/hubble/engine-targets.json",
-      "bytes": 4360,
-      "sha256": "2c180acad466b78b1e67f1b79dcb15e2095c6a6ead405e192432f2a3c6d6221c"
+      "bytes": 6224,
+      "sha256": "b7338a3145a75301b3cf095a4c93e4980cab3053c3c4a0e461465fcae1f6a469"
+    },
+    {
+      "path": "data/hubble/engine-bootes.json",
+      "bytes": 36549,
+      "sha256": "60f0ba0d27b1e782436a9626922c304743f11f62b05d8723fefc4f605a9d1e1f"
+    },
+    {
+      "path": "data/hubble/bootes-witnesses.json",
+      "bytes": 1677,
+      "sha256": "5dc769ec3e754ab3d095bed3703383902af06a12e7d51f5d3452aebd3ea9cbe4"
     }
   ]
 }

@@ -3269,5 +3269,6 @@
   "galaxyExposure.engineLoading": "Preparing this galaxy’s field (catalogues and field evidence are checked first)…",
   "galaxyExposure.engineError": "This galaxy’s field could not be prepared: a catalogue or field-evidence file did not load or did not match its recorded identity. Your other work is unchanged.",
   "galaxyExposure.engineRetry": "Try again",
-  "galaxyExposure.modelLimitOwnSpectrum": "{id} · browser simulation using an adapted raster and this galaxy’s own original library spectrum ({file}), which the original uses unshifted (matched branch). Measured z comes solely from your alignment controls."
+  "galaxyExposure.modelLimitOwnSpectrum": "{id} · browser simulation using an adapted raster and this galaxy’s own original library spectrum ({file}), which the original uses unshifted (matched branch). Measured z comes solely from your alignment controls.",
+  "hubbleHtl.reason.spectrum-continuation": "its field is prepared, but at its redshift the galaxy template no longer covers 4000 Å and the original’s random spectral continuation is not yet tied to the exposure, so no acquisition is offered"
 }

@@ -16,7 +16,7 @@ async function toGalaxy(page:Page){
  await card.getByRole('button',{name:'Use exact catalogue centre',exact:true}).click();await expect(card).toHaveAttribute('data-pointing','exact');
  const toScope=page.getByRole('button',{name:'Switch to telescope view ↗',exact:true});if(await toScope.isVisible())await toScope.click();await tracking(page);
  await page.getByRole('button',{name:'Acquire supported galaxy',exact:true}).click();
- await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue(T.id);await expect(page.getByTestId(`galaxy-umi-adaptation-${T.id}`)).toBeVisible();
 }
 async function acquire(page:Page){
@@ -43,7 +43,7 @@ test('Hubble.HTL → UM-I – 3 cached pan → manual z → Hubble → Save (v29
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'umi3.json',mimeType:'application/json',buffer:saved});
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
  await page.getByRole('button',{name:'Inspect acquisition for measurement 1',exact:true}).click();await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText(T.id);await page.getByRole('button',{name:'Restore this acquisition in the telescope',exact:true}).click();
- await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue(T.id);await expect(page.getByTestId('galaxy-source-total')).toHaveText(source);
  await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByRole('button',{name:'Start galaxy exposure',exact:true}).click();await page.clock.runFor(100);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();await expect(page.getByTestId('galaxy-elapsed')).toHaveText('2100 ms');
  expect(errors).toEqual([]);

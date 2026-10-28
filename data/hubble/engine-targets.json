@@ -9,6 +9,11 @@
    "file": "data/hubble/engine-coma.json",
    "sha256": "acae935c6dabe47149507b0011367dbf9f9b40d7fd8654062de9c42006ca9c26",
    "bytes": 42477
+  },
+  "hubble-engine-bootes": {
+   "file": "data/hubble/engine-bootes.json",
+   "sha256": "60f0ba0d27b1e782436a9626922c304743f11f62b05d8723fefc4f605a9d1e1f",
+   "bytes": 36549
   }
  },
  "targets": [
@@ -146,6 +151,90 @@
        "insert",
        152
       ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "51976",
+   "label": "Boo – 1",
+   "variables": "outside-view",
+   "htlRow": 5,
+   "htlRecordSHA256": "e9ab7d6b43540c5ba8602b02848211d35f1f5ef3a4a121c649bc7dca0d19f69b",
+   "glxIndex": 17656,
+   "pointing": {
+    "ra": 14.545666666666667,
+    "dec": 31.56361111111111
+   },
+   "catalogMagnitude": 17.899999618530273,
+   "pack": "hubble-engine-bootes",
+   "workbook": {
+    "source": "Hubble Data.xls · Sheet1!C7",
+    "apparentV": 18.5
+   },
+   "librarySpectrum": null,
+   "telescopes": [
+    {
+     "telescope": 0,
+     "status": "unavailable",
+     "reasons": [
+      "spectrum-range"
+     ]
+    },
+    {
+     "telescope": 1,
+     "status": "unavailable",
+     "reasons": [
+      "spectrum-range"
+     ]
+    },
+    {
+     "telescope": 2,
+     "status": "unavailable",
+     "reasons": [
+      "spectrum-range"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "51975",
+   "label": "Boo – 2",
+   "variables": "outside-view",
+   "htlRow": 6,
+   "htlRecordSHA256": "fbffdb6104dc83d657a2567e9b74710bb1bce1bb32bddc0cb505bc69e98414ae",
+   "glxIndex": 17657,
+   "pointing": {
+    "ra": 14.545666666666667,
+    "dec": 31.596944444444443
+   },
+   "catalogMagnitude": 18.5,
+   "pack": "hubble-engine-bootes",
+   "workbook": {
+    "source": "Hubble Data.xls · Sheet1!C8",
+    "apparentV": 17.6
+   },
+   "librarySpectrum": null,
+   "telescopes": [
+    {
+     "telescope": 0,
+     "status": "unavailable",
+     "reasons": [
+      "spectrum-range"
+     ]
+    },
+    {
+     "telescope": 1,
+     "status": "unavailable",
+     "reasons": [
+      "spectrum-range"
+     ]
+    },
+    {
+     "telescope": 2,
+     "status": "unavailable",
+     "reasons": [
+      "spectrum-range"
      ]
     }
    ]

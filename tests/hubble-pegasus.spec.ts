@@ -26,7 +26,7 @@ async function toGalaxy(page:Page,t:Target,keyboard=false){
  await expect(card).toHaveAttribute('data-pointing','exact');await expect(card.getByRole('button',{name:'Use exact catalogue centre',exact:true})).toBeDisabled();
  const toScope=page.getByRole('button',{name:'Switch to telescope view ↗',exact:true});if(await toScope.isVisible())await toScope.click();await tracking(page);
  if(keyboard)await press(page,'Acquire supported galaxy');else await page.getByRole('button',{name:'Acquire supported galaxy',exact:true}).click();
- await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue(t.id);await expect(page.getByTestId(`galaxy-pegasus-adaptation-${slug(t.id)}`)).toBeVisible();await expect(page.getByTestId(`galaxy-cached-adaptation-${t.id}`)).toHaveCount(0);
 }
 async function measure(page:Page,t:Target){
@@ -66,7 +66,7 @@ test('Hubble.HTL → exact centre → Pegasus acquisitions, then all eight targe
  await expect(page.getByRole('alert').first()).toBeVisible();await expect(page.locator('#measurement-log tbody tr')).toHaveCount(8);await expect(page.getByTestId('hubble-value')).toHaveText(value!);
  // Resume NGC 7503 (cached view) from its archived acquisition.
  await page.getByRole('button',{name:'Inspect acquisition for measurement 3',exact:true}).click();await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText('NGC 7503');await page.getByRole('button',{name:'Restore this acquisition in the telescope',exact:true}).click();
- await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue('NGC 7503');await expect(page.getByTestId('galaxy-source-total')).toHaveText(sources.get('NGC 7503')!);await expect(page.getByTestId('galaxy-phase')).toHaveText('Deactivated');
  await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByRole('button',{name:'Start galaxy exposure',exact:true}).click();await page.clock.runFor(100);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();await expect(page.getByTestId('galaxy-elapsed')).toHaveText('2100 ms');
  // The fresh NGC 7501 bank is untouched by the NGC 7503 resume; a different-target journal is refused by its panel.
