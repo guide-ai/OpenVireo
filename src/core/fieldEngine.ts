@@ -99,8 +99,8 @@ export type FieldContinuationMode='none'|'start-time';
 /** A selected GSC star (type 0) is observed only when the caller resolves its spectral index (record offset 8) to a template
  * (starTemplates.ts: JSPEC2.SPI exact match, no fallback); a miss stays star-selected. */
 export type FieldStarObservation=Readonly<{templateFor:(spectralIndex:number)=>Readonly<{file:string;spectrum:UniformSpectrum}>|null}>;
-/** The spectrometer interval of the galaxy, continuation and star paths. Default 4000–5000 Å: the Hubble domain of every existing
- * galaxy acquisition (unchanged). The normal spectrometer's interval (3700–4700 Å) is passed explicitly by its callers. */
+/** The spectrometer interval of the galaxy, continuation and star paths. Default 4000–5000 Å: the web configuration of every existing
+ * galaxy acquisition (unchanged; 4000/5000 do not occur in CLEA_VEO.exe, GALAXY-ACQUISITION.md). The normal spectrometer's interval (3700–4700 Å) is passed explicitly by its callers. */
 export type FieldSpectralInterval=Readonly<{minimum:number;maximum:number}>;
 /** Photographic images (Front F, Object X): the kept GLIMAGES.LST rows (photographicList.ts, with the native names) and the
  * decoded bitmaps the caller verified, by file name. With this option a photograph in the area no longer gates the field by
@@ -110,9 +110,14 @@ export type FieldSpectralInterval=Readonly<{minimum:number;maximum:number}>;
  * Without the option every photograph in the area stays that typed reason (unchanged). */
 export type FieldPhotographs=Readonly<{rows:readonly PhotographRow[];bitmaps:ReadonlyMap<string,Bitmap8>}>;
 export type FieldPhotographAssociation=Readonly<{recordIndex:number;galaxyName:string;photograph:number;name:string;file:string}>;
-/** 0x55eb64 (loop 0x55ecdc..0x55ed55): the first GLXYSP.LST line containing the galaxy name with any parenthesised suffix and
- * the spaces removed (Pos), or null. */
-export function glxyspLookup(lines:readonly string[],id:string):string|null{const key=id.replace(/\(.*$/,'').replace(/ /g,'');return key?lines.find(l=>l.includes(key))??null:null;}
+/** 0x55eb64: the key keeps the text INSIDE the parentheses — 0x55ec6f p=Pos('(') then 0x55ec7a Delete(key,1,p) (no-op when
+ * p=0), 0x55ec91 q=Pos(')') then 0x55eca8 Delete(key,q,Length) (no-op when q=0) — then its spaces are removed
+ * (0x55ecb4..0x55ecd8); the loop 0x55ecdc..0x55ed55 returns the first GLXYSP.LST line containing it (case-sensitive Pos
+ * 0x55ecf8), or null. "M82 (NGC 3034)" → NGC3034; "NGC 4889" → NGC4889. */
+export function glxyspKey(id:string):string{
+ let k=id;const p=k.indexOf('(');if(p>=0)k=k.slice(p+1);const q=k.indexOf(')');if(q>=0)k=k.slice(0,q);return k.replace(/ /g,'');
+}
+export function glxyspLookup(lines:readonly string[],id:string):string|null{const key=glxyspKey(id);return key?lines.find(l=>l.includes(key))??null:null;}
 export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a selected galaxy that has an own spectrum there is
  * observed only with that spectrum supplied as librarySpectrum; otherwise the typed spectrum-mapping reason (never the
  * GLXYTMPL.SP fallback). Without this option the caller vouches for the mapping (Hubble targets: recorded per target). */

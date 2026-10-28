@@ -26,15 +26,20 @@ export function parseLssFieldsList(bytes:Uint8Array):readonly LssFieldEntry[]{
   return Object.freeze({field:LSS_FIELD_FILES[i].field,file:m[1],ra:Number(m[2]),dec:Number(m[3]),label:m[4]});
  }));
 }
-/** GLIMAGES.LST: CSV rows with RA hours in column 4 and Dec degrees in column 5 (1-based); only positions are read. */
+/** GLIMAGES.LST: CSV rows with RA hours in column 4 and Dec degrees in column 5 (1-based); only positions are read. As natively
+ * (0x596da8 inside try…except, review 3 finding 5), a row whose RA or Dec does not parse is dropped and the others are kept
+ * with their file index; a parsed value outside the sky simply never falls inside an area. The evident decimal form is read
+ * (StrToFloat's locale DecimalSeparator and exponent forms are not modelled: such a row is dropped, declared). */
 export function parseGlimagesPositions(bytes:Uint8Array):readonly Readonly<{index:number;ra:number;dec:number}>[]{
  const rows=lines(bytes);if(rows[rows.length-1]==='')rows.pop();
  if(rows.length<1||rows.length>1000)throw new OriginalListError(GLIMAGES_LST.name,0);
- return Object.freeze(rows.map((row,index)=>{
-  const f=row.split(','),ra=Number(f[3]),dec=Number(f[4]);
-  if(f.length<5||!/^-?\d+(\.\d+)?$/.test(f[3])||!/^-?\d+(\.\d+)?$/.test(f[4])||ra<0||ra>=24||Math.abs(dec)>90)throw new OriginalListError(GLIMAGES_LST.name,index+1);
-  return Object.freeze({index,ra,dec});
- }));
+ const out:Readonly<{index:number;ra:number;dec:number}>[]=[];
+ rows.forEach((row,index)=>{
+  const f=row.split(',');
+  if(f.length<5||!/^-?\d+(\.\d+)?$/.test(f[3])||!/^-?\d+(\.\d+)?$/.test(f[4]))return;
+  out.push(Object.freeze({index,ra:Number(f[3]),dec:Number(f[4])}));
+ });
+ return Object.freeze(out);
 }
 /** GLXYSP.LST: one library file name per line. */
 export function parseGlxyspNames(bytes:Uint8Array):ReadonlySet<string>{

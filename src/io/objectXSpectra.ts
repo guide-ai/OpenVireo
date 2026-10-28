@@ -9,6 +9,7 @@ import {MAX_JOURNAL_EVENTS} from '../core/exposureJournal';
 import {parseHtl,type HtlList} from '../core/hotList';
 import {objectXCode} from '../core/objectXLab';
 import type {FieldTelescope} from '../core/fieldEngine';
+import {workerFailureKind} from './workerFailure';
 
 export const OBJECT_X_SPECTRA_POLICY='openvireo-objectx-spectra-v29';
 /** Own bounds: 8 kept spectra, 40-character labels, each journal within the exposure journal's own event limit, and at most
@@ -59,7 +60,8 @@ export async function admitObjectXSpectra(value:unknown,sources?:ObjectXSpectraS
  try{s=sources??seam??await browserSources();rows=await s.hotList();}catch{return fail('resources');}
  for(const r of list){
   const row=rows.find(x=>objectXCode(x.id)===r.code);if(!row)fail('replay');
-  let view;try{view=await s.observe({ra:row!.ra,dec:row!.dec},r.telescope);}catch{return fail('resources');}
+  // A deterministic evidence failure cannot be retried: the file is rejected; transport or resource problems are retryable.
+  let view;try{view=await s.observe({ra:row!.ra,dec:row!.dec},r.telescope);}catch(e){return fail(e instanceof Error&&(e.name==='ObjectXSpectrometerEvidenceError'||workerFailureKind(e)==='evidence')?'replay':'resources');}
   if(view.status!=='available')fail('replay');
   try{const replayed=view.status==='available'?view.engine.replay(r.seedAtReset,r.events):null;if(!replayed||replayed.exposure.elapsedMs<=0)fail('replay');}catch(e){if(e instanceof ObjectXSpectraError)throw e;fail('replay');}
  }

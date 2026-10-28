@@ -9,9 +9,11 @@ import {continuationSourcePreparer,type FieldContinuationSource} from '../core/f
 import type {HubbleEngineResources,PreparedEngineEntry} from './hubbleEngineEntry';
 import type {HubbleEngineWorkerRequest} from './hubbleEngineWorker';
 import {resourceSha256} from './boundedResource';
+import {WORKER_REPLY_TIMEOUT_MS,type WorkerFailureKind} from './workerFailure';
 
 export type {HubbleEngineResources};
-export type HubbleEngineStatus='idle'|'loading'|'ready'|'error';
+/** 'error': retryable (load); 'invalid': deterministic evidence mismatch, final. */
+export type HubbleEngineStatus='idle'|'loading'|'ready'|'error'|'invalid';
 /** A preparation that failed for a transient reason (network, worker): the caller may offer a retry. */
 export class HubbleEngineLoadError extends Error{constructor(){super('Hubble engine field could not be prepared');this.name='HubbleEngineLoadError';}}
 let resources:HubbleEngineResources|null=null;// null: the browser path (Worker)
@@ -24,17 +26,21 @@ export function hubbleEngineTargetStatus(id:string,t:ExtendedTelescope):HubbleEn
 export function subscribeHubbleEngineTargets(listener:()=>void):()=>void{listeners.add(listener);return()=>{listeners.delete(listener);};}
 
 let worker:Worker|null=null,ticket=0;
-const waiting=new Map<number,(m:{ok:boolean;definition?:PreparedEngineEntry['definition'];configuration?:Omit<PreparedEngineEntry['configuration'],'sourcePreparer'>})=>void>();
+const waiting=new Map<number,(m:{ok:boolean;kind?:WorkerFailureKind;definition?:PreparedEngineEntry['definition'];configuration?:Omit<PreparedEngineEntry['configuration'],'sourcePreparer'>})=>void>();
+function dropWorker(){for(const w of waiting.values())w({ok:false,kind:'load'});waiting.clear();worker?.terminate();worker=null;}
 function viaWorker(id:string,telescope:ExtendedTelescope):Promise<PreparedEngineEntry>{
  if(!worker){
   worker=new Worker(new URL('./hubbleEngineWorker.ts',import.meta.url),{type:'module'});
   worker.onmessage=e=>{const w=waiting.get(e.data.ticket);waiting.delete(e.data.ticket);w?.(e.data);};
-  worker.onerror=()=>{for(const w of waiting.values())w({ok:false});waiting.clear();worker?.terminate();worker=null;};
+  worker.onerror=dropWorker;
  }
  const mine=++ticket;
  return new Promise((resolve,reject)=>{
+  // A silent Worker is evicted after the timeout (with every request it holds) as a retryable load failure.
+  const timer=setTimeout(()=>{if(waiting.has(mine))dropWorker();},WORKER_REPLY_TIMEOUT_MS);
   waiting.set(mine,m=>{
-   if(!m.ok||!m.definition||!m.configuration){reject(new HubbleEngineLoadError());return;}
+   clearTimeout(timer);
+   if(!m.ok||!m.definition||!m.configuration){reject(m.kind==='evidence'?new HubbleEngineError('evidence'):new HubbleEngineLoadError());return;}
    const c=m.configuration as PreparedEngineEntry['configuration']&{continuationSource?:FieldContinuationSource};
    const configuration=Object.freeze({...c,...(c.continuationSource?{sourcePreparer:continuationSourcePreparer(c.continuationSource)}:{})}) as PreparedEngineEntry['configuration'];
    resolve(Object.freeze({definition:m.definition,configuration}));
@@ -55,10 +61,11 @@ async function prepare(id:string,telescope:ExtendedTelescope):Promise<void>{
 /** Resolves when this (target, telescope) is registered; rejects with a typed error (and allows a retry) otherwise. */
 export function ensureHubbleEngineTarget(id:string,telescope:ExtendedTelescope):Promise<void>{
  const k=key(id,telescope);if(status.get(k)==='ready')return Promise.resolve();
+ if(status.get(k)==='invalid')return Promise.reject(new HubbleEngineError('evidence'));// final: never retried
  let p=pending.get(k);
  if(!p){
   set(k,'loading');
-  p=prepare(id,telescope).then(()=>{pending.delete(k);set(k,'ready');},e=>{pending.delete(k);set(k,'error');throw e;});
+  p=prepare(id,telescope).then(()=>{pending.delete(k);set(k,'ready');},e=>{pending.delete(k);set(k,e instanceof HubbleEngineLoadError?'error':'invalid');throw e;});
   pending.set(k,p);
  }
  return p;

@@ -19,10 +19,19 @@ Front F supplies the field-engine side of the Object X spectrometer and, since F
 - Regression record: `data/objectx/frozen-observations.json` (every row × telescope: status, reasons, populations, photographs,
   crop digest, slit level, fraction, source file, source-means digest), checked by `src/io/objectXFrozen.test.ts`.
 
+## Accepted D5 residual
+Before the reveal the display carries no reason, but the availability pattern across telescopes still narrows the kind: on the
+4.0 m every star, galaxy and QSO row gives a spectrum and every pulsar or asteroid row gives none, and on the 0.4 m only some QSO
+and galaxy rows do. The coordinator accepted this (2026-10-28) as a consequence of recovered behaviour: in the original a pulsar
+or an asteroid also puts no measurable object in the slit. The web has no approved field at those coordinates and does not invent
+a sky-only spectrum, so the neutral message says only "No measurable spectrum at this position with this telescope."
+
 ## Kept spectra (save and restore)
 The student keeps a stopped exposure (`ObjX-<ID>-Snn`, at most 8). A record holds the label, the opaque target code, the telescope,
-the seed at reset and the journal events — nothing that names the object. Before any replay the file is bounded: at most 8 records, each journal
-within the exposure journal's event limit, and at most 24000 events over all of them. Kept spectra are saved in the v29 wrapper
+the seed at reset and the journal events — nothing that names the object. These bounds — at most 8 records, each journal within the exposure journal's event
+limit, and at most 24000 events over all of them — are checked right after the combined replay budget, before any engine-field
+preparation or base replay. The budget is separate from the combined one (these journals replay against their own Object X
+fields), so a v29 replays at most 24000 + 24000 events. Kept spectra are saved in the v29 wrapper
 (`objectXSpectra`, only when present; the v28 Object X section is unchanged) and restored by re-evaluating each record and
 replaying its journal (`io/objectXSpectra.ts`); a record that does not replay rejects the file, a loading failure is the retryable
 `resources` error. A kept spectrum's CSV (`wavelength_A,counts`, 600 rows) is rebuilt identically after a restore.
@@ -38,7 +47,7 @@ Reveal-side outcomes (`telescope` = the existing brightness bound, `mean-bound`;
 | 8 NGC 4449 | galaxy | telescope | telescope | available | its GLIMAGES.LST row is dropped by the original parser (below), so no photograph; own NGC4449.SP (GLXYSP Pos lookup, matched branch) |
 | 9 N3730-01103 | star | telescope | telescope | available | slit selects N3730.DAT@513845 (V 9.47), spectral index 50105000 → A0000044.sp (JSPEC2.SPI) |
 | 3 NGC 2403 | galaxy | available | telescope | available | drawn from NGC2403.BMP (GLIMAGES row 40); GLXYSP fallback template |
-| 4 N6000-00933 | star | telescope | telescope | available | N6000.DAT@209199, index 30005000 (no entry) → A0000018.sp by the 0x50d660 walk-back; NGC2403.BMP in the field |
+| 4 N6000-00685 | star | telescope | telescope | available | N6000.DAT@209199, index 30005000 (no entry) → A0000018.sp by the 0x50d660 walk-back; NGC2403.BMP in the field |
 | 5 N0730-00120 | star | telescope | telescope | available | N0730.DAT@472049, 60005000 → A0000052.sp; NGC4262.BMP in the field |
 | 6 NGC 4262 | galaxy | available | telescope | available | drawn from NGC4262.BMP (row 97); own NGC4262.SP |
 | 11 NGC 4631 | galaxy | telescope | telescope | available | drawn from NGC4631.BMP (row 131); own NGC4631.SP; variable AQ CVn (9631) takes the false-merge branch |
@@ -93,6 +102,9 @@ photograph is ever loaded for it).
   column 0 stay unscaled; Round(red × factor), clamped to 255, written as gray.
 - Draw 0x597470 from the compositor 0x53b5d5..0x53b61c (instead of the synthetic stamp): left = Round(x) − centreX,
   top = Round(y) − centreY (GLIMAGES columns 9/10), unscaled TCanvas.Draw — it overwrites, unlike the synthetic larger-red rule.
+- Pan offset: the synthetic stamp's position adds the view's pan (0x53b561 `fadd [esi+0x45]` with [ebx+0x6a6]); the photograph
+  path does not. They agree while the pan is zero, which holds for every web field (each is a fresh field at its own pointing,
+  never panned); a panned field would need that offset traced for photographs.
 - Tested on synthetic bitmaps and on the four originals inside the engine.
 - Palette mapping (web adaptation): the rescale writes a plain RGB(v,v,v) COLORREF (0x5973f5..0x597404, no PALETTERGB flag)
   through TCanvas.Pixels (0x42ced4 → Windows SetPixel). The mapping onto the 8-bit colour table is done by GDI inside Windows, not

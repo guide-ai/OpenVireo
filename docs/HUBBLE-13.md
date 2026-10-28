@@ -54,7 +54,8 @@ See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`;
   source file and QSO operations; the loader (`io/hubbleEngineTargets.ts`) re-derives them, checks the crop digest and only then
   registers the definitions. Telescope availability follows the existing mean bound: 0.4 m and 4 m available, KPNO 0.9 m
   `mean-bound` (max Poisson mean 17.8 and 29.1 against the bound 12). This differs from the plan's guess ("likely 4 m only").
-- NGC 4889 own spectrum: the GLXYSP lookup 0x55eb64 removes a parenthesised suffix and spaces from the name and takes the first
+- NGC 4889 own spectrum: the GLXYSP lookup 0x55eb64 keeps only the text inside any parentheses (Delete up to '(' at 0x55ec7a, from ')' at
+  0x55eca8; a name without them is unchanged), removes its spaces and takes the first
   GLXYSP.LST line that contains it (Pos 0x40640c) → `NGC4889.SP` (27616 bytes, SHA-256 d48f7964…1e39). The matched branch of
   0x55e55c uses it with wavelength factor 1 (no catalogue shift). NGC 4874 has no line and keeps GLXYTMPL.SP. The analyzer's
   provenance text names the own spectrum.

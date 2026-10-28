@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 // E08: evaluates Object X spectrometer fields off the main thread (review 2 finding 1 applied to E08). Inputs are loaded once
 // (a failure is not cached); the reply is plain data (display and reveal parts, core/objectXSpectrometer.ts).
+import {workerFailureKind} from './workerFailure';
 import {browserObjectXResources,loadObjectXSpectrometerInputs} from './objectXSpectrometerInputs';
 import {evaluateObjectXSpectrum,type ObjectXSpectrometerInputs} from '../core/objectXSpectrometer';
 import type {FieldTelescope} from '../core/fieldEngine';
@@ -11,5 +12,5 @@ self.onmessage=async(event:MessageEvent<ObjectXSpectrometerWorkerRequest>)=>{
  try{
   inputs??=loadObjectXSpectrometerInputs(browserObjectXResources()).catch(e=>{inputs=null;throw e;});
   post({ticket,ok:true,evaluation:evaluateObjectXSpectrum(await inputs,pointing,telescope)});
- }catch{post({ticket,ok:false});}
+ }catch(e){post({ticket,ok:false,kind:workerFailureKind(e)});}
 };

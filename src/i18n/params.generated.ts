@@ -3274,4 +3274,5 @@ export interface MessageParameters {
   "galaxyExposure.continuationAdaptation": never;
   "session.restoreResourcesError": never;
   "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
+  "galaxyExposure.engineInvalid": never;
 }
