@@ -57,9 +57,9 @@ export const LEGACY_PLEIADES_PHOTOMETER_TARGETS=Object.freeze([evidence.target,.
 export const EXPANDED_PHOTOMETER_FIELDS_SHA256='86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40';
 /** Rows 3, 5 and 10 (coordinator decision of 2026-10-28): their CLEA_VStrs.dat variables take the recovered no-effect false merge
  * (data/photometry/pleiades-variable-fields.json, generator analysis/front-f-hubble-objectx/scripts/pleiades_variable_fields.py). */
-export const VARIABLE_PHOTOMETER_FIELDS_SHA256='6ec0821f4888a79c1556a7653b0f7f45ef57098f79ead577973ec4c2913c4c14';
+export const VARIABLE_PHOTOMETER_FIELDS_SHA256='27436c8eff7f22b9180cbff2f7226346d6fcb66016186f18f4df5857ceb95a69';
 /** Rows 2, 7, 12, 14, 22: the recovered native selection at the exact HTL pointing (pleiades-pointing-fields.json). */
-export const POINTING_PHOTOMETER_FIELDS_SHA256='621bf7de8398b44099cf3b9eefd05b4e412ca3a9ac61c534b59cf0e175f7eac3';
+export const POINTING_PHOTOMETER_FIELDS_SHA256='9282d07f50b80efb72d28820bd0f03b95b0b09883641ff66c4f0dd875f9de452';
 export const PLEIADES_PHOTOMETER_TARGETS=Object.freeze([...LEGACY_PLEIADES_PHOTOMETER_TARGETS,...[...expanded.targets,...variableFields.targets,...pointingFields.targets].map(t=>Object.freeze({...t.target,pointing:Object.freeze({...t.target.pointing})}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord));
 export const PLEIADES_PHOTOMETER_CHOICES=Object.freeze([...PLEIADES_PHOTOMETER_TARGETS.map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:t.catalogId,reason:null as string|null})),...expandedProof.unavailable.filter(t=>![...variableFields.targets,...pointingFields.targets].some(v=>v.target.hotlistRecord===t.hotlistRecord)).map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:null,reason:t.reason}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord).map(t=>Object.freeze(t)));
 export function isLegacyPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&LEGACY_PLEIADES_PHOTOMETER_TARGETS.some(t=>t.catalogId===id);}
@@ -80,12 +80,15 @@ function equal(a:unknown,b:unknown):boolean{
  return Object.keys(x).length===Object.keys(y).length&&Object.keys(y).every(k=>Object.hasOwn(x,k)&&equal(x[k],y[k]));
 }
 type ReadRow=Readonly<{packedRa:number;star:NamedStar|null}>;
-function readRow(rawHex:string,band:string,index:number,area:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>):ReadRow{
+/** strict (the 2026-10-28 files): a whole record must lie inside the area and a witness outside it. The older bundled files
+ * (pinned-pleiades-v, pleiades-target-fields, pleiades-expanded-fields) keep whole records outside their areas, unchanged because
+ * saved-file headers attest their hashes (RESOURCE-PROVENANCE.json); they are read with strict false. */
+export function photometerReadRow(rawHex:string,band:string,index:number,area:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>,strict:boolean):ReadRow{
  if(typeof rawHex!=='string'||!/^(?:[a-f0-9]{54}|[a-f0-9]{16})$/.test(rawHex))throw new PhotometerFieldError('evidence');
  const v=new DataView(Uint8Array.from(rawHex.match(/../g)!,s=>parseInt(s,16)).buffer),packedRa=v.getInt32(0,true);
- if(rawHex.length===54)return Object.freeze({packedRa,star:namedStar(rawHex,band,index)});
- const ra=packedRa/10_000_000,dec=v.getInt32(4,true)/100_000;
- if(ra>=area.minimumRa&&ra<=area.maximumRa&&dec>=area.minimumDec&&dec<=area.maximumDec)throw new PhotometerFieldError('evidence');
+ const ra=packedRa/10_000_000,dec=v.getInt32(4,true)/100_000,inside=ra>=area.minimumRa&&ra<=area.maximumRa&&dec>=area.minimumDec&&dec<=area.maximumDec;
+ if(rawHex.length===54){if(strict&&!inside)throw new PhotometerFieldError('evidence');return Object.freeze({packedRa,star:namedStar(rawHex,band,index)});}
+ if(!strict||inside)throw new PhotometerFieldError('evidence');
  return Object.freeze({packedRa,star:null});
 }
 function namedStar(rawHex:string,band:string,index:number):NamedStar{
@@ -150,7 +153,7 @@ function buildCompleteField(target:typeof evidence.target,fixtures:typeof eviden
  // A read is the whole 27-byte record (54 hex digits) or, for a record outside this field's area, a position-only witness
  // (16 hex digits: packed Int32 RA and Dec), which is all the trace and the admission predicate read from a record rejected by
  // position (user approval of 2026-10-28; the LSS pack rule, fieldPack.ts). A witness inside the area is an evidence error.
- const band=fixture.band,rows=new Map(band.reads.map(r=>[r.index,readRow(r.rawHex,band.name,r.index,area)]));
+ const band=fixture.band,strict=provenanceFile==='pleiades-variable-fields.json'||provenanceFile==='pleiades-pointing-fields.json',rows=new Map(band.reads.map(r=>[r.index,photometerReadRow(r.rawHex,band.name,r.index,area,strict)]));
  const trace=traceCompactGscBandRead({recordCount:band.recordCount,readPackedRa(index){const row=rows.get(index);if(!row)throw new PhotometerFieldError('evidence');return row.packedRa;}},Math.round(area.minimumRa*1e7),area.maximumRa,10000);
  if(!equal(trace.probes,band.expectedProbes)||trace.visits[0].recordIndex!==band.firstVisit||trace.visits.at(-1)!.recordIndex!==band.lastVisit)throw new PhotometerFieldError('evidence');
  const admittedStars=Object.freeze(trace.visits.map(v=>rows.get(v.recordIndex)!.star).filter((s):s is NamedStar=>s!==null&&nativeCatalogAdmission(s,area)));

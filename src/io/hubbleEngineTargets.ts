@@ -10,6 +10,7 @@ import type {HubbleEngineResources,PreparedEngineEntry} from './hubbleEngineEntr
 import type {HubbleEngineWorkerRequest} from './hubbleEngineWorker';
 import {resourceSha256} from './boundedResource';
 import {workerClient,type WorkerReply} from './workerClient';
+import {workerFailureKind,type WorkerFailureKind} from './workerFailure';
 
 export type {HubbleEngineResources};
 /** 'error': retryable (load); 'invalid': deterministic evidence mismatch, final. */
@@ -39,7 +40,8 @@ async function prepare(id:string,telescope:ExtendedTelescope):Promise<void>{
  if(!target||!target.telescopes.includes(telescope))throw new HubbleEngineError('evidence');// only recorded-available telescopes
  let entry:PreparedEngineEntry;
  try{entry=resources?await (await import('./hubbleEngineEntry')).prepareEngineEntry(id,telescope,resources):await viaWorker(id,telescope);}
- catch(e){if(e instanceof HubbleEngineError)throw e;throw new HubbleEngineLoadError();}
+ // In process (tests) as in the Worker: a deterministic error is final evidence, anything else a retryable load failure.
+ catch(e){if(e instanceof HubbleEngineError)throw e;if(e instanceof HubbleEngineLoadError||workerFailureKind(e)==='load')throw new HubbleEngineLoadError();throw new HubbleEngineError('evidence');}
  const recorded=(HUBBLE_ENGINE_RECORD.targets.find(t=>t.id===id)!.telescopes as readonly {telescope:number;cropSHA256?:string}[]).find(x=>x.telescope===telescope);
  if(!recorded||entry.definition.domain.telescopeRecord!==telescope)throw new HubbleEngineError('evidence');
  // Review 4 item 6: hashing (crypto.subtle) and the lazy galaxyExposure chunk can fail transiently after the reply; those are
@@ -56,7 +58,14 @@ export function ensureHubbleEngineTarget(id:string,telescope:ExtendedTelescope):
  let p=pending.get(k);
  if(!p){
   set(k,'loading');
-  p=prepare(id,telescope).then(()=>{pending.delete(k);set(k,'ready');},e=>{pending.delete(k);set(k,e instanceof HubbleEngineLoadError?'error':'invalid');throw e;});
+  // Review 5: every failure is typed as in the Worker path. A load error stays retryable; a HubbleEngineError or another
+  // deterministic error (workerFailureKind 'evidence') is final; anything else (an unexpected runtime error) is retryable.
+  p=prepare(id,telescope).then(()=>{pending.delete(k);set(k,'ready');},e=>{
+   pending.delete(k);
+   const kind:WorkerFailureKind=e instanceof HubbleEngineLoadError?'load':e instanceof HubbleEngineError?'evidence':workerFailureKind(e);
+   set(k,kind==='load'?'error':'invalid');
+   throw kind==='load'?(e instanceof HubbleEngineLoadError?e:new HubbleEngineLoadError()):(e instanceof HubbleEngineError?e:new HubbleEngineError('evidence'));
+  });
   pending.set(k,p);
  }
  return p;

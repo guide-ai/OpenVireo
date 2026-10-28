@@ -16,8 +16,10 @@ record is class 3 with period 0 and word 0, so its time update 0x51ec48 returns 
 merged in the stage's (RA, Dec) order (inserted with 0x492728 under 0x4bc950; 0x598608, reference 0), a hit record is restored (0x5986c0) and a miss inserts nothing (0x5987a1). The only
 change to a field is a runner the nearest merge prunes: in row 10's object field V0447 Tau's merge removes N2230.DAT@149084. The
 fields, their merge witnesses (independent Python model) and independent UBV means are in `data/photometry/pleiades-variable-fields.json`
-and `pleiades-variable-vectors.json`; a history that names one of these targets is saved as owner 11
-(`OpenVireo-Pleiades-variable-field-targets-v11`, with the field SHA-256). Row 12 and the other four rows the earlier policy called unvalidated associations (2, 7, 12, 14, 22) are settled by
+and `pleiades-variable-vectors.json`; a history that names one of these targets (or of the five rows below) is saved as owner 11
+(`OpenVireo-Pleiades-added-targets-v11`, whose header carries `variableTargetFieldsSHA256` and `pointingTargetFieldsSHA256`;
+`OpenVireo-Pleiades-variable-field-targets-v11` is only the field file's own label). The five rows the earlier policy called
+unvalidated associations (2, 7, 12, 14, 22; row 12 also has a variable, V0453 Tau) are settled by
 recovery as well: the photometer's FormActivate (0x4ff8b0) selects, through 0x53cf94/0x53ce8c and 0x59a0fc, the star nearest the
 rounded projected telescope pointing (below the 350-pixel sentinel), and the aperture fraction follows the real angular offset
 (0x500568 with 0x59a49c); no label or suffix check exists. Each field is pointed at the exact HTL coordinates

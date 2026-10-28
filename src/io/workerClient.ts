@@ -1,4 +1,4 @@
-// Review 4 item 6: one request/reply client for the page's Workers, with an inactivity timeout instead of a reply deadline.
+// Review 4 item 6 (monotonic clock: performance.now, review 5): one request/reply client for the page's Workers, with an inactivity timeout instead of a reply deadline.
 // While a Worker holds requests it posts a heartbeat every WORKER_HEARTBEAT_MS (its timers run whenever it awaits a download or
 // a decode); the page evicts it only after WORKER_INACTIVITY_TIMEOUT_MS with no message at all (no heartbeat, no reply), so a slow
 // but working Worker is never killed and a hung or crashed one is. Eviction rejects every held request as a retryable load failure.
@@ -19,15 +19,15 @@ export function workerClient(create:()=>Worker){
   for(const w of held)w({ticket:0,ok:false,kind:'load'});
  }
  function start(){
-  worker=create();last=Date.now();
-  worker.onmessage=(e:MessageEvent)=>{last=Date.now();const d=e.data as WorkerReply&{heartbeat?:true};if(d?.heartbeat)return;const w=waiting.get(d.ticket);waiting.delete(d.ticket);w?.(d);};
+  worker=create();last=performance.now();
+  worker.onmessage=(e:MessageEvent)=>{last=performance.now();const d=e.data as WorkerReply&{heartbeat?:true};if(d?.heartbeat)return;const w=waiting.get(d.ticket);waiting.delete(d.ticket);w?.(d);};
   worker.onerror=drop;
-  watch=setInterval(()=>{if(waiting.size===0)last=Date.now();else if(Date.now()-last>WORKER_INACTIVITY_TIMEOUT_MS)drop();},WORKER_HEARTBEAT_MS);
+  watch=setInterval(()=>{if(waiting.size===0)last=performance.now();else if(performance.now()-last>WORKER_INACTIVITY_TIMEOUT_MS)drop();},WORKER_HEARTBEAT_MS);
  }
  /** Posts one request; resolves with the Worker's reply, or a {ok:false,kind:'load'} reply when the Worker is evicted. */
  return function request<T extends object>(message:T):Promise<WorkerReply>{
   if(!worker)start();
-  if(waiting.size===0)last=Date.now();// the silence clock starts when the Worker becomes busy
+  if(waiting.size===0)last=performance.now();// the silence clock starts when the Worker becomes busy
   const mine=++ticket;
   return new Promise(resolve=>{waiting.set(mine,resolve);worker!.postMessage({...message,ticket:mine});});
  };
