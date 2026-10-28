@@ -1,0 +1,137 @@
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {describe,expect,it} from 'vitest';
+import {VSTRS_FILE_BYTES,VariableStarError,decodeExtended,decodeVariableStarCatalog,decodeVariableStarRecord,formatExtendedFixed,formatNativeSexagesimal,parseVariableTypeHelp,searchVariableStars,variableStarDataLines,variableStarSaveFileName,variableStarSaveText,variableStarTypes} from './variableStars';
+import {LIGHT_CURVE_BOX,LightCurveError,cepheidMagnitude,cepheidModel,lightCurveBounds,lightCurvePlot} from './lightCurve';
+import witness from './variableStars.controls.json';
+import manifest from '../../docs/LOCAL-RESOURCES.json';
+import {BUNDLED_VARIABLE_STARS,BUNDLED_VARIABLE_TYPE_HELP,BundledVariableFileError,fetchBundledVariableFile,verifyBundledVariableFile} from '../io/bundledVariableStars';
+
+// Witness: research analysis/front-v-variable-stars/tools/variable_witness.py (Python struct + fractions + math, written
+// separately from this port). It is evidence of the chosen contract, not of original-runtime equivalence.
+const FILE=new Uint8Array(readFileSync(new URL('../../public/original/variables/CLEA_VStrs.dat',import.meta.url)));
+const HELP=new Uint8Array(readFileSync(new URL('../../public/original/variables/VarTypeHlp.TXT',import.meta.url)));
+const fromHex=(hex:string)=>Uint8Array.from(hex.match(/../g)!,v=>parseInt(v,16));
+const catalog=decodeVariableStarCatalog(FILE);
+
+describe('CLEA_VStrs.dat bundled identity',()=>{
+ it('is the manifested byte-exact file the witness read',()=>{
+  expect(FILE.length).toBe(VSTRS_FILE_BYTES);
+  const sha=createHash('sha256').update(FILE).digest('hex');
+  expect(sha).toBe(BUNDLED_VARIABLE_STARS.sha256);expect(witness.source.sha256).toBe(sha);
+  for(const id of [BUNDLED_VARIABLE_STARS,BUNDLED_VARIABLE_TYPE_HELP])expect(manifest.files).toContainEqual({path:'public'+id.path,bytes:id.bytes,sha256:id.sha256});
+  expect(createHash('sha256').update(HELP).digest('hex')).toBe(BUNDLED_VARIABLE_TYPE_HELP.sha256);
+ });
+ it('decodes every record with the witness statistics',()=>{
+  expect(catalog).toHaveLength(witness.stats.records);
+  expect(catalog[0].name).toBe(witness.stats.firstName);expect(catalog.at(-1)!.name).toBe(witness.stats.lastName);
+  expect(catalog.filter(r=>r.period.value===0)).toHaveLength(witness.stats.periodZero);
+  expect(catalog.filter(r=>r.riseWord===0)).toHaveLength(witness.stats.riseZero);
+  expect(catalog.every((r,i)=>i===0||catalog[i-1].raHours<=r.raHours)).toBe(witness.stats.sortedByRa);
+ });
+ it('rejects other sizes and malformed records',()=>{
+  expect(()=>decodeVariableStarCatalog(FILE.subarray(0,FILE.length-1))).toThrow(VariableStarError);
+  const bad=FILE.slice(0,92);bad[0]=11;expect(()=>decodeVariableStarRecord(bad,0)).toThrow(VariableStarError);
+  const badExt=FILE.slice(0,92);badExt[51+7]&=0x7f;expect(()=>decodeVariableStarRecord(badExt,0)).toThrow(VariableStarError);
+  expect(()=>decodeVariableStarRecord(FILE,31147)).toThrow(VariableStarError);
+ });
+});
+
+describe('Variable Star Data lines (0x52ccec) against the witness',()=>{
+ for(const c of witness.cases)it(`${c.index} ${c.name}`,()=>{
+  const r=decodeVariableStarRecord(fromHex(c.rawHex),0);
+  expect(r).toEqual({...catalog[c.index],index:0});
+  expect(variableStarDataLines(r)).toEqual(c.lines);
+  expect(variableStarDataLines(r,true)).toEqual(c.linesAfterDefault);
+ });
+ it('formats the sexagesimal and Extended cases explicitly',()=>{
+  expect(formatNativeSexagesimal(0.0009929221987460951,2,['h ','m ','s'])).toBe('   0h 00m 03.57s');
+  expect(formatNativeSexagesimal(-2.9742248625257863,1,['° ',"' ",'"'])).toBe('  -2° 58\' 27.2"');
+  expect(formatNativeSexagesimal(23.99999999,2,['h ','m ','s'])).toBe('  24h 00m 00.00s');
+  const e=decodeExtended(Uint8Array.from([0,0,0,0,0,0,0,0x80,0xff,0x3f]),0);// 1.0
+  expect(e.value).toBe(1);expect(formatExtendedFixed(e,2)).toBe('1.00');
+  expect(formatExtendedFixed(decodeExtended(new Uint8Array(10),0),5)).toBe('0.00000');
+ });
+});
+
+describe('CepheidTypeObj model and plot (0x51f33c, 0x52b6f4, 0x52b9cc, 0x52c090) against the witness',()=>{
+ for(const c of witness.cases)it(`${c.index} ${c.name}`,()=>{
+  const r=decodeVariableStarRecord(fromHex(c.rawHex),0),plot=lightCurvePlot(r),w=c.plot;
+  expect([plot.faintBound,plot.brightBound]).toEqual([w.faintBound,w.brightBound]);
+  if(c.periodZero){expect(plot.curve).toEqual({unavailable:'period-zero'});return;}
+  if(!('points' in plot.curve))throw new Error('curve expected');
+  expect(plot.curve.points.map(p=>p[1])).toEqual(w.curveY);
+  expect(plot.curve.points.map(p=>p[0])).toEqual(w.curveY!.map((_,i)=>LIGHT_CURVE_BOX.left+i));
+  const m=cepheidModel(r),step=m.period*1.5/(LIGHT_CURVE_BOX.right-LIGHT_CURVE_BOX.left);
+  for(const [i,v] of w.samples!)expect(cepheidMagnitude(m,i*step+m.epoch)).toBe(v);
+ });
+ it('starts at maximum, reaches minimum at f and repeats each period',()=>{
+  const r=catalog[30234],m=cepheidModel(r);// del Cep, M−m/D 25 %
+  expect(m.declineFraction).toBe(0.75);
+  expect(cepheidMagnitude(m,m.epoch)).toBe(r.max);
+  expect(cepheidMagnitude(m,m.epoch+0.75*m.period)).toBeCloseTo(r.min,5);
+  expect(cepheidMagnitude(m,m.epoch+m.period)).toBeCloseTo(r.max,5);
+ });
+ it('defaults a zero M−m/D to 50 and reports it',()=>{
+  const r=catalog[2];expect(r.riseWord).toBe(0);
+  const m=cepheidModel(r);expect([m.riseWord,m.riseDefaulted,m.declineFraction]).toEqual([50,true,0.5]);
+ });
+ it('names the original faults instead of drawing a curve',()=>{
+  const r=catalog[100];expect(r.period.value).toBe(0);
+  expect(()=>cepheidMagnitude(cepheidModel(r),r.epoch.value)).toThrow(LightCurveError);
+  const p=lightCurvePlot(r);expect(p.curve).toEqual({unavailable:'period-zero'});expect(p.ticks.length).toBeGreaterThan(0);
+  const zero={...cepheidModel(catalog[0]),declineFraction:0,riseWord:100};
+  expect(()=>cepheidMagnitude(zero,zero.epoch)).toThrow(expect.objectContaining({code:'zero-decline-fraction'}));
+ });
+ it('uses the recovered half-magnitude bounds',()=>{
+  expect(lightCurveBounds(12.3,11.6)).toEqual({faintBound:12.5,brightBound:11});// 11.6 − 11 is not > 0.6
+  expect(lightCurveBounds(12.5,12.5)).toEqual({faintBound:12.5,brightBound:11.5});// Round(12.5) = 12 (ties to even)
+  expect(lightCurveBounds(13.5,13.5)).toEqual({faintBound:14,brightBound:13});
+ });
+ it('lays out the axes and texts as decoded',()=>{
+  const p=lightCurvePlot(catalog[30234]),t=Object.fromEntries(p.texts.map(x=>[x.text,x]));
+  expect(t['del Cep']).toMatchObject({x:90,y:44});expect(t['DCEP']).toMatchObject({x:615,y:44,anchor:'end'});
+  expect(t['V mag']).toMatchObject({x:30,y:10});expect(t['Phase']).toMatchObject({x:352.5,y:310,anchor:'middle'});
+  expect(t['0.0']).toMatchObject({x:65,y:295});expect(t['1.5']).toMatchObject({x:620,y:295});
+  expect(t['0.5']).toMatchObject({x:250,y:295});expect(t['1.0']).toMatchObject({x:435,y:295});
+  expect(t['3.00']).toMatchObject({x:35,y:32});expect(t['4.50']).toMatchObject({x:35,y:282});
+  expect(p.texts.map(x=>x.text)).toEqual(['4.50','3.00','3.50','4.00','del Cep','DCEP','V mag','0.0','1.5','0.5','1.0','Phase']);
+  // Magnitude steps of 0.5 mag over 250 px: three major marks on each edge plus four minor marks each.
+  expect(p.ticks.filter(s=>s.y1===s.y2)).toHaveLength(3*2*5);expect(p.ticks.filter(s=>s.x1===s.x2)).toHaveLength(3*5);
+ });
+});
+
+describe('Save Text and help',()=>{
+ it('writes one CRLF line per list item in Latin-1',()=>{
+  const r=catalog[30234],bytes=variableStarSaveText(variableStarDataLines(r));
+  const text=String.fromCharCode(...bytes);
+  expect(text.split('\r\n')).toEqual([...variableStarDataLines(r),'']);
+  expect(bytes.includes(0xb0)).toBe(true);
+  expect(variableStarSaveFileName(r)).toBe('del_Cep.TXT');
+ });
+ it('splits VarTypeHlp.TXT at its own headings',()=>{
+  const s=parseVariableTypeHelp(HELP);
+  expect(s.map(x=>x.title)).toEqual(['Pulsating Variable Types','Rotating Variable Types','Eruptive Variable Types','Explosive/Cataclysmic Variable Types','Eclipsing Variable Types']);
+  expect(s[0].lines).toHaveLength(12);expect(s[0].lines[0]).toBe('DCEP/CEP    Classical Cepheids + those of uncertain type');
+  expect(s.slice(1).every(x=>x.lines.length===0)).toBe(true);
+ });
+ it('filters the catalog by name and type (web browsing)',()=>{
+  expect(searchVariableStars(catalog,{name:'del  CEP',type:''}).rows.map(r=>r.name)).toEqual(['del Cep']);
+  const dcep=searchVariableStars(catalog,{name:'',type:'DCEP'});expect(dcep.total).toBe(440);expect(dcep.rows).toHaveLength(100);
+  expect(variableStarTypes(catalog)[0]).toEqual({type:'M',count:5220});
+  expect(()=>searchVariableStars(catalog,{name:'x'.repeat(41),type:''})).toThrow(VariableStarError);
+ });
+});
+
+describe('bundled fetch',()=>{
+ it('checks size, then SHA-256, and only fetches same-origin',async()=>{
+  const id={...BUNDLED_VARIABLE_TYPE_HELP},calls:string[]=[];
+  const ok=(async(input:RequestInfo|URL,init?:RequestInit)=>{calls.push(String(input));expect(init?.credentials).toBe('same-origin');return new Response(HELP.slice());}) as typeof fetch;
+  expect(await fetchBundledVariableFile(ok,new AbortController().signal,id)).toEqual(HELP);expect(calls).toEqual([id.path]);
+  const code=async(p:Promise<unknown>)=>{try{await p;}catch(e){return e instanceof BundledVariableFileError?e.code:e instanceof DOMException?e.name:'other';}return 'resolved';};
+  expect(await code(verifyBundledVariableFile(HELP.slice().buffer,{...id,sha256:'0'.repeat(64)}))).toBe('sha256');
+  expect(await code(verifyBundledVariableFile(HELP.slice(1).buffer,id))).toBe('size');
+  expect(await code(fetchBundledVariableFile((async()=>new Response('x',{status:404})) as typeof fetch,new AbortController().signal,id))).toBe('download');
+  const abort=new AbortController();abort.abort();expect(await code(fetchBundledVariableFile(ok,abort.signal,id))).toBe('AbortError');
+ });
+});
