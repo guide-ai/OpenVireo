@@ -7,10 +7,10 @@ import {parseFitsImage,type FitsImage} from './core/fitsImage';
 import {formatSexagesimal,tanWcsFromCards,targetMotion,type MeasurementLog,type TanWcs} from './core/astrometryMeasure';
 import {DEFAULT_LIMITING_MAGNITUDE,movingPairs,type ObservableList} from './core/asteroidField';
 import {separationDegrees} from './core/ephemeris';
-import {OBJECT_X_DEFAULT_UTC,OBJECT_X_ID_MAX,OBJECT_X_KINDS,OBJECT_X_ON_TARGET_DEGREES,objectXDataLabel,objectXTargets,revealObjectX,type ObjectXKind,type ObjectXLabSummary} from './core/objectXLab';
+import {OBJECT_X_DEFAULT_UTC,OBJECT_X_ID_MAX,OBJECT_X_KINDS,OBJECT_X_ON_TARGET_DEGREES,objectXCameraListUse,objectXDataLabel,objectXTargets,revealObjectX,type ObjectXKind,type ObjectXLabSummary} from './core/objectXLab';
 import {parseClockUTC} from './core/siteClock';
 import {cameraCatalogReference} from './core/cameraCatalogReference';
-import type {CameraExtraSource} from './core/cameraExposure';
+import type {CameraExposureKind,CameraExtraSource} from './core/cameraExposure';
 import type {CameraImage} from './CameraControl';
 import {DEFAULT_ORBIT_FILE,SELECTABLE_ORBIT_FILES,fetchBundledOrbitFile,fetchObjectXHotList,type BundledOrbitFileId} from './io/bundledOrbitFile';
 import {resourceSha256} from './io/boundedResource';
@@ -22,7 +22,7 @@ import {objectXFitsBytes} from './io/objectXImage';
  * total length the camera captured at Start (ComputeMovers T and dt). */
 /** The unrevealed target as instruments need it: position, opaque code and the ObjX-<ID> data label. */
 export type ObjectXHiddenTarget=Readonly<{ra:number;dec:number;code:string;label:string}>;
-export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
+export type ObjectXController=Readonly<{extraSources:(jd:number,pointing:Readonly<{ra:number;dec:number}>,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];acceptImage:(image:CameraImage)=>void}>;
 type Props=Readonly<{
  active:boolean;busy:boolean;
  clockUtc:()=>string;onSetClock:(utc:string)=>void;
@@ -114,17 +114,20 @@ export default function ObjectXLab({active,busy,clockUtc,clockApplied,onSetClock
   });
  }
  controllerRef.current={
-  extraSources:(jd,pointing,seconds)=>{
+  extraSources:(jd,pointing,seconds,camera)=>{
    const l=listRef.current,o=orbit.current;
+   const current=!!l&&!!o&&o.id===l.orbitFile&&Math.abs(jd-l.list.jd)<=OBJECT_X_LIST_CURRENT_DAYS;
+   const use=objectXCameraListUse({camera,listCurrent:current,clockSet:invRef.current.clockSet,hasList:!!l});
    // No list, or one for another date: no asteroids in this image ("asteroids not computed"); a list for this date is built
-   // for the next one if the exercise has started.
-   if(!l||!o||o.id!==l.orbitFile||Math.abs(jd-l.list.jd)>OBJECT_X_LIST_CURRENT_DAYS){
-    lastPairs.current={jd,list:null,pairs:0};
-    if(invRef.current.clockSet||l)window.setTimeout(()=>void buildList(jd),0);
+   // for the next CCD image if the exercise has started. IR images only read a current list: they never build one and do
+   // not touch lastPairs, so they leave Object X state unchanged.
+   if(use!=='use'){
+    if(camera==='ccd')lastPairs.current={jd,list:null,pairs:0};
+    if(use==='build')window.setTimeout(()=>void buildList(jd),0);
     return [];
    }
-   const r=movingPairs(o.bytes,l.list,pointing,jd,seconds);
-   lastPairs.current={jd,list:l,pairs:r.pairs.length};
+   const r=movingPairs(o!.bytes,l!.list,pointing,jd,seconds);
+   if(camera==='ccd')lastPairs.current={jd,list:l,pairs:r.pairs.length};
    return r.pairs.map(p=>p.source);
   },
   acceptImage:image=>{void acceptImage(image);},

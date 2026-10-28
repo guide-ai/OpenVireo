@@ -78,4 +78,4 @@ The camera window shows this citation under every image.
 
 Run `node node_modules/vitest/vitest.mjs run src/core/vizierNomad.test.ts src/core/cameraExposure.test.ts src/io/cameraCatalog.test.ts` and `OPENVIREO_TEST_PORT=5196 node_modules/.bin/playwright test tests/camera-exposure.spec.ts`.
 
-Still open in front C: bundled extracts for the ObjectX.HTL fields (C5); the IR camera is optional (C6).
+Still open in front C: bundled extracts for the ObjectX.HTL fields (C5). The IR camera (C6) is described in [CAMERA-IR.md](CAMERA-IR.md).

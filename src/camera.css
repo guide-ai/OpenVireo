@@ -22,3 +22,7 @@
 .camera-control>p,.camera-control>h2{margin:0}
 .camera-control .button-row{display:flex;flex-wrap:wrap;gap:var(--ov-space-2);align-items:center}
 .camera-control .button-row>button{width:auto;flex:0 0 auto;margin:0}
+/* C6: camera choice (CCD / IR) spans the settings row; radios sit side by side and wrap on phones. */
+.camera-kind{border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);padding:var(--ov-space-2) var(--ov-space-3);margin:0;min-width:0;flex:1 1 100%;display:flex;flex-wrap:wrap;gap:var(--ov-space-2) var(--ov-space-5)}
+.camera-kind legend{padding:0 var(--ov-space-1)}
+.camera-settings .camera-kind label{flex-direction:row;align-items:center;gap:var(--ov-space-2)}
