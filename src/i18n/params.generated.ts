@@ -480,7 +480,6 @@ export interface MessageParameters {
   "lab.next.dataset": never;
   "lab.next.recipe": never;
   "lab.next.inputs": never;
-  "lab.next.interpret": never;
   "lab.duplicate": never;
   "lab.acquireTitle": never;
   "lab.acquireHelp": never;
@@ -526,7 +525,6 @@ export interface MessageParameters {
   "lab.recover.limits": never;
   "lab.sources": never;
   "lab.sourceHelp": never;
-  "lab.limits": never;
   "lab.continue": never;
   "lab.progressMeaning": never;
   "class.nav": never;
@@ -3262,4 +3260,18 @@ export interface MessageParameters {
   "lss.saveError": never;
   "lss.eventLimit": "limit";
   "lss.descriptionInvalid": never;
+  "galaxyExposure.umiAdaptation": never;
+  "lab.next.interpretSupported": "original" | "supported";
+  "lab.limitsExtended": never;
+  "lss.reason.qso-selected": never;
+  "galaxyExposure.engineAdaptation": never;
+  "galaxyExposure.engineLoading": never;
+  "galaxyExposure.engineError": never;
+  "galaxyExposure.engineRetry": never;
+  "galaxyExposure.modelLimitOwnSpectrum": "file" | "id";
+  "hubbleHtl.reason.spectrum-continuation": never;
+  "galaxyExposure.catalogueReference": "value" | "workbook";
+  "galaxyExposure.continuationAdaptation": never;
+  "session.restoreResourcesError": never;
+  "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
 }

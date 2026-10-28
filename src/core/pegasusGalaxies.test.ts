@@ -76,7 +76,8 @@ describe('Pegasus acquisition definitions and Hubble.HTL rows',()=>{
   expect(galaxyDefinition(BASE).target).toMatchObject({id:BASE,recordIndex:23041,ra:PEGASUS_FIELD_DOMAIN.pointing.ra,dec:PEGASUS_FIELD_DOMAIN.pointing.dec});
   for(const t of cached.targets){const d=galaxyDefinition(t.id),view=(d.domain as unknown as {view:{policy:string;baseFieldId:string;pointing:{ra:number;dec:number}}}).view,identity=galaxyIdentity(t.id);
    expect(view).toEqual({policy:cached.viewPolicy,baseFieldId:BASE,pointing:{ra:identity.ra,dec:identity.dec}});expect(d.domain.pointing).toEqual(cached.baseFieldCenter);expect(()=>galaxyDomainFor(t.id)).toThrow();expect(()=>buildPinnedPegasusPopulation(d.domain)).toThrow();}
-  expect(GALAXY_TARGETS.map(t=>t.id).slice(-3)).toEqual([...ids]);
+  // Front F appends extended Hubble.HTL targets after the Pegasus three (hubbleEngineTargets.ts).
+  expect(GALAXY_TARGETS.map(t=>t.id).slice(5,8)).toEqual([...ids]);
  });
  it('Hubble.HTL entries 11–13 are supported on the 0.4 m only; their rounded coordinates are not the catalogue centres',()=>{
   for(const [i,id] of ids.entries()){const row=HUBBLE_HOT_LIST[10+i];

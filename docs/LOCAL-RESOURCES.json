@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1318 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus byte-exact CLEA_VStrs.dat and VarTypeHlp.TXT in public/original/variables (user approvals of 2026-10-26 and 2026-10-27, groups 1 and 2, recorded in AGENTS.md).",
+  "purpose": "Exact identity manifest for the 1346 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata, plus the derived Boötes engine pack (with the approved whole N3000 records 512620/512802) and its independent witness, plus Front F Object X spectroscopy: seven bounded GSC packs for the ObjectX.HTL spectroscopy targets (user approval of 2026-10-27, group 2), their provenance and independent witnesses, and byte-exact QSOSpect.dat (approval of 2026-10-27, group 1), plus byte-exact JSPEC2.SPI (approval of 2026-10-27, group 1) for the Object X star branch, plus the four byte-exact Object X galaxy photographs NGC2403/4262/4631/4656.BMP (user approval of 2026-10-28), plus the byte-exact jspect2 template A0000046.SP required by the Object X row-12 star N3000.DAT@483032 (user approval of 2026-10-27, group 1), plus data/objectx/frozen-observations.json (a derived regression record of the Object X spectrometer: digests and integers only), plus the Front V variable-star resources (see RESOURCE-PROVENANCE.json).",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6591,6 +6591,146 @@
       "path": "public/original/variables/VarTypeHlp.TXT",
       "bytes": 743,
       "sha256": "d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445"
+    },
+    {
+      "path": "data/hubble/existing-target-fingerprints.json",
+      "bytes": 110738,
+      "sha256": "d0670bd6e070157274fb59620b5ed2587b1aef57d03ec1c65270e9821adffeec"
+    },
+    {
+      "path": "data/hubble/umi-cached-provenance.json",
+      "bytes": 4311,
+      "sha256": "998dbe571d833475d0e5902291b8ec59987145f9080e9a2da518c959b4030c73"
+    },
+    {
+      "path": "data/hubble/umi-targets.json",
+      "bytes": 478,
+      "sha256": "eae25002fe6c52fa6c1bff0ee964597439c74efcdb4d93270688ff10f1c06980"
+    },
+    {
+      "path": "data/hubble/umi-distance-references.json",
+      "bytes": 181,
+      "sha256": "3373466c5fb6e8e3363178cbb94a8749d219b99eb00095ad7751adcf76e30ecc"
+    },
+    {
+      "path": "data/hubble/umi-independent-vectors.json",
+      "bytes": 810,
+      "sha256": "74a070cbb4f8b70a357e6ab67a8b230f2bdfecdc0b337f1f608c5f20e63dfda8"
+    },
+    {
+      "path": "public/original/catalogs/CLEA_QSO.DAT",
+      "bytes": 117988,
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5"
+    },
+    {
+      "path": "data/hubble/qso-merge-witnesses.json",
+      "bytes": 98081,
+      "sha256": "d3b5f31e8fa7b8029325b5a3f16aa246ec38a21c7cb122de773e22b1d46e8555"
+    },
+    {
+      "path": "data/hubble/engine-coma.json",
+      "bytes": 42477,
+      "sha256": "acae935c6dabe47149507b0011367dbf9f9b40d7fd8654062de9c42006ca9c26"
+    },
+    {
+      "path": "data/hubble/engine-targets.json",
+      "bytes": 12304,
+      "sha256": "07f99881b82d1e8bf84091b3d70e9820a4a4cdb913618a13e95699ccd8c952b7"
+    },
+    {
+      "path": "data/hubble/engine-bootes.json",
+      "bytes": 36549,
+      "sha256": "60f0ba0d27b1e782436a9626922c304743f11f62b05d8723fefc4f605a9d1e1f"
+    },
+    {
+      "path": "data/hubble/bootes-witnesses.json",
+      "bytes": 1677,
+      "sha256": "5dc769ec3e754ab3d095bed3703383902af06a12e7d51f5d3452aebd3ea9cbe4"
+    },
+    {
+      "path": "data/objectx/spectra-he0353.json",
+      "bytes": 49756,
+      "sha256": "c64967ad8be27a417af8fdee761b954703621bb2cf5bf2e9b4186ea593d69c94"
+    },
+    {
+      "path": "data/objectx/spectra-ngc2403.json",
+      "bytes": 105400,
+      "sha256": "c169cce1a15fc24edb8fa406afab9bbe6fa6b8b16f64efda97d8f10851855b21"
+    },
+    {
+      "path": "data/objectx/spectra-ngc4262.json",
+      "bytes": 77790,
+      "sha256": "b36a3be8aa57b2c2f1999fdb644105318bc710cda11a50f934c44216788e93e3"
+    },
+    {
+      "path": "data/objectx/spectra-ngc4449.json",
+      "bytes": 42568,
+      "sha256": "0d9bd737d8de5618aebad03aa62766393120e2432a77d8ee0e5ca2e98cdca24b"
+    },
+    {
+      "path": "data/objectx/spectra-3c273.json",
+      "bytes": 35352,
+      "sha256": "6c2b0ea905bae86c2d1b18711acd7b7070371106bc9dea0470291ef06cc118e1"
+    },
+    {
+      "path": "data/objectx/spectra-ngc4631.json",
+      "bytes": 46912,
+      "sha256": "dfa2e7f743275da9793c8d20af602ba43e5454d58b7fb7cc653507c26fc64df7"
+    },
+    {
+      "path": "data/objectx/spectra-hs1603.json",
+      "bytes": 49100,
+      "sha256": "19e85a8ad3f4c01e5273837b2c06db5b475a58bbfb92e89df1e62830aa8b2d4b"
+    },
+    {
+      "path": "data/objectx/witnesses.json",
+      "bytes": 9334,
+      "sha256": "8e26d56df2c23ac9efaca7d31ce9487247cea13a5bfb91c0f531c37d804ed2c6"
+    },
+    {
+      "path": "data/objectx/PROVENANCE.json",
+      "bytes": 5476,
+      "sha256": "faf846aef8225865cdb415390ecac3a69dc8e5085afd4c91f0dd999ffe2b85f8"
+    },
+    {
+      "path": "public/original/spectra/QSOSpect.dat",
+      "bytes": 49506,
+      "sha256": "7ab662914042f0cf9213b3e988834fc61d68f57751f89f9d69e46f06e7d7a9cd"
+    },
+    {
+      "path": "public/original/spectra/jspect2/JSPEC2.SPI",
+      "bytes": 3168,
+      "sha256": "5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa"
+    },
+    {
+      "path": "public/original/images/NGC2403.BMP",
+      "bytes": 75852,
+      "sha256": "d490142539a2dfaade1780d0ad73918076f15141ca6fc0f6f93ccb3f627e1394"
+    },
+    {
+      "path": "public/original/images/NGC4262.BMP",
+      "bytes": 3952,
+      "sha256": "ac967f4472d20e1ff2e8ac5f5b6dc20d643fea8305f800bf7271883940559ea1"
+    },
+    {
+      "path": "public/original/images/NGC4631.BMP",
+      "bytes": 53864,
+      "sha256": "0cba75c792d0aac7aa56541e958f87e3fe3e37f5893896e4fc12a84bad729d9e"
+    },
+    {
+      "path": "public/original/images/NGC4656.BMP",
+      "bytes": 76016,
+      "sha256": "0c94936472f13a87e26c5156e49ae491869f47818df61c8f94b6f0249601028d"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000046.SP",
+      "bytes": 55980,
+      "sha256": "ed50d12a757da8eb063188e6f2da3c7e7842a68b21c4eb4e35c5a1cff654414c"
+    },
+    {
+      "path": "data/objectx/frozen-observations.json",
+      "bytes": 13792,
+      "sha256": "311c596b14d8f68e0cfeeb5ec771988294894db483bdae843c991e5011d44872"
     }
   ]
 }

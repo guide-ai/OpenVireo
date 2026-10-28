@@ -9,13 +9,13 @@ import {nativeMergeNearest,type MergeCandidate,type MergeRecord,type MergeTrace}
  *   any constructor, curve or evaluation;
  * - 0x5986c0: a false result restores the 95-byte hit record; a runner prune already performed is NOT rolled back;
  *   0x5987a1: a false result skips the miss insertion.
- * Everything else (classes 0/1/2, zero period or word48, an unsafe saved index, a null lookup or a boundary needing more
+ * Everything else (classes 0/1/2, zero period or zero word48 (0x51ecb0 cmp WORD,0 / jne: any nonzero value, either sign), an unsafe saved index, a null lookup or a boundary needing more
  * precision) is rejected, never repaired. Number/Math is the declared adapter policy, not x87 equivalence. */
 export class VariableMergeError extends Error{
  constructor(readonly code:'record'|'table'|'variable-model-unsupported'|'dispatch-unsupported'|'unsafe-saved-index'|'native-null-lookup'|'precision-required'){super(`Native variable merge: ${code}`);this.name='VariableMergeError';}
 }
-/** CLEA_VStrs.dat 92-byte record layout of this contract: short strings name@0 (≤10) and classification@27 (≤11), Double
- * RA hours@11 and Dec degrees@19, Single magnitude@39, Extended period@62 and word@72 (record+0x48). */
+/** CLEA_VStrs.dat 92-byte record layout of this contract: short strings name@0 (≤10) and classification@27 (≤10: length byte + 10 characters at 27..37, PStrNCat 27 at 0x52ce11; flag byte at 38), Double
+ * RA hours@11 and Dec degrees@19, Single magnitude@39, Extended period@62 and word@72 (record+0x48, the signed 16-bit M−m/D word: FILD m16 at its read sites; 0x51ecb0 tests it for nonzero). */
 export const VARIABLE_RECORD_BYTES=92;
 export const VARIABLE_RECORD_OFFSETS=Object.freeze({name:0,raDouble:11,decDouble:19,classification:27,magnitudeSingle:39,periodExtended:62,word48:72});
 export type NativeVariable=Readonly<{recordIndex:number;name:string;ra:number;dec:number;classification:string;magnitude:number;periodNonzero:boolean;word48:number;rawHex:string}>;
@@ -37,7 +37,7 @@ export function decodeNativeVariableRecord(rawHex:string,recordIndex:number):Nat
  const raw=Uint8Array.from(rawHex.match(/../g)!,v=>parseInt(v,16)),view=new DataView(raw.buffer),o=VARIABLE_RECORD_OFFSETS;
  const ra=view.getFloat64(o.raDouble,true),dec=view.getFloat64(o.decDouble,true),magnitude=view.getFloat32(o.magnitudeSingle,true);
  if(!Number.isFinite(ra)||ra<0||ra>24||!Number.isFinite(dec)||Math.abs(dec)>90||!Number.isFinite(magnitude))throw new VariableMergeError('record');
- return Object.freeze({recordIndex,name:shortString(raw,o.name,10),ra,dec,classification:shortString(raw,o.classification,11),magnitude,periodNonzero:extendedNonzero(raw,o.periodExtended),word48:view.getUint16(o.word48,true),rawHex});
+ return Object.freeze({recordIndex,name:shortString(raw,o.name,10),ra,dec,classification:shortString(raw,o.classification,10),magnitude,periodNonzero:extendedNonzero(raw,o.periodExtended),word48:view.getInt16(o.word48,true),rawHex});
 }
 /** 0x4bc834: exact stored-string equality against the three recovered tables in their class order; default class 3. */
 export function nativeVariableClass(classification:string,tables:readonly VariableClassTable[]):0|1|2|3{
@@ -55,10 +55,23 @@ export type VariableMergeResult=Readonly<{
 /** One variable against the ordered stellar list. Distances are supplied explicitly (catalogMergeDistance, variable as query).
  * Hit: STRICT best·3600 < 30″. Returned rows are the merge rows: the hit star keeps its record unchanged (restored), a runner
  * pruned before the hit test stays removed, nothing is inserted on a miss. */
-export function nativeVariableFalseMerge(candidates:readonly MergeCandidate[],variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[]):VariableMergeResult{
+/** The time-update dispatch 0x51ec48..0x51ecdb as far as it returns false without any side effect (the path to 0x51ee57 only
+ * builds the classification string and its class): a zero period (0x51ec9a fcomp 0 / je), a zero word with a class other
+ * than 1 (0x51ecb0..0x51ecba), or class 3 (0x51eccb). Any other combination reaches a light-curve constructor (not modelled). */
+export function nativeVariableDispatchFalse(variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[]):boolean{
+ if(!variable||typeof variable!=='object'||typeof variable.periodNonzero!=='boolean'||!Number.isInteger(variable.word48)||variable.word48< -0x8000||variable.word48>0x7fff)throw new VariableMergeError('record');
+ const c=nativeVariableClass(variable.classification,tables);
+ return !variable.periodNonzero||variable.word48===0&&c!==1||c===3;
+}
+/** dispatch 'class-3' (default, the verified HI Peg contract): only class 3 with nonzero period and word. 'recovered' (Front F,
+ * Object X): any variable for which nativeVariableDispatchFalse holds; the merge itself is the same. */
+export function nativeVariableFalseMerge(candidates:readonly MergeCandidate[],variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[],dispatch:'class-3'|'recovered'='class-3'):VariableMergeResult{
  if(!variable||typeof variable!=='object')throw new VariableMergeError('record');
+ if(dispatch==='recovered'){if(!nativeVariableDispatchFalse(variable,tables))throw new VariableMergeError('variable-model-unsupported');}
+ else{
  if(nativeVariableClass(variable.classification,tables)!==3)throw new VariableMergeError('variable-model-unsupported');
- if(variable.periodNonzero!==true||!Number.isInteger(variable.word48)||variable.word48<=0||variable.word48>0xffff)throw new VariableMergeError('dispatch-unsupported');
+ if(variable.periodNonzero!==true||!Number.isInteger(variable.word48)||variable.word48===0||variable.word48< -0x8000||variable.word48>0x7fff)throw new VariableMergeError('dispatch-unsupported');
+ }
  const trace=nativeMergeNearest(candidates,0),arcseconds=trace.bestDistanceDegrees*3600;awayFromBoundary(arcseconds,30);
  if(arcseconds>=30)return Object.freeze({rows:trace.rows,trace,hit:false,classification:3 as const,timeUpdateResult:false as const,recordRestored:false,inserted:false as const,callerTarget:null});
  const target=trace.resolvedSavedIndex;if(!target)throw new VariableMergeError('native-null-lookup');

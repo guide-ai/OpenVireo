@@ -1,0 +1,172 @@
+{
+ "schema": 1,
+ "kind": "bounded derived field packs (openvireo-field-pack-v1) for the ObjectX.HTL spectroscopy targets; whole 27-byte GSC records only inside a target area (±0.375° Dec, ±0.375/(15 cos Dec) h RA), 8-byte position witnesses for the other probe/scan reads",
+ "approval": "User approval of 2026-10-27 (AGENTS.md, group 2): bounded GSC subsets (±0.375° per target area, with read witnesses and provenance) for the Object X spectroscopy targets in ObjectX.HTL. Bands used: N6000, N0730, N1500, N3730, N3000, N0000, S3730 (N1500 is needed by the NGC 4262 / N0730-00120 areas, which cross Dec +15°).",
+ "query": "Pointings: the exact binary64 ObjectX.HTL coordinates of rows 1, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13 (CLEA_Vireo.zip 58dc02a6…6778b, ObjectX.HTL fd9e68e4…858243b3); band order, binary-search probes and sequential scans of each pointing (0x5977e0/0x5978c0, 0x59ae16, 0x59af80..0x59b1f7).",
+ "sources": {
+  "archive": "CLEA_Vireo.zip 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b",
+  "binary": "CLEA_VEO.exe 781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "qso": "CLEA_QSO.DAT 69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+  "vstrs": "CLEA_VStrs.dat 55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+  "glimages": "GLIMAGES.LST fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01"
+ },
+ "credits": "Project CLEA, Gettysburg College (originator); NSF and Gettysburg College (supporters). GSC source-specific terms remain uncertain. Not the full GSC or any complete band.",
+ "witnesses": "data/objectx/witnesses.json: independent Python model (static reads) of band order, initial stars, QSO merge and galaxy cleanup.",
+ "packs": {
+  "data/objectx/spectra-he0353.json": {
+   "id": "objectx-he0353",
+   "bytes": 49756,
+   "sha256": "c64967ad8be27a417af8fdee761b954703621bb2cf5bf2e9b4186ea593d69c94",
+   "bands": {
+    "S3730": {
+     "reads": 1642,
+     "wholeRecords": 119,
+     "sha256": "d48a3bc984b150f91085bc6c0098b7d22c40f38ec402a854151a638518318482",
+     "recordCount": 1050344
+    }
+   },
+   "pointings": [
+    {
+     "ra": 3.9194166666666668,
+     "dec": -39.174166666666665
+    }
+   ]
+  },
+  "data/objectx/spectra-ngc2403.json": {
+   "id": "objectx-ngc2403",
+   "bytes": 105400,
+   "sha256": "c169cce1a15fc24edb8fa406afab9bbe6fa6b8b16f64efda97d8f10851855b21",
+   "bands": {
+    "N6000": {
+     "reads": 3193,
+     "wholeRecords": 398,
+     "sha256": "59ee42b0af17b06eaf15ff3d490d848e4cebca0e82096c6c5ebc10cb5dbd4a5d",
+     "recordCount": 522879
+    }
+   },
+   "pointings": [
+    {
+     "ra": 7.614058333333333,
+     "dec": 65.60266666666666
+    },
+    {
+     "ra": 7.617669444444444,
+     "dec": 65.49627777777778
+    }
+   ]
+  },
+  "data/objectx/spectra-ngc4262.json": {
+   "id": "objectx-ngc4262",
+   "bytes": 77790,
+   "sha256": "b36a3be8aa57b2c2f1999fdb644105318bc710cda11a50f934c44216788e93e3",
+   "bands": {
+    "N0730": {
+     "reads": 1221,
+     "wholeRecords": 87,
+     "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1",
+     "recordCount": 1058393
+    },
+    "N1500": {
+     "reads": 1361,
+     "wholeRecords": 32,
+     "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55",
+     "recordCount": 1027626
+    }
+   },
+   "pointings": [
+    {
+     "ra": 12.3138,
+     "dec": 14.79738888888889
+    },
+    {
+     "ra": 12.325188888888889,
+     "dec": 14.87725
+    }
+   ]
+  },
+  "data/objectx/spectra-ngc4449.json": {
+   "id": "objectx-ngc4449",
+   "bytes": 42568,
+   "sha256": "0d9bd737d8de5618aebad03aa62766393120e2432a77d8ee0e5ca2e98cdca24b",
+   "bands": {
+    "N3730": {
+     "reads": 1307,
+     "wholeRecords": 134,
+     "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+     "recordCount": 1001166
+    }
+   },
+   "pointings": [
+    {
+     "ra": 12.469711111111112,
+     "dec": 44.09261111111111
+    },
+    {
+     "ra": 12.479408333333334,
+     "dec": 44.211305555555555
+    }
+   ]
+  },
+  "data/objectx/spectra-3c273.json": {
+   "id": "objectx-3c273",
+   "bytes": 35352,
+   "sha256": "6c2b0ea905bae86c2d1b18711acd7b7070371106bc9dea0470291ef06cc118e1",
+   "bands": {
+    "N0000": {
+     "reads": 1066,
+     "wholeRecords": 123,
+     "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+     "recordCount": 1165987
+    }
+   },
+   "pointings": [
+    {
+     "ra": 12.485194444444444,
+     "dec": 2.0522222222222224
+    }
+   ]
+  },
+  "data/objectx/spectra-ngc4631.json": {
+   "id": "objectx-ngc4631",
+   "bytes": 46912,
+   "sha256": "dfa2e7f743275da9793c8d20af602ba43e5454d58b7fb7cc653507c26fc64df7",
+   "bands": {
+    "N3000": {
+     "reads": 1426,
+     "wholeRecords": 155,
+     "sha256": "2cb76117cc1c7fda678f2b78bb7430f3222cb14c891b9a7ed926697d52efc8c6",
+     "recordCount": 1033677
+    }
+   },
+   "pointings": [
+    {
+     "ra": 12.702163888888888,
+     "dec": 32.54080555555556
+    },
+    {
+     "ra": 12.742680555555555,
+     "dec": 32.33797222222222
+    }
+   ]
+  },
+  "data/objectx/spectra-hs1603.json": {
+   "id": "objectx-hs1603",
+   "bytes": 49100,
+   "sha256": "19e85a8ad3f4c01e5273837b2c06db5b475a58bbfb92e89df1e62830aa8b2d4b",
+   "bands": {
+    "N3730": {
+     "reads": 1534,
+     "wholeRecords": 140,
+     "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+     "recordCount": 1001166
+    }
+   },
+   "pointings": [
+    {
+     "ra": 16.082055555555556,
+     "dec": 38.20388888888889
+    }
+   ]
+  }
+ }
+}

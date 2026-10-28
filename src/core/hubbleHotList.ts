@@ -7,6 +7,7 @@
  * here. The rounded HTL coordinates are never the catalogue centre and cannot certify acquisition: the supported pointing is the
  * exact catalogue centre of the acquisition target. Exact identity only (no case/space folding or coordinate tolerance). */
 import type {HtlFields} from './hotList';
+import {hubbleExtendedTarget} from './hubbleEngineTargets';
 import type {Pointing} from './sky';
 
 export const HUBBLE_HTL=Object.freeze({
@@ -15,24 +16,29 @@ export const HUBBLE_HTL=Object.freeze({
  archiveSha256:'58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b',archiveMember:'program files/CLEA/VIREO/Hubble.HTL',
 });
 /** Missing dependency, by the phase-2 plan's dependency table (D1..D5). */
-export type HubbleUnavailableReason='photographic-image'|'qso-merge'|'variable-qso-merge'|'variable-merge';
+/** spectrum-continuation (Front F M5): the field is prepared (RS Boo outside the view, QSO merged) but at z ≈ 0.13 the shifted
+ * fallback template starts above 4000 Å; the recovered blue continuation draws uniforms whose order relative to the exposure's own
+ * random stream (Go 0x50f484) is not recovered, so no acquisition is offered. */
+export type HubbleUnavailableReason='photographic-image'|'qso-merge'|'variable-qso-merge'|'variable-merge'|'spectrum-continuation';
 type Common=Readonly<{index:number;id:string;remarks:string;ra:number;dec:number;recordSha256:string;catalogIndex:number}>;
-export type HubbleSupportedRow=Common&Readonly<{supported:true;targetId:string;route:'fresh'|'cached';telescopes:readonly (0|1|2)[]}>;
+export type HubbleSupportedRow=Common&Readonly<{supported:true;targetId:string;route:'fresh'|'cached'|'engine';telescopes:readonly (0|1|2)[]}>;
 export type HubbleUnavailableRow=Common&Readonly<{supported:false;reason:HubbleUnavailableReason}>;
 export type HubbleHotListRow=HubbleSupportedRow|HubbleUnavailableRow;
 
-type Support=readonly ['fresh'|'cached',string,readonly (0|1|2)[]]|HubbleUnavailableReason;
+type Support=readonly ['fresh'|'cached'|'engine',string,readonly (0|1|2)[]]|HubbleUnavailableReason;
 // F: fresh on all three verified telescopes; F0: fresh, verified on the 0.4 m only (Pegasus); C: cached pan, 0.4 m only.
+// E: Front F general-field-engine target, verified on the telescopes recorded in data/hubble/engine-targets.json.
+const E=(id:string):Support=>['engine',id,hubbleExtendedTarget(id)!.telescopes];
 const F=(id:string):Support=>['fresh',id,[0,1,2]],F0=(id:string):Support=>['fresh',id,[0]],C=(id:string):Support=>['cached',id,[0]];
 // [id, remarks, RA hours, Dec degrees, HTL record SHA-256, CLEA_GLX.DAT record index, support], file order.
 const SOURCE:readonly (readonly [string,string,number,number,string,number,Support])[]=[
  ['36747','UM-I - 1',11.781055555555556,55.705,'5040db24814e531adccca759962128f1cca7e810cbe9e8b05119a93d7f6e97b2',12109,F('36747')],
  ['36773','UM-I - 2',11.789325,55.69,'131b6eeb84fa6c9951d2226ffcfd153212b5472f00ac3b8c69cc8ca54b1ff683',12119,F('36773')],
- ['36805','UM-I - 3',11.796,55.772777777777776,'d7e7cab363a46f3557ee7f3947b357964ffbcc8b6653cc69d87a7859cd0c0e7e',12127,'photographic-image'],
- ['NGC 4874','Coma - 1',12.993091666666666,27.96,'081df31bf88ccf7e2ee9e8227d606229e8e9786b6512c43904f929e5426da092',15036,'qso-merge'],
- ['NGC 4889','Coma - 2',13.002297222222222,27.977777777777778,'30ace048d3d55492487052d9d4ac9a4979fde4c331ab68e7b6e1923cf9d68698',15074,'qso-merge'],
- ['51976','Boo - 1',14.545630555555556,31.563333333333333,'e9ab7d6b43540c5ba8602b02848211d35f1f5ef3a4a121c649bc7dca0d19f69b',17656,'variable-qso-merge'],
- ['51975','Boo - 2',14.545666666666667,31.598333333333333,'fbffdb6104dc83d657a2567e9b74710bb1bce1bb32bddc0cb505bc69e98414ae',17657,'variable-qso-merge'],
+ ['36805','UM-I - 3',11.796,55.772777777777776,'d7e7cab363a46f3557ee7f3947b357964ffbcc8b6653cc69d87a7859cd0c0e7e',12127,C('36805')],
+ ['NGC 4874','Coma - 1',12.993091666666666,27.96,'081df31bf88ccf7e2ee9e8227d606229e8e9786b6512c43904f929e5426da092',15036,E('NGC 4874')],
+ ['NGC 4889','Coma - 2',13.002297222222222,27.977777777777778,'30ace048d3d55492487052d9d4ac9a4979fde4c331ab68e7b6e1923cf9d68698',15074,E('NGC 4889')],
+ ['51976','Boo - 1',14.545630555555556,31.563333333333333,'e9ab7d6b43540c5ba8602b02848211d35f1f5ef3a4a121c649bc7dca0d19f69b',17656,E('51976')],
+ ['51975','Boo - 2',14.545666666666667,31.598333333333333,'fbffdb6104dc83d657a2567e9b74710bb1bce1bb32bddc0cb505bc69e98414ae',17657,E('51975')],
  ['54875','CorBor - 1',15.3735,27.740833333333335,'d17030ebae9408e3ce1b08b2c7a3f2d62ea9ff94ac63b5438feb9bd7134b6cde',18485,C('54875')],
  ['54876','CorBor - 2',15.3735,27.7225,'b65bdceea2978851d24409faaa7c072639d0afab6c5092fe0659eb71365d7c64',18484,F('54876')],
  ['54891','CorBor - 3',15.378480555555555,27.672777777777778,'f4c2e7a14197d885d47c74d945e7907fe934808291679fc95d36515addf4c7b7',18493,C('54891')],

@@ -1,0 +1,74 @@
+{
+ "schema": 1,
+ "kind": "independent Python witness of the Bootes fields under the outside-view variable rule (static reads)",
+ "sources": {
+  "exe": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "glx": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+  "qso": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+  "vstrs": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de"
+ },
+ "pointings": [
+  {
+   "glxIndex": 17656,
+   "pointing": {
+    "ra": 14.545666666666667,
+    "dec": 31.56361111111111
+   },
+   "variable": 10908,
+   "hitId": "N3000.DAT@513122",
+   "hitArcseconds": 1.8629649295038204,
+   "resolvedId": "N3000.DAT@513131",
+   "removedRunner": [
+    "N3000.DAT@513119"
+   ],
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1656",
+     "insert",
+     65
+    ]
+   ],
+   "finalStars": 103,
+   "finalStarIdsSHA256": "fe514fc7c4c9a113f05a4c17231e9138b32e89ad0db32d6c62dd34fcf55c1dc8",
+   "galaxies": [
+    17640,
+    17651,
+    17656,
+    17657,
+    17684
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "glxIndex": 17657,
+   "pointing": {
+    "ra": 14.545666666666667,
+    "dec": 31.596944444444443
+   },
+   "variable": 10908,
+   "hitId": "N3000.DAT@513122",
+   "hitArcseconds": 1.8629649295038204,
+   "resolvedId": "N3000.DAT@513131",
+   "removedRunner": [
+    "N3000.DAT@513119"
+   ],
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1656",
+     "insert",
+     65
+    ]
+   ],
+   "finalStars": 104,
+   "finalStarIdsSHA256": "bdd85b9be9c06ac9f0d1dc27026d5313bbc04302b48d4f07da1232db002deba3",
+   "galaxies": [
+    17640,
+    17651,
+    17656,
+    17657,
+    17684
+   ],
+   "deletedGalaxies": []
+  }
+ ]
+}

@@ -13,7 +13,7 @@ function record(o:{name?:string;cls?:string;ra?:number;dec?:number;magnitude?:nu
  raw[0]=name.length;for(let i=0;i<name.length;i++)raw[1+i]=name.charCodeAt(i);
  v.setFloat64(11,o.ra??23.17,true);v.setFloat64(19,o.dec??7.6,true);
  raw[27]=cls.length;for(let i=0;i<cls.length;i++)raw[28+i]=cls.charCodeAt(i);
- v.setFloat32(39,o.magnitude??11.5,true);(o.period??ONE).forEach((b,i)=>raw[62+i]=b);v.setUint16(72,o.word??1,true);
+ v.setFloat32(39,o.magnitude??11.5,true);(o.period??ONE).forEach((b,i)=>raw[62+i]=b);v.setInt16(72,o.word??1,true);
  return raw;
 }
 const hex=(raw:Uint8Array)=>Array.from(raw,b=>b.toString(16).padStart(2,'0')).join('');
@@ -43,6 +43,16 @@ describe('CLEA_VStrs.dat 92-byte record decoding',()=>{
   expect(v).toMatchObject({recordIndex:4,name:'HI Peg',classification:'EA/SD',ra:23.1,dec:7.5,magnitude:12.25,periodNonzero:true,word48:7});
   expect(decodeNativeVariableRecord(hex(record({period:Array(10).fill(0)})),0).periodNonzero).toBe(false);
   expect(decodeNativeVariableRecord(hex(record({period:[0,0,0,0,0,0,0,0,0,0x80]})),0).periodNonzero).toBe(false);
+ });
+ it('reads the M−m/D word as signed 16-bit and dispatches any nonzero value (0x51ecb0 cmp WORD,0 / jne)',()=>{
+  expect(decodeNativeVariableRecord(hex(record({word:-3})),0).word48).toBe(-3);
+  expect(decodeNativeVariableRecord(hex(record({word:-0x8000})),0).word48).toBe(-0x8000);
+  expect(nativeVariableFalseMerge([star('A',.001)],{...supported,word48:-3},tables).hit).toBe(true);
+  expect(code(()=>nativeVariableFalseMerge([star('A',.001)],{...supported,word48:0x8000},tables))).toBe('dispatch-unsupported');
+ });
+ it('bounds the classification at 10 characters (length byte at 27, characters 28..37, flag byte at 38)',()=>{
+  expect(decodeNativeVariableRecord(hex(record({cls:'ABCDEFGHIJ'})),0).classification).toBe('ABCDEFGHIJ');
+  const eleven=record();eleven[27]=11;expect(code(()=>decodeNativeVariableRecord(hex(eleven),0))).toBe('record');
  });
  it('rejects malformed records instead of guessing',()=>{
   const long=record();long[0]=11;

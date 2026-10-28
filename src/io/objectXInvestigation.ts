@@ -46,6 +46,8 @@ export type ObjectXInvestigation=Readonly<{
  orbitFile:BundledOrbitFileId;id:string;target:string|null;startUtc:string;clockSet:boolean;listJd:number|null;limit:number;
  exposures:readonly ObjectXExposure[];images:readonly ObjectXImageRef[];measure:Readonly<{first:number;second:number}>|null;log:MeasurementLog;
  answer:ObjectXKind|null;description:string;revealed:boolean;
+ /** Kept spectra (io/objectXSpectra.ts). Not part of this v28 section: saved and restored by the v29 wrapper. */
+ spectra?:readonly import('./objectXSpectra').ObjectXSpectrumRecord[];
 }>;
 /** Where restore gets the orbit file (browser: same-origin, size/SHA-checked; tests: the repository files). */
 export type ObjectXResources=Readonly<{orbit:(id:BundledOrbitFileId)=>Promise<Uint8Array>;catalog?:CameraCatalogOptions}>;

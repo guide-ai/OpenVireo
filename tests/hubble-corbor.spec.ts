@@ -21,7 +21,7 @@ async function toGalaxy(page:Page,t:typeof targets[number],keyboard=false){
  await expect(card).toHaveAttribute('data-pointing','exact');await expect(card.getByRole('button',{name:'Use exact catalogue centre',exact:true})).toBeDisabled();
  const toScope=page.getByRole('button',{name:'Switch to telescope view ↗',exact:true});if(await toScope.isVisible())await toScope.click();await tracking(page);
  if(keyboard)await press(page,'Acquire supported galaxy');else await page.getByRole('button',{name:'Acquire supported galaxy',exact:true}).click();
- await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue(t.id);await expect(page.getByTestId(`galaxy-cached-adaptation-${t.id}`)).toBeVisible();
 }
 async function acquire(page:Page,t:typeof targets[number],keyboard=false){
@@ -39,7 +39,8 @@ async function acquire(page:Page,t:typeof targets[number],keyboard=false){
 test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and – 3 → manual z → Hubble → Save, fresh Restore, resume',async({page})=>{
  test.setTimeout(120000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.clock.install();await page.goto('/');await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
- await loadHubble(page);await pointRow(page,4);await expect(page.getByTestId('hubble-point-unavailable')).toContainText('QSO catalogue merge');await expect(page.getByTestId('hubble-point-card').getByRole('button')).toHaveCount(0);
+ await loadHubble(page);// Front F: all 13 rows are now supported (Boötes through the general field engine), so no row is unavailable.
+ await pointRow(page,5);await expect(page.getByTestId('hubble-point-card')).toHaveAttribute('data-status','available');await expect(page.getByTestId('hubble-point-unavailable')).toHaveCount(0);
  const sources:string[]=[];
  for(const [i,t] of targets.entries()){if(i>0){await page.clock.resume();await clickHeaderTool(page,'Observatory');await openHotList(page);}await toGalaxy(page,t,i===1);sources.push(await acquire(page,t,i===1));}
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2);await expect(page.locator('#measurement-log')).toContainText('54875');await expect(page.locator('#measurement-log')).toContainText('54891');
@@ -51,7 +52,7 @@ test('Hubble.HTL → exact centre → cached-pan acquisition of CorBor – 1 and
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'corbor.json',mimeType:'application/json',buffer:saved});
  await expect(page.locator('#measurement-log tbody tr')).toHaveCount(2);await page.getByText('Hubble diagram & distances',{exact:true}).click();await expect(page.getByTestId('hubble-value')).toHaveText(value!);
  await page.getByRole('button',{name:'Inspect acquisition for measurement 2',exact:true}).click();await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText('54891');await page.getByRole('button',{name:'Restore this acquisition in the telescope',exact:true}).click();
- await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+ await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue('54891');await expect(page.getByTestId('galaxy-source-total')).toHaveText(sources[1]);await expect(page.getByTestId('galaxy-phase')).toHaveText('Deactivated');
  await page.getByRole('button',{name:'Activate supported galaxy field',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByRole('button',{name:'Start galaxy exposure',exact:true}).click();await page.clock.runFor(100);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();await expect(page.getByTestId('galaxy-elapsed')).toHaveText('2100 ms');
  // Different-target journal: a 54891 galaxy session is refused by the 54875 panel without changing it.

@@ -162,7 +162,8 @@ test('hidden identity, two images of the target with asteroids, measure, answer,
 test('the radio and spectrometer branches, the guide, and light/dark at desktop and 320 px never name the object',async({page})=>{
  await openLab(page);
  await page.getByTestId('objectx-target').selectOption('X-Z2YY7');
- await expect(page.getByTestId('objectx-spectrum-unavailable')).toContainText('Not available yet');
+ await button(page,'Place the slit on the object').click();
+ await expect(page.getByTestId('objectx-spectrum-unavailable')).toContainText('No spectrum can be recorded at these coordinates',{timeout:60_000});
  await clickHeaderTool(page,'Object X guide');
  const guide=page.getByTestId('objectx-guide');await expect(guide).toBeVisible();
  await expect(guide.getByTestId('objectx-guide-step-target')).toHaveAttribute('data-done','true');

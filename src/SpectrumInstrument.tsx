@@ -13,7 +13,8 @@ import {loadClassificationSources} from './io/classificationSources';
 import {classificationWorkspaceUsed,readClassificationWorkspace,EMPTY_CLASSIFICATION_WORKSPACE,type ClassificationWorkspace} from './core/classification';
 import type {StarObservation} from './io/starObservation';
 import {hubbleLabProgress,type HubbleLabProgress} from './core/hubbleLab';
-import {MAX_ACQUISITION_ARCHIVE,MAX_ARCHIVE_EVENTS} from './core/acquisitionArchive';
+import {galaxyStateDefinition} from './core/galaxyExposure';
+import {EXTENDED_MAX_ACQUISITION_ARCHIVE,MAX_ARCHIVE_EVENTS} from './core/acquisitionArchive';
 import { t, formatNumber, fixed, scientific } from './i18n';
 import {acquisitionObjectId,acquisitionReference,acquiredSpectrumBytes,type AcquisitionObservation} from './io/acquisitionObservation';
 import VelocityAnalysis from './VelocityAnalysis';
@@ -23,7 +24,7 @@ import {EMPTY_HUBBLE,type HubbleWorkspace} from './core/hubbleAnalysis';
 import { useEffect, useImperativeHandle, useMemo, useRef, useState, type ChangeEvent, type Ref } from 'react';
 import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTROL, MAX_FILE_BYTES, measurementCsv, moveControl, parseLines, parseSpectrum, rebase, shiftedWavelength, type Measurement, type Sample } from './core/spectrum';
 import { readImportedSpectrum } from './io/spectrumFiles';
-import { MAX_SESSION_ROWS, readInvestigationSession, serializeAnalysisSession, type SessionObservation, type ObservatorySession } from './io/analysisSession';
+import { AnalysisSessionError, MAX_SESSION_ROWS, readInvestigationSession, serializeAnalysisSession, type SessionObservation, type ObservatorySession } from './io/analysisSession';
 import {LssSessionError,type LssInvestigation} from './io/lssInvestigation';
 import {ObjectXSessionError,type ObjectXInvestigation} from './io/objectXInvestigation';
 import {OBJECT_X_SESSION_EN} from './objectx/ObjectXMessages';
@@ -73,7 +74,8 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
     if(busy)throw errorFor('continuity.busy');
     if(observation?.kind&&observation.acquisitionId===packet.acquisitionId){setError('');setNotice(t('continuity.sameSnapshot'));return;}
     const next=acquisitions.some(a=>a.acquisitionId===packet.acquisitionId)?acquisitions:[...acquisitions,packet];
-    if(next.length>MAX_ACQUISITION_ARCHIVE||next.reduce((n,a)=>n+a.state.events.length,0)>MAX_ARCHIVE_EVENTS)throw errorFor('continuity.archiveFull');
+    // Front F: more than 12 acquisitions are saved only in the v29 wrapper (analysisSession.ts).
+    if(next.length>EXTENDED_MAX_ACQUISITION_ARCHIVE||next.reduce((n,a)=>n+a.state.events.length,0)>MAX_ARCHIVE_EVENTS)throw errorFor('continuity.archiveFull');
     generation.current++;recordDialog.current?.close();setConfirm(false);setDraft(null);
     setAcquisitions(next);setObservation(packet);setObject(acquisitionObjectId(packet));setReference(acquisitionReference(packet));setWide(false);setControl(INITIAL_CONTROL);setStepInput('');setError('');setNotice(t(packet.kind==='catalog-star-acquisition'?'continuity.received':'galaxyExposure.received'));
   }
@@ -192,7 +194,7 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
       setAcquisitions(saved.acquisitions??[]);setObservation(saved.observation);setControl(saved.control);setStepInput(saved.stepInput);setReference(saved.reference);
       setObject(saved.object);setRows(saved.rows);setHubble(saved.hubble);setWide(saved.wide);nextId.current=(saved.rows.at(-1)?.id??0)+1;
       setNotice(t('session.restored'));return true;
-    } catch {if(ticket===generation.current)setError(t('session.restoreError'));return false;}
+    } catch(e) {if(ticket===generation.current)setError(t(e instanceof AnalysisSessionError&&e.code==='resources'?'session.restoreResourcesError':'session.restoreError'));return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
   function cancelSessionOperation(){generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}
@@ -200,7 +202,7 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
   return <div className="app-shell">
     <aside className="sidebar analyzer-sidebar"><a className="brand" href="#spectrum" aria-label={t('spectrum.home')}><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="currentColor"/><path d="M6 25 27 9M10 9l17 17M18 3v30M3 18h30" fill="none" stroke="currentColor"/></svg><span>{t('app.name')}<span className="brand-web"></span></span></a><div className="sidebar-label">{t('spectrum.sidebarTitle')}</div><nav aria-label={t('spectrum.tools')}><a href="#spectrum" className="nav-active"><span>◌</span> {t('spectrum.spectra')}</a><a href="#measurement-log"><span>▤</span> {t('spectrum.log')} <b>{rows.length}</b></a><button onClick={() => evidence.current?.showModal()}><span>⌘</span> {t('spectrum.evidence')}</button></nav><div className="sidebar-bottom"><span className="local-dot"/> {t('spectrum.localSession')}<span className="subtle">{t('spectrum.noServices')}</span></div></aside>
     <main id="spectrum"><header className="topbar"><div><span className="breadcrumb">{t(isStar?'spectrum.stellarEdition':'spectrum.hubbleEdition')}</span><span className="stage-pill">{t('spectrum.stage')}</span></div><button className="text-button" onClick={() => evidence.current?.showModal()}>{t('spectrum.about')}</button></header>
-    {isAcquired&&<section className="library-context acquisition-context" aria-label={t(isStar?'continuity.provenance':'galaxyExposure.provenance')}><strong>{isStar?t('continuity.acquiredStar'):t('galaxyExposure.acquired',{id:observation.targetId})}</strong>{isGalaxy&&<p>{t('galaxyExposure.modelLimit',{id:observation.targetId})}</p>}<button className="secondary-button" disabled={busy} onClick={()=>onRestoreAcquisition?.(observation)}>{t('continuity.restoreExposure')}</button><p>{t('continuity.restoreHelp')}</p>{isStar&&<button className="secondary-button" disabled={busy} onClick={()=>onClassifyAcquisition?.(observation)}>{t('classLink.open')}</button>}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('continuity.context',{time:observation.state.exposure.elapsedMs,seed:observation.state.exposure.seed,draws:observation.state.exposure.draws})}</p><p>{t('continuity.normalized')}</p></details></section>}
+    {isAcquired&&<section className="library-context acquisition-context" aria-label={t(isStar?'continuity.provenance':'galaxyExposure.provenance')}><strong>{isStar?t('continuity.acquiredStar'):t('galaxyExposure.acquired',{id:observation.targetId})}</strong>{isGalaxy&&<p>{((d:{sourceFile?:string})=>d.sourceFile&&d.sourceFile!=='GLXYTMPL.SP'?t('galaxyExposure.modelLimitOwnSpectrum',{id:observation.targetId,file:d.sourceFile}):t('galaxyExposure.modelLimit',{id:observation.targetId}))(galaxyStateDefinition(observation.state) as {sourceFile?:string})}</p>}<button className="secondary-button" disabled={busy} onClick={()=>onRestoreAcquisition?.(observation)}>{t('continuity.restoreExposure')}</button><p>{t('continuity.restoreHelp')}</p>{isStar&&<button className="secondary-button" disabled={busy} onClick={()=>onClassifyAcquisition?.(observation)}>{t('classLink.open')}</button>}<details className="research-notes"><summary>{t('notes.summary')}</summary><p>{t('continuity.context',{time:observation.state.exposure.elapsedMs,seed:observation.state.exposure.seed,draws:observation.state.exposure.draws})}</p><p>{t('continuity.normalized')}</p></details></section>}
     <section className="page-heading"><div className="eyebrow">{t('spectrum.eyebrow')}</div><h1 tabIndex={-1}>{isStar?t('continuity.title'):isGalaxy?t('galaxyExposure.analysisTitle'):t('spectrum.title')}<span>.</span></h1><p>{isStar?t('continuity.intro'):isGalaxy?t('galaxyExposure.analysisIntro'):t('spectrum.intro')}</p></section>
     <div className="workspace"><div className="left-column"><section className="instrument card"><div className="card-heading"><div><div className="eyebrow">{t('spectrum.bench')}</div><h2>{t('spectrum.spectrumLines')}</h2></div><span className={'status-badge '+(observation ? 'loaded' : '')}>{observation ? isStar?t('continuity.acquiredBadge'):isGalaxy?t('galaxyExposure.acquiredBadge'):t('spectrum.importedData') : t('spectrum.originalReference')}</span></div>
       <div className="plot-toolbar"><div className="legend"><span><i className="ref-key"/> {isStar?t('continuity.template'):isGalaxy?t('galaxyExposure.restTemplate'):library ? t('spectrum.scaledLibrary') : t('spectrum.template')}</span>{observation && <span><i className="obs-key"/> {observation.name}</span>}<span><i className="line-key"/> {t('spectrum.shiftedLines')}</span></div><button className="plot-button" onClick={() => setWide(v => !v)} aria-pressed={wide}>{wide ? t('spectrum.hkView') : t('spectrum.fullView')}</button></div>

@@ -10,6 +10,7 @@ import second from '../../data/hubble/galaxy-54876-vectors.json';
 import {activateGalaxy,createGalaxyExposure,galaxyDefinition,galaxyPolicyDefinition,pauseGalaxy,replayGalaxy,startGalaxy,tickGalaxy,verifiedGalaxyConfiguration,galaxyTelescopeIndex} from './galaxyExposure';
 import {GALAXY_FIELD_REGISTRY,buildPinnedGalaxyPopulation,galaxyDomainFor,type NativeGalaxy} from './pinnedGalaxyField';
 import {galaxyDistanceReference,GALAXY_TARGETS} from './galaxyIdentity';
+import {isHubbleEngineId} from './hubbleEngineTargets';
 import {galaxyCatalogAxes} from './galaxyCatalogAxes';
 import {galaxyStampGeometry,paintAdaptedGalaxy} from './galaxyScene';
 import {galaxyTargetTelescopeSupported} from './galaxyTelescope';
@@ -22,7 +23,8 @@ const relative=(a:number,b:number)=>Math.abs(a/b-1);
 const trajectories:readonly {seed:number;deltas:readonly number[]}[]=[{seed:1,deltas:[1000]},{seed:2,deltas:Array(10).fill(100)},{seed:4294967295,deltas:[16,17,16,17,934]},{seed:123456789,deltas:Array(10).fill(1000)},{seed:2037932076,deltas:[1,999,0,1000]}];
 describe('CorBor – 1/3 through the recovered cached-pan view of the verified 54876 field (0.4 m only)',()=>{
  it('registers only verified descriptors and keeps the base field domain unchanged',()=>{
-  expect(GALAXY_FIELD_REGISTRY.map(d=>d.id).sort()).toEqual(GALAXY_TARGETS.map(t=>t.id).sort());
+  // Front F engine targets have no pinned field descriptor (hubbleEngineTargets.ts registers them asynchronously).
+  expect(GALAXY_FIELD_REGISTRY.map(d=>d.id).sort()).toEqual(GALAXY_TARGETS.map(t=>t.id).filter(id=>!isHubbleEngineId(id)).sort());
   expect(GALAXY_FIELD_REGISTRY.filter(d=>d.kind==='cached'&&['54875','54891'].includes(d.id)).map(d=>d.kind==='cached'?[d.id,d.baseId,d.recordIndex]:[])).toEqual([['54875','54876',18485],['54891','54876',18493]]);
   for(const t of cached.targets){
    expect(()=>galaxyDomainFor(t.id)).toThrow();const d=galaxyDefinition(t.id);
