@@ -6,7 +6,7 @@ Actualizado el 27 oct 2026. Las decisiones aprobadas también constan en `AGENTS
 
 | Tema | Decisión |
 |---|---|
-| Catálogo de las cámaras CCD/IR | El servicio original (`http://www.nofs.navy.mil/cgi-bin/vo_cone.cgi`) no respondió el 27 oct 2026, así que ni el CLEA original puede tomar imágenes hoy. Se sustituye por CDS/VizieR, NOMAD (I/297) y USNO-B1 (I/284), con dos modos: **(A)** extractos estáticos acotados para los campos de los ejercicios, publicados con su consulta, fecha, hash y las citas de CDS/VizieR y del catálogo; **(B)** consulta en vivo desde el navegador para cualquier campo, como hacía el original. VizieR respondió con `Access-Control-Allow-Origin: *`, así que no hace falta backend propio. |
+| Catálogo de las cámaras CCD/IR | El servicio original (`http://www.nofs.navy.mil/cgi-bin/vo_cone.cgi`) no respondió el 27 oct 2026, así que ni el CLEA original puede tomar imágenes hoy. Se sustituye por CDS/VizieR, NOMAD (I/297) y USNO-B1 (I/284), con dos modos: **(A)** extractos estáticos acotados para los campos de los ejercicios, publicados con su consulta, fecha, hash y las citas de CDS/VizieR y del catálogo; **(B)** consulta en vivo desde el navegador para cualquier campo, como hacía el original. VizieR respondió con `Access-Control-Allow-Origin: *`, así que no hace falta backend propio. El espejo oficial de CfA (`vizier.cfa.harvard.edu`) queda cubierto por la misma aprobación (27 oct 2026), registrando en la procedencia qué host sirvió cada extracto o respuesta. |
 | Datos de Object X | Se aprueban `Orbit/ObjX_AST.CMO` (4 750 326 B) y `Orbit/ObjX_MPC.CMO` (30 989 466 B), byte a byte. Los hashes están en `AGENTS.md`. |
 | GSC para LSS | Subconjuntos acotados de N2230/N3000, solo para la franja LSS. |
 
