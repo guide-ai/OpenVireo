@@ -64,9 +64,15 @@ type Derived=Readonly<{investigation:LssInvestigation;digest:string}>;
 /** The last verified payload (exact text): Save's self-check restore of the same bytes does not verify them twice. */
 let lastVerified:Readonly<{text:string;result:Derived}>|null=null;
 /** Validates, replays and re-derives a stored payload. Returns the investigation and the digest of its derivatives. */
-async function derive(value:unknown):Promise<Derived>{
- const text=JSON.stringify(value);
- if(text.length>LSS_SESSION_LIMITS.bytes)fail('bounds');
+/** Front T: per-record observatory-clock JD frozen when the record's field list was built (record id → JD). It is carried by the
+ * v30 session wrapper, outside this v27 payload; a record without one is evaluated with no variable time, so a row whose field
+ * needs the time fails closed (variable-time-required → replay). */
+export type LssFieldJds=ReadonlyMap<number,number>;
+const NO_FIELD_JDS:LssFieldJds=new Map();
+async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS):Promise<Derived>{
+ const text=JSON.stringify(value)+'\u0000'+JSON.stringify([...fieldJds].sort((a,b)=>a[0]-b[0]));
+ if(text.length>LSS_SESSION_LIMITS.bytes+64*LSS_SESSION_LIMITS.records)fail('bounds');
+ if(JSON.stringify(value).length>LSS_SESSION_LIMITS.bytes)fail('bounds');
  if(lastVerified&&lastVerified.text===text)return lastVerified.result;
  const v=exact(value,['policy','field','telescope','journals','records','description','wedgeOptions']);
  if(v.policy!==LSS_INVESTIGATION_POLICY)fail('format');
@@ -104,10 +110,12 @@ async function derive(value:unknown):Promise<Derived>{
   const c=control(r.control),z=currentZ(c);if(!Number.isFinite(z)||Math.fround(z)<=-1)fail('record');
   const zSingle=Math.fround(z),velocity=hubbleVelocity(z);
   if(r.zHex!==hex32(zSingle)||r.velocityHex!==velocity.storedHex)fail('record');
-  const key=`${f}:${rowIndex}:${t}`;
+  const fieldJd=fieldJds.get(i+1);
+  if(fieldJd!==undefined&&(!Number.isFinite(fieldJd)||fieldJd<2415020.5||fieldJd>2488069.5))fail('record');
+  const key=`${f}:${rowIndex}:${t}:${fieldJd??'none'}`;
   if(!statuses.has(key)){
    if(!packs.has(f))packs.set(f,await src.pack(f));
-   let evaluated:LssRowStatus|null=null;try{evaluated=evaluateLssRow(packs.get(f)!,glx!,row,t,spectra!);}catch{evaluated=null;}
+   let evaluated:LssRowStatus|null=null;try{evaluated=evaluateLssRow(packs.get(f)!,glx!,row,t,spectra!,fieldJd===undefined?undefined:{jd:fieldJd,source:'observatory-clock'});}catch{evaluated=null;}
    if(!evaluated)return fail('replay');statuses.set(key,evaluated);
   }
   const status=statuses.get(key)!;
@@ -119,20 +127,23 @@ async function derive(value:unknown):Promise<Derived>{
    replays.set(ji,{counts:await resourceSha256(new TextEncoder().encode(replayed.exposure.counts.join(',')))});
   }
   const remarks=text_(r.remarks,LSS_LIMITS.remarks);
-  records.push(Object.freeze({id:i+1,field:f,row:rowIndex,telescope:t,object:status.selectedId,jd,ra:row.ra,dec:row.dec,zSingle,zHex:r.zHex as string,velocitySingle:velocity.storedKmS,velocityHex:velocity.storedHex,remarks,acquisitionPolicy:r.acquisitionPolicy as string,journal:Object.freeze({seedAtReset:journal.seedAtReset,events:journal.events}),control:c}));
-  derivatives.push({id:i+1,selected:status.selectedIndex,pixelLevel:status.result.calibration!.pixelLevel,counts:replays.get(ji)!.counts,zHex:r.zHex,velocityHex:velocity.storedHex});
+  records.push(Object.freeze({id:i+1,...(fieldJd!==undefined?{fieldJd}:{}),field:f,row:rowIndex,telescope:t,object:status.selectedId,jd,ra:row.ra,dec:row.dec,zSingle,zHex:r.zHex as string,velocitySingle:velocity.storedKmS,velocityHex:velocity.storedHex,remarks,acquisitionPolicy:r.acquisitionPolicy as string,journal:Object.freeze({seedAtReset:journal.seedAtReset,events:journal.events}),control:c}));
+  derivatives.push({id:i+1,...(fieldJd!==undefined?{fieldJd}:{}),selected:status.selectedIndex,pixelLevel:status.result.calibration!.pixelLevel,counts:replays.get(ji)!.counts,zHex:r.zHex,velocityHex:velocity.storedHex});
  }
  if(used.size!==journals.length)fail('record');// every stored journal belongs to a record
+ for(const id of fieldJds.keys())if(!Number.isInteger(id)||id<1||id>raw.length)fail('record');// every frozen JD names a record
  const digest=await resourceSha256(new TextEncoder().encode(JSON.stringify({policy:LSS_INVESTIGATION_POLICY,derivatives})));
  const result=Object.freeze({investigation:Object.freeze({field,telescope,records:Object.freeze(records),description,wedgeOptions}),digest});
  lastVerified={text,result};return result;
 }
 /** Save: the portable payload plus its derivative digest (the payload is replayed once to compute it). */
 export async function portableLssInvestigation(i:LssInvestigation):Promise<Readonly<{lss:unknown;digest:string}>>{
- const lss=portablePayload(i),{digest}=await derive(JSON.parse(JSON.stringify(lss)));return Object.freeze({lss,digest});
+ const lss=portablePayload(i),{digest}=await derive(JSON.parse(JSON.stringify(lss)),lssFieldJdsOf(i));return Object.freeze({lss,digest});
 }
+/** The record id → frozen field JD map of an investigation (empty when no record carries one). */
+export function lssFieldJdsOf(i:LssInvestigation):LssFieldJds{return new Map(i.records.flatMap(r=>r.fieldJd===undefined?[]:[[r.id,r.fieldJd] as const]));}
 /** Restore: replays everything and rejects on any mismatch, including the stored digest. */
-export async function admitLssInvestigation(value:unknown,digest:unknown):Promise<LssInvestigation>{
+export async function admitLssInvestigation(value:unknown,digest:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS):Promise<LssInvestigation>{
  if(typeof digest!=='string'||!/^[a-f0-9]{64}$/.test(digest))fail('digest');
- const d=await derive(value);if(d.digest!==digest)fail('digest');return d.investigation;
+ const d=await derive(value,fieldJds);if(d.digest!==digest)fail('digest');return d.investigation;
 }

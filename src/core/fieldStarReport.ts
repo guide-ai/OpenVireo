@@ -20,7 +20,9 @@ export const FIELD_STAR_LITERALS=Object.freeze({
  menu:Object.freeze({data:'&Get Selection Data',add:'&Add Selection to Current Hot List',start:'Start &New Hot List with Selection',entire:'&Create New Hot List of Entire List'}),
 });
 const CSV_COLUMNS=[11,20,23,28,34,37,40,49,56,63];
-export type FieldStarReportReason='spectral-code-unformattable';
+/** variable-values-unavailable (Front T): a TRUE-dispatch variable star's V, colours and spectral type need the observatory-clock
+ * time, and this population was built without one, so no row of the list is shown (as for an unformattable code). */
+export type FieldStarReportReason='spectral-code-unformattable'|'variable-values-unavailable';
 export type FieldStarReport=Readonly<{caption:string;lines:readonly string[];first:number;last:number;records:readonly CatalogStarRecord[];reason:FieldStarReportReason|null}>;
 
 /** Builder header (0x534e18). F = 0x486ca0 with separators h/m/s (1 decimal) and °/'/" (0 decimals), no spaces. */
@@ -46,6 +48,7 @@ export function fieldStarRow(r:CatalogStarRecord):string|null{
 }
 export function fieldStarReport(area:Pick<NativeCatalogRegion,'minimumRa'|'maximumRa'|'minimumDec'|'maximumDec'>,center:Readonly<{ra:number;dec:number}>,records:readonly CatalogStarRecord[]):FieldStarReport{
  const header=fieldStarHeader(area,center),rows=records.map(fieldStarRow);
+ if(records.some(r=>r.variable!==null&&!r.variable.valuesAvailable))return Object.freeze({caption:FIELD_STAR_LITERALS.caption,lines:header,first:header.length,last:header.length-1,records:Object.freeze([]),reason:'variable-values-unavailable'});
  if(rows.some(r=>r===null))return Object.freeze({caption:FIELD_STAR_LITERALS.caption,lines:header,first:header.length,last:header.length-1,records:Object.freeze([]),reason:'spectral-code-unformattable'});
  const lines=Object.freeze([...header,...rows as string[]]);
  return Object.freeze({caption:FIELD_STAR_LITERALS.caption,lines,first:header.length,last:lines.length-1,records,reason:null});

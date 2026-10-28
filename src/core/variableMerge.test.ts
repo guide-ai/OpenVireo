@@ -2,7 +2,8 @@ import {describe,it,expect} from 'vitest';
 import {createHash} from 'node:crypto';
 import provenance from '../../data/hubble/pegasus-field-provenance.json';
 import snapshot from '../../data/hubble/pinned-pegasus-field.json';
-import {decodeNativeVariableRecord,nativeVariableClass,nativeVariableFalseMerge,VariableMergeError,VARIABLE_RECORD_OFFSETS} from './variableMerge';
+import {decodeNativeVariableRecord,nativeVariableClass,nativeVariableDispatchFalse,nativeVariableFalseMerge,nativeVariableSpectrum,nativeVariableTrueMerge,VariableMergeError,VARIABLE_RECORD_OFFSETS} from './variableMerge';
+import {nativeRaCursorInsertPosition} from './qsoMerge';
 import {catalogMergeDistance} from './catalogMerge';
 import {decodeNativeCompactRecord} from './pinnedNativeField';
 const contract=provenance.variableContract,tables=contract.tables;
@@ -104,5 +105,37 @@ describe('false time-update merge branch (0x5986c0/0x5987a1)',()=>{
   expect(r.trace.bestDistanceDegrees).toBeCloseTo(w.bestDistanceDegrees,15);expect(r.trace.bestDistanceDegrees*3600).toBeLessThan(contract.hitThresholdArcseconds);
   expect(r.rows.map(s=>s.id)).toEqual(w.postMergeIds);expect(r.rows.map(s=>s.id)).toEqual(snapshot.initialStarIds);
   expect(reads.get('N0000.DAT@1141949')!.type).toBe(0);
+ });
+});
+
+describe('Front T: TRUE-branch merge (hit modifies the resolved target, miss inserts at the RA cursor)',()=>{
+ // Synthetic candidates (contract controls only): id, distance to the variable (degrees), RA hours.
+ const c=(id:string,distanceDegrees:number,ra:number)=>({record:{id,type:0,magnitude:12},distanceDegrees,ra});
+ it('hit: STRICT < 30″ returns the record at the saved index, including after a runner pruned below it',()=>{
+  const hit=nativeVariableTrueMerge([c('a',.5,10),c('b',5/3600,10.1),c('c',1,10.2)],{ra:10.1});
+  expect(hit.path).toBe('hit');if(hit.path!=='hit')return;expect(hit.target.id).toBe('b');expect(hit.targetIndex).toBe(1);
+  // Runner 'a' (index 0) within 0.006° of the winner 'b' (index 1) is pruned; saved index 1 now names 'c' (not repaired).
+  const shifted=nativeVariableTrueMerge([c('a',6/3600,10),c('b',5/3600,10.1),c('c',.9,10.2)],{ra:10.1});
+  expect(shifted.path).toBe('hit');if(shifted.path!=='hit')return;expect(shifted.trace.removedRunner?.id).toBe('a');expect(shifted.target.id).toBe('c');expect(shifted.rows.map(r=>r.id)).toEqual(['b','c']);
+ });
+ it('miss: insertion index after the cursor walk from the saved winner, or from the head without a winner',()=>{
+  // Winner 'b' at 31″ (a miss): cursor at index 1 (RA 10.1); forward past RA ≤ 10.15 → index 2 (10.2 > 10.15), back to 1 → insert at 2.
+  const m=nativeVariableTrueMerge([c('a',.5,10),c('b',31/3600,10.1),c('c',.6,10.2)],{ra:10.15});
+  expect(m.path).toBe('miss');if(m.path!=='miss')return;expect(m.insertAt).toBe(2);
+  // No winner (every star beyond 1°): cursor at the head.
+  const far=nativeVariableTrueMerge([c('a',2,10),c('b',2,10.1)],{ra:9});
+  expect(far.path).toBe('miss');if(far.path!=='miss')return;expect(far.insertAt).toBe(1);// west of the head: after the head
+  expect(code(()=>nativeVariableTrueMerge([],{ra:9}))).toBe('native-null-lookup');
+ });
+ it('the shared RA cursor walk (0x5986f8..0x59873c = the QSO insert walk), hand-checked vectors',()=>{
+  const ras=[1,2,2,3,5];
+  expect([[0,2],[0,2.5],[4,2],[4,0.5],[2,6],[1,1],[3,3]].map(([cur,ra])=>nativeRaCursorInsertPosition(ras,cur,ra))).toEqual([3,3,3,1,5,1,4]);
+ });
+ it('class 2 with a spectral code 0 (empty or "-"-led spectrum) is a no-effect FALSE dispatch; other class-2 spectra are not',()=>{
+  for(const spectrum of ['','-K0','-']) expect(nativeVariableDispatchFalse({classification:'EA',periodNonzero:true,word48:5,spectrum},tables)).toBe(true);
+  for(const spectrum of ['A0','K0-K2','::']) expect(nativeVariableDispatchFalse({classification:'EA',periodNonzero:true,word48:5,spectrum},tables)).toBe(false);
+  expect(nativeVariableDispatchFalse({classification:'EA',periodNonzero:true,word48:5},tables)).toBe(false);// spectrum not supplied: unchanged
+  expect(nativeVariableDispatchFalse({classification:'RRAB',periodNonzero:true,word48:5,spectrum:''},tables)).toBe(false);
+  const raw=record({cls:'EA'});raw[74]=2;raw[75]=0x41;raw[76]=0x30;expect(nativeVariableSpectrum(hex(raw))).toBe('A0');
  });
 });

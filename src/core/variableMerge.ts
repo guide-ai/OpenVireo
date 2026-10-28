@@ -1,4 +1,6 @@
 import {nativeMergeNearest,type MergeCandidate,type MergeRecord,type MergeTrace} from './catalogMerge';
+import {class2SpectralCode,VariableDispatchError} from './variableDispatch';
+import {nativeRaCursorInsertPosition} from './qsoMerge';
 /** Native variable-star merge entry for ONE recovered branch only (CLEA_VEO.exe 781bc970…c54c; contract and table hashes in
  * pegasus-field-provenance.json variableContract). It is not a variable-star model, light curve or phase:
  * - 0x598600/0x598602/0x598604 push three zero DWORDs before 0x598608 calls 0x59a2e0: the nearest merge uses reference
@@ -58,14 +60,23 @@ export type VariableMergeResult=Readonly<{
 /** The time-update dispatch 0x51ec48..0x51ecdb as far as it returns false without any side effect (the path to 0x51ee57 only
  * builds the classification string and its class): a zero period (0x51ec9a fcomp 0 / je), a zero word with a class other
  * than 1 (0x51ecb0..0x51ecba), or class 3 (0x51eccb). Any other combination reaches a light-curve constructor (not modelled). */
-export function nativeVariableDispatchFalse(variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[]):boolean{
- if(!variable||typeof variable!=='object'||typeof variable.periodNonzero!=='boolean'||!Number.isInteger(variable.word48)||variable.word48< -0x8000||variable.word48>0x7fff)throw new VariableMergeError('record');
+export function nativeVariableDispatchFalse(variable:Readonly<{classification:string;periodNonzero:boolean;word48:number;spectrum?:string}>,tables:readonly VariableClassTable[]):boolean{
+ if(!variable||typeof variable!=='object'||typeof variable.periodNonzero!=='boolean'||!Number.isInteger(variable.word48)||variable.word48< -0x8000||variable.word48>0x7fff||variable.spectrum!==undefined&&typeof variable.spectrum!=='string')throw new VariableMergeError('record');
  const c=nativeVariableClass(variable.classification,tables);
- return !variable.periodNonzero||variable.word48===0&&c!==1||c===3;
+ if(!variable.periodNonzero||variable.word48===0&&c!==1||c===3)return true;
+ // Front T: class 2 (VarStarObj) with a spectral code 0 — an empty spectrum or one led by '-' (0x51f18c cuts at the first '-',
+ // 0x55d840 returns 0) — returns FALSE at 0x51ed49 before any field write (plan §1.4). Only when the caller supplies the spectrum.
+ if(c===2&&variable.spectrum!==undefined){try{return class2SpectralCode(variable.spectrum)===0;}catch(e){if(e instanceof VariableDispatchError)return false;throw e;}}
+ return false;
+}
+/** Spectrum short string of a 92-byte record (offset 74, ≤ 17 characters; variableStars.ts VSTRS_OFFSETS.spectrum). */
+export function nativeVariableSpectrum(rawHex:string):string{
+ if(typeof rawHex!=='string'||!new RegExp(`^[a-f0-9]{${VARIABLE_RECORD_BYTES*2}}$`).test(rawHex))throw new VariableMergeError('record');
+ return shortString(Uint8Array.from(rawHex.match(/../g)!,v=>parseInt(v,16)),74,17);
 }
 /** dispatch 'class-3' (default, the verified HI Peg contract): only class 3 with nonzero period and word. 'recovered' (Front F,
  * Object X): any variable for which nativeVariableDispatchFalse holds; the merge itself is the same. */
-export function nativeVariableFalseMerge(candidates:readonly MergeCandidate[],variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[],dispatch:'class-3'|'recovered'='class-3'):VariableMergeResult{
+export function nativeVariableFalseMerge(candidates:readonly MergeCandidate[],variable:Readonly<{classification:string;periodNonzero:boolean;word48:number;spectrum?:string}>,tables:readonly VariableClassTable[],dispatch:'class-3'|'recovered'='class-3'):VariableMergeResult{
  if(!variable||typeof variable!=='object')throw new VariableMergeError('record');
  if(dispatch==='recovered'){if(!nativeVariableDispatchFalse(variable,tables))throw new VariableMergeError('variable-model-unsupported');}
  else{
@@ -78,4 +89,27 @@ export function nativeVariableFalseMerge(candidates:readonly MergeCandidate[],va
  // A prune below the saved winner shifts the saved position onto another record before the restore: not supported.
  if(trace.removedRunner&&trace.runnerIndex<trace.savedWinnerIndex)throw new VariableMergeError('unsafe-saved-index');
  return Object.freeze({rows:trace.rows,trace,hit:true,classification:3 as const,timeUpdateResult:false as const,recordRestored:true,inserted:false as const,callerTarget:target});
+}
+
+export type VariableTrueMergeResult=
+ /** HIT: the record at the unrepaired saved index (0x492688) — not necessarily the nearest when a runner below it was pruned. */
+ Readonly<{rows:readonly MergeRecord[];trace:MergeTrace;path:'hit';targetIndex:number;target:MergeRecord;arcseconds:number}>|
+ /** MISS: the insertion index of the new object after the RA cursor walk 0x5986f8..0x59873c (cursor at the saved winner, or at
+  * the head when there is no winner), in `rows`. */
+ Readonly<{rows:readonly MergeRecord[];trace:MergeTrace;path:'miss';insertAt:number;arcseconds:number}>;
+/** Front T: the merge part of the variable stage 0x59859c for a variable whose dispatch reaches a model (TRUE branch candidate).
+ * Same nearest merge as the false branch (reference magnitude 0, runner prune kept); a hit returns the resolved target WITH the
+ * saved-index semantics (no unsafe-saved-index rejection: the native update acts on that record); a miss returns the cursor-walk
+ * insertion index. The caller runs the dispatch and applies or discards the result (FALSE restores the hit / skips the insert).
+ * Candidates carry their RA for the walk; null lookups and the 30″ precision boundary are typed. */
+export function nativeVariableTrueMerge(candidates:readonly Readonly<{record:MergeRecord;distanceDegrees:number;ra:number}>[],variable:Readonly<{ra:number}>):VariableTrueMergeResult{
+ if(!Array.isArray(candidates)||!variable||!Number.isFinite(variable.ra)||candidates.some(c=>!c||!Number.isFinite(c.ra)))throw new VariableMergeError('record');
+ const trace=nativeMergeNearest(candidates,0),arcseconds=trace.bestDistanceDegrees*3600,ra=new Map(candidates.map(c=>[c.record.id,c.ra]));
+ if(trace.winner){
+  awayFromBoundary(arcseconds,30);
+  const target=trace.resolvedSavedIndex;if(!target)throw new VariableMergeError('native-null-lookup');// GetAt nil
+  if(arcseconds<30)return Object.freeze({rows:trace.rows,trace,path:'hit' as const,targetIndex:trace.savedWinnerIndex,target,arcseconds});
+ }else if(!trace.rows.length)throw new VariableMergeError('native-null-lookup');// empty list: the walk reads a nil cursor
+ const insertAt=nativeRaCursorInsertPosition(trace.rows.map(r=>ra.get(r.id)!),trace.winner?trace.savedWinnerIndex:0,variable.ra);
+ return Object.freeze({rows:trace.rows,trace,path:'miss' as const,insertAt,arcseconds});
 }

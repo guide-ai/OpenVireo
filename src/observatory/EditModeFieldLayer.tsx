@@ -15,7 +15,7 @@ const PX_PER_ARCMIN=SIZE/15;
  * engine's own field (the population Catalog Object reads; drawing style [W]) and a click, or the keyboard cursor + Enter, picks
  * with the recovered 350 px rule and opens Catalog Object with a lime 15×15 marker. Elsewhere only a status line with the typed
  * reason is shown and clicks reach the normal sky view (target selection) unchanged. */
-export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden}:{editMode:boolean;active:boolean;mode:FieldMode;pointing:Pointing;hidden:Pointing|null}){
+export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden,onOpenVariable}:{editMode:boolean;active:boolean;mode:FieldMode;pointing:Pointing;hidden:Pointing|null;onOpenVariable?:(recordIndex:number)=>void}){
  const [state,setState]=useState<State>({status:'loading'}),[record,setRecord]=useState<CatalogRecord|null>(null),[marked,setMarked]=useState<CatalogRecord|null>(null),[cursor,setCursor]=useState({x:SIZE/2,y:SIZE/2});
  const svg=useRef<SVGSVGElement>(null);
  useEffect(()=>{
@@ -58,6 +58,6 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
    <g stroke="var(--ov-focus)" strokeWidth="1.5" opacity=".9" aria-hidden="true"><path d={`M${cursor.x-12} ${cursor.y}h9m6 0h9M${cursor.x} ${cursor.y-12}v9m0 6v9`}/></g>
   </svg>
   <p className="em-caption" id="em-layer-help" data-testid="em-caption">{M.editLayerCaption(state.packId,scene.stars.length,scene.galaxies.length)}</p>
-  {record&&<CatalogObjectDialog record={record} onClose={()=>{setRecord(null);requestAnimationFrame(()=>svg.current?.focus());}}/>}
+  {record&&<CatalogObjectDialog record={record} onGcvs={record.kind==='star'&&record.variable&&onOpenVariable?()=>onOpenVariable(record.variable!.recordIndex):undefined} onClose={()=>{setRecord(null);requestAnimationFrame(()=>svg.current?.focus());}}/>}
  </div>;
 }

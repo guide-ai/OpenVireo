@@ -15,9 +15,15 @@
      option (Object X) the association 0x5990a3, rescale 0x597290 and draw 0x597470 are ported (docs/OBJECT-X-SPECTRA.md).
    - Variables (default `variableDispatch: 'recovered'`, coordinator decision of 2026-10-28): every variable whose dispatch
      0x51ec48 returns false without side effects (zero period, zero word unless class 1, or class 3) takes the HI Peg
-     false-merge branch, one after another in the variable stage's order (kept variables are inserted with 0x492728 under comparator 0x4bc950: RA, then Dec); any other variable keeps the typed `variable-merge` reason (Boo – 1/2
+     false-merge branch, one after another in the variable stage's order (kept variables are inserted with 0x492728 under comparator 0x4bc950: RA, then Dec); a TRUE dispatch (classes 0/1/2, period ≠ 0, word ≠ 0 or class 1;
+     Front T, `variableDispatch.ts`) modifies the hit star at the saved index or inserts a star after the RA cursor walk, with
+     V/colours/spectral code from the class model at `options.variableTime` (the observatory-clock JD frozen at field build;
+     host Now + offset natively). Without a JD a TRUE star gates the field (`variable-time-required`) only if its 99×99 stamp
+     reaches the crop or a galaxy/QSO is within the merge guard; otherwise it is not painted (pixel-identical). The
+     indeterminate original branches are typed (`variable-spectrum-dangling`, `variable-spectrum-indeterminate`,
+     `variable-colour-residue`, `variable-model-fault`); a merge boundary keeps `variable-merge` (Boo – 1/2
      use the outside-view rule). `'class-3'` keeps the earlier one-variable contract for comparison.
-4. Variables: none, or records whose dispatch 0x51ec48 returns false without side effects, merged one after another in the variable stage's order (kept variables are inserted with 0x492728 under comparator 0x4bc950: RA, then Dec) through the false-merge branch (`variableMerge.ts`). Anything else is `variable-merge` (Boo – 1/2: outside-view).
+4. Variables: none, or records whose dispatch 0x51ec48 returns false without side effects, merged one after another in the variable stage's order (kept variables are inserted with 0x492728 under comparator 0x4bc950: RA, then Dec) through the false-merge branch (`variableMerge.ts`). TRUE dispatches: hit/miss with the class model (Front T; see above). Indeterminate cases are typed; a merge boundary is `variable-merge` (Boo – 1/2: outside-view).
 5. Galaxies:
    - Whole-file CLEA_GLX.DAT admission in source order. The GLX loader (call at 0x599128) inserts each galaxy with the cursor-relative linked-list insert 0x492728, using the strict RA/Dec-greater comparator 0x5969e0.
    - The cursor is the last inserted galaxy. A key greater than the cursor walks forward and goes after equal keys. Otherwise it walks backward and goes before equal keys, except that reaching an equal head inserts right after the head.
@@ -34,7 +40,7 @@
 `lssPacks.test.ts` reproduces the independent Python witnesses for all 219 LSS pointings.
 
 ## Typed unavailable reasons
-outside-pack, qso-merge (`'gate'` only), qso-selected (`'merge'` only), photographic-image, variable-merge, axis-fallback, merge-boundary, stamp-bound (the browser raster bound: major axis ≤ 100 px, minor axis ≥ 1 px), no-galaxy-selected, star-selected, slit-empty, spectrum-range, mean-bound (the existing per-telescope bound) and spectrum-mapping (LSS only).
+outside-pack, variable-time-required, variable-spectrum-dangling, variable-spectrum-indeterminate, variable-colour-residue, variable-model-fault (Front T), qso-merge (`'gate'` only), qso-selected (`'merge'` only), photographic-image, variable-merge, axis-fallback, merge-boundary, stamp-bound (the browser raster bound: major axis ≤ 100 px, minor axis ≥ 1 px), no-galaxy-selected, star-selected, slit-empty, spectrum-range, mean-bound (the existing per-telescope bound) and spectrum-mapping (LSS only).
 
 ## Numerical policy
 Arithmetic uses Number with nearest-even rounding; x87 equivalence is not claimed. The one exception is Frac(1000·RA): it is exact in the Extended significand, so it is computed exactly and rounded once.

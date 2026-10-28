@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "scope": "All1352files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json.",
-  "totalFiles": 1352,
-  "totalBytes": 128172762,
+  "totalFiles": 1353,
+  "totalBytes": 128213053,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
@@ -184,6 +184,14 @@
       "materialClass": "derived-witness",
       "description": "Output of the independent Python witness analysis/front-o-info-forms/tools/info_witness.py (SHA-256 f2aeb5140224e56973ba108e2cfc23133c036e5815c1a72e124927b6a69daa08) of the static reading of CLEA_VEO.exe (781bc970…c54c): TVarFldLstForm1 list lines for CLEA_VStrs.dat at six pointings and two views, Star Data List rows of ten pinned N2230/N3000 compact-GSC records already published in data/lss/lss-field-01.json (raw hex), two labelled synthetic rows, spectral-text, ffExponent and ffFixed examples. Derived from already-approved resources only; no new original bytes.",
       "usedBy": "src/core/fieldInfoWitness.test.ts (Front O, docs/OBJECT-INFO-FORMS.md)",
+      "upstreamStatus": "Derived test evidence; a second implementation of the same reading, not an x87 or original-runtime oracle."
+    },
+    "data/variables": {
+      "files": 1,
+      "bytes": 12963,
+      "materialClass": "derived-witness",
+      "description": "Output of the independent Python witness analysis/front-t-true-dispatch/tools/lss_rows_true_dispatch_witness.py (SHA-256 0d080b1e1df5afcf4138016f1e7bfaf274cffb2b856c64aaf08e250c4ca81d6e) of the static reading of CLEA_VEO.exe (781bc970…c54c): for every LSS row whose field holds a TRUE-dispatch variable (0x51ec48 returns true), the hit/miss merge, the modified or inserted star, its 99×99-stamp margin against the 312² crop and galaxy proximity, and the row class without a JD (time-independent / needs-jd / qso-gated). Pointings decoded from the approved LSS_Field0N.HTL; stars read from the approved bounded GSC records' source bands by the same research reader as the LSS packs. Derived from already-approved resources only; no new original bytes.",
+      "usedBy": "src/core/fieldEngineTrueDispatch.test.ts (Front T, docs/FIELD-ENGINE.md)",
       "upstreamStatus": "Derived test evidence; a second implementation of the same reading, not an x87 or original-runtime oracle."
     }
   },
@@ -484,6 +492,24 @@
           "data/photometry/pleiades-pointing-vectors.json"
         ],
         "sourceGrant": "Review 5 L-1/L-2 (2026-10-28): pleiades-variable-fields.json regains its source-file SHA-256 block; pleiades-pointing-fields.json drops the stale row-12 unavailable entry (row 12 is admitted); both generators' docstrings corrected. Records and merges unchanged; covered by the user approval of 2026-10-28.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/hubble/existing-target-fingerprints.json"
+        ],
+        "sourceGrant": "Front T (2026-10-28): the LSS list of existing-target-fingerprints.json updated deliberately for the recovered TRUE variable dispatch (90 LSS entries, listed in its updates block); the Hubble pairs are unchanged. Derived regression record, no new resource.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/variables/lss-true-dispatch-witness.json"
+        ],
+        "sourceGrant": "Front T (2026-10-28): independent Python witness of the LSS rows with TRUE-dispatch variables (derived numbers and record ids only; no new original bytes).",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }

@@ -1,0 +1,694 @@
+{
+ "schema": 1,
+ "kind": "independent Python witness of the LSS rows holding TRUE-dispatch variables, without a JD (static reads; not an original runtime observation)",
+ "generator": {
+  "path": "analysis/front-t-true-dispatch/tools/lss_rows_true_dispatch_witness.py",
+  "sha256": "0d080b1e1df5afcf4138016f1e7bfaf274cffb2b856c64aaf08e250c4ca81d6e"
+ },
+ "sources": {
+  "vstrs": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+  "qso": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5"
+ },
+ "rows": [
+  {
+   "field": 1,
+   "row": 2,
+   "pointing": {
+    "ra": 12.110611111111112,
+    "dec": 28.17527777777778
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 9114,
+     "name": "GR Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9114",
+     "ra": 12.088915083876277,
+     "dec": 27.938304473094203,
+     "margin": 155,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 1,
+   "row": 17,
+   "pointing": {
+    "ra": 12.302194444444444,
+    "dec": 28.175555555555555
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9296,
+     "name": "GY Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9296",
+     "ra": 12.32356768137313,
+     "dec": 28.450800725734084,
+     "margin": 147,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 1,
+   "row": 19,
+   "pointing": {
+    "ra": 12.323222222222222,
+    "dec": 28.308888888888887
+   },
+   "status": "needs-jd",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9296,
+     "name": "GY Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9296",
+     "ra": 12.32356768137313,
+     "dec": 28.450800725734084,
+     "margin": -28,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 1,
+   "row": 20,
+   "pointing": {
+    "ra": 12.33,
+    "dec": 30.337777777777777
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9285,
+     "name": "HL Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9285",
+     "ra": 12.306335439426846,
+     "dec": 30.190704176193172,
+     "margin": 179,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 2,
+   "row": 9,
+   "pointing": {
+    "ra": 12.430805555555555,
+    "dec": 27.56
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9364,
+     "name": "GS Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9364",
+     "ra": 12.40476432083536,
+     "dec": 27.92299913031714,
+     "margin": 248,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 2,
+   "row": 23,
+   "pointing": {
+    "ra": 12.718166666666667,
+    "dec": 27.714444444444446
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9636,
+     "name": "DV Com",
+     "path": "hit",
+     "starId": "N2230.DAT@497626",
+     "ra": 12.7317827,
+     "dec": 28.02112,
+     "margin": 178,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 3,
+   "row": 2,
+   "pointing": {
+    "ra": 12.79075,
+    "dec": 29.787222222222223
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 9688,
+     "name": "EG Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9688",
+     "ra": 12.808567532401224,
+     "dec": 29.79250206762133,
+     "margin": 84,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 3,
+   "row": 16,
+   "pointing": {
+    "ra": 12.958944444444445,
+    "dec": 28.477222222222224
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9810,
+     "name": "EP Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9810",
+     "ra": 12.964132831308904,
+     "dec": 28.290053239400894,
+     "margin": 30,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 3,
+   "row": 17,
+   "pointing": {
+    "ra": 12.959555555555555,
+    "dec": 28.482222222222223
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9810,
+     "name": "EP Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9810",
+     "ra": 12.964132831308904,
+     "dec": 28.290053239400894,
+     "margin": 36,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 3,
+   "row": 18,
+   "pointing": {
+    "ra": 12.96825,
+    "dec": 28.244722222222222
+   },
+   "status": "needs-jd",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9810,
+     "name": "EP Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9810",
+     "ra": 12.964132831308904,
+     "dec": 28.290053239400894,
+     "margin": -136,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 3,
+   "row": 21,
+   "pointing": {
+    "ra": 12.984472222222223,
+    "dec": 28.1225
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9810,
+     "name": "EP Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9810",
+     "ra": 12.964132831308904,
+     "dec": 28.290053239400894,
+     "margin": 131,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 3,
+   "row": 22,
+   "pointing": {
+    "ra": 12.988833333333334,
+    "dec": 28.084444444444443
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 9810,
+     "name": "EP Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9810",
+     "ra": 12.964132831308904,
+     "dec": 28.290053239400894,
+     "margin": 203,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 4,
+   "row": 0,
+   "pointing": {
+    "ra": 13.001,
+    "dec": 26.8975
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9826,
+     "name": "ES Com",
+     "path": "hit",
+     "starId": "N2230.DAT@503284",
+     "ra": 12.9854087,
+     "dec": 26.59726,
+     "margin": 171,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 4,
+   "row": 3,
+   "pointing": {
+    "ra": 13.01088888888889,
+    "dec": 29.019166666666667
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9825,
+     "name": "ER Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9825",
+     "ra": 12.98480704554453,
+     "dec": 29.295427267558246,
+     "margin": 222,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 4,
+   "row": 18,
+   "pointing": {
+    "ra": 13.163194444444445,
+    "dec": 28.908333333333335
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 9936,
+     "name": "UY Com",
+     "path": "hit",
+     "starId": "N2230.DAT@506697",
+     "ra": 13.186476,
+     "dec": 28.58267,
+     "margin": 202,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 4,
+   "row": 22,
+   "pointing": {
+    "ra": 13.242527777777777,
+    "dec": 30.705277777777777
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 9950,
+     "name": "EW Com",
+     "path": "hit",
+     "starId": "N3000.DAT@489919",
+     "ra": 13.2171267,
+     "dec": 31.02258,
+     "margin": 203,
+     "nearGalaxy": false
+    },
+    {
+     "variable": 9951,
+     "name": "EX Com",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@9951",
+     "ra": 13.21793293769958,
+     "dec": 30.411847953816665,
+     "margin": 193,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 5,
+   "row": 18,
+   "pointing": {
+    "ra": 13.623555555555555,
+    "dec": 27.419166666666666
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10245,
+     "name": "AG Boo",
+     "path": "hit",
+     "starId": "N2230.DAT@514265",
+     "ra": 13.608302,
+     "dec": 27.5652,
+     "margin": 49,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 5,
+   "row": 20,
+   "pointing": {
+    "ra": 13.665444444444445,
+    "dec": 28.399166666666666
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 10298,
+     "name": "WY CVn",
+     "path": "hit",
+     "starId": "N2230.DAT@515694",
+     "ra": 13.6798953,
+     "dec": 28.55737,
+     "margin": 33,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 5,
+   "row": 21,
+   "pointing": {
+    "ra": 13.714777777777778,
+    "dec": 29.865277777777777
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10316,
+     "name": "AR CVn",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@10316",
+     "ra": 13.699269655313081,
+     "dec": 29.764763233672234,
+     "margin": 48,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 5,
+   "row": 23,
+   "pointing": {
+    "ra": 13.723583333333334,
+    "dec": 30.069166666666668
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10316,
+     "name": "AR CVn",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@10316",
+     "ra": 13.699269655313081,
+     "dec": 29.764763233672234,
+     "margin": 191,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 6,
+   "row": 5,
+   "pointing": {
+    "ra": 13.994333333333334,
+    "dec": 28.061666666666667
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10545,
+     "name": "WY Boo",
+     "path": "hit",
+     "starId": "N2230.DAT@522016",
+     "ra": 13.99402,
+     "dec": 27.78742,
+     "margin": 138,
+     "nearGalaxy": false
+    },
+    {
+     "variable": 10555,
+     "name": "UV CVn",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@10555",
+     "ra": 14.013796036272094,
+     "dec": 28.328709521461782,
+     "margin": 128,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 6,
+   "row": 7,
+   "pointing": {
+    "ra": 14.01575,
+    "dec": 29.558888888888887
+   },
+   "status": "needs-jd",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10550,
+     "name": "UU CVn",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@10550",
+     "ra": 14.005807214794217,
+     "dec": 29.416756729962717,
+     "margin": -27,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 6,
+   "row": 8,
+   "pointing": {
+    "ra": 14.017416666666668,
+    "dec": 29.525555555555556
+   },
+   "status": "needs-jd",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10550,
+     "name": "UU CVn",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@10550",
+     "ra": 14.005807214794217,
+     "dec": 29.416756729962717,
+     "margin": -15,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 6,
+   "row": 9,
+   "pointing": {
+    "ra": 14.051027777777778,
+    "dec": 28.031388888888888
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10592,
+     "name": "BI Boo",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@10592",
+     "ra": 14.078123753935932,
+     "dec": 28.192751412159264,
+     "margin": 242,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 6,
+   "row": 10,
+   "pointing": {
+    "ra": 14.075972222222223,
+    "dec": 27.91111111111111
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 10592,
+     "name": "BI Boo",
+     "path": "miss",
+     "starId": "CLEA_VStrs.dat@10592",
+     "ra": 14.078123753935932,
+     "dec": 28.192751412159264,
+     "margin": 146,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 6,
+   "row": 11,
+   "pointing": {
+    "ra": 14.131916666666667,
+    "dec": 29.874166666666667
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 10624,
+     "name": "BM Boo",
+     "path": "hit",
+     "starId": "N2230.DAT@524343",
+     "ra": 14.1197207,
+     "dec": 29.91105,
+     "margin": -6,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 7,
+   "row": 17,
+   "pointing": {
+    "ra": 14.544027777777778,
+    "dec": 31.670555555555556
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 10908,
+     "name": "RS Boo",
+     "path": "hit",
+     "starId": "N3000.DAT@513131",
+     "ra": 14.559542,
+     "dec": 31.83895,
+     "margin": 42,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 7,
+   "row": 20,
+   "pointing": {
+    "ra": 14.572277777777778,
+    "dec": 31.548333333333332
+   },
+   "status": "qso-gated",
+   "qsos": 1,
+   "affected": [
+    {
+     "variable": 10908,
+     "name": "RS Boo",
+     "path": "hit",
+     "starId": "N3000.DAT@513131",
+     "ra": 14.559542,
+     "dec": 31.83895,
+     "margin": 158,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 8,
+   "row": 19,
+   "pointing": {
+    "ra": 15.330722222222223,
+    "dec": 31.37
+   },
+   "status": "time-independent",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 11355,
+     "name": "S CrB",
+     "path": "hit",
+     "starId": "N3000.DAT@528802",
+     "ra": 15.3566573,
+     "dec": 31.3674,
+     "margin": 210,
+     "nearGalaxy": false
+    }
+   ]
+  },
+  {
+   "field": 8,
+   "row": 21,
+   "pointing": {
+    "ra": 15.365694444444445,
+    "dec": 31.221944444444443
+   },
+   "status": "needs-jd",
+   "qsos": 0,
+   "affected": [
+    {
+     "variable": 11355,
+     "name": "S CrB",
+     "path": "hit",
+     "starId": "N3000.DAT@528802",
+     "ra": 15.3566573,
+     "dec": 31.3674,
+     "margin": -23,
+     "nearGalaxy": false
+    }
+   ]
+  }
+ ]
+}

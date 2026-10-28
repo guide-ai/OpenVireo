@@ -36,6 +36,7 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
   'gcvs-merge-unmodelled':'GCVS is disabled: VIREO links a variable record to this star through a merge that this site does not reproduce yet. Use Field Information › Variable Stars › Get Selection Data instead.',
   'record-edit-unavailable':'Values are read-only here: VIREO’s OK writes edited values back into the in-memory field, which this site does not do.',
   'update-master-catalog':'Update is not available: in VIREO it rewrites the master star catalogue file on disk.',
+  'variable-values-unavailable':'Values not shown: this variable star’s brightness, colours and spectral type depend on the observatory clock, and this field was built without its time.',
   'galaxy-colour-residue':'Colours not shown: for this morphological type VIREO leaves uninitialised values.',
   'galaxy-type-fault':'Type not shown: for this morphology code VIREO’s type text routine fails or reads outside its recovered table.',
   'spectral-code-unformattable':'This list cannot be shown: a record’s spectral code has no recovered text.',

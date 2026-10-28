@@ -90,3 +90,39 @@ describe('v27 LSS investigation',()=>{
   await expect(serializeAnalysisSession({...base,lss:investigation(records)})).rejects.toBeInstanceOf(LssSessionError);
  },60000);
 });
+import {VARIABLE_TIME_SESSION_POLICY} from './analysisSession';
+describe('v30: the frozen observatory-clock JD of LSS fields (Front T)',()=>{
+ // F8 row 22 (NGC 5924, index 21): S CrB is in view, so the field needs the time. 2451545.0 is a SYNTHETIC test time.
+ const JD=2451545.0;
+ function timedRecord(fieldJd:number|undefined):LssRecord{
+  const row=lssFieldRows(8)[21],status=evaluateLssRow(pack(8),glx,row,0,spectra,fieldJd===undefined?undefined:{jd:fieldJd,source:'observatory-clock'});
+  if(status.kind==='unavailable')throw Error(status.reasons.join('+'));
+  const policy=lssPolicy(8,21,0),e=lssExposureEngine(status.result,policy);let s=e.start(e.activate(e.create(11)));for(let i=0;i<10;i++)s=e.tick(s,100);s=e.pause(s);
+  const control=moveControl(configureStep(INITIAL_CONTROL,.001),15);
+  const open=openLssRecord(EMPTY_LSS_SURVEY,{field:8,row:21,telescope:0,object:status.selectedId,jd:2451545.25,...(fieldJd!==undefined?{fieldJd}:{}),ra:row.ra,dec:row.dec,z:currentZ(control),control,journal:{seedAtReset:s.seedAtReset,events:s.events},acquisitionPolicy:policy});
+  return confirmLssRecord(open).records[0];
+ }
+ it('the time row is unavailable without a JD and available with one',()=>{
+  expect(evaluateLssRow(pack(8),glx,lssFieldRows(8)[21],0,spectra)).toMatchObject({kind:'unavailable',reasons:['variable-time-required']});
+  expect(()=>timedRecord(JD)).not.toThrow();
+ });
+ it('saves v30 over the unchanged v27 layer, restores the same record, and older files fail closed',async()=>{
+  const r=timedRecord(JD),inv:LssInvestigation={...investigation([r]),field:8};
+  expect(r.fieldJd).toBe(JD);
+  const text=await serializeAnalysisSession({...base,lss:inv}),v=JSON.parse(text);
+  expect([v.version,v.variableTimePolicy,v.lssFieldJds,v.base.version]).toEqual([30,VARIABLE_TIME_SESSION_POLICY,[[1,JD]],27]);
+  expect(JSON.stringify(v.base)).not.toContain('fieldJd');// the v27 payload itself is unchanged in shape
+  expect((await read(text)).lss).toEqual(inv);
+  // The same v27 layer without its frozen JD (an older file): the row needs the time, so the restore fails closed.
+  await expect(read(JSON.stringify(v.base))).rejects.toThrow();
+  // Another JD replays a different field: the stored digest no longer matches.
+  await expect(read(JSON.stringify({...v,lssFieldJds:[[1,JD+0.37]]}))).rejects.toThrow();
+  // Malformed or orphaned JDs, a nested or LSS-less v30: format errors.
+  for(const bad of [[],[[2,JD]],[[1,'x']],[[1,NaN]],[[1,2400000]]])await expect(read(JSON.stringify({...v,lssFieldJds:bad}))).rejects.toThrow();
+  await expect(read(JSON.stringify({...v,base:JSON.parse(await serializeAnalysisSession(base))}))).rejects.toThrow();
+  await expect(read(JSON.stringify({...v,base:v}))).rejects.toThrow();
+ },120000);
+ it('a record without a frozen JD keeps the v27 file exactly',async()=>{
+  const text=await serializeAnalysisSession({...base,lss:investigation([acquiredRecord()])});expect(JSON.parse(text).version).toBe(27);
+ },60000);
+});

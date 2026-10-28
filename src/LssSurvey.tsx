@@ -21,7 +21,10 @@ import type {LssLabSummary} from './core/lssLab';
 import LssAcquisition from './LssAcquisition';
 import LssMeasurement from './LssMeasurement';
 type Telescope=0|1|2;
-type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[]}>;
+/** fieldJd: the observatory-clock JD frozen when this list was built (Front T: the variable stage's time); undefined when the
+ * clock gave no finite JD, so rows whose field needs the time stay unavailable (variable-time-required). */
+type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[];fieldJd:number|undefined}>;
+function frozenFieldJd(currentJd:()=>number):number|undefined{try{const jd=currentJd();return Number.isFinite(jd)&&jd>=2415020.5&&jd<=2488069.5?jd:undefined;}catch{return undefined;}}
 export type LssSnapshot=Omit<LssInvestigation,'wedgeOptions'>;
 export type LssWedgeHandoff=Readonly<{records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>;
 function download(text:string,name:string){const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -76,9 +79,10 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
    glx.current??=await fetchBundledGlxCatalog(fetch,controller.signal);
    if(!lists.current){const [photographs,spectra]=await Promise.all([fetchBundledHotList(fetch,controller.signal,GLIMAGES_LST),fetchBundledHotList(fetch,controller.signal,GLXYSP_LST)]);lists.current={photographs:parseGlimagesPositions(photographs.bytes),spectra:parseGlxyspNames(spectra.bytes)};}
    const pack=packWithPhotographs(await loadLssPack(field),lists.current.photographs),rows=lssFieldRows(field),statuses:LssRowStatus[]=[];
-   for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope,lists.current.spectra));await new Promise(r=>setTimeout(r,0));}
+   const fieldJd=frozenFieldJd(currentJd),variableTime=fieldJd===undefined?undefined:{jd:fieldJd,source:'observatory-clock' as const};
+   for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope,lists.current.spectra,variableTime));await new Promise(r=>setTimeout(r,0));}
    if(controller.signal.aborted)return;
-   update(s=>markLssListLoaded(selectLssField(s,field),field));setLoaded(Object.freeze({field,telescope:scope,statuses:Object.freeze(statuses)}));
+   update(s=>markLssListLoaded(selectLssField(s,field),field));setLoaded(Object.freeze({field,telescope:scope,statuses:Object.freeze(statuses),fieldJd}));
    setNotice(t('lss.loaded',{name:identity.name,rows:rows.length,available:statuses.filter(s=>s.kind!=='unavailable').length,telescope:opticalProfile(scope).name}));
   }catch(e){if(controller.signal.aborted||(e instanceof DOMException&&e.name==='AbortError'))return;setError(t('lss.loadError'));setNotice('');}
   finally{if(abort.current===controller){abort.current=null;setLoading(false);}}
@@ -86,7 +90,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
  function cancelLoad(){abort.current?.abort();abort.current=null;setLoading(false);setNotice(t('lss.loadCancelled'));}
  const field=survey.field,rows=loaded?lssFieldRows(loaded.field):[],row=pointed!==null&&loaded?rows[pointed]:null,status=pointed!==null&&loaded?loaded.statuses[pointed]:null;
  const live=status&&status.kind!=='unavailable'?status:null;
- function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));}
+ function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));}
  function confirm(){if(update(confirmLssRecord)){setDialogError('');setNotice(t('lss.recorded'));}else setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));}
  function remarks(text:string){if(!update(s=>editLssDraft(s,{remarks:text})))setDialogError(t('lss.dialog.controlChars'));else setDialogError('');}
  async function plot(){
@@ -103,10 +107,10 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
     <label htmlFor="lss-telescope">{t('lss.telescope')}</label><select id="lss-telescope" value={telescope} disabled={loading} onChange={e=>setTelescope(Number(e.target.value) as Telescope)}>{([0,1,2] as const).map(i=><option key={i} value={i}>{opticalProfile(i).name}</option>)}</select>
     <button className="primary-button" disabled={!field||loading} onClick={()=>field&&void load(field,telescope)}>{t('lss.load')}</button>{loading&&<button className="secondary-button" onClick={cancelLoad}>{t('lss.cancelLoad')}</button>}</div>
    <p className="observatory-note">{t('lss.fieldHelp')}</p>
-   {loaded&&<table className="lss-rows" data-testid="lss-rows"><caption>{t('lss.rowsCaption',{label:fields?.[loaded.field-1]?.label??'',name:`LSS_Field0${loaded.field}.HTL`,telescope:opticalProfile(loaded.telescope).name})}</caption><thead><tr><th scope="col">#</th><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.col.status')}</th><th scope="col">{t('lss.col.action')}</th></tr></thead>
+   {loaded&&<table className="lss-rows" data-testid="lss-rows"><caption>{t('lss.rowsCaption',{label:fields?.[loaded.field-1]?.label??'',name:`LSS_Field0${loaded.field}.HTL`,telescope:opticalProfile(loaded.telescope).name})}{loaded.fieldJd!==undefined&&<small data-testid="lss-field-jd"> {t('lss.fieldJd',{jd:loaded.fieldJd.toFixed(5)})}</small>}</caption><thead><tr><th scope="col">#</th><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.col.status')}</th><th scope="col">{t('lss.col.action')}</th></tr></thead>
     <tbody>{rows.map((r,i)=>{const s=loaded.statuses[i];return <tr key={i} data-testid={`lss-row-${i+1}`} aria-current={pointed===i?'true':undefined}><td>{i+1}</td><td>{r.id}</td><td>{statusText(s)}</td><td><button className="secondary-button" disabled={s.kind==='unavailable'||survey.draft!==null} onClick={()=>{setPointed(i);setExposure(null);setNotice(t('lss.pointed',{id:r.id}));}}>{t('lss.point')}</button></td></tr>;})}</tbody></table>}
   </section>
-  {row&&live&&loaded&&<LssAcquisition key={lssPolicy(loaded.field,row.index,loaded.telescope)} active={active} result={live.result} row={row} policy={lssPolicy(loaded.field,row.index,loaded.telescope)} onCounts={setExposure}/>}
+  {row&&live&&loaded&&<LssAcquisition key={`${lssPolicy(loaded.field,row.index,loaded.telescope)}@${loaded.fieldJd??'none'}`} active={active} result={live.result} row={row} policy={lssPolicy(loaded.field,row.index,loaded.telescope)} onCounts={setExposure}/>}
   {row&&live&&exposure&&exposure.exposure.phase!=='running'&&exposure.exposure.counts.some(n=>n>0)&&<LssMeasurement key={`measure:${exposure.policy}`} counts={exposure.exposure.counts} wavelengths={live.result.calibration!.wavelengths} onRecord={record} disabled={survey.draft!==null||lssAtLimit(survey)}/>}
   <dialog ref={dialog} className="lss-dialog" aria-labelledby="lss-dialog-title" onCancel={e=>{e.preventDefault();update(cancelLssRecord);setDialogError('');}}>{draft&&<form method="dialog" onSubmit={e=>{e.preventDefault();confirm();}}>
    <h2 id="lss-dialog-title">{t('lss.dialog.title')}</h2>

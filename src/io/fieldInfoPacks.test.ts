@@ -36,7 +36,9 @@ describe('certified population (io/fieldInfoPacks.ts) over every bundled pack po
     for(const z of forms){expect(Object.values(v).filter(x=>typeof x==='string').join('|')).not.toContain(z);if(z.length>5)expect(text).not.toContain(z);}
    }
   }
-  expect(tally).toEqual({ready:195,'population:variable-merge':32});
+  // Front T (2026-10-28): the 32 pointings formerly gated by variable-merge hold TRUE-dispatch variables, now merged (the
+  // population needs no time; Catalog Object marks the values variable-values-unavailable without one).
+  expect(tally).toEqual({ready:227});
  },120000);
  test('36773: the e2e picks (centre click → the galaxy, keyboard cursor 150 px west → N5230-00237)',async()=>{
   const p=JSON.parse(readFileSync(snapFile('36773'),'utf8')).domain.pointing,r=await findCertifiedPopulation(p);if(r.status!=='ready')throw new Error('not certified');

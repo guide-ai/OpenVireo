@@ -3144,6 +3144,7 @@ export interface MessageParameters {
   "lss.loaded": "available" | "name" | "rows" | "telescope";
   "lss.fieldHelp": never;
   "lss.rowsCaption": "label" | "name" | "telescope";
+  "lss.fieldJd": "jd";
   "lss.col.object": never;
   "lss.col.status": never;
   "lss.col.action": never;
@@ -3155,6 +3156,11 @@ export interface MessageParameters {
   "lss.reason.qso-merge": never;
   "lss.reason.photographic-image": never;
   "lss.reason.variable-merge": never;
+  "lss.reason.variable-time-required": never;
+  "lss.reason.variable-spectrum-dangling": never;
+  "lss.reason.variable-spectrum-indeterminate": never;
+  "lss.reason.variable-colour-residue": never;
+  "lss.reason.variable-model-fault": never;
   "lss.reason.axis-fallback": never;
   "lss.reason.merge-boundary": never;
   "lss.reason.stamp-bound": never;
