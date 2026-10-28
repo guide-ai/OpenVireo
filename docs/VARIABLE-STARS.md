@@ -76,9 +76,16 @@ The text `CLEA Exercise "VIREO - The VIRtual Educational Observatory" - ` + a VI
 so the preview does not show it. The page body, in order:
 
 1. `DateTimeToStr(Now)` + `     Laboratory Table Number (Not Recorded)` (this site has no lab table). Date and time are
-   shown in the browser's format [W].
-2. The student/lab ShortStrings at global+0x5fa (the first always, three more only when set). Their contents come from
-   elsewhere in VIREO and are **not recovered**; one labelled placeholder line stands in.
+   shown in the browser's format [W]. Light curve: always (0x52c346..0x52c3b8), lab table from global+0x5fa+0xa4.
+2. The student/lab ShortStrings at global+0x5fa: the first always, three more only when set (light curve
+   0x52c3c3..0x52c470; list 0x52d798..0x52d840). Their contents come from elsewhere in VIREO and are **not recovered**;
+   one labelled placeholder line stands in.
+
+   **List print exception.** The list print sets [form+0x3b3] := options[+0x2e7e] xor 1 (0x52d656..0x52d662; options
+   +0x6b4+0x27ca). When options +0x2e7e is set, [form+0x3b3] is 0: the date prints without the laboratory suffix
+   (0x52d73a), all four student/lab strings are skipped (0x52d798), and the job title ends `Database Modification`. When it
+   is clear, the suffix uses the lab table at options +0x6b4+0x27c1, else `(Not Recorded)`. This is the same untraced
+   options byte that gates TVarFldLstForm1, so its default is unknown; the preview shows the clear-flag branch [W].
 3. List print only: the window caption `Variable Star Data`.
 4. The eleven list lines.
 5. Light curve only, VIREO's landscape branch (0x52c4fd..0x52c571): `(Screen Image Printed on Next Page)`, a page break,
@@ -87,7 +94,7 @@ so the preview does not show it. The page body, in order:
 
 Not reproduced: the portrait branch (plot on the same page), page layout and fonts, and the option (options +0x2e8d) that
 lets VIREO print in screen colours; the preview always prints black on white [W]. The first reading (and plan finding 8)
-put the job title on the page; review 1 corrected it.
+put the job title on the page; review 1 corrected it, and the closure check (N1) added the list-print exception.
 
 ## Light-curve model (0x51f0f8, 0x51f298, 0x51f33c)
 
