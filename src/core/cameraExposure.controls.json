@@ -1,6 +1,6 @@
 {
  "evidenceId": "CAMERA-EXPOSURE-CONTROL-01",
- "synthetic": "Recipes are authored test inputs. Catalogs: the recorded CDS response tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml (R and B bands) and the AUTHORED document tests/fixtures/vizier/authored-usnob1-control.xml (I band, one off-detector row). Not observations.",
+ "synthetic": "Recipes are authored test inputs. Catalogs: the recorded CDS response tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml (R and B bands) and the AUTHORED document tests/fixtures/vizier/authored-usnob1-control.xml (I band, one off-detector row). Not observations. IR (C6): the AUTHORED document tests/fixtures/vizier/authored-nomad-jhk-control.xml (J/H/K only, one blank K, one off-detector row).",
  "control": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-front-c/scripts/exposure_control.py: a separate stdlib Python re-implementation, line by line, of the declared policy by the same author as the TypeScript. It checks composition and draw order, not readings shared with the earlier stage documents.",
  "policy": "binary64 + float32 stores (nearest/even); libm vs V8 transcendental differences would show as hash mismatches; seeds reproduce these hashes on V8",
  "cases": {
@@ -33,6 +33,18 @@
    "draws": 1053344,
    "finalState": 2136321266,
    "records": 5
+  },
+  "ir-j-catalog": {
+   "sha256": "0ec0349368eb5d0f39391d85658403bf69cc32d3786aa933a20d27931cb65775",
+   "draws": 265581,
+   "finalState": 572199268,
+   "records": 3
+  },
+  "ir-k-pair-catalog": {
+   "sha256": "be80b83c8f79d9d78dbad0fb82ca9c74c8e0b4b818f55b5b6cbf05fcf2ffa332",
+   "draws": 265767,
+   "finalState": 356882334,
+   "records": 4
   }
  }
 }

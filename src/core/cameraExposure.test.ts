@@ -1,7 +1,7 @@
 import {describe,expect,test} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {composeCameraExposure,CameraExposureError,type CameraExposureRecipe,type CameraExtraSource} from './cameraExposure';
+import {cameraMovingMagnitude,composeCameraExposure,CameraExposureError,CAMERA_EXPOSURE_ADAPTATIONS,CAMERA_MAX_SECONDS,type CameraExposureRecipe,type CameraExtraSource} from './cameraExposure';
 import {readVizierCatalog,selectVizierCatalog,wholeSkySelection} from './vizierNomad';
 import {CameraRandomCursor} from './cameraRandom';
 import {randomDraw} from './acquisition';
@@ -73,5 +73,44 @@ describe('CCD exposure composer',()=>{
   const plain=composeCameraExposure({...recipe,seconds:600,filterPosition:2},selection());
   const mid=Math.round((x.records[0].pixelY+x.records[1].pixelY)/2)*1024+Math.round((x.records[0].pixelX+x.records[1].pixelX)/2);
   expect(x.plane.pixels[mid]).toBeGreaterThan(plain.plane.pixels[mid]);
+ });
+});
+describe('IR exposure composer (C6)',()=>{
+ const jhk=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url)));
+ const irSelection=(band:'J'|'H'|'K')=>selectVizierCatalog(readVizierCatalog(jhk,{catalog:'I/297',band,epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5}),wholeSkySelection(21.5));
+ const ir:CameraExposureRecipe={...recipe,camera:'ir',gain:4};
+ const pin=(x:ReturnType<typeof composeCameraExposure>)=>({sha256:sha(x.plane.pixels),draws:x.drawsConsumed,finalState:x.finalRandomState,records:x.records.length});
+ const pair={raHours:56.744/15,decDeg:24.117,storedMag:14,kind:'pair' as const,end:{raHours:56.7445/15,decDeg:24.1172}};
+ test('J field: 512x512 plane, three stars on the detector, matches the independent control',()=>{
+  const x=composeCameraExposure(ir,irSelection('J'));
+  expect(x.plane.width).toBe(512);expect(x.plane.height).toBe(512);
+  expect(x.catalog).toEqual({rows:4,selected:4,onDetector:3});
+  expect(x.records.map(r=>r.magnitude).sort((p,q)=>p-q)).toEqual([11.25,13.5,15.75].map(Math.fround));expect(x.records.every(r=>r.origin==='catalog')).toBe(true);
+  expect(pin(x)).toEqual(controls.cases['ir-j-catalog']);
+ });
+ test('K field with a moving pair: blank K is rejected, pair first, matches the control',()=>{
+  const x=composeCameraExposure({...ir,filterPosition:2,seconds:30,gain:8,seed:31},irSelection('K'),[pair]);
+  expect(x.records.map(r=>r.origin)).toEqual(['moving-start','moving-end','catalog','catalog']);
+  expect(x.records[0].magnitude).toBe(cameraMovingMagnitude('ir',2,14));
+  expect(pin(x)).toEqual(controls.cases['ir-k-pair-catalog']);
+ });
+ test('IR moving offsets 0x51e110 are cumulative steps of 1.13, 0.29 and 0.07, stored Single; no NF -0.25',()=>{
+  expect(cameraMovingMagnitude('ir',0,14)).toBe(Math.fround(14-1.13));
+  expect(cameraMovingMagnitude('ir',1,14)).toBe(Math.fround((14-1.13)-0.29));
+  expect(cameraMovingMagnitude('ir',2,14)).toBe(Math.fround(((14-1.13)-0.29)-0.07));
+  expect(cameraMovingMagnitude('ccd',0,14)).toBe(Math.fround(14-0.54));
+  const j=composeCameraExposure(ir,irSelection('J'),[pair]);
+  expect(j.records[0].magnitude).toBe(Math.fround(14-1.13));
+ });
+ test('IR refusals: CCD-only gain 5 and filter positions past K; IR gains 1/2/4/8 accepted; CCD refuses gain 4',()=>{
+  expect(()=>composeCameraExposure({...ir,gain:5},irSelection('J'))).toThrow(CameraExposureError);
+  expect(()=>composeCameraExposure({...ir,filterPosition:3},irSelection('J'))).toThrow(CameraExposureError);
+  expect(()=>composeCameraExposure({...recipe,gain:4},selection())).toThrow(CameraExposureError);
+  for(const gain of [1,2,8])expect(composeCameraExposure({...ir,gain,seconds:1},irSelection('H')).plane.width).toBe(512);
+ });
+ test('unrecovered IR exposure limit and overlay follow the CCD web adaptation',()=>{
+  expect(CAMERA_EXPOSURE_ADAPTATIONS.some(a=>a.startsWith('ir-like-ccd:'))).toBe(true);
+  expect(()=>composeCameraExposure({...ir,seconds:CAMERA_MAX_SECONDS+1},irSelection('J'))).toThrow(CameraExposureError);
+  expect(composeCameraExposure({...ir,seconds:CAMERA_MAX_SECONDS},irSelection('J')).recipe.seconds).toBe(CAMERA_MAX_SECONDS);
  });
 });
