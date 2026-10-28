@@ -147,9 +147,9 @@ Las estimaciones son en días de trabajo de un agente concentrado. No están cal
 
 ### Fase 3: LSS, cámaras y Object X (después de la fase 2)
 - LSS (E02): listas `LSS_FieldNN.HTL`, adquisición de muchas galaxias con el motor de la fase 2, registro de redshift y conexión con la cuña que ya existe. Esfuerzo L. El multiespectrómetro (I03) se puede dejar para después si se adquiere con el espectrómetro normal.
-- CCD e IR (I04, I05): hay que decidir qué hacer con NOMAD, el catálogo en línea del que depende la cámara, y después conectar la lógica que ya existe a una interfaz. Esfuerzo L.
+- CCD e IR (I04, I05): hay que decidir qué hacer con NOMAD, el catálogo en línea del que depende la cámara, y después conectar la lógica que ya existe a una interfaz. Esfuerzo L. **Estado (28 oct 2026):** la CCD y la IR funcionan con CDS/VizieR NOMAD en vivo (la IR usa las bandas J/H/K de NOMAD, que vienen de 2MASS). Los extractos estáticos (C5) esperan a que CDS o el espejo de CfA respondan.
 - Object X (E08): depende de CCD, astrometría, `ObjectX.HTL` y los archivos de órbitas. Esfuerzo L.
-- Variables y curvas de luz (TVStarListForm1, TLtCrvDsplyForm1): necesita `CLEA_VStrs.dat`. Esfuerzo M.
+- Variables y curvas de luz (TVStarListForm1, TLtCrvDsplyForm1): necesita `CLEA_VStrs.dat`. Esfuerzo M. **Estado (28 oct 2026):** hechas. La lista de datos de la variable y la curva de luz simulada se recuperaron del ejecutable (`docs/VARIABLE-STARS.md`). La lista de variables en el campo (TVarFldLstForm1) sigue sin portar.
 
 ### Fase 4: otros programas de CLEA (proyecto aparte)
 E07 y E09–E15 (astrometría, Sol, tránsitos, Júpiter, Roemer, Mercurio, flujo solar, XMM), X01 y X02. El primer paso es extraer e inventariar con REA los instaladores de `CLEA_Labex1.zip`, y después priorizar.
