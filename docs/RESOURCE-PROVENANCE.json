@@ -1,17 +1,17 @@
 {
   "schema": 1,
-  "scope": "All1353files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json.",
-  "totalFiles": 1353,
-  "totalBytes": 128213053,
+  "scope": "All1353files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json.",
+  "totalFiles": 1355,
+  "totalBytes": 128221325,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
     ".DAT": 2,
     ".HTL": 12,
-    ".LST": 6,
+    ".LST": 7,
     ".SP": 82,
     ".SPI": 1,
-    ".TXT": 1,
+    ".TXT": 2,
     ".dat": 4,
     ".json": 1067,
     ".png": 170,
@@ -193,6 +193,14 @@
       "description": "Output of the independent Python witness analysis/front-t-true-dispatch/tools/lss_rows_true_dispatch_witness.py (SHA-256 0d080b1e1df5afcf4138016f1e7bfaf274cffb2b856c64aaf08e250c4ca81d6e) of the static reading of CLEA_VEO.exe (781bc970…c54c): for every LSS row whose field holds a TRUE-dispatch variable (0x51ec48 returns true), the hit/miss merge, the modified or inserted star, its 99×99-stamp margin against the 312² crop and galaxy proximity, and the row class without a JD (time-independent / needs-jd / qso-gated). Pointings decoded from the approved LSS_Field0N.HTL; stars read from the approved bounded GSC records' source bands by the same research reader as the LSS packs. Derived from already-approved resources only; no new original bytes.",
       "usedBy": "src/core/fieldEngineTrueDispatch.test.ts (Front T, docs/FIELD-ENGINE.md)",
       "upstreamStatus": "Derived test evidence; a second implementation of the same reading, not an x87 or original-runtime oracle."
+    },
+    "public/original/cluster-help": {
+      "files": 2,
+      "bytes": 8272,
+      "materialClass": "unchanged-original-text-resource",
+      "description": "Byte-exact original VIREO HR-analysis help files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/HRAnalHlp.LST(715bytes,zip date2006-10-17,the help index:18 rows of quoted title and file tokens),SHA-256 b50c590f0f0f3e60456b8adeae06d123a2121ed5db3f741a74610d28d0a61537;and program files/CLEA/VIREO/HRAnalHlp.TXT(7557bytes,zip date2006-10-19,CRLF ASCII text with **Title** section headers),SHA-256 3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b.Every other help file is excluded.",
+      "usedBy": "Cluster HR Help(docs/CLUSTER-HR-TOOLS.md):lazy same-origin fetch,size and SHA-256 checked before parsing;index and topics read by src/core/cleaHelp.ts(the shared CLEA help viewer recovered from CLEA_VEO.exe 0x493264,0x493708,0x59f174)",
+      "upstreamStatus": "Included under the user approval of2026-10-28 recorded in AGENTS.md,on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The text is Project CLEA documentation.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     }
   },
   "authoredExamples": [

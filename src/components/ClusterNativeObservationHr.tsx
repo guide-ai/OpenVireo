@@ -8,6 +8,7 @@ import{loadNativeClusterModel}from'../io/nativeClusterModels';
 import{readNativeObservationFile}from'../io/nativeObservationResults';
 import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrBlockedRows,clusterNativeHrFrame,clusterNativeHrHundredths as hundredths,clusterNativeHrLogAgeTicks,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,clusterNativeHrX,clusterNativeHrY,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,plotClusterNativeHrObservations,setClusterNativeHrTrial,CLUSTER_NATIVE_HR_GEOMETRY as G,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'../core/clusterNativeObservationHr';
 import{CLUSTER_NATIVE_HR_MESSAGES,type ClusterNativeHrMessages}from'./ClusterNativeObservationHrMessages';
+import CleaHelp from '../clusters/CleaHelp';
 
 export type ClusterNativeObservationHrProps=Readonly<{
  /** Optional handoff of an already ordered native results list(e.g. from the DAT inspector). */
@@ -74,7 +75,7 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
  const offAxes=shownPlot?shownPlot.rows.filter(r=>r.status==='plotted'&&!r.inFrame).length:0;
  const id=(s:string)=>idPrefix+s;
  return <section className="card cluster-native-hr" aria-labelledby={id('title')}>
-  <h2 id={id('title')}>{m.title}</h2><p>{m.intro}</p>
+  <h2 id={id('title')}>{m.title}</h2><CleaHelp testId={`${idPrefix}help`}/><p>{m.intro}</p>
 
   <section aria-labelledby={id('results')}><h3 id={id('results')}>{m.resultsHeading}</h3>
    <label htmlFor={id('file')}>{m.chooseFile}</label><input ref={input} id={id('file')} type="file" accept=".dat,.DAT,application/octet-stream" disabled={busy||w.pending!==null} onChange={choose}/><p className="cluster-native-hr-note">{m.fileHelp}</p>

@@ -1,0 +1,34 @@
+/* Front V2 cluster HR tools. Colours, spacing and type come from src/theme/tokens.css (light and dark). */
+.cluster-hr-note{color:var(--ov-text-muted);font-size:var(--ov-text-sm);max-width:60rem}
+.cluster-hr-help-bar{display:flex;flex-wrap:wrap;gap:var(--ov-space-2);align-items:center;margin-block:var(--ov-space-2)}
+.cluster-hr-window{border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);padding:var(--ov-space-2) var(--ov-space-3);margin-block:var(--ov-space-2);max-width:min(46rem,100%);min-width:0}
+.cluster-hr-window h3,.cluster-hr-window h4{margin:0 0 var(--ov-space-1);font-size:var(--ov-text-md)}
+.cluster-hr-menubar{display:flex;flex-wrap:wrap;gap:var(--ov-space-1);border-bottom:1px solid var(--ov-border);padding-bottom:var(--ov-space-1);margin-bottom:var(--ov-space-2)}
+.cluster-hr-menubar button{background:var(--ov-surface);border:1px solid transparent;border-radius:var(--ov-radius-sm);color:var(--ov-text);padding:4px 10px;font-size:var(--ov-text-sm)}
+.cluster-hr-menubar button:hover:not(:disabled){background:var(--ov-surface-hover)}
+.cluster-hr-menubar button[aria-expanded=true]{border-color:var(--ov-border-strong)}
+.cluster-hr-menubar button:disabled{color:var(--ov-disabled-text)}
+.cluster-hr-menubar button:focus-visible,.cluster-hr-listbox:focus-visible{outline:2px solid var(--ov-focus);outline-offset:1px}
+.cluster-hr-menu{display:flex;flex-direction:column;min-width:0}
+.cluster-hr-menu-list{display:flex;flex-direction:column;border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);padding:var(--ov-space-1);margin-top:var(--ov-space-1);min-width:min(14rem,calc(100vw - 64px))}
+.cluster-hr-menu-list button{text-align:left}
+.cluster-hr-listbox{list-style:none;margin:0;padding:2px;max-height:min(28rem,60vh);overflow:auto;border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);background:var(--ov-surface-sunken);color:var(--ov-text);font-size:var(--ov-text-sm)}
+.cluster-hr-listbox li{white-space:pre;min-height:1.4em;padding:1px 6px;cursor:default;overflow:hidden;text-overflow:ellipsis}
+.cluster-hr-listbox.cluster-hr-wrap li{white-space:pre-wrap;overflow-wrap:anywhere}
+.cluster-hr-listbox li[aria-selected=true]{background:var(--ov-accent);color:var(--ov-accent-contrast,#fff)}
+.cluster-hr-message{white-space:pre-line}
+.cluster-hr-search{display:flex;flex-direction:column;gap:var(--ov-space-2)}
+.cluster-hr-search input[type=text]{max-width:100%}
+.cluster-print-report{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px;max-height:min(60vh,34rem);overflow:auto}
+.cluster-print-line{font-family:"Courier New",Courier,var(--ov-font-mono);font-size:13px;margin:0;white-space:pre-wrap;min-height:1.2em}
+.cluster-print-indent{padding-inline-start:4ch}
+.cluster-print-placeholder{font-style:italic}
+.cluster-print-gap{height:1.2em}
+.cluster-print-page{break-before:page}
+@media print{
+html[data-print-scope=cluster-hr] body>:not(.cluster-print-root){display:none!important}
+html[data-print-scope=cluster-hr] .cluster-print-root{position:static!important;display:block!important;border:0!important;box-shadow:none!important;max-height:none!important;overflow:visible!important;width:auto!important;padding:0!important;background:#fff!important;color:#000!important}
+html[data-print-scope=cluster-hr] .cluster-print-root::backdrop{display:none}
+html[data-print-scope=cluster-hr] .cluster-print-chrome{display:none!important}
+html[data-print-scope=cluster-hr] .cluster-print-report{border:0!important;max-height:none!important;overflow:visible!important}
+}

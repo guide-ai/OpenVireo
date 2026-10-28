@@ -1,0 +1,163 @@
+**Load Data from Observations**
+To load and analyze photometric data for a cluster that you have just
+taken with the telescope and photometer, select "File"->"Load/Plot"->
+"Data from Observations" from the HR diagram analysis tool menu.  The
+raw color-magnitude (HR) diagram will appear when the data is loaded.
+If you have saved photometric data from a previous session, reload it
+before accessing it in this manner.
+
+Related Topics:
+    Topics under "Cluster Analysis Tools"
+    Help topics "Results Editors" and "Load Saved Data" on the
+      observatory control panel menu.
+
+**Load Data from Cluster Database**
+To load and analyze photometric data for individual custers from the
+VIREO database, select "File"->"Load/Plot"->"Select Cluster Data" from
+the HR diagram analysis tool menu.  On the list that appears, click on
+an entry to select it, then pick "Selection"->"Plot" from the menu.
+Alternatively, double-click an entry on the list to load and plot the
+data.
+
+Related Topics:
+    Topics under "Cluster Analysis Tools"
+    Load New Cluster from Database
+
+**Load New Cluster from Database**
+Loading a new cluster from the database will replace the data points on
+the HR diagram display.  If the ZAMS and/or an isochrone is displayed,
+it will not be removed automatically.
+
+Related Topics:
+    Load Data from Cluster Database
+    Remove ZAMS, Isochrone from Display
+
+**Display Zero-Age Main Sequence**
+Fitting the zero-age main sequence (ZAMS) to the cluster data will
+enable you to determine the distance modulus V-Mv and the color excess
+E(B-V) of the cluster.  To display the ZAMS, select "Tools"->"Zero Age
+Main Sequence" from the HR diagram analysis tool menu.  The ZAMS will be
+initially displayed with V-Mv = 0.
+
+Related Topics:
+    Fit Zero-Age Main Sequence
+    Remove ZAMS, Isochrone from Display
+
+**Fit Zero-Age Main Sequence**
+Use the V-Mv adjustment slider on the right-hand side of the HR diagram
+plot to fit the ZAMS to the main sequence shown by the cluster plot.
+Keep in mind that the upper portion of the cluster main sequence will
+have evolved away from the zero-age main sequence.  The extent of this
+will depend on the age of the cluster.  (Fitting an isochrone after you
+have placed the ZAMS will make this clearer.)  There will also be stars
+on the cluster HR diagram that are not members of the cluster, but in
+most cases the cluster main sequence is adequately delineated to allow a
+fairly accurate fit of the ZAMS.
+
+The slider on the bottom of the plot moves the ZAMS laterally by
+applying a color excess E(B-V) to compensate for the reddening effect of
+interstellar dust between the cluster and the sun.  To simplify the
+fitting process, by default the software automatically sets E(B-V) to
+the correct value for the cluster you are studying, and you need not
+change it.  Your instuctor should inform you if this default has been
+changed, and you need to consider adjusting E(B-V) when you are fitting
+the ZAMS.
+
+Related Topics:
+    Display Zero-Age Main Sequence
+    Add Isochrone to Display
+    Remove ZAMS, Isochrone from Display
+
+**Add Isochrone to Display**
+Fitting the correct isochrone to the cluster data will tell you the age
+of the cluster and the metallicity of the cluster stars. The isochrone
+display uses the fit of the zero-age main sequence to "anchor" the V-Mv
+and E(B-V) parameters, so you must first fit the ZAMS before adding an
+isochrone.  When you have done this, add the isochrone display by
+selecting "Tools"->"Isochrones..." from the menu.  The Isochrone
+Parameters control box that appears will enable you to adjust the
+isochrone to fit the cluster data.  (When an isochrone is displayed,
+changes to the sliders on the HR diagram display that control the V-Mv
+and E(B-V) values will cause the ZAMS and isochrone displays to move
+together.)
+
+NOTE: The isochrones are obtained from theoretical models provided at
+the specific values of age and metallicity covered by the controls.
+Intermediate values are not available, and an exact fit to a specific
+cluster may not always be possible.  The lower portion of the main
+sequence from the isochrone may not exactly match the ZAMS.  You should
+try to make a good match to the main sequence just below the turnoff,
+the turnoff itself, and the evolved poritons of the diagram above and to
+the right of the turnoff.
+
+Related Topics:
+    Fit Zero-Age Main Sequence
+    Adjust Isochrone Age
+    Set Isochrone Metallicity
+    Adjust Isochrone Color
+    Remove ZAMS, Isochrone from Display
+
+**Adjust Isochrone Age**
+Use the slider at the top of the Isochrone Parameters control box to
+adjust the age of the displayed isochrone.  The slider adjusts the
+logarithim of the age in years from 7.80 to 10.25, in units of 0.05.
+This corresponds to cluster ages from 63 million to nearly 18 billion
+years.  (See NOTE under "Add Isochrone to Display".)  You may find that
+the age of the cluster you are studying is outside the range of the
+available isochrones.  In this case you would conclude that the age of
+the cluster is less than or greater than the applicable limit.
+
+Related Topics:
+    Add Isochrone to Display
+    Set Isochrone Metallicity
+    Adjust Isochrone Color
+    Remove ZAMS, Isochrone from Display
+
+**Set Isochrone Metallicity**
+Isochrone models are provided for 6 values of metallicity.  (See NOTE
+under "Add Isochrone to Display".)  In addition to the solar value, 4
+models with lower metallicity and 1 with higher are available.  Most
+open clusters in the galaxy have metallicities near the solar value, and
+you should always start with that.  If you cannot get a satisfactory
+match, you can try changing the metallicity.  (You may also want to try
+several values just to see the effect it has.)  On the Isochrone
+Parameters control box, use the little arrow buttons at the right edge
+of the metallicity read-out to display the different values.  To change
+the metallicity of the displayed isochrone, set the model you want in
+the box and then double-click on it.
+
+Related Topics:
+    Add Isochrone to Display
+    Adjust Isochrone Color
+
+**Adjust Isochrone Color**
+The "Adjust (B-V)" slider on the Isochrone Parameters control box moves
+the isochrone laterally on the HR diagram without moving the ZAMS.  This
+may allow you to get a better fit, especially if you are having trouble
+getting the main sequence of the isochrone to match the ZAMS.  (You also
+might try alteriing the metallicity to correct this.)  To some degree,
+the (B-V) adjustment mimics the effect of metallicity variations that
+are smaller than the differences in the models.
+
+Related Topics:
+    Add Isochrone to Display
+    Set Isochrone Metallicity
+
+**Remove ZAMS, Isochrone from Display**
+Select "Tools"->"Clear" from the HR diagram analysis tool menu to remove
+both the ZAMS and isochrone from the display.  You can also remove them
+individually by re-selecting the appropriate menu choice ("Tools"->
+"Zero-Age Main Sequence" or "Tools"->"Isochrones...").  This is probably
+most useful for removing the isochrone while leaving the ZAMS,
+especially after a new cluster has been loaded.
+
+Related Topics:
+    Load New Cluster from Database
+
+**Display/Print Cluster Age/Distance Parameters**
+Select "Tools"->"View/Print Parameters" from the HR diagram analysis
+tool menu to obtain a display of the parameter values resulting from
+your analysis of the cluster HR diagram.  Select "List"->"Print" for a
+hard copy.
+
+
