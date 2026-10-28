@@ -71,3 +71,13 @@ export const OBJECT_X_HIDE_DEGREES=2;
 export function objectXMasks(hidden:Readonly<{ra:number;dec:number}>|null,p:Readonly<{ra:number;dec:number}>):boolean{
  return !!hidden&&separationDegrees(p.ra,p.dec,hidden.ra,hidden.dec)<=OBJECT_X_HIDE_DEGREES;
 }
+
+/** What a camera exposure does with the Object X observable list (web wiring, not a recovered contract). A list current for
+ * the exposure date is read by both cameras (the original IR copy 0x51e110 also draws moving objects, with IR offsets).
+ * Otherwise a CCD exposure asks for a list to be built for the next image once the exercise has started; an IR exposure
+ * never does, so IR images leave the Object X session (lists, images, exposures) unchanged. */
+export type ObjectXCameraListUse='use'|'build'|'none';
+export function objectXCameraListUse(o:Readonly<{camera:'ccd'|'ir';listCurrent:boolean;clockSet:boolean;hasList:boolean}>):ObjectXCameraListUse{
+ if(o.listCurrent)return 'use';
+ return o.camera==='ccd'&&(o.clockSet||o.hasList)?'build':'none';
+}

@@ -22,3 +22,18 @@ test('the camera passes (jd, seconds) and a skipped moving pair shows in the Obj
  const images=host.getByTestId('objectx-images').locator('li');await expect(images).toHaveCount(1);
  await expect(host.getByTestId('objectx-image-skipped-0')).toHaveText('Not drawn: 1 far outside the detector.');
 });
+test('an IR exposure draws through the same hook but adds nothing to the Object X session',async({page})=>{
+ const jhk=await readFile(new URL('./fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url));
+ await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body:jhk}));
+ await page.goto('/');await expect(page.locator('h1').first()).toBeVisible();
+ await page.evaluate(()=>document.getElementById('root')?.remove());
+ await page.evaluate(`import(${JSON.stringify('/tests/fixtures/object-x-camera-host.ts')}).then(m=>{m.mountObjectXCameraHost();})`);
+ const host=page.getByTestId('objectx-camera-host'),camera=host.getByTestId('camera-control');
+ await camera.getByLabel('IR camera (J, H, K)').check();
+ await camera.getByLabel(/Ask CDS\/VizieR live/).check();await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill('2');
+ await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
+ await expect(camera.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:30_000});
+ expect(JSON.parse(await host.getByTestId('host-extra-calls').textContent()??'[]')).toEqual([2454983.5+4/24,2]);
+ await expect(host.getByTestId('host-objectx-snapshot')).toHaveText('{"exposures":0,"images":0,"listJd":null}');
+ await expect(host.getByTestId('objectx-images').locator('li')).toHaveCount(0);
+});

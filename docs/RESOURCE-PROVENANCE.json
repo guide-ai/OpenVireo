@@ -1,19 +1,21 @@
 {
   "schema": 1,
-  "scope": "All1343files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
-  "totalFiles": 1344,
-  "totalBytes": 124681249,
+  "scope": "All1346files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
+  "totalFiles": 1346,
+  "totalBytes": 127547516,
   "extensions": {
-    ".json": 1061,
-    ".LST": 6,
-    ".HTL": 12,
-    ".SP": 81,
-    ".dat": 2,
-    ".png": 170,
-    ".DAT": 2,
+    ".BMP": 4,
     ".CMO": 2,
-    ".sav": 1,
-    ".SPI": 1
+    ".DAT": 2,
+    ".HTL": 12,
+    ".LST": 6,
+    ".SP": 82,
+    ".SPI": 1,
+    ".TXT": 1,
+    ".dat": 3,
+    ".json": 1062,
+    ".png": 170,
+    ".sav": 1
   },
   "groups": {
     "data/classification": {
@@ -159,6 +161,14 @@
       "description": "Bounded derived GSC field packs (whole records only inside ObjectX.HTL spectroscopy target areas; position witnesses otherwise), their provenance and independent Python witnesses",
       "usedBy": "Object X spectrometer branch (core/objectXSpectrometer.ts) through the general field engine",
       "upstreamStatus": "Included under the user approval of 2026-10-27 (AGENTS.md, group 2), based on CLEA License.rtf free noncommercial student copies/no distribution for profit. Originator Project CLEA, Gettysburg College; supporters NSF and Gettysburg College. GSC source-specific terms remain uncertain; not the full GSC or any complete band."
+    },
+    "public/original/variables": {
+      "files": 2,
+      "bytes": 2866267,
+      "materialClass": "unchanged-original-binary-and-text-resource",
+      "description": "Byte-exact original VIREO variable-star files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/CLEA_VStrs.dat(2865524bytes,31147records of92bytes,sorted by RA),SHA-256 55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de;and program files/CLEA/VIREO/VarTypeHlp.TXT(743bytes,CRLF text,the variable-type help sections),SHA-256 d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445.VarTypeHlp.LST(the original help index)and every other file are excluded.",
+      "usedBy": "Variable Star Data and Simulated Light Curve(docs/VARIABLE-STARS.md):lazy same-origin fetch,size and SHA-256 checked before parsing;records decoded by src/core/variableStars.ts,light curve by src/core/lightCurve.ts",
+      "upstreamStatus": "Included under the user approvals of2026-10-26(CLEA_VStrs.dat)and2026-10-27(VarTypeHlp.TXT,group1)recorded in AGENTS.md,on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The records follow the General Catalogue of Variable Stars(GCVS,Samus et al.)field layout(ID,type,max/min magnitudes and flags,magnitude system,epoch,period,M-m/D,spectrum);that upstream identification is an inference from the form captions and values and remains uncertain.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     }
   },
   "authoredExamples": [

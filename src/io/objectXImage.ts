@@ -12,7 +12,7 @@ import {exposureFromWorker,handleCameraWorkerRequest,type CameraWorkerState} fro
 import {loadCameraCatalog,type CameraCatalogOptions,type CameraCatalogSource} from './cameraCatalog';
 
 export function objectXFitsBytes(exposure:CameraExposure,jd:number,catalogName:string,source:Pick<CameraCatalogSource,'mode'|'sha256'|'extractId'|'url'>):Uint8Array{
- const context:CameraFitsContext={jd,filterName:cameraCatalogReference('ccd',exposure.recipe.filterPosition).filter,catalogName,
+ const context:CameraFitsContext={jd,filterName:cameraCatalogReference(exposure.recipe.camera,exposure.recipe.filterPosition).filter,catalogName,
   source:{mode:source.mode,sha256:source.sha256,extractId:source.extractId,url:source.url}};
  return writeCameraFits(exposure,context);
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AUTHORED TEST DOCUMENT (front C6 IR control), not VizieR output and not an observation.
+     Shaped like an I/297 cone-search table with J/H/K only: three stars inside the 0.4 m IR field centred at
+     RA 56.745, Dec 24.118 (one with a blank K) and one row 0.5 deg away (projected, then rejected by the bounds). -->
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+<RESOURCE type="results"><TABLE>
+<FIELD name="NOMAD1" datatype="char" arraysize="12"/><FIELD name="RAJ2000" datatype="double"/><FIELD name="DEJ2000" datatype="double"/>
+<FIELD name="pmRA" datatype="double"/><FIELD name="pmDE" datatype="double"/><FIELD name="Bmag" datatype="float"/><FIELD name="Vmag" datatype="float"/>
+<FIELD name="Rmag" datatype="float"/><FIELD name="Jmag" datatype="float"/><FIELD name="Hmag" datatype="float"/><FIELD name="Kmag" datatype="float"/>
+<DATA><TABLEDATA>
+<TR><TD>1141-0000101</TD><TD>56.7400000</TD><TD>24.1100000</TD><TD>0.0</TD><TD>0.0</TD><TD/><TD/><TD/><TD>11.25</TD><TD>10.80</TD><TD>10.70</TD></TR>
+<TR><TD>1141-0000102</TD><TD>56.7500000</TD><TD>24.1250000</TD><TD>-4.0</TD><TD>6.0</TD><TD/><TD/><TD/><TD>13.50</TD><TD>13.00</TD><TD>12.90</TD></TR>
+<TR><TD>1141-0000103</TD><TD>56.7480000</TD><TD>24.1150000</TD><TD>0.0</TD><TD>0.0</TD><TD/><TD/><TD/><TD>15.75</TD><TD>15.40</TD><TD/></TR>
+<TR><TD>1141-0000104</TD><TD>57.2450000</TD><TD>24.1180000</TD><TD>0.0</TD><TD>0.0</TD><TD/><TD/><TD/><TD>9.00</TD><TD>8.70</TD><TD>8.60</TD></TR>
+</TABLEDATA></DATA></TABLE></RESOURCE>
+</VOTABLE>

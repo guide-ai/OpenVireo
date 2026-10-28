@@ -4,7 +4,7 @@ import {CAMERA_MESSAGES as M} from './camera/CameraMessages';
 import {cameraRequestTransition,createCameraRequestGate,CAMERA_OBSERVE_INTERVAL_MS,type CameraGateEffect,type CameraGateEvent,type CameraRequestGate} from './core/cameraRequestGate';
 import {compiledCameraQueryReference} from './core/cameraQueryReference';
 import {vizierRouteForCamera} from './core/vizierNomad';
-import {CAMERA_MAX_SECONDS,type CameraExposure,type CameraExtraSource} from './core/cameraExposure';
+import {CAMERA_GAINS,CAMERA_MAX_SECONDS,type CameraExposure,type CameraExposureKind,type CameraExtraSource} from './core/cameraExposure';
 import {exposureFromWorker,type CameraWorkerReply,type CameraWorkerRequest} from './camera/cameraWorkerCore';
 import {cameraDisplayRgba} from './core/cameraDisplay';
 import {INITIAL_CAMERA_PALETTE} from './core/cameraPalette';
@@ -15,23 +15,25 @@ import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
 
-export type CameraExtraSourceProvider=(jd:number,seconds:number)=>readonly CameraExtraSource[];
+export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
-export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number):readonly CameraExtraSource[]{return provider?.(jd,seconds)??[];}
+export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string}>;
 export type CameraControlProps=Readonly<{
  active:boolean;busy:boolean;telescopeIndex:OpticalIndex;pointing:Pointing;access:AccessReason;
  /** Julian date of the observatory clock at the moment Start is pressed. */
  currentJd:()=>number;
  /** Moving pairs for this exposure, supplied by front X: called with the JD at Start and the exposure length in seconds
-  * (the pair's end is the position at JD + seconds, as ComputeMovers 0x59940c uses dt = exposure). */
+  * (the pair's end is the position at JD + seconds, as ComputeMovers 0x59940c uses dt = exposure), and the camera kind
+  * (IR images draw moving objects too, but must not change Object X state). */
  extraSources?:CameraExtraSourceProvider;
- /** Receives every finished image; image.exposure.skipped lists moving pairs that were not drawn, with a typed reason. */
+ /** Receives every finished CCD image; image.exposure.skipped lists moving pairs that were not drawn, with a typed reason.
+  * IR images are not passed on: they stay out of the Object X investigation and its replay (coordinator, 2026-10-28). */
  onImage?:(image:CameraImage)=>void;
  /** Test seam: fixed seed instead of crypto.getRandomValues. */
  seedSource?:()=>number;
 }>;
-type Attempt={ticket:CameraGateEffect['ticket'];controller:AbortController;seconds:number;filter:number;gain:number;mode:CameraCatalogMode;jd:number;seed:number;pointing:Pointing;telescope:OpticalIndex;
+type Attempt={ticket:CameraGateEffect['ticket'];controller:AbortController;camera:CameraExposureKind;seconds:number;filter:number;gain:number;mode:CameraCatalogMode;jd:number;seed:number;pointing:Pointing;telescope:OpticalIndex;
  worker:Worker|null;pending:((reply:CameraWorkerReply|null)=>void)|null;source:CameraCatalogSource|null;failure:string|null;prepared:CameraImage|null;catalogName:string};
 /** One Worker per attempt; parse and compose run there so Stop stays responsive (review fix H2). */
 function call(a:Attempt,request:CameraWorkerRequest,transfer:Transferable[]=[]):Promise<CameraWorkerReply|null>{
@@ -41,14 +43,14 @@ function call(a:Attempt,request:CameraWorkerRequest,transfer:Transferable[]=[]):
  return new Promise(resolve=>{a.pending=resolve;a.worker!.postMessage(request,transfer);});
 }
 function stopWorker(a:Attempt|null){if(!a)return;a.worker?.terminate();a.worker=null;const p=a.pending;a.pending=null;p?.(null);}
-function cameraQuery(telescope:OpticalIndex,filter:number,pointing:Pointing,jd:number){
- const reference=compiledCameraQueryReference('ccd',telescope,filter,{centerRAHours:pointing.ra,centerDecDegrees:pointing.dec,selectionMagnitudeLimit:21.5,suppliedDateDouble:jd,dateBias:0});
- return {reference,route:vizierRouteForCamera('ccd',filter)};
+function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:number,pointing:Pointing,jd:number){
+ const reference=compiledCameraQueryReference(camera,telescope,filter,{centerRAHours:pointing.ra,centerDecDegrees:pointing.dec,selectionMagnitudeLimit:21.5,suppliedDateDouble:jd,dateBias:0});
+ return {reference,route:vizierRouteForCamera(camera,filter)};
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
 export default function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
- const [filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
+ const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
  const [image,setImage]=useState<CameraImage|null>(null);
@@ -72,14 +74,14 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    case 'initialize-request':void request(a);break;
    case 'prepare':setMessage(M.statusPreparing);void prepare(a);break;
    case 'release':a.controller.abort();stopWorker(a);stopTimers();window.setTimeout(()=>dispatch({type:'released',ticket:effect.ticket,ok:true}),0);break;
-   case 'accept-prepared':if(a.prepared){setImage(a.prepared);onImage?.(a.prepared);}break;
+   case 'accept-prepared':if(a.prepared){setImage(a.prepared);if(a.camera==='ccd')onImage?.(a.prepared);}break;
   }
  }
  /** Every outcome ends in a gate event; nothing is rethrown (review fix H1). */
  async function request(a:Attempt){
   const fail=(failure:string,transportSucceeded:boolean,catalog:'invalid'|'unsupported')=>{if(attempt.current!==a)return;a.failure=failure;dispatch({type:'request-result',ticket:a.ticket,finished:true,transportSucceeded,catalog});};
   let query;
-  try{query=cameraQuery(a.telescope,a.filter,a.pointing,a.jd);}
+  try{query=cameraQuery(a.camera,a.telescope,a.filter,a.pointing,a.jd);}
   catch{a.failure='initialization';dispatch({type:'initialization-failed',ticket:a.ticket});return;}
   try{
    const {reference,route}=query;a.catalogName=route.catalogName;
@@ -96,8 +98,8 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
  async function prepare(a:Attempt){
   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
   try{
-   const extras=cameraExtras(extraSources,a.jd,a.seconds);
-   const reply=await call(a,{type:'compose',recipe:{camera:'ccd',opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras});
+   const extras=cameraExtras(extraSources,a.jd,a.seconds,a.camera);
+   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
    a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName});
@@ -125,7 +127,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
  const ready=access==='ready'&&active&&!busy;
  // Static mode: whether a bundled extract covers this pointing is known before Start (review L6).
  let staticCovered=true;
- if(mode==='static'){try{const {reference,route}=cameraQuery(telescopeIndex,filter,pointing,2451545);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
+ if(mode==='static'){try{const {reference,route}=cameraQuery(camera,telescopeIndex,filter,pointing,2451545);staticCovered=!!findCameraExtract({catalog:route.catalog,raHours:pointing.ra,decDegrees:pointing.dec,radiusDegrees:reference.searchRadiusDegrees});}catch{staticCovered=false;}}
  function start(){
   if(!ready||!validExposure||running)return;
   if(mode==='static'&&!staticCovered){setMessage(`${M.statusFailed} ${M.failure['no-extract']}`);return;}
@@ -133,27 +135,33 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
   attempt.current=null;
   const transition=cameraRequestTransition(gateRef.current,{type:'start',seconds:total});
   const ticket=transition.state.ticket!;
-  attempt.current={ticket,controller:new AbortController(),seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:''};
+  attempt.current={ticket,controller:new AbortController(),camera,seconds:total,filter,gain,mode,jd,seed,pointing:{ra:pointing.ra,dec:pointing.dec},telescope:telescopeIndex,worker:null,pending:null,source:null,failure:null,prepared:null,catalogName:''};
   gateRef.current=transition.state;setGate(transition.state);setWaitShown(false);
   for(const effect of transition.effects)apply(effect);
  }
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
- function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference('ccd',i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
+ function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
  function save(){
   if(!image)return;const context=fitsContext(image),bytes=writeCameraFits(image.exposure,context);
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
-  a.href=url;a.download=cameraFitsFileName(context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
+  a.href=url;a.download=cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
- const shown=image?.exposure,filterName=(i:number)=>M.filterNames[i];
+ const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
+ const shown=image?.exposure,showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
+ /** Switching camera resets the filter and keeps the gain when the other camera offers it (gain 2 exists on both). */
+ function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
  return <section className="card camera-control" aria-labelledby="camera-control-title" data-testid="camera-control" data-phase={gate.phase} data-terminal={gate.terminal}>
-  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{M.title}</h2><p>{M.intro}</p>
+  <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2><p>{camera==='ir'?M.introIr:M.intro}</p>
   <fieldset className="camera-settings" disabled={running||busy}>
-   <label>{M.filter}<select value={filter} onChange={e=>setFilter(Number(e.target.value))}>{M.filterNames.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
+   <fieldset className="camera-kind"><legend>{M.camera}</legend>
+    {(['ccd','ir'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
+   </fieldset>
+   <label>{M.filter}<select value={filter} onChange={e=>setFilter(Number(e.target.value))}>{filterNames.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
    <div className="camera-exposure" role="group" aria-label={M.exposure}>
     <label>{M.minutes}<input inputMode="numeric" value={minutes} maxLength={2} onChange={e=>setMinutes(e.target.value.trim())} aria-invalid={!validExposure}/></label>
     <label>{M.seconds}<input inputMode="numeric" value={seconds} maxLength={2} onChange={e=>setSeconds(e.target.value.trim())} aria-invalid={!validExposure}/></label>
    </div>
-   <label>{M.gain}<select value={gain} onChange={e=>setGain(Number(e.target.value))}>{[1,2,5].map(g=><option key={g} value={g}>{g}</option>)}</select></label>
+   <label>{M.gain}<select value={gain} onChange={e=>setGain(Number(e.target.value))}>{gains.map(g=><option key={g} value={g}>{g}</option>)}</select></label>
    <fieldset className="camera-source"><legend>{M.catalogSource}</legend>
     <label><input type="radio" name="camera-source" checked={mode==='static'} onChange={()=>setMode('static')}/>{CAMERA_EXTRACTS.length?M.sourceStatic:M.sourceStaticNone}</label>
     <label><input type="radio" name="camera-source" checked={mode==='live'} onChange={()=>setMode('live')}/>{M.sourceLive}</label>
@@ -168,7 +176,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
   <p role="status" aria-live="polite" data-testid="camera-status">{!ready&&!running?(busy||!active?M.statusUnavailable:M.statusNotReady(M.accessReason[access]??'')):message}</p>
   {gate.phase==='exposing'&&<p className="camera-countdown" data-testid="camera-countdown">{M.countdown(gate.remainingSeconds,gate.requestedSeconds)}</p>}
   {shown&&image&&<figure className="camera-image">
-   <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.filterPosition),shown.recipe.seconds)} data-testid="camera-canvas"/>
+   <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.camera,shown.recipe.filterPosition),shown.recipe.seconds,shown.recipe.camera)} data-testid="camera-canvas"/>
    <figcaption>{M.displayNote}</figcaption>
    <div className="button-row"><button className="secondary-button" disabled={running} onClick={save}>{M.save}</button></div><p className="observatory-note">{M.saveNote}</p>
    <label className="camera-palette"><input type="checkbox" checked={usePalette} onChange={e=>setUsePalette(e.target.checked)}/>{M.palette}</label>
@@ -183,6 +191,8 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    </dl></details>
   </figure>}
   <p className="observatory-note">{M.adaptation}</p>
+  {showIrNotes&&<p className="observatory-note" data-testid="camera-ir-adaptation">{M.adaptationIr}</p>}
   <p className="observatory-note">{M.citation}</p>
+  {showIrNotes&&<p className="observatory-note" data-testid="camera-ir-citation">{M.citationIr}</p>}
  </section>;
 }

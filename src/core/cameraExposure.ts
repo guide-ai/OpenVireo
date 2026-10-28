@@ -1,4 +1,10 @@
-/** CCD exposure composer (front C2): recipe + catalog selection + extra sources -> final Single plane.
+/** CCD/IR exposure composer (fronts C2, C6): recipe + catalog selection + extra sources -> final Single plane.
+ * The IR path (window 0x53f850, form 0x5b5f08) has the same stage order with its own owners (docs/CAMERA-IR.md):
+ * select 0x51def0 (J/H/K = NOMAD selectors 3/4/5), moving copy 0x51e110 (offsets J 1.13, H +0.29, K +0.07, applied
+ * cumulatively), catalog update = the inherited CCD update 0x522454 (IR VMT 0x51dc40 slot 2, called at 0x51e46e;
+ * 0x522698 per row), background 0x51e4f3 (CCD noise record), no overlay branch, source loop 0x51e567 (no NF
+ * adjustment) and final 0x51e60a (IR record). The loop 0x51e035..0x51e0d4 inside select is inert (inference: its
+ * list is empty there). CCD order:
  * Order recovered statically (NATIVE-CAMERA-FRONT-C-C0-01, docs/CAMERA-EXPOSURE.md):
  *  1. Field initialize 0x5220f4 clears the field source list. Select 0x5222d4 then calls 0x522718, which projects the
  *     moving-object (kind-2) records with 0x522560 (2 draws each, no bounds test), applies the filter offset table
@@ -28,8 +34,9 @@ import type {VizierSelection} from './vizierNomad';
  * storedMag is the record magnitude before the recovered filter offset, which the composer applies.
  * [W] Fixed-position field objects (native kind 0 via 0x5228dc) are not offered: see CAMERA_EXPOSURE_UNRECOVERED. */
 export type CameraExtraSource=Readonly<{raHours:number;decDeg:number;storedMag:number;kind:'pair';end:Readonly<{raHours:number;decDeg:number}>}>;
+export type CameraExposureKind='ccd'|'ir';
 export type CameraExposureRecipe=Readonly<{
- camera:'ccd';opticalIndex:OpticalIndex;filterPosition:number;seconds:number;gain:number;
+ camera:CameraExposureKind;opticalIndex:OpticalIndex;filterPosition:number;seconds:number;gain:number;
  centerRaHours:number;centerDecDegrees:number;
  /** uint32 seed of the camera-private stream [W]. */
  seed:number;
@@ -53,11 +60,23 @@ export type CameraExposure=Readonly<{
 }>;
 /** Filter offsets of 0x522718's switch on the filter position. Extended constants, applied as mag - c. */
 const MOVING_OFFSET:readonly number[]=Object.freeze([0.54,-0.65,0,0.54,0.88]);
+/** IR moving copy 0x51e110: Extended 1.13 (0x51e2b4), 0.29 (0x51e2c0), 0.07 (0x51e2cc), subtracted in turn
+ * (J one step, H two, K three; fsubr then fsubp) before the Single store. */
+export const IR_MOVING_STEPS:readonly number[]=Object.freeze([1.13,0.29,0.07]);
+export function cameraMovingMagnitude(kind:CameraExposureKind,filterPosition:number,storedMag:number):number {
+ const m=Math.fround(storedMag);
+ if(kind==='ccd')return Math.fround(m-MOVING_OFFSET[filterPosition]);
+ let v=m;for(let i=0;i<=filterPosition;i++)v-=IR_MOVING_STEPS[i];
+ return Math.fround(v);
+}
+/** Compiled gain positions: CCD 1/2/5, IR 1/2/4/8 (cameraBackground/cameraFinal owners). */
+export const CAMERA_GAINS:Readonly<Record<CameraExposureKind,readonly number[]>>=Object.freeze({ccd:Object.freeze([1,2,5]),ir:Object.freeze([1,2,4,8])});
 export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'private-seeded-stream: each exposure draws from its own uint32-seeded copy of the recovered Random step',
  'fresh-field-list: the list is rebuilt per exposure (initialize -> select -> update), and moving records are projected in the same stream just before catalog rows',
  'whole-sky-selection: the region bounds at [0x5b5b30] are not recovered; selection keeps the magnitude limit',
  'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered',
+ 'ir-like-ccd: the IR window\'s exposure-time limit is not recovered; IR uses the CCD web bound (CAMERA_MAX_SECONDS). (No overlay is recovered: IR preparation 0x51e43c has no overlay branch.)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
  'number-arithmetic: Number/Math with Single stores replaces x87 Extended',
@@ -70,15 +89,16 @@ export const CAMERA_EXPOSURE_UNRECOVERED=Object.freeze([
 
 const finite=(v:unknown,limit:number):v is number=>typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<=limit;
 function checkRecipe(r:CameraExposureRecipe):CameraExposureRecipe {
- if(!r||typeof r!=='object'||r.camera!=='ccd')throw new CameraExposureError('recipe','camera');
- const index=opticalIndex(r.opticalIndex);cameraCatalogReference('ccd',r.filterPosition);
+ if(!r||typeof r!=='object'||(r.camera!=='ccd'&&r.camera!=='ir'))throw new CameraExposureError('recipe','camera');
+ const index=opticalIndex(r.opticalIndex);
+ try{cameraCatalogReference(r.camera,r.filterPosition);}catch{throw new CameraExposureError('recipe','filter');}
  if(!Number.isInteger(r.seconds)||r.seconds<1||r.seconds>CAMERA_MAX_SECONDS)throw new CameraExposureError('recipe','seconds');
- if(![1,2,5].includes(r.gain))throw new CameraExposureError('recipe','gain');
+ if(!CAMERA_GAINS[r.camera].includes(r.gain))throw new CameraExposureError('recipe','gain');
  if(!finite(r.centerRaHours,24)||r.centerRaHours<0||!finite(r.centerDecDegrees,90))throw new CameraExposureError('recipe','center');
  if(!Number.isInteger(r.seed)||r.seed<0||r.seed>0xffff_ffff)throw new CameraExposureError('recipe','seed');
- return Object.freeze({camera:'ccd',opticalIndex:index,filterPosition:r.filterPosition,seconds:r.seconds,gain:r.gain,centerRaHours:r.centerRaHours,centerDecDegrees:r.centerDecDegrees,seed:r.seed});
+ return Object.freeze({camera:r.camera,opticalIndex:index,filterPosition:r.filterPosition,seconds:r.seconds,gain:r.gain,centerRaHours:r.centerRaHours,centerDecDegrees:r.centerDecDegrees,seed:r.seed});
 }
-/** [W] Web bound on one exposure (the original editor limit is not recovered). The camera form uses the same value. */
+/** [W] Web bound on one exposure (the original editor limit is not recovered, for CCD or IR). The camera form uses the same value. */
 export const CAMERA_MAX_SECONDS=3600;
 function checkExtras(extras:readonly CameraExtraSource[]):readonly CameraExtraSource[] {
  if(!Array.isArray(extras)||extras.length>256)throw new CameraExposureError('extra','list');
@@ -104,12 +124,13 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
  const recipe=checkRecipe(recipeInput),extras=checkExtras(extrasInput);
  if(!selection||!Array.isArray(selection.selectedEntries))throw new CameraExposureError('catalog');
  const stream=new CameraRandomCursor(recipe.seed);
- // CCD compiled record byte +0x5a = 1 (0x5a2bd8): seeing jitter enabled.
- const context=compiledCameraProjection('ccd',recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true);
+ // Compiled record byte +0x5a = 1 for both cameras (CCD store 0x5a2bd8, IR store 0x5a2c48): seeing jitter on.
+ const kind=recipe.camera;
+ const context=compiledCameraProjection(kind,recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true);
  const records:CameraFieldRecord[]=[],skipped:CameraSkippedSource[]=[];
  // 1. Moving (kind-2) records: start and end are both kind 2; the end record's magnitude is never read.
  extras.forEach((e,extraIndex)=>{
-  const magnitude=Math.fround(Math.fround(e.storedMag)-MOVING_OFFSET[recipe.filterPosition]),pair:CameraFieldRecord[]=[];
+  const magnitude=cameraMovingMagnitude(kind,recipe.filterPosition,e.storedMag),pair:CameraFieldRecord[]=[];
   for(const [origin,c] of [['moving-start',{raHours:e.raHours,decDegrees:e.decDeg}],['moving-end',{raHours:e.end.raHours,decDegrees:e.end.decDeg}]] as const){
    const p=projectCameraSource(context,c,[stream.next(),stream.next()]);
    pair.push(Object.freeze({origin,kind:2 as const,extraIndex,identifier:null,raHours:c.raHours,decDegrees:c.decDegrees,magnitude,...pixel(context,p.planeX,p.planeY)}));
@@ -124,13 +145,13 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   records.push(Object.freeze({origin:'catalog' as const,kind:0 as const,extraIndex:null,identifier:row.identifier,raHours:row.raHours,decDegrees:row.decDegrees,magnitude:row.selectedMagnitude,pixelX:p.pixelX!,pixelY:p.pixelY!}));
  }
  // 3. Background.
- const background=compiledCameraBackgroundParameters('ccd',recipe.seconds,recipe.gain);
+ const background=compiledCameraBackgroundParameters(kind,recipe.seconds,recipe.gain);
  const initial=cameraBackgroundStage(background,stream.take(background.width*background.height));
  const plane=Float32Array.from(initial.pixels);
  // 5. Sources in list order.
  for(let i=0;i<records.length;i++){
   const r=records[i];
-  const calibration=compiledCameraSourceCalibration('ccd',recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);
+  const calibration=compiledCameraSourceCalibration(kind,recipe.opticalIndex,recipe.filterPosition,recipe.seconds,r.magnitude);
   if(r.kind===2){
    const end=records[i+1];
    let plan:CameraExtendedPlan|null=null;
@@ -143,7 +164,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
    if(plan)applyPlan(plane,plan,stream);i++;
   }else applyPlan(plane,cameraPointPlan(cameraPointParametersFromCalibration(calibration,r.pixelX,r.pixelY)),stream);
  }
- const final=finalizeCameraPlane({phase:'point-sources-before-clipping',width:initial.width,height:initial.height,localDrawsConsumed:0,pixels:Array.from(plane),histogram:initial.histogram},compiledCameraFinalParameters('ccd',recipe.gain));
+ const final=finalizeCameraPlane({phase:'point-sources-before-clipping',width:initial.width,height:initial.height,localDrawsConsumed:0,pixels:Array.from(plane),histogram:initial.histogram},compiledCameraFinalParameters(kind,recipe.gain));
  return Object.freeze({recipe,plane:final,records:Object.freeze(records),skipped:Object.freeze(skipped),drawsConsumed:stream.drawsConsumed,finalRandomState:stream.finalState,
   catalog:Object.freeze({rows:selection.catalog?.entries.length??0,selected:selection.selectedEntries.length,onDetector}),
   adaptations:CAMERA_EXPOSURE_ADAPTATIONS,unrecovered:CAMERA_EXPOSURE_UNRECOVERED});
