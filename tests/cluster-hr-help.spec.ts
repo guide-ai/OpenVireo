@@ -101,3 +101,17 @@ test('Help works at 320 px and in the dark theme',async({page})=>{
  await expect(page.getByTestId('cluster-help-window').getByRole('heading',{name:'Help - Display/Print Cluster Age/Distance Parameters'})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
+
+test('Hyades: VIREO draws points outside the axes; the two that miss its picture are marked in the values table',async({page})=>{
+ await page.goto('/#cluster-database');
+ await panel(page).getByLabel('Reference cluster dataset',{exact:true}).selectOption('hyades');
+ await panel(page).getByRole('button',{name:'Load selected dataset',exact:true}).click();
+ const b=panel(page);
+ await expect(b.getByTestId('db-hr-star-count')).toHaveText('# of Stars: 372');
+ await expect(b.getByTestId('native-observed-point')).toHaveCount(370);
+ await expect(b.getByTestId('db-hr-drawn-count')).toContainText("Outside VIREO's 496 × 506 picture (listed in the values table): 2.");
+ await b.getByText('Inspect all reference data values',{exact:true}).click();
+ await expect(b.locator('tr[data-off-image=true]')).toHaveCount(2);
+ await expect(b.locator('tr[data-off-image=true]').first()).toContainText("outside VIREO's picture");
+ await expect(b.getByTestId('cluster-ebv-gate-note')).toContainText('Set E(B-V)');
+});
