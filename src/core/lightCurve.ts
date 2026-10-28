@@ -1,5 +1,5 @@
-import {formatFixed,roundHalfEven} from './radioAntenna';
-import {effectiveRiseWord,type VariableStarRecord} from './variableStars';
+import {roundHalfEven} from './radioAntenna';
+import {delphiFixed,effectiveRiseWord,type VariableStarRecord} from './variableStars';
 /** "Simulated Light Curve" (TLtCrvDsplyForm1) of CLEA_VEO.exe 781bc970…c54c. Recovery: research
  * analysis/front-v-variable-stars/RECOVERY.md §4–§5; docs/VARIABLE-STARS.md.
  * - FormCreate 0x52b6d9 always builds a CepheidTypeObj (class slot 0x51eb5c) — for every variability type;
@@ -18,6 +18,12 @@ export type LightCurveUnavailable=
  'period-zero'|
  /** f = 0 (M−m/D = 100) with φ = 0 divides 0/0 in the decline branch: same failure. */
  'zero-decline-fraction'|
+ /** Faint bound = bright bound: SetRecord 0x52b6f4 divides (bottom − top) by a zero range and the window is never shown
+  * [I]. No bundled record has it (synthetic tests only). */
+ 'axis-range-zero'|
+ /** A magnitude-system string of length 0: 0x52bddd reads its second character through a nil AnsiString and the paint
+  * handler faults after the magnitude axis, GCVS ID and type are drawn [I]. None in the bundled file (synthetic only). */
+ 'magnitude-system-empty'|
  /** A non-finite intermediate that the original would also fault on (defensive). */
  'non-finite';
 export class LightCurveError extends Error{constructor(readonly code:LightCurveUnavailable){super(`Light curve: ${code}`);this.name='LightCurveError';}}
@@ -69,25 +75,29 @@ export type LightCurvePlot=Readonly<{
  curve:Readonly<{points:readonly (readonly [number,number])[]}>|Readonly<{unavailable:LightCurveUnavailable}>;
  model:CepheidModel;
 }>;
-/** SetRecord + FormPaint as data. Text widths are not known on the web: the type label is right-aligned at right − 15
+/** SetRecord + FormPaint as data. Throws LightCurveError('axis-range-zero') when the original never shows the window. Text widths are not known on the web: the type label is right-aligned at right − 15
  * and "Phase" centred, which is what the native TextWidth arithmetic produces (WEB). */
 export function lightCurvePlot(record:VariableStarRecord):LightCurvePlot{
  const model=cepheidModel(record),{left,top,right,bottom}=LIGHT_CURVE_BOX;
  const {faintBound,brightBound}=lightCurveBounds(model.faint,model.bright),range=faintBound-brightBound;
+ if(range===0)throw new LightCurveError('axis-range-zero');
+ // Records with min = 0 and a blank flag (155) have bright > faint, a negative range and a negative step count: the
+ // tick loop runs zero times (0x52bbeb jl), the labels swap places and the curve leaves the box (no clipping).
  const pixelsPerMagnitude=(bottom-top)/range,texts:PlotText[]=[],ticks:PlotSegment[]=[];
  const label=(x:number,y:number,text:string,anchor:PlotText['anchor']='start')=>texts.push(Object.freeze({x,y,text,anchor}));
  const tick=(x1:number,y1:number,x2:number,y2:number)=>ticks.push(Object.freeze({x1,y1,x2,y2}));
  // Magnitude axis 0x52bae5..0x52bd64.
  const steps=roundHalfEven(range/0.5),yStep=roundHalfEven((bottom-top)/steps),yMinor=(bottom-top)/(range*5/0.5);
- label(left-40,bottom-8,formatFixed(faintBound,2));label(left-40,top-8,formatFixed(brightBound,2));
+ label(left-40,bottom-8,delphiFixed(faintBound,2));label(left-40,top-8,delphiFixed(brightBound,2));
  let y=top,value=brightBound;
  for(let k=0;k<steps;k++){
-  if(k>0){y+=yStep;value+=0.5;label(left-40,y-8,formatFixed(value,2));}
+  if(k>0){y+=yStep;value+=0.5;label(left-40,y-8,delphiFixed(value,2));}
   const major=frac(value)<0.01?15:10;tick(left,y,left+major,y);tick(right,y,right-major,y);
   for(let j=1;j<5;j++){const yy=roundHalfEven(j*yMinor)+y;tick(left,yy,left+5,yy);tick(right,yy,right-5,yy);}
  }
  // Titles 0x52bd6a..0x52be1a.
  label(left+15,top+4,record.name);label(right-15,top+4,record.type,'end');
+ if(record.system.length===0)return Object.freeze({box:LIGHT_CURVE_BOX,faintBound,brightBound,pixelsPerMagnitude,texts:Object.freeze(texts),ticks:Object.freeze(ticks),curve:Object.freeze({unavailable:'magnitude-system-empty' as const}),model});
  const system=record.system.length>=2&&record.system[1]===' '?record.system.slice(0,1)+record.system.slice(2):record.system;
  label(left-45,top-30,system+' mag');
  // Phase axis 0x52be1f..0x52c014.
@@ -95,11 +105,11 @@ export function lightCurvePlot(record:VariableStarRecord):LightCurvePlot{
  label(left-10,bottom+5,'0.0');label(right-10,bottom+5,'1.5');
  let x=left;value=0;
  for(let k=0;k<xSteps;k++){
-  if(k>0){x+=xStep;value+=0.5;label(x-10,bottom+5,formatFixed(value,1));}
+  if(k>0){x+=xStep;value+=0.5;label(x-10,bottom+5,delphiFixed(value,1));}
   tick(x,bottom,x,bottom-(frac(value)<0.01?15:10));
   for(let j=1;j<5;j++){const xx=roundHalfEven(j*xMinor)+x;tick(xx,bottom,xx,bottom-5);}
  }
- label((left+right)/2,bottom+20,'Phase','middle');
+ label(Math.trunc((left+right)/2),bottom+20,'Phase','middle');// (left+right) sar 1 − TextWidth sar 1 (0x52bfed)
  // Curve 0x52c090.
  let curve:LightCurvePlot['curve'];
  try{

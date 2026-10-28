@@ -1,4 +1,4 @@
-import {formatFixed,roundHalfEven,splitSexagesimal} from './radioAntenna';
+import {roundHalfEven,splitSexagesimal} from './radioAntenna';
 /** CLEA_VStrs.dat records and the "Variable Star Data" list (TVStarListForm1) of CLEA_VEO.exe
  * 781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c. Recovery notes, addresses and listings:
  * research analysis/front-v-variable-stars/RECOVERY.md; this module ports §3 and §6, docs/VARIABLE-STARS.md.
@@ -8,8 +8,8 @@ import {formatFixed,roundHalfEven,splitSexagesimal} from './radioAntenna';
  * - the CepheidTypeObj Init 0x51f2d8 overwrites a zero M−m/D word with 50 in the in-memory record; a later list fill
  *   (FormShow rebuilds the list) then shows 0.50. That mutation is modelled explicitly by `riseDefaulted`.
  * Numeric policy (web): Singles are exact binary64 values; Extended epoch and period are decoded exactly with BigInt
- * for text and rounded to the nearest binary64 for computing. FloatToStrF rounds the exact value half away from zero
- * [I: the Delphi 18-digit decimal stage is not re-derived]. DecimalSeparator is not recovered; '.' is used. */
+ * for text and rounded to the nearest binary64 for computing. FloatToStrF follows FloatToDecimal 0x40cbb5 (18 digits ties to
+ * even, then half up at the requested decimals; `floatToStrFFixed`). DecimalSeparator is not recovered; '.' is used. */
 
 export const VSTRS_RECORD_BYTES=92;
 export const VSTRS_RECORD_COUNT=31147;
@@ -53,6 +53,9 @@ function extendedToNumber(negative:boolean,mantissa:bigint,exponent:number):numb
  if(!Number.isFinite(v))throw new VariableStarError('record');
  return negative?-v:v;
 }
+/** M−m/D is loaded with `fild WORD` (0x51f2de, 0x51f407, 0x52d0ab): a signed int16. Negative values do not occur and are
+ * rejected. */
+function riseWord(view:DataView):number{const w=view.getInt16(VSTRS_OFFSETS.riseWord,true);if(w<0)throw new VariableStarError('record');return w;}
 export function decodeVariableStarRecord(bytes:Uint8Array,index:number):VariableStarRecord{
  if(!(bytes instanceof Uint8Array)||!Number.isSafeInteger(index)||index<0||(index+1)*VSTRS_RECORD_BYTES>bytes.length)throw new VariableStarError('index');
  const base=index*VSTRS_RECORD_BYTES,r=bytes.subarray(base,base+VSTRS_RECORD_BYTES),view=new DataView(r.buffer,r.byteOffset,VSTRS_RECORD_BYTES),o=VSTRS_OFFSETS;
@@ -60,7 +63,7 @@ export function decodeVariableStarRecord(bytes:Uint8Array,index:number):Variable
  if(!Number.isFinite(raHours)||raHours<0||raHours>=24||!Number.isFinite(decDegrees)||Math.abs(decDegrees)>90||!Number.isFinite(max)||!Number.isFinite(min))throw new VariableStarError('record');
  return Object.freeze({index,name:shortString(r,o.name,SHORT_MAX.name),raHours,decDegrees,type:shortString(r,o.type,SHORT_MAX.type),
   maxFlag:flag(r,o.maxFlag),max,minFlag:flag(r,o.minFlag),min,system:shortString(r,o.system,SHORT_MAX.system),
-  epoch:decodeExtended(r,o.epoch),periodFlag:flag(r,o.periodFlag),period:decodeExtended(r,o.period),riseWord:view.getUint16(o.riseWord,true),
+  epoch:decodeExtended(r,o.epoch),periodFlag:flag(r,o.periodFlag),period:decodeExtended(r,o.period),riseWord:riseWord(view),
   spectrum:shortString(r,o.spectrum,SHORT_MAX.spectrum)});
 }
 /** The whole bundled file, in file order (sorted by RA in this copy). */
@@ -72,25 +75,64 @@ export function decodeVariableStarCatalog(bytes:Uint8Array):readonly VariableSta
 }
 
 // ------------------------------------------------------------------ text
-/** FloatToStrF(x, ffFixed, 18, digits) of an exact Extended: half away from zero on the exact value; a rounded zero
- * keeps no '-'. */
-export function formatExtendedFixed(x:ExactExtended,digits:number):string{
- if(!Number.isInteger(digits)||digits<0||digits>18)throw new VariableStarError('record');
- // |x|·10^d = m·2^e·10^d; rounded = floor(num/den + 1/2).
- let num=x.mantissa*10n**BigInt(digits),den=1n;
- if(x.exponent>=0)num<<=BigInt(x.exponent);else den<<=BigInt(-x.exponent);
- const rounded=(2n*num+den)/(2n*den);
- let s=rounded.toString().padStart(digits+1,'0');
- if(digits>0)s=s.slice(0,-digits)+'.'+s.slice(-digits);
- return x.negative&&rounded!==0n?'-'+s:s;
+/** Exact binary value of a finite Number (a Single or Double field), in the same form as a decoded Extended. */
+export function exactFromNumber(value:number):ExactExtended{
+ if(!Number.isFinite(value))throw new VariableStarError('record');
+ if(value===0)return Object.freeze({negative:Object.is(value,-0),mantissa:0n,exponent:0,value});
+ const view=new DataView(new ArrayBuffer(8));view.setFloat64(0,value);
+ const hi=view.getUint32(0),lo=view.getUint32(4),biased=(hi>>>20)&0x7ff;
+ let mantissa=(BigInt(hi&0xfffff)<<32n)|BigInt(lo),exponent:number;
+ if(biased===0)exponent=-1074;else{mantissa|=1n<<52n;exponent=biased-1075;}
+ // Normalize to a 64-bit mantissa with the top bit set, like an Extended.
+ const shift=64-mantissa.toString(2).length;
+ return Object.freeze({negative:value<0,mantissa:mantissa<<BigInt(shift),exponent:exponent-shift,value});
 }
+const roundHalfEvenRational=(num:bigint,den:bigint)=>{const q=num/den,r=num-q*den;return 2n*r>den||(2n*r===den&&(q&1n)===1n)?q+1n:q;};
+const TEN18=10n**18n;
+/** FloatToStrF(x, ffFixed, 18, digits) through FloatToDecimal 0x40cbb5 (called by 0x40cf28 via wrapper 0x486268) [D]:
+ * E = ((floor(log2|x|)·0x4d10) sar 16) + 1; N = FRNDINT(|x|·10^(18−E)) (ties to even under control word 0x1332);
+ * if N ≥ 10^18 then N := N/10 rounded again by FBSTP, E += 1; the 18 BCD digits are then cut at E + digits (capped at 18)
+ * and rounded half up on the next digit ('5' or more, 0x40cc76), with carry; a cut below 0 gives zero. Web policy: the
+ * scaling |x|·10^k is exact here, while 0x404984 scales in x87 Extended (an error of about one ulp is not reproduced). A
+ * rounded zero prints without '-' (sign behaviour not traced). */
+export function floatToStrFFixed(x:ExactExtended,digits:number):string{
+ if(!Number.isInteger(digits)||digits<0||digits>18)throw new VariableStarError('record');
+ let text:string;
+ if(x.mantissa===0n)text='0'.repeat(digits+1);
+ else{
+  const log2=x.exponent+x.mantissa.toString(2).length-1;
+  let E=Math.floor(log2*0x4d10/65536)+1;
+  const k=18-E;
+  // |x|·10^k = m·2^e·10^k as num/den.
+  let num=x.mantissa,den=1n;
+  if(x.exponent>=0)num<<=BigInt(x.exponent);else den<<=BigInt(-x.exponent);
+  if(k>=0)num*=10n**BigInt(k);else den*=10n**BigInt(-k);
+  let n=roundHalfEvenRational(num,den);
+  if(n>=TEN18){n=roundHalfEvenRational(n,10n);E+=1;}
+  let bcd=n.toString().padStart(18,'0');
+  let cut=E+digits,integer:bigint;
+  if(cut<0)integer=0n;
+  else{
+   if(cut>18)cut=18;
+   let kept=cut===0?0n:BigInt(bcd.slice(0,cut));
+   if(cut<18&&bcd.charCodeAt(cut)>=0x35)kept+=1n;// carry can add one digit: that is E+1 natively, the same number
+   integer=kept*10n**BigInt(E+digits-cut);
+  }
+  text=integer.toString().padStart(digits+1,'0');
+  void bcd;
+ }
+ if(digits>0)text=text.slice(0,-digits)+'.'+text.slice(-digits);
+ return x.negative&&/[1-9]/.test(text)?'-'+text:text;
+}
+/** FloatToStrF ffFixed of a finite Number (Single/Double fields and computed seconds). */
+export const delphiFixed=(value:number,digits:number)=>floatToStrFFixed(exactFromNumber(value),digits);
 /** 0x486ca0: sign slot, whole (wrapped below 360) left-padded to 4, minutes to 2 digits, seconds FloatToStrF(digits)
  * with a '0' prefix when Round(Round(10^d)·sec) div Round(10^d) < 10; split by the ported 0x486bc0. */
 export function formatNativeSexagesimal(value:number,digits:1|2,separators:readonly [string,string,string]):string{
  if(!Number.isFinite(value))throw new VariableStarError('record');
  const s=splitSexagesimal(value,digits);let whole=s.whole;while(whole>=360)whole-=360;
  const scale=digits===1?10:100,minutes=String(s.minutes).slice(0,2);
- const seconds=(Math.trunc(roundHalfEven(scale*s.seconds)/scale)<10?'0':'')+formatFixed(s.seconds,digits);
+ const seconds=(Math.trunc(roundHalfEven(scale*s.seconds)/scale)<10?'0':'')+delphiFixed(s.seconds,digits);
  return ((s.sign<0?'-':' ')+whole).padStart(4,' ')+separators[0]+(minutes.length===1?'0'+minutes:minutes)+separators[1]+seconds+separators[2];
 }
 /** Literals of the list fill (0x52d168..0x52d2c0), in line order. */
@@ -109,12 +151,12 @@ export function variableStarDataLines(record:VariableStarRecord,riseDefaulted=fa
   L[1]+formatNativeSexagesimal(record.raHours,2,['h ','m ','s']),
   L[2]+formatNativeSexagesimal(record.decDegrees,1,['° ',"' ",'"']),
   L[3]+record.type,
-  L[4]+record.maxFlag+dropOneZero(formatFixed(record.max,2))+closeIfParen(record.maxFlag),
-  L[5]+record.minFlag+dropOneZero(formatFixed(record.min,2))+closeIfParen(record.minFlag),
+  L[4]+record.maxFlag+dropOneZero(delphiFixed(record.max,2))+closeIfParen(record.maxFlag),
+  L[5]+record.minFlag+dropOneZero(delphiFixed(record.min,2))+closeIfParen(record.minFlag),
   L[6]+record.system,
-  L[7]+dropZeros(formatExtendedFixed(record.epoch,5)),
-  L[8]+record.periodFlag+dropZeros(formatExtendedFixed(record.period,8))+closeIfParen(record.periodFlag),
-  L[9]+formatFixed(effectiveRiseWord(record,riseDefaulted)/100,2),
+  L[7]+dropZeros(floatToStrFFixed(record.epoch,5)),
+  L[8]+record.periodFlag+dropZeros(floatToStrFFixed(record.period,8))+closeIfParen(record.periodFlag),
+  L[9]+delphiFixed(effectiveRiseWord(record,riseDefaulted)/100,2),
   L[10]+record.spectrum,
  ]);
 }

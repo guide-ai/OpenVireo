@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {describe,expect,it} from 'vitest';
-import {VSTRS_FILE_BYTES,VariableStarError,decodeExtended,decodeVariableStarCatalog,decodeVariableStarRecord,formatExtendedFixed,formatNativeSexagesimal,parseVariableTypeHelp,searchVariableStars,variableStarDataLines,variableStarSaveFileName,variableStarSaveText,variableStarTypes} from './variableStars';
+import {VSTRS_FILE_BYTES,VariableStarError,decodeExtended,decodeVariableStarCatalog,decodeVariableStarRecord,delphiFixed,exactFromNumber,floatToStrFFixed,formatNativeSexagesimal,parseVariableTypeHelp,searchVariableStars,variableStarDataLines,variableStarSaveFileName,variableStarSaveText,variableStarTypes} from './variableStars';
 import {LIGHT_CURVE_BOX,LightCurveError,cepheidMagnitude,cepheidModel,lightCurveBounds,lightCurvePlot} from './lightCurve';
 import witness from './variableStars.controls.json';
 import manifest from '../../docs/LOCAL-RESOURCES.json';
@@ -37,6 +37,23 @@ describe('CLEA_VStrs.dat bundled identity',()=>{
  });
 });
 
+const sha=(text:string)=>createHash('sha256').update(Buffer.from(text,'latin1')).digest('hex');
+describe('whole-catalog digests against the witness',()=>{
+ it('every list, before and after the M−m/D default',()=>{
+  expect(sha(catalog.flatMap(r=>variableStarDataLines(r)).join('\r\n'))).toBe(witness.digests.allLinesSha256);
+  expect(sha(catalog.flatMap(r=>variableStarDataLines(r,true)).join('\r\n'))).toBe(witness.digests.allLinesAfterDefaultSha256);
+ });
+ it('every plot: bounds, labels, ticks and curve pixels or the typed fault',()=>{
+  const lines=catalog.map((r,i)=>{
+   let p;try{p=lightCurvePlot(r);}catch(e){if(e instanceof LightCurveError)return `${i}|${e.code}`;throw e;}
+   const head=`${i}|${p.faintBound}|${p.brightBound}|`+p.texts.map(x=>`${x.x},${x.y},${x.text},${x.anchor}`).join(';')+'|'+p.ticks.map(s=>`${s.x1},${s.y1},${s.x2},${s.y2}`).join(';');
+   return head+'|'+('points' in p.curve?p.curve.points.map(q=>q[1]).join(','):p.curve.unavailable);
+  });
+  expect(sha(lines.join('\n'))).toBe(witness.digests.allPlotsSha256);
+  expect(catalog.filter(r=>{const p=lightCurvePlot(r);return p.faintBound<p.brightBound;})).toHaveLength(witness.stats.invertedRange);
+ });
+});
+
 describe('Variable Star Data lines (0x52ccec) against the witness',()=>{
  for(const c of witness.cases)it(`${c.index} ${c.name}`,()=>{
   const r=decodeVariableStarRecord(fromHex(c.rawHex),0);
@@ -49,8 +66,14 @@ describe('Variable Star Data lines (0x52ccec) against the witness',()=>{
   expect(formatNativeSexagesimal(-2.9742248625257863,1,['° ',"' ",'"'])).toBe('  -2° 58\' 27.2"');
   expect(formatNativeSexagesimal(23.99999999,2,['h ','m ','s'])).toBe('  24h 00m 00.00s');
   const e=decodeExtended(Uint8Array.from([0,0,0,0,0,0,0,0x80,0xff,0x3f]),0);// 1.0
-  expect(e.value).toBe(1);expect(formatExtendedFixed(e,2)).toBe('1.00');
-  expect(formatExtendedFixed(decodeExtended(new Uint8Array(10),0),5)).toBe('0.00000');
+  expect(e.value).toBe(1);expect(floatToStrFFixed(e,2)).toBe('1.00');
+  expect(floatToStrFFixed(decodeExtended(new Uint8Array(10),0),5)).toBe('0.00000');
+  // FloatToDecimal 0x40cbb5: 18 digits ties to even, then half up at the decimals; differs from exact rounding here.
+  for(const p of witness.fixedPolicy){const r=catalog[p.index];expect(floatToStrFFixed(r[p.field as 'period'],8)).toBe(p.delphi);}
+  expect(witness.fixedPolicy.map(p=>p.index)).toEqual([6370,7570,7813,28572,29323]);
+  expect(delphiFixed(0.125,2)).toBe('0.13');expect(delphiFixed(-1.005,2)).toBe('-1.00');expect(delphiFixed(0.9999,2)).toBe('1.00');
+  expect(delphiFixed(-0.001,2)).toBe('0.00');expect(delphiFixed(123456789.123,0)).toBe('123456789');expect(delphiFixed(1e-30,5)).toBe('0.00000');
+  expect(exactFromNumber(Math.fround(12.3)).value).toBe(Math.fround(12.3));
  });
 });
 
@@ -83,6 +106,21 @@ describe('CepheidTypeObj model and plot (0x51f33c, 0x52b6f4, 0x52b9cc, 0x52c090)
   const zero={...cepheidModel(catalog[0]),declineFraction:0,riseWord:100};
   expect(()=>cepheidMagnitude(zero,zero.epoch)).toThrow(expect.objectContaining({code:'zero-decline-fraction'}));
  });
+ it('draws no magnitude ticks for an inverted range and lets the curve leave the box',()=>{
+  expect(lightCurvePlot(catalog[44])).toMatchObject({brightBound:11,faintBound:0.5,curve:{unavailable:'period-zero'}});// VW And
+  const r=catalog[6870],p=lightCurvePlot(r);expect(r.name).toBe('QS Pup');
+  expect([p.brightBound,p.faintBound]).toEqual([5.5,0.5]);
+  expect(p.ticks.filter(s=>s.y1===s.y2)).toHaveLength(0);
+  if(!('points' in p.curve))throw new Error('curve expected');
+  expect(Math.max(...p.curve.points.map(q=>q[1]))).toBeGreaterThan(LIGHT_CURVE_BOX.bottom);
+ });
+ it('names the synthetic faults: equal bounds, empty magnitude system, signed word',()=>{
+  const r=catalog[30234];
+  expect(()=>lightCurvePlot({...r,max:Math.fround(10.8),min:10})).toThrow(expect.objectContaining({code:'axis-range-zero'}));
+  const p=lightCurvePlot({...r,system:''});expect(p.curve).toEqual({unavailable:'magnitude-system-empty'});
+  expect(p.texts.map(x=>x.text)).toEqual(['4.50','3.00','3.50','4.00','del Cep','DCEP']);
+  const bytes=FILE.slice(30234*92,30235*92);bytes[72]=0;bytes[73]=0x80;expect(()=>decodeVariableStarRecord(bytes,0)).toThrow(VariableStarError);
+ });
  it('uses the recovered half-magnitude bounds',()=>{
   expect(lightCurveBounds(12.3,11.6)).toEqual({faintBound:12.5,brightBound:11});// 11.6 − 11 is not > 0.6
   expect(lightCurveBounds(12.5,12.5)).toEqual({faintBound:12.5,brightBound:11.5});// Round(12.5) = 12 (ties to even)
@@ -91,7 +129,7 @@ describe('CepheidTypeObj model and plot (0x51f33c, 0x52b6f4, 0x52b9cc, 0x52c090)
  it('lays out the axes and texts as decoded',()=>{
   const p=lightCurvePlot(catalog[30234]),t=Object.fromEntries(p.texts.map(x=>[x.text,x]));
   expect(t['del Cep']).toMatchObject({x:90,y:44});expect(t['DCEP']).toMatchObject({x:615,y:44,anchor:'end'});
-  expect(t['V mag']).toMatchObject({x:30,y:10});expect(t['Phase']).toMatchObject({x:352.5,y:310,anchor:'middle'});
+  expect(t['V mag']).toMatchObject({x:30,y:10});expect(t['Phase']).toMatchObject({x:352,y:310,anchor:'middle'});
   expect(t['0.0']).toMatchObject({x:65,y:295});expect(t['1.5']).toMatchObject({x:620,y:295});
   expect(t['0.5']).toMatchObject({x:250,y:295});expect(t['1.0']).toMatchObject({x:435,y:295});
   expect(t['3.00']).toMatchObject({x:35,y:32});expect(t['4.50']).toMatchObject({x:35,y:282});

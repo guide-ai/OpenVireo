@@ -104,11 +104,36 @@ test('Help shows the VarTypeHlp.TXT sections and Print opens a preview',async({p
  await page.getByTestId('curve-file-menu').click();await page.getByTestId('curve-print').click();
  const preview=page.getByTestId('variable-print-preview');
  await expect(preview).toBeVisible();
- await expect(preview).toContainText('CLEA Exercise "VIREO - The VIRtual Educational Observatory" - Simulated Light Curve');
+ await expect(preview).toContainText('CLEA Exercise "VIREO - The VIRtual Educational Observatory" - ');
+ await expect(preview).toContainText('Laboratory Table Number (Not Recorded)');
+ await expect(preview).toContainText(' - Page 2');
+ await expect(preview).not.toContainText('Observatory" - Simulated');
  await expect(preview).toContainText('(Screen Image Printed on Next Page)');
  await expect(page.getByTestId('variable-print-svg').locator('polyline')).toHaveAttribute('stroke','#000000');
  await page.getByTestId('variable-print-close').click();
  await expect(preview).toHaveCount(0);
+});
+
+test('an inverted magnitude range draws no magnitude ticks and the curve leaves the box',async({page})=>{
+ await openRoute(page);
+ await openRecord(page,'QS Pup');
+ await page.getByTestId('vstar-data-menu').click();await page.getByTestId('vstar-display-curve').click();
+ const svg=page.getByTestId('light-curve-svg');
+ await expect(svg).toHaveAttribute('data-faint-bound','0.5');await expect(svg).toHaveAttribute('data-bright-bound','5.5');
+ const ys=(await svg.locator('polyline').getAttribute('points'))!.split(' ').map(p=>Number(p.split(',')[1]));
+ expect(Math.max(...ys)).toBeGreaterThan(290);
+ // Only the 15 phase-axis ticks (3 major + 12 minor) remain.
+ await expect(svg.locator('[data-part=ticks] line')).toHaveCount(15);
+});
+
+test('the light-curve panel keeps VIREO colours in the dark theme',async({page})=>{
+ await page.emulateMedia({colorScheme:'dark'});
+ await openRoute(page);
+ await openRecord(page,'del Cep');
+ await page.getByTestId('vstar-data-menu').click();await page.getByTestId('vstar-display-curve').click();
+ const svg=page.getByTestId('light-curve-svg');
+ await expect(svg.locator('rect').first()).toHaveAttribute('fill','#000080');
+ await expect(svg.locator('polyline')).toHaveAttribute('stroke','#ffff00');
 });
 
 test('works at 320 px without horizontal page scroll',async({page})=>{
