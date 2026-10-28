@@ -3265,4 +3265,5 @@ export interface MessageParameters {
   "galaxyExposure.umiAdaptation": never;
   "lab.next.interpretSupported": "original" | "supported";
   "lab.limitsExtended": never;
+  "lss.reason.qso-selected": never;
 }

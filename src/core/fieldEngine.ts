@@ -4,7 +4,10 @@
  * and galaxyExposure.ts, without changing them:
  *  1. area: pointing ± 0.375° Dec, ± 0.375/(15·cos Dec) h RA, limiting magnitude 20 (fresh 15′ field ×3);
  *  2. regions 0x5977e0/0x5978c0, band order 0x59ae16, per-band seek/read 0x59af80 and admission 0x599e08 from the pack reads;
- *  3. QSO (0x597f90) and photographic-list association: any position inside the area is a typed unavailable gate (not ported);
+ *  3. QSO: option qso 'gate' (default; E02 LSS is byte-identical) makes any QSO position inside the area a typed unavailable
+ *     gate; 'merge' runs the recovered loader 0x5987e4 and merge 0x597f90 (qsoMerge.ts) on the bundled CLEA_QSO.DAT, after the
+ *     variable stage and before the galaxies, and the galaxy cleanup then also takes its type-3 branches (keep both, or delete
+ *     the galaxy). Photographic-list association stays a typed unavailable gate (not ported);
  *  4. variables: none, or exactly one class-3 record through the recovered false-merge branch (variableMerge.ts); otherwise gated;
  *  5. galaxies: whole-file CLEA_GLX.DAT admission in source order, each inserted by the GLX loader (call 0x599128) through the
  *     cursor-relative linked-list insert 0x492728 with the strict RA/Dec-greater comparator 0x5969e0 (nativeCursorInsert);
@@ -34,6 +37,7 @@ import {prepareGalaxyProfile} from './galaxySpectrum';
 import {roundNearestEven} from './numericPolicy';
 import {createJournalExposure,type JournalState} from './exposureJournal';
 import {packCovers,type FieldPack} from './fieldPack';
+import {loadNativeQsoList,nativeQsoMerge,QsoMergeError,QSO_CATALOG,type NativeQso,type QsoMergeWitness} from './qsoMerge';
 
 export class FieldEngineError extends Error{
  constructor(readonly code:'input'|'evidence'){super(`Field engine: ${code}`);this.name='FieldEngineError';}
@@ -51,12 +55,21 @@ export const FIELD_MULTIPLIER=base.multiplier;
 /** Why a pointing cannot be acquired in this version (never a fabricated substitute). */
 export type FieldUnavailableReason=
  |'outside-pack'|'qso-merge'|'photographic-image'|'variable-merge'|'axis-fallback'|'merge-boundary'|'stamp-bound'
- |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping';
-export type FieldMergeWitness=Readonly<{galaxy:string;removed:readonly string[];savedWinnerIndex:number;runnerIndex:number;winnerId:string|null}>;
+ |'no-galaxy-selected'|'star-selected'|'slit-empty'|'spectrum-range'|'mean-bound'|'spectrum-mapping'
+ /** Front F, 'merge' mode only: the slit selects a merged QSO record (type 3); a QSO observation is another branch. */
+ |'qso-selected';
+/** QSO stage: 'gate' (default) or the recovered merge on the caller-verified bundled catalogue (bytes and their SHA-256). */
+export type FieldQsoMode='gate'|'merge';
+export type FieldQsoCatalog=Readonly<{bytes:Uint8Array;sha256:string}>;
+export type FieldOptions=Readonly<{qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog}>;
+export type FieldStar=NativeFieldStar|NativeQso;
+export type FieldMergeWitness=Readonly<{galaxy:string;removed:readonly string[];savedWinnerIndex:number;runnerIndex:number;winnerId:string|null;galaxyDeleted?:true}>;
 export type FieldPopulation=Readonly<{
  area:NativeCatalogRegion;regionIds:readonly number[];bandOrder:readonly string[];initialStarIds:readonly string[];
  variables:readonly NativeVariable[];variableRemoved:readonly string[];galaxies:readonly NativeGalaxy[];galaxyAdmissionIds:readonly number[];
- mergeWitnesses:readonly FieldMergeWitness[];stars:readonly NativeFieldStar[];qsoMatches:readonly number[];photographMatches:readonly number[];
+ mergeWitnesses:readonly FieldMergeWitness[];stars:readonly FieldStar[];qsoMatches:readonly number[];photographMatches:readonly number[];
+ /** Present in 'merge' mode only: records read by the ordered QSO scan and one witness per merged QSO. */
+ qsoStage?:Readonly<{recordsRead:number;witnesses:readonly QsoMergeWitness[]}>;
 }>;
 export type FieldCalibration=Readonly<{zeroPoint:number;pixelLevel:number;fraction:number;amplitude:PhotonAmplitudes;instrumentMagnitude:number;sourceMeans:readonly number[];sourceValues:readonly number[];wavelengths:readonly number[]}>;
 export type FieldResult=Readonly<{
@@ -143,13 +156,26 @@ export function admitFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Read
 const VARIABLE_TABLES=pegasusProvenance.variableContract.tables;
 function axesSupported(g:NativeGalaxy):boolean{try{galaxyCatalogAxes(g);catalogGalaxyMagnitude(g);return true;}catch{return false;}}
 /** Population stages 1–5. Gates are collected; stages that cannot run under a gate are skipped. */
-export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
+/** In 'merge' mode the caller's catalogue must be the approved CLEA_QSO.DAT and agree with the pack's own QSO list inside its
+ * coverage (the pack's whole-source witness); anything else is an evidence error. */
+function checkedQsoCatalog(pack:FieldPack,options:FieldOptions):Uint8Array{
+ const c=options.qsoCatalog;
+ if(!c||!(c.bytes instanceof Uint8Array)||c.bytes.byteLength!==QSO_CATALOG.bytes||c.sha256!==QSO_CATALOG.sha256)throw new FieldEngineError('input');
+ if(pack.qso.sha256!==null&&pack.qso.sha256!==c.sha256||pack.qso.recordsChecked!==QSO_CATALOG.records)throw new FieldEngineError('evidence');
+ const v=new DataView(c.bytes.buffer,c.bytes.byteOffset,c.bytes.byteLength),inCoverage:number[]=[];
+ for(let i=0;i<QSO_CATALOG.records;i++){const ra=v.getFloat64(i*52+0x12,true),dec=v.getFloat64(i*52+0x1a,true);if(inside({ra,dec},{...pack.coverage,limitingMagnitude:20}))inCoverage.push(i);}
+ if(inCoverage.join()!==pack.qso.entries.map(e=>e.index).join()||pack.qso.entries.some(e=>e.ra!==v.getFloat64(e.index*52+0x12,true)||e.dec!==v.getFloat64(e.index*52+0x1a,true)))throw new FieldEngineError('evidence');
+ return c.bytes;
+}
+export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,options:FieldOptions={}):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
+ const mode=options.qso??'gate';if(mode!=='gate'&&mode!=='merge')throw new FieldEngineError('input');
  const area=freshFieldArea(pointing),reasons:FieldUnavailableReason[]=[];
  if(!packCovers(pack,pointing,area))return {population:null,reasons:['outside-pack']};
+ const qsoCatalog=mode==='merge'?checkedQsoCatalog(pack,options):null;
  const regionIds=nativeRegionIds(area),bandOrder=nativeCompactBandOrder(regionIds);
- let stars=packStars(pack,area,bandOrder);const initialStarIds=Object.freeze(stars.map(s=>s.id));
+ let stars:FieldStar[]=packStars(pack,area,bandOrder);const initialStarIds=Object.freeze(stars.map(s=>s.id));
  const qsoMatches=pack.qso.entries.filter(p=>inside(p,area)).map(p=>p.index),photographMatches=pack.photographs.entries.find(e=>pack.pointings[e.pointing].ra===pointing.ra&&pack.pointings[e.pointing].dec===pointing.dec)?.indices??[];
- if(qsoMatches.length)reasons.push('qso-merge');
+ if(qsoMatches.length&&mode==='gate')reasons.push('qso-merge');
  if(photographMatches.length)reasons.push('photographic-image');
  let variables:NativeVariable[];
  try{variables=pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>inside(v,area));}catch{throw new FieldEngineError('evidence');}
@@ -157,22 +183,37 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  if(variables.length>1||variables.some(v=>nativeVariableClass(v.classification,VARIABLE_TABLES)!==3))reasons.push('variable-merge');
  else if(variables.length===1){
   try{
-   const merged=nativeVariableFalseMerge(stars.map(s=>({record:s,distanceDegrees:catalogMergeDistance(variables[0],s)})),variables[0],VARIABLE_TABLES);
+   const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(variables[0],s)})),variables[0],VARIABLE_TABLES);
    const kept=new Set(merged.rows.map(r=>r.id));variableRemoved=stars.filter(s=>!kept.has(s.id)).map(s=>s.id);stars=stars.filter(s=>kept.has(s.id));
   }catch(e){if(e instanceof VariableMergeError||e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
  }
- const {admission,galaxies}=admitFieldGalaxies(glx,area);
+ let qsoStage:FieldPopulation['qsoStage'];
+ if(qsoCatalog&&!reasons.includes('variable-merge')){
+  const load=loadNativeQsoList(qsoCatalog,area);
+  if(load.qsos.map(q=>q.recordIndex).join()!==qsoMatches.join())throw new FieldEngineError('evidence');// the scan and the pack agree
+  if(load.qsos.length){
+   try{const merged=nativeQsoMerge(stars,load.qsos);stars=[...merged.rows];qsoStage=Object.freeze({recordsRead:load.recordsRead,witnesses:merged.witnesses});}
+   catch(e){if(e instanceof QsoMergeError){reasons.push('merge-boundary');}else throw e;}
+  }else qsoStage=Object.freeze({recordsRead:load.recordsRead,witnesses:Object.freeze([])});
+ }
+ const {admission,galaxies:admitted}=admitFieldGalaxies(glx,area);let galaxies=admitted;
  if(galaxies.some(g=>!axesSupported(g)))reasons.push('axis-fallback');
  const mergeWitnesses:FieldMergeWitness[]=[];
- if(!reasons.includes('variable-merge'))for(const g of galaxies){
-  try{
-   const before=stars,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s)})),g.magnitude);
-   if(!result.galaxyKept)throw new FieldEngineError('evidence');// GSC stars are type 0; a type-3 hit is outside this domain
-   const ids=new Set(result.rows.map(s=>s.id));stars=before.filter(s=>ids.has(s.id));
-   mergeWitnesses.push(Object.freeze({galaxy:g.id,removed:Object.freeze(before.filter(s=>!ids.has(s.id)).map(s=>s.id)),savedWinnerIndex:result.trace.savedWinnerIndex,runnerIndex:result.trace.runnerIndex,winnerId:result.trace.winner?.id??null}));
-  }catch(e){if(e instanceof CatalogMergeError){reasons.push('merge-boundary');break;}throw e;}
+ if(!reasons.includes('variable-merge')&&!reasons.includes('merge-boundary')){
+  const kept:NativeGalaxy[]=[];
+  for(const g of galaxies){
+   try{
+    const before=stars,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s)})),g.magnitude);
+    if(!result.galaxyKept&&mode==='gate')throw new FieldEngineError('evidence');// GSC stars are type 0; a type-3 hit needs 'merge'
+    const ids=new Set(result.rows.map(s=>s.id));stars=before.filter(s=>ids.has(s.id));
+    // 0x598172: deleting the galaxy (QSO within 30″ and 1 mag) leaves the cursor on its predecessor; iteration continues.
+    if(result.galaxyKept)kept.push(g);
+    mergeWitnesses.push(Object.freeze({galaxy:g.id,removed:Object.freeze(before.filter(s=>!ids.has(s.id)).map(s=>s.id)),savedWinnerIndex:result.trace.savedWinnerIndex,runnerIndex:result.trace.runnerIndex,winnerId:result.trace.winner?.id??null,...(result.galaxyKept?{}:{galaxyDeleted:true as const})}));
+   }catch(e){if(e instanceof CatalogMergeError){reasons.push('merge-boundary');break;}throw e;}
+  }
+  if(kept.length!==galaxies.length)galaxies=Object.freeze(kept);
  }
- return {reasons,population:Object.freeze({area,regionIds,bandOrder,initialStarIds,variables:Object.freeze(variables),variableRemoved:Object.freeze(variableRemoved),galaxies,galaxyAdmissionIds:admission,mergeWitnesses:Object.freeze(mergeWitnesses),stars:Object.freeze(stars),qsoMatches:Object.freeze(qsoMatches),photographMatches:Object.freeze(photographMatches)})};
+ return {reasons,population:Object.freeze({area,regionIds,bandOrder,initialStarIds,variables:Object.freeze(variables),variableRemoved:Object.freeze(variableRemoved),galaxies,galaxyAdmissionIds:admission,mergeWitnesses:Object.freeze(mergeWitnesses),stars:Object.freeze(stars),qsoMatches:Object.freeze(qsoMatches),photographMatches:Object.freeze(photographMatches),...(qsoStage?{qsoStage}:{})})};
 }
 type Calibration=(typeof FIELD_CALIBRATIONS)[number];
 /** Same paint order and levels as galaxyExposure.ts: galaxies first (rounded projected centres), then stars by stored level. */
@@ -189,11 +230,11 @@ function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Cali
  return raster;
 }
 /** Complete fresh-field evaluation for one pointing and telescope record. */
-export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):FieldResult{
+export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,options:FieldOptions={}):FieldResult{
  if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
  const c=FIELD_CALIBRATIONS[telescope],at=Object.freeze({ra:pointing.ra,dec:pointing.dec});
  const empty={pointing:at,telescope,scene:null,viewport:null,selection:null,target:null,calibration:null};
- const {population,reasons}=buildFieldPopulation(pack,glx,at);
+ const {population,reasons}=buildFieldPopulation(pack,glx,at,options);
  if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
  const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
  // The bounded browser stamp (galaxyScene.ts: 3 ≤ major ≤ 100 px, 1 ≤ minor ≤ major) is the only gate here; any other error throws.
@@ -204,10 +245,10 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  if(selection.kind==='throughput-required'){
   // 0x59a0fc: the galaxy is chosen iff the star's throughput is zero (strict raw-coordinate cuts at this pointing and level).
   const star=population.stars[selection.star.index];
-  selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor,nativeObjectSlitFraction({objectPresent:true,objectType:0,pixelLevel,object:{raHours:star.ra,decDegrees:star.dec},pointing:{raHours:at.ra,decDegrees:at.dec}}));
+  selection=selectCatalogObject(scene,FRAME.anchor,FRAME.anchor,nativeObjectSlitFraction({objectPresent:true,objectType:star.type,pixelLevel,object:{raHours:star.ra,decDegrees:star.dec},pointing:{raHours:at.ra,decDegrees:at.dec}}));
  }
  const base={...empty,population,scene,viewport,selection};
- if(selection.kind!=='galaxy')return Object.freeze({...base,reasons:Object.freeze([selection.kind==='star'?'star-selected' as const:'no-galaxy-selected' as const])});
+ if(selection.kind!=='galaxy')return Object.freeze({...base,reasons:Object.freeze([selection.kind==='star'?population.stars[selection.star.index].type===3?'qso-selected' as const:'star-selected' as const:'no-galaxy-selected' as const])});
  const target=population.galaxies[selection.galaxy.index];
  const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:1,pixelLevel});
  if(fraction<=0)return Object.freeze({...base,target,reasons:Object.freeze(['slit-empty' as const])});

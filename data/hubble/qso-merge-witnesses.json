@@ -1,0 +1,5628 @@
+{
+ "schema": 1,
+ "kind": "independent Python witnesses of the QSO merge and type-3 galaxy cleanup (static reads; not original runtime observations)",
+ "sources": {
+  "exe": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "glx": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753",
+  "qso": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5",
+  "vstrs": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
+  "regions": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05"
+ },
+ "pointings": [
+  {
+   "label": "F1R1",
+   "pointing": {
+    "ra": 12.078833333333334,
+    "dec": 31.176111111111112
+   },
+   "qso": [],
+   "qsoRecordsRead": 1286,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 68,
+   "finalStarIdsSHA256": "01944a58d8703f08f896fe268d616bf4e15a1853fb9a8560e1bc4d3ba6609b43",
+   "galaxies": [
+    12632,
+    12633,
+    12649,
+    12669,
+    12671,
+    12673
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R2",
+   "pointing": {
+    "ra": 12.080944444444444,
+    "dec": 26.99388888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1286,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 66,
+   "finalStarIdsSHA256": "7447d67686ef91d90b14957415e692d87dce8456b81580b21ca9041f8cbc71e6",
+   "galaxies": [
+    12640
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R3",
+   "pointing": {
+    "ra": 12.110611111111112,
+    "dec": 28.17527777777778
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1288"
+   ],
+   "qsoRecordsRead": 1291,
+   "variables": [
+    9114
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F1R4",
+   "pointing": {
+    "ra": 12.146638888888889,
+    "dec": 29.305
+   },
+   "qso": [],
+   "qsoRecordsRead": 1296,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 58,
+   "finalStarIdsSHA256": "ff1689dc0cbf1b6ccd883395558797502712380e5f3ee44ac1bfaa18839923eb",
+   "galaxies": [
+    12779,
+    12786,
+    12789,
+    12791
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R5",
+   "pointing": {
+    "ra": 12.150416666666667,
+    "dec": 29.25138888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1299,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 60,
+   "finalStarIdsSHA256": "89fb812608d26a6994699aec70aa58b0cc095237705e709a35ebe1177fdcb5bd",
+   "galaxies": [
+    12779,
+    12786,
+    12789,
+    12791
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R6",
+   "pointing": {
+    "ra": 12.15275,
+    "dec": 31.569166666666668
+   },
+   "qso": [],
+   "qsoRecordsRead": 1300,
+   "variables": [
+    9140
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F1R7",
+   "pointing": {
+    "ra": 12.152833333333334,
+    "dec": 29.177222222222223
+   },
+   "qso": [],
+   "qsoRecordsRead": 1300,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 56,
+   "finalStarIdsSHA256": "b15a6edc5a22e9d190ee6acb063d019ba3e516f8aba3b537455864fd7d5ca9a6",
+   "galaxies": [
+    12779,
+    12786,
+    12789,
+    12791
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R8",
+   "pointing": {
+    "ra": 12.155,
+    "dec": 29.926666666666666
+   },
+   "qso": [],
+   "qsoRecordsRead": 1301,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 51,
+   "finalStarIdsSHA256": "59c26e65a585e7d7acba16b83a76be113fa61091a68239c7bb233f2a19797a8e",
+   "galaxies": [
+    12797
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R9",
+   "pointing": {
+    "ra": 12.175944444444445,
+    "dec": 30.40138888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1302,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 47,
+   "finalStarIdsSHA256": "c5bb9bea6a28a55574c5adcc624ad161e6faf9da8ba082dcf4ec6d7495b20ab1",
+   "galaxies": [
+    12850
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R10",
+   "pointing": {
+    "ra": 12.205972222222222,
+    "dec": 29.206666666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1308,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 48,
+   "finalStarIdsSHA256": "fc75262819a1f0fb2ee5e8405dd043f08fd0b0252ab3bf40d6c1e7fd125faa65",
+   "galaxies": [
+    12886,
+    12906,
+    12907,
+    12912,
+    12914,
+    12935
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R11",
+   "pointing": {
+    "ra": 12.207472222222222,
+    "dec": 29.149166666666666
+   },
+   "qso": [],
+   "qsoRecordsRead": 1308,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 53,
+   "finalStarIdsSHA256": "c2f0c0bc1a00a90d40a39ac1ed5c169a01e6d34dae7d43fa6c5aeebb69ba5381",
+   "galaxies": [
+    12886,
+    12906,
+    12907,
+    12910,
+    12912,
+    12914,
+    12935
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R12",
+   "pointing": {
+    "ra": 12.2085,
+    "dec": 29.169166666666666
+   },
+   "qso": [],
+   "qsoRecordsRead": 1308,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 54,
+   "finalStarIdsSHA256": "7f26a4c12a2c8f361ad98b17237b0479719dad3c9fe9be8fce226a9ff00e9ca7",
+   "galaxies": [
+    12886,
+    12906,
+    12907,
+    12910,
+    12912,
+    12914,
+    12935
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R13",
+   "pointing": {
+    "ra": 12.22275,
+    "dec": 28.511388888888888
+   },
+   "qso": [],
+   "qsoRecordsRead": 1312,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 58,
+   "finalStarIdsSHA256": "ffe01b6f7a0fc79a45c0a42f3fcf4f869ab6b4bbee74686f101302e01a33994a",
+   "galaxies": [
+    12910,
+    12935,
+    12940,
+    12963
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R14",
+   "pointing": {
+    "ra": 12.241444444444445,
+    "dec": 28.424722222222222
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1310"
+   ],
+   "qsoRecordsRead": 1317,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1310",
+     "insert",
+     31
+    ]
+   ],
+   "finalStars": 51,
+   "finalStarIdsSHA256": "93f88c68d90a8dd8407914906122be242ffe8e8da8c85f54a45431a28a2dcf13",
+   "galaxies": [
+    12940,
+    12963,
+    12999,
+    13009,
+    13010,
+    13013,
+    13044
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R15",
+   "pointing": {
+    "ra": 12.257083333333334,
+    "dec": 28.17222222222222
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1310"
+   ],
+   "qsoRecordsRead": 1319,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1310",
+     "insert",
+     23
+    ]
+   ],
+   "finalStars": 68,
+   "finalStarIdsSHA256": "a2a0141368df1685b5b2b352d4305cb25e898d91354731b9d27207d5ee96a84a",
+   "galaxies": [
+    12963,
+    12999,
+    13009,
+    13010,
+    13013,
+    13044,
+    13060
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R16",
+   "pointing": {
+    "ra": 12.27838888888889,
+    "dec": 28.72972222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1324,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 59,
+   "finalStarIdsSHA256": "df7582d94f36be40bb5f751c949b5fdc3119217a179ae79473ab1a2a7dd0167e",
+   "galaxies": [
+    13046,
+    13063
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R17",
+   "pointing": {
+    "ra": 12.293583333333334,
+    "dec": 29.609166666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1330,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 46,
+   "finalStarIdsSHA256": "550fdcc1c7ed25cae21852f66e9e6f5fd927b33ee04babdce4c8346e5be546a3",
+   "galaxies": [
+    13055,
+    13093,
+    13117,
+    13122
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R18",
+   "pointing": {
+    "ra": 12.302194444444444,
+    "dec": 28.175555555555555
+   },
+   "qso": [],
+   "qsoRecordsRead": 1332,
+   "variables": [
+    9296
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F1R19",
+   "pointing": {
+    "ra": 12.307333333333334,
+    "dec": 29.813055555555554
+   },
+   "qso": [],
+   "qsoRecordsRead": 1332,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 58,
+   "finalStarIdsSHA256": "ad31a62bee975f1f70038d17078c1684b5ee6e1b7ab6dddfdb575518bd094ec9",
+   "galaxies": [
+    13093,
+    13122,
+    13180,
+    13195
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R20",
+   "pointing": {
+    "ra": 12.323222222222222,
+    "dec": 28.308888888888887
+   },
+   "qso": [],
+   "qsoRecordsRead": 1335,
+   "variables": [
+    9296
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F1R21",
+   "pointing": {
+    "ra": 12.33,
+    "dec": 30.337777777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1336,
+   "variables": [
+    9285
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F1R22",
+   "pointing": {
+    "ra": 12.330777777777778,
+    "dec": 29.615
+   },
+   "qso": [],
+   "qsoRecordsRead": 1336,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 49,
+   "finalStarIdsSHA256": "7e9de13c5fb3cc9484c85a415c2fee6e755336458114cdf9de25f4363790a06a",
+   "galaxies": [
+    13117,
+    13122,
+    13180,
+    13195,
+    13207,
+    13216,
+    13231
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F1R23",
+   "pointing": {
+    "ra": 12.331194444444444,
+    "dec": 27.621111111111112
+   },
+   "qso": [],
+   "qsoRecordsRead": 1336,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 62,
+   "finalStarIdsSHA256": "e84b43361dedc7ff02f02eed32f4e44d87b676711f73881d8d3952ee1f9f4a21",
+   "galaxies": [
+    13196,
+    13203
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R1",
+   "pointing": {
+    "ra": 12.335305555555555,
+    "dec": 29.279722222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1336,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 50,
+   "finalStarIdsSHA256": "fbc40bf68595e5adef46b3bd770dc08b5f2e0b50ac441efdc4497d4a6d2afd09",
+   "galaxies": [
+    13195,
+    13207,
+    13216,
+    13231
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R2",
+   "pointing": {
+    "ra": 12.33913888888889,
+    "dec": 29.310833333333335
+   },
+   "qso": [],
+   "qsoRecordsRead": 1336,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 47,
+   "finalStarIdsSHA256": "12389abf24b7b7ed276c124b3de98dc28c933fa4cb1f9cd3c030197ff8a91404",
+   "galaxies": [
+    13195,
+    13207,
+    13216,
+    13231
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R3",
+   "pointing": {
+    "ra": 12.341,
+    "dec": 31.170555555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1337,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 56,
+   "finalStarIdsSHA256": "0eefc8b244796b8492580096947dc393a48297bcba74903c9abfe21407106c91",
+   "galaxies": [
+    13223,
+    13227
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R4",
+   "pointing": {
+    "ra": 12.344916666666666,
+    "dec": 29.343611111111112
+   },
+   "qso": [],
+   "qsoRecordsRead": 1337,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 46,
+   "finalStarIdsSHA256": "794a27251ee08b16e19433cd587d81d801b5753230c86914752c1c7ebb844a06",
+   "galaxies": [
+    13195,
+    13207,
+    13216,
+    13231
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R5",
+   "pointing": {
+    "ra": 12.365833333333333,
+    "dec": 30.075555555555557
+   },
+   "qso": [],
+   "qsoRecordsRead": 1340,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 66,
+   "finalStarIdsSHA256": "31270ed16b84a6cff1855bf3ee9b8feb2dd1c54ebee699c907ff4b1f6df652a6",
+   "galaxies": [
+    13272,
+    13291,
+    13302
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R6",
+   "pointing": {
+    "ra": 12.374,
+    "dec": 29.20888888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1340,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 63,
+   "finalStarIdsSHA256": "3f0b0025047dd2bb7ff5eb5b01dfc06b7bb2f78cf4ba35ea697d67e18f3d7341",
+   "galaxies": [
+    13297,
+    13304,
+    13330
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R7",
+   "pointing": {
+    "ra": 12.37561111111111,
+    "dec": 29.89638888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1341,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 67,
+   "finalStarIdsSHA256": "75304c8bebe024c918418c62b175300ac7e0c285c6a090eab9b317b39ffa9cfc",
+   "galaxies": [
+    13272,
+    13291,
+    13302
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R8",
+   "pointing": {
+    "ra": 12.403277777777777,
+    "dec": 31.522222222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1350,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 76,
+   "finalStarIdsSHA256": "3b6b160aeac83a2b9a4f5160b894801e1cb8c8afa1bdbf0d6753c0b5aa461e4d",
+   "galaxies": [
+    13367
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R9",
+   "pointing": {
+    "ra": 12.416777777777778,
+    "dec": 28.558055555555555
+   },
+   "qso": [],
+   "qsoRecordsRead": 1352,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 60,
+   "finalStarIdsSHA256": "10f26b0627569cd691fd81ed9c057e79492736e3fccca02dbf3fa974f1dd8236",
+   "galaxies": [
+    13349,
+    13392,
+    13411,
+    13478
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R10",
+   "pointing": {
+    "ra": 12.430805555555555,
+    "dec": 27.56
+   },
+   "qso": [],
+   "qsoRecordsRead": 1353,
+   "variables": [
+    9364,
+    9405
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F2R11",
+   "pointing": {
+    "ra": 12.440944444444444,
+    "dec": 31.224722222222223
+   },
+   "qso": [],
+   "qsoRecordsRead": 1354,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 94,
+   "finalStarIdsSHA256": "c444fe15d5dbab7f9de13d9af32002980e823cf476a42380eb1597619edc7ebe",
+   "galaxies": [
+    13471,
+    13535
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R12",
+   "pointing": {
+    "ra": 12.463888888888889,
+    "dec": 26.994444444444444
+   },
+   "qso": [],
+   "qsoRecordsRead": 1359,
+   "variables": [
+    9410
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F2R13",
+   "pointing": {
+    "ra": 12.470972222222223,
+    "dec": 28.620833333333334
+   },
+   "qso": [],
+   "qsoRecordsRead": 1361,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 87,
+   "finalStarIdsSHA256": "067d053871e3b3cd077d719b436570373d577eba73153ab191eaefc93416e2f4",
+   "galaxies": [
+    13536,
+    13567,
+    13572,
+    13597
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R14",
+   "pointing": {
+    "ra": 12.484277777777777,
+    "dec": 27.779166666666665
+   },
+   "qso": [],
+   "qsoRecordsRead": 1365,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 110,
+   "finalStarIdsSHA256": "fb29f45b3ff2e54e88f9e8a8ff003f804c80454385f382f0aea15ecfc5b542dc",
+   "galaxies": [
+    13603
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R15",
+   "pointing": {
+    "ra": 12.4965,
+    "dec": 27.256944444444443
+   },
+   "qso": [],
+   "qsoRecordsRead": 1366,
+   "variables": [
+    9457
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F2R16",
+   "pointing": {
+    "ra": 12.523055555555555,
+    "dec": 29.136666666666667
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1360",
+    "CLEA_QSO.DAT@1367"
+   ],
+   "qsoRecordsRead": 1373,
+   "variables": [
+    9453,
+    9455
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F2R17",
+   "pointing": {
+    "ra": 12.532666666666668,
+    "dec": 29.70916666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1376,
+   "variables": [
+    9453
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F2R18",
+   "pointing": {
+    "ra": 12.545361111111111,
+    "dec": 29.7125
+   },
+   "qso": [],
+   "qsoRecordsRead": 1382,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 70,
+   "finalStarIdsSHA256": "5fe213754a7e3f62f0144a022f7b5a01de0a49e33841335ec810cff009632d54",
+   "galaxies": [
+    13696,
+    13728
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R19",
+   "pointing": {
+    "ra": 12.564333333333334,
+    "dec": 30.278333333333332
+   },
+   "qso": [],
+   "qsoRecordsRead": 1384,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 76,
+   "finalStarIdsSHA256": "457c6fc43bbc075e0cf72a9fba4c00efc270923c9959f147f77c78ae1c0104f8",
+   "galaxies": [
+    13776
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R20",
+   "pointing": {
+    "ra": 12.596,
+    "dec": 26.90972222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1390,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 93,
+   "finalStarIdsSHA256": "74266710e120138a6f0fc17cd65444d538b99e4a78f97ce701c8dbec2c669291",
+   "galaxies": [
+    13781,
+    13845,
+    13849,
+    13870
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R21",
+   "pointing": {
+    "ra": 12.599222222222222,
+    "dec": 27.964444444444446
+   },
+   "qso": [],
+   "qsoRecordsRead": 1391,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 92,
+   "finalStarIdsSHA256": "c8b47023669e0489f9536b3bb652f277d97d89c1031e67052f42cf058ee7418c",
+   "galaxies": [
+    13851,
+    13883,
+    13884,
+    13893
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R22",
+   "pointing": {
+    "ra": 12.636916666666666,
+    "dec": 28.935555555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1394,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 73,
+   "finalStarIdsSHA256": "042ff19d9a307c0caa01ff2ff465fa106bb63d8a346c2fe899abe4cc7fbf77b7",
+   "galaxies": [
+    13918
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R23",
+   "pointing": {
+    "ra": 12.681305555555555,
+    "dec": 26.728055555555557
+   },
+   "qso": [],
+   "qsoRecordsRead": 1403,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 108,
+   "finalStarIdsSHA256": "bf9db4fcfb5e773270fd35fccf28c4a2c350c5d49cd8fbd22e6defa257e89fca",
+   "galaxies": [
+    14005,
+    14010,
+    14024,
+    14025
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F2R24",
+   "pointing": {
+    "ra": 12.718166666666667,
+    "dec": 27.714444444444446
+   },
+   "qso": [],
+   "qsoRecordsRead": 1406,
+   "variables": [
+    9636
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F2R25",
+   "pointing": {
+    "ra": 12.744,
+    "dec": 28.471944444444443
+   },
+   "qso": [],
+   "qsoRecordsRead": 1408,
+   "variables": [
+    9624
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R1",
+   "pointing": {
+    "ra": 12.754694444444445,
+    "dec": 27.12611111111111
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1408"
+   ],
+   "qsoRecordsRead": 1412,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1408",
+     "insert",
+     83
+    ]
+   ],
+   "finalStars": 96,
+   "finalStarIdsSHA256": "96a792800edce2b911d608c69bedf4f36322126a007a04546a9ed28aaa9c5efe",
+   "galaxies": [
+    14135,
+    14140,
+    14194,
+    14200
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R2",
+   "pointing": {
+    "ra": 12.759638888888889,
+    "dec": 27.06111111111111
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1408"
+   ],
+   "qsoRecordsRead": 1414,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1408",
+     "insert",
+     63
+    ]
+   ],
+   "finalStars": 84,
+   "finalStarIdsSHA256": "f580dc12d7bc27b13461f31bda82fdd022e14ba6fdae227864ae51865f5eaa07",
+   "galaxies": [
+    14194,
+    14200,
+    14249
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R3",
+   "pointing": {
+    "ra": 12.79075,
+    "dec": 29.787222222222223
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1412"
+   ],
+   "qsoRecordsRead": 1417,
+   "variables": [
+    9688
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R4",
+   "pointing": {
+    "ra": 12.795027777777777,
+    "dec": 26.98111111111111
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1408"
+   ],
+   "qsoRecordsRead": 1418,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1408",
+     "insert",
+     12
+    ]
+   ],
+   "finalStars": 106,
+   "finalStarIdsSHA256": "5d30610ae3694696caba4bcb7c24ab8d24be90abb30dfb243aa55f1cc0cd633d",
+   "galaxies": [
+    14249,
+    14266,
+    14269,
+    14277,
+    14296,
+    14299,
+    14321
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R5",
+   "pointing": {
+    "ra": 12.798694444444445,
+    "dec": 27.223055555555554
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1408"
+   ],
+   "qsoRecordsRead": 1418,
+   "variables": [
+    9703
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R6",
+   "pointing": {
+    "ra": 12.881527777777778,
+    "dec": 28.371111111111112
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1427"
+   ],
+   "qsoRecordsRead": 1432,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1427",
+     "insert",
+     39
+    ]
+   ],
+   "finalStars": 98,
+   "finalStarIdsSHA256": "88aaa82dbe8d49b7ba3bc3164a097b5f7caaaf09377823c46b6e53d0f3ef14f3",
+   "galaxies": [
+    14551,
+    14650
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R7",
+   "pointing": {
+    "ra": 12.905277777777778,
+    "dec": 27.069444444444443
+   },
+   "qso": [],
+   "qsoRecordsRead": 1434,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 114,
+   "finalStarIdsSHA256": "4130f41f830cf8ec07affb1bcf028378de26bc5e3c9851a2e70d01ec016cdbb3",
+   "galaxies": [
+    14539,
+    14543,
+    14574,
+    14582,
+    14624,
+    14627,
+    14628,
+    14637,
+    14665,
+    14682,
+    14729
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R8",
+   "pointing": {
+    "ra": 12.911388888888888,
+    "dec": 28.9375
+   },
+   "qso": [],
+   "qsoRecordsRead": 1434,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 123,
+   "finalStarIdsSHA256": "1bb20c08f658dcc256f1418d94378cfefbedbe3b30eacd0baebcd36c15a5cc22",
+   "galaxies": [
+    14612,
+    14659
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R9",
+   "pointing": {
+    "ra": 12.915194444444445,
+    "dec": 27.415555555555557
+   },
+   "qso": [],
+   "qsoRecordsRead": 1434,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 95,
+   "finalStarIdsSHA256": "3a4683d273df1770eb916f1786bf8ca5e4c35d9941aee9380bcd37b8e5874107",
+   "galaxies": [
+    14582,
+    14624,
+    14627,
+    14628,
+    14637,
+    14682,
+    14711,
+    14713,
+    14716,
+    14718,
+    14719,
+    14729,
+    14746,
+    14749,
+    14753,
+    14760,
+    14761,
+    14768,
+    14774
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R10",
+   "pointing": {
+    "ra": 12.924805555555556,
+    "dec": 27.520555555555557
+   },
+   "qso": [],
+   "qsoRecordsRead": 1437,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 86,
+   "finalStarIdsSHA256": "80c76c962f457d85c3693e66103a6299be138cc6a344258b40d4baff02da7ed9",
+   "galaxies": [
+    14624,
+    14627,
+    14682,
+    14709,
+    14711,
+    14713,
+    14716,
+    14718,
+    14719,
+    14729,
+    14746,
+    14749,
+    14753,
+    14760,
+    14761,
+    14763,
+    14768,
+    14774,
+    14779,
+    14781,
+    14785,
+    14787,
+    14814,
+    14817,
+    14821
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R11",
+   "pointing": {
+    "ra": 12.936694444444445,
+    "dec": 27.745277777777776
+   },
+   "qso": [],
+   "qsoRecordsRead": 1438,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 91,
+   "finalStarIdsSHA256": "1616dc1d3fbc9ce659a3dd27e975511656cc86a98dec3c5d187bd6894c8a2daa",
+   "galaxies": [
+    14682,
+    14709,
+    14711,
+    14713,
+    14716,
+    14718,
+    14719,
+    14746,
+    14749,
+    14753,
+    14760,
+    14761,
+    14763,
+    14769,
+    14771,
+    14774,
+    14779,
+    14781,
+    14784,
+    14785,
+    14814,
+    14817,
+    14821,
+    14830,
+    14838,
+    14843,
+    14848,
+    14849,
+    14850,
+    14851,
+    14852,
+    14864,
+    14869,
+    14870,
+    14877,
+    14878,
+    14879,
+    14887,
+    14889,
+    14898
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R12",
+   "pointing": {
+    "ra": 12.941222222222223,
+    "dec": 26.988055555555555
+   },
+   "qso": [],
+   "qsoRecordsRead": 1438,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 88,
+   "finalStarIdsSHA256": "269ca7c763cab6db84d0398d63b979b7138b6091dec5c6262b1c375bdfaac78e",
+   "galaxies": [
+    14729,
+    14767,
+    14768,
+    14770,
+    14787,
+    14796,
+    14804,
+    14834,
+    14873,
+    14910,
+    14911
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R13",
+   "pointing": {
+    "ra": 12.945388888888889,
+    "dec": 27.17972222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1438,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 77,
+   "finalStarIdsSHA256": "9e7b6c10fa0f9980504ac554356e206504bac9422f681a96d5cb89851bae89af",
+   "galaxies": [
+    14713,
+    14716,
+    14729,
+    14753,
+    14767,
+    14768,
+    14770,
+    14774,
+    14781,
+    14785,
+    14787,
+    14796,
+    14804,
+    14814,
+    14821,
+    14830,
+    14834,
+    14843,
+    14848,
+    14849,
+    14850,
+    14851,
+    14852,
+    14869,
+    14870,
+    14873,
+    14898,
+    14903,
+    14910,
+    14911,
+    14913,
+    14919,
+    14933,
+    14939
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R14",
+   "pointing": {
+    "ra": 12.950027777777779,
+    "dec": 30.713055555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1439,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 75,
+   "finalStarIdsSHA256": "6e42f4f7c4ef1310fed0d387ac18fd5552adb02222dbcb3bc1eb05367d8730fa",
+   "galaxies": [
+    14782,
+    14808
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R15",
+   "pointing": {
+    "ra": 12.956722222222222,
+    "dec": 27.498333333333335
+   },
+   "qso": [],
+   "qsoRecordsRead": 1441,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 82,
+   "finalStarIdsSHA256": "764a0fd4ed48888864278f0b37a7d88899281176313a2d157756a60c0b97b0dc",
+   "galaxies": [
+    14746,
+    14749,
+    14753,
+    14760,
+    14761,
+    14763,
+    14768,
+    14774,
+    14779,
+    14781,
+    14785,
+    14787,
+    14814,
+    14817,
+    14821,
+    14830,
+    14834,
+    14838,
+    14843,
+    14848,
+    14849,
+    14850,
+    14851,
+    14852,
+    14864,
+    14869,
+    14870,
+    14878,
+    14879,
+    14889,
+    14898,
+    14903,
+    14904,
+    14907,
+    14913,
+    14914,
+    14916,
+    14919,
+    14922,
+    14933,
+    14939,
+    14944,
+    14947,
+    14952,
+    14954,
+    14955,
+    14958,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14978,
+    14980,
+    14983,
+    14993
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R16",
+   "pointing": {
+    "ra": 12.957,
+    "dec": 27.546666666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1441,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 85,
+   "finalStarIdsSHA256": "6a6d1416a6a5a40fb0079c31922fda909fe1db3c06c2a9fc41966568267421e1",
+   "galaxies": [
+    14746,
+    14749,
+    14753,
+    14760,
+    14761,
+    14763,
+    14768,
+    14771,
+    14774,
+    14779,
+    14781,
+    14785,
+    14787,
+    14814,
+    14817,
+    14821,
+    14830,
+    14834,
+    14838,
+    14843,
+    14848,
+    14849,
+    14850,
+    14851,
+    14852,
+    14864,
+    14869,
+    14870,
+    14877,
+    14878,
+    14879,
+    14887,
+    14889,
+    14898,
+    14903,
+    14904,
+    14907,
+    14913,
+    14914,
+    14916,
+    14919,
+    14922,
+    14933,
+    14939,
+    14943,
+    14944,
+    14947,
+    14952,
+    14954,
+    14955,
+    14958,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14978,
+    14980,
+    14983,
+    14993,
+    14994
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R17",
+   "pointing": {
+    "ra": 12.958944444444445,
+    "dec": 28.477222222222224
+   },
+   "qso": [],
+   "qsoRecordsRead": 1442,
+   "variables": [
+    9810
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R18",
+   "pointing": {
+    "ra": 12.959555555555555,
+    "dec": 28.482222222222223
+   },
+   "qso": [],
+   "qsoRecordsRead": 1442,
+   "variables": [
+    9810
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R19",
+   "pointing": {
+    "ra": 12.96825,
+    "dec": 28.244722222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1442,
+   "variables": [
+    9810
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R20",
+   "pointing": {
+    "ra": 12.97486111111111,
+    "dec": 27.565277777777776
+   },
+   "qso": [],
+   "qsoRecordsRead": 1443,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 81,
+   "finalStarIdsSHA256": "ad5964aff2ec02f032df8e1dc6e5f5cce505543310eb9cc7257ff9f262b46bf5",
+   "galaxies": [
+    14814,
+    14817,
+    14821,
+    14830,
+    14834,
+    14838,
+    14843,
+    14848,
+    14849,
+    14850,
+    14851,
+    14852,
+    14864,
+    14869,
+    14870,
+    14877,
+    14878,
+    14879,
+    14887,
+    14889,
+    14898,
+    14903,
+    14904,
+    14907,
+    14913,
+    14914,
+    14916,
+    14919,
+    14922,
+    14933,
+    14939,
+    14943,
+    14944,
+    14947,
+    14952,
+    14954,
+    14955,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14978,
+    14980,
+    14983,
+    14993,
+    14994,
+    15000,
+    15001,
+    15002,
+    15004,
+    15005,
+    15007,
+    15012,
+    15017,
+    15018,
+    15021,
+    15025,
+    15029,
+    15041,
+    15043,
+    15045,
+    15046,
+    15048,
+    15051,
+    15055,
+    15056,
+    15057,
+    15061,
+    15069,
+    15075
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R21",
+   "pointing": {
+    "ra": 12.9765,
+    "dec": 27.59777777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1443,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 80,
+   "finalStarIdsSHA256": "bd9bc4b7679b1c5dd96598e4588c1fd128a7596fe721c31201b5dcb3b5511fbf",
+   "galaxies": [
+    14814,
+    14817,
+    14821,
+    14830,
+    14834,
+    14838,
+    14843,
+    14848,
+    14849,
+    14850,
+    14851,
+    14852,
+    14864,
+    14869,
+    14870,
+    14877,
+    14878,
+    14879,
+    14887,
+    14889,
+    14898,
+    14903,
+    14904,
+    14907,
+    14913,
+    14914,
+    14916,
+    14919,
+    14922,
+    14933,
+    14939,
+    14940,
+    14943,
+    14947,
+    14952,
+    14954,
+    14955,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14978,
+    14979,
+    14980,
+    14983,
+    14987,
+    14993,
+    14994,
+    15000,
+    15001,
+    15002,
+    15004,
+    15005,
+    15007,
+    15009,
+    15012,
+    15017,
+    15018,
+    15021,
+    15025,
+    15027,
+    15029,
+    15034,
+    15036,
+    15041,
+    15043,
+    15045,
+    15046,
+    15047,
+    15048,
+    15051,
+    15055,
+    15056,
+    15057,
+    15061,
+    15069,
+    15075,
+    15080,
+    15085
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R22",
+   "pointing": {
+    "ra": 12.984472222222223,
+    "dec": 28.1225
+   },
+   "qso": [],
+   "qsoRecordsRead": 1443,
+   "variables": [
+    9810,
+    9839
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R23",
+   "pointing": {
+    "ra": 12.988833333333334,
+    "dec": 28.084444444444443
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1443"
+   ],
+   "qsoRecordsRead": 1445,
+   "variables": [
+    9810,
+    9839
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F3R24",
+   "pointing": {
+    "ra": 12.992777777777778,
+    "dec": 27.94611111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1446,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 93,
+   "finalStarIdsSHA256": "48d960bc00590f55c51fe8865f545270f2ffd369e4007d39f3ff3487ce2fdc54",
+   "galaxies": [
+    14902,
+    14904,
+    14905,
+    14907,
+    14914,
+    14915,
+    14916,
+    14918,
+    14922,
+    14928,
+    14935,
+    14940,
+    14942,
+    14943,
+    14949,
+    14955,
+    14957,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14976,
+    14978,
+    14979,
+    14980,
+    14983,
+    14987,
+    14989,
+    14991,
+    14992,
+    14993,
+    14994,
+    14996,
+    15000,
+    15001,
+    15002,
+    15004,
+    15006,
+    15007,
+    15008,
+    15009,
+    15013,
+    15014,
+    15016,
+    15017,
+    15018,
+    15020,
+    15021,
+    15022,
+    15024,
+    15025,
+    15027,
+    15028,
+    15029,
+    15031,
+    15032,
+    15034,
+    15036,
+    15040,
+    15041,
+    15043,
+    15045,
+    15046,
+    15047,
+    15048,
+    15051,
+    15053,
+    15055,
+    15056,
+    15057,
+    15060,
+    15061,
+    15063,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15090,
+    15092,
+    15095,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F3R25",
+   "pointing": {
+    "ra": 12.99311111111111,
+    "dec": 27.959722222222222
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1443"
+   ],
+   "qsoRecordsRead": 1446,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1443",
+     "insert",
+     169
+    ]
+   ],
+   "finalStars": 94,
+   "finalStarIdsSHA256": "5d801dfa74d6e2188e8ae2418e643d193536a4b47aae6353b674188c6d4289f5",
+   "galaxies": [
+    14902,
+    14904,
+    14905,
+    14907,
+    14914,
+    14915,
+    14916,
+    14918,
+    14928,
+    14935,
+    14940,
+    14942,
+    14943,
+    14949,
+    14955,
+    14957,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14976,
+    14978,
+    14979,
+    14980,
+    14983,
+    14987,
+    14989,
+    14991,
+    14992,
+    14993,
+    14994,
+    14996,
+    15000,
+    15001,
+    15002,
+    15004,
+    15006,
+    15007,
+    15008,
+    15009,
+    15013,
+    15014,
+    15016,
+    15017,
+    15018,
+    15020,
+    15021,
+    15022,
+    15024,
+    15025,
+    15027,
+    15028,
+    15029,
+    15031,
+    15032,
+    15034,
+    15036,
+    15040,
+    15041,
+    15043,
+    15045,
+    15046,
+    15047,
+    15048,
+    15051,
+    15053,
+    15055,
+    15056,
+    15057,
+    15060,
+    15061,
+    15063,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15090,
+    15092,
+    15095,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15118,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R1",
+   "pointing": {
+    "ra": 13.001,
+    "dec": 26.8975
+   },
+   "qso": [],
+   "qsoRecordsRead": 1447,
+   "variables": [
+    9826
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F4R2",
+   "pointing": {
+    "ra": 13.002305555555555,
+    "dec": 27.9775
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1443"
+   ],
+   "qsoRecordsRead": 1447,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1443",
+     "insert",
+     152
+    ]
+   ],
+   "finalStars": 96,
+   "finalStarIdsSHA256": "1e1880215657970696e0dea7fe64db35c32c00ce81727458a02d43522ec13c61",
+   "galaxies": [
+    14949,
+    14957,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14976,
+    14978,
+    14979,
+    14980,
+    14983,
+    14987,
+    14989,
+    14991,
+    14992,
+    14993,
+    14994,
+    14996,
+    15000,
+    15001,
+    15002,
+    15004,
+    15006,
+    15007,
+    15008,
+    15009,
+    15013,
+    15014,
+    15016,
+    15017,
+    15018,
+    15020,
+    15021,
+    15022,
+    15024,
+    15025,
+    15027,
+    15028,
+    15029,
+    15031,
+    15032,
+    15034,
+    15036,
+    15040,
+    15041,
+    15043,
+    15045,
+    15046,
+    15047,
+    15048,
+    15051,
+    15053,
+    15055,
+    15056,
+    15057,
+    15060,
+    15061,
+    15063,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15090,
+    15092,
+    15095,
+    15104,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15118,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156,
+    15159,
+    15167,
+    15169,
+    15178,
+    15179,
+    15180,
+    15183
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R3",
+   "pointing": {
+    "ra": 13.005,
+    "dec": 28.201666666666668
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1443"
+   ],
+   "qsoRecordsRead": 1447,
+   "variables": [
+    9839
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F4R4",
+   "pointing": {
+    "ra": 13.01088888888889,
+    "dec": 29.019166666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1447,
+   "variables": [
+    9825
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F4R5",
+   "pointing": {
+    "ra": 13.013333333333334,
+    "dec": 28.156666666666666
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1443"
+   ],
+   "qsoRecordsRead": 1447,
+   "variables": [
+    9839
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F4R6",
+   "pointing": {
+    "ra": 13.015638888888889,
+    "dec": 27.79277777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1447,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 99,
+   "finalStarIdsSHA256": "ac3c26828c38a0133c68ef5644532d93fe5619833cb0cfbb1b58925df6d775a2",
+   "galaxies": [
+    15008,
+    15009,
+    15012,
+    15013,
+    15016,
+    15017,
+    15018,
+    15021,
+    15024,
+    15025,
+    15027,
+    15028,
+    15029,
+    15031,
+    15032,
+    15034,
+    15036,
+    15040,
+    15041,
+    15043,
+    15045,
+    15046,
+    15047,
+    15048,
+    15051,
+    15053,
+    15055,
+    15056,
+    15057,
+    15060,
+    15061,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15092,
+    15095,
+    15103,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156,
+    15159,
+    15167,
+    15169,
+    15178,
+    15179,
+    15180,
+    15183,
+    15187,
+    15189,
+    15190,
+    15198,
+    15218,
+    15219,
+    15222
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R7",
+   "pointing": {
+    "ra": 13.023972222222222,
+    "dec": 27.886666666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1448,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 107,
+   "finalStarIdsSHA256": "f7dbbcfc7c73f8b8f3468850cac66046b135538e4b66b093f741f6d3e23c6e6d",
+   "galaxies": [
+    15051,
+    15053,
+    15055,
+    15056,
+    15057,
+    15060,
+    15061,
+    15063,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15090,
+    15092,
+    15095,
+    15103,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156,
+    15159,
+    15167,
+    15169,
+    15178,
+    15179,
+    15180,
+    15183,
+    15187,
+    15189,
+    15190,
+    15198,
+    15203,
+    15204,
+    15214,
+    15218,
+    15219,
+    15222,
+    15226,
+    15227,
+    15229,
+    15231,
+    15235,
+    15238
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R8",
+   "pointing": {
+    "ra": 13.0255,
+    "dec": 27.8475
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1447"
+   ],
+   "qsoRecordsRead": 1449,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1447",
+     "insert",
+     163
+    ]
+   ],
+   "finalStars": 109,
+   "finalStarIdsSHA256": "213e48460a74ebb7a6c36bffb7aad4833053660e3259889550a1c2d3d91ea928",
+   "galaxies": [
+    15060,
+    15061,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15090,
+    15092,
+    15095,
+    15103,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156,
+    15159,
+    15167,
+    15169,
+    15178,
+    15179,
+    15180,
+    15183,
+    15187,
+    15189,
+    15190,
+    15198,
+    15203,
+    15204,
+    15218,
+    15219,
+    15222,
+    15226,
+    15227,
+    15229,
+    15231,
+    15235,
+    15238
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R9",
+   "pointing": {
+    "ra": 13.031722222222223,
+    "dec": 27.624444444444446
+   },
+   "qso": [],
+   "qsoRecordsRead": 1449,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 83,
+   "finalStarIdsSHA256": "a22b1edcabf27553e12deea478fe0f15efcad6401624c22c57e580063367d81a",
+   "galaxies": [
+    15080,
+    15085,
+    15087,
+    15088,
+    15089,
+    15091,
+    15092,
+    15103,
+    15107,
+    15115,
+    15117,
+    15119,
+    15124,
+    15125,
+    15126,
+    15129,
+    15130,
+    15132,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156,
+    15159,
+    15167,
+    15169,
+    15178,
+    15180,
+    15183,
+    15187,
+    15190,
+    15198,
+    15218,
+    15219,
+    15229,
+    15231
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R10",
+   "pointing": {
+    "ra": 13.045666666666667,
+    "dec": 28.045277777777777
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1447"
+   ],
+   "qsoRecordsRead": 1453,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1447",
+     "insert",
+     87
+    ]
+   ],
+   "finalStars": 106,
+   "finalStarIdsSHA256": "9ceafa34a31f27af1fc00377f7cb87ab07fed769b16b6b5d16544dc3cf2942b1",
+   "galaxies": [
+    15153,
+    15154,
+    15156,
+    15159,
+    15167,
+    15169,
+    15178,
+    15179,
+    15180,
+    15183,
+    15189,
+    15190,
+    15199,
+    15202,
+    15203,
+    15204,
+    15214,
+    15215,
+    15218,
+    15219,
+    15222,
+    15225,
+    15226,
+    15227,
+    15229,
+    15231,
+    15235,
+    15238,
+    15246,
+    15258,
+    15261,
+    15263,
+    15272
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R11",
+   "pointing": {
+    "ra": 13.050305555555555,
+    "dec": 28.03361111111111
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1447"
+   ],
+   "qsoRecordsRead": 1454,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1447",
+     "insert",
+     74
+    ]
+   ],
+   "finalStars": 104,
+   "finalStarIdsSHA256": "ef18f83606e89b1253f4e415e41b48e102b4ed22fc52f196da0499d23fd6f4eb",
+   "galaxies": [
+    15167,
+    15169,
+    15178,
+    15179,
+    15180,
+    15183,
+    15189,
+    15190,
+    15199,
+    15202,
+    15203,
+    15204,
+    15214,
+    15215,
+    15218,
+    15219,
+    15222,
+    15225,
+    15226,
+    15227,
+    15229,
+    15231,
+    15235,
+    15238,
+    15246,
+    15258,
+    15261,
+    15263,
+    15272
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R12",
+   "pointing": {
+    "ra": 13.063888888888888,
+    "dec": 28.185833333333335
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1447"
+   ],
+   "qsoRecordsRead": 1455,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1447",
+     "insert",
+     38
+    ]
+   ],
+   "finalStars": 97,
+   "finalStarIdsSHA256": "c4ef5a54df44bd5b0b91dc786043f1c406dce74ba8249e4e54e156d27dba8812",
+   "galaxies": [
+    15199,
+    15202,
+    15203,
+    15204,
+    15214,
+    15215,
+    15218,
+    15219,
+    15222,
+    15225,
+    15226,
+    15227,
+    15229,
+    15231,
+    15235,
+    15238,
+    15246,
+    15258,
+    15261,
+    15263,
+    15272
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R13",
+   "pointing": {
+    "ra": 13.083,
+    "dec": 29.123333333333335
+   },
+   "qso": [],
+   "qsoRecordsRead": 1461,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 85,
+   "finalStarIdsSHA256": "3e7d0d9b7f291ec4146306a0f8e81c509894d06c55b7f8309940b7281b795c56",
+   "galaxies": [
+    15281,
+    15296,
+    15311,
+    15328,
+    15329,
+    15343,
+    15357,
+    15358
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R14",
+   "pointing": {
+    "ra": 13.086805555555555,
+    "dec": 27.57
+   },
+   "qso": [],
+   "qsoRecordsRead": 1462,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 86,
+   "finalStarIdsSHA256": "fe27c6d66f7b8b8efd32aa5eec6f51778da7e37d9bdeb43ecd570e532d0ad421",
+   "galaxies": [
+    15283,
+    15303,
+    15323,
+    15361
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R15",
+   "pointing": {
+    "ra": 13.09661111111111,
+    "dec": 27.735277777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1464,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 90,
+   "finalStarIdsSHA256": "c553fa7a84e36462c849ed7ac3b474446b0d2f4b13f10a80b8f7bf5f7ca4366f",
+   "galaxies": [
+    15303,
+    15323,
+    15361,
+    15379
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R16",
+   "pointing": {
+    "ra": 13.104805555555556,
+    "dec": 29.06277777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1465,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 106,
+   "finalStarIdsSHA256": "9e984785d092f0a2e6025da154dc61c7d91347943962497e9a4e2992ba26743d",
+   "galaxies": [
+    15296,
+    15311,
+    15328,
+    15329,
+    15343,
+    15357,
+    15358,
+    15400
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R17",
+   "pointing": {
+    "ra": 13.140694444444444,
+    "dec": 28.32027777777778
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1466"
+   ],
+   "qsoRecordsRead": 1473,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1466",
+     "insert",
+     42
+    ]
+   ],
+   "finalStars": 100,
+   "finalStarIdsSHA256": "53e0d666de45ddd2bc728daa9bf6aa276f25e15ecaef2a890b0013e7db631ebf",
+   "galaxies": [
+    15366,
+    15379,
+    15417,
+    15432,
+    15436,
+    15458,
+    15462
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R18",
+   "pointing": {
+    "ra": 13.1485,
+    "dec": 28.183055555555555
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1466"
+   ],
+   "qsoRecordsRead": 1476,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1466",
+     "insert",
+     20
+    ]
+   ],
+   "finalStars": 91,
+   "finalStarIdsSHA256": "7afc02a2f88a739cf908faa2093f094b39d6fc68f6b38f933b3f32bdaab479db",
+   "galaxies": [
+    15379,
+    15417,
+    15432,
+    15436,
+    15458,
+    15462
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R19",
+   "pointing": {
+    "ra": 13.163194444444445,
+    "dec": 28.908333333333335
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1468"
+   ],
+   "qsoRecordsRead": 1480,
+   "variables": [
+    9936
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F4R20",
+   "pointing": {
+    "ra": 13.18375,
+    "dec": 29.636666666666667
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1476"
+   ],
+   "qsoRecordsRead": 1483,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1476",
+     "insert",
+     41
+    ]
+   ],
+   "finalStars": 84,
+   "finalStarIdsSHA256": "acd796bf137a44e1b84cbbba853a52d46820c6c450ac0a9480cb378de69c7c67",
+   "galaxies": [
+    15486,
+    15490,
+    15491,
+    15492
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R21",
+   "pointing": {
+    "ra": 13.19425,
+    "dec": 31.50138888888889
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1482"
+   ],
+   "qsoRecordsRead": 1486,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1482",
+     "insert",
+     83
+    ]
+   ],
+   "finalStars": 103,
+   "finalStarIdsSHA256": "0a42ff918d7a651f51be7fedda64a3d338348614872285d2bfd8c02312bb0710",
+   "galaxies": [
+    15469,
+    15504,
+    15508,
+    15541,
+    15546
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R22",
+   "pointing": {
+    "ra": 13.22411111111111,
+    "dec": 27.802222222222223
+   },
+   "qso": [],
+   "qsoRecordsRead": 1489,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 103,
+   "finalStarIdsSHA256": "c282d1462ca97bb5ce1867650524cc937384499834f0f66a34c66f80bb99ca10",
+   "galaxies": [
+    15566,
+    15567,
+    15569
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F4R23",
+   "pointing": {
+    "ra": 13.242527777777777,
+    "dec": 30.705277777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1489,
+   "variables": [
+    9950,
+    9951
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F5R1",
+   "pointing": {
+    "ra": 13.259305555555555,
+    "dec": 29.65277777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1489,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 80,
+   "finalStarIdsSHA256": "dd862bbd95101191da18098bfd080c3b9c9ec6d471324d2fc89785d6b79bfe9a",
+   "galaxies": [
+    15625,
+    15638
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R2",
+   "pointing": {
+    "ra": 13.270055555555556,
+    "dec": 30.94972222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1491,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 89,
+   "finalStarIdsSHA256": "340a0a977616b6d00045418ed7cffd5664a34b22ad911e32534369a9e0f86a8c",
+   "galaxies": [
+    15597,
+    15642,
+    15649,
+    15651,
+    15677,
+    15679
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R3",
+   "pointing": {
+    "ra": 13.274083333333333,
+    "dec": 31.01972222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1491,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 88,
+   "finalStarIdsSHA256": "0455d9515e8f94d745ceb3c22acbc787c767488fcbb37407da76ea83f598727e",
+   "galaxies": [
+    15642,
+    15649,
+    15651,
+    15658,
+    15659,
+    15677,
+    15679
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R4",
+   "pointing": {
+    "ra": 13.291972222222222,
+    "dec": 31.093888888888888
+   },
+   "qso": [],
+   "qsoRecordsRead": 1491,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 101,
+   "finalStarIdsSHA256": "8e40124d6f8d77177cd08a7af4504c91b2c2f9fe1995e602976745252c82be4e",
+   "galaxies": [
+    15642,
+    15651,
+    15658,
+    15659,
+    15677,
+    15679,
+    15701,
+    15703,
+    15713
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R5",
+   "pointing": {
+    "ra": 13.306944444444444,
+    "dec": 31.470833333333335
+   },
+   "qso": [],
+   "qsoRecordsRead": 1497,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 108,
+   "finalStarIdsSHA256": "b0500aa2b0f665de7c37c1f2bb473a9a40510d2dac5a5f36534272404473d747",
+   "galaxies": [
+    15658,
+    15659,
+    15664,
+    15697,
+    15701
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R6",
+   "pointing": {
+    "ra": 13.318888888888889,
+    "dec": 28.505
+   },
+   "qso": [],
+   "qsoRecordsRead": 1497,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 116,
+   "finalStarIdsSHA256": "ba172a9baaa0735aa89f62c6bf287506b3986007b7918031e044b5bf89c6a39e",
+   "galaxies": [
+    15717
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R7",
+   "pointing": {
+    "ra": 13.327694444444445,
+    "dec": 30.25722222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1499,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 112,
+   "finalStarIdsSHA256": "771e7abcf321ab3a4fd8049f82135d5310854be94158ce5d700e564fecdb89fe",
+   "galaxies": [
+    15731,
+    15738,
+    15761
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R8",
+   "pointing": {
+    "ra": 13.339194444444445,
+    "dec": 31.514722222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1500,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 103,
+   "finalStarIdsSHA256": "a8f9447abd376333cff6e30c524e980e74e9492b559a1060e638727513afef5e",
+   "galaxies": [
+    15758,
+    15785,
+    15788,
+    15789,
+    15793,
+    15797,
+    15799,
+    15801
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R9",
+   "pointing": {
+    "ra": 13.360944444444444,
+    "dec": 31.345833333333335
+   },
+   "qso": [],
+   "qsoRecordsRead": 1504,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 97,
+   "finalStarIdsSHA256": "b6c2974ff662871fd6635bb0095bea25424883a95aea1de5107630205351a939",
+   "galaxies": [
+    15745,
+    15758,
+    15785,
+    15788,
+    15789,
+    15793,
+    15797,
+    15799,
+    15801
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R10",
+   "pointing": {
+    "ra": 13.362583333333333,
+    "dec": 31.235
+   },
+   "qso": [],
+   "qsoRecordsRead": 1505,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 108,
+   "finalStarIdsSHA256": "3ea2bfff179b2e2da6f9c12dea926ecc748aaa8e1ad5509740c8b12b6975c12c",
+   "galaxies": [
+    15745,
+    15746,
+    15758,
+    15785,
+    15788,
+    15789,
+    15793,
+    15797,
+    15799,
+    15801
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R11",
+   "pointing": {
+    "ra": 13.382138888888889,
+    "dec": 26.980833333333333
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1498"
+   ],
+   "qsoRecordsRead": 1507,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1498",
+     "insert",
+     21
+    ]
+   ],
+   "finalStars": 105,
+   "finalStarIdsSHA256": "a712a3de4697cbee575ed57722de03f8d7a6094c9c9a1da521a999a27d1560a7",
+   "galaxies": [
+    15809,
+    15827,
+    15836
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R12",
+   "pointing": {
+    "ra": 13.382333333333333,
+    "dec": 28.317777777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1507,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 95,
+   "finalStarIdsSHA256": "81819179ef6d71998dee0553c326518ea7bb780c0bf50db7f210d4e901294530",
+   "galaxies": [
+    15804,
+    15805,
+    15829
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R13",
+   "pointing": {
+    "ra": 13.384361111111112,
+    "dec": 27.1225
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1498"
+   ],
+   "qsoRecordsRead": 1507,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1498",
+     "insert",
+     17
+    ]
+   ],
+   "finalStars": 102,
+   "finalStarIdsSHA256": "85021ff74acc1455fb919299e3fe43fd6cdc45cd18946291b5a65e1a7ddce5d6",
+   "galaxies": [
+    15827,
+    15836
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R14",
+   "pointing": {
+    "ra": 13.395888888888889,
+    "dec": 31.564722222222223
+   },
+   "qso": [],
+   "qsoRecordsRead": 1511,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 90,
+   "finalStarIdsSHA256": "f39607a16ccc2852ee0353f29bbecfd735c571fa6cf360be9fbf6aff283ba871",
+   "galaxies": [
+    15820,
+    15848,
+    15853,
+    15866
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R15",
+   "pointing": {
+    "ra": 13.399166666666666,
+    "dec": 30.986944444444443
+   },
+   "qso": [],
+   "qsoRecordsRead": 1511,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 97,
+   "finalStarIdsSHA256": "5e39af202a820afd0eff54c059c3616cb7cdeed5d70af7107e29392a9fa06ef2",
+   "galaxies": [
+    15857,
+    15866,
+    15874
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R16",
+   "pointing": {
+    "ra": 13.496722222222223,
+    "dec": 31.130277777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1521,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 79,
+   "finalStarIdsSHA256": "f4d374cf821f3d91cda8897fcfec1363d44ef120a87646222c7095000cab4ddc",
+   "galaxies": [
+    16054,
+    16058,
+    16100,
+    16122,
+    16126,
+    16133,
+    16135
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R17",
+   "pointing": {
+    "ra": 13.50461111111111,
+    "dec": 31.333055555555557
+   },
+   "qso": [],
+   "qsoRecordsRead": 1522,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 93,
+   "finalStarIdsSHA256": "58a3c2aca44254776b2e8b6e020ce5e92d09f671e9ceb66707c4c10d97d7a103",
+   "galaxies": [
+    16100,
+    16122,
+    16126,
+    16131,
+    16133,
+    16135,
+    16163
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R18",
+   "pointing": {
+    "ra": 13.507222222222222,
+    "dec": 31.619722222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1522,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 89,
+   "finalStarIdsSHA256": "ea80438c56f4af9a8434ca846bc0386be71ed69225cf25c435cf5ce21041bf30",
+   "galaxies": [
+    16122,
+    16126,
+    16131,
+    16133,
+    16135
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R19",
+   "pointing": {
+    "ra": 13.623555555555555,
+    "dec": 27.419166666666666
+   },
+   "qso": [],
+   "qsoRecordsRead": 1533,
+   "variables": [
+    10245,
+    10262
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F5R20",
+   "pointing": {
+    "ra": 13.66225,
+    "dec": 27.77638888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1537,
+   "variables": [
+    10290,
+    10305
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F5R21",
+   "pointing": {
+    "ra": 13.665444444444445,
+    "dec": 28.399166666666666
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1533"
+   ],
+   "qsoRecordsRead": 1537,
+   "variables": [
+    10287,
+    10298
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F5R22",
+   "pointing": {
+    "ra": 13.714777777777778,
+    "dec": 29.865277777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1546,
+   "variables": [
+    10316
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F5R23",
+   "pointing": {
+    "ra": 13.719166666666666,
+    "dec": 30.336388888888887
+   },
+   "qso": [],
+   "qsoRecordsRead": 1547,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 135,
+   "finalStarIdsSHA256": "cf7a14ec5f6c2e9a223b5ccae66c1b89c0828978c912261e8377f06de7cec390",
+   "galaxies": [
+    16423,
+    16434,
+    16449,
+    16450,
+    16457,
+    16461,
+    16476
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F5R24",
+   "pointing": {
+    "ra": 13.723583333333334,
+    "dec": 30.069166666666668
+   },
+   "qso": [],
+   "qsoRecordsRead": 1547,
+   "variables": [
+    10316
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R1",
+   "pointing": {
+    "ra": 13.787833333333333,
+    "dec": 30.33416666666667
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1549"
+   ],
+   "qsoRecordsRead": 1557,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1549",
+     "insert",
+     2
+    ]
+   ],
+   "finalStars": 109,
+   "finalStarIdsSHA256": "26f1c217658e3931eda8e2536928348262d13bc23bc9d6ddbac5c40132073b0c",
+   "galaxies": [
+    16534
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R2",
+   "pointing": {
+    "ra": 13.84325,
+    "dec": 28.149166666666666
+   },
+   "qso": [],
+   "qsoRecordsRead": 1562,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 108,
+   "finalStarIdsSHA256": "fa8cf9c6ea4c6d2bc49e299cce9320787feaffcd2385d1444471f266ab89bb28",
+   "galaxies": [
+    16621
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R3",
+   "pointing": {
+    "ra": 13.948944444444445,
+    "dec": 29.163611111111113
+   },
+   "qso": [],
+   "qsoRecordsRead": 1573,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 101,
+   "finalStarIdsSHA256": "d47151fc0df2454e888623e8346db66227a40716b5fb3bdcfb74112e066717e6",
+   "galaxies": [
+    16796,
+    16808,
+    16842,
+    16841
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R4",
+   "pointing": {
+    "ra": 13.95588888888889,
+    "dec": 28.791666666666668
+   },
+   "qso": [],
+   "qsoRecordsRead": 1574,
+   "variables": [
+    10511
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R5",
+   "pointing": {
+    "ra": 13.967777777777778,
+    "dec": 28.42361111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1574,
+   "variables": [
+    10511
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R6",
+   "pointing": {
+    "ra": 13.994333333333334,
+    "dec": 28.061666666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1579,
+   "variables": [
+    10545,
+    10555,
+    10557
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R7",
+   "pointing": {
+    "ra": 14.012305555555555,
+    "dec": 30.075277777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1584,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 81,
+   "finalStarIdsSHA256": "2c1b8cb82657312ebdbea347f955e841a3673b52ba19022c4a08b777d8ee7d09",
+   "galaxies": [
+    16861,
+    16892
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R8",
+   "pointing": {
+    "ra": 14.01575,
+    "dec": 29.558888888888887
+   },
+   "qso": [],
+   "qsoRecordsRead": 1584,
+   "variables": [
+    10550
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R9",
+   "pointing": {
+    "ra": 14.017416666666668,
+    "dec": 29.525555555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1584,
+   "variables": [
+    10550
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R10",
+   "pointing": {
+    "ra": 14.051027777777778,
+    "dec": 28.031388888888888
+   },
+   "qso": [],
+   "qsoRecordsRead": 1588,
+   "variables": [
+    10592
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R11",
+   "pointing": {
+    "ra": 14.075972222222223,
+    "dec": 27.91111111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1592,
+   "variables": [
+    10592
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R12",
+   "pointing": {
+    "ra": 14.131916666666667,
+    "dec": 29.874166666666667
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1594"
+   ],
+   "qsoRecordsRead": 1602,
+   "variables": [
+    10624
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F6R13",
+   "pointing": {
+    "ra": 14.197555555555555,
+    "dec": 27.115555555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1606,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 120,
+   "finalStarIdsSHA256": "1671749e1a585fc2f590178e6e6b676b00caa70365f98355e54bdd8c3e8b51fb",
+   "galaxies": [
+    17184,
+    17206,
+    17235
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R14",
+   "pointing": {
+    "ra": 14.21,
+    "dec": 30.849444444444444
+   },
+   "qso": [],
+   "qsoRecordsRead": 1608,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 106,
+   "finalStarIdsSHA256": "64a484b41d9d527aa471bf6ff9f9e2303c973c5f45fc7a98e3bdd8efb9a634da",
+   "galaxies": [
+    17226
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R15",
+   "pointing": {
+    "ra": 14.22113888888889,
+    "dec": 27.008333333333333
+   },
+   "qso": [],
+   "qsoRecordsRead": 1609,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 121,
+   "finalStarIdsSHA256": "bd6f0cf4ba760f16b773a73e8771e452f65479f275d8ab56efecc05d4bae68f6",
+   "galaxies": [
+    17206,
+    17235,
+    17253
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R16",
+   "pointing": {
+    "ra": 14.22861111111111,
+    "dec": 29.433611111111112
+   },
+   "qso": [],
+   "qsoRecordsRead": 1609,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 143,
+   "finalStarIdsSHA256": "87b62e84167e9b85e6e47aae0e7e99f583c3519a856c61a67f51eba7967b2d26",
+   "galaxies": [
+    17212,
+    17244
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R17",
+   "pointing": {
+    "ra": 14.289111111111112,
+    "dec": 26.856944444444444
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1613"
+   ],
+   "qsoRecordsRead": 1619,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1613",
+     "insert",
+     60
+    ]
+   ],
+   "finalStars": 109,
+   "finalStarIdsSHA256": "cf8d78c8498569d2c4664b07a6958466b86982fa49a7dbcda4badb4ca31f257e",
+   "galaxies": [
+    17296,
+    17297,
+    17298,
+    17337
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R18",
+   "pointing": {
+    "ra": 14.304555555555556,
+    "dec": 31.653333333333332
+   },
+   "qso": [],
+   "qsoRecordsRead": 1625,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 95,
+   "finalStarIdsSHA256": "5d414ca58885566fc7e7dda9afec65910d2497813a57c7dab8c77e7342dd0a6a",
+   "galaxies": [
+    17316
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R19",
+   "pointing": {
+    "ra": 14.342305555555555,
+    "dec": 26.855
+   },
+   "qso": [],
+   "qsoRecordsRead": 1629,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 98,
+   "finalStarIdsSHA256": "861508342859c9fb663d65a2493713a63f32481d1d45f8c12d5eb5c51d29b1ea",
+   "galaxies": [
+    17367
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R20",
+   "pointing": {
+    "ra": 14.353055555555555,
+    "dec": 29.995833333333334
+   },
+   "qso": [],
+   "qsoRecordsRead": 1630,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 100,
+   "finalStarIdsSHA256": "858f4c37a0e6e9b826121b1b6452bec4604e637b10ec325aa2a586a4b1b83f0d",
+   "galaxies": [
+    17380
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F6R21",
+   "pointing": {
+    "ra": 14.357777777777779,
+    "dec": 31.58888888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1631,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 104,
+   "finalStarIdsSHA256": "89872e96ca76f90a5ecbe3bb46a748e0e8dd415d84a5acaef10a228e062998bc",
+   "galaxies": [
+    17389
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R1",
+   "pointing": {
+    "ra": 14.431222222222223,
+    "dec": 30.475277777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1646,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 90,
+   "finalStarIdsSHA256": "a6bdefa3c7ef29d0e193d0201d420eaf90b772a4feca1bd84109a12a2bed82b6",
+   "galaxies": [
+    17469
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R2",
+   "pointing": {
+    "ra": 14.445361111111112,
+    "dec": 27.1925
+   },
+   "qso": [],
+   "qsoRecordsRead": 1648,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 99,
+   "finalStarIdsSHA256": "02be7685c26bda2daa147b6baf38bbbb7d3ba3cde86e17da3a45d5ea18d4e7ab",
+   "galaxies": [
+    17492,
+    17497,
+    17539
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R3",
+   "pointing": {
+    "ra": 14.4495,
+    "dec": 31.515
+   },
+   "qso": [],
+   "qsoRecordsRead": 1648,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 82,
+   "finalStarIdsSHA256": "e18bca6eb43edbc37c1570e2b77cd8c2de142bc6e6c7e63dcaab81a8839a10e9",
+   "galaxies": [
+    17500
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R4",
+   "pointing": {
+    "ra": 14.452861111111112,
+    "dec": 30.947777777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1648,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 88,
+   "finalStarIdsSHA256": "255eeeb0aaf793bbc7c5b5385f2713380daf9592cb5fcc0ab4d63b29f03fe13c",
+   "galaxies": [
+    17504,
+    17555
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R5",
+   "pointing": {
+    "ra": 14.475194444444444,
+    "dec": 27.265833333333333
+   },
+   "qso": [],
+   "qsoRecordsRead": 1652,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 96,
+   "finalStarIdsSHA256": "6dffa3af3195ab9688550a2e0f0009d8531bbd73273163cbfdef2117db11ed41",
+   "galaxies": [
+    17539,
+    17548,
+    17553,
+    17560,
+    17601
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R6",
+   "pointing": {
+    "ra": 14.475472222222223,
+    "dec": 27.409166666666668
+   },
+   "qso": [],
+   "qsoRecordsRead": 1652,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 87,
+   "finalStarIdsSHA256": "d1be50130204c84975cf4abd6725151db90a82011cda6f5146d51d763b5ba549",
+   "galaxies": [
+    17548,
+    17553,
+    17560,
+    17601
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R7",
+   "pointing": {
+    "ra": 14.479305555555555,
+    "dec": 28.96527777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1652,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 100,
+   "finalStarIdsSHA256": "5c215388eea178f5e0af030866a8261a16c43119758cc2327e5aa21cc909e1a6",
+   "galaxies": [
+    17559,
+    17578
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R8",
+   "pointing": {
+    "ra": 14.481111111111112,
+    "dec": 30.412777777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1652,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 101,
+   "finalStarIdsSHA256": "d7489209ef5d48a6f18cfce2a7d09b7babdb8afb0a5490bb5320017622bd8931",
+   "galaxies": [
+    17555,
+    17562,
+    17563,
+    17571
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R9",
+   "pointing": {
+    "ra": 14.487166666666667,
+    "dec": 30.026666666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1654,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 89,
+   "finalStarIdsSHA256": "afe20478cd1a8afbe76d1a584180f16aff106b8a9aed7e938fbc9a922981bf2b",
+   "galaxies": [
+    17571,
+    17577
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R10",
+   "pointing": {
+    "ra": 14.488027777777777,
+    "dec": 28.822222222222223
+   },
+   "qso": [],
+   "qsoRecordsRead": 1654,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 101,
+   "finalStarIdsSHA256": "409c70fc4b6bbeb59890e2996f14bd0e343a283dd5424f60a6ef9ddf4229d561",
+   "galaxies": [
+    17559,
+    17578,
+    17613
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R11",
+   "pointing": {
+    "ra": 14.488472222222223,
+    "dec": 30.83111111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1654,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 98,
+   "finalStarIdsSHA256": "62e76187bde3227b685e8fa2b53105ae6146cbe18a0c445907965f2c82ff0dba",
+   "galaxies": [
+    17555,
+    17579
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R12",
+   "pointing": {
+    "ra": 14.50286111111111,
+    "dec": 31.21472222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1655,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 99,
+   "finalStarIdsSHA256": "0f81215c2f2ab3e5eecdfafad9e9a9579b602b14e86fb182328ad4bdc6587243",
+   "galaxies": [
+    17600
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R13",
+   "pointing": {
+    "ra": 14.503222222222222,
+    "dec": 27.528333333333332
+   },
+   "qso": [],
+   "qsoRecordsRead": 1655,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 97,
+   "finalStarIdsSHA256": "91910aa7a7ab0c92b3752e327775a33ca509c0abc26667a5bb50f1b5b60db5ad",
+   "galaxies": [
+    17548,
+    17553,
+    17560,
+    17601,
+    17623
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R14",
+   "pointing": {
+    "ra": 14.51211111111111,
+    "dec": 29.18111111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1656,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 115,
+   "finalStarIdsSHA256": "313e47b524e2958ea4ad2351d6a6598fdaa835096010db1b86106c8bf5aa145a",
+   "galaxies": [
+    17578,
+    17613
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R15",
+   "pointing": {
+    "ra": 14.519166666666667,
+    "dec": 27.2375
+   },
+   "qso": [],
+   "qsoRecordsRead": 1657,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 114,
+   "finalStarIdsSHA256": "4170b7aeed7861608e6149934427756cb94513f3a5e2fdfef63fa525bbc7e48b",
+   "galaxies": [
+    17601,
+    17623,
+    17645
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R16",
+   "pointing": {
+    "ra": 14.536722222222222,
+    "dec": 28.55611111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1659,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 103,
+   "finalStarIdsSHA256": "835fa60bd62efbd1e202eee6d434a68ddde84f9a7954f7a36bc2aebf0e863589",
+   "galaxies": [
+    17621,
+    17642,
+    17664,
+    17676
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R17",
+   "pointing": {
+    "ra": 14.540111111111111,
+    "dec": 27.43
+   },
+   "qso": [],
+   "qsoRecordsRead": 1659,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 97,
+   "finalStarIdsSHA256": "d1a85df82dc48fbb9b74367d30b584cebfbabe9beb5216e52663d2775332b356",
+   "galaxies": [
+    17623,
+    17645
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R18",
+   "pointing": {
+    "ra": 14.544027777777778,
+    "dec": 31.670555555555556
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1656"
+   ],
+   "qsoRecordsRead": 1659,
+   "variables": [
+    10908
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F7R19",
+   "pointing": {
+    "ra": 14.5615,
+    "dec": 28.05388888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1661,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 118,
+   "finalStarIdsSHA256": "db0d3ef7b0b9e27eb5632825202ae42ebf857dd75fa9cc114dd9e026d07541ee",
+   "galaxies": [
+    17672,
+    17676,
+    17679
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R20",
+   "pointing": {
+    "ra": 14.56825,
+    "dec": 27.948055555555555
+   },
+   "qso": [],
+   "qsoRecordsRead": 1661,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 109,
+   "finalStarIdsSHA256": "5484fe23a49f191dd2eca5d87fe2129911d2e541f959ce23f163feef58d458b6",
+   "galaxies": [
+    17672,
+    17679
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R21",
+   "pointing": {
+    "ra": 14.572277777777778,
+    "dec": 31.548333333333332
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1656"
+   ],
+   "qsoRecordsRead": 1661,
+   "variables": [
+    10908
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F7R22",
+   "pointing": {
+    "ra": 14.574083333333334,
+    "dec": 30.965
+   },
+   "qso": [],
+   "qsoRecordsRead": 1661,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 91,
+   "finalStarIdsSHA256": "730084db0e59f092d63b94fa666d26bcbe9e0796f12bcb01ca4ae9d775e9b5ec",
+   "galaxies": [
+    17686
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R23",
+   "pointing": {
+    "ra": 14.575944444444444,
+    "dec": 30.281666666666666
+   },
+   "qso": [],
+   "qsoRecordsRead": 1661,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 100,
+   "finalStarIdsSHA256": "ac37537d789a5f384d8be5f1d52cc3b816ff7dad7a43e9dfe6a82247cfb123b3",
+   "galaxies": [
+    17690,
+    17732
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R24",
+   "pointing": {
+    "ra": 14.604305555555555,
+    "dec": 29.908055555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1666,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 128,
+   "finalStarIdsSHA256": "60bfb2348472efedd5726750386d825a2931e0c2d64723f0e9d744d22b79698c",
+   "galaxies": [
+    17690,
+    17732
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R25",
+   "pointing": {
+    "ra": 14.647333333333334,
+    "dec": 30.44333333333333
+   },
+   "qso": [],
+   "qsoRecordsRead": 1669,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 121,
+   "finalStarIdsSHA256": "01962537122f6bed042da380a65bffacc170d052827520650e6d9124cd1ab84b",
+   "galaxies": [
+    17752,
+    17753,
+    17756,
+    17768,
+    17774
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F7R26",
+   "pointing": {
+    "ra": 14.648916666666667,
+    "dec": 30.951666666666668
+   },
+   "qso": [],
+   "qsoRecordsRead": 1669,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 105,
+   "finalStarIdsSHA256": "d035d8dc274d59c5ab254162beeab381888c091ce688fee4d721c7e85483272d",
+   "galaxies": [
+    17772,
+    17774
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R1",
+   "pointing": {
+    "ra": 14.668222222222223,
+    "dec": 31.501666666666665
+   },
+   "qso": [],
+   "qsoRecordsRead": 1671,
+   "variables": [
+    10997
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F8R2",
+   "pointing": {
+    "ra": 14.675416666666667,
+    "dec": 31.369722222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1672,
+   "variables": [
+    10997
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F8R3",
+   "pointing": {
+    "ra": 14.690305555555556,
+    "dec": 31.636944444444445
+   },
+   "qso": [],
+   "qsoRecordsRead": 1673,
+   "variables": [
+    10997
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F8R4",
+   "pointing": {
+    "ra": 14.709277777777778,
+    "dec": 28.725277777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1674,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 122,
+   "finalStarIdsSHA256": "e27d6cb1ded6a338033d673a045c7d263ad75eb0619ce8a656dd856e9944ec3a",
+   "galaxies": [
+    17834,
+    17858
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R5",
+   "pointing": {
+    "ra": 14.757166666666667,
+    "dec": 30.421944444444446
+   },
+   "qso": [],
+   "qsoRecordsRead": 1677,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 117,
+   "finalStarIdsSHA256": "aae3ba7f780e844f0b511d0faf7b0709bf892c48af789464fc22b08100dc0037",
+   "galaxies": [
+    17873
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R6",
+   "pointing": {
+    "ra": 14.824388888888889,
+    "dec": 27.78
+   },
+   "qso": [],
+   "qsoRecordsRead": 1684,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 114,
+   "finalStarIdsSHA256": "0172e1b2549b93ad7f7444c13fe029d98053c062a3c23f4bcbcafbadaee0e972",
+   "galaxies": [
+    17938,
+    17939,
+    17941,
+    17971
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R7",
+   "pointing": {
+    "ra": 14.847805555555556,
+    "dec": 27.56111111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1687,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 127,
+   "finalStarIdsSHA256": "8fe5940df540ab8545782e2e681aab32e3618b7b15faf53d988fff7325a3e3ac",
+   "galaxies": [
+    17938,
+    17939,
+    17941,
+    17971
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R8",
+   "pointing": {
+    "ra": 14.868777777777778,
+    "dec": 29.845555555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1687,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 125,
+   "finalStarIdsSHA256": "e65797f4f5f5fde2e39c40d174c7ca41b52c88aa948c3ccc31ff6a4ee011ef39",
+   "galaxies": [
+    18005,
+    18023
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R9",
+   "pointing": {
+    "ra": 14.875222222222222,
+    "dec": 29.806944444444444
+   },
+   "qso": [],
+   "qsoRecordsRead": 1687,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 126,
+   "finalStarIdsSHA256": "b58dfb8790a56c8dc9ab4b5195b59b3699d1d202284607c77e40b4273c734980",
+   "galaxies": [
+    18005,
+    18023
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R10",
+   "pointing": {
+    "ra": 14.901916666666667,
+    "dec": 30.21388888888889
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1689"
+   ],
+   "qsoRecordsRead": 1691,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1689",
+     "insert",
+     16
+    ]
+   ],
+   "finalStars": 99,
+   "finalStarIdsSHA256": "5bf5d997a06ebd52946db393cef4cf2dba6376ed5431fdf96b2396c3ff70d6a1",
+   "galaxies": [
+    18078,
+    18079,
+    18086
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R12",
+   "pointing": {
+    "ra": 14.90563888888889,
+    "dec": 28.9475
+   },
+   "qso": [],
+   "qsoRecordsRead": 1693,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 116,
+   "finalStarIdsSHA256": "97266a3c42da020c890ebb648fee6ec55afee625f42adec5ca878189877daa62",
+   "galaxies": [
+    18088
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R13",
+   "pointing": {
+    "ra": 14.94325,
+    "dec": 30.23361111111111
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1689"
+   ],
+   "qsoRecordsRead": 1696,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1689",
+     "insert",
+     3
+    ]
+   ],
+   "finalStars": 103,
+   "finalStarIdsSHA256": "ce1d2c6038c454d41a9a6423695c6061a3536d43cdcddc750ed5fdfed57da3b4",
+   "galaxies": [
+    18133,
+    18151
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R14",
+   "pointing": {
+    "ra": 14.960638888888889,
+    "dec": 29.968611111111112
+   },
+   "qso": [],
+   "qsoRecordsRead": 1697,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 107,
+   "finalStarIdsSHA256": "9a87736b50619620f27ed832c8c6644573da4423987b91d54facee2f4fa85afa",
+   "galaxies": [
+    18133,
+    18151
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R15",
+   "pointing": {
+    "ra": 14.993416666666667,
+    "dec": 27.115555555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1699,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 137,
+   "finalStarIdsSHA256": "a0fe565d6a027cea638f363deddcd4e82f7f1702ecf955e7e0e12eaf19a185ff",
+   "galaxies": [
+    18177,
+    18179,
+    18184
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R16",
+   "pointing": {
+    "ra": 15.075111111111111,
+    "dec": 27.793055555555554
+   },
+   "qso": [],
+   "qsoRecordsRead": 1709,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 126,
+   "finalStarIdsSHA256": "83003dbfd1b2497fbcfba9f9326c8354d197dcc5f336d23834083147e2767f9f",
+   "galaxies": [
+    18228,
+    18244
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R17",
+   "pointing": {
+    "ra": 15.077555555555556,
+    "dec": 26.989444444444445
+   },
+   "qso": [],
+   "qsoRecordsRead": 1709,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 132,
+   "finalStarIdsSHA256": "191d7179ce48019b22b281d196f0fceb8d43ad122154699d1d744021a7d9cac1",
+   "galaxies": [
+    18247
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R18",
+   "pointing": {
+    "ra": 15.093638888888888,
+    "dec": 31.162777777777777
+   },
+   "qso": [],
+   "qsoRecordsRead": 1710,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 139,
+   "finalStarIdsSHA256": "63a1777673f9a7dc7dec978bd96afc8a658bed83c73db9e903ab39a727b3b7f9",
+   "galaxies": [
+    18264
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R19",
+   "pointing": {
+    "ra": 15.300777777777778,
+    "dec": 30.6925
+   },
+   "qso": [],
+   "qsoRecordsRead": 1722,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 119,
+   "finalStarIdsSHA256": "913a8c3e331b5ee9ed373f333a6f085ee66595dc068abb7cedce1f996a24c992",
+   "galaxies": [
+    18420,
+    18422
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R20",
+   "pointing": {
+    "ra": 15.330722222222223,
+    "dec": 31.37
+   },
+   "qso": [],
+   "qsoRecordsRead": 1724,
+   "variables": [
+    11316,
+    11355
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F8R21",
+   "pointing": {
+    "ra": 15.354916666666666,
+    "dec": 28.554444444444446
+   },
+   "qso": [],
+   "qsoRecordsRead": 1726,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 128,
+   "finalStarIdsSHA256": "b369eff4e8a36fdabd267d62ef781611ef5428a27afb8f5fe616da84fc388c5c",
+   "galaxies": [
+    18445,
+    18455
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R22",
+   "pointing": {
+    "ra": 15.365694444444445,
+    "dec": 31.221944444444443
+   },
+   "qso": [],
+   "qsoRecordsRead": 1726,
+   "variables": [
+    11355,
+    11375
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F8R23",
+   "pointing": {
+    "ra": 15.379194444444444,
+    "dec": 29.770833333333332
+   },
+   "qso": [],
+   "qsoRecordsRead": 1730,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 131,
+   "finalStarIdsSHA256": "fafa4156d11b7e0687c46ce3909b5edcb43019c491f8a04951e3c1d959e18595",
+   "galaxies": [
+    18494
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F8R24",
+   "pointing": {
+    "ra": 15.449666666666667,
+    "dec": 28.843333333333334
+   },
+   "qso": [],
+   "qsoRecordsRead": 1741,
+   "variables": [
+    11421
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F8R25",
+   "pointing": {
+    "ra": 15.494583333333333,
+    "dec": 30.485555555555557
+   },
+   "qso": [],
+   "qsoRecordsRead": 1747,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 171,
+   "finalStarIdsSHA256": "a53b3c9aacb87a8075ea0deac89adb05f6dc5a2976b663c6bc0792cf89cdb1bc",
+   "galaxies": [
+    18570
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R1",
+   "pointing": {
+    "ra": 15.505166666666666,
+    "dec": 27.09638888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1750,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 140,
+   "finalStarIdsSHA256": "ebcfa937ea32e13dfb31df79328026228d56f725f03e2d582218ea3bbd458319",
+   "galaxies": [
+    18577,
+    18579
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R2",
+   "pointing": {
+    "ra": 15.580361111111111,
+    "dec": 28.655277777777776
+   },
+   "qso": [],
+   "qsoRecordsRead": 1753,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 119,
+   "finalStarIdsSHA256": "a922c01355193478fe5566e9f6e38af98ded948161ba5dbb9a5799d8a6714528",
+   "galaxies": [
+    18629
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R3",
+   "pointing": {
+    "ra": 15.586638888888888,
+    "dec": 27.334444444444443
+   },
+   "qso": [],
+   "qsoRecordsRead": 1753,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 157,
+   "finalStarIdsSHA256": "301dd5ad04165ae0a689dbbfa4d148eb424f9c140f9d0c7c97fd57d76560d3cf",
+   "galaxies": [
+    18618,
+    18637,
+    18638,
+    18657,
+    18658
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R4",
+   "pointing": {
+    "ra": 15.58788888888889,
+    "dec": 30.864722222222223
+   },
+   "qso": [],
+   "qsoRecordsRead": 1753,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 136,
+   "finalStarIdsSHA256": "4f8d29f38a6fa6db468ee112a062d194d29af7f1d190892689921467b68c2dda",
+   "galaxies": [
+    18628,
+    18639,
+    18641,
+    18659,
+    18661,
+    18662
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R5",
+   "pointing": {
+    "ra": 15.588055555555556,
+    "dec": 30.801388888888887
+   },
+   "qso": [],
+   "qsoRecordsRead": 1753,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 135,
+   "finalStarIdsSHA256": "110a53c9055f08c2779f66cf22b478cbc4d2744a43c5abe087f5633c2e8cbdc6",
+   "galaxies": [
+    18628,
+    18639,
+    18641,
+    18659,
+    18661,
+    18662
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R6",
+   "pointing": {
+    "ra": 15.605333333333334,
+    "dec": 30.681944444444444
+   },
+   "qso": [],
+   "qsoRecordsRead": 1754,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 133,
+   "finalStarIdsSHA256": "9a1817f4c7a54d4766b4f82afe6c85b14cdd964bbb62bca68dbd7e75055188d0",
+   "galaxies": [
+    18628,
+    18639,
+    18641,
+    18659
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R7",
+   "pointing": {
+    "ra": 15.650638888888889,
+    "dec": 31.759166666666665
+   },
+   "qso": [],
+   "qsoRecordsRead": 1759,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 152,
+   "finalStarIdsSHA256": "f5c5584a878ec69ed02af453e080ac6d370effa71ee03bd453e1623fa043e448",
+   "galaxies": [
+    18687
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R8",
+   "pointing": {
+    "ra": 15.66788888888889,
+    "dec": 28.156111111111112
+   },
+   "qso": [],
+   "qsoRecordsRead": 1760,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 138,
+   "finalStarIdsSHA256": "3d239bf7aa7e6776f4b1bac2080059fc45c07314c633266433064bd0852bd04b",
+   "galaxies": [
+    18701,
+    18709,
+    18708,
+    18707,
+    18711,
+    18713,
+    18715,
+    18716,
+    18718
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R9",
+   "pointing": {
+    "ra": 15.674472222222223,
+    "dec": 28.35638888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1760,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 144,
+   "finalStarIdsSHA256": "c61a6675d23575ad41da7af2a077c012a43633c73a252e152e4537f565d11ff3",
+   "galaxies": [
+    18701,
+    18709,
+    18708,
+    18707,
+    18711,
+    18713,
+    18715,
+    18716,
+    18718,
+    18724
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R12",
+   "pointing": {
+    "ra": 15.6795,
+    "dec": 28.29
+   },
+   "qso": [],
+   "qsoRecordsRead": 1760,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 138,
+   "finalStarIdsSHA256": "10996251bc5b8f30cc70e7e6e9fffd0d522def574346a6d0073a68887bcaa646",
+   "galaxies": [
+    18701,
+    18709,
+    18708,
+    18707,
+    18711,
+    18713,
+    18715,
+    18716,
+    18718,
+    18724
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R13",
+   "pointing": {
+    "ra": 15.689527777777778,
+    "dec": 28.229444444444443
+   },
+   "qso": [],
+   "qsoRecordsRead": 1760,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 147,
+   "finalStarIdsSHA256": "a037ca8ed6e775a5153f9de43872323454b4d6c74119d7cf17c0936e7c2c54b3",
+   "galaxies": [
+    18701,
+    18709,
+    18708,
+    18707,
+    18711,
+    18713,
+    18715,
+    18716,
+    18718,
+    18724
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R14",
+   "pointing": {
+    "ra": 15.689583333333333,
+    "dec": 27.990555555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1760,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 149,
+   "finalStarIdsSHA256": "ac4411b9c926928c5e3098f6bfb4287afc61d7ceb946829d9d5c2cc1504d9ff3",
+   "galaxies": [
+    18701,
+    18709,
+    18708,
+    18707,
+    18711,
+    18713,
+    18715,
+    18716,
+    18718,
+    18724
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R15",
+   "pointing": {
+    "ra": 15.697861111111111,
+    "dec": 28.124444444444446
+   },
+   "qso": [],
+   "qsoRecordsRead": 1760,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 143,
+   "finalStarIdsSHA256": "85322023bbf98ab00c22f5c2e099760c1bbad28027965fdac0b572778ae634ee",
+   "galaxies": [
+    18707,
+    18709,
+    18708,
+    18711,
+    18713,
+    18715,
+    18716,
+    18718,
+    18724,
+    18733
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R16",
+   "pointing": {
+    "ra": 15.719416666666667,
+    "dec": 28.359166666666667
+   },
+   "qso": [],
+   "qsoRecordsRead": 1766,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 152,
+   "finalStarIdsSHA256": "b6121406f2e6c7005e26940ab6d37fa7d8a103547b0ae3fc2d495f23d980214d",
+   "galaxies": [
+    18718,
+    18724,
+    18733,
+    18739,
+    18740,
+    18742,
+    18743,
+    18746,
+    18747
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R17",
+   "pointing": {
+    "ra": 15.72938888888889,
+    "dec": 28.426388888888887
+   },
+   "qso": [],
+   "qsoRecordsRead": 1767,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 157,
+   "finalStarIdsSHA256": "a36a861f9fd2a44bab7501c48bdcc1b11688b217f71ae59caeb3dfba3367eb6e",
+   "galaxies": [
+    18733,
+    18739,
+    18740,
+    18742,
+    18743,
+    18746,
+    18747
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R18",
+   "pointing": {
+    "ra": 15.73275,
+    "dec": 28.26
+   },
+   "qso": [],
+   "qsoRecordsRead": 1768,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 151,
+   "finalStarIdsSHA256": "828348d471b51fa21bc49111c4c7d06e294cce6152ef5a878320ff05feca727d",
+   "galaxies": [
+    18733,
+    18739,
+    18740,
+    18742,
+    18743,
+    18746,
+    18747,
+    18775
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R19",
+   "pointing": {
+    "ra": 15.760805555555555,
+    "dec": 28.088055555555556
+   },
+   "qso": [],
+   "qsoRecordsRead": 1769,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 151,
+   "finalStarIdsSHA256": "c6e7196a9f9f8b3e6c2534bc1af82ba0709311ff30732eafe7c67e5ac07105f0",
+   "galaxies": [
+    18747,
+    18775
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R20",
+   "pointing": {
+    "ra": 15.772,
+    "dec": 30.26222222222222
+   },
+   "qso": [],
+   "qsoRecordsRead": 1771,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 148,
+   "finalStarIdsSHA256": "0280d30f738b83ba61b63314cb907b324c7ebe29c6563a5f753fc7e0cf646277",
+   "galaxies": [
+    18770,
+    18772,
+    18783
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R21",
+   "pointing": {
+    "ra": 15.779083333333332,
+    "dec": 31.010833333333334
+   },
+   "qso": [],
+   "qsoRecordsRead": 1771,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 164,
+   "finalStarIdsSHA256": "0594e79020bab5af3e304b1ab1f62e50447b1a99e364551e6870f1f73932a3b4",
+   "galaxies": [
+    18790
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R22",
+   "pointing": {
+    "ra": 15.796083333333334,
+    "dec": 28.64027777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1772,
+   "variables": [
+    11682
+   ],
+   "modelled": false
+  },
+  {
+   "label": "F9R23",
+   "pointing": {
+    "ra": 15.816194444444445,
+    "dec": 27.615
+   },
+   "qso": [],
+   "qsoRecordsRead": 1772,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 164,
+   "finalStarIdsSHA256": "0d8a7397549df63ffc9d2dd0fca3365353b8327a5e810db0cdc005e8ba8b95a2",
+   "galaxies": [
+    18817
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R24",
+   "pointing": {
+    "ra": 15.842472222222222,
+    "dec": 28.633333333333333
+   },
+   "qso": [],
+   "qsoRecordsRead": 1776,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 184,
+   "finalStarIdsSHA256": "1bfa3e2bdab648315c3a9b7fe7ecec168b9847f150e4180333dda226b6f7a0f1",
+   "galaxies": [
+    18828,
+    18836,
+    18841
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R25",
+   "pointing": {
+    "ra": 15.901833333333334,
+    "dec": 30.15361111111111
+   },
+   "qso": [],
+   "qsoRecordsRead": 1781,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 178,
+   "finalStarIdsSHA256": "b22e9b793819c52cd20de3eaba87d6e5fed6faba2c963399bce65d21fe91559d",
+   "galaxies": [
+    18875
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R26",
+   "pointing": {
+    "ra": 15.933916666666667,
+    "dec": 26.970277777777778
+   },
+   "qso": [],
+   "qsoRecordsRead": 1782,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 186,
+   "finalStarIdsSHA256": "f92901b1ae6ccc7d3cd5b6216ca23e39fb087764907e961599685b7e99013f1e",
+   "galaxies": [
+    18901
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "F9R27",
+   "pointing": {
+    "ra": 15.957694444444444,
+    "dec": 30.05638888888889
+   },
+   "qso": [],
+   "qsoRecordsRead": 1784,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 161,
+   "finalStarIdsSHA256": "d50f4145306f58cd9d3dea94fb63bb1232552d59109e5a3cd1e48c0eab125f73",
+   "galaxies": [
+    18900,
+    18923,
+    18924
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "GLX@15036 NGC 4874",
+   "pointing": {
+    "ra": 12.99311111111111,
+    "dec": 27.959722222222222
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1443"
+   ],
+   "qsoRecordsRead": 1446,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1443",
+     "insert",
+     169
+    ]
+   ],
+   "finalStars": 94,
+   "finalStarIdsSHA256": "5d801dfa74d6e2188e8ae2418e643d193536a4b47aae6353b674188c6d4289f5",
+   "galaxies": [
+    14902,
+    14904,
+    14905,
+    14907,
+    14914,
+    14915,
+    14916,
+    14918,
+    14928,
+    14935,
+    14940,
+    14942,
+    14943,
+    14949,
+    14955,
+    14957,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14976,
+    14978,
+    14979,
+    14980,
+    14983,
+    14987,
+    14989,
+    14991,
+    14992,
+    14993,
+    14994,
+    14996,
+    15000,
+    15001,
+    15002,
+    15004,
+    15006,
+    15007,
+    15008,
+    15009,
+    15013,
+    15014,
+    15016,
+    15017,
+    15018,
+    15020,
+    15021,
+    15022,
+    15024,
+    15025,
+    15027,
+    15028,
+    15029,
+    15031,
+    15032,
+    15034,
+    15036,
+    15040,
+    15041,
+    15043,
+    15045,
+    15046,
+    15047,
+    15048,
+    15051,
+    15053,
+    15055,
+    15056,
+    15057,
+    15060,
+    15061,
+    15063,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15090,
+    15092,
+    15095,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15118,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "GLX@15074 NGC 4889",
+   "pointing": {
+    "ra": 13.002305555555555,
+    "dec": 27.9775
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1443"
+   ],
+   "qsoRecordsRead": 1447,
+   "variables": [],
+   "modelled": true,
+   "qsoOperations": [
+    [
+     "CLEA_QSO.DAT@1443",
+     "insert",
+     152
+    ]
+   ],
+   "finalStars": 96,
+   "finalStarIdsSHA256": "1e1880215657970696e0dea7fe64db35c32c00ce81727458a02d43522ec13c61",
+   "galaxies": [
+    14949,
+    14957,
+    14961,
+    14962,
+    14968,
+    14972,
+    14975,
+    14976,
+    14978,
+    14979,
+    14980,
+    14983,
+    14987,
+    14989,
+    14991,
+    14992,
+    14993,
+    14994,
+    14996,
+    15000,
+    15001,
+    15002,
+    15004,
+    15006,
+    15007,
+    15008,
+    15009,
+    15013,
+    15014,
+    15016,
+    15017,
+    15018,
+    15020,
+    15021,
+    15022,
+    15024,
+    15025,
+    15027,
+    15028,
+    15029,
+    15031,
+    15032,
+    15034,
+    15036,
+    15040,
+    15041,
+    15043,
+    15045,
+    15046,
+    15047,
+    15048,
+    15051,
+    15053,
+    15055,
+    15056,
+    15057,
+    15060,
+    15061,
+    15063,
+    15068,
+    15069,
+    15071,
+    15072,
+    15073,
+    15074,
+    15075,
+    15076,
+    15080,
+    15082,
+    15085,
+    15087,
+    15088,
+    15090,
+    15092,
+    15095,
+    15104,
+    15107,
+    15109,
+    15111,
+    15112,
+    15115,
+    15117,
+    15118,
+    15119,
+    15122,
+    15124,
+    15125,
+    15126,
+    15127,
+    15128,
+    15131,
+    15132,
+    15134,
+    15138,
+    15145,
+    15146,
+    15153,
+    15154,
+    15156,
+    15159,
+    15167,
+    15169,
+    15178,
+    15179,
+    15180,
+    15183
+   ],
+   "deletedGalaxies": []
+  },
+  {
+   "label": "GLX@17656 51976",
+   "pointing": {
+    "ra": 14.545666666666667,
+    "dec": 31.56361111111111
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1656"
+   ],
+   "qsoRecordsRead": 1660,
+   "variables": [
+    10908
+   ],
+   "modelled": false
+  },
+  {
+   "label": "GLX@17657 51975",
+   "pointing": {
+    "ra": 14.545666666666667,
+    "dec": 31.596944444444443
+   },
+   "qso": [
+    "CLEA_QSO.DAT@1656"
+   ],
+   "qsoRecordsRead": 1660,
+   "variables": [
+    10908
+   ],
+   "modelled": false
+  }
+ ]
+}

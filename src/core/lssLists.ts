@@ -1,7 +1,8 @@
 /** Byte-exact original VIREO lists used by E02 (CLEA_Vireo.zip, user approval of 2026-10-27, groups 1 and 2 in AGENTS.md):
  * LSSFields.LST (field names and centres), Images/Galaxies/GLIMAGES.LST (photographic list; positions only) and
  * Spectra/Galaxies/GLXYSP.LST (galaxy library spectrum names). The native readers are not recovered (TLSSFieldsForm1
- * FormShow, the photographic-list loader 0x5987e4 family, the GLXYSP lookup): these parsers read the evident text formats
+ * FormShow, the photographic-list selection 0x596ab8 and association 0x598e3b..0x598e52 (0x5987e4 is the QSO catalogue loader,
+ * see qsoMerge.ts), the GLXYSP lookup): these parsers read the evident text formats
  * and reject anything else; they never repair a row. Callers verify size and SHA-256 before parsing. */
 import {freshFieldArea} from './fieldEngine';
 import type {FieldPack} from './fieldPack';
