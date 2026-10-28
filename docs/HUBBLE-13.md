@@ -14,8 +14,8 @@ selected record, crop digest and calibration. Regeneration needs `OPENVIREO_FREE
 | HTL row | Target | Route | Telescopes | Status |
 |---|---|---|---|---|
 | 3 | 36805 UM-I – 3 | cached pan of the verified 36773 field (M1) | 0.4 m | available |
-| 4 | NGC 4874 Coma – 1 | engine (M3) | — | qso-merge (pending) |
-| 5 | NGC 4889 Coma – 2 | engine + own spectrum (M4) | — | qso-merge (pending) |
+| 4 | NGC 4874 Coma – 1 | engine, QSO merge (M3) | 0.4 m, 4 m (0.9 m: mean bound) | available |
+| 5 | NGC 4889 Coma – 2 | engine, QSO merge, own NGC4889.SP (M4) | 0.4 m, 4 m (0.9 m: mean bound) | available |
 | 6 | 51976 Boo – 1 | engine (M5) | — | variable-qso-merge (pending) |
 | 7 | 51975 Boo – 2 | engine (M5) | — | variable-qso-merge (pending) |
 
@@ -40,3 +40,24 @@ may sit directly under it). It carries `extendedPolicy` `openvireo-hubble-extend
 archive hold more than 12 acquisitions (web bound 16, `EXTENDED_MAX_ACQUISITION_ARCHIVE`). Acquisitions, banks or context of
 extended targets in any other version are rejected. All replay inputs (base archive and slots, v24/v25/v29 banks) are counted
 against the one 24 000-event budget before replay.
+
+## M2 — QSO merge
+See docs/FIELD-ENGINE.md (stage 3). The engine targets below use `qso: 'merge'`; E02 LSS keeps `'gate'`.
+
+## M3/M4 — Coma – 1 (NGC 4874) and Coma – 2 (NGC 4889)
+- Field: a fresh general-field-engine field at the exact catalogue centre, from the derived pack `data/hubble/engine-coma.json`
+  (both pointings; N2230 only). Every read is byte-equal to, or the 8-byte position prefix of, a read already published in
+  `data/lss/lss-field-03/04.json` (test), so no new GSC bytes are published.
+- QSO 1443 (CSO 786, V 17.4) is the only QSO in both areas; it has no merge winner (nothing within 2′ and 1 mag) and is inserted
+  in RA order (positions 169 and 152), as the independent Python witness gives; it lies outside the 312² crop.
+- `data/hubble/engine-targets.json` records, per telescope, the policy, crop SHA-256, slit level and fraction, star/galaxy counts,
+  source file and QSO operations; the loader (`io/hubbleEngineTargets.ts`) re-derives them, checks the crop digest and only then
+  registers the definitions. Telescope availability follows the existing mean bound: 0.4 m and 4 m available, KPNO 0.9 m
+  `mean-bound` (max Poisson mean 17.8 and 29.1 against the bound 12). This differs from the plan's guess ("likely 4 m only").
+- NGC 4889 own spectrum: the GLXYSP lookup 0x55eb64 removes a parenthesised suffix and spaces from the name and takes the first
+  GLXYSP.LST line that contains it (Pos 0x40640c) → `NGC4889.SP` (27616 bytes, SHA-256 d48f7964…1e39). The matched branch of
+  0x55e55c uses it with wavelength factor 1 (no catalogue shift). NGC 4874 has no line and keeps GLXYTMPL.SP. The analyzer's
+  provenance text names the own spectrum.
+- Workbook V: 12.9 (Sheet1!C5), 12.5 (Sheet1!C6).
+- Adaptations: fresh field at the exact catalogue centre (not the rounded HTL coordinates), no cached pan from these fields;
+  field preparation is asynchronous (a few seconds; a load or identity failure is an explicit, retryable notice).

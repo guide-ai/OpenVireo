@@ -3266,4 +3266,9 @@ export interface MessageParameters {
   "lab.next.interpretSupported": "original" | "supported";
   "lab.limitsExtended": never;
   "lss.reason.qso-selected": never;
+  "galaxyExposure.engineAdaptation": never;
+  "galaxyExposure.engineLoading": never;
+  "galaxyExposure.engineError": never;
+  "galaxyExposure.engineRetry": never;
+  "galaxyExposure.modelLimitOwnSpectrum": "file" | "id";
 }

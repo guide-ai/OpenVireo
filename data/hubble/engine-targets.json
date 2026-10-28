@@ -1,0 +1,159 @@
+{
+ "schema": 1,
+ "kind": "derived typed metadata for the general-field-engine Hubble targets (Front F); recorded integers are regression evidence computed by the engine at this commit and cross-checked by the independent Python witnesses; no original bytes",
+ "engine": "openvireo-field-engine-v1+qso-merge",
+ "binarySHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+ "qsoMode": "merge",
+ "packs": {
+  "hubble-engine-coma": {
+   "file": "data/hubble/engine-coma.json",
+   "sha256": "acae935c6dabe47149507b0011367dbf9f9b40d7fd8654062de9c42006ca9c26",
+   "bytes": 42477
+  }
+ },
+ "targets": [
+  {
+   "id": "NGC 4874",
+   "label": "Coma – 1",
+   "htlRow": 3,
+   "htlRecordSHA256": "081df31bf88ccf7e2ee9e8227d606229e8e9786b6512c43904f929e5426da092",
+   "glxIndex": 15036,
+   "pointing": {
+    "ra": 12.99311111111111,
+    "dec": 27.959722222222222
+   },
+   "catalogMagnitude": 12.899999618530273,
+   "pack": "hubble-engine-coma",
+   "workbook": {
+    "source": "Hubble Data.xls · Sheet1!C5",
+    "apparentV": 12.9
+   },
+   "librarySpectrum": null,
+   "telescopes": [
+    {
+     "telescope": 0,
+     "status": "available",
+     "policyId": "openvireo-engine-galaxy-NGC4874-r0-v1",
+     "cropSHA256": "b0403396694156425c5813cbb72995c06f4523ff6a393c32e850412edf4768e5",
+     "pixelLevel": 252,
+     "fraction": 1,
+     "stars": 94,
+     "galaxies": 112,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 2.8171056392072322,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1443",
+       "insert",
+       169
+      ]
+     ]
+    },
+    {
+     "telescope": 1,
+     "status": "unavailable",
+     "reasons": [
+      "mean-bound"
+     ],
+     "maxSourcePoissonMean": 17.774734932343716
+    },
+    {
+     "telescope": 2,
+     "status": "available",
+     "policyId": "openvireo-engine-galaxy-NGC4874-r2-v1",
+     "cropSHA256": "0f710b4a24dcf72c118c160bad82bc5a8ad30ea3e91947bf87714506d5cc8a2c",
+     "pixelLevel": 353,
+     "fraction": 1,
+     "stars": 94,
+     "galaxies": 112,
+     "sourceFile": "GLXYTMPL.SP",
+     "maxSourcePoissonMean": 281.7105639207232,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1443",
+       "insert",
+       169
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "NGC 4889",
+   "label": "Coma – 2",
+   "htlRow": 4,
+   "htlRecordSHA256": "30ace048d3d55492487052d9d4ac9a4979fde4c331ab68e7b6e1923cf9d68698",
+   "glxIndex": 15074,
+   "pointing": {
+    "ra": 13.002305555555555,
+    "dec": 27.9775
+   },
+   "catalogMagnitude": 12.5,
+   "pack": "hubble-engine-coma",
+   "workbook": {
+    "source": "Hubble Data.xls · Sheet1!C6",
+    "apparentV": 12.5
+   },
+   "librarySpectrum": {
+    "file": "NGC4889.SP",
+    "sha256": "d48f79640fa5d70d947388968bccb41beabf9ea8ea95c51ca877c381da101e39",
+    "bytes": 27616,
+    "listLine": "NGC4889.SP",
+    "lookup": "0x55eb64: id without spaces, first GLXYSP.LST line containing it (Pos)"
+   },
+   "telescopes": [
+    {
+     "telescope": 0,
+     "status": "available",
+     "policyId": "openvireo-engine-galaxy-NGC4889-r0-v1",
+     "cropSHA256": "ec846c251bd7250ce216ca69e44fe5b83fe2ba05b2880051417c262bbbffda57",
+     "pixelLevel": 257,
+     "fraction": 1,
+     "stars": 96,
+     "galaxies": 106,
+     "sourceFile": "NGC4889.SP",
+     "maxSourcePoissonMean": 4.607481303284523,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1443",
+       "insert",
+       152
+      ]
+     ]
+    },
+    {
+     "telescope": 1,
+     "status": "unavailable",
+     "reasons": [
+      "mean-bound"
+     ],
+     "maxSourcePoissonMean": 29.07124167862541
+    },
+    {
+     "telescope": 2,
+     "status": "available",
+     "policyId": "openvireo-engine-galaxy-NGC4889-r2-v1",
+     "cropSHA256": "ee48f957b277b9b1019f95fed92077ff84ebe3b077badf90abf97866feae7f1c",
+     "pixelLevel": 367,
+     "fraction": 1,
+     "stars": 96,
+     "galaxies": 106,
+     "sourceFile": "NGC4889.SP",
+     "maxSourcePoissonMean": 460.74813032845225,
+     "qsoOperations": [
+      [
+       "CLEA_QSO.DAT@1443",
+       "insert",
+       152
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "adaptations": [
+  "Fresh field at the exact catalogue centre (not the rounded HTL coordinates); no cache pan from these fields",
+  "Telescope availability follows the existing per-record mean bound (unchanged policy)",
+  "Number arithmetic and the nearest-centre raster are declared browser policies; no x87/GDI equivalence"
+ ]
+}

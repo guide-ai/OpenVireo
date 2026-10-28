@@ -61,7 +61,10 @@ export type FieldUnavailableReason=
 /** QSO stage: 'gate' (default) or the recovered merge on the caller-verified bundled catalogue (bytes and their SHA-256). */
 export type FieldQsoMode='gate'|'merge';
 export type FieldQsoCatalog=Readonly<{bytes:Uint8Array;sha256:string}>;
-export type FieldOptions=Readonly<{qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog}>;
+/** A selected galaxy's own library spectrum (GLXYSP.LST match, lookup 0x55eb64): used only when the slit selects that target,
+ * through the matched branch of 0x55e55c (wavelength factor 1); any other selection keeps the GLXYTMPL.SP fallback. */
+export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:readonly Readonly<{wavelength:number;intensity:number}>[]}>;
+export type FieldOptions=Readonly<{qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum}>;
 export type FieldStar=NativeFieldStar|NativeQso;
 export type FieldMergeWitness=Readonly<{galaxy:string;removed:readonly string[];savedWinnerIndex:number;runnerIndex:number;winnerId:string|null;galaxyDeleted?:true}>;
 export type FieldPopulation=Readonly<{
@@ -71,7 +74,7 @@ export type FieldPopulation=Readonly<{
  /** Present in 'merge' mode only: records read by the ordered QSO scan and one witness per merged QSO. */
  qsoStage?:Readonly<{recordsRead:number;witnesses:readonly QsoMergeWitness[]}>;
 }>;
-export type FieldCalibration=Readonly<{zeroPoint:number;pixelLevel:number;fraction:number;amplitude:PhotonAmplitudes;instrumentMagnitude:number;sourceMeans:readonly number[];sourceValues:readonly number[];wavelengths:readonly number[]}>;
+export type FieldCalibration=Readonly<{sourceFile:string;zeroPoint:number;pixelLevel:number;fraction:number;amplitude:PhotonAmplitudes;instrumentMagnitude:number;sourceMeans:readonly number[];sourceValues:readonly number[];wavelengths:readonly number[]}>;
 export type FieldResult=Readonly<{
  pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];population:FieldPopulation|null;
  scene:NativeSelectionScene|null;viewport:RgbImage|null;selection:ObjectSelection|null;target:NativeGalaxy|null;calibration:FieldCalibration|null;
@@ -256,10 +259,11 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
  const amplitude=photonAmplitudes(instrumentMagnitude,c.skyMagnitude,zeroPoint,fraction);
  let profile;
- try{profile=prepareGalaxyProfile(galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),galaxySource.matched,target.redshift,4000,5000);}
+ const own=options.librarySpectrum?.targetId===target.id?options.librarySpectrum:null;
+ try{profile=own?prepareGalaxyProfile(own.samples,true,target.redshift,4000,5000):prepareGalaxyProfile(galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),galaxySource.matched,target.redshift,4000,5000);}
  catch{return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-range' as const])});}
  const sourceMeans=Object.freeze(profile.values.map(v=>v*amplitude.source));
- const calibration=Object.freeze({zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans,sourceValues:profile.values,wavelengths:profile.wavelengths});
+ const calibration=Object.freeze({sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans,sourceValues:profile.values,wavelengths:profile.wavelengths});
  if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
  return Object.freeze({...base,target,calibration,reasons:Object.freeze([])});
 }

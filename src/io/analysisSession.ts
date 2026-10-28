@@ -32,7 +32,7 @@ import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFil
 import {OBJECT_X_INVESTIGATION_POLICY,ObjectXSessionError,admitObjectXInvestigation,portableObjectXInvestigation,type ObjectXInvestigation} from './objectXInvestigation';
 import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,portableLssInvestigation,type LssInvestigation} from './lssInvestigation';
 import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
-import {HUBBLE_EXTENDED_BANKS,isHubbleExtendedId} from '../core/hubbleEngineTargets';
+import {HUBBLE_EXTENDED_BANKS,HUBBLE_EXTENDED_TARGETS,isHubbleExtendedId} from '../core/hubbleEngineTargets';
 import {EXTENDED_MAX_ACQUISITION_ARCHIVE} from '../core/acquisitionArchive';
 import {observingUsesExtendedGalaxies} from '../core/observingWorkspace';
 import umiCached from '../../data/hubble/umi-cached-provenance.json';
@@ -163,6 +163,8 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.extendedPolicy!==HUBBLE_EXTENDED_SESSION_POLICY||r.binarySHA256!==umiCached.binarySHA256||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>28)fail('format');
     checkCombinedReplayBudget(value,true);
+    // Engine targets need their asynchronous, hash-checked field preparation before any of their journals can replay.
+    const text=JSON.stringify(value);if(HUBBLE_EXTENDED_TARGETS.some(t=>t.route==='engine'&&Object.values(t.policies).some(p=>text.includes(JSON.stringify(p)))))try{await (await import('./hubbleEngineTargets')).ensureHubbleEngineTargets();}catch{fail('state');}
     const base=await restore(r.base,verifySources,true,false,false,true,true,true);
     if((r.extendedGalaxies===null)!==!base.observing)fail('state');
     if(!base.observing)return base;

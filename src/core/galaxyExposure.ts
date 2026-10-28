@@ -37,6 +37,7 @@ import {prepareNativeStarProfile} from './starProfiles';
 import {photonAmplitudes,slitPixelLevel,telescopeZeroPoint,type RgbImage} from './photons';
 import {nativeObjectSlitFraction} from './slitThroughput';
 import {roundNearestEven} from './numericPolicy';
+import {isHubbleEngineId,hubbleExtendedPolicyTelescope,type HubbleEngineDefinition,type HubbleEngineConfiguration} from './hubbleEngineTargets';
 import {activateJournal,cancelJournal,createJournalExposure,deactivateJournal,JournalError,pauseJournal,resetJournal,replayJournal,startJournal,tickJournal,type JournalState,type JournalEvent} from './exposureJournal';
 export const GALAXY_FIELD_SHA256=provenance.fieldSnapshotSHA256,GALAXY_SOURCE_SHA256=provenance.sourceSnapshotSHA256;
 export const GALAXY_POLICY_ID=provenance.policyId,GALAXY_TARGET=Object.freeze({...provenance.target}),GALAXY_DOMAIN=PINNED_GALAXY_DOMAIN;
@@ -60,8 +61,18 @@ const pegasusCachedDefinitions=pegasusCached.targets.map(t=>{const identity=gala
 const umiCachedDefinitions=umiCached.targets.map(t=>{const identity=galaxyIdentity(t.id),pointing=Object.freeze({ra:identity.ra,dec:identity.dec});
  return Object.freeze({...provenance,policyId:t.policyId,fieldSnapshotSHA256:umiCached.baseFieldSnapshotSHA256,target:Object.freeze({id:t.id,recordIndex:t.recordIndex,ra:identity.ra,dec:identity.dec,magnitude:identity.magnitude}),domain:Object.freeze({...provenance.domain,view:Object.freeze({policy:umiCached.viewPolicy,baseFieldId:umiCached.baseFieldId,pointing})})});});
 const definitions=[...originalDefinitions,...originalDefinitions.map(d=>({...d,policyId:kpno09.records.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:1},calibration:{...d.calibration,telescopeCorrection:0,magnitudeShift:0}})),...originalDefinitions.map(d=>({...d,policyId:mayall.galaxies.find(r=>r.id===d.target.id)!.policyId,domain:{...d.domain,telescopeRecord:2},calibration:{...d.calibration,telescopeCorrection:3,magnitudeShift:3}})),...cachedDefinitions,pegasusFresh,...pegasusCachedDefinitions,...umiCachedDefinitions];
-export function galaxyDefinition(id='36773',index:0|1|2=0){galaxyIdentity(id);const d=definitions.find(d=>d.target.id===id&&d.domain.telescopeRecord===index);if(!d)throw new JournalError('proof');return d;}
-export function galaxyPolicyDefinition(policy:unknown){const d=definitions.find(d=>d.policyId===policy);if(!d)throw new JournalError('session');return d;}
+type Definition=(typeof definitions)[number];
+/** Front F engine targets (hubbleEngineTargets.ts): definitions and configurations registered only after the asynchronous,
+ * hash-checked preparation (io/hubbleEngineTargets.ts). Before that, every use is a typed 'proof' error. */
+const engineDefinitions:Definition[]=[];
+export function registerEngineGalaxy(definition:HubbleEngineDefinition,configuration:HubbleEngineConfiguration):void{
+ if(!isHubbleEngineId(definition.target.id)||hubbleExtendedPolicyTelescope(definition.policyId)!==definition.domain.telescopeRecord)throw new JournalError('proof');
+ if(engineDefinitions.some(d=>d.policyId===definition.policyId))return;
+ engineDefinitions.push(definition as unknown as Definition);prepared.set(definition.target.id+':'+definition.domain.telescopeRecord,configuration as unknown as ReturnType<typeof prepare>);
+}
+export function engineGalaxyRegistered(id:string,index:0|1|2):boolean{return engineDefinitions.some(d=>d.target.id===id&&d.domain.telescopeRecord===index);}
+export function galaxyDefinition(id='36773',index:0|1|2=0){galaxyIdentity(id);const d=definitions.find(d=>d.target.id===id&&d.domain.telescopeRecord===index)??engineDefinitions.find(d=>d.target.id===id&&d.domain.telescopeRecord===index);if(!d)throw new JournalError('proof');return d;}
+export function galaxyPolicyDefinition(policy:unknown){const d=definitions.find(d=>d.policyId===policy)??engineDefinitions.find(d=>d.policyId===policy);if(!d)throw new JournalError('session');return d;}
 export function galaxyStateDefinition(s:GalaxyState){return galaxyPolicyDefinition(s?.policy);}
 type Calibration=Readonly<{baseZeroPoint:number;telescopeCorrection:number;skyMagnitude:number;magnitudeShift:number}>;
 type PopulationField=ReturnType<typeof buildPinnedGalaxyPopulation>|ReturnType<typeof buildPinnedPegasusPopulation>;
@@ -133,7 +144,7 @@ function prepareCached(id:string,index:0|1|2){
  if(calibration.pixelLevel!==row.pixelLevel||calibration.fraction!==row.fraction)throw new JournalError('proof');
  return Object.freeze({telescopeIndex:index,field,scene,...calibration,viewport,view:Object.freeze({pan,selection:selected,targetIndex})});
 }
-function prepare(id:string,index:0|1|2){return galaxyFieldDescriptor(id).kind==='cached'?prepareCached(id,index):prepareFresh(id,index);}
+function prepare(id:string,index:0|1|2){if(isHubbleEngineId(id))throw new JournalError('proof');return galaxyFieldDescriptor(id).kind==='cached'?prepareCached(id,index):prepareFresh(id,index);}
 export function verifiedGalaxyConfiguration(id='36773',index:0|1|2=0){const key=id+':'+index;let c=prepared.get(key);if(!c){c=prepare(id,index);prepared.set(key,c);}return c;}
 function checked(s:GalaxyState){galaxyStateDefinition(s);}
 export function createGalaxyExposure(seed:number,id='36773',index:0|1|2=0){const c=verifiedGalaxyConfiguration(id,index);return createJournalExposure(galaxyDefinition(id,index).policyId,c.sourceMeans,c.amplitude.sky,50,seed);}
@@ -147,5 +158,5 @@ export function cancelGalaxy(s:GalaxyState){checked(s);return cancelJournal(s);}
 export function replayGalaxy(seed:number,events:readonly JournalEvent[],id='36773',index:0|1|2=0){return replayJournal(seed=>createGalaxyExposure(seed,id,index),seed,events);}
 function cell(s:string|number){const t=String(s);return /[",\r\n]/.test(t)?'"'+t.replaceAll('"','""')+'"':t;}
 export function galaxyCountsCsv(s:GalaxyState){checked(s);if(s.exposure.phase==='running')throw new JournalError('phase');if(!s.exposure.draws)throw new JournalError('no-data');const provenance=galaxyStateDefinition(s),GALAXY_TARGET=provenance.target,GALAXY_DOMAIN=provenance.domain,index=galaxyTelescopeIndex(s),c=verifiedGalaxyConfiguration(GALAXY_TARGET.id,index),e=s.exposure;
- return [['kind','policy','object_id','source_file','source_sha256','field_sha256','ra_h','dec_deg','magnitude_single','slit_level','slit_fraction','bin','wavelength_A','source_plus_sky_count','source_total','sky_total','elapsed_ms','seed_at_reset','current_seed','uniform_draws','raster_policy','instrument_magnitude','source_amplitude','sky_amplitude','numerical_policy',...(index!==0?['telescope_record','telescope_zero_point','optical_profile_sha256','configuration_sha256']:[])],...e.counts.map((count,i)=>['browser-catalog-galaxy-exposure',s.policy,GALAXY_TARGET.id,source.file,source.sha256,provenance.fieldSnapshotSHA256,GALAXY_TARGET.ra,GALAXY_TARGET.dec,GALAXY_TARGET.magnitude,c.pixelLevel,c.fraction,i+1,c.wavelengths[i],count,e.sourceTotal,e.skyTotal,e.elapsedMs,s.seedAtReset,e.seed,e.draws,GALAXY_DOMAIN.rasterPolicy,c.instrumentMagnitude,c.amplitude.source,c.amplitude.sky,'Number/Math nearest-even; explicit browser seed/timing; not native x87/GDI oracle',...(index!==0?[index,c.zeroPoint,kpno09.opticalProfileSHA256,index===2?MAYALL_PROOF_SHA256:KPNO09_GALAXY_PROOF_SHA256]:[])])].map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
+ return [['kind','policy','object_id','source_file','source_sha256','field_sha256','ra_h','dec_deg','magnitude_single','slit_level','slit_fraction','bin','wavelength_A','source_plus_sky_count','source_total','sky_total','elapsed_ms','seed_at_reset','current_seed','uniform_draws','raster_policy','instrument_magnitude','source_amplitude','sky_amplitude','numerical_policy',...(index!==0?['telescope_record','telescope_zero_point','optical_profile_sha256','configuration_sha256']:[])],...e.counts.map((count,i)=>['browser-catalog-galaxy-exposure',s.policy,GALAXY_TARGET.id,(provenance as {sourceFile?:string}).sourceFile??source.file,(provenance as {sourceFile?:string}).sourceFile?provenance.sourceSnapshotSHA256:source.sha256,provenance.fieldSnapshotSHA256,GALAXY_TARGET.ra,GALAXY_TARGET.dec,GALAXY_TARGET.magnitude,c.pixelLevel,c.fraction,i+1,c.wavelengths[i],count,e.sourceTotal,e.skyTotal,e.elapsedMs,s.seedAtReset,e.seed,e.draws,GALAXY_DOMAIN.rasterPolicy,c.instrumentMagnitude,c.amplitude.source,c.amplitude.sky,'Number/Math nearest-even; explicit browser seed/timing; not native x87/GDI oracle',...(index!==0?[index,c.zeroPoint,kpno09.opticalProfileSHA256,index===2?MAYALL_PROOF_SHA256:KPNO09_GALAXY_PROOF_SHA256]:[])])].map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
 }
