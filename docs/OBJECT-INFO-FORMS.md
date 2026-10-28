@@ -113,7 +113,7 @@ At a certified pointing in Edit Mode, the Telescope view shows the engine's own 
   - Size `major[xminor]` with 1 decimal.
 - **Field, LED and colour table:** FormActivate `0x56005c`, then the Telescope view pass. Assigned values light the LED red
   (yellow is never shown, [D]). TypeEd is magenta for non-stellar objects.
-- **GCVS:** enabled only for a type-0 star carrying a variable record (`0x56034e`). The engine ports only the false variable merge, so no certified star carries one, and the button is disabled with `gcvs-no-variable-record`. The working path from the observatory to the variable data is item 6 above. The route prop (`openRequest`) is ready if the true merge is ported.
+- **GCVS:** enabled only for a type-0 star carrying a variable record (`0x56034e`). The engine ports only the false variable merge, so no certified star carries one, and the button is disabled with `gcvs-no-variable-record`. The working path from the observatory to the variable data is item 6 above. GCVS turns on once the true-dispatch merge (+0x5b) is ported. That is a separate, later front, after Front F's follow-ups merge (coordinator decision 2026-10-28). The route prop (`openRequest`) is already wired for it.
 - **Not ported:**
   - **Update** (`update-master-catalog`): `0x59a54c` rewrites `GSC\<band>.DAT`.
   - **OK write-back** (`record-edit-unavailable`).
