@@ -76,9 +76,9 @@ function NakedEyeStarDialog({record,onClose}:{record:NakedEyeRecord;onClose:()=>
  return <dialog ref={ref} className="ob-dialog ob-box" aria-labelledby={`${id}-t`} data-testid="ne-dialog" onCancel={e=>{e.preventDefault();onClose();}}>
   <h2 id={`${id}-t`} className="ob-native">{L.caption}</h2>
   <div className="co-grid">
-   <label htmlFor={`${id}-ra`} className="ob-native">{L.ra}</label><input id={`${id}-ra`} readOnly value={f.ra} data-testid="ne-ra"/><span/>
-   <label htmlFor={`${id}-dec`} className="ob-native">{L.dec}</label><input id={`${id}-dec`} readOnly value={f.dec} data-testid="ne-dec"/><span/>
-   <label htmlFor={`${id}-mag`} className="ob-native">{L.mag}</label><input id={`${id}-mag`} value={mag} onChange={e=>setMag(e.target.value.slice(0,20))} data-testid="ne-mag"/><span/>
+   <div className="co-row ne-row"><label htmlFor={`${id}-ra`} className="ob-native">{L.ra}</label><input id={`${id}-ra`} readOnly value={f.ra} data-testid="ne-ra"/></div>
+   <div className="co-row ne-row"><label htmlFor={`${id}-dec`} className="ob-native">{L.dec}</label><input id={`${id}-dec`} readOnly value={f.dec} data-testid="ne-dec"/></div>
+   <div className="co-row ne-row"><label htmlFor={`${id}-mag`} className="ob-native">{L.mag}</label><input id={`${id}-mag`} value={mag} onChange={e=>setMag(e.target.value.slice(0,20))} data-testid="ne-mag"/></div>
   </div>
   <p className="fi-note">{M.magNote}</p>
   <div className="ob-actions"><button type="button" className="primary-button" data-testid="ne-ok" onClick={onClose}>{FIELD_INFO_MESSAGES.ok}</button></div>

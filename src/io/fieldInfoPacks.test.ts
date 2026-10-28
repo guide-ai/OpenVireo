@@ -46,3 +46,14 @@ describe('certified population (io/fieldInfoPacks.ts) over every bundled pack po
  });
  test('a non-pack pointing is field-not-certified',async()=>{expect(await findCertifiedPopulation({ra:3.3,dec:-12})).toEqual({status:'unavailable',reason:'field-not-certified'});});
 });
+describe('Object X mask radius for the Variable Stars list (closure N2)',()=>{
+ test('only rows within 0.25° of an ObjectX.HTL position mask the list',async()=>{
+  const {objectXNear}=await import('./objectXMask');
+  const {parseHtl}=await import('../core/hotList');
+  const positions=parseHtl(new Uint8Array(readFileSync('public/original/hotlists/ObjectX.HTL'))).map(r=>({ra:r.ra,dec:r.dec}));
+  const {separationDegrees}=await import('../core/ephemeris');
+  const near=(p:{ra:number;dec:number})=>positions.some(q=>separationDegrees(p.ra,p.dec,q.ra,q.dec)<=.25);
+  expect(near({ra:12.7427,dec:32.338+.2})).toBe(true);expect(near({ra:12.7427,dec:32.338+.3})).toBe(false);
+  expect(objectXNear(positions,null,{ra:7.6141,dec:65.6027})).toBe(true);// the 2° hide radius still masks Catalog Object / Star Data List
+ });
+});

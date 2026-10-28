@@ -84,9 +84,11 @@ Object X packs are excluded:
 - Web Edit Mode has no password, so these forms would reveal hidden E08 identities.
 - The engine does not model asteroids in those fields.
 
-Both lists and the layer are masked (`object-x-hidden`) within 2° (plus the list's area) of every ObjectX.HTL position, whether or not the Object X lab holds a target (`src/io/objectXMask.ts`; a failed read of the hash-checked list masks everything).
+Masks (`object-x-hidden`, `src/io/objectXMask.ts`), applied whether or not the Object X lab holds a target; a failed read of the hash-checked ObjectX.HTL masks everything:
+- **Catalog Object and the Star Data List:** within 2° (`OBJECT_X_HIDE_DEGREES`, the finder field) of any ObjectX.HTL position or the lab's hidden target.
+- **Variable Stars list (closure N2):** only when one of its own rows lies within 0.25° (`OBJECT_X_ON_TARGET_DEGREES`) of such a position. The risk is a listed variable that an Object X camera or spectrometer image would contain. Half the largest camera field diagonal (0.4 m) is about 0.2°, and the spectrometer field is smaller. In CLEA_VStrs.dat only AQ CVn (near the ObjectX.HTL star N3000-01915) is that close, so the list is masked only in fields that contain it, instead of across a 7.6° area.
 
-**Galaxy redshift mask (review 1 M2) [W].** Web Edit Mode has no instructor login, so Catalog Object hides a galaxy's catalogue z (`instructor-value-masked`). That z is the answer of the Hubble and LSS exercises (E01/E02); VIREO keeps it behind the login. V, morphology, colours and size stay visible. `fieldInfoPacks.test.ts` checks every certified pointing: no galaxy z appears in the dialog fields or in the Star Data List lines and CSV. The e2e flow checks the page text, Search, Save Text, CSV and Print at 36773.
+**Galaxy redshift mask (review 1 M2) [W].** Web Edit Mode has no instructor login, so Catalog Object hides a galaxy's catalogue z (`instructor-value-masked`). That z is the answer of the Hubble and LSS exercises (E01/E02); VIREO keeps it behind the login. V, morphology, colours and size stay visible. `fieldInfoPacks.test.ts` checks every certified pointing: no galaxy z appears in the dialog fields or in the Star Data List lines and CSV. The e2e flow at 36773 checks the page text, Search (the z text is not found), Save Text, CSV and the Print preview (closure N3).
 
 Options used:
 - QSO merge when the area needs it;
@@ -216,11 +218,11 @@ The raw report is `analysis/reviews/front-o-review-1.md` (verdict MERGE-AFTER-FI
 | Finding | Resolution |
 |---|---|
 | M1 Catalog Object breaks at 320 px | One grid row per field; the LED wraps under its row on phones. New 320 px dark e2e checks every value box fits unclipped. |
-| M2 galaxy z visible without a login | z masked (`instructor-value-masked`) in the web dialog; Edit Mode note and this doc say so. Vitest sweep over all certified pointings and e2e (page text, Save Text, CSV) check that no z appears. |
+| M2 galaxy z visible without a login | z masked (`instructor-value-masked`) in the web dialog; Edit Mode note and this doc say so. Vitest sweep over all certified pointings and e2e (page text, Search, Save Text, CSV, Print) check that no z appears. |
 | Object X mask only with the lab's target | Masked by every ObjectX.HTL position (`io/objectXMask.ts`), fail closed; e2e points at NGC 2403 without opening the route. |
 | L1 T −9/−8 | Table bound −9..20: `QSO/AGN`, `''`. RECOVERY-A erratum. |
 | L2 CSV units literal | `,Hr,Mn,Sec,°,',''` (0x5530c8, 17 bytes), pinned in Vitest and e2e. |
-| L3 focus | The sky svg is refocused when Catalog Object or Naked Eye Star closes (e2e checks it). |
+| L3 focus | The sky svg is refocused when Catalog Object or Naked Eye Star closes (both checked in e2e). |
 | L4 iOS long press | Tap moves the cursor; **Show star at cursor** picks [W]; touch e2e. |
 | L5/L6 smoke test and tally | `src/io/fieldInfoPacks.test.ts` pins 195 ready / 32 variable-merge on main c7ba82c. |
 | L7 TInfoListForm1 wording | Corrected (13 direct sites; Site Information only in the telescope window). |
@@ -230,11 +232,17 @@ The raw report is `analysis/reviews/front-o-review-1.md` (verdict MERGE-AFTER-FI
 | L11 | Slew to Selection refills an open Set Coordinates dialog. |
 | Witness reshape | Scripted (`tools/reshape_info_witness.py`), byte-identical, hashes above. |
 
+**Closure follow-ups (N1–N3, L9):**
+- N1: Naked Eye Star uses label and value rows.
+- N2: Variable Stars mask radius 0.25° on its own rows.
+- N3: e2e for Search and Print z-masking and for focus after Naked Eye Star closes.
+- L9: "a later true-dispatch front".
+
 ## Not done
 
 - The original Telescope display's click offsets (view offsets E[+0x41c439/+0x6a6]); the web assumes a fresh unpanned field.
 - The FSC finder catalogue (Finder-view Catalog Object).
-- The true variable merge (GCVS button), which belongs to Front F.
+- The true variable merge (GCVS button), for a later true-dispatch front.
 - The popup menus (right-click on list rows). Their items are the Selection menu's.
 - Window auto-sizing.
 - The printed lab/student lines of non-Edit-Mode printing (unreachable here).

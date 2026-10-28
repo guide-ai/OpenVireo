@@ -10,7 +10,7 @@ import type {Pointing} from '../core/sky';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import FieldInfoListWindow,{MessageBox,downloadText,type FieldInfoBox} from './FieldInfoListWindow';
 import {FIELD_INFO_MESSAGES as M,fieldInfoReasonText,type FieldInfoReason} from './FieldInfoMessages';
-import {objectXMasked} from '../io/objectXMask';
+import {objectXListedNear,objectXMasked} from '../io/objectXMask';
 import {freshFieldArea} from '../core/fieldEngine';
 import {catalogRecords} from '../core/catalogObject';
 import {FIELD_STAR_LITERALS as FL,FIELD_STAR_SAVE_NAMES,fieldStarCsvLines,fieldStarReport,type FieldStarReport} from '../core/fieldStarReport';
@@ -59,9 +59,10 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
  function openVariables(mode:VariableFieldMode){
   setMenu(null);setBox(null);const at=pointing,view=info.view;
   setVariable({mode,loading:true});
-  objectXMasked(info.hidden??null,at,(view==='finder'?3.75:.375)*1.5).then(async masked=>{
-   if(masked){setVariable(v=>v&&v.mode===mode?{mode,hidden:true}:v);return;}
-   const records=await loadFieldVariables();setVariable(v=>v&&v.mode===mode?{mode,list:variableFieldList(records,at,view,mode)}:v);
+  loadFieldVariables().then(async records=>{
+   const list=variableFieldList(records,at,view,'gcvs');
+   if(await objectXListedNear(info.hidden??null,list.records.map(r=>({ra:r.raHours,dec:r.decDegrees})))){setVariable(v=>v&&v.mode===mode?{mode,hidden:true}:v);return;}
+   setVariable(v=>v&&v.mode===mode?{mode,list:mode==='gcvs'?list:variableFieldList(records,at,view,mode)}:v);
   }).catch(()=>setVariable(v=>v&&v.mode===mode?{mode,error:true}:v));
  }
  const record=(selection:number)=>variable&&'list' in variable?variable.list.records[selection]??null:null;
