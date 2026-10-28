@@ -37,7 +37,7 @@
 .lc-panel{max-width:654px;border-radius:var(--ov-radius-sm);overflow:hidden;background:#000080}
 .lc-svg{display:block;width:100%;height:auto}
 .variable-print-report{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px;max-height:min(60vh,34rem);overflow:auto}
-.variable-print-header{font-family:"MS Sans Serif",Arial,sans-serif;font-size:13px;margin:0 0 8px}
+.variable-print-header{font-family:"MS Sans Serif",Arial,sans-serif;font-size:13px;margin:0 0 8px;white-space:pre-wrap}
 .variable-print-page{max-width:654px;break-before:page}
 .variable-print-placeholder{font-style:italic}
 @media print{
