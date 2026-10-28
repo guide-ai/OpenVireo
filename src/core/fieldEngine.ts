@@ -218,7 +218,7 @@ const galaxyGreater=(a:NativeGalaxy,b:NativeGalaxy)=>a.ra>b.ra||a.ra===b.ra&&a.d
 /** 0x4bc950: strict RA greater, or equal RA and Dec greater (the variable list's comparator). */
 const variableGreater=(a:NativeVariable,b:NativeVariable)=>a.ra!==b.ra?a.ra>b.ra:a.dec>b.dec;
 /** Variable loader predicate (…0x598572): inside the area and Single magnitude <= the limiting magnitude. */
-export function fieldVariableAdmitted(v:Readonly<{ra:number;dec:number;magnitude:number}>,area:NativeCatalogRegion):boolean{return inside(v,area)&&Math.fround(v.magnitude)<=area.limitingMagnitude;}
+export function fieldVariableAdmitted(v:Readonly<{ra:number;dec:number;magnitude:number}>,area:NativeCatalogRegion):boolean{return inside(v,area)&&Math.fround(v.magnitude)<=Math.fround(area.limitingMagnitude);}
 /** Whole-file galaxy admission (source order), then the native cursor insert 0x492728 (comparator 0x5969e0). */
 export function admitFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Readonly<{admission:readonly number[];galaxies:readonly NativeGalaxy[]}>{
  if(!(glx instanceof Uint8Array)||glx.byteLength!==GLX_CATALOG.bytes)throw new FieldEngineError('input');

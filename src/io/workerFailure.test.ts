@@ -68,3 +68,16 @@ describe('Hubble engine preparation: a transient failure after the reply is retr
   }finally{subtle.mockRestore();vi.unstubAllGlobals();setHubbleEngineResources(null);}
  });
 });
+import {FieldEngineError as FE} from '../core/fieldEngine';
+describe('Hubble engine preparation in process: failures typed as in the Worker path (review 5)',()=>{
+ const t=HUBBLE_EXTENDED_TARGETS.find(x=>x.route==='engine')!,tel=t.telescopes[0];
+ const seam=(e:unknown)=>({glx:async()=>{throw e;},qso:async()=>{throw e;},spectrum:async()=>{throw e;}});
+ it('a deterministic error is final (invalid); an unexpected runtime error is retryable (error)',async()=>{
+  try{
+   setHubbleEngineResources(seam(new FE('evidence')));
+   await expect(ensureHubbleEngineTarget(t.id,tel)).rejects.toMatchObject({name:'HubbleEngineError'});expect(hubbleEngineTargetStatus(t.id,tel)).toBe('invalid');
+   setHubbleEngineResources(seam(new TypeError('transient')));
+   await expect(ensureHubbleEngineTarget(t.id,tel)).rejects.toBeInstanceOf(HubbleEngineLoadError);expect(hubbleEngineTargetStatus(t.id,tel)).toBe('error');
+  }finally{setHubbleEngineResources(null);}
+ });
+});

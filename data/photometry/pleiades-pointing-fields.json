@@ -11440,14 +11440,6 @@
       ]
     }
   ],
-  "unavailableUpdates": [
-    {
-      "hotlistRecord": 12,
-      "hotlistLabel": "N2230-01627",
-      "reason": "unvalidated-pointing-association",
-      "basis": "Its variable V0453 Tau is a no-effect false merge (a miss at 92.8\u2033), but its HTL coordinates (3.7806972222222224 h, 23.23938888888889\u00b0) are not the record's exact stored coordinates (N2230.DAT@149519: 3.7806967 h, 23.23938\u00b0), the same rule as the other unvalidated rows."
-    }
-  ],
   "sources": [
     {
       "file": "CLEA_VEO.exe",
@@ -11480,7 +11472,7 @@
   ],
   "generator": {
     "path": "analysis/front-f-hubble-objectx/scripts/pleiades_pointing_fields.py",
-    "sha256": "1bd67885754a601c5e66a3aab3934064f6cb18f1a85f2d5ea11ed90120e920a3"
+    "sha256": "e04b708acbf3b579ade7edf599bf9635c239606f158f932585c17f1170a92f9d"
   },
   "uncertainty": "Number/Math geometry and seeded Poisson remain adaptations. The false-merge chain is the recovered static branch; no light curve is involved. Complete fields only at these 10 fixed object/sky pointings."
 }

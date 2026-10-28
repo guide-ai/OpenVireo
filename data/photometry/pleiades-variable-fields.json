@@ -6535,9 +6535,39 @@
       ]
     }
   ],
+  "sources": [
+    {
+      "file": "CLEA_VEO.exe",
+      "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c"
+    },
+    {
+      "file": "CLEA_VStrs.dat",
+      "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de"
+    },
+    {
+      "file": "N2230.DAT",
+      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54"
+    },
+    {
+      "file": "PLEIADES.HTL",
+      "sha256": "f992103946e8f809ac9bb6806fafa6424933ba6e78cfee6fb5740e4ab3b038a2"
+    },
+    {
+      "file": "GLIMAGES.LST",
+      "sha256": "fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01"
+    },
+    {
+      "file": "CLEA_QSO.DAT",
+      "sha256": "69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5"
+    },
+    {
+      "file": "CLEA_GLX.DAT",
+      "sha256": "4c1c9c99babaae19e22834df9bfcfa375a659257c4b7dd267a9da7d8ef16f753"
+    }
+  ],
   "generator": {
     "path": "analysis/front-f-hubble-objectx/scripts/pleiades_variable_fields.py",
-    "sha256": "93a9ef0f569d6561841ee9f171dd696b023c8830ff831675cf88af73c75253e1"
+    "sha256": "a8188d265f1b71c408ed75a1ebc79cc988ac6b04aa8e2c79c9aabb8562064d30"
   },
   "uncertainty": "Number/Math geometry and seeded Poisson remain adaptations. The false-merge chain is the recovered static branch; no light curve is involved. Complete fields only at these 6 fixed object/sky pointings."
 }

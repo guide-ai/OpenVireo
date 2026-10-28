@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "kind": "independent Decimal90 UBV means at the real pointing offset (native quadrature, reference.py method)",
-  "fieldsSHA256": "621bf7de8398b44099cf3b9eefd05b4e412ca3a9ac61c534b59cf0e175f7eac3",
+  "fieldsSHA256": "9282d07f50b80efb72d28820bd0f03b95b0b09883641ff66c4f0dd875f9de452",
   "offsets": {
     "N2230.DAT@146960": {
       "separationDegrees": "0",

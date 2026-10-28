@@ -2,7 +2,7 @@
   "schema": 1,
   "scope": "All1350files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
   "totalFiles": 1350,
-  "totalBytes": 128083998,
+  "totalBytes": 128084436,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
@@ -444,6 +444,30 @@
           "data/photometry/expanded-provenance.json"
         ],
         "sourceGrant": "Under the user approval of 2026-10-28 (AGENTS.md) for bounded N2230 subsets of the 24 Pleiades photometer fields: the variable and pointing field files now publish whole 27-byte records only inside each field's own area (newly published whole records: 2 each for rows 2, 12 and 22; none for rows 3, 5, 7, 10 and 14); every other band read is an 8-byte position-only witness. The approval is cited in the files (resourceApproval) and in expanded-provenance.json, whose 2026-10-28 evidence wording no longer says 'file order'.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/photometry/pinned-pleiades-v.json",
+          "data/photometry/pleiades-target-fields.json",
+          "data/photometry/pleiades-expanded-fields.json",
+          "data/photometry/integration-provenance.json"
+        ],
+        "sourceGrant": "Recorded limitation (review 5, 2026-10-28); no bytes changed. The three older Pleiades photometer field files publish whole 27-byte N2230 records for every band read, including binary-search probes and Dec-strip scan rows outside their field areas (distinct whole records outside every field area: pinned-pleiades-v.json 205 of 208, pleiades-target-fields.json 414 of 418, pleiades-expanded-fields.json 2552 of 2569). They stay unchanged under the 1279-resource approval because saved-file headers attest their SHA-256 (owner 1-5 photometer headers); any regeneration applies the position-only witness rule of the 2026-10-28 files (whole records only inside a field's own area, 8-byte witnesses elsewhere), and the reader enforces that rule strictly only for pleiades-variable-fields.json and pleiades-pointing-fields.json. Likewise, owner 4+ photometer headers attest integration-provenance.json (integrationContractSHA256), which still records browserPolicy.maximumEvents 256; the bound in force is 512 (core/photometer.ts, 2026-10-28), a web bound with no CLEA address. Generator hashes recorded anywhere in the repository are kept verifiable by read-only, hash-named copies in the research folder (analysis/generator-archive/, MANIFEST.json), outside the repository.",
+        "treatment": "No resource bytes changed; the limitation and the in-force bound are recorded here.",
+        "boundedScan": "Counts computed from the committed files by position against each field area. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/photometry/pleiades-variable-fields.json",
+          "data/photometry/pleiades-variable-vectors.json",
+          "data/photometry/pleiades-pointing-fields.json",
+          "data/photometry/pleiades-pointing-vectors.json"
+        ],
+        "sourceGrant": "Review 5 L-1/L-2 (2026-10-28): pleiades-variable-fields.json regains its source-file SHA-256 block; pleiades-pointing-fields.json drops the stale row-12 unavailable entry (row 12 is admitted); both generators' docstrings corrected. Records and merges unchanged; covered by the user approval of 2026-10-28.",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }

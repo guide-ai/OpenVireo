@@ -76,3 +76,18 @@ describe('published N2230 reads stay inside the 24 photometer fields (user appro
   expect(whole).toBeGreaterThan(0);expect(witnesses).toBeGreaterThan(whole);
  });
 });
+import {photometerReadRow,PhotometerFieldError} from './photometerField';
+describe('strict reads of the 2026-10-28 files (review 5)',()=>{
+ it('a whole record outside the area and a witness inside it are both evidence errors; the older files stay readable',()=>{
+  const f=(pointing.targets[0] as unknown as {fields:{area:{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number};band:{reads:{index:number;rawHex:string}[]}}[]}).fields[0];
+  const whole=f.band.reads.find(r=>r.rawHex.length===54)!,witness=f.band.reads.find(r=>r.rawHex.length===16)!;
+  const outsideWhole=Buffer.from(whole.rawHex,'hex');outsideWhole.writeInt32LE(Buffer.from(witness.rawHex,'hex').readInt32LE(0),0);outsideWhole.writeInt32LE(Buffer.from(witness.rawHex,'hex').readInt32LE(4),4);
+  const insideWitness=whole.rawHex.slice(0,16);
+  expect(photometerReadRow(whole.rawHex,'N2230',whole.index,f.area,true).star).not.toBeNull();
+  expect(photometerReadRow(witness.rawHex,'N2230',witness.index,f.area,true).star).toBeNull();
+  expect(()=>photometerReadRow(outsideWhole.toString('hex'),'N2230',whole.index,f.area,true)).toThrow(PhotometerFieldError);
+  expect(()=>photometerReadRow(insideWitness,'N2230',whole.index,f.area,true)).toThrow(PhotometerFieldError);
+  expect(photometerReadRow(outsideWhole.toString('hex'),'N2230',whole.index,f.area,false).star).not.toBeNull();// older files
+  expect(()=>photometerReadRow(witness.rawHex,'N2230',witness.index,f.area,false)).toThrow(PhotometerFieldError);// older files hold no witnesses
+ });
+});
