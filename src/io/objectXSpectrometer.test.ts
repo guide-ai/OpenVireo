@@ -9,7 +9,7 @@ vi.setConfig({testTimeout:120000});
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
 const sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
 const htl=parseHtl(file('hotlists/ObjectX.HTL')),qb=file('catalogs/CLEA_QSO.DAT');
-const byPath:Record<string,Uint8Array>={'/original/spectra/QSOSpect.dat':file('spectra/QSOSpect.dat'),'/original/images/GLIMAGES.LST':file('images/GLIMAGES.LST')};
+const byPath:Record<string,Uint8Array>=Object.fromEntries(['spectra/QSOSpect.dat','images/GLIMAGES.LST','spectra/jspect2/JSPEC2.SPI','spectra/GLXYSP.LST','classification/A0000044.SP','spectra/NGC4262.SP','spectra/NGC4449.SP','spectra/NGC4631.SP'].map(p=>['/original/'+p,file(p)]));
 const at=(row:number)=>({ra:htl[row].ra,dec:htl[row].dec});
 describe('Front F: Object X spectrometer API (QSO branch available; stars and galaxies typed)',()=>{
  beforeAll(()=>{vi.stubGlobal('crypto',webcrypto);setObjectXSpectrometerResources({glx:async()=>file('catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>byPath[p],objectXHotList:async()=>file('hotlists/ObjectX.HTL')});});
@@ -33,10 +33,24 @@ describe('Front F: Object X spectrometer API (QSO branch available; stars and ga
   }
   expect(got).toEqual({1:['available','available','available'],10:['telescope','telescope','available'],13:['available','available','available']});
  });
- it('stars and galaxies are typed not-recovered (photographic association; NGC 4631 also its variable); other pointings are not targets',async()=>{
-  for(const row of [3,4,5,6,8,9,11,12]){const r=await observeObjectXSpectrum(at(row),0);expect(r).toMatchObject({status:'unavailable',reason:'not-recovered',targetKey:row});if(r.status==='unavailable')expect(r.revealDetail.reasons).toContain('photographic-image');}
+ it('the NGC 4449 galaxy (own NGC4449.SP) and the row-9 star (A0000044) are observable on the 4 m; bright on smaller telescopes',async()=>{
+  for(const [row,kind,id] of [[8,'galaxy','NGC 4449'],[9,'star','N3730.DAT@513845']] as const){
+   for(const t of [0,1] as const)expect(await observeObjectXSpectrum(at(row),t)).toMatchObject({status:'unavailable',reason:'telescope'});
+   const r=await observeObjectXSpectrum(at(row),2);expect(r.status).toBe('available');if(r.status==='available'){expect(r.revealDetail).toEqual({kind,recordId:id});expect(r.wavelengths[0]).toBe(3700);}
+  }
+ });
+ it('photograph rows stay typed not-recovered; other pointings are not targets',async()=>{
+  for(const row of [3,4,5,6,11,12]){const r=await observeObjectXSpectrum(at(row),0);expect(r).toMatchObject({status:'unavailable',reason:'not-recovered',targetKey:row});if(r.status==='unavailable')expect(r.revealDetail.reasons).toContain('photographic-image');}
   for(const row of [0,2,7,14,15,16])expect(await observeObjectXSpectrum(at(row),0)).toMatchObject({status:'unavailable',reason:'not-a-target',targetKey:null});
   expect(await observeObjectXSpectrum({ra:at(1).ra,dec:at(1).dec+1e-9},0)).toMatchObject({reason:'not-a-target'});
+ });
+ it('unavailable results are kind-neutral: same fields, the reason from the same domain, no per-kind resource fetch',async()=>{
+  const fetched:string[]=[];setObjectXSpectrometerResources({glx:async()=>file('catalogs/CLEA_GLX.DAT'),qsoCatalog:async()=>({bytes:qb,sha256:sha(qb)}),file:async p=>{fetched.push(p);return byPath[p];},objectXHotList:async()=>file('hotlists/ObjectX.HTL')});
+  const shown=async(row:number,t:0|1|2)=>{const r=await observeObjectXSpectrum(at(row),t);const {revealDetail,...rest}=r;void revealDetail;return rest;};
+  // galaxy (8), star (9) and QSO (10) rows on the 0.4 m: identical shape and reason; only the row key differs.
+  const [g,s,q]=[await shown(8,0),await shown(9,0),await shown(10,0)];
+  expect([g,s,q].map(x=>({...x,targetKey:0}))).toEqual([0,0,0].map(()=>({status:'unavailable',targetKey:0,telescope:0,reason:'telescope'})));
+  const before=fetched.length;await shown(3,0);await shown(13,0);expect(fetched.length).toBe(before);// everything is loaded once, up front
  });
 });
 describe('Object X spectroscopy packs reproduce the independent witnesses',()=>{

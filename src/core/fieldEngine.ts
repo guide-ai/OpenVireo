@@ -37,8 +37,8 @@ import {prepareGalaxyProfile} from './galaxySpectrum';
 import {roundNearestEven} from './numericPolicy';
 import {createJournalExposure,type JournalState,type JournalSourcePreparer} from './exposureJournal';
 import {prepareCatalogGalaxyChannels,prepareCatalogGalaxyExtension} from './galaxyContinuum';
-import {galaxyLibrarySpectrum} from './galaxySpectrum';
-import {sampleUniformSpectrum} from './acquisition';
+import {galaxyLibrarySpectrum,galaxyChannelGrid} from './galaxySpectrum';
+import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
 import {packCovers,type FieldPack} from './fieldPack';
 import {prepareQsoProfile,QsoSpectrumError,type QsoSpectrumFile} from './qsoSpectrum';
 import {loadNativeQsoList,nativeQsoMerge,QsoMergeError,QSO_CATALOG,type NativeQso,type QsoMergeWitness} from './qsoMerge';
@@ -76,15 +76,21 @@ export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:r
  * painted and is reported; nothing it could become is visible or reaches another merge. */
 export type FieldVariableMode='gate'|'outside-view';
 /** A selected merged QSO record (type 3) is observed only when the caller supplies the decoded QSOSpect.dat (qsoSpectrum.ts)
- * and the spectrometer interval (default the 4000–5000 Å domain of every web acquisition; the Object X exercise's own interval is
- * not recovered). Without it a QSO selection stays the typed qso-selected reason. */
-export type FieldQsoObservation=Readonly<{file:QsoSpectrumFile;minimum?:number;maximum?:number}>;
+ * and the spectrometer interval explicitly (the active range env+0x2bd4/0x2bd8; see objectXSpectrometer.ts). Without it a QSO
+ * selection stays the typed qso-selected reason. */
+export type FieldQsoObservation=Readonly<{file:QsoSpectrumFile;minimum:number;maximum:number}>;
 /** 'start-time' (Front F, Boötes): a selected galaxy whose shifted template misses the 4000–5000 Å grid is prepared with the
  * recovered continuation (galaxyContinuum.ts, 0x55e97c), drawn from the exposure's own random state at each Go that follows no
  * integration (exposureJournal.ts JournalSourcePreparer). Availability uses the deterministic upper bound (every continuation
  * uniform → 1) against the existing mean bound. Without it such a galaxy stays spectrum-range. */
 export type FieldContinuationMode='none'|'start-time';
-export type FieldOptions=Readonly<{continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation}>;
+/** A selected GSC star (type 0) is observed only when the caller resolves its spectral index (record offset 8) to a template
+ * (starTemplates.ts: JSPEC2.SPI exact match, no fallback); a miss stays star-selected. */
+export type FieldStarObservation=Readonly<{templateFor:(spectralIndex:number)=>Readonly<{file:string;spectrum:UniformSpectrum}>|null}>;
+/** The spectrometer interval of the galaxy, continuation and star paths. Default 4000–5000 Å: the Hubble domain of every existing
+ * galaxy acquisition (unchanged). The normal spectrometer's interval (3700–4700 Å) is passed explicitly by its callers. */
+export type FieldSpectralInterval=Readonly<{minimum:number;maximum:number}>;
+export type FieldOptions=Readonly<{spectralInterval?:FieldSpectralInterval;starObservation?:FieldStarObservation;continuation?:FieldContinuationMode;qso?:FieldQsoMode;qsoCatalog?:FieldQsoCatalog;librarySpectrum?:FieldLibrarySpectrum;variables?:FieldVariableMode;qsoObservation?:FieldQsoObservation}>;
 /** hitId: the nearest record (the merge winner); resolvedId: the record at the unrepaired saved index that the unmodelled update
  * would act on (a runner pruned below the winner shifts it onto another record); removedRunner: pruned as natively. */
 export type FieldOutsideViewVariable=Readonly<{variable:number;name:string;classification:string;hitId:string;resolvedId:string;hitArcseconds:number;removedRunner:string|null}>;
@@ -106,6 +112,8 @@ export type FieldResult=Readonly<{
  pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];population:FieldPopulation|null;
  /** The selected QSO record when a QSO observation was prepared (qsoObservation option). */
  qsoTarget?:NativeQso;
+ /** The selected GSC star when a star observation was attempted (starObservation option). */
+ starTarget?:NativeFieldStar;
  scene:NativeSelectionScene|null;viewport:RgbImage|null;selection:ObjectSelection|null;target:NativeGalaxy|null;calibration:FieldCalibration|null;
 }>;
 const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,viewport:312});
@@ -334,12 +342,28 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
   if(fraction<=0)return Object.freeze({...base,qsoTarget:q,reasons:Object.freeze(['slit-empty' as const])});
   const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
   const amplitude=photonAmplitudes(q.magnitude,c.skyMagnitude,zeroPoint,fraction);
-  let profile;try{profile=prepareQsoProfile(options.qsoObservation.file,q.redshift,options.qsoObservation.minimum??4000,options.qsoObservation.maximum??5000);}
+  let profile;try{profile=prepareQsoProfile(options.qsoObservation.file,q.redshift,options.qsoObservation.minimum,options.qsoObservation.maximum);}
   catch(e){if(e instanceof QsoSpectrumError)return Object.freeze({...base,qsoTarget:q,reasons:Object.freeze(['spectrum-range' as const])});throw e;}
   const sourceMeans=Object.freeze(profile.values.map(v=>v*amplitude.source));
   const calibration=Object.freeze({sourceFile:'QSOSpect.dat',zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:q.magnitude,sourceMeans,sourceValues:profile.values,wavelengths:profile.wavelengths});
   if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,qsoTarget:q,calibration,reasons:Object.freeze(['mean-bound' as const])});
   return Object.freeze({...base,qsoTarget:q,calibration,reasons:Object.freeze([])});
+ }
+ if(selection.kind==='star'&&population.stars[selection.star.index].type===0&&options.starObservation){
+  // Star path (starExposure.ts generalized): template by spectral index, point-source throughput with the star's own position.
+  const st=population.stars[selection.star.index] as NativeFieldStar,raw=Uint8Array.from(st.rawHex.match(/../g)!,x=>parseInt(x,16)),spectralIndex=new DataView(raw.buffer).getInt32(8,true);
+  const template=options.starObservation.templateFor(spectralIndex);
+  if(!template)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['star-selected' as const])});
+  const fraction=nativeObjectSlitFraction({objectPresent:true,objectType:0,pixelLevel,object:{raHours:st.ra,decDegrees:st.dec},pointing:{raHours:at.ra,decDegrees:at.dec}});
+  if(fraction<=0)return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['slit-empty' as const])});
+  const zeroPoint=telescopeZeroPoint(c.baseZeroPoint,c.telescopeCorrection);if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
+  const amplitude=photonAmplitudes(st.magnitude,c.skyMagnitude,zeroPoint,fraction),{minimum,maximum}=options.spectralInterval??{minimum:4000,maximum:5000};
+  const grid=galaxyChannelGrid(minimum,maximum),values:number[]=[];
+  for(const w of grid.wavelengths){const v=sampleUniformSpectrum(template.spectrum,w);if(!v.valid||!(v.value>=0))return Object.freeze({...base,starTarget:st,reasons:Object.freeze(['spectrum-range' as const])});values.push(v.value);}
+  const sourceMeans=Object.freeze(values.map(v=>v*amplitude.source));
+  const calibration=Object.freeze({sourceFile:template.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude:st.magnitude,sourceMeans,sourceValues:Object.freeze(values),wavelengths:grid.wavelengths});
+  if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,starTarget:st,calibration,reasons:Object.freeze(['mean-bound' as const])});
+  return Object.freeze({...base,starTarget:st,calibration,reasons:Object.freeze([])});
  }
  if(selection.kind!=='galaxy')return Object.freeze({...base,reasons:Object.freeze([selection.kind==='star'?population.stars[selection.star.index].type===3?'qso-selected' as const:'star-selected' as const:'no-galaxy-selected' as const])});
  const target=population.galaxies[selection.galaxy.index];
@@ -349,20 +373,20 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  if(zeroPoint!==c.zeroPoint)throw new FieldEngineError('evidence');
  const amplitude=photonAmplitudes(instrumentMagnitude,c.skyMagnitude,zeroPoint,fraction);
  let profile;
- const own=options.librarySpectrum?.targetId===target.id?options.librarySpectrum:null;
- try{profile=own?prepareGalaxyProfile(own.samples,true,target.redshift,4000,5000):prepareGalaxyProfile(galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),galaxySource.matched,target.redshift,4000,5000);}
+ const own=options.librarySpectrum?.targetId===target.id?options.librarySpectrum:null,{minimum:lo,maximum:hi}=options.spectralInterval??{minimum:4000,maximum:5000};
+ try{profile=own?prepareGalaxyProfile(own.samples,true,target.redshift,lo,hi):prepareGalaxyProfile(galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),galaxySource.matched,target.redshift,lo,hi);}
  catch{
   if(options.continuation!=='start-time')return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-range' as const])});
   const samples=own?own.samples:galaxySource.samples.map(([wavelength,intensity])=>({wavelength,intensity})),matched=own?true:galaxySource.matched;
   let bound:number[],wavelengths:readonly number[];
   try{
-   const {source}=galaxyLibrarySpectrum(samples,matched,target.redshift),ext=prepareCatalogGalaxyExtension(source,target.morphology,target.redshift,4000,5000);
-   const grid=prepareCatalogGalaxyChannels(samples,matched,target.morphology,target.redshift,4000,5000,1);wavelengths=grid.wavelengths;
+   const {source}=galaxyLibrarySpectrum(samples,matched,target.redshift),ext=prepareCatalogGalaxyExtension(source,target.morphology,target.redshift,lo,hi);
+   const grid=prepareCatalogGalaxyChannels(samples,matched,target.morphology,target.redshift,lo,hi,1);wavelengths=grid.wavelengths;
    // Upper bound of 0x55e97c: blue (U·0.16+0.92)·C·corr ≤ 1.08·C·corr, red (U·0.08+0.96)·C·corr ≤ 1.04·C·corr; in-template exact.
    bound=grid.wavelengths.map(w=>{if(w>=ext.source.minimum&&w<=ext.source.maximum)return sampleUniformSpectrum(ext.source,w).value;const blue=w<ext.source.minimum,c=sampleUniformSpectrum(ext.continuum,w).value;return (blue?1.08:1.04)*c*(blue?ext.blueCorrection:ext.redCorrection);});
   }catch{return Object.freeze({...base,target,reasons:Object.freeze(['spectrum-range' as const])});}
   const boundMeans=Object.freeze(bound.map(v=>v*amplitude.source));
-  const sourcePreparer:JournalSourcePreparer=seed=>{const p=prepareCatalogGalaxyChannels(samples,matched,target.morphology,target.redshift,4000,5000,seed);return Object.freeze({means:Object.freeze(p.values.map(v=>v*amplitude.source)),seed:p.seed,draws:p.draws});};
+  const sourcePreparer:JournalSourcePreparer=seed=>{const p=prepareCatalogGalaxyChannels(samples,matched,target.morphology,target.redshift,lo,hi,seed);return Object.freeze({means:Object.freeze(p.values.map(v=>v*amplitude.source)),seed:p.seed,draws:p.draws});};
   const calibration=Object.freeze({sourcePreparer,continuationDraws:'start-time' as const,sourceFile:own?own.file:galaxySource.file,zeroPoint,pixelLevel,fraction,amplitude,instrumentMagnitude,sourceMeans:boundMeans,sourceValues:Object.freeze(bound),wavelengths});
   if(Math.max(...boundMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
   return Object.freeze({...base,target,calibration,reasons:Object.freeze([])});

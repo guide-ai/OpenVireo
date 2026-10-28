@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "scope": "All1323files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
-  "totalFiles": 1337,
-  "totalBytes": 124396023,
+  "scope": "All1338files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
+  "totalFiles": 1338,
+  "totalBytes": 124399191,
   "extensions": {
     ".json": 1061,
     ".LST": 6,
@@ -12,7 +12,8 @@
     ".png": 170,
     ".DAT": 2,
     ".CMO": 2,
-    ".sav": 1
+    ".sav": 1,
+    ".SPI": 1
   },
   "groups": {
     "data/classification": {
@@ -120,8 +121,8 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/spectra": {
-      "files": 25,
-      "bytes": 714602,
+      "files": 26,
+      "bytes": 717770,
       "materialClass": "unchanged-original-text-resource",
       "description": "23unchanged original SP files;also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
       "usedBy": "Runtime galaxy library and template spectra;LSS spectrum-mapping gate: a selected galaxy with its own library spectrum is not given the template",
@@ -348,6 +349,15 @@
           "public/original/spectra/QSOSpect.dat"
         ],
         "sourceGrant": "Front F Object X: bounded GSC subsets for the ObjectX.HTL spectroscopy targets (2026-10-27, group 2) and QSOSpect.dat (group 1)",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-27",
+        "scope": [
+          "public/original/spectra/jspect2/JSPEC2.SPI"
+        ],
+        "sourceGrant": "Front F Object X: JSPEC2.SPI (2026-10-27, group 1)",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }
