@@ -162,7 +162,7 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
 
 - Done by Front O (docs/OBJECT-INFO-FORMS.md): the Catalog Object dialog and TVarFldLstForm1 (Field Information › Variable
   Stars), both reachable in Edit Mode as in VIREO (options byte +0x2e7e, compiled default 0 at 0x5a2ad3). Get Selection Data
-  opens this page on the record. The GCVS button stays disabled until the true variable merge sets +0x5b (Front F).
+  opens this page on the record. The GCVS button stays disabled until a later true-dispatch front ports the variable merge that sets +0x5b.
 - **Pleiades "mixed-variable-field" stars** (PLEIADES.HTL rows 3, 5, 10, 12): every GCVS record within 12′ of those
   pointings is class 3 (UV, BY, UV+BY, RS:) with period 0 and M−m/D 0 (e.g. V0855 Tau, V0641 Tau). The block is therefore
   the untraced zero-period/zero-word branch of 0x51ec95, which `variableMerge.ts` rejects as `dispatch-unsupported` — not

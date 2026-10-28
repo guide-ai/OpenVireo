@@ -43,15 +43,16 @@ test('Edit Mode: Catalog Object at a certified field (36773), by click and by ke
  await sky.click({position:{x:box.width/2,y:box.height/2}});
  const dialog=page.getByTestId('co-dialog');await expect(dialog).toBeVisible();
  await expect(page.getByTestId('co-type')).toHaveValue('Galaxy');await expect(page.getByTestId('co-id')).toHaveValue('36773');
- await expect(page.getByTestId('co-ra')).toHaveValue('  11h 47m 21.70s');await expect(page.getByTestId('co-z')).toHaveValue('4.899E-02');await expect(page.getByTestId('co-size')).toHaveValue('0.4x0.4');
+ await expect(page.getByTestId('co-ra')).toHaveValue('  11h 47m 21.70s');await expect(page.getByTestId('co-z')).toHaveValue('');await expect(dialog.locator('[data-reason=instructor-value-masked]')).toBeVisible();
+ for(const z of ['4.899E-02','0.049','0.0489'])expect(await page.locator('body').innerText()).not.toContain(z);await expect(page.getByTestId('co-size')).toHaveValue('0.4x0.4');
  await expect(page.getByTestId('co-update')).toBeDisabled();await expect(page.getByTestId('co-gcvs')).toBeDisabled();
  await expect(page.getByTestId('co-update-reason')).toContainText('master star catalogue');await expect(page.getByTestId('co-gcvs-reason')).toContainText('variable record');
  await expect(page.getByTestId('em-marker')).toBeVisible();
  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(page.getByTestId('em-marker')).toBeVisible();
  // Keyboard: the cursor starts at the centre; move it onto a star and press Enter.
  await sky.focus();for(let i=0;i<3;i++)await page.keyboard.press('Shift+ArrowLeft');await page.keyboard.press('Enter');
- await expect(dialog).toBeVisible();await expect(page.getByTestId('co-id')).toHaveValue(/^(N5230-\d{5}|36773|.+)$/);
- await page.getByTestId('co-ok').click();await expect(dialog).toHaveCount(0);
+ await expect(dialog).toBeVisible();await expect(page.getByTestId('co-id')).toHaveValue('N5230-00237');// pinned in fieldInfoPacks.test.ts
+ await page.getByTestId('co-ok').click();await expect(dialog).toHaveCount(0);await expect(sky).toBeFocused();
  // Finder view: the finder catalogue is not on this site.
  await page.getByRole('button',{name:/^Finder/}).click();await expect(page.getByTestId('em-status')).toHaveAttribute('data-reason','finder-catalog-unavailable');
 });
@@ -75,7 +76,8 @@ test('Star Data List at 36773: lines, Search, Save Text, Comma Delimit, Print pr
  expect(text.name).toBe('CLEA_Field1.TXT');const lines=text.bytes.toString('latin1').split('\r\n');expect(lines[19]).toBe('N5230-00946       11 44 42.9   +55 22 43   14.19  +1.15* +1.08* K6V*#');expect(lines[18].charCodeAt(32)).toBe(0xb0);
  await expect(page.getByTestId('fi-box-text')).toHaveText('Report Text Written to CLEA_Field1.TXT.');await page.getByTestId('fi-box').getByRole('button',{name:'OK'}).click();
  const csv=await download(page,async()=>{await page.getByTestId('fi-slist-list-menu').click();await page.getByTestId('fi-slist-save-menu').click();await page.getByTestId('fi-slist-save-csv').click();});
- expect(csv.name).toBe('CLEA_Field1.CSV');expect(csv.bytes.toString('latin1').split('\r\n')).toContain('N5230-00946,11,44,42.9,+55,22,43,14.19,+1.15*,+1.08*,K6V*#');
+ for(const f of [text,csv])expect(f.bytes.toString('latin1')).not.toContain('4.899E-02');
+ expect(csv.name).toBe('CLEA_Field1.CSV');expect(csv.bytes.toString('latin1').split('\r\n')).toContain(",Hr,Mn,Sec,°,',''");expect(csv.bytes.toString('latin1').split('\r\n')).toContain('N5230-00946,11,44,42.9,+55,22,43,14.19,+1.15*,+1.08*,K6V*#');
  await page.getByTestId('fi-box').getByRole('button',{name:'OK'}).click();
  // Print preview.
  await page.getByTestId('fi-slist-list-menu').click();await page.getByTestId('fi-slist-print').click();
@@ -134,4 +136,45 @@ test('Naked Eye Star: right-click a star in the dome sky (no Edit Mode) at 320 p
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
  // Left click does nothing (the original picks with the right button).
  await page.mouse.click(b.x+b.width/2,b.y+b.height/2);await expect(dialog).toHaveCount(0);
+});
+
+test('Catalog Object at 320 px in dark mode: every row fits and keeps its label beside or above its value (review 1 M1)',async({page})=>{
+ await page.emulateMedia({colorScheme:'dark'});await page.setViewportSize({width:320,height:800});
+ await open(page);await tracking(page);await pointAt36773(page);await editMode(page,true);
+ await expect(page.getByTestId('em-caption')).toContainText('snapshot-36773',{timeout:20000});
+ const sky=page.getByTestId('em-sky');await sky.scrollIntoViewIfNeeded();const box=(await sky.boundingBox())!;await sky.click({position:{x:box.width/2,y:box.height/2}});
+ const dialog=page.getByTestId('co-dialog');await expect(dialog).toBeVisible();
+ for(const k of ['type','id','ra','dec','mag','bv','ub','sp','z','size']){
+  const input=page.getByTestId(`co-${k}`),b=(await input.boundingBox())!;expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(320);expect(b.width).toBeGreaterThan(60);
+  const value=await input.inputValue();expect(await input.evaluate((el:HTMLInputElement)=>el.scrollWidth<=el.clientWidth+1)).toBe(true);void value;
+ }
+ expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+});
+
+test('Object X positions mask the Edit Mode forms without the Object X lab (review 1)',async({page})=>{
+ await open(page);await tracking(page);
+ // NGC 2403, an ObjectX.HTL row, pointed by coordinates; the Object X route is never opened.
+ await page.getByText('Enter coordinates',{exact:true}).click();
+ await page.locator('#point-ra').fill('7.6142');await page.locator('#point-dec').fill('65.6025');
+ await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();
+ await expect(page.getByTestId('pointing-dec')).toHaveText(/^65\.6/,{timeout:30000});
+ await editMode(page,true);
+ await page.getByRole('button',{name:/^Telescope/}).click();
+ await expect(page.getByTestId('em-status')).toHaveAttribute('data-reason','object-x-hidden',{timeout:20000});
+ await fieldMenu(page,'fi-variables-gcvs');await expect(page.getByTestId('fi-vlist-status').getByRole('status')).toHaveAttribute('data-reason','object-x-hidden',{timeout:20000});
+ await page.getByTestId('fi-vlist-status').getByRole('button').click();
+ await fieldMenu(page,'fi-star-list');await expect(page.getByTestId('fi-slist-status').getByRole('status')).toHaveAttribute('data-reason','object-x-hidden',{timeout:20000});
+});
+
+test.describe('touch',()=>{
+ test.use({hasTouch:true,viewport:{width:390,height:844}});
+ test('Naked Eye Star by tap + "Show star at cursor" (review 1 L4)',async({page})=>{
+  await open(page);
+  const sky=page.getByTestId('ne-sky');await expect(sky).toBeVisible({timeout:20000});await sky.scrollIntoViewIfNeeded();
+  const index=await sky.evaluate(svg=>[...svg.querySelectorAll('circle')].findIndex(c=>{const x=Number(c.getAttribute('cx')),y=Number(c.getAttribute('cy'));return x>30&&x<210&&y>30&&y<270;}));
+  const b=(await sky.locator('circle').nth(index).boundingBox())!;
+  await page.touchscreen.tap(b.x+b.width/2,b.y+b.height/2);await expect(page.getByTestId('ne-dialog')).toHaveCount(0);
+  await page.getByTestId('ne-show-cursor').tap();
+  await expect(page.getByTestId('ne-dialog')).toBeVisible();await page.getByTestId('ne-ok').tap();await expect(page.getByTestId('ne-dialog')).toHaveCount(0);
+ });
 });

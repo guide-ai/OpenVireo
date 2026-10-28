@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useRef,useState,type KeyboardEvent,type MouseEvent} from 'react';
 import {TELESCOPE_FRAME,catalogScene,pickCatalogObject,type CatalogRecord,type CatalogScene} from '../core/catalogObject';
-import {objectXMasks} from '../core/objectXLab';
+import {objectXMasked} from '../io/objectXMask';
 import type {FieldMode,Pointing} from '../core/sky';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
 import CatalogObjectDialog from './CatalogObjectDialog';
@@ -18,22 +18,23 @@ const PX_PER_ARCMIN=SIZE/15;
 export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden}:{editMode:boolean;active:boolean;mode:FieldMode;pointing:Pointing;hidden:Pointing|null}){
  const [state,setState]=useState<State>({status:'loading'}),[record,setRecord]=useState<CatalogRecord|null>(null),[marked,setMarked]=useState<CatalogRecord|null>(null),[cursor,setCursor]=useState({x:SIZE/2,y:SIZE/2});
  const svg=useRef<SVGSVGElement>(null);
- const masked=objectXMasks(hidden,pointing);
  useEffect(()=>{
-  if(!editMode||!active||mode!=='telescope'||masked)return;
+  if(!editMode||!active||mode!=='telescope')return;
   let current=true;setState({status:'loading'});setRecord(null);setMarked(null);
-  findCertifiedPopulation(pointing).then(r=>{if(!current)return;
+  objectXMasked(hidden,pointing).then(async masked=>{
+   if(masked){if(current)setState({status:'unavailable',reason:'object-x-hidden'});return;}
+   const r=await findCertifiedPopulation(pointing);if(!current)return;
    if(r.status==='ready')setState({status:'ready',packId:r.packId,scene:catalogScene(r.population,pointing,`Field pack ${r.packId}; certified pointing`)});
    else setState(r.reason==='population'?{status:'unavailable',reason:'population',detail:r.detail}:{status:'unavailable',reason:r.reason});
   }).catch(()=>{if(current)setState({status:'error'});});
   return()=>{current=false;};
- },[editMode,active,mode,masked,pointing.ra,pointing.dec]);// eslint-disable-line react-hooks/exhaustive-deps
+ },[editMode,active,mode,hidden?.ra,hidden?.dec,pointing.ra,pointing.dec]);// eslint-disable-line react-hooks/exhaustive-deps
  const shapes=useMemo(()=>state.status==='ready'?{
   stars:state.scene.stars.map((p,i)=>({x:toWeb(p.x),y:toWeb(p.y),r:Math.max(.9,Math.min(4.5,(17-state.scene.records.stars[i].v)*.38)),qso:state.scene.records.stars[i].type===3})),
   galaxies:state.scene.galaxies.map((p,i)=>{const g=state.scene.records.galaxies[i];return {x:toWeb(p.x),y:toWeb(p.y),rx:Math.max(2,(g.major||.5)*PX_PER_ARCMIN/2),ry:Math.max(1.5,(g.minor||g.major||.5)*PX_PER_ARCMIN/2)};}),
  }:null,[state]);
  if(!editMode||!active)return null;
- const reason:Readonly<{reason:FieldInfoReason;detail?:string}>|null=mode!=='telescope'?{reason:'finder-catalog-unavailable'}:masked?{reason:'object-x-hidden'}:state.status==='unavailable'?state:state.status==='error'?{reason:'load-error'}:null;
+ const reason:Readonly<{reason:FieldInfoReason;detail?:string}>|null=mode!=='telescope'?{reason:'finder-catalog-unavailable'}:state.status==='unavailable'?state:state.status==='error'?{reason:'load-error'}:null;
  if(reason||state.status!=='ready'||!shapes)return <p className="em-caption" data-testid="em-status" data-reason={reason?.reason??'loading'} style={{pointerEvents:'none'}}>{reason?fieldInfoReasonText(reason.reason,reason.detail):fieldInfoReasonText('loading')}</p>;
  const scene=state.scene;
  function pickAt(webX:number,webY:number){const r=pickCatalogObject(scene,toControl(webX),toControl(webY));if(r){setRecord(r);setMarked(r);}}
@@ -57,6 +58,6 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
    <g stroke="var(--ov-focus)" strokeWidth="1.5" opacity=".9" aria-hidden="true"><path d={`M${cursor.x-12} ${cursor.y}h9m6 0h9M${cursor.x} ${cursor.y-12}v9m0 6v9`}/></g>
   </svg>
   <p className="em-caption" id="em-layer-help" data-testid="em-caption">{M.editLayerCaption(state.packId,scene.stars.length,scene.galaxies.length)}</p>
-  {record&&<CatalogObjectDialog record={record} onClose={()=>setRecord(null)}/>}
+  {record&&<CatalogObjectDialog record={record} onClose={()=>{setRecord(null);requestAnimationFrame(()=>svg.current?.focus());}}/>}
  </div>;
 }

@@ -2,7 +2,7 @@
  * translated; these are the labelled web adaptations, notices and typed reasons. */
 export const FIELD_INFO_MESSAGES=Object.freeze({
  editModeLabel:'Edit Mode (instructor, VIREO)',
- editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here it is a plain check box, off by default and not saved. It only enables the Telescope-view click (Catalog Object) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
+ editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here it is a plain check box, off by default and not saved. It only enables the Telescope-view click (Catalog Object, with galaxy redshifts hidden because they are exercise answers) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
  fileMenu:'File',
  guideTitle:'How to use (instructor)',
  guide:Object.freeze([
@@ -46,6 +46,7 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
   'variable-csv-not-available':'Comma Delimit is disabled for this list in VIREO.',
   'naked-eye-geometry-unrecovered':'The naked-eye sky drawing has not been recovered from VIREO yet.',
   'naked-eye-file':'The naked-eye star file could not be loaded or did not match its recorded size and SHA-256.',
+  'instructor-value-masked':'Z not shown: a galaxy’s catalogue redshift is what the Hubble and LSS exercises ask students to measure. VIREO keeps this box behind the instructor login, which this site does not have, so the value is hidden here.',
   'loading':'Loading catalogue data…',
   'load-error':'The catalogue data could not be loaded or did not match its recorded size and SHA-256.',
  }),
@@ -61,5 +62,7 @@ export const NAKED_EYE_MESSAGES=Object.freeze({
  fileError:'The naked-eye star file (NkdEye.dat) could not be loaded or did not match its recorded size and SHA-256.',
  caption:(site:string,utc:string,count:number)=>`${site} · ${utc} UT (the moment the dome opened; close and reopen the dome to redraw) · ${count} stars in view.`,
  adaptation:'Web adaptation: stars are drawn as discs by VIREO’s brightness level instead of its star sprites, and the dome shutters are not drawn. Positions, the visible region (including VIREO’s quirk that drops many stars just west of the centre line when facing south) and the right-click pick follow the original.',
+ showAtCursor:'Show star at cursor',
+ tapAdaptation:'Web adaptation for touch screens: tap the sky to move the cursor (+), then press “Show star at cursor”. A tap alone does not open the star, as a left click does nothing in VIREO.',
  magNote:'As in VIREO, V Mag can be typed in but nothing is saved.',
 });

@@ -68,7 +68,8 @@ describe('Catalog Object view (0x56005c, Telescope view pass, final pass)',()=>{
   expect(galaxyTypeText({morphology:3,bar:'X',ring:'R',luminosity:'3'})).toBe('SABb(R) II');
   expect(galaxyTypeText({morphology:5,bar:'B',ring:' ',luminosity:' '})).toBe('SBc');
   expect(galaxyTypeText({morphology:-4,bar:'B',ring:' ',luminosity:' '})).toBe('SBO');expect(galaxyTypeText({morphology:-5,bar:'B',ring:' ',luminosity:' '})).toBeNull();
-  expect(galaxyTypeText({morphology:-9,bar:' ',ring:' ',luminosity:' '})).toBeNull();
+  expect(galaxyTypeText({morphology:-9,bar:' ',ring:' ',luminosity:' '})).toBe('QSO/AGN');expect(galaxyTypeText({morphology:-8,bar:' ',ring:' ',luminosity:' '})).toBe('');expect(galaxyTypeText({morphology:-10,bar:' ',ring:' ',luminosity:' '})).toBeNull();
+  expect(FIELD_STAR_LITERALS.csvUnits).toBe(",Hr,Mn,Sec,°,',''");expect(FIELD_STAR_LITERALS.csvUnits).toHaveLength(17);
   expect(catalogObjectView({kind:'galaxy',id:'X',ra:1,dec:1,v:1,major:0,minor:0,z:0,morphology:18,bar:' ',luminosity:' ',ring:' '},formatNativeSexagesimal).reasons).toEqual(['galaxy-colour-residue']);
  });
  test('pick: strict nearest below 350 px; the star wins only when the galaxy is strictly farther',()=>{

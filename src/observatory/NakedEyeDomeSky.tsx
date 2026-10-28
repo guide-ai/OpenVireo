@@ -24,7 +24,7 @@ export default function NakedEyeDomeSky({open,active,site,utcNow,pointing}:{open
  const id=useId(),[records,setRecords]=useState<readonly NakedEyeRecord[]|null>(null),[failed,setFailed]=useState(false);
  const [build,setBuild]=useState<Build|null>(null),[sky,setSky]=useState<NakedEyeSky|null>(null),[picked,setPicked]=useState<Readonly<{record:NakedEyeRecord;x:number;y:number}>|null>(null);
  const [dialog,setDialog]=useState<NakedEyeRecord|null>(null),[cursor,setCursor]=useState({x:W/2,y:H/2});
- const wasOpen=useRef(false),latest=useRef({site,utcNow,pointing});latest.current={site,utcNow,pointing};
+ const svgRef=useRef<SVGSVGElement>(null),wasOpen=useRef(false),latest=useRef({site,utcNow,pointing});latest.current={site,utcNow,pointing};
  useEffect(()=>{
   if(open&&!wasOpen.current){const l=latest.current;setBuild({utcMs:l.utcNow(),site:{latitudeRadians:l.site.latitudeRadians,longitudeRadians:l.site.longitudeRadians},telescope:{...l.pointing}});setPicked(null);setDialog(null);}
   if(!open){setDialog(null);}
@@ -42,6 +42,8 @@ export default function NakedEyeDomeSky({open,active,site,utcNow,pointing}:{open
   e.preventDefault();const box=e.currentTarget.getBoundingClientRect(),x=(e.clientX-box.left)*W/box.width,y=(e.clientY-box.top)*H/box.height;
   setCursor({x,y});pickAt(x,y);
  }
+ /** Tap / left click [W]: only moves the cursor (the original picks with the right button); "Show star at cursor" then picks. */
+ function tap(e:MouseEvent<SVGSVGElement>){const box=e.currentTarget.getBoundingClientRect();setCursor({x:(e.clientX-box.left)*W/box.width,y:(e.clientY-box.top)*H/box.height});}
  function key(e:KeyboardEvent<SVGSVGElement>){
   const step=e.shiftKey?20:4,moves:Record<string,[number,number]>={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]};
   if(moves[e.key]){e.preventDefault();const [dx,dy]=moves[e.key];setCursor(c=>({x:Math.min(W,Math.max(0,c.x+dx)),y:Math.min(H,Math.max(0,c.y+dy))}));}
@@ -53,15 +55,17 @@ export default function NakedEyeDomeSky({open,active,site,utcNow,pointing}:{open
   <p className="fi-note">{M.help}</p>
   {failed?<p className="fi-unavailable" role="status" data-testid="ne-status" data-reason="naked-eye-file">{M.fileError}</p>
    :!sky?<p className="fi-note" role="status" data-testid="ne-status">{M.loading}</p>
-   :<div className="ne-sky"><svg viewBox={`0 0 ${W} ${H}`} role="application" tabIndex={0} aria-label={M.skyLabel} data-testid="ne-sky" data-count={sky.points.length} onContextMenu={context} onKeyDown={key}>
+   :<div className="ne-sky"><svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} role="application" tabIndex={0} aria-label={M.skyLabel} data-testid="ne-sky" data-count={sky.points.length} onContextMenu={context} onClick={tap} onKeyDown={key}>
     <rect width={W} height={H} fill="#000"/>
     {sky.points.filter(p=>p.x>=-5&&p.x<=W+5&&p.y>=-5&&p.y<=S.bitmapHeight+5).map(p=><circle key={p.record.index} cx={p.x} cy={p.y*sy} r={Math.max(.9,4.5*Math.pow(.85,nakedEyeDrawLevel(p.level)))} fill="#fff" opacity={Math.max(.35,Math.pow(.9,nakedEyeDrawLevel(p.level)))}/>)}
     {picked&&<rect data-testid="ne-marker" x={picked.x-7} y={picked.y-7} width="15" height="15" fill="none" stroke="#00ff00" strokeWidth="1"/>}
     <g stroke="var(--ov-focus)" strokeWidth="1" aria-hidden="true"><path d={`M${cursor.x-6} ${cursor.y}h4m4 0h4M${cursor.x} ${cursor.y-6}v4m0 4v4`}/></g>
    </svg></div>}
+  {sky&&<div className="ob-actions"><button type="button" className="secondary-button" data-testid="ne-show-cursor" onClick={()=>pickAt(cursor.x,cursor.y)}>{M.showAtCursor}</button></div>}
+  {sky&&<p className="fi-note">{M.tapAdaptation}</p>}
   {sky&&<p className="fi-note" data-testid="ne-caption">{M.caption(site.name,new Date(build!.utcMs).toISOString().slice(0,16).replace('T',' '),sky.points.length)}</p>}
   <p className="fi-note">{M.adaptation}</p>
-  {dialog&&<NakedEyeStarDialog record={dialog} onClose={()=>setDialog(null)}/>}
+  {dialog&&<NakedEyeStarDialog record={dialog} onClose={()=>{setDialog(null);requestAnimationFrame(()=>svgRef.current?.focus());}}/>}
  </section>;
 }
 

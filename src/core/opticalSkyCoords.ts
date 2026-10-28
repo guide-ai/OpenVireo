@@ -109,7 +109,8 @@ export function opticalSlewBelowText(target:Pointing):string{
  const L=OPTICAL_SLEW_LITERALS;return L.belowHead+formatSlewRa(target.ra)+L.lineBreak+L.decHead+formatSlewDec(target.dec);
 }
 /** Front O FO-VF Slew to Selection (TVarFldLstForm1 0x530180): the target cells take the record's RA/Dec, the B1950 flag
- * +0x3c5 := 0 and EpochGrp is enabled; OK then runs ProgrammedSlew (OB-SC-03..08). No hot-list origin (Cancel reopens nothing). */
+ * +0x3c5 := 0 and EpochGrp is enabled; OK then runs ProgrammedSlew (OB-SC-03..08). No hot-list origin (Cancel reopens nothing).
+ * An already open dialog is refilled with the new target (the original dialog is modal, so this cannot arise there [W]). */
 export function openOpticalSkyCoordsAt(s:OpticalSkyCoordsState,target:Pointing):OpticalSkyCoordsState{
  checkPointing(target);
  const t=Object.freeze({ra:target.ra,dec:target.dec});

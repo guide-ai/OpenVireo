@@ -1,4 +1,4 @@
-import {useEffect,useId,useRef} from 'react';
+import {useEffect,useId,useRef,type ReactNode} from 'react';
 import {menuCaptionText} from '../core/radioControl';
 import {CATALOG_OBJECT_LITERALS as L,TYPE_COLOURS,catalogObjectView,type CatalogRecord,type LedView} from '../core/catalogObject';
 import {formatNativeSexagesimal} from '../core/variableStars';
@@ -14,23 +14,23 @@ function Led({led,label,hint}:{led:LedView;label:string;hint:string}){
  * typed reasons. OK and Cancel close (they also close a visible Variable Star Data window natively; that window lives on its
  * own page here). Escape = Cancel [W]. */
 export default function CatalogObjectDialog({record,onClose,onGcvs}:{record:CatalogRecord;onClose:()=>void;onGcvs?:()=>void}){
- const id=useId(),ref=useRef<HTMLDialogElement>(null),v=catalogObjectView(record,formatNativeSexagesimal);
+ const id=useId(),ref=useRef<HTMLDialogElement>(null),v=catalogObjectView(record,formatNativeSexagesimal,{maskGalaxyRedshift:true});
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector<HTMLButtonElement>('[data-default]')?.focus();}},[]);
- const field=(key:string,label:string,value:string,enabled=true,hint?:string)=><><label htmlFor={`${id}-${key}`} className="ob-native" style={enabled?undefined:{opacity:.55}}>{label}</label>
-  <input id={`${id}-${key}`} readOnly disabled={!enabled} value={value} title={hint} data-testid={`co-${key}`} style={key==='type'&&v.typeHighlight?{background:TYPE_COLOURS.highlight,color:'#000'}:undefined}/></>;
+ const row=(key:string,label:string,value:string,enabled=true,hint?:string,led?:ReactNode)=><div className="co-row" key={key}><label htmlFor={`${id}-${key}`} className="ob-native" style={enabled?undefined:{opacity:.55}}>{label}</label>
+  <input id={`${id}-${key}`} readOnly disabled={!enabled} value={value} title={hint} data-testid={`co-${key}`} style={key==='type'&&v.typeHighlight?{background:TYPE_COLOURS.highlight,color:'#000'}:undefined}/>{led}</div>;
  return <dialog ref={ref} className="ob-dialog" aria-labelledby={`${id}-t`} data-testid="co-dialog" onCancel={e=>{e.preventDefault();onClose();}}>
   <h2 id={`${id}-t`} className="ob-native">{L.caption}</h2>
   <div className="co-grid">
-   {field('type',L.type,v.type)}<span/>
-   {field('id',L.id,v.id)}<span/>
-   {field('ra',L.ra,v.ra)}<span/>
-   {field('dec',L.dec,v.dec)}<span/>
-   {field('mag',L.mag,v.mag)}<span/>
-   {field('bv',L.bv,v.bv)}<Led led={v.bvLed} label="B-V" hint={L.ledHint}/>
-   {field('ub',L.ub,v.ub)}<Led led={v.ubLed} label="U-B" hint={L.ledHint}/>
-   {field('sp',v.spLabel,v.sp)}<Led led={v.spLed} label="Sp" hint={L.spLedHint}/>
-   {field('z',L.z,v.z,v.zEnabled)}<span/>
-   {field('size',L.size,v.size,v.sizeEnabled,L.sizeHint)}<span/>
+   {row('type',L.type,v.type)}
+   {row('id',L.id,v.id)}
+   {row('ra',L.ra,v.ra)}
+   {row('dec',L.dec,v.dec)}
+   {row('mag',L.mag,v.mag)}
+   {row('bv',L.bv,v.bv,true,undefined,<Led led={v.bvLed} label="B-V" hint={L.ledHint}/>)}
+   {row('ub',L.ub,v.ub,true,undefined,<Led led={v.ubLed} label="U-B" hint={L.ledHint}/>)}
+   {row('sp',v.spLabel,v.sp,true,undefined,<Led led={v.spLed} label="Sp" hint={L.spLedHint}/>)}
+   {row('z',L.z,v.z,v.zEnabled)}
+   {row('size',L.size,v.size,v.sizeEnabled,L.sizeHint)}
   </div>
   {v.reasons.map(r=><p key={r} className="fi-unavailable" data-testid="co-reason" data-reason={r}>{fieldInfoReasonText(r)}</p>)}
   <p className="fi-note" data-testid="co-readonly">{fieldInfoReasonText('record-edit-unavailable')}</p>

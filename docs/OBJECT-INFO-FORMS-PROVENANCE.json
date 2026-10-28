@@ -13,7 +13,7 @@
   "veo-menus.txt": "8b53e7692bc5143787cf9c7c7ab2dca77240a0af791d23762e43e3efe69f071c"
  },
  "notes": {
-  "RECOVERY-A-catalog-object.md": "4b42690f6f1358a7148ae9d071ebaf6719684e372295f16776ce7695fe230e57",
+  "RECOVERY-A-catalog-object.md": "4df9a58453ec7121434b0c8d391b26b07e5a1b6a41cc2a877bde0c965ab6f43f",
   "RECOVERY-B-star-list.md": "9cb1f2496e7012924106590e42659cd2387715706895d597e1c3c5d75f06891f",
   "RECOVERY-C-variable-field-list.md": "babf6bcaa5f2808e5a7838dd19cb04955fa3c30fec73c4f2493b5b31ed1a0047",
   "RECOVERY-D-naked-eye-geometry.md": "4e7358a09e0192f8a8e72c3f69b9b3a124725dbb67517d6063e2a4ece330db65",
@@ -23,7 +23,8 @@
   "tools/info_witness.py": "f2aeb5140224e56973ba108e2cfc23133c036e5815c1a72e124927b6a69daa08",
   "tools/nakedeye_witness.py": "58e2615f8ffcb666797a66e89f4e2ba2b1815aac59d1cbb0153aab03b71f01e6",
   "info-witness.json": "a9fc1097bb208b337b5eb8b6af927df0a191bad407c42bbde2ae7f6e36044c61",
-  "nakedeye-witness.json": "b31d8b31fb37a0b47454a14107abc13b2638988043c2078a1588401ed31308cb"
+  "nakedeye-witness.json": "b31d8b31fb37a0b47454a14107abc13b2638988043c2078a1588401ed31308cb",
+  "tools/reshape_info_witness.py": "2f8a6795a8e6e42f2f05145a7e1ecf36ce1459b509156dfaef4c1e2cbc23ce1f"
  },
  "dossiers": {
   "asteroid-record-5997b6.asm": "0d2e899c1bdf343cda477e6d7fccc703b2be0193194b94c356306347e742c4c5",
@@ -147,7 +148,7 @@
   },
   {
    "id": "FO-CO-04",
-   "claim": "Galaxy record: T, bar, luminosity, ring bytes +0x22..+0x25; colours/code from T; type text tables; z ffExponent(4,2); size F1.",
+   "claim": "Galaxy record: T, bar, luminosity, ring bytes +0x22..+0x25; colours/code from T; type text tables; z ffExponent(4,2); size F1. Type table read for T −9..20 (T −9 'QSO/AGN' at 0x5b50c8, T −8 ''); web masks z (instructor-value-masked) [W].",
    "addresses": "0x598ed2..0x599069, 0x598f09..0x598f22, 0x596820, 0x560844",
    "tag": "D",
    "port": "catalogRecordFromGalaxy, galaxyColours, galaxyTypeText, floatToStrFExponent4"
@@ -175,7 +176,7 @@
   },
   {
    "id": "FO-SL-03",
-   "claim": "Comma Delimit enabled by TClstrRptForm1; columns 11,20,23,28,34,37,40,49,56,63 → ',' and spaces removed.",
+   "claim": "Comma Delimit enabled by TClstrRptForm1; columns 11,20,23,28,34,37,40,49,56,63 → ',' and spaces removed. Units literal 0x5530c8 ',Hr,Mn,Sec,°,'''' (17 bytes).",
    "addresses": "0x552878, 0x552ad8..0x552f61",
    "tag": "D",
    "port": "fieldStarCsvLines"
@@ -232,5 +233,6 @@
   "Click→raster offset terms of the Telescope display are untraced; the web assumes a fresh unpanned field.",
   "Runtime control sizes are taken from the DFMs.",
   "Tests are evidence of the chosen contract, not of original-runtime equivalence."
- ]
+ ],
+ "witnessReshape": "data/fieldinfo/info-witness.json = python3 -I tools/reshape_info_witness.py info-witness.json <out> (byte-identical; output SHA-256 recorded in docs/LOCAL-RESOURCES.json)."
 }

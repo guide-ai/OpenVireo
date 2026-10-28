@@ -14,7 +14,8 @@ import type {NativeCatalogRegion} from './catalogPopulation';
 
 export const FIELD_STAR_LITERALS=Object.freeze({
  caption:'CLEA Star Field Data',stem:'CLEA_Field1',
- csvHead:'Name/ID,Right Ascn.,,,Declination,,,V,B-V,U-B,Sp',csvUnits:',Hr,Mn,Sec,°,\',"',
+ csvHead:'Name/ID,Right Ascn.,,,Declination,,,V,B-V,U-B,Sp',/** AnsiString literal 0x5530c8 (length 17): two apostrophes at the end (review 1 L2). */
+ csvUnits:",Hr,Mn,Sec,°,',''",
  csvTitle:'Save Data in Comma-Separated Text File',
  menu:Object.freeze({data:'&Get Selection Data',add:'&Add Selection to Current Hot List',start:'Start &New Hot List with Selection',entire:'&Create New Hot List of Entire List'}),
 });

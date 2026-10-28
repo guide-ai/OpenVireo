@@ -35,7 +35,7 @@ export type CatalogStarRecord=Readonly<{kind:'star';id:string;type:0|3;ra:number
  flags:Readonly<{spectral:boolean;luminosity:boolean;bv:boolean;ub:boolean}>;code:number;variable:null}>;
 export type CatalogGalaxyRecord=Readonly<{kind:'galaxy';id:string;ra:number;dec:number;v:number;major:number;minor:number;z:number;morphology:number;bar:string;luminosity:string;ring:string}>;
 export type CatalogRecord=CatalogStarRecord|CatalogGalaxyRecord;
-export type CatalogObjectReason='galaxy-colour-residue'|'galaxy-type-fault'|'spectral-code-unformattable';
+export type CatalogObjectReason='galaxy-colour-residue'|'galaxy-type-fault'|'spectral-code-unformattable'|'instructor-value-masked';
 export class CatalogObjectError extends Error{constructor(readonly code:'record'){super(`Catalog object: ${code}`);this.name='CatalogObjectError';}}
 
 const bytesOf=(hex:string)=>Uint8Array.from(hex.match(/../g)!,x=>parseInt(x,16));
@@ -77,12 +77,12 @@ export function galaxyColours(t:number):Readonly<{bv:number;ub:number}>|null{
  if(t===3)return {bv:f(.81),ub:f(.27)};if(t===4)return {bv:f(.63),ub:f(-.02)};if(t<=9)return {bv:f(.52),ub:f(-.12)};
  if(t<=16)return {bv:f(.5),ub:f(-.2)};if(t===20)return {bv:f(.7),ub:f(0)};return null;
 }
-const GALAXY_TYPES:Readonly<Record<number,string>>=Object.freeze({[-7]:'Unclassified Elliptical',[-6]:'Compact Elliptical',[-5]:'E, dwarf E',[-4]:'E/SO',[-3]:'L-, S0-',[-2]:'L, S0',[-1]:'L+, S0+',0:'S0/a, S0-a',1:'Sa',2:'Sab',3:'Sb',4:'Sbc',5:'Sc',6:'Scd',7:'Sd',8:'Sdm',9:'Sm',10:'Im',11:'Compact Irregular',15:'Peculiar, Unclassifiable',16:'Irr II',20:'Unclassified Spiral'});
+const GALAXY_TYPES:Readonly<Record<number,string>>=Object.freeze({[-9]:'QSO/AGN',[-8]:'',[-7]:'Unclassified Elliptical',[-6]:'Compact Elliptical',[-5]:'E, dwarf E',[-4]:'E/SO',[-3]:'L-, S0-',[-2]:'L, S0',[-1]:'L+, S0+',0:'S0/a, S0-a',1:'Sa',2:'Sab',3:'Sb',4:'Sbc',5:'Sc',6:'Scd',7:'Sd',8:'Sdm',9:'Sm',10:'Im',11:'Compact Irregular',15:'Peculiar, Unclassifiable',16:'Irr II',20:'Unclassified Spiral'});
 const LUMINOSITY=['','I','I-II','II','II-III','III','III-IV','IV','IV-V','V'];
 /** 0x596820 (tables 0x5b51df, 0x5b5465). A bar character with a base lacking 'S'/'I' dereferences nil natively: typed fault. */
 export function galaxyTypeText(g:Pick<CatalogGalaxyRecord,'morphology'|'bar'|'luminosity'|'ring'>):string|null{
- // T outside −7..20 reads outside the recovered table (CLEA_GLX.DAT has T = −9 for 37 records): typed.
- if(!Number.isInteger(g.morphology)||g.morphology<-7||g.morphology>20)return null;
+ // The table at 0x5b51df + 31·T is read for T −9..20 (T −9 'QSO/AGN' at 0x5b50c8, review 1 L1); outside that range: typed.
+ if(!Number.isInteger(g.morphology)||g.morphology<-9||g.morphology>20)return null;
  let s=GALAXY_TYPES[g.morphology]??'';
  if(g.bar!==' '){
   const i=[...s].findIndex(c=>c==='S'||c==='I');if(i<0)return null;s=s.slice(i);
@@ -114,13 +114,16 @@ export type CatalogObjectView=Readonly<{
 }>;
 const led=(active:boolean):LedView=>Object.freeze({active,colour:active?LED_COLOURS.active:LED_COLOURS.inactive});
 /** FormActivate + Telescope view pass + final pass for one record. RA 0x486ca0(2,'h ','m ','s'), Dec 0x486ca0(1,'° ',"' ",'"'). */
-export function catalogObjectView(r:CatalogRecord,format:(v:number,d:1|2,s:readonly [string,string,string])=>string):CatalogObjectView{
+/** `maskGalaxyRedshift` [W] (review 1 M2): web Edit Mode has no instructor login, and a galaxy's catalogue z is the E01/E02
+ * answer, so the web masks it (typed instructor-value-masked); the original keeps it behind the login. */
+export function catalogObjectView(r:CatalogRecord,format:(v:number,d:1|2,s:readonly [string,string,string])=>string,options:Readonly<{maskGalaxyRedshift?:boolean}>={}):CatalogObjectView{
  const L=CATALOG_OBJECT_LITERALS,ra=format(r.ra,2,['h ','m ','s']),dec=format(r.dec,1,['° ',"' ",'"']),reasons:CatalogObjectReason[]=[];
  if(r.kind==='galaxy'){
   const c=galaxyColours(r.morphology);if(!c)reasons.push('galaxy-colour-residue');
   const type=galaxyTypeText(r);if(type===null)reasons.push('galaxy-type-fault');
+  if(options.maskGalaxyRedshift)reasons.push('instructor-value-masked');
   return Object.freeze({type:L.galaxy,typeHighlight:false,id:r.id,ra,dec,mag:F3(r.v),bv:c?blank30(c.bv):'',ub:c?blank30(c.ub):'',spLabel:L.galaxyType,sp:type??'',
-   zEnabled:true,z:floatToStrFExponent4(r.z),sizeEnabled:true,size:r.major===0?'':delphiFixed(r.major,1)+(r.minor!==0?'x'+delphiFixed(r.minor,1):''),
+   zEnabled:true,z:options.maskGalaxyRedshift?'':floatToStrFExponent4(r.z),sizeEnabled:true,size:r.major===0?'':delphiFixed(r.major,1)+(r.minor!==0?'x'+delphiFixed(r.minor,1):''),
    bvLed:led(true),ubLed:led(true),spLed:led(false),gcvsEnabled:false,reasons:Object.freeze(reasons)});
  }
  if(r.type===3)return Object.freeze({type:L.nonStellar,typeHighlight:true,id:r.id,ra,dec,mag:blank30(r.v),bv:blank30(r.bv),ub:blank30(r.ub),spLabel:L.spectrum,sp:L.redshiftedQso,

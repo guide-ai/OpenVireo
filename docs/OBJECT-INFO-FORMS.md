@@ -1,13 +1,13 @@
 # Object and field information forms (Front O)
 
-Status: implemented on branch `claude/front-o-info-forms-eb3a61`; awaiting the coordinator's independent high-effort review.
+Status: implemented on branch `claude/front-o-info-forms-eb3a61`. Independent review 1 (`analysis/reviews/front-o-review-1.md`, MERGE-AFTER-FIXES) applied: M1 Catalog Object 320 px layout, M2 galaxy z mask, the Object X mask by ObjectX.HTL positions, L1–L11 and the scripted witness reshape.
 
 | Step | Who | Model · effort |
 |---|---|---|
 | Static recovery A–E | general-purpose subagents | claude-opus-5-5 · default (medium) |
 | Plan | Plan subagent, `analysis/front-plans/front-o-info-forms.md` | claude-opus-5-5 · high |
 | Implementation | Claude Code session | claude-opus-5-5 · medium |
-| Independent review | coordinator | pending |
+| Independent review 1 | coordinator (`analysis/reviews/front-o-review-1.md`, raw report kept there) | high |
 
 Order: the plan was written after the recovery notes. Implementation started after the plan and applied its findings:
 - the GCVS finding (§0.1);
@@ -51,11 +51,11 @@ Naked Eye Star is the one student form: a right-click on the sky seen through th
 
 One-line adaptations shown in the app:
 - **Edit Mode note:** no login, not saved, and only the click and Field Information follow it.
-- **Catalog Object:** shows values but does not edit them.
+- **Catalog Object:** shows values but does not edit them, and hides galaxy redshifts (`instructor-value-masked`, see below).
 - **Print:** a preview of the page body. Date in the browser's format; layout and fonts differ.
 - **Save Text:** a download.
 - **Start New Hot List:** asks whenever the list has rows; Yes downloads the list.
-- **Naked-eye sky:** discs instead of star sprites, and no dome shutters drawn.
+- **Naked-eye sky:** discs instead of star sprites, and no dome shutters drawn. On touch screens a tap moves the cursor and **Show star at cursor** picks (iOS fires no `contextmenu` on long press).
 
 None of Edit Mode's other effects are applied:
 - hot-list row format, editing and Save Updated List;
@@ -78,13 +78,15 @@ That means a pointing that is **exactly** a listed pointing of a bundled pack (`
 - the Hubble engine packs: Coma (2 pointings) and Boötes;
 - the nine LSS survey packs.
 
-The test sweep certifies 193 of 227 pack pointings. The 34 Boötes-area pointings stay `population: variable-merge`, because their variable update is not modelled.
+The test sweep (`src/io/fieldInfoPacks.test.ts`, on main c7ba82c) certifies 195 of 227 pack pointings. The 32 Boötes-area pointings stay `population: variable-merge`, because their variable update is not modelled.
 
 Object X packs are excluded:
 - Web Edit Mode has no password, so these forms would reveal hidden E08 identities.
 - The engine does not model asteroids in those fields.
 
-Both lists and the layer are masked (`object-x-hidden`) near an unrevealed target.
+Both lists and the layer are masked (`object-x-hidden`) within 2° (plus the list's area) of every ObjectX.HTL position, whether or not the Object X lab holds a target (`src/io/objectXMask.ts`; a failed read of the hash-checked list masks everything).
+
+**Galaxy redshift mask (review 1 M2) [W].** Web Edit Mode has no instructor login, so Catalog Object hides a galaxy's catalogue z (`instructor-value-masked`). That z is the answer of the Hubble and LSS exercises (E01/E02); VIREO keeps it behind the login. V, morphology, colours and size stay visible. `fieldInfoPacks.test.ts` checks every certified pointing: no galaxy z appears in the dialog fields or in the Star Data List lines and CSV. The e2e flow checks the page text, Search, Save Text, CSV and Print at 36773.
 
 Options used:
 - QSO merge when the area needs it;
@@ -109,7 +111,7 @@ At a certified pointing in Edit Mode, the Telescope view shows the engine's own 
 - **Galaxy record:**
   - colours and code from the morphology T;
   - type text from `0x596820`, with bar, luminosity and ring bytes +0x23..+0x25 (`0x598f10..0x598f22`);
-  - z as `FloatToStrF(ffExponent,4,2)`, e.g. `4.899E-02`;
+  - z as `FloatToStrF(ffExponent,4,2)` (port tested, e.g. `4.899E-02`), masked in the web dialog (above);
   - Size `major[xminor]` with 1 decimal.
 - **Field, LED and colour table:** FormActivate `0x56005c`, then the Telescope view pass. Assigned values light the LED red
   (yellow is never shown, [D]). TypeEd is magenta for non-stellar objects.
@@ -119,7 +121,7 @@ At a certified pointing in Edit Mode, the Telescope view shows the engine's own 
   - **OK write-back** (`record-edit-unavailable`).
 - **Typed record faults:**
   - `galaxy-colour-residue`: T 17–19 or above 20.
-  - `galaxy-type-fault`: a barred type whose base has no S or I, or T outside −7..20 (37 records have T = −9).
+  - `galaxy-type-fault`: a barred type whose base has no S or I, or T outside −9..20. The table at `0x5b51df + 31·T` starts at T = −9: `QSO/AGN` at `0x5b50c8` (37 CLEA_GLX.DAT records) and T = −8 `''` (review 1 L1).
   - `spectral-code-unformattable`: codes the ported formatter cannot render. `0x55d4f4` never raises; the ported `formatObservationType` agrees for valid codes. Witness examples it rejects: 999, −60405000, 5000000, 21503000.
 
 ## Star Data List (FO-SL)
@@ -128,7 +130,7 @@ The original form is TFieldRptForm1 < TClstrRptForm1 < TObjctListForm1 (RECOVERY
 - **Caption:** `CLEA Star Field Data`.
 - **Content:** 19 header lines, then one row per NewGSC object (stars and QSOs) in collection order.
 - **Row format** `0x5354e8`: `+` inserted on B−V/U−B, `* ` for assigned values, `*`/`#` class flags. A rounded negative zero prints `+0.00`.
-- **Comma Delimit** is enabled: header lines, two literals, then the column-to-comma transform.
+- **Comma Delimit** is enabled: header lines, two literals (`0x5530c8` units line `,Hr,Mn,Sec,°,',''`, two apostrophes, review 1 L2), then the column-to-comma transform.
 - **Save names:** `CLEA_Field1.TXT` / `.CSV`.
 - **Selection menu:** Add / Start New / Create New Hot List of Entire List are shown disabled with `starlist-hotlist-cluster-bank`. FormatforHotList `0x552a7c` reads the cluster bank `0x5bca88`/`0x5bcaa4`, not the selected field row. This is a probable original defect:
   - with an empty bank the code dereferences nil;
@@ -149,7 +151,7 @@ The original form is TFieldRptForm1 < TClstrRptForm1 < TObjctListForm1 (RECOVERY
 ## Naked Eye Star (FO-NE)
 
 - **File:** NkdEye.dat (bundled byte-exact; approved by the user on 2026-10-28). 2887 records of 20 bytes each: Double RA in hours, Double Dec in degrees, Single V. The Bright Star Catalogue origin is an inference.
-- **Sky:** built when the dome opens, then frozen (`DomeSw1UpClick`; no clock rebuild). Built from:
+- **Sky:** built when the dome opens, then frozen (`DomeSw1UpClick`; no clock rebuild). VIREO also rebuilds it when the optical control switch goes off (`OptCntrlSwChange 0x58c9e7`); that switch has no web counterpart, so close and reopen the dome to redraw (review 1 L10). Built from:
   - the effective site;
   - the observatory clock;
   - the telescope pointing. The centre azimuth is the telescope's; RA exactly 0 means south or north.
@@ -196,7 +198,7 @@ Arithmetic uses Number (binary64) with half-even Round. FloatToStrF ffFixed come
   - `variableFieldList`, `nakedEye`, `nakedEyeSky` (four witness vectors);
   - `nativeListFormat` (parity with the existing 1/2-decimal ports; 0-decimal case; Edit Mode defaults);
   - `fieldInfoWitness`: twelve variable lists, ten GSC rows, synthetic rows, spectral/ffExponent/ffFixed tables, CSV, Catalog Object view and pick rule.
-- **Witness data:** `data/fieldinfo/info-witness.json`, a derived manifest entry produced by `tools/info_witness.py` (SHA-256 `f2aeb514…a08`).
+- **Witness data:** `data/fieldinfo/info-witness.json`, a derived manifest entry produced by `tools/info_witness.py` (SHA-256 `f2aeb514…a08`, output `a9fc1097…c61`) and reshaped byte-identically by `tools/reshape_info_witness.py` (SHA-256 `2f8a6795…ce1f`).
 - **Playwright:** `tests/object-info-forms.spec.ts`:
   - Edit Mode off parity;
   - Catalog Object by click and keyboard;
@@ -207,6 +209,27 @@ Arithmetic uses Number (binary64) with half-even Round. FloatToStrF ffFixed come
 
 The witnesses are second implementations of the same reading. They check the port, not the reading, and are not runtime oracles.
 
+## Review 1 resolution
+
+The raw report is `analysis/reviews/front-o-review-1.md` (verdict MERGE-AFTER-FIXES; no blocking defect, no Object X leak).
+
+| Finding | Resolution |
+|---|---|
+| M1 Catalog Object breaks at 320 px | One grid row per field; the LED wraps under its row on phones. New 320 px dark e2e checks every value box fits unclipped. |
+| M2 galaxy z visible without a login | z masked (`instructor-value-masked`) in the web dialog; Edit Mode note and this doc say so. Vitest sweep over all certified pointings and e2e (page text, Save Text, CSV) check that no z appears. |
+| Object X mask only with the lab's target | Masked by every ObjectX.HTL position (`io/objectXMask.ts`), fail closed; e2e points at NGC 2403 without opening the route. |
+| L1 T −9/−8 | Table bound −9..20: `QSO/AGN`, `''`. RECOVERY-A erratum. |
+| L2 CSV units literal | `,Hr,Mn,Sec,°,',''` (0x5530c8, 17 bytes), pinned in Vitest and e2e. |
+| L3 focus | The sky svg is refocused when Catalog Object or Naked Eye Star closes (e2e checks it). |
+| L4 iOS long press | Tap moves the cursor; **Show star at cursor** picks [W]; touch e2e. |
+| L5/L6 smoke test and tally | `src/io/fieldInfoPacks.test.ts` pins 195 ready / 32 variable-merge on main c7ba82c. |
+| L7 TInfoListForm1 wording | Corrected (13 direct sites; Site Information only in the telescope window). |
+| L8 keyboard pick | e2e asserts `N5230-00237`, pinned in `fieldInfoPacks.test.ts`. |
+| L9 | VARIABLE-STARS.md: "a later true-dispatch front". |
+| L10 | Naked-eye rebuild on the optical control switch documented. |
+| L11 | Slew to Selection refills an open Set Coordinates dialog. |
+| Witness reshape | Scripted (`tools/reshape_info_witness.py`), byte-identical, hashes above. |
+
 ## Not done
 
 - The original Telescope display's click offsets (view offsets E[+0x41c439/+0x6a6]); the web assumes a fresh unpanned field.
@@ -216,4 +239,4 @@ The witnesses are second implementations of the same reading. They check the por
 - Window auto-sizing.
 - The printed lab/student lines of non-Edit-Mode printing (unreachable here).
 - The dome shutter and rib drawing, and StretchBlt resampling.
-- TInfoListForm1: it is a base class. In the telescope window its only direct instance is Site Information (`Current Site & Telescope Parameters`); its descendants (results lists) are covered by other fronts. No field list uses it (RECOVERY-B §7).
+- TInfoListForm1 is not a field list. It is instantiated directly at 13 sites (camera information, file-merge and database conversion reports, Site Information) and has five descendants (results lists, spectrum and cluster parameter windows; RECOVERY-B §7). In the telescope window only Site Information (`Current Site & Telescope Parameters`) uses it; it is not part of this front (review 1 L7).
