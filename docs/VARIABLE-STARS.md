@@ -1,7 +1,9 @@
 # Variable stars and light curves (Front V, V1–V3)
 
-Status: implemented on branch `claude/front-v-variables-43a775`; independent high-effort review by the coordinator is
-pending. Implementation: Claude Code (claude-opus-5-5), medium effort. Plan: Plan subagent (claude-opus-5-5, high effort) in
+Status: implemented on branch `claude/front-v-variables-43a775`; the coordinator's high-effort review 1
+(`analysis/reviews/front-v-review-1.md`) was applied: print page body (M1), the M−m/D note (M2), type bound 10 (L1), blank
+type filter (L2), menu focus (L3), guide wording (L4), manifest scope (L5), table amplitude (L6), no mutation without Init
+(L7), the `non-finite` test and the pinned witness hash. Implementation: Claude Code (claude-opus-5-5), medium effort. Plan: Plan subagent (claude-opus-5-5, high effort) in
 `analysis/front-plans/front-v-variable-stars.md` of the research root. Honest note on order: the plan was launched first, but
 the first drafts were written in parallel from the recovery notes; the plan's findings (section 0) were applied afterwards:
 the two-stage FloatToStrF, signed M−m/D, inverted axes, the two extra typed faults, the Phase position, the print header
@@ -22,7 +24,7 @@ witness scripts are outside the repository: `/home/dobleuber/Documents/Codex/202
 | 3 | Data › **Display Light Curve...** | same | original |
 | 4 | **Simulated Light Curve**: 1.5 cycles from the epoch, VIREO layout and colours | TLtCrvDsplyForm1 | original (fonts differ) |
 | 5 | Data › Save Text › **As Displayed...** downloads `<GCVS ID>.TXT` | Save dialog, empty default name, `.TXT` | adaptation (file name, browser download) |
-| 6 | Data/File › **Print...** opens a print preview with the recovered literals only | printer pages (rest of header, date, layout not recovered) | adaptation |
+| 6 | Data/File › **Print...** opens a print preview of the page body (see Print) | printer pages | adaptation (date format, placeholder for the student/lab text, landscape layout, no fonts) |
 | 7 | **Help** shows VarTypeHlp.TXT sections | CLEA help viewer via VarTypeHlp.LST | adaptation |
 
 One-line labels shown in the app: the entry adaptation (`variable-adaptation`), "The plot keeps VIREO's layout, colours and
@@ -48,7 +50,7 @@ decoding.
 ## Record (`src/core/variableStars.ts`)
 
 92 bytes, little-endian, 31,147 records sorted by RA: ID ShortString[≤10] @0, RA Double @11, Dec Double @19, type
-ShortString[≤11] @27, max flag @38 + max Single @39, min flag @43 + min Single @44, magnitude system ShortString[≤2] @48,
+ShortString[≤10] @27 (11 bytes up to the max flag; PStrNCat max 27 = 17 + 10 at 0x52ce11), max flag @38 + max Single @39, min flag @43 + min Single @44, magnitude system ShortString[≤2] @48,
 epoch Extended @51, period flag @61 + period Extended @62, M−m/D signed int16 @72 (`fild WORD`), spectrum ShortString[≤17] @74. Offsets are read by
 the list fill 0x52ccec and agree with the merge reader `variableMerge.ts` (Front F). 13,189 records have period 0 and 22,868
 have no M−m/D.
@@ -67,11 +69,33 @@ FloatToStrF follows FloatToDecimal 0x40cbb5 [D]: 18 significant digits (ties to 
 decimals. This differs from exact rounding for 5 periods (TZ Aur, TT Lyn, AE UMa, BV Del, BP Peg end in …62, not …61). The
 web scaling to 18 digits is exact; the x87 scaling error (about 1 ulp) is not reproduced.
 
+## Print (list 0x52d58c → 0x52d5e8, light curve 0x52c1cc)
+
+The text `CLEA Exercise "VIREO - The VIRtual Educational Observatory" - ` + a VIREO string is stored in
+`Printer.Title` (+0x18, read by BeginDoc 0x4430cc for StartDocA): it names the print job and is **never drawn on the page**,
+so the preview does not show it. The page body, in order:
+
+1. `DateTimeToStr(Now)` + `     Laboratory Table Number (Not Recorded)` (this site has no lab table). Date and time are
+   shown in the browser's format [W].
+2. The student/lab ShortStrings at global+0x5fa (the first always, three more only when set). Their contents come from
+   elsewhere in VIREO and are **not recovered**; one labelled placeholder line stands in.
+3. List print only: the window caption `Variable Star Data`.
+4. The eleven list lines.
+5. Light curve only, VIREO's landscape branch (0x52c4fd..0x52c571): `(Screen Image Printed on Next Page)`, a page break,
+   then `<first student/lab string> - Page 2` (placeholder + ` - Page 2`). Then, in both orientations, the literal
+   `CLEA Exercise "VIREO - The VIRtual Educational Observatory"` (0x52c848, no dash) and the plot in black on white.
+
+Not reproduced: the portrait branch (plot on the same page), page layout and fonts, and the option (options +0x2e8d) that
+lets VIREO print in screen colours; the preview always prints black on white [W]. The first reading (and plan finding 8)
+put the job title on the page; review 1 corrected it.
+
 ## Light-curve model (0x51f0f8, 0x51f298, 0x51f33c)
 
 The form always builds a **CepheidTypeObj**, whatever the variability type. bright = max (or min − max when the max flag is
 '('); faint = min (or max + min when the min flag is '(', an amplitude). A zero M−m/D word is replaced by **50 in the in-memory
-record** (so a later list shows `0.50`; the app models this per record and shows a note). With f = 1 − word/100, A = (faint −
+record** (so a later list shows `0.50`; the app models this per record and shows a note only when the list on screen was
+rebuilt from the 50, never right after Display). When the axis range is zero, SetRecord divides by it (0x52b940) before
+Init (0x52b991), so the word stays 0; the session skips the mutation then (synthetic test). With f = 1 − word/100, A = (faint −
 bright)/2 and φ = Frac((t − E)/P) (+1 if negative):
 
 - φ ≤ f: m = faint − A·exp(−φ/f)·(cos(πφ/f) + 1)
@@ -81,6 +105,7 @@ The result is a Single. There is **no noise** and nothing is fitted. **Unavailab
 records: VIREO raises a floating-point exception in the paint handler after drawing the axes, so the app draws the axes and
 explains why there is no curve), `zero-decline-fraction` (M−m/D = 100 %), `axis-range-zero` (equal axis bounds: no window)
 and `magnitude-system-empty` (fault after the magnitude axis); the last three occur in no bundled record (synthetic tests).
+`non-finite` is a defensive reason for a non-finite model value (synthetic test).
 VIREO draws the catalog epoch as maximum light (phase 0) for every type, though for eclipsing binaries the GCVS epoch is a
 minimum. The light curve of an eclipsing
 or irregular variable is therefore Cepheid-shaped, exactly as in VIREO; the guide says so.
@@ -105,19 +130,25 @@ equivalence; a pixel may differ at an exact .5 boundary. Text widths are not rep
 
 ## Evidence
 
-- `src/core/variableStars.test.ts` (87 tests): the bundled bytes equal the manifest and the witness's SHA-256; all 31,147
+- `src/core/variableStars.test.ts` (89 tests): the bundled bytes equal the manifest and the witness's SHA-256; all 31,147
   records decode with the witness statistics; SHA-256 digests of **every record's eleven lines** (before and after the M−m/D
   default) and of **every record's whole plot** (bounds, labels, ticks, all curve pixels or the typed fault) equal the
   witness's; the 5 FloatToDecimal policy records; inverted ranges and the synthetic faults; for 35 witness records (flagged, period 0, M−m/D 0 and ≥ 100, negative Dec,
   del Cep, RR Lyr, omi Cet, HI Peg, bet Per…) the eleven lines, the lines after the M−m/D default, the axis bounds, every one of
   the 556 curve pixels and seven model samples equal the Python witness (`tools/variable_witness.py`: struct + fractions +
   math, written separately); explicit bounds, layout, Save Text bytes, help sections, search and fetch failures.
-- `src/core/variableStarSession.test.ts` (3 tests): window transitions and the in-memory M−m/D mutation sequence.
+- `src/core/variableStarSession.test.ts` (4 tests): window transitions, the in-memory M−m/D mutation sequence and its absence
+  when SetRecord faults before Init.
 - `tests/variable-stars.spec.ts` (8 flows): header navigation, type filter, list lines and curve pixels from the witness,
-  period-0 notice with axes, the M−m/D default after reopening, Save Text download bytes, Help and print preview, inverted
-  range, dark-theme panel colours, 320 px.
-- The witness implements the same reading of the binary, so it checks the implementation, not the reading; it cannot check
-  x87, FloatToDecimal scaling or GDI behaviour.
+  period-0 notice with axes, the M−m/D default after reopening (and no note before), Save Text download bytes, Help and both
+  print previews (no job title on the page), the blank-type filter, Escape focus, inverted range, dark-theme panel colours,
+  320 px.
+- The witness is a second implementation of the same reading of the binary, so it checks the port, not the reading (review
+  1 found a reading error both shared: the type bound); it cannot check x87, FloatToDecimal scaling or GDI behaviour. Its
+  SHA-256 is recorded in `variableStars.controls.json` (`source.witnessSha256`) and pinned by the test:
+  `8efffbbf8dd153190b586d56131b6679441944e328ce64f0aa5d741da63982ca` (review-1 version
+  `12a7eeb3e50032532b0f7d8779dd51a74fbba1c72b852179710e0b8622bbc4bd`; the change is the type bound, the signed word and
+  the self-hash; its output is otherwise identical).
 Tests are evidence of the chosen contract, not of original-runtime equivalence.
 
 ## Not done (follow-ups)
@@ -133,4 +164,4 @@ Tests are evidence of the chosen contract, not of original-runtime equivalence.
   `nativeVariableFalseMerge`; witness the four fields from CLEA_VStrs.dat (Front V's `bundledVariableStars.ts` and
   `decodeVariableStarRecord` can be reused read-only); run them through `fieldEngine.ts`; then admit the rows. If the branch
   calls Mag, P = 0 faults in the original too and the photometer must refuse with a typed reason. Not done here.
-- Printer layout and the CLEA help viewer; saving this page's state with the investigation (not needed: it is a browsing aid).
+- Printer layout, the portrait print branch, the student/lab print strings and the CLEA help viewer; saving this page's state with the investigation (not needed: it is a browsing aid).

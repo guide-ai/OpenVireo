@@ -16,7 +16,9 @@ export const VSTRS_RECORD_COUNT=31147;
 export const VSTRS_FILE_BYTES=VSTRS_RECORD_BYTES*VSTRS_RECORD_COUNT;
 /** Record offsets (decimal). */
 export const VSTRS_OFFSETS=Object.freeze({name:0,ra:11,dec:19,type:27,maxFlag:38,max:39,minFlag:43,min:44,system:48,epoch:51,periodFlag:61,period:62,riseWord:72,spectrum:74});
-const SHORT_MAX=Object.freeze({name:10,type:11,system:2,spectrum:17});
+// Type: 11 bytes at 27..37 (maxFlag at 38) = length byte + 10 characters; the list fill joins label + type with
+// PStrNCat max 27 = 17 + 10 (0x52ce11).
+const SHORT_MAX=Object.freeze({name:10,type:10,system:2,spectrum:17});
 
 export class VariableStarError extends Error{
  constructor(readonly code:'file-size'|'record'|'index'){super(`Variable star catalog: ${code}`);this.name='VariableStarError';}
@@ -175,16 +177,17 @@ export function variableStarSaveFileName(record:VariableStarRecord):string{
 }
 
 // ------------------------------------------------------------------ browsing (web adaptation)
-export type VariableStarQuery=Readonly<{name:string;type:string}>;
+/** `type: null` matches every record; `''` matches only the records whose type text is blank. */
+export type VariableStarQuery=Readonly<{name:string;type:string|null}>;
 export const VARIABLE_STAR_RESULT_LIMIT=100;
 const normalizeName=(s:string)=>s.trim().replace(/\s+/g,' ').toLowerCase();
 /** WEB: the original reaches one record from a clicked star; this page filters the catalog instead. Name: case-insensitive
- * substring after collapsing blanks; type: exact stored type text, or '' for all. Results keep file order. */
+ * substring after collapsing blanks; type: exact stored type text ('' = blank type), or null for all. Results keep file order. */
 export function searchVariableStars(records:readonly VariableStarRecord[],query:VariableStarQuery,limit=VARIABLE_STAR_RESULT_LIMIT):Readonly<{total:number;rows:readonly VariableStarRecord[]}>{
- if(!query||typeof query.name!=='string'||typeof query.type!=='string'||query.name.length>40||query.type.length>11||!Number.isSafeInteger(limit)||limit<1)throw new VariableStarError('index');
+ if(!query||typeof query.name!=='string'||(query.type!==null&&(typeof query.type!=='string'||query.type.length>10))||query.name.length>40||!Number.isSafeInteger(limit)||limit<1)throw new VariableStarError('index');
  const name=normalizeName(query.name),rows:VariableStarRecord[]=[];let total=0;
  for(const r of records){
-  if(query.type&&r.type!==query.type)continue;
+  if(query.type!==null&&r.type!==query.type)continue;
   if(name&&!normalizeName(r.name).includes(name))continue;
   total++;if(rows.length<limit)rows.push(r);
  }

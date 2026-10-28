@@ -8,7 +8,9 @@ import manifest from '../../docs/LOCAL-RESOURCES.json';
 import {BUNDLED_VARIABLE_STARS,BUNDLED_VARIABLE_TYPE_HELP,BundledVariableFileError,fetchBundledVariableFile,verifyBundledVariableFile} from '../io/bundledVariableStars';
 
 // Witness: research analysis/front-v-variable-stars/tools/variable_witness.py (Python struct + fractions + math, written
-// separately from this port). It is evidence of the chosen contract, not of original-runtime equivalence.
+// separately from this port). It implements the same reading of the binary, so it checks the port, not the reading; it is
+// evidence of the chosen contract, not of original-runtime equivalence. Its SHA-256 is pinned below.
+const WITNESS_SCRIPT_SHA256='8efffbbf8dd153190b586d56131b6679441944e328ce64f0aa5d741da63982ca';
 const FILE=new Uint8Array(readFileSync(new URL('../../public/original/variables/CLEA_VStrs.dat',import.meta.url)));
 const HELP=new Uint8Array(readFileSync(new URL('../../public/original/variables/VarTypeHlp.TXT',import.meta.url)));
 const fromHex=(hex:string)=>Uint8Array.from(hex.match(/../g)!,v=>parseInt(v,16));
@@ -18,7 +20,7 @@ describe('CLEA_VStrs.dat bundled identity',()=>{
  it('is the manifested byte-exact file the witness read',()=>{
   expect(FILE.length).toBe(VSTRS_FILE_BYTES);
   const sha=createHash('sha256').update(FILE).digest('hex');
-  expect(sha).toBe(BUNDLED_VARIABLE_STARS.sha256);expect(witness.source.sha256).toBe(sha);
+  expect(sha).toBe(BUNDLED_VARIABLE_STARS.sha256);expect(witness.source.sha256).toBe(sha);expect(witness.source.witnessSha256).toBe(WITNESS_SCRIPT_SHA256);
   for(const id of [BUNDLED_VARIABLE_STARS,BUNDLED_VARIABLE_TYPE_HELP])expect(manifest.files).toContainEqual({path:'public'+id.path,bytes:id.bytes,sha256:id.sha256});
   expect(createHash('sha256').update(HELP).digest('hex')).toBe(BUNDLED_VARIABLE_TYPE_HELP.sha256);
  });
@@ -123,6 +125,16 @@ describe('CepheidTypeObj model and plot (0x51f33c, 0x52b6f4, 0x52b9cc, 0x52c090)
   expect(p.texts.map(x=>x.text)).toEqual(['4.50','3.00','3.50','4.00','del Cep','DCEP']);
   const bytes=FILE.slice(30234*92,30235*92);bytes[72]=0;bytes[73]=0x80;expect(()=>decodeVariableStarRecord(bytes,0)).toThrow(VariableStarError);
  });
+ it('names a non-finite model value (defensive reason)',()=>{
+  const r=catalog[30234],m=cepheidModel(r);
+  expect(()=>cepheidMagnitude(m,Number.NaN)).toThrow(expect.objectContaining({code:'non-finite'}));
+  expect(lightCurvePlot({...r,epoch:{...r.epoch,value:Number.POSITIVE_INFINITY}}).curve).toEqual({unavailable:'non-finite'});
+ });
+ it('bounds the type text at 10 characters (offsets 27..37, maxFlag at 38; PStrNCat 27 at 0x52ce11)',()=>{
+  expect(Math.max(...catalog.map(r=>r.type.length))).toBe(10);
+  const bytes=FILE.slice(30234*92,30235*92);bytes[27]=11;expect(()=>decodeVariableStarRecord(bytes,0)).toThrow(VariableStarError);
+  bytes.fill(0x41,28,38);bytes[27]=10;expect(decodeVariableStarRecord(bytes,0).type).toBe('AAAAAAAAAA');
+ });
  it('uses the recovered half-magnitude bounds',()=>{
   expect(lightCurveBounds(12.3,11.6)).toEqual({faintBound:12.5,brightBound:11});// 11.6 − 11 is not > 0.6
   expect(lightCurveBounds(12.5,12.5)).toEqual({faintBound:12.5,brightBound:11.5});// Round(12.5) = 12 (ties to even)
@@ -156,10 +168,14 @@ describe('Save Text and help',()=>{
   expect(s.slice(1).every(x=>x.lines.length===0)).toBe(true);
  });
  it('filters the catalog by name and type (web browsing)',()=>{
-  expect(searchVariableStars(catalog,{name:'del  CEP',type:''}).rows.map(r=>r.name)).toEqual(['del Cep']);
+  expect(searchVariableStars(catalog,{name:'del  CEP',type:null}).rows.map(r=>r.name)).toEqual(['del Cep']);
   const dcep=searchVariableStars(catalog,{name:'',type:'DCEP'});expect(dcep.total).toBe(440);expect(dcep.rows).toHaveLength(100);
   expect(variableStarTypes(catalog)[0]).toEqual({type:'M',count:5220});
-  expect(()=>searchVariableStars(catalog,{name:'x'.repeat(41),type:''})).toThrow(VariableStarError);
+  expect(()=>searchVariableStars(catalog,{name:'x'.repeat(41),type:null})).toThrow(VariableStarError);
+  expect(()=>searchVariableStars(catalog,{name:'',type:'x'.repeat(11)})).toThrow(VariableStarError);
+  // A blank type is a filter of its own, distinct from "all types" (null).
+  const blank=searchVariableStars(catalog,{name:'',type:''});expect(blank.total).toBe(428);expect(blank.rows.every(r=>r.type==='')).toBe(true);
+  expect(searchVariableStars(catalog,{name:'',type:null}).total).toBe(31147);
  });
 });
 

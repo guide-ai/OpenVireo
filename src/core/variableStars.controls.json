@@ -2,7 +2,8 @@
  "source": {
   "file": "CLEA_VStrs.dat",
   "sha256": "55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de",
-  "witness": "analysis/front-v-variable-stars/tools/variable_witness.py"
+  "witness": "analysis/front-v-variable-stars/tools/variable_witness.py",
+  "witnessSha256": "8efffbbf8dd153190b586d56131b6679441944e328ce64f0aa5d741da63982ca"
  },
  "stats": {
   "invertedRange": 155,

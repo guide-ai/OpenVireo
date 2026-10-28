@@ -27,7 +27,11 @@ test('search, open a record and display its simulated light curve',async({page})
  await expect(page.getByTestId('variable-adaptation')).toContainText('Catalog Object');
  await page.getByTestId('variable-type').selectOption('DCEP');
  await expect(page.getByTestId('variable-count')).toContainText('Showing the first 100 of 440');
+ await page.getByTestId('variable-type').selectOption({label:'(blank) — 428'});
+ await expect(page.getByTestId('variable-count')).toContainText('Showing the first 100 of 428');
+ await expect(page.getByTestId('variable-results').locator('tbody tr td:nth-child(2)').first()).toHaveText('');
  await page.getByTestId('variable-type').selectOption('');
+ await expect(page.getByTestId('variable-count')).toContainText('31,147 matching records');
  const c=byName('del Cep');
  await openRecord(page,'del Cep');
  await expect(page.getByTestId('vstar-lines')).toHaveText(c.lines.join('\n'));
@@ -45,9 +49,13 @@ test('search, open a record and display its simulated light curve',async({page})
  await expect(page.getByTestId('light-curve-unavailable')).toHaveCount(0);
  // List Type Codes only toggles its own check mark.
  await page.getByTestId('vstar-data-menu').click();
- await expect(page.getByTestId('vstar-type-codes')).toHaveAttribute('aria-checked','true');
+ await expect(page.getByTestId('vstar-type-codes')).toHaveAttribute('aria-pressed','true');
  await page.getByTestId('vstar-type-codes').click();
- await expect(page.getByTestId('vstar-type-codes')).toHaveAttribute('aria-checked','false');
+ await expect(page.getByTestId('vstar-type-codes')).toHaveAttribute('aria-pressed','false');
+ // Escape closes the menu and returns focus to its trigger.
+ await page.getByTestId('vstar-type-codes').focus();await page.keyboard.press('Escape');
+ await expect(page.getByTestId('vstar-display-curve')).toHaveCount(0);
+ await expect(page.getByTestId('vstar-data-menu')).toBeFocused();
  await expect(page.getByTestId('vstar-lines')).toHaveText(c.lines.join('\n'));
  // File › Exit closes the light curve; Data › Close closes both windows.
  await page.getByTestId('curve-file-menu').click();await page.getByTestId('curve-exit').click();
@@ -74,6 +82,7 @@ test('a zero M-m/D becomes 0.50 in the list after the light curve is opened, as 
  await expect(page.getByTestId('vstar-lines')).toHaveText(c.lines.join('\n'));
  await page.getByTestId('vstar-data-menu').click();await page.getByTestId('vstar-display-curve').click();
  await expect(page.getByTestId('vstar-lines')).toHaveText(c.lines.join('\n'));// the open list is not refreshed
+ await expect(page.getByTestId('vstar-rise-defaulted')).toHaveCount(0);// …so the note does not claim 0.50 yet
  await page.getByRole('button',{name:`Open ${c.name}`,exact:true}).click();
  await expect(page.getByTestId('vstar-lines')).toHaveText(c.linesAfterDefault.join('\n'));
  await expect(page.getByTestId('vstar-rise-defaulted')).toBeVisible();
@@ -104,14 +113,24 @@ test('Help shows the VarTypeHlp.TXT sections and Print opens a preview',async({p
  await page.getByTestId('curve-file-menu').click();await page.getByTestId('curve-print').click();
  const preview=page.getByTestId('variable-print-preview');
  await expect(preview).toBeVisible();
- await expect(preview).toContainText('CLEA Exercise "VIREO - The VIRtual Educational Observatory" - ');
- await expect(preview).toContainText('Laboratory Table Number (Not Recorded)');
- await expect(preview).toContainText(' - Page 2');
- await expect(preview).not.toContainText('Observatory" - Simulated');
+ // The 'CLEA Exercise … - ' print-job title (Printer.Title) is never drawn on the page.
+ await expect(preview).not.toContainText('Observatory" - ');
+ await expect(page.getByTestId('variable-print-date')).toHaveText(/\S.*     Laboratory Table Number \(Not Recorded\)$/);
+ await expect(preview).toContainText('[student and lab text entered in VIREO: not recovered on this site]');
  await expect(preview).toContainText('(Screen Image Printed on Next Page)');
+ const page2=page.getByTestId('variable-print-page2');
+ await expect(page2.locator('p').first()).toHaveText('[student and lab text entered in VIREO: not recovered on this site] - Page 2');
+ await expect(page2).toContainText('CLEA Exercise "VIREO - The VIRtual Educational Observatory"');
+ await expect(page.getByTestId('variable-print-lines')).toHaveText(byName('del Cep').lines.join('\n'));
  await expect(page.getByTestId('variable-print-svg').locator('polyline')).toHaveAttribute('stroke','#000000');
  await page.getByTestId('variable-print-close').click();
  await expect(preview).toHaveCount(0);
+ // The list print adds the window caption and has no page 2.
+ await page.getByTestId('vstar-data-menu').click();await page.getByTestId('vstar-print').click();
+ await expect(preview).toContainText('Variable Star Data');
+ await expect(preview).not.toContainText('Observatory" - ');
+ await expect(page.getByTestId('variable-print-page2')).toHaveCount(0);
+ await page.getByTestId('variable-print-close').click();
 });
 
 test('an inverted magnitude range draws no magnitude ticks and the curve leaves the box',async({page})=>{

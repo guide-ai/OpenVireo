@@ -7,11 +7,17 @@ const rec=(i:number)=>decodeVariableStarRecord(FILE,i);
 describe('Variable Star Data / Simulated Light Curve windows (RECOVERY §1, §2, §6)',()=>{
  it('shows 0.00, keeps it after Display Light Curve, and shows 0.50 when the list is shown again (0x51f2d8)',()=>{
   const ep=rec(2);expect(ep.riseWord).toBe(0);
-  let s=openVariableStarList(INITIAL_VARIABLE_STAR_SESSION,ep);expect(s.list!.lines[9]).toBe('M-m/D(%):        0.00');
-  s=displayLightCurve(s,ep);expect(s.curve).toBe(2);expect(s.list!.lines[9]).toBe('M-m/D(%):        0.00');
-  s=openVariableStarList(s,ep);expect(s.curve).toBeNull();expect(s.list!.lines[9]).toBe('M-m/D(%):        0.50');
+  let s=openVariableStarList(INITIAL_VARIABLE_STAR_SESSION,ep);expect(s.list!.lines[9]).toBe('M-m/D(%):        0.00');expect(s.list!.riseDefaulted).toBe(false);
+  s=displayLightCurve(s,ep);expect(s.curve).toBe(2);expect(s.list!.lines[9]).toBe('M-m/D(%):        0.00');expect(s.list!.riseDefaulted).toBe(false);
+  s=openVariableStarList(s,ep);expect(s.curve).toBeNull();expect(s.list!.lines[9]).toBe('M-m/D(%):        0.50');expect(s.list!.riseDefaulted).toBe(true);
   // Another record is unaffected; the mutation persists for this page only.
   s=openVariableStarList(s,rec(30234));expect(s.list!.lines[9]).toBe('M-m/D(%):        0.25');expect(s.riseDefaulted.has(2)).toBe(true);
+ });
+ it('keeps a zero M−m/D when SetRecord faults on a zero axis range before Init (0x52b940 before 0x52b991; synthetic)',()=>{
+  const r={...rec(2),max:Math.fround(10.8),min:10};expect(r.riseWord).toBe(0);
+  let s=displayLightCurve(openVariableStarList(INITIAL_VARIABLE_STAR_SESSION,r),r);
+  expect(s.riseDefaulted.has(2)).toBe(false);
+  s=openVariableStarList(s,r);expect(s.list!.lines[9]).toBe('M-m/D(%):        0.00');expect(s.list!.riseDefaulted).toBe(false);
  });
  it('closes the light curve with the list, exits it alone, and ignores a curve for a record not shown',()=>{
   const r=rec(30234);let s=displayLightCurve(openVariableStarList(INITIAL_VARIABLE_STAR_SESSION,r),r);
