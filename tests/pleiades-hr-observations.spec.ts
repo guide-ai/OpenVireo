@@ -51,9 +51,9 @@ const restoreInvestigation=(page:Page,bytes:Buffer,name='own-hr.json')=>page.get
 const duplicateIds=(page:Page)=>page.evaluate(()=>{const seen=new Map<string,number>();for(const e of document.querySelectorAll('[id]'))seen.set(e.id,(seen.get(e.id)??0)+1);return [...seen].filter(([id,n])=>n>1&&/native|own-hr|^db-|cluster|photo-|cnhr/.test(id)).map(([id])=>id);});
 const noOverflow=(page:Page)=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth);
 
-test('row 1 and all 16 own pairs reach Data from Observations: own (0.25, 9.875) at native pixels 170/235.5, manual trial report, confirm, Save and fresh-context Restore',async({page,browser,baseURL})=>{
+test('row 1 and all 19 own pairs reach Data from Observations: own (0.25, 9.875) at native pixels 170/235.5, manual trial report, confirm, Save and fresh-context Restore',async({page,browser,baseURL})=>{
  test.setTimeout(300000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- const seven=PLEIADES_ADMITTED_ROWS.find(r=>r.catalogId===SEVEN);expect(seven).toBeDefined();expect(PLEIADES_ADMITTED_ROWS).toHaveLength(16);
+ const seven=PLEIADES_ADMITTED_ROWS.find(r=>r.catalogId===SEVEN);expect(seven).toBeDefined();expect(PLEIADES_ADMITTED_ROWS).toHaveLength(19);
  await open(page);await page.getByRole('heading',{name:'Original hot lists',exact:true}).click();await page.getByRole('button',{name:'Load exercise list (PLEIADES.HTL)',exact:true}).click();await expect(page.locator('#htl-rows option')).toHaveCount(24);
  const asset=await readFile(new URL('../public/original/hotlists/PLEIADES.HTL',import.meta.url));expect(asset.length).toBe(PLEIADES_HTL.bytes);expect(sha(asset)).toBe(PLEIADES_HTL.sha256);
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await page.locator('#htl-rows').selectOption('0');await page.getByRole('button',{name:'Point to HTL selection',exact:true}).click();
@@ -69,17 +69,17 @@ test('row 1 and all 16 own pairs reach Data from Observations: own (0.25, 9.875)
   // The acquired color is never the plotted value: star 7 plots only the learner's typed pair.
   if(own){await expect(page.getByTestId('photo-manual-bv')).toHaveText('0.25');expect(await page.getByTestId('photo-acquired-bv').textContent()).not.toBe('0.25');}
  }
- await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(32);
+ await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(38);
  await page.getByLabel('Your vertical shift m−M (mag)',{exact:true}).fill('5.5');await page.getByRole('button',{name:'Confirm manual cluster fit',exact:true}).click();await expect(page.getByTestId('pleiades-distance-pc')).toHaveText('125.892541');
  await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').click();await expect(page.getByTestId('pleiades-lab-counts')).toHaveText('Guide steps done: 8/8');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();await page.getByTestId('pleiades-lab-close').click();
  // Explicit handoff: the photometer is released synchronously (no draw), and the own view opens with its summary focused.
  const seed=await page.getByTestId('photo-seed').textContent();await expect(page.getByTestId('photo-phase')).toHaveText('Integration complete');
  await withClock(page,async()=>{await page.getByTestId('photo-open-hr').click();await expect(ownView(page)).toBeVisible();});
  await expect(page.getByTestId('own-hr-disclosure')).toHaveAttribute('open','');await expect(page.getByTestId('own-hr-summary')).toBeFocused();
- const o=ownView(page);await expect(o.getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 16 of 16 admitted stars.');await expect(o.getByTestId('own-hr-source')).toContainText('never used');await expect(o.getByTestId('own-hr-adaptation')).toContainText('Adaptation:');
+ const o=ownView(page);await expect(o.getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 19 of 19 admitted stars.');await expect(o.getByTestId('own-hr-source')).toContainText('never used');await expect(o.getByTestId('own-hr-adaptation')).toContainText('Adaptation:');
  const point=o.locator(`[data-testid=own-hr-native-observed-point][data-target="${SEVEN}"]`);await expect(point).toHaveAttribute('cx',String(frameX(.25)));await expect(point).toHaveAttribute('cy',String(frameY(9.875)));expect([frameX(.25),frameY(9.875)]).toEqual([170,235.5]);
- const rows=o.getByTestId('own-hr-pair');await expect(rows).toHaveCount(16);expect((await rows.evaluateAll(r=>r.map(e=>e.getAttribute('data-target')!))).sort()).toEqual(PLEIADES_ADMITTED_ROWS.map(r=>r.catalogId).sort());
- const outside=await o.locator('[data-testid=own-hr-pair][data-outside=true]').count();await expect(o.getByTestId('own-hr-native-observed-point')).toHaveCount(16-outside);
+ const rows=o.getByTestId('own-hr-pair');await expect(rows).toHaveCount(19);expect((await rows.evaluateAll(r=>r.map(e=>e.getAttribute('data-target')!))).sort()).toEqual(PLEIADES_ADMITTED_ROWS.map(r=>r.catalogId).sort());
+ const outside=await o.locator('[data-testid=own-hr-pair][data-outside=true]').count();await expect(o.getByTestId('own-hr-native-observed-point')).toHaveCount(19-outside);
  const row7=o.locator(`[data-testid=own-hr-pair][data-target="${SEVEN}"]`);for(const text of ['9.875','10.125','0.25','B reading',SEVEN])await expect(row7).toContainText(text);await expect(row7).not.toHaveAttribute('data-outside','true');
  // No catalog/DAT identity in the own view; reference and DAT identifiers stay separate.
  await expect(o.getByTestId('native-observed-point')).toHaveCount(0);await expect(o.getByTestId('db-hr-report')).toHaveCount(0);expect(await duplicateIds(page)).toEqual([]);
@@ -93,20 +93,20 @@ test('row 1 and all 16 own pairs reach Data from Observations: own (0.25, 9.875)
  await expect(o.getByRole('button',{name:'Print this report',exact:true})).toHaveCount(0);
  await o.getByLabel(labels.note,{exact:true}).fill(NOTE);await o.getByRole('button',{name:'Confirm chosen model fit',exact:true}).click();
  await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveText('8');await expect(o.getByTestId('own-hr-native-confirmed-distance')).toHaveText('119.124201');await expect(o.getByTestId('own-hr-native-confirmed-interpretation')).toHaveText(NOTE);await expect(o.getByTestId('own-hr-refused')).toHaveCount(0);
- await expect(o.getByTestId('own-hr-hr-report-kind')).toHaveText('Confirmed result');expect(await o.getByTestId('own-hr-hr-report').textContent()).toBe(ownLines);await expect(o.getByText('Confirmed against 16 of your confirmed B/V pairs',{exact:false})).toBeVisible();
+ await expect(o.getByTestId('own-hr-hr-report-kind')).toHaveText('Confirmed result');expect(await o.getByTestId('own-hr-hr-report').textContent()).toBe(ownLines);await expect(o.getByText('Confirmed against 19 of your confirmed B/V pairs',{exact:false})).toBeVisible();
  // The photometer's own model-fit section shows the same single confirmation.
  await toPhotometer(page);await expect(photometerRoute(page).getByTestId('native-confirmed-logage')).toHaveText('8');await expect(photometerRoute(page).getByTestId('native-confirmed-interpretation')).toHaveText(NOTE);await toDatabase(page);
  await o.getByLabel(labels.age,{exact:true}).fill('8.05');await expect(o.getByTestId('own-hr-hr-report-kind')).toHaveText('Current trial (unconfirmed)');await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveText('8');
  const lab=page.locator('.cluster-database-lab'),guide=page.getByTestId('cluster-lab-dialog');await lab.getByTestId('cluster-lab-open').click();
- await expect(guide.getByTestId('cluster-lab-counts')).toHaveText('0 of 5 database steps show an action or result.');await expect(guide.getByTestId('cluster-lab-own-pairs')).toHaveText('Your confirmed photometer pairs: 16 of 16 admitted stars.');await expect(guide.getByTestId('cluster-lab-own-fit')).toHaveAttribute('data-confirmed','true');await guide.getByTestId('cluster-lab-close').click();
+ await expect(guide.getByTestId('cluster-lab-counts')).toHaveText('0 of 5 database steps show an action or result.');await expect(guide.getByTestId('cluster-lab-own-pairs')).toHaveText('Your confirmed photometer pairs: 19 of 19 admitted stars.');await expect(guide.getByTestId('cluster-lab-own-fit')).toHaveAttribute('data-confirmed','true');await guide.getByTestId('cluster-lab-close').click();
  await page.screenshot({path:'test-results/pleiades-hr-observations-desktop.png',fullPage:true});
  const bytes=await saveInvestigation(page),json=JSON.parse(bytes.toString()),text=bytes.toString();
- expect(json.version).toBe(17);expect(json.photometry.version).toBe(7);expect(json.photometry.events.length).toBeLessThanOrEqual(256);expect(json.editingPolicy).toBe('OpenVireo-editing-workspace-v3');expect(json.editing.photometry.nativeClusterDraft.logAge).toBe('8.05');
+ expect(json.version).toBe(17);expect(json.photometry.version).toBe(11);/* owner 11: the history names the variable-field targets (rows 3, 5, 10) */expect(json.photometry.events.length).toBeLessThanOrEqual(256);expect(json.editingPolicy).toBe('OpenVireo-editing-workspace-v3');expect(json.editing.photometry.nativeClusterDraft.logAge).toBe('8.05');
  expect(json.photometry.events.filter((e:{type:string})=>e.type==='nativeClusterFit')).toEqual([{type:'nativeClusterFit',modulusTicks:550,ebvTicks:4,ageIndex:4,modelIndex:4,offsetTicks:0,extinctionCorrected:true,interpretation:NOTE}]);
  for(const s of ['own-hr','ownHr','my confirmed B/V','Data from Observations'])expect(text).not.toContain(s);
  const context=await browser.newContext({baseURL}),other=await context.newPage();
  try{other.on('pageerror',e=>errors.push(e.message));await open(other,'#cluster-database');await withClock(other,async()=>{await restoreInvestigation(other,bytes);await expect(other.getByText(restored,{exact:true})).toBeVisible();});
-  await openOwn(other);const r=ownView(other);await expect(r.getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 16 of 16 admitted stars.');
+  await openOwn(other);const r=ownView(other);await expect(r.getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 19 of 19 admitted stars.');
   const p=r.locator(`[data-testid=own-hr-native-observed-point][data-target="${SEVEN}"]`);await expect(p).toHaveAttribute('cx','170');await expect(p).toHaveAttribute('cy','235.5');
   await expect(r.getByTestId('own-hr-native-confirmed-logage')).toHaveText('8');await expect(r.getByTestId('own-hr-native-confirmed-interpretation')).toHaveText(NOTE);await expect(r.getByLabel(labels.age,{exact:true})).toHaveValue('8.05');await expect(r.getByLabel(labels.note,{exact:true})).toHaveValue(NOTE);
   expect(await saveInvestigation(other)).toEqual(bytes);
@@ -124,7 +124,7 @@ test('a guide link invoked while integrating releases the photometer with no dra
  // The link releases synchronously; only afterwards does the clock run for the lazy view.
  await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').click();await page.getByTestId('pleiades-lab-observations').click();await withClock(page,async()=>{await expect(page.getByTestId('own-hr-summary')).toBeVisible();});
  await expect(page.getByTestId('pleiades-lab-dialog')).toBeHidden();await expect(page.getByTestId('own-hr-disclosure')).toHaveAttribute('open','');await expect(page.getByTestId('own-hr-summary')).toBeFocused();
- await expect(ownView(page).getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 0 of 16 admitted stars.');await expect(ownView(page).getByTestId('own-hr-empty')).toBeVisible();
+ await expect(ownView(page).getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 0 of 19 admitted stars.');await expect(ownView(page).getByTestId('own-hr-empty')).toBeVisible();
  // A later timer cannot draw: the integration was stopped and deactivated before the view changed.
  await page.clock.runFor(3000);await toPhotometer(page);await expect(page.getByTestId('photo-phase')).toHaveText(/Inactive/);await expect(page.getByTestId('photo-seed')).toHaveText(seed!);await expect(page.getByTestId('photo-magnitude')).toHaveText('—');
  // The cluster guide link opens the same view (already on its route).
@@ -133,14 +133,14 @@ test('a guide link invoked while integrating releases the photometer with no dra
 
 test('320px: empty, unconfirmed and one-pair gating; a recalculated pair clears the fit; a stale confirmation is refused and keeps the trial',async({page})=>{
  test.setTimeout(180000);await page.setViewportSize({width:320,height:800});await open(page);await toDatabase(page);await openOwn(page);const o=ownView(page),confirm=o.getByRole('button',{name:'Confirm chosen model fit',exact:true});
- await expect(o.getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 0 of 16 admitted stars.');await expect(o.getByTestId('own-hr-empty')).toBeVisible();await expect(o.getByTestId('own-hr-minimum')).toContainText('two or more pairs');
+ await expect(o.getByTestId('own-hr-pairs')).toHaveText('Your confirmed pairs: 0 of 19 admitted stars.');await expect(o.getByTestId('own-hr-empty')).toBeVisible();await expect(o.getByTestId('own-hr-minimum')).toContainText('two or more pairs');
  await trial(page);await expect(confirm).toBeDisabled();
  // A recorded V and B without Calculate B−V is not a pair.
- await benchPairs(page,[{target:A,v:'9.5',b:'10',color:false}]);await toDatabase(page);await expect(o.getByTestId('own-hr-pairs')).toContainText('0 of 16');await expect(confirm).toBeDisabled();
+ await benchPairs(page,[{target:A,v:'9.5',b:'10',color:false}]);await toDatabase(page);await expect(o.getByTestId('own-hr-pairs')).toContainText('0 of 19');await expect(confirm).toBeDisabled();
  await toPhotometer(page);await color(page);await expect(page.getByTestId('photo-manual-bv')).toHaveText('0.5');await toDatabase(page);
- await expect(o.getByTestId('own-hr-pairs')).toContainText('1 of 16');await expect(o.getByTestId('own-hr-pair')).toHaveCount(1);await expect(confirm).toBeDisabled();
+ await expect(o.getByTestId('own-hr-pairs')).toContainText('1 of 19');await expect(o.getByTestId('own-hr-pair')).toHaveCount(1);await expect(confirm).toBeDisabled();
  await toPhotometer(page);await activate(page).click();await skies(page);await page.getByLabel('Photometry target',{exact:true}).selectOption(B);await measure(page,'V','10.25');await measure(page,'B','11');await color(page);await expect(page.getByTestId('photo-manual-bv')).toHaveText('0.75');
- await toDatabase(page);await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 16');await expect(o.getByTestId('own-hr-native-observed-point')).toHaveCount(2);await expect(confirm).toBeEnabled();
+ await toDatabase(page);await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 19');await expect(o.getByTestId('own-hr-native-observed-point')).toHaveCount(2);await expect(confirm).toBeEnabled();
  await confirm.click();await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveText('8');await expect(o.getByText('Confirmed against 2 of your confirmed B/V pairs',{exact:false})).toBeVisible();
  // An identical recalculation in the photometer clears the confirmation (existing core rule).
  await toPhotometer(page);await page.getByRole('button',{name:'Calculate B−V',exact:true}).click();await toDatabase(page);await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveCount(0);
@@ -179,7 +179,7 @@ test('own confirmations until the existing photometer budget refuses: the own vi
  // The failed trial is kept as typed; the prior confirmed interpretation and the learner's pairs are unchanged.
  await expect(o.getByLabel(labels.note,{exact:true})).toHaveValue(note);for(const[k,v]of[['modulus','5.50'],['ebv','0.04'],['age','8.00'],['model','4']]as const)await expect(o.getByLabel(labels[k],{exact:true})).toHaveValue(v);
  await expect(confirmed).toHaveText(last);await expect(o.getByTestId('own-hr-hr-report-kind')).toHaveText('Current trial (unconfirmed)');
- await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 16');const rows=o.getByTestId('own-hr-pair');await expect(rows).toHaveCount(2);
+ await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 19');const rows=o.getByTestId('own-hr-pair');await expect(rows).toHaveCount(2);
  for(const[target,v,b]of[[A,'9.5','10'],[B,'10.25','11']]as const){const row=o.locator(`[data-testid=own-hr-pair][data-target="${target}"]`);await expect(row).toContainText(v);await expect(row).toContainText(b);}
  // The hidden photometer route gained no alert from the own-view failure.
  await expect(photometerRoute(page).locator('[role=alert]')).toHaveCount(0);
@@ -200,7 +200,7 @@ test('a held investigation Restore disables the own view; after cancel its late 
  await page.clock.resume();await page.evaluate(()=>(window as unknown as{releaseRead:()=>void}).releaseRead());await page.waitForTimeout(1000);await pause(page);
  await expect(page.getByText(restored,{exact:true})).toHaveCount(0);await expect(o.getByLabel(labels.age,{exact:true})).toHaveValue('8.10');await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveText('8');
  // A completed Restore applies explicitly and the view follows the restored canonical state.
- await withClock(page,async()=>{await restoreInvestigation(page,saved,'again.json');await expect(page.getByText(restored,{exact:true})).toBeVisible();});await expect(o.getByLabel(labels.age,{exact:true})).toHaveValue('8.05');await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 16');
+ await withClock(page,async()=>{await restoreInvestigation(page,saved,'again.json');await expect(page.getByText(restored,{exact:true})).toBeVisible();});await expect(o.getByLabel(labels.age,{exact:true})).toHaveValue('8.05');await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 19');
 });
 
 test('own model loads: a failed model keeps the trial and retries; a late model never replaces the newer choice',async({page})=>{
@@ -226,7 +226,7 @@ test('legacy raw6 photometer session: its pairs appear without a native fit and 
  const raw6=await save();expect(JSON.parse(raw6.toString()).version).toBe(6);
  await page.clock.resume();await page.reload();await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();await pause(page);
  await withClock(page,async()=>{await page.locator('#photo-file').setInputFiles({name:'raw6.json',mimeType:'application/json',buffer:raw6});await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(4);});
- await toDatabase(page);await openOwn(page);const o=ownView(page);await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 16');await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveCount(0);await expect(o.getByText('No native model fit is confirmed.',{exact:false})).toBeVisible();
+ await toDatabase(page);await openOwn(page);const o=ownView(page);await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 19');await expect(o.getByTestId('own-hr-native-confirmed-logage')).toHaveCount(0);await expect(o.getByText('No native model fit is confirmed.',{exact:false})).toBeVisible();
  await toPhotometer(page);await expect(page.getByTestId('pleiades-confirmed-modulus')).toHaveText('5.5');expect(await save()).toEqual(raw6);
 });
 
@@ -244,7 +244,7 @@ test('own fit, M67 reference fit and imported DAT results stay independent throu
  await page.getByLabel('Load saved observation results (DAT)',{exact:true}).setInputFiles({name:'night.dat',mimeType:'application/octet-stream',buffer:dat});await page.getByRole('button',{name:'Add to current results',exact:true}).click();
  await page.getByRole('button',{name:'Plot data from observations',exact:true}).click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 1');
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Download current results (DAT)',exact:true}).click();expect((await readFile((await(await download).path())!)).equals(dat)).toBe(true);
- await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 16');await expect(o.getByTestId('own-hr-native-observed-point')).toHaveCount(2);
+ await expect(o.getByTestId('own-hr-pairs')).toContainText('2 of 19');await expect(o.getByTestId('own-hr-native-observed-point')).toHaveCount(2);
  await toPhotometer(page);expect(await duplicateIds(page)).toEqual([]);await toDatabase(page);
  const bytes=await saveInvestigation(page),raw=JSON.parse(bytes.toString()),text=bytes.toString();expect([19,20]).toContain(raw.version);
  expect(raw.base.photometry.events.filter((e:{type:string})=>e.type==='nativeClusterFit')).toHaveLength(1);for(const s of ['HD 4','night.dat','own-hr'])expect(text).not.toContain(s);
