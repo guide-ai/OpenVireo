@@ -1,4 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import {documentMessages} from './src/i18n/html.ts';
 import react from '@vitejs/plugin-react';
-export default defineConfig({ plugins: [react(),{name:'openvireo-document-messages',transformIndexHtml:documentMessages}], server: { host: '127.0.0.1', port: 5173, strictPort: true, watch: { ignored: ['**/.claude/**', '**/test-results/**', '**/playwright-report/**'] } }, test: { include: ['src/**/*.test.ts'] } });
+import {fileURLToPath} from 'node:url';
+// Ignore only this checkout's own .claude folder (agent worktrees live there); a worktree's own path also contains /.claude/.
+const root=fileURLToPath(new URL('.',import.meta.url));
+export default defineConfig({ plugins: [react(),{name:'openvireo-document-messages',transformIndexHtml:documentMessages}], server: { host: '127.0.0.1', port: 5173, strictPort: true, watch: { ignored: [`${root}.claude/**`, `${root}test-results/**`, `${root}playwright-report/**`] } }, test: { include: ['src/**/*.test.ts'] } });
