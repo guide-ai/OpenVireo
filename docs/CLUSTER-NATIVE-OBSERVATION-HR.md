@@ -66,12 +66,14 @@ The Playwright spec reads `CLUSTER_NATIVE_HR_URL` and defaults to the integrated
 ## Remaining limits
 
 The following are not recovered:
-- the paint-box extent, GDI colours and fonts;
+- GDI colours and fonts (the paint-box extent is now recovered as the 496×506 Display1 image [I: from the DFM]; see
+  [CLUSTER-HR-TOOLS.md](CLUSTER-HR-TOOLS.md));
 - initial database/observation mode byte +0x40c;
 - optional selected-star marker ownership/context:0x542b03–0x542b5e reads +0x480 and position +0x481/+0x485, with colour from +0x3d9. That branch is not implemented;no marker is synthesized;
-- the print path (0x542fc8);
+- the print path (0x542fc8) — recovered by Front V2 and ported as a print preview ([CLUSTER-HR-TOOLS.md](CLUSTER-HR-TOOLS.md));
 - the database-record name line for observation data;
-- the default of option +0x2e7c;
+- the default of option +0x2e7c — Front V2: it is TestBox1 "Test Mode", compiled default 0 (0x5a5962), so VIREO prints the
+  distance line only in Test Mode;
 - the exact FloatToStrF decimal path and host FPU state.
 
 No runtime witness exists. Tests check this implementation's contract and are not an original oracle. N04/E05 remain partial: optional CCD, uncertainty, classroom validation and original runtime fidelity are open. No original execution, emulation, network or new dependency is used.
