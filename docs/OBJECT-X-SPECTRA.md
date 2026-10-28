@@ -105,10 +105,15 @@ exercises keep the verified class-3 contract (`'class-3'`), so LSS and Hubble ga
 ## Not recovered (typed `not-recovered`)
 No spectroscopy row needs it now; the reason family stays for any future pointing whose field holds an unmodelled branch.
 
-## Open decision (coordinator / user)
-Coordinator decision (2026-10-27): `observeObjectXSpectrum` is not wired into the Object X UI until every spectroscopy row's kind
-is observable; each still-unavailable row then shows one kind-neutral message. A test checks that unavailable results have the
-same fields and reason domain across kinds and that resources are loaded once, up front.
+## UI (`src/ObjectXSpectrum.tsx`, spectrometer branch of `#object-x`)
+Wired under D5 once every spectroscopy row's kind was observable (coordinator decision of 2026-10-27). The student chooses a
+telescope and places the slit on the object at its catalogue coordinates (web adaptation, stated on the page); the exposure uses
+the bounded journal (start / stop / clear, 250 ms ticks; the exposure model's signal-to-noise stop disables Start until Clear), a
+counts-per-channel plot from 3700 to 4700 Å, and a CSV of the counts named `ObjX-<ID>-spectrum.csv`. Spectra are not stored in
+the saved investigation (stated on the page). Nothing displayed reads `revealDetail`; unavailable results show one message per
+reason family, the same for every kind (`no-object` and `not-a-target` share one text). End-to-end:
+`tests/object-x-spectrum.spec.ts` (star, galaxy and QSO on the 4.0 m with no identifier, record, template or photograph name in
+the page; identical unavailable text and markup on the 0.4 m; a pulsar's coordinates give the shared "nothing measurable" text).
 
 ## Evidence
 `data/objectx/spectra-*.json` (seven bounded packs; N6000, N0730, N1500, N3730, N3000, N0000, S3730 — N1500 because the NGC 4262 /
