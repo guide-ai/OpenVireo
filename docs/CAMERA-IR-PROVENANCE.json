@@ -1,0 +1,135 @@
+{
+ "evidenceId": "NATIVE-CAMERA-IR-C6-01",
+ "sourceSHA256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+ "method": "Static objdump reading of CLEA_VEO.exe (research listing native-camera-front-c/full.asm). No execution, emulation or published binary bytes; only addresses, decoded constants and byte-range hashes.",
+ "evidenceDirectory": "/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-front-c",
+ "captures": [
+  {
+   "name": "ir-constructor-plane-seeing",
+   "start": "0x51dd10",
+   "endExclusive": "0x51deb0",
+   "bytesSHA256": "1434d4216e3e2425ec0ec8563bf43fe165a6a12fe9e122676068ff4e31f34e9c"
+  },
+  {
+   "name": "ir-constructor-constants",
+   "start": "0x51deb0",
+   "endExclusive": "0x51def0",
+   "bytesSHA256": "0c6d835d0899ebb591c6471187810e6db8211998a58df893ed56940f13bb3e58"
+  },
+  {
+   "name": "ir-select-route-update",
+   "start": "0x51def0",
+   "endExclusive": "0x51e10c",
+   "bytesSHA256": "7ddf55b359c1757f0eb1e5bb0f09d9d7942c237b34b2b525db86cc580932023d"
+  },
+  {
+   "name": "ir-half-field-divisor",
+   "start": "0x51e10c",
+   "endExclusive": "0x51e110",
+   "bytesSHA256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d"
+  },
+  {
+   "name": "ir-moving-kind2-copy-offsets",
+   "start": "0x51e110",
+   "endExclusive": "0x51e2b4",
+   "bytesSHA256": "91632aee0f488136756a247351d99982a0093f0327f25b56912acad90410e9fe"
+  },
+  {
+   "name": "ir-moving-offset-constants",
+   "start": "0x51e2b4",
+   "endExclusive": "0x51e2d6",
+   "bytesSHA256": "d15bcf1f72899f6c8061b82f1fbbb05d3c3afa7017db8b451515d936008d3c42"
+  },
+  {
+   "name": "ir-request-start-wrapper",
+   "start": "0x51e3b8",
+   "endExclusive": "0x51e43c",
+   "bytesSHA256": "fd2db004bb77f8969d001cfa859d10f50767ce8a69e6fefa16735472102a1a3a"
+  },
+  {
+   "name": "ir-preparation-background-sources-final",
+   "start": "0x51e43c",
+   "endExclusive": "0x51e712",
+   "bytesSHA256": "95b7a6912bef366c3ab88b13a429163e3ce6a82353b10ac792ebbb2703220fc2"
+  },
+  {
+   "name": "shared-source-calibration-ccd-record",
+   "start": "0x52455c",
+   "endExclusive": "0x5245d0",
+   "bytesSHA256": "3a1a062c06d018d5833ba2e071cc612cccfe5094e41e21d69d6de29fabaa023a"
+  },
+  {
+   "name": "ir-compiled-defaults",
+   "start": "0x5a2bdc",
+   "endExclusive": "0x5a2c4c",
+   "bytesSHA256": "2e96fa0923bddb9df65df1350b23ed6e23a4780b4b2eea52ad2a8e2c6c69b64e"
+  },
+  {
+   "name": "ir-window-menu-show",
+   "start": "0x53f850",
+   "endExclusive": "0x53f86b",
+   "bytesSHA256": "257019eacda6e45ae06d5cea89dc4211c8361f597ddcf66614ad7169ba3b3cb2"
+  },
+  {
+   "name": "ccd-ir-visible-refresh",
+   "start": "0x53e300",
+   "endExclusive": "0x53e337",
+   "bytesSHA256": "68c322384fb8a9ec65a29aa71ede5ad3e533a62424e2f875ba13e58c7065e07c"
+  }
+ ],
+ "constants": {
+  "irMovingOffsetJ": {
+   "address": "0x51e2b4",
+   "bytes": "d7a3703d0ad7a390ff3f",
+   "type": "Extended",
+   "decimal20": "1.1299999999999999999957"
+  },
+  "irMovingOffsetHStep": {
+   "address": "0x51e2c0",
+   "bytes": "e17a14ae47e17a94fd3f",
+   "type": "Extended",
+   "decimal20": "0.28999999999999999999241"
+  },
+  "irMovingOffsetKStep": {
+   "address": "0x51e2cc",
+   "bytes": "295c8fc2f5285c8ffb3f",
+   "type": "Extended",
+   "decimal20": "0.070000000000000000000271"
+  },
+  "irHalfFieldDivisor": {
+   "address": "0x51e10c",
+   "bytes": "00000040",
+   "type": "Single",
+   "value": 2.0
+  },
+  "irQueryFaintMagnitude": {
+   "address": "0x51dff6",
+   "immediate": "0x41ac0000",
+   "type": "Single",
+   "value": 21.5
+  },
+  "irSeeingFlag": {
+   "address": "0x5a2c48",
+   "instruction": "mov BYTE PTR [esi+0x5a],0x1",
+   "record": "options+0x6b4+0x2740"
+  }
+ },
+ "findings": [
+  "Catalog: the IR filter byte (form 0x5b5f08 +0x405) 0/1/2 selects NOMAD selectors 3/4/5 = J/H/K (0x51dfda); the USNO-B1 flag +0x39 stays 0. The xena.harvard.edu tmpsc.html string is only the Help 2MASS link (0x58ec84). No 2MASS (II/246) query.",
+  "NOMAD J/H/K magnitudes originate in 2MASS (Skrutskie et al. 2006, AJ 131, 1163); the camera receives them through NOMAD I/297 only. Acknowledgement added to the IR citation, FITS COMMENT and notices (coordinator, 2026-10-28).",
+  "IR record defaults 0x5a2bf0..0x5a2c48: pixel 40 um, read 53, dark 0.7, bias 1000, base 10/1000/10, 512 x 512, 32-bit A/D, well 250000, LN2 (+0x59=1), seeing +0x5a=1.",
+  "Constructor 0x51dd10 = CCD 0x5220f4 with the IR record; byte-identical constants (86400 at 0x51dec0 / 0x5222a4).",
+  "Region: max(options 0x6d6, 0x6da) / Single 2.0 (fdiv 0x51dfbb), as the CCD (0x52239c).",
+  "Moving copy 0x51e110: refresh 0x59940c, deletes the leading kind-2 run of its own list, copies the leading kind-2 run of [0x5b56ac]+5, projects with 0x522560 (2 draws, no bounds), magnitude J m-1.13, H (m-1.13)-0.29, K ((m-1.13)-0.29)-0.07 (fsubr/fsubp, Single store), inserts with 0x492574.",
+  "Update 0x51e035..0x51e0d4: catalog rows through 0x522698 (2 draws + inclusive bounds), kind 0.",
+  "Background 0x51e4f3 reads the CCD record (options+0x2d99 = +0x6b4+0x26e5): read +0x31, dark +0x35 only when CCD +0x59 == 0, bias +0x45; one 0x520ec0 draw per pixel; IR gain form +0x406.",
+  "Source loop 0x51e567..0x51e604: no NF adjustment; kind 2 -> extended 0x524a6c with the next record, else point 0x5245d0. Shared calibration 0x52455c reads the CCD record (+0x26e5) for pixel size (0x524571).",
+  "Final 0x51e60a: IR record (+0x2df4) well +0x55 and 2^(+0x51) via 0x4270c0, IR gain.",
+  "Window: menu handler 0x53f850 shows form 0x5b5f08 without a telescope condition (CCD twin 0x53f834); a telescope change refreshes a visible IR window (0x53e31b -> 0x514260)."
+ ],
+ "unrecovered": [
+  "IR exposure-time limit and controls beyond filter and gain: web uses CAMERA_MAX_SECONDS (adaptation ir-like-ccd).",
+  "Whether the IR window has an overlay branch: none offered (adaptation ir-like-ccd).",
+  "Region writer [0x5b5b30] and global random prefix, as for the CCD."
+ ]
+}

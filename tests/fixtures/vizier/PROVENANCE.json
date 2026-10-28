@@ -18,5 +18,15 @@
   "USNO-B1.0: Monet D.G. et al. 2003, AJ 125, 984"
  ],
  "licence": "VizieR declares no explicit licence for I/297 or I/284 (rights_uri https://cds.unistra.fr/vizier-org/licences_vizier.html). Probably US-government USNO works; uncertain. Published under the user's decision of 2026-10-27 (AGENTS.md).",
- "hostPolicy": "Every recorded response names the VizieR host that served it (vizier.cds.unistra.fr or the official CfA mirror vizier.cfa.harvard.edu). Hosts are never mixed within one file."
+ "hostPolicy": "Every recorded response names the VizieR host that served it (vizier.cds.unistra.fr or the official CfA mirror vizier.cfa.harvard.edu). Hosts are never mixed within one file.",
+ "authored": [
+  {
+   "file": "authored-usnob1-control.xml",
+   "note": "AUTHORED test document shaped like an I/284 table (front C control); not VizieR output."
+  },
+  {
+   "file": "authored-nomad-jhk-control.xml",
+   "note": "AUTHORED test document shaped like an I/297 table with J/H/K only (front C6 IR control); not VizieR output."
+  }
+ ]
 }
