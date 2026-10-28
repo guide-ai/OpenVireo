@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react';
 import ResearchNotes from '../components/ResearchNotes';
 import {HtlError,newHtlEditor} from '../core/hotList';
 import {appendAddCurrentEntry,HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
@@ -16,7 +16,8 @@ import HotListPrintPreview from './HotListPrintPreview';
 import OpticalHotListWindow from './OpticalHotListWindow';
 import OpticalSkyCoordsDialog from './OpticalSkyCoordsDialog';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
-import FieldInformationMenu,{type FieldInformationProps} from './FieldInformationMenu';
+import type {FieldInformationProps} from './FieldInformationMenu';
+const FieldInformationMenu=lazy(()=>import('./FieldInformationMenu'));
 import {openOpticalSkyCoordsAt} from '../core/opticalSkyCoords';
 const M=OBSERVATORY_MESSAGES.skyCoords,H=OBSERVATORY_MESSAGES.hotList,E=OBSERVATORY_MESSAGES.entry;
 
@@ -52,7 +53,7 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
    onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(r,i)=>opticalHotListRowText(r,i+1)))}/>
   <OpticalSkyCoordsDialog state={sky} onEdit={(f,text)=>setSky(s=>editOpticalSkyCoordsField(s,f,text))} onEpoch={i=>setSky(s=>selectOpticalSkyCoordsEpoch(s,i))} onOk={ok} onCancel={cancel} onDismiss={()=>setSky(dismissOpticalSkyCoordsNotice)}/>
   <HotListEntryDialog draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={addEntry} onCancel={()=>setEntry(null)} onDismiss={()=>setEntryError('')}/>
-  {fieldInfo&&<FieldInformationMenu info={fieldInfo} pointing={pointing} enabled={enabled} hotList={hotList} onSlew={target=>setSky(s=>s.dialog?s:openOpticalSkyCoordsAt(s,target))}/>}
+  {fieldInfo?.editMode&&<Suspense fallback={null}><FieldInformationMenu info={fieldInfo} pointing={pointing} enabled={enabled} hotList={hotList} onSlew={target=>setSky(s=>s.dialog?s:openOpticalSkyCoordsAt(s,target))}/></Suspense>}
   {info&&<InfoBox caption={info.caption} text={info.text} onClose={()=>setInfo(null)}/>}
   {print&&<HotListPrintPreview snapshot={print} onClose={()=>setPrint(null)}/>}
  </div>;

@@ -29,7 +29,6 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
   'csv-row-short':'Comma Delimit is not available: a row is shorter than the recovered column positions.',
   'starlist-hotlist-cluster-bank':'Not available: in VIREO these commands read the cluster list (0x552a7c reads the cluster bank 0x5bca88/0x5bcaa4) instead of the selected field row, which is probably an original defect.',
   'modeled-uninitialised':'Not available: which variables VIREO lists in this mode depends on memory the original never initialises, so the list cannot be reproduced. Use “All GCVS variables in region.”.',
-  'ra-wrap-scan-untraced':'Not available: this field crosses 0h of right ascension, a case of VIREO’s catalogue search that has not been recovered.',
   'polar-area':'Not available: this field is too close to a celestial pole.',
   'variable-csv-not-available':'Comma Delimit is disabled for this list in VIREO.',
   'naked-eye-geometry-unrecovered':'The naked-eye sky drawing has not been recovered from VIREO yet.',

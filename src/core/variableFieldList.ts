@@ -5,18 +5,21 @@
  * H = FieldCreationFactor (default 3, 0x5a2a74) × FinderField 2.5° / 2 or × InstrField 15′ / 120; Dec limits Dec ∓ H;
  * RA limits RA ∓ H/(15·cos Dec) wrapped into [0,24); limiting magnitude Single 14 (finder) / 20 (instrument).
  * Predicate 0x59848c: RA and Dec inclusive, then the record's max magnitude (Single +0x27) ≤ limit (0.0 passes).
- * Order: the field list's own order (CLEA_VStrs.dat is sorted by RA). The RA-wrap branch of the binary-search scan
- * (0x5982ce..0x5983cd) is not traced, so a wrapping area is the typed reason `ra-wrap-scan-untraced` [W].
+ * Order (RECOVERY-E §4): the variable stage 0x5981a0 scans from a binary search on RA and inserts each admitted record with
+ * the sorted cursor insert 0x492728 under comparator 0x4bc950 (RA, then Dec, ascending); a wrapping area is read by the caller
+ * 0x597ac8 in two passes, [minRA, 24) then [0, maxRA], so the list is ascending (RA, Dec) with exact duplicates ordered by the
+ * cursor rule (fieldEngine.nativeCursorInsert, read-only).
  * Mode 0 admits a record only when the light-curve dispatch 0x51ec48 returns true on a stack temp whose bytes +0x3d/+0x39/
  * +0x3a are never initialised (0x52fbd7..0x52fc2d): the modeled rows are the typed reason `modeled-uninitialised`.
  * Numbers: Number arithmetic (not x87 Extended); limits computed once per area. Pure. */
 import {delphiFixed,formatNativeSexagesimal,type VariableStarRecord} from './variableStars';
 import type {HtlFields} from './hotList';
+import {nativeCursorInsert} from './fieldEngine';
 
 export type VariableFieldView='finder'|'instrument';
 export type VariableFieldMode='gcvs'|'modeled';
 export type VariableFieldArea=Readonly<{view:VariableFieldView;centerRa:number;centerDec:number;minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number;limitingMagnitude:number}>;
-export type VariableFieldReason='ra-wrap-scan-untraced'|'polar-area'|'modeled-uninitialised';
+export type VariableFieldReason='polar-area'|'modeled-uninitialised';
 export class VariableFieldError extends Error{constructor(readonly code:'input'){super(`Variable field list: ${code}`);this.name='VariableFieldError';}}
 
 /** Compiled option defaults (0x5a29e2 FinderField 2.5°, 0x5a29f6 InstrField 15′, 0x5a2a74 FieldCreationFactor 3). */
@@ -48,16 +51,19 @@ export function variableFieldArea(pointing:Readonly<{ra:number;dec:number}>,view
  return Object.freeze({view,centerRa:pointing.ra,centerDec:pointing.dec,minimumRa:wrapHours(pointing.ra-hr),maximumRa:wrapHours(pointing.ra+hr),minimumDec:pointing.dec-h,maximumDec:pointing.dec+h,limitingMagnitude:view==='finder'?D.finderLimit:D.instrumentLimit});
 }
 export const areaWraps=(a:VariableFieldArea)=>a.minimumRa>=a.maximumRa;
-/** 0x59848c on a non-wrapping area (inclusive bounds, then max magnitude ≤ limit). */
+/** 0x59848c for one scan range (inclusive bounds, then max magnitude ≤ limit). */
+const inRange=(r:VariableStarRecord,minRa:number,maxRa:number,a:VariableFieldArea)=>r.raHours>=minRa&&r.raHours<=maxRa&&r.decDegrees>=a.minimumDec&&r.decDegrees<=a.maximumDec&&r.max<=a.limitingMagnitude;
 export function variableInArea(r:VariableStarRecord,a:VariableFieldArea):boolean{
- return r.raHours>=a.minimumRa&&r.raHours<=a.maximumRa&&r.decDegrees>=a.minimumDec&&r.decDegrees<=a.maximumDec&&r.max<=a.limitingMagnitude;
+ return areaWraps(a)?inRange(r,a.minimumRa,24,a)||inRange(r,0,a.maximumRa,a):inRange(r,a.minimumRa,a.maximumRa,a);
 }
+/** Comparator 0x4bc950: RA, then Dec. */
+const greater=(a:VariableStarRecord,b:VariableStarRecord)=>a.raHours>b.raHours||a.raHours===b.raHours&&a.decDegrees>b.decDegrees;
 export type VariableFieldMembers=Readonly<{status:'ok';records:readonly VariableStarRecord[]}|{status:'unavailable';reason:VariableFieldReason}>;
 /** Field list +0x4b for the area, in catalog (RA) order. */
 export function variableFieldMembers(records:readonly VariableStarRecord[],area:VariableFieldArea|Readonly<{reason:'polar-area'}>):VariableFieldMembers{
  if('reason' in area)return Object.freeze({status:'unavailable',reason:area.reason});
- if(areaWraps(area))return Object.freeze({status:'unavailable',reason:'ra-wrap-scan-untraced'});
- return Object.freeze({status:'ok',records:Object.freeze(records.filter(r=>variableInArea(r,area)))});
+ const read=areaWraps(area)?[...records.filter(r=>inRange(r,area.minimumRa,24,area)),...records.filter(r=>inRange(r,0,area.maximumRa,area))]:records.filter(r=>inRange(r,area.minimumRa,area.maximumRa,area));
+ return Object.freeze({status:'ok',records:Object.freeze([...nativeCursorInsert(read,greater)])});
 }
 const pad=(s:string,n:number)=>s.length>=n?s:s+' '.repeat(n-s.length);
 const magCell=(m:number)=>m!==0?delphiFixed(m,2).padStart(5,' ')+' ':'      ';

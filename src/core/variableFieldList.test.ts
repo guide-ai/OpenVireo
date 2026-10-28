@@ -16,19 +16,15 @@ describe('TVarFldLstForm1 area (0x53bc7b / 0x53becb)',()=>{
   const a=variableFieldArea(delCep,'finder');if('reason' in a)throw new Error();
   expect(a.maximumDec-a.centerDec).toBeCloseTo(3.75,12);expect(a.limitingMagnitude).toBe(14);
  });
- test('wrap into [0,24) is a typed reason (scan branch untraced); polar areas are typed',()=>{
-  expect(variableFieldMembers(records,variableFieldArea({ra:.01,dec:10},'finder'))).toEqual({status:'unavailable',reason:'ra-wrap-scan-untraced'});
+ test('polar areas are typed',()=>{
   expect(variableFieldArea({ra:3,dec:89.9},'finder')).toEqual({reason:'polar-area'});
   expect(variableFieldList(records,{ra:3,dec:89.9},'finder','gcvs').reason).toBe('polar-area');
  });
  test('predicate 0x59848c: inclusive bounds, max magnitude ≤ limit, 0.0 passes',()=>{
   const a=variableFieldArea(delCep,'finder');if('reason' in a)throw new Error();
   const r=(over:Partial<VariableStarRecord>)=>({...records[0],raHours:a.minimumRa,decDegrees:a.maximumDec,max:0,...over}) as VariableStarRecord;
-  const m=(x:VariableStarRecord)=>variableFieldMembers([x],a);
-  expect(m(r({})).status==='ok'&&m(r({})).records.length).toBe(1);
-  expect((m(r({max:14})) as {records:unknown[]}).records.length).toBe(1);
-  expect((m(r({max:Math.fround(14.01)})) as {records:unknown[]}).records.length).toBe(0);
-  expect((m(r({decDegrees:a.maximumDec+1e-9})) as {records:unknown[]}).records.length).toBe(0);
+  const n=(x:VariableStarRecord)=>{const m=variableFieldMembers([x],a);return m.status==='ok'?m.records.length:-1;};
+  expect(n(r({}))).toBe(1);expect(n(r({max:14}))).toBe(1);expect(n(r({max:Math.fround(14.01)}))).toBe(0);expect(n(r({decDegrees:a.maximumDec+1e-9}))).toBe(0);
  });
 });
 describe('lines (0x52f7fc, row 0x52feb4)',()=>{
