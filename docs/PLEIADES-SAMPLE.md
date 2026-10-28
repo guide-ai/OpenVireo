@@ -18,8 +18,8 @@ rounded projected telescope pointing (below the 350-pixel sentinel), and the ape
 (`data/photometry/pleiades-pointing-fields.json`): rows 12 and 22 sit 0.041″ and 0.049″ from their stars (selected at 0.21 and
 0.26 px; independent offset-dependent means in `pleiades-pointing-vectors.json`), and the sky fields of rows 2, 7, 14 and 22 select
 another star at zero fraction. All labels match their record suffixes. The 0.4 m now admits all 24 positions (KPNO 0.9 m 14 and
-Mayall 10 unchanged). A complete 24-star B/V sample needs 251 of the photometer's 256 journal events (release included), so it
-leaves little room for repeated readings in one session. The policy change is recorded in `expanded-provenance.json`
+Mayall 10 unchanged). A complete 24-star B/V sample needs 251 journal events (release included); the event bound was raised from 256 to 512 so
+retakes fit (PHOTOMETER-VISUAL.md). The policy change is recorded in `expanded-provenance.json`
 (`policyUpdates`).
 ## Try a newly admitted star
 

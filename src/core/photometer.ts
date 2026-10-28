@@ -9,7 +9,12 @@ import {drawPinnedPleiadesUbv,isPhotometerFilter,type PhotometerFilter} from './
 import {reducePhotometerSky,reducePhotometerObject,photometricBMinusV} from './photometryReduction';
 import {photometerJournalFits,EXPANDED_PHOTOMETER_POLICY,PHOTOMETER_POLICY} from './photometerJournal';
 export {PHOTOMETER_POLICY,UBV_PHOTOMETER_POLICY,LEGACY_PHOTOMETER_POLICY} from './photometerJournal';
-export const MAX_PHOTOMETER_EVENTS=256;
+/** Journal event bound of the OpenVireo photometer session (a web format, not a native limit): integration-provenance.json
+ * records it as browserPolicy.maximumEvents 256 next to the browser timer policy, and no CLEA address bounds the readings. Raised to
+ * 512 on 2026-10-28 (coordinator decision) because the full 24-star B/V sample needs 251 events, leaving no room for retakes; the
+ * 128 KiB byte bound (photometerJournalFits) and the callback bound are unchanged, and files within 256 events restore unchanged.
+ * The provenance file keeps its recorded value (its SHA-256 is part of every v4+ header). */
+export const MAX_PHOTOMETER_EVENTS=512;
 export class PhotometerError extends Error {constructor(readonly code:'phase'|'sky'|'event'|'limit'|'entry'|'session'|'color'){super(`Photometer: ${code}`);this.name='PhotometerError';}}
 export type PhotometerEvent=Readonly<{type:'activate'|'deactivate'|'start'|'stop'|'complete'}|{type:'telescope';index:PhotometerTelescopeIndex}|{type:'aperture';selector:number}|{type:'point';kind:PleiadesFieldKind}|{type:'record';readingId:number;value:number;note:string}|{type:'filter';filter:PhotometerFilter}|{type:'color';bReadingId:number;vReadingId:number}|{type:'target';targetId:string}|{type:'timing';secondsPerIntegration:number;integrations:number}|{type:'advance';callbacks:number}|{type:'clusterFit';modulus:number}|({type:'nativeClusterFit'}&NativeClusterParameters)>;
 type Callback=Readonly<{sourceCount:number;skyCount:number;totalPhotonCount:number;initialSeed:number;seed:number;draws:number;nativeBaseCountSum:number;timerWaitMs:number}>;
