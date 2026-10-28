@@ -8,7 +8,7 @@ import {writeCameraFits,cameraFitsCards,cameraFitsFileName,jdToIso,type CameraFi
 const recorded=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url)));
 const selection=selectVizierCatalog(readVizierCatalog(recorded,{catalog:'I/297',band:'R',epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5}),wholeSkySelection(21.5));
 const exposure=composeCameraExposure({camera:'ccd',opticalIndex:0,filterPosition:0,seconds:10,gain:2,centerRaHours:56.745/15,centerDecDegrees:24.118,seed:20261027},selection);
-const context:CameraFitsContext={jd:2461341.25,filterName:'NF',catalogName:'NOMAD',source:{mode:'live',sha256:'da65f76732e4d849c3ddb3b40825d5b49bd1f9b170b34d8c5fab86a511f6b3eb',extractId:null,url:'x'}};
+const context:CameraFitsContext={jd:2461341.25,filterName:'NF',catalogName:'NOMAD',source:{mode:'live',sha256:'da65f76732e4d849c3ddb3b40825d5b49bd1f9b170b34d8c5fab86a511f6b3eb',extractId:null,url:'https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out?RA=56.750000&DEC=24.120000&SR=0.23'}};
 
 describe('camera FITS writer',()=>{
  test('round-trips through the bounded FITS reader with every pixel bit unchanged',()=>{
@@ -29,6 +29,7 @@ describe('camera FITS writer',()=>{
   expect(Number(get('CDELT1'))).toBeLessThan(0);expect(Number(get('CDELT2'))).toBeLessThan(0);
   expect(Math.abs(Number(get('CDELT1'))*3600)).toBeCloseTo(206264.806*0.024/4627.5,3);
   expect(get('CAMSEED')).toBe('20261027');expect(get('CATSHA')?.startsWith("'da65f767")).toBe(true);
+  expect(get('CATHOST')).toBe(`'${new URL(context.source.url).hostname}'`);
   expect(cameraFitsFileName(context)).toBe('OpenVireo-CCD-20261027-180000-NF.fit');
   expect(jdToIso(2451545)).toBe('2000-01-01T12:00:00.000');
  });

@@ -1,22 +1,27 @@
 /** Camera catalog transport (front C3). Two web adaptations of the original NOFS request (docs/CAMERA-EXPOSURE.md):
  *  - static: a bundled CDS/VizieR extract whose cone contains the requested cone, checked against its SHA-256;
- *  - live: a browser request to CDS/VizieR Simple Cone Search that carries only RA, DEC and SR.
+ *  - live: a browser request to CDS/VizieR Simple Cone Search that carries only RA, DEC and SR, trying the approved
+ *    hosts of VIZIER_POLICY.liveHosts in order. Every result names the host that served it.
  * Both return raw bytes plus their hash; parsing is src/core/vizierNomad.ts. Tests inject `fetchImpl`
  * (the recorded-response seam) or intercept the CDS URL with Playwright page.route. Nothing is cached:
  * the original requests a fresh response per exposure. */
 import index from '../../data/camera/extracts.json';
 import {boundedResourceBody,BoundedResourceError,resourceSha256} from './boundedResource';
-import {VIZIER_POLICY,vizierConeUrl,type VizierCatalogId} from '../core/vizierNomad';
+import {VIZIER_POLICY,isVizierHost,vizierBaseUrl,vizierConeUrl,type VizierCatalogId,type VizierHost} from '../core/vizierNomad';
 
 export type CameraCatalogMode='static'|'live';
 export type CameraCatalogQuery=Readonly<{catalog:VizierCatalogId;raHours:number;decDegrees:number;radiusDegrees:number}>;
-export type CameraCatalogSource=Readonly<{mode:CameraCatalogMode;url:string;sha256:string;bytes:number;extractId:string|null;recordedAt:string|null}>;
+export type CameraCatalogSource=Readonly<{mode:CameraCatalogMode;host:VizierHost;url:string;sha256:string;bytes:number;extractId:string|null;recordedAt:string|null}>;
 export type CameraCatalogFailure='no-extract'|'integrity'|'timeout'|'network'|'http'|'size'|'cancelled';
 export type CameraCatalogResult=
  |Readonly<{ok:true;bytes:Uint8Array;source:CameraCatalogSource}>
  |Readonly<{ok:false;failure:CameraCatalogFailure;detail:string}>;
-export type CameraExtract=Readonly<{id:string;catalog:VizierCatalogId;raDegrees:number;decDegrees:number;radiusDegrees:number;file:string;sha256:string;bytes:number;recordedAt:string;request:string}>;
-export const CAMERA_EXTRACTS:readonly CameraExtract[]=Object.freeze((index.extracts as CameraExtract[]).map(e=>Object.freeze({...e})));
+export type CameraExtract=Readonly<{id:string;catalog:VizierCatalogId;raDegrees:number;decDegrees:number;radiusDegrees:number;file:string;sha256:string;bytes:number;recordedAt:string;request:string;host:VizierHost}>;
+/** An extract is admitted only when its declared host is approved and is the host of its own request URL. */
+export function cameraExtractHostValid(e:CameraExtract):boolean {
+ try{return isVizierHost(e.host)&&new URL(e.request).protocol==='https:'&&new URL(e.request).hostname===e.host;}catch{return false;}
+}
+export const CAMERA_EXTRACTS:readonly CameraExtract[]=Object.freeze((index.extracts as CameraExtract[]).filter(cameraExtractHostValid).map(e=>Object.freeze({...e})));
 export const CAMERA_CATALOG_TIMEOUT_MS=30_000;
 
 const RAD=Math.PI/180;
@@ -29,13 +34,13 @@ export function findCameraExtract(query:CameraCatalogQuery,extracts:readonly Cam
  const ra=query.raHours*15;
  let best:CameraExtract|null=null,bestSeparation=Infinity;
  for(const e of extracts){
-  if(e.catalog!==query.catalog)continue;
+  if(e.catalog!==query.catalog||!cameraExtractHostValid(e))continue;
   const d=separationDegrees(ra,query.decDegrees,e.raDegrees,e.decDegrees);
   if(d+query.radiusDegrees<=e.radiusDegrees+1e-9&&d<bestSeparation){best=e;bestSeparation=d;}
  }
  return best;
 }
-export type CameraCatalogOptions=Readonly<{signal?:AbortSignal;fetchImpl?:typeof fetch;timeoutMs?:number;baseUrl?:string;extracts?:readonly CameraExtract[];extractBase?:string}>;
+export type CameraCatalogOptions=Readonly<{signal?:AbortSignal;fetchImpl?:typeof fetch;timeoutMs?:number;liveHosts?:readonly VizierHost[];extracts?:readonly CameraExtract[];extractBase?:string}>;
 
 async function fetchBytes(url:string,options:CameraCatalogOptions):Promise<CameraCatalogResult|Uint8Array> {
  const controller=new AbortController(),timeoutMs=options.timeoutMs??CAMERA_CATALOG_TIMEOUT_MS;
@@ -62,10 +67,20 @@ export async function loadCameraCatalog(query:CameraCatalogQuery,mode:CameraCata
   const bytes=await fetchBytes(url,options);if(!(bytes instanceof Uint8Array))return bytes;
   const sha256=await resourceSha256(bytes as Uint8Array<ArrayBuffer>);
   if(sha256!==extract.sha256)return Object.freeze({ok:false as const,failure:'integrity' as const,detail:extract.id});
-  return Object.freeze({ok:true as const,bytes,source:Object.freeze({mode,url:extract.request,sha256,bytes:bytes.length,extractId:extract.id,recordedAt:extract.recordedAt})});
+  return Object.freeze({ok:true as const,bytes,source:Object.freeze({mode,host:extract.host,url:extract.request,sha256,bytes:bytes.length,extractId:extract.id,recordedAt:extract.recordedAt})});
  }
- const url=vizierConeUrl(query.catalog,query.raHours*15,query.decDegrees,query.radiusDegrees,options.baseUrl);
- const bytes=await fetchBytes(url,options);if(!(bytes instanceof Uint8Array))return bytes;
- const sha256=await resourceSha256(bytes as Uint8Array<ArrayBuffer>);
- return Object.freeze({ok:true as const,bytes,source:Object.freeze({mode,url,sha256,bytes:bytes.length,extractId:null,recordedAt:null})});
+ const hosts=(options.liveHosts??VIZIER_POLICY.liveHosts).filter(isVizierHost);
+ let last:CameraCatalogResult=Object.freeze({ok:false as const,failure:'network' as const,detail:'no-host'});
+ for(const host of hosts){
+  const url=vizierConeUrl(query.catalog,query.raHours*15,query.decDegrees,query.radiusDegrees,vizierBaseUrl(host));
+  const bytes=await fetchBytes(url,options);
+  if(bytes instanceof Uint8Array){
+   const sha256=await resourceSha256(bytes as Uint8Array<ArrayBuffer>);
+   return Object.freeze({ok:true as const,bytes,source:Object.freeze({mode,host,url,sha256,bytes:bytes.length,extractId:null,recordedAt:null})});
+  }
+  last=bytes;
+  /** [W] Fall back only when this host could not answer; a 4xx, an oversized body or a cancel is final. */
+  if(bytes.ok||!(bytes.failure==='network'||bytes.failure==='timeout'||(bytes.failure==='http'&&/^5\d\d$/.test(bytes.detail))))break;
+ }
+ return last;
 }

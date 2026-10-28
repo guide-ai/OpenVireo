@@ -42,6 +42,8 @@ export function jdToIso(jd:number):string {
  if(!Number.isFinite(jd)||jd<2_000_000||jd>3_000_000)throw new FitsWriterError('value');
  return new Date(Math.round((jd-2440587.5)*86_400_000)).toISOString().slice(0,23);
 }
+/** The VizieR host that served the catalog (it is the host of the request URL). */
+function fitsCatalogHost(url:string):string {try{return new URL(url).hostname.slice(0,60);}catch{return '';}}
 export function cameraFitsCards(exposure:CameraExposure,context:CameraFitsContext):readonly string[] {
  const {plane,recipe}=exposure,profile=opticalProfile(recipe.opticalIndex);
  const projection=compiledCameraProjection('ccd',recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true);
@@ -62,6 +64,7 @@ export function cameraFitsCards(exposure:CameraExposure,context:CameraFitsContex
   ['CUNIT1','deg'],['CUNIT2','deg'],
   ['CATALOG',context.catalogName],['CATMODE',context.source.mode==='static'?'bundled extract':'live VizieR'],
   ['CATSHA',context.source.sha256.slice(0,64)],
+  ...(fitsCatalogHost(context.source.url)?[['CATHOST',fitsCatalogHost(context.source.url)] as Card]:[]),
   ...(context.source.extractId?[['CATEXTR',context.source.extractId.slice(0,60)] as Card]:[]),
   ['CAMSEED',recipe.seed,'web camera random stream seed'],['CAMDRAWS',exposure.drawsConsumed],
   ['COMMENT','Simulated image: catalog stars from CDS/VizieR (doi:10.26093/cds/vizier).'],

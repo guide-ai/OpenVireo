@@ -16,9 +16,20 @@ export type VizierErrorCode='size'|'encoding'|'not-votable'|'binary'|'query-stat
 export class VizierCatalogError extends Error {
  constructor(readonly code:VizierErrorCode,readonly detail=''){super(`VizieR catalog: ${code}${detail?` (${detail})`:''}`);this.name='VizierCatalogError';}
 }
+/** Approved VizieR hosts (AGENTS.md, docs/EXTERNAL-SERVICES.md §1): CDS and its official CfA mirror. Every extract and
+ * live response records which one served it. */
+export const VIZIER_HOSTS=Object.freeze({cds:'vizier.cds.unistra.fr',cfa:'vizier.cfa.harvard.edu'} as const);
+export type VizierHost=typeof VIZIER_HOSTS[keyof typeof VIZIER_HOSTS];
+export function isVizierHost(host:unknown):host is VizierHost {return host===VIZIER_HOSTS.cds||host===VIZIER_HOSTS.cfa;}
+export function vizierBaseUrl(host:VizierHost):string {return `https://${host}/viz-bin/conesearch`;}
 export const VIZIER_POLICY=Object.freeze({
  /** [W] CDS primary host. Only RA, DEC and SR are sent (docs/EXTERNAL-SERVICES.md §1). */
- baseUrl:'https://vizier.cds.unistra.fr/viz-bin/conesearch',
+ baseUrl:vizierBaseUrl(VIZIER_HOSTS.cds),
+ /** [W] Hosts the browser tries in order for a live query; the next is tried only on a network error, a timeout or a
+  * 5xx answer. CfA is left out until one of its successful responses is seen to carry Access-Control-Allow-Origin:
+  * on 2026-10-28 its query endpoint answered 504 or nothing, so its CORS could not be checked. Until then CfA serves
+  * only offline-recorded extracts. */
+ liveHosts:Object.freeze([VIZIER_HOSTS.cds] as VizierHost[]),
  /** [W] Bounded admission; a dense galactic-plane cone at 0.23 deg stays far below this. */
  maxBytes:24*1024*1024,maxRows:60_000,maxCellChars:256,
  /** VizieR's own row cap (INFO MaxTuples). Reaching it means the field is incomplete. */

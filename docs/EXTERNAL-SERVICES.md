@@ -48,6 +48,24 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 
 ## 4. Decisiones que necesito
 
+**Decidido por el usuario el 27 oct 2026:**
+
+- **Cuentas:** sí habrá creación de cuentas, así que el producto tendrá backend (autenticación y base de datos).
+- **Qué se guarda (nivel B):**
+  - **Perfil mínimo:** correo para entrar y un alias. El nombre real no es obligatorio.
+  - **Investigaciones en la nube:** el mismo JSON de "Save investigation", con nombre y fecha. Se guardan en R2, con el índice en D1.
+  - **Preferencias:** tema, idioma y opciones del telescopio.
+  - **Progreso y resultados:** el avance por ejercicio (los 7) y los resultados clave del estudiante (por ejemplo H₀, la DM del púlsar, la distancia de las Pléyades o el tipo del Objeto X), calculados a partir de las investigaciones guardadas, sin rastreo adicional.
+  - **Fuera de la primera versión:** las funciones para docentes (nivel C: clases, entregas, panel del profesor). El modelo de datos debe permitir añadirlas después sin migrar.
+- **Público:** general, cualquier persona y sin institución. Por eso las cuentas son opcionales y el simulador funciona sin entrar. Se guardan los datos mínimos, el usuario puede exportar y borrar su cuenta, y hay que fijar una edad mínima en los términos, porque puede haber menores (COPPA; RGPD con 13–16 años según el país).
+- **Entrada:** enlace por correo, sin contraseña. Enviar esos correos requiere un servicio de envío, que es otro servicio externo y se elegirá y aprobará al implementar el backend.
+- **Proveedor:** Cloudflare (sitio estático, y Workers, D1 y R2 cuando haga falta backend).
+- **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
+- **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
+
+Preguntas que siguen abiertas:
+
+
 1. **Público y cuentas:** ¿quién usará el sitio (universidades, secundaria, público general)? ¿Hacen falta cuentas o funciones para docentes en la primera versión? De eso depende si el primer despliegue incluye backend.
 2. **Proveedor:** ¿Cloudflare (recomendado), GitHub Pages u otro? ¿Bajo qué cuenta u organización, y con qué dominio?
 3. **Despliegue:** `AGENTS.md` prohíbe hoy el alojamiento público y el despliegue. Para publicar hace falta tu aprobación explícita de ese cambio.
