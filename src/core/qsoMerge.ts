@@ -19,6 +19,10 @@
  *  - no winner: the cursor goes to the head (0x492628, 0x492634);
  *  - not replaced: walk forward while the cursor RA ≤ QSO RA and not at the tail, then backward while the cursor RA > QSO RA and
  *    not at the head, then insert after the cursor (0x492574). A QSO west of the head is therefore inserted after the head.
+ * Uncertainty (review 1, item 5): the loader's 95-byte object at ebp−0x210 is never cleared, so bytes +0x3e..+0x42 and
+ * +0x47..+0x5e hold stack residue; the replace branch (0x598026..0x598037) copies all 95 bytes into the star record, and native
+ * code reads +0x3e (for example 0x596858, a classification/label byte). This port models only the fields the merge, cleanup,
+ * paint and selection read (name, RA, Dec, V, B−V, U−B, z, flags, type 3); what the residue bytes would do downstream is unknown.
  * Unsupported native paths are typed errors, never repaired: an empty star list or a null GetAt (both dereference null natively)
  * and distances too close to the 30″ boundary for the declared Number policy. */
 import {catalogMergeDistance,nativeMergeNearest,CatalogMergeError} from './catalogMerge';

@@ -4,13 +4,13 @@
   "totalFiles": 1337,
   "totalBytes": 124389943,
   "extensions": {
-    ".json": 1042,
+    ".json": 1061,
     ".LST": 6,
     ".HTL": 12,
     ".SP": 81,
-    ".dat": 1,
+    ".dat": 2,
     ".png": 170,
-    ".DAT": 1,
+    ".DAT": 2,
     ".CMO": 2,
     ".sav": 1
   },

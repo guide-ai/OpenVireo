@@ -81,3 +81,13 @@ describe('v29 sessions for the extended Hubble.HTL targets (Front F)',()=>{
   for(const change of changes){const x=structuredClone(data);change(x);await expect(read(JSON.stringify(x))).rejects.toThrow();}
  });
 });
+describe('v29 replay budget is counted before any replay (review 1, item 6)',()=>{
+ it('an over-budget extended bank is rejected as size, before its journal is replayed',async()=>{
+  const data=JSON.parse(await serializeAnalysisSession(await session([['36805',1]])));
+  const journal=structuredClone(data.base.acquisitions[0].journal);journal.events=Array.from({length:24001},()=>({kind:'tick',deltaMs:1}));
+  data.extendedGalaxies[UMI3]={seedText:'1',source:{kind:'journal',journal}};
+  await expect(read(JSON.stringify(data))).rejects.toMatchObject({code:'size'});
+  // The same journal under the budget fails only at replay (a different code), so the size check came first.
+  journal.events=journal.events.slice(0,13000);await expect(read(JSON.stringify(data))).rejects.toMatchObject({code:'state'});
+ },60000);
+});

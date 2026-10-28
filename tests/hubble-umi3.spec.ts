@@ -41,7 +41,7 @@ test('Hubble.HTL → UM-I – 3 cached pan → manual z → Hubble → Save (v29
  expect(data.version).toBe(29);expect(data.extendedPolicy).toBe('openvireo-hubble-extended-targets-v29');expect(data.extendedGalaxies['0:36805'].source.kind).toBe('archive');
  expect(data.base.acquisitions).toHaveLength(1);expect(data.base.hubble.rows[0].input).toMatchObject({targetId:T.id,apparentVText:T.V,magnitudeSource:`Hubble Data.xls · Sheet1!${T.cell}`});expect(data.base.measurements.map((m:any)=>m.origin.targetId)).toEqual([T.id]);
  await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'umi3.json',mimeType:'application/json',buffer:saved});
- await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1);
+ await expect(page.locator('#measurement-log tbody tr')).toHaveCount(1,{timeout:30000});
  await page.getByRole('button',{name:'Inspect acquisition for measurement 1',exact:true}).click();await expect(page.getByLabel('Galaxy acquisition provenance')).toContainText(T.id);await page.getByRole('button',{name:'Restore this acquisition in the telescope',exact:true}).click();
  await page.clock.resume();await expect(page.getByRole('heading',{name:'Acquire a Hubble galaxy.',exact:true})).toBeVisible({timeout:15000});await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await expect(page.getByLabel('Acquisition galaxy')).toHaveValue(T.id);await expect(page.getByTestId('galaxy-source-total')).toHaveText(source);

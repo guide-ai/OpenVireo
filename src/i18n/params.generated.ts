@@ -526,7 +526,6 @@ export interface MessageParameters {
   "lab.recover.limits": never;
   "lab.sources": never;
   "lab.sourceHelp": never;
-  "lab.limits": never;
   "lab.continue": never;
   "lab.progressMeaning": never;
   "class.nav": never;

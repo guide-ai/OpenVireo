@@ -191,6 +191,22 @@ function checkedQsoCatalog(pack:FieldPack,options:FieldOptions):Uint8Array{
  if(inCoverage.join()!==pack.qso.entries.map(e=>e.index).join()||pack.qso.entries.some(e=>e.ra!==v.getFloat64(e.index*52+0x12,true)||e.dec!==v.getFloat64(e.index*52+0x1a,true)))throw new FieldEngineError('evidence');
  return c.bytes;
 }
+/** 0x5980cc over the ordered galaxies. A galaxy deleted by a type-3 hit (QSO within 30″ and 1 mag) leaves the list cursor on its
+ * predecessor (0x4925dc) and iteration continues. A precision boundary stops the stage with the typed merge-boundary reason; the
+ * galaxy list is then returned unchanged (only a completed loop replaces it), as before the QSO merge existed. */
+export function cleanFieldGalaxies(stars:readonly FieldStar[],galaxies:readonly NativeGalaxy[],mode:FieldQsoMode):Readonly<{stars:FieldStar[];galaxies:readonly NativeGalaxy[];witnesses:FieldMergeWitness[];boundary:boolean}>{
+ let current=[...stars];const kept:NativeGalaxy[]=[],witnesses:FieldMergeWitness[]=[];
+ for(const g of galaxies){
+  try{
+   const before=current,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s)})),g.magnitude);
+   if(!result.galaxyKept&&mode==='gate')throw new FieldEngineError('evidence');// GSC stars are type 0; a type-3 hit needs 'merge'
+   const ids=new Set(result.rows.map(s=>s.id));current=before.filter(s=>ids.has(s.id));
+   if(result.galaxyKept)kept.push(g);
+   witnesses.push(Object.freeze({galaxy:g.id,removed:Object.freeze(before.filter(s=>!ids.has(s.id)).map(s=>s.id)),savedWinnerIndex:result.trace.savedWinnerIndex,runnerIndex:result.trace.runnerIndex,winnerId:result.trace.winner?.id??null,...(result.galaxyKept?{}:{galaxyDeleted:true as const})}));
+  }catch(e){if(e instanceof CatalogMergeError)return {stars:current,galaxies,witnesses,boundary:true};throw e;}
+ }
+ return {stars:current,galaxies:kept.length===galaxies.length?galaxies:Object.freeze(kept),witnesses,boundary:false};
+}
 export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,options:FieldOptions={}):Readonly<{population:FieldPopulation|null;reasons:FieldUnavailableReason[]}>{
  const mode=options.qso??'gate';if(mode!=='gate'&&mode!=='merge')throw new FieldEngineError('input');
  const area=freshFieldArea(pointing),reasons:FieldUnavailableReason[]=[];
@@ -235,18 +251,8 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  if(galaxies.some(g=>!axesSupported(g)))reasons.push('axis-fallback');
  const mergeWitnesses:FieldMergeWitness[]=[];
  if(!reasons.includes('variable-merge')&&!reasons.includes('merge-boundary')){
-  const kept:NativeGalaxy[]=[];
-  for(const g of galaxies){
-   try{
-    const before=stars,result=cleanNativeGalaxy(before.map(s=>({record:s,distanceDegrees:catalogMergeDistance(g,s)})),g.magnitude);
-    if(!result.galaxyKept&&mode==='gate')throw new FieldEngineError('evidence');// GSC stars are type 0; a type-3 hit needs 'merge'
-    const ids=new Set(result.rows.map(s=>s.id));stars=before.filter(s=>ids.has(s.id));
-    // 0x598172: deleting the galaxy (QSO within 30″ and 1 mag) leaves the cursor on its predecessor; iteration continues.
-    if(result.galaxyKept)kept.push(g);
-    mergeWitnesses.push(Object.freeze({galaxy:g.id,removed:Object.freeze(before.filter(s=>!ids.has(s.id)).map(s=>s.id)),savedWinnerIndex:result.trace.savedWinnerIndex,runnerIndex:result.trace.runnerIndex,winnerId:result.trace.winner?.id??null,...(result.galaxyKept?{}:{galaxyDeleted:true as const})}));
-   }catch(e){if(e instanceof CatalogMergeError){reasons.push('merge-boundary');break;}throw e;}
-  }
-  if(kept.length!==galaxies.length)galaxies=Object.freeze(kept);
+  const cleaned=cleanFieldGalaxies(stars,galaxies,mode);stars=cleaned.stars;galaxies=cleaned.galaxies;mergeWitnesses.push(...cleaned.witnesses);
+  if(cleaned.boundary)reasons.push('merge-boundary');
  }
  return {reasons,population:Object.freeze({area,regionIds,bandOrder,initialStarIds,variables:Object.freeze(variables),variableRemoved:Object.freeze(variableRemoved),galaxies,galaxyAdmissionIds:admission,mergeWitnesses:Object.freeze(mergeWitnesses),stars:Object.freeze(stars),qsoMatches:Object.freeze(qsoMatches),photographMatches:Object.freeze(photographMatches),...(qsoStage?{qsoStage}:{}),...(outsideViewVariable?{outsideViewVariable}:{})})};
 }

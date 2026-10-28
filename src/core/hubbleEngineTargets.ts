@@ -1,6 +1,7 @@
-/** Front F: the Hubble.HTL targets added after the frozen eight (docs/HUBBLE-13.md). This module is the single table that the
- * session wrapper (v29), the observing banks, telescope support and the hot-list status read; nothing outside it lists these
- * identifiers. Routes:
+/** Front F: the Hubble.HTL targets added after the frozen eight (docs/HUBBLE-13.md). This module is the single source of the
+ * routes, telescopes and journal policies that the session wrapper (v29), the observing banks, telescope support and the
+ * hot-list status read. hubbleHotList.ts still names each row's target by identifier (the 13-row table), and the target data
+ * files (umi-*.json, engine-targets.json) carry the identities. Routes:
  *  - 'cached-umi': the recovered cached-pan branch over the verified 36773 (UM-I – 2) field on the 0.4 m
  *    (data/hubble/umi-cached-provenance.json), coordinator decision 2026-10-27;
  *  - 'engine': a fresh general-field-engine field at the exact catalogue centre (fieldEngine.ts, QSO 'merge') from a bounded

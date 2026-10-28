@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import witnesses from '../../data/hubble/qso-merge-witnesses.json';
 import {decodeQsoRecord,loadNativeQsoList,nativeQsoMerge,qsoPositionPredicate,QsoMergeError,QSO_CATALOG,type NativeQso} from './qsoMerge';
 import {decodeFieldPack} from './fieldPack';
-import {buildFieldPopulation,evaluateField,FieldEngineError} from './fieldEngine';
+import {buildFieldPopulation,evaluateField,FieldEngineError,cleanFieldGalaxies} from './fieldEngine';
 import {packWithPhotographs,parseGlimagesPositions} from './lssLists';
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
 const qsoBytes=file('catalogs/CLEA_QSO.DAT'),glx=file('catalogs/CLEA_GLX.DAT'),photos=parseGlimagesPositions(file('images/GLIMAGES.LST'));
@@ -88,4 +88,18 @@ describe('field engine qso option',()=>{
   }
   expect(checked).toBe(witnesses.pointings.filter(w=>w.modelled&&!w.label.startsWith('GLX@1765')).length);
  },300000);
+});
+describe('galaxy cleanup with type-3 records (cleanFieldGalaxies)',()=>{
+ const g=(id:string,ra:number,dec:number,magnitude:number)=>({id,recordIndex:0,ra,dec,majorArcminutes:1,minorArcminutes:1,magnitude:Math.fround(magnitude),redshift:0,positionAngleDegrees:0,morphology:0,rawHex:''});
+ it('a QSO within 30″ and 1 mag deletes the galaxy; iteration continues with the next galaxy',()=>{
+  const r=cleanFieldGalaxies([q('Q',1,0,15)],[g('G1',1,5/3600,15.5),g('G2',2,0,15)],'merge');
+  expect(r.galaxies.map(x=>x.id)).toEqual(['G2']);expect(r.witnesses.map(w=>[w.galaxy,!!w.galaxyDeleted])).toEqual([['G1',true],['G2',false]]);expect(r.boundary).toBe(false);
+  // Outside 1 mag both are kept.
+  expect(cleanFieldGalaxies([q('Q',1,0,15)],[g('G1',1,5/3600,16.5)],'merge').galaxies.map(x=>x.id)).toEqual(['G1']);
+ });
+ it('a precision boundary stops the stage and leaves the galaxy list untouched (review 1, item 4)',()=>{
+  const gs=[g('G1',1,5/3600,15.5),g('G2',2,0,15)];
+  const r=cleanFieldGalaxies([q('Q',1,0,15),s('S',2,30/3600,12) as unknown as NativeQso],gs,'merge');
+  expect(r.boundary).toBe(true);expect(r.galaxies).toBe(gs);expect(r.witnesses.map(w=>w.galaxy)).toEqual(['G1']);
+ });
 });
