@@ -42,6 +42,20 @@ export const CLUSTER_HR_EN=Object.freeze({
  outsideImage:'outside VIREO\'s picture',
  ebvGateNote:'VIREO\'s option "Set E(B-V)" (on by default) fixes the E(B−V) slider at this catalogue value whenever the ZAMS is shown for a database cluster (0x543a32). OpenVireo copies the value but lets you edit it.',
  testModeNote:'In VIREO the "Estimated Cluster Distance" line appears only in its Test Mode (option off by default; 0x543f43). OpenVireo shows it when you apply the extinction-corrected distance.',
+ // Possible Cluster Member (TClstrStrForm1)
+ memberItemMenu:'Item',// VIREO
+ memberAddHotList:'Add to Hot List',// VIREO
+ memberRemove:'Remove from HR Diagram',// VIREO
+ memberExit:'Exit',// VIREO
+ memberName:'Cluster Name:',memberId:'ID #:',memberRa:'RA:',memberDec:'Dec:',memberV:'V:',memberBmV:'B-V:',memberUmB:'U-B:',memberSp:'Spectral Type:',// VIREO
+ memberNotPublished:'not published',
+ memberDataNote:'VIREO also shows the star\'s catalogue ID, U−B and spectral type. That per-star data is not published on this site yet, so those fields are empty.',
+ memberHotListUnavailable:'Add to Hot List is not available on this page yet.',
+ memberRemoveNote:'In VIREO, Remove from HR Diagram appears only in its Edit Mode (an instructor setting, off by default). OpenVireo keeps it as your own exclusion, which you can restore.',
+ memberRemoved:'Removed from the HR diagram. Restore it with "Restore all excluded points".',
+ memberAlreadyRemoved:'This star is already removed from the plot.',
+ rightClickNote:'Like VIREO, right-click a star on the plot (or press and hold on a touch screen) to open "Possible Cluster Member". You can also choose a record from the list below.',
+ yes:'Yes',no:'No',
  // print preview (shared)
  printTitle:(caption:string)=>`Print — ${caption}`,
  printButton:'Print…',
