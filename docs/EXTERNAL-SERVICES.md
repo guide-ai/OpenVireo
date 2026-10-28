@@ -104,6 +104,6 @@ Programas nativos e instaladores; sonidos WAV; imágenes de interfaz, cursores e
 
 - **Catálogo de cámaras:** resuelto con VizieR (§1). Para el filtro I, la CCD usa USNO-B1.
 - `http://xena.harvard.edu/software/catalogs/tmpsc.html` aparece en el ejecutable con un papel desconocido; posiblemente sea 2MASS para la cámara IR. Se investigará con la cámara IR.
-- **Archivo HST:** el diálogo original abre un enlace a `hubblesite.org`. Es un enlace externo, no datos; se decidirá con el resto de servicios.
+- **Archivo HST:** recuperado en Front O2 (docs/QSO-LIST-HST.md). El menú Tools › HST Image Archive... abre una URL fija, `http://hubblesite.org/newscenter/archive/browse/`, en una ventana del navegador; no envía coordenadas ni nombres, y la URL es editable en File Options. El diálogo «Search HST Image Archive» (THSTImgDlg) nunca se muestra en el original y no contiene ninguna URL de MAST. Es un enlace externo, no datos. La web muestra el motivo y la URL como texto, sin enlace ni petición; abrirla queda pendiente de la decisión del usuario.
 - **Medición de posiciones en Object X:** el original usa herramientas externas (CLEA Toolkit y SAOImage DS9). La web necesita su propia herramienta de medición; ningún programa nativo se puede incluir.
 - **Anomalía del original:** `GLIMAGES.LST` nombra imágenes que no están en el zip, entre ellas NGC4449.BMP, un objetivo de Object X. Hay que ver qué hace el original cuando falta el archivo.

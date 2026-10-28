@@ -1,10 +1,8 @@
-import {useEffect,useId,useRef,useState} from 'react';
-import {menuCaptionText} from '../core/radioControl';
+import {useEffect,useRef,useState} from 'react';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
 import {decodeVariableStarCatalog,type VariableStarRecord} from '../core/variableStars';
 import {VARIABLE_FIELD_LITERALS as VL,VARIABLE_FIELD_SAVE_NAME,variableAddedText,variableFieldList,variableHotListFields,variableNewListText,type VariableFieldList,type VariableFieldMode,type VariableFieldView} from '../core/variableFieldList';
-import {EDIT_MODE_CAPTIONS} from '../core/editMode';
 import {BUNDLED_VARIABLE_STARS,fetchBundledVariableFile} from '../io/bundledVariableStars';
 import type {Pointing} from '../core/sky';
 import type {SharedHotListHandle} from '../useSharedHotList';
@@ -16,6 +14,7 @@ import {catalogRecords} from '../core/catalogObject';
 import {FIELD_STAR_LITERALS as FL,FIELD_STAR_SAVE_NAMES,fieldStarCsvLines,fieldStarReport,type FieldStarReport} from '../core/fieldStarReport';
 import {variableStarSaveText} from '../core/variableStars';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
+import type {FieldInfoRequestKind} from './ObservatoryFileMenu';
 import './field-info.css';
 
 let variableCatalog:Promise<readonly VariableStarRecord[]>|null=null;
@@ -25,6 +24,7 @@ export function loadFieldVariables():Promise<readonly VariableStarRecord[]>{
  return variableCatalog;
 }
 
+export type FieldInfoRequest=Readonly<{kind:FieldInfoRequestKind;token:number}>;
 export type FieldInformationProps=Readonly<{
  editMode:boolean;
  /** Telescope view slider: finder or instrument (telescope). */
@@ -39,17 +39,23 @@ export type FieldInformationProps=Readonly<{
 type StarWindow=Readonly<{report:FieldStarReport}|{loading:true}|{reason:FieldInfoReason;detail?:string}>;
 type VariableWindow=Readonly<{mode:VariableFieldMode;list:VariableFieldList}|{mode:VariableFieldMode;loading:true}|{mode:VariableFieldMode;error:true}|{mode:VariableFieldMode;hidden:true}>;
 
-/** File › Field Information (FO-EM, FO-VF; docs/OBJECT-INFO-FORMS.md). Shown only in Edit Mode; turning Edit Mode off closes the
- * windows. The windows are modeless and keep their lines until reopened from the menu (every Show refills, 0x52e464). */
-export default function FieldInformationMenu({info,pointing,enabled,hotList,onSlew}:{info:FieldInformationProps;pointing:Pointing;enabled:boolean;hotList:SharedHotListHandle;onSlew:(p:Pointing)=>void}){
- const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|null>(null),trigger=useRef<HTMLButtonElement>(null);
+/** File › Field Information windows (FO-EM, FO-VF; docs/OBJECT-INFO-FORMS.md). Shown only in Edit Mode; turning Edit Mode off
+ * closes the windows. The menu items live in ObservatoryFileMenu (Front O2), which sends `request` (a new token per click). The
+ * windows are modeless and keep their lines until reopened from the menu (every Show refills, 0x52e464). */
+export default function FieldInformationMenu({info,pointing,enabled,hotList,onSlew,request}:{info:FieldInformationProps;pointing:Pointing;enabled:boolean;hotList:SharedHotListHandle;onSlew:(p:Pointing)=>void;request:FieldInfoRequest|null}){
  const [variable,setVariable]=useState<VariableWindow|null>(null),[star,setStar]=useState<StarWindow|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[starBox,setStarBox]=useState<FieldInfoBox|null>(null);
  const [confirm,setConfirm]=useState<VariableStarRecord|null>(null);
- useEffect(()=>{if(!info.editMode){setMenu(null);setVariable(null);setStar(null);setBox(null);setConfirm(null);}},[info.editMode]);
+ const handled=useRef(0);
+ useEffect(()=>{if(!info.editMode){setVariable(null);setStar(null);setBox(null);setConfirm(null);}},[info.editMode]);
+ useEffect(()=>{
+  if(!request||request.token===handled.current||!info.editMode)return;handled.current=request.token;
+  if(request.kind==='stars')openStars();else openVariables(request.kind);
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[request,info.editMode]);
  if(!info.editMode)return null;
  /** StarList1Click 0x5404e0 → 0x534e18: the instrument (NewGSC) field at the current pointing, in either view. */
  function openStars(){
-  setMenu(null);setStarBox(null);const at=pointing,variableTime=frozenObservatoryTime(info.currentJd);
+  setStarBox(null);const at=pointing,variableTime=frozenObservatoryTime(info.currentJd);
   setStar({loading:true});
   objectXMasked(info.hidden??null,at).then(async masked=>{
    if(masked){setStar({reason:'object-x-hidden'});return;}
@@ -59,7 +65,7 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
   }).catch(()=>setStar({reason:'load-error'}));
  }
  function openVariables(mode:VariableFieldMode){
-  setMenu(null);setBox(null);const at=pointing,view=info.view;
+  setBox(null);const at=pointing,view=info.view;
   setVariable({mode,loading:true});
   loadFieldVariables().then(async records=>{
    const list=variableFieldList(records,at,view,'gcvs');
@@ -91,24 +97,10 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
   if(hotList.current().editor?.list.length)setConfirm(r);else startNew(r,false);
  }
  const slew=(selection:number)=>{const r=record(selection);if(r&&enabled)onSlew({ra:r.raHours,dec:r.decDegrees});};
- const SM=VL.selectionMenu,menuId=`${id}-file`;
+ const SM=VL.selectionMenu;
  const reason=variable&&'list' in variable?variable.list.reason:null;
  return <div className="fi-area" data-testid="fi-area">
   <div className="fi-file-menu">
-   <div className="fi-menu" onKeyDown={e=>{if(e.key==='Escape'&&menu){e.stopPropagation();setMenu(null);trigger.current?.focus();}}}>
-    <button type="button" ref={trigger} aria-expanded={menu!==null} aria-controls={menuId} data-testid="fi-file-menu" onClick={()=>setMenu(m=>m?null:'file')}>{M.fileMenu}</button>
-    {menu&&<div id={menuId} role="group" aria-label={M.fileMenu} className="fi-menu-list">
-     <button type="button" aria-expanded={menu==='field'||menu==='variables'} data-testid="fi-field-information" onClick={()=>setMenu(m=>m==='file'?'field':'file')}>{menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation)} ›</button>
-     {(menu==='field'||menu==='variables')&&<div role="group" aria-label={menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation)} className="fi-submenu">
-      <button type="button" data-testid="fi-star-list" onClick={openStars}>{menuCaptionText(EDIT_MODE_CAPTIONS.starList)}</button>
-      <button type="button" aria-expanded={menu==='variables'} data-testid="fi-variable-stars" onClick={()=>setMenu(m=>m==='variables'?'field':'variables')}>{menuCaptionText(VL.menu.variableStars)} ›</button>
-      {menu==='variables'&&<div role="group" aria-label={menuCaptionText(VL.menu.variableStars)} className="fi-submenu">
-       <button type="button" data-testid="fi-variables-gcvs" onClick={()=>openVariables('gcvs')}>{menuCaptionText(VL.menu.gcvs)}</button>
-       <button type="button" data-testid="fi-variables-modeled" onClick={()=>openVariables('modeled')}>{menuCaptionText(VL.menu.modeled)}</button>
-      </div>}
-     </div>}
-    </div>}
-   </div>
    <p className="fi-note">{M.menuHelp}</p>
    <details className="fi-guide" data-testid="fi-guide"><summary>{M.guideTitle}</summary><ol>{M.guide.map(g=><li key={g}>{g}</li>)}</ol></details>
   </div>

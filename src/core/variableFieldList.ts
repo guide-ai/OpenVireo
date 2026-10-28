@@ -15,6 +15,7 @@
 import {delphiFixed,formatNativeSexagesimal,type VariableStarRecord} from './variableStars';
 import type {HtlFields} from './hotList';
 import {nativeCursorInsert} from './fieldEngine';
+import {VARIABLE_STARS_MENU} from './observatoryMenuLiterals';
 
 export type VariableFieldView='finder'|'instrument';
 export type VariableFieldMode='gcvs'|'modeled';
@@ -26,7 +27,7 @@ export class VariableFieldError extends Error{constructor(readonly code:'input')
 export const VARIABLE_FIELD_DEFAULTS=Object.freeze({finderDegrees:2.5,instrumentArcminutes:15,creationFactor:3,finderLimit:Math.fround(14),instrumentLimit:Math.fround(20)});
 /** Original literals (DFM TVARFLDLSTFORM1, fill 0x52f7fc, row 0x52feb4, selection handlers). Never translated. */
 export const VARIABLE_FIELD_LITERALS=Object.freeze({
- menu:Object.freeze({fieldInformation:'&Field Information',variableStars:'&Variable Stars',gcvs:'&All GCVS variables in region.',modeled:'&VIREO-modeled varibles in region.'}),
+ menu:VARIABLE_STARS_MENU,
  captionFinder:'Variable Stars in Finder Field',captionInstrument:'Variable Stars in Instrument Field',
  center:'Field Center:',ra:'RA: ',dec:'Dec:',limits:'Field Limits:',to:'to',
  note:'(Visible field is 1/3 of loaded field and may not be centered.)',

@@ -19,7 +19,7 @@
 .fi-line[aria-selected=true]{background:var(--ov-accent);color:var(--ov-accent-contrast)}
 .fi-note,.fi-status{font-size:var(--ov-text-sm);color:var(--ov-text-muted);margin:0;line-height:1.45}
 .fi-unavailable{font-size:var(--ov-text-sm);margin:0;padding:var(--ov-space-2) var(--ov-space-3);border:1px solid var(--ov-warning-border);background:var(--ov-warning-soft);color:var(--ov-text);border-radius:var(--ov-radius-sm)}
-.fi-box-text{white-space:pre-wrap}
+.fi-box-text{white-space:pre-wrap;overflow-wrap:anywhere}
 .fi-file-menu{display:flex;flex-wrap:wrap;gap:var(--ov-space-2);align-items:flex-start}
 /* Catalog Object (TRefInfoForm1, 348×154 client) */
 .co-grid{display:flex;flex-direction:column;gap:6px;font-size:13px}

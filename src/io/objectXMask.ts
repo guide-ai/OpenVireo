@@ -24,6 +24,12 @@ export async function objectXMasked(hidden:Pointing|null,p:Pointing,reach=0):Pro
  * camera field diagonal; the spectrometer field is smaller) of an Object X position or of the lab's hidden target. Fail closed. */
 export async function objectXListedNear(hidden:Pointing|null,rows:readonly Pointing[]):Promise<boolean>{
  let list:readonly Pointing[];try{list=await loadObjectXPositions();}catch{return true;}
+ const on=objectXOnTarget(list,hidden);
+ return rows.some(on);
+}
+/** Front O2 (QSO List): a per-row test, true when the row lies within OBJECT_X_ON_TARGET_DEGREES of an Object X position or of
+ * the lab's hidden target. The caller loads `list` (loadObjectXPositions) and fails closed itself. */
+export function objectXOnTarget(list:readonly Pointing[],hidden:Pointing|null):(r:Pointing)=>boolean{
  const targets=[...list,...(hidden?[hidden]:[])];
- return rows.some(r=>targets.some(q=>separationDegrees(r.ra,r.dec,q.ra,q.dec)<=OBJECT_X_ON_TARGET_DEGREES));
+ return r=>targets.some(q=>separationDegrees(r.ra,r.dec,q.ra,q.dec)<=OBJECT_X_ON_TARGET_DEGREES);
 }

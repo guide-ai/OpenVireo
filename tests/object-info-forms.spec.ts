@@ -26,13 +26,13 @@ async function pointAt36773(page:Page){
 }
 async function download(page:Page,click:()=>Promise<void>){await paceDownload(page);const d=page.waitForEvent('download');await click();const e=await d;return {name:e.suggestedFilename(),bytes:await readFile((await e.path())!)};}
 
-test('Edit Mode off (compiled default): no Field Information menu, no Catalog Object click, options unchanged',async({page})=>{
+test('Edit Mode off (compiled default): no Field Information item, no Catalog Object click, options unchanged',async({page})=>{
  await open(page);await tracking(page);
  await card(page).getByTestId('ob-options').click();
  await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-edit-mode-note')).toContainText('not saved');
  await expect(page.getByTestId('ob-options-others')).not.toContainText('Edit Mode');
  await page.getByRole('button',{name:'Cancel',exact:true}).click();
- await expect(page.getByTestId('fi-file-menu')).toHaveCount(0);await expect(page.getByTestId('em-layer')).toHaveCount(0);await expect(page.getByTestId('em-status')).toHaveCount(0);
+ await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('qso-menu')).toBeVisible();await expect(page.getByTestId('fi-field-information')).toHaveCount(0);await page.getByTestId('fi-file-menu').click();// Front O2: File › QSO List is always thereawait expect(page.getByTestId('em-layer')).toHaveCount(0);await expect(page.getByTestId('em-status')).toHaveCount(0);
  await page.getByTestId('sky-map').click({position:{x:120,y:120}});await expect(page.getByTestId('co-dialog')).toHaveCount(0);
 });
 
