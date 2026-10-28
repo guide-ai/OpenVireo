@@ -97,6 +97,7 @@ export type FieldVariableMode='gate'|'outside-view';
  * value is unavailable (variable-time-required). */
 export type FieldVariableTime=Readonly<{jd:number;source:'observatory-clock'}>;
 /** Site-clock JD domain (1900-01-01 … 2099-12-31, as the observatory clock). */
+/** The one JD domain for frozen field times (= the site clock's domain, siteClock.ts; review 1 N1). */
 export const FIELD_VARIABLE_JD_DOMAIN=Object.freeze({minimum:2415020.5,maximum:2488069.5});
 /** 'recovered' (default since the coordinator decision of 2026-10-28): every variable whose time update the dispatch 0x51ec48
  * returns false for without side effects (zero period, zero word unless class 1, or class 3: variableMerge.ts
@@ -372,6 +373,9 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  const mergeWitnesses:FieldMergeWitness[]=[];
  // Front T guard: a galaxy (before cleanup) or a QSO position near a TRUE star.
  const guardPositions:Readonly<{ra:number;dec:number}>[]=[...admitted,...pack.qso.entries.filter(p=>inside(p,area))];
+ // Review 1 N1: entries are kept when a later QSO replacement or galaxy cleanup deletes their star. Such a star lies within the
+ // merge guard of that QSO or galaxy, so with unavailable values it still gates the field (conservative: whether a time-dependent
+ // miss star exists can change the cleanup's runner pruning); fieldStarVariable returns null for a star no longer present.
  const variableStars=variableEntries?Object.freeze(variableEntries.map(e=>Object.freeze({...e,nearGalaxyOrQso:guardPositions.some(p=>catalogMergeDistance(p,e)<OUTSIDE_VIEW.mergeRadiusDegrees)}))):undefined;
  if(!variableGate&&!reasons.includes('merge-boundary')){
   const cleaned=cleanFieldGalaxies(stars,galaxies,mode);stars=cleaned.stars;galaxies=cleaned.galaxies;mergeWitnesses.push(...cleaned.witnesses);
@@ -386,7 +390,8 @@ function checkedVariableTime(t:FieldVariableTime|undefined):FieldVariableTime|un
 }
 type VariableEntry=Omit<FieldVariableStar,'nearGalaxyOrQso'>;
 /** Reasons that leave the star's existence (and so the later merges) undetermined: the whole field is gated. */
-const STAGE_GATES:ReadonlySet<FieldVariableUnavailable>=new Set(['variable-spectrum-indeterminate','variable-model-fault']);
+export const FIELD_VARIABLE_STAGE_GATES:readonly FieldVariableUnavailable[]=Object.freeze(['variable-spectrum-indeterminate','variable-model-fault']);
+const STAGE_GATES:ReadonlySet<FieldVariableUnavailable>=new Set(FIELD_VARIABLE_STAGE_GATES);
 type DispatchOutcome=Readonly<{kind:'false'}>|Readonly<{kind:'computed';values:Extract<FieldVariableValues,{status:'computed'}>;riseWordDefaulted:boolean}>|Readonly<{kind:'unavailable';reason:FieldVariableUnavailable;riseWordDefaulted:boolean}>;
 function dispatchOutcome(rawHex:string,recordIndex:number,jd:number|null,star:VariableDispatchStar):DispatchOutcome{
  const record=variableRecordFromHex(rawHex,recordIndex),s=variableModelStatic(record),word=s.riseWordDefaulted;
@@ -412,6 +417,7 @@ function dispatchOutcome(rawHex:string,recordIndex:number,jd:number|null,star:Va
  * +0x29/+0x2d/+0x31/+0x43 from the model, +0x5b := record) or inserts a type-0 star after the RA cursor walk (miss). */
 function runTrueVariableStage(initial:readonly FieldStar[],variables:readonly NativeVariable[],jd:number|null):Readonly<{stars:FieldStar[];removed:string[];entries:VariableEntry[];reason?:undefined}>|Readonly<{reason:FieldUnavailableReason}>{
  let stars=[...initial];const removed:string[]=[],entries=new Map<string,VariableEntry>();
+ const timeDependentColours=new Set<string>();// stars whose colours a no-JD class-0/1 dispatch replaced (review 1 L4)
  const prune=(rows:readonly Readonly<{id:string}>[])=>{const kept=new Set(rows.map(r=>r.id));for(const s of stars)if(!kept.has(s.id)){removed.push(s.id);entries.delete(s.id);}stars=stars.filter(s=>kept.has(s.id));};
  try{
   for(const v of variables){
@@ -425,14 +431,17 @@ function runTrueVariableStage(initial:readonly FieldStar[],variables:readonly Na
    if(merge.path==='hit'&&target!.id!==merge.target.id)throw new FieldEngineError('evidence');
    if(target&&target.type!==0)continue;// 0x51ec6b: +0x3d ≠ 0 → FALSE, the 0x5f-byte backup is restored
    const colours:VariableDispatchStar=target&&Number.isFinite(target.photometry2Single)&&Number.isFinite(target.photometry3Single)?{bMinusV:target.photometry2Single,uMinusB:target.photometry3Single}:'residue';
-   const outcome=dispatchOutcome(v.rawHex,v.recordIndex,jd,colours);
+   let outcome=dispatchOutcome(v.rawHex,v.recordIndex,jd,colours);
+   // Review 1 L4: a class-0/1 hit without a JD left this star's +0x2d/+0x31 at the model's (unknown) colours; a later TRUE dispatch
+   // on it reads them, so its values need the time too (never the catalogue colours).
+   if(target&&outcome.kind==='computed'&&timeDependentColours.has(target.id))outcome=Object.freeze({kind:'unavailable' as const,reason:'variable-time-required' as const,riseWordDefaulted:outcome.riseWordDefaulted});
    if(outcome.kind==='false')continue;
    if(outcome.kind==='unavailable'&&STAGE_GATES.has(outcome.reason))return Object.freeze({reason:outcome.reason});
    const values:FieldVariableValues=outcome.kind==='computed'?outcome.values:Object.freeze({status:'unavailable' as const,reason:outcome.reason});
    const computed=values.status==='computed'?values:null,magnitude=computed?computed.v:Math.fround(v.magnitude);
    let starId:string,winnerId:string|undefined,ra:number,dec:number;
    if(target){
-    const t=target;
+    const t=target;if(values.status==='unavailable'||timeDependentColours.has(t.id))timeDependentColours.add(t.id);
     stars[(merge as Extract<typeof merge,{path:'hit'}>).targetIndex]=Object.freeze({...t,magnitude,photometry2Single:computed?computed.bMinusV:t.photometry2Single,photometry3Single:computed?computed.uMinusB:t.photometry3Single}) as FieldStar;
     starId=t.id;ra=t.ra;dec=t.dec;if(merge.trace.winner&&merge.trace.winner.id!==t.id)winnerId=merge.trace.winner.id;
    }else{

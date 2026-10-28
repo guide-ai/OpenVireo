@@ -31,6 +31,7 @@ import { createMeasurement, currentZ, type Measurement, type ShiftControl } from
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
 import type {ObjectXSpectrumRecord} from './objectXSpectra';
 import {OBJECT_X_INVESTIGATION_POLICY,ObjectXSessionError,admitObjectXInvestigation,portableObjectXInvestigation,type ObjectXInvestigation} from './objectXInvestigation';
+import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
 import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,lssFieldJdsOf,portableLssInvestigation,type LssFieldJds,type LssInvestigation} from './lssInvestigation';
 import { RADIO_INVESTIGATION_POLICY, admitRadioInvestigation, portableRadioInvestigation, type RadioInvestigationRecord } from './radioInvestigation';
 import {HUBBLE_EXTENDED_BANKS,HUBBLE_EXTENDED_TARGETS,isHubbleExtendedId} from '../core/hubbleEngineTargets';
@@ -185,7 +186,7 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     if(!Array.isArray(r.lssFieldJds)||r.lssFieldJds.length<1||r.lssFieldJds.length>MAX_SESSION_ROWS)fail('format');
     const lssFieldJds=new Map<number,number>();let last=0;
     for(const e of r.lssFieldJds as unknown[]){
-     if(!Array.isArray(e)||e.length!==2||!Number.isInteger(e[0])||e[0]<=last||typeof e[1]!=='number'||!Number.isFinite(e[1])||e[1]<2415020.5||e[1]>2488069.5)fail('format');
+     if(!Array.isArray(e)||e.length!==2||!Number.isInteger(e[0])||e[0]<=last||typeof e[1]!=='number'||!Number.isFinite(e[1])||e[1]<FIELD_VARIABLE_JD_DOMAIN.minimum||e[1]>FIELD_VARIABLE_JD_DOMAIN.maximum)fail('format');
      lssFieldJds.set(e[0],e[1]);last=e[0];
     }
     const consumed={done:false};

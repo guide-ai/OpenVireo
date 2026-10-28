@@ -7,6 +7,7 @@ import './lss.css';
 import {LSS_FIELD_FILES,lssFieldRows,isLssFieldList,type LssFieldNumber} from './core/lssFields';
 import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,restoredLssSurvey,LSS_LIMITS,type LssRecord,type LssSurveyState} from './core/lssSurvey';
 import {evaluateLssRow,lssPolicy,type LssRowStatus} from './core/lssExposure';
+import {FIELD_VARIABLE_JD_DOMAIN} from './core/fieldEngine';
 import {opticalProfile} from './core/opticalTelescope';
 import {parseHtl} from './core/hotList';
 import {fetchBundledHotList} from './io/bundledHotList';
@@ -24,7 +25,7 @@ type Telescope=0|1|2;
 /** fieldJd: the observatory-clock JD frozen when this list was built (Front T: the variable stage's time); undefined when the
  * clock gave no finite JD, so rows whose field needs the time stay unavailable (variable-time-required). */
 type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[];fieldJd:number|undefined}>;
-function frozenFieldJd(currentJd:()=>number):number|undefined{try{const jd=currentJd();return Number.isFinite(jd)&&jd>=2415020.5&&jd<=2488069.5?jd:undefined;}catch{return undefined;}}
+function frozenFieldJd(currentJd:()=>number):number|undefined{try{const jd=currentJd();return Number.isFinite(jd)&&jd>=FIELD_VARIABLE_JD_DOMAIN.minimum&&jd<=FIELD_VARIABLE_JD_DOMAIN.maximum?jd:undefined;}catch{return undefined;}}
 export type LssSnapshot=Omit<LssInvestigation,'wedgeOptions'>;
 export type LssWedgeHandoff=Readonly<{records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>;
 function download(text:string,name:string){const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}

@@ -2,6 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import controls from './variableDispatch.controls.json';
+import {cepheidModel} from './lightCurve';
 import {decodeVariableStarCatalog} from './variableStars';
 import {parseObservationType} from './observationResults';
 import {
@@ -145,5 +146,34 @@ describe('model values',()=>{
   const gr=catalog.find(r=>r.name==='GR Com')!;
   expect(reason(()=>variableDispatchAt({...gr,spectrum:'C5,4'},2451545,'residue'))).toBe('variable-spectrum-dangling');
   expect(reason(()=>variableDispatchAt({...gr,riseWord:100},gr.epoch.value,'residue'))).toBe('variable-model-fault');
+ });
+});
+describe('descending spectral ranges (review 1 M2)',()=>{
+ it('T Mon and SU Cyg are not resolvable at every time; every range marked everyTime formats at every sampled magnitude',()=>{
+  for(const [index,t1,t2] of [[5339,'F7','A0V'],[25789,'F2','B7V']] as const){
+   const s=variableModelStatic(catalog[index]);
+   expect(s.spectrum).toMatchObject({kind:'range',t1,t2,everyTime:false});// the last type token is t2 (0x520248)
+  }
+  let ranges=0,descending=0;
+  for(const r of catalog){
+   const c=variableClass(r.type);if(c!==0&&c!==1)continue;
+   let s;try{s=variableModelStatic(r);}catch{continue;}
+   if(s.spectrum.kind!=='range')continue;ranges++;
+   const {bright,faint}=cepheidModel(r);if(!(faint>bright))continue;
+   const fails=Array.from({length:201},(_,k)=>bright+(faint-bright)*k/200).filter(m=>reason(()=>interpolateSpectralType(s.spectrum.kind==='range'?s.spectrum.t1:'',s.spectrum.kind==='range'?s.spectrum.t2:'',faint,bright,m))!=='none').length;
+   if(parseSpectralType(s.spectrum.t2)<parseSpectralType(s.spectrum.t1))descending++;
+   if(s.spectrum.everyTime)expect(fails,`${r.index} ${r.spectrum}`).toBe(0);
+  }
+  expect(ranges).toBeGreaterThan(900);expect(descending).toBeGreaterThan(0);
+ });
+});
+import provenance from '../../docs/VARIABLE-DISPATCH-PROVENANCE.json';
+describe('docs/VARIABLE-DISPATCH-PROVENANCE.json (review 1 L3)',()=>{
+ it('binds the binary, every contract cites listed evidence with an address range and a [D]/[I] tag',()=>{
+  expect(provenance.artifact.sha256).toBe(controls.source.binary);
+  const ids=new Set(provenance.derivedEvidence.map(e=>e.id));
+  for(const e of provenance.derivedEvidence){expect(e.sha256).toMatch(/^[a-f0-9]{64}$/);expect(e.addresses).toMatch(/^0x[0-9a-f]+\.\.0x[0-9a-f]+$/);}
+  for(const c of provenance.contracts){expect(['D','I']).toContain(c.tag);expect(c.ranges.length).toBeGreaterThan(0);expect(c.evidence.length).toBeGreaterThan(0);for(const e of c.evidence)expect(ids.has(e),`${c.id} ${e}`).toBe(true);}
+  expect(provenance.webPolicies.every(w=>w.tag==='W')).toBe(true);
  });
 });

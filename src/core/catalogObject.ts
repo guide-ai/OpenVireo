@@ -36,7 +36,9 @@ export type CatalogStarRecord=Readonly<{kind:'star';id:string;type:0|3;ra:number
  flags:Readonly<{spectral:boolean;luminosity:boolean;bv:boolean;ub:boolean}>;code:number;variable:CatalogVariable|null}>;
 /** Front T: the variable record (+0x5b) a TRUE dispatch left on this star (variableDispatch.ts fieldStarVariable); `valuesAvailable`
  * false when the field was built without an observatory-clock JD (variable-time-required). */
-export type CatalogVariable=Readonly<{recordIndex:number;gcvsId:string;valuesAvailable:boolean}>;
+export type CatalogVariable=Readonly<{recordIndex:number;gcvsId:string;valuesAvailable:boolean;
+ /** Cepheid Init (classes 0/1) wrote 50 into a zero M−m/D word of the field-list copy +0x5b points to (0x51f2d8). */
+ riseWordDefaulted:boolean}>;
 export type CatalogGalaxyRecord=Readonly<{kind:'galaxy';id:string;ra:number;dec:number;v:number;major:number;minor:number;z:number;morphology:number;bar:string;luminosity:string;ring:string}>;
 export type CatalogRecord=CatalogStarRecord|CatalogGalaxyRecord;
 export type CatalogObjectReason='variable-values-unavailable'|'galaxy-colour-residue'|'galaxy-type-fault'|'spectral-code-unformattable'|'instructor-value-masked';
@@ -60,7 +62,7 @@ export function catalogRecordFromVariableStar(s:NativeFieldStar|FieldVariableIns
  const gsc='rawHex' in s?catalogRecordFromStar(s):null,values=variable.values,computed=values.status==='computed'?values:null;
  return Object.freeze({kind:'star',id:variable.gcvsId,type:0,ra:s.ra,dec:s.dec,v:computed?computed.v:30,bv:computed?computed.bMinusV:30,ub:computed?computed.uMinusB:30,aux:gsc?gsc.aux:0,
   flags:Object.freeze(computed?{spectral:computed.flags.spectral,luminosity:computed.flags.luminosity,bv:computed.flags.bMinusV,ub:computed.flags.uMinusB}:{spectral:true,luminosity:true,bv:true,ub:true}),
-  code:computed?computed.spectralCode:0,variable:Object.freeze({recordIndex:variable.recordIndex,gcvsId:variable.gcvsId,valuesAvailable:!!computed})});
+  code:computed?computed.spectralCode:0,variable:Object.freeze({recordIndex:variable.recordIndex,gcvsId:variable.gcvsId,valuesAvailable:!!computed,riseWordDefaulted:variable.riseWordDefaulted})});
 }
 /** 0x5987e4: a merged QSO (type 3, code 99, +0x35 = z, B−V/U−B flags from the record). */
 export function catalogRecordFromQso(q:NativeQso):CatalogStarRecord{

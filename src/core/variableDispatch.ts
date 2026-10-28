@@ -168,6 +168,8 @@ function stripLuminosity(token:string):string{
  return tok;
 }
 /** 0x520248 (+0x51ee90 on each luminosity token): t1/t2 end at I, V, '-' or '('; luminosity tokens end at a type letter.
+ * Every type token after t1 is copied into t2 (0x520306..0x520318 select t1 only while it is empty, otherwise [ebp+0x10];
+ * 0x520389..0x520398 Copy overwrites it), so the LAST type token is t2 [D, review 1 M2 recheck]: `F7Iab-K1Iab+A0V` → t1 F7, t2 A0V.
  * ok:false when the spectrum starts with 'C' (0x5205e0 returns 0). Reading s[1] of an emptied string is typed. */
 export function splitVariableSpectrum(text:string):VariableSpectrumSplit{
  if(typeof text!=='string')throw new VariableDispatchError('input');
@@ -202,10 +204,15 @@ export function interpolateSpectralType(t1:string,t2:string,faint:number,bright:
  while(sub<0){sub+=100;letter-=10;}
  return formatSpectralType(letter*1_000_000+sub*10_000);
 }
+/** Whether 0x51f754 yields a formattable type for every magnitude in [bright, faint]: q = (F − m)/(((F − B)/span)·10) runs over
+ * [0, span/10] (either sign), so n takes every integer between 0 and Round(span/10). Each must leave sub in 0..99 after the
+ * downward borrow (a descending range gives sub ≥ 100, which corrupts the letter field) and a letter of the table (review 1 M2;
+ * regression records T Mon and SU Cyg). */
 function rangeResolvableAtEveryTime(t1:string,t2:string):boolean{
  const c1=parseSpectralType(t1),c2=parseSpectralType(t2),L1=Math.trunc(c1/1_000_000),S1=Math.trunc(c1%1_000_000/10_000),L2=Math.trunc(c2/1_000_000),S2=Math.trunc(c2%1_000_000/10_000);
- const span=(L2-L1)*10+(S2-S1),last=Math.max(0,Math.ceil(Math.abs(span)/10)+1);
- for(let n=0;n<=last;n++){let sub=S2-n*10,letter=L2;while(sub<0){sub+=100;letter-=10;}if(!LETTERS.some(([c])=>c===letter))return false;}
+ const span=(L2-L1)*10+(S2-S1);if(span===0)return false;
+ const end=roundHalfEven(span/10),lo=Math.min(0,end),hi=Math.max(0,end);
+ for(let n=lo;n<=hi;n++){let sub=S2-n*10,letter=L2;while(sub<0){sub+=100;letter-=10;}if(sub>=100||!LETTERS.some(([c])=>c===letter))return false;}
  return true;
 }
 /** 0x51f8c4: both tokens empty → the type default; l1 empty with l2 not → nil read (typed); else l1's prefix of '-IVab'. */

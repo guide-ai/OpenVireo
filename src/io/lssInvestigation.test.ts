@@ -126,3 +126,7 @@ describe('v30: the frozen observatory-clock JD of LSS fields (Front T)',()=>{
   const text=await serializeAnalysisSession({...base,lss:investigation([acquiredRecord()])});expect(JSON.parse(text).version).toBe(27);
  },60000);
 });
+import en from '../i18n/en.json';
+it('the variable-time-required reason has its student text (shown in the row status when the list has no time)',()=>{
+ expect((en as Record<string,string>)['lss.reason.variable-time-required']).toBe('a variable star in view whose brightness depends on the observatory clock, which gave no time');
+});

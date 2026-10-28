@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {decodeVariableStarRecord} from './variableStars';
-import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve,exitLightCurve,openVariableStarList,toggleListTypeCodes,toggleVariableHelp} from './variableStarSession';
+import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve,exitLightCurve,openVariableStarList,openVariableStarListFromField,toggleListTypeCodes,toggleVariableHelp} from './variableStarSession';
 const FILE=new Uint8Array(readFileSync(new URL('../../public/original/variables/CLEA_VStrs.dat',import.meta.url)));
 const rec=(i:number)=>decodeVariableStarRecord(FILE,i);
 describe('Variable Star Data / Simulated Light Curve windows (RECOVERY §1, §2, §6)',()=>{
@@ -30,5 +30,14 @@ describe('Variable Star Data / Simulated Light Curve windows (RECOVERY §1, §2,
  it('List Type Codes only toggles its own check mark (0x52d334)',()=>{
   const r=rec(30234),s=openVariableStarList(INITIAL_VARIABLE_STAR_SESSION,r),t=toggleListTypeCodes(s);
   expect([s.listTypeCodes,t.listTypeCodes]).toEqual([true,false]);expect(t.list).toBe(s.list);
+ });
+});
+describe('GCVS from Catalog Object (Front T review 1 L1)',()=>{
+ it('a field star whose dispatch defaulted the word opens with 0.50 (WY Boo); without the flag the record shows 0.00',()=>{
+  const wy=rec(10545);expect(wy.riseWord).toBe(0);
+  const s=openVariableStarListFromField(INITIAL_VARIABLE_STAR_SESSION,wy,true);
+  expect(s.list!.lines[9]).toBe('M-m/D(%):        0.50');expect(s.list!.riseDefaulted).toBe(true);expect(s.riseDefaulted.has(10545)).toBe(true);
+  expect(openVariableStarListFromField(INITIAL_VARIABLE_STAR_SESSION,wy,false).list!.lines[9]).toBe('M-m/D(%):        0.00');
+  expect(openVariableStarListFromField(INITIAL_VARIABLE_STAR_SESSION,rec(30234),true).list!.lines[9]).toBe('M-m/D(%):        0.25');// a nonzero word is never replaced
  });
 });

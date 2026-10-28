@@ -43,7 +43,9 @@ lie in 30 LSS rows:
 - 5 rows need the time (a variable star is in view): F1 r19, F3 r18, F6 r7, F6 r8, F8 r21. Without it they are
   `variable-time-required`.
 - 8 rows stay QSO-gated: F1 r2, F3 r2, F3 r22, F4 r18, F5 r20, F6 r11, F7 r17, F7 r20.
-An independent Python witness (data/variables/lss-true-dispatch-witness.json) gives the same classes, hit/miss and stars.
+An independent Python witness (data/variables/lss-true-dispatch-witness.json) gives the same row classes, hit/miss and stars. It is
+narrower than the engine (post-cleanup galaxies, no QSO positions in the guard, no FALSE/indeterminate/fault outcomes) and does not
+vouch for the OK/mean-bound statuses or the counts, which come from the TypeScript engine only.
 The 90 changed M0 LSS entries are listed in data/hubble/existing-target-fingerprints.json (`updates`); no Hubble pair changed.
 
 Time (Front T, recovered 0x487bcc; adaptation): VIREO reads the variable stage's time from the observatory clock, host Now + the user's offset (0x5384b0, 0x58b2ec), which is not deterministic. The web freezes the observatory-clock JD (siteClock/clockDrive) when the list's fields are built, shows it in the list caption, stores it per record and saves it in the v30 investigation wrapper (`lssFieldJds`), so a restore replays the same magnitudes. Without a clock time, or from a file older than v30, a row whose field needs the time stays unavailable (`variable-time-required`) and a record on such a row does not restore.

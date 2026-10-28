@@ -3,6 +3,7 @@
 // the free-text description and the committed wedge options. Restore never trusts stored results: each journal is replayed
 // through the field engine on its bundled pack, z and velocity are re-derived from the control, and a SHA-256 over those
 // derivatives must equal the stored digest. Any failure rejects the whole file (the caller applies nothing).
+import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
 import {evaluateLssRow,lssExposureEngine,lssPolicy} from '../core/lssExposure';
 import {lssFieldRows,type LssFieldNumber} from '../core/lssFields';
 import {LSS_LIMITS,decodeLssEvents,encodeLssEvents,lssJournalKey,type LssRecord} from '../core/lssSurvey';
@@ -111,7 +112,7 @@ async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS):Promise<D
   const zSingle=Math.fround(z),velocity=hubbleVelocity(z);
   if(r.zHex!==hex32(zSingle)||r.velocityHex!==velocity.storedHex)fail('record');
   const fieldJd=fieldJds.get(i+1);
-  if(fieldJd!==undefined&&(!Number.isFinite(fieldJd)||fieldJd<2415020.5||fieldJd>2488069.5))fail('record');
+  if(fieldJd!==undefined&&(!Number.isFinite(fieldJd)||fieldJd<FIELD_VARIABLE_JD_DOMAIN.minimum||fieldJd>FIELD_VARIABLE_JD_DOMAIN.maximum))fail('record');
   const key=`${f}:${rowIndex}:${t}:${fieldJd??'none'}`;
   if(!statuses.has(key)){
    if(!packs.has(f))packs.set(f,await src.pack(f));

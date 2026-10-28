@@ -20,7 +20,8 @@
      V/colours/spectral code from the class model at `options.variableTime` (the observatory-clock JD frozen at field build;
      host Now + offset natively). Without a JD a TRUE star gates the field (`variable-time-required`) only if its 99×99 stamp
      reaches the crop or a galaxy/QSO is within the merge guard; otherwise it is not painted (pixel-identical). The
-     indeterminate original branches are typed (`variable-spectrum-dangling`, `variable-spectrum-indeterminate`,
+     indeterminate original branches are typed (`variable-spectrum-dangling`, `variable-spectrum-indeterminate` — also a range spectrum
+     that leaves the letter table or overflows the subclass at some magnitude, e.g. T Mon and SU Cyg —,
      `variable-colour-residue`, `variable-model-fault`); a merge boundary keeps `variable-merge` (Boo – 1/2
      use the outside-view rule). `'class-3'` keeps the earlier one-variable contract for comparison.
 4. Variables: none, or records whose dispatch 0x51ec48 returns false without side effects, merged one after another in the variable stage's order (kept variables are inserted with 0x492728 under comparator 0x4bc950: RA, then Dec) through the false-merge branch (`variableMerge.ts`). TRUE dispatches: hit/miss with the class model (Front T; see above). Indeterminate cases are typed; a merge boundary is `variable-merge` (Boo – 1/2: outside-view).

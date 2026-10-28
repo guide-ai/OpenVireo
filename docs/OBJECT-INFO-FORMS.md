@@ -117,7 +117,7 @@ At a certified pointing in Edit Mode, the Telescope view shows the engine's own 
   - Size `major[xminor]` with 1 decimal.
 - **Field, LED and colour table:** FormActivate `0x56005c`, then the Telescope view pass. Assigned values light the LED red
   (yellow is never shown, [D]). TypeEd is magenta for non-stellar objects.
-- **GCVS:** enabled only for a type-0 star carrying a variable record (`0x56034e`). The engine ports only the false variable merge, so no certified star carries one, and the button is disabled with `gcvs-no-variable-record`. The working path from the observatory to the variable data is item 6 above. GCVS turns on once the true-dispatch merge (+0x5b) is ported. That is a separate, later front, after Front F's follow-ups merge (coordinator decision 2026-10-28). The route prop (`openRequest`) is already wired for it.
+- **GCVS:** enabled only for a type-0 star carrying a variable record (`0x56034e`). Since Front T (2026-10-28) a TRUE-dispatch star carries one: `fieldStarVariable` (src/core/variableDispatch.ts) fills the record's `variable` slot, the dialog shows its GCVS ID and "Variable Star", and GCVS opens Variable Star Data through `onOpenVariable` (with the 0.50 word when Cepheid Init defaulted it). Field Information freezes the observatory-clock JD when it builds the field; without one the values are typed `variable-values-unavailable`. Every other star keeps `gcvs-no-variable-record`.
 - **Not ported:**
   - **Update** (`update-master-catalog`): `0x59a54c` rewrites `GSC\<band>.DAT`.
   - **OK write-back** (`record-edit-unavailable`).
@@ -242,7 +242,7 @@ The raw report is `analysis/reviews/front-o-review-1.md` (verdict MERGE-AFTER-FI
 
 - The original Telescope display's click offsets (view offsets E[+0x41c439/+0x6a6]); the web assumes a fresh unpanned field.
 - The FSC finder catalogue (Finder-view Catalog Object).
-- The true variable merge (GCVS button), for a later true-dispatch front.
+- The true variable merge (GCVS button): done by Front T (2026-10-28).
 - The popup menus (right-click on list rows). Their items are the Selection menu's.
 - Window auto-sizing.
 - The printed lab/student lines of non-Edit-Mode printing (unreachable here).

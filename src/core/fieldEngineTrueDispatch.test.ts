@@ -96,7 +96,7 @@ describe('Front T: Catalog Object records of TRUE-dispatch stars (GCVS button, F
     const p=buildFieldPopulation(lssPack(f),glx,at,options).population!,e=p.variableStars!.find(x=>x.gcvsId===gcvs)!;
     expect(e.path).toBe(path);
     const k=p.stars.findIndex(s=>s.id===e.starId),r=catalogRecords(p).stars[k];
-    expect(r.kind==='star'&&r.variable).toEqual({recordIndex:e.recordIndex,gcvsId:gcvs,valuesAvailable:'variableTime' in options});
+    expect(r.kind==='star'&&r.variable).toEqual({recordIndex:e.recordIndex,gcvsId:gcvs,valuesAvailable:'variableTime' in options,riseWordDefaulted:e.riseWordDefaulted});
     const v=catalogObjectView(r,formatNativeSexagesimal);
     expect([v.id,v.type,v.gcvsEnabled]).toEqual([gcvs,'Variable Star',true]);
     if('variableTime' in options){const x=fieldStarVariable(p,e.starId)!.values;expect(x.status).toBe('computed');expect(v.reasons).toEqual([]);expect(v.sp).toBe(x.status==='computed'?x.spectralText:'');}
@@ -125,5 +125,43 @@ describe('Front T: LSS rows with TRUE variables equal the independent Python wit
    }
   }
   expect(counts).toEqual({'time-independent':17,'needs-jd':5,'qso-gated':8});
+ });
+});
+import {setFieldInfoResources,findCertifiedPopulation} from '../io/fieldInfoPacks';
+const VSTRS=new Uint8Array(file('public/original/variables/CLEA_VStrs.dat'));
+/** A real CLEA_VStrs.dat record moved to a position (and optionally with another record index or magnitude system): SYNTHETIC
+ * test placements of real records, not catalogue entries. */
+function moved(index:number,ra:number,dec:number,patch?:(b:Uint8Array)=>void):Readonly<{recordIndex:number;rawHex:string}>{
+ const b=VSTRS.slice(index*92,index*92+92),v=new DataView(b.buffer);v.setFloat64(11,ra,true);v.setFloat64(19,dec,true);patch?.(b);
+ return {recordIndex:index,rawHex:Array.from(b,x=>x.toString(16).padStart(2,'0')).join('')};
+}
+function withVariables(pack:FieldPack,extra:readonly Readonly<{recordIndex:number;rawHex:string}>[]):FieldPack{
+ const entries=[...pack.variables.entries.filter(e=>!extra.some(x=>x.recordIndex===e.recordIndex)),...extra].sort((a,b)=>a.recordIndex-b.recordIndex);
+ return Object.freeze({...pack,variables:Object.freeze({...pack.variables,entries:Object.freeze(entries)})}) as FieldPack;
+}
+describe('Front T review 1: stage gates never certify a population (M1); colours after a no-JD hit (L4)',()=>{
+ const row=lssFieldRows(2)[23],at={ra:row.ra,dec:row.dec};
+ it('T Mon (descending range) and an empty magnitude system gate the population; Field Information refuses it',async()=>{
+  const cases:readonly (readonly [string,Readonly<{recordIndex:number;rawHex:string}>])[]=[
+   ['variable-spectrum-indeterminate',moved(5339,row.ra+0.004,row.dec+0.1)],// T Mon F7Iab-K1Iab+A0V
+   ['variable-model-fault',moved(9636,row.ra+0.004,row.dec+0.1,b=>{b[48]=0;})],// DV Com with no magnitude system
+  ];
+  for(const [reason,entry] of cases){
+   const pack=withVariables(lssPack(2),[entry]);
+   expect(buildFieldPopulation(pack,glx,at).reasons,reason).toContain(reason);
+   setFieldInfoResources({snapshot:async id=>JSON.parse(file(`data/hubble/${id==='36773'?'pinned-galaxy-field':id==='pegasus'?'pinned-pegasus-field':`pinned-galaxy-${id}-field`}.json`).toString()),engine:async id=>JSON.parse(file(`data/hubble/engine-${id}.json`).toString()),lss:async f=>f===2?pack:lssPack(f),
+    glx:async()=>glx,qso:async()=>({bytes:new Uint8Array(file('public/original/catalogs/CLEA_QSO.DAT')),sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'}),glimages:async()=>new Uint8Array(file('public/original/images/GLIMAGES.LST'))});
+   try{expect(await findCertifiedPopulation(at),reason).toEqual({status:'unavailable',reason:'population',detail:reason});}finally{setFieldInfoResources(null);}
+  }
+ });
+ it('a class-2 hit after a no-JD class-0/1 hit on the same star is typed, and computed with a JD',()=>{
+  const base=buildFieldPopulation(lssPack(2),glx,at).population!,dv=base.variableStars!.find(e=>e.gcvsId==='DV Com')!;
+  const star=base.stars.find(s=>s.id===dv.starId)!;
+  // AK Aur (EA, class 2, system B) placed 1″ north of the star DV Com modified: the stage visits it after DV Com and hits that star.
+  const pack=withVariables(lssPack(2),[moved(5603,star.ra,star.dec+1/3600)]);
+  const plain=buildFieldPopulation(pack,glx,at).population!,e=plain.variableStars!.find(x=>x.gcvsId==='AK Aur')!;
+  expect([e.path,e.starId,e.values]).toEqual(['hit',dv.starId,{status:'unavailable',reason:'variable-time-required'}]);
+  const timed=buildFieldPopulation(pack,glx,at,{variableTime:SYNTHETIC_JD}).population!.variableStars!.find(x=>x.gcvsId==='AK Aur')!;
+  expect(timed.values.status).toBe('computed');
  });
 });

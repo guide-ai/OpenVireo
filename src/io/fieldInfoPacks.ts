@@ -4,7 +4,7 @@
 // unmodelled asteroids). The field engine is used read-only through its public functions; nothing is fetched from elsewhere.
 import type {FieldPack} from '../core/fieldPack';
 import {decodeFieldPack,fieldPackFromSnapshot,packCovers} from '../core/fieldPack';
-import {buildFieldPopulation,freshFieldArea,type FieldOptions,type FieldPopulation,type FieldUnavailableReason} from '../core/fieldEngine';
+import {FIELD_VARIABLE_STAGE_GATES,buildFieldPopulation,freshFieldArea,type FieldOptions,type FieldPopulation,type FieldUnavailableReason,type FieldVariableTime} from '../core/fieldEngine';
 import {LSS_ROWS} from '../core/lssFields';
 import {GLIMAGES_LST,packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
 import {nativePhotographRows} from '../core/photographicList';
@@ -12,7 +12,9 @@ import type {LssFieldNumber} from '../core/lssFields';
 
 export type CertifiedPopulation=Readonly<{status:'ready';packId:string;population:FieldPopulation;reasons:readonly FieldUnavailableReason[]}|{status:'unavailable';reason:'field-not-certified'}|{status:'unavailable';reason:'population';detail:FieldUnavailableReason}>;
 /** Reasons that leave no exact population (the others concern only the raster or the drawing). */
-export const POPULATION_BLOCKING:readonly FieldUnavailableReason[]=Object.freeze(['outside-pack','qso-merge','variable-merge','merge-boundary']);
+export const POPULATION_BLOCKING:readonly FieldUnavailableReason[]=Object.freeze(['outside-pack','qso-merge','variable-merge','merge-boundary',
+ /* Front T review 1 M1: a variable stage gate leaves the pre-variable star list (no QSO merge, no cleanup): never certified. */
+ ...FIELD_VARIABLE_STAGE_GATES]);
 export type FieldInfoResources=Readonly<{
  snapshot:(id:SnapshotId)=>Promise<unknown>;engine:(id:'coma'|'bootes')=>Promise<unknown>;lss:(field:LssFieldNumber)=>Promise<FieldPack>;
  glx:()=>Promise<Uint8Array>;qso:()=>Promise<Readonly<{bytes:Uint8Array;sha256:string}>>;glimages:()=>Promise<Uint8Array>;
@@ -58,12 +60,14 @@ async function candidatePacks(pointing:Readonly<{ra:number;dec:number}>):Promise
 }
 /** The certified population at an exact pointing, or the typed reason. QSO 'merge' and the photograph renames are used when the
  * area needs them; variables use the recovered dispatch (as the exercises do). */
-export async function findCertifiedPopulation(pointing:Readonly<{ra:number;dec:number}>):Promise<CertifiedPopulation>{
+/** variableTime (Front T review 1 L5): the observatory-clock JD frozen when the caller builds the field; without it TRUE-dispatch
+ * variable values stay typed (variable-values-unavailable in Catalog Object and the Star Data List). */
+export async function findCertifiedPopulation(pointing:Readonly<{ra:number;dec:number}>,variableTime?:FieldVariableTime):Promise<CertifiedPopulation>{
  let area;try{area=freshFieldArea(pointing);}catch{return Object.freeze({status:'unavailable',reason:'field-not-certified'});}
  const packs=(await candidatePacks(pointing)).filter(p=>packCovers(p,pointing,area));
  if(!packs.length)return Object.freeze({status:'unavailable',reason:'field-not-certified'});
  const r=res(),pack=packs[0],glx=await once('glx',r.glx);
- const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={variableDispatch:'recovered'};
+ const options:{-readonly [K in keyof FieldOptions]:FieldOptions[K]}={variableDispatch:'recovered',...(variableTime?{variableTime}:{})};
  let built=buildFieldPopulation(pack,glx,pointing,options);
  if(built.reasons.includes('qso-merge')){options.qso='merge';options.qsoCatalog=await once('qso',r.qso);built=buildFieldPopulation(pack,glx,pointing,options);}
  if(built.reasons.includes('photographic-image')){options.photographs={rows:nativePhotographRows(await once('glimages',r.glimages)),bitmaps:new Map()};built=buildFieldPopulation(pack,glx,pointing,options);}

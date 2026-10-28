@@ -22,6 +22,13 @@ export function openVariableStarList(s:VariableStarSession,record:VariableStarRe
  const defaulted=record.riseWord===0&&s.riseDefaulted.has(record.index);
  return Object.freeze({...s,curve:null,help:false,list:Object.freeze({index:record.index,lines:variableStarDataLines(record,defaulted),riseDefaulted:defaulted})});
 }
+/** Front T review 1 L1: GCVS in Catalog Object (0x561244) opens Variable Star Data on the field-list copy +0x5b points to; when
+ * the dispatch's Cepheid Init wrote 50 into its zero word (0x51f2d8 [D]), the list shows 0.50 [I: FormShow rebuilds the lines from
+ * that copy after the field load]. The page's own riseDefaulted set records it for this record index. */
+export function openVariableStarListFromField(s:VariableStarSession,record:VariableStarRecord,riseWordDefaulted:boolean):VariableStarSession{
+ const seeded=riseWordDefaulted&&record.riseWord===0&&!s.riseDefaulted.has(record.index)?Object.freeze({...s,riseDefaulted:Object.freeze(new Set([...s.riseDefaulted,record.index]))}):s;
+ return openVariableStarList(seeded,record);
+}
 export function displayLightCurve(s:VariableStarSession,record:VariableStarRecord):VariableStarSession{
  if(!s.list||s.list.index!==record.index)return s;
  const reachesInit=initReached(record);

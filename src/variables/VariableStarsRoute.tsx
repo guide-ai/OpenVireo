@@ -2,7 +2,7 @@ import {useEffect,useId,useMemo,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import {decodeVariableStarCatalog,parseVariableTypeHelp,searchVariableStars,variableStarSaveFileName,variableStarSaveText,variableStarTypes,type VariableStarRecord,type VariableTypeHelpSection} from '../core/variableStars';
 import {LightCurveError,lightCurvePlot,type LightCurvePlot,type LightCurveUnavailable} from '../core/lightCurve';
-import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve as sessionDisplayCurve,exitLightCurve,openVariableStarList,toggleListTypeCodes,toggleVariableHelp,type VariableStarSession} from '../core/variableStarSession';
+import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve as sessionDisplayCurve,exitLightCurve,openVariableStarList,openVariableStarListFromField,toggleListTypeCodes,toggleVariableHelp,type VariableStarSession} from '../core/variableStarSession';
 import {delphiFixed,formatNativeSexagesimal} from '../core/variableStars';
 import {BUNDLED_VARIABLE_STARS,BUNDLED_VARIABLE_TYPE_HELP,fetchBundledVariableFile} from '../io/bundledVariableStars';
 import {VARIABLE_STARS_EN as M} from './VariableStarMessages';
@@ -26,7 +26,7 @@ function download(bytes:Uint8Array,name:string){
  * State is a browsing aid only; it is not saved with the investigation. */
 /** `openRequest` (Front O): Field Information › Variable Stars › Get Selection Data (0x530130) opens Variable Star Data on a
  * CLEA_VStrs.dat record index; each new token opens once the catalog is loaded. */
-export default function VariableStarsRoute({active,openRequest=null}:{active:boolean;openRequest?:Readonly<{token:number;index:number}>|null}){
+export default function VariableStarsRoute({active,openRequest=null}:{active:boolean;openRequest?:Readonly<{token:number;index:number;riseWordDefaulted?:boolean}>|null}){
  const id=useId(),[load,setLoad]=useState<LoadState>({status:'loading'}),[name,setName]=useState(''),[type,setType]=useState('');
  const [session,setSession]=useState<VariableStarSession>(INITIAL_VARIABLE_STAR_SESSION);
  const [menu,setMenu]=useState<'data'|'save'|'file'|null>(null),[notice,setNotice]=useState('');
@@ -51,8 +51,8 @@ export default function VariableStarsRoute({active,openRequest=null}:{active:boo
  const listRecord=records&&session.list?records[session.list.index]:null,curve=records&&session.curve!==null?records[session.curve]:null;
  const list=listRecord&&session.list?{record:listRecord,lines:session.list.lines,riseShown:session.list.riseDefaulted}:null;
  const help=session.help,typeCodes=session.listTypeCodes;
- function openRecord(record:VariableStarRecord){
-  setMenu(null);setNotice('');setSession(s=>openVariableStarList(s,record));
+ function openRecord(record:VariableStarRecord,fieldRiseDefaulted=false){
+  setMenu(null);setNotice('');setSession(s=>fieldRiseDefaulted?openVariableStarListFromField(s,record,true):openVariableStarList(s,record));
   requestAnimationFrame(()=>listHeading.current?.focus());
  }
  function displayLightCurve(){
@@ -63,7 +63,7 @@ export default function VariableStarsRoute({active,openRequest=null}:{active:boo
  useEffect(()=>{
   if(!openRequest||openRequest.token===handledRequest.current||!records)return;
   handledRequest.current=openRequest.token;
-  const r=records[openRequest.index];if(r)openRecord(r);
+  const r=records[openRequest.index];if(r)openRecord(r,openRequest.riseWordDefaulted??false);
  });
  function closeList(){setMenu(null);setNotice('');setSession(closeVariableStarList);}
  function saveText(){
