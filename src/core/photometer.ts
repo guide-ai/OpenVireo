@@ -4,12 +4,17 @@ import {confirmNativeCluster,validNativeClusterParameters,sameNativeCluster,type
 import {confirmPleiadesFit,type PleiadesFit} from './pleiadesAnalysis';
 import {TIMED_PHOTOMETER_POLICY,PHOTOMETER_SECONDS,PHOTOMETER_REPEATS,MAX_PHOTOMETER_CALLBACKS_PER_READING,LEGACY_PHOTOMETER_TIMING,photometerTiming,requiredPhotometerCallbacks,createPhotometerIntegration,advancePhotometerIntegration,photometerReplayCallbacks,MAX_PHOTOMETER_CALLBACKS,PHOTOMETER_CALLBACK_MS,type PhotometerTiming,type PhotometerIntegration} from './photometerIntegration';
 import {randomDraw} from './acquisition';
-import {PINNED_PLEIADES_V_TARGET,isExpandedPhotometerTarget,isPhotometerTarget,type PleiadesFieldKind} from './photometerField';
+import {PINNED_PLEIADES_V_TARGET,isExpandedPhotometerTarget,isAddedPhotometerTarget,isPhotometerTarget,type PleiadesFieldKind} from './photometerField';
 import {drawPinnedPleiadesUbv,isPhotometerFilter,type PhotometerFilter} from './photometerUbvField';
 import {reducePhotometerSky,reducePhotometerObject,photometricBMinusV} from './photometryReduction';
-import {photometerJournalFits,EXPANDED_PHOTOMETER_POLICY,PHOTOMETER_POLICY} from './photometerJournal';
+import {photometerJournalFits,EXPANDED_PHOTOMETER_POLICY,PHOTOMETER_POLICY,VARIABLE_FIELD_PHOTOMETER_POLICY} from './photometerJournal';
 export {PHOTOMETER_POLICY,UBV_PHOTOMETER_POLICY,LEGACY_PHOTOMETER_POLICY} from './photometerJournal';
-export const MAX_PHOTOMETER_EVENTS=256;
+/** Journal event bound of the OpenVireo photometer session (a web format, not a native limit): integration-provenance.json
+ * records it as browserPolicy.maximumEvents 256 next to the browser timer policy, and no CLEA address bounds the readings. Raised to
+ * 512 on 2026-10-28 (coordinator decision) because the full 24-star B/V sample needs 251 events, leaving no room for retakes; the
+ * 128 KiB byte bound (photometerJournalFits) and the callback bound are unchanged, and files within 256 events restore unchanged.
+ * The provenance file keeps its recorded value (its SHA-256 is part of every v4+ header). */
+export const MAX_PHOTOMETER_EVENTS=512;
 export class PhotometerError extends Error {constructor(readonly code:'phase'|'sky'|'event'|'limit'|'entry'|'session'|'color'){super(`Photometer: ${code}`);this.name='PhotometerError';}}
 export type PhotometerEvent=Readonly<{type:'activate'|'deactivate'|'start'|'stop'|'complete'}|{type:'telescope';index:PhotometerTelescopeIndex}|{type:'aperture';selector:number}|{type:'point';kind:PleiadesFieldKind}|{type:'record';readingId:number;value:number;note:string}|{type:'filter';filter:PhotometerFilter}|{type:'color';bReadingId:number;vReadingId:number}|{type:'target';targetId:string}|{type:'timing';secondsPerIntegration:number;integrations:number}|{type:'advance';callbacks:number}|{type:'clusterFit';modulus:number}|({type:'nativeClusterFit'}&NativeClusterParameters)>;
 type Callback=Readonly<{sourceCount:number;skyCount:number;totalPhotonCount:number;initialSeed:number;seed:number;draws:number;nativeBaseCountSum:number;timerWaitMs:number}>;
@@ -17,7 +22,13 @@ export type PhotometerReading=Readonly<{id:number;telescopeIndex?:PhotometerTele
 export type PhotometerEntry=Readonly<{readingId:number;value:number;note:string}>;
 /** In-memory transition-family marker retained for API compatibility;minimal
  * persisted owner/policy is derived from history,not this legacy state label. */
-export type PhotometerState=Readonly<{policy:typeof PHOTOMETER_POLICY|typeof TIMED_PHOTOMETER_POLICY|typeof EXPANDED_PHOTOMETER_POLICY;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;nativeClusterFit?:NativeClusterFit|null;clusterFit?:PleiadesFit|null;timing?:PhotometerTiming;work?:PhotometerIntegration|null;callbacksUsed?:number;targetId:string;colors:Readonly<Record<string,PhotometerColor>>;filter:PhotometerFilter;contextId:number;skies:Readonly<Record<PhotometerFilter,PhotometerReading|null>>;color:PhotometerColor|null;seedAtStart:number;seed:number;armed:boolean;pointing:PleiadesFieldKind;phase:'idle'|'running'|'stopped'|'complete';sky:PhotometerReading|null;current:PhotometerReading|null;readings:readonly PhotometerReading[];entries:readonly PhotometerEntry[];events:readonly PhotometerEvent[]}>;
+export type PhotometerState=Readonly<{policy:typeof PHOTOMETER_POLICY|typeof TIMED_PHOTOMETER_POLICY|typeof EXPANDED_PHOTOMETER_POLICY|typeof VARIABLE_FIELD_PHOTOMETER_POLICY;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;nativeClusterFit?:NativeClusterFit|null;clusterFit?:PleiadesFit|null;timing?:PhotometerTiming;work?:PhotometerIntegration|null;callbacksUsed?:number;targetId:string;colors:Readonly<Record<string,PhotometerColor>>;filter:PhotometerFilter;contextId:number;skies:Readonly<Record<PhotometerFilter,PhotometerReading|null>>;color:PhotometerColor|null;seedAtStart:number;seed:number;armed:boolean;pointing:PleiadesFieldKind;phase:'idle'|'running'|'stopped'|'complete';sky:PhotometerReading|null;current:PhotometerReading|null;readings:readonly PhotometerReading[];entries:readonly PhotometerEntry[];events:readonly PhotometerEvent[]}>;
+/** Review 4 item 8: the state label follows the widest target set selected so far (added targets: the v11 label, the sixteen
+ * expanded targets: the v5 label); it never narrows. The persisted owner/policy is still derived from history. */
+function labelFor(current:PhotometerState['policy'],targetId:string):PhotometerState['policy']{
+ if(isAddedPhotometerTarget(targetId)||current===VARIABLE_FIELD_PHOTOMETER_POLICY)return VARIABLE_FIELD_PHOTOMETER_POLICY;
+ return isExpandedPhotometerTarget(targetId)?EXPANDED_PHOTOMETER_POLICY:current;
+}
 export function createPhotometer(seed:number):PhotometerState {randomDraw(seed);return Object.freeze({policy:PHOTOMETER_POLICY,targetId:PINNED_PLEIADES_V_TARGET.catalogId,colors:Object.freeze({}),filter:'V',contextId:0,skies:emptySkies(),color:null,seedAtStart:seed,seed,armed:false,pointing:'sky',phase:'idle',sky:null,current:null,readings:Object.freeze([]),entries:Object.freeze([]),events:Object.freeze([])});}
 export type PhotometerColor=Readonly<{bReadingId:number;vReadingId:number;targetId:string;telescopeIndex?:PhotometerTelescopeIndex;apertureSelector?:number;acquired:number;transcribed:number}>;
 const emptySkies=()=>Object.freeze({U:null,B:null,V:null});
@@ -56,12 +67,12 @@ function transition(s:PhotometerState,e:PhotometerEvent,live:boolean):Photometer
   next={...s,apertureSelector:e.selector,current:null,phase:'idle',...(s.timing?{work:null}:{})};
  }else if(e.type==='timing'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');const timing=photometerTiming(e.secondsPerIntegration,e.integrations);
-  next={...s,policy:s.policy===EXPANDED_PHOTOMETER_POLICY?s.policy:TIMED_PHOTOMETER_POLICY,timing,callbacksUsed:s.callbacksUsed??s.readings.length,work:null,current:null,phase:'idle'};
+  next={...s,policy:s.policy===EXPANDED_PHOTOMETER_POLICY||s.policy===VARIABLE_FIELD_PHOTOMETER_POLICY?s.policy:TIMED_PHOTOMETER_POLICY,timing,callbacksUsed:s.callbacksUsed??s.readings.length,work:null,current:null,phase:'idle'};
  }else if(e.type==='deactivate')next={...s,armed:false,skies:emptySkies(),sky:null,phase:s.phase==='running'?'stopped':s.phase};
  else if(e.type==='target'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   if(!isPhotometerTelescopeTarget(e.targetId,s.telescopeIndex??0))throw new PhotometerError('event');
-  next={...s,policy:isExpandedPhotometerTarget(e.targetId)?EXPANDED_PHOTOMETER_POLICY:s.policy,targetId:e.targetId,pointing:'object',current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[e.targetId]??null};
+  next={...s,policy:labelFor(s.policy,e.targetId),targetId:e.targetId,pointing:'object',current:null,phase:'idle',...(s.timing?{work:null}:{}),color:s.colors[e.targetId]??null};
  }else if(e.type==='filter'){
   if(!s.armed||s.phase==='running')throw new PhotometerError('phase');
   next={...s,filter:e.filter,sky:s.skies[e.filter],current:null,phase:'idle',...(s.timing?{work:null}:{})};

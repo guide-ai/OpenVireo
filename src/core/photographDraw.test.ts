@@ -72,3 +72,13 @@ describe('photograph names, the approved bitmaps and the draw inside the field e
   expect(checked).toBeGreaterThan(0);
  });
 });
+describe('GLXYSP name key 0x55eb64 (review 3 finding 1)',()=>{
+ it('keeps the text inside the parentheses, removes spaces, and looks the key up with Pos',async()=>{
+  const {glxyspKey,glxyspLookup}=await import('./fieldEngine');
+  expect(glxyspKey('M82 (NGC 3034)')).toBe('NGC3034');expect(glxyspKey('NGC 4889')).toBe('NGC4889');
+  expect(glxyspKey('A (B C')).toBe('BC');expect(glxyspKey('A B) C')).toBe('AB');expect(glxyspKey('()')).toBe('');
+  const lines=new TextDecoder('latin1').decode(readFileSync(new URL('../../public/original/spectra/GLXYSP.LST',import.meta.url))).replace(/\x1a$/,'').split('\r\n').filter(Boolean);
+  expect(glxyspLookup(lines,'M82 (NGC 3034)')).toBe('NGC3034.SP');expect(glxyspLookup(lines,'NGC 4889')).toBe('NGC4889.SP');
+  expect(glxyspLookup(lines,'NGC 4874')).toBeNull();expect(glxyspLookup(lines,'()')).toBeNull();
+ });
+});

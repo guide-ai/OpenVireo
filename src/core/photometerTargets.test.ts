@@ -28,6 +28,7 @@ describe('three original Pleiades target identities and complete fields',()=>{
   for(const t of PLEIADES_PHOTOMETER_TARGETS)for(const f of ['U','B','V']as const){const actual=buildPinnedPleiadesUbvField('object',f,t.catalogId),reference=Number(vectors.means[t.catalogId as keyof typeof vectors.means][f].source);expect(Math.abs(actual.sourceMean-reference)).toBeLessThan(reference*1e-7);expect(actual.sourceMean).toBeLessThan(1e6);expect(actual.skyMean).toBeGreaterThan(0);}
  });
  it('rejects unsupported, malformed and merely similarly named sources, and arbitrary pointing',()=>{
-  for(const id of ['01803-00478','N2230-01442','N2230.DAT@0144496','N2230.DAT@146960','',null])expect(()=>buildPhotometerTargetField(id as string,'object')).toThrow();expect(()=>buildPhotometerTargetField('N2230.DAT@144496','else' as 'object')).toThrow();
+  // N2230.DAT@146960 (row 2) is a target since the recovered pointing association of 2026-10-28; N2230.DAT@146947 never is.
+  for(const id of ['01803-00478','N2230-01442','N2230.DAT@0144496','N2230.DAT@146947','',null])expect(()=>buildPhotometerTargetField(id as string,'object')).toThrow();expect(()=>buildPhotometerTargetField('N2230.DAT@144496','else' as 'object')).toThrow();
  });
 });

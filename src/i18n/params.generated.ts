@@ -256,6 +256,7 @@ export interface MessageParameters {
   "session.boundary": never;
   "session.saved": never;
   "session.restored": never;
+  "session.preparingFields": never;
   "session.restoreError": never;
   "session.exportError": never;
   "session.logLimit": never;
@@ -3274,4 +3275,5 @@ export interface MessageParameters {
   "galaxyExposure.continuationAdaptation": never;
   "session.restoreResourcesError": never;
   "hubblePoint.telescopeBound": "id" | "telescope" | "telescopes";
+  "galaxyExposure.engineInvalid": never;
 }

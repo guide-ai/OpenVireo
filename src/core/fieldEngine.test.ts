@@ -8,7 +8,8 @@ import fieldPegasus from '../../data/hubble/pinned-pegasus-field.json';
 import exposureVectors from '../../data/hubble/galaxy-exposure-vectors.json';
 import {fieldPackFromSnapshot,decodeFieldPack,FieldPackError,FIELD_PACK_SCHEMA} from './fieldPack';
 import {lssFieldRows,type LssFieldNumber} from './lssFields';
-import {nativeCursorInsert,evaluateField,buildFieldPopulation,admitFieldGalaxies,createFieldExposure,freshFieldArea,FieldEngineError,type FieldTelescope} from './fieldEngine';
+import {nativeCursorInsert,evaluateField,buildFieldPopulation,admitFieldGalaxies,createFieldExposure,freshFieldArea,fieldVariableAdmitted,FieldEngineError,type FieldTelescope} from './fieldEngine';
+import {decodeNativeVariableRecord} from './variableMerge';
 import {verifiedGalaxyConfiguration,createGalaxyExposure} from './galaxyExposure';
 import {tickJournal,startJournal,activateJournal} from './exposureJournal';
 // The approved original catalogue is read only to feed the engine; assertions compare against the verified builders.
@@ -124,5 +125,22 @@ describe('field engine gates and errors',()=>{
   const {galaxies}=admitFieldGalaxies(glx,freshFieldArea({ra:15.674482603095818,dec:28.356417345271815}));
   const tied=galaxies.filter(g=>g.ra===15.674482603095818&&g.dec===28.356417345271815).map(g=>g.recordIndex);
   expect(tied).toEqual([18709,18708,18707]);
+ });
+});
+describe('variable loading keeps only variables within the limiting magnitude (0x598572)',()=>{
+ // Real CLEA_VStrs.dat records: 1791 (V0512 Per, Single 20.22, one of the 7 fainter than 20) and 7494 (EU Cnc, 20.4).
+ const vstrs=new Uint8Array(readFileSync(new URL('../../public/original/variables/CLEA_VStrs.dat',import.meta.url)));
+ const rec=(i:number)=>decodeNativeVariableRecord(Array.from(vstrs.subarray(i*92,i*92+92),b=>b.toString(16).padStart(2,'0')).join(''),i);
+ it('a faint variable inside the area is not loaded; the same position at 20 or brighter is',()=>{
+  expect(vstrs.length%92).toBe(0);
+  const faint=[1791,7494].map(rec),faintCount=Array.from({length:vstrs.length/92},(_,i)=>i).filter(i=>new DataView(vstrs.buffer,vstrs.byteOffset+i*92+39,4).getFloat32(0,true)>20).length;
+  expect(faintCount).toBe(7);
+  for(const v of faint){
+   expect(v.magnitude).toBeGreaterThan(20);
+   const area=freshFieldArea({ra:v.ra,dec:v.dec});
+   expect(fieldVariableAdmitted(v,area)).toBe(false);
+   expect(fieldVariableAdmitted({...v,magnitude:20},area)).toBe(true);
+   expect(fieldVariableAdmitted({...v,magnitude:20,dec:area.maximumDec+.01},area)).toBe(false);
+  }
  });
 });

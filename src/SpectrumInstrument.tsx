@@ -163,7 +163,7 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
     const ticket=++generation.current;setBusy(true);setError('');setNotice('');
     try {
       onPrepareObserving?.();onPreparePhotometry?.();
-      const incoming=await readInvestigationSession(file);
+      const incoming=await readInvestigationSession(file,{onPreparingFields:()=>{if(ticket===generation.current)setNotice(t('session.preparingFields'));}});
       if(incoming.kind==='practice'){
         const stars=acquisitions.filter(a=>a.kind==='catalog-star-acquisition'),merged=readClassificationWorkspace({...classification,practice:incoming.state,active:'practice'},stars);
         await loadClassificationSources(incoming.state,stars);

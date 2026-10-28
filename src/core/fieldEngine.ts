@@ -8,7 +8,8 @@
  *     gate; 'merge' runs the recovered loader 0x5987e4 and merge 0x597f90 (qsoMerge.ts) on the bundled CLEA_QSO.DAT, after the
  *     variable stage and before the galaxies, and the galaxy cleanup then also takes its type-3 branches (keep both, or delete
  *     the galaxy). Photographic-list association: a typed unavailable gate, or with the photographs option the ported draw;
- *  4. variables: none, or exactly one class-3 record through the recovered false-merge branch (variableMerge.ts); otherwise gated;
+ *  4. variables: none, or each record whose dispatch 0x51ec48 returns false without side effects, merged one after another in file
+ *     order through the recovered false-merge branch (variableMerge.ts); any other class/period/word combination is gated;
  *  5. galaxies: whole-file CLEA_GLX.DAT admission in source order, each inserted by the GLX loader (call 0x599128) through the
  *     cursor-relative linked-list insert 0x492728 with the strict RA/Dec-greater comparator 0x5969e0 (nativeCursorInsert);
  *     each galaxy then cleans the star list (0x5980cc) in that order;
@@ -83,9 +84,12 @@ export type FieldLibrarySpectrum=Readonly<{targetId:string;file:string;samples:r
  * could become is visible, and no galaxy or QSO near enough to read the overwritten magnitude exists. Used for the Boötes rows
  * only (coordinator decision); Object X uses variableDispatch 'recovered' instead. */
 export type FieldVariableMode='gate'|'outside-view';
-/** 'class-3' (default): the verified HI Peg dispatch only. 'recovered' (Front F, Object X): one variable whose time update the
- * dispatch 0x51ec48 returns false for without side effects (zero period, zero word unless class 1, or class 3:
- * variableMerge.ts nativeVariableDispatchFalse) takes the same false-merge branch. Existing exercises keep 'class-3'. */
+/** 'recovered' (default since the coordinator decision of 2026-10-28): every variable whose time update the dispatch 0x51ec48
+ * returns false for without side effects (zero period, zero word unless class 1, or class 3: variableMerge.ts
+ * nativeVariableDispatchFalse) takes the false-merge branch, one after another in the stage's (RA, Dec) order (0x492728 under
+ * 0x4bc950); any other variable keeps the
+ * typed variable-merge reason (or the Boo outside-view rule). 'class-3': the earlier verified HI Peg contract only (one class-3
+ * variable with nonzero period and word), kept for comparison and tests. */
 export type FieldVariableDispatch='class-3'|'recovered';
 /** A selected merged QSO record (type 3) is observed only when the caller supplies the decoded QSOSpect.dat (qsoSpectrum.ts)
  * and the spectrometer interval explicitly (the active range env+0x2bd4/0x2bd8; see objectXSpectrometer.ts). Without it a QSO
@@ -99,8 +103,8 @@ export type FieldContinuationMode='none'|'start-time';
 /** A selected GSC star (type 0) is observed only when the caller resolves its spectral index (record offset 8) to a template
  * (starTemplates.ts: JSPEC2.SPI exact match, no fallback); a miss stays star-selected. */
 export type FieldStarObservation=Readonly<{templateFor:(spectralIndex:number)=>Readonly<{file:string;spectrum:UniformSpectrum}>|null}>;
-/** The spectrometer interval of the galaxy, continuation and star paths. Default 4000–5000 Å: the Hubble domain of every existing
- * galaxy acquisition (unchanged). The normal spectrometer's interval (3700–4700 Å) is passed explicitly by its callers. */
+/** The spectrometer interval of the galaxy, continuation and star paths. Default 4000–5000 Å: the web configuration of every existing
+ * galaxy acquisition (unchanged; 4000/5000 do not occur in CLEA_VEO.exe, GALAXY-ACQUISITION.md). The normal spectrometer's interval (3700–4700 Å) is passed explicitly by its callers. */
 export type FieldSpectralInterval=Readonly<{minimum:number;maximum:number}>;
 /** Photographic images (Front F, Object X): the kept GLIMAGES.LST rows (photographicList.ts, with the native names) and the
  * decoded bitmaps the caller verified, by file name. With this option a photograph in the area no longer gates the field by
@@ -110,9 +114,14 @@ export type FieldSpectralInterval=Readonly<{minimum:number;maximum:number}>;
  * Without the option every photograph in the area stays that typed reason (unchanged). */
 export type FieldPhotographs=Readonly<{rows:readonly PhotographRow[];bitmaps:ReadonlyMap<string,Bitmap8>}>;
 export type FieldPhotographAssociation=Readonly<{recordIndex:number;galaxyName:string;photograph:number;name:string;file:string}>;
-/** 0x55eb64 (loop 0x55ecdc..0x55ed55): the first GLXYSP.LST line containing the galaxy name with any parenthesised suffix and
- * the spaces removed (Pos), or null. */
-export function glxyspLookup(lines:readonly string[],id:string):string|null{const key=id.replace(/\(.*$/,'').replace(/ /g,'');return key?lines.find(l=>l.includes(key))??null:null;}
+/** 0x55eb64: the key keeps the text INSIDE the parentheses — 0x55ec6f p=Pos('(') then 0x55ec7a Delete(key,1,p) (no-op when
+ * p=0), 0x55ec91 q=Pos(')') then 0x55eca8 Delete(key,q,Length) (no-op when q=0) — then its spaces are removed
+ * (0x55ecb4..0x55ecd8); the loop 0x55ecdc..0x55ed55 returns the first GLXYSP.LST line containing it (case-sensitive Pos
+ * 0x55ecf8), or null. "M82 (NGC 3034)" → NGC3034; "NGC 4889" → NGC4889. */
+export function glxyspKey(id:string):string{
+ let k=id;const p=k.indexOf('(');if(p>=0)k=k.slice(p+1);const q=k.indexOf(')');if(q>=0)k=k.slice(0,q);return k.replace(/ /g,'');
+}
+export function glxyspLookup(lines:readonly string[],id:string):string|null{const key=glxyspKey(id);return key?lines.find(l=>l.includes(key))??null:null;}
 export type FieldOptions=Readonly<{/** GLXYSP.LST rows (review 2 finding 2): a selected galaxy that has an own spectrum there is
  * observed only with that spectrum supplied as librarySpectrum; otherwise the typed spectrum-mapping reason (never the
  * GLXYTMPL.SP fallback). Without this option the caller vouches for the mapping (Hubble targets: recorded per target). */
@@ -206,6 +215,10 @@ export function nativeCursorInsert<T>(items:readonly T[],greater:(a:T,b:T)=>bool
  return list;
 }
 const galaxyGreater=(a:NativeGalaxy,b:NativeGalaxy)=>a.ra>b.ra||a.ra===b.ra&&a.dec>b.dec;
+/** 0x4bc950: strict RA greater, or equal RA and Dec greater (the variable list's comparator). */
+const variableGreater=(a:NativeVariable,b:NativeVariable)=>a.ra!==b.ra?a.ra>b.ra:a.dec>b.dec;
+/** Variable loader predicate (…0x598572): inside the area and Single magnitude <= the limiting magnitude. */
+export function fieldVariableAdmitted(v:Readonly<{ra:number;dec:number;magnitude:number}>,area:NativeCatalogRegion):boolean{return inside(v,area)&&Math.fround(v.magnitude)<=area.limitingMagnitude;}
 /** Whole-file galaxy admission (source order), then the native cursor insert 0x492728 (comparator 0x5969e0). */
 export function admitFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Readonly<{admission:readonly number[];galaxies:readonly NativeGalaxy[]}>{
  if(!(glx instanceof Uint8Array)||glx.byteLength!==GLX_CATALOG.bytes)throw new FieldEngineError('input');
@@ -262,10 +275,13 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  if(qsoMatches.length&&mode==='gate')reasons.push('qso-merge');
  if(photographMatches.length&&!options.photographs)reasons.push('photographic-image');
  let variables:NativeVariable[];
- try{variables=pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>inside(v,area));}catch{throw new FieldEngineError('evidence');}
+ // Variable loader: a record is kept when it lies inside the area and its magnitude is within the limiting magnitude (0x598572
+ // setbe: Single magnitude <= limit); kept records are inserted with the cursor insert 0x492728 under the strict RA-then-Dec
+ // greater comparator 0x4bc950, and the variable stage 0x59859c iterates that sorted list (review 4 items 4 and 5).
+ try{variables=[...nativeCursorInsert(pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>fieldVariableAdmitted(v,area)),variableGreater)];}catch(e){if(e instanceof FieldEngineError)throw e;throw new FieldEngineError('evidence');}
  let variableRemoved:string[]=[];
  let outsideViewVariable:FieldOutsideViewVariable|undefined;
- const dispatch=options.variableDispatch??'class-3',falseDispatch=(v:NativeVariable)=>dispatch==='recovered'?nativeVariableDispatchFalse(v,VARIABLE_TABLES):nativeVariableClass(v.classification,VARIABLE_TABLES)===3;
+ const dispatch=options.variableDispatch??'recovered',falseDispatch=(v:NativeVariable)=>dispatch==='recovered'?nativeVariableDispatchFalse(v,VARIABLE_TABLES):nativeVariableClass(v.classification,VARIABLE_TABLES)===3;
  if(variables.length===1&&options.variables==='outside-view'&&!falseDispatch(variables[0])){
   const v=variables[0];
   try{
@@ -276,11 +292,17 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
     outsideViewVariable=Object.freeze({variable:v.recordIndex,name:v.name,classification:v.classification,hitId:trace.winner!.id,resolvedId:target.id,hitArcseconds:arcseconds,removedRunner:trace.removedRunner?.id??null});}
   }catch(e){if(e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
  }
- else if(variables.length>1||variables.some(v=>!falseDispatch(v)))reasons.push('variable-merge');
- else if(variables.length===1){
+ else if(variables.some(v=>!falseDispatch(v))||variables.length>1&&dispatch!=='recovered')reasons.push('variable-merge');
+ else if(variables.length){
+  // The variable stage 0x59859c..0x5987d9 iterates the RA/Dec-sorted variable list (reset/next 0x5985cb/0x5985d8) and merges each
+  // variable in turn (0x598608): several no-effect variables are sequential false merges over the current star list; each may
+  // prune a runner (kept pruned) and each hit record is restored (0x5986c0). A failure part-way (an unsafe saved index or a merge
+  // boundary) gates the whole field with variable-merge, so the partly merged list is never used and needs no rollback.
   try{
-   const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(variables[0],s)})),variables[0],VARIABLE_TABLES,dispatch);
-   const kept=new Set(merged.rows.map(r=>r.id));variableRemoved=stars.filter(s=>!kept.has(s.id)).map(s=>s.id);stars=stars.filter(s=>kept.has(s.id));
+   for(const v of variables){
+    const merged=nativeVariableFalseMerge((stars as NativeFieldStar[]).map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),v,VARIABLE_TABLES,dispatch);
+    const kept=new Set(merged.rows.map(r=>r.id));variableRemoved.push(...stars.filter(s=>!kept.has(s.id)).map(s=>s.id));stars=stars.filter(s=>kept.has(s.id));
+   }
   }catch(e){if(e instanceof VariableMergeError||e instanceof CatalogMergeError)reasons.push('variable-merge');else throw e;}
  }
  let qsoStage:FieldPopulation['qsoStage'];
@@ -358,8 +380,12 @@ function paintField(population:FieldPopulation,scene:NativeSelectionScene,c:Cali
  }
  return raster;
 }
+export const FIELD_EVALUATION_MARK='openvireo:field-evaluation';
 /** Complete fresh-field evaluation for one pointing and telescope record. */
 export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,options:FieldOptions={}):FieldResult{
+ // A per-thread marker (performance marks belong to the timeline of the thread that makes them): tests use it to prove that a
+ // page delegates field evaluation to a Worker. No state or result depends on it.
+ if(typeof performance!=='undefined'&&typeof performance.mark==='function')performance.mark(FIELD_EVALUATION_MARK);
  if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
  const c=FIELD_CALIBRATIONS[telescope],at=Object.freeze({ra:pointing.ra,dec:pointing.dec});
  const empty={pointing:at,telescope,scene:null,viewport:null,selection:null,target:null,calibration:null};

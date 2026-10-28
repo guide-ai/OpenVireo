@@ -1,7 +1,32 @@
 # Original Pleiades16-target observing sample
 
+**Superseded on 2026-10-28:** all 24 positions are now admitted (see the update below); the paragraph that follows describes the 16-target increment.
+
 The photometer at **http://127.0.0.1:5173/#photometer** now admits16 of the24 original PLEIADES.HTL positions. All24 are listed in original order; eight are disabled with their actual remaining contract: four mixed variable-source fields and four unvalidated exact pointing associations. This expands the existing observation workflow by13 complete original fields. It adds no new astronomy model, arbitrary target, catalog answer, HR fit, reddening or distance.
 
+
+## Update 2026-10-28: all twenty-four targets (rows 3, 5, 10, then 2, 7, 12, 14, 22)
+Resources: the user approval of 2026-10-28 (AGENTS.md) covers bounded N2230 subsets for the photometer fields of the 24
+PLEIADES.HTL positions, with their read witnesses and provenance. Each field publishes whole 27-byte records only inside its own
+area; every other band read (binary-search probe or Dec-strip scan row) is an 8-byte position-only witness (packed RA and Dec),
+which is all the trace and the admission predicate read from a record rejected by position. Design: by the coordinator decision
+of 2026-10-28 the recovered variable stage is applied to the photometer fields. In rows 3
+(01799-00306, NZ Tau), 5 (01803-00156, V0443 Tau and V0855 Tau) and 10 (01800-02089, V0447 Tau and V0641 Tau) every CLEA_VStrs.dat
+record is class 3 with period 0 and word 0, so its time update 0x51ec48 returns false without side effects: each variable is
+merged in the stage's (RA, Dec) order (inserted with 0x492728 under 0x4bc950; 0x598608, reference 0), a hit record is restored (0x5986c0) and a miss inserts nothing (0x5987a1). The only
+change to a field is a runner the nearest merge prunes: in row 10's object field V0447 Tau's merge removes N2230.DAT@149084. The
+fields, their merge witnesses (independent Python model) and independent UBV means are in `data/photometry/pleiades-variable-fields.json`
+and `pleiades-variable-vectors.json`; a history that names one of these targets is saved as owner 11
+(`OpenVireo-Pleiades-variable-field-targets-v11`, with the field SHA-256). Row 12 and the other four rows the earlier policy called unvalidated associations (2, 7, 12, 14, 22) are settled by
+recovery as well: the photometer's FormActivate (0x4ff8b0) selects, through 0x53cf94/0x53ce8c and 0x59a0fc, the star nearest the
+rounded projected telescope pointing (below the 350-pixel sentinel), and the aperture fraction follows the real angular offset
+(0x500568 with 0x59a49c); no label or suffix check exists. Each field is pointed at the exact HTL coordinates
+(`data/photometry/pleiades-pointing-fields.json`): rows 12 and 22 sit 0.041″ and 0.049″ from their stars (selected at 0.21 and
+0.26 px; independent offset-dependent means in `pleiades-pointing-vectors.json`), and the sky fields of rows 2, 7, 14 and 22 select
+another star at zero fraction. All labels match their record suffixes. The 0.4 m now admits all 24 positions (KPNO 0.9 m 14 and
+Mayall 10 unchanged). A complete 24-star B/V sample needs 251 journal events (release included); the event bound was raised from 256 to 512 so
+retakes fit (PHOTOMETER-VISUAL.md). The policy change is recorded in `expanded-provenance.json`
+(`policyUpdates`).
 ## Try a newly admitted star
 
 1. Save current work before a new seed42 session. Release the photometer, open **Raw counts & reproducibility**, enter42 and choose **New seeded session**. Activate and choose **01803-01554 · original hotlist entry7**. This keeps its native identity `N2230.DAT@148460`.
@@ -52,7 +77,7 @@ Point to HTL selection points the App telescope; the selected navigation object 
 
 Because Activate uses the shared tracked-field path, a full investigation Save now contains a clock drive and uses the existing version 17 (18 with sky profiles). Photometer formats, owners, events, budgets and all scientific transitions are unchanged; older files restore as before.
 
-The Pleiades lab guide recomputes its marks from the current list, pointing and photometer state. Its sample step counts when all 16 admitted original stars have their own confirmed B−V: explicit web exercise coverage, not a historical classroom minimum or grade. The existing two-pair fit minimum remains a technical guard. Save is an instruction, not a counted step.
+The Pleiades lab guide recomputes its marks from the current list, pointing and photometer state. Its sample step counts when all admitted original stars (24 since 2026-10-28; 16 at this increment) have their own confirmed B−V: explicit web exercise coverage, not a historical classroom minimum or grade. The existing two-pair fit minimum remains a technical guard. Save is an instruction, not a counted step.
 
 ## Your pairs in Data from Observations (phase 1 item 1.9)
 

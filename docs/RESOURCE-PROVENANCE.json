@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "scope": "All1348files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json.",
-  "totalFiles": 1348,
-  "totalBytes": 127635842,
+  "scope": "All1352files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json.",
+  "totalFiles": 1352,
+  "totalBytes": 128172324,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
@@ -13,7 +13,7 @@
     ".SPI": 1,
     ".TXT": 1,
     ".dat": 4,
-    ".json": 1063,
+    ".json": 1067,
     ".png": 170,
     ".sav": 1
   },
@@ -59,8 +59,8 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "data/photometry": {
-      "files": 75,
-      "bytes": 6139853,
+      "files": 79,
+      "bytes": 6798285,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed catalog/model tables, source fields, analytic tests, proof metadata and earlier web-writer fixtures",
       "usedBy": "UBV photometry, clusters/ZAMS/isochrones, compatibility and scientific tests",
@@ -414,6 +414,52 @@
           "data/objectx/frozen-observations.json"
         ],
         "sourceGrant": "Derived regression record (review 2 finding 11): per Object X spectroscopy row and telescope the status, typed reasons, populations, photograph files, crop digest, slit level, fraction, source file and a digest of the source means; no original bytes.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/photometry/pleiades-variable-fields.json",
+          "data/photometry/pleiades-variable-vectors.json"
+        ],
+        "sourceGrant": "User approval of 2026-10-28 (AGENTS.md): bounded GSC subsets from band N2230 for the Pleiades photometer fields of the 24 PLEIADES.HTL positions (each field pointed at the exact HTL coordinates), with their read witnesses and provenance, on the same terms as the published Hubble and LSS fields; not the complete band or the full GSC. Whole 27-byte records are published only inside a field's own area; every other band read (binary-search probe or Dec-strip scan row) is an 8-byte position-only witness. Contents: bounded N2230 photometer fields for PLEIADES.HTL rows 3, 5 and 10 with their CLEA_VStrs.dat records (CLEA_VStrs.dat is already published) and the recovered no-effect variable merges, plus independent UBV means; same terms as the existing Pleiades field packets.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/photometry/pleiades-pointing-fields.json",
+          "data/photometry/pleiades-pointing-vectors.json"
+        ],
+        "sourceGrant": "User approval of 2026-10-28 (AGENTS.md): bounded GSC subsets from band N2230 for the Pleiades photometer fields of the 24 PLEIADES.HTL positions (each field pointed at the exact HTL coordinates), with their read witnesses and provenance, on the same terms as the published Hubble and LSS fields; not the complete band or the full GSC. Whole 27-byte records are published only inside a field's own area; every other band read (binary-search probe or Dec-strip scan row) is an 8-byte position-only witness. Contents: bounded N2230 photometer fields at the exact PLEIADES.HTL pointings of rows 2, 7, 12, 14, 22 with the recovered native selection (and row 12's CLEA_VStrs.dat record), plus independent offset-dependent UBV means; same terms as the existing Pleiades field packets.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/photometry/pleiades-variable-fields.json",
+          "data/photometry/pleiades-variable-vectors.json",
+          "data/photometry/pleiades-pointing-fields.json",
+          "data/photometry/pleiades-pointing-vectors.json",
+          "data/hubble/existing-target-fingerprints.json"
+        ],
+        "sourceGrant": "Review 4 of b68dfc0 (2026-10-28): the Pleiades photometer field and vector files regenerated with the recovered (RA, Dec) insertion order (0x492728 under 0x4bc950) and the magnitude-within-limit condition (0x598572; no Pleiades variable is fainter than 20, so the merges are unchanged). Their N2230 records are covered by the user approval of 2026-10-28 cited in the two preceding entries. The same review corrected the variable-order wording (\"file order\") in data/hubble/existing-target-fingerprints.json; its fingerprints are unchanged.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "data/photometry/pleiades-variable-fields.json",
+          "data/photometry/pleiades-variable-vectors.json",
+          "data/photometry/pleiades-pointing-fields.json",
+          "data/photometry/pleiades-pointing-vectors.json",
+          "data/photometry/expanded-provenance.json"
+        ],
+        "sourceGrant": "Under the user approval of 2026-10-28 (AGENTS.md) for bounded N2230 subsets of the 24 Pleiades photometer fields: the variable and pointing field files now publish whole 27-byte records only inside each field's own area (newly published whole records: 2 each for rows 2, 12 and 22; none for rows 3, 5, 7, 10 and 14); every other band read is an 8-byte position-only witness. The approval is cited in the files (resourceApproval) and in expanded-provenance.json, whose 2026-10-28 evidence wording no longer says 'file order'.",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }

@@ -38,6 +38,16 @@ No other telescope/filter/aperture/seeing/integration/target or generated-cluste
 
 `OpenVireo Pleiades photometer session`, version1, is a separate web format. It does **not** extend or reinterpret existing full analysis v7. Spectrum/raw acquisition/classification/Hubble sessions retain their current schemas and flow. Photometer files contain only an explicit seed and strictly validated events, plus policy/numerical markers and the original field-fixture SHA-256. Imported computed counts, calibration fields, foreign v7 files, unknown event keys, invalid ordering and altered proof are rejected.
 
-Limits are128KiB,256 events and500 characters per note. Capacity is reserved to Stop/release safely at the journal limit. The replay recomputes every photon component, reduction and manual-entry association from the confirmed fixed domain. Saved/restored contexts are released; a file cannot authorize background acquisition or reuse a stored sky bank. No wall-clock catchup is performed. Pending file reads can be cancelled; cancelled or late results after navigation cannot overwrite current work. Parse errors retain the current completed readings/notebook.
+Limits are128KiB,512 events (256 until 2026-10-28; see below) and500 characters per note. Capacity is reserved to Stop/release safely at the journal limit. The replay recomputes every photon component, reduction and manual-entry association from the confirmed fixed domain. Saved/restored contexts are released; a file cannot authorize background acquisition or reuse a stored sky bank. No wall-clock catchup is performed. Pending file reads can be cancelled; cancelled or late results after navigation cannot overwrite current work. Parse errors retain the current completed readings/notebook.
 
 No backend, service configuration, dependency, Worker or IndexedDB change was needed. The persistent service remains on127.0.0.1:5173. Original files/hashes/license remain intact; local research only. No Windows/original execution/microemulation, Claude, publication, remote push or original-resource upload occurred. [Validation](PHOTOMETER-VISUAL-VALIDATION.md) records actual-repository results and browser screenshots.
+
+## Event bound raised to 512 (2026-10-28)
+The journal event bound is a web limit of this session format, not a recovered native one: `integration-provenance.json` records it
+as `browserPolicy.maximumEvents` 256, next to the browser timer policy, and no CLEA address bounds the photometer readings (Record
+0x501e7c appends to a collection through 0x54a73c). With all 24 PLEIADES.HTL positions admitted, a minimal complete B/V sample
+needs 251 events (two filter skies, then per star: target, V and B series with transcriptions, color; plus the fit and release),
+which left 5 events for retakes. `MAX_PHOTOMETER_EVENTS` is now 512; the 128 KiB byte bound and the callback bound are unchanged.
+Files within 256 events restore unchanged; the provenance file keeps its recorded value because its SHA-256 is part of every v4+
+header.
+

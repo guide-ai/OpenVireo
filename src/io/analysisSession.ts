@@ -154,13 +154,18 @@ function measurement(value:unknown,previousId:number,acquisitions:readonly Acqui
   return row;
 }
 /** E08 kept spectra admitted from a v29 wrapper are attached to the restored Object X investigation (which must exist). */
-async function withObjectXSpectra(base:AnalysisSession,value:unknown):Promise<AnalysisSession>{
-  if(value===null)return base;if(!base.objectX)fail('state');
+/** E08 kept spectra, already shape- and budget-checked (readObjectXSpectra, before the base replay), replayed here and attached
+ * to the restored Object X investigation (which must exist). */
+async function withObjectXSpectra(base:AnalysisSession,list:readonly ObjectXSpectrumRecord[]|null):Promise<AnalysisSession>{
+  if(list===null)return base;if(!base.objectX)fail('state');
   let spectra:readonly ObjectXSpectrumRecord[];
-  try{spectra=await (await import('./objectXSpectra')).admitObjectXSpectra(value);}catch(e){if(e instanceof Error&&(e as {code?:string}).code==='resources')fail('resources');fail('state');}
+  try{spectra=await (await import('./objectXSpectra')).admitObjectXSpectra(list);}catch(e){if(e instanceof Error&&(e as {code?:string}).code==='resources')fail('resources');fail('state');}
   return Object.freeze({...base,objectX:Object.freeze({...base.objectX!,spectra:spectra!})});
 }
-async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false):Promise<AnalysisSession> {
+/** Review 4 item 8: lets the page say that a restore is preparing fields (engine Hubble fields or kept Object X spectra, both in
+ * Workers) before the base replays; called at most once, only by the outermost v29 wrapper. */
+export type RestoreHooks=Readonly<{onPreparingFields?:()=>void}>;
+async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false,hooks:RestoreHooks={}):Promise<AnalysisSession> {
  if(!migrated){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
@@ -173,12 +178,18 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
     const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
     if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.extendedPolicy!==HUBBLE_EXTENDED_SESSION_POLICY||r.binarySHA256!==umiCached.binarySHA256||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>28)fail('format');
     checkCombinedReplayBudget(value,true);
+    // Review 3 finding 3: the kept spectra's own bounds (8 records, the per-journal limit and 24000 events in total) are checked
+    // here, before any engine-field preparation or base replay. Their budget stays separate from the combined one: those
+    // journals replay against their own Object X fields, not the observing banks, so a v29 replays at most 24000 + 24000 events.
+    let keptSpectra:readonly ObjectXSpectrumRecord[]|null=null;
+    if(withSpectra){if(r.objectXSpectra===null)fail('format');try{keptSpectra=(await import('./objectXSpectra')).readObjectXSpectra(r.objectXSpectra);}catch{fail('format');}}
     // Engine targets need their asynchronous, hash-checked field preparation before any of their journals can replay.
     // Only the (target, telescope) fields whose policies the file names are prepared (review 2 findings 1 and 9): a transient
     // preparation failure is the retryable 'resources' error, never an invalid-session verdict.
     const text=JSON.stringify(value),needed=HUBBLE_EXTENDED_TARGETS.filter(t=>t.route==='engine').flatMap(t=>t.telescopes.filter(i=>{const p=t.policies[i];return p!==undefined&&text.includes(JSON.stringify(p));}).map(i=>[t.id,i] as const));
+    if(needed.length||keptSpectra)hooks.onPreparingFields?.();
     if(needed.length){const io=await import('./hubbleEngineTargets');try{await io.ensureHubbleEngineTargets(needed);}catch(e){if(e instanceof io.HubbleEngineLoadError)fail('resources');fail('state');}}
-    const base=await withObjectXSpectra(await restore(r.base,verifySources,true,false,false,true,true,true),withSpectra?(r.objectXSpectra===null?fail('format'):r.objectXSpectra):null);
+    const base=await withObjectXSpectra(await restore(r.base,verifySources,true,false,false,true,true,true),keptSpectra);
     if((r.extendedGalaxies===null)!==!base.observing)fail('state');
     if(!base.observing)return base;
     let extendedGalaxies:NonNullable<ObservingWorkspace['extendedGalaxies']>;try{extendedGalaxies=(await import('./observingWorkspace')).restoreExtendedGalaxies(r.extendedGalaxies,base.acquisitions??[]);}catch{fail('state');}
@@ -392,12 +403,12 @@ export async function readAnalysisSession(file:File):Promise<AnalysisSession> {
 /** One UI entry can restore a complete analysis or merge a supported legacy
  * practice-only file. The caller applies practice-only state without replacing
  * acquisitions/measurements; unknown formats never gain partial acceptance. */
-export async function readInvestigationSession(file:File):Promise<{kind:'analysis';session:AnalysisSession}|{kind:'practice';state:ClassificationState}>{
+export async function readInvestigationSession(file:File,hooks:RestoreHooks={}):Promise<{kind:'analysis';session:AnalysisSession}|{kind:'practice';state:ClassificationState}>{
  if(file.size>MAX_SESSION_BYTES)fail('size');const bytes=await file.arrayBuffer();if(bytes.byteLength>MAX_SESSION_BYTES)fail('size');
  let value:unknown;try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{fail('format');}
  try{if(!projectBytesFit(bytes.byteLength,value,SESSION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}
  if(value&&typeof value==='object'&&projectMarker((value as {format:unknown}).format)==='OpenVireo stellar classification session'){
   if(bytes.byteLength>MAX_CLASSIFICATION_BYTES)fail('size');try{if(!projectBytesFit(bytes.byteLength,value,CLASSIFICATION_PAYLOAD_BYTES))fail('size');}catch{fail('size');}return {kind:'practice',state:parseClassificationSession(value)};
  }
- return {kind:'analysis',session:await restore(value)};
+ return {kind:'analysis',session:await restore(value,true,false,false,false,false,false,false,hooks)};
 }

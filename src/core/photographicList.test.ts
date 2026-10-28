@@ -42,3 +42,16 @@ describe('star templates through JSPEC2.SPI (0x50d460/0x50d660, generalized from
   expect(compactSpectralIndex('00'.repeat(8)+'48ffc102'+'00'.repeat(15))).toBe(0x02c1ff48);
  });
 });
+describe('Val 0x4042e4 and the per-row drop (review 3 finding 5)',()=>{
+ it('nativeVal follows Val: leading spaces, one sign, $/x/0x hex, nothing trailing',async()=>{
+  const {nativeVal}=await import('./photographicList');
+  expect(['143','  143','+7','-7','0','$1F','x1f','0X10','-$10'].map(nativeVal)).toEqual([143,143,7,-7,0,31,31,16,-16]);
+  for(const bad of ['','  ','143 ',' 1 4','1.5','+-1','--1','$','0x','12a','\t1'])expect(nativeVal(bad),JSON.stringify(bad)).toBeNull();
+  expect(nativeVal('2147483647')).toBe(2147483647);expect(nativeVal('2147483648')).toBeNull();expect(nativeVal('-2147483648')).toBe(-2147483648);
+ });
+ it('an unparsable RA/Dec drops only that GLIMAGES.LST row; the rest keep their file index',async()=>{
+  const {parseGlimagesPositions}=await import('./lssLists');
+  const text=',1,,0.5,10.0,A.BMP,1,1,0,0\r\n,2,,bad,10.0,B.BMP,1,1,0,0\r\n,3,,25.0,-95.0,C.BMP,1,1,0,0\r\n';
+  expect(parseGlimagesPositions(new TextEncoder().encode(text))).toEqual([{index:0,ra:.5,dec:10},{index:2,ra:25,dec:-95}]);
+ });
+});

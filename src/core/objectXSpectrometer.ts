@@ -1,14 +1,16 @@
-/** Front F → Front X: the spectrometer at an Object X spectroscopy pointing (E08 star, galaxy and QSO branches). Pure: the caller
- * (io/objectXSpectrometer.ts) supplies the decoded bounded packs (data/objectx/spectra-*.json, user approval of 2026-10-27,
- * group 2), CLEA_GLX.DAT, CLEA_QSO.DAT and QSOSpect.dat, all identity-checked.
+/** Front F → E08: the spectrometer at an Object X spectroscopy pointing (star, galaxy and QSO branches). Pure: the caller
+ * (io/objectXSpectrometerInputs.ts) supplies the decoded bounded packs (data/objectx/spectra-*.json, user approval of
+ * 2026-10-27, group 2), CLEA_GLX.DAT, CLEA_QSO.DAT, QSOSpect.dat, the star templates, galaxy spectra and photographs, all
+ * identity-checked.
  *
- * Hidden identity (decision D5): nothing returned for display names the object, its kind or its catalogue record. `targetKey` is
- * the ObjectX.HTL row index (already the student's own assignment); `revealDetail` carries the engine's typed reasons and the
- * selected record and must be shown only after the reveal. The status itself is not identity-neutral while some kinds are
- * unavailable (see docs/OBJECT-X-SPECTRA.md); that is a coordinator/user decision, not hidden here.
+ * Hidden identity (decision D5): evaluateObjectXSpectrum returns two parts. `display` holds only available (with what the
+ * exposure needs) or unavailable, with no row, kind, record or reason; `reveal` (row, kind, record, typed reasons) is for after
+ * the reveal only (io/objectXSpectrometer.ts revealObjectXSpectrum). The per-telescope availability pattern still narrows the
+ * kind (pulsar and asteroid coordinates give no spectrum on any telescope); the coordinator accepted that as a consequence of
+ * the recovered behaviour (docs/OBJECT-X-SPECTRA.md, "Accepted D5 residual").
  *
  * Fields: the general field engine at the exact ObjectX.HTL coordinates (the coordinates the student is given), QSO 'merge',
- * variables 'outside-view', photographs from GLIMAGES.LST (association, rescale and draw ported; photographDraw.ts), the QSO observation through
+ * the recovered variable dispatch, the GLXYSP guard, photographs from GLIMAGES.LST (association, rescale and draw ported; photographDraw.ts), the QSO observation through
  * QSOSpect.dat. Journals use the same bounded exposure journal as every acquisition. */
 import {evaluateField,glxyspLookup,FIELD_MULTIPLIER,type FieldOptions,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
 import {continuationSourcePreparer,type FieldContinuationSource} from './fieldContinuation';

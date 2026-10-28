@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {OBJECT_X_LAB_EN as M} from './objectx/ObjectXMessages';
-import {observeObjectXSpectrum,type ObjectXSpectrumView} from './io/objectXSpectrometer';
+import {observeObjectXSpectrum,objectXSpectrometerFailure,type ObjectXSpectrumView} from './io/objectXSpectrometer';
 import {OBJECT_X_SPECTRA_LIMITS,type ObjectXSpectrumRecord} from './io/objectXSpectra';
 import type {FieldTelescope} from './core/fieldEngine';
 import type {JournalState} from './core/exposureJournal';
@@ -9,7 +9,7 @@ import type {JournalState} from './core/exposureJournal';
  * reason; every unavailable case shows the same message; labels are the student's ObjX ID. The field is evaluated in a Worker.
  * Kept spectra are part of the investigation (saved in the v29 wrapper) and are rebuilt from their journals. */
 type Available=Extract<ObjectXSpectrumView,{status:'available'}>;
-type View=Readonly<{kind:'idle'}|{kind:'loading'}|{kind:'error'}|{kind:'unavailable'}|{kind:'ready';result:Available;state:JournalState;keptAs:string|null}|{kind:'kept';result:Available;state:JournalState;label:string}>;
+type View=Readonly<{kind:'idle'}|{kind:'loading'}|{kind:'error'}|{kind:'invalid'}|{kind:'unavailable'}|{kind:'ready';result:Available;state:JournalState;keptAs:string|null}|{kind:'kept';result:Available;state:JournalState;label:string}>;
 const TICK_MS=250;
 const seconds=(ms:number)=>(ms/1000).toFixed(1);
 const total=(s:JournalState)=>String(Math.round(s.exposure.counts.reduce((a,b)=>a+b,0)));
@@ -27,7 +27,7 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
    if(r.status==='unavailable'){setView({kind:'unavailable'});return;}
    const seed=crypto.getRandomValues(new Uint32Array(1))[0]>>>0;
    setView({kind:'ready',result:r,state:r.engine.activate(r.engine.create(seed)),keptAs:null});
-  }catch{if(ticket.current===mine)setView({kind:'error'});}
+  }catch(e){if(ticket.current===mine)setView({kind:objectXSpectrometerFailure(e)==='evidence'?'invalid':'error'});}
  }
  /** A kept spectrum, rebuilt from its journal (the same evaluation and replay as a restore). */
  async function show(rec:ObjectXSpectrumRecord,pointing:Readonly<{ra:number;dec:number}>){
@@ -36,7 +36,7 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
    const r=await observeObjectXSpectrum(pointing,rec.telescope);if(ticket.current!==mine)return;
    if(r.status!=='available'){setView({kind:'error'});return;}
    setView({kind:'kept',result:r,state:r.engine.replay(rec.seedAtReset,rec.events),label:rec.label});
-  }catch{if(ticket.current===mine)setView({kind:'error'});}
+  }catch(e){if(ticket.current===mine)setView({kind:objectXSpectrometerFailure(e)==='evidence'?'invalid':'error'});}
  }
  // A transition the journal refuses leaves the state unchanged (the buttons already exclude them).
  const update=(f:(r:Available,s:JournalState)=>JournalState)=>setView(v=>{if(v.kind!=='ready')return v;try{return {...v,state:f(v.result,v.state),keptAs:null};}catch{return v;}});
@@ -68,7 +68,7 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
    {M.spectrumTelescopes.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
   <div className="button-row"><button className="secondary-button" disabled={disabled||!target||view.kind==='loading'||running} onClick={()=>void prepare()}>{M.spectrumPrepare}</button></div>
   <div role="status" data-testid="objectx-spectrum-status">
-   {!target?M.spectrumNeedTarget:view.kind==='loading'?M.spectrumLoading:view.kind==='error'?M.spectrumLoadError:view.kind==='unavailable'?<span data-testid="objectx-spectrum-unavailable">{M.spectrumUnavailableNeutral}</span>
+   {!target?M.spectrumNeedTarget:view.kind==='loading'?M.spectrumLoading:view.kind==='error'?M.spectrumLoadError:view.kind==='invalid'?M.spectrumInvalid:view.kind==='unavailable'?<span data-testid="objectx-spectrum-unavailable">{M.spectrumUnavailableNeutral}</span>
     :view.kind==='ready'?M.spectrumReady(label,M.spectrumTelescopes[view.result.telescope]):view.kind==='kept'?M.spectrumKeptRow(view.label,M.spectrumTelescopes[view.result.telescope],seconds(view.state.exposure.elapsedMs)):''}
   </div>
   {view.kind==='ready'&&<div className="button-row">

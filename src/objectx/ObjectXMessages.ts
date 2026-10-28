@@ -83,9 +83,10 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  spectrumPrepare:'Place the slit on the object',
  spectrumLoading:'Loading the spectrometer data…',
  spectrumLoadError:'The spectrometer data could not be loaded. Try again.',
+ spectrumInvalid:'The spectrometer data failed its integrity check, so this position cannot be observed. Report this problem; trying again will not help.',
  spectrumReady:(label:string,telescope:string)=>`${label}: slit on the object with the ${telescope} telescope. Start the spectrum.`,
  /** The one message for every unavailable case before the reveal (D5): it never depends on the object's kind. */
- spectrumUnavailableNeutral:'No spectrum can be recorded at these coordinates with this telescope in this version. Try another telescope, or another instrument.',
+ spectrumUnavailableNeutral:'No measurable spectrum at this position with this telescope.',
  spectrumLimit:'The exposure reached the signal-to-noise limit and stopped. Clear it to start a new one.',
  spectrumStart:'Start spectrum',spectrumStop:'Stop spectrum',spectrumReset:'Clear spectrum',
  spectrumStatus:(seconds:string,counts:string)=>`Exposure ${seconds} s · total counts ${counts}`,

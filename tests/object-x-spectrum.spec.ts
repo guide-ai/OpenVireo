@@ -11,7 +11,7 @@ const SECRETS=Array.from({length:HTL.length/86},(_,i)=>[short(i*86),short(i*86+4
 // Engine-side names that must never reach the student before the reveal.
 const ENGINE=[/\.DAT@/,/A00000\d\d/i,/\.BMP/i,/NGC ?\d{4}/,/GLXYSP|QSOSpect|JSPEC2/,/\b(quasar|QSO|galaxy|star)\b/i];
 const CODES={star:'X-NTFB6',galaxy:'X-ZATDM',qso:'X-PRNJS'} as const;// ObjectX.HTL rows 9, 8, 1
-const NEUTRAL='No spectrum can be recorded at these coordinates with this telescope in this version. Try another telescope, or another instrument.';
+const NEUTRAL='No measurable spectrum at this position with this telescope.';
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 const word=(s:string)=>new RegExp(`(^|[^\\w])${s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^\\w])`);
 /** Secrets in a text; `generic` lists fixed help sentences that name the kinds generically (not the object). */

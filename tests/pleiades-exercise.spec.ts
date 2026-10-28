@@ -17,7 +17,10 @@ async function toPhotometer(page:Page,clock:boolean,click:()=>Promise<void>){if(
 const navPhotometer=(page:Page)=>clickHeaderTool(page,'Pleiades photometry');
 const navObservatory=async(page:Page)=>{await clickHeaderTool(page,'Observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();};
 const activate=(page:Page)=>page.getByRole('button',{name:'Activate Pleiades photometer',exact:true});
-async function readout(page:Page,p:Readonly<{ra:number;dec:number}>){await expect(page.getByTestId('photo-telescope-ra')).toHaveText(String(p.ra));await expect(page.getByTestId('photo-telescope-dec')).toHaveText(String(p.dec));await expect(page.getByTestId('photo-telescope-access')).toHaveAttribute('data-access','ready');}
+// The readout shows at most 9 fraction digits (Photometer.tsx num); rows 12 and 22 have longer HTL coordinates. Exact equality
+// of the pointing itself is what data-access='ready' checks.
+const shown=(v:number)=>new Intl.NumberFormat('en-US',{maximumFractionDigits:9,useGrouping:false}).format(v);
+async function readout(page:Page,p:Readonly<{ra:number;dec:number}>){await expect(page.getByTestId('photo-telescope-ra')).toHaveText(shown(p.ra));await expect(page.getByTestId('photo-telescope-dec')).toHaveText(shown(p.dec));await expect(page.getByTestId('photo-telescope-access')).toHaveAttribute('data-access','ready');}
 async function run(page:Page){await page.getByRole('button',{name:'Start integration',exact:true}).click();await page.clock.runFor(3000);await expect(page.getByTestId('photo-phase')).toHaveText('Integration complete');}
 async function record(page:Page,band:string,value:string){await page.getByRole('button',{name:'Add notebook entry',exact:true}).click();const input=page.getByLabel(`Your transcribed ${band} magnitude`,{exact:true});await expect(input).toHaveValue('');await input.fill(value);await page.getByRole('button',{name:'Confirm notebook entry',exact:true}).click();}
 async function measure(page:Page,band:'V'|'B'){await page.getByLabel('Photometer filter',{exact:true}).selectOption(band);await run(page);const shown=(await page.getByTestId('photo-magnitude').textContent())!;expect(Number.isFinite(Number(shown))).toBe(true);const typed=Number(shown).toFixed(3);await record(page,band,typed);return typed;}
@@ -26,7 +29,7 @@ async function saveInvestigation(page:Page){const wait=page.waitForEvent('downlo
 async function guide(page:Page){await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').click();await expect(page.getByTestId('pleiades-lab-dialog')).toBeVisible();}
 const step=(page:Page,name:string)=>page.getByTestId(`pleiades-lab-step-${name}`);
 
-test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 16 stars with own B/V transcriptions, manual fit and Save/fresh Restore',async({page})=>{
+test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 24 stars with own B/V transcriptions, manual fit and Save/fresh Restore',async({page})=>{
  test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await open(page);await hotList(page);await loadExercise(page);
  const asset=await readFile(new URL('../public/original/hotlists/PLEIADES.HTL',import.meta.url));expect(asset.length).toBe(PLEIADES_HTL.bytes);expect(sha(asset)).toBe(PLEIADES_HTL.sha256);
@@ -51,23 +54,23 @@ test('nondefault row 1 (01799-01442) is measured as N2230.DAT@144496, then all 1
   await page.getByLabel('Saved B reading',{exact:true}).selectOption(await lastOption(page,'Saved B reading'));await page.getByLabel('Saved V reading',{exact:true}).selectOption(await lastOption(page,'Saved V reading'));
   await page.getByRole('button',{name:'Calculate B−V',exact:true}).click();await expect(page.getByTestId('photo-manual-bv')).toHaveText(String(Number((Number(b)-Number(v)).toFixed(3))));
  }
- await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(32);
- await guide(page);await expect(step(page,'sample')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-coverage')).toContainText('16 of 16');await expect(step(page,'distance')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();
- await page.getByLabel('Your vertical shift m−M (mag)',{exact:true}).fill('5.5');await page.getByRole('button',{name:'Confirm manual cluster fit',exact:true}).click();await expect(page.getByTestId('pleiades-distance-pc')).toHaveText('125.892541');await expect(page.getByTestId('pleiades-manual-point')).toHaveCount(16);
+ await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(48);
+ await guide(page);await expect(step(page,'sample')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-coverage')).toContainText('24 of 24');await expect(step(page,'distance')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();
+ await page.getByLabel('Your vertical shift m−M (mag)',{exact:true}).fill('5.5');await page.getByRole('button',{name:'Confirm manual cluster fit',exact:true}).click();await expect(page.getByTestId('pleiades-distance-pc')).toHaveText('125.892541');await expect(page.getByTestId('pleiades-manual-point')).toHaveCount(24);
  await guide(page);await expect(page.getByTestId('pleiades-lab-counts')).toHaveText('Guide steps done: 8/8');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();await expect(page.getByTestId('pleiades-lab-next')).toHaveAttribute('data-next','save');await expect(step(page,'save')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();
  await page.screenshot({path:'test-results/pleiades-exercise-desktop.png',fullPage:true});
  const bytes=await saveInvestigation(page),json=JSON.parse(bytes.toString()),last=PLEIADES_ADMITTED_ROWS.at(-1)!;
  expect(json.version).toBe(17);expect(json.observing.context.selectedId).toBe(navigation);expect(json.observing.context.pointing).toEqual({ra:last.ra,dec:last.dec});expect(json.photometry.events.length).toBeLessThanOrEqual(256);
  await page.clock.resume();await page.reload();await expect(page.getByRole('heading',{name:'Measure a listed star.'})).toBeVisible();await pause(page);
  await page.getByLabel('Restore investigation JSON',{exact:true}).setInputFiles({name:'pleiades.json',mimeType:'application/json',buffer:bytes});await expect(page.getByText(restored,{exact:true})).toBeVisible();
- await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(32);await expect(page.getByTestId('pleiades-confirmed-modulus')).toHaveText('5.5');await expect(page.getByTestId('photo-phase')).toHaveText(/Inactive/);
+ await expect(page.locator('.photometer-notebook tbody tr')).toHaveCount(48);await expect(page.getByTestId('pleiades-confirmed-modulus')).toHaveText('5.5');await expect(page.getByTestId('photo-phase')).toHaveText(/Inactive/);
  await guide(page);for(const name of ['measure','record','color','sample','distance'])await expect(step(page,name)).toHaveAttribute('data-done','true');await expect(step(page,'list')).toHaveAttribute('data-done','false');await page.getByTestId('pleiades-lab-close').click();
  expect(await saveInvestigation(page)).toEqual(bytes);
  await activate(page).click();await expect(select).toHaveValue(last.catalogId);await readout(page,last);await expect(page.getByRole('button',{name:'Start integration',exact:true})).toBeDisabled();
  expect(errors).toEqual([]);
 });
 
-test('all 24 rows: the 8 unavailable rows block activation with no event; each of the 16 admitted rows activates its own target at its pointing',async({page})=>{
+test('all 24 rows: every row is admitted since 2026-10-28; each of the 24 admitted rows activates its own target at its pointing',async({page})=>{
  test.setTimeout(120000);await open(page,false);await hotList(page);await loadExercise(page);await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  let first=true;
  for(const row of PLEIADES_HOT_LIST.filter(r=>!r.admitted)){
@@ -84,7 +87,7 @@ test('all 24 rows: the 8 unavailable rows block activation with no event; each o
  }
  await toPhotometer(page,false,()=>navPhotometer(page));const wait=page.waitForEvent('download');await page.getByRole('button',{name:'Save photometer session',exact:true}).click();
  const raw=JSON.parse((await readFile((await(await wait).path())!)).toString()) as {events:{type:string;targetId?:string}[]};
- expect(raw.events.filter(e=>e.type==='activate')).toHaveLength(16);expect(raw.events.filter(e=>e.type==='target').map(e=>e.targetId)).toEqual(PLEIADES_ADMITTED_ROWS.map(r=>r.catalogId));
+ expect(raw.events.filter(e=>e.type==='activate')).toHaveLength(24);expect(raw.events.filter(e=>e.type==='target').map(e=>e.targetId)).toEqual(PLEIADES_ADMITTED_ROWS.map(r=>r.catalogId));
 });
 
 test('arbitrary pointing is never acquired: only explicit Activate moves to the named field, and motion releases',async({page})=>{
@@ -111,7 +114,7 @@ test('an admitted row outside the selected telescope domain is not offered for m
  await expect(card.getByRole('button',{name:'Measure with photometer',exact:true})).toHaveCount(0);await expect(page.getByTestId('pleiades-point-telescope')).toContainText('Mayall');await expect(page.getByTestId('pleiades-point-telescope')).toContainText('0.4m telescope');
  await expect(page.getByTestId('htl-exercise-row')).toContainText(`PLEIADES.HTL entry ${excluded!.index+1}:`);await expect(page.getByTestId('htl-exercise-row')).toContainText('outside the checked photometer domain');
  await guide(page);await expect(step(page,'list')).toHaveAttribute('data-done','true');await expect(step(page,'point')).toHaveAttribute('data-done','false');await expect(page.getByTestId('pleiades-lab-next')).toHaveAttribute('data-next','point');
- await expect(page.getByTestId('pleiades-lab-step-sample')).toContainText('All 16 are measurable only with the 0.4m telescope');await page.keyboard.press('Escape');
+ await expect(page.getByTestId('pleiades-lab-step-sample')).toContainText('All 24 are measurable only with the 0.4m telescope');await page.keyboard.press('Escape');
  // Ordinary navigation still reaches the photometer, whose existing Activate guard blocks the pointed row.
  await toPhotometer(page,false,()=>navPhotometer(page));
  await expect(page.getByTestId('photo-pointed-row')).toHaveAttribute('data-pointed','blocked');await expect(page.getByTestId('photo-pointed-row')).toContainText('outside the checked domain');await expect(activate(page)).toBeDisabled();await expect(page.getByTestId('photo-phase')).toHaveText(/Inactive/);
@@ -130,7 +133,7 @@ test('the explicit exercise-list read honours cancel, drafts, navigation and hid
  await loadButton(page).click();await expect.poll(()=>hits).toBe(3);await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{value:'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));});release();await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{value:'visible',configurable:true});});await expect(loadButton(page)).toBeEnabled();await expect(page.locator('#htl-rows option')).toHaveCount(0);
  await page.unroute('**/original/hotlists/PLEIADES.HTL');await loadExercise(page);
  await page.locator('#htl-rows').focus();await page.keyboard.press('End');await expect(page.locator('#htl-rows')).toHaveValue('23');await expect(page.getByTestId('htl-exercise-row')).toContainText('PLEIADES.HTL entry 24:');
- await page.keyboard.press('Home');await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowDown');await expect(page.getByTestId('htl-exercise-row')).toContainText('not available');
+ await page.keyboard.press('Home');await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowDown');await expect(page.getByTestId('htl-exercise-row')).toContainText('measurable with the Pleiades photometer');/* row 2 is a target since 2026-10-28 */
  await openHeaderTools(page);await page.getByTestId('pleiades-lab-open').focus();await page.keyboard.press('Enter');await expect(page.getByTestId('pleiades-lab-close')).toBeFocused();await expect(page.getByTestId('pleiades-lab-step-list')).toHaveAttribute('data-done','true');await expect(page.getByTestId('pleiades-lab-e05')).toBeVisible();await expect(page.getByTestId('pleiades-lab-e05')).not.toContainText('not yet available');await expect(page.getByTestId('pleiades-lab-observations')).toBeVisible();
  await page.keyboard.press('Escape');await expect(page.getByTestId('pleiades-lab-dialog')).toBeHidden();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/pleiades-exercise-mobile.png',fullPage:true});

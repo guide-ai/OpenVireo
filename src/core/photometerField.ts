@@ -8,6 +8,12 @@ const expandedProof=projectResource(expandedProofSource);
 import additionalSource from '../../data/photometry/pleiades-target-fields.json';
 const additional=projectResource(additionalSource);
 
+import variableSource from '../../data/photometry/pleiades-variable-fields.json';
+const variableFields=projectResource(variableSource);
+
+import pointingSource from '../../data/photometry/pleiades-pointing-fields.json';
+const pointingFields=projectResource(pointingSource);
+
 import evidenceSource from '../../data/photometry/pinned-pleiades-v.json';
 const evidence=projectResource(evidenceSource);
 
@@ -20,6 +26,9 @@ import {magnitudeAmplitude} from './photons';
 import {poissonDraw} from './acquisition';
 import {reducePhotometerSky,reducePhotometerObject} from './photometryReduction';
 import type {Pointing} from './sky';
+import {decodeNativeVariableRecord,nativeVariableDispatchFalse,nativeVariableFalseMerge} from './variableMerge';
+import {catalogMergeDistance} from './catalogMerge';
+import pegasusProvenance from '../../data/hubble/pegasus-field-provenance.json';
 
 /** Static finite profile, not a live instrument or native observation file.
  * docs/PHOTOMETER-FIELD.md records coverage and the non-default field option. */
@@ -46,10 +55,19 @@ export const PINNED_PLEIADES_V_TARGET=Object.freeze({...evidence.target,pointing
 export type PleiadesFieldKind='object'|'sky';
 export const LEGACY_PLEIADES_PHOTOMETER_TARGETS=Object.freeze([evidence.target,...additional.targets.map(t=>t.target)].sort((a,b)=>a.hotlistRecord-b.hotlistRecord).map(t=>Object.freeze({...t,pointing:Object.freeze({...t.pointing})})));
 export const EXPANDED_PHOTOMETER_FIELDS_SHA256='86af4f7d3ceee63fba3e52923aead9b8d2e675001a3ce5d8c58b3dccc1321a40';
-export const PLEIADES_PHOTOMETER_TARGETS=Object.freeze([...LEGACY_PLEIADES_PHOTOMETER_TARGETS,...expanded.targets.map(t=>Object.freeze({...t.target,pointing:Object.freeze({...t.target.pointing})}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord));
-export const PLEIADES_PHOTOMETER_CHOICES=Object.freeze([...PLEIADES_PHOTOMETER_TARGETS.map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:t.catalogId,reason:null as string|null})),...expandedProof.unavailable.map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:null,reason:t.reason}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord).map(t=>Object.freeze(t)));
+/** Rows 3, 5 and 10 (coordinator decision of 2026-10-28): their CLEA_VStrs.dat variables take the recovered no-effect false merge
+ * (data/photometry/pleiades-variable-fields.json, generator analysis/front-f-hubble-objectx/scripts/pleiades_variable_fields.py). */
+export const VARIABLE_PHOTOMETER_FIELDS_SHA256='6ec0821f4888a79c1556a7653b0f7f45ef57098f79ead577973ec4c2913c4c14';
+/** Rows 2, 7, 12, 14, 22: the recovered native selection at the exact HTL pointing (pleiades-pointing-fields.json). */
+export const POINTING_PHOTOMETER_FIELDS_SHA256='621bf7de8398b44099cf3b9eefd05b4e412ca3a9ac61c534b59cf0e175f7eac3';
+export const PLEIADES_PHOTOMETER_TARGETS=Object.freeze([...LEGACY_PLEIADES_PHOTOMETER_TARGETS,...[...expanded.targets,...variableFields.targets,...pointingFields.targets].map(t=>Object.freeze({...t.target,pointing:Object.freeze({...t.target.pointing})}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord));
+export const PLEIADES_PHOTOMETER_CHOICES=Object.freeze([...PLEIADES_PHOTOMETER_TARGETS.map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:t.catalogId,reason:null as string|null})),...expandedProof.unavailable.filter(t=>![...variableFields.targets,...pointingFields.targets].some(v=>v.target.hotlistRecord===t.hotlistRecord)).map(t=>({hotlistRecord:t.hotlistRecord,hotlistLabel:t.hotlistLabel,targetId:null,reason:t.reason}))].sort((a,b)=>a.hotlistRecord-b.hotlistRecord).map(t=>Object.freeze(t)));
 export function isLegacyPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&LEGACY_PLEIADES_PHOTOMETER_TARGETS.some(t=>t.catalogId===id);}
 export function isExpandedPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&expanded.targets.some(t=>t.target.catalogId===id);}
+export function isVariableFieldPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&variableFields.targets.some(t=>t.target.catalogId===id);}
+export function isPointingFieldPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&pointingFields.targets.some(t=>t.target.catalogId===id);}
+/** Targets added on 2026-10-28 (owner 11): the variable-field rows and the pointing-association rows. */
+export function isAddedPhotometerTarget(id:unknown):id is string{return isVariableFieldPhotometerTarget(id)||isPointingFieldPhotometerTarget(id);}
 export function photometerTarget(id:string){const target=PLEIADES_PHOTOMETER_TARGETS.find(t=>t.catalogId===id);if(!target)throw new PhotometerFieldError('domain');return target;}
 export function isPhotometerTarget(id:unknown):id is string{return typeof id==='string'&&PLEIADES_PHOTOMETER_TARGETS.some(t=>t.catalogId===id);}
 
@@ -60,6 +78,15 @@ function equal(a:unknown,b:unknown):boolean{
  if(!a||typeof a!=='object'||Array.isArray(a)!==Array.isArray(b))return false;
  const x=a as Record<string,unknown>,y=b as Record<string,unknown>;
  return Object.keys(x).length===Object.keys(y).length&&Object.keys(y).every(k=>Object.hasOwn(x,k)&&equal(x[k],y[k]));
+}
+type ReadRow=Readonly<{packedRa:number;star:NamedStar|null}>;
+function readRow(rawHex:string,band:string,index:number,area:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>):ReadRow{
+ if(typeof rawHex!=='string'||!/^(?:[a-f0-9]{54}|[a-f0-9]{16})$/.test(rawHex))throw new PhotometerFieldError('evidence');
+ const v=new DataView(Uint8Array.from(rawHex.match(/../g)!,s=>parseInt(s,16)).buffer),packedRa=v.getInt32(0,true);
+ if(rawHex.length===54)return Object.freeze({packedRa,star:namedStar(rawHex,band,index)});
+ const ra=packedRa/10_000_000,dec=v.getInt32(4,true)/100_000;
+ if(ra>=area.minimumRa&&ra<=area.maximumRa&&dec>=area.minimumDec&&dec<=area.maximumDec)throw new PhotometerFieldError('evidence');
+ return Object.freeze({packedRa,star:null});
 }
 function namedStar(rawHex:string,band:string,index:number):NamedStar{
  const star=decodeNativeCompactRecord(rawHex,band,index),bytes=Uint8Array.from(rawHex.match(/../g)!,s=>parseInt(s,16)),length=bytes[21];
@@ -75,10 +102,40 @@ export type PinnedPleiadesField=Readonly<{
 export function assertPhotometerCoverageLayout(value:unknown):void{
  if(!Array.isArray(value)||value.length!==2||value.some(f=>!f||typeof f!=='object')||value.filter(f=>f.kind==='object').length!==1||value.filter(f=>f.kind==='sky').length!==1||value.some(f=>!Array.isArray(f.bandOrder)||f.bandOrder.length!==1||typeof f.band?.name!=='string'||f.bandOrder[0]!==f.band.name))throw new PhotometerFieldError('evidence');
 }
+type Certificate=Readonly<{file:string;recordsChecked:number;allPositionMatches:readonly number[]}>;
+type VariableFixture=Readonly<{positionCertificates:readonly Certificate[];variables:readonly Readonly<{recordIndex:number;rawHex:string}>[];
+ variableMerges:readonly Readonly<{variable:number;hit:boolean;winnerId:string|null;savedWinnerIndex:number;removed:readonly string[]}>[];mergedIds:readonly string[]}>;
+/** The recovered variable stage over a photometer field (coordinator decision of 2026-10-28): each CLEA_VStrs.dat record inside the
+ * area and within the limiting magnitude, in (RA, Dec) order, is merged with reference 0 (0x598608 → 0x59a2e0, which may prune a runner); its time update 0x51ec48
+ * must return false without side effects (nativeVariableDispatchFalse: period 0, word 0 unless class 1, or class 3), so a hit
+ * record is restored (0x5986c0) and a miss inserts nothing (0x5987a1). Any other variable is not modelled (evidence error). The
+ * independent Python witness (variableMerges, mergedIds) must match exactly. */
+function mergeNoEffectVariables(stars:readonly NamedStar[],fixture:VariableFixture):readonly NamedStar[]{
+ const tables=pegasusProvenance.variableContract.tables;let current=[...stars];
+ if(fixture.variables.length!==fixture.variableMerges.length)throw new PhotometerFieldError('evidence');
+ // Loader order and admission (review 4 items 4 and 5): magnitude within the limit (0x598572) and the RA-then-Dec cursor-insert
+ // order of 0x492728 with comparator 0x4bc950, in which the variable stage merges them.
+ const decoded=fixture.variables.map(v=>{try{return decodeNativeVariableRecord(v.rawHex,v.recordIndex);}catch{throw new PhotometerFieldError('evidence');}});
+ if(decoded.some(v=>!(Math.fround(v.magnitude)<=20))||decoded.some((v,i)=>i&&!(v.ra>decoded[i-1].ra||v.ra===decoded[i-1].ra&&v.dec>decoded[i-1].dec)))throw new PhotometerFieldError('evidence');
+ for(const [i,stored] of fixture.variables.entries()){
+  let v;try{v=decodeNativeVariableRecord(stored.rawHex,stored.recordIndex);}catch{throw new PhotometerFieldError('evidence');}
+  if(!nativeVariableDispatchFalse(v,tables))throw new PhotometerFieldError('evidence');
+  let merged;try{merged=nativeVariableFalseMerge(current.map(s=>({record:s,distanceDegrees:catalogMergeDistance(v,s)})),v,tables,'recovered');}catch{throw new PhotometerFieldError('evidence');}
+  const kept=new Set(merged.rows.map(r=>r.id)),removed=current.filter(s=>!kept.has(s.id)).map(s=>s.id),w=fixture.variableMerges[i];
+  if(w.variable!==v.recordIndex||w.hit!==merged.hit||(merged.trace.winner?.id??null)!==w.winnerId||!equal(removed,w.removed))throw new PhotometerFieldError('evidence');
+  current=current.filter(s=>kept.has(s.id));
+ }
+ if(!equal(current.map(s=>s.id),fixture.mergedIds))throw new PhotometerFieldError('evidence');
+ return Object.freeze(current);
+}
 /** Reconstructs only the two pinned fields from original compact records and
  * original read/admission order. Full-file absence/whole-band proofs are static
  * evidence, not inferred from a supplied small list or navigation tiles. */
-function buildCompleteField(target:typeof evidence.target,fixtures:typeof evidence.fields,kind:PleiadesFieldKind,provenanceFile:string):PinnedPleiadesField{
+/** nativeSelection (pleiades-pointing-fields.json): the field is pointed at the exact HTL coordinates and the photometer takes the star
+ * the recovered selection returns (FormActivate 0x4ff8b0 → 0x53cf94 → 0x53ce8c: pointing projected and rounded, nearest star below
+ * 350 px in 0x59a0fc); in the object field that is the target (possibly a fraction of a pixel away), in the sky field any star
+ * (its aperture fraction must be 0). The aperture fraction follows the real offset (0x500568 with 0x59a49c). */
+function buildCompleteField(target:typeof evidence.target,fixtures:typeof evidence.fields,kind:PleiadesFieldKind,provenanceFile:string,nativeSelection=false):PinnedPleiadesField{
  if(kind!=='object'&&kind!=='sky')throw new PhotometerFieldError('field');
  assertPhotometerCoverageLayout(fixtures);
  const fixture=fixtures.find(f=>f.kind===kind)!;
@@ -86,21 +143,32 @@ function buildCompleteField(target:typeof evidence.target,fixtures:typeof eviden
  const area={minimumRa:pointing.ra-halfRa,maximumRa:pointing.ra+halfRa,minimumDec:pointing.dec-halfDec,maximumDec:pointing.dec+halfDec,limitingMagnitude:20};
  if(!equal(area,fixture.area)||!equal(nativeRegionIds(area),fixture.regionIds)||!equal(nativeCompactBandOrder(fixture.regionIds),fixture.bandOrder))throw new PhotometerFieldError('evidence');
  const expectedAbsence=[['CLEA_VStrs.dat',31147],['CLEA_QSO.DAT',2269],['CLEA_GLX.DAT',24069],['GLIMAGES.LST',183]];
- if(!equal(fixture.absenceCertificates.map(c=>[c.file,c.recordsChecked]),expectedAbsence)||fixture.absenceCertificates.some(c=>c.allPositionMatches.length)||!fixture.wholeBandAdmissionMatches||!fixture.exactRationalAdmissionMatches||!fixture.adjacentKeyControlsMatch)throw new PhotometerFieldError('evidence');
- const band=fixture.band,rows=new Map(band.reads.map(r=>[r.index,namedStar(r.rawHex,band.name,r.index)]));
- const trace=traceCompactGscBandRead({recordCount:band.recordCount,readPackedRa(index){const row=rows.get(index);if(!row)throw new PhotometerFieldError('evidence');return new DataView(Uint8Array.from(row.rawHex.match(/../g)!,s=>parseInt(s,16)).buffer).getInt32(0,true);}},Math.round(area.minimumRa*1e7),area.maximumRa,10000);
+ // A variable field (pleiades-variable-fields.json) lists its CLEA_VStrs.dat position matches; every other source stays absent.
+ const variableFixture=fixture as unknown as Partial<VariableFixture>,certificates=(fixture as {absenceCertificates?:Certificate[]}).absenceCertificates??variableFixture.positionCertificates??[];
+ const variableIds=variableFixture.variables?.map(v=>v.recordIndex)??[];
+ if(!equal(certificates.map(c=>[c.file,c.recordsChecked]),expectedAbsence)||certificates.some((c,i)=>!equal(c.allPositionMatches,i===0?variableIds:[]))||!fixture.wholeBandAdmissionMatches||!fixture.exactRationalAdmissionMatches||!fixture.adjacentKeyControlsMatch)throw new PhotometerFieldError('evidence');
+ // A read is the whole 27-byte record (54 hex digits) or, for a record outside this field's area, a position-only witness
+ // (16 hex digits: packed Int32 RA and Dec), which is all the trace and the admission predicate read from a record rejected by
+ // position (user approval of 2026-10-28; the LSS pack rule, fieldPack.ts). A witness inside the area is an evidence error.
+ const band=fixture.band,rows=new Map(band.reads.map(r=>[r.index,readRow(r.rawHex,band.name,r.index,area)]));
+ const trace=traceCompactGscBandRead({recordCount:band.recordCount,readPackedRa(index){const row=rows.get(index);if(!row)throw new PhotometerFieldError('evidence');return row.packedRa;}},Math.round(area.minimumRa*1e7),area.maximumRa,10000);
  if(!equal(trace.probes,band.expectedProbes)||trace.visits[0].recordIndex!==band.firstVisit||trace.visits.at(-1)!.recordIndex!==band.lastVisit)throw new PhotometerFieldError('evidence');
- const stars=Object.freeze(trace.visits.map(v=>rows.get(v.recordIndex)!).filter(s=>nativeCatalogAdmission(s,area)));
- if(!equal(stars.map(s=>s.id),fixture.admitted.map(s=>s.id)))throw new PhotometerFieldError('evidence');
+ const admittedStars=Object.freeze(trace.visits.map(v=>rows.get(v.recordIndex)!.star).filter((s):s is NamedStar=>s!==null&&nativeCatalogAdmission(s,area)));
+ if(!equal(admittedStars.map(s=>s.id),fixture.admitted.map(s=>s.id)))throw new PhotometerFieldError('evidence');
+ const stars=variableIds.length?mergeNoEffectVariables(admittedStars,variableFixture as VariableFixture):admittedStars;
  const radius=10.5/(936/.05),width=(3/2)/3600;
  if(radius!==evidence.geometry.radiusDegrees||width!==evidence.geometry.seeingWidthDegrees)throw new PhotometerFieldError('evidence');
  const neighbors=queryPhotometerNeighbors(pointing,radius,stars,[]);
  if(!equal(neighbors.map(s=>s.id),fixture.neighborIds))throw new PhotometerFieldError('evidence');
  const scene=createNativeSelectionScene(stars,[],{width:936,height:936,fieldDegrees:.05,center:pointing,population:{coverage:'complete',provenance:`${provenanceFile}; complete original Pleiades field: ${target.catalogId}; fresh mode3, no generated context`}});
  const selection=selectCatalogObject(scene,468,468);
- if(selection.kind!=='star'||selection.object.id!==target.catalogId)throw new PhotometerFieldError('selection');
+ const fixtureSelected=(fixtures.find(f=>f.kind===kind) as unknown as {selectedId?:string}).selectedId;
+ const expectedId=nativeSelection?(kind==='object'?target.catalogId:fixtureSelected):target.catalogId;
+ if(nativeSelection&&kind==='object'&&fixtureSelected!==target.catalogId)throw new PhotometerFieldError('evidence');
+ if(selection.kind!=='star'||selection.object.id!==expectedId)throw new PhotometerFieldError('selection');
  const selected=stars.find(s=>s.id===selection.object.id)!;
- if(selected.nativeName!==target.nativeName||selected.ra!==target.pointing.ra||selected.dec!==target.pointing.dec)throw new PhotometerFieldError('evidence');
+ const starAt=nativeSelection?(target as unknown as {starPointing:Pointing}).starPointing:target.pointing;
+ if(!nativeSelection||kind==='object'){if(selected.nativeName!==target.nativeName||selected.ra!==starAt.ra||selected.dec!==starAt.dec)throw new PhotometerFieldError('evidence');}
  const fraction=(s:NamedStar)=>photometerPointFraction(radius,photometerSeparation(pointing.ra,pointing.dec,s.ra,s.dec),width);
  const centralFraction=fraction(selected),supplied=(s:NamedStar)=>({v:s.magnitude,bMinusV:s.photometry2Single,uMinusB:s.photometry3Single,fraction:fraction(s)});
  // This exact sky field has a nearest star inside350 pixels, zero aperture
@@ -121,8 +189,12 @@ export function buildPhotometerTargetField(targetId:string,kind:PleiadesFieldKin
  const legacy=additional.targets.find(p=>p.target.catalogId===targetId);
  if(legacy)return buildCompleteField(target,legacy.fields,kind,'pleiades-target-fields.json');
  const packet=expanded.targets.find(p=>p.target.catalogId===targetId);
- if(!packet)throw new PhotometerFieldError('evidence');
- return buildCompleteField(target,packet.fields,kind,'pleiades-expanded-fields.json');
+ if(packet)return buildCompleteField(target,packet.fields,kind,'pleiades-expanded-fields.json');
+ const variablePacket=variableFields.targets.find(p=>p.target.catalogId===targetId);
+ if(variablePacket)return buildCompleteField(target,variablePacket.fields as unknown as typeof evidence.fields,kind,'pleiades-variable-fields.json');
+ const pointingPacket=pointingFields.targets.find(p=>p.target.catalogId===targetId);
+ if(!pointingPacket)throw new PhotometerFieldError('evidence');
+ return buildCompleteField(target,pointingPacket.fields as unknown as typeof evidence.fields,kind,'pleiades-pointing-fields.json',true);
 }
 
 function callback(field:PinnedPleiadesField,seed:number){
