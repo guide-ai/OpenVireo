@@ -4,6 +4,13 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
  editModeLabel:'Edit Mode (instructor, VIREO)',
  editModeAdaptation:'Web adaptation: in VIREO, Edit Mode is an instructor option behind the instructor login or Demonstration Mode. Here it is a plain check box, off by default and not saved. It only enables the Telescope-view click (Catalog Object) and File › Field Information; its other effects (hot-list editing and saving, other print layouts) are not applied.',
  fileMenu:'File',
+ guideTitle:'How to use (instructor)',
+ guide:Object.freeze([
+  'Point the telescope at an exercise field (an LSS survey row, a Hubble target or a supported galaxy) and switch to the Telescope view: the view then shows the complete catalogue field, and a click opens Catalog Object with its catalogue values.',
+  'File › Field Information › Star Data List lists every star and QSO of that field with V, B−V, U−B and spectral type; values marked * were assigned by the catalogue builders, not measured.',
+  'File › Field Information › Variable Stars lists the GCVS variables of the finder or telescope field anywhere in the sky. Select a row, then use Selection to open its data and light curve, slew to it or add it to the hot list.',
+  'Students do not need Edit Mode for the naked-eye sky: open the dome and right-click a bright star.',
+ ]),
  menuHelp:'Instructor tools (Edit Mode): lists of the objects in the current field. Close Optical Simulation Options with Edit Mode off to hide them again.',
  printAdaptation:'Web adaptation: Print opens a print preview of the page body (date and time in your browser’s format, the window caption and the list). Printer page layout and fonts differ.',
  saveAdaptation:'Web adaptation: Save Text downloads the list as a text file (one line per row, CRLF, Latin-1) instead of a save dialog; the download name is a web choice.',
@@ -11,6 +18,9 @@ export const FIELD_INFO_MESSAGES=Object.freeze({
  editLayerLabel:'Telescope view, Edit Mode: click an object, or move the cursor with the arrow keys (Shift for larger steps) and press Enter, to open Catalog Object.',
  editLayerCaption:(pack:string,stars:number,galaxies:number)=>`Edit Mode · certified field ${pack}: ${stars} stars and QSOs, ${galaxies} galaxies of the loaded 0.75° field (the view shows its central 15′). Drawing style is a web choice.`,
  catalogObjectAdaptation:'Web adaptation: VIREO opens this box only in Edit Mode; values are shown, not edited.',
+ find:Object.freeze({label:'Search String:',matchCase:'Case Dependent',top:'From Top',next:'From Cursor',cancel:'Cancel'}),
+ printTitle:'Print preview',printButton:'Print…',printError:'Printing is not available in this browser.',
+ ledAssigned:(label:string)=>`${label}: assigned`,ledCatalogue:(label:string)=>`${label}: catalogue value`,
  close:'Close',ok:'OK',cancel:'Cancel',yes:'Yes',no:'No',
  noSelection:'Select a star row first.',
  slewBusy:'Slew to Selection is not available while the telescope moves or the dome is closed.',
@@ -44,7 +54,7 @@ export type FieldInfoReason=keyof typeof FIELD_INFO_MESSAGES.unavailable;
 export const fieldInfoReasonText=(reason:FieldInfoReason,detail='')=>FIELD_INFO_MESSAGES.unavailable[reason].replace('{reason}',detail);
 /** Naked Eye Star (student path). */
 export const NAKED_EYE_MESSAGES=Object.freeze({
- eyebrow:'Dome open',title:'Naked-eye sky',
+ eyebrow:'VIREO · Dome open',title:'Naked-eye sky',
  help:'The bright stars (V ≤ 5.5) you would see by eye through the open dome, as VIREO draws them: about 31° wide and 40° high, centred 45° above the horizon in the direction the telescope points. Right-click a star (or move the cursor with the arrow keys and press Enter) to see its data.',
  skyLabel:'Naked-eye sky through the dome. Right-click a star, or use the arrow keys and Enter, to open Naked Eye Star.',
  loading:'Loading the naked-eye star file…',

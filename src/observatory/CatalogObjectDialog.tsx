@@ -7,7 +7,7 @@ import './observatory-dialogs.css';
 import './field-info.css';
 
 function Led({led,label,hint}:{led:LedView;label:string;hint:string}){
- return <span className="co-led" title={hint} data-active={led.active||undefined}><i style={{background:led.colour}} aria-hidden="true"/>{led.active?`${label}: assigned`:`${label}: catalogue value`}</span>;
+ return <span className="co-led" title={hint} data-active={led.active||undefined}><i style={{background:led.colour}} aria-hidden="true"/>{led.active?M.ledAssigned(label):M.ledCatalogue(label)}</span>;
 }
 /** TRefInfoForm1 "Catalog Object" (modal, ShowModal 0x53d558): the original fields in the DFM order. Every value is read-only
  * here (record-edit-unavailable); Update (master catalogue write 0x59a54c) and GCVS (no variable record) are disabled with their

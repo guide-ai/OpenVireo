@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "scope": "All1347files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28).",
-  "totalFiles": 1347,
-  "totalBytes": 127605400,
+  "scope": "All1348files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json.",
+  "totalFiles": 1348,
+  "totalBytes": 127635842,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
@@ -13,7 +13,7 @@
     ".SPI": 1,
     ".TXT": 1,
     ".dat": 4,
-    ".json": 1062,
+    ".json": 1063,
     ".png": 170,
     ".sav": 1
   },
@@ -177,6 +177,14 @@
       "description": "Byte-exact original VIREO naked-eye star file from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/NkdEye.dat(57740bytes,2887records of20bytes:Double RA hours,Double Dec degrees,Single V),SHA-256 1d2f10450b8f72ca3dd2a84e83ac0c5df739646374d421aa4084308e9333bddd.Every other file is excluded.",
       "usedBy": "Naked Eye Star(docs/OBJECT-INFO-FORMS.md):lazy same-origin fetch,size and SHA-256 checked before decoding by src/core/nakedEye.ts(reader recovered from CLEA_VEO.exe loader 0x554e78)",
       "upstreamStatus": "Included under the user approval of2026-10-28 recorded in AGENTS.md,on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The first records match HR3 and HR15,so the file appears to be the Yale Bright Star Catalogue(Hoffleit&Warren)in HR order limited to V<=5.5;that upstream identification is an inference and remains uncertain.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
+    },
+    "data/fieldinfo": {
+      "files": 1,
+      "bytes": 30442,
+      "materialClass": "derived-witness",
+      "description": "Output of the independent Python witness analysis/front-o-info-forms/tools/info_witness.py (SHA-256 f2aeb5140224e56973ba108e2cfc23133c036e5815c1a72e124927b6a69daa08) of the static reading of CLEA_VEO.exe (781bc970…c54c): TVarFldLstForm1 list lines for CLEA_VStrs.dat at six pointings and two views, Star Data List rows of ten pinned N2230/N3000 compact-GSC records already published in data/lss/lss-field-01.json (raw hex), two labelled synthetic rows, spectral-text, ffExponent and ffFixed examples. Derived from already-approved resources only; no new original bytes.",
+      "usedBy": "src/core/fieldInfoWitness.test.ts (Front O, docs/OBJECT-INFO-FORMS.md)",
+      "upstreamStatus": "Derived test evidence; a second implementation of the same reading, not an x87 or original-runtime oracle."
     }
   },
   "authoredExamples": [

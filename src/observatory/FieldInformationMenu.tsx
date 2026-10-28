@@ -106,6 +106,7 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
     </div>}
    </div>
    <p className="fi-note">{M.menuHelp}</p>
+   <details className="fi-guide" data-testid="fi-guide"><summary>{M.guideTitle}</summary><ol>{M.guide.map(g=><li key={g}>{g}</li>)}</ol></details>
   </div>
   {star&&('report' in star?<FieldInfoListWindow testId="fi-slist" caption={star.report.caption} lines={star.report.lines} first={star.report.first} last={star.report.last}
     notice={<>{star.report.reason&&<p className="fi-unavailable" role="status" data-testid="fi-slist-reason" data-reason={star.report.reason}>{fieldInfoReasonText(star.report.reason)}</p>}<p className="fi-note">{M.modelessNote} {M.printAdaptation} {M.saveAdaptation}</p></>}

@@ -1,0 +1,236 @@
+{
+ "schema": 1,
+ "feature": "Front O: object and field information forms (docs/OBJECT-INFO-FORMS.md)",
+ "artifact": {
+  "name": "CLEA_VEO.exe",
+  "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "archive": "CLEA_Vireo.zip 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b"
+ },
+ "method": "Static reading only (GNU objdump Intel, Delphi 2007 VMT/DFM decoding, REA not used for decompilation). Nothing executed, emulated or debugged.",
+ "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/front-o-info-forms (outside the repository)",
+ "formsAndMenus": {
+  "veo-forms.json": "ba9dc9c698d57e9412c5953ff642d1e8385be1fc6960af24661ee138f88d4e43",
+  "veo-menus.txt": "8b53e7692bc5143787cf9c7c7ab2dca77240a0af791d23762e43e3efe69f071c"
+ },
+ "notes": {
+  "RECOVERY-A-catalog-object.md": "4b42690f6f1358a7148ae9d071ebaf6719684e372295f16776ce7695fe230e57",
+  "RECOVERY-B-star-list.md": "9cb1f2496e7012924106590e42659cd2387715706895d597e1c3c5d75f06891f",
+  "RECOVERY-C-variable-field-list.md": "babf6bcaa5f2808e5a7838dd19cb04955fa3c30fec73c4f2493b5b31ed1a0047",
+  "RECOVERY-D-naked-eye-geometry.md": "4e7358a09e0192f8a8e72c3f69b9b3a124725dbb67517d6063e2a4ece330db65",
+  "RECOVERY-E-verifications.md": "d72e11e00c4e3f067202ef3bf83c6e30e900a5c92a0a3bcd280915d5b9311633"
+ },
+ "witnesses": {
+  "tools/info_witness.py": "f2aeb5140224e56973ba108e2cfc23133c036e5815c1a72e124927b6a69daa08",
+  "tools/nakedeye_witness.py": "58e2615f8ffcb666797a66e89f4e2ba2b1815aac59d1cbb0153aab03b71f01e6",
+  "info-witness.json": "a9fc1097bb208b337b5eb8b6af927df0a191bad407c42bbde2ae7f6e36044c61",
+  "nakedeye-witness.json": "b31d8b31fb37a0b47454a14107abc13b2638988043c2078a1588401ed31308cb"
+ },
+ "dossiers": {
+  "asteroid-record-5997b6.asm": "0d2e899c1bdf343cda477e6d7fccc703b2be0193194b94c356306347e742c4c5",
+  "crt1-obsrvtry-mousedown-mouseup.asm": "03d21e3367a920f6091a3850a3259f79238450bda5ba689f2cb72081bba64b94",
+  "e-field-build-split-597ac8.asm": "66aa84466f5d1fcce52af639e1c32bbfe9d80460fb471c518b06c11d1433df7a",
+  "e-floattodecimal-40cbb5.asm": "7d4c2a1549e48c9d729c09f266d0236ec178d6d211f5411e622bf6d4fcbc9e5f",
+  "e-floattostrf-40cf28.asm": "727f20b9269728776d3a6931b397fe0e208d37337a130467bce855c0a46788f6",
+  "e-floattostrf-wrappers-486268-48634c.asm": "1923f7e7595d612bb77b3a5bbcb37362bdc75a06b059f4bea79a893c3e686261",
+  "e-gsc-predicate-599e08.asm": "17ff07941cfba38885486c990ff7ad628155e1ddc37099cbcdf07baebbaee471",
+  "e-list-primitives-4924d4-4927fc.asm": "33d71360563416094f6a5e1c53b3499de4c30fa0ead6f11875160872278ddc76",
+  "e-newgsc-compact-reader-59ad98.asm": "7dfd67f9a5d9c73ef5d00a80613e45f008776be4381393b8e64e4cccd78b5d51",
+  "e-sexagesimal-486b20-486ca0.asm": "12050ab5d949063e134ce6799a82752b24ed5f591f43aa5ab3e5fa0b5977da82",
+  "e-spectral-text-55d4f4.asm": "c3c3f2e71741ce0f3081a662204fefc0f27461fe7227796d894309c4cb7c5dec",
+  "e-varfld-row-52feb4.asm": "9299964e6106063135cb74a5853c667277a307142032b64cbda79ea868729d4d",
+  "e-variable-comparator-4bc950.asm": "dd0cdea314f35b115950fc73a8bbf33fea4918d01c5bbed0314875312b719b95",
+  "e-variable-predicate-59848c.asm": "1f94625041618bee42ed4e2e4d60516dfb4e2fd19387c13de9b3b27717326499",
+  "e-variable-stage-5981a0.asm": "3d344f3bbf27bb71006e7828652657d557aa879bf45d8a8153890a552e5b1c06",
+  "galaxy-record-from-glx-598e48.asm": "7965b345e1697bfc4bb2533904e5e063568bed1fba0afa2b6a2eaf06dcb0d7af",
+  "galaxy-type-text-596820.asm": "3e4f4976bc8afc42c3335af5b33c755c46d72baeda5e9a3eddb3c80506f6200f",
+  "gate-environment-587d54-587dbc.asm": "558439fc7ec170624e9709bd50be06906d779ae01b6a5702f84e672c3ba1a515",
+  "gate-environment-formcreate.asm": "670c8e5d6e59a3ca1b237c90a9d33a63faeba04e8fa6e9f1bc835b9196377dff",
+  "gate-environment-login.asm": "064670e685f6ef88aacb37afd75d17178d770bf591a797c5d3723d1ce4d40f0c",
+  "gate-environment-preferences.asm": "cc74c1d35713aa6a7e3d2c2414293254979e51063842af6a2f7d1f5e654779b4",
+  "gate-environment-save-options-0x58ed74.asm": "99be824b2d8dd7c82a11cfe8ad3515f8eaf3c4faa9033a7c2c4e890c2c5e907f",
+  "gate-obsrvtry-enable-disable.asm": "07580c9f92fd1c82e4d0921cc0ecd4f6bd72d834772cdb371c813aff74cef62e",
+  "gate-obsrvtry-formactivate.asm": "134d7396294eb5bf6a0b9d93814c097413f4dc87a5e17ee510e5fb57af973e90",
+  "gate-obsrvtry-hotlist-menus-and-enable.asm": "11551c219a95114a1955a376371f920dcd2029fd21780763101957a70dc69302",
+  "gate-options-defaults-0x5a21d0.asm": "3d0219d4fde1173ecde43bf1fa71d6773692beb11d3a9255f322e0058d05cf87",
+  "gate-options-file-read-write.asm": "80584ea8780ba073ffe30eaf95fcb618cc3b23ce1da795dc70a30fc4d797ad23",
+  "gate-options-init-0x5a1a08.asm": "db7636977410c7fc2ca32fbc4560aa12f18420dfcdfeda5294458b3e4c9013e3",
+  "gate-optionsdlg-editmode.asm": "1f64f69afbd807893eb2721b06c30d3cb24c2290898bb08f1d1af7545df37b9e",
+  "gsc-master-update-59a54c.asm": "bd2d24fba0da33ce1560ab49d883e992c1ea66fb4825317165bc11c6f8999d98",
+  "gscfield-nearest-star-galaxy.asm": "2d5cbd49ba6f15046e8d61634101ebc23979fa767bdcfe120c33002bb7e57687",
+  "infolist-create-show-59de74.asm": "a0270422abb900559a3d4529e528148e366fdc6398914c2eefd50ccd17898268",
+  "infolist-direct-sites.asm": "1612b0a291d71d489842c3ffd93aab2291c3a26bcb2ac8c3e222b97a99d9cebc",
+  "infolist-env-autocreate-587fc8.asm": "6b61bd7d0e0d9d6ef62f75df134020c15e7af1c51417470750893d26af045e48",
+  "infolist-gcvs-site-4bcbc0.asm": "962c4f08b9bc06afc810c4481f02160ed411487135886f741cd03236448dad19",
+  "infolist-print-59e4c0.asm": "bfe3c31b74cd9b609bf7db44789f044dc769fa37a1e202c877721f32fb71b5dc",
+  "infolist-save-csv-misc-59e92c.asm": "24f0f10fb0bd5c760ed346d211bfe1362e7676a3b5eb3b990f1fb55ced8f56b1",
+  "infolist-search-59e0f8.asm": "e92186db9d23117e47a4bd47b4aa8f42d1ed962d2dbe17912515ce9f906ab723",
+  "infolist-site1click-53e9e4.asm": "85ca0b4bbb76088cc493c57ebaad91979b698e359ec80d8660b01421dec02c1d",
+  "nkdeye-dataform-activate.asm": "6ade48ab737a83d8f2e15e98b96786995e41b37682791325bc6ff39b60ce7e71",
+  "nkdeye-env-crt1-mouse-dome.asm": "c075e9fc8285d448f3b3791787fd20b33f1d14d94c3835072b74bdeaea689b82",
+  "nkdeye-fldobj-create-load-project.asm": "7ca4c42db46ddc4612f193da662a3b2e40be444ae1c900442353d435c4b58ad0",
+  "nkdeye-geom-build-553a10-553c58.asm": "23c0c7d3889c354a1f8d14aa9b6982834a8c0a9c8f7902f59659a20b4bf9a2e4",
+  "nkdeye-geom-clock-jd-487b2c-5ac748.asm": "8e2c7530d0c4399e3e55098218f432fc95418a7a83e6685a7a42714e2d065f92",
+  "nkdeye-geom-draw-553df8.asm": "03bc9a7e7e3c862f6e2203c5798221c7591195ac422da9c5a97520d7e50fc219",
+  "nkdeye-geom-env-dome-587c78-58d5c0.asm": "af836020a2c7bf2d86ab1ca2ebf289c0f55b21f04c573e769de1a94de23f6e21",
+  "nkdeye-geom-horizontal-sidereal-4ba65c-4bac0c.asm": "44b2602d627ed97e762668cfcf3d4abd8cb0d85c0988b5ad12950986d568970e",
+  "nkdeye-geom-loader-visibility-554d90-5550b8.asm": "b1a33275fa0ba9674be831a3a15db150851dd245071695ae67e99d46e0ef58f6",
+  "nkdeye-geom-pick-projection-55526c-555524.asm": "ec2566d3644a3be76fac7f80b42c4bd309a4f5401d75313aa9bfacd6fc628e57",
+  "nkdeye-pick-55526c.asm": "da3e1885acfa20a87fd334f104deb19eb22106d845f66dee0375d2e7e44d2e49",
+  "objctlist-clstrrpt-55281c.asm": "5cb7ccb7da8e8cfbb634f6d2d685d4514481d67def407de69ba9456d7b680627",
+  "objctlist-clstrrpt-csv-552ad8.asm": "3991b8ed509e1fcd57744a125d68e37b709e878db34b3039ee4670ffe5ae1db8",
+  "objctlist-create-show-activate.asm": "1c5d7e1dcad9ad51af3b46390329d96058110999c9741b4c2fd3d7ba505376b7",
+  "objctlist-fieldrpt-553138.asm": "185e4e5f8c036a39dbe8f9a8aa14284db3bac0e692d727b760143d1670a5a339",
+  "objctlist-hotlist-append-590588.asm": "d53018d90d25badf4d51327ff51b5fcb514e0d6fd5989fc07586a16d3b4f663b",
+  "objctlist-hotlist-newlist-592120.asm": "606243eff56983477ffeb123c0bcd6135ee5b1667dad0a38a0603c29e44acad6",
+  "objctlist-print-551ae0.asm": "8406c71435ce7ce25986650f5400c09c78d2f2fd0357df4529f59e13ab96fcc7",
+  "objctlist-save-csv-551f28.asm": "f8035669c78753cfd7f3c96bb577d62990fb218f2828f7183b2e8263b595a6e3",
+  "objctlist-search-551718.asm": "44a1ef046926c3f6f5ef4799236d5d4e279d7924119cc3b4851684b0663ad5e5",
+  "objctlist-select-hotlist-5523ec.asm": "5522d097bb889521c529b9525a0d3d9a9e766e0386dde2826a5de9eaa829c778",
+  "objctlist-srchdlg-492a8c.asm": "6af9193e72a1da19948e334e5a6cdb192728f0f1bbc3644e086411fbd1a27668",
+  "options-editmode-objid.asm": "17cac6b63cc2f17c9fa37075e8a3c3821c02817b3508d02862d471c5a6634ffa",
+  "refinfo-formcreate-activate.asm": "5ad64dd757af0828d9ab161c3ca9c72322ba20b0804c2c6f17d65325a5209adb",
+  "refinfo-ok-writeback-cancel-magedchange-update-gcvs.asm": "0e36011ae30c669a7c7cb704e2f8027757f9ef0cb9653cafb391d6d8e21e6350",
+  "star-record-from-gsc-region-599b57.asm": "e2164cb75d0080252c9fc655d5b0dcc663671adedf6352f0f56eb730c8f7d83b",
+  "starlist-534e18-collect.asm": "75c12382346a0b2e9a5a61a8171a54e360464a7a85c3d3b612ace3c3af181336",
+  "starlist-5404e0.asm": "8247a1843c3d8cd06f396afddea8e1eceb4ab294df30461c370537bea2069ba0",
+  "starlist-row-5354e8.asm": "69a024a6bc03ef4cee34b2be1d95490d3e880956a6b415749aa5c25c5d1315c1",
+  "varfld-area-build-finder-0x53bc40.asm": "8ed01dadf14194cc921aee37b2fd4a8a43689579d342368ec2b7e9ed5cc02017",
+  "varfld-area-build-instrument-0x53bec0.asm": "5a065a4c2b5985de5003c5712629e7502cb12aaf4f399e465af7cab4f8a32f78",
+  "varfld-create-show-activate.asm": "823492aa54ada0a0ac69b3aa9cc2920349b1508ad52915b04c6301e82e0076f2",
+  "varfld-field-variable-stage-0x5982c0.asm": "55a62206b0538337263c66040e3b9d376ac927aa1309c05d54e7f8d96767991b",
+  "varfld-fill.asm": "8679c361aa777f63a72425c52d230db88509f265de9014c52940c31e44e7d394",
+  "varfld-hotlist-new-0x592120.asm": "cbe3f2dfd244dd78293d82a403dd03acbf48421dd0abb004805c500ae4632a60",
+  "varfld-modeled-dispatch-0x51ec48.asm": "8b7848bda3e98e7300ebf18ff54e9efa791141383803bfe4e57bd4f97cb38125",
+  "varfld-openers.asm": "c230cfe772e030f049d919685cfdb0d303d00a1dd180364e26187bdf81aaa20a",
+  "varfld-print.asm": "bad6c315dc7251edf568d42c27ab29a107ae7e69f13e980d8693ff0a76d68f46",
+  "varfld-save-csv-close.asm": "e9d9d3800626f2d303c160374615fc494a48d1a314f269f3f11d6d4b51e92c60",
+  "varfld-search-dialog-TGetSrchStrDlg.asm": "23a9f64087b14451c2c49b1f57d3952d673236357c27f9a8da0e22abfd5180e5",
+  "varfld-search.asm": "7a45705012f13825bcc61021d1cee75956ad90926c1bd811bc4bf550ffbaf1f7",
+  "varfld-selection-hotlist.asm": "0790ba08c9ec8a366c6870a95efb959c93f24b8822df66fd4da89ae9062bf13a",
+  "varfld-selectiondata-slew.asm": "5e926e00ef8c2bb2cecbf2c176268854ac6fbc0a0c92e93689d726ff7afe6e16"
+ },
+ "contracts": [
+  {
+   "id": "FO-EM-01",
+   "claim": "Edit Mode byte options+0x27ca → env+0x2e7e; compiled default 0; written by TOptionsDlg OKBtnClick from EditModeBox (caption 'Edit Mode', hint recorded); options load from VEO_OPTS.INI (none shipped).",
+   "addresses": "0x5a2ad3, 0x5a60e3, DFM TOPTIONSDLG",
+   "tag": "D",
+   "port": "src/core/editMode.ts; WEB-EM-01 non-persisted check box [W]"
+  },
+  {
+   "id": "FO-EM-02",
+   "claim": "File › Field Information Visible := Edit Mode at first activation; Enabled re-read by 0x53a210; it is the only route to the Star Data List and TVarFldLstForm1.",
+   "addresses": "0x5379f9..0x537a06, 0x53a1fe, 0x53a2f4..0x53a308",
+   "tag": "D",
+   "port": "FieldInformationMenu (shown while Edit Mode is on) [W: no enable timing]"
+  },
+  {
+   "id": "FO-CO-01",
+   "claim": "Telescope-display click opens Catalog Object (ShowModal) only when env+0x2e7e ≠ 0; nearest star/galaxy strictly below 350 px, star iff galaxy strictly farther; lime 15×15 marker.",
+   "addresses": "0x53cfa8, 0x53cff8, 0x53d4f7, 0x53d648, 0x53d558, 0x599f1c, 0x59a010",
+   "tag": "D; click→raster offset I/W",
+   "port": "catalogObject.pickCatalogObject; EditModeFieldLayer"
+  },
+  {
+   "id": "FO-CO-02",
+   "claim": "Star record from NewGSC reader: ID band+'-'+name(+0x15), RA/Dec, V/B−V/U−B Int16/1000, +0x35 = Int16 +0x12, flags byte +0x14 bits 1/2/4/8, code Int32 +8.",
+   "addresses": "0x59ad98, 0x59b055..0x59b196",
+   "tag": "D",
+   "port": "catalogRecordFromStar"
+  },
+  {
+   "id": "FO-CO-03",
+   "claim": "QSO record: type 3, code 99, +0x35 = z.",
+   "addresses": "0x5987e4",
+   "tag": "D",
+   "port": "catalogRecordFromQso"
+  },
+  {
+   "id": "FO-CO-04",
+   "claim": "Galaxy record: T, bar, luminosity, ring bytes +0x22..+0x25; colours/code from T; type text tables; z ffExponent(4,2); size F1.",
+   "addresses": "0x598ed2..0x599069, 0x598f09..0x598f22, 0x596820, 0x560844",
+   "tag": "D",
+   "port": "catalogRecordFromGalaxy, galaxyColours, galaxyTypeText, floatToStrFExponent4"
+  },
+  {
+   "id": "FO-CO-05",
+   "claim": "FormActivate field table, Telescope view pass, final pass; GCVS enabled only for type 0 with +0x5b ≠ nil in the Telescope view; write-back and master Update not ported.",
+   "addresses": "0x56005c, 0x56034e..0x560378, 0x56058d, 0x56096a, 0x560a26, 0x560c80, 0x561150, 0x59a54c",
+   "tag": "D",
+   "port": "catalogObjectView; record-edit-unavailable, update-master-catalog [W]"
+  },
+  {
+   "id": "FO-SL-01",
+   "claim": "StarList1Click → builder: caption, stem CLEA_Field1, 19 header lines, one row per NewGSC object in collection order.",
+   "addresses": "0x5404e0, 0x534e18",
+   "tag": "D",
+   "port": "fieldStarHeader, fieldStarReport"
+  },
+  {
+   "id": "FO-SL-02",
+   "claim": "Row format and spectral text (code 99 → '0').",
+   "addresses": "0x5354e8, 0x55d4f4, 0x486268, 0x486bc0",
+   "tag": "D",
+   "port": "fieldStarRow, nativeSpectralText (typed for codes the port cannot format)"
+  },
+  {
+   "id": "FO-SL-03",
+   "claim": "Comma Delimit enabled by TClstrRptForm1; columns 11,20,23,28,34,37,40,49,56,63 → ',' and spaces removed.",
+   "addresses": "0x552878, 0x552ad8..0x552f61",
+   "tag": "D",
+   "port": "fieldStarCsvLines"
+  },
+  {
+   "id": "FO-SL-04",
+   "claim": "Selection hot-list commands read the cluster bank, not the field row (probable original defect); Get Selection Data hidden, double-click no-op.",
+   "addresses": "0x552a7c, 0x552604, 0x5526f4, 0x552894, 0x552a78",
+   "tag": "D mechanics, I effect",
+   "port": "starlist-hotlist-cluster-bank [W]"
+  },
+  {
+   "id": "FO-VF-01",
+   "claim": "Openers, area (FCF 3 × finder 2.5°/2 or instr 15′/120; limit 14/20), predicate 0x59848c, list order (comparator 0x4bc950, cursor insert 0x492728), RA wrap in two passes.",
+   "addresses": "0x53dafc, 0x53db54, 0x52f7fc, 0x53bc7b, 0x53becb, 0x59848c, 0x5981a0, 0x597ac8, 0x4bc950",
+   "tag": "D",
+   "port": "variableFieldList"
+  },
+  {
+   "id": "FO-VF-02",
+   "claim": "Lines, row format, header literal; mode 0 depends on uninitialised stack bytes.",
+   "addresses": "0x52fe74, 0x52feb4, 0x52fbd7..0x52fc2d",
+   "tag": "D",
+   "port": "variableFieldRow; modeled-uninitialised [W]"
+  },
+  {
+   "id": "FO-VF-03",
+   "claim": "Search (shared Find dialog), Print body, Save Text, Comma Delimit message, selection rule, Get Selection Data, Slew to Selection, hot-list record and messages.",
+   "addresses": "0x52e6b4, 0x52ead8, 0x52eec4, 0x52f318, 0x52f388, 0x530130, 0x530180, 0x5300f0, 0x52f5dc, 0x52f6d4",
+   "tag": "D",
+   "port": "FieldInfoListWindow, FieldInformationMenu, openOpticalSkyCoordsAt"
+  },
+  {
+   "id": "FO-NE-01",
+   "claim": "NkdEye.dat reader (20-byte records), V ≤ 5.5, form fields, right-button pick strictly below 10 px, marker 1.01·y.",
+   "addresses": "0x554e78, 0x553c0b, 0x55334c, 0x58d500, 0x58d53c, 0x58d598, 0x55526c, 0x58d5c0",
+   "tag": "D",
+   "port": "nakedEye.ts"
+  },
+  {
+   "id": "FO-NE-02",
+   "claim": "Dome sky: built when the dome opens; altC 45°, ±30° alt, 20° scaled azimuth with the wrap after the cos scaling; GAST with nutation; projection W 240, H 262.",
+   "addresses": "0x553a10, 0x5550b8, 0x4bac0c, 0x4baab8, 0x4ba65c, 0x4ba76c, 0x4ba990, 0x5553f0, 0x555464, 0x555524, 0x553df8, 0x58cbec",
+   "tag": "D; control sizes from DFM I",
+   "port": "nakedEyeSky.ts; discs instead of sprites [W]"
+  }
+ ],
+ "resources": {
+  "public/original/nakedeye/NkdEye.dat": "1d2f10450b8f72ca3dd2a84e83ac0c5df739646374d421aa4084308e9333bddd (user approval 2026-10-28)",
+  "data/fieldinfo/info-witness.json": "derived witness (see docs/LOCAL-RESOURCES.json)"
+ },
+ "uncertainty": [
+  "Numbers are binary64, not x87 Extended; boundary cases (350 px, 10 px, visibility edges, half-way roundings) may differ.",
+  "Click→raster offset terms of the Telescope display are untraced; the web assumes a fresh unpanned field.",
+  "Runtime control sizes are taken from the DFMs.",
+  "Tests are evidence of the chosen contract, not of original-runtime equivalence."
+ ]
+}

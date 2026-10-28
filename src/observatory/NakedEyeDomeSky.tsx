@@ -3,7 +3,7 @@ import {NAKED_EYE_LITERALS as L,NKDEYE_FILE,decodeNakedEyeFile,nakedEyeFormField
 import {NAKED_EYE_SKY as S,buildNakedEyeSky,nakedEyeDrawLevel,type NakedEyeSky,type NakedEyeSite} from '../core/nakedEyeSky';
 import {fetchBundledVariableFile} from '../io/bundledVariableStars';
 import type {Pointing} from '../core/sky';
-import {NAKED_EYE_MESSAGES as M} from './FieldInfoMessages';
+import {FIELD_INFO_MESSAGES,NAKED_EYE_MESSAGES as M} from './FieldInfoMessages';
 import './observatory-dialogs.css';
 import './field-info.css';
 
@@ -49,13 +49,13 @@ export default function NakedEyeDomeSky({open,active,site,utcNow,pointing}:{open
  }
  const sy=H/S.bitmapHeight;
  return <section className="card ne-card" aria-labelledby={`${id}-t`} data-testid="ne-card">
-  <div className="card-heading"><div><div className="eyebrow">VIREO · {M.eyebrow}</div><h2 id={`${id}-t`}>{M.title}</h2></div></div>
+  <div className="card-heading"><div><div className="eyebrow">{M.eyebrow}</div><h2 id={`${id}-t`}>{M.title}</h2></div></div>
   <p className="fi-note">{M.help}</p>
   {failed?<p className="fi-unavailable" role="status" data-testid="ne-status" data-reason="naked-eye-file">{M.fileError}</p>
    :!sky?<p className="fi-note" role="status" data-testid="ne-status">{M.loading}</p>
    :<div className="ne-sky"><svg viewBox={`0 0 ${W} ${H}`} role="application" tabIndex={0} aria-label={M.skyLabel} data-testid="ne-sky" data-count={sky.points.length} onContextMenu={context} onKeyDown={key}>
     <rect width={W} height={H} fill="#000"/>
-    {sky.points.filter(p=>p.x>=-5&&p.x<=W+5&&p.y>=-5&&p.y<=S.bitmapHeight+5).map(p=><circle key={p.record.index} cx={p.x} cy={p.y*sy} r={Math.max(.6,3.2*Math.pow(.8,nakedEyeDrawLevel(p.level)))} fill="#fff" opacity={Math.max(.35,Math.pow(.9,nakedEyeDrawLevel(p.level)))}/>)}
+    {sky.points.filter(p=>p.x>=-5&&p.x<=W+5&&p.y>=-5&&p.y<=S.bitmapHeight+5).map(p=><circle key={p.record.index} cx={p.x} cy={p.y*sy} r={Math.max(.9,4.5*Math.pow(.85,nakedEyeDrawLevel(p.level)))} fill="#fff" opacity={Math.max(.35,Math.pow(.9,nakedEyeDrawLevel(p.level)))}/>)}
     {picked&&<rect data-testid="ne-marker" x={picked.x-7} y={picked.y-7} width="15" height="15" fill="none" stroke="#00ff00" strokeWidth="1"/>}
     <g stroke="var(--ov-focus)" strokeWidth="1" aria-hidden="true"><path d={`M${cursor.x-6} ${cursor.y}h4m4 0h4M${cursor.x} ${cursor.y-6}v4m0 4v4`}/></g>
    </svg></div>}
@@ -77,6 +77,6 @@ function NakedEyeStarDialog({record,onClose}:{record:NakedEyeRecord;onClose:()=>
    <label htmlFor={`${id}-mag`} className="ob-native">{L.mag}</label><input id={`${id}-mag`} value={mag} onChange={e=>setMag(e.target.value.slice(0,20))} data-testid="ne-mag"/><span/>
   </div>
   <p className="fi-note">{M.magNote}</p>
-  <div className="ob-actions"><button type="button" className="primary-button" data-testid="ne-ok" onClick={onClose}>OK</button></div>
+  <div className="ob-actions"><button type="button" className="primary-button" data-testid="ne-ok" onClick={onClose}>{FIELD_INFO_MESSAGES.ok}</button></div>
  </dialog>;
 }

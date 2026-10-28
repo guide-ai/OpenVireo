@@ -109,9 +109,9 @@ function FindDialog({draft,onDraft,onSearch,onCancel}:{draft:Readonly<{query:str
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector('input')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" aria-labelledby={`${id}-t`} data-testid="fi-find-dialog" onCancel={e=>{e.preventDefault();onCancel();}}>
   <h2 id={`${id}-t`} className="ob-native">{SL.caption}</h2>
-  <label className="ob-field">Search String:<input data-testid="fi-find-query" maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} value={draft.query} onChange={e=>onDraft({...draft,query:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onSearch('top');}}}/></label>
-  <label className="ob-check"><input type="checkbox" checked={draft.matchCase} onChange={e=>onDraft({...draft,matchCase:e.target.checked})}/>Case Dependent</label>
-  <div className="ob-actions"><button type="button" className="primary-button" data-testid="fi-find-top" onClick={()=>onSearch('top')}>From Top</button><button type="button" className="secondary-button" data-testid="fi-find-next" onClick={()=>onSearch('next')}>From Cursor</button><button type="button" className="secondary-button" onClick={onCancel}>Cancel</button></div>
+  <label className="ob-field">{M.find.label}<input data-testid="fi-find-query" maxLength={RADIO_HOT_LIST_SEARCH_QUERY_MAX} value={draft.query} onChange={e=>onDraft({...draft,query:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();onSearch('top');}}}/></label>
+  <label className="ob-check"><input type="checkbox" checked={draft.matchCase} onChange={e=>onDraft({...draft,matchCase:e.target.checked})}/>{M.find.matchCase}</label>
+  <div className="ob-actions"><button type="button" className="primary-button" data-testid="fi-find-top" onClick={()=>onSearch('top')}>{M.find.top}</button><button type="button" className="secondary-button" data-testid="fi-find-next" onClick={()=>onSearch('next')}>{M.find.next}</button><button type="button" className="secondary-button" onClick={onCancel}>{M.find.cancel}</button></div>
  </dialog>;
 }
 
@@ -142,13 +142,13 @@ function FieldInfoPrintPreview({caption,lines,onClose}:{caption:string;lines:rea
   try{if(typeof window.print!=='function')throw new TypeError('print unavailable');window.print();setFailed(false);}catch{end();setFailed(true);}
  }
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide fi-print-root" aria-labelledby={`${id}-t`} data-testid="fi-print-preview" onCancel={e=>{e.preventDefault();onClose();}}>
-  <div className="fi-print-chrome"><h2 id={`${id}-t`}>Print preview</h2><p className="fi-note">{M.printAdaptation}</p></div>
+  <div className="fi-print-chrome"><h2 id={`${id}-t`}>{M.printTitle}</h2><p className="fi-note">{M.printAdaptation}</p></div>
   <section className="fi-print-report" tabIndex={0} aria-label={caption}>
    <p className="fi-print-header" data-testid="fi-print-date">{printedAt}</p>
    <p className="fi-print-header">{caption}</p>
    <pre className="fi-print-lines" data-testid="fi-print-lines">{lines.join('\n')}</pre>
   </section>
-  <div className="fi-print-chrome"><p role="alert">{failed?'Printing is not available in this browser.':''}</p>
-   <div className="ob-actions"><button type="button" className="primary-button" ref={button} data-testid="fi-print-print" onClick={print}>Print…</button><button type="button" className="secondary-button" data-testid="fi-print-close" onClick={onClose}>{M.close}</button></div></div>
+  <div className="fi-print-chrome"><p role="alert">{failed?M.printError:''}</p>
+   <div className="ob-actions"><button type="button" className="primary-button" ref={button} data-testid="fi-print-print" onClick={print}>{M.printButton}</button><button type="button" className="secondary-button" data-testid="fi-print-close" onClick={onClose}>{M.close}</button></div></div>
  </dialog>,document.body);
 }

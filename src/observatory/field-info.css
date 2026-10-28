@@ -3,8 +3,9 @@
 .fi-area{display:flex;flex-direction:column;gap:var(--ov-space-3);min-width:0}
 .fi-window{min-width:0;padding:var(--ov-space-4);display:flex;flex-direction:column;gap:var(--ov-space-2)}
 .fi-window h2{margin:0;font-size:var(--ov-text-lg)}
+.fi-menubar,.fi-file-menu{position:relative}
 .fi-menubar{display:flex;flex-wrap:wrap;gap:var(--ov-space-2)}
-.fi-menu{position:relative}
+.fi-menu{position:static}
 .fi-menu>button{min-height:40px;padding:0 var(--ov-space-3);border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-sm);background:var(--ov-surface-raised);color:var(--ov-text);font:inherit;cursor:pointer}
 .fi-menu-list{position:absolute;z-index:5;top:calc(100% + 4px);left:0;min-width:min(18rem,calc(100vw - 48px));max-width:calc(100vw - 32px);display:flex;flex-direction:column;padding:var(--ov-space-1);background:var(--ov-surface);border:1px solid var(--ov-border-strong);border-radius:var(--ov-radius-md);box-shadow:var(--ov-shadow-md)}
 .fi-menu-list button{min-height:40px;text-align:left;padding:0 var(--ov-space-3);border:0;background:none;color:var(--ov-text);font:inherit;cursor:pointer;border-radius:var(--ov-radius-sm)}
@@ -51,3 +52,4 @@ html[data-print-scope=field-info] .fi-print-lines{white-space:pre-wrap}
 }
 .ne-card{margin:8px 22px 20px;padding:var(--ov-space-4);display:flex;flex-direction:column;gap:var(--ov-space-2);min-width:0}
 @media(max-width:600px){.ne-card{margin:8px 14px 16px;padding:var(--ov-space-3)}}
+.fi-guide{font-size:var(--ov-text-sm)}.fi-guide summary{cursor:pointer;min-height:32px}.fi-guide ol{margin:var(--ov-space-2) 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:var(--ov-space-1)}
