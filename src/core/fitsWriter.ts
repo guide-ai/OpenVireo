@@ -1,4 +1,4 @@
-/** Save Image (front C4): single-plane float32 FITS for a composed CCD exposure.
+/** Save Image (front C4): single-plane float32 FITS for a composed CCD or IR exposure.
  * Recovered (NATIVE-FITS-SINGLE-PLANE-01, docs/FITS-IMAGE.md): metadata init 0x523a1a sets SIMPLE T, BITPIX -32,
  * NAXIS 2; plane writer 0x523954 walks y outside / x inside and stores each value as Single; 0x52425c byte-reverses
  * each 4-byte word (big-endian). [W] The native keyword writer 0x523218 is not ported: every other card here is
@@ -13,6 +13,8 @@ export class FitsWriterError extends Error {
 }
 export type CameraFitsContext=Readonly<{
  jd:number;filterName:string;catalogName:string;
+ /** Camera for the file name (default CCD). */
+ camera?:'ccd'|'ir';
  source:Readonly<{mode:'static'|'live';sha256:string;extractId:string|null;url:string}>;
 }>;
 type Card=readonly [key:string,value:string|number|boolean|null,comment?:string];
@@ -46,14 +48,14 @@ export function jdToIso(jd:number):string {
 function fitsCatalogHost(url:string):string {try{return new URL(url).hostname.slice(0,60);}catch{return '';}}
 export function cameraFitsCards(exposure:CameraExposure,context:CameraFitsContext):readonly string[] {
  const {plane,recipe}=exposure,profile=opticalProfile(recipe.opticalIndex);
- const projection=compiledCameraProjection('ccd',recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true);
+ const ir=recipe.camera==='ir',projection=compiledCameraProjection(recipe.camera,recipe.opticalIndex,{raHours:recipe.centerRaHours,decDegrees:recipe.centerDecDegrees},true);
  const degrees=180/Math.PI;
  // Gnomonic plane: xi = -planeX = halfX - x*stepX, eta = planeY = halfY + y*stepY (x,y 0-based pixel centres).
  const cards:Card[]=[
   ['SIMPLE',true,'conforms to FITS standard'],['BITPIX',-32,'IEEE single precision'],['NAXIS',2],
   ['NAXIS1',plane.width],['NAXIS2',plane.height],
   ['ORIGIN','OpenVireo','web reconstruction of CLEA VIREO'],
-  ['TELESCOP',profile.name.slice(0,60)],['INSTRUME','CCD'],
+  ['TELESCOP',profile.name.slice(0,60)],['INSTRUME',ir?'IR':'CCD'],
   ['DATE-OBS',jdToIso(context.jd),'UTC, observatory clock at Start'],['MJD-OBS',context.jd-2400000.5],
   ['EXPTIME',recipe.seconds,'s'],['FILTER',context.filterName],['GAIN',recipe.gain,'e-/ADU'],
   ['RA',recipe.centerRaHours*15,'deg, telescope pointing'],['DEC',recipe.centerDecDegrees,'deg'],['EQUINOX',2000],
@@ -69,6 +71,7 @@ export function cameraFitsCards(exposure:CameraExposure,context:CameraFitsContex
   ['CAMSEED',recipe.seed,'web camera random stream seed'],['CAMDRAWS',exposure.drawsConsumed],
   ['COMMENT','Simulated image: catalog stars from CDS/VizieR (doi:10.26093/cds/vizier).'],
   ['COMMENT','NOMAD: Zacharias et al. 2004. USNO-B1.0: Monet et al. 2003.'],
+  ...(ir?[['COMMENT','J/H/K: 2MASS via NOMAD (Skrutskie et al. 2006, AJ 131, 1163).'],['COMMENT','Two Micron All Sky Survey: UMass, IPAC/Caltech; NASA and NSF.']] as Card[]:[]),
   ['COMMENT','Header cards are web-authored; the CLEA keyword writer is not ported.'],
   ['COMMENT','WCS describes the camera projection without the per-star seeing jitter.'],
  ];
@@ -90,5 +93,5 @@ export function writeCameraFits(exposure:CameraExposure,context:CameraFitsContex
  return out;
 }
 export function cameraFitsFileName(context:CameraFitsContext):string {
- return `OpenVireo-CCD-${jdToIso(context.jd).slice(0,19).replace(/[-:]/g,'').replace('T','-')}-${context.filterName.replace(/[^A-Za-z0-9]/g,'')}.fit`;
+ return `OpenVireo-${context.camera==='ir'?'IR':'CCD'}-${jdToIso(context.jd).slice(0,19).replace(/[-:]/g,'').replace('T','-')}-${context.filterName.replace(/[^A-Za-z0-9]/g,'')}.fit`;
 }

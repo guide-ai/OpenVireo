@@ -1,12 +1,18 @@
-/** Presentation strings for the CCD camera window (front C). Pure and keyed so the coordinator can fold them into
+/** Presentation strings for the CCD and IR camera windows (fronts C, C6). Pure and keyed so the coordinator can fold them into
  * en.json at merge. English default. Native captions recovered from the CCD form are marked (native). */
 export const CAMERA_MESSAGES=Object.freeze({
  title:'CCD camera',
+ titleIr:'IR camera',
+ camera:'Camera',
+ cameraNames:{ccd:'CCD camera',ir:'IR camera (J, H, K)'} as const,
  eyebrow:'VIREO · Imaging',
  intro:'Take a CCD image of the field the telescope is tracking. Star positions and magnitudes come from the NOMAD or USNO-B1 catalog; the camera adds sky background, seeing, noise and the detector response.',
+ introIr:'Take a near-infrared image of the field the telescope is tracking. Star positions and J, H or K magnitudes come from the NOMAD catalog; the camera adds sky background, seeing, noise and the detector response.',
  adaptation:'Web adaptation: the original camera asked the USNO NOFS server, which no longer answers. This one reads the same catalogs from CDS/VizieR (VOTable instead of NOFS ASCII). Each exposure uses its own seeded random stream, and the optional bitmap overlay is not offered.',
  filter:'Filter',
  filterNames:['NF (no filter)','B','V','R','I'] as const,
+ filterNamesIr:['J','H','K'] as const,
+ adaptationIr:'IR web adaptation: the original IR window\'s exposure-time limit and any overlay option are not recovered, so the IR camera uses the same 60-minute limit as the CCD and offers no overlay.',
  exposure:'Exposure',
  minutes:'Minutes',
  seconds:'Seconds',
@@ -47,7 +53,7 @@ export const CAMERA_MESSAGES=Object.freeze({
   preparation:'The image could not be built for this field.',
   initialization:'The camera could not start for this pointing.',
  } as Readonly<Record<string,string>>,
- imageAlt:(filter:string,seconds:number)=>`CCD image, filter ${filter}, ${seconds} s.`,
+ imageAlt:(filter:string,seconds:number,camera:'ccd'|'ir'='ccd')=>`${camera==='ir'?'IR':'CCD'} image, filter ${filter}, ${seconds} s.`,
  palette:'Recovered display palette (64/127)',
  displayNote:'Display only: the picture is stretched between the 1st and 99.9th percentile of the pixel values (web choice). Saved pixel values are unchanged.',
  details:'Exposure details',
@@ -64,4 +70,5 @@ export const CAMERA_MESSAGES=Object.freeze({
  sourceWithHash:(label:string,sha256:string)=>`${label} · SHA-256 ${sha256.slice(0,16)}…`,
  rowCounts:(rows:number,selected:number,onDetector:number)=>`${rows} / ${selected} / ${onDetector}`,
  citation:'Catalog data: CDS/VizieR (doi:10.26093/cds/vizier); NOMAD, Zacharias et al. 2004; USNO-B1.0, Monet et al. 2003. VizieR declares no explicit licence for these two catalogs.',
+ citationIr:'The J, H and K magnitudes in NOMAD come from the Two Micron All Sky Survey (2MASS; Skrutskie et al. 2006), a joint project of the University of Massachusetts and IPAC/Caltech, funded by NASA and the NSF.',
 });

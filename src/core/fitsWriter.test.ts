@@ -33,4 +33,17 @@ describe('camera FITS writer',()=>{
   expect(cameraFitsFileName(context)).toBe('OpenVireo-CCD-20261027-180000-NF.fit');
   expect(jdToIso(2451545)).toBe('2000-01-01T12:00:00.000');
  });
+ test('IR exposure (C6): 512 square, INSTRUME IR, 2MASS credit and IR file name; CCD cards carry none of these',()=>{
+  const jhk=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url)));
+  const k=selectVizierCatalog(readVizierCatalog(jhk,{catalog:'I/297',band:'K',epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5}),wholeSkySelection(21.5));
+  const ir=composeCameraExposure({camera:'ir',opticalIndex:0,filterPosition:2,seconds:1,gain:4,centerRaHours:56.745/15,centerDecDegrees:24.118,seed:5},k);
+  const irContext:CameraFitsContext={...context,camera:'ir',filterName:'K'};
+  const cards=cameraFitsCards(ir,irContext),ccd=cameraFitsCards(exposure,context);
+  expect(cards).toContain("INSTRUME= 'IR      '".padEnd(80));expect(ccd).toContain("INSTRUME= 'CCD     '".padEnd(80));
+  expect(cards.some(c=>c.startsWith('COMMENT J/H/K: 2MASS via NOMAD (Skrutskie et al. 2006'))).toBe(true);
+  expect(ccd.some(c=>c.includes('2MASS'))).toBe(false);
+  expect(cards.length).toBe(ccd.length+2);
+  const image=parseFitsImage(writeCameraFits(ir,irContext));expect([image.width,image.height]).toEqual([512,512]);
+  expect(cameraFitsFileName(irContext)).toBe('OpenVireo-IR-20261027-180000-K.fit');expect(cameraFitsFileName(context)).toMatch(/^OpenVireo-CCD-/);
+ });
 });
