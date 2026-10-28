@@ -8,18 +8,32 @@ import type {FieldTelescope} from '../core/fieldEngine';
 import {decodeQsoSpectrumFile,QSO_SPECTRUM_FILE} from '../core/qsoSpectrum';
 import {parseHtl} from '../core/hotList';
 import {packWithPhotographs,GLIMAGES_LST,GLXYSP_LST} from '../core/lssLists';
-import {nativePhotographPositions} from '../core/photographicList';
+import {nativePhotographRows} from '../core/photographicList';
+import {decodeBitmap8,type Bitmap8} from '../core/photographDraw';
 import {decodeStarIndexList,starTemplateSpectrum,JSPEC2_SPI} from '../core/starTemplates';
 import {parseLibrarySpectrum} from '../core/spectrum';
 import type {UniformSpectrum} from '../core/acquisition';
-/** Star templates that the observable Object X star rows select through JSPEC2.SPI (row 9: N3730.DAT@513845, index 50105000 →
- * A0000044.sp), each the already-published byte-exact file in public/original/classification; galaxy own spectra (GLXYSP.LST
- * matches of the Object X galaxies) already published in public/original/spectra. */
-const STAR_TEMPLATES=Object.freeze([{file:'A0000044.SP',path:'/original/classification/A0000044.SP',bytes:55980,sha256:'6d49365b7b52266afd3477df21f30c123d89f5d1cf0771f2c6264487c37800c4'}]);
+/** Star templates that the Object X star rows select through JSPEC2.SPI (0x50d660), each byte-exact and hash-checked, with the
+ * star that requires it: row 9 N3730.DAT@513845 (50105000, exact) → A0000044; row 5 N0730.DAT@472049 (60005000, exact) →
+ * A0000052; row 4 N6000.DAT@209199 (30005000, no entry: walk-back to the nearest lower bucket-50 entry 20805000) → A0000018 (these
+ * three already published in public/original/classification, byte-identical to their jspect2 originals); row 12
+ * N3000.DAT@483032 (50305000, exact) → A0000046 (bundled under public/original/spectra/jspect2). Galaxy own spectra (GLXYSP.LST
+ * matches of the Object X galaxies) are already published in public/original/spectra. */
+const STAR_TEMPLATES=Object.freeze([
+ {file:'A0000018.SP',path:'/original/classification/A0000018.SP',bytes:55980,sha256:'ee65da16e6884d93af66df7c6285664c9dddde3cf1e747c4638af6a36711698a'},
+ {file:'A0000044.SP',path:'/original/classification/A0000044.SP',bytes:55980,sha256:'6d49365b7b52266afd3477df21f30c123d89f5d1cf0771f2c6264487c37800c4'},
+ {file:'A0000046.SP',path:'/original/spectra/jspect2/A0000046.SP',bytes:55980,sha256:'ed50d12a757da8eb063188e6f2da3c7e7842a68b21c4eb4e35c5a1cff654414c'},
+ {file:'A0000052.SP',path:'/original/classification/A0000052.SP',bytes:55980,sha256:'3214b6c401c865bd0b6a2e7e8e175aae88dd2999512a97606be86c4d5828f897'}].map(x=>Object.freeze(x)));
 const GALAXY_SPECTRA=Object.freeze([
  {file:'NGC4262.SP',path:'/original/spectra/NGC4262.SP',bytes:27616,sha256:'f26683c9b84fa039c8bbc1ff615a422a7d30e655a872b29f975fb764f2adfa7a'},
  {file:'NGC4449.SP',path:'/original/spectra/NGC4449.SP',bytes:27617,sha256:'04bf5a4ce4c96b8069a5063a6638a1f14d96f4e93dc315f1bb684bf24bff1da9'},
  {file:'NGC4631.SP',path:'/original/spectra/NGC4631.SP',bytes:27616,sha256:'d333d4a709457869315a2dcefdf0908033c65c40ed623c2554f8f341326bcad8'}]);
+/** The four approved photographs that GLIMAGES.LST associates with Object X areas (user approval of 2026-10-28), byte-exact. */
+export const OBJECT_X_PHOTOGRAPHS=Object.freeze([
+ {file:'NGC2403.BMP',path:'/original/images/NGC2403.BMP',bytes:75852,sha256:'d490142539a2dfaade1780d0ad73918076f15141ca6fc0f6f93ccb3f627e1394'},
+ {file:'NGC4262.BMP',path:'/original/images/NGC4262.BMP',bytes:3952,sha256:'ac967f4472d20e1ff2e8ac5f5b6dc20d643fea8305f800bf7271883940559ea1'},
+ {file:'NGC4631.BMP',path:'/original/images/NGC4631.BMP',bytes:53864,sha256:'0cba75c792d0aac7aa56541e958f87e3fe3e37f5893896e4fc12a84bad729d9e'},
+ {file:'NGC4656.BMP',path:'/original/images/NGC4656.BMP',bytes:76016,sha256:'0c94936472f13a87e26c5156e49ae491869f47818df61c8f94b6f0249601028d'}].map(x=>Object.freeze(x)));
 const latin1=(b:Uint8Array)=>{let t='';for(const x of b)t+=String.fromCharCode(x);return t;};
 import {boundedResourceBody,resourceSha256} from './boundedResource';
 
@@ -49,12 +63,13 @@ async function load():Promise<ObjectXSpectrometerInputs>{
  for(const t of STAR_TEMPLATES)starTemplates.set(t.file,starTemplateSpectrum(latin1(await checked(t.path,t.bytes,t.sha256))));
  for(const g of GALAXY_SPECTRA)galaxySpectra.set(g.file,parseLibrarySpectrum(latin1(await checked(g.path,g.bytes,g.sha256))));
  // The photographic list as the original keeps it (photographicList.ts: malformed rows such as NGC 4449's are dropped).
- const photographs=nativePhotographPositions(glimages),packs=new Map<string,FieldPack>();
+ const photographRows=nativePhotographRows(glimages),photographs=photographRows.map(r=>({index:r.index,ra:r.ra,dec:r.dec})),packs=new Map<string,FieldPack>();
  for(const id of new Set(OBJECT_X_SPECTRUM_ROWS.map(r=>r.pack))){const p=decodeFieldPack((await PACKS[id]()).default);if(p.id!==id)throw new ObjectXSpectrometerError('pack');packs.set(id,packWithPhotographs(p,photographs));}
+ const bitmaps=new Map<string,Bitmap8>();for(const b of OBJECT_X_PHOTOGRAPHS)bitmaps.set(b.file,decodeBitmap8(await checked(b.path,b.bytes,b.sha256)));
  const rows=parseHtl(htl),rowPointings=new Map(OBJECT_X_SPECTRUM_ROWS.map(r=>[r.row,Object.freeze({ra:rows[r.row].ra,dec:rows[r.row].dec})]));
  for(const r of OBJECT_X_SPECTRUM_ROWS){const p=rowPointings.get(r.row)!;if(!packs.get(r.pack)!.pointings.some(x=>x.ra===p.ra&&x.dec===p.dec))throw new ObjectXSpectrometerError('pack');}
  const glxyspLines=latin1(glxysp).replace(/\x1a$/,'').split('\r\n').filter(l=>l!=='');
- return Object.freeze({packs,glx,qsoCatalog,qsoSpectrum:decodeQsoSpectrumFile(qsoBytes),rowPointings,starIndex:decodeStarIndexList(spi),starTemplates,glxyspLines,galaxySpectra});
+ return Object.freeze({packs,glx,qsoCatalog,qsoSpectrum:decodeQsoSpectrumFile(qsoBytes),rowPointings,starIndex:decodeStarIndexList(spi),starTemplates,glxyspLines,galaxySpectra,photographs:Object.freeze({rows:photographRows,bitmaps})});
 }
 /** The typed entry point for Front X's spectrometer branch. */
 export async function observeObjectXSpectrum(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):Promise<ObjectXSpectrometerResult>{

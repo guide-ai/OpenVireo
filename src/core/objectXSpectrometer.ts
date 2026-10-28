@@ -8,9 +8,9 @@
  * unavailable (see docs/OBJECT-X-SPECTRA.md); that is a coordinator/user decision, not hidden here.
  *
  * Fields: the general field engine at the exact ObjectX.HTL coordinates (the coordinates the student is given), QSO 'merge',
- * variables 'outside-view', photographs from GLIMAGES.LST (association not ported: a typed reason), the QSO observation through
+ * variables 'outside-view', photographs from GLIMAGES.LST (association, rescale and draw ported; photographDraw.ts), the QSO observation through
  * QSOSpect.dat. Journals use the same bounded exposure journal as every acquisition. */
-import {evaluateField,createFieldExposure,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog} from './fieldEngine';
+import {evaluateField,createFieldExposure,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldQsoCatalog,type FieldPhotographs} from './fieldEngine';
 import type {FieldPack} from './fieldPack';
 import type {QsoSpectrumFile} from './qsoSpectrum';
 import {lookupStarTemplate,type StarIndexEntry} from './starTemplates';
@@ -31,7 +31,9 @@ export const OBJECT_X_SPECTRUM_ROWS:readonly Readonly<{row:number;pack:string}>[
 /** starIndex: JSPEC2.SPI decoded (starTemplates.ts); starTemplates: template file → decoded spectrum (bundled, hash-checked);
  * glxyspLines: GLXYSP.LST rows; galaxySpectra: own library spectrum file → samples. */
 export type ObjectXSpectrometerInputs=Readonly<{packs:ReadonlyMap<string,FieldPack>;glx:Uint8Array;qsoCatalog:FieldQsoCatalog;qsoSpectrum:QsoSpectrumFile;rowPointings:ReadonlyMap<number,Readonly<{ra:number;dec:number}>>;
- starIndex:readonly StarIndexEntry[];starTemplates:ReadonlyMap<string,UniformSpectrum>;glxyspLines:readonly string[];galaxySpectra:ReadonlyMap<string,readonly Readonly<{wavelength:number;intensity:number}>[]>}>;
+ starIndex:readonly StarIndexEntry[];starTemplates:ReadonlyMap<string,UniformSpectrum>;glxyspLines:readonly string[];galaxySpectra:ReadonlyMap<string,readonly Readonly<{wavelength:number;intensity:number}>[]>;
+ /** Kept GLIMAGES.LST rows with native names and the approved bitmaps (fieldEngine 'photographs' option). */
+ photographs:FieldPhotographs}>;
 /** 0x55eb64: the first GLXYSP.LST line containing the name without a parenthesised suffix and spaces (Pos), or null. */
 export function glxyspLookup(lines:readonly string[],id:string):string|null{const key=id.replace(/\(.*$/,'').replace(/ /g,'');return key?lines.find(l=>l.includes(key))??null:null;}
 /** Display-safe reason families (one neutral message each in the UI): 'not-recovered' (a branch this version cannot model),
@@ -63,7 +65,7 @@ export function objectXSpectrometerAt(inputs:ObjectXSpectrometerInputs,pointing:
  const pack=inputs.packs.get(row.pack);if(!pack)throw new JournalError('proof');
  const at={ra:pointing.ra,dec:pointing.dec};
  const starObservation={templateFor:(index:number)=>{const file=lookupStarTemplate(inputs.starIndex,index);const spectrum=file?inputs.starTemplates.get(file):undefined;return file&&spectrum?{file,spectrum}:null;}};
- const options={qso:'merge' as const,qsoCatalog:inputs.qsoCatalog,variables:'outside-view' as const,continuation:'start-time' as const,spectralInterval:OBJECT_X_SPECTRAL_INTERVAL,starObservation,qsoObservation:{file:inputs.qsoSpectrum,...OBJECT_X_SPECTRAL_INTERVAL}};
+ const options={variableDispatch:'recovered' as const,photographs:inputs.photographs,qso:'merge' as const,qsoCatalog:inputs.qsoCatalog,variables:'outside-view' as const,continuation:'start-time' as const,spectralInterval:OBJECT_X_SPECTRAL_INTERVAL,starObservation,qsoObservation:{file:inputs.qsoSpectrum,...OBJECT_X_SPECTRAL_INTERVAL}};
  let r=evaluateField(pack,inputs.glx,at,telescope,options);
  // A selected galaxy with its own GLXYSP.LST spectrum takes the matched branch (0x55e55c, factor 1), as NGC 4889 in E01.
  const own=r.target?glxyspLookup(inputs.glxyspLines,r.target.id):null;

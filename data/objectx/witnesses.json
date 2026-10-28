@@ -27,6 +27,7 @@
    "qsoRecordsRead": 527,
    "variables": [],
    "photographs": [],
+   "photographAssociations": [],
    "modelled": true,
    "qsoOperations": [
     [
@@ -62,6 +63,15 @@
    "photographs": [
     40
    ],
+   "photographAssociations": [
+    {
+     "recordIndex": 7511,
+     "galaxyName": "NGC 2403",
+     "photograph": 40,
+     "name": "NGC 2403",
+     "file": "NGC2403.BMP"
+    }
+   ],
    "modelled": true,
    "qsoOperations": [],
    "finalStars": 337,
@@ -89,6 +99,20 @@
    "photographs": [
     40
    ],
+   "photographAssociations": [
+    {
+     "recordIndex": 7511,
+     "galaxyName": "NGC 2403",
+     "photograph": 40,
+     "name": "NGC 2403",
+     "file": "NGC2403.BMP"
+    }
+   ],
+   "selectedStar": {
+    "id": "N6000.DAT@209199",
+    "spectralIndex": 30005000,
+    "template": "A0000018.sp"
+   },
    "modelled": true,
    "qsoOperations": [],
    "finalStars": 351,
@@ -117,6 +141,20 @@
    "photographs": [
     97
    ],
+   "photographAssociations": [
+    {
+     "recordIndex": 13175,
+     "galaxyName": "NGC 4262",
+     "photograph": 97,
+     "name": "NGC 4262",
+     "file": "NGC4262.BMP"
+    }
+   ],
+   "selectedStar": {
+    "id": "N0730.DAT@472049",
+    "spectralIndex": 60005000,
+    "template": "A0000052.sp"
+   },
    "modelled": true,
    "qsoOperations": [],
    "finalStars": 96,
@@ -144,6 +182,15 @@
    "photographs": [
     97
    ],
+   "photographAssociations": [
+    {
+     "recordIndex": 13175,
+     "galaxyName": "NGC 4262",
+     "photograph": 97,
+     "name": "NGC 4262",
+     "file": "NGC4262.BMP"
+    }
+   ],
    "modelled": true,
    "qsoOperations": [],
    "finalStars": 89,
@@ -170,6 +217,7 @@
    "photographs": [
     112
    ],
+   "photographAssociations": [],
    "modelled": true,
    "qsoOperations": [],
    "finalStars": 106,
@@ -199,6 +247,12 @@
    "photographs": [
     112
    ],
+   "photographAssociations": [],
+   "selectedStar": {
+    "id": "N3730.DAT@513845",
+    "spectralIndex": 50105000,
+    "template": "A0000044.sp"
+   },
    "modelled": true,
    "qsoOperations": [],
    "finalStars": 98,
@@ -229,6 +283,7 @@
    "qsoRecordsRead": 1364,
    "variables": [],
    "photographs": [],
+   "photographAssociations": [],
    "modelled": true,
    "qsoOperations": [
     [
@@ -263,7 +318,30 @@
    "photographs": [
     131
    ],
-   "modelled": false
+   "variableFalseMerge": {
+    "variable": 9631,
+    "winner": "N3000.DAT@482829",
+    "arcseconds": 27.66232298600608,
+    "starsAfter": 84
+   },
+   "photographAssociations": [
+    {
+     "recordIndex": 14055,
+     "galaxyName": "NGC 4631",
+     "photograph": 131,
+     "name": "NGC 4631",
+     "file": "NGC4631.BMP"
+    }
+   ],
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 83,
+   "finalStarIdsSHA256": "364cc5c3c63478bce8edbe6b0e8887765d2970fbc081b5331610ddf6a886fd73",
+   "galaxies": [
+    14052,
+    14055
+   ],
+   "deletedGalaxies": []
   },
   {
    "row": 12,
@@ -284,7 +362,34 @@
    "photographs": [
     135
    ],
-   "modelled": false
+   "variableFalseMerge": {
+    "variable": 9631,
+    "winner": "N3000.DAT@482829",
+    "arcseconds": 27.66232298600608,
+    "starsAfter": 91
+   },
+   "photographAssociations": [
+    {
+     "recordIndex": 14144,
+     "galaxyName": "NGC 4656",
+     "photograph": 135,
+     "name": "NGC 4656",
+     "file": "NGC4656.BMP"
+    }
+   ],
+   "selectedStar": {
+    "id": "N3000.DAT@483032",
+    "spectralIndex": 50305000,
+    "template": "A0000046.sp"
+   },
+   "modelled": true,
+   "qsoOperations": [],
+   "finalStars": 89,
+   "finalStarIdsSHA256": "e35b5d61fbbe6e8d30b9bcc0423e1314f526e8528a6ae814acfcd98471306113",
+   "galaxies": [
+    14144
+   ],
+   "deletedGalaxies": []
   },
   {
    "row": 13,
@@ -303,6 +408,7 @@
    "qsoRecordsRead": 1788,
    "variables": [],
    "photographs": [],
+   "photographAssociations": [],
    "modelled": true,
    "qsoOperations": [
     [

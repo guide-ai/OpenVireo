@@ -3,7 +3,10 @@
  *  - the compact reader 0x59b0b3–0x59b0b9 copies the packed Int32 at record offset 8 (the spectral index) to the expanded record;
  *  - JSPEC2.SPI (approved byte-exact, 3168 bytes, SHA-256 5abf48cb…a0aa): 132 rows `<index> '<file>'`, read by 0x50d460/0x50d754
  *    and inserted with the cursor insert 0x492728 under the signed-integer greater comparator 0x50d454 (an ascending list);
- *  - the matcher 0x50d660 selects the entry with exactly this index; there is no fallback template (a miss stays typed);
+ *  - the matcher 0x50d660 (lookupStarTemplate): nil for an unloaded list or an index below 10 000 000; otherwise a forward walk
+ *    returns an exact match; at the first larger entry it walks back (0x492668) to the nearest lower entry whose bucket
+ *    Round(Frac(index/10000)·100) (0x40365c Frac, 0x403700 Round) equals the key's, else returns the entry just before the larger
+ *    one (the first entry when the key is below all); a key above every entry is nil;
  *  - the headerless loader 0x55ef64–0x55f05d keeps the file's flux values on a uniform endpoint grid (first..last wavelength);
  *  - Go samples the 600 channels through 0x55dfe0 (acquisition.ts).
  * The file names in JSPEC2.SPI are lower-case ('A0000044.sp'); the original runs on a case-insensitive file system and the
@@ -25,10 +28,21 @@ export function decodeStarIndexList(bytes:Uint8Array):readonly StarIndexEntry[]{
  const read=rows.map((l,row)=>{const m=/^\s*(-?\d{1,10})\s+'([A-Za-z0-9_]{1,8}\.[A-Za-z]{2,3})'\s*$/.exec(l);if(!m)throw new StarTemplateError('index-file');const index=Number(m[1]);if(!Number.isSafeInteger(index)||index< -0x8000_0000||index>0x7fff_ffff)throw new StarTemplateError('index-file');return Object.freeze({index,file:m[2],row});});
  return Object.freeze(nativeCursorInsert(read,(a,b)=>a.index>b.index));
 }
-/** 0x50d660: the entry with exactly this index, or null (no fallback). Returns the bundled (upper-case) file name. */
+/** 0x50d660 over the natively ordered list; returns the bundled (upper-case) file name or null. The bucket is computed exactly
+ * on integers; indices that are not multiples of 100 (where the x87 Frac·100 could round differently) are not supported. */
 export function lookupStarTemplate(list:readonly StarIndexEntry[],spectralIndex:number):string|null{
- const hit=list.filter(e=>e.index===spectralIndex);if(hit.length>1)throw new StarTemplateError('index-file');
- return hit.length?hit[0].file.toUpperCase():null;
+ if(!Number.isSafeInteger(spectralIndex)||spectralIndex< -0x8000_0000||spectralIndex>0x7fff_ffff)throw new StarTemplateError('template');
+ if(!list.length||spectralIndex<10_000_000)return null;// 0x50d66c..0x50d67b
+ const bucket=(i:number)=>{if(i%100!==0)throw new StarTemplateError('template');return ((i%10000)+10000)%10000/100;};
+ const k=bucket(spectralIndex);
+ for(let g=0;g<list.length;g++){
+  if(list[g].index===spectralIndex)return list[g].file.toUpperCase();
+  if(list[g].index>spectralIndex){
+   for(let b=g-1;b>=0;b--)if(bucket(list[b].index)===k)return list[b].file.toUpperCase();
+   return list[Math.max(0,g-1)].file.toUpperCase();
+  }
+ }
+ return null;// 0x50d72e: tail reached without a larger entry
 }
 /** Spectral index of a compact GSC record (27-byte hex): packed Int32 at offset 8. */
 export function compactSpectralIndex(rawHex:string):number{

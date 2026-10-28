@@ -11,7 +11,10 @@
    - Evidence: `data/hubble/qso-merge-witnesses.json`, an independent Python model (explicit linked list with the recovered helper semantics 0x492574/0x4925dc/0x492688) of every unique LSS pointing and the Coma/Boötes centres; `qsoMerge.test.ts` reproduces all 169 modelled LSS pointings and both Coma centres (final star order, galaxy order, QSO operations). Pointings with a CLEA_VStrs.dat record in the area are not modelled there. In the real data every QSO is an ordered insert; replacement and galaxy deletion are covered by synthetic tests only.
    - Uncertainty: the loader's 95-byte QSO object (stack, ebp−0x210) is never cleared; +0x3e..+0x42 and +0x47..+0x5e are residue, copied whole by the replace branch (0x598026..0x598037), and native code reads +0x3e (e.g. 0x596858). Only the fields the merge, cleanup, paint and selection read are modelled.
    - The engine trusts the caller's `qsoCatalog.sha256`: hashing is asynchronous, so the io adapter (`io/bundledQsoCatalog.ts`) checks size and SHA-256 before the bytes reach the engine (tested); the engine then cross-checks the bytes against the pack's own QSO positions.
-   - Photographic association stays unported: any photograph inside the area is a typed `unavailable` reason.
+   - Photographic association: by default any photograph inside the area is a typed `unavailable` reason. With the `photographs`
+     option (Object X) the association 0x5990a3, rescale 0x597290 and draw 0x597470 are ported (docs/OBJECT-X-SPECTRA.md).
+   - Variables: `variableDispatch: 'recovered'` (Object X) lets one variable whose dispatch 0x51ec48 returns false without side
+     effects (zero period, zero word unless class 1, or class 3) take the HI Peg false-merge branch; the default keeps class 3 only.
 4. Variables: none, or exactly one class-3 record through the false-merge branch (`variableMerge.ts`). Anything else is `variable-merge`.
 5. Galaxies:
    - Whole-file CLEA_GLX.DAT admission in source order. The GLX loader (call at 0x599128) inserts each galaxy with the cursor-relative linked-list insert 0x492728, using the strict RA/Dec-greater comparator 0x5969e0.

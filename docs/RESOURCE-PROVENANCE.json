@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "scope": "All1338files in LOCAL-RESOURCES.json:the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md;no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26).",
-  "totalFiles": 1338,
-  "totalBytes": 124399191,
+  "totalFiles": 1343,
+  "totalBytes": 124667281,
   "extensions": {
     ".json": 1061,
     ".LST": 6,
@@ -97,11 +97,11 @@
       "upstreamStatus": "Included under the second user approval(2026-10-26,AGENTS.md)on the basis of the recorded CLEA License.rtf terms(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     },
     "public/original/images": {
-      "files": 171,
-      "bytes": 2089107,
+      "files": 175,
+      "bytes": 2298791,
       "materialClass": "lossless-image-conversion",
-      "description": "170PNG conversions of original BMPs;verified RGB preservation;also byte-exact GLIMAGES.LST(program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST,10103bytes,183 photographic-list rows;only positions are read),SHA-256 fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01",
-      "usedBy": "Runtime galaxy reference-image cards;Field engine photographic-image gate (positions only;no image is loaded)",
+      "description": "170PNG conversions of original BMPs;verified RGB preservation;also byte-exact GLIMAGES.LST(program files/CLEA/VIREO/Images/Galaxies/GLIMAGES.LST,10103bytes,183 photographic-list rows;only positions are read),SHA-256 fd5b98163259b3b4f7e0da1185930ef393e349fbfa07bcc3b6abfd97552c0a01;also 4 byte-exact galaxy photographs from program files/CLEA/VIREO/Images/Galaxies/ (user approval of 2026-10-28): NGC2403.BMP (75852 bytes, SHA-256 d490142539a2dfaade1780d0ad73918076f15141ca6fc0f6f93ccb3f627e1394), NGC4262.BMP (3952, ac967f4472d20e1ff2e8ac5f5b6dc20d643fea8305f800bf7271883940559ea1), NGC4631.BMP (53864, 0cba75c792d0aac7aa56541e958f87e3fe3e37f5893896e4fc12a84bad729d9e), NGC4656.BMP (76016, 0c94936472f13a87e26c5156e49ae491869f47818df61c8f94b6f0249601028d); NGC4449.BMP is absent from the zip (its GLIMAGES.LST row is dropped by the original parser)",
+      "usedBy": "Runtime galaxy reference-image cards;Field engine photographic-image gate (positions only;no image is loaded);Object X spectrometer photographic draw (the four BMPs: association, rescale and draw ported from 0x598ed2/0x597290/0x597470; palette mapping uncertain)",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/radio": {
@@ -121,10 +121,10 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/spectra": {
-      "files": 26,
-      "bytes": 717770,
+      "files": 27,
+      "bytes": 773750,
       "materialClass": "unchanged-original-text-resource",
-      "description": "23unchanged original SP files;also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a",
+      "description": "23unchanged original SP files;also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a;also jspect2/A0000046.SP (55980 bytes, SHA-256 ed50d12a757da8eb063188e6f2da3c7e7842a68b21c4eb4e35c5a1cff654414c), byte-exact from program files/CLEA/VIREO/Spectra/jspect2/ (user approval of 2026-10-27, group 1), required by the Object X row-12 star N3000.DAT@483032 (spectral index 50305000, exact JSPEC2.SPI match); the other Object X stars use templates already published in public/original/classification (row 9 N3730.DAT@513845 → A0000044.SP exact, row 5 N0730.DAT@472049 → A0000052.SP exact, row 4 N6000.DAT@209199 index 30005000 → A0000018.SP by the 0x50d660 walk-back), each byte-identical to its jspect2 original",
       "usedBy": "Runtime galaxy library and template spectra;LSS spectrum-mapping gate: a selected galaxy with its own library spectrum is not given the template",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
@@ -358,6 +358,27 @@
           "public/original/spectra/jspect2/JSPEC2.SPI"
         ],
         "sourceGrant": "Front F Object X: JSPEC2.SPI (2026-10-27, group 1)",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "public/original/images/NGC2403.BMP",
+          "public/original/images/NGC4262.BMP",
+          "public/original/images/NGC4631.BMP",
+          "public/original/images/NGC4656.BMP"
+        ],
+        "sourceGrant": "User approval of 2026-10-28 (AGENTS.md): byte-exact NGC2403.BMP, NGC4262.BMP, NGC4631.BMP and NGC4656.BMP from CLEA_Vireo.zip program files/CLEA/VIREO/Images/Galaxies/, for the Object X photographic draw; NGC4449.BMP is absent from the zip and its GLIMAGES.LST row is dropped by the original parser.",
+        "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-28",
+        "scope": [
+          "public/original/spectra/jspect2/A0000046.SP"
+        ],
+        "sourceGrant": "User approval of 2026-10-27 group 1 (AGENTS.md): byte-exact jspect2 templates that stars in published fields require through JSPEC2.SPI; A0000046.SP (55980 bytes) is required by the Object X row-12 star N3000.DAT@483032 (spectral index 50305000, exact JSPEC2.SPI match).",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }

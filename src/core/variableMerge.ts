@@ -55,10 +55,23 @@ export type VariableMergeResult=Readonly<{
 /** One variable against the ordered stellar list. Distances are supplied explicitly (catalogMergeDistance, variable as query).
  * Hit: STRICT best·3600 < 30″. Returned rows are the merge rows: the hit star keeps its record unchanged (restored), a runner
  * pruned before the hit test stays removed, nothing is inserted on a miss. */
-export function nativeVariableFalseMerge(candidates:readonly MergeCandidate[],variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[]):VariableMergeResult{
+/** The time-update dispatch 0x51ec48..0x51ecdb as far as it returns false without any side effect (the path to 0x51ee57 only
+ * builds the classification string and its class): a zero period (0x51ec9a fcomp 0 / je), a zero word with a class other
+ * than 1 (0x51ecb0..0x51ecba), or class 3 (0x51eccb). Any other combination reaches a light-curve constructor (not modelled). */
+export function nativeVariableDispatchFalse(variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[]):boolean{
+ if(!variable||typeof variable!=='object'||typeof variable.periodNonzero!=='boolean'||!Number.isInteger(variable.word48)||variable.word48< -0x8000||variable.word48>0x7fff)throw new VariableMergeError('record');
+ const c=nativeVariableClass(variable.classification,tables);
+ return !variable.periodNonzero||variable.word48===0&&c!==1||c===3;
+}
+/** dispatch 'class-3' (default, the verified HI Peg contract): only class 3 with nonzero period and word. 'recovered' (Front F,
+ * Object X): any variable for which nativeVariableDispatchFalse holds; the merge itself is the same. */
+export function nativeVariableFalseMerge(candidates:readonly MergeCandidate[],variable:Readonly<{classification:string;periodNonzero:boolean;word48:number}>,tables:readonly VariableClassTable[],dispatch:'class-3'|'recovered'='class-3'):VariableMergeResult{
  if(!variable||typeof variable!=='object')throw new VariableMergeError('record');
+ if(dispatch==='recovered'){if(!nativeVariableDispatchFalse(variable,tables))throw new VariableMergeError('variable-model-unsupported');}
+ else{
  if(nativeVariableClass(variable.classification,tables)!==3)throw new VariableMergeError('variable-model-unsupported');
  if(variable.periodNonzero!==true||!Number.isInteger(variable.word48)||variable.word48===0||variable.word48< -0x8000||variable.word48>0x7fff)throw new VariableMergeError('dispatch-unsupported');
+ }
  const trace=nativeMergeNearest(candidates,0),arcseconds=trace.bestDistanceDegrees*3600;awayFromBoundary(arcseconds,30);
  if(arcseconds>=30)return Object.freeze({rows:trace.rows,trace,hit:false,classification:3 as const,timeUpdateResult:false as const,recordRestored:false,inserted:false as const,callerTarget:null});
  const target=trace.resolvedSavedIndex;if(!target)throw new VariableMergeError('native-null-lookup');

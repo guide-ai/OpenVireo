@@ -30,8 +30,15 @@ describe('star templates through JSPEC2.SPI (0x50d460/0x50d660, generalized from
   const s=starTemplateSpectrum(new TextDecoder('latin1').decode(file('public/original/classification/A0000049.SP')));
   expect(s.intensities).toEqual(starSource.samples.map(r=>r[1]));expect([s.minimum,s.maximum]).toEqual([starSource.samples[0][0],starSource.samples.at(-1)![0]]);
  });
- it('Object X row 9 star N3730.DAT@513845 → 50105000 → A0000044 (already published); a missing index has no fallback',()=>{
+ it('Object X row 9 star N3730.DAT@513845 → 50105000 → A0000044 (already published); the 0x50d660 walk-back on a miss',()=>{
   const list=decodeStarIndexList(spi);expect(lookupStarTemplate(list,50105000)).toBe('A0000044.SP');expect(lookupStarTemplate(list,12345)).toBeNull();
+  expect(lookupStarTemplate(list,9_999_900)).toBeNull();expect(lookupStarTemplate(list,99_999_900)).toBeNull();// below 10^7; above every entry
+  expect(lookupStarTemplate(list,10_000_000)).toBe(list[0].file.toUpperCase());// below every entry: the first
+  // Row 4 star (index 30005000, no entry): back from 30101000 to the nearest lower bucket-50 entry.
+  const lower=[...list].filter(e=>e.index<30005000&&e.index%10000===5000).at(-1)!;expect(lookupStarTemplate(list,30005000)).toBe(lower.file.toUpperCase());
+  // No same-bucket entry below: the entry just before the first larger one.
+  const synthetic=[{index:20001000,file:'a.sp',row:0},{index:20003000,file:'b.sp',row:1},{index:20101000,file:'c.sp',row:2}];
+  expect(lookupStarTemplate(synthetic,20005000)).toBe('B.SP');expect(lookupStarTemplate(synthetic,20003000)).toBe('B.SP');expect(lookupStarTemplate(synthetic,20001500)).toBe('A.SP');
   expect(compactSpectralIndex('00'.repeat(8)+'48ffc102'+'00'.repeat(15))).toBe(0x02c1ff48);
  });
 });

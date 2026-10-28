@@ -1,5 +1,8 @@
 import {describe,it,expect} from 'vitest';
-import {decodeBitmap8,scaleNativePhotograph,drawNativePhotograph,associatePhotograph,PHOTOGRAPH_FACTORS,PhotographError} from './photographDraw';
+import {decodeBitmap8,scaleNativePhotograph,drawNativePhotograph,associatePhotograph,nativeGalaxyName,PHOTOGRAPH_FACTORS,PhotographError} from './photographDraw';
+import {nativePhotographName,nativePhotographRows} from './photographicList';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 /** Authored synthetic 8-bit BMP (grayscale palette); not an original image. */
 function bmp(width:number,height:number,pixel:(x:number,y:number)=>number,bottomUp=true):Uint8Array{
  const stride=(width+3)&~3,offset=14+40+1024,size=offset+stride*height,b=new Uint8Array(size),v=new DataView(b.buffer);
@@ -30,5 +33,42 @@ describe('photographic galaxy image contract (0x597290, 0x597470) on synthetic b
  });
  it('association takes the first photograph whose name contains the galaxy name (Pos), no other rule',()=>{
   const list=[{name:'NGC 24030'},{name:'NGC 2403'}];expect(associatePhotograph('NGC 2403',list)).toBe(list[0]);expect(associatePhotograph('NGC 9999',list)).toBeNull();
+ });
+});
+describe('photograph names, the approved bitmaps and the draw inside the field engine',()=>{
+ const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
+ it('0x596da8 names (empty column 1 → "NGC " + column 2; otherwise "c1 (NGC c2)", String[18]) and 0x598e58 galaxy names (untrimmed)',()=>{
+  expect(nativePhotographName('','2403')).toBe('NGC 2403');expect(nativePhotographName('M100','4321')).toBe('M100 (NGC 4321)');
+  expect(nativePhotographName('ABCDEFGHIJ','12345')).toBe('ABCDEFGHIJ (NGC 12');// String[18]
+  const raw=(kind:number,text:string,at:number)=>{const r=new Uint8Array(59);r[38]=kind;r[at]=text.length;for(let i=0;i<text.length;i++)r[at+1+i]=text.charCodeAt(i);return r;};
+  expect(nativeGalaxyName(raw(0,'2403',39))).toBe('NGC 2403');expect(nativeGalaxyName(raw(0,'2403 ',39))).toBe('NGC 2403 ');// not trimmed: no Pos match
+  expect(nativeGalaxyName(raw(0,'12345678',39))).toBe('NGC 1234567');expect(nativeGalaxyName(raw(1,'1234567',39))).toBe('IC 1234567');expect(nativeGalaxyName(raw(2,'54890',47))).toBe('54890');
+  expect(associatePhotograph('NGC 2403 ',[{name:'NGC 2403'}])).toBeNull();expect(associatePhotograph('',[{name:'NGC 2403'}])).toBeNull();
+ });
+ it('the four approved BMPs decode as 8-bit with the GLIMAGES.LST width and height of their kept rows',()=>{
+  const rows=nativePhotographRows(file('images/GLIMAGES.LST'));
+  for(const [f,sum] of [['NGC2403.BMP','d490142539a2dfaade1780d0ad73918076f15141ca6fc0f6f93ccb3f627e1394'],['NGC4262.BMP','ac967f4472d20e1ff2e8ac5f5b6dc20d643fea8305f800bf7271883940559ea1'],['NGC4631.BMP','0cba75c792d0aac7aa56541e958f87e3fe3e37f5893896e4fc12a84bad729d9e'],['NGC4656.BMP','0c94936472f13a87e26c5156e49ae491869f47818df61c8f94b6f0249601028d']]){
+   const b=file('images/'+f);expect(createHash('sha256').update(b).digest('hex')).toBe(sum);
+   const d=decodeBitmap8(b),row=rows.find(r=>r.file===f)!;expect([d.width,d.height]).toEqual([row.width,row.height]);expect(row.name).toBe('NGC '+f.slice(3,7));
+  }
+  expect(rows.some(r=>r.file==='NGC4449.BMP')).toBe(false);// dropped by the native parser (empty integer columns)
+ });
+ it('evaluateField draws the rescaled photograph at Round(projected) − listed centre; without a bitmap it stays photographic-image',async()=>{
+  const {evaluateField}=await import('./fieldEngine');const {decodeFieldPack}=await import('./fieldPack');const {packWithPhotographs}=await import('./lssLists');const {parseHtl}=await import('./hotList');
+  const rows=nativePhotographRows(file('images/GLIMAGES.LST')),glx=file('catalogs/CLEA_GLX.DAT'),htl=parseHtl(file('hotlists/ObjectX.HTL'));
+  const pack=packWithPhotographs(decodeFieldPack(JSON.parse(readFileSync(new URL('../../data/objectx/spectra-ngc4262.json',import.meta.url),'utf8'))),rows),at={ra:htl[6].ra,dec:htl[6].dec};
+  const bmp=decodeBitmap8(file('images/NGC4262.BMP'));
+  expect(evaluateField(pack,glx,at,2,{photographs:{rows,bitmaps:new Map()}}).reasons).toEqual(['photographic-image']);
+  expect(evaluateField(pack,glx,at,2).reasons).toContain('photographic-image');// option absent: unchanged gate
+  const r=evaluateField(pack,glx,at,2,{photographs:{rows,bitmaps:new Map([['NGC4262.BMP',bmp]])}});
+  const i=r.population!.galaxies.findIndex(g=>g.recordIndex===13175),p=r.scene!.galaxies[i],row=rows.find(x=>x.file==='NGC4262.BMP')!,scaled=scaleNativePhotograph(bmp,2);
+  const left=Math.round(p.x)-row.centreX,top=Math.round(p.y)-row.centreY,anchor=468-156;// crop origin
+  let checked=0;
+  for(const [x,y] of [[row.centreX,row.centreY],[10,10],[row.width-1,row.height-1]]){
+   const cx=left+x-anchor,cy=top+y-anchor;if(cx<0||cy<0||cx>=312||cy>=312)continue;
+   const v=r.viewport!,k=(cy*312+cx)*3,[R,G,B]=scaled.palette[scaled.indices[y*bmp.width+x]];
+   expect([v.rgb[k],v.rgb[k+1],v.rgb[k+2]]).toEqual([R,G,B]);checked++;
+  }
+  expect(checked).toBeGreaterThan(0);
  });
 });

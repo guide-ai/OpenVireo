@@ -1,5 +1,6 @@
-/** Photographic galaxy images in the telescope field (Front F), static reading of CLEA_VEO.exe 781bc970…c54c. Not wired to any
- * original BMP: the files are not approved resources yet; tests use authored synthetic bitmaps only.
+/** Photographic galaxy images in the telescope field (Front F), static reading of CLEA_VEO.exe 781bc970…c54c. The four bitmaps
+ * associated with Object X areas (NGC2403/4262/4631/4656.BMP, user approval of 2026-10-28) are bundled byte-exact; the field
+ * engine uses this module through its 'photographs' option.
  *
  * Association (galaxy loader 0x598ed2..0x599128): for each admitted galaxy, the area's photographic list (photographicList.ts,
  * selected by 0x596ab8) is scanned in order; the first photograph whose name contains the galaxy's name (Pos 0x40640c) gets an
@@ -54,7 +55,17 @@ export function drawNativePhotograph(raster:RgbImage,bmp:Bitmap8,projected:Reado
   for(let x=0;x<bmp.width;x++){const tx=left+x;if(tx<0||tx>=raster.width)continue;const [r,g,b]=bmp.palette[bmp.indices[y*bmp.width+x]],at=(ty*raster.width+tx)*3;rgb[at]=r;rgb[at+1]=g;rgb[at+2]=b;}}
  return Object.freeze({width:raster.width,height:raster.height,rgb});
 }
+/** The galaxy's name as 0x598e58..0x598ecd builds it from the 59-byte CLEA_GLX.DAT record (not trimmed, unlike glxCatalog.ts):
+ * name kind 0 → ('NGC ' + String@39) limited to 11 characters, 1 → ('IC ' + String@39) limited to 10, otherwise String@47
+ * (stored as String[18]). */
+export function nativeGalaxyName(raw:Uint8Array):string{
+ if(raw.length!==59)throw new PhotographError('geometry');
+ const text=(at:number)=>{const n=raw[at];if(at+1+n>raw.length)throw new PhotographError('geometry');return String.fromCharCode(...raw.subarray(at+1,at+1+n));};
+ const kind=raw[38];return kind===0?('NGC '+text(39)).slice(0,11):kind===1?('IC '+text(39)).slice(0,10):text(47).slice(0,18);
+}
 /** The association rule: first kept photograph whose file-list name contains the galaxy name (Pos), or null. */
+/** 0x5990a3..0x5990cc: Pos(galaxy name, photograph name) over the area's photographic sublist in its order (an empty galaxy name
+ * never matches: Pos returns 0 for an empty substring). */
 export function associatePhotograph<T extends Readonly<{name:string}>>(galaxyName:string,photographs:readonly T[]):T|null{
  return galaxyName?photographs.find(p=>p.name.includes(galaxyName))??null:null;
 }
