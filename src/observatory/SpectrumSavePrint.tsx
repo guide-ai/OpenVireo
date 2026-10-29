@@ -1,5 +1,5 @@
 import {useEffect,useMemo,useRef,useState} from 'react';
-import {starSpectrumBytes} from '../core/exposureSpectrum';
+import {starSpectrumBytes,starSpectrumFileName} from '../core/exposureSpectrum';
 import {opticalProfile} from '../core/opticalTelescope';
 import {parseSpectrum} from '../core/spectrum';
 import {STAR_TARGET,type StarState} from '../core/starExposure';
@@ -56,5 +56,5 @@ export default function SpectrumSavePrint({state,active,busy}:{state:StarState|n
  const running=state?.exposure.phase==='running',usable=!!state&&!running&&state.exposure.draws>0&&!busy;
  const bytes=useMemo(()=>{if(!state||running)return null;try{return starSpectrumBytes(state);}catch{return null;}},[state,running]);
  const index=state?starTelescopeIndex(state):0;
- return <SpectrumSaveCard active={active} source={{bytes,usable,label:STAR_TARGET.id,telescopeName:opticalProfile(index).name,elapsedMs:state?.exposure.elapsedMs??0,fileName:`openvireo-star-${STAR_TARGET.id.replace(/[^A-Za-z0-9_-]+/g,'_')}.ssp`}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable,label:STAR_TARGET.id,telescopeName:opticalProfile(index).name,elapsedMs:state?.exposure.elapsedMs??0,fileName:starSpectrumFileName(STAR_TARGET.id)}}/>;
 }

@@ -15,17 +15,24 @@ load, so they are never asserted.
 ## Scenarios and budgets
 | Scenario | What happens | Count | Budget |
 |---|---|---|---|
-| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 135 | 150 |
+| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 144 | 158 |
 | classificationKey | one keystroke in "Proposed spectral type" | 31 | 36 |
 | classificationFill | `fill` of that field | 31 | 36 |
-| classificationToSpectrum | header click from classification to the spectrum analyzer | 42 | 47 |
-| analyzerKey | one keystroke in the analyzer's "Object or reference" | 7 | 12 |
-| observatoryLoad | open `#observatory` cold, until its heading shows | 73 | 81 |
+| classificationToSpectrum | header click from classification to the spectrum analyzer | 43 | 47 |
+| analyzerKey | one keystroke in the analyzer's "Object or reference" | 8 | 12 |
+| observatoryLoad | open `#observatory` cold, until its heading shows | 82 | 90 |
 | openDome | click "Open dome ↗" | 25 | 30 |
 | visitedKey | after visiting eight routes (they stay mounted, hidden), one classification keystroke | 31 | 36 |
-| visitedRouteChange | then the header click to the spectrum analyzer | 42 | 47 |
+| visitedRouteChange | then the header click to the spectrum analyzer | 43 | 47 |
 
 Counts are as of the commit that set them; the Front Perf commits lower them step by step and update this table.
+
+### Budget changes
+- Merge of main 4ac7516 (Fronts S and R1) into Front Perf: classificationLoad 135 → 144 and observatoryLoad 73 → 82
+  (budgets 158, 90): Front S mounts SpectrumEngineControls (×2) in the always-mounted analyzer, and the analyzer subtree
+  renders once more on load (SpectrumInstrument, Chart, Diagram, VelocityAnalysis, HubbleAnalysis, OwnObservationResults,
+  CleaHelp, one each). analyzerKey 7 → 8 and both analyzer route changes 42 → 43: SpectrumEngineControls renders with the
+  analyzer. Keystroke counts on other routes are unchanged (31).
 
 ## Changing a budget
 - `OPENVIREO_RENDER_REPORT=1 npx playwright test tests/render-budget.spec.ts` (or `=all` for every component) prints each scenario's count, commit count and

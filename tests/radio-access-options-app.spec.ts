@@ -500,3 +500,8 @@ test('preservation: the same seeded receiver scenario with and without every con
  expect({...b,menu:a.menu,saved:''}).toEqual({...a,saved:''});
  expect(a.source).toContain('J0001+3826');expect(a.identify).toBe('B2358+38');expect(a.properties).toContain('B2358+38');
 });
+
+test('Front R1: File ▸ Save Recorded Data... is disabled until the analysis holds recorded data',async({page})=>{
+ await startApp(page);await radioRoute(page);await loadCatalog(page);
+ await expect(id(page,'radio-save-recorded-data')).toBeDisabled();await expect(id(page,'radio-save-recorded-data-row')).toContainText('keeps this item disabled');
+});

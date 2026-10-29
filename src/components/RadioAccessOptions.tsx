@@ -1,4 +1,5 @@
 import {Fragment,useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type ReactNode,type RefObject} from 'react';
+import {RADIO_R1_MESSAGES as R1} from './RadioR1Messages';
 import ResearchNotes from './ResearchNotes';
 import {menuCaptionText} from '../core/radioControl';
 import {RADIO_OPTIONS_CAPTIONS,type RadioLabOptions,type RadioLabTransition} from '../core/radioAntenna';
@@ -558,6 +559,8 @@ function RadioSimulationOptionsDialog({snapshot,checked,numeric,refusal,onText,o
      aria-describedby={`${id}-fast-note`} onChange={e=>onFlag('fastSlewing',e.target.checked)}/> {D.checkBoxes.maxRateIndex93b}</label>
     <span id={`${id}-fast-note`} className="radio-control-note">{t('radioSimOptions.fastNote')}</span>
     {READ_ONLY_BOXES.map(readOnlyBox)}
+    {/* Front R1: the effect of each read-only setting (dossier C, compiled defaults 0x5a8fcb..0x5a90ad). */}
+    <details className="radio-control-note" data-testid="radio-options-effects"><summary data-testid="radio-options-effects-summary">{R1.optionEffectsTitle}</summary><ul>{R1.optionEffects.map(e=><li key={e}>{e}</li>)}</ul></details>
     <label className="radio-control-check radio-control-native"><input type="checkbox" data-testid="radio-access-checkbox" checked={checked}
      onChange={e=>onAccess(e.target.checked)}/> {D.checkBoxes.accessPulsarList}</label>
    </fieldset>

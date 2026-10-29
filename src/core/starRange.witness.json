@@ -1,0 +1,67 @@
+{
+ "tool": "star_range_witness.py",
+ "template": "A0000049.SP",
+ "templateSha256": "a26f5bf43520aa0228c108f9870f06f989e708756021d36c5bc9f507ea702220",
+ "ranges": [
+  {
+   "minimum": 3700,
+   "maximum": 4700,
+   "outside": 0,
+   "first": 0.5084549571428572,
+   "last": 0.8727931698412758,
+   "maximum_value": 0.9954800408163246,
+   "sum": 396.1867485342404,
+   "valuesFloat64LeSha256": "4b38a8d85da54cbda8721f75f6e2e560ae6a3f97bdfbc80a3c0fa4f72a08accb"
+  },
+  {
+   "minimum": 4000,
+   "maximum": 5000,
+   "outside": 0,
+   "first": 0.7030988,
+   "last": 0.8967568530612294,
+   "maximum_value": 0.9954800408163246,
+   "sum": 488.8047958793651,
+   "valuesFloat64LeSha256": "b52182025ff9d1ca7553665ac405eb331eb72aad97a93bfef285d9d745e179fd"
+  },
+  {
+   "minimum": 3500,
+   "maximum": 7400,
+   "outside": 2,
+   "first": 0.0,
+   "last": 0.49122934005102215,
+   "maximum_value": 0.9819266749999992,
+   "sum": 419.47201786122446,
+   "valuesFloat64LeSha256": "c594c63e8354e168dbd2d65f5b80668d0d0a06ea4c41a0aabbbbdbb1cce7197e"
+  },
+  {
+   "minimum": 3600,
+   "maximum": 3700,
+   "outside": 0,
+   "first": 0.39467060408163257,
+   "last": 0.5080889432539688,
+   "maximum_value": 0.5186011111111112,
+   "sum": 227.52542841748868,
+   "valuesFloat64LeSha256": "9156b87e773cf45e47b1d613692d05407245d1bd1ccb610bd3623ae0ef1a8ce5"
+  },
+  {
+   "minimum": 6400,
+   "maximum": 7400,
+   "outside": 0,
+   "first": 0.682233281632654,
+   "last": 0.5079233823129256,
+   "maximum_value": 0.7282556836734694,
+   "sum": 367.7282518492063,
+   "valuesFloat64LeSha256": "79ec237d1734dd0779871ef23c066f8e1fc059de80d385504a8430c42015f2c8"
+  },
+  {
+   "minimum": 3500,
+   "maximum": 3600,
+   "outside": 60,
+   "first": 0.0,
+   "last": 0.39704238611110887,
+   "maximum_value": 0.4117770458049896,
+   "sum": 160.22362349532312,
+   "valuesFloat64LeSha256": "c787e4a83d837710d849d955ac84ddeec32b2455b1bd12b56fbfab7780c42d22"
+  }
+ ]
+}

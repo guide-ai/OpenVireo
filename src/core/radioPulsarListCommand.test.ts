@@ -139,7 +139,7 @@ describe('C11/C14/C15 receivers at the click',()=>{
   expect(ok(preparePulsarListCommand(input({session:stopping}))).source).toBe('hit');
   const leased=take(markPointerDown(opened(),{pointerId:1,pointerType:'mouse',button:0,slot:0,code:0,x:80}));
   expect(after(ok(preparePulsarListCommand(input({session:leased})))).markLease).toBe(leased.markLease);
-  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04}),A0=rec();
+  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',s54:Math.fround(1e8)}),A0=rec();
   let e=take(mode(opened(cat(A0),AT_A)));e=tick(e).session;e=take(reassociateReceivers(e,{catalog:[P],pointing:AT_A}));e=tick(e).session;
   expect(e.tickError).toMatchObject({kind:'poisson-mean-domain'});
   expect(after(ok(preparePulsarListCommand(input({session:e,catalog:cat(P),pointing:AT_A})))).tickError).toBe(e.tickError);
