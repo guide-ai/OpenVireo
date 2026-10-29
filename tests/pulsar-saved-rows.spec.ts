@@ -533,6 +533,9 @@ for (const variant of [{ name: 'plain', query: '' }, { name: 'StrictMode', query
 }
 
 test('Find reveals a row of a 2000-row file below the sticky column header, at several viewport sizes', async ({ page }) => {
+  // Twelve Finds over 2000 rendered rows at three viewport sizes, each re-rendering the table: 23–29 s in the original harness
+  // runs (2026-10-22); alone through the Front Q port (1f6c43b, 2026-10-29) 30–31 s at machine load ~17 and 43 s–2 min at 35–50.
+  test.setTimeout(240_000);
   // HAND-WRITTEN CONTROL: 2000 LF rows in the 11-column profile, numbered objects; rows 1990 and 1991 are identical.
   const rows = Array.from({ length: 2000 }, (_, i) => ROW_B.replace('PSR B0531+21', i === 1990 || i === 1991 ? 'PSR DUP' : `PSR R${String(i).padStart(4, '0')}`));
   const big = ['"10/22/2026","9:41:07 AM"', '"Table Number: 3"', '', '', HEADER, ...rows].map(l => l + '\n').join('');
