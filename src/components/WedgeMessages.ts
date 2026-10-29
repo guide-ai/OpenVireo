@@ -79,7 +79,7 @@ export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  presentationNote:'Grid geometry, scales, labels, point sizes and both colour schemes follow the recovered program; fonts are approximate and the dashed selection ring is this page’s own.',
  schemeLabel:'Plot colours',
  schemes:Object.freeze(['Original display colours','Original black-and-white (print) colours']as const),
- schemeHelp:'The original switches to black and white only while printing; which scheme its display starts in depends on a program setting that was not recovered.',
+ schemeHelp:'In the original, printing uses the scheme opposite to a program setting (black and white when that setting is 0), and the display starts from that setting; its default was not recovered.',
  tableCaption:'Loaded records (original order)',
  columns:Object.freeze({index:'#',object:'Object ID',mjd:'MJD(Days) as saved',ra:'RA',dec:'Dec',velocity:'V (km/s)',z:'Z',comment:'Comments',status:'Plot'}),
  selectRow:(id:string,i:number)=>`Select record ${i}${id?` (${id})`:''}`,

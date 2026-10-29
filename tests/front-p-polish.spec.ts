@@ -135,7 +135,10 @@ test('hot-list window Edit, Delete (with the native question) and one-level Undo
  await id(page,'ob-hotlist-undo').click();await expect(rows).toContainText('RA3');await expect(rows).not.toContainText('Edited');await expect(id(page,'ob-hotlist-undo')).toBeDisabled();
  await rows.getByRole('radio').nth(0).check();await id(page,'ob-hotlist-delete').click();
  const q=id(page,'ob-hotlist-delete-box');await expect(q).toContainText('Delete Highlighted Entry from List?');await id(page,'ob-hotlist-delete-box-no').click();await expect(rows.getByRole('radio')).toHaveCount(2);
- await id(page,'ob-hotlist-delete').click();await id(page,'ob-hotlist-delete-box-yes').click();await expect(rows.getByRole('radio')).toHaveCount(1);await expect(rows).not.toContainText('RA1');
+ // N2: focus returns to the selected row after No and after Escape.
+ await expect(rows.getByRole('radio').nth(0)).toBeFocused();
+ await id(page,'ob-hotlist-delete').click();await expect(q).toBeVisible();await page.keyboard.press('Escape');await expect(q).toHaveCount(0);await expect(rows.getByRole('radio')).toHaveCount(2);await expect(rows.getByRole('radio').nth(0)).toBeFocused();
+ await id(page,'ob-hotlist-delete').click();await id(page,'ob-hotlist-delete-box-yes').click();await expect(rows.getByRole('radio')).toHaveCount(1);await expect(rows.getByRole('radio').nth(0)).toBeFocused();await expect(rows).not.toContainText('RA1');
  await id(page,'ob-hotlist-undo').click();await expect(rows.getByRole('radio')).toHaveCount(2);await expect(rows).toContainText('RA1');
 });
 

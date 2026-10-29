@@ -8,8 +8,9 @@ import{WEDGE_NATIVE_TEXT}from'./wedgeNativeText';
  * .5 tie are flagged, not claimed. GDI font metrics are not recovered. */
 
 /** TColor dwords (0x00BBGGRR) at .data 0x5b4acc..0x5b4ae8, selected by TWedgePlot+0x394:
- * 0 = brush/pen+font/own/group of the colour display, 1 = the black-and-white scheme
- * Print1Click 0x580f88 switches to. FormShow copies +0x394 from Env+0x2e8e, whose
+ * 0 = brush/pen+font/own/group of the colour display, 1 = the black-and-white scheme.
+ * Print1Click 0x580f88 sets +0x394 := Env+0x2e8d XOR 1 (0x580fba–0x580fc3) while printing
+ * (the web print always uses 1). FormShow copies +0x394 from Env+0x2e8e, whose
  * default is not recovered; WdgPltHlp.TXT says the display is normally colour. */
 export type WedgeColourScheme=0|1;
 export type WedgeColours=Readonly<{background:string;ink:string;own:string;group:string;dwords:Readonly<{background:number;ink:number;own:number;group:number}>}>;

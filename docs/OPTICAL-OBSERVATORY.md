@@ -21,7 +21,7 @@ All of this is on the **Observatory** page, after **Open dome**.
 - Set Coordinates is a web modal; the immediate **Point** button and the decimal RA/Dec boxes remain as labelled web shortcuts.
 - The B1950 flag and the stored target are local to the optical observatory (natively shared with the radio lab through one dialog instance).
 - The programmed-slew confirmation is the existing web dialog; it shows the decoded native text "Slew Telescope to Target Coordinates?…" and, after a B1950 entry, "(Input B1950.0 Coordinates Precessed to J2000.0.)".
-- The hot-list window's List/Selection menus are buttons; Edit, Delete, Undo and Save List stay in the *Original hot lists* editor.
+- The hot-list window's List/Selection menus are buttons. Edit Selection, Delete Selection and Undo Edit/Delete (Front P, THotListForm1 0x591488 / 0x59172c / 0x5918d0) change the shared list: Edit with no row shows "Please select an entry, using the left mouse button." (No Selection!), Delete asks "Delete Highlighted Entry from List?", Undo reverses the window's last Edit or Delete (one level; a deleted row returns to its file position, natively it is re-inserted by RA). Save List stays in the *Original hot lists* editor.
 - List rows use the recovered ordinal formatter 0x590248 (number + RA + Dec, as natively for no exercise/Hubble/Pleiades); the ID and remarks are shown in a second decimal line, and Search matches the native row text only.
 - The window caption is the exercise-0 caption ("Hot List File: …" / "New Hot List File"); " (Modified)" is not tracked.
 - Hot-list Print is a scoped browser print of the caption and rows; the date, names and laboratory table number of the original header are not recovered and not printed.
@@ -37,7 +37,7 @@ All of this is on the **Observatory** page, after **Open dome**.
 - Within the ±1e-9° horizon boundary guard, Limit Slewing refuses (Number cannot settle the Extended comparison).
 - Limit Slewing checks run while the browser clock runs (native ClockTimer always runs).
 - Spectrum Save is a browser download (no file dialog/overwrite prompt); Print is a scoped browser print. Sky exposure Save stays absent. File › Print Sky Image... (Front P) is a web print of the sky view with the date and pointing; VIREO's header and footer contents are not recovered.
-- The hot-list window's popup menu (right-click or the context-menu key; Front P) offers Slew to Selection; Edit, Delete and Undo are shown disabled because they live in the editor.
+- The hot-list window's popup menu (right-click or the context-menu key; Front P) offers the same Slew to Selection, Edit Selection, Delete Selection and Undo Edit/Delete.
 - Session v26 wraps an unchanged v1–25 base outermost and is written only when an option or a site override differs from the defaults; a file without v26 restores the compiled defaults.
 
 ## Milestones and contracts

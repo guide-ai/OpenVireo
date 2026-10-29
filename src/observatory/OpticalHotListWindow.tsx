@@ -53,7 +53,7 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
     </label>)}
    </div>
    <PopupMenu at={popup.at} label={P.label} onClose={popup.close} returnFocus={()=>radios.current[state.index>=0?state.index:0]?.focus()} note={onEdit?PM.hotListEdit.note:PM.hotListPopup.note}
-    items={[{key:'slew',label:C.slew,onSelect:onSlew},{key:'edit',label:P.edit,onSelect:()=>onEdit?.(),disabled:!onEdit||editBlocked},{key:'delete',label:P.delete,onSelect:()=>onDelete?.(),disabled:!onDelete||editBlocked},{key:'undo',label:P.undo,onSelect:()=>onUndo?.(),disabled:!undoEnabled||editBlocked}]}/>
+    items={[{key:'slew',label:C.slew,onSelect:onSlew},{key:'edit',label:P.editPopup,onSelect:()=>onEdit?.(),disabled:!onEdit||editBlocked},{key:'delete',label:P.delete,onSelect:()=>onDelete?.(),disabled:!onDelete||editBlocked},{key:'undo',label:P.undo,onSelect:()=>onUndo?.(),disabled:!undoEnabled||editBlocked}]}/>
    <p className="ob-note" role="status" aria-live="polite" data-testid="ob-hotlist-found">{found===null?'':M.found(found+1)}</p>
    <p className="ob-note">{M.adaptation}</p>
    <dialog ref={find} className="ob-dialog" aria-labelledby={`${id}-find`} data-testid="ob-hotlist-find" onCancel={e=>{e.preventDefault();onSearchCancel();}}>

@@ -49,6 +49,14 @@ test('Object X: before the reveal nothing names the target or its neighbours; af
  // The target at the centre, three neighbour stars (review M1: control pixels of stars of this field), one sky fibre.
  for(const [x,y] of [[156,156],[100,158],[264,174],[7,221],[300,4]])await at(field,x,y);
  const n=await page.locator('[data-testid^=ms-marker-]').count();expect(n).toBeGreaterThanOrEqual(4);
+ // Front P N1: Print Selection Field prints this Multi-Spec display with exactly its markers, nothing the masks hide.
+ await page.getByTestId('ms-print-field').click();const preview=page.getByTestId('print-sky');await expect(preview).toBeVisible();
+ await expect(page.getByTestId('print-sky-picture').locator('[data-testid^=print-ms-marker-]')).toHaveCount(n);
+ await expect(page.getByTestId('print-sky-header-1')).toContainText('Pointing (J2000)');
+ // The field pixels are a PNG data URL (random base64), so its href is left out of the text check.
+ const printed=await preview.evaluate(e=>e.innerHTML.replace(/href="data:image\/png;base64,[^"]*"/g,'href=""')+' '+(e.textContent??''));
+ for(const secret of SECRETS)expect(printed).not.toMatch(word(secret));for(const r of ENGINE)expect(printed).not.toMatch(r);
+ await page.getByTestId('print-sky-close').click();await expect(preview).toHaveCount(0);await expect(page.getByTestId('ms-print-field')).toBeFocused();
  await page.getByTestId('ms-minutes').fill('0.05');await page.getByTestId('ms-init').click();await page.getByTestId('ms-go').click();
  await expect(page.getByTestId('ms-list')).toBeVisible({timeout:20_000});
  for(let i=0;i<n;i++)await expect(page.getByTestId(`ms-item-${i}`)).toHaveText(`  (${i+1})  `);

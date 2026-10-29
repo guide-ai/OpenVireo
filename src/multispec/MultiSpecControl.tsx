@@ -1,5 +1,7 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import PrintSkyImage from '../polish/PrintSkyImage';
+import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
+import type {Pointing} from '../core/sky';
 import type {MultiSpecState,MultiSpecAction} from '../core/multiSpec';
 import {MULTISPEC_MESSAGES as N} from '../core/multiSpecFormat';
 import {t} from '../i18n';
@@ -21,7 +23,9 @@ const clockText=(c:Readonly<{minutes:number;seconds:number}>)=>`${c.minutes}:${S
  * the Select LED, Exposure Minutes, Init/Go/Stop. Every enable state is the reducer's (core/multiSpec.ts). Print Selection Field
  * (PrintSelectionField1Click 0x52a78c) only calls TObsrvtry.PrintSkyImage1Click 0x53f934, so it opens the same web Print Sky
  * Image (Front P). Help (MLTSPHLP.LST is empty) stays disabled with its reason. */
-export default function MultiSpecControl({state,dispatch,busy,masked}:Readonly<{state:MultiSpecState;dispatch:(a:MultiSpecAction)=>void;busy:boolean;
+export default function MultiSpecControl({state,dispatch,busy,masked,printField=null}:Readonly<{state:MultiSpecState;dispatch:(a:MultiSpecAction)=>void;busy:boolean;
+ /** Front P: the shown field to print (null: no field shown, the item is disabled with a typed reason). */
+ printField?:Readonly<{pointing:Pointing;clone:()=>Element|null}>|null;
  /** Object X rule (plan §4): the typed S/N reason is replaced by one neutral text. */masked:boolean}>){
  const c=state.controls,menu=c.objects&&!busy,id=useId(),[printing,setPrinting]=useState(false),printButton=useRef<HTMLButtonElement>(null);
  const snr=state.displays.snr===null?t('multispec.snrIndeterminate'):state.displays.snr.toFixed(1);
@@ -31,12 +35,12 @@ export default function MultiSpecControl({state,dispatch,busy,masked}:Readonly<{
    <button type="button" className="secondary-button" disabled={!menu||!c.select} onClick={()=>dispatch({type:'select'})} data-testid="ms-select">{C.select}</button>
    <button type="button" className="secondary-button" disabled={!menu||!c.clear} onClick={()=>dispatch({type:'clear'})} data-testid="ms-clear">{C.clear}</button>
    <button type="button" className="secondary-button" disabled={!menu||!c.viewSave} onClick={()=>dispatch({type:'view-save'})} data-testid="ms-view-save">{C.viewSave}</button>
-   <button type="button" ref={printButton} className="secondary-button" disabled={!menu} aria-describedby={`${id}-print`} onClick={()=>setPrinting(true)} data-testid="ms-print-field">{C.printField}</button>
+   <button type="button" ref={printButton} className="secondary-button" disabled={!menu||!printField} aria-describedby={`${id}-print`} onClick={()=>setPrinting(true)} data-testid="ms-print-field">{C.printField}</button>
    <button type="button" className="secondary-button" disabled={busy} onClick={()=>dispatch({type:'close'})} data-testid="ms-close">{C.close}</button>
    <button type="button" className="secondary-button" disabled aria-describedby={`${id}-help`}>{C.help}</button>
   </div>
-  <p className="observatory-note" id={`${id}-print`}>{t('multispec.printFieldTyped')}</p>
-  {printing&&<PrintSkyImage onClose={()=>{setPrinting(false);printButton.current?.focus();}}/>}<p className="observatory-note" id={`${id}-help`}>{t('multispec.helpEmpty')}</p>
+  <p className="observatory-note" id={`${id}-print`} data-testid="ms-print-field-note">{printField?t('multispec.printFieldTyped'):PM.multiSpecPrint.unavailable}</p>
+  {printing&&printField&&<PrintSkyImage pointing={printField.pointing} view="instrument" clone={printField.clone} onClose={()=>{setPrinting(false);printButton.current?.focus();}}/>}<p className="observatory-note" id={`${id}-help`}>{t('multispec.helpEmpty')}</p>
   <div className="ms-displays">
    <div className="ms-display"><span>{C.objectsDisplay}</span><output data-testid="ms-objects">{state.displays.objects}</output></div>
    <div className="ms-display"><span>{C.snr}</span><output data-testid="ms-snr">{snr}</output><small>{N.snrLabel}</small></div>

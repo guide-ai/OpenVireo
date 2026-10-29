@@ -12,7 +12,7 @@ Reference `CLEA_VEO.exe`, SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9
 - **Options** (`TWdgPltOptsForm1`): the defaults (0x5803e0) are Velocity grid, size 1, Open, Auto Plot off and a 5-minute interval. Size is 1–5 and style is Open/Filled. OK commits and Cancel discards.
 - **Colours.** Codex independently recovered the eight TColor literals at .data 0x5b4acc…0x5b4ae8 (`COORDINATOR-colors-and-results.json`, with a SHA-256 for each dword). Flag `TWedgePlot+0x394` chooses between two schemes:
   - *Display:* navy background, yellow grid and text, white own points, green group points.
-  - *Black-and-white:* white, black, black and grey. Print switches to this scheme while capturing.
+  - *Black-and-white:* white, black, black and grey. Print1Click 0x580f88 sets the scheme to Env+0x2e8d XOR 1 (0x580fba–0x580fc3) while printing, so the original prints in this scheme only when that setting is 0; its default is not recovered. The web Print Wedge Plot always uses this scheme [W].
 
   The literals are exact. The flag's value on a historical host is not known: `FormShow` copies it from Env+0x2e8e, and Print uses Env+0x2e8d. The original help says the display is normally in colour.
 - **Global aliases.** These were recovered from static storage:

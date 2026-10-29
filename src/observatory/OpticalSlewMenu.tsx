@@ -65,6 +65,12 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
  // Front P, THotListForm1 Edit/Delete/Undo (0x591488 / 0x59172c / 0x5918d0). `editing` is the file index under Edit;
  // `undoList` is the list the window's last Edit/Delete produced (Undo is one level and only while that list is current).
  const [editing,setEditing]=useState<number|null>(null),[deleting,setDeleting]=useState<number|null>(null),[undoList,setUndoList]=useState<HtlList|null>(null);
+ // N2: after the Delete question closes (Yes, No or Escape) focus returns to the list's selected row, else to Delete; this
+ // runs after the question's dialog has closed, so the hot-list window is the top modal again.
+ const wasDeleting=useRef(false);
+ useEffect(()=>{if(wasDeleting.current&&deleting===null){const w=document.querySelector('[data-testid="ob-hotlist"]');
+  (w?.querySelector<HTMLInputElement>('[data-testid="ob-hotlist-rows"] input:checked')??w?.querySelector<HTMLButtonElement>('[data-testid="ob-hotlist-delete"]'))?.focus();}
+  wasDeleting.current=deleting!==null;},[deleting]);
  const shownRow=()=>hot.index>=0&&hot.index<rows.length?rows[hot.index]:null;
  const noSelection=()=>setInfo({caption:HE.noSelectionCaption,text:HE.noSelectionText});
  function editRow(){const r=shownRow();if(!r){noSelection();return;}setEntryError('');setEditing(r.sourceIndex);setEntry(hotListEntryDraft(r.record));}

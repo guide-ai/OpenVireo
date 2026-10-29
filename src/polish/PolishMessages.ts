@@ -29,7 +29,7 @@ export const TERMINATE_SLEW_LITERALS=Object.freeze({caption:'Slew Suspended',tex
 export const CAMERA_FIELD_SIZE_LITERALS=Object.freeze({group:'Field Size (Arc Min)',width:'Width',height:'Height'});
 
 /** THotListForm1 PopupMenu items (DFM) [D]; Slew uses RADIO_HOT_LIST_FORM_CAPTIONS.slew. */
-export const HOT_LIST_POPUP_LITERALS=Object.freeze({label:'Hot list',edit:'&Edit Selection...',delete:'&Delete Selection',undo:'&Undo Edit/Delete'});
+export const HOT_LIST_POPUP_LITERALS=Object.freeze({label:'Hot list',edit:'&Edit Selection...',editPopup:'&Edit Selection',delete:'&Delete Selection',undo:'&Undo Edit/Delete'});
 /** THotListForm1 EditSelectedLine1Click 0x591488 (box 0x5916e4 / caption 0x59171c, MB_ICONWARNING) and DeleteSelectedLine1Click
  * 0x59172c (MessageDlg 0x5918ac, mtConfirmation, [mbYes,mbNo]) [D]; "Confirm" is Delphi's mtConfirmation caption [I]. */
 export const HOT_LIST_EDIT_LITERALS=Object.freeze({noSelectionCaption:'No Selection!',noSelectionText:'Please select an entry, using the left mouse button.',deleteCaption:'Confirm',deleteText:'Delete Highlighted Entry from List?'});
@@ -51,6 +51,7 @@ export const POLISH_MESSAGES=Object.freeze({
   retired:'This page used to show a preview of prepared source profiles (M82, Coma1, Coma2) before acquisition existed. It was retired on 2026-10-29; the routes above replace it.',
  }),
  clusterGuide:Object.freeze({nav:'Cluster HR guide'}),
+ multiSpecPrint:Object.freeze({unavailable:'Print Selection Field is not available: no Multi-Spec field is shown here.'}),
  siteInfo:Object.freeze({
   note:'In VIREO this list window hides its Search, Save Text and Edit menus for the site information, so only Print and Close are offered.',
   printNote:'Web adaptation: VIREO prints the list lines under its shared header on the printer; this prints the date, the caption and the lines.',
