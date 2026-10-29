@@ -3,6 +3,8 @@ import { pulsarAnalysisSnapshot, type PulsarAnalysisSnapshot, type RadioSnapshot
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import './PulsarAnalysis.css';
+import WebPrintPreview from '../polish/WebPrintPreview';
+import { POLISH_MESSAGES as PM, PULSAR_PRINT_LITERALS as PP } from '../polish/PolishMessages';
 import { resourceSha256 } from '../io/boundedResource';
 import { admitPlrRecording, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
 import {
@@ -184,6 +186,8 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
   const [primaryAs, setPrimaryAs] = useState<'left' | 'right'>('left');
   const epoch = useRef(0);
   const propertiesButton = useRef<HTMLButtonElement>(null), propertiesClose = useRef<HTMLButtonElement>(null);
+  // Front P: File › Print Window... [W], a print preview of both panels as shown.
+  const panelsRef = useRef<HTMLDivElement>(null), printButton = useRef<HTMLButtonElement>(null), [printing, setPrinting] = useState(false);
   const commentInput = useRef<HTMLInputElement>(null), clearDefault = useRef<HTMLButtonElement>(null), clearButton = useRef<HTMLButtonElement>(null), recordButton = useRef<HTMLButtonElement>(null);
   const reviewButton = useRef<HTMLButtonElement>(null), reviewDelete = useRef<HTMLButtonElement>(null), reviewCancel = useRef<HTMLButtonElement>(null), reviewPromptDefault = useRef<HTMLButtonElement>(null);
   const reviewEdit = useRef<HTMLButtonElement>(null), reviewEditComment = useRef<HTMLInputElement>(null);
@@ -1213,6 +1217,7 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
               <h3 id={`${idPrefix}tools`}>{t('pulsar.toolbar.heading')}</h3>
               <div className="plr-row">
                 <button type="button" ref={propertiesButton} onClick={openProperties} data-testid="pulsar-properties-open">{t('pulsar.toolbar.properties')}</button>
+                <button type="button" ref={printButton} onClick={() => setPrinting(true)} data-testid="pulsar-print-window">{PP.menu}</button>
                 <button type="button" onClick={() => act(st => pulsarReset(st))} data-testid="pulsar-reset">{t('pulsar.toolbar.reset')}</button>
                 <button type="button" onClick={() => act(st => pulsarZoom(st, 'out'))} disabled={!s.zoomOutEnabled} data-testid="pulsar-zoom-out">{t('pulsar.toolbar.zoomOut')}</button>
                 <span>{t('pulsar.toolbar.zoom')} <output data-testid="pulsar-zoom">{readouts.zoom}</output></span>
@@ -1235,7 +1240,8 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
               </fieldset>
             </section>
 
-            <div className="plr-panels">
+            {printing && <WebPrintPreview testId="pulsar-print-preview" caption={PP.caption} note={PM.pulsarPrint.note} clone={() => panelsRef.current} onClose={() => { setPrinting(false); printButton.current?.focus(); }} />}
+            <div className="plr-panels" ref={panelsRef}>
               {PULSAR_PANELS.map(ch => <Panel key={ch} ch={ch} s={s} t={t} act={act} idPrefix={idPrefix} primaryAs={primaryAs} owner={pointerOwner} />)}
             </div>
             <p className="plr-reference">{t('pulsar.reference')} <output data-testid="pulsar-reference">{readouts.reference}</output></p>

@@ -9,7 +9,7 @@ const digest=createHash('sha256').update(TEXT,'ascii').digest('hex');
 // includeHidden: assertion-only uses (enabled/inert checks) also run at phone widths while the Tools menu is folded.
 const nav=(page:Page,name:string)=>page.locator('.portal-header nav').getByRole('button',{name,exact:true,includeHidden:true});
 // UI redesign: tools listed in their header groups (optical, radio, analysis, files, guides); Front X adds Object X (analysis) and its guide.
-const HEADER_TOOLS=['Observatory','Spectrometer','Sky exposure','Star exposure','Galaxy exposure','Pleiades photometry','Radio telescope','Radio data','Spectrum analyzer','Stellar classification','Cluster database','LSS survey','LSS data','Object X','Variable stars','Saved images','Hubble lab guide','LSS guide','Object X guide','Pulsar guide','Pleiades lab guide','Classification guide'];
+const HEADER_TOOLS=['Observatory','Spectrometer','Sky exposure','Star exposure','Galaxy exposure','Pleiades photometry','Radio telescope','Radio data','Spectrum analyzer','Stellar classification','Cluster database','LSS survey','LSS data','Object X','Variable stars','Observational Results','Pulsar Results','Saved images','Hubble lab guide','LSS guide','Object X guide','Pulsar guide','Pleiades lab guide','Classification guide'];
 const TOOLBAR_HELP='Back up supported spectrum/Hubble and classification work, pending edits, photometry, exposure segments, cluster database/comparison/selection, optical/observatory context, and the Radio telescope setup with the current pulsar capture or .PLR and its confirmed measurements. This is not a backup of every tool or view setting. For example, imported program lists, other-source width results, saved-text inspection, native-list receipts, FITS images, observation HR, hot lists, the saved pulsar measurement file viewer and LSS remain separate; follow each tool\'s persistence and export notice. Save downloads a file; the download is not confirmation that it was written. Save stops and releases optical exposures and pauses the observatory clock; a running Radio clock and the Radio panel timers are only held during Save and continue without catching up, and the file stores the Radio clock paused. Restored optical observing tools require activation; Restore starts the Radio telescope paused with its receivers closed.';
 /** Phase 1 item 1.5: Save/Restore investigation keeps the Radio data rows; a page reload without Restore still discards them. */
 const PLR_PERSISTENCE='Save investigation in the toolbar keeps them with the current data, and Restore investigation brings them back.';
@@ -220,7 +220,8 @@ test('all tools remain reachable without document overflow across the navigation
   await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await openHeaderTools(page);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`no horizontal scroll with the Tools menu open at ${width}px`).toBe(true);
   for(const name of HEADER_TOOLS){
-   const button=nav(page,name);await expect(button,`${name} at ${width}px`).toBeInViewport({ratio:1});
+   // Front P: the desktop sidebar scrolls once its tools exceed the window height; each tool must be reachable there.
+   const button=nav(page,name);await button.scrollIntoViewIfNeeded();await expect(button,`${name} at ${width}px`).toBeInViewport({ratio:1});
    const box=(await button.boundingBox())!;
    expect(await page.evaluate(([x,y,name])=>{const hit=document.elementFromPoint(x,y);return hit?.closest('button')?.textContent===name;},[box.x+box.width/2,box.y+box.height/2,name] as const),`${name} hit-test at ${width}px`).toBe(true);
   }

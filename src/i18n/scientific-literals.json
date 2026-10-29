@@ -140,13 +140,6 @@
     "reason": "Fixed cryptographic algorithm identifier or pinned original binary digest; never translated."
   },
   {
-    "file": "src/Spectrometer.tsx",
-    "kind": "text",
-    "value": "K",
-    "count": 1,
-    "reason": "Scientific unit symbol or punctuation; raw numeric values remain governed by the documented precision policy."
-  },
-  {
     "file": "src/SpectrumInstrument.tsx",
     "kind": "rendered literal",
     "value": "A0000049.SP",

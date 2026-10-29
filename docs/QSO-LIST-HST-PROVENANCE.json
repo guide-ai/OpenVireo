@@ -46,7 +46,7 @@
   "Navigate flags 0x11 read as navOpenInNewWindow|navAllowAutosearch from the Windows enum [I].",
   "THSTImgDlg's purpose (MAST image search) is inferred from captions and strings only; it is unreachable.",
   "FormatforHotList remarks are uninitialised natively; the web writes empty remarks.",
-  "The hot-list add appends (web shared list) instead of the native RA-ordered insert 0x590588, as for the Front O variable list.",
+  "The hot-list add appended (web shared list) instead of the native RA-ordered insert 0x590588, as for the Front O variable list; since Front P (2026-10-29) it places the row after the last file row with RA ≤ its RA (core/hotListEntry.ts addHtlRowRaOrdered), a web rule whose tie order is not the native cursor history.",
   "FormatforHotList (0x578548) indexes the list of the current sort global (reset at 0x578392 without Edit Mode, or changed on the invalid-limit path), so VIREO may index a cleared or different list; the web adds the displayed row [W].",
   "env+0x37d8 as the instructor access flag is inferred from its setters (0x587c6a, 0x587f70, 0x5884a1, 0x5887f0) and the USER OPTIONS! box.",
   "The HST link's final page is on science.nasa.gov because hubblesite.org redirects there (2026-10-28); the redirect target may change."

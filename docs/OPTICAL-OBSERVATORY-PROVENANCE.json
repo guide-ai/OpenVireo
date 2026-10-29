@@ -960,7 +960,7 @@
   }
  ],
  "notRecovered": [
-  "Pixel/tolerance rule of the object lookup 0x59a0fc used by Add Current Item (OB-AC-01).",
+  "Add Current Item (OB-AC-01) does not run the object lookup 0x59a0fc; the nearest-object rule itself is recovered in src/core/objectSelection.ts (docs/HUBBLE-RECOVERY.md), but Add Current would need the field objects at an arbitrary pointing.",
   "Whether instructor option/site edits reach the running environment before the next telescope setup (OB-ST-04).",
   "Content of the printed sky image, header and footer (OB-SR-03).",
   "Meaning of TSpectrometer+0x3172 (OB-SR-02)."

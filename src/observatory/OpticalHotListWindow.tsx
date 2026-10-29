@@ -7,6 +7,8 @@ import type {RadioHotListRow} from '../core/radioHotList';
 import {RADIO_HOT_LIST_SEARCH_LITERALS as L,RADIO_HOT_LIST_SEARCH_QUERY_MAX,radioHotListFoundIndex,type RadioHotListSearchMode} from '../core/radioHotListSearch';
 import {OBSERVATORY_MESSAGES} from './ObservatoryMessages';
 import './observatory-dialogs.css';
+import PopupMenu,{usePopupMenu} from '../polish/PopupMenu';
+import {HOT_LIST_POPUP_LITERALS as P,POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 const M=OBSERVATORY_MESSAGES.hotList;
 
 function useModal(ref:RefObject<HTMLDialogElement|null>,open:boolean,focus?:()=>void){
@@ -18,7 +20,8 @@ function useModal(ref:RefObject<HTMLDialogElement|null>,open:boolean,focus?:()=>
  * decimal values. Search highlights a row without selecting it. Native <dialog> modals; presentation only. */
 export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,onSlew,onClose,onSearch,onSearchEdit,onSearchSubmit,onSearchCancel,onDismiss,onPrint}:{caption:string;texts:readonly string[];state:WindowState;rows:readonly RadioHotListRow[];onSelect:(i:number)=>void;onSlew:()=>void;onClose:()=>void;onSearch:()=>void;onSearchEdit:(q:string,c:boolean)=>void;onSearchSubmit:(m:RadioHotListSearchMode)=>void;onSearchCancel:()=>void;onDismiss:()=>void;onPrint:()=>void}){
  const id=useId(),win=useRef<HTMLDialogElement>(null),find=useRef<HTMLDialogElement>(null),box=useRef<HTMLDialogElement>(null),query=useRef<HTMLInputElement>(null),radios=useRef<(HTMLInputElement|null)[]>([]);
- const found=radioHotListFoundIndex(state.search.found,texts);
+ const found=radioHotListFoundIndex(state.search.found,texts),popup=usePopupMenu();
+ useEffect(()=>{if(!state.shown)popup.close();},[state.shown]);// eslint-disable-line react-hooks/exhaustive-deps
  useModal(win,state.shown,()=>radios.current[state.index>=0&&state.index<rows.length?state.index:0]?.focus());
  useModal(find,state.shown&&state.search.dialog!==null,()=>{query.current?.focus();query.current?.select();});
  useModal(box,state.notice!==null);
@@ -35,7 +38,8 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
     <button type="button" className="primary-button" data-testid="ob-hotlist-slew" onClick={onSlew}>{menuCaptionText(C.slew)}</button>
     <button type="button" className="secondary-button" data-testid="ob-hotlist-close" onClick={onClose}>{menuCaptionText(C.close)}</button>
    </div>
-   <div className="ob-list" role="radiogroup" aria-label={M.rows} data-testid="ob-hotlist-rows">
+   {/* THotListForm1 PopupMenu (Front P): right-click or the context-menu key on the list; acts on the current selection. */}
+   <div className="ob-list" role="radiogroup" aria-label={M.rows} data-testid="ob-hotlist-rows" onContextMenu={popup.open}>
     {rows.map((row,i)=><label key={row.sourceIndex} className="ob-row" data-testid={`ob-hotlist-row-${i+1}`} data-checked={state.index===i||undefined} data-found={found===i||undefined} onDoubleClick={()=>{onSelect(i);onSlew();}}>
      <input ref={el=>{radios.current[i]=el;}} type="radio" name={`${id}-row`} checked={state.index===i} onChange={()=>onSelect(i)} onClick={()=>onSelect(i)}/>
      <span className="ob-row-text"><span className="ob-row-native" aria-hidden="true" data-testid={`ob-hotlist-native-${i+1}`}>{texts[i]}</span>
@@ -43,6 +47,8 @@ export default function OpticalHotListWindow({caption,texts,state,rows,onSelect,
      {found===i&&<span aria-hidden="true">{M.foundMark}</span>}
     </label>)}
    </div>
+   <PopupMenu at={popup.at} label={P.label} onClose={popup.close} returnFocus={()=>radios.current[state.index>=0?state.index:0]?.focus()} note={PM.hotListPopup.note}
+    items={[{key:'slew',label:C.slew,onSelect:onSlew},{key:'edit',label:P.edit,onSelect:()=>{},disabled:true},{key:'delete',label:P.delete,onSelect:()=>{},disabled:true},{key:'undo',label:P.undo,onSelect:()=>{},disabled:true}]}/>
    <p className="ob-note" role="status" aria-live="polite" data-testid="ob-hotlist-found">{found===null?'':M.found(found+1)}</p>
    <p className="ob-note">{M.adaptation}</p>
    <dialog ref={find} className="ob-dialog" aria-labelledby={`${id}-find`} data-testid="ob-hotlist-find" onCancel={e=>{e.preventDefault();onSearchCancel();}}>

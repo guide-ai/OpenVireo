@@ -1,6 +1,6 @@
 # LSS wedge plot (N06/E02, bounded)
 
-This increment ports one complete, source-backed piece of the VIREO Large-Scale Structure exercise: **load saved LSS redshift data → choose the original wedge-plot options → plot → inspect and export**. It is not the whole of N06 or E02. Field selection, acquisition, spectrum measuring, group Auto Plot, printing and the original save format stay open.
+This increment ports one complete, source-backed piece of the VIREO Large-Scale Structure exercise: **load saved LSS redshift data → choose the original wedge-plot options → plot → inspect and export**. It is not the whole of N06 or E02. Since this increment, field selection, acquisition, spectrum measuring and the hand-over of your own records are done in `#lss-survey` (docs/LSS-SURVEY.md), and Print is a labelled web print (docs/POLISH-FRONT-P.md). Group Auto Plot and the original save format stay open. (Updated by Front P, 2026-10-29.)
 
 Reference `CLEA_VEO.exe`, SHA-256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. The program was never run. Evidence ID `VIREO-LSS-WEDGE-STATIC-2026-10-21`. Addresses, constants, literals and hashes are in [WEDGE-PLOT-PROVENANCE.json](WEDGE-PLOT-PROVENANCE.json).
 
@@ -75,7 +75,7 @@ This feature branch provides `src/components/WedgeLab.tsx`; Codex owns its separ
   - After any prompt answer, or after cancelling a read, focus returns to the file input once React has enabled it again. This doesn't happen if the input is hidden or disabled, or if focus has already left the panel. Host inactivity clears any pending focus return.
   - The Options dialog keeps Tab and Shift+Tab inside the dialog. Each radio group has one tab stop: its checked radio.
 - **Units and counts.** The table and details show the units `detail.hours` and `detail.degrees` from the presentation catalog, and the prompt and source list show row counts through `rowCount`. The figure text and the native strings are unchanged.
-- **Local workspace only.** The panel states in the window that its workspace belongs to the open window. Loaded files, the plot, options and selection are not part of Save investigation and are discarded on reload or close; the source `.TXT` files can be loaded again. This pass adds no persistence format.
+- **Local workspace only.** The panel states in the window that its workspace belongs to the open window. Loaded files, the plot and the selection are not part of Save investigation and are discarded on reload or close; the source `.TXT` files can be loaded again. The wedge options are saved with the LSS investigation (`wedgeOptions` in src/io/lssInvestigation.ts, session v27), and your own LSS records are saved with that investigation and can be plotted again from `#lss-survey`.
 - **Host inactivity** has no original counterpart. When the host passes `disabled` (a hidden route that stays mounted, or a project operation), every control is disabled and three things are dropped before paint:
   - an in-flight read: it is aborted and its token no longer matches, so a late completion or failure changes nothing;
   - a validated import still waiting at "Retain Current Data?" or "Confirm Deletion!";

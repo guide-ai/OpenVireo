@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {appendAddCurrentEntry,originalCatalogId,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from './hotListEntry';
+import {addHtlRowRaOrdered,raOrderedInsertIndex,appendAddCurrentEntry,originalCatalogId,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from './hotListEntry';
 
 // Chosen implementation contract (OB-AC-01..04); not a native runtime oracle.
 const d=(raHours:string,raMinutes:string,raSeconds:string,decDegrees:string,decMinutes:string,decSeconds:string,id='X',remarks=''):HotListEntryDraft=>({id,remarks,raHours,raMinutes,raSeconds,decDegrees,decMinutes,decSeconds});
@@ -44,7 +44,8 @@ describe('F7 blank ID for Add Current only',()=>{
   expect(e.list[0]).toMatchObject({id:'',remarks:'',ra:3.25,dec:-20.5});expect(e.selected).toBe(0);
   expect(parseHtl(serializeHtl(e.list))[0]).toMatchObject({id:'',ra:3.25,dec:-20.5});
   expect(undoHtl(e).list).toHaveLength(0);
-  expect(appendAddCurrentEntry(e,{id:'M82',remarks:'',ra:1,dec:2}).list[1].id).toBe('M82');
+  // Front P: 0x590588 inserts in RA order, so M82 (1 h) goes before the 3.25 h position.
+  expect(appendAddCurrentEntry(e,{id:'M82',remarks:'',ra:1,dec:2}).list.map(r=>r.id)).toEqual(['M82','']);
   expect(()=>addHtlRow(newHtlEditor(),{id:'',remarks:'',ra:1,dec:2})).toThrow();// editor rule unchanged
  });
 });
@@ -60,5 +61,30 @@ describe('review note 3: ID whitespace is kept exactly as typed (no Trim in OKBt
   expect(parseHtl(serializeHtl(e.list)).map(x=>x.id)).toEqual([' M82 ','   ','']);
   expect(hotListEntryAddedText('   ')).toBe('Object     added to Observation List.');expect(hotListEntryAddedText('')).toBe('Position added to Observation List.');
   expect(()=>appendAddCurrentEntry(newHtlEditor(),{id:'\t',remarks:'',ra:1,dec:2})).toThrow();
+ });
+});
+
+describe('Front P: RA-ordered placement of 0x590588 (web rule on the file-order list)',()=>{
+ it('keeps an RA-ordered list in RA order, puts equal RAs after the existing ones, selects the new row and keeps Undo',async()=>{
+  const {newHtlEditor,addHtlRow,undoHtl}=await import('./hotList');
+  let e=newHtlEditor();for(const [id,ra] of [['A',1],['B',5],['C',5],['D',20]] as const)e=addHtlRow(e,{id,remarks:'',ra,dec:0});
+  const at=(ra:number,id='N')=>appendAddCurrentEntry(e,{id,remarks:'',ra,dec:10});
+  expect(at(0.5).list.map(r=>r.id)).toEqual(['N','A','B','C','D']);
+  expect(at(3).list.map(r=>r.id)).toEqual(['A','N','B','C','D']);
+  expect(at(5).list.map(r=>r.id)).toEqual(['A','B','C','N','D']);
+  expect(at(23.9).list.map(r=>r.id)).toEqual(['A','B','C','D','N']);
+  const n=at(3);expect(n.selected).toBe(1);expect(undoHtl(n).list.map(r=>r.id)).toEqual(['A','B','C','D']);
+  expect(at(3,'').list.map(r=>r.id)).toEqual(['A','','B','C','D']);// blank-ID path too
+  expect(addHtlRowRaOrdered(e,{id:'Q',remarks:'',ra:12,dec:0}).list.map(r=>r.id)).toEqual(['A','B','C','Q','D']);
+ });
+ it('in an unsorted file the new row goes after the last file row with a smaller or equal RA',async()=>{
+  const {newHtlEditor,addHtlRow}=await import('./hotList');
+  let e=newHtlEditor();for(const [id,ra] of [['X',10],['Y',2],['Z',6]] as const)e=addHtlRow(e,{id,remarks:'',ra,dec:0});
+  // File X(10) Y(2) Z(6): RA 7 → after Z (index 3); RA 1 → top (index 0); RA 3 → after Y (index 2); RA 11 → end.
+  expect(raOrderedInsertIndex(e.list,addHtlRow(e,{id:'N',remarks:'',ra:7,dec:0}).list[3])).toBe(3);
+  expect(raOrderedInsertIndex(e.list,addHtlRow(e,{id:'N',remarks:'',ra:1,dec:0}).list[3])).toBe(0);
+  expect(raOrderedInsertIndex(e.list,addHtlRow(e,{id:'N',remarks:'',ra:3,dec:0}).list[3])).toBe(2);
+  expect(raOrderedInsertIndex(e.list,addHtlRow(e,{id:'N',remarks:'',ra:11,dec:0}).list[3])).toBe(3);
+  expect(raOrderedInsertIndex([],addHtlRow(e,{id:'N',remarks:'',ra:11,dec:0}).list[3])).toBe(0);
  });
 });

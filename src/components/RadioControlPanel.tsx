@@ -30,6 +30,8 @@ import {RADIO_HOT_LIST_SEARCH_LITERALS,RADIO_HOT_LIST_SEARCH_QUERY_MAX,radioHotL
 import {beginHotListRead,cancelHotListRead,commitHotListRead,failHotListRead,type SharedHotList} from '../core/sharedHotList';
 import type {SharedHotListHandle} from '../useSharedHotList';
 import RadioHotListDialog from './RadioHotListDialog';
+import {BUNDLED_PULSARS_HOT_LIST,BundledHotListError,fetchBundledHotList,type BundledHotListFailure} from '../io/bundledHotList';
+import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 import RadioHotListSearchDialog from './RadioHotListSearchDialog';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import './RadioControlPanel.css';
@@ -156,7 +158,8 @@ const noticeTitle=(n:RadioLabNotice,ta:RadioAntennaTranslate)=>n.kind==='hot-lis
  :n.kind==='hot-list-search-miss'?ta('antenna.notice.title.hot-list-search-miss',{caption:RADIO_HOT_LIST_SEARCH_LITERALS.missCaption}):ta(NOTICE_META[n.kind].title);
 /** Radio Load status (WEB-HL-05/06). */
 type HotLoadStatus=Readonly<{kind:'reading';name:string}|{kind:'loaded';name:string;count:number}|{kind:'cancelled'}|{kind:'stale'}
- |{kind:'refused';reason:'optical-draft'|'read-pending'|'modal'|'menu'|'inactive'}|{kind:'error';code:HtlErrorCode|'read';row:number}>;
+ |{kind:'refused';reason:'optical-draft'|'read-pending'|'modal'|'menu'|'inactive'}|{kind:'error';code:HtlErrorCode|'read';row:number}
+ |{kind:'bundled-error';code:BundledHotListFailure}>;
 function hotLoadText(s:HotLoadStatus,ta:RadioAntennaTranslate):string{
  switch(s.kind){
   case 'reading':return ta('antenna.hotList.reading',{name:s.name});
@@ -165,6 +168,7 @@ function hotLoadText(s:HotLoadStatus,ta:RadioAntennaTranslate):string{
   case 'stale':return ta('antenna.hotList.stale');
   case 'refused':return ta(`antenna.hotList.refused.${s.reason}`);
   case 'error':{const message=ta(`antenna.hotList.error.${s.code}`);return s.row?ta('antenna.hotList.errorAt',{row:s.row,message}):ta('antenna.hotList.errorMessage',{message});}
+  case 'bundled-error':return PM.pulsarsHtl.error(s.code);
  }
 }
 /** The options' horizon limit in degrees (× Extended 0x5a93ec ≈ 180/π, as TRadiOptsDlg.FormActivate 0x5a9255 converts
@@ -337,7 +341,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const radioRead=useRef<number|null>(null);
  const hotFile=useRef<HTMLInputElement>(null),viewSelectRef=useRef<HTMLButtonElement>(null);
  const cancelRadioRead=(status:'cancelled'|'stale')=>{
-  const token=radioRead.current;if(token===null)return;radioRead.current=null;
+  const token=radioRead.current;if(token===null)return;radioRead.current=null;bundledAbort.current?.abort();
   latest.current.hotList?.update(d=>cancelHotListRead(d,'radio',token));setHotLoad({kind:status});
  };
  /** Gates read from the latest working state at the click, at the file choice and again when the read completes. */
@@ -359,9 +363,23 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   const begun=handle.update(d=>beginHotListRead(d,'radio'));
   if(begun.outcome!=='ok'||begun.token===undefined){setHotLoad({kind:'refused',reason:begun.outcome==='optical-draft'?'optical-draft':'read-pending'});return;}
   const token=begun.token,name=file.name.slice(0,128);radioRead.current=token;setHotLoad({kind:'reading',name});
+  await finishRadioRead(handle,token,name,async()=>{if(file.size>HTL_MAX_BYTES)throw new HtlError('size');return new Uint8Array(await file.arrayBuffer());});
+ };
+ /** Front P [W]: the bundled original Pulsars.HTL (VIREO opens it from its file dialog). Same gates, token and commit as a
+  * chosen file; the bytes are fetched from this origin and checked for size and SHA-256 before parseHtl. */
+ const bundledAbort=useRef<AbortController|null>(null);
+ const loadBundledPulsars=async()=>{
+  const handle=latest.current.hotList;if(!handle)return;
+  const refusal=hotLoadRefusal()??sharedRefusal(handle.current());if(refusal){setHotLoad({kind:'refused',reason:refusal});return;}
+  const begun=handle.update(d=>beginHotListRead(d,'radio'));
+  if(begun.outcome!=='ok'||begun.token===undefined){setHotLoad({kind:'refused',reason:begun.outcome==='optical-draft'?'optical-draft':'read-pending'});return;}
+  const token=begun.token,name=BUNDLED_PULSARS_HOT_LIST.name;radioRead.current=token;setHotLoad({kind:'reading',name});
+  bundledAbort.current?.abort();const abort=new AbortController();bundledAbort.current=abort;
+  await finishRadioRead(handle,token,name,async()=>(await fetchBundledHotList(fetch,abort.signal,BUNDLED_PULSARS_HOT_LIST)).bytes);
+ };
+ const finishRadioRead=async(handle:SharedHotListHandle,token:number,name:string,read:()=>Promise<Uint8Array>)=>{
   try{
-   if(file.size>HTL_MAX_BYTES)throw new HtlError('size');
-   const bytes=new Uint8Array(await file.arrayBuffer());
+   const bytes=await read();
    if(radioRead.current!==token)return;
    if(hotLoadRefusal()){cancelRadioRead('stale');return;}
    const list=parseHtl(bytes);
@@ -371,7 +389,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   }catch(value){
    if(radioRead.current!==token)return;
    radioRead.current=null;handle.update(d=>failHotListRead(d,'radio',token));
-   setHotLoad(value instanceof HtlError?{kind:'error',code:value.code,row:value.row}:{kind:'error',code:'read',row:0});
+   setHotLoad(value instanceof HtlError?{kind:'error',code:value.code,row:value.row}:value instanceof BundledHotListError?{kind:'bundled-error',code:value.code}:{kind:'error',code:'read',row:0});
   }
  };
  // Cancellation causes of a pending read: an antenna dialog/box or the list opening, the route hidden, a project
@@ -381,7 +399,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
   const hide=()=>{if(document.visibilityState==='hidden')cancelRadioRead('cancelled');};
   document.addEventListener('visibilitychange',hide);return ()=>document.removeEventListener('visibilitychange',hide);
  },[]);
- useEffect(()=>()=>{const token=radioRead.current;radioRead.current=null;if(token!==null)latest.current.hotList?.update(d=>cancelHotListRead(d,'radio',token));},[]);
+ useEffect(()=>()=>{const token=radioRead.current;radioRead.current=null;bundledAbort.current?.abort();if(token!==null)latest.current.hotList?.update(d=>cancelHotListRead(d,'radio',token));},[]);
  const onHotListLoadClick=()=>{
   const refusal=hotLoadRefusal()??(latest.current.hotList?sharedRefusal(latest.current.hotList.current()):null);
   if(refusal){setHotLoad({kind:'refused',reason:refusal});return;}
@@ -389,7 +407,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  };
  const hotMenu:HotListMenu|null=hotList?{doc:hotList.doc,load:hotLoad,viewSelectRef,fileRef:hotFile,
   onView:()=>runAntenna(a=>openRadioHotList(a,antennaOptions,currentHotRows().length)),onLoad:onHotListLoadClick,
-  onFile:file=>{void loadRadioHotList(file);},onCancelLoad:()=>cancelRadioRead('cancelled')}:null;
+  onFile:file=>{void loadRadioHotList(file);},onBundled:()=>{void loadBundledPulsars();},onCancelLoad:()=>cancelRadioRead('cancelled')}:null;
  /** The clock reading at a user request (OK, a box answer): null when the host supplies none. */
  const clockNow=():RadioClockReading|null=>{const r=radioClock?.read();return r?.status==='ok'?r.reading:null;};
  // RC-06: the 1 ms ScopeTimer is delivered while it is enabled, admitted (option byte) and not held by dome byte 3,
@@ -722,7 +740,7 @@ type AntennaControlsProps=Readonly<{antenna:RadioLabState;options:RadioLabOption
  manual:ManualPadInput;hotList:HotListMenu|null;receiver?:RadioReceiverButton}>;
 /** Slew ▸ Hot List items (RA-HL-06) and the radio Load state. */
 type HotListMenu=Readonly<{doc:SharedHotList;load:HotLoadStatus|null;viewSelectRef:RefObject<HTMLButtonElement|null>;fileRef:RefObject<HTMLInputElement|null>;
- onView:()=>void;onLoad:()=>void;onFile:(file:File|undefined)=>void;onCancelLoad:()=>void}>;
+ onView:()=>void;onLoad:()=>void;onFile:(file:File|undefined)=>void;onBundled:()=>void;onCancelLoad:()=>void}>;
 /** WEB-KEY-03 handlers for the key-scope controls and the direction-button refs of the focus step. */
 type ManualTableKeys=Readonly<{down:(e:KeyboardEvent<HTMLElement>)=>void;up:(e:KeyboardEvent<HTMLElement>)=>void;blur:(e:FocusEvent<HTMLElement>)=>void;
  buttons:RefObject<Partial<Record<ManualDirection,HTMLButtonElement|null>>>}>;
@@ -804,10 +822,13 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
      <button type="button" className="secondary-button" data-testid="antenna-hotlist-add" disabled aria-describedby={`${id}-hot-add`}>{hotItem(C.addCurrent)}</button>
      <button type="button" className="secondary-button" data-testid="antenna-hotlist-load" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled||loadBlocked!==null}
       aria-describedby={loadBlocked?`${id}-hot-load`:a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={hot.onLoad}>{hotItem(C.loadHotList)}</button>
+     <button type="button" className="secondary-button" data-testid="antenna-hotlist-load-pulsars" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled||loadBlocked!==null||reading}
+      aria-describedby={`${id}-hot-pulsars`} onClick={hot.onBundled}>{PM.pulsarsHtl.button}</button>
      {reading&&<button type="button" className="secondary-button" data-testid="antenna-hotlist-cancel-load" onClick={hot.onCancelLoad}>{ta('antenna.hotList.cancelLoad')}</button>}
     </div>
     <input ref={hot.fileRef} type="file" accept=".htl" hidden data-testid="antenna-hotlist-file" aria-label={ta('antenna.hotList.file')} onChange={e=>{const file=e.target.files?.[0];e.target.value='';hot.onFile(file);}}/>
     <p id={`${id}-hot-add`} className="radio-control-note">{ta('antenna.hotList.addDisabled')}</p>
+    <p id={`${id}-hot-pulsars`} className="radio-control-note" data-testid="antenna-hotlist-pulsars-note">{PM.pulsarsHtl.note}</p>
     {loadBlocked&&<p id={`${id}-hot-load`} className="radio-control-note" data-testid="antenna-hotlist-load-blocked" data-reason={loadBlocked}>{ta(loadBlocked==='draft'?'antenna.hotList.loadDraft':'antenna.hotList.loadPending')}</p>}
     <p data-testid="antenna-hotlist-source">{hot.doc.editor?ta(hot.doc.name?'antenna.hotList.source':'antenna.hotList.sourceNew',{name:hot.doc.name,count:hot.doc.editor.list.length}):ta('antenna.hotList.none')}</p>
     {hot.load?.kind==='error'

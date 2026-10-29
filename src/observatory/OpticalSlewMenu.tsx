@@ -1,4 +1,6 @@
-import {lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react';
+import {lazy,Suspense,useContext,useEffect,useMemo,useRef,useState} from 'react';
+import {ProgrammedSlewContext} from '../polish/programmedSlew';
+import TerminateSlewBox from '../polish/TerminateSlewBox';
 import ResearchNotes from '../components/ResearchNotes';
 import {HtlError,newHtlEditor} from '../core/hotList';
 import {appendAddCurrentEntry,HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
@@ -47,15 +49,20 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
   if(hotList.current().read){setEntryError(E.busy);return;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
   setEntry(null);setInfo({caption:HOT_LIST_ENTRY_CAPTIONS.addedCaption,text:hotListEntryAddedText(r.fields.id)});}
+ const programmed=useContext(ProgrammedSlewContext),[terminate,setTerminate]=useState(false);
+ // The question goes away with the slew (it ended, or was stopped elsewhere).
+ useEffect(()=>{if(!programmed?.moving)setTerminate(false);},[programmed?.moving]);
  function slew(){const step=slewToOpticalHotListSelection(hot,rows);setHot(step.window);if(step.row)setSky(s=>openOpticalSkyCoordsFromHotList(s,step.row!));}
  return <div className="ob-slew-menu">
   <div className="ob-menu">
-   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-set-coordinates" onClick={()=>setSky(s=>openOpticalSkyCoords(s,pointing))}>{M.open}</button>
+   {/* OB-SC-02 (Front P): during a programmed slew Set Coordinates asks "Terminate Current Slew?" instead of opening. */}
+   <button type="button" className="secondary-button" disabled={!enabled&&!programmed?.moving} data-testid="ob-set-coordinates" onClick={()=>{if(programmed?.moving){setTerminate(true);return;}setSky(s=>openOpticalSkyCoords(s,pointing));}}>{M.open}</button>
+   {terminate&&programmed?.moving&&<TerminateSlewBox onYes={()=>{setTerminate(false);programmed.terminate();}} onNo={()=>setTerminate(false)}/>}
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
    <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined}/>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>{setEntryError('');setEntry(hotListEntryDraft(addCurrentPrefill(pointing,objectId)));}}>{E.open}</button>
   </div>
-  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)}/>}
+  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
   <OpticalHotListWindow caption={caption} texts={texts} state={hot} rows={rows} onSelect={i=>setHot(h=>selectOpticalHotListIndex(h,i,rows.length))} onSlew={slew} onClose={()=>setHot(closeOpticalHotList)}
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}

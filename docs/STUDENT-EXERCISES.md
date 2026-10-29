@@ -63,7 +63,7 @@ Phase-2 B2 is technically validated and separately reviewed (2026-10-27): `tests
 
 **Evidence** — `b1db397` plus QA3: all 16 transcribed B/V pairs, manual fit, Save and fresh-context Restore.
 
-**Web adaptations** — 8 of the 24 stars stay unmeasurable in this profile; the guide is web presentation.
+**Web adaptations** — On the 0.4 m all 24 stars are measurable (since `c7ba82c`; earlier 8 stayed unmeasurable); the KPNO 0.9 m and Mayall domains are narrower. The guide is web presentation.
 
 ## E05 · Cluster HR diagrams
 **Criteria**
