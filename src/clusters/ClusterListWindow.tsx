@@ -40,7 +40,7 @@ export default function ClusterListWindow({list,onPlot,onClose,busy}:{list:Clust
      <button type="button" data-testid="cluster-list-plot" disabled={busy} onClick={()=>plot(selection)}>{M.plotItem}</button>
     </div>}</div>
   </div>
-  <HelpListBox rows={list.lines} selected={index} onSelect={setIndex} onActivate={i=>{if(i>=list.first&&i<=list.last&&!busy)plot(i-list.first);}} label={list.caption} testId="cluster-list-lines"/>
+  <HelpListBox rows={list.lines} selected={index} onSelect={setIndex} onActivate={i=>{if(i>=list.first&&i<=list.last&&!busy)plot(i-list.first);}} label={list.caption} testId="cluster-list-lines" columns/>
   <p className="cluster-hr-note">{M.listCaptionNote}</p>
   <p className="cluster-hr-note">{M.listSearchNote}</p>
   <p className="cluster-hr-note">{M.listPlotNote}</p>

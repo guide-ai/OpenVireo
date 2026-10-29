@@ -56,7 +56,9 @@ export const CLUSTER_HR_EN=Object.freeze({
  memberRemoveNote:'In VIREO, Remove from HR Diagram appears only in its Edit Mode (an instructor setting, off by default). OpenVireo keeps it as your own exclusion, which you can restore.',
  memberRemoved:'Removed from the HR diagram. Restore it with "Restore all excluded points".',
  memberAlreadyRemoved:'This star is already removed from the plot.',
- rightClickNote:'Like VIREO, right-click a star on the plot (or press and hold on a touch screen) to open "Possible Cluster Member". You can also choose a record from the list below.',
+ rightClickNote:'Like VIREO, right-click a star on the plot (or press and hold on a touch screen) to open "Possible Cluster Member". With the keyboard, choose a record below and press "Possible Cluster Member…".',
+ memberOpen:'Possible Cluster Member…',
+ observationDataUnavailable:'Display/Print Data is not available for observations: VIREO shows its "Recorded Results" list here, whose row format (0x5486a8) is not recovered yet.',
  yes:'Yes',no:'No',
  exclusionEditModeNote:'In VIREO, removing points from the HR diagram is an Edit Mode tool (an instructor setting, off by default); OpenVireo lets you exclude and restore points yourself.',
  // HR Print (0x542f44)

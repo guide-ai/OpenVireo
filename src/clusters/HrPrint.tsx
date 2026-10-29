@@ -24,6 +24,13 @@ function PlotCopy({source}:{source:RefObject<SVGSVGElement|null>}){
  return <div ref={host} className="cluster-print-image" data-testid="cluster-hr-print-image"/>;
 }
 
+/** File › Display/Print Data in observation mode (0x542f1c → RsltsListForm1): typed unavailable, its row writer 0x5486a8 is not
+ * recovered (coordinator decision Q8). Shown disabled next to Print with the reason. */
+export function ObservationDataUnavailable({testId}:{testId:string}){
+ return <><button type="button" className="secondary-button" disabled aria-describedby={`${testId}-reason`} data-testid={testId}>{M.displayData}</button>
+  <span id={`${testId}-reason`} className="cluster-hr-note" data-testid={`${testId}-reason`} data-reason="row-writer-not-recovered">{M.observationDataUnavailable}</span></>;
+}
+
 /** File › Print (0x542f44): the recovered page body in either orientation, then the plot. */
 export default function HrPrint({trial,plot,testId,disabled=false}:{trial:Trial|null;plot:RefObject<SVGSVGElement|null>;testId:string;disabled?:boolean}){
  const [open,setOpen]=useState(false),[orientation,setOrientation]=useState<ClusterHrPrintOrientation>('portrait'),[date]=useState(()=>new Date().toLocaleString());

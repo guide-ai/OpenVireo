@@ -22,7 +22,8 @@ type Search=Readonly<{query:string;matchCase:boolean}>;
 type Topic=Readonly<{index:number;body:HelpTopicBody;selected:number}>;
 
 /** A ListBox: one selected row, arrow keys/Home/End move, Enter or double-click activates. */
-export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean}){
+export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap=false,columns=false}:{rows:readonly string[];selected:number;onSelect:(i:number)=>void;onActivate:(i:number)=>void;label:string;testId:string;wrap?:boolean;
+ /** Column-built native lines: monospace, full width, scrolled horizontally (never cut). */ columns?:boolean}){
  const id=useId(),list=useRef<HTMLUListElement>(null);
  useEffect(()=>{list.current?.querySelector<HTMLElement>(`[data-row="${selected}"]`)?.scrollIntoView({block:'nearest'});},[selected]);
  function key(e:KeyboardEvent<HTMLUListElement>){
@@ -32,7 +33,7 @@ export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap
   else if(e.key==='Enter'){e.preventDefault();if(selected>=0)onActivate(selected);return;}else return;
   e.preventDefault();if(next>=0)onSelect(next);
  }
- return <ul ref={list} role="listbox" tabIndex={0} aria-label={label} data-testid={testId} className={`cluster-hr-listbox${wrap?' cluster-hr-wrap':''}`}
+ return <ul ref={list} role="listbox" tabIndex={0} aria-label={label} data-testid={testId} className={`cluster-hr-listbox${wrap?' cluster-hr-wrap':''}${columns?' cluster-hr-columns':''}`}
   aria-activedescendant={selected>=0?`${id}-${selected}`:undefined} onKeyDown={key}>
   {rows.map((r,i)=><li key={i} id={`${id}-${i}`} data-row={i} role="option" aria-selected={i===selected} onClick={()=>onSelect(i)} onDoubleClick={()=>onActivate(i)}>{r===''?' ':r}</li>)}
  </ul>;

@@ -54,6 +54,9 @@ values, Round half-even; exact in binary64. 0x542bf4 has no frame test, so out-o
 16 datasets: 30 Dor 3, Cyg OB2 1, Hyades 2, M 44 1, Mel 20 2); 4 miss the 496×506 picture. ZAMS nodes are kept only inside the
 frame (0x543940); the isochrone is not tested (curve nodes are Extended in VIREO, so they are not rounded through Single).
 
+The cluster name and `# of Stars: N` are right-aligned at the frame's right edge (x 440) with their text tops at y 15 and 33
+(0x542c93–0x542ca9, 0x542de7–0x542e00; review L3).
+
 Corrected labels:
 - **"Set E(B-V)"** (option +0x2e90, compiled default 1): in database mode VIREO locks the E(B−V) slider at Round(E·100)
   whenever the ZAMS is toggled (0x543a32). For all 16 clusters this equals the contract's preset tick (Vitest). OpenVireo keeps
@@ -63,9 +66,10 @@ Corrected labels:
   with a note.
 
 Frozen results: none of the saved data changes. Drawn counts and texts in `tests/cluster-database-hr.spec.ts` were updated
-(30 Dor 606 → 609 drawn). The database view no longer renders the en.json keys `db.hrDrawn`, `db.axes` and `db.frameNote`
-(they described a clipped plot); the own-pairs view still uses `ownHr.drawn`. Those three keys are now unused (left for the
-coordinator to remove at merge, to keep en.json untouched).
+(30 Dor 606 → 609 drawn). The database view renders its own texts from `ClusterHrMessages.ts` instead of the en.json keys
+`db.hrDrawn`, `db.axes` and `db.frameNote`. The own-pairs view (unchanged plot) still renders `ownHr.drawn` and `db.frameNote`;
+review 1 (L5) corrected the en.json `db.frameNote` text, which wrongly said the paint-box extent was not recovered and implied
+an autoscale. `db.axes` is no longer rendered, and `db.hrDrawn` only on a branch the database view no longer reaches.
 
 ## Right-click selection and Possible Cluster Member (M3)
 
@@ -84,7 +88,9 @@ coordinator to remove at merge, to keep en.json untouched).
   investigation formats are unchanged.
 - Touch: iOS Safari fires no `contextmenu` on a long press, so a touch held still for 500 ms (moving more than 10 px cancels
   it, so scrolling still works) picks the same star [W]; a `contextmenu` that Android may send afterwards is ignored. The
-  record chooser stays the keyboard path.
+  record chooser plus the **Possible Cluster Member…** button next to it is the keyboard path (review M1); closing the window
+  returns focus to whatever opened it (the button or the plot). A `contextmenu` cancels a pending long press, and a second
+  pick within 800 ms is ignored (review L6).
 - **Add to Hot List** 0x540ccc (M7): the shared "Add/Edit Hot List Entry" dialog (`HotListEntryDialog`, imported) prefilled
   with ID := the star's catalogue ID, remarks := the cluster name (40 characters), RA/Dec := the star's; OK appends to the
   page's shared observation hot list (`appendAddCurrentEntry`, 0x590588) and shows `Object <ID> added to Observation List.`
@@ -123,7 +129,9 @@ Both are in LOCAL-RESOURCES.json, the RESOURCE-PROVENANCE group `data/clusters` 
   (name; star count; V, B−V and U−B ranges with `+` above 0 and the U−B count, from 0x5359a4/0x5359e4 over every star), notes,
   the column header, then one row per star in V-bank order (Front O's `fieldStarRow`, 0x5354e8) with `*` after the ID of a
   star the pupil excluded. Search, Print, Save Text (`<cluster>.TXT`) and Comma Delimit (`<cluster>.CSV`, 0x552ad8) come from
-  Front O's list window; its Selection menu is empty because VIREO hides it from the HR route (AL = 0).
+  Front O's list window, with its Selection menu and selection status hidden as VIREO hides them from the HR route (AL = 0;
+`hideSelection`, review L2) and its Print on the student branch (`printStudent`: the HR route is not Edit Mode, so the page has
+the Laboratory Table Number line, review L1).
 
 ## Evidence
 
@@ -152,7 +160,8 @@ Both are in LOCAL-RESOURCES.json, the RESOURCE-PROVENANCE group `data/clusters` 
 
 ## Not done (follow-ups)
 
-- Observation-mode Display/Print Data needs the RsltsListForm1 row writer 0x5486a8 (not recovered).
+- Observation-mode Display/Print Data needs the RsltsListForm1 row writer 0x5486a8 (not recovered); the own-pairs and saved-DAT
+  views show it as a disabled control with that reason (review L4).
 - The Cluster Data dialog and its list (TClstrDlgForm1, TClstrListForm1: centre coordinates, Use Telescope Coordinates, Type of
   Listing, Sort By, View/Select, Add Cluster to List, the hot-list rows) — plan milestone M8, not done: its finding list for an
   arbitrary centre needs GSC data that is not published, and Use Telescope Coordinates needs the observatory pointing.
