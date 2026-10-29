@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 // the recorded VizieR response (tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml, CDS 2026-10-27); it is test data, not a
 // bundled extract. The real CameraControl (Worker composer) takes and saves the image; the page then replays its recipe.
 const xmlPromise=readFile(new URL('./fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
-const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|cdsarc|unistra\.fr/;
+const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/;// every VizieR mirror the camera may ask
 
 test('replayStaticExposure gives the camera static path\'s FITS bytes for the same recipe',async({page})=>{
  const xml=await xmlPromise,sha=createHash('sha256').update(xml).digest('hex');

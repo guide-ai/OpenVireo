@@ -15,7 +15,7 @@ Actualizado el 29 oct 2026. Las decisiones aprobadas también constan en `AGENTS
 | Backend en local (29 oct 2026) | Cuentas, guardado (nivel B) y métricas con Cloudflare Workers y D1 se construyen y prueban solo en local, en loopback, sin cuenta de Cloudflare, recursos remotos, envío real de correos ni secretos en el código. Desplegar sigue esperando el dominio y la aprobación del usuario. |
 
 Condiciones del modo en vivo (B):
-- solo envía a CDS las coordenadas y el radio de la consulta;
+- solo envía a VizieR (CDS o un espejo oficial; el primero es IDIA y el host que respondió queda registrado) las coordenadas y el radio de la consulta;
 - se etiqueta como adaptación web (VOTable de VizieR en lugar del ASCII de NOFS);
 - las pruebas usan respuestas grabadas, para que sean deterministas;
 - si VizieR no responde, la cámara lo dice con claridad y no inventa campos.
