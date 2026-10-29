@@ -104,7 +104,7 @@ The pure core in `src/core/radioControl.ts` does not import React or i18n. Trans
   6. Choose **Window: Radio Telescope Control Panel** (the window is shown again), then close the panel: the switch turns Off and the Window item disappears.
   7. Click the switch on to reopen the panel, then off again.
 
-The current harness is the antenna harness on 127.0.0.1:5266 (see RADIO-ANTENNA.md); the 5181 harness above is historical.
+The current harness is the antenna harness on 127.0.0.1:5266 (see RADIO-ANTENNA.md); the 5181 harness above is historical. Since 2026-10-29 these harnesses are in the repository (`tests/harness/`, served by the dev server only) and `playwright.config.ts` sets the URL, so a plain `playwright test` runs them; see docs/TEST-HARNESSES.md. The external configs named here are historical.
 
 Tests check the implementation contract chosen here. They are not an oracle for the original runtime.
 

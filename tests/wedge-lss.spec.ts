@@ -1,9 +1,9 @@
 import{test,expect,type Page}from'@playwright/test';
-// Scoped N06/E02 LSS wedge flows. Until the coordinator mounts WedgeLab in App these
-// run against the owned harness (docs/WEDGE-PLOT.md) via OPENVIREO_WEDGE_HARNESS_URL.
+// Scoped N06/E02 LSS wedge flows, standalone panel contract. They run against the test-only harness page
+// /__harness/wedge/ (docs/TEST-HARNESSES.md) via OPENVIREO_WEDGE_HARNESS_URL, which playwright.config.ts sets.
 // All files below are synthetic test vectors, not CLEA observations or original saves.
 const harness=process.env.OPENVIREO_WEDGE_HARNESS_URL;
-test.skip(!harness,'OPENVIREO_WEDGE_HARNESS_URL is not set; the wedge panel is not mounted in App yet.');
+test.skip(!harness,'OPENVIREO_WEDGE_HARNESS_URL is empty; playwright.config.ts normally points it at /__harness/wedge/ (docs/TEST-HARNESSES.md).');
 const HEADER='Object ID    MJD(Days)      RA           Dec     V(km/sec)  Comments';
 const DEG='°';
 const row=(id:string,ra:string,dec:string,v:string,c='synthetic')=>id.padEnd(11)+'  4321.5000 '+ra+' '+dec+' '+v+' '+c;
