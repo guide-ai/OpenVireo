@@ -115,14 +115,16 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
   const input = useRef<HTMLInputElement>(null), evidence = useRef<HTMLDialogElement>(null), recordDialog = useRef<HTMLDialogElement>(null), generation = useRef(0), nextId = useRef(1);
   useEffect(()=>{if(!active){recordDialog.current?.close();evidence.current?.close();setConfirm(false);setDraft(null);}},[active]);
   const z = currentZ(control), selected = references[reference];
-  // Front S (S5, docs/SPECTRUM-ENGINE-VIEW.md): the engine window starts from the loaded spectrum and the spectrometer
-  // range (0x582f00). Until the range dialog lands, that range is the route's fixed interval [W].
-  const spectrometerRange=isGalaxy?{minimum:4000,maximum:5000}:{minimum:3700,maximum:4700};
+  // Front S (S5, docs/SPECTRUM-ENGINE-VIEW.md): the engine window starts from the loaded spectrum and the spectrometer range
+  // (0x582f00). For a spectrum acquired here the web takes the spectrometer maximum from the range it was acquired with (its
+  // last wavelength rounded up to 100 Å: 4700 Å by default, 5000 Å for galaxies); otherwise the default setting, 3700–4700 Å [W].
+  const lastWavelength=observation?.kind?observation.samples.at(-1)?.wavelength:undefined;
+  const spectrometerRange={minimum:3700,maximum:lastWavelength===undefined?4700:Math.ceil(lastWavelength/100)*100};
   const firstWavelength=observation?.samples[0]?.wavelength??null;
   const [engine,setEngine]=useState<EngineWindow>(()=>initialEngineWindow(firstWavelength,spectrometerRange));
   const [cursor,setCursor]=useState<Readonly<{at:EngineCursor;final:boolean}>|null>(null),[nearest,setNearest]=useState<Readonly<{index:number|null;text:string}>|null>(null);
   useEffect(()=>{setEngine(initialEngineWindow(firstWavelength,spectrometerRange));setCursor(null);setNearest(null);// eslint-disable-next-line react-hooks/exhaustive-deps
-  },[observation,isGalaxy]);
+  },[observation]);
   const axisMin=Math.min(0,...(observation?.samples.map(p=>p.intensity)??[]));
   const readoutOf=(c:EngineCursor)=>{const r=engineReadout(engine,c);return {wavelength:r.wavelength,relativeIntensity:axisMin+r.relativeIntensity*(1-axisMin)};};
   const readout=cursor&&!wide?readoutOf(cursor.at):null;

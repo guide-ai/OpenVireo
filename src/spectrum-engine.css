@@ -17,3 +17,6 @@
 .engine-zoom-row output{font-variant-numeric:tabular-nums}
 tr.engine-selected td{background:var(--ov-surface-hover);font-weight:600}
 .spectrum .engine-tick{stroke:#476676;stroke-width:1}
+/* Front S (S1): spectrometer range row on the star route. */
+.spectral-range-row{display:flex;flex-direction:column;gap:var(--ov-space-1);margin-bottom:var(--ov-space-3)}
+.spectral-range-row p{margin:0}

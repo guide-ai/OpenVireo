@@ -1,5 +1,5 @@
 import {serializeDotDecimalVireoSpectrum} from './legacySpectrumFile';
-import {STAR_TARGET,type StarState} from './starExposure';
+import {STAR_TARGET,starSpectralRange,type StarState} from './starExposure';
 import {galaxyStateDefinition,type GalaxyState} from './galaxyExposure';
 import type {JournalState} from './exposureJournal';
 import type {FieldResult} from './fieldEngine';
@@ -11,7 +11,9 @@ import type {LssRow} from './lssFields';
  * Numerical/byte policy: docs/SPECTRUM-SAVE-CONTRACT.md.
  */
 export function starSpectrumBytes(state:StarState):Uint8Array {
- return serializeDotDecimalVireoSpectrum({object:STAR_TARGET.id,pointingRa:STAR_TARGET.ra,pointingDec:STAR_TARGET.dec,apparentMagnitude:STAR_TARGET.magnitudeSingle,minimum:3700,step:1000/600,counts:state.exposure.counts});
+ // Front S (S1): rows from the exposure's spectrometer range (Save 0x50fb1c: λ from env+0x2bd4, step (max − min)/600).
+ const range=starSpectralRange(state);
+ return serializeDotDecimalVireoSpectrum({object:STAR_TARGET.id,pointingRa:STAR_TARGET.ra,pointingDec:STAR_TARGET.dec,apparentMagnitude:STAR_TARGET.magnitudeSingle,minimum:range.minimum,step:(range.maximum-range.minimum)/600,counts:state.exposure.counts});
 }
 export function galaxySpectrumBytes(state:GalaxyState):Uint8Array {
  const target=galaxyStateDefinition(state).target;

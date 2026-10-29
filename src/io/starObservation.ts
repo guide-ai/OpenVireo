@@ -1,5 +1,5 @@
 import {diagnosticError} from '../core/diagnostics';
-import {deactivateStar,verifiedStarConfiguration,starTelescopeIndex,type StarState} from '../core/starExposure';
+import {deactivateStar,starConfigurationOf,type StarState} from '../core/starExposure';
 import {parseStarSession,serializeStarSession,starSessionIdentityText} from './starSession';
 import {starSpectrumBytes} from '../core/exposureSpectrum';
 import {parseSpectrum,type Sample} from '../core/spectrum';
@@ -18,7 +18,7 @@ async function build(state:StarState,starSessionText:string):Promise<StarObserva
  // Retain the existing headerless curve identity for linked measurements and
  // sessions. Native SSP export uses the same full recovered save profile.
  const sourceText=new TextDecoder().decode(saved).split('\r\n').slice(1).join('\r\n');
- const samples=Object.freeze(parseSpectrum(sourceText).map(p=>Object.freeze(p))),sha256=await digest(sourceText),c=verifiedStarConfiguration(starTelescopeIndex(state));
+ const samples=Object.freeze(parseSpectrum(sourceText).map(p=>Object.freeze(p))),sha256=await digest(sourceText),c=starConfigurationOf(state);
  return Object.freeze({kind:'catalog-star-acquisition',name:`catalog-star-${acquisitionId.slice(0,12)}.sp`,sha256,samples,sourceText,acquisitionId,starSessionText,state,templateSamples:Object.freeze(c.wavelengths.map((w,i)=>Object.freeze({wavelength:w,intensity:c.sourceValues[i]})))});
 }
 export async function createStarObservation(input:StarState):Promise<StarObservation>{
