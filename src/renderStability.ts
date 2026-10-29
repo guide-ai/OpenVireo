@@ -16,3 +16,12 @@ export function useStableHandlers<T extends Handlers>(handlers:T):T{
 /** Equality by value for plain JSON data (progress summaries and similar): two values are equal when they serialise the
  * same. Only for data without functions, Maps, Sets, undefined-vs-missing distinctions or non-finite numbers. */
 export function sameData(a:unknown,b:unknown):boolean{return a===b||JSON.stringify(a)===JSON.stringify(b);}
+/** The handler props K of a component's props P, required, for `useStableHandlers<StableProps<…>>({...})`. */
+export type StableProps<P,K extends keyof P>={[k in K]-?:NonNullable<P[k]>};
+/** A React.memo comparator: props in `byValue` are compared with sameData (plain data rebuilt each render, such as a frozen
+ * site record); props in `ignored` are not compared (only for a prop the child reads in a render that another prop's change
+ * always causes; each use says why); every other prop by identity. */
+export function propsEqual<P extends object>(byValue:readonly (keyof P)[],ignored:readonly (keyof P)[]=[]):(a:Readonly<P>,b:Readonly<P>)=>boolean{
+ return (a,b)=>{const keys=new Set([...Object.keys(a),...Object.keys(b)] as (keyof P)[]);
+  for(const k of keys){if(ignored.includes(k))continue;if(byValue.includes(k)?!sameData(a[k],b[k]):!Object.is(a[k],b[k]))return false;}return true;};
+}

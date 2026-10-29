@@ -15,13 +15,13 @@ load, so they are never asserted.
 ## Scenarios and budgets
 | Scenario | What happens | Count | Budget |
 |---|---|---|---|
-| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 334 | 350 |
-| classificationKey | one keystroke in "Proposed spectral type" | 75 | 80 |
-| classificationFill | `fill` of that field | 75 | 80 |
-| classificationToSpectrum | header click from classification to the spectrum analyzer | 75 | 80 |
+| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 164 | 175 |
+| classificationKey | one keystroke in "Proposed spectral type" | 31 | 36 |
+| classificationFill | `fill` of that field | 31 | 36 |
+| classificationToSpectrum | header click from classification to the spectrum analyzer | 42 | 47 |
 | analyzerKey | one keystroke in the analyzer's "Object or reference" | 7 | 12 |
-| observatoryLoad | open `#observatory` cold, until its heading shows | 112 | 118 |
-| openDome | click "Open dome ↗" | 53 | 58 |
+| observatoryLoad | open `#observatory` cold, until its heading shows | 73 | 78 |
+| openDome | click "Open dome ↗" | 25 | 30 |
 
 Counts are as of the commit that set them; the Front Perf commits lower them step by step and update this table.
 

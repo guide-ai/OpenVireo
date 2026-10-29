@@ -6,13 +6,13 @@ import {installRenderProbe,rendersOf,type RenderTally} from './fixtures/render-p
 
 // Measured count → budget (count plus headroom). Keep in step with docs/RENDER-BUDGET.md.
 const BUDGET={
- classificationLoad:350,
- classificationKey:80,
- classificationFill:80,
- classificationToSpectrum:80,
+ classificationLoad:175,
+ classificationKey:36,
+ classificationFill:36,
+ classificationToSpectrum:47,
  analyzerKey:12,
- observatoryLoad:118,
- openDome:58,
+ observatoryLoad:78,
+ openDome:30,
 } as const;
 type Scenario=keyof typeof BUDGET;
 
