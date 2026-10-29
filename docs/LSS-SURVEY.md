@@ -113,6 +113,8 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   them in their own table [W] with Save Data (.TXT) (velocity column blank, `LSS_Galaxy_Data.TXT`); they are not saved with
   the investigation. Catalogue redshifts are the E02 answers, so the table's z and the summary's "Range in Z" show
   "hidden (instructor value)" (as Catalog Object masks z) and the rows are not handed to the wedge, which would plot them by
-  z [W, coordinator decision of 2026-10-29]. The .TXT carries no z column and no velocity. Counts per box remain visible.
+  z [W, coordinator decision of 2026-10-29]. [W] For the same reason the Z bounds are disabled while z is masked, with the note
+  "Z range uses the masked catalogue redshift": they are not applied, so only the RA and Dec bounds select (applying the native
+  z filter would reveal z through the found counts). The .TXT carries no z column and no velocity. Counts per box remain visible.
 - Not ported: Auto Plot and the group results file 0x57c710. (Wedge Print is ported by Front P; docs/WEDGE-PLOT.md.)
 

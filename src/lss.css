@@ -23,6 +23,7 @@
 .lss-region-grid{width:100%;table-layout:fixed;border-collapse:collapse}
 .lss-region-grid th,.lss-region-grid td{padding:.2rem;min-width:0;text-align:left}
 .lss-region-grid input{width:100%}
+.lss-region-grid input:disabled{background:var(--ov-disabled-bg);border-color:var(--ov-disabled-border);color:var(--ov-disabled-text);border-style:dashed;cursor:not-allowed}
 .lss-region-box-text{white-space:pre-line}
 @media (max-width:480px){
  .lss-region-grid thead{display:none}

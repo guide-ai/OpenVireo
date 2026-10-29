@@ -19,7 +19,8 @@ export const HUBBLE_HTL=Object.freeze({
 /** spectrum-continuation (Front F M5): the field is prepared (RS Boo outside the view, QSO merged) but at z ≈ 0.13 the shifted
  * fallback template starts above 4000 Å; the recovered blue continuation draws uniforms whose order relative to the exposure's own
  * random stream (Go 0x50f484) is not recovered, so no acquisition is offered. */
-export type HubbleUnavailableReason='photographic-image'|'qso-merge'|'variable-qso-merge'|'variable-merge'|'spectrum-continuation';
+// Front L2 follow-up: 'qso-merge' and 'variable-qso-merge' were retired once the QSO merge was ported (no row carries them).
+export type HubbleUnavailableReason='photographic-image'|'variable-merge'|'spectrum-continuation';
 type Common=Readonly<{index:number;id:string;remarks:string;ra:number;dec:number;recordSha256:string;catalogIndex:number}>;
 export type HubbleSupportedRow=Common&Readonly<{supported:true;targetId:string;route:'fresh'|'cached'|'engine';telescopes:readonly (0|1|2)[]}>;
 export type HubbleUnavailableRow=Common&Readonly<{supported:false;reason:HubbleUnavailableReason}>;
