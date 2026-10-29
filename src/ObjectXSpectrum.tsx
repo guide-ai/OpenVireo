@@ -7,6 +7,9 @@ import {OBJECT_X_SPECTRA_LIMITS,type ObjectXSpectrumRecord} from './io/objectXSp
 import type {FieldTelescope} from './core/fieldEngine';
 import type {JournalState} from './core/exposureJournal';
 import {ObjectXSpectrumSave} from './observatory/RouteSpectrumSave';
+import {objectXSpectrumBytes} from './core/exposureSpectrum';
+import {readClassificationImport} from './io/classificationImports';
+import type {ClassificationImport} from './core/classificationImport';
 
 /** E08 spectrometer branch (docs/OBJECT-X-SPECTRA.md). Hidden identity (D5): the display API carries no row, kind, record or
  * reason; every unavailable case shows the same message; labels are the student's ObjX ID. The field is evaluated in a Worker.
@@ -16,9 +19,10 @@ type View=Readonly<{kind:'idle'}|{kind:'loading'}|{kind:'error'}|{kind:'invalid'
 const TICK_MS=250;
 const seconds=(ms:number)=>(ms/1000).toFixed(1);
 const total=(s:JournalState)=>String(Math.round(s.exposure.counts.reduce((a,b)=>a+b,0)));
-export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,pointingOf,active=true}:Readonly<{
+export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,pointingOf,active=true,onClassify}:Readonly<{
+ /** Front S (S2): load this spectrum's masked .SSP in Classify. */onClassify?:(source:ClassificationImport)=>void;
  /** Front S (S6): the Object X route is shown (the save card's print scope expects one card in the page). */active?:boolean;target:Readonly<{ra:number;dec:number;code:string}>|null;label:string;disabled:boolean;spectra:readonly ObjectXSpectrumRecord[];onKeep:(record:ObjectXSpectrumRecord)=>void;pointingOf:(code:string)=>Readonly<{ra:number;dec:number}>|null}>){
- const [telescope,setTelescope]=useState<FieldTelescope>(2),[view,setView]=useState<View>({kind:'idle'});
+ const [telescope,setTelescope]=useState<FieldTelescope>(2),[view,setView]=useState<View>({kind:'idle'}),[classifyError,setClassifyError]=useState(false);
  const ticket=useRef(0),timer=useRef<number|null>(null),last=useRef(0);
  const stopTimer=()=>{if(timer.current!==null){window.clearInterval(timer.current);timer.current=null;}};
  // A new target or telescope clears the slit (and stops any exposure).
@@ -63,6 +67,13 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
   const url=URL.createObjectURL(new Blob([rows],{type:'text/csv'})),a=document.createElement('a');
   a.href=url;a.download=`${name}.csv`;document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
+ /** "Save, then load" (VIREO has no direct route to Classify): the same masked bytes as Save .SSP, read by Classify's import. */
+ async function classify(name:string,r:Available,s:JournalState,pointing:Readonly<{ra:number;dec:number}>|null){
+  setClassifyError(false);
+  try{if(!pointing||!onClassify)throw Error();const bytes=objectXSpectrumBytes(s,name,pointing,r.wavelengths[0]);
+   onClassify(await readClassificationImport(new File([bytes.slice().buffer],`${name.replace(/[^A-Za-z0-9_-]+/g,'_')}.ssp`,{type:'text/plain'})));}
+  catch{setClassifyError(true);}
+ }
  const running=view.kind==='ready'&&view.state.exposure.phase==='running',limited=view.kind==='ready'&&view.state.exposure.stopReason!==null;
  const full=spectra.length>=OBJECT_X_SPECTRA_LIMITS.spectra;
  const shown=view.kind==='ready'||view.kind==='kept'?view:null,shownName=view.kind==='kept'?view.label:view.kind==='ready'?view.keptAs??label:label;
@@ -88,7 +99,9 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
    <SpectrumPlot wavelengths={shown.result.wavelengths} counts={shown.state.exposure.counts} label={M.spectrumChart(shownName)}/>
    <div className="button-row"><button className="secondary-button" disabled={disabled||running||shown.state.exposure.elapsedMs===0} onClick={()=>saveCsv(shownName,shown.result,shown.state)}>{M.spectrumSaveCsv(shownName)}</button></div>
    {!running&&<><ObjectXSpectrumSave active={active} busy={disabled} state={shown.state} label={shownName} pointing={view.kind==='kept'?view.pointing:target?{ra:target.ra,dec:target.dec}:null} minimum={shown.result.wavelengths[0]} telescopeName={M.spectrumTelescopes[shown.result.telescope]} saved={M.spectrumSaved}/>
-    {active&&<p className="observatory-note" data-testid="objectx-spectrum-save-note">{M.spectrumSaveNote}</p>}</>}
+    {active&&<p className="observatory-note" data-testid="objectx-spectrum-save-note">{M.spectrumSaveNote}</p>}
+    {active&&onClassify&&<div className="button-row"><button className="secondary-button" data-testid="objectx-spectrum-classify" disabled={disabled||shown.state.exposure.elapsedMs===0} onClick={()=>void classify(shownName,shown.result,shown.state,view.kind==='kept'?view.pointing:target)}>{M.spectrumClassify}</button></div>}
+    {classifyError&&<p role="alert">{M.spectrumClassifyError}</p>}</>}
   </>}
   {spectra.length>0&&<div data-testid="objectx-spectra"><h4>{M.spectrumKeptTitle}</h4><ul>{spectra.map(r=><li key={r.label}>
    {M.spectrumKeptRow(r.label,M.spectrumTelescopes[r.telescope],seconds(r.events.reduce((a,e)=>a+(e.kind==='tick'?e.deltaMs:0),0)))}{' '}

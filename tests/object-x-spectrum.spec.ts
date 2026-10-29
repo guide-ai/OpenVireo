@@ -119,3 +119,22 @@ test('the spectrometer at 320 px and in dark mode: no overflow, themed surface, 
   await page.getByTestId('objectx-branch-spectrum').screenshot({path:test.info().outputPath(`object-x-spectrum-${scheme}-${width}.png`)});
  }
 });
+
+// Front S (S2): "save, then load" as one button. Classify receives the masked .SSP: its source is the label, and no object name,
+// template or kind reaches the Classify page; Observational Data takes the label as the object ID.
+test('an Object X spectrum opens in Classify under its label, without naming the object',async({page})=>{
+ await openLab(page);await slit(page,CODES.star,'4.0 m');await expose(page);
+ await button(page,'Classify this spectrum').click();
+ await expect(page).toHaveURL(/#classification$/);
+ await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();
+ const main=page.locator('main.classification-main');
+ const text=await main.evaluate(n=>n.innerHTML+' '+n.textContent);
+ expect(text).toContain('ObjX-7.ssp');
+ expect(SECRETS.filter(s=>word(s).test(text))).toEqual([]);expect(text).not.toMatch(/\.DAT@/);
+ // Template file names: only those Classify always lists (its atlas), never one tied to this object.
+ const names=(t:string)=>new Set([...t.matchAll(/A00000\d\d/gi)].map(m=>m[0].toUpperCase()));
+ const fresh=await page.context().newPage();await fresh.goto('/#classification');await expect(fresh.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();
+ const baseline=names(await fresh.locator('main.classification-main').evaluate(n=>n.innerHTML+' '+n.textContent));await fresh.close();
+ expect([...names(text)].filter(n=>!baseline.has(n))).toEqual([]);
+ await button(page,'Open observation results').click();await expect(page.getByTestId('observation-object')).toHaveText('ObjX-7');
+});
