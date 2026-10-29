@@ -40,8 +40,9 @@ Sound Device!", and turns the option off for the session.
 
 - **Option** [W]: Sound Effects is **off by default**, by the user's decision. It is a student checkbox in the observatory and
   lasts only for this page session; VEO_OPTS.INI and Save Updates are not ported.
-- **Loading:** nothing is fetched while the option is off. When an event needs a sound, the page fetches that one file from
-  this site, checks its size and SHA-256, and plays it.
+- **Loading:** nothing is fetched while the option is off. Turning it on prepares `Emotor.wav`, which must be decoded. Any
+  other sound is fetched only when an event needs it. Every file comes from this site and is checked for size and SHA-256
+  before it plays.
 - **Autoplay:** every sound follows the student's own click (the checkbox, the dome, a slew button), as browser autoplay
   rules require.
 - **Events:** the web dome opens or closes at once, so the end sound comes about 7.5 s later [W] (0.94 of travel at 0.01 per

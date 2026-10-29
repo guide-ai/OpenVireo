@@ -4,8 +4,8 @@ import {resourceSha256} from '../io/boundedResource';
 import {SOUND_MESSAGES as M} from './SoundMessages';
 
 /** Observatory Sound Effects (Front C5W; src/core/soundEffects.ts, docs/SOUND-EFFECTS.md). Two <audio> channels stand for
- * VIREO's two TMediaPlayers. [W] Off by default; the choice lasts for this page session (module memory, no storage). A sound
- * is fetched only when an event needs it (same origin, size and SHA-256 checked); Emotor.wav (MS-ADPCM) is decoded in the
+ * VIREO's two TMediaPlayers. [W] Off by default; the choice lasts for this page session (module memory, no storage). Turning
+ * it on prepares the motor sound (it must be decoded); any other sound is fetched only when an event needs it (same origin, size and SHA-256 checked); Emotor.wav (MS-ADPCM) is decoded in the
  * page. Every play follows the student's own click (the checkbox, the dome, a slew), as browsers require. */
 let sessionEnabled=SOUND_EFFECTS_DEFAULT;
 const cache=new Map<SoundName,Promise<string>>();
@@ -48,7 +48,7 @@ export default function ObservatorySounds({domeOpen,motion}:ObservatorySoundsPro
  }};
  useEffect(()=>{const actions=soundEffectsStep(prev.current,state,enabled);prev.current=state;run(actions);});
  useEffect(()=>()=>stopAll(),[]);
- const toggle=(on:boolean)=>{sessionEnabled=on;setEnabled(on);setStatus('');if(!on)stopAll();};
+ const toggle=(on:boolean)=>{sessionEnabled=on;setEnabled(on);setStatus('');if(!on)stopAll();else void sound('emotor.wav').catch(()=>{});};// the motor is decoded in the page, so it is prepared when the option is turned on
  return <section className="card observatory-sounds" aria-labelledby={`${id}-title`} data-testid="sound-effects" data-enabled={enabled}>
   <h2 id={`${id}-title`}>{M.title}</h2>
   <label title={M.hint}><input type="checkbox" checked={enabled} onChange={e=>toggle(e.target.checked)} data-testid="sound-effects-toggle"/> {M.toggle}</label>

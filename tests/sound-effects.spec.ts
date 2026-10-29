@@ -15,18 +15,18 @@ test('off by default: the dome makes no sound request; on: the door, an end soun
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();await page.getByRole('button',{name:/Close dome/}).first().click();
  expect(seen).toEqual([]);await expect(dome(page)).not.toHaveAttribute('data-sound');
  // On: the dome door (GARDOOR.WAV, fetched and checked, played from a blob), then one of the eight end sounds.
- await toggle.check();expect(seen).toEqual([]);
+ await toggle.check();await expect.poll(()=>seen).toEqual(['Emotor.wav']);// prepared at once (it must be decoded)
  await page.getByRole('button',{name:'Open dome ↗',exact:true}).click();
  await expect(dome(page)).toHaveAttribute('data-sound','GARDOOR.WAV');await expect(dome(page)).toHaveAttribute('src',/^blob:/);
  await expect(page.getByTestId('sound-effects-status')).toHaveText('');
  await expect(dome(page)).toHaveAttribute('data-sound',/^(CHACLUNK|CLUNKIT|CRASHBRN|ROLLING|CRINKLE|DRAG|MAILBOX|WHAADING)\.WAV$/,{timeout:15_000});
  // A programmed slew plays Emotor.wav (MS-ADPCM, decoded in the page) and Stop ends it.
- await coords(page,'.5','0');await tracking(page);await coords(page,'9','60',false);
+ await coords(page,'.5','0');await tracking(page);await coords(page,'14','-50',false);
  await card(page).getByRole('button',{name:'Slew to coordinate draft',exact:true}).click();await page.getByRole('button',{name:'Start programmed slew',exact:true}).click();
  await expect(scope(page)).toHaveAttribute('data-sound','Emotor.wav',{timeout:15_000});await expect(scope(page)).toHaveAttribute('src',/^blob:/);
  expect(await scope(page).evaluate((a:HTMLAudioElement)=>a.loop)).toBe(true);
  const stopButton=card(page).getByRole('button',{name:'Stop telescope motion',exact:true});
- if(await stopButton.isEnabled())await stopButton.click();// Stop, or the arrival, ends the motor (SlewTimer2Timer 0x5396f5)
+ await stopButton.click({timeout:3000}).catch(()=>{});// Stop, or an arrival first, ends the motor (SlewTimer2Timer 0x5396f5)
  await expect(scope(page)).not.toHaveAttribute('data-sound',{timeout:60_000});
  // A held manual slew plays servostart.wav.
  const north=card(page).getByRole('button',{name:'Hold North',exact:true});const box=(await north.boundingBox())!;
