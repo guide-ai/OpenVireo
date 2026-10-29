@@ -55,7 +55,8 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
  const latest=useRef({editMode,driveOn,pointing});latest.current={editMode,driveOn,pointing};
  useEffect(()=>{if(request>0)setDialog(true);},[request]);
  function ok(record:ClusterDialogRecord){
-  setDialog(false);focusFileMenu();const c=certifiedCluster(record);
+  // The modal closes on this render; focus moves after it (L7).
+  setDialog(false);requestAnimationFrame(focusFileMenu);const c=certifiedCluster(record);
   if(!c){setReport({reason:M.unavailable});return;}
   setReport({loading:true});
   Promise.all([loadClusterDataset(c.id),loadClusterDetail()]).then(([d,detail])=>{
@@ -79,7 +80,7 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
  function startNew(then:()=>void){if(hotList.current().editor?.list.length){setConfirm(()=>then);return;}then();}
  function answer(save:boolean){const then=confirm;setConfirm(null);if(!then)return;const doc=hotList.current();if(save&&doc.editor)downloadText(serializeHtl(doc.editor.list),doc.name||'HotList.HTL');then();}
  return <>
-  {dialog&&<ClusterDialog editMode={editMode} driveOn={driveOn} pointing={pointing} hotList={hotList} onOk={ok} onCancel={()=>{setDialog(false);focusFileMenu();}}/>}
+  {dialog&&<ClusterDialog editMode={editMode} driveOn={driveOn} pointing={pointing} hotList={hotList} onOk={ok} onCancel={()=>{setDialog(false);requestAnimationFrame(focusFileMenu);}}/>}
   {report&&('report' in report&&'lines' in report.report?<FieldInfoListWindow testId="cluster-data" caption={report.report.caption} lines={report.report.lines} first={report.report.first} last={report.report.last}
     notice={<p className="fi-note">{M.reportNote}</p>}
     selectionItems={[

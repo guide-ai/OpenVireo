@@ -58,7 +58,7 @@ async function pick(page:Page,name:string){await id(page,'cd-file').click();awai
 test('M1: a limit brighter than every star of the field answers VIREO\'s "No Stars Found in Field!" box',async({page})=>{
  await observatory(page);await openDialog(page);await pick(page,'NGC 752');await id(page,'cd-limit').fill('5.0');await id(page,'cd-ok').click();
  await expect(id(page,'fi-box')).toContainText('No Stars Found in Field!');await expect(id(page,'fi-box-text')).toContainText('Possible Error in Field Parameters:');await expect(id(page,'fi-box-text')).toContainText('LimitMag: 5.000');
- await id(page,'fi-box').getByRole('button').click();await expect(id(page,'cluster-data-reason')).toContainText('kept its previous list');await expect(id(page,'fi-file-menu')).toBeFocused();
+ await id(page,'fi-box').getByRole('button').click();await expect(id(page,'cluster-data-reason')).toContainText('the rows of its previous query');await expect(id(page,'fi-file-menu')).toBeFocused();
 });
 
 test('Use Telescope Coordinates, Search, Start New / Entire hot lists, Print and Get Selection Data closing a modified list',async({page})=>{
@@ -67,7 +67,7 @@ test('Use Telescope Coordinates, Search, Start New / Entire hot lists, Print and
  const ra=await page.getByTestId('pointing-ra').textContent();expect(ra).toBeTruthy();await expect(id(page,'cd-raHours')).toHaveJSProperty('readOnly',true);
  await id(page,'cd-use-telescope').uncheck();
  await id(page,'cd-file').click();await id(page,'cd-view-select').click();
- await id(page,'cd-study-list-menu').click();await id(page,'cd-study-search').click();await page.getByTestId('fi-find-query').fill('hyades');await page.getByTestId('fi-find-top').click();
+ await id(page,'cd-study-list-menu').click();await id(page,'cd-study-search').click();await page.getByTestId('fi-find-query').fill('hyades');await page.getByTestId('fi-find-top').click();await expect(id(page,'cd-study-lines').getByRole('option',{selected:true})).toContainText('Hyades');
  await id(page,'cd-study-list-menu').click();await id(page,'cd-study-print').click();await expect(id(page,'cd-study-print-preview')).toContainText('Laboratory Table Number');await page.keyboard.press('Escape');
  await id(page,'cd-study-lines').getByText('M 34 (NGC 1039)').click();await id(page,'cd-study-selection-menu').click();await id(page,'cd-study-start').click();
  await expect(id(page,'fi-box')).toContainText('New Hot List Created - Object M 34 (NGC 1039) Added to New Hot List.');await id(page,'fi-box').getByRole('button').click();
@@ -84,4 +84,11 @@ test('Get Selection Data on a modified list asks to save first (L1); 320 px dark
  await expect(id(page,'fi-box')).toContainText('You have not saved your updated Cluster List.');await id(page,'cd-unsaved-no').click();
  await expect(id(page,'cd-study-list')).toHaveCount(0);await expect(id(page,'cd-name')).toHaveValue('Mine');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('L7: the File trigger has focus after the dialog closes by Cancel, Escape and OK',async({page})=>{
+ await observatory(page);
+ await openDialog(page);await id(page,'cd-cancel').click();await expect(id(page,'cd-dialog')).toHaveCount(0);await expect(id(page,'fi-file-menu')).toBeFocused();
+ await openDialog(page);await page.keyboard.press('Escape');await expect(id(page,'cd-dialog')).toHaveCount(0);await expect(id(page,'fi-file-menu')).toBeFocused();
+ await openDialog(page);await id(page,'cd-diameter').fill('30');await id(page,'cd-ok').click();await expect(id(page,'cd-dialog')).toHaveCount(0);await expect(id(page,'fi-file-menu')).toBeFocused();
 });

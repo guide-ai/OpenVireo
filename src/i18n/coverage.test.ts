@@ -25,7 +25,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
  });
  it('keeps all remaining direct render sites confined to reviewed scientific/source-identity tokens',()=>{
   // 119 (Front H's 116 + Front L2's 2 + Front K's 1): see the Front K and Front L2 lines below.
-  // 117 (with Front H's 116): Front K adds src/clusterdata/ClusterDataWindow.tsx; its strings come from src/clusterdata/ClusterDataMessages.ts or recovered core literals.
+  // Front K adds src/clusterdata/ClusterDataWindow.tsx; its strings come from src/clusterdata/ClusterDataMessages.ts or recovered core literals.
   // 118 (Front H's 116 + Front L2's 2): Front L2 adds src/LssRegion.tsx and src/observatory/RouteSpectrumSave.tsx; their strings come from the catalog, the recovered TLSSRgnDlg literals (core/lssRegion.ts) or ObservatoryMessages.ts.
   // 116 (Front M's 105 + Front P's 9 + Front H's 2): Front H adds src/help/{HelpMenus,SpectralLineTable}.tsx (main/radio Help menus, Exit Observatory reminder, Spectral Line Table); their strings come from src/help/HelpMessages.ts, the module's own message object or recovered literals in src/help/mainHelp.ts.
   // 114 (with Front M's 105): Front P adds src/polish/{AboutDialog,WebPrintPreview,PrintSkyImage,ResultsEditorsNav,TerminateSlewBox,CameraFieldSize,PopupMenu,QuestionBox,ClusterGuideNavButton}.tsx; their strings come from src/polish/PolishMessages.ts or recovered core literals. The retired #spectrometer preview drops its "K" unit site.

@@ -67,7 +67,8 @@
     it without one.
   - Any other centre or diameter gets a typed reason: VIREO searches its full Guide Star Catalog, which is not published.
   - A limit brighter than every star of the field: VIREO's reader returns nothing, it answers `No Stars Found in Field!` with
-    `Possible Error in Field Parameters:` and the rectangle and limit (0x53435b–0x534452), and keeps its previous list. The web
+    `Possible Error in Field Parameters:` and the rectangle and limit (0x53435b–0x534452). The query ends without clearing
+    the bank, so VIREO then opens its report with "0 Stars" (the statistics were reset) and the rows of its previous query. The web
     shows that box and then a typed reason. For 12 clusters the brightest rectangle record is in the published bank (census),
     so this is exact; for 30 Dor, M 67, Mel 111 and IC 4665 a typed reason says the web cannot tell the box from an empty list.
 - The observatory File menu order is Print Sky Image..., Cluster Data..., QSO List... (ClusterData1 sits directly before

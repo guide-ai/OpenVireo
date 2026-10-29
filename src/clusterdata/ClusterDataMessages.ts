@@ -11,7 +11,7 @@ export const CLUSTER_DATA_MESSAGES=Object.freeze({
  saveListUnavailable:'Save List is not available here: VIREO writes the whole 102-byte cluster records, which include catalogue values this site does not publish.',
  noSelection:'Select a cluster row first (left click).',
  reportNote:'The list is VIREO’s query of the published cluster field at the dialog’s centre and diameter (checked offline to give exactly the published stars), filtered by the magnitude limit.',
- emptyField:'No stars of this field are as bright as the magnitude limit. VIREO answered with the box above and kept its previous list; this site shows no list.',
+ emptyField:'No stars of this field are as bright as the magnitude limit. After the box above VIREO still opens its report, with “0 Stars” and the rows of its previous query; this site shows no list.',
  emptyUnknown:'No published star of this field is as bright as the magnitude limit. VIREO may have listed none or answered “No Stars Found in Field!”, depending on catalogue stars this site does not publish, so no list is shown.',
  listModal:'Web adaptation: VIREO shows this list as a separate window beside the dialog; here it opens on top of it.',
  listNote:'Double-click a row (or Get Selection Data) to copy it into Cluster Data Parameters; right-click a selected row for the hot-list items.',
