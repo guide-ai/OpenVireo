@@ -12,7 +12,7 @@ import {astrometricPosition,elementsFromState} from '../src/core/ephemeris';
 // background, the asteroids placed by the ephemeris and noise). The motion check (review 2 M5) predicts the target's pixel on
 // each saved image from the bundled orbit file and the image's own header, then compares the measured rate and position angle
 // with the ephemeris.
-const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|cdsarc|unistra\.fr/;
+const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/;// every VizieR mirror the camera may ask
 const recorded=readFile(new URL('./fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 /** Every ObjectX.HTL identifier and remark (ShortString[24] at 0, ShortString[40] at 45 of each 86-byte row). */
@@ -39,7 +39,7 @@ async function openLab(page:Page){
 }
 async function exposeHere(page:Page,seconds:string,minutes='0'){
  const camera=page.getByTestId('camera-control');
- await camera.getByLabel(/Ask CDS\/VizieR live/).check();await camera.getByLabel('Minutes').fill(minutes);await camera.getByLabel('Seconds').fill(seconds);
+ await camera.getByLabel(/Ask VizieR live/).check();await camera.getByLabel('Minutes').fill(minutes);await camera.getByLabel('Seconds').fill(seconds);
  await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
  await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});
@@ -188,4 +188,30 @@ test('the radio and spectrometer branches, the guide, and light/dark at desktop 
   expect(await leaks(page)).toEqual([]);
   await page.screenshot({path:test.info().outputPath(`object-x-${scheme}-${width}.png`),fullPage:width===320?false:true});
  }
+});
+
+test('Front C5W: the default bundled-extract mode images an Object X field without asking any mirror and never names it',async({page})=>{
+ test.setTimeout(180_000);
+ const asked:string[]=[];page.on('request',r=>{if(CDS.test(r.url()))asked.push(r.url());});
+ await openLab(page);
+ await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill('42');
+ await page.getByTestId('objectx-target').selectOption(EROS_CODE);
+ await button(page,'Set the observatory clock').click();
+ await button(page,'Copy the coordinates to the observatory').click();
+ await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await button(page,'Point to coordinates').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ await button(page,'Start observatory clock').click();await button(page,'Turn tracking on').click();
+ const camera=page.getByTestId('camera-control');
+ await expect(camera.getByLabel(/Bundled extracts/)).toBeChecked();
+ await camera.getByLabel('Minutes').fill('0');await camera.getByLabel('Seconds').fill('1');
+ await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});
+ await camera.getByText('Exposure details').click();
+ await expect(page.getByTestId('camera-detail-source')).toContainText('Bundled extract nomad-340.8302-08.0399-r0.25 (recorded');
+ await expect(page.getByTestId('camera-detail-source')).toContainText('from vizier.idia.ac.za');
+ expect(asked).toEqual([]);expect(await leaks(page)).toEqual([]);
 });

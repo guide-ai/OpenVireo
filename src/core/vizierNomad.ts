@@ -16,20 +16,22 @@ export type VizierErrorCode='size'|'encoding'|'not-votable'|'binary'|'query-stat
 export class VizierCatalogError extends Error {
  constructor(readonly code:VizierErrorCode,readonly detail=''){super(`VizieR catalog: ${code}${detail?` (${detail})`:''}`);this.name='VizierCatalogError';}
 }
-/** Approved VizieR hosts (AGENTS.md, docs/EXTERNAL-SERVICES.md §1): CDS and its official CfA mirror. Every extract and
- * live response records which one served it. */
-export const VIZIER_HOSTS=Object.freeze({cds:'vizier.cds.unistra.fr',cfa:'vizier.cfa.harvard.edu'} as const);
+/** Approved VizieR hosts (AGENTS.md, docs/EXTERNAL-SERVICES.md §1): CDS and the official mirrors used so far (CfA,
+ * 2026-10-27; every official mirror, 2026-10-29, of which IDIA answers). Every extract and live response records which
+ * one served it. */
+export const VIZIER_HOSTS=Object.freeze({cds:'vizier.cds.unistra.fr',cfa:'vizier.cfa.harvard.edu',idia:'vizier.idia.ac.za'} as const);
 export type VizierHost=typeof VIZIER_HOSTS[keyof typeof VIZIER_HOSTS];
-export function isVizierHost(host:unknown):host is VizierHost {return host===VIZIER_HOSTS.cds||host===VIZIER_HOSTS.cfa;}
+export function isVizierHost(host:unknown):host is VizierHost {return (Object.values(VIZIER_HOSTS) as unknown[]).includes(host);}
 export function vizierBaseUrl(host:VizierHost):string {return `https://${host}/viz-bin/conesearch`;}
 export const VIZIER_POLICY=Object.freeze({
  /** [W] CDS primary host. Only RA, DEC and SR are sent (docs/EXTERNAL-SERVICES.md §1). */
  baseUrl:vizierBaseUrl(VIZIER_HOSTS.cds),
  /** [W] Hosts the browser tries in order for a live query; the next is tried only on a network error, a timeout or a
-  * 5xx answer. CfA is left out until one of its successful responses is seen to carry Access-Control-Allow-Origin:
-  * on 2026-10-28 its query endpoint answered 504 or nothing, so its CORS could not be checked. Until then CfA serves
-  * only offline-recorded extracts. */
- liveHosts:Object.freeze([VIZIER_HOSTS.cds] as VizierHost[]),
+  * 5xx answer. IDIA comes first (Front C5W): on 2026-10-29 it answered in about 2 s with Access-Control-Allow-Origin *
+  * while CDS timed out; CDS stays as the fallback. CfA is left out until one of its successful responses is seen to carry
+  * Access-Control-Allow-Origin: on 2026-10-28/29 its query endpoint answered 504 or nothing, so its CORS could not be
+  * checked. */
+ liveHosts:Object.freeze([VIZIER_HOSTS.idia,VIZIER_HOSTS.cds] as VizierHost[]),
  /** [W] Bounded admission; a dense galactic-plane cone at 0.23 deg stays far below this. */
  maxBytes:24*1024*1024,maxRows:60_000,maxCellChars:256,
  /** VizieR's own row cap (INFO MaxTuples). Reaching it means the field is incomplete. */

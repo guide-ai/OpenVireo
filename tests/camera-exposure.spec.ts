@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 
 // Every CDS/VizieR request is intercepted: the recorded response is tests/fixtures/vizier/nomad-56.75+24.12-r0.01.xml
 // (CDS, 2026-10-27). Synthetic documents below are authored test inputs, not VizieR output.
-const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|cdsarc|unistra\.fr/;
+const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/;// every VizieR mirror the camera may ask
 const recorded=readFile(new URL('./fixtures/vizier/nomad-56.75+24.12-r0.01.xml',import.meta.url));
 const overflow='<?xml version="1.0"?><VOTABLE version="1.4"><INFO name="QUERY_STATUS" value="OVERFLOW"/><RESOURCE><TABLE><FIELD name="NOMAD1"/></TABLE></RESOURCE></VOTABLE>';
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
@@ -30,7 +30,7 @@ test('the camera waits for a tracked, pointed telescope and explains why',async(
 });
 test('static mode never contacts CDS; a field without a bundled extract makes no image',async({page})=>{
  const seen=watch(page);await trackedField(page);await exposure(page,'0','30');
- await expect(page.getByTestId('camera-static-hint')).toHaveText('No bundled extract covers this pointing. Choose the live CDS/VizieR option to image it.');
+ await expect(page.getByTestId('camera-static-hint')).toHaveText('No bundled extract covers this pointing. Choose the live VizieR option to image it.');
  await button(page,'Start exposure').click();
  // Reported at Start, not after the 30 s countdown.
  await expect(page.getByTestId('camera-status')).toContainText('There is no bundled extract for this field',{timeout:2_000});
@@ -41,7 +41,7 @@ test('static mode never contacts CDS; a field without a bundled extract makes no
 test('live mode sends only RA, DEC and SR and builds an image from the recorded response',async({page})=>{
  const seen=watch(page);await trackedField(page);const body=await recorded;
  await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
- await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','2');
+ await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','2');
  await button(page,'Start exposure').click();
  await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
  await expect(page.getByTestId('camera-countdown')).toContainText('of 2 s left.');
@@ -49,24 +49,33 @@ test('live mode sends only RA, DEC and SR and builds an image from the recorded 
  await expect(page.getByTestId('camera-canvas')).toBeVisible();
  expect(seen).toHaveLength(1);
  const url=new URL(seen[0].url());
- expect(url.origin+url.pathname).toBe('https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out');
+ expect(url.origin+url.pathname).toBe('https://vizier.idia.ac.za/viz-bin/conesearch/I/297/out');
  expect([...url.searchParams.keys()]).toEqual(['RA','DEC','SR']);expect(url.searchParams.get('SR')).toBe('0.23');
  await camera(page).getByText('Exposure details').click();
  await expect(page.getByTestId('camera-detail-catalog')).toHaveText('NOMAD');
- await expect(page.getByTestId('camera-detail-source')).toContainText('Live VizieR query answered by vizier.cds.unistra.fr');
+ await expect(page.getByTestId('camera-detail-source')).toContainText('Live VizieR query answered by vizier.idia.ac.za');
  await expect(page.getByTestId('camera-detail-rows')).toHaveText('4 / 1 / 0');
  await page.screenshot({path:test.info().outputPath('camera-live.png'),fullPage:false});
+});
+test('Front C5W: when the IDIA mirror cannot be reached, the live query falls back to CDS and names it',async({page})=>{
+ const seen=watch(page);await trackedField(page);const body=await recorded;
+ await page.route(CDS,route=>new URL(route.request().url()).hostname==='vizier.idia.ac.za'?route.abort('connectionrefused'):route.fulfill({status:200,contentType:'text/xml',body}));
+ await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','1');
+ await button(page,'Start exposure').click();await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:15_000});
+ expect(seen.map(r=>new URL(r.url()).hostname)).toEqual(['vizier.idia.ac.za','vizier.cds.unistra.fr']);
+ await camera(page).getByText('Exposure details').click();
+ await expect(page.getByTestId('camera-detail-source')).toContainText('Live VizieR query answered by vizier.cds.unistra.fr');
 });
 test('CCD I asks USNO-B1 (I/284), never NOMAD',async({page})=>{
  const seen=watch(page);await trackedField(page);
  await page.route(CDS,route=>route.abort('connectionrefused'));
- await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await camera(page).getByLabel('Filter').selectOption('4');await exposure(page,'0','1');
+ await camera(page).getByLabel(/Ask VizieR live/).check();await camera(page).getByLabel('Filter').selectOption('4');await exposure(page,'0','1');
  await button(page,'Start exposure').click();
- await expect(page.getByTestId('camera-status')).toContainText('could not be reached',{timeout:15_000});
+ await expect(page.getByTestId('camera-status')).toContainText('No VizieR mirror could be reached',{timeout:15_000});
  expect(new URL(seen[0].url()).pathname).toBe('/viz-bin/conesearch/I/284/out');
 });
 test('unreachable or incomplete catalogs make no image and say so',async({page})=>{
- await trackedField(page);await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','1');
+ await trackedField(page);await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','1');
  await page.route(CDS,route=>route.abort('timedout'));
  await button(page,'Start exposure').click();
  await expect(page.getByTestId('camera-status')).toContainText('The camera does not invent a star field',{timeout:15_000});
@@ -79,7 +88,7 @@ test('Stop cancels a long exposure and the pending request; keyboard use at 320 
  await page.setViewportSize({width:320,height:800});
  const seen=watch(page);await trackedField(page);
  let aborted=false;await page.route(CDS,()=>{/* never answer */});page.on('requestfailed',r=>{if(CDS.test(r.url()))aborted=true;});
- await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','30');
+ await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','30');
  await button(page,'Start exposure').focus();await page.keyboard.press('Enter');
  await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
  await expect(camera(page).getByLabel('Seconds')).toBeDisabled();
@@ -93,7 +102,7 @@ test('Stop cancels a long exposure and the pending request; keyboard use at 320 
 test('Save image writes a FITS file that reopens under Saved images with the same bytes',async({page})=>{
  await trackedField(page);const body=await recorded;
  await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
- await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await camera(page).getByLabel('Filter').selectOption('2');await exposure(page,'0','1');
+ await camera(page).getByLabel(/Ask VizieR live/).check();await camera(page).getByLabel('Filter').selectOption('2');await exposure(page,'0','1');
  await button(page,'Start exposure').click();await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:15_000});
  const download=page.waitForEvent('download');await button(page,'Save image (FITS)').click();const d=await download;
  expect(d.suggestedFilename()).toMatch(/^OpenVireo-CCD-\d{8}-\d{6}-V\.fit$/);
@@ -121,7 +130,7 @@ test('a dense field of 10,001 catalog rows still makes an image, built off the m
   const rows=Array.from({length:10001},(_,i)=>`<TR><TD>g${i}</TD><TD>${(ra+((i%101)/101-0.5)*0.25).toFixed(6)}</TD><TD>${(dec+(Math.floor(i/101)/100-0.5)*0.25).toFixed(6)}</TD><TD>0</TD><TD>0</TD><TD/><TD/><TD>${(15+(i%60)/10).toFixed(2)}</TD><TD/><TD/><TD/></TR>`).join('');
   return route.fulfill({status:200,contentType:'text/xml',body:`<?xml version="1.0"?><VOTABLE version="1.4"><INFO name="MaxTuples" value="50000"/><RESOURCE><TABLE>${f.map(x=>`<FIELD name="${x}"/>`).join('')}<DATA><TABLEDATA>${rows}</TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>`});
  });
- await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','1');
+ await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','1');
  await button(page,'Start exposure').click();
  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:30_000});
  await camera(page).getByText('Exposure details').click();
@@ -135,7 +144,7 @@ test('Stop during image building keeps the page responsive and makes no image',a
   const rows=Array.from({length:40000},(_,i)=>`<TR><TD>g${i}</TD><TD>${(ra+((i%200)/200-0.5)*0.25).toFixed(6)}</TD><TD>${(dec+(Math.floor(i/200)/200-0.5)*0.25).toFixed(6)}</TD><TD>0</TD><TD>0</TD><TD/><TD/><TD>14</TD><TD/><TD/><TD/></TR>`).join('');
   return route.fulfill({status:200,contentType:'text/xml',body:`<?xml version="1.0"?><VOTABLE version="1.4"><RESOURCE><TABLE>${f.map(x=>`<FIELD name="${x}"/>`).join('')}<DATA><TABLEDATA>${rows}</TABLEDATA></DATA></TABLE></RESOURCE></VOTABLE>`});
  });
- await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();await exposure(page,'0','1');
+ await camera(page).getByLabel(/Ask VizieR live/).check();await exposure(page,'0','1');
  await button(page,'Start exposure').click();
  await expect(page.getByTestId('camera-status')).toHaveText('Building the image…',{timeout:20_000});
  const t=Date.now();await button(page,'Stop').click();

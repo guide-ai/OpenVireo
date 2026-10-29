@@ -201,6 +201,9 @@ test('census roots report unlisted files and entries, nested ones included; othe
   await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify(manifest));
   assert.equal(await resourceCheckCommand(root, [], line => lines.push(line)), 1);
   assert.ok(lines.includes('Unlisted files under data/g: 3.') && lines.includes('  data/g/S0000/000.bin: not listed in the manifest'));
+  assert.ok(!lines.some(line => line.startsWith('Restore missing')), 'unlisted-only failures do not ask to restore resources');
+  await writeFile(path.join(root, 'data/g/.DS_Store'), 'finder'); await writeFile(path.join(root, 'data/g/N0000/Thumbs.db'), 'explorer');
+  assert.equal((await unlistedResources(root, manifest)).length, 3, 'desktop metadata files are not resources');
   assert.equal((await checkResources(root, {files: [a, b, c]})).unlisted, undefined);
 }));
 

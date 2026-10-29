@@ -53,6 +53,7 @@ export function censusRoots(manifest, entries = resourceEntries(manifest)) {
   });
 }
 /** Every file or other entry under the census roots that the manifest does not list (symlinks and special files included). */
+const OS_METADATA = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
 export async function unlistedResources(root, manifest) {
   const entries = resourceEntries(manifest), roots = censusRoots(manifest, entries), listed = new Set(entries.map(e => e.path)), out = [];
   async function walk(rel) {
@@ -62,6 +63,7 @@ export async function unlistedResources(root, manifest) {
     for (const item of items.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)) {
       const child = `${rel}/${item.name}`;
       if (item.isDirectory()) await walk(child);
+      else if (item.isFile() && OS_METADATA.has(item.name)) continue; // Desktop metadata (Finder, Explorer) is not a resource.
       else if (!listed.has(child)) out.push({path: child, reason: item.isFile() ? 'not listed in the manifest' : 'unlisted non-regular entry'});
     }
   }
@@ -195,7 +197,7 @@ export async function resourceCheckCommand(root, args = [], output = console.log
   for (const issue of report.issues.slice(0, 20)) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   if (report.issues.length > 20) output(`  ... ${report.issues.length - 20} additional resource issues.`);
   if (report.unlisted?.length) output('Remove each unlisted file, or list it (with its approval) in docs/LOCAL-RESOURCES.json.');
-  output('Restore missing or changed versioned resources from the matching source revision.');
+  if (report.issues.length || report.assembled?.issues.length) output('Restore missing or changed versioned resources from the matching source revision.');
   output('See README.md and docs/LOCAL-RESOURCES.json. Nothing was downloaded, generated or changed.');
   return 1;
 }

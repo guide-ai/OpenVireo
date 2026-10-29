@@ -15,7 +15,7 @@ Actualizado el 29 oct 2026. Las decisiones aprobadas también constan en `AGENTS
 | Backend en local (29 oct 2026) | Cuentas, guardado (nivel B) y métricas con Cloudflare Workers y D1 se construyen y prueban solo en local, en loopback, sin cuenta de Cloudflare, recursos remotos, envío real de correos ni secretos en el código. Desplegar sigue esperando el dominio y la aprobación del usuario. |
 
 Condiciones del modo en vivo (B):
-- solo envía a CDS las coordenadas y el radio de la consulta;
+- solo envía a VizieR (CDS o un espejo oficial; el primero es IDIA y el host que respondió queda registrado) las coordenadas y el radio de la consulta;
 - se etiqueta como adaptación web (VOTable de VizieR en lugar del ASCII de NOFS);
 - las pruebas usan respuestas grabadas, para que sean deterministas;
 - si VizieR no responde, la cámara lo dice con claridad y no inventa campos.
@@ -66,6 +66,10 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 - **Proveedor:** Cloudflare (sitio estático, y Workers, D1 y R2 cuando haga falta backend).
 - **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
 - **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
+
+**Prerrequisitos de despliegue** (se resuelven antes de publicar, no ahora):
+
+- `public/original/.../ObjX_MPC.CMO` mide 30 989 466 B y supera el límite de 25 MiB por archivo de Cloudflare Pages. Hay que servirlo en trozos byte a byte, como el GSC (Front G), o desde R2. Lo detectó la revisión de G1 (29 oct 2026).
 
 Preguntas que siguen abiertas:
 
