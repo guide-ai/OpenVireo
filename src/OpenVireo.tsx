@@ -571,11 +571,14 @@ export default function OpenVireo(){
    onRestoreClassification:(w,a)=>{classificationController.current?.resetProgram();setClassificationWorkspace(w);setClassificationArchive(a);},
    onRestoreAcquisition:observation=>{if(observation.kind==='catalog-star-acquisition'){restoreStarPacket(observation);}else{prepareObserving();preparePhotometry();const index=galaxyTelescopeIndex(observation.state);setOptical({selectedIndex:index,draftIndex:index});setOpen(false);if(index===2)setGalaxy4mVisited(true);if(index===1)setGalaxy09Visited(true);setGalaxyTargetId(observation.targetId);setGalaxyVisited(true);setRestoredGalaxy({token:++restoreToken.current,observation});navigate('galaxy-exposure');}},
   });
-  const cameraHandlers=useStableHandlers<StableProps<ComponentProps<typeof CameraControl>,'currentJd'|'extraSources'|'onImage'>>({
+  const cameraHandlers=useStableHandlers<StableProps<ComponentProps<typeof CameraControl>,'currentJd'|'onImage'>>({
    currentJd:()=>siteClockReadingMS(observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),optical.selectedIndex).jd,
-   extraSources:(jd,seconds,camera)=>objectXController.current?.extraSources(jd,pointing,seconds,camera)??[],
    onImage:image=>objectXController.current?.acceptImage(image),
   });
+  // Front Perf review 1 M1: CameraControl calls extraSources after the awaits of an exposure it started; like main, it must use
+  // the pointing of the render in which Start was pressed (a mid-exposure repoint keeps the exposure), so it is a
+  // useCallback over pointing, not a latest-closure handler.
+  const cameraExtraSources=useCallback<NonNullable<ComponentProps<typeof CameraControl>['extraSources']>>((jd,seconds,camera)=>objectXController.current?.extraSources(jd,pointing,seconds,camera)??[],[pointing]);
   const opticalHandlers=useStableHandlers<StableProps<ComponentProps<typeof OpticalTelescope>,'onDraft'|'onApply'|'onCancel'>>({
    onDraft:index=>setOptical(w=>draftOpticalTelescope(w,index)),
    onApply:()=>applyOptical(),
@@ -646,8 +649,7 @@ export default function OpenVireo(){
    onComparisonChange:changeClusterComparison,
    onOpenOwn:openOwnHr,
   });
-  const objectXHandlers=useStableHandlers<StableProps<ComponentProps<typeof ObjectXLab>,'clockUtc'|'onSetClock'|'onPrefill'|'onOpenRadio'|'onSnapshot'|'onSummary'>>({
-   clockUtc:()=>observatoryClock.state?new Date(clockDriveUTMS(observatoryClock.state)).toISOString().slice(0,19):siteClock.utc,
+  const objectXHandlers=useStableHandlers<StableProps<ComponentProps<typeof ObjectXLab>,'onSetClock'|'onPrefill'|'onOpenRadio'|'onSnapshot'|'onSummary'>>({
    onSetClock:utc=>applyClockUTC({utc,draftUTC:utc}),
    onPrefill:(nextRa,nextDec)=>{setRa(nextRa.toString());setDec(nextDec.toString());navigate('observatory');},
    onOpenRadio:()=>navigate('radio-control'),
@@ -660,6 +662,10 @@ export default function OpenVireo(){
    currentJd:()=>siteClockReadingMS(observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc),0).jd,
    onPlotWedge:h=>{const token=++lssToken.current;setWedgeOwn({...h,token});navigate('lss-wedge');return token;},
   });
+  // Front Perf review 1 L1: ObjectXLab hands clockUtc to MultiSpecObjectX, which calls it during render; like observatoryJd
+  // it is a stable reader of a ref assigned in this render, so children rendered in the same pass read this render's clock.
+  const objectXClockRef=useRef<()=>string>(()=>siteClock.utc);objectXClockRef.current=()=>observatoryClock.state?new Date(clockDriveUTMS(observatoryClock.state)).toISOString().slice(0,19):siteClock.utc;
+  const objectXClockUtc=useCallback(()=>objectXClockRef.current(),[]);
   const stable=useStableHandlers({
    navigate,
    hubbleGuide:(destination:LabDestination)=>{navigate(destination==='hubble'?'spectrum':destination);if(destination==='hubble')requestAnimationFrame(()=>analyzerController.current?.openHubble());},
@@ -685,7 +691,7 @@ export default function OpenVireo(){
   {((view==='star-exposure'&&!compatibleStar)||(view==='galaxy-exposure'&&!compatibleGalaxy)||(view==='sky-exposure'&&!compatibleSky)||(view==='photometer'&&!compatiblePhotometer))&&<OpticalCompatibility workspace={optical} busy={projectBusy} onUseSupported={()=>applyOptical({...optical,draftIndex:0})}/>}
   {['observatory','sky-exposure','star-exposure','galaxy-exposure'].includes(view)&&<div inert={projectBusy}><RunningClock limitSlewing={opticalOptions.limitSlewing} site={siteOverrides[optical.selectedIndex]} utc={siteClock.utc} pointing={pointing} statusOnly={view!=='observatory'} access={currentAccess} state={observatoryClock.state} running={observatoryClock.running} limited={observatoryClock.limited} index={optical.selectedIndex} {...runningClockHandlers} /></div>}
   <div inert={projectBusy} ref={observatoryView} hidden={view!=='observatory'}><main className="observatory-main"><section className="observatory-heading"><div className="eyebrow">{t('sky.eyebrow')}</div><h1 tabIndex={-1}>{t('sky.title')}</h1><p>{t('sky.subtitle')}</p><button className="text-button" onClick={()=>about.current?.showModal()}>{t('sky.about')} ↗</button></section>
-  <OpticalTelescope workspace={optical} busy={projectBusy} {...opticalHandlers} /><CameraControl active={view==='observatory'} busy={projectBusy} telescopeIndex={optical.selectedIndex} pointing={pointing} access={instrumentAccess({...nativeGate,configurationAvailable:true,pointingMatches:hasPointed})} {...cameraHandlers} />
+  <OpticalTelescope workspace={optical} busy={projectBusy} {...opticalHandlers} /><CameraControl active={view==='observatory'} busy={projectBusy} telescopeIndex={optical.selectedIndex} pointing={pointing} access={instrumentAccess({...nativeGate,configurationAvailable:true,pointingMatches:hasPointed})} {...cameraHandlers} extraSources={cameraExtraSources} />
   {/* Front M (Multi-Spec, instrument position 3 + Access, as recovered). virtualObservatory: exercise mode 0 "Access All Instruments" (D1); gated on Front O2's instructor Virtual Observatory option (the page's virtualObservatory state). */}
   <MultiSpecObservatoryLazy active={view==='observatory'} busy={projectBusy} access={instrumentAccess({...nativeGate,configurationAvailable:true,pointingMatches:hasPointed})} mode={mode} pointing={pointing} telescope={optical.selectedIndex} editMode={editMode} virtualObservatory={virtualObservatory} hidden={objectXHidden} currentJd={observatoryJd}/>
   <ol className="first-steps"><li className={!open?'current':''}><strong>{t('sky.step1')}</strong><span>{t('sky.step1Help')}</span></li><li className={open&&(!hasPointed||!centered)?'current':''}><strong>{t('sky.step2')}</strong><span>{t('sky.step2Help')}</span></li><li className={open&&hasPointed&&centered?'current':''}><strong>{t('sky.step3')}</strong><span>{t('sky.step3Help')}</span></li></ol>
@@ -708,7 +714,7 @@ export default function OpenVireo(){
    <p data-testid="objectx-radio-coordinates" data-ra={[f.raHours,f.raMinutes,f.raSeconds].join(' ')} data-dec={[f.decDegrees,f.decMinutes,f.decSeconds].join(' ')}>{OBJECT_X_LAB_EN.radioCardCoordinates(f.raHours,f.raMinutes,f.raSeconds,f.decDegrees,f.decMinutes,f.decSeconds)}</p></section>;})()}<Suspense fallback={<p>{t('radioRoute.loading')}</p>}><RadioTelescopeRoute prefillTarget={radioPrefill} hiddenName={radioHiddenName} key={radioRestore?.token??0} restored={radioRestore?.workspace??null} controllerRef={radioController} active={view==='radio-control'} busy={projectBusy} {...radioHandlers} hotList={hotList} pulsarData={pulsarData} onExerciseProgress={setRadioExercise}/></Suspense></main>}</div>
   <div inert={projectBusy} ref={wedgeView} hidden={view!=='lss-wedge'}>{(wedgeVisited||view==='lss-wedge')&&<main className="observatory-main"><div className="observatory-heading"><h1 tabIndex={-1}>{t('wedge.routeTitle')}</h1><p>{t('wedge.routeScope')}</p></div><Suspense fallback={<p>{t('wedge.loading')}</p>}><WedgeLab disabled={view!=='lss-wedge'||projectBusy} {...wedgeHandlers} ownRecords={wedgeOwn} restoredOptions={wedgeOptionsRestore} /></Suspense></main>}</div>
   <div inert={projectBusy} ref={objectXView} hidden={view!=='object-x'}>{(objectXVisited||view==='object-x')&&<Suspense fallback={<p>…</p>}><ObjectXLab key={objectXRestore?.token??0} restored={objectXRestore?.investigation??null} active={view==='object-x'} busy={projectBusy} controllerRef={objectXController}
-   {...objectXHandlers} clockApplied={siteClock.utc}
+   {...objectXHandlers} clockUtc={objectXClockUtc} clockApplied={siteClock.utc}
    
    onHiddenTarget={setObjectXHidden} /></Suspense>}</div>
   <div inert={projectBusy} ref={variableStarsView} hidden={view!=='variable-stars'}>{variableStarsVisited&&<Suspense fallback={<p>{VARIABLE_STARS_EN.loading}</p>}><VariableStarsRoute active={view==='variable-stars'&&!projectBusy} openRequest={variableOpen}/></Suspense>}</div>
