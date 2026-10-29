@@ -57,3 +57,18 @@ test('the Options dialog lists the other original options as text with recovered
  await expect(list).toContainText('Fast Slewing — compiled: checked');await expect(list.getByRole('listitem')).toHaveCount(13);await expect(list).not.toContainText('Edit Mode');await expect(list).not.toContainText('Virtual Observatory');
  await expect(page.getByTestId('ob-options-dialog').getByRole('checkbox')).toHaveCount(3);await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
 });
+
+test('a refused HTL Point leaves the selected target, the card and the pointing exactly as they were (review note 1)',async({page})=>{
+ await open(page);await coords(page,1,40);await limit(page,true);
+ const snapshot=async()=>({card:await page.locator('.target-coordinates').first().innerText(),cards:await page.locator('.target-card').allInnerTexts(),ra:await page.getByTestId('pointing-ra').textContent(),dec:await page.getByTestId('pointing-dec').textContent(),hubble:await page.getByTestId('hubble-point-card').count()});
+ // NGC 5128 (catalog RA/Dec exactly) never rises above the 10° Gettysburg horizon.
+ await page.getByText('Original hot lists',{exact:true}).click();await page.getByRole('button',{name:'New HTL list',exact:true}).click();await page.getByRole('button',{name:'Add HTL target',exact:true}).click();
+ await page.getByLabel('HTL identifier',{exact:true}).fill('NGC5128');await page.getByLabel('HTL right ascension · hours',{exact:true}).fill('13.42433889');await page.getByLabel('HTL declination · degrees',{exact:true}).fill('-43.01911111');
+ await page.getByRole('button',{name:'Apply HTL edit',exact:true}).click();
+ const before=await snapshot();
+ await page.getByRole('button',{name:'Point to HTL selection',exact:true}).click();
+ const box=page.getByTestId('motion-limit-box');await expect(box.getByRole('heading',{name:'Cannot Perform Slew'})).toBeVisible();
+ await box.getByRole('button',{name:'OK'}).click();await expect(box).toBeHidden();
+ expect(await snapshot()).toEqual(before);
+ expect(before.card).not.toContain('NGC 5128');
+});
