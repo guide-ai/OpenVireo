@@ -4,7 +4,8 @@ import {takeSigninToken} from './signinLink';
 
 /** Read and strip `#signin=` once, before the app's own hash routing or anything else can keep the token around. */
 const pendingToken=CLOUD_ENABLED&&typeof window!=='undefined'?takeSigninToken(window.location,window.history):null;
-const CloudAccount=CLOUD_ENABLED?lazy(()=>import('./CloudAccount')):null;
+// The flag is read inline (not through config.ts) so the bundler sees a literal false and never emits the chunk.
+const CloudAccount=import.meta.env.VITE_OPENVIREO_CLOUD==='1'?lazy(()=>import('./CloudAccount')):null;
 
 export type CloudEntryProps=Readonly<{busy:boolean;onRestore:(file:File)=>void}>;
 

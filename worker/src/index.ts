@@ -1,6 +1,6 @@
-import type { Env } from './env';
+import { devSwitchesConfigured, requestIsLoopback, type Env } from './env';
 import { HttpError, errorResponse, json, requireSameOriginWrite, withBaseHeaders } from './http';
-import { currentUser, requestLink, requireUser, signOut, verifyLink } from './auth';
+import { currentUser, peekLink, requestLink, requireUser, signOut, signOutEverywhere, verifyLink } from './auth';
 import { devSinkEnabled } from './email';
 import { deleteInvestigation, downloadInvestigation, listInvestigations, progressRows, uploadInvestigation } from './investigations';
 import { getPreferences, putPreferences } from './preferences';
@@ -10,16 +10,20 @@ import { normaliseEmail } from './auth';
 async function route(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   const url = new URL(request.url), path = url.pathname, method = request.method;
   if (!path.startsWith('/api/')) throw new HttpError(404, 'not-found');
+  // Review 1 M2: dev-only switches on a request that did not arrive on loopback mean a misconfigured deployment;
+  // refuse everything rather than run with a dev email sink or an insecure cookie.
+  if (devSwitchesConfigured(env) && !requestIsLoopback(request)) throw new HttpError(503, 'dev-config-on-public-host');
   const write = method !== 'GET' && method !== 'HEAD';
   if (write) requireSameOriginWrite(request, env);
 
   if (path === '/api/session' && method === 'GET') return json(sessionBody(env, await currentUser(request, env)));
   if (path === '/api/auth/request' && method === 'POST') return requestLink(request, env);
+  if (path === '/api/auth/peek' && method === 'POST') return peekLink(request, env);
   if (path === '/api/auth/verify' && method === 'POST') return verifyLink(request, env);
   if (path === '/api/auth/signout' && method === 'POST') return signOut(request, env);
 
   if (path === '/api/dev/outbox' && method === 'GET') {
-    if (!devSinkEnabled(env)) throw new HttpError(404, 'not-found');
+    if (!devSinkEnabled(env, request)) throw new HttpError(404, 'not-found');
     const to = normaliseEmail(url.searchParams.get('to'));
     if (!to) throw new HttpError(400, 'email');
     const row = await env.DB.prepare('SELECT subject, body, created_at FROM dev_outbox WHERE to_email = ? ORDER BY id DESC LIMIT 1').bind(to).first();
@@ -29,6 +33,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
 
   const user = await requireUser(request, env);
   // Session, terms, export and delete stay reachable whatever the terms policy says (plan §6).
+  if (path === '/api/auth/signout-all' && method === 'POST') return signOutEverywhere(request, env, user);
   if (path === '/api/account/terms' && method === 'POST') return acceptTerms(request, env, user);
   if (path === '/api/account/export' && method === 'GET') return exportAccount(env, user, ctx);
   if (path === '/api/account' && method === 'DELETE') return deleteAccount(request, env, user);

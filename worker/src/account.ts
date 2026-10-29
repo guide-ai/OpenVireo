@@ -1,6 +1,6 @@
 import type { Env } from './env';
 import { HttpError, hasControlCharacters, json, readJsonBody } from './http';
-import { clearSessionCookie, type SessionUser } from './auth';
+import { clearSessionCookie, rateLimitMailbox, type SessionUser } from './auth';
 import { sha256Hex } from './crypto';
 import { listIndex, progressRows } from './investigations';
 import { loadPreferences } from './preferences';
@@ -69,7 +69,7 @@ export async function exportAccount(env: Env, user: SessionUser, ctx: ExecutionC
         if (object) {
           const reader = object.body.getReader();
           for (;;) { const { done, value } = await reader.read(); if (done) break; await writer.write(value); }
-        } else await writer.write(encoder.encode('null'));
+        } else await writer.write(encoder.encode('null,"missing":true'));
         await writer.write(encoder.encode('}'));
       }
       await writer.write(encoder.encode(']}\n'));
@@ -89,17 +89,24 @@ export async function deleteAccount(request: Request, env: Env, user: SessionUse
   const body = await readJsonBody(request);
   if (typeof body.confirmEmail !== 'string' || body.confirmEmail.trim().toLowerCase() !== user.email) throw new HttpError(400, 'confirm-email');
   const prefix = `inv/${user.id}/`;
-  let cursor: string | undefined;
-  do {
-    const page = await env.INVESTIGATIONS.list({ prefix, cursor, limit: 1000 });
-    if (page.objects.length) await env.INVESTIGATIONS.delete(page.objects.map(o => o.key));
-    cursor = page.truncated ? page.cursor : undefined;
-  } while (cursor);
+  await deletePrefix(env.INVESTIGATIONS, prefix);
   await env.DB.batch([
     env.DB.prepare('DELETE FROM users WHERE id = ?').bind(user.id),
     env.DB.prepare('DELETE FROM login_tokens WHERE email = ?').bind(user.email),
-    env.DB.prepare('DELETE FROM rate_limits WHERE bucket = ?').bind(`email:${await sha256Hex(user.email)}`),
+    env.DB.prepare('DELETE FROM rate_limits WHERE bucket = ?').bind(`email:${await sha256Hex(rateLimitMailbox(user.email))}`),
     env.DB.prepare('DELETE FROM dev_outbox WHERE to_email = ?').bind(user.email),
   ]);
-  return json({ ok: true }, 200, { 'Set-Cookie': clearSessionCookie(env) });
+  // Review 1 L5: an upload that was in flight may have written its bytes after the first listing; sweep once more now
+  // that no row can be reserved for this user any more (the foreign key refuses it).
+  await deletePrefix(env.INVESTIGATIONS, prefix);
+  return json({ ok: true }, 200, { 'Set-Cookie': clearSessionCookie(env, request) });
+}
+
+async function deletePrefix(bucket: R2Bucket, prefix: string): Promise<void> {
+  let cursor: string | undefined;
+  do {
+    const page = await bucket.list({ prefix, cursor, limit: 1000 });
+    if (page.objects.length) await bucket.delete(page.objects.map(o => o.key));
+    cursor = page.truncated ? page.cursor : undefined;
+  } while (cursor);
 }

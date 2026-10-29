@@ -18,6 +18,7 @@
   "vars": {
     "TERMS_POLICY": "none",
     "MAX_INVESTIGATIONS": "20",
-    "MAX_TOTAL_BYTES": "134217728"
+    "MAX_TOTAL_BYTES": "134217728",
+    "MAX_LINKS_PER_HOUR": "200"
   }
 }

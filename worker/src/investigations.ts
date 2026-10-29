@@ -45,18 +45,21 @@ export async function uploadInvestigation(request: Request, env: Env, user: Sess
   try { value = JSON.parse(new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes)); } catch { throw new HttpError(400, 'json'); }
   const shape = investigationShape(value);
   if (!shape) throw new HttpError(400, 'format');
-  const existing = await env.DB.prepare('SELECT COUNT(*) AS n, COALESCE(SUM(size_bytes), 0) AS total FROM investigations WHERE user_id = ?')
-    .bind(user.id).first<{ n: number; total: number }>();
-  if ((existing?.n ?? 0) + 1 > positiveIntVar(env.MAX_INVESTIGATIONS, 20)
-    || (existing?.total ?? 0) + bytes.byteLength > positiveIntVar(env.MAX_TOTAL_BYTES, 128 * 1024 * 1024)) throw new HttpError(413, 'quota');
   const id = randomToken(16), r2Key = `inv/${user.id}/${id}.json`, sha256 = await sha256Hex(bytes), now = Date.now();
-  await env.INVESTIGATIONS.put(r2Key, bytes, { httpMetadata: { contentType: 'application/json' }, sha256 });
+  // Review 1 M1: the quota check and the reservation are one statement (D1 serialises writes), so concurrent uploads
+  // cannot all pass a stale count. The row comes first; the bytes follow, and a failed write releases the row.
+  const reserved = await env.DB.prepare(
+    'INSERT INTO investigations (id, user_id, name, r2_key, size_bytes, sha256, format, format_version, exercises, created_at) ' +
+    'SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE ' +
+    '(SELECT COUNT(*) FROM investigations WHERE user_id = ?) < ? AND ' +
+    '(SELECT COALESCE(SUM(size_bytes), 0) FROM investigations WHERE user_id = ?) + ? <= ? RETURNING id',
+  ).bind(id, user.id, name, r2Key, bytes.byteLength, sha256, shape.format, shape.version, JSON.stringify(shape.exercises), now,
+    user.id, positiveIntVar(env.MAX_INVESTIGATIONS, 20), user.id, bytes.byteLength, positiveIntVar(env.MAX_TOTAL_BYTES, 128 * 1024 * 1024)).first();
+  if (!reserved) throw new HttpError(413, 'quota');
   try {
-    await env.DB.prepare(
-      'INSERT INTO investigations (id, user_id, name, r2_key, size_bytes, sha256, format, format_version, exercises, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    ).bind(id, user.id, name, r2Key, bytes.byteLength, sha256, shape.format, shape.version, JSON.stringify(shape.exercises), now).run();
+    await env.INVESTIGATIONS.put(r2Key, bytes, { httpMetadata: { contentType: 'application/json' }, sha256 });
   } catch (error) {
-    await env.INVESTIGATIONS.delete(r2Key);
+    await env.DB.prepare('DELETE FROM investigations WHERE id = ?').bind(id).run();
     throw error;
   }
   await refreshProgress(env, user.id);

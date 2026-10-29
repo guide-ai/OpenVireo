@@ -45,9 +45,15 @@ test('sign in by emailed link, save to the cloud, restore, export and delete the
  const tab=await context.newPage();
  await tab.goto(link);
  const tabAccount=tab.getByTestId('cloud-account');
- await expect(tabAccount.locator('summary').first()).toHaveText(`Cloud account: ${EMAIL}`);
- await expect(tabAccount.getByRole('status').filter({hasText:'Signed in.'})).toBeVisible();
  expect(new URL(tab.url()).hash).toBe('');// the token left the address bar
+ // Review 1 L1: opening a link never signs in by itself; the masked address is shown and the user completes it.
+ await expect(tabAccount.getByTestId('cloud-confirm-signin')).toContainText('You opened a sign-in link for l••••••@example.test.');
+ expect(await (await tab.request.get('/api/session')).json()).toEqual({signedIn:false});
+ await tabAccount.getByRole('button',{name:'Complete sign-in'}).click();
+ await expect(tabAccount.locator('summary').first()).toHaveText(`Cloud account: ${EMAIL}`);
+ await expect(tabAccount.getByRole('status').filter({hasText:`Signed in as ${EMAIL}. Not you? Sign out.`})).toBeVisible();
+ await expect(tabAccount.getByTestId('cloud-confirm-signin')).toHaveCount(0);
+ await expect(tabAccount.getByRole('button',{name:'Sign out everywhere'})).toBeVisible();
  const cookies=await context.cookies();
  expect(cookies.find(c=>c.name==='__Host-ov_session')).toMatchObject({httpOnly:true,secure:true,sameSite:'Strict',path:'/'});
  // A used link does not sign in again.

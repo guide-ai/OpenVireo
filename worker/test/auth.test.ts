@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:test';
 import { describe, expect, it } from 'vitest';
 import { api, cookieFrom, latestToken, requestLink, signIn } from './helpers';
-import { EMAIL_RATE_LIMIT, normaliseEmail } from '../src/auth';
+import { DEFAULT_LINKS_PER_HOUR, EMAIL_RATE_LIMIT, maskEmail, normaliseEmail, rateLimitMailbox } from '../src/auth';
 
 let n = 0;
 const fresh = () => `student${++n}-${crypto.randomUUID().slice(0, 8)}@example.test`;
@@ -9,7 +9,78 @@ const fresh = () => `student${++n}-${crypto.randomUUID().slice(0, 8)}@example.te
 describe('magic-link sign-in', () => {
   it('normalises and validates email addresses', () => {
     expect(normaliseEmail('  Ada@Example.ORG ')).toBe('ada@example.org');
-    for (const bad of ['', 'a', 'a@b', 'a@@b.c', '@b.c', 'a b@c.d', 'a@.c', 'a@c.', 'x\u0000@y.z', 1, null, `${'a'.repeat(250)}@b.cd`]) expect(normaliseEmail(bad)).toBeNull();
+    expect(normaliseEmail('o.brien+vireo@mail.xn--p1ai')).toBe('o.brien+vireo@mail.xn--p1ai');
+    for (const bad of ['', 'a', 'a@b', 'a@@b.c', '@b.c', 'a b@c.d', 'a@.c', 'a@c.', 'x\u0000@y.z', 1, null, `${'a'.repeat(250)}@b.cd`,
+      'a@b.com>,<c.d', 'a..b@c.de', '.a@c.de', 'a.@c.de', 'a@-c.de', 'a@c-.de', 'a@c.d1', 'a@c_d.de', 'a"b@c.de', `${'a'.repeat(65)}@c.de`, 'ü@c.de']) expect(normaliseEmail(bad)).toBeNull();
+  });
+
+  it('keys rate limits by mailbox: plus tags and Gmail dots share one bucket (review 1 L4)', () => {
+    expect(rateLimitMailbox('victim+3@example.test')).toBe('victim@example.test');
+    expect(rateLimitMailbox('v.i.c.tim+x@googlemail.com')).toBe('victim@gmail.com');
+    expect(rateLimitMailbox('v.i.c.tim@example.test')).toBe('v.i.c.tim@example.test');
+    expect(maskEmail('learner@example.test')).toBe('l••••••@example.test');
+    expect(maskEmail('ab@example.test')).toBe('a•@example.test');
+  });
+
+  it('counts plus-addressed requests against the same mailbox', async () => {
+    const base = `plus${crypto.randomUUID().slice(0, 8)}`;
+    const statuses: number[] = [];
+    for (let i = 0; i <= EMAIL_RATE_LIMIT; i++) statuses.push((await requestLink(`${base}+${i}@example.test`, { headers: { 'CF-Connecting-IP': `203.0.113.${i + 1}` } })).status);
+    expect(statuses).toEqual([...Array(EMAIL_RATE_LIMIT).fill(202), 429]);
+  });
+
+  it('applies a global hourly cap on sign-in emails', async () => {
+    const now = Date.now(), windowStart = now - (now % (60 * 60 * 1000));
+    await env.DB.prepare('INSERT INTO rate_limits (bucket, window_start, count) VALUES (?, ?, ?) ON CONFLICT(bucket, window_start) DO UPDATE SET count = excluded.count')
+      .bind('global', windowStart, DEFAULT_LINKS_PER_HOUR).run();
+    try {
+      expect((await requestLink(fresh())).status).toBe(429);
+    } finally {
+      await env.DB.prepare('DELETE FROM rate_limits WHERE bucket = ?').bind('global').run();
+    }
+  });
+
+  it('retires older links when a new one is requested and when one is used (review 1 L2, P5)', async () => {
+    const email = fresh();
+    await requestLink(email); const first = await latestToken(email);
+    await requestLink(email); const second = await latestToken(email);
+    const verify = (token: string, cookie?: string) => api('/api/auth/verify', { method: 'POST', body: JSON.stringify({ token }), cookie });
+    expect((await verify(first)).status).toBe(400);
+    // Direct insertion of a sibling token (as if two links raced) is retired by the verify that uses the other one.
+    const sibling = 'S'.repeat(43);
+    const { sha256Hex } = await import('../src/crypto');
+    await env.DB.prepare('INSERT INTO login_tokens (token_hash, email, created_at, expires_at) VALUES (?, ?, ?, ?)').bind(await sha256Hex(sibling), email, Date.now(), Date.now() + 60_000).run();
+    expect((await verify(second)).status).toBe(200);
+    expect((await verify(sibling)).status).toBe(400);
+  });
+
+  it('peeks at a link without consuming it and shows only a masked address (review 1 L1)', async () => {
+    const email = fresh();
+    await requestLink(email);
+    const token = await latestToken(email);
+    const peek = await api('/api/auth/peek', { method: 'POST', body: JSON.stringify({ token }) });
+    expect(peek.status).toBe(200);
+    const body = await peek.json() as { email: string };
+    expect(body.email).toMatch(/^s•+@example\.test$/);
+    expect(body.email).not.toContain(email.split('@')[0]);
+    const verified = await api('/api/auth/verify', { method: 'POST', body: JSON.stringify({ token }) });
+    expect(await verified.json()).toEqual({ ok: true, email });
+    expect((await api('/api/auth/peek', { method: 'POST', body: JSON.stringify({ token }) })).status).toBe(400);
+  });
+
+  it('rotates the session on sign-in and signs out everywhere (review 1 L2)', async () => {
+    const email = fresh();
+    const a = await signIn(email), b = await signIn(email);
+    // Signing in again from browser A replaces A's old session row.
+    await requestLink(email);
+    const rotated = await api('/api/auth/verify', { method: 'POST', cookie: a, body: JSON.stringify({ token: await latestToken(email) }) });
+    const a2 = cookieFrom(rotated);
+    expect(await (await api('/api/session', { cookie: a })).json()).toEqual({ signedIn: false });
+    expect((await (await api('/api/session', { cookie: a2 })).json() as { signedIn: boolean }).signedIn).toBe(true);
+    const all = await api('/api/auth/signout-all', { method: 'POST', cookie: a2 });
+    expect(all.status).toBe(200);
+    expect(all.headers.get('Set-Cookie')).toContain('Max-Age=0');
+    for (const cookie of [a2, b]) expect(await (await api('/api/session', { cookie })).json()).toEqual({ signedIn: false });
   });
 
   it('answers the same 202 for new and existing addresses (no enumeration) and stores only the token hash', async () => {

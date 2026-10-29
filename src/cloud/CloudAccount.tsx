@@ -5,10 +5,7 @@ import {CLOUD_EN as M} from './messages';
 import './cloud.css';
 
 type Props=Readonly<{busy:boolean;onRestore:(file:File)=>void;signinToken:string|null}>;
-type Phase='loading'|'verifying'|'signed-out'|'signed-in'|'unavailable';
-
-// Verification is attempted once per page load, even if React mounts the component twice (StrictMode).
-let tokenAttempt:Promise<void>|null=null;
+type Phase='loading'|'signed-out'|'signed-in'|'unavailable';
 
 function errorText(error:unknown):string{
  if(!(error instanceof CloudError))return M.genericError;
@@ -29,13 +26,19 @@ const formatBytes=(n:number)=>n<1024?`${n} B`:n<1048576?`${(n/1024).toFixed(1)} 
 
 export default function CloudAccount({busy,onRestore,signinToken}:Props){
  const client=useMemo(()=>cloudClient(),[]);
- const [phase,setPhase]=useState<Phase>(signinToken?'verifying':'loading');
+ const [phase,setPhase]=useState<Phase>('loading');
+ // Review 1 L1 (login CSRF): an opened link is never used automatically. It is peeked (non-consuming) to show which
+ // masked address it is for, and only the user's "Complete sign-in" click consumes it.
+ const [pendingToken,setPendingToken]=useState<string|null>(signinToken),[pendingEmail,setPendingEmail]=useState<string|null>(null);
  const [user,setUser]=useState<CloudUser|null>(null);
  const [items,setItems]=useState<readonly CloudInvestigation[]>([]);
  const [email,setEmail]=useState(''),[uploadName,setUploadName]=useState(''),[confirmEmail,setConfirmEmail]=useState('');
  const [notice,setNotice]=useState(''),[error,setError]=useState(''),[working,setWorking]=useState(false);
  const fileInput=useRef<HTMLInputElement>(null),details=useRef<HTMLDetailsElement>(null);
  const disabled=busy||working;
+ // An opened sign-in link expands the panel once it has rendered (it renders nothing while the session loads).
+ const [reveal,setReveal]=useState(signinToken!==null);
+ useEffect(()=>{if(reveal&&phase!=='loading'&&details.current){details.current.open=true;setReveal(false);}},[reveal,phase]);
 
  async function refresh(){
   const session=await client.session();
@@ -47,9 +50,8 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
   (async()=>{
    try{
     if(signinToken){
-     tokenAttempt??=client.verify(signinToken);
-     try{await tokenAttempt;if(live){setNotice(M.signedIn);if(details.current)details.current.open=true;}}
-     catch(e){if(live){setError(errorText(e));if(details.current)details.current.open=true;}}
+     try{const masked=await client.peek(signinToken);if(live)setPendingEmail(masked);}
+     catch(e){if(live){setPendingToken(null);setError(errorText(e));}}
     }
     if(live)await refresh();
    }catch{if(live)setPhase('unavailable');}
@@ -83,7 +85,12 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
   if(!window.confirm(M.confirmDelete(item.name)))return;
   void run(async()=>{await client.remove(item.id);setItems(await client.list());return M.deleted(item.name);});
  }
+ function completeSignin(){
+  const token=pendingToken;if(!token)return;
+  void run(async()=>{try{const email=await client.verify(token);await refresh();return M.signedInAs(email);}finally{setPendingToken(null);setPendingEmail(null);}});
+ }
  function signOut(){void run(async()=>{await client.signOut();await refresh();});}
+ function signOutEverywhere(){void run(async()=>{await client.signOutEverywhere();await refresh();return M.signedOutEverywhere;});}
  function deleteAccount(event:FormEvent){
   event.preventDefault();
   if(!user||confirmEmail.trim().toLowerCase()!==user.email){setNotice('');setError(M.confirmMismatch);return;}
@@ -95,7 +102,9 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
  return <details ref={details} className="toolbar-help cloud-account" data-testid="cloud-account">
   <summary>{phase==='signed-in'&&user?M.summarySignedIn(who):M.summary}</summary>
   <p className="cloud-intro">{M.intro}</p>
-  {phase==='verifying'&&<p role="status">{M.verifying}</p>}
+  {pendingToken&&<div className="cloud-row cloud-confirm" data-testid="cloud-confirm-signin">
+   {pendingEmail?<><p>{M.confirmLink(pendingEmail)}</p><button className="secondary-button" type="button" disabled={disabled} onClick={completeSignin}>{M.completeSignin}</button></>:<p role="status">{M.checkingLink}</p>}
+  </div>}
   {phase==='unavailable'&&<p role="status">{M.unavailable}</p>}
   {phase==='signed-out'&&<form className="cloud-row" onSubmit={submitEmail}>
    <label htmlFor="cloud-email">{M.email}</label>
@@ -114,7 +123,7 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
    <h3 className="cloud-list-title">{M.listTitle} <span className="count">{M.saved(items.length)}</span></h3>
    {items.length===0?<p>{M.empty}</p>:<ul className="cloud-list" data-testid="cloud-list">{items.map(item=><li key={item.id} data-testid="cloud-item">
     <span className="cloud-item-name">{item.name}</span>
-    <span className="cloud-item-meta">{new Date(item.createdAt).toLocaleString()} · {formatBytes(item.sizeBytes)}{item.exercises.length?` · ${M.exercises}: ${item.exercises.join(', ')}`:''}</span>
+    <span className="cloud-item-meta">{M.itemMeta(new Date(item.createdAt).toLocaleString(),formatBytes(item.sizeBytes),item.exercises)}</span>
     <span className="cloud-item-actions">
      <button className="secondary-button" type="button" disabled={disabled} onClick={()=>restore(item)}>{M.restore}</button>
      <a className="secondary-button" href={client.downloadUrl(item.id)} download="openvireo-session.json">{M.download}</a>
@@ -124,6 +133,7 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
    <div className="cloud-row">
     <a className="secondary-button" href={client.exportUrl} download="openvireo-account-export.json">{M.exportData}</a>
     <button className="secondary-button" type="button" disabled={disabled} onClick={signOut}>{M.signOut}</button>
+    <button className="secondary-button" type="button" disabled={disabled} onClick={signOutEverywhere}>{M.signOutEverywhere}</button>
    </div>
    <details className="cloud-danger">
     <summary>{M.deleteAccountSummary}</summary>
@@ -135,7 +145,7 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
     </form>
    </details>
   </>}
-  {working&&<p role="status">…</p>}
+  {working&&<p role="status">{M.working}</p>}
   {notice&&<p role="status">{notice}</p>}
   {error&&<p role="alert">{error}</p>}
  </details>;

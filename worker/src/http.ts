@@ -68,5 +68,6 @@ export async function readJsonBody(request: Request): Promise<Record<string, unk
   return value as Record<string, unknown>;
 }
 
-const CONTROL = /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/;
+// C0/C1 controls, line/paragraph separators and bidi embedding/override/isolate controls (review 1 I6).
+const CONTROL = /[\u0000-\u001f\u007f-\u009f\u2028\u2029\u202a-\u202e\u2066-\u2069]/;
 export function hasControlCharacters(text: string): boolean { return CONTROL.test(text); }

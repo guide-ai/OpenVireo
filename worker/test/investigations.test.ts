@@ -54,6 +54,18 @@ describe('cloud investigations', () => {
     expect((await upload(cookie, huge)).status).toBe(413);
   });
 
+  it('holds the quota under concurrent uploads (review 1 M1, P1)', async () => {
+    const cookie = await signIn(fresh());
+    const results = await Promise.all(Array.from({ length: 12 }, (_, i) => upload(cookie, synthetic.plain(), `parallel ${i}`)));
+    const statuses = results.map(r => r.status);
+    expect(statuses.filter(s => s === 201)).toHaveLength(3);
+    expect(statuses.filter(s => s === 413)).toHaveLength(9);
+    const list = await (await api('/api/investigations', { cookie })).json() as { investigations: { id: string }[] };
+    expect(list.investigations).toHaveLength(3);
+    const userId = (await env.DB.prepare('SELECT user_id FROM investigations WHERE id = ?').bind(list.investigations[0].id).first<{ user_id: string }>())!.user_id;
+    expect((await env.INVESTIGATIONS.list({ prefix: `inv/${userId}/` })).objects).toHaveLength(3);
+  });
+
   it('enforces the per-user quota and derives progress from the index', async () => {
     const cookie = await signIn(fresh());
     expect((await upload(cookie, synthetic.plain(), 'one')).status).toBe(201);

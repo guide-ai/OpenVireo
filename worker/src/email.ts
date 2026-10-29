@@ -1,4 +1,4 @@
-import { isLoopbackOrigin, type Env } from './env';
+import { isLoopbackOrigin, requestIsLoopback, type Env } from './env';
 
 export type EmailMessage = Readonly<{ to: string; subject: string; text: string }>;
 
@@ -16,11 +16,12 @@ export class DevSinkSender implements EmailSender {
   }
 }
 
-/** The dev sink is honoured only with EMAIL_MODE=dev-sink and a loopback APP_ORIGIN; otherwise there is no sender. */
-export function devSinkEnabled(env: Env): boolean {
-  return env.EMAIL_MODE === 'dev-sink' && isLoopbackOrigin(env.APP_ORIGIN);
+/** The dev sink is honoured only with EMAIL_MODE=dev-sink, a loopback APP_ORIGIN **and** a request that actually
+ * arrived on a loopback host (review 1 M2): configuration alone never enables it. Otherwise there is no sender. */
+export function devSinkEnabled(env: Env, request: Request): boolean {
+  return env.EMAIL_MODE === 'dev-sink' && isLoopbackOrigin(env.APP_ORIGIN) && requestIsLoopback(request);
 }
 
-export function emailSender(env: Env): EmailSender | null {
-  return devSinkEnabled(env) ? new DevSinkSender(env.DB) : null;
+export function emailSender(env: Env, request: Request): EmailSender | null {
+  return devSinkEnabled(env, request) ? new DevSinkSender(env.DB) : null;
 }

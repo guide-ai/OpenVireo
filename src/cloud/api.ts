@@ -23,8 +23,11 @@ export function cloudClient(fetchImpl:Fetch=(...args)=>fetch(...args),base=CLOUD
  return {
   session:async():Promise<CloudSession>=>await(await call('/session')).json() as CloudSession,
   requestLink:async(email:string)=>{await post('/auth/request',{email});},
-  verify:async(token:string)=>{await post('/auth/verify',{token});},
+  /** Non-consuming: the masked address a link would sign in, shown before the user completes sign-in. */
+  peek:async(token:string):Promise<string>=>(await(await post('/auth/peek',{token})).json() as {email:string}).email,
+  verify:async(token:string):Promise<string>=>(await(await post('/auth/verify',{token})).json() as {email:string}).email,
   signOut:async()=>{await post('/auth/signout',{});},
+  signOutEverywhere:async()=>{await post('/auth/signout-all',{});},
   list:async():Promise<readonly CloudInvestigation[]>=>(await(await call('/investigations')).json() as {investigations:CloudInvestigation[]}).investigations,
   /** Uploads the exact bytes of a Save investigation file; the format is unchanged. */
   upload:async(body:Blob,name:string):Promise<CloudInvestigation>=>(await(await call('/investigations',{method:'POST',body,headers:{'Content-Type':'application/json','X-OpenVireo-Name':encodeURIComponent(name)}})).json() as {investigation:CloudInvestigation}).investigation,
