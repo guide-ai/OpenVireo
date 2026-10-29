@@ -66,7 +66,7 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
   objectXMasked(info.hidden??null,at).then(async masked=>{
    if(masked){setStar({reason:'object-x-hidden'});return;}
    const r=await findCertifiedPopulation(at,variableTime);
-   if(r.status!=='ready'){setStar(r.reason==='population'?{reason:'population',detail:r.detail}:{reason:r.reason});return;}
+   if(r.status!=='ready'){setStar('detail' in r?{reason:r.reason,detail:r.detail}:{reason:r.reason});return;}
    setStar({report:fieldStarReport(freshFieldArea(at),at,catalogRecords(r.population).stars)});
   }).catch(()=>setStar({reason:'load-error'}));
  }

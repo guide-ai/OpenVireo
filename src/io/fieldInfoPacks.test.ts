@@ -8,11 +8,22 @@ import {catalogObjectView,catalogRecords,catalogScene,floatToStrFExponent4,pickC
 import {fieldStarCsvLines,fieldStarReport} from '../core/fieldStarReport';
 import {freshFieldArea} from '../core/fieldEngine';
 import {delphiFixed,formatNativeSexagesimal} from '../core/variableStars';
+import {assembleFieldPack} from './assembledFieldPack';
+import {checkGscIndex,createGscTileStore} from './gscTiles';
+import {createHash} from 'node:crypto';
 
 const f=(p:string)=>new Uint8Array(readFileSync(p));
 const snapFile=(id:string)=>`data/hubble/${id==='36773'?'pinned-galaxy-field':id==='pegasus'?'pinned-pegasus-field':`pinned-galaxy-${id}-field`}.json`;
-beforeAll(()=>setFieldInfoResources({snapshot:async id=>JSON.parse(readFileSync(snapFile(id),'utf8')),engine:async id=>JSON.parse(readFileSync(`data/hubble/engine-${id}.json`,'utf8')),lss:loadLssPack,
- glx:async()=>f('public/original/catalogs/CLEA_GLX.DAT'),qso:async()=>({bytes:f('public/original/catalogs/CLEA_QSO.DAT'),sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'}),glimages:async()=>f('public/original/images/GLIMAGES.LST')}));
+const sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
+const diskFetch=(async(input:RequestInfo|URL)=>new Response(f('public'+String(input)))) as typeof fetch;
+const variables=f('public/original/variables/CLEA_VStrs.dat'),qsoBytes=f('public/original/catalogs/CLEA_QSO.DAT');
+/** Front G: the tiled path reads the published tiles from disk (the browser fetches them from this origin). */
+let tileFetch:typeof fetch=diskFetch;
+const resources=()=>({snapshot:async (id:string)=>JSON.parse(readFileSync(snapFile(id),'utf8')),engine:async (id:string)=>JSON.parse(readFileSync(`data/hubble/engine-${id}.json`,'utf8')),lss:loadLssPack,
+ glx:async()=>f('public/original/catalogs/CLEA_GLX.DAT'),qso:async()=>({bytes:qsoBytes,sha256:'69ecc5bf1aea34a40507de326d39ee47d23c810d49baa53d5732c064edef90b5'}),glimages:async()=>f('public/original/images/GLIMAGES.LST'),
+ assembled:async(p:Readonly<{ra:number;dec:number}>)=>assembleFieldPack(p,{index:checkGscIndex(JSON.parse(readFileSync('data/gsc/gsc-index.json','utf8'))),tiles:createGscTileStore({fetcher:(i,init)=>tileFetch(i,init)}),
+  variables,variablesSha256:sha(variables),qso:qsoBytes,qsoSha256:sha(qsoBytes),glimages:f('public/original/images/GLIMAGES.LST')})});
+beforeAll(()=>setFieldInfoResources(resources()));
 afterAll(()=>setFieldInfoResources(null));
 function pointings(){
  const pts:{ra:number;dec:number;k:string}[]=[];
@@ -46,7 +57,22 @@ describe('certified population (io/fieldInfoPacks.ts) over every bundled pack po
   expect(pickCatalogObject(scene,control(350),control(350))?.id).toBe('36773');
   expect(pickCatalogObject(scene,control(200),control(350))?.id).toBe('N5230-00237');
  });
- test('a non-pack pointing is field-not-certified',async()=>{expect(await findCertifiedPopulation({ra:3.3,dec:-12})).toEqual({status:'unavailable',reason:'field-not-certified'});});
+ // Front G (G2): VIREO builds this field at every pointing (RE-wrap-polar-consumers.md §G-RE3); the web now builds it from the
+ // compact GSC tiles wherever no bundled pack lists the pointing (this replaces "a non-pack pointing is field-not-certified").
+ test('a non-pack pointing is built from the tiles, across 0 h too; a polar or failed-tile field gets a typed reason',async()=>{
+  for(const p of [{ra:3.3,dec:-12},{ra:0.004,dec:41.2},{ra:18.6,dec:-30.1}]){
+   const r=await findCertifiedPopulation(p);expect(r.status,`${p.ra} ${p.dec}`).toBe('ready');
+   if(r.status==='ready'){expect(r.packId).toBe('gsc-tiles');expect(r.population.stars.length).toBeGreaterThan(0);}
+  }
+  expect(await findCertifiedPopulation({ra:5,dec:89.9})).toEqual({status:'unavailable',reason:'field-polar'});
+  // A tampered tile response: typed, with the GscTileError code; the next request (honest bytes) succeeds again.
+  setFieldInfoResources(resources());
+  tileFetch=(async()=>new Response(new Uint8Array(27)))as typeof fetch;
+  try{expect(await findCertifiedPopulation({ra:7.7,dec:22})).toEqual({status:'unavailable',reason:'field-tiles',detail:'integrity'});}
+  finally{tileFetch=diskFetch;}
+  setFieldInfoResources(resources());
+  expect((await findCertifiedPopulation({ra:7.7,dec:22})).status).toBe('ready');
+ },120_000);
 });
 describe('Object X mask radius for the Variable Stars list (closure N2)',()=>{
  test('only rows within 0.25° of an ObjectX.HTL position mask the list',async()=>{

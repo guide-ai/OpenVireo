@@ -95,7 +95,23 @@ Options used:
 - photograph renames (GLIMAGES.LST) without bitmaps;
 - the recovered variable dispatch, as in the exercises.
 
-Elsewhere, Catalog Object and the Star Data List are `field-not-certified`; there is no partial dialog. In the Finder view,
+**Any other pointing (Front G, G2, 2026-10-29).** VIREO builds this field at every pointing: the telescope load 0x53be70 has no
+pointing gate, Catalog Object is gated only by Edit Mode (0x53d4f7), and the Star Data List not at all (0x5404e0)
+(`analysis/front-g-gsc/RE-wrap-polar-consumers.md` §G-RE3). Wherever no bundled pack lists the pointing, the field is built from
+the published compact GSC tiles (`io/assembledFieldPack.ts`, docs/COMPACT-GSC-TILES.md), including fields across RA 0 h, with the
+same options and the same Object X masks. The bundled packs remain the fast path at their own pointings, with identical
+results (proved in `src/io/assembledFieldPack.test.ts`). The Edit Mode caption names the source ("field read from the compact
+Guide Star Catalog").
+
+Typed reasons where no field can be built:
+- `field-polar`: an RA half-width of 12 h or more (|Dec| ≳ 89.88°), where VIREO depends on the x87 cosine and its Int64 band
+  key.
+- `field-tiles`: a tile could not be fetched or did not match its recorded size and SHA-256. The detail is the code; nothing is
+  changed.
+- `field-unreadable`: the native read cannot be reproduced (for example `band-end`, where VIREO reads past the end of a band).
+- `population`: as before, when the field engine's own stages gate the field.
+
+There is no partial dialog. In the Finder view,
 Catalog Object is `finder-catalog-unavailable`, because the FSC finder catalogue is not bundled. The Variable Stars list works anywhere, because CLEA_VStrs.dat is whole-sky.
 
 At a certified pointing in Edit Mode, the Telescope view shows the engine's own field in an overlay
@@ -168,7 +184,7 @@ The original form is TFieldRptForm1 < TClstrRptForm1 < TObjctListForm1 (RECOVERY
 ## Typed reasons
 
 All appear in the UI with a one-line explanation (`src/observatory/FieldInfoMessages.ts`):
-- field-not-certified
+- field-polar, field-tiles:<code>, field-unreadable:<code> (Front G; they replace field-not-certified)
 - finder-catalog-unavailable
 - object-x-hidden
 - asteroids-not-modelled

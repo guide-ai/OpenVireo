@@ -12,9 +12,10 @@ type State=Readonly<{status:'loading'}|{status:'ready';packId:string;scene:Catal
 const SIZE=700,F=TELESCOPE_FRAME,toWeb=(raster:number)=>(raster-F.cropOrigin)*SIZE/F.crop,toControl=(web:number)=>web*F.crop/SIZE;
 const PX_PER_ARCMIN=SIZE/15;
 
-/** Edit Mode Telescope-view click (FO-CO): in Edit Mode only. At a certified pointing (io/fieldInfoPacks.ts) the view shows the
- * engine's own field (the population Catalog Object reads; drawing style [W]) and a click, or the keyboard cursor + Enter, picks
- * with the recovered 350 px rule and opens Catalog Object with a lime 15×15 marker. Elsewhere only a status line with the typed
+/** Edit Mode Telescope-view click (FO-CO): in Edit Mode only. The view shows the engine's own field (the population Catalog
+ * Object reads, io/fieldInfoPacks.ts: a bundled pack at its pointings, otherwise the compact GSC tiles — Front G; drawing style
+ * [W]) and a click, or the keyboard cursor + Enter, picks with the recovered 350 px rule and opens Catalog Object with a lime
+ * 15×15 marker. Where no field can be built (a polar field, a tile failure, an Object X mask) only a status line with the typed
  * reason is shown and clicks reach the normal sky view (target selection) unchanged. */
 export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden,onOpenVariable,currentJd}:{editMode:boolean;active:boolean;mode:FieldMode;pointing:Pointing;hidden:Pointing|null;onOpenVariable?:(recordIndex:number,riseWordDefaulted:boolean)=>void;
  /** Front T: the observatory clock; its JD is frozen when the field is built (as the LSS list does). */
@@ -27,8 +28,8 @@ export default function EditModeFieldLayer({editMode,active,mode,pointing,hidden
   objectXMasked(hidden,pointing).then(async masked=>{
    if(masked){if(current)setState({status:'unavailable',reason:'object-x-hidden'});return;}
    const r=await findCertifiedPopulation(pointing,frozenObservatoryTime(currentJd));if(!current)return;
-   if(r.status==='ready')setState({status:'ready',packId:r.packId,scene:catalogScene(r.population,pointing,`Field pack ${r.packId}; certified pointing`)});
-   else setState(r.reason==='population'?{status:'unavailable',reason:'population',detail:r.detail}:{status:'unavailable',reason:r.reason});
+   if(r.status==='ready')setState({status:'ready',packId:r.packId,scene:catalogScene(r.population,pointing,r.packId==='gsc-tiles'?'Compact GSC tiles; field built for this pointing':`Field pack ${r.packId}; certified pointing`)});
+   else setState('detail' in r?{status:'unavailable',reason:r.reason,detail:r.detail}:{status:'unavailable',reason:r.reason});
   }).catch(()=>{if(current)setState({status:'error'});});
   return()=>{current=false;};
  },[editMode,active,mode,hidden?.ra,hidden?.dec,pointing.ra,pointing.dec]);// eslint-disable-line react-hooks/exhaustive-deps

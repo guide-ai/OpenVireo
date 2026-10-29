@@ -123,7 +123,16 @@ test('VIREO-modeled mode is typed unavailable; the instrument field near the sta
  await fieldMenu(page,'fi-variables-modeled');
  await expect(page.getByTestId('fi-vlist-reason')).toHaveAttribute('data-reason','modeled-uninitialised',{timeout:20000});
  await page.getByTestId('fi-vlist-list-menu').click();await page.getByTestId('fi-vlist-close').click();
- await fieldMenu(page,'fi-star-list');await expect(page.getByTestId('fi-slist-status')).toContainText('certified exercise fields',{timeout:20000});
+ // Front G (G2): VIREO builds this field at every pointing (0x53be70; StarList1Click 0x5404e0 has no gate). The start pointing
+ // is no bundled pack's pointing, so the list is built from the compact GSC tiles instead of being typed unavailable.
+ await fieldMenu(page,'fi-star-list');
+ const w=page.getByTestId('fi-slist');await expect(w.getByRole('heading',{name:'CLEA Star Field Data'})).toBeVisible({timeout:30000});
+ await expect(page.getByTestId('fi-slist-line-2')).toContainText('Center:');await expect(page.getByTestId('fi-slist-status')).toHaveCount(0);
+ await expect(page.getByTestId('fi-slist-line-19')).toHaveText(/^[NS]\d{4}-\d{5} /);
+ // The Telescope view shows the field built from the tiles in Edit Mode.
+ await page.getByRole('button',{name:/^Telescope/}).click();
+ await expect(page.getByTestId('em-status')).toHaveCount(0,{timeout:30000});
+ await expect(page.getByTestId('em-caption')).toContainText('field read from the compact Guide Star Catalog');
 });
 
 test('Naked Eye Star: right-click a star in the dome sky (no Edit Mode) at 320 px in dark mode',async({page})=>{
