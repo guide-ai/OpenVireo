@@ -1,0 +1,13 @@
+.cloud-account .cloud-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.cloud-account .cloud-row input[type=email],.cloud-account .cloud-row input[type=text]{min-width:0;flex:1 1 200px}
+.cloud-account .cloud-help,.cloud-account .cloud-intro{margin:4px 0}
+.cloud-account .cloud-list-title{font-size:1rem;margin:12px 0 4px}
+.cloud-account .cloud-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cloud-account .cloud-list li{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.cloud-account .cloud-item-name{font-weight:600;overflow-wrap:anywhere}
+.cloud-account .cloud-item-meta{opacity:.8;font-size:.9em}
+.cloud-account .cloud-item-actions{display:flex;gap:6px;margin-left:auto}
+.cloud-account a.secondary-button{text-decoration:none;display:inline-flex;align-items:center}
+.cloud-account .cloud-danger{margin-top:12px}
+.cloud-account .cloud-danger form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cloud-account .cloud-danger p{flex-basis:100%;margin:4px 0}

@@ -1,0 +1,23 @@
+// OpenVireo optional backend. LOCAL ONLY (AGENTS.md, decision (4) of 2026-10-29): there is no account_id, no route, no
+// custom domain and no remote binding. The D1 id and R2 bucket name below are local placeholders for Miniflare's
+// emulation; deployment needs the user's approval and real resources created then.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "openvireo-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "send_metrics": false,
+  "observability": { "enabled": false },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "openvireo-local", "database_id": "00000000-0000-4000-8000-000000000000", "migrations_dir": "migrations" }
+  ],
+  "r2_buckets": [
+    { "binding": "INVESTIGATIONS", "bucket_name": "openvireo-investigations-local" }
+  ],
+  "vars": {
+    "TERMS_POLICY": "none",
+    "MAX_INVESTIGATIONS": "20",
+    "MAX_TOTAL_BYTES": "134217728"
+  }
+}
