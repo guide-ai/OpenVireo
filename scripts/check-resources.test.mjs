@@ -132,3 +132,10 @@ test('RESOURCE-PROVENANCE totals must equal the manifest file count, byte sum an
   assert.deepEqual(provenanceTotalIssues(manifest, {totalFiles: 2, totalBytes: 7, extensions: {'.json': 1, '.SP': 4}}),
     ['totalFiles 2 != 3', 'totalBytes 7 != 8', 'extensions .json 1 != 2', 'extensions .DAT undefined != 1', 'extensions .SP 4 != 0']);
 });
+
+test('RESOURCE-PROVENANCE group totals must equal the entries under each prefix and cover every entry', () => {
+  const manifest = {files: [entry('data/a/x.json', '{}'), entry('data/a/y.json', '[1]'), entry('data/b/z.json', 'z')]};
+  const base = {totalFiles: 3, totalBytes: 6, extensions: {'.json': 3}};
+  assert.deepEqual(provenanceTotalIssues(manifest, {...base, groups: {'data/a': {files: 2, bytes: 5}, 'data/b': {files: 1, bytes: 1}}}), []);
+  assert.deepEqual(provenanceTotalIssues(manifest, {...base, groups: {'data/a': {files: 2, bytes: 4}}}), ['groups data/a bytes 4 != 5', 'groups cover 2 of 3 entries']);
+});

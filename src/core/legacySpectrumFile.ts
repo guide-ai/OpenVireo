@@ -79,7 +79,7 @@ export function originalLegacySpectrumBytes(file: LegacySpectrumFile): Uint8Arra
   if (!file || file[brand] !== true) throw new LegacySpectrumFileError('bytes');
   return asciiBytes(file.sourceText);
 }
-function fixedRatio(numerator: bigint, denominator: bigint, digits: number): string {
+export function fixedRatio(numerator: bigint, denominator: bigint, digits: number): string {
   const negative = numerator < 0n, magnitude = negative ? -numerator : numerator;
   const scaled = magnitude * 10n ** BigInt(digits);
   let rounded = scaled / denominator;
@@ -91,7 +91,7 @@ function fixedRatio(numerator: bigint, denominator: bigint, digits: number): str
 /** Exact fraction of a supplied Number; this is a new binary64 decimal policy,
  * not an emulation of the original eighteen-digit x87/BCD conversion stage.
  */
-function fixedNumber(value: number, digits: number): string {
+export function fixedNumber(value: number, digits: number): string {
   if (!Number.isFinite(value) || Math.abs(value) >= 1e18) throw new LegacySpectrumFileError('range');
   if (value === 0) return fixedRatio(0n, 1n, digits);
   const bits = new DataView(new ArrayBuffer(8)); bits.setFloat64(0, value, false);
