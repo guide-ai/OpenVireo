@@ -4,6 +4,7 @@ import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import './PulsarAnalysis.css';
 import WebPrintPreview from '../polish/WebPrintPreview';
+import { menuCaptionText } from '../core/radioControl';
 import { POLISH_MESSAGES as PM, PULSAR_PRINT_LITERALS as PP } from '../polish/PolishMessages';
 import { resourceSha256 } from '../io/boundedResource';
 import { admitPlrRecording, PLR_MAX_BYTES, type PlrRecording } from '../core/pulsarRecording';
@@ -1217,7 +1218,7 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
               <h3 id={`${idPrefix}tools`}>{t('pulsar.toolbar.heading')}</h3>
               <div className="plr-row">
                 <button type="button" ref={propertiesButton} onClick={openProperties} data-testid="pulsar-properties-open">{t('pulsar.toolbar.properties')}</button>
-                <button type="button" ref={printButton} onClick={() => setPrinting(true)} data-testid="pulsar-print-window">{PP.menu}</button>
+                <button type="button" ref={printButton} onClick={() => setPrinting(true)} data-testid="pulsar-print-window">{menuCaptionText(PP.menu)}</button>
                 <button type="button" onClick={() => act(st => pulsarReset(st))} data-testid="pulsar-reset">{t('pulsar.toolbar.reset')}</button>
                 <button type="button" onClick={() => act(st => pulsarZoom(st, 'out'))} disabled={!s.zoomOutEnabled} data-testid="pulsar-zoom-out">{t('pulsar.toolbar.zoomOut')}</button>
                 <span>{t('pulsar.toolbar.zoom')} <output data-testid="pulsar-zoom">{readouts.zoom}</output></span>

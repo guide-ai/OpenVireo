@@ -35,6 +35,8 @@ test('Edit Mode at Coma – 2: Access, select 2 stars + 1 galaxy + 1 sky, remove
  await card(page).getByTestId('ms-access').click();
  await okBox(page,'Click on objects in Telescope Display to select.\n\nRight-click selected object to remove.');
  await expect(page.getByTestId('ms-control').getByRole('heading',{name:'CLEA Multi-Channel Spectrometer Control'})).toBeVisible();
+ // Front P: Print Selection Field (0x52a78c) only calls Print Sky Image (0x53f934), the observatory's web print.
+ await page.getByTestId('ms-print-field').click();await expect(page.getByTestId('print-sky')).toContainText('VIREO Optical Telescope Control Panel');await page.getByTestId('print-sky-close').click();await expect(page.getByTestId('ms-print-field')).toBeFocused();
  await expect(page.getByTestId('ms-minutes')).toHaveValue('1.00');await expect(page.getByTestId('ms-led')).toHaveAttribute('data-on','true');
  await expect(page.getByTestId('ms-armed')).toHaveText('Object selection is on: Edit Mode is on.');
  const field=page.getByTestId('ms-field');await expect(field).toBeVisible({timeout:60000});await expect(field).toHaveAttribute('data-armed','true');

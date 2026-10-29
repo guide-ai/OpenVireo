@@ -13,7 +13,7 @@ test('Open spectrometer from a pointed galaxy reaches the spectrometer index, wh
   await expect(page.getByRole('heading',{name:'Where to take a spectrum'})).toBeFocused();
   await expect(page.getByRole('button',{name:'Spectrometer',exact:true})).toHaveAttribute('aria-current','page');
   const routes=page.getByTestId('spectrometer-routes');
-  await expect(routes.getByRole('link')).toHaveText(['Catalog star exposure','Galaxy exposure','LSS survey','Object X','Spectrum analyzer','Classification']);
+  await expect(routes.getByRole('link')).toHaveText(['Catalog star exposure','Galaxy exposure','LSS survey','Object X','Multi-Spec','Spectrum analyzer','Classification']);
   await expect(page.getByText(/Exposure acquisition is pending|Acquisition unavailable|Prepare a source spectrum/)).toHaveCount(0);
   await expect(page.getByTestId('prepared-source-curve')).toHaveCount(0);expect(previews).toBe(0);
   await routes.getByRole('link',{name:'Galaxy exposure'}).click();await expect.poll(()=>new URL(page.url()).hash).toBe('#galaxy-exposure');

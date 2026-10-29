@@ -195,7 +195,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
     <figure className="wedge-figure">
      <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[scheme]} selected={w.selected} label={m.figureLabel} onSelect={i=>select(i)} idPrefix={idPrefix}/>
      {printing&&!disabled&&<WebPrintPreview testId="wedge-print-preview" caption={C.windowCaption} note={PM.wedgePrint.note} onClose={()=>{setPrinting(false);printButton.current?.focus();}}>
-      {/* Print1Click 0x580f88: VIREO switches TWedgePlot+0x394 to the black-and-white scheme 1 for the printer. */}
+      {/* Print1Click 0x580f88 sets TWedgePlot+0x394 := Env+0x2e8d XOR 1 (0x580fba–0x580fc3); the web always prints scheme 1 [W]. */}
       <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[1]} selected={null} label={m.figureLabel} onSelect={()=>{}} idPrefix={idPrefix+'print-'}/>
      </WebPrintPreview>}
      <figcaption className="wedge-note">

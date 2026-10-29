@@ -7,17 +7,17 @@ const FILE_REASONS:Readonly<Record<BundledHotListFailure,string>>=Object.freeze(
 /** TAboutBox DFM captions (CLEA_VEO.exe 781bc970…c54c, resource TABOUTBOX) [D]. */
 export const ABOUT_BOX=Object.freeze({
  caption:'About This Exercise',productName:'Contemporary Laboratory Experiences in Astronomy',exercise:'VIREO - The VIRtual Educational Observatory',
- version:'Version 0.5',copyright:'Copyright © 1999-2011 CLEA',comments:'All Rights Reserved',ok:'OK',
+ version:'Version 0.5',copyright:'Copyright © 1999-2011 CLEA',comments:'All Rights Reserved',
 });
 
 /** TObsrvtry File item (OB-SR-03, PrintSkyImage1Click 0x53f934) [D]. */
 export const PRINT_SKY_LITERALS=Object.freeze({menu:'&Print Sky Image...',caption:'VIREO Optical Telescope Control Panel'});
 
-/** TWedgePlot File item (DFM Print1, Print1Click 0x580f88) [D]. */
+/** TWedgePlot File item (DFM Print1, Print1Click 0x580f88; scheme := Env+0x2e8d XOR 1 at 0x580fba–0x580fc3) [D]. */
 export const WEDGE_PRINT_LITERALS=Object.freeze({menu:'Print Wedge Plot...'});
 
 /** TPlsrAnalysisForm1 caption and File item (DFM) [D]. */
-export const PULSAR_PRINT_LITERALS=Object.freeze({menu:'Print Window...',caption:'Analyze Pulsar Data'});
+export const PULSAR_PRINT_LITERALS=Object.freeze({menu:'Print &Window...',caption:'Analyze Pulsar Data'});
 
 /** TEnvironment1 Tools › Results Editors (DFM ResultsEditors1, ObservationalResults1, PulsarResults1) [D]. */
 export const RESULTS_EDITORS_LITERALS=Object.freeze({resultsEditors:'Results &Editors',observational:'&Observational Results',pulsar:'&Pulsar Results'});
@@ -29,7 +29,10 @@ export const TERMINATE_SLEW_LITERALS=Object.freeze({caption:'Slew Suspended',tex
 export const CAMERA_FIELD_SIZE_LITERALS=Object.freeze({group:'Field Size (Arc Min)',width:'Width',height:'Height'});
 
 /** THotListForm1 PopupMenu items (DFM) [D]; Slew uses RADIO_HOT_LIST_FORM_CAPTIONS.slew. */
-export const HOT_LIST_POPUP_LITERALS=Object.freeze({label:'Hot list',edit:'Edit Selection...',delete:'Delete Selection',undo:'Undo Edit/Delete'});
+export const HOT_LIST_POPUP_LITERALS=Object.freeze({label:'Hot list',edit:'&Edit Selection...',delete:'&Delete Selection',undo:'&Undo Edit/Delete'});
+/** THotListForm1 EditSelectedLine1Click 0x591488 (box 0x5916e4 / caption 0x59171c, MB_ICONWARNING) and DeleteSelectedLine1Click
+ * 0x59172c (MessageDlg 0x5918ac, mtConfirmation, [mbYes,mbNo]) [D]; "Confirm" is Delphi's mtConfirmation caption [I]. */
+export const HOT_LIST_EDIT_LITERALS=Object.freeze({noSelectionCaption:'No Selection!',noSelectionText:'Please select an entry, using the left mouse button.',deleteCaption:'Confirm',deleteText:'Delete Highlighted Entry from List?'});
 
 export const POLISH_MESSAGES=Object.freeze({
  spectrometerIndex:Object.freeze({
@@ -41,10 +44,20 @@ export const POLISH_MESSAGES=Object.freeze({
    Object.freeze({href:'#galaxy-exposure',label:'Galaxy exposure',help:'the thirteen Hubble.HTL galaxies (Hubble’s law).'}),
    Object.freeze({href:'#lss-survey',label:'LSS survey',help:'galaxy spectra in the nine LSS fields.'}),
    Object.freeze({href:'#object-x',label:'Object X',help:'spectra of the Object X targets.'}),
+   Object.freeze({href:'#observatory',label:'Multi-Spec',help:'the multi-object spectrometer card in the observatory, on the bundled exercise fields (and in the Object X lab).'}),
    Object.freeze({href:'#spectrum',label:'Spectrum analyzer',help:'measure line shifts and record redshifts.'}),
    Object.freeze({href:'#classification',label:'Classification',help:'classify star spectra against the standards.'}),
   ]),
   retired:'This page used to show a preview of prepared source profiles (M82, Coma1, Coma2) before acquisition existed. It was retired on 2026-10-29; the routes above replace it.',
+ }),
+ clusterGuide:Object.freeze({nav:'Cluster HR guide'}),
+ siteInfo:Object.freeze({
+  note:'In VIREO this list window hides its Search, Save Text and Edit menus for the site information, so only Print and Close are offered.',
+  printNote:'Web adaptation: VIREO prints the list lines under its shared header on the printer; this prints the date, the caption and the lines.',
+ }),
+ hotListEdit:Object.freeze({
+  note:'Edit, Delete and Undo change the shared hot list, as the Original hot lists editor does; Undo reverses only the last Edit or Delete made here.',
+  deleteNote:'Web adaptation: the row is removed from the shared list; Undo puts it back where it was in the file (VIREO re-inserts it by RA).',
  }),
  hotListPopup:Object.freeze({
   note:'Edit, Delete and Undo are in the Original hot lists editor on this page.',
@@ -63,10 +76,10 @@ export const POLISH_MESSAGES=Object.freeze({
   help:'VIREO’s Tools › Results Editors. Observational Results opens your observational results in the spectrum analyzer; Pulsar Results opens the saved pulsar measurements in the pulsar analysis.',
  }),
  pulsarPrint:Object.freeze({
-  note:'Web adaptation: VIREO prints the analysis window as it looks on screen; its print handler is not decoded, so this prints both panels with their readouts as shown, in the browser’s printer layout.',
+  note:'Web adaptation: VIREO’s Print Window (PrintScreen1Click 0x56d9d8) draws the window on the printer, and that drawing is not decoded; this prints both panels with their readouts as shown, in the browser’s printer layout.',
  }),
  wedgePrint:Object.freeze({
-  note:'Web adaptation: VIREO prints the wedge in its black-and-white scheme (Print1Click 0x580f88 switches to it); this print uses that scheme and the browser’s printer layout. Selection highlighting is not printed.',
+  note:'Web adaptation: VIREO’s Print sets the colour scheme to the opposite of a program setting (scheme := Env+0x2e8d XOR 1, 0x580fba–0x580fc3), so it prints in black and white when that setting is 0; the setting’s default is not recovered. This print always uses the black-and-white scheme and the browser’s printer layout. Selection highlighting is not printed.',
  }),
  printSky:Object.freeze({
   note:'Web adaptation: VIREO prints a header, the sky image (scaled 1.5) and a footer on the printer; their contents are not recovered, so this prints the date, the pointing and the sky view as shown.',
@@ -81,7 +94,7 @@ export const POLISH_MESSAGES=Object.freeze({
   works:Object.freeze([
    'All seven VIREO exercises have a web student path: Hubble’s law (13 galaxies), large-scale structure, stellar classification, Pleiades photometry (24 stars), cluster HR diagrams, pulsars and the Quest for Object X.',
    'Optical observatory: dome, telescopes, finder and telescope views, slewing with the optional horizon limit, hot lists, site and date, catalog and field information, the variable-star and QSO lists.',
-   'Instruments: spectrometer and photometer for the exercise targets, CCD and infrared cameras (live catalogue query), and the radio telescope with its receiver and pulsar analysis.',
+   'Instruments: spectrometer and photometer for the exercise targets, CCD and infrared cameras (live catalogue query), the multi-object spectrometer (Multi-Spec, on the bundled exercise fields and in the Object X lab), and the radio telescope with its receiver and pulsar analysis.',
    'Analysis: spectrum measuring and classification, Hubble and Pleiades fits, the LSS wedge plot, your observational results, and saved investigations.',
   ]),
   creditsTitle:'Credits',

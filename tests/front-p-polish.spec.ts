@@ -89,8 +89,8 @@ test('Set Coordinates during a programmed slew asks Terminate Current Slew?; No 
  await expect(id(page,'ob-set-coordinates')).toBeEnabled();await expect(id(page,'ob-view-select')).toBeDisabled();
  await id(page,'ob-set-coordinates').click();const box=id(page,'terminate-slew-box');await expect(box).toContainText('Slew Suspended');await expect(box).toContainText('Terminate Current Slew?');
  await expect(id(page,'ob-sky-coords')).toBeHidden();
- await id(page,'terminate-slew-no').click();await expect(box).toHaveCount(0);await expect(id(page,'motion-phase')).toContainText(/Slewing|moving/i);
- await id(page,'ob-set-coordinates').click();await id(page,'terminate-slew-yes').click();await expect(box).toHaveCount(0);
+ await id(page,'terminate-slew-box-no').click();await expect(box).toHaveCount(0);await expect(id(page,'ob-set-coordinates')).toBeFocused();await expect(id(page,'motion-phase')).toContainText(/Slewing|moving/i);
+ await id(page,'ob-set-coordinates').click();await id(page,'terminate-slew-box-yes').click();await expect(box).toHaveCount(0);await expect(id(page,'ob-set-coordinates')).toBeFocused();
  await expect(id(page,'motion-phase')).not.toContainText(/Slewing|moving/i);await expect(id(page,'ob-set-coordinates')).toBeEnabled();
 });
 
@@ -109,10 +109,54 @@ test('hot-list popup, RA-ordered Add Current and the spectrometer index',async({
  await card(page).getByTestId('ob-view-select').click();const rows=id(page,'ob-hotlist-rows');
  await rows.getByRole('radio').nth(1).check();await rows.click({button:'right'});
  const menu=id(page,'popup-menu');await expect(menu).toBeVisible();await expect(id(page,'popup-slew')).toBeFocused();
- for(const k of['edit','delete','undo'])await expect(id(page,`popup-${k}`)).toBeDisabled();
+ await expect(id(page,'popup-edit')).toBeEnabled();await expect(id(page,'popup-delete')).toBeEnabled();await expect(id(page,'popup-undo')).toBeDisabled();
  await page.keyboard.press('Escape');await expect(menu).toHaveCount(0);await expect(id(page,'ob-hotlist')).toBeVisible();
  await rows.click({button:'right'});await id(page,'popup-slew').click();await expect(id(page,'ob-sky-coords')).toBeVisible();
  await page.goto('/#spectrometer');await expect(heading(page,'Where to take a spectrum')).toBeVisible();
- await expect(id(page,'spectrometer-routes').getByRole('link')).toHaveCount(6);await expect(page.getByText('Exposure acquisition is pending')).toHaveCount(0);
+ await expect(id(page,'spectrometer-routes').getByRole('link')).toHaveCount(7);await expect(page.getByText('Exposure acquisition is pending')).toHaveCount(0);
  await expect(page.getByRole('link',{name:'Open supported star exposure'})).toBeVisible();
+});
+
+test('the Terminate question closes and returns focus to Set Coordinates when the slew arrives first',async({page})=>{
+ await observatory(page,true);await coords(page,'.5','0');await tracking(page);await coords(page,'.5005','0',false);
+ await card(page).getByRole('button',{name:'Slew to coordinate draft',exact:true}).click();await page.getByRole('button',{name:'Start programmed slew',exact:true}).click();
+ await id(page,'ob-set-coordinates').click();await expect(id(page,'terminate-slew-box')).toBeVisible();
+ await expect(async()=>{await page.clock.runFor(2_000);await expect(id(page,'terminate-slew-box')).toHaveCount(0,{timeout:100});}).toPass({timeout:20_000});await expect(id(page,'ob-set-coordinates')).toBeFocused();
+});
+
+test('hot-list window Edit, Delete (with the native question) and one-level Undo change the shared list',async({page})=>{
+ await observatory(page);
+ for(const [ra,dec] of [['1','20'],['3','30']]){await coords(page,ra,dec);await card(page).getByTestId('ob-add-current').click();await id(page,'ob-entry-id').fill(`RA${ra}`);await id(page,'ob-entry-ok').click();await id(page,'ob-info-box').getByRole('button',{name:'OK'}).click();}
+ await card(page).getByTestId('ob-view-select').click();const rows=id(page,'ob-hotlist-rows');
+ await id(page,'ob-hotlist-edit').click();await expect(id(page,'ob-info-box')).toContainText('Please select an entry, using the left mouse button.');await expect(id(page,'ob-info-box')).toContainText('No Selection!');await id(page,'ob-info-box').getByRole('button',{name:'OK'}).click();
+ await expect(id(page,'ob-hotlist-undo')).toBeDisabled();
+ await rows.getByRole('radio').nth(1).check();await id(page,'ob-hotlist-edit').click();await expect(id(page,'ob-entry-id')).toHaveValue('RA3');
+ await id(page,'ob-entry-id').fill('Edited');await id(page,'ob-entry-ok').click();await expect(rows).toContainText('Edited');
+ await id(page,'ob-hotlist-undo').click();await expect(rows).toContainText('RA3');await expect(rows).not.toContainText('Edited');await expect(id(page,'ob-hotlist-undo')).toBeDisabled();
+ await rows.getByRole('radio').nth(0).check();await id(page,'ob-hotlist-delete').click();
+ const q=id(page,'ob-hotlist-delete-box');await expect(q).toContainText('Delete Highlighted Entry from List?');await id(page,'ob-hotlist-delete-box-no').click();await expect(rows.getByRole('radio')).toHaveCount(2);
+ await id(page,'ob-hotlist-delete').click();await id(page,'ob-hotlist-delete-box-yes').click();await expect(rows.getByRole('radio')).toHaveCount(1);await expect(rows).not.toContainText('RA1');
+ await id(page,'ob-hotlist-undo').click();await expect(rows.getByRole('radio')).toHaveCount(2);await expect(rows).toContainText('RA1');
+});
+
+test('the QSO list popup offers its Selection items only for a selected data row',async({page})=>{
+ await observatory(page);
+ // QSO list (TObjctListForm1 family): no popup without a selected data row; with one, the Selection items.
+ await card(page).getByTestId('ob-options').click();await id(page,'ob-options-virtual-observatory').check();await id(page,'ob-options-ok').click();
+ await id(page,'fi-file-menu').click();await id(page,'qso-menu').click();await id(page,'qso-ok').click();
+ const lines=id(page,'qso-list-lines');await expect(lines).toBeVisible();
+ await lines.click({button:'right'});await expect(id(page,'popup-menu')).toHaveCount(0);
+ await id(page,'qso-list-line-6').click();await lines.click({button:'right'});await expect(id(page,'popup-qso-list-add')).toBeFocused();await expect(id(page,'popup-qso-list-start')).toBeVisible();
+ await id(page,'popup-qso-list-add').click();await expect(id(page,'fi-box')).toContainText('Added');await id(page,'fi-box').getByRole('button').first().click();
+ await id(page,'qso-list-list-menu').click();await id(page,'qso-list-close').click();
+});
+
+test('Site Information keeps Print and Close; the Cluster HR guide header entry opens the E05 guide',async({page})=>{
+ await observatory(page);
+ // Site Information: TInfoListForm1 with Search, Save Text and Edit hidden; Print and Close.
+ await page.getByText('Site clock · fixed UT scenario',{exact:true}).click();await page.getByTestId('ob-site-information').click();await expect(id(page,'ob-site-info-close')).toBeVisible();
+ await id(page,'ob-site-info-print').click();await expect(id(page,'ob-site-info-print-preview')).toContainText('Current Site & Telescope Parameters');
+ await id(page,'ob-site-info-print-preview-close').click();await id(page,'ob-site-info-close').click();await expect(id(page,'ob-site-info')).toBeHidden();
+ await clickHeaderTool(page,'Cluster HR guide');await expect.poll(()=>new URL(page.url()).hash).toBe('#cluster-database');
+ await expect(page.getByRole('heading',{name:'Ages and distances of star clusters'})).toBeVisible({timeout:15000});
 });
