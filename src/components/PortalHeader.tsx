@@ -8,8 +8,9 @@ const PHONE_QUERY='(max-width: 599.98px)';
  * disclosure button; on wider screens they are always shown and the button is hidden.
  * Escape closes the open menu and returns focus to its button. The menu also closes whenever
  * the current view or the URL hash changes (header tools, guide steps, history) and when the
- * window widens past the phone breakpoint, so it never reopens unexpectedly. */
-export default function PortalHeader({inert,view,brand,navLabel,children}:{inert:boolean;view:string;brand:ReactNode;navLabel:string;children:ReactNode}){
+ * window widens past the phone breakpoint, so it never reopens unexpectedly. `help` is the main window's Help menu (VIREO's
+ * TEnvironment1 menu bar, reachable from every route; docs/CLEA-HELP.md). */
+export default function PortalHeader({inert,view,brand,navLabel,help,children}:{inert:boolean;view:string;brand:ReactNode;navLabel:string;help?:ReactNode;children:ReactNode}){
  const [open,setOpen]=useState(false),toggle=useRef<HTMLButtonElement>(null),panel=useId();
  useEffect(()=>{setOpen(false);},[view]);
  useEffect(()=>{
@@ -25,7 +26,7 @@ export default function PortalHeader({inert,view,brand,navLabel,children}:{inert
    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" focusable="false"><path d={open?'M5 5l10 10M15 5L5 15':'M3 5h14M3 10h14M3 15h14'}/></svg>{M.toolsMenu}</button></div>
   <div className="portal-panel" id={panel}>
    <nav aria-label={navLabel} onClick={onNavClick}>{children}</nav>
-   <div className="portal-footer"><ThemeSwitch/></div>
+   <div className="portal-footer">{help&&<div className="portal-help" data-testid="portal-help">{help}</div>}<ThemeSwitch/></div>
   </div>
  </header>;
 }

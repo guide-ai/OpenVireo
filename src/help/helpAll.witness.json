@@ -1,0 +1,2254 @@
+{
+"source": {
+"tool": "analysis/front-h-help/tools/help_all_witness.py",
+"toolSha256": "5a14541043f716172be770ebfd9d935c4996d69c00e7c1681fac7ebf50e1cb86",
+"note": "Second implementation of the same static reading (RECOVERY-help.md); checks the port, not the reading."
+},
+"lists": {
+"ASTRMHLP.LST": {
+"rows": [
+"-Basic Operations-",
+"",
+"  -Files-",
+"    Set Image File Type",
+"    Load Image Files",
+"    Clear Current Images and/or Reference Fields",
+"",
+"  -Images-",
+"    Display Loaded Images",
+"    Display/Print Header & Display Information",
+"    Print Images",
+"",
+"    -Adjust Images-",
+"      Change Display Size",
+"      Zoom/Unzoom an Image",
+"      Adjust Brightness, Contrast",
+"      Change Image Orientation",
+"      Invert Display",
+"      Initial Background Level & Display Range",
+"",
+"    -Blink Images-",
+"      Blinking Procedure",
+"      Blink Adjustments",
+"      Blink a Sub-Region",
+"",
+"  -Astrometric Measurements-",
+"    Measure Images",
+"    Set \"Box\" Parameters",
+"    Mathematical Solution Models",
+"    Cursor Pointing Accuracy",
+"    Magnitudes",
+"",
+"  -Reports-",
+"    Astrometric Solution Report",
+"    Astrometric Results Report",
+"    Compute Projected Baselines",
+"    Using a Spreadsheet Program",
+"",
+"  Close the Program",
+""
+],
+"topics": [
+{
+"index": 3,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 4,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 5,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 8,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 9,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 10,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 13,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 14,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 15,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 16,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 17,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 18,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 21,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 22,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 23,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 26,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 27,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 28,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 29,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 30,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 33,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 34,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 35,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 36,
+"file": "astrmhlp.txt",
+"txt": "missing"
+},
+{
+"index": 38,
+"file": "astrmhlp.txt",
+"txt": "missing"
+}
+]
+},
+"CAMHLP.LST": {
+"rows": [
+"-Taking CCD Images-",
+"  Set Exposure",
+"  Set Filter",
+"  Set Gain",
+"  Take Exposure",
+"  Save Image",
+"  Analyze Images",
+"",
+"-Data Functions-",
+"  Camera Parameters",
+"",
+"-User Interface-",
+"  Image Display",
+"  Slider Switches",
+"  Close CCD Camera",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": 8,
+"bodySha256": "f371172c450fa692eb2d7fc7fa63f3e11990e6c2420edebb2a970717e0b53821"
+},
+{
+"index": 2,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": 8,
+"bodySha256": "b97f1771b673fc2d7daaf0b1096dcaab2892a4b920fa6a94f901611895c24ce5"
+},
+{
+"index": 3,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 10,
+"relatedLine": 6,
+"bodySha256": "ec736f4ee5d648632ef40c5c48986b6720be8a6ed780d9260c04c1995ece96e1"
+},
+{
+"index": 4,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 33,
+"relatedLine": 25,
+"bodySha256": "a5095333f8026342c873ecb62a1f11ff2bfd2b6e65e49548b4719947b0c88680"
+},
+{
+"index": 5,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 16,
+"relatedLine": 12,
+"bodySha256": "e4f12646ebc21d1892e55dbe1d16153402f78a704920d2634096d2cbcb9c8b74"
+},
+{
+"index": 6,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": 8,
+"bodySha256": "0ca380526d05219c1c82031210c5f8b09e4e77fab3d25f043a489dcf03664c1b"
+},
+{
+"index": 9,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 5,
+"relatedLine": -1,
+"bodySha256": "a4889c03270e7cfdb766ceeeaa408f3a1c1f8940e98ea987f364107b6987bb55"
+},
+{
+"index": 12,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 3,
+"relatedLine": -1,
+"bodySha256": "82552af9b7d1f3abfb647608d2201708f8088baa2e19d9d4b4b8e9c7183d1966"
+},
+{
+"index": 13,
+"file": "ObsrvHlp.txt",
+"found": true,
+"lines": 18,
+"relatedLine": -1,
+"bodySha256": "292fcfcab91896ee8f8d192c9bfa6a70f7de330cedb0482f84dc0d499a8924b8"
+},
+{
+"index": 14,
+"file": "CamHlp.txt",
+"found": true,
+"lines": 11,
+"relatedLine": 7,
+"bodySha256": "4c0b691e8c1ecb2131690522a12d7f9f1de2cea6eec6861cec6cdceed24b89ab"
+}
+]
+},
+"CLASSHLP.LST": {
+"rows": [
+"-Classify Spectra-",
+"  Load Spectrum",
+"  Load Standard Spectra",
+"  Spectral Line Table & Help",
+"  Measure/Mark Spectral Features",
+"  Measure Equivalent Widths",
+"  Save, Review, Analyze Results",
+"",
+"-User Interface-",
+"  Controls",
+"  Configure Display",
+"  Close Classification Window",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "classhlp.txt",
+"found": true,
+"lines": 30,
+"relatedLine": -1,
+"bodySha256": "1b56ccd05b07089a9d23aa0d21ab8f33431eb060fd29da6bee9ec2dc4c555c45"
+},
+{
+"index": 2,
+"file": "classhlp.txt",
+"found": true,
+"lines": 25,
+"relatedLine": -1,
+"bodySha256": "ccf63f4759286e2fd4447ebc8e6f27de535f6070040f9a65dff4a7054cd13180"
+},
+{
+"index": 3,
+"file": "classhlp.txt",
+"found": true,
+"lines": 45,
+"relatedLine": 41,
+"bodySha256": "a20fc1421197eba96cc25075586dac780ee58e07afa2e679212b8f6127d0701c"
+},
+{
+"index": 4,
+"file": "classhlp.txt",
+"found": true,
+"lines": 41,
+"relatedLine": 36,
+"bodySha256": "b7333b4378fcbbafed677dc82b65f046dd99e1fbf55f77c19bd5fbc5b1d84bf5"
+},
+{
+"index": 5,
+"file": "classhlp.txt",
+"found": true,
+"lines": 40,
+"relatedLine": 35,
+"bodySha256": "f90d132ac70b99451841493484541f7320cdd51cd8e090e5ea26f7b6804adbe9"
+},
+{
+"index": 6,
+"file": "classhlp.txt",
+"found": true,
+"lines": 15,
+"relatedLine": 11,
+"bodySha256": "293b3283854a6c45177127059e74cfb8eeae86cd2f37b0db5a1657fa973abef9"
+},
+{
+"index": 9,
+"file": "classhlp.txt",
+"found": true,
+"lines": 24,
+"relatedLine": -1,
+"bodySha256": "f18bd9333133ef91d351d317821f3dbc6b31819fb156d8a9facb78322e6fca4e"
+},
+{
+"index": 10,
+"file": "classhlp.txt",
+"found": true,
+"lines": 32,
+"relatedLine": -1,
+"bodySha256": "4f075472d6d4b1ab2d913f6e5bdbb3d874f35d65393f5f2aacf363fe925bcddb"
+},
+{
+"index": 11,
+"file": "classhlp.txt",
+"found": true,
+"lines": 6,
+"relatedLine": -1,
+"bodySha256": "34115114f848fab425657af5a1b49ab0f5d0f65831683cdd8090d98880f90479"
+}
+]
+},
+"HRANALHLP.LST": {
+"rows": [
+"-Load/Plot Data-",
+"  Load Data from Observations",
+"  Load Data from Cluster Database",
+"  Load New Cluster from Database",
+"",
+"-Cluster Analysis Tools-",
+"  Display Zero-Age Main Sequence",
+"  Fit Zero-Age Main Sequence",
+"",
+"  -Display/Fit Isochrone-",
+"    Add Isochrone to Display",
+"    Adjust Isochrone Age",
+"    Set Isochrone Metallicity",
+"    Adjust Isochrone Color",
+"",
+"  Remove ZAMS, Isochrone from Display",
+"  Display/Print Cluster Age/Distance Parameters",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 8,
+"bodySha256": "4965214f70910c6bc36ee22a99a9f39537857f762401e098dd38a998d806cbd1"
+},
+{
+"index": 2,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 13,
+"relatedLine": 8,
+"bodySha256": "e33534fd836a05335bef7764c0cbf7b410f788ccb4bc6ddc5ea6905ce28b0a56"
+},
+{
+"index": 3,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 10,
+"relatedLine": 5,
+"bodySha256": "e512b381eee93bc2c1bf04bfe90c541aa91b4d248ba80ff5df1251a2b5eed612"
+},
+{
+"index": 6,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": 7,
+"bodySha256": "acd43b5f20f973761fbf91efb4cff166a964cedb98e4ce9f1b1a97570523071e"
+},
+{
+"index": 7,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 26,
+"relatedLine": 20,
+"bodySha256": "e20d4e939380bda1511fe842da94c30e417bb87cc1c18c6a854e64cbb79fcaef"
+},
+{
+"index": 10,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 30,
+"relatedLine": 22,
+"bodySha256": "0d9f1d393365302382e3c7bbe6eed4550d22082520324f6a94af71a4d2c6a450"
+},
+{
+"index": 11,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 17,
+"relatedLine": 10,
+"bodySha256": "29f112d94963ef7c89c7f8b0c6e7ff86d909d89dfb2b37706b55ea15532ccfe2"
+},
+{
+"index": 12,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 18,
+"relatedLine": 13,
+"bodySha256": "56c1d68e77bb0f1d95c365e96a8571ff3738aaa860b5d60cf81c3960c8d74d80"
+},
+{
+"index": 13,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 9,
+"bodySha256": "a2c94bd15d3a4cf9f9aa90995ae8d21b5f4f3ce6f5d39bf9f2940dcda8359317"
+},
+{
+"index": 15,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": 8,
+"bodySha256": "acea9f2424d209dd64887f551dade0a73495a90085496e20d675186ec9aa4b30"
+},
+{
+"index": 16,
+"file": "HRAnalHlp.txt",
+"found": true,
+"lines": 8,
+"relatedLine": -1,
+"bodySha256": "b1ddfddcf7c86f8e722f675e3f8c27d42a13f5191f76b25d075935c0035a7653"
+}
+]
+},
+"HUBHLP.LST": {
+"rows": [
+"-Getting Started-",
+"  Log In",
+"",
+"  -Operate Telescope-",
+"    Access Telescope Window",
+"    Telescope Controls",
+"",
+"  -Change Telescope-",
+"    Request Telescope Time",
+"    Access Telescopes",
+"",
+"  Change Star Field",
+"",
+"-Taking Data-",
+"",
+"  -Use Spectrometer-",
+"    Access Spectrometer Window",
+"    Start/Resume Count",
+"    Stop Count",
+"    Measure Spectrum",
+"    Print Spectrum",
+"",
+"  Return to Telescope Window",
+"",
+"-Data Operations-",
+"  Load Data",
+"  Review Data",
+"  Save Data",
+"  Print Data",
+"  Use Spreadsheet Program",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 4,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 5,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 8,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 9,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 11,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 16,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 17,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 18,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 19,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 20,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 22,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 25,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 26,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 27,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 28,
+"file": "hublab.txt",
+"txt": "missing"
+},
+{
+"index": 29,
+"file": "hublab.txt",
+"txt": "missing"
+}
+]
+},
+"LSSHLP.LST": {
+"rows": [
+"-Getting Started-",
+"  Log In",
+"",
+"  -Operate Telescope-",
+"    Access Telescope Window",
+"    Telescope Controls",
+"",
+"  -Change Telescope-",
+"    Request Telescope Time",
+"    Access Telescopes",
+"",
+"  Change Star Field",
+"",
+"-Taking Data-",
+"",
+"  -Use Spectrometer-",
+"    Access Spectrometer Window",
+"    Start/Resume Count",
+"    Stop Count",
+"    Measure Spectrum",
+"    Print Spectrum",
+"",
+"  -Compute Velocity-",
+"    Compute by Hand",
+"    Verify Computations",
+"",
+"  Return to Telescope Window",
+"",
+"-Data Operations-",
+"  Load Data",
+"  Review Data",
+"  Save Data",
+"  Print Data",
+"",
+"  -Plot Results-",
+"    Save Results in Shared Plot File",
+"    Access \"Wedge\" Plot Program",
+"",
+"  Use Spreadsheet Program",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 4,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 5,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 8,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 9,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 11,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 16,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 17,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 18,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 19,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 20,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 23,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 24,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 26,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 29,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 30,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 31,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 32,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 35,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 36,
+"file": "lsslab.txt",
+"txt": "missing"
+},
+{
+"index": 38,
+"file": "lsslab.txt",
+"txt": "missing"
+}
+]
+},
+"MEASHLP.LST": {
+"rows": [
+"-Measure Spectrum-",
+"  Load Spectrum for Measurement",
+"  Measure Individual Spectral Features",
+"  Load Comparison Spectrum",
+"  Measure With Comparison Spectrum",
+"  Identify Comparison Lines",
+"  Clear Comparison Spectrum",
+"  Record Measurements",
+"",
+"-User Interface-",
+"  Zoom/Scan Spectrum",
+"  Set Slider Sensitivity",
+"  Re-center the Slider",
+"  Close Measurement Window",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "meashlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": 5,
+"bodySha256": "3f4515f0f67ea2623a184f8cf0c54beeb87565cc43ab9a8fb9385b64b49adb5f"
+},
+{
+"index": 2,
+"file": "meashlp.txt",
+"found": true,
+"lines": 28,
+"relatedLine": -1,
+"bodySha256": "b4210f77bb4e95e43dc5937992bd756ef9d5c62ff941a7833faecc16e7858839"
+},
+{
+"index": 3,
+"file": "meashlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": -1,
+"bodySha256": "7e347406794ff49a7d328be44f90a6dd4238226b5a4e92a91ff11e2ae76ded96"
+},
+{
+"index": 4,
+"file": "meashlp.txt",
+"found": true,
+"lines": 33,
+"relatedLine": -1,
+"bodySha256": "905f3460451493cb5ef15fc9a950d04114f370516309e880af8770e3eebc18d5"
+},
+{
+"index": 5,
+"file": "meashlp.txt",
+"found": true,
+"lines": 11,
+"relatedLine": -1,
+"bodySha256": "35d53338df8c411c072c376a90e6efbadb43ba5b49cd59cb6c18225499d57acb"
+},
+{
+"index": 6,
+"file": "meashlp.txt",
+"found": true,
+"lines": 6,
+"relatedLine": -1,
+"bodySha256": "c4f0c8a4fa201f9ec05e463740d8f8c2c1eb48337400ae56b7d6298c1f31c4a3"
+},
+{
+"index": 7,
+"file": "meashlp.txt",
+"found": true,
+"lines": 19,
+"relatedLine": -1,
+"bodySha256": "da182fe0a57b31e9eff308b1396d5cacbcd14c8e30374588231c122ecb122d23"
+},
+{
+"index": 10,
+"file": "meashlp.txt",
+"found": true,
+"lines": 22,
+"relatedLine": 17,
+"bodySha256": "9cb982b040ed3c3794d8c57bc0692d05e61554de2a876e6d636141b9663a6604"
+},
+{
+"index": 11,
+"file": "meashlp.txt",
+"found": true,
+"lines": 10,
+"relatedLine": 5,
+"bodySha256": "48c671860f18b3a45ca0d90b6762b24c8e3f7c585a39e35b51694a91caeefb45"
+},
+{
+"index": 12,
+"file": "meashlp.txt",
+"found": true,
+"lines": 10,
+"relatedLine": 5,
+"bodySha256": "9911d378a0f29e428bcbfa83d5b322a250f8ecd4b5f7cdb767672add6dc26b15"
+},
+{
+"index": 13,
+"file": "meashlp.txt",
+"found": true,
+"lines": 6,
+"relatedLine": -1,
+"bodySha256": "9e200397e13888269c1deeb40b93db83f84c738859ae7656f873240d7668619f"
+}
+]
+},
+"MLTSPHLP.LST": {
+"rows": [],
+"topics": []
+},
+"OBJXHLP.LST": {
+"rows": [
+"-Basic Operations-",
+"  Log In",
+"",
+"  -Files-",
+"    Set Image File Type",
+"    Load Image Files",
+"    Clear Current Settings",
+"",
+"  -Images-",
+"    Display Loaded Images",
+"",
+"    -Adjust Images-",
+"      Change Display Size",
+"      Adjust Brightness, Contrast",
+"      Change Image Orientation",
+"      Invert Display",
+"      Initial Background Level & Display Range",
+"",
+"    Display/Print Header & Display Information",
+"    Print Images",
+"    Blink Images",
+"",
+"    -Astrometric Measurements-",
+"      Measure Images",
+"      Cursor Pointing Accuracy",
+"      Magnitudes",
+"",
+"  -Reports-",
+"    Astrometric Solution Report",
+"    Astrometric Results Report",
+"    Compute Projected Baselines",
+"    Using a Spreadsheet Program",
+"",
+"  Close the Program",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 4,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 5,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 6,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 9,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 12,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 13,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 14,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 15,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 16,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 18,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 19,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 20,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 23,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 24,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 25,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 28,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 29,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 30,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 31,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 33,
+"file": "astrmlab.txt",
+"txt": "missing"
+}
+]
+},
+"OBSRVHLP.LST": {
+"rows": [
+"-Telescope Controls-",
+"  \"Tracking\"",
+"  Slew Buttons (\"N\",\"S\",\"E\",\"W\")",
+"  \"Slew Rate\"",
+"  \"View\"",
+"  \"Instrument\"",
+"  \"Slew\"",
+"",
+"-Data Functions-",
+"  Site and Telescope Parameters",
+"",
+"-User Interface-",
+"  Slider Switches",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "90ad918bc34194f2381e3f9c269b01754bcc3e9d90a2b1e552052d8136758c15"
+},
+{
+"index": 2,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 29,
+"relatedLine": 23,
+"bodySha256": "bf562bb4cd5c85ece005a3e16b01f1d1589db1908d4f49264c562418502dbdd3"
+},
+{
+"index": 3,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 11,
+"relatedLine": 7,
+"bodySha256": "bc51a829904e79c32eb4bf8ee56ea6fa4911d74729237920dae5026318f1a874"
+},
+{
+"index": 4,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 26,
+"relatedLine": 21,
+"bodySha256": "e67e7ff2af203f8c0fc4d6910f89038e0226941b88b4d07d4601b21747604f60"
+},
+{
+"index": 5,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 11,
+"relatedLine": 6,
+"bodySha256": "23d4ad1e4ad3028b0254410eb60121e852e876545e1dd90f05d380a57d5e5568"
+},
+{
+"index": 6,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 13,
+"relatedLine": 9,
+"bodySha256": "0b11d4e2196bfa76cd43c4dfbf63bbf04bae26cf786ca76232baef7d7fba32f5"
+},
+{
+"index": 9,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 11,
+"relatedLine": 7,
+"bodySha256": "fc61dc48f9d701725825a9e83a1bebb175aae7e03ec1d60f14868a0bbe268a04"
+},
+{
+"index": 12,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 18,
+"relatedLine": -1,
+"bodySha256": "292fcfcab91896ee8f8d192c9bfa6a70f7de330cedb0482f84dc0d499a8924b8"
+}
+]
+},
+"OBXMNHLP.LST": {
+"rows": [
+"-Getting Started-",
+"  Log In",
+"  Set Date & Time",
+"  Select Telescope",
+"  Open Dome",
+"  Access Telescope Control",
+"  End Exercise",
+"  Keyboard Access",
+"",
+"-Change Telescope-",
+"  Request Telescope Time",
+"  Change Optical Telescope",
+"",
+"-Tools-",
+"  Spectral Classification Tool",
+"  Spectrum Measuring Tool",
+"  Radio Pulsar Analysis Tool",
+"  Astrometry Module",
+"  Results Editors",
+"  Load Saved Data",
+"  Spreadsheet",
+"",
+"-Data Functions-",
+"  Data Operations",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 2,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 3,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 4,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 5,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 6,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 7,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 10,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 11,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 14,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 15,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 16,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 17,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 18,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 19,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 20,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+},
+{
+"index": 23,
+"file": "ObXMnHlp.txt",
+"txt": "missing"
+}
+]
+},
+"PHOTOHLP.LST": {
+"rows": [
+"-Use Photometer-",
+"  Set Filter",
+"  Set Integration Seconds",
+"  Set Number of Integrations",
+"  Set Aperture Size",
+"  Set Type of Reading",
+"  Take Sky Readings",
+"",
+"  -Take Photometric Readings-",
+"    Stars & Other Point Sources",
+"    Galaxies & Other Extended Sources",
+"",
+"  Record Readings",
+"",
+"-User Interface-",
+"  Slider Switches",
+"  Return to Telescope Window",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "photohlp.txt",
+"found": true,
+"lines": 10,
+"relatedLine": 5,
+"bodySha256": "c3f84ec21d25be7d0048550de3e1a46c6b298a2480a1b05c8741237f48fdd796"
+},
+{
+"index": 2,
+"file": "photohlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": 6,
+"bodySha256": "de4a2e6e9272ab81b9ef3f9acee3e4bf693e611455837d2b7348a3d992c6237b"
+},
+{
+"index": 3,
+"file": "photohlp.txt",
+"found": true,
+"lines": 11,
+"relatedLine": 5,
+"bodySha256": "715a4fbcf07d1d5b7dc4848a72a3608f5ff38c9e33f8378b1ad8eb8750d36860"
+},
+{
+"index": 4,
+"file": "photohlp.txt",
+"found": true,
+"lines": 29,
+"relatedLine": 24,
+"bodySha256": "cca659625954f2fd7575c9d9509b274ec2f44e05f177dc06d05f0493b95bf4ac"
+},
+{
+"index": 5,
+"file": "photohlp.txt",
+"found": true,
+"lines": 17,
+"relatedLine": -1,
+"bodySha256": "05fa08c2a2db1cd0803ffe5d0fdc641701c18ef9f7ae167dc03faf98fc9966eb"
+},
+{
+"index": 6,
+"file": "photohlp.txt",
+"found": true,
+"lines": 47,
+"relatedLine": 41,
+"bodySha256": "2e249334bb68ebfd1dee449948bdba1784dd6b233c7c5174d9e342b42e70db98"
+},
+{
+"index": 9,
+"file": "photohlp.txt",
+"found": true,
+"lines": 63,
+"relatedLine": 56,
+"bodySha256": "fd3c355ef22b3db898de5f450844f1e6e21165186722fc16a0de21b577b42698"
+},
+{
+"index": 10,
+"file": "photohlp.txt",
+"found": true,
+"lines": 40,
+"relatedLine": 34,
+"bodySha256": "305857cf219bbde8395bc62837f87a63fa6989a6bcfed3bb35818cf45d6bb240"
+},
+{
+"index": 12,
+"file": "photohlp.txt",
+"found": true,
+"lines": 27,
+"relatedLine": 23,
+"bodySha256": "35bbe35e901a58b8607d6e439779056ae5ab3fcb84ada1b2708120c9069e8383"
+},
+{
+"index": 15,
+"file": "obsrvhlp.txt",
+"found": true,
+"lines": 18,
+"relatedLine": -1,
+"bodySha256": "292fcfcab91896ee8f8d192c9bfa6a70f7de330cedb0482f84dc0d499a8924b8"
+},
+{
+"index": 16,
+"file": "photohlp.txt",
+"found": true,
+"lines": 15,
+"relatedLine": 11,
+"bodySha256": "85dd430bbbf6d824538aea67d16b72d9fe45c235b03562422668d9e1253b30c1"
+}
+]
+},
+"PLSANHLP.LST": {
+"rows": [
+"-Data Operations-",
+"  Load Recorded Pulsar Data",
+"  Save Recorded Pulsar Data",
+"  View Data Properties",
+"",
+"-Analysis & Results-",
+"  Controls",
+"  Make Measurements",
+"  Record Measurements",
+"  Review Recorded Measurements",
+"  Save Recorded Measurements",
+"  Clear the Measurement List",
+"  Access Spreadsheet Program",
+"",
+"-Miscellaneous Operations-",
+"  Print Screen Image",
+"  Close Data Analysis Window",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 11,
+"relatedLine": -1,
+"bodySha256": "a32a16441d90b60e0b215fcbeff7f11678a0cd676e9ad40e7c5fa6a9dbda4bd1"
+},
+{
+"index": 2,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 12,
+"relatedLine": -1,
+"bodySha256": "8acfc76f5d27464234edb5278db01fc818db1189c3527cffb249dfec5ebf6a42"
+},
+{
+"index": 3,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 18,
+"relatedLine": -1,
+"bodySha256": "045e238c16bcc66ef7b4619db8ce6bfae7b12627e9f935dd171a801af5d78dc2"
+},
+{
+"index": 6,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 32,
+"relatedLine": -1,
+"bodySha256": "57e013d97cd4ef6c2e2ca3ecf5c7c1a01b68432347affd3b0ec3b8e8bf940168"
+},
+{
+"index": 7,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 22,
+"relatedLine": -1,
+"bodySha256": "ee219919f5f51ec800778508eda3fb2f31d078d53a90e778d7b775e0a58b6b99"
+},
+{
+"index": 8,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 22,
+"relatedLine": -1,
+"bodySha256": "932c27c8c11065204b956c48915a11a4079cffe5589e8ccf31327d692dc4a216"
+},
+{
+"index": 9,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 15,
+"relatedLine": -1,
+"bodySha256": "0231d7f831bc23bab9a057395d31014a2f9f5c38573ca172916277d5ddb89ef3"
+},
+{
+"index": 10,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 14,
+"relatedLine": -1,
+"bodySha256": "311a6ba09b38af6d8b848ed6761c3558252f51cb69d5f65fe8f0c7ff6de380f8"
+},
+{
+"index": 11,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "364163be029427bf50d4c8193add07caa678d23d5657b59ac81b1e91558d33f6"
+},
+{
+"index": 12,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 12,
+"relatedLine": -1,
+"bodySha256": "2678a9874f98bd7b0ecfb3849f710096c21472c27e489aba679a40410139d545"
+},
+{
+"index": 15,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 10,
+"relatedLine": -1,
+"bodySha256": "2c54f1257d33de225af66c301ec83c5fbfbaf874646a335d934b816823c41080"
+},
+{
+"index": 16,
+"file": "pulsranl.txt",
+"found": true,
+"lines": 6,
+"relatedLine": -1,
+"bodySha256": "bdc1a5c11e724d5a609f511e2465207c749fba711dc94787a2e0b20574288f49"
+}
+]
+},
+"PLSLSHLP.LST": {
+"rows": [
+"Find Pulsar In List",
+"",
+"-Compute Derived Quantities-",
+"  Change Date - Compute Period",
+"  Change Electron Density - Compute Distance",
+"  Return to Current Values",
+"",
+"Select Pulsars for Study"
+],
+"topics": [
+{
+"index": 0,
+"file": "pulsrlst.txt",
+"found": true,
+"lines": 18,
+"relatedLine": -1,
+"bodySha256": "adab4a79c1bc5565c2d2c6c4a1d0d7a2e43a4779c2d02ffb38b07b405e2d0f9b"
+},
+{
+"index": 3,
+"file": "pulsrlst.txt",
+"found": true,
+"lines": 22,
+"relatedLine": -1,
+"bodySha256": "56c9b97a759189a3a2c9258d3843f81f612dc889f14e13b34777bec8cfbcaccc"
+},
+{
+"index": 4,
+"file": "pulsrlst.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "bc86d3b8bca41b89e2a57030833e39ca8aa01e84022593716e55cddf3311bfdf"
+},
+{
+"index": 5,
+"file": "pulsrlst.txt",
+"found": true,
+"lines": 8,
+"relatedLine": -1,
+"bodySha256": "9d2ad21879b4599d4aec624c12e185905081482c131cb1f45443783322b2a627"
+},
+{
+"index": 7,
+"file": "pulsrlst.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "e9ac25fb2c3c3ae5b6722ad97101ea16532701e1fb98d8e7f5eebd8fc174518d"
+}
+]
+},
+"PULSRHLP.LST": {
+"rows": [
+"-Basic Operations-",
+"",
+"  -Operate the Radio Telescope-",
+"    Radio Telescope Controls",
+"    Set Coordinates",
+"    Remarks on Slewing the Telescope",
+"",
+"  -Using the \"Hot List\"-",
+"    Select a \"Hot List\" Object",
+"    Add an Object to the \"Hot List\"",
+"    Remove an Object from the \"Hot List\"",
+"",
+"  Set the Observation Date & Time",
+"",
+"  -Using the Receivers-",
+"    Access Receivers",
+"    Receiver Controls",
+"    Receive Signals",
+"    Record Signals",
+"    Sounds",
+"    Measure Received Signals",
+"    Save Received Signals",
+"    Close Receivers",
+"",
+"  Analyze Pulsar Data",
+"  Close the Radio Telescope Control Panel",
+""
+],
+"topics": [
+{
+"index": 3,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 38,
+"relatedLine": 32,
+"bodySha256": "9d99a545b9dbef34e8e70d4837001f40622d1370703da1506e3915258fc70b95"
+},
+{
+"index": 4,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 9,
+"bodySha256": "ae7dbc17cd2289ae66f508bbcbf5b8d8c9753dda764b616296eae59da06a1209"
+},
+{
+"index": 5,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 34,
+"relatedLine": -1,
+"bodySha256": "abbbc24c44c82a4f0a6e76274e0ea13d795733dd4feca66e51be0eb71f6b1e63"
+},
+{
+"index": 8,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": -1,
+"bodySha256": "26d38486ad19b30767f6c6a2d54f6c0ac545695c972a94aba2395ba1e0e71758"
+},
+{
+"index": 9,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": -1,
+"bodySha256": "19855dbc8f2f6e3a975c9add05967ba494b6e188b96633f933ffbf60b82e704a"
+},
+{
+"index": 10,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 10,
+"relatedLine": -1,
+"bodySha256": "7c145cc5fc1c2053fdaeead2718891d7ece9232bdeb96e1a2858fdef884bca48"
+},
+{
+"index": 12,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": 5,
+"bodySha256": "528269ea3b03d4e99d359f76770547be19b631250fb5b42b803c253af3e17e57"
+},
+{
+"index": 15,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 8,
+"relatedLine": -1,
+"bodySha256": "ff075a33ea8d5fb2c98ea8efbb18e6032f91e8a4a20f96f7f5e36d2106d1adfc"
+},
+{
+"index": 16,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 78,
+"relatedLine": -1,
+"bodySha256": "0727d924fc7ae7abf56eff555f74e3e49438a80049a9ff084713c1f284bb3c9a"
+},
+{
+"index": 17,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 35,
+"relatedLine": 28,
+"bodySha256": "1603341922f79d19b83f614d6c42e1f7908e46620ef93866aa548473424de94c"
+},
+{
+"index": 18,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 20,
+"relatedLine": 15,
+"bodySha256": "3b6cfedbcad757c75ccc729e3b0b3440820e85f4e533b653884610b0900e63df"
+},
+{
+"index": 19,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 16,
+"relatedLine": -1,
+"bodySha256": "d2f9406ae0abef98470f8d739855e0c435c2a59533a11f7d206e4671e7922154"
+},
+{
+"index": 20,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 21,
+"relatedLine": 15,
+"bodySha256": "d3de23229ee534f9cce1f4b0d23f04ffbb9b81a57474d84c9f12bb32bbd7470d"
+},
+{
+"index": 21,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 19,
+"relatedLine": -1,
+"bodySha256": "86db833945f727e4c8f7c6b861430a99bdbac2d31ae56be42df86468928e6fd3"
+},
+{
+"index": 22,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "2dcc63ee2fb9eecfff9e6f018090106a9eec4863f148e27617e4ac4c8daf6015"
+},
+{
+"index": 24,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 11,
+"relatedLine": 4,
+"bodySha256": "5fd20e7035d205a294bc3d7b9482b5198afa814aedb865d2dde345ee6d8fc560"
+},
+{
+"index": 25,
+"file": "pulsrhlp.txt",
+"found": true,
+"lines": 7,
+"relatedLine": -1,
+"bodySha256": "db7d81e36b1e769fd5a41ac6f3f0234ad1c9013dc960328b0ed2048b5f42583d"
+}
+]
+},
+"SPECHLP.LST": {
+"rows": [
+"-Use Spectrometer-",
+"  Set Wavelength Range",
+"  Start/Resume Count",
+"  Stop Count",
+"  Save Spectrum for Analysis",
+"",
+"-Analyze Spectra-",
+"  Access Classification Tool",
+"  Access Spectrum Measuring Tool",
+"",
+"-User Interface-",
+"  Print Spectrum",
+"  Close Spectrometer Control Panel",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "spechlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": -1,
+"bodySha256": "a00f91205391a26b000a453fb0e08c744317b28a74dcb674c4db78972a9bd74a"
+},
+{
+"index": 2,
+"file": "spechlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": -1,
+"bodySha256": "73086841d72169c0a336f86d3725682d1581e38dd67e527204ecaab5bae13dbb"
+},
+{
+"index": 3,
+"file": "spechlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "aa2ca6dfea29f20dfac0509379e65021d9d4b66c41f0cb57f9bfcc3bd21967f8"
+},
+{
+"index": 4,
+"file": "spechlp.txt",
+"found": true,
+"lines": 41,
+"relatedLine": 35,
+"bodySha256": "30bc856e1e70e0f3a4e27f42ac8fa6631b17a98adad347563d9081a6d0a9c545"
+},
+{
+"index": 7,
+"file": "spechlp.txt",
+"found": true,
+"lines": 12,
+"relatedLine": 7,
+"bodySha256": "3c81488ffba0ce8570b06221099104329057b10b569ebf0619dcd4d91799ec09"
+},
+{
+"index": 8,
+"file": "spechlp.txt",
+"found": true,
+"lines": 13,
+"relatedLine": 8,
+"bodySha256": "59a371df58582e6809e396ff20c4bf1a4c96dc888818ae5f2f83e3a8114bcfde"
+},
+{
+"index": 11,
+"file": "spechlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "f6ecad3964d399802a5d153e2c88278512a7b81af33d8ef831370b531272597a"
+},
+{
+"index": 12,
+"file": "spechlp.txt",
+"found": true,
+"lines": 13,
+"relatedLine": 9,
+"bodySha256": "691ed1b0f4241be242c0d400726a1fc3ba457ebc9abe55f68454b896729d5d45"
+}
+]
+},
+"SPLSTHLP.LST": {
+"rows": [],
+"topics": []
+},
+"TOOLSHLP.LST": {
+"rows": [
+"-Basic Operations-",
+"  Log In",
+"",
+"  -Files-",
+"    Set Image File Type",
+"    Load Image Files",
+"    Clear Current Settings",
+"",
+"  -Images-",
+"    Display Loaded Images",
+"",
+"    -Adjust Images-",
+"      Change Display Size",
+"      Adjust Brightness, Contrast",
+"      Change Image Orientation",
+"      Invert Display",
+"      Initial Background Level & Display Range",
+"",
+"    Display/Print Header & Display Information",
+"    Print Images",
+"    Blink Images",
+"",
+"    -Astrometric Measurements-",
+"      Measure Images",
+"      Cursor Pointing Accuracy",
+"      Magnitudes",
+"",
+"  -Reports-",
+"    Astrometric Solution Report",
+"    Astrometric Results Report",
+"    Compute Projected Baselines",
+"    Using a Spreadsheet Program",
+"",
+"  Close the Program",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 4,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 5,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 6,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 9,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 12,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 13,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 14,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 15,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 16,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 18,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 19,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 20,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 23,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 24,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 25,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 28,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 29,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 30,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 31,
+"file": "astrmlab.txt",
+"txt": "missing"
+},
+{
+"index": 33,
+"file": "astrmlab.txt",
+"txt": "missing"
+}
+]
+},
+"VARTYPEHLP.LST": {
+"rows": [
+"-Variable Star Types-",
+"  Pulsating Variable Types",
+"  Rotating Variable Types",
+"  Eruptive Variable Types",
+"  Explosive/Cataclysmic Variable Types",
+"  Eclipsing Variable Types",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "VarTypeHlp.TXT",
+"found": true,
+"lines": 15,
+"relatedLine": -1,
+"bodySha256": "3693c0fb276a93ba2d0c8302b1f98694e2fbae33de569d51d94b458b05c2cc57"
+},
+{
+"index": 2,
+"file": "VarTypeHlp.TXT",
+"found": true,
+"lines": 3,
+"relatedLine": -1,
+"bodySha256": "82552af9b7d1f3abfb647608d2201708f8088baa2e19d9d4b4b8e9c7183d1966"
+},
+{
+"index": 3,
+"file": "VarTypeHlp.TXT",
+"found": true,
+"lines": 3,
+"relatedLine": -1,
+"bodySha256": "82552af9b7d1f3abfb647608d2201708f8088baa2e19d9d4b4b8e9c7183d1966"
+},
+{
+"index": 4,
+"file": "VarTypeHlp.TXT",
+"found": true,
+"lines": 3,
+"relatedLine": -1,
+"bodySha256": "82552af9b7d1f3abfb647608d2201708f8088baa2e19d9d4b4b8e9c7183d1966"
+},
+{
+"index": 5,
+"file": "VarTypeHlp.TXT",
+"found": true,
+"lines": 3,
+"relatedLine": -1,
+"bodySha256": "82552af9b7d1f3abfb647608d2201708f8088baa2e19d9d4b4b8e9c7183d1966"
+}
+]
+},
+"VIRMNHLP.LST": {
+"rows": [
+"-Getting Started-",
+"  Log In",
+"  Select Exercise",
+"  Set Date & Time",
+"  Select Telescope",
+"  Open Dome",
+"  Access Telescope Control",
+"  End Exercise",
+"  Keyboard Access",
+"",
+"-Change Telescope-",
+"  Request Telescope Time",
+"  Change Optical Telescope",
+"",
+"-Tools-",
+"  Spectral Classification Tool",
+"  Spectrum Measuring Tool",
+"  Radio Pulsar Analysis Tool",
+"  HR Diagram Analysis Tool",
+"  LSS Wedge Plot Tool",
+"  Astrometry Module",
+"  Image Processing (DS9)",
+"  Results Editors",
+"  Load Saved Data",
+"  Spreadsheet",
+"",
+"-Data Functions-",
+"  Data Operations",
+""
+],
+"topics": [
+{
+"index": 1,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 31,
+"relatedLine": 27,
+"bodySha256": "4f9cb3d66a2df3ff5cb274a127e2d99408d0161731879faf33e633b8fb026411"
+},
+{
+"index": 2,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 15,
+"relatedLine": -1,
+"bodySha256": "70b49ec023933cc7489d8596b1f028b899eb6214a5661bf447114e8106d63806"
+},
+{
+"index": 3,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 20,
+"relatedLine": -1,
+"bodySha256": "eb60a715e15e959c3fb3f10f1ca57a497c7b0cfdb33e89792f775c92c5d4fb35"
+},
+{
+"index": 4,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 16,
+"relatedLine": 12,
+"bodySha256": "2a3fafeeaceab8b1d71f15fec46e381b831522d5984e891328092cb67ab1633b"
+},
+{
+"index": 5,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 26,
+"relatedLine": 22,
+"bodySha256": "c26a38677ce152c0be66da95d47d83da21b75a3f6a364bd16115a31b052600c9"
+},
+{
+"index": 6,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 13,
+"relatedLine": -1,
+"bodySha256": "8f59fb438b4f6761370a6aef5c13ee0b99173b7aba626f2f6306baf935ec1749"
+},
+{
+"index": 7,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": -1,
+"bodySha256": "9736e9af8720f39f0779cb078ac02b0c67240045bed928dd466cb1793e734051"
+},
+{
+"index": 8,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 45,
+"relatedLine": -1,
+"bodySha256": "a699c18f06f1f50375c39ab88ccaf140a9456383379a6bcb3a90f30652d97cc4"
+},
+{
+"index": 11,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 26,
+"relatedLine": 22,
+"bodySha256": "1812c4451a7d321b124e9888ced7fd54b4af1ddb85a83098fe049bc6d0254e76"
+},
+{
+"index": 12,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 19,
+"relatedLine": 15,
+"bodySha256": "21ef97f817fe9316fa5948e34c9a7338d22b9504d35c4c9fc6d6714e4f010b72"
+},
+{
+"index": 15,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 15,
+"relatedLine": 9,
+"bodySha256": "57dd53f84df6fe894740090e4ed49e3bf02d26e013d61f18bc142e7f5b14c18c"
+},
+{
+"index": 16,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 15,
+"relatedLine": 9,
+"bodySha256": "f26b80e6fbe018cc0055ecd56fc9fbd0ba926eeae1508829afac22f5d66c3d2e"
+},
+{
+"index": 17,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 8,
+"bodySha256": "6666712889375d75fdd269e82ad2d6a38bb839852d095423b8745c7e3135d1ae"
+},
+{
+"index": 18,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 9,
+"bodySha256": "fefd14afb3314517e5fe8e823dccd94c6ec04503748521d0a0a28b9409a8eaa5"
+},
+{
+"index": 19,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 9,
+"bodySha256": "16e2e1511b0aafee40ea18dc3f39850f53f957f9b0632c5864b259bdf40742c6"
+},
+{
+"index": 20,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 16,
+"relatedLine": 10,
+"bodySha256": "cb2f9462d49451dfd0be396d2ea8da6539074fc77e9c425e7b59d32bfb04605c"
+},
+{
+"index": 21,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 23,
+"relatedLine": 18,
+"bodySha256": "a9151eb6ef0dbd486805941ea86803f26dcb33d8498e8b4ca2ba697048283177"
+},
+{
+"index": 22,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 32,
+"relatedLine": 26,
+"bodySha256": "803f6993b72241edbe8becf83ed88ae41d6f367ef35ff19c4a80d91143a39207"
+},
+{
+"index": 23,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 29,
+"relatedLine": 25,
+"bodySha256": "c99c90db166512569c980fc79f2e1a1b8b37fcf3fcc9f81e8c22e1a0a29bef76"
+},
+{
+"index": 24,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 38,
+"relatedLine": 34,
+"bodySha256": "b4963676c3bed2dba674e735c77aae8622bb2f004e366e0e4d41c9ae15955fea"
+},
+{
+"index": 27,
+"file": "VIRMnHlp.txt",
+"found": true,
+"lines": 6,
+"relatedLine": -1,
+"bodySha256": "4d3cb03048fa997ae0700c1def578a34a99569a25a5a9628913ff45d1b7081b2"
+}
+]
+},
+"WDGPLTHLP.LST": {
+"rows": [
+"Plotting Data",
+"Load Data",
+"Print the Wedge Plot",
+"",
+"-Wedge Plot Options-",
+"  Set Grid Type",
+"  Set Point Size",
+"  Set Point Style",
+"",
+"  -Auto Plot-",
+"    Turn Auto Plot On/Off",
+"    Set Auto Plot File Name/Path",
+"    Set Auto Plot Update Interval",
+""
+],
+"topics": [
+{
+"index": 0,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 7,
+"bodySha256": "91ae2560cc6d33162996bf777f9d062dfc7955d1cc579427849f751e56b72fcf"
+},
+{
+"index": 1,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 15,
+"relatedLine": -1,
+"bodySha256": "0a49283519fd310fc74d537d5295484444f626dab46696b2a33aa9045744737c"
+},
+{
+"index": 2,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 7,
+"relatedLine": -1,
+"bodySha256": "37a7d03002ee49594d8c7cb4c317891facc754f90598c532883e99ad605c4a28"
+},
+{
+"index": 5,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 7,
+"relatedLine": -1,
+"bodySha256": "6b7887f711fc2c1e057e91c6158b30856712adb090218572aa396ac9ebebba24"
+},
+{
+"index": 6,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": 5,
+"bodySha256": "63f8aa2e33065c3804bb733fe4f6b746f13b6544e9a0e34fe8cf53d4b093469c"
+},
+{
+"index": 7,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 9,
+"relatedLine": 5,
+"bodySha256": "fe2fe2fed3145f2819234ee00257d474b080b1cf615d46af14b82b9f3f7cbcb2"
+},
+{
+"index": 10,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 14,
+"relatedLine": 9,
+"bodySha256": "f626f8b1c614633f44665f82c6ab43312cd203f24e7b55425927f00b596ccdde"
+},
+{
+"index": 11,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 13,
+"relatedLine": 8,
+"bodySha256": "b143acede0d44a44fae4a84a04be4f0e12ff2165f7baac4908384c2b4e3030c5"
+},
+{
+"index": 12,
+"file": "WdgPltHlp.txt",
+"found": true,
+"lines": 17,
+"relatedLine": 12,
+"bodySha256": "2c6b9a15fe4f35faea7dd906f41fef0c070e986fac92922691fa6050113d252d"
+}
+]
+}
+}
+}

@@ -1,0 +1,339 @@
+**Radio Telescope Controls**
+The following buttons are used to operate the radio telescope.  They are
+located on the telescope control panel.  Depending on settings selected
+by your instructor, slewing may be limited by the local horizon and
+possibly by other limitations of the telescope.
+
+    "Tracking" - This button turns on the sidereal tracking that enables
+    the telescope to remain pointed at a particular spot on the sky as
+    the Earth turns.  When tracking is off, celestial objects will drift
+    through the telescope field, as indicated by the changing Right
+    Ascension readout.  Tracking is off when the telescope is first
+    accessed.  NOTE: if the telescope is a meridian transit instrument,
+    the "Tracking" button will not appear on the control panel.
+
+    "Slew Rate" - This pair of buttons are used to set the rate at which
+    the telescope moves when a slew button (N,S,E,W) is pressed.  The
+    rate can be varied by factors of ten through a fairly wide range.
+
+    Slew Buttons ("N","S","E","W") - The slew buttons are used to move
+    the telescope to point to a particular spot (direction) in the sky.
+    To move the telescope, press and hold the appropriate button.  The
+    telescope will slew at a speed determined by the slew rate setting.
+    Release the button to stop the slew.  For long slews, the button
+    will stay down if you slide the cursor off of it before releasing
+    the mouse button.  In this case, stop the slew by pressing and
+    releasing the mouse button with the cursor over the active slew
+    button. NOTE: if the telescope is a meridian transit instrument the
+    "E" and "W" buttons will not appear on the control panel.
+
+    "Receiver" - Press this button to access the first or "master"
+    receiver.
+
+Related Topics:
+    Set Coordinates
+    Remarks on Slewing the Telescope
+    Using the Receivers
+
+**Set Coordinates**
+To enter the desired pointing coordinates for the telescope directly,
+select "Slew"->"Set Coordinates..." from the radio telescope control
+panel menu and enter the coordinates on the form that appears.  This is
+generally faster than using the slew buttons to move the telescope from
+object to object, unless the objects are very near each other in the
+sky.  NOTE: if the telescope is a meridian transit instrument, this
+facility will move the telescope in Declination only.
+
+Related Topics:
+    Radio Telescope Controls
+    Remarks on Slewing the Telescope
+
+**Remarks on Slewing the Telescope**
+The portion of the sky that is accessible to a telescope at any given
+time is limited by several factors.  In reality, no telescope, optical
+or radio, can "see" below the local horizon.  If so configured, the
+telescope in this exercise may not slew below an altitude that is
+several degrees above the "true" geographic horizon.
+
+In addition, many radio telescopes are restricted by their design to
+limited regions of the sky overhead.  The most common of these is the
+meridian transit telescope, which can slew only in Declination, and must
+wait for the object being observed to be carried through the field of
+view by the rotation of the Earth.  Another type of restriction is
+exemplified by the Arecibo 1000 ft. dish, which can be pointed only at
+objects within a few degrees of the local zenith.  This software can be
+set to simulate either of these slewing restrictions - your instructor
+will inform you if this has been done.  If the software is set to
+simulate a meridian transit instrument, the "Tracking", "E" and "W"
+buttons will not appear on the control panel, and the "Set Coordinates"
+and "Hot List" facilities will slew the telescope in Declination only.
+
+Unlike optical telescopes, radio telescopes are usable in either
+daylight or darkness, so the easiest solution to observing objects that
+are currently out of the accessible range of the telescope (in Right
+Ascension) is to wait a few hours, or with this software, change the
+simulated date/time.
+
+In order to simplify this exercise, your instructor may set the software
+to ignore all slewing restrictions and slew to any part of the sky at
+any time.  You will be informed if this is the case.
+
+See also;
+    "Set the Observation Date & Time"
+
+**Select a "Hot List" Object**
+To slew the telescope to an item on the Hot List, select "Slew"->"Hot
+List"-> "View/Select from List..." from the radio telescope control
+panel menu.  When the list appears, click on the desired entry to
+highlight it.  Press "OK" and the telescope will slew to the object.
+(The software may be configured to allow slewing only to objects that
+are above the instrument's horizon and within its slewing range.)  If
+the telescope is a meridian transit instrument, the "Hot List" facility
+will move the telescope in Declination only.
+
+See also;
+    "Remarks on Slewing the Telescope"
+
+**Add an Object to the "Hot List"**
+You can add interesting objects to the Hot List to make it easy to
+return to them later for additional observation.  To add an object,
+accurately point the telescope toward it and access a receiver to verify
+that you have located a pulsar.  Next, select "Slew"->"Hot List" ->"Add
+Current Item to List..." from the radio telescope control panel menu. In
+the form that appears, you can add a comment to help you identify the
+object or why it is of interest.  (You can also change the
+identification and position to add an object that is not currently in
+the telescope field.) When you have completed the entry, press "OK" to
+add it to the list. (If you create a bad entry by mistake, see the Help
+Topic "Remove an Object from the "Hot List".)
+
+**Remove an Object from the "Hot List"**
+To remove an entry from the Hot List, select "Slew:->"Hot List"->
+"View/Select from List..." from the radio telescope control panel menu.
+When the list appears, click on the desired entry to highlight it, then
+press the "Delete" button.  You will be asked to confirm the deletion
+before the entry is removed from the list.  When you are finished, you
+can press "Cancel" to close the Hot List if you don't want to slew the
+telescope to any of the remaining Hot List objects.
+
+**Set the Observation Date & Time**
+To set the "current" date and time for the telescope, close the radio
+telescope control panel, then select "File"->"Set Observation Date/Time,
+ID..." from the observatory control panel menu.
+
+Related Topics:
+    "Set Date & Time" on the observatory control panel "Help" menu.
+
+**Analyze Pulsar Data**
+To analyze pulsar data that you have taken and recorded, select "Tools"
+->"Radio Pulsar Analysis Tool" from the observatory control panel menu.
+
+Related Topics:
+    Receive Signals
+    Record Signals
+    Measure Received Signals
+    "Help" topics on the pulsar analysis tool menu.
+
+**Close the Radio Telescope Control Panel**
+To close the radio telescope control panel, select "File"->"Exit" from
+the menu, or use any of the standard Windows features (System Menu or
+"X" box) to close the window.  You will be reminded of any unsaved data
+and given a chance to save it before the telescope closes.
+
+**Access Receivers**
+To access the main or "master" receiver, press the "Receiver" button on
+the radio telescope control panel.  Once the master receiver window
+appears, up to two additional channels or "slave" receivers may be
+accessed by pressing the "Add Channel" button on the master receiver
+panel.
+
+**Receiver Controls**
+The following controls are used to operate the receivers.  Note that
+some of the controls are located only on the main or "master" receiver.
+When receiving, the Horizontal Seconds, Add Channel, and Record controls
+are disabled.  When recording, all controls except Receiver Mode, Align
+Receivers and Volume are disabled.
+
+    Receiver Frequency - This control sets the receiver frequency.  Each
+    click on the appropriate arrowed button increases or decreases the
+    frequency by the amount (MHz) determined by the Frequency Increment
+    control.  The frequency can be set to values between 400.00 and
+    1400.00 MHz.  The Receiver Frequency control appears on all
+    receivers, and is disabled during recording.
+
+    Frequency Increment - This control sets the increment for the
+    Receiver Frequency control.  The increment can be varied between
+    0.01 and 100 MHz by factors of ten.  The Receiver Frequency control
+    appears on all receivers, and is disabled during recording.
+
+    Vertical Gain - This control sets the amplification applied to the
+    signal by the receiver.  This affects both the "height" of the
+    signal on the display and the strength of the recorded signal.  The
+    vertical gain can be varied between 0.125 and 8.0 (arbitrary units)
+    by factors of two.  The Vertical Gain control appears on all
+    receivers, and is disabled during recording.
+
+    Horizontal Seconds - This control sets the time scale of the
+    received signal.  In addition to establishing the horizontal scale
+    of the display and the recorded signal, this control alters the
+    "time constant" or effective integration time of the receiver. Thus,
+    setting the horizontal seconds to a higher value will aid in the
+    detection of faint signals by increasing the signal to noise ratio,
+    while lower values give visibility to the pulse shapes and provide
+    for more accurate measuring of pulse positions.  The horizontal
+    seconds can be varied between 0.5 and 16.0 by factors of two.
+    Setting this control affects all open receivers, thus the control
+    appears only on the main receiver (although the readout appears on
+    all receivers).  The Horizontal Seconds control is disabled during
+    both receiving and recording.
+
+    Add Channel - Pressing this button opens a secondary or "slave"
+    receiver.  The frequency and vertical gain of secondary receivers
+    can be set independently, all other parameters and controls are
+    established by the main receiver.  A maximum of two secondary
+    receivers can be added.  The "Add Channel" control is disabled
+    during both receiving and recording.  Secondary receivers can be
+    closed without closing the main receiver, but certain restrictions
+    apply - see the Help topic "Close Receivers".
+
+    Align Receivers - This button switches receiver alignment on ("yes")
+    and off ("no").  When receiver alignment is off, all open receivers
+    can be moved and positioned independently, anywhere on the screen.
+    When alignment is on, the receivers position themselves in a stack
+    below the main receiver and "follow" the main receiver whenever it
+    is moved.  Secondary receivers cannot be moved independently when
+    alignment is on.  This control is always enabled.
+
+    Receiver Mode - This button is used to start and stop the receivers.
+    When the mode is set to "Receive", all open receivers begin
+    displaying the received signals.  Recording also begins if the
+    Record Switch is "on", and sounds are heard if the computer is
+    properly equipped and sound effects are enabled.  To stop
+    receiving/recording, press the Receiver Mode button again to switch
+    the mode to "Stop".  The receiving/recording/sound will then stop
+    when the display reaches the end of the current panel.  (Also see
+    the Help topic "Record Signals".)
+
+    Record Switch - This button turns signal recording on and off.  This
+    button is enabled only when the receiver mode is "Stop" (see above).
+    See the Help topic "Record Signals" for more information.
+
+    Volume Control - This control will appear on the main receiver only
+    if the computer is properly equipped for sound reproduction and the
+    sound features of this software have been enabled.  Use it to
+    control the volume of the sound during receiving/recording.  See the
+    Help Topic "Sounds" for more information.
+
+**Receive Signals**
+To receive pulsar signals, accurately point the telescope at the
+position of the pulsar.  The telescope tracking should be on.  (If you
+are using a meridian transit telescope, see the note below.)  Once the
+telescope has stopped moving, access the receiver.  To begin receiving a
+signal, press the "Mode" button.  To stop, press the "Mode" button
+again; reception will stop at the end of the current display.  Note that
+when signals are being received you can change the frequency and the
+vertical gain individually for each active receiver.  When reception is
+stopped you can, in addition, open new receiver channels, adjust the
+time scale (horizontal seconds), and activate data recording.
+
+You should adjust each receiver so that the pulses are clearly visible.
+If the signals are buried in the noise, it may help to increase the
+Horizontal Seconds; this will increase the signal to noise ratio.  Use
+the Vertical Gain to adjust the pulse height; the pulses should be
+clearly visible but should not reach or be clipped by the top of the
+display.
+
+NOTE: For a meridian transit telescope, you must pick an observation
+time when the pulsar is just to the East of the telescope's meridian.
+Accurately position the declination of the telescope, and begin
+receiving.  As the pulsar enters the telescope beam, you will begin to
+receive the pulses.  They will get stronger, then begin to weaken and
+finally disappear as the Earth's motion carries the telescope beam past
+the object.  You must do all your observations, including recording the
+signal, during the short time that the pulsar is in the beam.
+
+Related Topics:
+    Radio Telescope Controls
+    Remarks on Slewing the Telescope
+    Access Receivers
+    Receiver Controls
+
+**Record Signals**
+To record the signals received from a pulsar, first perform the steps
+described under the Help Topic "Receive Signals".  When you have
+adjusted all receivers to give clear, easily identifiable pulses, stop
+receiving, press the "Record" button to switch recording on, and begin
+receiving again.  Everything you see on the receiver screens will be
+recorded, up to a maximum of 4 full screens (2 to 64 seconds, depending
+on the Horizontal Seconds setting).  To stop recording, press the Mode
+button to stop receiving (but you will never record more than the first
+four screens).
+
+Recorded signals can be measured in using the radio pulsar analysis tool,
+and/or saved for later analysis.
+
+Related Topics:
+    Save Received Signals
+    Analyze Pulsar Data
+
+**Sounds**
+If your computer is properly equipped, and the sound features of the
+software are enabled, you will hear the sounds of the pulses and the
+background noise when signals are being received.  You can adjust the
+sound volume by using the volume control on the main receiver.  The
+sound will accurately reflect the period and signal strength of the
+pulsar being observed.
+
+The sound will, in general, be synchronized to the display on the main
+receiver.  However, since sound and video on PCs are controlled by
+completely separate and independent subsystems, it is possible for the
+sound and video to get "out of synch".  This will probably be noticeable
+only for pulsars with periods longer than about 1/2 second.  Stopping
+and restarting the receiver may get the sound and video back in synch.
+
+**Measure Received Signals**
+Received signals can be measured directly on the receiver screen, once
+reception has stopped.  Press and drag with the left mouse button to
+create and move a vertical cursor on each receiver screen.  The position
+of the cursor, given in seconds from the left edge of the display,
+appears on the upper left of each screen.  If you press and drag with
+the right mouse button, you will create and move a single "reference"
+cursor that appears in the same position on all open receiver screens.
+Its readout appears on the upper right of all screens.
+
+You are limited by this method to measurements of only one screen (time
+span) of data.  For longer time spans, more accurate measurements (with
+zooming and panning), and measurement recording features, you should
+record the receiver data and use the radio pulsar analysis tool.
+
+Related Topics:
+    Record Signals
+    Save Received Signals
+    Analyze Pulsar Data
+
+**Save Received Signals**
+Recorded signals are held in RAM.  In this state they can be passed
+directly to the data analysis tool, but if you do not plan to do this
+immediately, or need a "permanent" record for any other reason, you
+should save this data to a file.  (Recorded signals in RAM are erased
+the next time recording is started.)  When you finish recording a signal
+you are given a chance to save them immediately, or transfer immediately
+to the data analysis window.  If you do not save at this point, you can
+save later by selecting "File"->"Save Recorded Data..." from the radio
+telescope control menu, or "File"->"Save..." from the data analysis tool
+menu.
+
+When you elect to save the file, a form appears allowing you to enter or
+select a name for the saved file.  You can use any name you like, the
+program will suggest a name generated from your login information.  You
+should always use the qualifier ".PLR" on these files to avoid
+difficulties and confusion later.
+
+**Close Receivers**
+Receiver windows are closed via the System Menu (click on the small box
+in the upper left corner of the receiver window, then select "Close") or
+the "X" box in the upper right corner of the window.  Closing the master
+receiver window closes all open receiver windows. Slave receivers may be
+closed individually, but must be closed in the reverse order of their
+creation (i.e., close the last-created receiver first).
+

@@ -2423,9 +2423,6 @@ export interface MessageParameters {
   "pulsarParameters.window.shared.commandNone": never;
   "pulsarParameters.window.cursorNote": "name" | "position";
   "pulsarParameters.window.pointerNote": "name" | "position" | "shown";
-  "pulsarParameters.help.title": never;
-  "pulsarParameters.help.body": never;
-  "pulsarParameters.help.note": never;
   "pulsarParameters.find.bounds": "max" | "searched";
   "pulsarParameters.find.tooLong": "max";
   "pulsarParameters.notice.notFound.title": never;

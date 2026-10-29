@@ -13,5 +13,4 @@
 .pulsar-params-part input{width:7rem;max-width:100%}
 .pulsar-params-value{min-height:36px;width:100%;box-sizing:border-box;font-variant-numeric:tabular-nums;background:var(--ov-surface-sunken)}
 .pulsar-params-group{border:1px solid var(--ov-border);border-radius:6px;padding:8px 10px;margin:8px 0}
-.pulsar-params-help{border-left:3px solid var(--ov-accent);padding:4px 10px;margin:6px 0}
 .pulsar-params-window input:focus-visible,.pulsar-params-window button:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}

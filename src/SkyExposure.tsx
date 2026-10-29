@@ -1,4 +1,6 @@
 import {skyProfile,skyTelescopeIndex,type SkyTelescopeIndex} from './core/skyTelescope';
+import CleaHelp from './clusters/CleaHelp';
+import {HELP_FILES} from './help/helpFiles';
 import {opticalProfile} from './core/opticalTelescope';
 import {JournalError} from './core/exposureJournal';
 import type {ExposureWorkspace} from './core/observingWorkspace';
@@ -20,7 +22,7 @@ export default function SkyExposure({active,fieldMatches,onActivate,onStart,canI
  useImperativeHandle(controllerRef,()=>({snapshot,replace}));
  const e=state?.exposure,total=e?.skyTotal??0,max=Math.max(1,...(e?.counts??[]));
  const points=e?.counts.map((n,i)=>`${55+i*890/599},${235-n*180/max}`).join(' ')??'';
- return <main className="observatory-main sky-exposure-main" aria-busy={busy}><section className="observatory-heading"><div className="eyebrow">{t('skyExposure.vireoSUPPORTEDCONFIGURATION')}</div><h1 ref={heading} tabIndex={-1}>{t('skyExposure.skyBackgroundExposure')}</h1><p>{t('skyExposure.collectSkyCountsAtTheVerified')}</p></section>
+ return <main className="observatory-main sky-exposure-main" aria-busy={busy}><section className="observatory-heading"><div className="eyebrow">{t('skyExposure.vireoSUPPORTEDCONFIGURATION')}</div><h1 ref={heading} tabIndex={-1}>{t('skyExposure.skyBackgroundExposure')}</h1>{/* TSpectrometer Help1Click 0x510f4c, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId={testId('spectrometer-help')}/><p>{t('skyExposure.collectSkyCountsAtTheVerified')}</p></section>
  <section className="sky-domain card"><h2>{t('skyExposure.oneSupportedSkyField')}</h2><p>{t('skyExposure.ra050000HDec0')}</p><p data-testid={testId('sky-telescope-context')}>{t('skyProfiles.context',{name:opticalProfile(telescopeIndex).name,zero:skyProfile(telescopeIndex).zeroPoint})}</p><p>{t('skyExposure.activationMovesTheTelescopeToThis')}</p><button className={fieldMatches?'secondary-button':'primary-button'} disabled={running||busy||!configurationAvailable} onClick={activate}>{t('skyExposure.activateSupportedSkyField')}</button><button className={fieldMatches?'primary-button':'secondary-button'} disabled={!fieldMatches||running||busy||!configurationAvailable} onClick={activateCurrent}>{t('instrumentAccess.useCurrent')}</button><p>{t('instrumentAccess.currentHelp')}</p><p role="status" data-testid={testId('sky-phase')}>{running?t('skyExposure.exposing'):armed&&fieldMatches?t('skyExposure.readyPaused'):t('skyExposure.deactivated')}</p></section>
  <div className="sky-exposure-layout"><section className="card sky-counts"><div className="card-heading"><h2>{t('skyExposure.rawSkyCounts')}</h2><span className="source-badge">{t('skyExposure.sourceContribution0')}</span></div>
  <svg className="source-spectrum" viewBox="0 0 1000 290" role="img" aria-label={t('skyExposure.chartLabel')}><line x1="55" x2="945" y1="235" y2="235"/><line x1="55" x2="55" y1="45" y2="235"/><text x="48" y="255">3700 Å</text><text x="845" y="255">4698.33 Å</text><text x="60" y="30">{t('skyExposure.binPeak',{peak:max===1&&total===0?0:max})}</text>{e&&<polyline points={points} fill="none"/>}</svg>

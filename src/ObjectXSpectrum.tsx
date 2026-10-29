@@ -1,4 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
+import CleaHelp from './clusters/CleaHelp';
+import {HELP_FILES} from './help/helpFiles';
 import {OBJECT_X_LAB_EN as M} from './objectx/ObjectXMessages';
 import {observeObjectXSpectrum,objectXSpectrometerFailure,type ObjectXSpectrumView} from './io/objectXSpectrometer';
 import {OBJECT_X_SPECTRA_LIMITS,type ObjectXSpectrumRecord} from './io/objectXSpectra';
@@ -62,7 +64,7 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
  const running=view.kind==='ready'&&view.state.exposure.phase==='running',limited=view.kind==='ready'&&view.state.exposure.stopReason!==null;
  const full=spectra.length>=OBJECT_X_SPECTRA_LIMITS.spectra;
  const shown=view.kind==='ready'||view.kind==='kept'?view:null,shownName=view.kind==='kept'?view.label:view.kind==='ready'?view.keptAs??label:label;
- return <section data-testid="objectx-branch-spectrum"><h3>{M.spectrumTitle}</h3><p>{M.spectrumHelp}</p>
+ return <section data-testid="objectx-branch-spectrum"><h3>{M.spectrumTitle}</h3>{/* TSpectrometer Help1Click 0x510f4c, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="objectx-spectrometer-help"/><p>{M.spectrumHelp}</p>
   <p className="observatory-note">{M.spectrumAdaptation}</p>
   <label>{M.spectrumTelescope}<select data-testid="objectx-spectrum-telescope" value={telescope} disabled={disabled||running} onChange={e=>setTelescope(Number(e.target.value) as FieldTelescope)}>
    {M.spectrumTelescopes.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>

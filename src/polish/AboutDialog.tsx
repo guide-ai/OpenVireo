@@ -1,10 +1,13 @@
 import type {RefObject} from 'react';
 import {t} from '../i18n';
-import {ABOUT_BOX,POLISH_MESSAGES as PM} from './PolishMessages';
+import {POLISH_MESSAGES as PM} from './PolishMessages';
+import {ABOUT_BOX} from '../help/mainHelp';
+import {AboutBoxPanel} from '../help/HelpMenus';
 import './polish.css';
 
-/** Help › About (TAboutBox, DFM "About This Exercise", 324×220, bsDialog): the native panel captions as read from the DFM,
- * then the web section [W]: what this site is, what works, credits and licence basis. ProgramIcon (CLEA logo) is not an
+/** Help › About (TAboutBox, DFM "About This Exercise", 324×220, bsDialog): the native panel, shared with Help › About...
+ * (src/help/HelpMenus.tsx AboutBoxPanel; texts in src/help/mainHelp.ts) with the Version label 0x58982c sets at run time,
+ * "Version 1.504" (the DFM's design-time "Version 0.5" is never shown), then the web section [W]: what this site is, what works, credits and licence basis. ProgramIcon (CLEA logo) is not an
  * approved resource and is omitted. Opened by the observatory's "What works in this version" button. */
 export default function AboutDialog({dialogRef}:{dialogRef:RefObject<HTMLDialogElement|null>}){
  const A=ABOUT_BOX,W=PM.about;
@@ -13,12 +16,7 @@ export default function AboutDialog({dialogRef}:{dialogRef:RefObject<HTMLDialogE
   <h2 id="scope-heading">{t('sky.about')}</h2>
   <section className="about-native" aria-label={A.caption} data-testid="about-native">
    <p className="about-native-caption ob-native">{A.caption}</p>
-   <div className="about-native-panel">
-    <p className="about-product">{A.productName}</p>
-    <p className="about-exercise">{A.exercise}</p>
-    <p className="about-version">{A.version}</p>
-    <p className="about-copyright">{A.copyright}<br/>{A.comments}</p>
-   </div>
+   <div className="about-native-panel"><AboutBoxPanel version={A.mainVersion}/></div>
    <p className="observatory-note">{W.nativeNote}</p>
   </section>
   <section aria-labelledby="about-site"><h3 id="about-site">{W.siteTitle}</h3><p>{W.site}</p></section>

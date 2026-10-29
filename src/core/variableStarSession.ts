@@ -15,12 +15,11 @@ export type VariableStarSession=Readonly<{
  curve:number|null;
  riseDefaulted:ReadonlySet<number>;
  listTypeCodes:boolean;
- help:boolean;
 }>;
-export const INITIAL_VARIABLE_STAR_SESSION:VariableStarSession=Object.freeze({list:null,curve:null,riseDefaulted:Object.freeze(new Set<number>()),listTypeCodes:true,help:false});
+export const INITIAL_VARIABLE_STAR_SESSION:VariableStarSession=Object.freeze({list:null,curve:null,riseDefaulted:Object.freeze(new Set<number>()),listTypeCodes:true});
 export function openVariableStarList(s:VariableStarSession,record:VariableStarRecord):VariableStarSession{
  const defaulted=record.riseWord===0&&s.riseDefaulted.has(record.index);
- return Object.freeze({...s,curve:null,help:false,list:Object.freeze({index:record.index,lines:variableStarDataLines(record,defaulted),riseDefaulted:defaulted})});
+ return Object.freeze({...s,curve:null,list:Object.freeze({index:record.index,lines:variableStarDataLines(record,defaulted),riseDefaulted:defaulted})});
 }
 /** Front T review 1 L1: GCVS in Catalog Object (0x561244) opens Variable Star Data on the field-list copy +0x5b points to; when
  * the dispatch's Cepheid Init wrote 50 into its zero word (0x51f2d8 [D]), the list shows 0.50 [I: FormShow rebuilds the lines from
@@ -39,7 +38,6 @@ export function displayLightCurve(s:VariableStarSession,record:VariableStarRecor
 function initReached(record:VariableStarRecord):boolean{
  const m=cepheidModel(record),b=lightCurveBounds(m.faint,m.bright);return b.faintBound-b.brightBound!==0;
 }
-export const closeVariableStarList=(s:VariableStarSession):VariableStarSession=>Object.freeze({...s,list:null,curve:null,help:false});
+export const closeVariableStarList=(s:VariableStarSession):VariableStarSession=>Object.freeze({...s,list:null,curve:null});
 export const exitLightCurve=(s:VariableStarSession):VariableStarSession=>Object.freeze({...s,curve:null});
 export const toggleListTypeCodes=(s:VariableStarSession):VariableStarSession=>Object.freeze({...s,listTypeCodes:!s.listTypeCodes});
-export const toggleVariableHelp=(s:VariableStarSession):VariableStarSession=>s.list?Object.freeze({...s,help:!s.help}):s;

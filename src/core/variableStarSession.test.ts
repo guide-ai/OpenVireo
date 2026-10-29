@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {decodeVariableStarRecord} from './variableStars';
-import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve,exitLightCurve,openVariableStarList,openVariableStarListFromField,toggleListTypeCodes,toggleVariableHelp} from './variableStarSession';
+import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve,exitLightCurve,openVariableStarList,openVariableStarListFromField,toggleListTypeCodes} from './variableStarSession';
 const FILE=new Uint8Array(readFileSync(new URL('../../public/original/variables/CLEA_VStrs.dat',import.meta.url)));
 const rec=(i:number)=>decodeVariableStarRecord(FILE,i);
 describe('Variable Star Data / Simulated Light Curve windows (RECOVERY §1, §2, §6)',()=>{
@@ -22,10 +22,8 @@ describe('Variable Star Data / Simulated Light Curve windows (RECOVERY §1, §2,
  it('closes the light curve with the list, exits it alone, and ignores a curve for a record not shown',()=>{
   const r=rec(30234);let s=displayLightCurve(openVariableStarList(INITIAL_VARIABLE_STAR_SESSION,r),r);
   expect(exitLightCurve(s)).toMatchObject({curve:null,list:{index:30234}});
-  s=toggleVariableHelp(s);expect(s.help).toBe(true);
-  expect(closeVariableStarList(s)).toMatchObject({list:null,curve:null,help:false});
+  expect(closeVariableStarList(s)).toMatchObject({list:null,curve:null});
   expect(displayLightCurve(INITIAL_VARIABLE_STAR_SESSION,r)).toBe(INITIAL_VARIABLE_STAR_SESSION);
-  expect(toggleVariableHelp(INITIAL_VARIABLE_STAR_SESSION)).toBe(INITIAL_VARIABLE_STAR_SESSION);
  });
  it('List Type Codes only toggles its own check mark (0x52d334)',()=>{
   const r=rec(30234),s=openVariableStarList(INITIAL_VARIABLE_STAR_SESSION,r),t=toggleListTypeCodes(s);
