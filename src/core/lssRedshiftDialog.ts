@@ -8,7 +8,10 @@
  *    EConvertError, i.e. the blank text of z = 0, gives 0); v := StrToFloat(velocity text), a conversion error →
  *    "Velocity is incorrect or missing!…" (caption "Velocity Error!"); |(v − c·z)/(c·z)| > 0.01, NaN included →
  *    "Velocity calculation is invalid!"; the dialog stays open on either. RA, Dec and JD edits are never read back.
- *  - [I] the check uses the Single fields the record stores (v and z are Single +0x30/+0x2c; v is stored before the test).
+ *  - [D] the check uses the Single fields the record stores: cz = c (Extended 0x57cfa4) × Single[+0x2c], then
+ *    |(Single[+0x30] − cz)/cz| against the Extended 0.01 at 0x57cfb0, accept when ≤ (0x57cec8..0x57cef5; review 1).
+ *  - [W] z = 0 (a blank z text): the web refuses with "Velocity calculation is invalid!"; natively the 0/0 or v/0 division
+ *    raises an x87 EInvalidOp/EZeroDivide (control word 0x1332) that reaches the VCL default box.
  * Web [W]: RA/Dec are read-only boxes (the native edits are discarded); Cancel adds nothing (natively 0x57c918 inserts the record
  * before the dialog opens and Cancel never removes it); every OK is a new record (the native reuse-by-ID option +0x2e8c is not
  * recovered). Pure. */

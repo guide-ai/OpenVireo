@@ -6594,8 +6594,8 @@
     },
     {
       "path": "data/hubble/existing-target-fingerprints.json",
-      "bytes": 194327,
-      "sha256": "0710b1b09d296a3d0b4ad945cf4433ec3bb10d61af2956e7524b6f0b7550a548"
+      "bytes": 194539,
+      "sha256": "80fee6c10981f310578d26c40d469cde338622769406f7e689e064815e3ace36"
     },
     {
       "path": "data/hubble/umi-cached-provenance.json",

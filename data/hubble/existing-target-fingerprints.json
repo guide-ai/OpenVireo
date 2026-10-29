@@ -928,7 +928,7 @@
   }
  ],
  "lssRows": 657,
- "lssSHA256": "7c73d0276d896323606fe01ef61838f4f57448db622776bedfe9f92a97876efd",
+ "lssSHA256": "9036380fc012ace1786a914a92c6d0c4192104cd91367dfeeeb182a035e88c41",
  "lss": [
   "F1R1T0|available|12632|a64d745d92aaddf33c3078a01afcc2ba1e6e7d98140d4662822c01d5f347039f|125/0.390625/97e3ed64500642053df25b17dfc48da0beefe3991fb62766328ffe2858126315",
   "F1R1T1|unavailable|mean-bound|d5f6b7f98e7a2e595435d865e48f300468d0f041cb76bdf9499598486b0c196e|146/0.5328999999999999/fcc9979677d3088f33b23ab964d22cf7af38177074af5981c80b7cf6e20c86c3",
@@ -1075,7 +1075,7 @@
   "F2R25T1|available|14170|d41752625cd1b7b5066267c2e9b733544b91bbe72c75e67389af769e1620c5a9|72/0.1296/e40b6aca113650b379e01592512e03bf7d8f3533f31e642964bd8c874694d8fe",
   "F2R25T2|available|14170|431809e87ea13fdb7e1a8e7a5201beec795a25ab19d29ca486f1e0230e061cd8|94/0.22089999999999999/558e37e3ddfdf6130c9a5c106686363d2c160aa471b5107d1c71104b2896da71",
   "F3R1T0|unavailable|mean-bound|b1f4d690f6ed6f81f516f694704f78029d60643059a80c0d68f54ed07de256ab|193/0.931225/3a8f9de22e92c071a10a7bd32ad41251337a9b8e7fba2f51dcc39e22b5327149",
-  "F3R1T1|unavailable|mean-bound|0f179112458b86f1d9a6e6d8dc8e292245f3e87e9af0b80ad40d4215cdea5b93|228/1/edc4f3776613e4e085b1bf60c91637082304d5d21574bc2500b243f4ea27fbad",
+  "F3R1T1|unavailable|mean-bound|0f179112458b86f1d9a6e6d8dc8e292245f3e87e9af0b80ad40d4215cdea5b93|228/1/42939db75fa2e25ef385e33ff64ee23dcdda626fa7fdd2df520bdd3acf2cdcca",
   "F3R1T2|available|14194|286b6e61bc6787527fedd1e12319a17a7cb272c33258f49d6b18a9430e1cd2ab|296/1/edb6b6381573f88cdebb7ac8cd18f4d3d321e126d50c11dcb7b162ef22e20d77",
   "F3R2T0|available|14200|2e87de05f3fe03bdef30dfd0459defb857e40f8457a24819cf8396351b31d0a8|138/0.4760999999999999/dad545cfc7be7035f94d8ac0d190a39b4e99d6a267d00dd44ef4ec08402d959b",
   "F3R2T1|unavailable|mean-bound|e12883ae1f6b5ada94ec854646e5c4db584939e5b5627e4b8b8bc3e7629a9c81|164/0.6723999999999999/1f445c8072469625426f9889d810c488091de2eeb9ea29a1f1b1f7d8cfdb5121",
@@ -1153,7 +1153,7 @@
   "F4R1T1|unavailable|mean-bound|5ba6568633dc6781415703cccf0c98a06a6dd06ef9a1c49973937ca53a74fddf|150/0.5625/eed8ad011089d3a81c53d4af3fc9ccf6651e3c0871210154f5e2da15ad37d5ce",
   "F4R1T2|available|15067|85a3e2d80015671548f29ac49f26ed1e293c02dbb7f8398a763d4a791f4d535d|191/0.912025/99fbb60410d98b1681d6cecc262fef404270c4f057ff28180044fdc2f59de9a7",
   "F4R2T0|available|15074|ec846c251bd7250ce216ca69e44fe5b83fe2ba05b2880051417c262bbbffda57|257/1/3394a71ab7115a9ddf81b86d2cd2b84159d1aa1c13ea871352c8898fafe0fbde",
-  "F4R2T1|unavailable|mean-bound|e231e7f0ad65a11943dc57fbef5d62ce24671fd37c9221492bfe7c0a4ac47ffe|293/1/5e67495320f18f5763c88f0a5005f44fdb767facff826906e9f1198aa22ebdca",
+  "F4R2T1|unavailable|mean-bound|e231e7f0ad65a11943dc57fbef5d62ce24671fd37c9221492bfe7c0a4ac47ffe|293/1/f8441e1091ba54185239ae3d25ac2505598cf4082f85bb24c8dfeb1dba607543",
   "F4R2T2|available|15074|ee48f957b277b9b1019f95fed92077ff84ebe3b077badf90abf97866feae7f1c|367/1/21df826357e9058e4f20134d0a835e14147b50366fb4d0e6c0a5a46c2bffaa43",
   "F4R3T0|available|15090|9cef41fcd62e1018b2ec4dafe4809733d67b5372156cc3d97e64dce1f51bee39|163/0.664225/7abdd5b03329a817dceadf062ec60a8d40e9624e40ab1b167969641ca8bedbd2",
   "F4R3T1|unavailable|mean-bound|7e10d192459196b4ae118ae39096bed93631deba8d3f56d7c1034e1341915ed4|193/0.931225/104166bdaf489b1c3d0e62d28895d4840fd381eaff3afd6aaec50bce6e61292a",
@@ -2280,7 +2280,7 @@
   },
   {
    "date": "2026-10-29",
-   "reason": "Front L2 (plan analysis/front-plans/front-l2-lss.md §1): LSS rows use the recovered QSO merge (0x5987e4/0x597f90, qsoMerge.ts, on the bundled CLEA_QSO.DAT) instead of the typed QSO gate, as the Hubble engine fields do; a selected galaxy with its own GLXYSP.LST spectrum is observed with it (NGC4670.SP, bundled byte-exact under the 2026-10-27 group-1 approval; NGC4889.SP). Exactly the 105 entries (35 rows × 3 telescopes) that were qso-merge change; no other LSS entry and no Hubble pair changes.",
+   "reason": "Front L2 (plan analysis/front-plans/front-l2-lss.md §1): LSS rows use the recovered QSO merge (0x5987e4/0x597f90, qsoMerge.ts, on the bundled CLEA_QSO.DAT) instead of the typed QSO gate, as the Hubble engine fields do; a selected galaxy with its own GLXYSP.LST spectrum is observed with it (NGC4670.SP, bundled byte-exact under the 2026-10-27 group-1 approval; NGC4889.SP). Exactly the 105 entries (35 rows × 3 telescopes) that were qso-merge change; no other LSS entry and no Hubble pair changes. Review 1 F8 (same day): the own spectrum is supplied up front, so a typed reason of a galaxy with its own spectrum is judged with it; this changes only the recorded means of F3R1T1 and F4R2T1 (still mean-bound).",
    "changedEntries": 105,
    "changes": [
     {
@@ -2351,7 +2351,7 @@
     {
      "entry": "F3R1T1",
      "before": "F3R1T1|unavailable|qso-merge|-|-",
-     "after": "F3R1T1|unavailable|mean-bound|0f179112458b86f1d9a6e6d8dc8e292245f3e87e9af0b80ad40d4215cdea5b93|228/1/edc4f3776613e4e085b1bf60c91637082304d5d21574bc2500b243f4ea27fbad"
+     "after": "F3R1T1|unavailable|mean-bound|0f179112458b86f1d9a6e6d8dc8e292245f3e87e9af0b80ad40d4215cdea5b93|228/1/42939db75fa2e25ef385e33ff64ee23dcdda626fa7fdd2df520bdd3acf2cdcca"
     },
     {
      "entry": "F3R1T2",
@@ -2471,7 +2471,7 @@
     {
      "entry": "F4R2T1",
      "before": "F4R2T1|unavailable|qso-merge|-|-",
-     "after": "F4R2T1|unavailable|mean-bound|e231e7f0ad65a11943dc57fbef5d62ce24671fd37c9221492bfe7c0a4ac47ffe|293/1/5e67495320f18f5763c88f0a5005f44fdb767facff826906e9f1198aa22ebdca"
+     "after": "F4R2T1|unavailable|mean-bound|e231e7f0ad65a11943dc57fbef5d62ce24671fd37c9221492bfe7c0a4ac47ffe|293/1/f8441e1091ba54185239ae3d25ac2505598cf4082f85bb24c8dfeb1dba607543"
     },
     {
      "entry": "F4R2T2",

@@ -1,4 +1,4 @@
-import{wedgeSingleFromBits,wedgeVelocityFromZ}from'./wedgeNumeric';
+import{wedgeSingleFromBits,wedgeVelocityFromZ,wedgeZFromVelocity}from'./wedgeNumeric';
 import{WEDGE_LIMITS,wedgeHasTxtExtension,wedgeParseLssText,type WedgeParseFailure,type WedgeParsedFile,type WedgeRecord,type WedgeSeparator}from'./wedgeLssText';
 import{WEDGE_DEFAULT_OPTIONS,validWedgeOptions,type WedgeOptions}from'./wedgePlot';
 /** Pure LSS wedge workspace. Ordering mirrors loader 0x57bfb4 and the LSS branch
@@ -107,7 +107,11 @@ export function selectWedgeRecord(w:WedgeWorkspace,index:number|null):WedgeWorks
  return index===w.selected?w:next(w,{selected:index});
 }
 /** One of the student's own E02 records (lssSurvey.ts), handed over without a text round trip. */
-export type WedgeOwnRecord=Readonly<{object:string;jd:number;ra:number;dec:number;zSingle:number;remarks:string}>;
+export type WedgeOwnRecord=Readonly<{object:string;jd:number;ra:number;dec:number;zSingle:number;remarks:string;
+ /** Front L2 (review 1 F4): the student's typed velocity (Single) of a record made with the recovered Measured Redshift Data
+  * rules. When present the wedge uses it as the loader uses a V column (z from v, wedgeZFromVelocity), so the hand-over plots
+  * what the .TXT route plots; absent for older records (v27–v30), which keep the Z-column conversion. */
+ velocitySingle?:number}>;
 export const WEDGE_OWN_RECORDS_NAME='OpenVireo LSS records';
 /** Web adaptation (not the native .TXT writer 0x57af74 + loader): the student's own Record Z rows become wedge records with
  * their exact values — RA hours and Dec degrees as recorded, z as the stored Single, velocity from the same Single c·z
@@ -121,13 +125,15 @@ export function appendOwnLssRecords(w:WedgeWorkspace,records:readonly WedgeOwnRe
  const source=w.receipts.length,action:WedgeReceipt['action']=w.listLoaded?'add':'first';
  const rows=records.map((r,i):WedgeRecord=>{
   if(![r.jd,r.ra,r.dec,r.zSingle].every(Number.isFinite)||r.ra<0||r.ra>=24||Math.abs(r.dec)>90||Math.fround(r.zSingle)!==r.zSingle)throw new RangeError('record');
-  const bits=new DataView(new ArrayBuffer(4));bits.setFloat32(0,r.zSingle,false);
-  const z=wedgeSingleFromBits(bits.getUint32(0,false)),velocity=wedgeVelocityFromZ(z);
+  if(r.velocitySingle!==undefined&&(!Number.isFinite(r.velocitySingle)||Math.fround(r.velocitySingle)!==r.velocitySingle))throw new RangeError('record');
+  const single=(x:number)=>{const bits=new DataView(new ArrayBuffer(4));bits.setFloat32(0,x,false);return wedgeSingleFromBits(bits.getUint32(0,false));};
+  const typed=r.velocitySingle!==undefined?single(r.velocitySingle):null;
+  const z=typed?wedgeZFromVelocity(typed):single(r.zSingle),velocity=typed??wedgeVelocityFromZ(z);
   const h=Math.trunc(r.ra),m=Math.trunc((r.ra-h)*60),s=(r.ra-h-m/60)*3600,ad=Math.abs(r.dec),d=Math.trunc(ad),dm=Math.trunc((ad-d)*60),ds=(ad-d-dm/60)*3600;
-  const raRaw=`${h}h${m}m${s.toFixed(2)}s`,decRaw=`${r.dec<0?'-':''}${d}°${dm}'${ds.toFixed(1)}"`,mjdRaw=(r.jd-2400000.5).toFixed(5),redshiftRaw=String(z.value);
+  const raRaw=`${h}h${m}m${s.toFixed(2)}s`,decRaw=`${r.dec<0?'-':''}${d}°${dm}'${ds.toFixed(1)}"`,mjdRaw=(r.jd-2400000.5).toFixed(5),redshiftRaw=String(typed?typed.value:z.value);
   return Object.freeze({source,line:i+2,raw:[r.object,mjdRaw,raRaw,decRaw,redshiftRaw,r.remarks].join(' '),objectId:r.object,mjdRaw,raRaw,decRaw,redshiftRaw,comment:r.remarks.slice(0,36),
    ra:Object.freeze({status:'value' as const,hours:r.ra,h,m,s}),dec:Object.freeze({status:'value' as const,degrees:r.dec,signLost:false}),
-   redshift:velocity?Object.freeze({status:'value' as const,source:'z' as const,z,velocity,boundary:false}):Object.freeze({status:'unadmitted' as const,reason:'binary32-range'})});
+   redshift:velocity?Object.freeze({status:'value' as const,source:typed?'velocity' as const:'z' as const,z,velocity,boundary:false}):Object.freeze({status:'unadmitted' as const,reason:'binary32-range'})});
  });
  const receipt:WedgeReceipt=Object.freeze({name:WEDGE_OWN_RECORDS_NAME,sha256:identity.sha256,bytes:identity.bytes,rows:rows.length,hasZ:true,separator:'.',action});
  return next(w,{records:Object.freeze([...w.records,...rows]),listLoaded:true,receipts:Object.freeze([...w.receipts,receipt]),notice:{kind:'loaded',name:WEDGE_OWN_RECORDS_NAME,rows:rows.length,action}});

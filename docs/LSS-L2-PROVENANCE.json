@@ -13,7 +13,7 @@
  ],
  "generator": {
   "path": "analysis/front-l2-lss/tools/lss_l2_provenance.py",
-  "sha256": "757a103d01b67a127d44d4cc23794d7f0d63ab5f8f9e96e4905bb6b3db5c4b98"
+  "sha256": "6a04cf97e3ea69fb263bcd7109404d076400c993974023faeaa5ffebce7190a4"
  },
  "derivedEvidence": [
   {
@@ -335,7 +335,7 @@
   {
    "id": "L2-02",
    "tag": "D",
-   "title": "Wedge reader round trip: the reader 0x57b488 re-prefixes the 3 JD characters the writer cut; V glued to remarks is unreadable",
+   "title": "Wedge reader round trip: the reader 0x57b488 re-prefixes the 3 JD characters the writer cut; the V field is FloatToStrF(v)+\" \" left-padded to 12 (_LStrCat3 0x406148 at 0x57ba0d..0x57ba43), so V and the first word of the remarks read back (review 1 F1)",
    "ranges": [
     "0x57b488..0x57b8e4"
    ],
@@ -416,7 +416,7 @@
    "id": "L2-W3",
    "tag": "W",
    "title": "Region destination",
-   "rule": "Region rows go to their own table in #lss-survey (natively the observation results list); velocity shown as not set; not saved."
+   "rule": "Region rows go to their own table in #lss-survey; natively they go to the 144-byte Observation Results list (0x5b5bd4), which the LSS writer 0x57af74 never serialises, so their LSS .TXT is a web addition (V blank: natively unset); not saved."
   },
   {
    "id": "L2-W4",
@@ -437,6 +437,18 @@
    "rule": "Catalogue z is masked in the region table and the Search Results Z range; region rows are not handed to the wedge (coordinator decision of 2026-10-29)."
   },
   {
+   "id": "L2-W8",
+   "tag": "W",
+   "title": "TXT row order",
+   "rule": "Rows are written in the order they were recorded; natively in the list order sorted by (TDateTime, RA) (0x492728); they differ only if the site clock was moved backwards."
+  },
+  {
+   "id": "L2-W9",
+   "tag": "W",
+   "title": "z = 0",
+   "rule": "With z = 0 the web shows \"Velocity calculation is invalid!\"; natively the 0/0 or v/0 division raises an x87 EInvalidOp/EZeroDivide that reaches the VCL default box."
+  },
+  {
    "id": "L2-W5",
    "tag": "W",
    "title": "LSS spectrum header",
@@ -444,7 +456,7 @@
   }
  ],
  "uncertainty": [
-  "Measured Redshift Data: whether OK tests the Extended StrToFloat velocity or the stored Single is inferred (the web uses the stored Singles); the VCL default exception box text is not decoded.",
+  "Measured Redshift Data: the VCL default exception box text is not decoded (OK tests the stored Single fields: 0x57cec8..0x57cef5, review 1).",
   "Options env+0x2e8c (record reuse by ID) and +0x2e88 (computed velocity) defaults not re-derived; +0x2e88 default taken from an earlier repo document.",
   "Meaning of the LSS record flag byte +0x34 and of the result kind byte 1 is not recovered.",
   "RTL FloatToStrF and file-name helpers are identified by inference; numbers use the ported half-even helpers, not x87.",

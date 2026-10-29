@@ -36,7 +36,8 @@ describe('LSS field packs reproduce the independent witnesses for every row',()=
   expect(counts).toEqual([187,93,189]);
   expect(mapped).toEqual([]);// NGC 4670 and NGC 4889 match GLXYSP.LST and are observed with their bundled own spectra
   expect(['NGC 4670','NGC 4889'].every(id=>hasLibrarySpectrum(spectra.names,id))).toBe(true);
- },600000);// 657 field evaluations (as hubbleExistingTargets.test.ts)
+ },600000);// 657 field evaluations (as hubbleExistingTargets.test.ts). Measured in review 1 at load average ~40 on 32 cores: 126 s on
+ // the QSO-gate base, 181 s with the merge (the 35 formerly gated rows now evaluate fully); about 60 s on an idle machine.
  it('Front L2: NGC 4670 (F3 row 1) and NGC 4889 (F4 row 2) are observed with their own bundled spectra; without the file the row stays typed',()=>{
   const pack3=packWithPhotographs(decodeFieldPack(JSON.parse(raw(3).toString())),photographs),pack4=packWithPhotographs(decodeFieldPack(JSON.parse(raw(4).toString())),photographs);
   const own=evaluateLssRow(pack3,glx,lssFieldRows(3)[0],2,spectra);

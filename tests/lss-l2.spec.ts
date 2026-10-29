@@ -51,7 +51,7 @@ test('a formerly QSO-gated row (F1 row 3) acquires; its spectrum saves as .SSP a
  expect(txt.name).toBe('LSS_Redshifts.TXT');
  const rows=txt.bytes.toString('latin1').split('\r\n');
  expect(rows[0]).toBe(WEDGE_HEADER);expect(rows).toHaveLength(3);expect(rows[2]).toBe('');
- expect(rows[1]).toMatch(/^.{12}\d{4}\.\d{6} +\d+h\d\dm\d\d\.\ds +-?\d+°\d\d'\d\d" +\d\.\d{3}E\+\d\d$/);
+ expect(rows[1]).toMatch(/^.{12}\d{4}\.\d{6} +\d+h\d\dm\d\d\.\ds +-?\d+°\d\d'\d\d" +\d\.\d{3}E\+\d\d $/);
  expect(errors).toEqual([]);
 });
 
@@ -71,7 +71,10 @@ test('LSS Galaxy Data appears only with Edit Mode; validation boxes; extraction 
  await box.getByRole('button',{name:'OK',exact:true}).click();
  await page.getByTestId('lss-region-raMin').fill('abc');await page.getByTestId('lss-region-ok').click();await expect(box).toContainText('Parameters contain non-numeric data!');
  await box.getByRole('button',{name:'OK',exact:true}).click();
- for(const [k,v] of [['raMin','12'],['raMax','12.5'],['decMin','27'],['decMax','29'],['zMin','0'],['zMax','0.03']])await page.getByTestId(`lss-region-${k}`).fill(v);
+ // Z bounds are disabled while catalogue z is masked (they would narrow searches to the E02 answers).
+ await expect(page.getByTestId('lss-region-zMin')).toBeDisabled();await expect(page.getByTestId('lss-region-zMax')).toBeDisabled();
+ await expect(page.getByTestId('lss-region-z-reason')).toContainText('Z range uses the masked catalogue redshift');
+ for(const [k,v] of [['raMin','12'],['raMax','12.5'],['decMin','27'],['decMax','29']])await page.getByTestId(`lss-region-${k}`).fill(v);
  await page.getByTestId('lss-region-ok').click();
  await expect(box).toContainText('Search Results');await expect(box).toContainText('Galaxy Records Searched: 24069');
  // Catalogue z is the E02 answer: masked in the summary and the table; no number in a z/velocity cell.

@@ -63,21 +63,21 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - Pointing a row goes straight to its fresh field: no dome, slew, horizon/time check or tracking.
 - Measured Redshift Data (Front L2): see below. RA/Dec are read-only h m s / d m s boxes (the original discards edits to them); Cancel adds nothing (the original inserts the record before the dialog opens, 0x57c918, and Cancel never removes it); every OK is a new record (the reuse-by-ID option +0x2e8c is not recovered); JD is read when Record Z is clicked.
 - Measurement uses a dedicated panel on the analyser's recovered shift-control contract.
-- Record Z follows the recovered LSS branch, but the creation function 0x57c918 and the dialog bodies are not recovered.
+- Record Z follows the recovered LSS branch; 0x57c918 (find-or-add) and the dialog bodies are recovered (Front L2, below).
 - Records go to the wedge directly with their exact values. The native .TXT writer 0x57af74 is ported for Save Data (.TXT) (Front L2, below).
 - Results are saved in an OpenVireo CSV format.
 - Stars come from bounded GSC read witnesses (`data/lss`); arithmetic uses Number, not x87.
 
 ## Not recovered
-QSO merge 0x597f90/0x5987e4, photographic association, variable classes 0–2 whose dispatch reaches a light curve, the exercise-mode-5 entry, 0x57c918 / TLSSRsltsDlg1 FormActivate and OK, TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format), and the wedge .TXT writer.
+Photographic association, variable classes 0–2 whose dispatch reaches a light curve, the exercise-mode-5 entry, and TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format). The QSO merge, TLSSRsltsDlg1 (0x57c918, FormActivate, OK) and the .TXT writer 0x57af74 are ported by Front L2 (below).
 
 ## Front L2 (2026-10-29; plan analysis/front-plans/front-l2-lss.md)
 Static reading of CLEA_VEO.exe only; addresses, evidence ids and SHA-256 in [LSS-L2-PROVENANCE.json](LSS-L2-PROVENANCE.json); research `analysis/front-l2-lss/` (rsltsdlg-txt-findings.md, rgndlg-findings.md, dossiers
 with SHA-256). This section supersedes the "Not recovered" list above for the items it names.
 - **QSO merge.** LSS rows run the recovered QSO merge (0x5987e4/0x597f90, `qsoMerge.ts`) on the bundled CLEA_QSO.DAT, as the
   Hubble engine fields do. 35 rows (105 row/telescope entries) were QSO-gated; exactly those entries change in
-  `data/hubble/existing-target-fingerprints.json` (`updates`, 2026-10-29), nothing else. 26 of them become acquirable on the
-  0.4 and 4 m and stay mean-bound on the 0.9 m; F1R15, F3R23, F4R11, F5R13, F7R21, F8R10 become acquirable on all three and
+  `data/hubble/existing-target-fingerprints.json` (`updates`, 2026-10-29), nothing else. 23 of them (F4R2, NGC 4889, among them) become
+  acquirable on the 0.4 and 4 m and stay mean-bound on the 0.9 m; F3R1 (NGC 4670) only on the 4 m; F1R15, F3R23, F4R11, F5R13, F7R21, F8R10 become acquirable on all three and
   F8R11 selects a neighbour; F3R5, F6R17, F7R18 are stamp-bound and F6R12 needs the clock time.
 - **Own spectra.** NGC4670.SP is bundled byte-exact (27616 bytes, SHA-256 228149e9…170a, CLEA_Vireo.zip
   `program files/CLEA/VIREO/Spectra/Galaxies/`, user approval of 2026-10-27, group 1). NGC 4670 (F3 row 1) is acquirable on
@@ -92,14 +92,18 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   text and the typed velocity (both Single); a velocity that does not convert shows "Velocity is incorrect or missing! You must
   supply a valid velocity for plotting." (Velocity Error!), one more than 1 % from c·z shows "Velocity calculation is
   invalid!", and the dialog stays open [D]. [W] within 1e-12 of the 1 % limit the velocity is refused, as on the Hubble route.
+  [W] With z = 0 the web shows "Velocity calculation is invalid!"; natively the division by zero raises an x87 exception that
+  reaches the program's default error box.
   Session: records made this way are listed in a v31 wrapper (`lssNativeDialogIds`, policy `openvireo-lss-dialog-v31`) around
   the unchanged v27–v30 layers; restore checks their stored z against the replayed z's 4-digit text and their velocity against
   the 1 % rule. Records from v27–v30 files keep the c·z rule and restore exactly as before.
 - **Save Data (.TXT).** The native LSS results writer 0x57af74 with row 0x57b8e4 (`core/lssResultsTxt.ts`): header
   `Object ID    MJD(Days)      RA           Dec     V(km/sec)  Comments`, then per record Copy(ID,1,11) padded to 12, the JD
-  text without its first 3 characters, RA h m s (1 decimal), Dec ° ' " (0 decimals), V as ` d.dddE+dd` in 12 columns (blank
-  when 0) and the remarks glued on, CR LF, Windows-1252; default name `LSS_Redshifts.TXT`. The wedge's Load Saved Data reads
-  it back (tested); as natively, remarks glued to V make that row's V unreadable. [W] browser download, remarks cut to 36.
+  text without its first 3 characters, RA h m s (1 decimal), Dec ° ' " (0 decimals), V as `d.dddE+dd ` (the number then a
+  space, left-padded to 12 columns; blank when 0) and the remarks, CR LF, Windows-1252; default name `LSS_Redshifts.TXT`. The
+  wedge's Load Saved Data reads it back with V and the first word of the remarks (tested). [W] browser download, remarks cut
+  to 36, rows in the order they were recorded (natively the list's sorted (time, RA) order; they differ only if the site
+  clock was moved backwards).
 - **LSS Galaxy Data (instructor).** File › "LSS Galaxy Data..." is visible natively only when the LSS exercise starts with Edit
   Mode on (LargeScaleStructure1Click 0x58aad3 is the only Visible writer). The web shows it in `#lss-survey` while Edit Mode is
   on. TLSSRgnDlg (FormShow 0x5853f4, OK 0x585510): six bounds with the native texts, "Parameters contain non-numeric data!" /

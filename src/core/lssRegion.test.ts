@@ -32,4 +32,12 @@ describe('Front L2: TLSSRgnDlg (0x5853f4 / 0x585510 / 0x584d0c)',()=>{
   // No match: the native initial range 1.0 .. 0.0 is shown.
   expect(lssRegionSummary(extractLssRegion(catalogue,{raMin:0,raMax:24,decMin:-90,decMax:90,zMin:50,zMax:60}))).toBe('Galaxy Records Searched: 24069\r\nGalaxies Found in Region: 0\r\nRange in Z: 1.00E+00 to 0.00E+00');
  });
+ it('masked z (web, review 1 F2): the Z edits are neither validated nor applied, so the found rows do not depend on them',()=>{
+  const at=(zMin:string,zMax:string)=>{const c=checkLssRegion(text({zMin,zMax}),{zMasked:true});if(!c.ok)throw Error(c.message);return extractLssRegion(catalogue,c.bounds,{zMasked:true});};
+  const a=at('0','0.05'),b=at('0.02','0.021'),c=at('x','-9');
+  expect(b.rows).toEqual(a.rows);expect(c.rows).toEqual(a.rows);
+  expect(a.rows.length).toBe(catalogue.filter(g=>g.ra>=12&&g.ra<=13&&g.dec>=27&&g.dec<=28).length);
+  // The stored Z bounds are kept as they were.
+  expect(checkLssRegion(text({zMin:'5',zMax:'1'}),{zMasked:true},{...LSS_REGION_INITIAL,zMin:0.1,zMax:0.2})).toMatchObject({ok:true,bounds:{zMin:0.1,zMax:0.2}});
+ });
 });

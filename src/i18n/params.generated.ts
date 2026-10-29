@@ -3222,6 +3222,7 @@ export interface MessageParameters {
   "lss.region.clear": never;
   "lss.region.velocity": never;
   "lss.region.zMasked": never;
+  "lss.region.zDisabled": never;
   "lss.region.noWedge": never;
   "lss.results.txtSaved": "name";
   "lss.results.plot": never;
@@ -3253,6 +3254,7 @@ export interface MessageParameters {
   "lss.dialog.decS": never;
   "lss.dialog.zLabel": never;
   "lss.dialog.velocity": never;
+  "lss.dialog.velocityChars": never;
   "lss.dialog.velocityHelp": never;
   "lss.wedge.refused": never;
   "lss.adaptation.observatory": never;

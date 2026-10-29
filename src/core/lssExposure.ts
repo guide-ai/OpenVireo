@@ -38,17 +38,20 @@ export type LssRowStatus=Readonly<{kind:'available'|'neighbour';result:FieldResu
 export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescope:FieldTelescope,inputs:LssSpectrumInputs,variableTime?:FieldVariableTime):LssRowStatus{
  // Evidence inconsistencies (tampered or incomplete pack) throw to the caller; only typed gates become statuses.
  // Front L2: the recovered QSO merge replaces the earlier typed QSO gate (as the Hubble engine fields use it).
- const at={ra:row.ra,dec:row.dec},options:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(variableTime?{variableTime}:{})};
- let result=evaluateField(pack,glx,at,telescope,options);
- if(result.reasons.length||!result.target)return Object.freeze({kind:'unavailable' as const,reasons:result.reasons,result});
- if(hasLibrarySpectrum(inputs.names,result.target.id)){
-  const file=result.target.id.replace(/ /g,'')+'.SP',samples=inputs.ownSpectra.get(file);
-  if(!samples)return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['spectrum-mapping' as const]),result});
-  const targetId=result.target.id;
-  result=evaluateField(pack,glx,at,telescope,{...options,librarySpectrum:Object.freeze({targetId,file,samples})});
-  if(result.reasons.length||!result.target)return Object.freeze({kind:'unavailable' as const,reasons:result.reasons,result});
-  if(result.target.id!==targetId||result.calibration?.sourceFile!==file)throw new Error('LSS own spectrum');
+ const at={ra:row.ra,dec:row.dec},base:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(variableTime?{variableTime}:{})};
+ // The row's own galaxy is usually the selected one: when it has an own spectrum, supply it up front (one evaluation, and any
+ // typed reason, mean-bound included, is then judged with that spectrum). Review 1 F8.
+ const ownFor=(id:string)=>{if(!hasLibrarySpectrum(inputs.names,id))return null;const file=id.replace(/ /g,'')+'.SP',samples=inputs.ownSpectra.get(file);return samples?Object.freeze({targetId:id,file,samples}):undefined;};
+ const rowOwn=ownFor(row.id);
+ let result=evaluateField(pack,glx,at,telescope,rowOwn?{...base,librarySpectrum:rowOwn}:base);
+ if(result.target&&result.target.id!==rowOwn?.targetId){
+  const own=ownFor(result.target.id);
+  if(own===undefined)return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['spectrum-mapping' as const]),result});
+  // Another selected galaxy with its own spectrum: evaluate again with it.
+  if(own)result=evaluateField(pack,glx,at,telescope,{...base,librarySpectrum:own});
  }
+ if(result.reasons.length||!result.target)return Object.freeze({kind:'unavailable' as const,reasons:result.reasons,result});
+ if(hasLibrarySpectrum(inputs.names,result.target.id)&&result.calibration?.sourceFile!==result.target.id.replace(/ /g,'')+'.SP')throw new Error('LSS own spectrum');
  return Object.freeze({kind:result.target.recordIndex===row.catalogIndex?'available' as const:'neighbour' as const,result,selectedId:result.target.id,selectedIndex:result.target.recordIndex});
 }
 /** Exposure engine for one available row; every operation checks the state's policy. */

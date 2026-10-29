@@ -21,7 +21,7 @@ export default function LssRegion({active,disabled,hasData,onResult}:{active:boo
  useEffect(()=>{const d=boxRef.current;if(!d)return;if(box&&!d.open)d.showModal();else if(!box&&d.open)d.close();},[box]);
  function open(){setError('');setText(lssRegionTexts(bounds));}
  function ok(){
-  if(!text)return;const c=checkLssRegion(text);
+  if(!text)return;const c=checkLssRegion(text,{zMasked:true},bounds);
   if(!c.ok){setBox({caption:R.inputCaption,text:c.message,kind:'error'});return;}
   setBounds(c.bounds);setText(null);pending.current=c.bounds;
   if(hasData)setBox({caption:R.retainCaption,text:R.retain,kind:'retain'});else void run(false);
@@ -30,7 +30,7 @@ export default function LssRegion({active,disabled,hasData,onResult}:{active:boo
   const b=pending.current;if(!b)return;pending.current=null;setBox(null);setBusy(true);setError('');
   try{
    catalogue.current??=parseGlxCatalog(await fetchBundledGlxCatalog(fetch,new AbortController().signal));
-   const r=extractLssRegion(catalogue.current,b);onResult(r,append);
+   const r=extractLssRegion(catalogue.current,b,{zMasked:true});onResult(r,append);
    setBox({caption:R.resultsCaption,text:lssRegionSummary(r,t('lss.region.zMasked')),kind:'results'});
   }catch{setError(t('lss.region.catalogError'));}
   finally{setBusy(false);}
@@ -49,9 +49,10 @@ export default function LssRegion({active,disabled,hasData,onResult}:{active:boo
    <h2 id="lss-region-title">{R.caption}</h2>
    <table className="lss-region-grid"><thead><tr><th/><th scope="col">{R.minimum}</th><th scope="col">{R.maximum}</th></tr></thead><tbody>
     {KEYS.map(([lo,hi,name])=><tr key={lo}><th scope="row">{name}</th>
-     <td><input aria-label={`${name} ${R.minimum}`} data-testid={`lss-region-${lo}`} value={text[lo]} onChange={e=>setText({...text,[lo]:e.target.value})}/></td>
-     <td><input aria-label={`${name} ${R.maximum}`} data-testid={`lss-region-${hi}`} value={text[hi]} onChange={e=>setText({...text,[hi]:e.target.value})}/></td></tr>)}
+     <td data-label={R.minimum}><input aria-label={`${name} ${R.minimum}`} data-testid={`lss-region-${lo}`} value={text[lo]} disabled={lo==='zMin'} aria-describedby={lo==='zMin'?'lss-region-z-reason':undefined} onChange={e=>setText({...text,[lo]:e.target.value})}/></td>
+     <td data-label={R.maximum}><input aria-label={`${name} ${R.maximum}`} data-testid={`lss-region-${hi}`} value={text[hi]} disabled={hi==='zMax'} aria-describedby={hi==='zMax'?'lss-region-z-reason':undefined} onChange={e=>setText({...text,[hi]:e.target.value})}/></td></tr>)}
    </tbody></table>
+   <p id="lss-region-z-reason" className="observatory-note" data-testid="lss-region-z-reason">{t('lss.region.zDisabled')}</p>
    <div className="sky-actions"><button type="submit" className="primary-button" data-testid="lss-region-ok">{label(R.ok)}</button><button type="button" className="secondary-button" onClick={()=>{setText(null);opener.current?.focus();}}>{label(R.cancel)}</button></div>
   </form>}</dialog>
   <dialog ref={boxRef} className="lss-dialog" role="alertdialog" aria-labelledby="lss-region-box-title" aria-describedby="lss-region-box-text" data-testid="lss-region-box" onCancel={e=>{e.preventDefault();answer(box?.kind==='retain'||box?.kind==='confirm'?'cancel':'yes');}}>{box&&<>

@@ -42,21 +42,25 @@ function strToFloat(s:string):number|null{
  return /^\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\s*$/.test(s)&&Number.isFinite(Number(s.trim()))?Number(s.trim()):null;
 }
 export type LssRegionCheck=Readonly<{ok:true;bounds:LssRegionBounds}>|Readonly<{ok:false;message:string}>;
-/** OKBtnClick 0x585510. */
-export function checkLssRegion(text:LssRegionText):LssRegionCheck{
- const keys=['raMin','raMax','decMin','decMax','zMin','zMax'] as const,v:Record<string,number>={};
+/** [W, coordinator decision of 2026-10-29, review 1 F2] While catalogue z is masked (the E02 answers), the Z bounds must not
+ * filter: a masked z that still narrows a search can be recovered by bisection. With `zMasked` the Z edits are not read, not
+ * validated and not applied; the stored Z bounds stay as they were. */
+export type LssRegionOptions=Readonly<{zMasked?:boolean}>;
+/** OKBtnClick 0x585510 (with zMasked: the Z pair is skipped). */
+export function checkLssRegion(text:LssRegionText,options:LssRegionOptions={},stored:LssRegionBounds=LSS_REGION_INITIAL):LssRegionCheck{
+ const keys=(options.zMasked?['raMin','raMax','decMin','decMax']:['raMin','raMax','decMin','decMax','zMin','zMax']) as readonly (keyof LssRegionBounds)[],v:Record<string,number>={};
  for(const k of keys){const n=strToFloat(text[k]);if(n===null)return {ok:false,message:LSS_REGION_TEXT.nonNumeric};v[k]=n;}
- const b=v as LssRegionBounds;
- const ok=b.raMin>=0&&b.raMin<=24&&b.raMax>=0&&b.raMax<=24&&b.raMin<b.raMax&&b.decMin>=-90&&b.decMin<=90&&b.decMax>=-90&&b.decMax<=90&&b.decMin<b.decMax&&b.zMin<b.zMax;
+ const b=(options.zMasked?{...v,zMin:stored.zMin,zMax:stored.zMax}:v) as LssRegionBounds;
+ const ok=b.raMin>=0&&b.raMin<=24&&b.raMax>=0&&b.raMax<=24&&b.raMin<b.raMax&&b.decMin>=-90&&b.decMin<=90&&b.decMax>=-90&&b.decMax<=90&&b.decMin<b.decMax&&(options.zMasked||b.zMin<b.zMax);
  return ok?{ok:true,bounds:Object.freeze({...b})}:{ok:false,message:LSS_REGION_TEXT.inconsistent};
 }
 export type LssRegionRow=Readonly<{object:string;recordIndex:number;ra:number;dec:number;z:number}>;
 export type LssRegionResult=Readonly<{searched:number;rows:readonly LssRegionRow[];zLow:number;zHigh:number}>;
 /** 0x584d0c over the parsed catalogue (z Single +28, RA Double +0, Dec Double +8; inclusive; z first). */
-export function extractLssRegion(catalogue:readonly IndexedGlxRecord[],b:LssRegionBounds):LssRegionResult{
+export function extractLssRegion(catalogue:readonly IndexedGlxRecord[],b:LssRegionBounds,options:LssRegionOptions={}):LssRegionResult{
  let zLow=1,zHigh=0;const rows:LssRegionRow[]=[];
  for(const g of catalogue){
-  if(!(b.zMin<=g.redshift&&g.redshift<=b.zMax))continue;
+  if(!options.zMasked&&!(b.zMin<=g.redshift&&g.redshift<=b.zMax))continue;
   if(!(b.raMin<=g.ra&&g.ra<=b.raMax))continue;
   if(!(b.decMin<=g.dec&&g.dec<=b.decMax))continue;
   rows.push(Object.freeze({object:g.id.slice(0,15),recordIndex:g.recordIndex,ra:g.ra,dec:g.dec,z:g.redshift}));

@@ -8,6 +8,8 @@ import {evaluateLssRow,lssExposureEngine,lssPolicy,parseLssPolicy,lssCountsCsv} 
 import {fieldPackFromSnapshot} from './fieldPack';
 import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy,pauseGalaxy} from './galaxyExposure';
 import {galaxySpectrumBytes,lssSpectrumBytes} from './exposureSpectrum';
+import {lssResultsTxtBytes} from './lssResultsTxt';
+import {wedgeParseLssText} from './wedgeLssText';
 import {EMPTY_WEDGE_WORKSPACE,appendOwnLssRecords,completeWedgeRead,beginWedgeRead,addWedgePending,removeOwnLssRecords,WEDGE_OWN_RECORDS_NAME} from './wedgeWorkspace';
 import {wedgePlot,WEDGE_DEFAULT_OPTIONS} from './wedgePlot';
 import {LSS_ROWS,type LssRow} from './lssFields';
@@ -125,5 +127,15 @@ describe('LSS row evaluation and exposure',()=>{
   const g=pauseGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(7,'36773',0))),500));
   expect(new TextDecoder().decode(lssSpectrumBytes(paused,st.result,row))).toBe(new TextDecoder().decode(galaxySpectrumBytes(g)));
   expect(parseLssPolicy(policy)).toEqual({field:1,row:0,telescope:0});expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R99:T0')).toThrow();
+ });
+ it('Front L2 (review 1 F4): a typed velocity reaches the wedge by hand-over exactly as by the native .TXT route',()=>{
+  const draft0={field:1 as const,row:0,telescope:0 as const,object:'SYNTH-1',jd:2451545.25,ra:12.5,dec:27.25,z:0.02,acquisitionPolicy:'p',journal:{seedAtReset:1,events:[]},control:{base:0,position:20,factor:1 as const,step:.001}};
+  const open=openLssRecord(EMPTY_LSS_SURVEY,draft0),r=confirmLssDialog(editLssDraft(open,{velocity:'6040',remarks:'arm'}));if(!r.ok)throw Error(r.message);
+  const rec=r.state.records[0];expect(rec.velocitySingle).toBe(6040);
+  const own=appendOwnLssRecords(EMPTY_WEDGE_WORKSPACE,[{object:rec.object,jd:rec.jd,ra:rec.ra,dec:rec.dec,zSingle:rec.zSingle,remarks:rec.remarks,velocitySingle:rec.velocitySingle}],{sha256:'0'.repeat(64),bytes:1});
+  const txt=wedgeParseLssText(lssResultsTxtBytes([rec]),'.');if(!txt.ok)throw Error();
+  const a=own.records[0].redshift,b=txt.file.rows[0].redshift;
+  if(a.status!=='value'||b.status!=='value')throw Error();
+  expect([a.source,a.velocity.bits,a.z.bits]).toEqual(['velocity',b.velocity.bits,b.z.bits]);expect(txt.file.rows[0].comment).toBe('arm');
  });
 });

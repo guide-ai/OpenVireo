@@ -105,11 +105,11 @@ export default function LssSurvey({active,editMode=false,currentJd,initialTelesc
   if(!r.ok){setDialogError(r.caption?`${r.caption} ${r.message.replace(/\r\n/g,' ')}`:r.message);return;}
   current.current=r.state;setSurveyState(r.state);setDialogError('');setNotice(t('lss.recorded'));
  }
- function velocity(text:string){if(!update(s=>editLssDraft(s,{velocity:text})))setDialogError(t('lss.dialog.controlChars'));else setDialogError('');}
+ function velocity(text:string){if(!update(s=>editLssDraft(s,{velocity:text})))setDialogError(t('lss.dialog.velocityChars'));else setDialogError('');}
  function remarks(text:string){if(!update(s=>editLssDraft(s,{remarks:text})))setDialogError(t('lss.dialog.controlChars'));else setDialogError('');}
  async function plot(){
   const pending=pendingWedgeRecords(survey);if(!pending.length){setNotice(t('lss.wedge.nothing'));return;}
-  const records=pending.map(r=>Object.freeze({object:r.object,jd:r.jd,ra:r.ra,dec:r.dec,zSingle:r.zSingle,remarks:r.remarks})),text=JSON.stringify(records),bytes=new TextEncoder().encode(text);
+  const records=pending.map(r=>Object.freeze({object:r.object,jd:r.jd,ra:r.ra,dec:r.dec,zSingle:r.zSingle,remarks:r.remarks,...(r.nativeDialog?{velocitySingle:r.velocitySingle}:{})})),text=JSON.stringify(records),bytes=new TextEncoder().encode(text);
   const upTo=current.current.handedToWedge+pending.length,sha256=await resourceSha256(bytes.slice().buffer);
   // Marked as handed only when the wedge reports that it added them (wedgeAck); otherwise they can be plotted again.
   handoff.current={token:onPlotWedge(Object.freeze({records:Object.freeze(records),sha256,bytes:bytes.byteLength})),upTo};

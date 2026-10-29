@@ -6,9 +6,12 @@
  *  - Row 0x57b8e4 (also the list box line), concatenated with no other separators [D]:
  *    Copy(ID,1,11) right-padded to 12; Copy(FloatToStrF(JD, ffFixed, 18, 6), 4, 11) (the JD text minus its first 3
  *    characters); RA 0x486ca0(1, 'h','m','s'); Dec 0x486ca0(0, '°',"'",'"'); V: 12 spaces when v = 0, otherwise
- *    ' ' + FloatToStrF(v, ffExponent, 4, 2) left-padded to 12; the remarks appended directly.
+ *    FloatToStrF(v, ffExponent, 4, 2) + ' ' (_LStrCat3 0x406148 at 0x57ba0d..0x57ba43: number, then ' ') left-padded to 12
+ *    (Insert loop 0x57ba26); the remarks appended directly, so the trailing space separates V from them.
  *  - Default file name LSS_Redshifts.TXT, dialog title "Save Reshift Measurements in Text File" (typo verbatim) [D].
- * Web [W]: the file is a browser download (no folder, overwrite or IO-error boxes); remarks are cut to the native 36
+ * Web [W]: rows are written in the order they were recorded (natively the list's sorted (TDateTime, RA) order, 0x492728;
+ * they differ only if the site clock was moved backwards). The file is a browser download (no folder, overwrite or IO-error
+ * boxes); remarks are cut to the native 36
  * characters (ShortString[36]) and a character outside Windows-1252 is written as '?'. Number formatting uses the ported
  * helpers (nativeListFormat.ts, catalogObject.floatToStrFExponent4, variableStars.delphiFixed): half-even, not x87. Pure. */
 import {formatNativeSexagesimalDigits,padLeft,padRight} from './nativeListFormat';
@@ -23,7 +26,7 @@ export type LssTxtRow=Pick<LssRecord,'object'|'jd'|'ra'|'dec'|'velocitySingle'|'
 export function lssResultsTxtRow(r:LssTxtRow):string{
  if(![r.jd,r.ra,r.dec,r.velocitySingle].every(Number.isFinite))throw new RangeError('LSS .TXT row');
  const jd=delphiFixed(r.jd,6).slice(3,14);
- const v=r.velocitySingle===0?' '.repeat(12):padLeft(' '+floatToStrFExponent4(r.velocitySingle),12,' ');
+ const v=r.velocitySingle===0?' '.repeat(12):padLeft(floatToStrFExponent4(r.velocitySingle)+' ',12,' ');
  return padRight(r.object.slice(0,LSS_RESULTS_TXT.id),12)+jd+formatNativeSexagesimalDigits(r.ra,1,['h','m','s'])+
   formatNativeSexagesimalDigits(r.dec,0,['°',"'",'"'])+v+r.remarks.slice(0,LSS_RESULTS_TXT.remarks);
 }
