@@ -138,3 +138,24 @@ test('an Object X spectrum opens in Classify under its label, without naming the
  expect([...names(text)].filter(n=>!baseline.has(n))).toEqual([]);
  await button(page,'Open observation results').click();await expect(page.getByTestId('observation-object')).toHaveText('ObjX-7');
 });
+
+// Front S (D4): until the reveal the header is masked (label, 0.000); after it, Save writes the native catalog name and
+// magnitude. A file saved earlier is not rewritten, and the 600 data rows are the same.
+test('after the reveal Save writes the native header; the earlier file and the data rows are unchanged',async({page})=>{
+ await openLab(page);await slit(page,CODES.star,'4.0 m');await expose(page);
+ const save=async()=>{const d=page.waitForEvent('download');await button(page,'Save spectrum (.SSP)').click();const dl=await d;return {name:dl.suggestedFilename(),path:(await dl.path())!};};
+ const before=await save(),beforeText=await readFile(before.path,'latin1');
+ expect(beforeText.split('\r\n')[0]).toMatch(/^\*SpHdr\* ObjX-7,.*,0\.000$/);
+ await page.getByTestId('objectx-answer').getByLabel('star').check();
+ await page.getByLabel('Describe your evidence').fill('Absorption lines of a cool star.');
+ await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
+ await expect(page.getByTestId('objectx-reveal')).toContainText('N3730-01103');
+ await expect(button(page,'Save spectrum (.SSP)')).toBeEnabled();
+ const after=await save(),afterText=await readFile(after.path,'latin1');
+ expect(after.name).toBe(before.name);
+ const [head,...rows]=afterText.split('\r\n');
+ // The header object is the selected catalogue record as the engine names it (the star route writes the same form).
+ expect(head).toMatch(/^\*SpHdr\* N3730\.DAT@\d+,-?\d+\.\d{6},-?\d+\.\d{5},\d+\.\d{3}$/);expect(head.endsWith(',0.000')).toBe(false);
+ expect(rows).toEqual(beforeText.split('\r\n').slice(1));
+ expect(await readFile(before.path,'latin1')).toBe(beforeText);
+});

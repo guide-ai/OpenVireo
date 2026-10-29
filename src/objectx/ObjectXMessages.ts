@@ -99,7 +99,7 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  spectrumShow:(label:string)=>`Show ${label}`,
  spectrumSaveCsv:(label:string)=>`Save ${label} spectrum (CSV)`,
  // Front S (S6)
- spectrumSaveNote:'The .SSP file is named after your ObjX label, and its header holds that label, the coordinates you were given and magnitude 0.000. VIREO writes the catalog name and magnitude there; OpenVireo leaves them out so that the file never names the object [W]. Load the file in Classify (Import SP or SSP) to classify it.',
+ spectrumSaveNote:'The .SSP file is named after your ObjX label. Until the reveal its header holds that label, the coordinates you were given and magnitude 0.000, so that the file never names the object [W]; after the reveal it holds the catalog name and magnitude, as VIREO writes. Load the file in Classify (Import SP or SSP) to classify it.',
  spectrumSaved:(name:string)=>`Spectrum saved as ${name}. Your saved investigation keeps the exposure itself.`,
  spectrumClassify:'Classify this spectrum',
  spectrumClassifyError:'This spectrum could not be opened in Classify (it needs a positive bin, a stopped exposure and wavelengths covering 3900–4500 Å).',

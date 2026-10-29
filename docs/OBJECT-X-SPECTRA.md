@@ -158,10 +158,13 @@ through the same writer and card as the star, galaxy and LSS routes (`objectXSpe
 Identity masking (research `analysis/front-s-spectroscopy/RE-observational-data-metadata.md` §5):
 - **File name:** the student's label, `ObjX-<ID>-Snn.ssp`. VIREO names the file `ObjX-<student>` when Show Object ID is off
   and after the catalog object when it is on; OpenVireo always uses the label. Classify then takes that label as the object ID.
-- **Header:** `*SpHdr* <label>,<RA>,<Dec>,0.000`. VIREO always writes the selected catalog object's name and catalog
-  magnitude there; OpenVireo writes the label and magnitude 0.000 [W], before and after the reveal, so a saved file never
-  names or narrows down the object. The RA/Dec are the target coordinates the student was given.
+- **Header before the reveal:** `*SpHdr* <label>,<RA>,<Dec>,0.000`. VIREO always writes the selected catalog object's name
+  and catalog magnitude there; while the identity is hidden OpenVireo writes the label and magnitude 0.000 [W], so a saved
+  file never names or narrows down the object. The RA/Dec are the target coordinates the student was given.
+- **Header after the reveal** (coordinator decision D4, 2026-10-29): the native values, the selected catalogue record as the
+  field engine names it (for a star the same `N….DAT@index` form the star route's header uses) and its catalog magnitude.
+  The 600 data rows are the same; a file saved before the reveal is never rewritten.
 - The body is VIREO's: 600 rows from 3700 Å, step 1000/600 Å, normalized source-plus-sky counts.
 
-A test writes the file for every ObjectX.HTL target and checks that no catalogue ID, remark word or star-template name appears
+A test writes the file for every ObjectX.HTL target and checks that no catalogue ID, remark word or star-template name appears before the reveal, and that after it only the header changes
 (`src/core/objectXSpectrumSave.test.ts`); the browser flow checks the downloaded file (`tests/object-x-spectrum.spec.ts`).

@@ -49,7 +49,9 @@ export type ObjectXSpectrumDisplay=
  |Readonly<{status:'available';telescope:FieldTelescope;policy:string;wavelengths:readonly number[];calibration:ObjectXSpectrumCalibration}>
  |Readonly<{status:'unavailable';telescope:FieldTelescope}>;
 /** reasons: the engine's typed reasons; 'not-a-target' when the pointing is not a spectroscopy row's exact coordinates. */
-export type ObjectXSpectrumReveal=Readonly<{row:number|null;kind:'qso'|'galaxy'|'star'|null;recordId:string|null;reasons:readonly (FieldUnavailableReason|'not-a-target')[];pixelLevel:number|null}>;
+/** headerMagnitude (Front S, S6): the selected record's catalog magnitude, which VIREO's .SSP header writes (0x510090); only
+ * used after the reveal. */
+export type ObjectXSpectrumReveal=Readonly<{row:number|null;kind:'qso'|'galaxy'|'star'|null;recordId:string|null;headerMagnitude:number|null;reasons:readonly (FieldUnavailableReason|'not-a-target')[];pixelLevel:number|null}>;
 export type ObjectXSpectrumEvaluation=Readonly<{display:ObjectXSpectrumDisplay;reveal:ObjectXSpectrumReveal}>;
 const CODE=/^X-[0-9A-Z]{5}$/;
 /** The journal policy names the opaque target code (never the ObjectX.HTL row) and the telescope. */
@@ -89,10 +91,10 @@ export function objectXField(inputs:ObjectXSpectrometerInputs,pointing:Readonly<
 export function evaluateObjectXSpectrum(inputs:ObjectXSpectrometerInputs,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):ObjectXSpectrumEvaluation{
  const unavailable=Object.freeze({status:'unavailable' as const,telescope});
  const f=objectXField(inputs,pointing,telescope);
- if(!f)return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,reasons:Object.freeze(['not-a-target' as const]),pixelLevel:null})});
+ if(!f)return Object.freeze({display:unavailable,reveal:Object.freeze({row:null,kind:null,recordId:null,headerMagnitude:null,reasons:Object.freeze(['not-a-target' as const]),pixelLevel:null})});
  const {row,code,result:r}=f;
- const kind=r.qsoTarget?'qso' as const:r.starTarget?'star' as const:r.target?'galaxy' as const:null,recordId=r.qsoTarget?.id??r.starTarget?.id??r.target?.id??null;
- const reveal=Object.freeze({row:row.row,kind,recordId,reasons:Object.freeze([...r.reasons]),pixelLevel:r.calibration?.pixelLevel??null});
+ const kind=r.qsoTarget?'qso' as const:r.starTarget?'star' as const:r.target?'galaxy' as const:null,recordId=r.qsoTarget?.id??r.starTarget?.id??r.target?.id??null,headerMagnitude=r.qsoTarget?.magnitude??r.starTarget?.magnitude??r.target?.magnitude??null;
+ const reveal=Object.freeze({row:row.row,kind,recordId,headerMagnitude,reasons:Object.freeze([...r.reasons]),pixelLevel:r.calibration?.pixelLevel??null});
  if(r.reasons.length||!r.calibration)return Object.freeze({display:unavailable,reveal});
  const c=r.calibration,calibration=Object.freeze({sourceMeans:c.sourceMeans,skyMean:c.amplitude.sky,multiplier:FIELD_MULTIPLIER,...(c.continuationSource?{continuationSource:c.continuationSource}:{})});
  return Object.freeze({display:Object.freeze({status:'available' as const,telescope,policy:objectXSpectrumPolicy(code,telescope),wavelengths:c.wavelengths,calibration}),reveal});

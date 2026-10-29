@@ -29,6 +29,12 @@ describe('Object X .SSP save',()=>{
    for(const word of forbidden)expect(text.includes(word),word).toBe(false);
   }
  });
+ it('after the reveal writes the native object and magnitude; the data rows do not change',()=>{
+  const t=objectXTargets(list)[0],masked=new TextDecoder().decode(objectXSpectrumBytes(state(counts),'ObjX-7-S01',t,3700));
+  const native=new TextDecoder().decode(objectXSpectrumBytes(state(counts),'ObjX-7-S01',t,3700,{object:'N3730-01103',magnitude:12.25}));
+  expect(native.split('\r\n')[0]).toMatch(/^\*SpHdr\* N3730-01103,.*,12\.250$/);
+  expect(native.split('\r\n').slice(1)).toEqual(masked.split('\r\n').slice(1));
+ });
  it('keeps the header object ASCII, without commas, and at most 24 characters',()=>{
   expect(objectXHeaderObject('ObjX-Ana, María-S01')).toBe('ObjX-Ana_ Mar_a-S01');
   expect(objectXHeaderObject('ObjX-'+'x'.repeat(40))).toHaveLength(24);
