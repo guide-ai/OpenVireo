@@ -15,7 +15,16 @@ describe('PListAddClick 0x567c5c record (Front R1)',()=>{
   expect(radioAddCurrentFields(here,null,{exactPosition:true,pulsarIdentification:1})).toEqual({id:'',remarks:'',ra:3.6,dec:54.6});
   expect(radioAddCurrentFields(here,P,{exactPosition:false,pulsarIdentification:0}).id).toBe('');
  });
- it('Object X: the hidden label replaces the pulsar name',()=>{expect(radioAddCurrentFields(here,P,undefined,'ObjX-7').id).toBe('ObjX-7');});
+ it('Object X: the hidden label replaces the pulsar name wherever the pointing is (review M2), even with Exact Pos',()=>{
+  expect(radioAddCurrentFields({ra:10,dec:-20},P,undefined,'ObjX-7')).toEqual({id:'ObjX-7',remarks:'',ra:10,dec:-20});
+  expect(radioAddCurrentFields(here,null,undefined,'ObjX-7').id).toBe('ObjX-7');
+ });
+ it('a receiver miss (empty primary name) keeps the pointing under Exact Pos; the ID is not trimmed, only cut to 24',()=>{
+  const miss={...P,primaryName:''} as PulsarRecord;
+  expect(radioAddCurrentFields(here,miss,{exactPosition:true,pulsarIdentification:1})).toEqual({id:'B0329+54',remarks:'',ra:3.6,dec:54.6});
+  expect(radioAddCurrentFields(here,{...P,legacyName:' B0329+54 '} as PulsarRecord).id).toBe(' B0329+54 ');
+  expect(radioAddCurrentFields(here,{...P,legacyName:'X'.repeat(30)} as PulsarRecord).id).toHaveLength(24);
+ });
  it('Rcvr1BtnClick 0x567a83 enables +0x480; a second open changes nothing',()=>{
   expect(INITIAL_RADIO_LAB.addToListEnabled).toBe(false);
   const t=receiverOneOpened(INITIAL_RADIO_LAB);expect(t.state.addToListEnabled).toBe(true);expect(t.changed).toBe(true);

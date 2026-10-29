@@ -71,7 +71,8 @@ export type PoissonDraw = Readonly<{ value: number; seed: number; draws: number 
  * Original cache is recomputed without changing random draw consumption.
  * `negativeMean: 'native'` (Front R1, radio): 0x55f0f4 has no mean guard; its product branch caches g := Exp(−mean)
  * (0x55f110..0x55f141) and multiplies uniforms while t > g (0x55f169..0x55f190). For a finite negative mean g > 1, so the
- * first uniform ends the loop with value 0 and one draw. The default keeps the earlier refusal for other callers.
+ * first uniform ends the loop with value 0 and one draw [D for −11356 < mean < 0]. Below about −11356.5 Exp overflows Extended and
+ * VIREO would likely raise EOverflow [I]; the web returns 0 there too [W]. The default keeps the earlier refusal for other callers.
  */
 export function poissonDraw(mean: number, initialSeed: number, drawBudget = 10_000, negativeMean: 'refuse' | 'native' = 'refuse'): PoissonDraw {
   if (!Number.isFinite(mean) || (mean < 0 && negativeMean !== 'native') || mean > 1_000_000) throw new AcquisitionError('mean');

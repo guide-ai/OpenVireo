@@ -1176,26 +1176,41 @@ test('Review UI-R06: Ok without edits keeps every field and enables no save writ
   await page.keyboard.press('Escape');
   await openReview(page);
   expect(await rowCells(page)).toEqual(before);
-  // Front R1: Find is enabled over the stored lines (0x5634c8: lowercase A–Z, From Top / after the selection, no wrap).
-  const find = page.getByTestId('pulsar-review-find');
+  // Front R1: Find is enabled over the stored lines (0x5634c8 via savedFindRun: lowercase A–Z, From Top / after the selection,
+  // no wrap, remembered lowercased query, "Find Record Containing..." caption).
+  const find = page.getByTestId('pulsar-review-find'), q = page.getByTestId('pulsar-review-find-query');
   await expect(find).toBeEnabled();
   await expect(find).toHaveAccessibleDescription(/^Find searches each stored line/);
   await find.click();
-  await page.getByTestId('fi-find-query').fill('SAME');
-  await page.getByTestId('fi-find-top').click();
+  await expect(page.getByTestId('pulsar-review-find-dialog')).toContainText('Find Record Containing...');
+  await expect(page.getByTestId('pulsar-review-find-dialog')).toContainText('Begin Search:');
+  await expect(q).toBeFocused(); await expect(q).toHaveValue('');
+  await q.fill('SAME');
+  await page.getByTestId('pulsar-review-find-top').click();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
+  await expect(page.getByTestId('pulsar-review-select-2')).toBeFocused();
   await find.click();
-  await page.getByTestId('fi-find-query').fill('same');
-  await page.getByTestId('fi-find-next').click();
+  await expect(q).toHaveValue('same'); // remembered, lowercased in place
+  await page.getByTestId('pulsar-review-find-cursor').click();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-3');
   await find.click();
-  await page.getByTestId('fi-find-query').fill('same');
-  await page.getByTestId('fi-find-next').click();
-  await expect(page.getByTestId('fi-box')).toContainText('String Not Found');
-  await expect(page.getByTestId('fi-box-text')).toHaveText('"same" Not Found.');
-  await page.getByTestId('fi-box').getByRole('button').first().click();
+  await page.getByTestId('pulsar-review-find-cursor').click();
+  await expect(page.getByTestId('pulsar-review-find-notice')).toContainText('String Not Found');
+  await expect(page.getByTestId('pulsar-review-find-notice-body')).toHaveText('"same" Not Found.');
+  await page.keyboard.press('Escape'); // the notice's OK only
+  await expect(page.getByTestId('pulsar-review-find-notice')).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
   await expect(find).toBeFocused();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-3');
+  // Review M1: Escape in Find is that dialog's Cancel; the Review and its draft stay.
+  await page.getByTestId('pulsar-review-delete').click(); await page.getByTestId('pulsar-review-yes').click();
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2']);
+  await find.click(); await expect(q).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('pulsar-review-find-dialog')).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2']);
+  await expect(find).toBeFocused();
   await expect(page.getByTestId('pulsar-review-edit')).toBeEnabled();
   await page.getByTestId('pulsar-review-cancel').click();
 });

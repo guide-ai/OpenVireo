@@ -36,8 +36,10 @@ describe('radio-private random stream',()=>{
  it('refuses out-of-domain means atomically (bounded web admission, not native parity)',()=>{
   const s=randomizeRadioStream(null,'receiver-create-0x572376',3),snapshot=JSON.stringify(s);
   for(const mean of [Number.NaN,1e6+1,Infinity,-Infinity])expect(refusal(()=>radioPoisson(s,mean,0))).toBe('poisson-mean-domain');
-  // Front R1: 0x55f0f4 has no mean guard; a finite negative mean ends the product loop after one uniform with 0.
-  for(const mean of [-0.1,-1,-1e9]){const d=radioPoisson(s,mean,0);expect([d.value,d.uniforms]).toEqual([0,1]);}
+  // Front R1: 0x55f0f4 has no mean guard; a finite negative mean ends the product loop after one uniform with 0 [D] for
+  // −11356 < mean < 0. Below about −11356.5 VIREO's Extended Exp(−mean) overflows and, with Delphi's default control word,
+  // would likely raise EOverflow [I]; the web still draws 0 there [W] (review I1). −1e9 pins that web choice.
+  for(const mean of [-0.1,-1,-11000,-1e9]){const d=radioPoisson(s,mean,0);expect([d.value,d.uniforms]).toEqual([0,1]);}
   expect(JSON.stringify(s)).toBe(snapshot);
  });
  it('bounds and freezes the ledger',()=>{

@@ -139,6 +139,7 @@ export const RADIO_ANTENNA_MESSAGES_EN=Object.freeze({
  'antenna.hotList.item':'{menu} ▸ {group} ▸ {item}',
  'antenna.hotList.addDisabled':'Add Current Item to List is enabled when Receiver 1 opens, and disabled again by a programmed slew or a manual stop at the horizon, as in VIREO. It stores the pulsar’s B1950 name (VIREO’s compiled Pulsar Identification setting) and the current pointing (Exact Pos for Hot List is off).',
  'antenna.hotList.loadDraft':'Load is unavailable while the observatory Hot List editor has an Add or Edit open: apply or cancel that edit first (browser policy).',
+ 'antenna.hotList.addDraft':'Add Current Item is unavailable while the observatory Hot List editor has an Add or Edit open: apply or cancel that edit first (browser policy; an insert would move the row being edited).',
  'antenna.hotList.loadPending':'A hot list file is being read. Cancel it or wait.',
  'antenna.hotList.file':'Radio hot list HTL file',
  'antenna.hotList.cancelLoad':'Cancel hot list load',

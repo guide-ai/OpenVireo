@@ -50,6 +50,8 @@ export type RadioControlPanelProps=Readonly<{
  hotListMask?:(ra:number,dec:number)=>string|null;
  /** Front R1: the pulsar in the receivers' shared buffer (+0x5f7), read when Add Current Item to List... is chosen. */
  addCurrentSource?:()=>PulsarRecord|null;
+ /** Front R1 (review M2): while Object X hides its target, the hidden target's label; Add Current then never reads the buffer. */
+ addCurrentHiddenLabel?:string|null;
  /** Controlled recovered control state; apply `transition.state` in onTransition. */
  state:RadioControlState;
  /** Inputs owned outside this slice (dome byte, option byte, diameter, other Window items). */
@@ -244,7 +246,7 @@ const domKey=(e:KeyboardEvent<HTMLElement>):BrowserKeyInput=>({key:e.key,code:e.
 const KEY_SCOPE='[data-antenna-key-scope]';
 
 export default function RadioControlPanel({state,environment,onTransition,onEnvironmentChange,translate=englishRadio,autoScopeTimer=true,
- antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList,receiver,managedDiameter=false,hotListMask,addCurrentSource}:RadioControlPanelProps){
+ antenna,onAntennaTransition,antennaOptions=RADIO_COMPILED_OPTIONS,antennaTranslate=englishAntenna,autoSlewTimer=true,active=true,hostBusy=false,onModalPresentedChange,radioClock,onAntennaOptionsChange,hotList,receiver,managedDiameter=false,hotListMask,addCurrentSource,addCurrentHiddenLabel=null}:RadioControlPanelProps){
  const t=translate,ta=antennaTranslate,id=useId();
  const managedRef=useRef(managedDiameter);
  useLayoutEffect(()=>{managedRef.current=managedDiameter;});
@@ -350,7 +352,7 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  const [hotLoad,setHotLoad]=useState<HotLoadStatus|null>(null);
  /** Token of this panel's pending shared read (null: none). */
  const radioRead=useRef<number|null>(null);
- const hotFile=useRef<HTMLInputElement>(null),viewSelectRef=useRef<HTMLButtonElement>(null);
+ const hotFile=useRef<HTMLInputElement>(null),viewSelectRef=useRef<HTMLButtonElement>(null),addCurrentRef=useRef<HTMLButtonElement>(null);
  const cancelRadioRead=(status:'cancelled'|'stale')=>{
   const token=radioRead.current;if(token===null)return;radioRead.current=null;bundledAbort.current?.abort();
   latest.current.hotList?.update(d=>cancelHotListRead(d,'radio',token));setHotLoad({kind:status});
@@ -418,15 +420,19 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
  };
  // Front R1: Add Current Item to List... (PListAddClick 0x567c5c): THOVerifyDlg prefilled, then 0x590588 and the box.
  const [entry,setEntry]=useState<HotListEntryDraft|null>(null),[entryError,setEntryError]=useState(''),[added,setAdded]=useState<string|null>(null);
+ // Review L1: back to Add Current once its dialog or box has closed (after the children's cleanup closed the <dialog>).
+ const focusAddCurrent=useRef(false);
+ useEffect(()=>{if(focusAddCurrent.current&&entry===null&&added===null){focusAddCurrent.current=false;addCurrentRef.current?.focus();}},[entry,added]);
  const onAddCurrent=()=>{const a=latest.current.antenna;if(!a||!a.addToListEnabled||!a.slewMenuEnabled||isRadioLabModal(a))return;
-  const f=radioAddCurrentFields(a.pointing,addCurrentSource?.()??null,undefined,hotListMask?.(a.pointing.ra,a.pointing.dec)??null);
+  const f=radioAddCurrentFields(a.pointing,addCurrentHiddenLabel===null?addCurrentSource?.()??null:null,undefined,addCurrentHiddenLabel);
   setEntryError('');setEntry(hotListEntryDraft(f));};
  const onAddOk=()=>{if(!entry||!hotList)return;const r=parseHotListEntry(entry);
   if(r.status!=='ok'){setEntryError(r.status==='ra-invalid'?HOT_LIST_ENTRY_CAPTIONS.raError:r.status==='dec-invalid'?HOT_LIST_ENTRY_CAPTIONS.decError:ta('antenna.hotList.addUnsupported'));return;}
   if(hotList.current().read){setEntryError(ta('antenna.hotList.loadPending'));return;}
+  if(hotList.current().opticalDraft){setEntryError(ta('antenna.hotList.addDraft'));return;}// review L5
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch{setEntryError(ta('antenna.hotList.addUnsupported'));return;}
   setEntry(null);setAdded(hotListEntryAddedText(r.fields.id));};
- const hotMenu:HotListMenu|null=hotList?{doc:hotList.doc,load:hotLoad,viewSelectRef,fileRef:hotFile,onAddCurrent,
+ const hotMenu:HotListMenu|null=hotList?{doc:hotList.doc,load:hotLoad,viewSelectRef,addCurrentRef,fileRef:hotFile,onAddCurrent,
   onView:()=>runAntenna(a=>openRadioHotList(a,antennaOptions,currentHotRows().length)),onLoad:onHotListLoadClick,
   onFile:file=>{void loadRadioHotList(file);},onBundled:()=>{void loadBundledPulsars();},onCancelLoad:()=>cancelRadioRead('cancelled')}:null;
  /** The clock reading at a user request (OK, a box answer): null when the host supplies none. */
@@ -737,8 +743,8 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    </dl>
   </details>
    {/* Front R1: THOVerifyDlg (the shared Add/Edit Hot List Entry dialog) and the "Observation List" box of 0x567c5c. */}
-   <HotListEntryDialog testId="antenna-entry" draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={onAddOk} onCancel={()=>setEntry(null)} onDismiss={()=>setEntryError('')}/>
-   {added!==null&&<AddedBox caption={HOT_LIST_ENTRY_CAPTIONS.addedCaption} text={added} onClose={()=>setAdded(null)}/>}
+   <HotListEntryDialog testId="antenna-entry" draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={onAddOk} onCancel={()=>{focusAddCurrent.current=true;setEntry(null);}} onDismiss={()=>setEntryError('')}/>
+   {added!==null&&<AddedBox caption={HOT_LIST_ENTRY_CAPTIONS.addedCaption} text={added} onClose={()=>{focusAddCurrent.current=true;setAdded(null);}}/>}
   {presented&&antenna?.hotListShown&&<RadioHotListDialog rows={hotRows} index={antenna.hotListIndex} found={antenna.hotListSearch.found}
    blocked={antenna.notice!==null||antenna.dialog!==null||antenna.hotListSearch.dialog!==null}
    searchBlock={antenna.hotListSearch.dialog!==null||antenna.notice?.kind==='hot-list-search-miss'} ta={ta}
@@ -767,7 +773,7 @@ type AntennaControlsProps=Readonly<{antenna:RadioLabState;options:RadioLabOption
  suspended:'options-unsupported'|'rate-unsupported'|null;setCoordinatesRef:RefObject<HTMLButtonElement|null>;clockSupplied:boolean;clockDomain:boolean;onClockTick:()=>void;
  manual:ManualPadInput;hotList:HotListMenu|null;receiver?:RadioReceiverButton}>;
 /** Slew ▸ Hot List items (RA-HL-06) and the radio Load state. */
-type HotListMenu=Readonly<{doc:SharedHotList;load:HotLoadStatus|null;viewSelectRef:RefObject<HTMLButtonElement|null>;fileRef:RefObject<HTMLInputElement|null>;
+type HotListMenu=Readonly<{doc:SharedHotList;load:HotLoadStatus|null;viewSelectRef:RefObject<HTMLButtonElement|null>;addCurrentRef:RefObject<HTMLButtonElement|null>;fileRef:RefObject<HTMLInputElement|null>;
  onView:()=>void;onLoad:()=>void;onFile:(file:File|undefined)=>void;onBundled:()=>void;onCancelLoad:()=>void;onAddCurrent:()=>void}>;
 /** WEB-KEY-03 handlers for the key-scope controls and the direction-button refs of the focus step. */
 type ManualTableKeys=Readonly<{down:(e:KeyboardEvent<HTMLElement>)=>void;up:(e:KeyboardEvent<HTMLElement>)=>void;blur:(e:FocusEvent<HTMLElement>)=>void;
@@ -847,7 +853,7 @@ function AntennaControls({antenna:a,options,ta,run,autoSlewTimer,suspended,setCo
     <span id={`${id}-hot`} className="antenna-label">{ta('antenna.hotList.heading')}</span>
     <div className="button-row">
      <button ref={hot.viewSelectRef} type="button" className="secondary-button" data-testid="antenna-hotlist-open" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled} aria-describedby={a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={hot.onView}>{hotItem(C.viewSelect)}</button>
-     <button type="button" className="secondary-button" data-testid="antenna-hotlist-add" onKeyDown={ignoreHeldKey} disabled={!a.addToListEnabled||!a.slewMenuEnabled} aria-describedby={`${id}-hot-add`} onClick={hot.onAddCurrent}>{hotItem(C.addCurrent)}</button>
+     <button ref={hot.addCurrentRef} type="button" className="secondary-button" data-testid="antenna-hotlist-add" onKeyDown={ignoreHeldKey} disabled={!a.addToListEnabled||!a.slewMenuEnabled} aria-describedby={`${id}-hot-add`} onClick={hot.onAddCurrent}>{hotItem(C.addCurrent)}</button>
      <button type="button" className="secondary-button" data-testid="antenna-hotlist-load" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled||loadBlocked!==null}
       aria-describedby={loadBlocked?`${id}-hot-load`:a.slewMenuEnabled?undefined:`${id}-menu-off`} onClick={hot.onLoad}>{hotItem(C.loadHotList)}</button>
      <button type="button" className="secondary-button" data-testid="antenna-hotlist-load-pulsars" onKeyDown={ignoreHeldKey} disabled={!a.slewMenuEnabled||loadBlocked!==null||reading}

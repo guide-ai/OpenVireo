@@ -5,7 +5,7 @@
  * - Class 0 builds CepheidTypeObj; classes 1 AND 2 build the base VarStarObj, whose V−R and R−I slots return 30.0, so an LPV
  *   gets R/NF = V−30 and I = V−60 (the original bug, kept). Only Init runs; Mag(t) is not called.
  * - By filter (0 NF, 1 B, 2 V, 3 R, 4 I): NF, R → V−R; B → −(B−V) of the field star (+0x2d as the dispatch left it);
- *   V → 0; I → (V−R)+(R−I). No `< 30` guard.
+ *   V → 0; I → (V−R)+(R−I) (both Singles, summed exactly, rounded once to Single). No `< 30` guard.
  * The camera magnitude is then Single(V − term) (0x52296c). Not yet wired: the camera has no field-engine population
  * (docs/CAMERA-EXPOSURE.md). */
 import {NO_COLOUR,variableClass,variableColours} from './variableDispatch';

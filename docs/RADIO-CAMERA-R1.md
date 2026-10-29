@@ -1,6 +1,6 @@
 # Radio and camera leftovers (Front R1)
 
-**Status:** implemented on branch `claude/front-r1-radio-camera` (2026-10-29).
+**Status:** implemented on branch `claude/front-r1-radio-camera` (2026-10-29); review 1 (MERGE-AFTER-FIXES) applied.
 
 **Plan:** research root `analysis/front-plans/front-r1-radio-camera.md`.
 
@@ -24,28 +24,44 @@ resources are used.
 - The radio now takes that native branch (`poissonDraw(…,'native')` in `src/core/acquisition.ts`, used by `radioRandom.ts`).
   The rejection branch for means of 12 or more is Front M's, unchanged.
 - NaN, infinite and > 1e6 means are still refused; those are browser limits [W].
+- This is [D] for −11356 < mean < 0. Below about −11356.5, Exp(−mean) overflows Extended and VIREO would likely raise
+  EOverflow [I]; the web still draws 0 there [W]. The bundled catalogue cannot reach that range.
 
 ### Slew › Hot List › Add Current Item
 - **Enable** [D]: when Receiver 1 opens (0x567a83), as long as slewing is allowed. VIREO disables it at a manual-slew horizon
   stop and at a confirmed programmed-slew start, and never re-enables it on arrival.
 - **Record** (`src/core/radioAddCurrent.ts`):
-  - RA/Dec: the current pointing. With Exact Pos (compiled 0) and a pulsar in the buffer, VIREO would use the catalogue
-    position.
-  - ID: by Pulsar Identification (compiled 1, the B1950 name), trimmed, at most 24 characters. Object X labels stay hidden as
-    on Front X.
+  - RA/Dec: the current pointing. With Exact Pos (compiled 0) and a named pulsar in the buffer (the length byte +0x5f7,
+    which a receiver miss clears), VIREO would use the catalogue position.
+  - ID: by Pulsar Identification (compiled 1, the B1950 name), copied as stored, at most 24 characters.
+  - Object X (0x567d1e) [D]: in the exercise the ID is always `ObjX-` + the target ID (or `UNKNOWN`), wherever the antenna
+    points; the buffer's names are never read. The web uses its label for the hidden target. [W] After the reveal the web stops
+    hiding and uses the pulsar name.
   - Remarks: always empty.
 - **Flow:** the shared entry dialog (THOVerifyDlg), then the RA-ordered append (Front P), then the box
   `Object <ID> added to Observation List.` or `Position added to Observation List.`, caption `Observation List`.
 
 ### File › Save Recorded Data
-- It is enabled when the analysis holds recorded data [D: it copies the analysis Save1 enable].
-- VIREO calls the same save wrapper 0x56b36c as the analysis Save. Here it opens the analysis on its verified save [W].
+- **VIREO** [D]: the item is enabled only by the analysis FormActivate/Load mirror of its Save1 enable and by a non-Yes answer
+  to `Save Data Now?` (a Yes answer skips it). Its click calls the save wrapper 0x56b36c, the same as the analysis Save.
+- **Web** [W]: enabled while the analysis holds a recording, not the cleared header that arming Record leaves. The click opens
+  the analysis, where its verified Save writes the file; it does not save by itself.
 
 ### Review › Find
-- 0x5634c8 lowercases A–Z of the query and of each row and matches by substring [D].
-- From Top starts at row 0, From Cursor at the row after the selection. There is no wrap, and Case Dependent is never read.
-- A miss answers `"<query>" Not Found.`, caption `String Not Found`.
-- The rows are the web's row text. It can differ from VIREO's in the file-name tail, in rounding near ties, and for NaN [W].
+- The contract is the existing `savedFindRun` (`src/core/pulsarSavedRows.ts`, PLR-REVIEW-FIND-STATIC-01), also used by the
+  saved-row viewer.
+- **Dialog** [D]: `Find Record Containing...`, `Search String:`, Case Dependent and the `Begin Search:` buttons From Top, From
+  Cursor and Cancel.
+- **Search** [D]: the query is stored and lowercased in place (A–Z only). Each row's copy is lowercased and matched by
+  substring. From Top starts at row 0, From Cursor at the row after the selection, and there is no wrap. Case Dependent is
+  stored but never read.
+- **Memory** [D]: the dialog reopens with the remembered, lowercased query. [W] The web keeps it while the analysis is open,
+  separate from the viewer's.
+- **Miss** [D]: the answer is `"<lowercased query>" Not Found.`, caption `String Not Found`.
+- **Keys:** Escape is that dialog's Cancel (or the notice's OK), and the Review stays open with its draft. A hit focuses the
+  selected row [I].
+- **Rows** [W]: the web's row text. It can differ from VIREO's in the file-name tail, in rounding near ties, and for NaN.
+- **Query bound** [W]: printable ASCII, at most 80 characters.
 
 ### Options (TRadiOptsDlg)
 The read-only boxes show the compiled states, each with one line on its effect:
@@ -88,7 +104,7 @@ The read-only boxes show the compiled states, each with one line on its effect:
   - DETECTOR and OBSERVER are empty;
   - NAXIS1/2 are the plane size;
   - OBSERVAT and TELESCOP come from the compiled profile.
-- **[I]:** the 8-character key column.
+- **Key column** [D]: the keyword table 0x5b3ff8 holds String[8] entries already space-padded.
 - The standard web FITS stays the first button.
 
 ## Follow-ups
@@ -100,20 +116,32 @@ The read-only boxes show the compiled states, each with one line on its effect:
   gain parameters are only inferred. It stays silent with a note.
 - **Camera field objects:** the colour term is ready; the pass needs a field-engine population in the camera.
 - **Camera overlay:** needs the StretchBlt mode.
+- **Field-object pass 0x5228dc:** the plan's pure-function fallback (two draws per eligible variable, the tail overwrite) was
+  not delivered; only the colour term was.
+- **Hot-list appends during an observatory edit** (review L5): Add Current now refuses while the observatory editor has an
+  Add or Edit open, as radio Load does. The other appenders (optical Slew, QSO list, field information, cluster database)
+  still insert by RA under an open Edit, which shifts its row index. Fix that once, in the shared pattern.
 
 ## Code and tests
 - **Vitest:**
   - `radioRandom.test.ts`: the negative-mean branch;
-  - `radioAddCurrent.test.ts`;
+  - `radioAddCurrent.test.ts`: the record rules, Object X anywhere, no trim;
+  - `pulsarProvenance.test.ts`: Find recorded as a web adaptation;
   - `cameraColourTerm.test.ts`;
   - `cameraFitsNative.test.ts`;
   - the receiver and list tests, whose refusals now come from a 1e8 flux.
 - **Playwright:**
   - `tests/radio-receiver-app.spec.ts`: both noise outcomes;
-  - `tests/radio-r1.spec.ts`: Add Current, Find, options, Save Recorded Data and the camera's VIREO-header save.
+  - Add Current: `tests/radio-receiver-app.spec.ts`; Object X (review M2): `tests/object-x-radio.spec.ts`;
+  - Find and Escape (review M1): `tests/pulsar-analysis.spec.ts`;
+  - options: `tests/radio-simulation-options-app.spec.ts`; Save Recorded Data: `tests/radio-access-options-app.spec.ts` and
+    `tests/radio-receiver-save-verified-app.spec.ts`;
+  - the camera's VIREO-header save: `tests/camera-exposure.spec.ts`.
 
 ## Model and effort
 | Step | Model | Effort |
 |---|---|---|
 | Plan and recovery | Claude Opus 5.5 | high |
 | Implementation and tests | Claude Opus 5.5 | medium |
+| Review 1 (`analysis/reviews/front-r1-review-1.md`) | Claude Opus 5.5 (coordinator) | high |
+| Review 1 fixes | Claude Opus 5.5 | medium |

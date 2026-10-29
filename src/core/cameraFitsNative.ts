@@ -6,7 +6,7 @@
  *     data that follow are not padded.
  * [D] Order: SIMPLE BITPIX NAXIS NAXIS1 NAXIS2 OBJECT ORIGIN DATE FILTER RA DEC EPOCH OBSERVAT TELESCOP INSTRUME DETECTOR
  *     OBSERVER EXP DATE-OBS GAIN END. Filter names NONE B V R I (CCD) and J H K (IR). File name `<name>-01.FIT`.
- * [I] The 8-character key column (the keyword table is String[8]; the formats put the value end at column 30 only so).
+ * [D] The 8-character key column: the keyword table 0x5b3ff8 holds String[8] entries already space-padded ('SIMPLE  ').
  * [W] OBJECT is 'UNKNOWN' (the camera page has no target name; VIREO writes 'ObjX-'+name for any other name, so Object X
  *     is never revealed here); DATE is the exposure time (VIREO's clock Double +0x37f2 is not recovered); DETECTOR and
  *     OBSERVER are empty (their calibration and student strings are not recovered); NAXIS1/2 are the plane's size (VIREO

@@ -379,6 +379,6 @@ test('Front R1: Slew › Hot List › Add Current Item is enabled by opening the
  await expect(id(page,'antenna-entry')).toBeVisible();await expect(id(page,'antenna-entry-id')).toHaveValue('B2358+38');await expect(id(page,'antenna-entry-remarks')).toHaveValue('');
  await id(page,'antenna-entry-ok').click();
  const box=id(page,'antenna-added-box');await expect(box).toBeVisible();await expect(box).toContainText('Observation List');await expect(box).toContainText('Object B2358+38 added to Observation List.');
- await box.getByRole('button',{name:'OK'}).click();await expect(box).toHaveCount(0);
+ await box.getByRole('button',{name:'OK'}).click();await expect(box).toHaveCount(0);await expect(id(page,'antenna-hotlist-add')).toBeFocused();
  await expect(id(page,'antenna-hotlist-source')).toContainText('1');
 });

@@ -3,8 +3,8 @@ import { pulsarAnalysisSnapshot, type PulsarAnalysisSnapshot, type RadioSnapshot
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import './PulsarAnalysis.css';
-import { FindDialog, MessageBox } from '../observatory/FieldInfoListWindow';
-import { PULSAR_REVIEW_FIND_LITERALS, pulsarReviewFind, pulsarReviewMissText } from '../core/pulsarReviewFind';
+import { ReviewFindDialog, ReviewFindNotice } from './PulsarSavedRows';
+import { SAVED_FIND_INITIAL, savedFindOpen, savedFindRun, type SavedFindAction, type SavedFindDraft, type SavedFindMemory } from '../core/pulsarSavedRows';
 import { RADIO_R1_MESSAGES as R1 } from './RadioR1Messages';
 import WebPrintPreview from '../polish/WebPrintPreview';
 import { menuCaptionText } from '../core/radioControl';
@@ -528,6 +528,9 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
   // it is active again. Review's inner question is a section of the same dialog, with the list and buttons
   // inert while it is open. No VCL parity is claimed.
   const root = useRef<HTMLElement>(null), recordDialog = useRef<HTMLDialogElement>(null), clearDialog = useRef<HTMLDialogElement>(null), reviewDialog = useRef<HTMLDialogElement>(null);
+  // Front R1: the Find dialog's remembered query and case flag (one TGetSrchStrDlg instance; FormActivate 0x492aa4 shows them).
+  // WEB: kept while this analysis is mounted, and separate from the saved-row viewer's.
+  const [reviewFindMemory, setReviewFindMemory] = useState<SavedFindMemory>(SAVED_FIND_INITIAL);
   const loadDialog = useRef<HTMLDialogElement>(null), exportDialog = useRef<HTMLDialogElement>(null), exportFirst = useRef<HTMLInputElement>(null), exportButton = useRef<HTMLButtonElement>(null);
   const appendDialog = useRef<HTMLDialogElement>(null), appendFile = useRef<HTMLInputElement>(null), appendButton = useRef<HTMLButtonElement>(null), appendCancelRead = useRef<HTMLButtonElement>(null), appendDownload = useRef<HTMLButtonElement>(null);
   const rawDialog = useRef<HTMLDialogElement>(null), rawButton = useRef<HTMLButtonElement>(null), rawCancel = useRef<HTMLButtonElement>(null), saveButton = useRef<HTMLButtonElement>(null);
@@ -1344,7 +1347,7 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
       {s.reviewSession && (
         <dialog ref={reviewDialog} aria-labelledby={`${idPrefix}review-heading`} className="plr-modal plr-review" data-testid="pulsar-review-dialog"
           {...dialogEvents(() => finishReview(act(pulsarReviewEscape)))}>
-          <Review session={s.reviewSession} editor={pulsarReviewEditView(s)} t={t} idPrefix={idPrefix} act={act} finish={finishReview} requestEdit={requestEdit}
+          <Review findMemory={reviewFindMemory} onFindMemory={setReviewFindMemory} session={s.reviewSession} editor={pulsarReviewEditView(s)} t={t} idPrefix={idPrefix} act={act} finish={finishReview} requestEdit={requestEdit}
             refs={{ edit: reviewEdit, remove: reviewDelete, cancel: reviewCancel, promptDefault: reviewPromptDefault, editComment: reviewEditComment }} />
           <p role="status" className="plr-status">{status}</p>
         </dialog>
@@ -1608,6 +1611,7 @@ function Panel({ ch, s, t, act, idPrefix, primaryAs, owner }: PanelProps) {
 }
 
 type ReviewProps = Readonly<{
+  findMemory: SavedFindMemory; onFindMemory: (m: SavedFindMemory) => void;
   session: PulsarReviewSession; editor: PulsarReviewEditView | null; t: PulsarTranslate; idPrefix: string; act: Act; finish: (tr: PulsarTransition) => void; requestEdit: () => void;
   refs: Readonly<{
     edit: RefObject<HTMLButtonElement | null>; remove: RefObject<HTMLButtonElement | null>; cancel: RefObject<HTMLButtonElement | null>;
@@ -1617,24 +1621,35 @@ type ReviewProps = Readonly<{
 /**
  * Contents of the Review dialog (TMEASLISTDLG). Rows are the working copy's structured fields, keyed by the
  * stable sequence; the opaque nativeLineCandidate is never shown. One radio per row is the ListBox selection
- * (WEB: arrow keys follow the browser radio group). Find keeps its DFM place but is disabled. Edit opens the
+ * (WEB: arrow keys follow the browser radio group). Find (Front R1) searches the stored lines. Edit opens the
  * comment editor (TMeasForm2) as an inline layer. While the question, notice or editor is open, the list and
  * buttons are inert.
  */
-function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }: ReviewProps) {
+function Review({ findMemory, onFindMemory, session, editor, t, idPrefix, act, finish, requestEdit, refs }: ReviewProps) {
   const blank = (v: string | null) => v ?? t('pulsar.review.blank');
   const { draft, selected, prompt } = session;
   const select = (i: number) => act(st => pulsarReviewSelect(st, i));
-  // Front R1: Find 0x5634c8 over the entries' stored line text (pulsarReviewFind.ts).
-  const [find, setFind] = useState<Readonly<{ query: string; matchCase: boolean }> | null>(null), [miss, setMiss] = useState<string | null>(null), findButton = useRef<HTMLButtonElement>(null);
-  const search = (mode: 'top' | 'next') => {
-    if (!find) return; const q = find.query; setFind(null); if (!q) return;
-    const hit = pulsarReviewFind(draft.map(e => e.nativeLineCandidate), q, mode === 'top' ? 0 : (selected ?? -1) + 1);
-    if (hit === null) setMiss(pulsarReviewMissText(q)); else select(hit);
+  // Front R1: Find 0x5634c8 over the entries' stored line text, through the shared contract savedFindRun (pulsarSavedRows.ts).
+  const [find, setFind] = useState<SavedFindDraft | null>(null), [refusal, setRefusal] = useState<'query-text' | 'query-length' | null>(null);
+  const [miss, setMiss] = useState<string | null>(null), findButton = useRef<HTMLButtonElement>(null), body = useRef<HTMLDivElement>(null);
+  const backToFind = () => requestAnimationFrame(() => findButton.current?.focus());
+  const answerFind = (action: SavedFindAction) => {
+    if (!find) return;
+    const r = savedFindRun(draft.map(e => e.nativeLineCandidate), selected, findMemory, find, action);
+    if (r.outcome.kind === 'refused') { setRefusal(r.outcome.reason); return; }
+    onFindMemory(r.memory); setFind(null); setRefusal(null);
+    if (r.outcome.kind === 'miss') { setMiss(r.outcome.body); return; }
+    if (r.outcome.kind === 'found') {
+      const seq = draft[r.outcome.ordinal].sequence; select(r.outcome.ordinal);
+      // [I] native sets ItemIndex and focuses the list: the selected row's radio takes focus.
+      requestAnimationFrame(() => body.current?.querySelector<HTMLInputElement>(`[data-testid="pulsar-review-select-${seq}"]`)?.focus());
+      return;
+    }
+    backToFind();
   };
   return (
     <>
-      <div className="plr-review-body" inert={prompt !== null || editor !== null} data-testid="pulsar-review-list">
+      <div ref={body} className="plr-review-body" inert={prompt !== null || editor !== null} data-testid="pulsar-review-list">
         <h3 id={`${idPrefix}review-heading`}>{t('pulsar.review.heading')}</h3>
         <p className="plr-help">{t('pulsar.review.note')}</p>
         {draft.length === 0 ? <p data-testid="pulsar-review-empty">{t('pulsar.review.empty')}</p> : (
@@ -1655,7 +1670,7 @@ function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }
         )}
         <div className="plr-row plr-review-buttons">
           <span className="plr-row">
-            <button type="button" ref={findButton} disabled={draft.length === 0} aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-find" onClick={() => setFind({ query: '', matchCase: false })}>{t('pulsar.review.find')}</button>
+            <button type="button" ref={findButton} disabled={draft.length === 0} aria-describedby={`${idPrefix}review-find-note`} data-testid="pulsar-review-find" onClick={() => { setFind(savedFindOpen(findMemory)); setRefusal(null); }}>{t('pulsar.review.find')}</button>
             <button type="button" ref={refs.edit} onClick={requestEdit} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
             <button type="button" ref={refs.remove} onClick={() => act(pulsarReviewRequestDelete)} data-testid="pulsar-review-delete">{t('pulsar.review.delete')}</button>
           </span>
@@ -1664,9 +1679,9 @@ function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }
             <button type="button" ref={refs.cancel} onClick={() => finish(act(pulsarReviewCancel))} data-testid="pulsar-review-cancel">{t('pulsar.review.cancel')}</button>
           </span>
         </div>
-        <p className="plr-help" id={`${idPrefix}review-gated`}>{R1.findNote}</p>
-        {find && <FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={() => { setFind(null); requestAnimationFrame(() => findButton.current?.focus()); }} />}
-        {miss !== null && <MessageBox box={{ caption: PULSAR_REVIEW_FIND_LITERALS.missCaption, text: miss }} onClose={() => { setMiss(null); requestAnimationFrame(() => findButton.current?.focus()); }} />}
+        <p className="plr-help" id={`${idPrefix}review-find-note`}>{R1.findNote}</p>
+        {find && <ReviewFindDialog draft={find} refusal={refusal} onDraft={d => { setFind(d); setRefusal(null); }} onAnswer={answerFind} idPrefix={idPrefix} />}
+        {miss !== null && <ReviewFindNotice body={miss} onClose={() => { setMiss(null); backToFind(); }} idPrefix={idPrefix} />}
       </div>
       {prompt === 'confirm-delete' && (
         <section className="plr-review-prompt" role="alertdialog" aria-labelledby={`${idPrefix}review-prompt`} aria-describedby={`${idPrefix}review-prompt-text`} data-testid="pulsar-review-confirm">

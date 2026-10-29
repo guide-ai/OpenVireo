@@ -135,3 +135,30 @@ test('a hidden non-pulsar shows no pulsar in the beam and no pulse',async({page}
  }
  const text=await radioText(page);expect(names.filter(s=>word(s).test(text))).toEqual([]);
 });
+
+test('Front R1 review M2: Add Current never names the hidden pulsar, even more than 2° away from it (0x567d1e uses ObjX-<id>)',async({page})=>{
+ test.setTimeout(180_000);
+ const target='0329+54',r=row(target),{names}=secrets(target);
+ await observe(page,target);
+ await expect(id(page,'antenna-hotlist-add')).toBeEnabled();
+ // Slew 5° north (the confirmed slew disables +0x480), then Receiver again: Open re-enables it while the receivers' buffer
+ // keeps the pulsar's B1950 name after the miss (radioReceiver.ts) — the leak path of review M2.
+ const fields=[...(await id(page,'objectx-radio-coordinates').getAttribute('data-ra'))!.split(' '),String(Math.trunc(r.dec)+5),'0','0'];
+ await id(page,'antenna-set-coordinates').click();await expect(id(page,'antenna-dialog')).toBeVisible();
+ for(const [i,name] of ['raHours','raMinutes','raSeconds','decDegrees','decMinutes','decSeconds'].entries())await id(page,`antenna-field-${name}`).fill(fields[i]);
+ await id(page,'antenna-dialog-ok').click();await flush(page);
+ await expect(id(page,'antenna-notice')).toHaveAttribute('data-kind','confirm-slew');await id(page,'antenna-notice-yes').click();await flush(page);
+ await expect(id(page,'antenna-hotlist-add')).toBeDisabled();
+ for(let i=0;i<600&&await id(page,'antenna-notice').count()===0;i++)await advance(page,200);
+ await expect(id(page,'antenna-notice')).toHaveAttribute('data-kind','slew-complete');await id(page,'antenna-notice-ok').click();await flush(page);
+ const away=separationDegrees(Number(await id(page,'antenna-ra').getAttribute('data-ra-hours')),Number(await id(page,'antenna-dec').getAttribute('data-dec-degrees')),r.ra,r.dec);
+ expect(away).toBeGreaterThan(OBJECT_X_HIDE_DEGREES);
+ await id(page,'antenna-receiver-button').click();await flush(page);
+ await expect(id(page,'antenna-hotlist-add')).toBeEnabled();await id(page,'antenna-hotlist-add').click();
+ await expect(id(page,'antenna-entry-id')).toHaveValue('ObjX-42');
+ const text=await radioText(page);expect(names.filter(s=>word(s).test(text)),'names with the entry dialog open').toEqual([]);
+ await id(page,'antenna-entry-ok').click();
+ await expect(id(page,'antenna-added-box')).toContainText('Object ObjX-42 added to Observation List.');
+ await id(page,'antenna-added-box').getByRole('button',{name:'OK'}).click();
+ await expect(id(page,'antenna-hotlist-add')).toBeFocused();// review L1
+});
