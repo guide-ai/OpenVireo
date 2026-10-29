@@ -5,6 +5,7 @@ import {menuCaptionText} from '../core/radioControl';
 import {variableStarSaveText} from '../core/variableStars';
 import {listSelection,VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldList';
 import {FIELD_INFO_MESSAGES as M} from './FieldInfoMessages';
+import PopupMenu,{usePopupMenu} from '../polish/PopupMenu';
 import {HOT_LIST_PRINT_LITERALS} from '../core/hotListPrint';
 import './observatory-dialogs.css';
 import './field-info.css';
@@ -41,6 +42,10 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
  const id=useId(),[itemIndex,setItemIndex]=useState(-1),[selection,setSelection]=useState(-1),[menu,setMenu]=useState<'list'|'save'|'selection'|null>(null);
  const [find,setFind]=useState<Readonly<{query:string;matchCase:boolean}>|null>(null),[printing,setPrinting]=useState(false);
  const listRef=useRef<HTMLDivElement>(null),listTrigger=useRef<HTMLButtonElement>(null),selTrigger=useRef<HTMLButtonElement>(null);
+ // Front P: the form's PopupMenu1 (TObjctListForm1 0x5523ec–0x5525fa [D]) pops on a right-click only when ItemIndex is a data row
+ // and Selection is visible; the right-click does not move the selection. Its items mirror the form's Selection items.
+ const popup=usePopupMenu();
+ const openPopup=(e:React.MouseEvent)=>{e.preventDefault();if(hideSelection||selection<0||!selectionItems.length)return;popup.open(e);};
  // A refill (new field) resets the window like FormShow does.
  useEffect(()=>{setItemIndex(-1);setSelection(-1);},[lines]);
  useEffect(()=>{if(itemIndex<0)return;listRef.current?.querySelector<HTMLElement>(`[data-line="${itemIndex}"]`)?.scrollIntoView({block:'nearest'});},[itemIndex]);
@@ -97,12 +102,14 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
     </div>}
    </div>}
   </div>
-  <div ref={listRef} className="fi-lines" role="listbox" tabIndex={0} aria-label={caption} aria-activedescendant={itemIndex>=0?`${id}-l${itemIndex}`:undefined} data-testid={`${testId}-lines`} onKeyDown={onKey}>
+  <div ref={listRef} className="fi-lines" role="listbox" tabIndex={0} aria-label={caption} aria-activedescendant={itemIndex>=0?`${id}-l${itemIndex}`:undefined} data-testid={`${testId}-lines`} onKeyDown={onKey} onContextMenu={openPopup}>
    {lines.map((line,i)=><div key={i} id={`${id}-l${i}`} role="option" aria-selected={i===itemIndex} data-line={i} data-testid={`${testId}-line-${i}`} className="fi-line" onClick={()=>choose(i)} onDoubleClick={()=>{const s=listSelection(i,first,last);if(s>=0&&onActivate)onActivate(s);}}>{line||' '}</div>)}
   </div>
   {notice}
   {!hideSelection&&<p role="status" className="fi-status" data-testid={`${testId}-selection`}>{selection>=0?`${selection+1} / ${last-first+1}`:noSelection}</p>}
   {children}
+  <PopupMenu at={popup.at} label={menuCaptionText(SM.selection)} onClose={popup.close} returnFocus={()=>listRef.current?.focus()}
+   items={selectionItems.map(item=>({key:`${testId}-${item.key}`,label:item.label,onSelect:()=>item.onClick(selection),disabled:!!item.unavailable,title:item.unavailable??undefined}))}/>
   {find&&<FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={()=>{setFind(null);listRef.current?.focus();}}/>}
   {box&&<MessageBox box={box} onClose={()=>{onBox(null);listRef.current?.focus();}}/>}
   {printing&&<FieldInfoPrintPreview caption={caption} lines={lines} student={printStudent} onClose={()=>setPrinting(false)}/>}

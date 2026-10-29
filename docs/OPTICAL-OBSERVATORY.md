@@ -21,22 +21,23 @@ All of this is on the **Observatory** page, after **Open dome**.
 - Set Coordinates is a web modal; the immediate **Point** button and the decimal RA/Dec boxes remain as labelled web shortcuts.
 - The B1950 flag and the stored target are local to the optical observatory (natively shared with the radio lab through one dialog instance).
 - The programmed-slew confirmation is the existing web dialog; it shows the decoded native text "Slew Telescope to Target Coordinates?…" and, after a B1950 entry, "(Input B1950.0 Coordinates Precessed to J2000.0.)".
-- The hot-list window's List/Selection menus are buttons; Edit, Delete, Undo and Save List stay in the *Original hot lists* editor.
+- The hot-list window's List/Selection menus are buttons. Edit Selection, Delete Selection and Undo Edit/Delete (Front P, THotListForm1 0x591488 / 0x59172c / 0x5918d0) change the shared list: Edit with no row shows "Please select an entry, using the left mouse button." (No Selection!), Delete asks "Delete Highlighted Entry from List?", Undo reverses the window's last Edit or Delete (one level; a deleted row returns to its file position, natively it is re-inserted by RA). Save List stays in the *Original hot lists* editor.
 - List rows use the recovered ordinal formatter 0x590248 (number + RA + Dec, as natively for no exercise/Hubble/Pleiades); the ID and remarks are shown in a second decimal line, and Search matches the native row text only.
 - The window caption is the exercise-0 caption ("Hot List File: …" / "New Hot List File"); " (Modified)" is not tracked.
 - Hot-list Print is a scoped browser print of the caption and rows; the date, names and laboratory table number of the original header are not recovered and not printed.
-- Add Current proposes the selected target's original catalog ID only when the telescope points exactly at it (pixel lookup 0x59a0fc not recovered; web keys such as FILE@offset are not proposed); its kind (Star/Galaxy…) is not known, so Comments start empty.
+- Add Current proposes the selected target's original catalog ID only when the telescope points exactly at it (the nearest-object rule 0x59a0fc is recovered in src/core/objectSelection.ts and used by the instruments, but Add Current does not run it: that needs the field objects at an arbitrary pointing; web keys such as FILE@offset are not proposed); its kind (Star/Galaxy…) is not known, so Comments start empty.
 - A blank Object ID is allowed for Add Current ("Position added…", as natively); the list editor's Add/Edit keeps OpenVireo's non-blank ID rule (docs/HTL-CONTRACT.md §4).
 - An RA of exactly 24 h is refused in Add/Edit because the HTL codec stores 0 ≤ RA < 24.
 - Site Parameters is natively an instructor dialog (Options ▸ Scopes); here students may set it, and it drives only the clocks (local time, LST) and the horizon; acquisitions, profiles and journals keep the compiled site.
 - Set Date/Time is the main window's dialog (TUTTimeDlg), offered from the observatory; its Object X ID field is not shown.
 - Optical Simulation Options offers only Limit Slewing (default off); the other original options are listed as text (Fast Slewing with its compiled checked state), not available in OpenVireo; Edit Mode stays off.
-- Set Coordinates, View/Select and Add Current are disabled while the telescope moves; the original instead asks "Terminate Current Slew?" (Slew Suspended, Yes/No, OB-SC-02).
+- View/Select and Add Current are disabled while the telescope moves. During a programmed slew, Set Coordinates asks "Terminate Current Slew?" (Slew Suspended, Yes/No, OB-SC-02; Front P): Yes stops the slew, No lets it continue, and the dialog never opens. VIREO suspends the slew while it asks; the web slew keeps moving (the question closes if it arrives). During manual N/S/E/W motion Set Coordinates stays disabled.
 - With Limit Slewing on, the immediate web pointing shortcuts (Point telescope, Point to coordinates, pan, HTL Point, Hubble exact centre) are refused below the horizon with the native box; instrument Activate jumps to a fixed acquisition field are not checked.
-- The list window shows rows in native RA order (OB-HL-03), but the HTL editor keeps file order plus append, so an added entry is saved at the end of the file (natively it is inserted in RA order).
+- The list window shows rows in native RA order (OB-HL-03). The HTL editor keeps file order; since Front P, Add Current (and the QSO and variable lists' Add Selection) places the record after the last file row with RA ≤ its RA, so a list in RA order is saved in RA order (natively 0x590588 inserts into the RA-ordered list; the native tie order follows the cursor history and is not modelled). The editor's own Add still appends.
 - Within the ±1e-9° horizon boundary guard, Limit Slewing refuses (Number cannot settle the Extended comparison).
 - Limit Slewing checks run while the browser clock runs (native ClockTimer always runs).
-- Spectrum Save is a browser download (no file dialog/overwrite prompt); Print is a scoped browser print. Sky exposure Save/Print stays absent.
+- Spectrum Save is a browser download (no file dialog/overwrite prompt); Print is a scoped browser print. Sky exposure Save stays absent. File › Print Sky Image... (Front P) is a web print of the sky view with the date and pointing; VIREO's header and footer contents are not recovered.
+- The hot-list window's popup menu (right-click or the context-menu key; Front P) offers the same Slew to Selection, Edit Selection, Delete Selection and Undo Edit/Delete.
 - Session v26 wraps an unchanged v1–25 base outermost and is written only when an option or a site override differs from the defaults; a file without v26 restores the compiled defaults.
 
 ## Milestones and contracts
@@ -62,7 +63,7 @@ Vitest: opticalSkyCoords (11), opticalHotList (9), hotListPrint (9), hotListEntr
 
 ## Not recovered / open
 
-- Object lookup under the pointing (0x59a0fc pixel/tolerance), Print Sky Image content, spectrometer flag +0x3172.
+- Add Current's use of the object lookup 0x59a0fc at arbitrary pointings (the rule itself is recovered), Print Sky Image header/footer content, spectrometer flag +0x3172.
 - Whether TStationDlg/TOptionsDlg edits reach a running observatory before the next telescope setup (OB-ST-04).
 - Native x87/Extended arithmetic, FloatToStrF and GDI printing are not reproduced (binary64, toFixed, browser print).
 

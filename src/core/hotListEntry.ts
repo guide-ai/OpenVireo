@@ -6,7 +6,8 @@
  * Web policy: StrToFloat is the radio grammar parseDelphiFloat (finite binary64, '.' decimal separator); the split uses the
  * ported sibling 0x486bc0 (splitSexagesimal) because 0x486b20's seconds rounding/carry is not re-derived; RA exactly 24 h
  * (natively accepted) is refused because the HTL codec stores 0 ≤ RA < 24. Pure: no React or I/O. */
-import {HTL_MAX_RECORDS,HtlError,addHtlRow,parseHtl,serializeHtl,updateHtlRecord,type HtlEditor,type HtlFields} from './hotList';
+import {HTL_MAX_RECORDS,HtlError,addHtlRow,parseHtl,serializeHtl,updateHtlRecord,type HtlEditor,type HtlFields,type HtlList} from './hotList';
+import {htlRaKeys} from './radioHotList';
 import {formatFixed,parseDelphiFloat,splitSexagesimal} from './radioAntenna';
 import type {Pointing} from './sky';
 
@@ -67,6 +68,33 @@ export function hotListEntryAddedText(id:string):string{
  * parseHtl, which admits such IDs as in original lists. Undo and selection follow addHtlRow. The web editor's
  * Add/Edit keeps its non-blank rule (docs/HTL-CONTRACT.md §4). */
 export function appendAddCurrentEntry(editor:HtlEditor,fields:HtlFields):HtlEditor{
+ return raOrderedAppend(editor,appendAddCurrentRecord(editor,fields));
+}
+/** Front P: Add Selection to Current Hot List of the QSO and variable lists also ends in 0x590588: the same RA-ordered
+ * placement as Add Current (non-blank IDs only, through the editor rule addHtlRow). */
+export function addHtlRowRaOrdered(editor:HtlEditor,fields:HtlFields):HtlEditor{return raOrderedAppend(editor,addHtlRow(editor,fields));}
+
+/** File index at which the web places a record added through 0x590588 (Front P, web rule [W]). Natively the record is
+ * inserted into the RA-ordered linked list by the cursor insert 0x492728 (comparator 0x590398: RA only), and Save writes
+ * that list. The web keeps file order, so the record goes right after the last file row whose RA ≤ the new RA (at the top
+ * when there is none): a list in RA order stays in RA order and the new row follows its equal RAs. Natively the tie order
+ * depends on the cursor history, which is not modelled; in a file that is not in RA order the result is only RA-adjacent.
+ * RAs are compared exactly on their retained Extended bytes (htlRaKeys), as the list window orders them. */
+export function raOrderedInsertIndex(list:HtlList,record:HtlList[number]):number{
+ if(!list.length)return 0;
+ const keys=htlRaKeys(list),key=htlRaKeys([record])[0];
+ let after=-1;keys.forEach((k,i)=>{if(k<=key)after=i;});
+ return after+1;
+}
+/** Moves the record just appended by `appended` (its last row) to raOrderedInsertIndex in `before`'s list; the selection
+ * follows it and Undo returns to `before`, as addHtlRow does. */
+function raOrderedAppend(before:HtlEditor,appended:HtlEditor):HtlEditor{
+ const record=appended.list.at(-1);if(!record||appended.list.length!==before.list.length+1)return appended;
+ const at=raOrderedInsertIndex(before.list,record);if(at===before.list.length)return appended;
+ const list=[...before.list.slice(0,at),record,...before.list.slice(at)];
+ return Object.freeze({...appended,list:Object.freeze(list),selected:at});
+}
+function appendAddCurrentRecord(editor:HtlEditor,fields:HtlFields):HtlEditor{
  if(fields.id.trim())return addHtlRow(editor,fields);
  if(editor.list.length>=HTL_MAX_RECORDS)throw new HtlError('limit',0);
  // Review note 3: OKBtnClick copies IDEd through @LStrToString 0x4060cc (length cap only, no Trim), so a whitespace-only

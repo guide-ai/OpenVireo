@@ -68,4 +68,6 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - Stars come from bounded GSC read witnesses (`data/lss`); arithmetic uses Number, not x87.
 
 ## Not recovered
-QSO merge 0x597f90/0x5987e4, photographic association, variable classes 0–2 whose dispatch reaches a light curve, the exercise-mode-5 entry, 0x57c918 / TLSSRsltsDlg1 FormActivate and OK, TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format), and the wedge .TXT writer.
+Photographic association, variable classes 0–2 whose dispatch reaches a light curve, the exercise-mode-5 entry, 0x57c918 / TLSSRsltsDlg1 FormActivate and OK, TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format), and the wedge .TXT writer.
+
+The QSO merge 0x597f90/0x5987e4 is recovered and ported in `src/core/qsoMerge.ts` (docs/FIELD-ENGINE.md; used by the Hubble Coma and Boötes engine fields). LSS still uses the QSO gate above; switching it to the merge (and wiring NGC4670.SP) is Front L2. (Front P, 2026-10-29.)

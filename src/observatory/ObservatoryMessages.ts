@@ -37,7 +37,7 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   noSelectionTitle:'No selection',noSelection:'No hot-list row is selected. Choose a row, then Slew to Selection; the list stays open.',
   row:(position:number,id:string,remarks:string,ra:string,dec:string)=>`${position}. ${id}${remarks?` · ${remarks}`:''} · RA ${ra} h · Dec ${dec}°`,
   unnamed:'Unnamed entry',foundMark:'◀ found',found:(position:number)=>`Search found row ${position}. Select it to use it.`,
-  adaptation:'Adaptation: the native List/Selection menus are shown as buttons; Edit, Delete, Undo and Save List remain in the “Original hot lists” editor.',
+  adaptation:'Adaptation: the native List/Selection menus are shown as buttons (and as the right-click menu); Save List remains in the “Original hot lists” editor.',
  }),
  entry:Object.freeze({
   open:'Add Current Item/Position to List…',

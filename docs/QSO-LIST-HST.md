@@ -46,7 +46,7 @@
   Options stands for VObsBox plus the run item: off by default, not saved, no session change, no instructor login. Its only
   effect is to show File › QSO List. The Edit Mode route through Object X is not modelled; Edit Mode keeps its own effects
   inside the list (Sort, Z and colours).
-- The File menu is hidden when it has no item (Edit Mode and Virtual Observatory both off). File and Tools are disabled only
+- Since Front P, File always holds Print Sky Image..., as in VIREO, so it is always shown (earlier it was hidden with Edit Mode and Virtual Observatory both off). File and Tools are disabled only
   while a project is read or written: VIREO's main menu does not depend on the dome or on motion (review 1 L1).
 
 ### Options for QSO List (TQSOListDlg) [D]
