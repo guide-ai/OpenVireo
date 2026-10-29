@@ -1571,6 +1571,8 @@ export interface MessageParameters {
   "sampledDiff.scrollLabel": never;
   "sampledDiff.invalidSource": never;
   "sampledDiff.unavailable": never;
+  "sampledDiff.unavailableOnly": never;
+  "sampledDiff.outside": never;
   "sampledDiff.fallback": never;
   "sampledDiff.method": never;
   "sampledDiff.limits": never;
