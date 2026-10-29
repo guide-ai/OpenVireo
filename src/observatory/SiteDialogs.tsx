@@ -1,7 +1,7 @@
 import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
 import WebPrintPreview from '../polish/WebPrintPreview';
 import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
-import {VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldList';
+import {VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldLiterals';
 import {OBSERVATORY_DATE_CAPTIONS as DC,observatoryDateEntry,observatoryDatePrefill} from '../core/observatoryDateTime';
 import {SITE_INFORMATION_LITERALS,STATION_DIALOG_CAPTIONS as SC,parseStationDraft,siteInformationLines,stationDraft,type ObservatorySite,type StationDraft,type StationField} from '../core/observatorySite';
 import type {OpticalIndex} from '../core/opticalTelescope';

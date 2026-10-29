@@ -13,7 +13,7 @@ import {loadClassificationSources} from './io/classificationSources';
 import {classificationWorkspaceUsed,readClassificationWorkspace,EMPTY_CLASSIFICATION_WORKSPACE,type ClassificationWorkspace} from './core/classification';
 import type {StarObservation} from './io/starObservation';
 import {hubbleLabProgress,type HubbleLabProgress} from './core/hubbleLab';
-import {galaxyStateDefinition} from './core/galaxyExposure';
+import {galaxyStateDefinition} from './core/galaxyDefinitions';
 import {EXTENDED_MAX_ACQUISITION_ARCHIVE,MAX_ARCHIVE_EVENTS} from './core/acquisitionArchive';
 import { t, formatNumber, fixed, scientific } from './i18n';
 import {acquisitionObjectId,acquisitionReference,acquiredSpectrumBytes,type AcquisitionObservation} from './io/acquisitionObservation';
@@ -25,9 +25,14 @@ import {EMPTY_HUBBLE,type HubbleWorkspace} from './core/hubbleAnalysis';
 import {memo,useEffect,useImperativeHandle,useMemo,useRef,useState,type ChangeEvent,type Ref} from 'react';
 import { changeFactor, configureStep, createMeasurement, currentZ, INITIAL_CONTROL, MAX_FILE_BYTES, measurementCsv, moveControl, parseLines, parseSpectrum, rebase, shiftedWavelength, type Measurement, type Sample } from './core/spectrum';
 import { readImportedSpectrum } from './io/spectrumFiles';
-import { AnalysisSessionError, MAX_SESSION_ROWS, readInvestigationSession, serializeAnalysisSession, type SessionObservation, type ObservatorySession } from './io/analysisSession';
-import {LssSessionError,type LssInvestigation} from './io/lssInvestigation';
-import {ObjectXSessionError,type ObjectXInvestigation} from './io/objectXInvestigation';
+import type { SessionObservation, ObservatorySession } from './io/analysisSession'
+import { AnalysisSessionError, MAX_SESSION_ROWS } from './io/analysisSessionLimits'
+// Front D3: the session code (and the field data its validators need) loads at the first await of Save or Restore.
+const sessionModule=()=>import('./io/analysisSession');;
+import type {LssInvestigation} from './io/lssInvestigation';
+import {LssSessionError} from './io/lssSessionError';
+import type {ObjectXInvestigation} from './io/objectXInvestigation';
+import {ObjectXSessionError} from './io/objectXSessionError';
 import {OBJECT_X_SESSION_EN} from './objectx/ObjectXMessages';
 const OBJECT_X_SAVE_ERROR=OBJECT_X_SESSION_EN.saveError;
 import { formatFloat32, formatZ, spectrumPoints } from './view/spectrum';
@@ -153,6 +158,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
       const motion=onPrepareMotion?.()??undefined,observatory=onPrepareObservatory?.()??undefined,lss=onPrepareLss?.()??undefined,objectX=onPrepareObjectX?.()??undefined,observing=onPrepareObserving?.(),photometry=onPreparePhotometry?.(),sharedEditing=onPrepareEditing?.(),optical=onPrepareOptical?.();
       const editing=sharedEditing?{...sharedEditing,velocity:velocityDraft}:undefined;
       const clusterDatabase=onPrepareClusterDatabase?.(),clusterComparison=onPrepareClusterComparison?.(),clusterSelection=onPrepareClusterSelection?.();
+      const {serializeAnalysisSession}=await sessionModule();
       const saved=await serializeAnalysisSession({...(objectX?{objectX}:{}),...(lss?{lss}:{}),...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(observatory?{observatory}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...((classification=>classificationWorkspaceUsed(classification)?{classification}:{})(onPrepareClassification?.()??EMPTY_CLASSIFICATION_WORKSPACE)),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
       download(saved,'openvireo-session.json','application/json;charset=utf-8');if(radio.kind==='ready')radio.onSaved();setNotice(t('session.saved'));return true;
@@ -170,6 +176,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
     const ticket=++generation.current;setBusy(true);setError('');setNotice('');
     try {
       onPrepareObserving?.();onPreparePhotometry?.();
+      const {readInvestigationSession}=await sessionModule();
       const incoming=await readInvestigationSession(file,{onPreparingFields:()=>{if(ticket===generation.current)setNotice(t('session.preparingFields'));}});
       if(incoming.kind==='practice'){
         const stars=acquisitions.filter(a=>a.kind==='catalog-star-acquisition'),merged=readClassificationWorkspace({...(onPrepareClassification?.()??EMPTY_CLASSIFICATION_WORKSPACE),practice:incoming.state,active:'practice'},stars);
