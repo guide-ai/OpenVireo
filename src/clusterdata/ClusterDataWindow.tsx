@@ -18,10 +18,11 @@ import {loadClusterDetail,type ClusterDetailIndex} from '../io/clusterDetail';
 import {loadClusterDataset} from '../io/clusterComparison';
 import type {Pointing} from '../core/sky';
 import type {SharedHotListHandle} from '../useSharedHotList';
-import FieldInfoListWindow,{MessageBox,downloadText,type FieldInfoBox} from '../observatory/FieldInfoListWindow';
+import FieldInfoListWindow,{FindDialog,MessageBox,downloadText,type FieldInfoBox} from '../observatory/FieldInfoListWindow';
+import {RADIO_HOT_LIST_SEARCH_LITERALS as SRL,RADIO_HOT_LIST_SEARCH_QUERY_MAX,foldAsciiCase,radioHotListMissText,searchRadioHotListRows} from '../core/radioHotListSearch';
+import {clusterEmptyFieldText,CLUSTER_EMPTY_FIELD_CAPTION} from '../core/clusterDialog';
 import {HelpListBox} from '../clusters/CleaHelp';
 import ClusterPrintPreview from '../clusters/ClusterPrintPreview';
-import {ListPrintBody} from '../clusters/ClusterListWindow';
 import PopupMenu,{usePopupMenu} from '../polish/PopupMenu';
 import {CLUSTER_DATA_MESSAGES as M} from './ClusterDataMessages';
 import {FIELD_INFO_MESSAGES as FM} from '../observatory/FieldInfoMessages';
@@ -33,29 +34,35 @@ import '../clusters/cluster-hr.css';
 let sessionRecord:ClusterDialogRecord=EMPTY_CLUSTER_RECORD;
 let sessionList:readonly ClusterStudyRecord[]|null=null,sessionSaved=true;
 const ENTIRE_LITERALS=Object.freeze({caption:'New Hot List Created',head:'All stars from cluster ',tail:' placed in Hot List'});
-type Certified=Readonly<{id:ClusterDatasetId;name:string}>;
+type Certified=Readonly<{id:ClusterDatasetId;name:string;brightestInBank:boolean}>;
 /** The certified cluster whose dialog key equals the validated record exactly (centre and Diam; Front K census). */
 function certifiedCluster(r:ClusterDialogRecord):Certified|null{
  const c=certificate.clusters.find(x=>x.equal&&x.keyRa===r.ra&&x.keyDec===r.dec&&Math.fround(x.keyDiam)===r.diam);
- return c&&(CLUSTER_DATASET_IDS as readonly string[]).includes(c.id)?{id:c.id as ClusterDatasetId,name:c.name}:null;
+ return c&&(CLUSTER_DATASET_IDS as readonly string[]).includes(c.id)?{id:c.id as ClusterDatasetId,name:c.name,brightestInBank:c.brightestRectangleRecordInBank}:null;
 }
 function studyRecords(detail:ClusterDetailIndex):readonly ClusterStudyRecord[]{
  return clusterBankOrder(contract.clusters.map(c=>Object.freeze({id:c.id,name:c.name,ra:c.catalogRa,dec:c.catalogDec,diam:c.angularLimitArcmin,ebv:c.catalogEbvSingle,comment:detail.comment(c.id)??''})),(a,b)=>a.ra>b.ra);
 }
 type Report=Readonly<{report:ClusterDataReport}|{loading:true}|{reason:string}>;
+/** Focus back on the observatory's File menu trigger when the dialog closes (L7). */
+const focusFileMenu=()=>document.querySelector<HTMLButtonElement>('[data-testid="fi-file-menu"]')?.focus();
 
 /** File › Cluster Data... (ClusterData1Click 0x58e650): TClstrDlgForm1 ShowModal; on OK the query 0x534254 and the report
  * 0x534680 with AL = 1 (Selection menu visible). The dialog's File button pops View/Select Cluster from List (TClstrListForm1)
  * and Add Cluster to List. */
 export default function ClusterDataWindow({request,editMode,driveOn,pointing,hotList}:{request:number;editMode:boolean;driveOn:boolean;pointing:Pointing;hotList:SharedHotListHandle}){
- const [dialog,setDialog]=useState(false),[report,setReport]=useState<Report|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[confirm,setConfirm]=useState<(()=>void)|null>(null);
+ const [emptyBox,setEmptyBox]=useState<string|null>(null),[dialog,setDialog]=useState(false),[report,setReport]=useState<Report|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[confirm,setConfirm]=useState<(()=>void)|null>(null);
  const latest=useRef({editMode,driveOn,pointing});latest.current={editMode,driveOn,pointing};
  useEffect(()=>{if(request>0)setDialog(true);},[request]);
  function ok(record:ClusterDialogRecord){
-  setDialog(false);const c=certifiedCluster(record);
+  setDialog(false);focusFileMenu();const c=certifiedCluster(record);
   if(!c){setReport({reason:M.unavailable});return;}
   setReport({loading:true});
   Promise.all([loadClusterDataset(c.id),loadClusterDetail()]).then(([d,detail])=>{
+   // 0x53435b–0x534452: an empty reader result answers "No Stars Found in Field!" and leaves the previous bank in place; the
+   // certificate says when an empty filtered bank is exactly that case (M1).
+   if(!d.points.some(p=>Math.fround(p.v)<=Math.fround(record.limit))){
+    if(c.brightestInBank&&record.area){setEmptyBox(clusterEmptyFieldText(record.area,record.limit));setReport({reason:M.emptyField});}else setReport({reason:M.emptyUnknown});return;}
    try{setReport({report:clusterDataReport(record.name,record.type,record.sort,record.limit,d.points,detail.detail)});}catch{setReport({reason:M.loadError});}
   },()=>setReport({reason:M.loadError}));
  }
@@ -64,7 +71,7 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
  const fields=(p:ClusterReferencePoint,id:string):HtlFields=>({id:id.slice(0,24),remarks:'',ra:p.ra,dec:p.dec});
  const rowId=(i:number)=>shown?shown.lines[shown.first+i].slice(0,18).replace(/\s+$/,''):'';
  function addFields(f:HtlFields,fresh:boolean,name=''):boolean{
-  if(hotList.current().read){setBox({caption:VL.confirmation,text:M.loadError});return false;}
+  if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return false;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,fresh?addHtlRow(newHtlEditor(),f):addHtlRowRaOrdered(d.editor??newHtlEditor(),f),fresh?name:d.editor?d.name:''));return true;}
   catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.loadError});return false;}
  }
@@ -72,22 +79,23 @@ export default function ClusterDataWindow({request,editMode,driveOn,pointing,hot
  function startNew(then:()=>void){if(hotList.current().editor?.list.length){setConfirm(()=>then);return;}then();}
  function answer(save:boolean){const then=confirm;setConfirm(null);if(!then)return;const doc=hotList.current();if(save&&doc.editor)downloadText(serializeHtl(doc.editor.list),doc.name||'HotList.HTL');then();}
  return <>
-  {dialog&&<ClusterDialog editMode={editMode} driveOn={driveOn} pointing={pointing} hotList={hotList} onOk={ok} onCancel={()=>setDialog(false)}/>}
+  {dialog&&<ClusterDialog editMode={editMode} driveOn={driveOn} pointing={pointing} hotList={hotList} onOk={ok} onCancel={()=>{setDialog(false);focusFileMenu();}}/>}
   {report&&('report' in report&&'lines' in report.report?<FieldInfoListWindow testId="cluster-data" caption={report.report.caption} lines={report.report.lines} first={report.report.first} last={report.report.last}
     notice={<p className="fi-note">{M.reportNote}</p>}
     selectionItems={[
      {key:'add',label:FL.menu.add,onClick:i=>{const r=shown;if(!r)return;const id=rowId(i);if(addFields(fields(r.bank[i],id),false))setBox({caption:VL.confirmation,text:variableAddedText(id)});}},
-     {key:'start',label:FL.menu.start,onClick:i=>{const r=shown;if(!r)return;const id=rowId(i);startNew(()=>{if(addFields(fields(r.bank[i],id),true))setBox({caption:VL.confirmation,text:variableNewListText(id)});});}},
-     {key:'entire',label:FL.menu.entire,onClick:()=>{const r=shown;if(!r)return;startNew(()=>{const stem=clusterEntireListStem(r.stem);let e=newHtlEditor();
-      try{r.bank.forEach((p,i)=>{e=addHtlRowRaOrdered(e,fields(p,rowId(i)));});hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,e,stem+'.HTL'));}catch(x){setBox({caption:VL.confirmation,text:x instanceof HtlError?x.message:M.loadError});return;}
+     {key:'start',label:FL.menu.start,onClick:i=>{const r=shown;if(!r)return;if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}const id=rowId(i);startNew(()=>{if(addFields(fields(r.bank[i],id),true))setBox({caption:VL.confirmation,text:variableNewListText(id)});});}},
+     {key:'entire',label:FL.menu.entire,onClick:()=>{const r=shown;if(!r)return;if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}startNew(()=>{const stem=clusterEntireListStem(r.stem);let e=newHtlEditor();
+      try{r.bank.forEach((p,i)=>{e=addHtlRowRaOrdered(e,fields(p,rowId(i)));});if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,e,stem+'.HTL'));}catch(x){setBox({caption:VL.confirmation,text:x instanceof HtlError?x.message:M.loadError});return;}
       setBox({caption:ENTIRE_LITERALS.caption,text:ENTIRE_LITERALS.head+r.stem+ENTIRE_LITERALS.tail});});}},
     ]}
-    saveName={`${report.report.stem}.TXT`} csv={{disabled:false,bytes:()=>{const r=report.report;const l='lines' in r?fieldStarCsvLines(r.lines):null;return l?{bytes:variableStarSaveText(l),name:`${r.stem}.CSV`}:{caption:FL.csvTitle,text:fieldInfoReasonText('csv-row-short')};}}}
+    printStudent={!editMode} saveName={`${report.report.stem}.TXT`} csv={{disabled:false,bytes:()=>{const r=report.report;const l='lines' in r?fieldStarCsvLines(r.lines):null;return l?{bytes:variableStarSaveText(l),name:`${r.stem}.CSV`}:{caption:FL.csvTitle,text:fieldInfoReasonText('csv-row-short')};}}}
     onClose={()=>setReport(null)} box={box} onBox={setBox}/>
    :<section className="card fi-window" data-testid="cluster-data-status"><h2 className="ob-native">{M.unavailableCaption}</h2>
     <p role="status" className={'loading' in report?'fi-note':'fi-unavailable'} data-testid="cluster-data-reason">{'loading' in report?M.loading:'reason' in report?report.reason:M.spectral}</p>
     <button type="button" className="secondary-button" onClick={()=>setReport(null)}>{menuCaptionText(SL.close)}</button></section>)}
   {confirm&&<UnsavedHotList onAnswer={answer}/>}
+  {emptyBox&&<MessageBox box={{caption:CLUSTER_EMPTY_FIELD_CAPTION,text:emptyBox}} onClose={()=>{setEmptyBox(null);requestAnimationFrame(focusFileMenu);}}/>}
  </>;
 }
 
@@ -101,10 +109,9 @@ function ClusterDialog({editMode,driveOn,pointing,hotList,onOk,onCancel}:{editMo
  const coordsReadOnly=state.useTelescope;
  function ok(){const r=clusterDialogValidate(sessionRecord,state);sessionRecord=r.record;if(r.status==='error'){setError(r.text);return;}onOk(r.record);}
  function addToList(){setMenu(false);const r=clusterDialogValidate(sessionRecord,state);sessionRecord=r.record;if(r.status==='error'){setError(r.text);return;}
-  // 0x536734 creates the list form (loading the list) if it does not exist yet, then inserts the record.
-  const record=r.record;
-  if(sessionList){sessionList=addClusterStudyRecord(sessionList,record);sessionSaved=false;return;}
-  loadClusterDetail().then(d=>{sessionList=addClusterStudyRecord(sessionList??studyRecords(d),record);sessionSaved=false;},()=>setError(M.loadError));}
+  // 0x536734 creates the list form if it does not exist yet (without showing it) and inserts the record; FormShow 0x531573
+  // loads CLUSTERS.DAT only into an empty list, so an Add before the first View/Select leaves only the added cluster (M2).
+  sessionList=addClusterStudyRecord(sessionList??[],r.record);sessionSaved=false;}
  const D=L,F=state.fields,field=(f:ClusterDialogField,label:string,hint?:string,readOnly=false)=><label className="ob-field"><span className={f==='name'?'visually-hidden':'ob-native'}>{label}</span>
   <input data-testid={`cd-${f}`} value={F[f]} maxLength={D.maxLength[f==='diameter'?'diameter':f==='limit'?'limit':f]} title={hint} readOnly={readOnly} onChange={e=>edit(f,e.target.value)} ref={f==='name'?nameRef:undefined}/></label>;
  return <dialog ref={ref} className="ob-dialog ob-box cluster-data-dialog" aria-labelledby={`${id}-t`} data-testid="cd-dialog" onCancel={e=>{e.preventDefault();if(e.target!==e.currentTarget)return;if(menu){setMenu(false);return;}onCancel();}}>
@@ -134,35 +141,45 @@ function ClusterDialog({editMode,driveOn,pointing,hotList,onOk,onCancel}:{editMo
    <p className="fi-note">{M.menuNote}</p>
   </form>
   {error&&<MessageBox box={{caption:D.errorCaption,text:error}} onClose={()=>{setError('');nameRef.current?.focus();}}/>}
-  {list&&<StudyList editMode={editMode} hotList={hotList} onClose={()=>{setList(false);fileRef.current?.focus();}}
-   onData={r=>{sessionRecord={...sessionRecord,name:r.name,ra:r.ra,dec:r.dec,diam:r.diam,ebv:r.ebv??sessionRecord.ebv};setList(false);setState(activate());}}/>}
+  {list&&<StudyList editMode={editMode} hotList={hotList} onClose={copied=>{setList(false);if(copied){setState(activate());requestAnimationFrame(()=>{nameRef.current?.focus();nameRef.current?.select();});}else fileRef.current?.focus();}}
+   onData={r=>{sessionRecord={...sessionRecord,name:r.name,ra:r.ra,dec:r.dec,diam:r.diam,ebv:r.ebv??sessionRecord.ebv};}}/>}
  </dialog>;
 }
 
 /** TClstrListForm1 "Clusters for Study" (§5): left click/keys select a data row; right-click on a selected data row pops the
  * hot-list items; double-click/Enter or Get Selection Data copies the row into the dialog and closes the list. */
-function StudyList({editMode,hotList,onClose,onData}:{editMode:boolean;hotList:SharedHotListHandle;onClose:()=>void;onData:(r:ClusterStudyRecord)=>void}){
+function StudyList({editMode,hotList,onClose,onData}:{editMode:boolean;hotList:SharedHotListHandle;onClose:(copied:boolean)=>void;onData:(r:ClusterStudyRecord)=>void}){
  const id=useId(),ref=useRef<HTMLDialogElement>(null),[records,setRecords]=useState<readonly ClusterStudyRecord[]|null>(sessionList);
- const [index,setIndex]=useState(-1),[menu,setMenu]=useState<'list'|'selection'|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[printing,setPrinting]=useState(false),[unsaved,setUnsaved]=useState(false);
+ const [index,setIndex]=useState(-1),[sel,setSel]=useState(-1),[find,setFind]=useState<Readonly<{query:string;matchCase:boolean}>|null>(null),copied=useRef(false),[menu,setMenu]=useState<'list'|'selection'|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[printing,setPrinting]=useState(false),[unsaved,setUnsaved]=useState(false),[saveFailed,setSaveFailed]=useState(false);
  const popup=usePopupMenu(),[confirm,setConfirm]=useState<(()=>void)|null>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open)el.showModal();},[]);
- useEffect(()=>{if(records)return;loadClusterDetail().then(d=>{sessionList??=studyRecords(d);setRecords(sessionList);},()=>setBox({caption:SL.caption,text:M.loadError}));},[records]);
+ // FormShow 0x531538 loads the list only when it is empty.
+ useEffect(()=>{if(records?.length)return;loadClusterDetail().then(d=>{if(!sessionList?.length)sessionList=studyRecords(d);setRecords(sessionList);},()=>setBox({caption:SL.caption,text:M.loadError}));},[records]);
  const list=records?clusterStudyList(records,editMode):null;
- const selection=list&&index>=list.first&&index<=list.last?index-list.first:-1;
- const close=()=>{if(!sessionSaved){setUnsaved(true);return;}onClose();};
+ // +0x5c7 is set by left clicks and keys only (MouseUp 0x532144 / KeyUp 0x5322d4); Search moves the highlight, not it.
+ const selection=list&&sel>=0&&sel<=list.last-list.first?sel:-1;
+ const choose=(i:number)=>{setIndex(i);setSel(list&&i>=list.first&&i<=list.last?i-list.first:-1);};
+ const close=()=>{if(!sessionSaved){setUnsaved(true);return;}onClose(copied.current);};
+ function search(mode:'top'|'next'){if(!find||!list)return;const q=find.query.slice(0,RADIO_HOT_LIST_SEARCH_QUERY_MAX);setFind(null);if(!q)return;
+  const r=searchRadioHotListRows(list.lines,q,find.matchCase,mode==='top'?0:index+1);
+  if(r.kind==='hit')setIndex(r.index);else setBox({caption:SRL.missCaption,text:radioHotListMissText(find.matchCase?q:foldAsciiCase(q))});}
  function hot(fresh:boolean){setMenu(null);if(!list||selection<0){setBox({caption:SL.caption,text:M.noSelection});return;}
+  if(hotList.current().read){setBox({caption:VL.confirmation,text:FM.busy});return;}
   const r=list.records[selection],f:HtlFields={id:r.name.slice(0,24),remarks:r.comment.slice(0,40),ra:r.ra,dec:r.dec};
   const run=()=>{try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,fresh?addHtlRow(newHtlEditor(),f):addHtlRowRaOrdered(d.editor??newHtlEditor(),f),fresh?'':d.editor?d.name:''));}
    catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.loadError});return;}setBox({caption:VL.confirmation,text:fresh?variableNewListText(f.id):variableAddedText(f.id)});};
   if(fresh&&hotList.current().editor?.list.length){setConfirm(()=>run);return;}
   run();}
  function answer(save:boolean){const then=confirm;setConfirm(null);if(!then)return;const doc=hotList.current();if(save&&doc.editor)downloadText(serializeHtl(doc.editor.list),doc.name||'HotList.HTL');then();}
- const data=()=>{setMenu(null);if(list&&selection>=0)onData(list.records[selection]);};
+ // 0x5325b0: copy into the record, then Close (FormClose 0x532054 asks to save a modified list) (L1).
+ const copy=(i:number)=>{if(!list||i<0)return;onData(list.records[i]);copied.current=true;close();};
+ const data=()=>{setMenu(null);copy(selection);};
  return <dialog ref={ref} className="ob-dialog ob-wide cluster-list-window" aria-labelledby={`${id}-t`} data-testid="cd-study-list" onCancel={e=>{e.preventDefault();if(e.target!==e.currentTarget)return;if(menu){setMenu(null);return;}close();}}>
   <h2 id={`${id}-t`} className="ob-native">{SL.caption}</h2>
   <div className="cluster-hr-menubar">
    <div className="cluster-hr-menu"><button type="button" aria-expanded={menu==='list'} data-testid="cd-study-list-menu" onClick={()=>setMenu(menu==='list'?null:'list')}>{menuCaptionText(SL.list)}</button>
     {menu==='list'&&<div role="group" aria-label={menuCaptionText(SL.list)} className="cluster-hr-menu-list">
+     <button type="button" data-testid="cd-study-search" disabled={!list} onClick={()=>{setMenu(null);setFind({query:'',matchCase:false});}}>{menuCaptionText(SL.search)}</button><hr/>
      <button type="button" data-testid="cd-study-print" disabled={!list} onClick={()=>{setMenu(null);setPrinting(true);}}>{menuCaptionText(SL.print)}</button><hr/>
      <button type="button" data-testid="cd-study-save" disabled={sessionSaved} onClick={()=>{setMenu(null);setBox({caption:SL.caption,text:M.saveListUnavailable});}}>{SL.saveList}</button><hr/>
      <button type="button" data-testid="cd-study-close" onClick={()=>{setMenu(null);close();}}>{menuCaptionText(SL.close)}</button>
@@ -175,16 +192,18 @@ function StudyList({editMode,hotList,onClose,onData}:{editMode:boolean;hotList:S
     </div>}</div>
   </div>
   {list?<div onContextMenu={e=>{e.preventDefault();if(selection>=0)popup.open(e);}}>
-    <HelpListBox rows={list.lines} selected={index} onSelect={setIndex} onActivate={i=>{if(list&&i>=list.first&&i<=list.last)onData(list.records[i-list.first]);}} label={SL.caption} testId="cd-study-lines" columns/></div>
+    <HelpListBox rows={list.lines} selected={index} onSelect={choose} onActivate={i=>{if(list&&i>=list.first&&i<=list.last)copy(i-list.first);}} label={SL.caption} testId="cd-study-lines" columns/></div>
    :<p role="status" className="fi-note">{M.loading}</p>}
   <PopupMenu at={popup.at} label={menuCaptionText(SL.selection)} onClose={popup.close} items={[{key:'cd-add',label:SL.add,onSelect:()=>hot(false)},{key:'cd-start',label:SL.start,onSelect:()=>hot(true)}]}/>
-  <p className="fi-note">{M.listNote}</p>{editMode&&<p className="fi-note" data-testid="cd-study-edit-note">{M.editModeColumns}</p>}
+  <p className="fi-note">{M.listNote} {M.listModal}</p>{editMode&&<p className="fi-note" data-testid="cd-study-edit-note">{M.editModeColumns}</p>}
   {box&&<MessageBox box={box} onClose={()=>setBox(null)}/>}
   {confirm&&<UnsavedHotList onAnswer={answer}/>}
-  {unsaved&&<MessageBox box={{caption:SL.notSavedCaption,text:SL.notSavedText}} onClose={()=>{setUnsaved(false);onClose();}} actions={<>
-   <button type="button" className="primary-button" data-testid="cd-unsaved-yes" onClick={()=>{setUnsaved(false);setBox({caption:SL.caption,text:M.saveListUnavailable});}}>{FM.yes}</button>
-   <button type="button" className="secondary-button" data-testid="cd-unsaved-no" onClick={()=>{setUnsaved(false);sessionSaved=true;onClose();}}>{FM.no}</button></>}/>}
-  {printing&&list&&<ClusterPrintPreview caption={SL.caption} note={M.printNote} onClose={()=>setPrinting(false)} testId="cd-study-print-preview"><ListPrintBody caption={SL.caption} lines={list.lines}/></ClusterPrintPreview>}
+  {unsaved&&<MessageBox box={{caption:SL.notSavedCaption,text:SL.notSavedText}} onClose={()=>{setUnsaved(false);onClose(copied.current);}} actions={<>
+   <button type="button" className="primary-button" data-testid="cd-unsaved-yes" onClick={()=>{setUnsaved(false);setSaveFailed(true);}}>{FM.yes}</button>
+   <button type="button" className="secondary-button" data-testid="cd-unsaved-no" onClick={()=>{setUnsaved(false);onClose(copied.current);}}>{FM.no}</button></>}/>}
+  {saveFailed&&<MessageBox box={{caption:SL.caption,text:M.saveListUnavailable}} onClose={()=>{setSaveFailed(false);onClose(copied.current);}}/>}
+  {find&&<FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={()=>setFind(null)}/>}
+  {printing&&list&&<ClusterPrintPreview caption={SL.caption} note={M.printNote} onClose={()=>setPrinting(false)} testId="cd-study-print-preview"><StudyPrintBody caption={SL.caption} lines={list.lines} student={!editMode}/></ClusterPrintPreview>}
  </dialog>;
 }
 
@@ -193,4 +212,15 @@ function UnsavedHotList({onAnswer}:{onAnswer:(save:boolean)=>void}){
  return <MessageBox box={{caption:VL.unsavedCaption,text:VL.unsavedText}} onClose={()=>onAnswer(false)} actions={<>
   <button type="button" className="primary-button" data-testid="cd-hot-unsaved-yes" onClick={()=>onAnswer(true)}>{FM.yes}</button>
   <button type="button" className="secondary-button" data-testid="cd-hot-unsaved-no" onClick={()=>onAnswer(false)}>{FM.no}</button></>}/>;
+}
+
+/** Print body 0x531c68 (Front O M6): +0x5c6 := not Edit Mode; the laboratory table line and the student names are printed only
+ * on the student branch (L5). VIREO prints landscape in Edit Mode and portrait otherwise. */
+function StudyPrintBody({caption,lines,student}:{caption:string;lines:readonly string[];student:boolean}){
+ const [date]=useState(()=>new Date().toLocaleString());
+ return <div data-testid="cd-study-print-body">
+  <p className="cluster-print-line">{date+(student?'     Laboratory Table Number (Not Recorded)':'')}</p>
+  <p className="cluster-print-line cluster-print-indent">{caption}</p>
+  {lines.map((l,i)=><p key={i} className="cluster-print-line cluster-print-indent">{l||' '}</p>)}
+ </div>;
 }

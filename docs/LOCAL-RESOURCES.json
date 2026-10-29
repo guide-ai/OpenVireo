@@ -7139,8 +7139,8 @@
     },
     {
       "path": "data/clusters/cluster-dialog-certificate.json",
-      "bytes": 7501,
-      "sha256": "c2b6c48fab2922878b7d3a79eff8d6db261ee7d98e733e544cde2d5c21bf38df"
+      "bytes": 8418,
+      "sha256": "0ac7a8cf303429c259e9ee1f88aeab5b1df046da3d2b06a2a0bbd71258afb1a3"
     }
   ]
 }

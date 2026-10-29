@@ -2,8 +2,8 @@ import {describe,expect,it} from 'vitest';
 import contract from '../../data/photometry/cluster-comparison-contract.json';
 import comments from '../../data/clusters/cluster-comments.json';
 import certificate from '../../data/clusters/cluster-dialog-certificate.json';
-import witness from './clusterStudyWitness.json';
-import {CLUSTER_DIALOG_LITERALS as L,EMPTY_CLUSTER_RECORD,addClusterStudyRecord,clusterDataReport,clusterDialogActivate,clusterDialogKey,clusterDialogValidate,clusterEntireListStem,clusterStudyList,clusterUseTelescope,type ClusterDialogState} from './clusterDialog';
+import witness from './clusterList.witness.json';
+import {clusterEmptyFieldText,CLUSTER_EMPTY_FIELD_CAPTION,CLUSTER_DIALOG_LITERALS as L,EMPTY_CLUSTER_RECORD,addClusterStudyRecord,clusterDataReport,clusterDialogActivate,clusterDialogKey,clusterDialogValidate,clusterEntireListStem,clusterStudyList,clusterUseTelescope,type ClusterDialogState} from './clusterDialog';
 import type {ClusterReferencePoint} from './clusterDatabase';
 
 const records=contract.clusters.map(c=>({id:c.id,name:c.name,ra:c.catalogRa,dec:c.catalogDec,diam:c.angularLimitArcmin,ebv:c.catalogEbvSingle,comment:comments.clusters.find(x=>x.id===c.id)!.comment}));
@@ -51,7 +51,7 @@ describe('Front K census certificate (dialog route at the parsed key)',()=>{
 
 describe('TClstrListForm1 fill 0x532de8 / row 0x5333e4',()=>{
  it('student lines equal the witness for all 16 records',()=>{
-  const l=clusterStudyList(records,false);expect(l.lines).toEqual(witness.lines);expect([l.first,l.last]).toEqual([7,22]);
+  const l=clusterStudyList(records,false);expect(l.lines).toEqual(witness.listStudent);expect([l.first,l.last]).toEqual([7,22]);
  });
  it('Edit Mode shows E(B−V) but none of the unpublished catalogue columns',()=>{
   const l=clusterStudyList(records,true);
@@ -72,7 +72,7 @@ describe('TClstrRptForm1 from the dialog (0x534680, AL = 1)',()=>{
  it('Type 1 RA: the finding list (ID, RA, Dec), RA order, no photometry lines',()=>{
   const r=clusterDataReport('Test',1,1,20,pts,detail);if('unavailable' in r)throw new Error();
   expect(r.lines.slice(0,6)).toEqual(['Cluster Name/ID: Test','3 Stars','Positions are J2000.0','List sorted by Right Ascension.','','Name/ID           Right Ascn. Declination ']);
-  expect(r.lines.slice(r.first).map(l=>l.slice(0,11))).toEqual(['N0000-00002','N0000-00003','N0000-00001']);expect(r.lines[r.first]).toBe('N0000-00002       01 00 00.0   +01 00 00');
+  expect(r.lines.slice(r.first).map(l=>l.slice(0,11))).toEqual(['N0000-00002','N0000-00003','N0000-00001']);expect(r.lines[r.first]).toBe('N0000-00002       01 00 00.0   +01 00 00   ');// three spaces appended at 0x53575f
  });
  it('Type 0 V with a limit: V ≤ limit only, V order, ranges and notes',()=>{
   const r=clusterDataReport('Test',0,0,12,pts,detail);if('unavailable' in r)throw new Error();
@@ -80,4 +80,14 @@ describe('TClstrRptForm1 from the dialog (0x534680, AL = 1)',()=>{
   expect(r.bank.map(p=>p.id)).toEqual(['N1@2','N1@1']);
  });
  it('Entire-list stem cuts before "("',()=>{expect(clusterEntireListStem('M 34 (NGC 1039)')).toBe('M 34');expect(clusterEntireListStem('Hyades')).toBe('Hyades');});
+});
+
+describe('empty reader result 0x53435b–0x534452 (review M1)',()=>{
+ it('box text with the rectangle (6, 6, 5, 5 decimals) and the limit (3 decimals)',()=>{
+  expect(CLUSTER_EMPTY_FIELD_CAPTION).toBe('No Stars Found in Field!');
+  expect(clusterEmptyFieldText({minimumRa:1.5,maximumRa:2.25,minimumDec:-3.125,maximumDec:4},Math.fround(5))).toBe('Possible Error in Field Parameters:\r\n\r\nMinRA: 1.500000\r\nMaxRA: 2.250000\r\nMinDec: -3.12500\r\nMaxDec: 4.00000\r\nLimitMag: 5.000');
+ });
+ it('the certificate says for which clusters an empty filtered bank is exactly the empty reader result',()=>{
+  expect(certificate.clusters.filter(c=>!c.brightestRectangleRecordInBank).map(c=>c.id).sort()).toEqual(['30dor','ic4665','m67','mel111']);
+ });
 });

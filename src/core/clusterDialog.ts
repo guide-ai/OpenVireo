@@ -87,11 +87,12 @@ export function clusterDialogKey(c:Readonly<{ra:number;dec:number;diam:number}>)
 export type ClusterDataReport=Readonly<{caption:string;stem:string;lines:readonly string[];first:number;last:number;bank:readonly ClusterReferencePoint[]}|{caption:string;stem:string;unavailable:'spectral-code-unformattable'}>;
 const plus=(x:number)=>(x>0?'+':'')+delphiFixed(x,2);
 const z2=(n:number)=>padLeft(String(n),2,'0');
-/** Row 0x5354e8 without photometry (Type 1, the student finding list): ID/18, RA, Dec. */
+/** Row 0x5354e8 without photometry (Type 1, the student finding list): ID/18, RA, Dec and the three spaces appended at
+ * 0x53575f before the Type test at 0x535771. */
 function findingRow(r:CatalogStarRecord):string{
  const ra=splitNativeSexagesimal(r.ra,1),dec=splitNativeSexagesimal(r.dec,0);
  return padRight(r.id,18)+z2(ra.whole)+' '+z2(ra.minutes)+' '+padLeft(delphiFixed(ra.seconds,1),4,'0')+'   '
-  +(dec.sign<0?'-':'+')+z2(dec.whole)+' '+z2(dec.minutes)+' '+padLeft(delphiFixed(dec.seconds,0),2,'0');
+  +(dec.sign<0?'-':'+')+z2(dec.whole)+' '+z2(dec.minutes)+' '+padLeft(delphiFixed(dec.seconds,0),2,'0')+'   ';
 }
 export function clusterDataReport(name:string,type:0|1,sort:0|1,limit:number,points:readonly ClusterReferencePoint[],detail:(id:string)=>ClusterPointDetail|undefined):ClusterDataReport{
  const L=CLUSTER_REPORT_LITERALS,admitted=points.filter(p=>Math.fround(p.v)<=Math.fround(limit));
@@ -107,6 +108,13 @@ export function clusterDataReport(name:string,type:0|1,sort:0|1,limit:number,poi
  const lines=Object.freeze([...header,...rows as string[]]);
  return Object.freeze({caption:L.caption,stem:name,lines,first:header.length,last:lines.length-1,bank});
 }
+/** 0x53435b–0x534452: the reader returned no star in the rectangle → MessageBox (MB_ICONERROR) caption `No Stars Found in
+ * Field!` with the rectangle (6, 6, 5, 5 decimals) and the limit (3 decimals); the query then ends without touching the bank. */
+export const CLUSTER_EMPTY_FIELD_CAPTION='No Stars Found in Field!';
+export function clusterEmptyFieldText(a:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>,limit:number):string{
+ return 'Possible Error in Field Parameters:\r\n\r\nMinRA: '+delphiFixed(a.minimumRa,6)+'\r\nMaxRA: '+delphiFixed(a.maximumRa,6)
+  +'\r\nMinDec: '+delphiFixed(a.minimumDec,5)+'\r\nMaxDec: '+delphiFixed(a.maximumDec,5)+'\r\nLimitMag: '+delphiFixed(Math.fround(limit),3);
+}
 /** Create New Hot List of Entire List (Front O M15): stem := name cut before any '(' and the spaces before it. */
 export function clusterEntireListStem(name:string):string{const i=name.indexOf('(');return (i<0?name:name.slice(0,i)).replace(/\s+$/,'');}
 
@@ -119,7 +127,6 @@ export const CLUSTER_STUDY_LITERALS=Object.freeze({caption:'Clusters for Study',
  list:'&List',search:'&Search...',print:'&Print...',saveList:'Save List...',close:'&Close',selection:'&Selection',getData:'&Get Selection Data',
  add:'&Add Selection to Current Hot List',start:'Start &New Hot List with Selection',
  notSavedCaption:'Cluster List not Saved!',notSavedText:'You have not saved your updated Cluster List.\r\n\r\nDo you want to save it now?',
- noSelectionAdd:'Please select (highlight) an item on the list, then select "Selection" -> "Add Selection to Current Hot List" from the menu.',
 });
 /** Row 0x5333e4, student columns: name/25, RA `hh mm ss.s` + 3 spaces, Dec `±dd mm ss` + 2 spaces, Diam S4(0 decimals),
  * 3 spaces, comment. Edit Mode inserts E(B−V) and the four catalogue columns this site does not publish [W]: only E(B−V)

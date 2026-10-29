@@ -46,8 +46,9 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
        <button type="button" data-testid="fi-variables-modeled" onClick={()=>pick(()=>onFieldInfo('modeled'))}>{menuCaptionText(VM.modeled)}</button>
       </div>}
      </div>}</>}
-    {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{menuCaptionText(CLUSTER_DATA_MENU)}</button>}
     <button type="button" data-testid="print-sky-menu" onClick={()=>pick(()=>setPrintSky(true))}>{menuCaptionText(PRINT_SKY_LITERALS.menu)}</button>
+    {/* TEnvironment1 File order: Print Sky Image, Cluster Data (ClusterData1 sits directly before QSOList1), QSO List. */}
+    {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{menuCaptionText(CLUSTER_DATA_MENU)}</button>}
     {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{menuCaptionText(QSO_LIST_MENU)}</button>}
    </div>}
   </div>

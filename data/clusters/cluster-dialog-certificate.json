@@ -1,12 +1,12 @@
 {
  "schema": "openvireo-cluster-dialog-certificate-v1",
- "purpose": "Front K: for each published cluster, the Cluster Data dialog key (the centre and Diam that TClstrDlgForm1 writes into its edits and OK parses back) and the result of a research-side census over the full compact band (the 0x534254 predicate at that key, limit 25): equal means the query admits exactly the published bank. No GSC record, distance, age or modulus is included.",
+ "purpose": "Front K: for each published cluster, the Cluster Data dialog key (the centre and Diam that TClstrDlgForm1 writes into its edits and OK parses back) and the result of a research-side census over the full compact band (the 0x534254 predicate at that key, limit 25): equal means the query admits exactly the published bank. No GSC record, distance, age or modulus is included. brightestRectangleRecordInBank: the brightest band record in the query rectangle belongs to the published bank, so a limit that empties the bank also empties the reader result (VIREO then shows \"No Stars Found in Field!\").",
  "census": {
   "tool": "analysis/front-k-cluster-dialogs/tools/dialog_census.py",
-  "toolSha256": "32daf255ddb257e473a9b4440e64ea46fc630386960b38d6236875f2ead95547",
+  "toolSha256": "82a343f2dc32f6ff7b93c4d741567d4ceae9672e57f5574b9f21a7dbc0a95bd2",
   "clustersDatSha256": "bec9dfb53969ba3828dff98962d9c80c3c7b5e51646f2a88ef70bcf634545ff2",
   "output": "analysis/front-k-cluster-dialogs/dialog-census.json",
-  "outputSha256": "ec97ada7ca6952d16a2bdc55c0b0974e34a1fa4c33d096e9aad012501120ad55"
+  "outputSha256": "6a4623a9b4c2ca7d9362ffddf2462828fcb14752452cf7dd7b9fae8953171f4c"
  },
  "clusters": [
   {
@@ -28,7 +28,8 @@
      "band": "N3730",
      "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "m34",
@@ -45,7 +46,8 @@
      "band": "N3730",
      "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "mel20",
@@ -70,7 +72,8 @@
      "band": "N5230",
      "sha256": "17e899286fba7af6b286fb88580449e5513e98a86a24544030d870f0d8af851d"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "pleiades",
@@ -91,7 +94,8 @@
      "band": "N2230",
      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "hyades",
@@ -112,7 +116,8 @@
      "band": "N1500",
      "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "30dor",
@@ -137,7 +142,8 @@
      "band": "S7500",
      "sha256": "55904d49d1e2e651263f1866e074ecd1acf3da7579bd86178e27d8ae633f6baa"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": false
   },
   {
    "id": "m41",
@@ -154,7 +160,8 @@
      "band": "S1500",
      "sha256": "c2bc97a911be613ec7f540148816329c5953ee6fed75b5604f6cdf2dcea37a31"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "m44",
@@ -171,7 +178,8 @@
      "band": "N1500",
      "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "ic2391",
@@ -192,7 +200,8 @@
      "band": "S5230",
      "sha256": "4b1678aa1b69f2404efba0b192df32dcfdd5e2fcdb0a55b17159915a4837c95a"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "m67",
@@ -209,7 +218,8 @@
      "band": "N0730",
      "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": false
   },
   {
    "id": "mel111",
@@ -226,7 +236,8 @@
      "band": "N2230",
      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": false
   },
   {
    "id": "ic4665",
@@ -243,7 +254,8 @@
      "band": "N0000",
      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": false
   },
   {
    "id": "m7",
@@ -260,7 +272,8 @@
      "band": "S3000",
      "sha256": "fa9ee76f4a2c5ea7ee5a17dc2f84c583478ff6d339f981ab25836a201fcd0228"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "m16",
@@ -277,7 +290,8 @@
      "band": "S0730",
      "sha256": "c029ac362f2a0b31d167719d4d9e4fa4fa412f15a459a59701a0c2b9ef496e19"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "cygob2",
@@ -294,7 +308,8 @@
      "band": "N3730",
      "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   },
   {
    "id": "m39",
@@ -311,7 +326,8 @@
      "band": "N4500",
      "sha256": "513a9deab803f1c7b5ef9cda029044b2c13c79edde6f51ee998f5ef2a75156cb"
     }
-   ]
+   ],
+   "brightestRectangleRecordInBank": true
   }
  ]
 }
