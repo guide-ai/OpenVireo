@@ -16,7 +16,7 @@ export default function AboutDialog({dialogRef}:{dialogRef:RefObject<HTMLDialogE
   <h2 id="scope-heading">{t('sky.about')}</h2>
   <section className="about-native" aria-label={A.caption} data-testid="about-native">
    <p className="about-native-caption ob-native">{A.caption}</p>
-   <div className="about-native-panel"><AboutBoxPanel version={A.mainVersion}/></div>
+   <div className="about-native-panel"><AboutBoxPanel version={A.mainVersion} testId="about-native"/></div>
    <p className="observatory-note">{W.nativeNote}</p>
   </section>
   <section aria-labelledby="about-site"><h3 id="about-site">{W.siteTitle}</h3><p>{W.site}</p></section>
