@@ -8,6 +8,8 @@ import './field-info.css';
 import PrintSkyImage from '../polish/PrintSkyImage';
 import {PRINT_SKY_LITERALS} from '../polish/PolishMessages';
 import type {Pointing} from '../core/sky';
+/** TEnvironment1 ClusterData1 (DFM) [D]. */
+const CLUSTER_DATA_MENU='&Cluster Data...';
 
 export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
 /** TEnvironment1 File and Tools items of the optical observatory (Front O, O2):
@@ -19,7 +21,9 @@ export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
  * - Tools › HST Image Archive...: the archive page as an external link, opened in a new tab only on click (user decision of
  *   2026-10-28, AGENTS.md; docs/QSO-LIST-HST.md).
  * The windows live in their own lazy components; this menu only sends open requests. Disabled only while a project is busy. */
-export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,pointing,view}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
+export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,onClusterData,pointing,view}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
+ /** Front K: File › Cluster Data... (TEnvironment1 ClusterData1). */
+ onClusterData?:()=>void;
  /** Front P: the current pointing and view for the Print Sky Image header. */
  pointing?:Pointing;view?:'finder'|'instrument'}){
  const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null),[printSky,setPrintSky]=useState(false);
@@ -42,6 +46,7 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
        <button type="button" data-testid="fi-variables-modeled" onClick={()=>pick(()=>onFieldInfo('modeled'))}>{menuCaptionText(VM.modeled)}</button>
       </div>}
      </div>}</>}
+    {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{menuCaptionText(CLUSTER_DATA_MENU)}</button>}
     <button type="button" data-testid="print-sky-menu" onClick={()=>pick(()=>setPrintSky(true))}>{menuCaptionText(PRINT_SKY_LITERALS.menu)}</button>
     {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{menuCaptionText(QSO_LIST_MENU)}</button>}
    </div>}
