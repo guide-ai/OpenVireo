@@ -2,7 +2,7 @@ import{test,expect,type Page}from'@playwright/test';
 import{readFile}from'node:fs/promises';
 import{paceDownload}from'./fixtures/download-pacing';
 
-// Front O2 (docs/QSO-LIST-HST.md): File › QSO List (TQSOListDlg, TQSORptForm1) and Tools › HST Image Archive (typed unavailable).
+// Front O2 (docs/QSO-LIST-HST.md): File › QSO List (TQSOListDlg, TQSORptForm1) behind the Virtual Observatory option, and Tools › HST Image Archive (external link opened only on click, user decision 2026-10-28).
 const card=(p:Page)=>p.locator('.telescope-motion');
 async function open(page:Page){
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:15000});
