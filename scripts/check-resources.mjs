@@ -86,6 +86,27 @@ export async function checkResources(root, manifest) {
   const issues = results.filter(Boolean);
   return {total: entries.length, matched: entries.length - issues.length, issues, ...(roots.length ? {roots} : {})};
 }
+/** docs/RESOURCE-PROVENANCE.json totals must equal the manifest: file count, byte sum and per-extension counts. */
+export function provenanceTotalIssues(manifest, provenance) {
+  const entries = resourceEntries(manifest), issues = [];
+  const bytes = entries.reduce((sum, e) => sum + e.bytes, 0), ext = {};
+  for (const e of entries) {const x = path.extname(e.path); ext[x] = (ext[x] ?? 0) + 1;}
+  if (provenance?.totalFiles !== entries.length) issues.push(`totalFiles ${provenance?.totalFiles} != ${entries.length}`);
+  if (provenance?.totalBytes !== bytes) issues.push(`totalBytes ${provenance?.totalBytes} != ${bytes}`);
+  const recorded = provenance?.extensions ?? {};
+  for (const x of new Set([...Object.keys(ext), ...Object.keys(recorded)])) if (recorded[x] !== ext[x]) issues.push(`extensions ${x} ${recorded[x]} != ${ext[x] ?? 0}`);
+  // Each group's file count and byte sum must equal the manifest entries under its path prefix, and groups must cover every entry.
+  const groups = provenance?.groups ?? {}, covered = new Set();
+  for (const [prefix, group] of Object.entries(groups)) {
+    const mine = entries.filter(e => e.path.startsWith(prefix + '/'));
+    for (const e of mine) covered.add(e.path);
+    const sum = mine.reduce((total, e) => total + e.bytes, 0);
+    if (group?.files !== mine.length) issues.push(`groups ${prefix} files ${group?.files} != ${mine.length}`);
+    if (group?.bytes !== sum) issues.push(`groups ${prefix} bytes ${group?.bytes} != ${sum}`);
+  }
+  if (Object.keys(groups).length && covered.size !== entries.length) issues.push(`groups cover ${covered.size} of ${entries.length} entries`);
+  return issues;
+}
 export async function resourceCheckCommand(root, args = [], output = console.log) {
   if (args.length) {output('Usage: node scripts/check-resources.mjs'); return 2;}
   let text, manifest, report;
@@ -96,7 +117,11 @@ export async function resourceCheckCommand(root, args = [], output = console.log
   try {report = await checkResources(root, manifest);}
   catch (error) {if (!(error instanceof ResourceManifestError)) throw error; output(`Resource manifest invalid: ${error.message}.`); return 2;}
   output(`Local scientific resources: ${report.matched}/${report.total} match size and SHA-256.`);
-  if (!report.issues.length) return 0;
+  let totals = [];
+  try {totals = provenanceTotalIssues(manifest, JSON.parse(await readFile(path.join(root, 'docs/RESOURCE-PROVENANCE.json'), 'utf8')));}
+  catch (error) {if (!isFilesystemError(error) && !(error instanceof SyntaxError)) throw error; totals = error.code === 'ENOENT' ? [] : ['docs/RESOURCE-PROVENANCE.json unreadable'];}
+  for (const issue of totals) output(`  RESOURCE-PROVENANCE.json: ${issue}`);
+  if (!report.issues.length) return totals.length ? 1 : 0;
   for (const issue of report.roots ?? []) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   for (const issue of report.issues.slice(0, 20)) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   if (report.issues.length > 20) output(`  ... ${report.issues.length - 20} additional resource issues.`);

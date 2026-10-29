@@ -49,7 +49,7 @@ it('report shows only visible valid sections;literal M67 lines with762 parsecs a
  expect(lines(blank,true)).toEqual(['Cluster: '+name]);expect(lines({...blank,ebv:'0.03'},true)).toEqual(['Cluster: '+name]);
  expect(lines(m67,false)).toEqual(['Cluster: '+name,'','From ZAMS fit:','  V-Mv = 9.50','  E(B-V) = 0.03','  Estimated Cluster Distance: 762 Parsecs']);
  expect(lines(m67,true)).toEqual(['Cluster: '+name,'','From ZAMS fit:','  V-Mv = 9.50','  E(B-V) = 0.03','  Estimated Cluster Distance: 762 Parsecs','','Isochrone Model Parameters:','  Metallicity: [Z=0.019, Y=0.273] (Solar Values)','  Log(Age/yrs): 9.60','  Estimated Cluster Age: 3981 Million Years','  (B-V) Adjustment: 0.00']);
- // Distance line follows the same option(+0x2e7c);the apparent-modulus distance is never substituted.
+ // WEB: the distance line follows the extinction checkbox (VIREO: Test Mode +0x2e7c);the apparent-modulus distance is never substituted.
  expect(lines({...m67,extinctionCorrected:false},true)).toEqual(['Cluster: '+name,'','From ZAMS fit:','  V-Mv = 9.50','  E(B-V) = 0.03','','Isochrone Model Parameters:','  Metallicity: [Z=0.019, Y=0.273] (Solar Values)','  Log(Age/yrs): 9.60','  Estimated Cluster Age: 3981 Million Years','  (B-V) Adjustment: 0.00']);
  expect(lines({...m67,logAge:'9.61'},true)).toHaveLength(6);expect(lines({...m67,modelIndex:''},true)).toHaveLength(6);
  expect(clusterDatabaseHrReport(name,clusterDatabaseHrTrial(m67,true)).caption).toBe('Cluster Age/Distance Parameters');

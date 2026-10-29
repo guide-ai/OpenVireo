@@ -101,7 +101,7 @@ The Vitest suites are `src/core/wedgeNumeric|wedgeLssText|wedgePlot|wedgeWorkspa
 - zero authored render literals in the Wedge components;
 - agreement between the provenance record and the code constants.
 
-The standalone Playwright files `tests/wedge-lss.spec.ts`, `tests/wedge-focus.spec.ts` and `tests/wedge-prompt-focus.spec.ts` run only when `OPENVIREO_WEDGE_HARNESS_URL` is set. Together they cover:
+The standalone Playwright files `tests/wedge-lss.spec.ts`, `tests/wedge-focus.spec.ts` and `tests/wedge-prompt-focus.spec.ts` run only when `OPENVIREO_WEDGE_HARNESS_URL` is set. Since 2026-10-29 these harnesses are in the repository (`tests/harness/`, served by the dev server only) and `playwright.config.ts` sets the URL, so a plain `playwright test` runs them; see docs/TEST-HARNESSES.md. The external configs named here are historical. Together they cover:
 
 - the complete desktop flow, including the persistence warning;
 - the refusals;

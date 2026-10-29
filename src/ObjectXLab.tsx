@@ -3,6 +3,7 @@ import './objectx.css';
 import {OBJECT_X_LAB_EN as M,OBJECT_X_MEASURE_EN} from './objectx/ObjectXMessages';
 import {ObjectXMeasure,type MeasureFrame} from './ObjectXMeasure';
 import ObjectXSpectrum from './ObjectXSpectrum';
+import {MultiSpecObjectXLazy} from './multispec/MultiSpecLazy';
 import {parseHtl,type HtlList} from './core/hotList';
 import {parseFitsImage,type FitsImage} from './core/fitsImage';
 import {formatSexagesimal,tanWcsFromCards,targetMotion,type MeasurementLog,type TanWcs} from './core/astrometryMeasure';
@@ -212,6 +213,7 @@ export default function ObjectXLab({active,busy,clockUtc,clockApplied,onSetClock
     <section data-testid="objectx-branch-radio"><h3>{M.radioTitle}</h3><p>{M.radioHelp}</p>
      <div className="button-row"><button className="secondary-button" disabled={disabled} onClick={onOpenRadio}>{M.openRadio}</button></div></section>
     <ObjectXSpectrum target={target} label={objectXDataLabel(inv.id)} disabled={disabled} spectra={inv.spectra??[]} pointingOf={code=>targets.find(t=>t.code===code)??null} onKeep={r=>update(i=>({...i,spectra:[...(i.spectra??[]),r]}))}/>
+    <MultiSpecObjectXLazy htl={htl} target={target} revealed={inv.revealed} label={objectXDataLabel(inv.id)} disabled={disabled} currentJd={()=>jdOfUtc(clockUtc())}/>
    </div>
   </section>
 

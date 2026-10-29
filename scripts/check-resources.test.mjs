@@ -6,7 +6,7 @@ import path from 'node:path';
 import{spawnSync}from'node:child_process';
 import{fileURLToPath}from'node:url';
 import {tmpdir} from 'node:os';
-import {checkResources, resourceCheckCommand, checkOpenedResource} from './check-resources.mjs';
+import {checkResources, resourceCheckCommand, checkOpenedResource, provenanceTotalIssues} from './check-resources.mjs';
 
 const digest = text => createHash('sha256').update(text).digest('hex');
 const entry = (name, text) => ({path: name, bytes: Buffer.byteLength(text), sha256: digest(text)});
@@ -124,4 +124,18 @@ test('opened-file failures preserve descriptor ownership and distinguish program
   assert.deepEqual(await checkOpenedResource(io, a), {path: a.path, reason: 'unreadable', code: 'EIO'}); assert.equal(closed, 2);
   const close = good(); close.close = async () => {closed++; throw Object.assign(new Error('close error'), {code: 'EIO'});};
   assert.deepEqual(await checkOpenedResource(close, a), {path: a.path, reason: 'close failed', code: 'EIO'}); assert.equal(closed, 3);
+});
+
+test('RESOURCE-PROVENANCE totals must equal the manifest file count, byte sum and extension counts', () => {
+  const manifest = {files: [entry('data/a.json', '{}'), entry('data/b.json', '[1]'), entry('public/original/c.DAT', 'xyz')]};
+  assert.deepEqual(provenanceTotalIssues(manifest, {totalFiles: 3, totalBytes: 8, extensions: {'.json': 2, '.DAT': 1}}), []);
+  assert.deepEqual(provenanceTotalIssues(manifest, {totalFiles: 2, totalBytes: 7, extensions: {'.json': 1, '.SP': 4}}),
+    ['totalFiles 2 != 3', 'totalBytes 7 != 8', 'extensions .json 1 != 2', 'extensions .DAT undefined != 1', 'extensions .SP 4 != 0']);
+});
+
+test('RESOURCE-PROVENANCE group totals must equal the entries under each prefix and cover every entry', () => {
+  const manifest = {files: [entry('data/a/x.json', '{}'), entry('data/a/y.json', '[1]'), entry('data/b/z.json', 'z')]};
+  const base = {totalFiles: 3, totalBytes: 6, extensions: {'.json': 3}};
+  assert.deepEqual(provenanceTotalIssues(manifest, {...base, groups: {'data/a': {files: 2, bytes: 5}, 'data/b': {files: 1, bytes: 1}}}), []);
+  assert.deepEqual(provenanceTotalIssues(manifest, {...base, groups: {'data/a': {files: 2, bytes: 4}}}), ['groups data/a bytes 4 != 5', 'groups cover 2 of 3 entries']);
 });

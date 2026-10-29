@@ -19,7 +19,7 @@ async function counts(p:Page,done:number){await panel(p).getByTestId('cluster-la
 async function closeGuide(p:Page){await guide(p).getByTestId('cluster-lab-close').click();await expect(guide(p)).toBeHidden();}
 const m67Lines=(name:string)=>['Cluster: '+name,'','From ZAMS fit:','  V-Mv = 9.50','  E(B-V) = 0.03','  Estimated Cluster Distance: 762 Parsecs','','Isochrone Model Parameters:','  Metallicity: [Z=0.019, Y=0.273] (Solar Values)','  Log(Age/yrs): 9.60','  Estimated Cluster Age: 3981 Million Years','  (B-V) Adjustment: 0.00'].join('\n');
 
-test('30 Doradus native frame draws606 of609, lists3 outside rows separately from pupil exclusions and keeps every source row',async({page})=>{
+test('30 Doradus native plot draws all609 like VIREO (3 outside the axes, Front V2), lists the3 outside rows separately from pupil exclusions and keeps every source row',async({page})=>{
  expect(dor).toHaveLength(609);expect(dor.filter(p=>!inFrame(p)).map(p=>p.id)).toEqual(OUTSIDE_30DOR);
  await open(page);await counts(page,0);await expect(guide(page).getByTestId('cluster-lab-step-load')).toHaveAttribute('data-next','true');
  // Item1.9: the own-observation route is live status with a link, never a pending text and never a counted step.
@@ -29,17 +29,17 @@ test('30 Doradus native frame draws606 of609, lists3 outside rows separately fro
  const c=info('30dor'),b=panel(page);await load(page,'30dor');
  await expect(b.getByLabel(labels.ebv,{exact:true})).toHaveValue(String(c.presetEbvTicks/100));await expect(b.getByTestId('cluster-reddening-source')).toContainText(`original ${c.name} catalog preset`);await expect(b.getByText(`New ${c.name} notebook: the catalog E(B−V) =`)).toBeVisible();
  for(const k of['modulus','age','model']as const)await expect(b.getByLabel(labels[k],{exact:true})).toHaveValue('');
- await expect(b.locator('.db-hr-scroll svg')).toHaveAttribute('viewBox','0 0 470 500');await expect(b.getByTestId('native-observed-point')).toHaveCount(606);
- await expect(b.getByTestId('db-hr-drawn-count')).toHaveText('Drawn inside the fixed native axes: 606. Outside these axes (not drawn; listed in the values table): 3.');
+ await expect(b.locator('.db-hr-scroll svg')).toHaveAttribute('viewBox','0 0 496 506');await expect(b.getByTestId('native-observed-point')).toHaveCount(609);await expect(b.locator('[data-testid=native-observed-point][data-outside-frame=true]')).toHaveCount(3);await expect(b.getByTestId('db-hr-star-count')).toHaveText('# of Stars: 609');
+ await expect(b.getByTestId('db-hr-drawn-count')).toHaveText("# of Stars: 609 (every included point, as in VIREO). Inside the axes: 606. Outside the axes but still drawn, as VIREO does: 3. Outside VIREO's 496 × 506 picture (listed in the values table): 0.");
  await b.getByText('Inspect all reference data values',{exact:true}).click();const rows=b.locator('details').first().locator('tbody tr');await expect(rows).toHaveCount(609);
  expect(await rows.locator('td:first-child').allTextContents()).toEqual(dor.map(p=>p.id));await expect(b.locator('tr[data-outside=true] td:first-child')).toHaveText(OUTSIDE_30DOR);await expect(b.locator('tr[data-outside=true]').first()).toContainText('Included · outside the fixed native axes');
  await counts(page,2);await expect(guide(page).getByTestId('cluster-lab-step-inspect')).toHaveAttribute('data-done','true');await closeGuide(page);
- // An outside row can be inspected and excluded;it was never drawn,so only the pupil's count changes.
+ // An outside row can be inspected and excluded;it is drawn like VIREO (0x542bf4 has no frame test),so excluding it removes its point.
  await choice(page).selectOption(OUTSIDE_30DOR[0]!);await expect(b.getByTestId('cluster-selected-point')).toContainText('Included · outside the fixed native axes');await exclude(page,OUTSIDE_30DOR[0]!);
- await expect(b.getByTestId('cluster-point-selection-count')).toHaveText('Included: 608 · excluded: 1 · original dataset: 609');await expect(b.getByTestId('native-observed-point')).toHaveCount(606);await expect(b.getByTestId('db-hr-drawn-count')).toContainText('606. Outside these axes (not drawn; listed in the values table): 2.');
+ await expect(b.getByTestId('cluster-point-selection-count')).toHaveText('Included: 608 · excluded: 1 · original dataset: 609');await expect(b.getByTestId('native-observed-point')).toHaveCount(608);await expect(b.getByTestId('db-hr-drawn-count')).toContainText('Outside the axes but still drawn, as VIREO does: 2.');
  await expect(rows).toHaveCount(609);await expect(rows.filter({hasText:OUTSIDE_30DOR[0]!})).toContainText('Excluded by you · outside the fixed native axes');
- const inside=dor.find(inFrame)!.id;await exclude(page,inside);await expect(b.getByTestId('native-observed-point')).toHaveCount(605);await expect(rows.filter({hasText:inside})).toContainText('Excluded by you');await expect(rows.filter({hasText:inside})).not.toContainText('outside');
- await b.getByRole('button',{name:'Restore all excluded points',exact:true}).click();await expect(b.getByTestId('native-observed-point')).toHaveCount(606);await expect(b.getByTestId('db-hr-drawn-count')).toContainText(': 3.');
+ const inside=dor.find(inFrame)!.id;await exclude(page,inside);await expect(b.getByTestId('native-observed-point')).toHaveCount(607);await expect(rows.filter({hasText:inside})).toContainText('Excluded by you');await expect(rows.filter({hasText:inside})).not.toContainText('outside');
+ await b.getByRole('button',{name:'Restore all excluded points',exact:true}).click();await expect(b.getByTestId('native-observed-point')).toHaveCount(609);await expect(b.getByTestId('db-hr-drawn-count')).toContainText('still drawn, as VIREO does: 3.');
  await b.screenshot({path:'test-results/cluster-database-hr-30dor.png'});
 });
 
@@ -109,7 +109,7 @@ test('prefill only on a new explicit Load;reselection, discard, legacy blank19 a
 
 for(const width of[320,390])test(`${width}px: guide, native frame, keyboard sliders and report stay within the page`,async({page})=>{
  await page.setViewportSize({width,height:800});await open(page);await counts(page,0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await closeGuide(page);
- await load(page,'30dor');const b=panel(page);await expect(b.getByTestId('native-observed-point')).toHaveCount(606);
+ await load(page,'30dor');const b=panel(page);await expect(b.getByTestId('native-observed-point')).toHaveCount(609);
  const modulus=b.getByLabel(sliders.modulus,{exact:true});await modulus.focus();await page.keyboard.press('End');await expect(b.getByLabel(labels.modulus,{exact:true})).toHaveValue('15.00');await page.keyboard.press('ArrowLeft');await expect(modulus).toHaveValue('1499');
  await b.getByLabel(labels.modulus,{exact:true}).fill('18.10');await expect(modulus).toHaveAttribute('aria-valuetext','not set');await expect(b.getByLabel(labels.modulus,{exact:true})).toHaveValue('18.10');
  await b.getByLabel(sliders.offset,{exact:true}).focus();await page.keyboard.press('ArrowLeft');await expect(b.getByLabel('Extra isochrone B−V offset · −1–1, step 0.01',{exact:true})).toHaveValue('-0.01');

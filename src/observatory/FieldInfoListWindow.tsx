@@ -24,7 +24,7 @@ export function downloadText(bytes:Uint8Array,name:string){
  * the recovered selection rule (MouseUp/KeyUp: data rows first..last only), List › Search (shared Find dialog TGetSrchStrDlg,
  * caption "Find Text String"; a hit moves the highlighted line but not the selection), Print (preview [W]), Save Text ›
  * As Displayed (download [W]) and Comma Delimit, Close, and the form's Selection items. */
-export default function FieldInfoListWindow({testId,caption,lines,first,last,notice,selectionItems,onActivate,saveName,csv,onClose,box,onBox,children,printStudent=false,noSelection=M.noSelection}:{
+export default function FieldInfoListWindow({testId,caption,lines,first,last,notice,selectionItems,onActivate,saveName,csv,onClose,box,onBox,children,printStudent=false,noSelection=M.noSelection,hideSelection=false}:{
  testId:string;caption:string;lines:readonly string[];first:number;last:number;notice:ReactNode;selectionItems:readonly FieldInfoSelectionItem[];
  /** Double-click / Enter on a selected data row (variable list: Slew to Selection). */
  onActivate?:(selection:number)=>void;saveName:string;
@@ -35,6 +35,8 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
  printStudent?:boolean;
  /** Status text while no data row is selected. */
  noSelection?:string;
+ /** Front V2: the form hides its Selection menu (TClstrRptForm1 from the HR route, AL = 0); no selection status either. */
+ hideSelection?:boolean;
 }){
  const id=useId(),[itemIndex,setItemIndex]=useState(-1),[selection,setSelection]=useState(-1),[menu,setMenu]=useState<'list'|'save'|'selection'|null>(null);
  const [find,setFind]=useState<Readonly<{query:string;matchCase:boolean}>|null>(null),[printing,setPrinting]=useState(false);
@@ -88,18 +90,18 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
      <button type="button" data-testid={`${testId}-close`} onClick={()=>{setMenu(null);onClose();}}>{menuCaptionText(LM.close)}</button>
     </div>}
    </div>
-   <div className="fi-menu" onKeyDown={e=>escape(e,selTrigger)}><button type="button" ref={selTrigger} aria-expanded={menu==='selection'} aria-controls={`${id}-sel`} data-testid={`${testId}-selection-menu`} onClick={()=>setMenu(m=>m==='selection'?null:'selection')}>{menuCaptionText(SM.selection)}</button>
+   {!hideSelection&&<div className="fi-menu" onKeyDown={e=>escape(e,selTrigger)}><button type="button" ref={selTrigger} aria-expanded={menu==='selection'} aria-controls={`${id}-sel`} data-testid={`${testId}-selection-menu`} onClick={()=>setMenu(m=>m==='selection'?null:'selection')}>{menuCaptionText(SM.selection)}</button>
     {menu==='selection'&&<div id={`${id}-sel`} role="group" aria-label={menuCaptionText(SM.selection)} className="fi-menu-list">
      {selectionItems.map(item=><button key={item.key} type="button" data-testid={`${testId}-${item.key}`} disabled={!!item.unavailable||selection<0} title={item.unavailable??undefined} onClick={()=>{setMenu(null);item.onClick(selection);}}>{menuCaptionText(item.label)}</button>)}
      {selectionItems.some(i=>i.unavailable)&&<p className="fi-note" data-testid={`${testId}-selection-reason`}>{selectionItems.find(i=>i.unavailable)!.unavailable}</p>}
     </div>}
-   </div>
+   </div>}
   </div>
   <div ref={listRef} className="fi-lines" role="listbox" tabIndex={0} aria-label={caption} aria-activedescendant={itemIndex>=0?`${id}-l${itemIndex}`:undefined} data-testid={`${testId}-lines`} onKeyDown={onKey}>
    {lines.map((line,i)=><div key={i} id={`${id}-l${i}`} role="option" aria-selected={i===itemIndex} data-line={i} data-testid={`${testId}-line-${i}`} className="fi-line" onClick={()=>choose(i)} onDoubleClick={()=>{const s=listSelection(i,first,last);if(s>=0&&onActivate)onActivate(s);}}>{line||' '}</div>)}
   </div>
   {notice}
-  <p role="status" className="fi-status" data-testid={`${testId}-selection`}>{selection>=0?`${selection+1} / ${last-first+1}`:noSelection}</p>
+  {!hideSelection&&<p role="status" className="fi-status" data-testid={`${testId}-selection`}>{selection>=0?`${selection+1} / ${last-first+1}`:noSelection}</p>}
   {children}
   {find&&<FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={()=>{setFind(null);listRef.current?.focus();}}/>}
   {box&&<MessageBox box={box} onClose={()=>{onBox(null);listRef.current?.focus();}}/>}

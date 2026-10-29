@@ -30,11 +30,14 @@ const M=OBSERVATORY_MESSAGES.skyCoords,H=OBSERVATORY_MESSAGES.hotList,E=OBSERVAT
  * moving, dome closed, other route) closes every open window without committing. */
 export default function OpticalSlewMenu({pointing,enabled,request,hotList,objectId,options,onOptions,fieldInfo}:{pointing:Pointing;enabled:boolean;request:(p:Pointing,note?:string)=>void;hotList:SharedHotListHandle;objectId:string|null;options:OpticalOptions;onOptions:(o:OpticalOptions)=>void;
  /** Front O: Edit Mode (not persisted) and File › Field Information. Absent: the menu is exactly as before. */
- fieldInfo?:FieldInformationProps&Readonly<{onEditMode:(on:boolean)=>void}>}){
+ fieldInfo?:FieldInformationProps&Readonly<{onEditMode:(on:boolean)=>void;
+  /** Front M: the Virtual Observatory state lifted to the page (also gates Multi-Spec mode 0); absent: kept here. */
+  virtualObservatory?:boolean;onVirtualObservatory?:(on:boolean)=>void}>}){
  const [sky,setSky]=useState<OpticalSkyCoordsState>(INITIAL_OPTICAL_SKY_COORDS),[hot,setHot]=useState<HotListState>(INITIAL_OPTICAL_HOT_LIST),[print,setPrint]=useState<HotListPrintSnapshot|null>(null),[entry,setEntry]=useState<HotListEntryDraft|null>(null),[entryError,setEntryError]=useState(''),[info,setInfo]=useState<Readonly<{caption:string;text:string}>|null>(null);
  const [fieldRequest,setFieldRequest]=useState<FieldInfoRequest|null>(null),[qsoRequest,setQsoRequest]=useState(0);
  // Front O2 review 1 M1: VIREO's VObsBox (options+0x27d5, default off), the only student route to File › QSO List; not persisted.
- const [virtualObservatory,setVirtualObservatory]=useState(false);
+ const [localVirtualObservatory,setLocalVirtualObservatory]=useState(false);
+ const virtualObservatory=fieldInfo?.virtualObservatory??localVirtualObservatory,setVirtualObservatory=fieldInfo?.onVirtualObservatory??setLocalVirtualObservatory;
  const editMode=fieldInfo?.editMode??false;
  // A request made in an earlier Edit Mode session must not reopen windows when Edit Mode is switched on again.
  useEffect(()=>{if(!editMode)setFieldRequest(null);},[editMode]);

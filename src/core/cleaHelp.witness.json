@@ -1,0 +1,331 @@
+{
+ "source": {
+  "witness": "analysis/front-v2-cluster-hr/tools/help_witness.py",
+  "witnessSha256": "64fb755f0bf7fa5d257e92ecb982f9849158bab39ea53cef7d594a379e073a9e",
+  "output": "analysis/front-v2-cluster-hr/help-witness.json",
+  "outputSha256": "e1aed4637a64b725d6605152b42d6fa71f1164b119ca06aeb25d8271a8044c99",
+  "lstSHA256": "b50c590f0f0f3e60456b8adeae06d123a2121ed5db3f741a74610d28d0a61537",
+  "txtSHA256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b",
+  "note": "A second implementation of the same static reading (not an independent oracle); pixels not modelled."
+ },
+ "topics": [
+  {
+   "index": 0,
+   "display": "-Load/Plot Data-",
+   "file": "begin"
+  },
+  {
+   "index": 1,
+   "display": "  Load Data from Observations",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 14,
+   "relatedLine": 8,
+   "links": [
+    [
+     9,
+     "Topics under \"Cluster Analysis Tools\"",
+     -1
+    ],
+    [
+     10,
+     "Help topics \"Results Editors\" and \"Load Saved Data\" on the",
+     -1
+    ],
+    [
+     11,
+     "observatory control panel menu.",
+     -1
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 2,
+   "display": "  Load Data from Cluster Database",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 13,
+   "relatedLine": 8,
+   "links": [
+    [
+     9,
+     "Topics under \"Cluster Analysis Tools\"",
+     -1
+    ],
+    [
+     10,
+     "Load New Cluster from Database",
+     3
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 3,
+   "display": "  Load New Cluster from Database",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 10,
+   "relatedLine": 5,
+   "links": [
+    [
+     6,
+     "Load Data from Cluster Database",
+     2
+    ],
+    [
+     7,
+     "Remove ZAMS, Isochrone from Display",
+     15
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 4,
+   "display": "",
+   "file": ""
+  },
+  {
+   "index": 5,
+   "display": "-Cluster Analysis Tools-",
+   "file": "begin"
+  },
+  {
+   "index": 6,
+   "display": "  Display Zero-Age Main Sequence",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 12,
+   "relatedLine": 7,
+   "links": [
+    [
+     8,
+     "Fit Zero-Age Main Sequence",
+     7
+    ],
+    [
+     9,
+     "Remove ZAMS, Isochrone from Display",
+     15
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 7,
+   "display": "  Fit Zero-Age Main Sequence",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 26,
+   "relatedLine": 20,
+   "links": [
+    [
+     21,
+     "Display Zero-Age Main Sequence",
+     6
+    ],
+    [
+     22,
+     "Add Isochrone to Display",
+     10
+    ],
+    [
+     23,
+     "Remove ZAMS, Isochrone from Display",
+     15
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 8,
+   "display": "",
+   "file": ""
+  },
+  {
+   "index": 9,
+   "display": "  -Display/Fit Isochrone-",
+   "file": "begin"
+  },
+  {
+   "index": 10,
+   "display": "    Add Isochrone to Display",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 30,
+   "relatedLine": 22,
+   "links": [
+    [
+     23,
+     "Fit Zero-Age Main Sequence",
+     7
+    ],
+    [
+     24,
+     "Adjust Isochrone Age",
+     11
+    ],
+    [
+     25,
+     "Set Isochrone Metallicity",
+     12
+    ],
+    [
+     26,
+     "Adjust Isochrone Color",
+     13
+    ],
+    [
+     27,
+     "Remove ZAMS, Isochrone from Display",
+     15
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 11,
+   "display": "    Adjust Isochrone Age",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 17,
+   "relatedLine": 10,
+   "links": [
+    [
+     11,
+     "Add Isochrone to Display",
+     10
+    ],
+    [
+     12,
+     "Set Isochrone Metallicity",
+     12
+    ],
+    [
+     13,
+     "Adjust Isochrone Color",
+     13
+    ],
+    [
+     14,
+     "Remove ZAMS, Isochrone from Display",
+     15
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 12,
+   "display": "    Set Isochrone Metallicity",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 18,
+   "relatedLine": 13,
+   "links": [
+    [
+     14,
+     "Add Isochrone to Display",
+     10
+    ],
+    [
+     15,
+     "Adjust Isochrone Color",
+     13
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 13,
+   "display": "    Adjust Isochrone Color",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 14,
+   "relatedLine": 9,
+   "links": [
+    [
+     10,
+     "Add Isochrone to Display",
+     10
+    ],
+    [
+     11,
+     "Set Isochrone Metallicity",
+     12
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 14,
+   "display": "",
+   "file": ""
+  },
+  {
+   "index": 15,
+   "display": "  Remove ZAMS, Isochrone from Display",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 12,
+   "relatedLine": 8,
+   "links": [
+    [
+     9,
+     "Load New Cluster from Database",
+     3
+    ]
+   ],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 16,
+   "display": "  Display/Print Cluster Age/Distance Parameters",
+   "file": "HRAnalHlp.txt",
+   "found": true,
+   "lines": 8,
+   "relatedLine": -1,
+   "links": [],
+   "wrapped": [
+    " ",
+    " "
+   ]
+  },
+  {
+   "index": 17,
+   "display": "",
+   "file": ""
+  }
+ ]
+}
