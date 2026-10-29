@@ -118,7 +118,7 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
 
 /** Shared Find dialog TGetSrchStrDlg (caption set by Search1Click): Search String (MaxLength 80), Case Dependent, From Top,
  * From Cursor, Cancel. Enter = From Top, Escape = Cancel [W]. */
-function FindDialog({draft,onDraft,onSearch,onCancel}:{draft:Readonly<{query:string;matchCase:boolean}>;onDraft:(d:Readonly<{query:string;matchCase:boolean}>)=>void;onSearch:(m:'top'|'next')=>void;onCancel:()=>void}){
+export function FindDialog({draft,onDraft,onSearch,onCancel}:{draft:Readonly<{query:string;matchCase:boolean}>;onDraft:(d:Readonly<{query:string;matchCase:boolean}>)=>void;onSearch:(m:'top'|'next')=>void;onCancel:()=>void}){
  const id=useId(),ref=useRef<HTMLDialogElement>(null);
  useEffect(()=>{const el=ref.current;if(el&&!el.open){el.showModal();el.querySelector('input')?.focus();}},[]);
  return <dialog ref={ref} className="ob-dialog ob-box" aria-labelledby={`${id}-t`} data-testid="fi-find-dialog" onCancel={e=>{e.preventDefault();onCancel();}}>

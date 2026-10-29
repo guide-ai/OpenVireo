@@ -13,7 +13,7 @@
  ],
  "generator": {
   "path": "analysis/front-l2-lss/tools/lss_l2_provenance.py",
-  "sha256": "6a04cf97e3ea69fb263bcd7109404d076400c993974023faeaa5ffebce7190a4"
+  "sha256": "312c01f22cf69d8b2cd861eb011de5cb144508eedba6653a863a931a596180b3"
  },
  "derivedEvidence": [
   {
@@ -434,7 +434,7 @@
    "id": "L2-W7",
    "tag": "W",
    "title": "Region masking",
-   "rule": "Catalogue z is masked in the region table and the Search Results Z range; region rows are not handed to the wedge (coordinator decision of 2026-10-29)."
+   "rule": "Catalogue z is masked in the region table and the Search Results Z range; region rows are not handed to the wedge (coordinator decision of 2026-10-29). While z is masked the Z bounds are disabled and not applied (the native filter 0x584d0c tests Zmin <= z <= Zmax first; applying it would reveal z through the found counts): only the RA and Dec bounds select (review 1, F2)."
   },
   {
    "id": "L2-W8",

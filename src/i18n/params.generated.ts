@@ -3078,8 +3078,6 @@ export interface MessageParameters {
   "htl.hubbleUnavailable": "number" | "reason";
   "htl.hubbleOther": never;
   "hubbleHtl.reason.photographic-image": never;
-  "hubbleHtl.reason.qso-merge": never;
-  "hubbleHtl.reason.variable-qso-merge": never;
   "hubbleHtl.reason.variable-merge": never;
   "hubblePoint.eyebrow": never;
   "hubblePoint.title": "label" | "number" | "remarks";

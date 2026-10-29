@@ -3077,8 +3077,6 @@
   "htl.hubbleUnavailable": "Hubble.HTL entry {number}: not available in this version ({reason}).",
   "htl.hubbleOther": "This row does not exactly match a Hubble.HTL exercise entry (identifier, remarks and coordinates).",
   "hubbleHtl.reason.photographic-image": "its field needs the photographic-image association, which is not ported",
-  "hubbleHtl.reason.qso-merge": "its field needs the QSO catalogue merge and a matched spectrum file, which are not ported",
-  "hubbleHtl.reason.variable-qso-merge": "its field needs the variable-star and QSO merges, which are not ported",
   "hubbleHtl.reason.variable-merge": "its field needs the variable-star merge, which is not ported",
   "hubblePoint.eyebrow": "Hubble galaxies · E01",
   "hubblePoint.title": "Hubble.HTL entry {number} · {label} · {remarks}",

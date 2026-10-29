@@ -1,0 +1,333 @@
+{
+ "schema": "openvireo-cluster-dialog-certificate-v1",
+ "purpose": "Front K: for each published cluster, the Cluster Data dialog key (the centre and Diam that TClstrDlgForm1 writes into its edits and OK parses back) and the result of a research-side census over the full compact band (the 0x534254 predicate at that key, limit 25): equal means the query admits exactly the published bank. No GSC record, distance, age or modulus is included. brightestRectangleRecordInBank: the brightest band record in the query rectangle belongs to the published bank, so a limit that empties the bank also empties the reader result (VIREO then shows \"No Stars Found in Field!\").",
+ "census": {
+  "tool": "analysis/front-k-cluster-dialogs/tools/dialog_census.py",
+  "toolSha256": "82a343f2dc32f6ff7b93c4d741567d4ceae9672e57f5574b9f21a7dbc0a95bd2",
+  "clustersDatSha256": "bec9dfb53969ba3828dff98962d9c80c3c7b5e51646f2a88ef70bcf634545ff2",
+  "output": "analysis/front-k-cluster-dialogs/dialog-census.json",
+  "outputSha256": "6a4623a9b4c2ca7d9362ffddf2462828fcb14752452cf7dd7b9fae8953171f4c"
+ },
+ "clusters": [
+  {
+   "id": "ngc752",
+   "index": 0,
+   "name": "NGC 752",
+   "keyRa": 1.9633333333333334,
+   "keyDec": 37.68333333333333,
+   "keyDiam": 75.0,
+   "equal": true,
+   "publishedCount": 120,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N3000",
+     "sha256": "2cb76117cc1c7fda678f2b78bb7430f3222cb14c891b9a7ed926697d52efc8c6"
+    },
+    {
+     "band": "N3730",
+     "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "m34",
+   "index": 1,
+   "name": "M 34 (NGC 1039)",
+   "keyRa": 2.7,
+   "keyDec": 42.78333333333333,
+   "keyDiam": 25.0,
+   "equal": true,
+   "publishedCount": 43,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N3730",
+     "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "mel20",
+   "index": 2,
+   "name": "Mel 20 (Alpha-Per)",
+   "keyRa": 3.4052777777777776,
+   "keyDec": 49.861666666666665,
+   "keyDiam": 300.0,
+   "equal": true,
+   "publishedCount": 305,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N3730",
+     "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95"
+    },
+    {
+     "band": "N4500",
+     "sha256": "513a9deab803f1c7b5ef9cda029044b2c13c79edde6f51ee998f5ef2a75156cb"
+    },
+    {
+     "band": "N5230",
+     "sha256": "17e899286fba7af6b286fb88580449e5513e98a86a24544030d870f0d8af851d"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "pleiades",
+   "index": 3,
+   "name": "M 45 (Pleiades)",
+   "keyRa": 3.7913888888888887,
+   "keyDec": 24.105,
+   "keyDiam": 120.0,
+   "equal": true,
+   "publishedCount": 297,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N1500",
+     "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55"
+    },
+    {
+     "band": "N2230",
+     "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "hyades",
+   "index": 4,
+   "name": "Hyades",
+   "keyRa": 4.448333333333333,
+   "keyDec": 15.866666666666667,
+   "keyDiam": 329.0,
+   "equal": true,
+   "publishedCount": 372,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N0730",
+     "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1"
+    },
+    {
+     "band": "N1500",
+     "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "30dor",
+   "index": 5,
+   "name": "30 Doradus (LMC)",
+   "keyRa": 5.65,
+   "keyDec": -69.1,
+   "keyDiam": 450.0,
+   "equal": true,
+   "publishedCount": 609,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "S6000",
+     "sha256": "f3d47f7e2c0ee7476f1c45a85bbceae80abd5fd076ec8261ef34b5ac755648c8"
+    },
+    {
+     "band": "S6730",
+     "sha256": "f05c38d22f9b557eed6d75131e340b8b1d8529d04a07a940cb4cca71a92b9ad4"
+    },
+    {
+     "band": "S7500",
+     "sha256": "55904d49d1e2e651263f1866e074ecd1acf3da7579bd86178e27d8ae633f6baa"
+    }
+   ],
+   "brightestRectangleRecordInBank": false
+  },
+  {
+   "id": "m41",
+   "index": 6,
+   "name": "M 41 (NGC 2287)",
+   "keyRa": 6.767777777777778,
+   "keyDec": -20.758333333333333,
+   "keyDiam": 40.0,
+   "equal": true,
+   "publishedCount": 44,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "S1500",
+     "sha256": "c2bc97a911be613ec7f540148816329c5953ee6fed75b5604f6cdf2dcea37a31"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "m44",
+   "index": 7,
+   "name": "M 44 (NGC 2632)",
+   "keyRa": 8.673333333333332,
+   "keyDec": 19.666666666666668,
+   "keyDiam": 70.0,
+   "equal": true,
+   "publishedCount": 198,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N1500",
+     "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "ic2391",
+   "index": 8,
+   "name": "IC 2391",
+   "keyRa": 8.675555555555555,
+   "keyDec": -53.035,
+   "keyDiam": 60.0,
+   "equal": true,
+   "publishedCount": 38,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "S4500",
+     "sha256": "3012858aa9d6248bf7e64605f15ce1d69b6332a533614a8c4ac492762734cb43"
+    },
+    {
+     "band": "S5230",
+     "sha256": "4b1678aa1b69f2404efba0b192df32dcfdd5e2fcdb0a55b17159915a4837c95a"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "m67",
+   "index": 9,
+   "name": "M 67 (NGC 2682)",
+   "keyRa": 8.856666666666666,
+   "keyDec": 11.816666666666666,
+   "keyDiam": 25.0,
+   "equal": true,
+   "publishedCount": 506,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N0730",
+     "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1"
+    }
+   ],
+   "brightestRectangleRecordInBank": false
+  },
+  {
+   "id": "mel111",
+   "index": 10,
+   "name": "Mel 111 (Coma)",
+   "keyRa": 12.418333333333333,
+   "keyDec": 26.116666666666667,
+   "keyDiam": 120.0,
+   "equal": true,
+   "publishedCount": 70,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N2230",
+     "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54"
+    }
+   ],
+   "brightestRectangleRecordInBank": false
+  },
+  {
+   "id": "ic4665",
+   "index": 11,
+   "name": "IC 4665",
+   "keyRa": 17.77,
+   "keyDec": 5.883333333333333,
+   "keyDiam": 70.0,
+   "equal": true,
+   "publishedCount": 45,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N0000",
+     "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a"
+    }
+   ],
+   "brightestRectangleRecordInBank": false
+  },
+  {
+   "id": "m7",
+   "index": 12,
+   "name": "M 7 (NGC 6475)",
+   "keyRa": 17.8975,
+   "keyDec": -34.79333333333333,
+   "keyDiam": 80.0,
+   "equal": true,
+   "publishedCount": 69,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "S3000",
+     "sha256": "fa9ee76f4a2c5ea7ee5a17dc2f84c583478ff6d339f981ab25836a201fcd0228"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "m16",
+   "index": 13,
+   "name": "M 16 (NGC 6611)",
+   "keyRa": 18.313333333333333,
+   "keyDec": -13.75,
+   "keyDiam": 7.0,
+   "equal": true,
+   "publishedCount": 59,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "S0730",
+     "sha256": "c029ac362f2a0b31d167719d4d9e4fa4fa412f15a459a59701a0c2b9ef496e19"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "cygob2",
+   "index": 14,
+   "name": "Cyg OB2",
+   "keyRa": 20.54888888888889,
+   "keyDec": 41.27722222222222,
+   "keyDiam": 50.0,
+   "equal": true,
+   "publishedCount": 69,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N3730",
+     "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  },
+  {
+   "id": "m39",
+   "index": 15,
+   "name": "M 39 (NGC 7092)",
+   "keyRa": 21.53666666666667,
+   "keyDec": 48.45,
+   "keyDiam": 30.0,
+   "equal": true,
+   "publishedCount": 29,
+   "recordsFainterThan25": 0,
+   "bands": [
+    {
+     "band": "N4500",
+     "sha256": "513a9deab803f1c7b5ef9cda029044b2c13c79edde6f51ee998f5ef2a75156cb"
+    }
+   ],
+   "brightestRectangleRecordInBank": true
+  }
+ ]
+}
