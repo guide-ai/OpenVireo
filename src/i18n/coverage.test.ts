@@ -24,7 +24,8 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   for(const bad of [{...en,extra:'extra'},{...en,'sky.pointed':'{wrong}'},{...en,'sky.pointed':5}])expect(()=>createI18n(bad as typeof en,'en-US')).toThrow();const missing={...en};delete(missing as Partial<typeof en>)['sky.pointed'];expect(()=>createI18n(missing,'en-US')).toThrow();
  });
  it('keeps all remaining direct render sites confined to reviewed scientific/source-identity tokens',()=>{
-  // 95: Front V2 adds src/clusters/{CleaHelp,ClusterPrintPreview,PossibleMemberWindow,HrPrint,ClusterListWindow}.tsx (cluster HR help viewer, print preview, Possible Cluster Member, HR Print, Clusters for Study); their strings come from src/clusters/ClusterHrMessages.ts or recovered core literals.
+  // 97: Front V2 adds src/clusters/{CleaHelp,ClusterPrintPreview,PossibleMemberWindow,HrPrint,ClusterListWindow}.tsx (cluster HR help viewer, print preview, Possible Cluster Member, HR Print, Clusters for Study); their strings come from src/clusters/ClusterHrMessages.ts or recovered core literals. (95 before Front O2 merged; 97 with it)
+  // 92: Front O2 adds src/observatory/{ObservatoryFileMenu,QsoListWindow}.tsx; their strings come from src/observatory/QsoListMessages.ts, FieldInfoMessages.ts or recovered core literals.
   // 90: Front O adds src/observatory/{FieldInfoListWindow,FieldInformationMenu,CatalogObjectDialog,EditModeFieldLayer,NakedEyeDomeSky,FrontOLazy}.tsx; their strings come from src/observatory/FieldInfoMessages.ts or recovered core literals.
   // 84: ObjectXSpectrum.tsx (Front F, E08 spectrometer branch); its strings come from src/objectx/ObjectXMessages.ts.
   // 83: variables/VariableStarsRoute.tsx and variables/LightCurveSvg.tsx (Front V) add the variable-star route and light-curve plot; their strings come from src/variables/VariableStarMessages.ts or recovered core literals.
@@ -35,7 +36,7 @@ describe('P01 complete authored presentation catalog and interpolation contract'
   // 74: LssLabGuide.tsx adds the E02 guide; it renders only catalog messages and counts.
   // 73: LssSurvey.tsx, LssAcquisition.tsx and LssMeasurement.tsx add the E02 survey route; they render only catalog messages and data fields, so the receipt map is unchanged.
   // 70: Front B adds eight optical observatory views under src/observatory (their strings come from ObservatoryMessages.ts or recovered core literals). 62: OwnObservationResults.tsx adds the phase-1 own results card (61 added ClassificationLineTable.tsx and ClassificationLabGuide.tsx; 59 included PleiadesLabGuide.tsx); it renders only catalog messages, data fields and an em dash, so the reviewed literal receipt map remains unchanged.
-  const audit=auditUi(root);expect(audit.files.length).toBe(95);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
+  const audit=auditUi(root);expect(audit.files.length).toBe(97);const actual=new Map<string,number>();for(const s of audit.sites){const key=JSON.stringify([s.file,s.kind,s.value]);actual.set(key,(actual.get(key)??0)+1);}
   const expected=new Map(receipts.map(r=>[JSON.stringify([r.file,r.kind,r.value]),r.count]));expect(actual).toEqual(expected);expect(receipts.every(r=>r.reason.length>30)).toBe(true);
  });
  it('sources browser title/description from the same English catalog and escapes them as text',()=>{

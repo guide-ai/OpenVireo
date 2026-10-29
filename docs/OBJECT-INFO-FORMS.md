@@ -211,6 +211,8 @@ Arithmetic uses Number (binary64) with half-even Round. FloatToStrF ffFixed come
 
 The witnesses are second implementations of the same reading. They check the port, not the reading, and are not runtime oracles.
 
+Front O2 (docs/QSO-LIST-HST.md) moves the File menu into `src/observatory/ObservatoryFileMenu.tsx`. The File menu appears only with Edit Mode or the Virtual Observatory option on. `QSO List...` needs Virtual Observatory (options+0x27d5, default 0), and Field Information still appears only in Edit Mode, with the same test ids. The windows stay in `FieldInformationMenu.tsx`, which now takes an open request. The QSO List reuses this document's list window.
+
 ## Review 1 resolution
 
 The raw report is `analysis/reviews/front-o-review-1.md` (verdict MERGE-AFTER-FIXES; no blocking defect, no Object X leak).

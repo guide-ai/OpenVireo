@@ -19,7 +19,7 @@
 .fi-line[aria-selected=true]{background:var(--ov-accent);color:var(--ov-accent-contrast)}
 .fi-note,.fi-status{font-size:var(--ov-text-sm);color:var(--ov-text-muted);margin:0;line-height:1.45}
 .fi-unavailable{font-size:var(--ov-text-sm);margin:0;padding:var(--ov-space-2) var(--ov-space-3);border:1px solid var(--ov-warning-border);background:var(--ov-warning-soft);color:var(--ov-text);border-radius:var(--ov-radius-sm)}
-.fi-box-text{white-space:pre-wrap}
+.fi-box-text{white-space:pre-wrap;overflow-wrap:anywhere}
 .fi-file-menu{display:flex;flex-wrap:wrap;gap:var(--ov-space-2);align-items:flex-start}
 /* Catalog Object (TRefInfoForm1, 348×154 client) */
 .co-grid{display:flex;flex-direction:column;gap:6px;font-size:13px}
@@ -56,3 +56,10 @@ html[data-print-scope=field-info] .fi-print-lines{white-space:pre-wrap}
 .fi-guide{font-size:var(--ov-text-sm)}.fi-guide summary{cursor:pointer;min-height:32px}.fi-guide ol{margin:var(--ov-space-2) 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:var(--ov-space-1)}
 .co-row.ne-row{grid-template-columns:4.5rem minmax(0,1fr)}
 @media(max-width:600px){.co-row.ne-row{grid-template-columns:4.5rem minmax(0,1fr)}}
+.fi-menu-link{display:flex;align-items:center;min-height:40px;padding:0 var(--ov-space-3);color:var(--ov-accent-text,var(--ov-text));border-radius:var(--ov-radius-sm)}
+.fi-menu-link:hover{background:var(--ov-surface-hover)}
+.fi-menu-link:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
+.fi-menu-note{padding:var(--ov-space-1) var(--ov-space-3);max-width:22rem;overflow-wrap:anywhere}
+/* Front O2: the observatory File/Tools bar sits in .telescope-motion (overflow:hidden), so its lists open in the flow. */
+.ob-file-menu{align-items:flex-start}
+.ob-file-menu .fi-menu-list{position:static;margin-top:4px}

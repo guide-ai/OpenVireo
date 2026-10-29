@@ -5,6 +5,7 @@ import {menuCaptionText} from '../core/radioControl';
 import {variableStarSaveText} from '../core/variableStars';
 import {listSelection,VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldList';
 import {FIELD_INFO_MESSAGES as M} from './FieldInfoMessages';
+import {HOT_LIST_PRINT_LITERALS} from '../core/hotListPrint';
 import './observatory-dialogs.css';
 import './field-info.css';
 
@@ -23,13 +24,17 @@ export function downloadText(bytes:Uint8Array,name:string){
  * the recovered selection rule (MouseUp/KeyUp: data rows first..last only), List › Search (shared Find dialog TGetSrchStrDlg,
  * caption "Find Text String"; a hit moves the highlighted line but not the selection), Print (preview [W]), Save Text ›
  * As Displayed (download [W]) and Comma Delimit, Close, and the form's Selection items. */
-export default function FieldInfoListWindow({testId,caption,lines,first,last,notice,selectionItems,onActivate,saveName,csv,onClose,box,onBox,children}:{
+export default function FieldInfoListWindow({testId,caption,lines,first,last,notice,selectionItems,onActivate,saveName,csv,onClose,box,onBox,children,printStudent=false,noSelection=M.noSelection}:{
  testId:string;caption:string;lines:readonly string[];first:number;last:number;notice:ReactNode;selectionItems:readonly FieldInfoSelectionItem[];
  /** Double-click / Enter on a selected data row (variable list: Slew to Selection). */
  onActivate?:(selection:number)=>void;saveName:string;
  /** Comma Delimit: `bytes` builds the file (null with `unavailable` text when the form refuses it); `disabled` greys the item. */
  csv:Readonly<{disabled:boolean;unavailable?:FieldInfoBox|null;bytes?:()=>Readonly<{bytes:Uint8Array;name:string}>|FieldInfoBox}>;
  onClose:()=>void;box:FieldInfoBox|null;onBox:(b:FieldInfoBox|null)=>void;children?:ReactNode;
+ /** Front O2: the list is open without Edit Mode, so Print takes the student branch (table number line). */
+ printStudent?:boolean;
+ /** Status text while no data row is selected. */
+ noSelection?:string;
 }){
  const id=useId(),[itemIndex,setItemIndex]=useState(-1),[selection,setSelection]=useState(-1),[menu,setMenu]=useState<'list'|'save'|'selection'|null>(null);
  const [find,setFind]=useState<Readonly<{query:string;matchCase:boolean}>|null>(null),[printing,setPrinting]=useState(false);
@@ -94,11 +99,11 @@ export default function FieldInfoListWindow({testId,caption,lines,first,last,not
    {lines.map((line,i)=><div key={i} id={`${id}-l${i}`} role="option" aria-selected={i===itemIndex} data-line={i} data-testid={`${testId}-line-${i}`} className="fi-line" onClick={()=>choose(i)} onDoubleClick={()=>{const s=listSelection(i,first,last);if(s>=0&&onActivate)onActivate(s);}}>{line||' '}</div>)}
   </div>
   {notice}
-  <p role="status" className="fi-status" data-testid={`${testId}-selection`}>{selection>=0?`${selection+1} / ${last-first+1}`:M.noSelection}</p>
+  <p role="status" className="fi-status" data-testid={`${testId}-selection`}>{selection>=0?`${selection+1} / ${last-first+1}`:noSelection}</p>
   {children}
   {find&&<FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={()=>{setFind(null);listRef.current?.focus();}}/>}
   {box&&<MessageBox box={box} onClose={()=>{onBox(null);listRef.current?.focus();}}/>}
-  {printing&&<FieldInfoPrintPreview caption={caption} lines={lines} onClose={()=>setPrinting(false)}/>}
+  {printing&&<FieldInfoPrintPreview caption={caption} lines={lines} student={printStudent} onClose={()=>setPrinting(false)}/>}
  </section>;
 }
 
@@ -125,10 +130,12 @@ export function MessageBox({box,onClose,actions}:{box:FieldInfoBox;onClose:()=>v
  </dialog>;
 }
 
-/** Print… (TVarFldLstForm1 0x52ead8 / TFieldRptForm1 print body) as a browser print preview. These forms are reachable only in
- * Edit Mode, so the Edit Mode branch prints: DateTimeToStr(Now) (browser format [W]), the caption, the lines. The job title
- * (`CLEA "Object X" Exercise - Database Modification`) names the spooler job and is not drawn. Fonts and layout differ [W]. */
-function FieldInfoPrintPreview({caption,lines,onClose}:{caption:string;lines:readonly string[];onClose:()=>void}){
+/** Print… (TVarFldLstForm1 0x52ead8 / TObjctListForm1 print body 0x551b3c) as a browser print preview. The Field Information
+ * forms are reachable only in Edit Mode, so they take the Edit Mode branch: DateTimeToStr(Now) (browser format [W]), the
+ * caption, the lines. The QSO List (Front O2) is also reachable without Edit Mode (`student`): the date line then ends with
+ * `     Laboratory Table Number (Not Recorded)`; this site records no table number or names, so the name lines are omitted [W].
+ * The job title names the spooler job and is not drawn. Fonts and layout differ [W]. */
+function FieldInfoPrintPreview({caption,lines,student,onClose}:{caption:string;lines:readonly string[];student:boolean;onClose:()=>void}){
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false);
  const [printedAt]=useState(()=>new Date().toLocaleString());
  useEffect(()=>{const el=dialog.current;if(el&&!el.open){el.showModal();button.current?.focus();}
@@ -144,7 +151,7 @@ function FieldInfoPrintPreview({caption,lines,onClose}:{caption:string;lines:rea
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide fi-print-root" aria-labelledby={`${id}-t`} data-testid="fi-print-preview" onCancel={e=>{e.preventDefault();onClose();}}>
   <div className="fi-print-chrome"><h2 id={`${id}-t`}>{M.printTitle}</h2><p className="fi-note">{M.printAdaptation}</p></div>
   <section className="fi-print-report" tabIndex={0} aria-label={caption}>
-   <p className="fi-print-header" data-testid="fi-print-date">{printedAt}</p>
+   <p className="fi-print-header" data-testid="fi-print-date">{printedAt}{student?HOT_LIST_PRINT_LITERALS.tableNumber+HOT_LIST_PRINT_LITERALS.notRecorded:''}</p>
    <p className="fi-print-header">{caption}</p>
    <pre className="fi-print-lines" data-testid="fi-print-lines">{lines.join('\n')}</pre>
   </section>

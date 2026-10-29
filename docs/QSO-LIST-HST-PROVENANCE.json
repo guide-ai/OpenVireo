@@ -1,0 +1,57 @@
+{
+ "schema": 1,
+ "feature": "Front O2: QSO List and HST Image Archive (docs/QSO-LIST-HST.md)",
+ "artifact": {
+  "name": "CLEA_VEO.exe",
+  "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "archive": "CLEA_Vireo.zip 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b"
+ },
+ "method": "Static reading only (GNU objdump Intel, Delphi VMT/field-table/DFM decoding with tools/dfm2txt.py, string search). Nothing executed, emulated or debugged; no network.",
+ "evidenceRoot": "/home/dobleuber/Documents/Codex/2026-10-17/task-2/analysis/front-o-info-forms (outside the repository)",
+ "plan": {
+  "front-plans/front-o2-qso-hst.md": "caa8fb2fe46a7c62b28ab40dc6441ef88bd1f4796a43fa8a3cf97660fabea152"
+ },
+ "tools": {
+  "tools/dfm2txt.py": "c8f6750cc390f7efc644ead48e41c1991f8594b22427ed2b6eecdb47afb978ab"
+ },
+ "dossiers": {
+  "dossiers/o2-allinstruments-qsovisible-58aee0.asm": "98a2185d59a2f4692802ab6e1e4f706ff166e212fb5e7b0cc677b21877c4343b",
+  "dossiers/o2-dfm-qsolistdlg-hstimgdlg.txt": "7d78eab470d20f70078fb49b3110c561bf83a2cad23c7dea3f95f3aec41a0bda",
+  "dossiers/o2-dfm-tenvironment1.txt": "762a46be4bf695dfd202f759dc7971b34d86ac09fc6dd28c84bf93b888b4501c",
+  "dossiers/o2-hstimagearchive1click-58e78c.asm": "aac9bf44fa90a9c5e11118b0bc6499d2061b2505fb80b2f27aca0d269ecaf58c",
+  "dossiers/o2-hstimgdlg-createform-5ad430.asm": "b12c3e37a465762a911a17e1b5621092ea54da8ce13b7dea09080d9acee6e244",
+  "dossiers/o2-hstimgdlg-unit-585b14-586700.asm": "a7bc6665e300fbfc8e0bbc82b85522e2698da927a51111e15ca77c90e0875979",
+  "dossiers/o2-objectx1click-qsovisible-58ad38.asm": "df9a8f63213341972150385b9b05323f7b16653a9b79ac84b2ca96cf87222f78",
+  "dossiers/o2-options-url-defaults-5a26ee.asm": "7749c7a98e4af4bd3aaed6cda949ad918abb9a7af57c63cb9e80113f7966f072",
+  "dossiers/o2-qso-build-row-5776f0-5782ad.asm": "d61af6c404c96617cecf2014177f7b9c1116b1b12edd9db5ab105f0d4d2cad29",
+  "dossiers/o2-qso-comparators-578314.asm": "00e2554987a8f0f0626752ca30c7b5cde7ed6e621039075275cd30eac443551e",
+  "dossiers/o2-qsolist1click-58e600.asm": "de708779a19952257d625a58415d5e5d957e7304e73cc3ef57b1b3f661d27b8d",
+  "dossiers/o2-qsolistdlg-activate-ok-57836c.asm": "9a195e4662de6d4e0a66831a206a4012b7955f2ff29e46c5218be976d5a4a6f5",
+  "dossiers/o2-qsorptform-create-hotlist-578518.asm": "016432e4694bf0483550c2a1d52148993c4def6d4ad2001587afd56e2d45959f",
+  "dossiers/o2-webbrowser-navigate-58ebe0.asm": "c717eb96e086e258c9d1203da023b4a3deec6dda9815c92d2ba8181f64ed36c2"
+ },
+ "contracts": {
+  "access": "QSOList1 DFM Visible=False; TMenuItem.SetVisible 0x4549c8; run handlers 0x58a2a6/0x58a477/0x58a61f/0x58a7ef/0x58abbb False, ObjectX 0x58ad55 := env+0x2e7e (Edit Mode), AccessAllInstruments 0x58af02 True, LSS untouched; QSOList1Click 0x58e600. The run item VirtualObservatoryAllInstruments1 (+0x49c) is enabled only from options+0x27d5 (SetEnabled 0x4548ac at 0x587f91, 0x588898) = TOptionsDlg VObsBox ('Virtual Observatory', hint 'Enables Virtual Observatory (read-only access to all data)'; shown 0x5a5ab9, stored 0x5a620e, compiled default 0 at 0x5a2b59); the Options dialog is gated by env+0x37d8 (0x5886c9; [I] instructor access). Default VIREO: no student route. Web W1 [W]: an Optical Options box 'Virtual Observatory (instructor, VIREO)', off by default, not persisted, shows File › QSO List; the Object X Edit Mode route is not modelled.",
+  "optionsDialog": "TQSOListDlg DFM; FormActivate 0x57836c (limit 0 -> 20.0, FloatToStrF ffFixed 2; no Edit Mode -> sort 0, group disabled); OKBtnClick 0x578430 (StrToFloat -> Single; except -> 'Invalid Magnitude Limit'/'Numeric Error!' MB_ICONERROR, ModalResult 0, _DoneExcept 0x405840 (not Abort), then sort := SortGrp.ItemIndex at 0x5784b4..0x5784c4 even on error)",
+  "builder": "0x5776f0: CLEA_QSO.DAT record 52; skip V(+0x22 Single) > limit; insert 0x492728 with comparator VMT 0x5772bc/d0/e4/f8 -> 0x578314 V>, 0x578324 z>, 0x578334 z<, 0x578344 RA then Dec; maxV from -2.0; header lines and Edit Mode branches 0x577a95/0x577acd; units char 32 := 0xB0 (0x577b1c)",
+  "row": "0x577df0: name pad 18; RA split 0x486bc0 digits 1; Dec digits 0; Edit Mode z FloatToStrF 3 right-pad 5; V FloatToStrF 2 left-pad 5; Edit Mode B-V/U-B with '+' when >= 0, parentheses when flag +0x32/+0x33",
+  "window": "TQSORptForm1 (parent TObjctListForm1 0x550bd8): FormCreate 0x578518 hides SelectionData1 (+0x3cc) and GetSlctnSep (+0x3d0); DblClick 0x578540 ret; FormatforHotList 0x578544 (current sort list, At(+0x3ee), ID max 24, RA/Dec, remarks unwritten)",
+  "hstMenu": "HSTImageArchive1Click 0x58e78c -> 0x58ebe0 WebBrowser1(+0x4d8).Navigate(options+0x23cd, OleVariant 0x11); default 0x5a2f00 'http://hubblesite.org/newscenter/archive/browse/'; editable in TFileOptsDlg 'HST Newscenter Archive URL' (0x57e2f1, 0x57f0a8); web (user decision 2026-10-28): external link, new tab on click, rel noopener noreferrer, href https://hubblesite.org/resource-gallery/images. Check 2026-10-28 (one GET each, shell): original http address refused on port 80, its https form redirects to https://science.nasa.gov/mission/hubble/ (mission home); https://hubblesite.org/resource-gallery/images redirects to https://science.nasa.gov/mission/hubble/multimedia/hubble-images/ ('Hubble Images - NASA Science')",
+  "hstDialog": "THSTImgDlg: Application.CreateForm 0x5ad43c (global 0x5bcf34) only; no reader of the class reference 0x5857d4 or the global; OkBtnClick 0x586068 validates and Writelns; RqstTimerTimer 0x5864fc -> 0x58666c writes TestImageList.csv; no MAST URL in the binary",
+  "webGate": "Menus disabled only while a project is busy (fieldInfo.busy); File hidden with no item."
+ },
+ "resources": "none added (CLEA_QSO.DAT, ObjectX.HTL, Hubble.HTL, LSS_Field01..09.HTL already bundled under the 2026-10-26 approval)",
+ "uncertainty": [
+  "StrToFloat: Delphi TextToFloat syntax with a '.' decimal separator is assumed (US locale); not re-traced in this front.",
+  "Navigate flags 0x11 read as navOpenInNewWindow|navAllowAutosearch from the Windows enum [I].",
+  "THSTImgDlg's purpose (MAST image search) is inferred from captions and strings only; it is unreachable.",
+  "FormatforHotList remarks are uninitialised natively; the web writes empty remarks.",
+  "The hot-list add appends (web shared list) instead of the native RA-ordered insert 0x590588, as for the Front O variable list.",
+  "FormatforHotList (0x578548) indexes the list of the current sort global (reset at 0x578392 without Edit Mode, or changed on the invalid-limit path), so VIREO may index a cleared or different list; the web adds the displayed row [W].",
+  "env+0x37d8 as the instructor access flag is inferred from its setters (0x587c6a, 0x587f70, 0x5884a1, 0x5887f0) and the USER OPTIONS! box.",
+  "The HST link's final page is on science.nasa.gov because hubblesite.org redirects there (2026-10-28); the redirect target may change."
+ ],
+ "review": {
+  "reviews/front-o2-review-1.md": "86642fd6a5daa6b9d5f5ad20a4733622d64b1acbb837dfca32dd204f770a145b"
+ }
+}
