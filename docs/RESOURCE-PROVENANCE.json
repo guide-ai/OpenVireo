@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "scope": "All files in LOCAL-RESOURCES.json(count in totalFiles):the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help,plus the derived data/clusters comments and point sidecar(approval of2026-10-28,cluster HR tools (a) and (b));no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json. Plus the Front M independent Multi-Spec fibre witness data/multispec/witness.json(derived),the 67 byte-exact jspect2 templates approved on2026-10-28 for the multi-object spectrometer(public/original/spectra/jspect2/,Appendix T)and their derived requirement record data/multispec/template-requirements.json. Plus the 35 byte-exact VIREO help files (user approval of 2026-10-29): 34 in public/original/help and VarTypeHlp.LST in public/original/variables.",
-  "totalFiles": 1463,
-  "totalBytes": 132342590,
+  "scope": "All files in LOCAL-RESOURCES.json(count in totalFiles):the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help,plus the derived data/clusters comments and point sidecar(approval of2026-10-28,cluster HR tools (a) and (b));no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json. Plus the Front M independent Multi-Spec fibre witness data/multispec/witness.json(derived),the 67 byte-exact jspect2 templates approved on2026-10-28 for the multi-object spectrometer(public/original/spectra/jspect2/,Appendix T)and their derived requirement record data/multispec/template-requirements.json. Plus the 35 byte-exact VIREO help files (user approval of 2026-10-29): 34 in public/original/help and VarTypeHlp.LST in public/original/variables. Plus byte-exact NGC4670.SP(user approval of2026-10-27,group 1)in public/original/spectra for the LSS row NGC 4670(Front L2).",
+  "totalFiles": 1464,
+  "totalBytes": 132410846,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
@@ -11,7 +11,7 @@
     ".LNL": 1,
     ".LST": 27,
     ".PLS": 1,
-    ".SP": 149,
+    ".SP": 150,
     ".SPI": 1,
     ".TXT": 14,
     ".dat": 4,
@@ -39,7 +39,7 @@
     },
     "data/hubble": {
       "files": 75,
-      "bytes": 3858991,
+      "bytes": 3899631,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
       "usedBy": "Verified star/sky and bounded galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
@@ -126,11 +126,11 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/spectra": {
-      "files": 94,
-      "bytes": 4524410,
+      "files": 95,
+      "bytes": 4552026,
       "materialClass": "unchanged-original-resources-text-and-binary",
-      "description": "24 unchanged original SP files (text, including jspect2/A0000046.SP);also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a;also jspect2/A0000046.SP (55980 bytes, SHA-256 ed50d12a757da8eb063188e6f2da3c7e7842a68b21c4eb4e35c5a1cff654414c), byte-exact from program files/CLEA/VIREO/Spectra/jspect2/ (user approval of 2026-10-27, group 1), required by the Object X row-12 star N3000.DAT@483032 (spectral index 50305000, exact JSPEC2.SPI match); the other Object X stars use templates already published in public/original/classification (row 9 N3730.DAT@513845 → A0000044.SP exact, row 5 N0730.DAT@472049 → A0000052.SP exact, row 4 N6000.DAT@209199 index 30005000 → A0000018.SP by the 0x50d660 walk-back), each byte-identical to its jspect2 original;also binary QSOSpect.dat (program files/CLEA/VIREO/QSOSpect.dat, 49506 bytes, 8251 six-byte records, SHA-256 7ab662914042f0cf9213b3e988834fc61d68f57751f89f9d69e46f06e7d7a9cd) and text JSPEC2.SPI (3168 bytes, SHA-256 5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa), both byte-exact under the user approval of 2026-10-27 (group 1)",
-      "usedBy": "Runtime galaxy library and template spectra;LSS spectrum-mapping gate: a selected galaxy with its own library spectrum is not given the template",
+      "description": "24 unchanged original SP files (text, including jspect2/A0000046.SP);also byte-exact GLXYSP.LST(program files/CLEA/VIREO/Spectra/Galaxies/GLXYSP.LST,576bytes,48 galaxy library spectrum names),SHA-256 0a7a352d37c5a899e2304048c660b7703646fbb616f49e5c7ddf75b84d3c166a;also jspect2/A0000046.SP (55980 bytes, SHA-256 ed50d12a757da8eb063188e6f2da3c7e7842a68b21c4eb4e35c5a1cff654414c), byte-exact from program files/CLEA/VIREO/Spectra/jspect2/ (user approval of 2026-10-27, group 1), required by the Object X row-12 star N3000.DAT@483032 (spectral index 50305000, exact JSPEC2.SPI match); the other Object X stars use templates already published in public/original/classification (row 9 N3730.DAT@513845 → A0000044.SP exact, row 5 N0730.DAT@472049 → A0000052.SP exact, row 4 N6000.DAT@209199 index 30005000 → A0000018.SP by the 0x50d660 walk-back), each byte-identical to its jspect2 original;also binary QSOSpect.dat (program files/CLEA/VIREO/QSOSpect.dat, 49506 bytes, 8251 six-byte records, SHA-256 7ab662914042f0cf9213b3e988834fc61d68f57751f89f9d69e46f06e7d7a9cd) and text JSPEC2.SPI (3168 bytes, SHA-256 5abf48cbd3e52a18278c9bd38ad939f6f019ee80f28743d5486dec59c677a0aa), both byte-exact under the user approval of 2026-10-27 (group 1);also NGC4670.SP (27616 bytes, SHA-256 228149e937449b4731421c0b81fc14545dabc514cd3af4a1c9b4e78f8f12170a), byte-exact from program files/CLEA/VIREO/Spectra/Galaxies/ (user approval of 2026-10-27, group 1), the own library spectrum GLXYSP.LST names for the LSS row NGC 4670 (Front L2)",
+      "usedBy": "Runtime galaxy library and template spectra; LSS (Front L2): a selected galaxy with its own GLXYSP.LST spectrum is observed with it (NGC4670.SP, NGC4889.SP); a listed spectrum that is not bundled stays typed spectrum-mapping, never given the template",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "public/original/catalogs": {
@@ -641,6 +641,16 @@
         ],
         "sourceGrant": "Front M M5 (2026-10-28): the independent Multi-Spec witness now computes the two fibres whose templates (A0000047.SP, A0000102.SP) were approved and bundled on 2026-10-28; derived numbers only.",
         "treatment": "Derived metadata and witnesses written without local research paths; source bytes, hashes and uncertainty recorded.",
+        "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-29",
+        "scope": [
+          "public/original/spectra/NGC4670.SP",
+          "data/hubble/existing-target-fingerprints.json"
+        ],
+        "sourceGrant": "Front L2 (2026-10-29): byte-exact NGC4670.SP from CLEA_Vireo.zip program files/CLEA/VIREO/Spectra/Galaxies/ under the user approval of 2026-10-27 (group 1); the frozen LSS fingerprints gain the 2026-10-29 update listing the 105 entries the recovered QSO merge changes (derived digests and integers only).",
+        "treatment": "Original bytes unchanged and hash-checked; derived metadata written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
       }
     ]

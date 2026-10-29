@@ -10,3 +10,5 @@
 .portal-help .fi-menu>button:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
 .portal-help .fi-menu-list{position:static;margin-top:4px;min-width:0;max-width:100%}
 @media(min-width:600px) and (max-width:1099.98px){.portal-footer{display:flex;align-items:flex-start;gap:var(--ov-space-2)}.portal-help{margin:0}.portal-help .fi-menu-list{position:absolute;left:auto;right:0;min-width:min(18rem,calc(100vw - 48px))}.portal-help .fi-menu{position:relative}}
+/* Wide layout: the menu sits at the foot of the sidebar, so its list opens upward over the navigation (review closure N5). */
+@media(min-width:1100px){.portal-help .fi-menu{position:relative}.portal-help .fi-menu-list{position:absolute;top:auto;bottom:calc(100% + 4px);left:0;right:0;margin:0;max-height:calc(100vh - 96px);overflow-y:auto}}

@@ -40,7 +40,7 @@ export default function MultiSpecControl({state,dispatch,busy,masked,printField=
    <button type="button" className="secondary-button" disabled={!menu||!c.viewSave} onClick={()=>dispatch({type:'view-save'})} data-testid="ms-view-save">{C.viewSave}</button>
    <button type="button" ref={printButton} className="secondary-button" disabled={!menu||!printField} aria-describedby={`${id}-print`} onClick={()=>setPrinting(true)} data-testid="ms-print-field">{C.printField}</button>
    <button type="button" className="secondary-button" disabled={busy} onClick={()=>dispatch({type:'close'})} data-testid="ms-close">{C.close}</button>
-   {/* TMultSpCntrl Help1: Help1.Enabled := Length(+0xb54) > 0, empty by default (0x529bb5). */}<CleaHelp list={HELP_FILES['MLTSPHLP.LST']} label={C.help} disabledReason={t('multispec.helpEmpty')} testId="ms-control-help"/>
+   {/* TMultSpCntrl Help1: Help1.Enabled := Length(+0xb54) > 0, empty by default (0x529b5f). */}<CleaHelp list={HELP_FILES['MLTSPHLP.LST']} label={C.help} disabledReason={t('multispec.helpEmpty')} testId="ms-control-help"/>
   </div>
   <p className="observatory-note" id={`${id}-print`} data-testid="ms-print-field-note">{printField?t('multispec.printFieldTyped'):PM.multiSpecPrint.unavailable}</p>
   {printing&&printField&&<PrintSkyImage pointing={printField.pointing} view="instrument" clone={printField.clone} onClose={()=>{setPrinting(false);printButton.current?.focus();}}/>}

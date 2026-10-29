@@ -118,8 +118,10 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
   const body=helpTopicBody(txt,rows[index].title);
   if(!body){setMessage({caption:M.topicNotFoundCaption,text:M.topicNotFound(rows[index].title.replace(/^ +/,''))});return;}
   setTopic({index,body,selected:-1});setListIndex(index);setHistory(push?helpHistoryOpen(base,index):base);setTopicMenu(false);
-  requestAnimationFrame(()=>topicHeading.current?.focus());
  }
+ /** Focus the topic heading once the topic window has rendered (its text arrives from a fetch, so a frame callback could
+  * run before the commit; review closure N1). Selecting a text row keeps the same topic and does not move focus. */
+ useEffect(()=>{if(topic)topicHeading.current?.focus();},[topic?.index,topic?.body]);
  function readRow(i:number){
   if(!loaded)return;
   const r=readHelpRow(loaded.rows,i);setStatus('');

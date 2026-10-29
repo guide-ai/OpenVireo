@@ -1,18 +1,19 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {repositoryLssSpectrumInputs} from './lssSpectrumInputs.node';
 import {readFileSync} from 'node:fs';
 import {webcrypto} from 'node:crypto';
 import {INITIAL_CONTROL,configureStep,moveControl,currentZ} from '../core/spectrum';
 import {EMPTY_HUBBLE} from '../core/hubbleAnalysis';
 import {decodeFieldPack} from '../core/fieldPack';
 import {lssFieldRows,type LssFieldNumber} from '../core/lssFields';
-import {GLIMAGES_LST,GLXYSP_LST,packWithPhotographs,parseGlimagesPositions,parseGlxyspNames} from '../core/lssLists';
+import {GLIMAGES_LST,packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
 import {evaluateLssRow,lssExposureEngine,lssPolicy} from '../core/lssExposure';
-import {EMPTY_LSS_SURVEY,openLssRecord,confirmLssRecord,editLssDraft,encodeLssEvents,decodeLssEvents,lssEventTotal,type LssRecord} from '../core/lssSurvey';
+import {EMPTY_LSS_SURVEY,openLssRecord,confirmLssDialog,editLssDraft,encodeLssEvents,decodeLssEvents,lssEventTotal,type LssRecord} from '../core/lssSurvey';
 import {LssSessionError,LSS_INVESTIGATION_POLICY,LSS_SESSION_LIMITS,admitLssInvestigation,portableLssInvestigation,setLssResources,type LssInvestigation} from './lssInvestigation';
 import {OBSERVATORY_SESSION_POLICY,readAnalysisSession,serializeAnalysisSession,type AnalysisSession} from './analysisSession';
 // Repository files feed the restore path in place of the same-origin fetches.
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../'+p,import.meta.url)));
-const glx=file('public/original/catalogs/CLEA_GLX.DAT'),photos=parseGlimagesPositions(file('public'+GLIMAGES_LST.path)),spectra=parseGlxyspNames(file('public'+GLXYSP_LST.path));
+const glx=file('public/original/catalogs/CLEA_GLX.DAT'),photos=parseGlimagesPositions(file('public'+GLIMAGES_LST.path)),spectra=repositoryLssSpectrumInputs();
 const pack=(f:LssFieldNumber)=>packWithPhotographs(decodeFieldPack(JSON.parse(readFileSync(new URL(`../../data/lss/lss-field-0${f}.json`,import.meta.url),'utf8'))),photos);
 beforeEach(()=>{vi.stubGlobal('crypto',webcrypto);setLssResources({pack:async f=>pack(f),glx:async()=>glx,spectra:async()=>spectra});});
 afterEach(()=>{vi.unstubAllGlobals();setLssResources(null);});
@@ -127,6 +128,70 @@ describe('v30: the frozen observatory-clock JD of LSS fields (Front T)',()=>{
  },60000);
 });
 import en from '../i18n/en.json';
+import {lssDialogZ,LSS_DIALOG_TEXT} from '../core/lssRedshiftDialog';
+import {hubbleVelocity} from '../core/hubbleVelocity';
+import {LSS_DIALOG_SESSION_POLICY} from './analysisSession';
+import type {LssSurveyState} from '../core/lssSurvey';
+/** Front L2: a record as v27–v30 files store it (z and velocity = c·z from the control, no native dialog). The tests of the
+ * older formats use these; the v31 tests below use the dialog's records. */
+function legacy(r:LssRecord):LssRecord{
+ const z=currentZ(r.control),v=hubbleVelocity(z),zSingle=Math.fround(z),{nativeDialog:_n,...rest}=r;void _n;
+ const b=new DataView(new ArrayBuffer(4));b.setFloat32(0,zSingle,false);
+ return Object.freeze({...rest,zSingle,zHex:b.getUint32(0,false).toString(16).padStart(8,'0'),velocitySingle:v.storedKmS,velocityHex:v.storedHex});
+}
+function nativeConfirm(s:LssSurveyState,velocity?:string):LssSurveyState{
+ const r=confirmLssDialog(editLssDraft(s,{velocity:velocity??String(299792.458*lssDialogZ(s.draft!.z))}));
+ if(!r.ok)throw new Error(r.message);return r.state;
+}
+function confirmLssRecord(s:LssSurveyState):LssSurveyState{const n=nativeConfirm(s);return Object.freeze({...n,records:Object.freeze(n.records.map(legacy))});}
+
 it('the variable-time-required reason has its student text (shown in the row status when the list has no time)',()=>{
  expect((en as Record<string,string>)['lss.reason.variable-time-required']).toBe('a variable star in view whose brightness depends on the observatory clock, which gave no time');
 });
+
+describe('v31: records made with the recovered Measured Redshift Data rules (Front L2)',()=>{
+ function nativeRecord(velocity?:string,position=20):LssRecord{
+  const row=lssFieldRows(1)[0],status=evaluateLssRow(pack(1),glx,row,0,spectra);if(status.kind==='unavailable')throw Error('row');
+  const policy=lssPolicy(1,0,0),e=lssExposureEngine(status.result,policy);let st=e.start(e.activate(e.create(7)));for(let i=0;i<20;i++)st=e.tick(st,100);st=e.pause(st);
+  const control=moveControl(configureStep(INITIAL_CONTROL,.001),position);
+  const open=openLssRecord(EMPTY_LSS_SURVEY,{field:1,row:0,telescope:0,object:status.selectedId,jd:2451545.25,ra:row.ra,dec:row.dec,z:currentZ(control),control,journal:{seedAtReset:st.seedAtReset,events:st.events},acquisitionPolicy:policy});
+  return nativeConfirm(open,velocity).records[0];
+ }
+ it('a typed velocity within 1 % is stored as typed; outside it, or unreadable, OK keeps the dialog with the native message',()=>{
+  const r=nativeRecord('6000');expect(r.nativeDialog).toBe(true);expect(r.velocitySingle).toBe(Math.fround(6000));
+  expect(r.zSingle).toBe(Math.fround(0.02));// 2.000E-02
+  const row=lssFieldRows(1)[0],control=moveControl(configureStep(INITIAL_CONTROL,.001),20),status=evaluateLssRow(pack(1),glx,row,0,spectra);if(status.kind==='unavailable')throw Error();
+  const open=openLssRecord(EMPTY_LSS_SURVEY,{field:1,row:0,telescope:0,object:status.selectedId,jd:2451545.25,ra:row.ra,dec:row.dec,z:currentZ(control),control,journal:{seedAtReset:1,events:[]},acquisitionPolicy:lssPolicy(1,0,0)});
+  expect(confirmLssDialog(editLssDraft(open,{velocity:'5000'}))).toEqual({ok:false,caption:null,message:LSS_DIALOG_TEXT.velocityInvalid});
+  expect(confirmLssDialog(editLssDraft(open,{velocity:''}))).toEqual({ok:false,caption:LSS_DIALOG_TEXT.velocityCaption,message:LSS_DIALOG_TEXT.velocityMissing});
+ });
+ it('saves v31 around the v27 layer, restores the typed velocity, and rejects tampering; v27 files keep the c·z rule',async()=>{
+  const r=nativeRecord('6010'),inv=investigation([r]);
+  const text=await serializeAnalysisSession({...base,lss:inv}),v=JSON.parse(text);
+  expect([v.version,v.lssDialogPolicy,v.lssNativeDialogIds,v.base.version]).toEqual([31,LSS_DIALOG_SESSION_POLICY,[1],27]);
+  expect((await read(text)).lss).toEqual(inv);
+  // The v27 layer alone applies the c·z rule: a typed velocity no longer matches.
+  await expect(read(JSON.stringify(v.base))).rejects.toThrow();
+  for(const bad of [[],[2],[1,1],['1']])await expect(read(JSON.stringify({...v,lssNativeDialogIds:bad}))).rejects.toThrow();
+  await expect(read(JSON.stringify({...v,base:JSON.parse(await serializeAnalysisSession(base))}))).rejects.toThrow();
+  await expect(read(JSON.stringify({...v,base:v}))).rejects.toThrow();
+  // A velocity outside 1 % in the file is refused.
+  const tampered=structuredClone(v),hex=(x:number)=>{const b=new DataView(new ArrayBuffer(4));b.setFloat32(0,x,false);return b.getUint32(0,false).toString(16).padStart(8,'0');};
+  tampered.base.lss.records[0].velocityHex=hex(5000);await expect(read(JSON.stringify(tampered))).rejects.toThrow();
+  // Mixed: a legacy record and a native one in one file.
+  const mixed=investigation([legacy(nativeRecord()),{...nativeRecord('5990',20),id:2}]);
+  const m=JSON.parse(await serializeAnalysisSession({...base,lss:mixed}));expect(m.lssNativeDialogIds).toEqual([2]);
+  expect((await read(JSON.stringify(m))).lss).toEqual(mixed);
+ },120000);
+ it('a native record with a frozen field JD saves v31 over v30 over v27 and restores',async()=>{
+  const JD=2451545.0,row=lssFieldRows(8)[21],status=evaluateLssRow(pack(8),glx,row,0,spectra,{jd:JD,source:'observatory-clock'});if(status.kind==='unavailable')throw Error();
+  const policy=lssPolicy(8,21,0),e=lssExposureEngine(status.result,policy);let st=e.start(e.activate(e.create(11)));for(let k=0;k<10;k++)st=e.tick(st,100);st=e.pause(st);
+  const control=moveControl(configureStep(INITIAL_CONTROL,.001),15);
+  const open=openLssRecord(EMPTY_LSS_SURVEY,{field:8,row:21,telescope:0,object:status.selectedId,jd:2451545.25,fieldJd:JD,ra:row.ra,dec:row.dec,z:currentZ(control),control,journal:{seedAtReset:st.seedAtReset,events:st.events},acquisitionPolicy:policy});
+  const r=nativeConfirm(open).records[0],inv:LssInvestigation={...investigation([r]),field:8};
+  const v=JSON.parse(await serializeAnalysisSession({...base,lss:inv}));
+  expect([v.version,v.base.version,v.base.base.version]).toEqual([31,30,27]);
+  expect((await read(JSON.stringify(v))).lss).toEqual(inv);
+ },120000);
+});
+

@@ -22,7 +22,7 @@ test('each instrument window opens its own VIREO help index',async({page})=>{
  await firstTopic(page,'telescope-help','-Telescope Controls-','"Tracking"','Help - "Tracking"','');
  await firstTopic(page,'camera-help','-Taking CCD Images-','Set Exposure','Help - Set Exposure','exposure');
  // The rows each index shows, from the witness (analysis/front-h-help/tools/help_all_witness.py).
- for(const [route,prefix,list] of [['#photometer','photo-help','PHOTOHLP.LST'],['#spectrometer','spectrometer-help','SPECHLP.LST'],['#classification','class-help','CLASSHLP.LST'],
+ for(const [route,prefix,list] of [['#photometer','photo-help','PHOTOHLP.LST'],['#spectrometer','spectrometer-index-help','SPECHLP.LST'],['#classification','class-help','CLASSHLP.LST'],
   ['#spectrum','measure-help','MEASHLP.LST'],['#lss-wedge','wedge-help','WDGPLTHLP.LST'],['#pulsar-analysis','pulsar-analysis-help','PLSANHLP.LST']] as const){
   await page.goto('/'+route);
   await id(page,`${prefix}-open`).click();
@@ -59,12 +59,12 @@ test('pulsar analysis does not add its topics to the Back history (0x56e634); ot
 
 test('the spectrometer Help is in the windows where students take spectra (TSpectrometer)',async({page})=>{
  const spec=(witness.lists as Record<string,{rows:string[]}>)['SPECHLP.LST'];
- for(const route of ['#star-exposure','#galaxy-exposure']){
+ for(const [route,prefix] of [['#star-exposure','star-spectrometer-help'],['#galaxy-exposure','galaxy-spectrometer-help']]){
   await page.goto('/'+route);
   // Visited routes stay mounted but hidden; the role query sees only this route's button.
   const open=page.getByRole('button',{name:'Help for the spectrometer',exact:true});
-  await expect(open).toHaveCount(1);await open.click();
-  await expect(page.getByRole('dialog').getByTestId('spectrometer-help-topic-list').getByRole('option').first()).toHaveText(spec.rows[0]);
+  await expect(open).toHaveCount(1);await expect(open).toHaveAttribute('data-testid',`${prefix}-open`);await open.click();
+  await expect(page.getByTestId(`${prefix}-topic-list`).getByRole('option').first()).toHaveText(spec.rows[0]);
   await page.keyboard.press('Escape');await expect(open).toBeFocused();
  }
 });
@@ -161,7 +161,9 @@ test('radio lab Help: Topics opens PULSRHLP.LST and About This Exercise shows it
  const rows=id(page,'radio-help-topic-list').getByRole('option');
  await expect(rows.first()).toHaveText('-Basic Operations-');
  await rows.filter({hasText:'Radio Telescope Controls'}).dblclick();
- await expect(id(page,'radio-help-window').getByRole('heading',{name:'Help - Radio Telescope Controls'})).toBeFocused();
+ // The topic text is fetched on demand: wait for the window, then for focus (it moves once the window has rendered).
+ const heading=id(page,'radio-help-window').getByRole('heading',{name:'Help - Radio Telescope Controls'});
+ await expect(heading).toBeVisible({timeout:15000});await expect(heading).toBeFocused({timeout:10000});
  await id(page,'radio-help-topic-menu').click();await id(page,'radio-help-close-topic').click();
  await id(page,'radio-help-menu').click();await id(page,'radio-help-about').click();
  await expect(id(page,'help-about').getByTestId('help-about-version')).toHaveText('Version 1.001-32');

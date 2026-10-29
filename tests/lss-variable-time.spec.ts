@@ -11,6 +11,7 @@ test('E02: the field list records its frozen JD; rows with TRUE variable stars a
   await page.getByLabel('Survey field',{exact:true}).selectOption(field);
   await page.getByRole('button',{name:'Load selected list',exact:true}).click();
   await expect(page.getByTestId('lss-rows')).toBeVisible({timeout:60000});
+  await expect(page.getByTestId('lss-rows')).not.toHaveAttribute('aria-busy','true',{timeout:60000});// the (re)load finished
   await expect(page.getByTestId('lss-field-jd')).toHaveText(/field built at JD \d{7}\.\d{5} \(observatory clock/);
   await expect(page.getByTestId(`lss-row-${row}`)).toContainText('Observable');
   await expect(page.getByTestId(`lss-row-${row}`)).not.toContainText('variable');

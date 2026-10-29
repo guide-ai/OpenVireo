@@ -1,4 +1,5 @@
 import {describe,it,expect} from 'vitest';
+import {repositoryLssSpectrumInputs} from '../io/lssSpectrumInputs.node';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import frozen from '../../data/hubble/existing-target-fingerprints.json';
@@ -6,7 +7,7 @@ import {verifiedGalaxyConfiguration,galaxyDefinition,replayGalaxy,galaxyCountsCs
 import type {JournalEvent} from './exposureJournal';
 import {decodeFieldPack} from './fieldPack';
 import {evaluateLssRow} from './lssExposure';
-import {parseGlimagesPositions,parseGlxyspNames,packWithPhotographs} from './lssLists';
+import {parseGlimagesPositions,packWithPhotographs} from './lssLists';
 import {lssFieldRows,type LssFieldNumber} from './lssFields';
 /** Front F M0: the 14 existing (target, telescope) pairs and the 219×3 LSS evaluations, frozen at the Front F base (main 612e846)
  * before any engine change. Regenerate only with OPENVIREO_FREEZE_FINGERPRINTS=1 on an unchanged engine; a diff here means an
@@ -33,7 +34,7 @@ function pairFingerprint(id:string,index:0|1|2){
 const glx=new Uint8Array(readFileSync(new URL('../../public/original/catalogs/CLEA_GLX.DAT',import.meta.url)));
 const original=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
 function lssFingerprints(){
- const photographs=parseGlimagesPositions(original('images/GLIMAGES.LST')),spectra=parseGlxyspNames(original('spectra/GLXYSP.LST')),out:string[]=[];
+ const photographs=parseGlimagesPositions(original('images/GLIMAGES.LST')),spectra=repositoryLssSpectrumInputs(),out:string[]=[];
  for(let f=1;f<=9;f++){
   const pack=packWithPhotographs(decodeFieldPack(JSON.parse(readFileSync(new URL(`../../data/lss/lss-field-0${f}.json`,import.meta.url)).toString())),photographs);
   for(const row of lssFieldRows(f as LssFieldNumber))for(const t of [0,1,2] as const){

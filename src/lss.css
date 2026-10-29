@@ -16,3 +16,19 @@
 .lss-dialog dl{display:grid;grid-template-columns:auto 1fr;gap:.2rem .6rem}
 .lss-main textarea{width:100%;box-sizing:border-box}
 @media (max-width:640px){.lss-acquire-layout{grid-template-columns:minmax(0,1fr)}.lss-rows{display:block;overflow-x:auto}.lss-main canvas{max-width:100%;height:auto}}
+/* Front L2 (review 1 F3): Measured Redshift Data angle boxes and the LSS Galaxy Data grid fit 320 px. */
+.lss-dialog input{max-width:100%;min-width:0;box-sizing:border-box}
+.lss-dialog-angles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem;border:1px solid var(--line,var(--ov-border));padding:.4rem .6rem;margin:.4rem 0;min-width:0}
+.lss-dialog-angles legend{padding:0 .2rem}
+.lss-region-grid{width:100%;table-layout:fixed;border-collapse:collapse}
+.lss-region-grid th,.lss-region-grid td{padding:.2rem;min-width:0;text-align:left}
+.lss-region-grid input{width:100%}
+.lss-region-box-text{white-space:pre-line}
+@media (max-width:480px){
+ .lss-region-grid thead{display:none}
+ .lss-region-grid,.lss-region-grid tbody,.lss-region-grid tr,.lss-region-grid th,.lss-region-grid td{display:block;width:100%}
+ .lss-region-grid tr{margin-bottom:.5rem}
+ .lss-region-grid td::before{display:block;font-size:.85em}
+ .lss-region-grid td:nth-of-type(1)::before{content:attr(data-label)}
+ .lss-region-grid td:nth-of-type(2)::before{content:attr(data-label)}
+}

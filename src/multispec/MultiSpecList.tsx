@@ -27,7 +27,7 @@ export default function MultiSpecList({items,selected,onSelected,onShow,onHide,o
    <button type="button" className="secondary-button" disabled={!file||!any} onClick={onCloseAll} data-testid="ms-close-all">{L.closeAll}</button>
    <button type="button" className="secondary-button" disabled={!file} onClick={onExit} data-testid="ms-list-exit">{L.exit}</button>
   </div>
-  {/* TMSpecListForm1 Help1: Help1.Enabled := Length(+0xb0c) > 0, empty by default (0x525a56; docs/CLEA-HELP.md). */}<CleaHelp list={HELP_FILES['SPLSTHLP.LST']} label={L.help} disabledReason={t('multispec.helpEmpty')} testId="ms-list-help"/>
+  {/* TMSpecListForm1 Help1: Help1.Enabled := Length(+0xb0c) > 0, empty by default (0x525a00; docs/CLEA-HELP.md). */}<CleaHelp list={HELP_FILES['SPLSTHLP.LST']} label={L.help} disabledReason={t('multispec.helpEmpty')} testId="ms-list-help"/>
   <div className="ms-list-body">
    <ul className="ms-items" role="listbox" tabIndex={0} aria-label={L.caption} aria-activedescendant={selected!==null?`${id}-i${selected}`:undefined} onKeyDown={key} data-testid="ms-items">
     {items.map((text,i)=><li key={i} id={`${id}-i${i}`} role="option" aria-selected={selected===i} data-testid={`ms-item-${i}`} onClick={()=>onSelected(i)} onDoubleClick={()=>{onSelected(i);onShow();}}>{text}</li>)}

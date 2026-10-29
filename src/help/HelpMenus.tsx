@@ -10,9 +10,10 @@ import './help.css';
 
 /** The TAboutBox panel (DFM at file offset 0x1e3174) with the Version label its caller sets: 0x58982c "Version 1.504" (main)
  * or 0x56543c "Version 1.001-32" (radio). The DFM's design-time "Version 0.5" is always overwritten and never shown. */
-export function AboutBoxPanel({version}:{version:string}){
- return <div className="help-about-lines" data-testid="help-about-panel">{ABOUT_BOX.lines.slice(0,2).map((l,i)=><p key={i} className={i===0?'help-about-strong':undefined}>{l}</p>)}
-  <p data-testid="help-about-version">{version}</p>{ABOUT_BOX.lines.slice(2).map(l=><p key={l}>{l}</p>)}</div>;
+export function AboutBoxPanel({version,testId='help-about'}:{version:string;
+ /** Prefix of the panel's test ids: Help › About... and the site's About page each show one (review closure N2). */testId?:string}){
+ return <div className="help-about-lines" data-testid={`${testId}-panel`}>{ABOUT_BOX.lines.slice(0,2).map((l,i)=><p key={i} className={i===0?'help-about-strong':undefined}>{l}</p>)}
+  <p data-testid={`${testId}-version`}>{version}</p>{ABOUT_BOX.lines.slice(2).map(l=><p key={l}>{l}</p>)}</div>;
 }
 
 /** TAboutBox, modal (About... 0x58982c / About This Exercise... 0x56543c). */
