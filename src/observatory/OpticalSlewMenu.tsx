@@ -1,6 +1,10 @@
-import {lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react';
+import {lazy,Suspense,useContext,useEffect,useMemo,useRef,useState} from 'react';
+import {ProgrammedSlewContext} from '../polish/programmedSlew';
+import TerminateSlewBox from '../polish/TerminateSlewBox';
+import QuestionBox from '../polish/QuestionBox';
+import {HOT_LIST_EDIT_LITERALS as HE,POLISH_MESSAGES as PM} from '../polish/PolishMessages';
 import ResearchNotes from '../components/ResearchNotes';
-import {HtlError,newHtlEditor} from '../core/hotList';
+import {HtlError,editHtlRow,newHtlEditor,removeHtlRow,undoHtl,type HtlList} from '../core/hotList';
 import {appendAddCurrentEntry,HOT_LIST_ENTRY_CAPTIONS,addCurrentPrefill,hotListEntryAddedText,hotListEntryDraft,parseHotListEntry,type HotListEntryDraft} from '../core/hotListEntry';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
 import type {SharedHotListHandle} from '../useSharedHotList';
@@ -48,23 +52,55 @@ export default function OpticalSlewMenu({pointing,enabled,request,hotList,object
  function cancel(){const fromList=sky.dialog?.origin==='hot-list';setSky(cancelOpticalSkyCoords);if(fromList)setHot(reopenOpticalHotList);}
  function addEntry(){if(!entry)return;const r=parseHotListEntry(entry);if(r.status!=='ok'){setEntryError(r.status==='ra-invalid'?HOT_LIST_ENTRY_CAPTIONS.raError:r.status==='dec-invalid'?HOT_LIST_ENTRY_CAPTIONS.decError:E.raUnsupported);return;}
   if(hotList.current().read){setEntryError(E.busy);return;}
+  if(editing!==null){const at=editing;let after:HtlList|null=null;
+   try{hotList.update(d=>{if(d.read||!d.editor)return keepHotList(d);const e=editHtlRow(d.editor,at,r.fields);after=e.list;return setHotListEditor(d,e,d.name);});}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
+   setEditing(null);setEntry(null);setUndoList(after);return;}
   try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,appendAddCurrentEntry(d.editor??newHtlEditor(),r.fields),d.editor?d.name:''));}catch(e){setEntryError(e instanceof HtlError?t(`htl.error.${e.code}`):E.busy);return;}
   setEntry(null);setInfo({caption:HOT_LIST_ENTRY_CAPTIONS.addedCaption,text:hotListEntryAddedText(r.fields.id)});}
+ const programmed=useContext(ProgrammedSlewContext),[terminate,setTerminate]=useState(false),setCoordinates=useRef<HTMLButtonElement>(null);
+ // L3: focus returns to Set Coordinates after the answer, and when the slew ends while the question is open.
+ const endTerminate=()=>setTerminate(false),wasTerminate=useRef(false);
+ // Runs after the question's dialog has closed (its cleanup runs first), so the page is no longer inert.
+ useEffect(()=>{if(wasTerminate.current&&!terminate)setCoordinates.current?.focus();wasTerminate.current=terminate;},[terminate]);
+ // Front P, THotListForm1 Edit/Delete/Undo (0x591488 / 0x59172c / 0x5918d0). `editing` is the file index under Edit;
+ // `undoList` is the list the window's last Edit/Delete produced (Undo is one level and only while that list is current).
+ const [editing,setEditing]=useState<number|null>(null),[deleting,setDeleting]=useState<number|null>(null),[undoList,setUndoList]=useState<HtlList|null>(null);
+ // N2: after the Delete question closes (Yes, No or Escape) focus returns to the list's selected row, else to Delete; this
+ // runs after the question's dialog has closed, so the hot-list window is the top modal again.
+ const wasDeleting=useRef(false);
+ useEffect(()=>{if(wasDeleting.current&&deleting===null){const w=document.querySelector('[data-testid="ob-hotlist"]');
+  (w?.querySelector<HTMLInputElement>('[data-testid="ob-hotlist-rows"] input:checked')??w?.querySelector<HTMLButtonElement>('[data-testid="ob-hotlist-delete"]'))?.focus();}
+  wasDeleting.current=deleting!==null;},[deleting]);
+ const shownRow=()=>hot.index>=0&&hot.index<rows.length?rows[hot.index]:null;
+ const noSelection=()=>setInfo({caption:HE.noSelectionCaption,text:HE.noSelectionText});
+ function editRow(){const r=shownRow();if(!r){noSelection();return;}setEntryError('');setEditing(r.sourceIndex);setEntry(hotListEntryDraft(r.record));}
+ function deleteRow(){const r=shownRow();if(!r){noSelection();return;}setDeleting(r.sourceIndex);}
+ function confirmDelete(yes:boolean){const at=deleting;setDeleting(null);if(!yes||at===null)return;let after:HtlList|null=null;const shown=hot.index;
+  try{hotList.update(d=>{if(d.read||!d.editor)return keepHotList(d);const e=removeHtlRow(d.editor,at);after=e.list;return setHotListEditor(d,e,d.name);});}catch{return;}
+  setUndoList(after);setHot(h=>({...h,index:after&&(after as HtlList).length?Math.max(0,shown-1):-1}));}
+ function undoRow(){if(!undoList)return;try{hotList.update(d=>d.editor&&d.editor.list===undoList&&!d.read?setHotListEditor(d,undoHtl(d.editor),d.name):keepHotList(d));}catch{}setUndoList(null);}
+ const undoEnabled=undoList!==null&&hotList.doc.editor?.list===undoList;
+ // The question goes away with the slew (it ended, or was stopped elsewhere).
+ useEffect(()=>{if(!programmed?.moving)setTerminate(false);},[programmed?.moving]);
  function slew(){const step=slewToOpticalHotListSelection(hot,rows);setHot(step.window);if(step.row)setSky(s=>openOpticalSkyCoordsFromHotList(s,step.row!));}
  return <div className="ob-slew-menu">
   <div className="ob-menu">
-   <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-set-coordinates" onClick={()=>setSky(s=>openOpticalSkyCoords(s,pointing))}>{M.open}</button>
+   {/* OB-SC-02 (Front P): during a programmed slew Set Coordinates asks "Terminate Current Slew?" instead of opening. */}
+   <button type="button" ref={setCoordinates} className="secondary-button" disabled={!enabled&&!programmed?.moving} data-testid="ob-set-coordinates" onClick={()=>{if(programmed?.moving){setTerminate(true);return;}setSky(s=>openOpticalSkyCoords(s,pointing));}}>{M.open}</button>
+   {terminate&&programmed?.moving&&<TerminateSlewBox onYes={()=>{endTerminate();programmed.terminate();}} onNo={endTerminate}/>}
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-view-select" onClick={()=>setHot(h=>openOpticalHotList(h,rows.length))}>{H.open}</button>
    <OpticalOptionsDialog options={options} onOptions={onOptions} disabled={!enabled} editMode={fieldInfo?.editMode} onEditMode={fieldInfo?.onEditMode} virtualObservatory={virtualObservatory} onVirtualObservatory={fieldInfo?setVirtualObservatory:undefined}/>
    <button type="button" className="secondary-button" disabled={!enabled} data-testid="ob-add-current" onClick={()=>{setEntryError('');setEntry(hotListEntryDraft(addCurrentPrefill(pointing,objectId)));}}>{E.open}</button>
   </div>
-  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)}/>}
+  {fieldInfo&&<ObservatoryFileMenu editMode={editMode} qsoList={virtualObservatory} disabled={fieldInfo.busy??false} pointing={pointing} view={fieldInfo.view} onFieldInfo={kind=>setFieldRequest(r=>({kind,token:(r?.token??0)+1}))} onQsoList={()=>setQsoRequest(n=>n+1)}/>}
   <ResearchNotes><p>{M.openHelp} {H.openHelp} {E.openHelp} {M.adaptation} {E.adaptation}</p></ResearchNotes>
   <OpticalHotListWindow caption={caption} texts={texts} state={hot} rows={rows} onSelect={i=>setHot(h=>selectOpticalHotListIndex(h,i,rows.length))} onSlew={slew} onClose={()=>setHot(closeOpticalHotList)}
    onSearch={()=>setHot(openOpticalHotListSearch)} onSearchEdit={(q,c)=>setHot(h=>editOpticalHotListSearch(h,q,c))} onSearchSubmit={mode=>setHot(h=>submitOpticalHotListSearch(h,mode,texts))} onSearchCancel={()=>setHot(cancelOpticalHotListSearch)}
-   onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(r,i)=>opticalHotListRowText(r,i+1)))}/>
+   onDismiss={()=>setHot(dismissOpticalHotListNotice)} onPrint={()=>setPrint(hotListPrintSnapshot(caption,rows,(r,i)=>opticalHotListRowText(r,i+1)))}
+   onEdit={editRow} onDelete={deleteRow} onUndo={undoRow} undoEnabled={undoEnabled} editBlocked={!!hotList.doc.read}/>
+  {deleting!==null&&<QuestionBox caption={HE.deleteCaption} text={HE.deleteText} note={PM.hotListEdit.deleteNote} testId="ob-hotlist-delete-box" onAnswer={confirmDelete}/>}
   <OpticalSkyCoordsDialog state={sky} onEdit={(f,text)=>setSky(s=>editOpticalSkyCoordsField(s,f,text))} onEpoch={i=>setSky(s=>selectOpticalSkyCoordsEpoch(s,i))} onOk={ok} onCancel={cancel} onDismiss={()=>setSky(dismissOpticalSkyCoordsNotice)}/>
-  <HotListEntryDialog draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={addEntry} onCancel={()=>setEntry(null)} onDismiss={()=>setEntryError('')}/>
+  <HotListEntryDialog draft={entry} error={entryError} onEdit={(f,v)=>setEntry(e=>e&&{...e,[f]:v})} onOk={addEntry} onCancel={()=>{setEntry(null);setEditing(null);}} onDismiss={()=>setEntryError('')}/>
   {fieldInfo?.editMode&&<Suspense fallback={null}><FieldInformationMenu info={fieldInfo} pointing={pointing} enabled={enabled} hotList={hotList} request={fieldRequest} onSlew={target=>setSky(s=>openOpticalSkyCoordsAt(s,target))}/></Suspense>}
   {fieldInfo&&qsoRequest>0&&<Suspense fallback={null}><QsoListWindow request={qsoRequest} editMode={editMode} hotList={hotList} hidden={fieldInfo.hidden??null}/></Suspense>}
   {info&&<InfoBox caption={info.caption} text={info.text} onClose={()=>setInfo(null)}/>}

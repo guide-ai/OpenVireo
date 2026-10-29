@@ -16,6 +16,7 @@ import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
+import CameraFieldSize from './polish/CameraFieldSize';// Front P
 
 export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
@@ -158,6 +159,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
    <fieldset className="camera-kind"><legend>{M.camera}</legend>
     {(['ccd','ir'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
    </fieldset>
+   <CameraFieldSize camera={camera} telescopeIndex={telescopeIndex}/>
    <label>{M.filter}<select value={filter} onChange={e=>setFilter(Number(e.target.value))}>{filterNames.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
    <div className="camera-exposure" role="group" aria-label={M.exposure}>
     <label>{M.minutes}<input inputMode="numeric" value={minutes} maxLength={2} onChange={e=>setMinutes(e.target.value.trim())} aria-invalid={!validExposure}/></label>

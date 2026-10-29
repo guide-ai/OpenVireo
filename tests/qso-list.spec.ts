@@ -20,7 +20,8 @@ const box=(p:Page)=>p.getByTestId('fi-box');
 
 test('File › QSO List appears only with Virtual Observatory on (VObsBox, default off; review 1 M1)',async({page})=>{
  await open(page);
- await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('qso-menu')).toHaveCount(0);await page.getByTestId('fi-file-menu').click();
+ // Front P: File always holds Print Sky Image..., as in VIREO; QSO List is absent with Virtual Observatory off.
+ await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('print-sky-menu')).toBeVisible();await expect(page.getByTestId('qso-menu')).toHaveCount(0);await page.getByTestId('fi-file-menu').click();
  await card(page).getByTestId('ob-options').click();await expect(page.getByTestId('ob-options-virtual-observatory')).not.toBeChecked();
  await expect(page.getByTestId('ob-options-virtual-observatory-note')).toContainText('not saved');await expect(page.getByTestId('ob-options-others')).not.toContainText('Virtual Observatory');
  await page.getByRole('button',{name:'Cancel',exact:true}).click();

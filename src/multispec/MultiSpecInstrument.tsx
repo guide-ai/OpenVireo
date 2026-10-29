@@ -1,4 +1,5 @@
 import {useEffect,useId,useMemo,useReducer,useRef,useState} from 'react';
+import {multiSpecFieldPicture} from '../polish/PrintSkyImage';
 import {createMultiSpecState,multiSpecReducer,type MultiSpecEntry} from '../core/multiSpec';
 import {multiSpecClickPoint,multiSpecPick,multiSpecTargetSource,type MultiSpecField} from '../core/multiSpecSelect';
 import {MULTISPEC_MESSAGES as N,MultiSpecFormatError,multiSpecCaption,multiSpecFileName,multiSpecInformationLines,multiSpecListItem,multiSpecPrintLines,multiSpecSspBytes,multiSpecZip,type MultiSpecTextOptions} from '../core/multiSpecFormat';
@@ -44,7 +45,7 @@ function download(name:string,bytes:Uint8Array,type:string){
 const safeName=(s:string)=>s.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_');
 
 export default function MultiSpecInstrument({field,telescope,access,armed,armedText,mask,editMode,busy,active,title,help,noFieldText,heading:Heading='h2'}:MultiSpecInstrumentProps){
- const id=useId();
+ const id=useId(),fieldWrap=useRef<HTMLDivElement>(null);
  const [state,dispatch]=useReducer(multiSpecReducer,undefined,()=>createMultiSpecState(telescope,pageSeed()));
  const [view,setView]=useState<ViewState>({status:'none'}),[viewTry,setViewTry]=useState(0);
  const [results,setResults]=useState<ReadonlyMap<string,Result>>(new Map());
@@ -155,13 +156,13 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
   <p role="status" data-testid="ms-access-status">{state.open?t('multispec.accessOpen'):access!=='ready'?multiSpecAccessText(access):''}</p>
   {state.open&&<div className="ms-body">
    <div className="ms-top">
-    <MultiSpecControl state={state} dispatch={dispatch} busy={!usable} masked={mask.masked}/>
+    <MultiSpecControl state={state} dispatch={dispatch} busy={!usable} masked={mask.masked} printField={ready&&field?{pointing:field.pointing,clone:()=>multiSpecFieldPicture(fieldWrap.current)}:null}/>
     <div className="ms-field-wrap">
      <p className="observatory-note" data-testid="ms-armed">{armedText}</p>
-     {ready?<MultiSpecFieldOverlay image={ready.viewport!} selections={state.selections} base={state.numberingBase} removing={removing} armed={armed&&usable&&state.selecting}
+     <div ref={fieldWrap}>{ready?<MultiSpecFieldOverlay image={ready.viewport!} selections={state.selections} base={state.numberingBase} removing={removing} armed={armed&&usable&&state.selecting}
        onSelect={(x,y)=>{const p=multiSpecClickPoint(x,y);dispatch({type:'add',selection:multiSpecPick({population:ready.population!,scene:ready.scene!},p.x,p.y)});}}
        onRemove={(x,y)=>{const p=multiSpecClickPoint(x,y);dispatch({type:'remove-at',x:p.x,y:p.y});}}/>
-      :<p role="status" data-testid="ms-field-status">{fieldStatus}</p>}
+      :<p role="status" data-testid="ms-field-status">{fieldStatus}</p>}</div>
      {view.status==='error'&&!mask.masked&&<button type="button" className="secondary-button" onClick={()=>setViewTry(n=>n+1)}>{t('multispec.retry')}</button>}
      <p className="observatory-note">{t('multispec.fieldAdaptation')}</p>
     </div>

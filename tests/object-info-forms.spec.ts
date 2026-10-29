@@ -32,7 +32,7 @@ test('Edit Mode off (compiled default): no Field Information menu, no Catalog Ob
  await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-edit-mode-note')).toContainText('not saved');
  await expect(page.getByTestId('ob-options-others')).not.toContainText('Edit Mode');
  await page.getByRole('button',{name:'Cancel',exact:true}).click();
- // With Edit Mode off File keeps only Exit Observatory (Front H); the Field Information items are gone (review 1 M1, M2).
+ // Front P: File always holds Print Sky Image... (as in VIREO); Field Information is absent with Edit Mode off.
  await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('fi-field-information')).toHaveCount(0);await expect(page.getByTestId('ob-exit')).toBeVisible();await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('em-layer')).toHaveCount(0);await expect(page.getByTestId('em-status')).toHaveCount(0);
  await page.getByTestId('sky-map').click({position:{x:120,y:120}});await expect(page.getByTestId('co-dialog')).toHaveCount(0);
 });

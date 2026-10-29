@@ -96,7 +96,7 @@ test('main window Help: Topics, Websites and About; File › Exit Observatory sh
  }
  await page.keyboard.press('Escape');
  await id(page,'main-help-menu').click();await id(page,'main-help-about').click();
- await expect(id(page,'help-about')).toContainText('VIREO - The VIRtual Educational Observatory');await expect(id(page,'help-about-version')).toHaveText('Version 1.504');
+ await expect(id(page,'help-about')).toContainText('VIREO - The VIRtual Educational Observatory');await expect(id(page,'help-about').getByTestId('help-about-version')).toHaveText('Version 1.504');
  await id(page,'help-about').getByRole('button',{name:'OK'}).click();await expect(id(page,'main-help-menu')).toBeFocused();
  // Exit Observatory: the reminder box; Cancel keeps the exercise, OK explains that the tab can now be closed.
  await id(page,'fi-file-menu').click();await id(page,'ob-exit').click();
@@ -164,5 +164,5 @@ test('radio lab Help: Topics opens PULSRHLP.LST and About This Exercise shows it
  await expect(id(page,'radio-help-window').getByRole('heading',{name:'Help - Radio Telescope Controls'})).toBeFocused();
  await id(page,'radio-help-topic-menu').click();await id(page,'radio-help-close-topic').click();
  await id(page,'radio-help-menu').click();await id(page,'radio-help-about').click();
- await expect(id(page,'help-about-version')).toHaveText('Version 1.001-32');
+ await expect(id(page,'help-about').getByTestId('help-about-version')).toHaveText('Version 1.001-32');
 });
