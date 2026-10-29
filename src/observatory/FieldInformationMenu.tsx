@@ -28,6 +28,8 @@ export function loadFieldVariables():Promise<readonly VariableStarRecord[]>{
 export type FieldInfoRequest=Readonly<{kind:FieldInfoRequestKind;token:number}>;
 export type FieldInformationProps=Readonly<{
  editMode:boolean;
+ /** Front K: dome open and tracking on (TObsrvtry +0x649/+0x64b, [I] panel active and drive on). */
+ driveOn?:boolean;
  /** Front O2 review 1 L1: the File and Tools menus are disabled only while a project is read or written (VIREO's main menu
   * does not depend on the dome or on motion). */
  busy?:boolean;

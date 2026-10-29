@@ -10,6 +10,8 @@ import {MAIN_HELP_MENU} from '../help/mainHelp';
 import PrintSkyImage from '../polish/PrintSkyImage';
 import {PRINT_SKY_LITERALS} from '../polish/PolishMessages';
 import type {Pointing} from '../core/sky';
+/** TEnvironment1 ClusterData1 (DFM) [D]. */
+const CLUSTER_DATA_MENU='&Cluster Data...';
 
 export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
 /** TEnvironment1 File and Tools items of the optical observatory (Front O, O2):
@@ -23,7 +25,9 @@ export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
  * - File › Exit Observatory shows VIREO's reminder (Reminder.obs; Front H, docs/CLEA-HELP.md). The main window's Help menu
  *   is in the app header, so that every route reaches it.
  * The windows live in their own lazy components; this menu only sends open requests. Disabled only while a project is busy. */
-export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,pointing,view}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
+export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,onClusterData,pointing,view}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
+ /** Front K: File › Cluster Data... (TEnvironment1 ClusterData1). */
+ onClusterData?:()=>void;
  /** Front P: the current pointing and view for the Print Sky Image header. */
  pointing?:Pointing;view?:'finder'|'instrument'}){
  const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null),[printSky,setPrintSky]=useState(false),[exiting,setExiting]=useState(false);
@@ -47,6 +51,8 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
       </div>}
      </div>}</>}
     <button type="button" data-testid="print-sky-menu" onClick={()=>pick(()=>setPrintSky(true))}>{menuCaptionText(PRINT_SKY_LITERALS.menu)}</button>
+    {/* TEnvironment1 File order: Print Sky Image, Cluster Data (ClusterData1 sits directly before QSOList1), QSO List. */}
+    {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{menuCaptionText(CLUSTER_DATA_MENU)}</button>}
     {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{menuCaptionText(QSO_LIST_MENU)}</button>}
     <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{menuCaptionText(MAIN_HELP_MENU.exit)}</button>
    </div>}
