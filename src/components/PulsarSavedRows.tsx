@@ -375,3 +375,57 @@ export function mountPulsarSavedRows(element: HTMLElement, props: PulsarSavedRow
   render(props);
   return Object.freeze({ render, unmount: () => root.unmount() });
 }
+
+/**
+ * Front R1 (review M3): the same TGetSrchStrDlg answer for Review › Find (FndBtnClick 0x5634c8), driven by savedFindRun, with
+ * the viewer's captions ("Find Record Containing...", "Begin Search:"). The dialog and its not-found notice sit inside the
+ * Review dialog, so every key stays here: Escape is this dialog's Cancel (mode 2, 0x492c5c) or the notice's OK, and the
+ * Review keeps its draft (review M1).
+ */
+export function ReviewFindDialog({ draft, refusal, onDraft, onAnswer, idPrefix }: Readonly<{
+  draft: SavedFindDraft; refusal: 'query-text' | 'query-length' | null; onDraft: (d: SavedFindDraft) => void; onAnswer: (a: SavedFindAction) => void; idPrefix: string;
+}>) {
+  const t = useMemo(() => createSavedRowsTranslator(), []);
+  const ref = useRef<HTMLDialogElement>(null), query = useRef<HTMLInputElement>(null);
+  useEffect(() => { const el = ref.current; if (el && !el.open) el.showModal(); query.current?.focus(); query.current?.select(); return () => { if (el?.open) el.close(); }; }, []);
+  return (
+    <dialog ref={ref} className="psr-modal" aria-labelledby={`${idPrefix}rfind-title`} data-testid="pulsar-review-find-dialog"
+      onKeyDown={e => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); if (!e.repeat) onAnswer('cancel'); } }}
+      onCancel={e => { e.preventDefault(); e.stopPropagation(); }}>
+      <h3 id={`${idPrefix}rfind-title`}>{t('savedRows.find.caption')}</h3>
+      <label>
+        {t('savedRows.find.searchString')}
+        <input ref={query} type="text" maxLength={SAVED_FIND_MAX_QUERY} value={draft.text} spellCheck={false} autoComplete="off"
+          onChange={e => onDraft({ ...draft, text: e.currentTarget.value })}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (!e.repeat) onAnswer('top'); } }} data-testid="pulsar-review-find-query" />
+      </label>
+      <label className="psr-check">
+        <input type="checkbox" checked={draft.caseDependent} onChange={e => onDraft({ ...draft, caseDependent: e.currentTarget.checked })} data-testid="pulsar-review-find-case" />
+        {t('savedRows.find.caseDependent')}
+      </label>
+      {refusal && <p role="alert" className="psr-error" data-testid="pulsar-review-find-refusal">{t(`savedRows.find.refused.${refusal}`)}</p>}
+      <div role="group" aria-labelledby={`${idPrefix}rfind-begin`} className="psr-find-buttons">
+        <span id={`${idPrefix}rfind-begin`}>{t('savedRows.find.beginSearch')}</span>
+        <div className="psr-row">
+          <button type="button" onClick={() => onAnswer('top')} data-testid="pulsar-review-find-top">{t('savedRows.find.fromTop')}</button>
+          <button type="button" onClick={() => onAnswer('cursor')} data-testid="pulsar-review-find-cursor">{t('savedRows.find.fromCursor')}</button>
+          <button type="button" onClick={() => onAnswer('cancel')} data-testid="pulsar-review-find-cancel">{t('savedRows.find.cancel')}</button>
+        </div>
+      </div>
+    </dialog>
+  );
+}
+export function ReviewFindNotice({ body, onClose, idPrefix }: Readonly<{ body: string; onClose: () => void; idPrefix: string }>) {
+  const t = useMemo(() => createSavedRowsTranslator(), []);
+  const ref = useRef<HTMLDialogElement>(null), ok = useRef<HTMLButtonElement>(null);
+  useEffect(() => { const el = ref.current; if (el && !el.open) el.showModal(); ok.current?.focus(); return () => { if (el?.open) el.close(); }; }, []);
+  return (
+    <dialog ref={ref} className="psr-modal" role="alertdialog" aria-labelledby={`${idPrefix}rnotice-title`} aria-describedby={`${idPrefix}rnotice-body`} data-testid="pulsar-review-find-notice"
+      onKeyDown={e => { e.stopPropagation(); if (e.key === 'Escape') { e.preventDefault(); if (!e.repeat) onClose(); } }}
+      onCancel={e => { e.preventDefault(); e.stopPropagation(); }}>
+      <h3 id={`${idPrefix}rnotice-title`}>{t('savedRows.notFound.caption')}</h3>
+      <p id={`${idPrefix}rnotice-body`} data-testid="pulsar-review-find-notice-body">{body}</p>
+      <div className="psr-row"><button ref={ok} type="button" onClick={onClose} data-testid="pulsar-review-find-notice-ok">{t('savedRows.notFound.ok')}</button></div>
+    </dialog>
+  );
+}

@@ -100,6 +100,13 @@ test('Save image writes a FITS file that reopens under Saved images with the sam
  const bytes=await readFile((await d.path())!);expect(bytes.length%2880).toBe(0);
  const header=bytes.subarray(0,2880).toString('latin1');
  expect(header.startsWith('SIMPLE  =                    T')).toBe(true);expect(header).toContain("FILTER  = 'V       '");expect(header).toContain("CATALOG = 'NOMAD   '");
+ // Front R1: VIREO's own keyword writer 0x523218 (cards, order, no data padding), the second button.
+ const nativeDownload=page.waitForEvent('download');await button(page,'Save image (VIREO header)').click();const n=await nativeDownload;
+ expect(n.suggestedFilename()).toBe('UNKNOWN-01.FIT');
+ const native=await readFile((await n.path())!);expect(native.length).toBe(2880+1024*1024*4);
+ const nh=native.subarray(0,2880).toString('latin1');
+ expect(nh.slice(80*5,80*8)).toMatch(/^OBJECT  = 'UNKNOWN '\s+\/\s*ORIGIN  = 'CLEA Simulation'    \/\s*DATE    = '\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d'/);
+ expect(nh).toContain("FILTER  = 'V       '           /");expect(nh).toContain("INSTRUME= 'CCD Camera'");expect(nh).not.toContain('CATALOG');
  await page.goto('/#images');
  await page.getByLabel('Open float32 FITS image (up to 5 MiB)',{exact:true}).setInputFiles({name:d.suggestedFilename(),mimeType:'application/octet-stream',buffer:bytes});
  await expect(page.locator('.fits-lab')).toContainText('1024 × 1024 pixels');

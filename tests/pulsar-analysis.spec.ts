@@ -1169,17 +1169,48 @@ test('Review UI-R06: Ok without edits keeps every field and enables no save writ
   await expect(review(page)).toHaveCount(0);
   await expect(count(page)).toHaveText('3 recorded measurements');
   await expect(page.getByTestId('pulsar-save')).toBeDisabled();
-  await expect(page.getByTestId('pulsar-save')).toHaveAccessibleDescription(/not recovered/);
+  await expect(page.getByTestId('pulsar-save')).toHaveAccessibleDescription(/that save is not implemented here/);
   // listSaved is false after Ok (the caller clears 0x5db): Clear asks about unsaved measurements first.
   await page.getByTestId('pulsar-clear').click();
   await expect(page.getByTestId('pulsar-clear-dialog')).toContainText('have not been saved');
   await page.keyboard.press('Escape');
   await openReview(page);
   expect(await rowCells(page)).toEqual(before);
-  await expect(page.getByTestId('pulsar-review-find')).toBeDisabled();
-  // Find is recovered but not enabled (PLR-REVIEW-FIND-STATIC-01): the searched line holds native file name and number text.
-  await expect(page.getByTestId('pulsar-review-find')).toHaveAccessibleDescription(/^Find is not available: the original searches whole stored lines\. Their native number text and, when present, file name text/);
-  // Superseded by the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01): Edit is enabled; Find stays disabled.
+  // Front R1: Find is enabled over the stored lines (0x5634c8 via savedFindRun: lowercase A–Z, From Top / after the selection,
+  // no wrap, remembered lowercased query, "Find Record Containing..." caption).
+  const find = page.getByTestId('pulsar-review-find'), q = page.getByTestId('pulsar-review-find-query');
+  await expect(find).toBeEnabled();
+  await expect(find).toHaveAccessibleDescription(/^Find searches each stored line/);
+  await find.click();
+  await expect(page.getByTestId('pulsar-review-find-dialog')).toContainText('Find Record Containing...');
+  await expect(page.getByTestId('pulsar-review-find-dialog')).toContainText('Begin Search:');
+  await expect(q).toBeFocused(); await expect(q).toHaveValue('');
+  await q.fill('SAME');
+  await page.getByTestId('pulsar-review-find-top').click();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
+  await expect(page.getByTestId('pulsar-review-select-2')).toBeFocused();
+  await find.click();
+  await expect(q).toHaveValue('same'); // remembered, lowercased in place
+  await page.getByTestId('pulsar-review-find-cursor').click();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-3');
+  await find.click();
+  await page.getByTestId('pulsar-review-find-cursor').click();
+  await expect(page.getByTestId('pulsar-review-find-notice')).toContainText('String Not Found');
+  await expect(page.getByTestId('pulsar-review-find-notice-body')).toHaveText('"same" Not Found.');
+  await page.keyboard.press('Escape'); // the notice's OK only
+  await expect(page.getByTestId('pulsar-review-find-notice')).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  await expect(find).toBeFocused();
+  await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-3');
+  // Review M1: Escape in Find is that dialog's Cancel; the Review and its draft stay.
+  await page.getByTestId('pulsar-review-delete').click(); await page.getByTestId('pulsar-review-yes').click();
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2']);
+  await find.click(); await expect(q).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('pulsar-review-find-dialog')).toHaveCount(0);
+  await expect(review(page)).toHaveJSProperty('open', true);
+  expect(await rowIds(page)).toEqual(['pulsar-entry-1', 'pulsar-entry-2']);
+  await expect(find).toBeFocused();
   await expect(page.getByTestId('pulsar-review-edit')).toBeEnabled();
   await page.getByTestId('pulsar-review-cancel').click();
 });
@@ -1197,9 +1228,9 @@ test('Review UI-R07: keyboard-only Review keeps Tab inside the active layer, Ent
   await expect(sel2).toBeFocused();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
   // The scroll region (review correction 1) is the first stop, before the row radios it contains.
-  // Edit is a Tab stop since the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01); Find stays disabled.
+  // Edit is a Tab stop since the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01), and Find since Front R1.
   const scroll = page.getByTestId('pulsar-review-scroll');
-  for (const next of [edit, del, ok, cancel, scroll, sel2]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [page.getByTestId('pulsar-review-find'), edit, del, ok, cancel, scroll, sel2]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
   await page.keyboard.press('Shift+Tab');
   await expect(scroll).toBeFocused();
   await page.keyboard.press('Shift+Tab');
@@ -1329,8 +1360,9 @@ test('Review correction 1: the named scroll region is a Tab stop inside the trap
   await expect(sel1).toBeChecked();
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-1');
   // Full cycle in both directions: one stop for the radio group, never a host control outside the dialog.
-  for (const next of [sel1, edit, del, ok, cancel, scroll, sel1]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
-  for (const next of [scroll, cancel, ok, del, edit, sel1]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
+  const find = page.getByTestId('pulsar-review-find'); // Front R1: Find is a Tab stop
+  for (const next of [sel1, find, edit, del, ok, cancel, scroll, sel1]) { await page.keyboard.press('Tab'); await expect(next).toBeFocused(); }
+  for (const next of [scroll, cancel, ok, del, edit, find, sel1]) { await page.keyboard.press('Shift+Tab'); await expect(next).toBeFocused(); }
   // The group's stop follows the checked radio.
   await page.keyboard.press('ArrowDown');
   await expect(sel2).toBeChecked();
@@ -1694,6 +1726,8 @@ test('Review Edit E3: keyboard-only edit keeps Tab inside the editor, skips the 
   await expect(selectedRow(page)).toHaveAttribute('data-testid', 'pulsar-entry-2');
   const edit = page.getByTestId('pulsar-review-edit'), comment = editComment(page);
   const ok = page.getByTestId('pulsar-review-edit-ok'), cancel = page.getByTestId('pulsar-review-edit-cancel');
+  await page.keyboard.press('Tab');
+  await expect(page.getByTestId('pulsar-review-find')).toBeFocused(); // Front R1: Find precedes Edit
   await page.keyboard.press('Tab');
   await expect(edit).toBeFocused();
   await page.keyboard.press('Enter');

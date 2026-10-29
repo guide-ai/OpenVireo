@@ -1,5 +1,7 @@
 # Bounded CCD post-GDI overlay stage
 
+**Front R1 (2026-10-29):** the overlay's source, gate and rectangle are now recovered (docs/RADIO-CAMERA-R1.md §Overlay). The GDI StretchBlt mode is not, so the overlay stays typed unavailable.
+
 `src/core/cameraOverlay.ts` now ports the numerical addition performed after the native CCD overlay bitmap has been drawn/resampled. It accepts an explicitly supplied row-major snapshot of GetPixel's low bytes and explicit calibration values. It does not read a bitmap/FITS image, reproduce GDI scaling, infer an overlay from an imported image or enable an exposure.
 
 [NATIVE-CCD-POST-GDI-OVERLAY-01](CAMERA-OVERLAY-PROVENANCE.json) pins four complete procedures, five typed Single constants, the GetPixel import/IAT identity and the source's constructed Extended10 power base to executable SHA256 `781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c`. Derived captures/controls remain in `/home/dobleuber/Documents/Codex/2026-10-18/task-3/native-camera-overlay/`. This is static recovery; no original execution, emulation or REA analysis produced it. Original resources/credits remain unchanged.

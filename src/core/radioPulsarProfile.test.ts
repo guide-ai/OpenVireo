@@ -58,7 +58,7 @@ describe('pulsar profile owner 0x562a70 / build 0x562b24',()=>{
    expect(pulsarActiveCount(c.dt,t.period),`id ${c.id}`).toBe(c.N);
    const built=(()=>{try{return buildPulsarProfile(createPulsarProfile(),{source:s,dt:c.dt,jd:c.jd},seeded(),1);}catch(e){return e as RadioSignalError;}})();
    if(c.N===0)expect((built as RadioSignalError).kind).toBe('profile-active-count');
-   else if(c.id===6)expect((built as RadioSignalError).kind).toBe('poisson-mean-domain');// see below
+   else if(c.id===6){const b=built as Exclude<typeof built,RadioSignalError>;expect(b.profile).toMatchObject({activeCount:c.N,resolved:c.resolved});expect(b.profile.samples![0]).toBe(0);}// negative first mean: native 0 (Front R1)
    else{
     const b=built as Exclude<typeof built,RadioSignalError>;
     expect(b.profile).toMatchObject({period:c.period,activeCount:c.N,cursor:c.N,resolved:c.resolved});
@@ -130,9 +130,9 @@ describe('pulsar profile owner 0x562a70 / build 0x562b24',()=>{
   expect(nonzero).toEqual(Array.from({length:500},(_,j)=>4*j));
   expect(u.profile.samples!.every(v=>Number.isInteger(v)&&v>=0&&Math.fround(v)===v)).toBe(true);
  });
- it('refuses a first-sample negative mean (0.2P ≤ dt < 0.3P), the +5 lookup boundary and bad periods, atomically',()=>{
+ it('draws 0 for a first-sample negative mean (0.2P ≤ dt < 0.3P, native 0x55f0f4); refuses the +5 lookup boundary and bad periods, atomically',()=>{
   const p=createPulsarProfile(),s=seeded(),snapshot=JSON.stringify([p,s]);
-  expect(refusal(()=>buildPulsarProfile(p,{source:rec({x2a:1}),dt:0.25,jd:2451545},s,1))).toBe('poisson-mean-domain');
+  expect(buildPulsarProfile(p,{source:rec({x2a:1}),dt:0.25,jd:2451545},s,1).profile.samples![0]).toBe(0);
   expect(refusal(()=>pulsarIntervalArea(5,0))).toBe('integral-boundary');
   expect(pulsarIntervalArea(6,-6)).toBe(1);expect(pulsarIntervalArea(-5,0)).toBeCloseTo(-0.5,6);
   expect(refusal(()=>buildPulsarProfile(p,{source:rec({x2a:0}),dt:0.01,jd:2451545},s,1))).toBe('profile-period');

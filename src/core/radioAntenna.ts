@@ -271,7 +271,7 @@ export type RadioLabState=Readonly<{
 }>;
 
 export type RadioLabOutcome=
- |'activated'|'already-activated'|'not-activated'|'modal-open'|'options-unsupported'|'rate-unsupported'
+ |'add-to-list-enabled'|'activated'|'already-activated'|'not-activated'|'modal-open'|'options-unsupported'|'rate-unsupported'
  |'tracking-on'|'tracking-off'|'tracking-unavailable'
  |'rate-up'|'rate-down'|'rate-at-limit'|'rate-disabled'
  |'menu-disabled'|'dialog-opened'|'stop-requested'
@@ -745,6 +745,13 @@ export function cancelSkyCoords(s:RadioLabState):RadioLabTransition{
  if(s.dialog.origin==='hot-list')return done(s,{...s,dialog:null,hotListShown:true,hotListSearch:INITIAL_RADIO_HOT_LIST_SEARCH},'hot-list-reopened',['RA-07','RA-HL-07']);
  // RA-EP-02: a converting open already wrote the B1950 values; Cancel keeps them (no rollback).
  return done(s,{...s,dialog:null},s.targetHoldsB1950?'dialog-cancelled-b1950':'dialog-cancelled',['RA-07']);
+}
+
+// ----------------------------------------------------------------- Slew ▸ Hot List ▸ Add Current Item (Front R1)
+/** Rcvr1BtnClick 0x567a83 enables +0x480 (Add Current Item to List...) unconditionally when Receiver 1 opens; the only other
+ * writers disable it (manual horizon stop 0x56603c, confirmed programmed slew 0x567122). Nothing re-enables it on arrival. */
+export function receiverOneOpened(s:RadioLabState):RadioLabTransition{
+ return s.addToListEnabled?same(s,'add-to-list-enabled'):done(s,{...s,addToListEnabled:true},'add-to-list-enabled',['RA-ADD-01']);
 }
 
 // ----------------------------------------------------------------- Slew ▸ Hot List ▸ View/Select (RA-HL-05..08)

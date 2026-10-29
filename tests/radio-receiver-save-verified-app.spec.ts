@@ -471,3 +471,12 @@ test('keyboard: Cancel default, Tab wraps, Escape returns focus, Enter on Choose
   await info.attach(`save-verified-memory-${width}.png`,{body:await page.screenshot({path:info.outputPath(`save-verified-memory-${width}.png`),fullPage:true}),contentType:'image/png'});
  }
 });
+
+test('Front R1: File ▸ Save Recorded Data... is enabled by the No answer and opens the analysis on its verified Save',async({page})=>{
+ await installShim(page);
+ await captureToAnalysis(page,'PSR B2358+38');
+ await toRadio(page);
+ await expect(id(page,'radio-save-recorded-data')).toBeEnabled();await expect(id(page,'radio-save-recorded-data-row')).toContainText('runs the same save as the pulsar analysis Save');
+ await id(page,'radio-save-recorded-data').click();
+ await expect(id(page,'pulsar-analysis')).toBeVisible();await expect(id(page,'pulsar-save-capture')).toBeEnabled();
+});
