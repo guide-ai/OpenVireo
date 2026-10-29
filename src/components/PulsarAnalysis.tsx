@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type MutableRefObject, type PointerEvent as ReactPointerEvent, type RefObject, type SyntheticEvent } from 'react';
+import {memo,useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent,type KeyboardEvent,type MouseEvent as ReactMouseEvent,type MutableRefObject,type PointerEvent as ReactPointerEvent,type RefObject,type SyntheticEvent} from 'react';
 import { pulsarAnalysisSnapshot, type PulsarAnalysisSnapshot, type RadioSnapshotResult } from '../core/radioInvestigation';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
@@ -147,7 +147,7 @@ const captureRepeatedEnter = (e: KeyboardEvent<HTMLElement>) => {
 /** Client pixel index of a position in a box of n native pixels. */
 const pixelIndex = (offset: number, size: number, n: number) => Math.min(n - 1, Math.max(0, Math.floor(offset / size * n)));
 
-export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', active = true, data, onMeasurementSummary, restored = null, controllerRef, onConfirmedList }: PulsarAnalysisProps) {
+function PulsarAnalysis({ translate, translateLoadSave, idPrefix = 'plr-', active = true, data, onMeasurementSummary, restored = null, controllerRef, onConfirmedList }: PulsarAnalysisProps) {
   const t = useMemo(() => translate ?? createPulsarTranslator(), [translate]);
   const ls = useMemo(() => translateLoadSave ?? createLoadSaveTranslator(), [translateLoadSave]);
   // Phase 1 item 1.5: a panel mounted by Restore investigation starts from the restored state (read once, at mount).
@@ -1729,3 +1729,5 @@ export function mountPulsarWorkbench(element: HTMLElement, props: PulsarAnalysis
   render(props);
   return Object.freeze({ render, unmount: () => root.unmount() });
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(PulsarAnalysis);

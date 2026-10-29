@@ -1,5 +1,5 @@
 import {selectionFromComparison,confirmClusterSelection,updateClusterSelectionComparison,includedClusterPoints,chooseClusterPoint,excludeClusterPoint,restoreClusterPoints,type ClusterSelectionWorkspace} from './core/clusterSelection';
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {memo,useEffect,useMemo,useRef,useState} from 'react';
 import './photometer.css';
 import './cluster-database-hr.css';
 import NativeClusterAnalysis,{type DatabaseHrProgress} from './NativeClusterAnalysis';
@@ -32,7 +32,7 @@ import {NATIVE_CLUSTER_MODELS} from './core/nativeCluster';
 import {loadClusterDataset} from './io/clusterComparison';
 import {t,locale} from './i18n';
 const EMPTY_EXCLUDED_IDS:readonly string[]=Object.freeze([]);
-export default function ClusterDatabaseLab({selection,onSelectionChange,workspace,comparison,onChange,onComparisonChange,busy,active,ownSource=null,onOpenOwn,hotList}: {hotList?:SharedHotListHandle;selection:ClusterSelectionWorkspace|null;onSelectionChange:(w:ClusterSelectionWorkspace|null)=>void;workspace:ClusterDatabaseWorkspace|null;comparison:ClusterComparisonWorkspace|null;onChange:(w:ClusterDatabaseWorkspace|null)=>void;onComparisonChange:(w:ClusterComparisonWorkspace|null)=>void;busy:boolean;active:boolean;ownSource?:PhotometerState|null;onOpenOwn?:()=>void}){
+function ClusterDatabaseLab({selection,onSelectionChange,workspace,comparison,onChange,onComparisonChange,busy,active,ownSource=null,onOpenOwn,hotList}: {hotList?:SharedHotListHandle;selection:ClusterSelectionWorkspace|null;onSelectionChange:(w:ClusterSelectionWorkspace|null)=>void;workspace:ClusterDatabaseWorkspace|null;comparison:ClusterComparisonWorkspace|null;onChange:(w:ClusterDatabaseWorkspace|null)=>void;onComparisonChange:(w:ClusterComparisonWorkspace|null)=>void;busy:boolean;active:boolean;ownSource?:PhotometerState|null;onOpenOwn?:()=>void}){
  // Own-observation route status(phase1 item1.9) from the live photometer pairs;counted here, never stored or graded.
  const ownPairs=useMemo(()=>{if(!ownSource)return 0;try{return pleiadesPoints(ownSource).length;}catch{return 0;}},[ownSource?.colors,ownSource?.entries,ownSource?.readings]);
  const ownStatus=clusterOwnStatus(ownPairs,PLEIADES_PHOTOMETER_TARGETS.length,!!ownSource?.nativeClusterFit);
@@ -115,3 +115,5 @@ export default function ClusterDatabaseLab({selection,onSelectionChange,workspac
  <dialog ref={removeDialog} aria-labelledby="cluster-point-remove-title" onCancel={e=>{e.preventDefault();cancelRemoval();}} onClose={()=>setPendingRemoval(null)}><h2 id="cluster-point-remove-title">{t('ce.confirmTitle')}</h2><p>{t('ce.confirmHelp',{id:pendingRemoval?.id??''})}</p><div className="sky-actions"><button className="secondary-button" autoFocus onClick={cancelRemoval}>{t('ce.cancel')}</button><button className="primary-button" disabled={busy||!pendingRemoval} onClick={confirmRemoval}>{t('ce.confirm')}</button></div></dialog>
  <ClusterLabGuide dialogRef={guide} progress={labProgress} cluster={activeLoaded&&info?info.name:null} onNavigate={goTo} own={ownStatus} onOpenOwn={onOpenOwn}/></main>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(ClusterDatabaseLab);

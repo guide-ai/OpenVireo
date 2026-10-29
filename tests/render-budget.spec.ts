@@ -6,13 +6,15 @@ import {installRenderProbe,rendersOf,type RenderTally} from './fixtures/render-p
 
 // Measured count → budget (count plus headroom). Keep in step with docs/RENDER-BUDGET.md.
 const BUDGET={
- classificationLoad:175,
+ classificationLoad:145,
  classificationKey:36,
  classificationFill:36,
  classificationToSpectrum:47,
  analyzerKey:12,
  observatoryLoad:78,
  openDome:30,
+ visitedKey:36,
+ visitedRouteChange:47,
 } as const;
 type Scenario=keyof typeof BUDGET;
 
@@ -38,4 +40,16 @@ test('observatory: load and opening the dome stay within the render budget',asyn
  test.setTimeout(90000);await installRenderProbe(page);
  check('observatoryLoad',await rendersOf(page,async()=>{await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:30000});},800));
  check('openDome',await rendersOf(page,()=>page.getByRole('button',{name:'Open dome ↗',exact:true}).click()));
+});
+
+test('after visiting eight routes, a classification keystroke and a route change stay within the render budget',async({page})=>{
+ test.setTimeout(150000);await installRenderProbe(page);
+ await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.',exact:true})).toBeVisible({timeout:30000});
+ // Visited routes stay mounted (hidden); they must not re-render for another route's work.
+ for(const r of ['photometer','radio-control','pulsar-analysis','cluster-database','lss-survey','lss-wedge','object-x','variable-stars']){
+  await page.locator(`[data-route="${r}"]`).first().click();await expect(page.locator(`[data-route="${r}"]`).first()).toHaveAttribute('aria-current','page');await page.waitForTimeout(1500);}
+ await page.locator('[data-route="classification"]').first().click();await typeField(page).waitFor({timeout:30000});await page.waitForTimeout(1500);
+ await typeField(page).click();
+ check('visitedKey',await rendersOf(page,()=>typeField(page).press('x')));
+ check('visitedRouteChange',await rendersOf(page,async()=>{await page.locator('[data-route="spectrum"]').first().click();await page.getByLabel('Object or reference').first().waitFor();},800));
 });

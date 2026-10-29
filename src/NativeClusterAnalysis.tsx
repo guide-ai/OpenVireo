@@ -1,5 +1,5 @@
 import PhotometerPlotSettings from './PhotometerPlotSettings';
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {memo,useEffect,useMemo,useRef,useState} from 'react';
 import type {ClusterReferencePoint} from './core/clusterDatabase';
 import type {PhotometerState} from './core/photometer';
 import {pleiadesPoints,pleiadesPointVisible,PLEIADES_PLOT,type PleiadesPoint} from './core/pleiadesAnalysis';
@@ -32,7 +32,7 @@ export type DatabaseHrProgress=Readonly<{validTrial:boolean;reportOpen:boolean}>
 /** variant "observation"(phase1 item1.9): the learner's own confirmed photometer pairs in the Data from Observations view,
  * drawn on the database route's native frame with its sliders and parameter report. It reads the live canonical photometer
  * state and the shared photometer fit/draft; it creates no DAT record and never consults catalog or acquired magnitudes. */
-export default function NativeClusterAnalysis({state,busy,draft,onDraft,onConfirm,referenceData,onDatabaseProgress,variant,ownIssue=null}:{state:PhotometerState|null;busy:boolean;draft:NativeClusterDraft|null;onDraft:(d:NativeClusterDraft|null)=>void;onConfirm:(p:NativeClusterParameters)=>boolean;referenceData?:ReferenceDisplay;onDatabaseProgress?:(p:DatabaseHrProgress)=>void;variant?:'observation';ownIssue?:'refused'|'limit'|'error'|null}){
+function NativeClusterAnalysis({state,busy,draft,onDraft,onConfirm,referenceData,onDatabaseProgress,variant,ownIssue=null}:{state:PhotometerState|null;busy:boolean;draft:NativeClusterDraft|null;onDraft:(d:NativeClusterDraft|null)=>void;onConfirm:(p:NativeClusterParameters)=>boolean;referenceData?:ReferenceDisplay;onDatabaseProgress?:(p:DatabaseHrProgress)=>void;variant?:'observation';ownIssue?:'refused'|'limit'|'error'|null}){
  const db=referenceData!==undefined;
  const own=!db&&variant==='observation';
  const prefix=db?'db-':own?'own-hr-':'';
@@ -151,3 +151,5 @@ export default function NativeClusterAnalysis({state,busy,draft,onDraft,onConfir
  {db&&<><div className="sky-actions"><button type="button" className="secondary-button" onClick={printReport}>{t('db.print')}</button></div><p className="observatory-note">{HR.reportPrintNote}</p>{printError&&<p role="alert">{t('db.printError')}</p>}</>}</details>}
  <p className="observatory-note">{t(referenceData?'db.limits':own?'ownHr.limits':'nc.limits')}</p></section>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(NativeClusterAnalysis);
