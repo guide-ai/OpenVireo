@@ -36,7 +36,7 @@
     },
     "data/hubble": {
       "files": 75,
-      "bytes": 3815830,
+      "bytes": 3858991,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
       "usedBy": "Verified star/sky and bounded galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
@@ -44,7 +44,7 @@
     },
     "data/observatory": {
       "files": 14,
-      "bytes": 160942,
+      "bytes": 161770,
       "materialClass": "mixed-derived-and-authored",
       "description": "Authored recovered-contract packets and reference vectors with original operand/provenance bindings",
       "usedBy": "Optical profiles, access, UT/site/tracking/horizon/motion and tests",
@@ -60,7 +60,7 @@
     },
     "data/photometry": {
       "files": 79,
-      "bytes": 6798285,
+      "bytes": 6660940,
       "materialClass": "mixed-derived-and-authored",
       "description": "Mixed catalog/model tables, source fields, analytic tests, proof metadata and earlier web-writer fixtures",
       "usedBy": "UBV photometry, clusters/ZAMS/isochrones, compatibility and scientific tests",
@@ -212,9 +212,9 @@
     },
     "data/multispec": {
       "files": 2,
-      "bytes": 85627,
+      "bytes": 94921,
       "materialClass": "derived-witness",
-      "description": "Output of the independent Python witness analysis/front-m-multispec/tools/multispec_witness.py (SHA-256 f442e2f3f553e01d6898c84dfb13671907066a1ed934180f6788323fc63d391d) of the static reading of CLEA_VEO.exe (781bc970…c54c): Multi-Spec fibre spectra (TMSpecDsplyForm1 0x526fb4: 400-bin grid 0x526e6c, K = 50·t·1000/1, one Poisson draw 0x55f0f4 per bin, object then sky, product and rejection branches) for eleven fibres on the 0.4 m and 4 m at t = 60 s and fixed seeds: six in the Hubble Coma engine field (GLXYTMPL.SP galaxy, own-spectrum galaxy, star, star with a template not bundled, sky, bright star over the 10^6 mean bound) and five in two unnamed Object X fields (numeric inputs only: QSO and star V, z and spectral index). It reads the bundled JSPEC2.SPI, star templates, GLXYTMPL.SP, NGC4889.SP and QSOSpect.dat itself and emits means, counts, totals, S/N, branch counts and the .SSP SHA-256. Derived from already-approved resources only; no new original bytes.",
+      "description": "Output of the independent Python witness analysis/front-m-multispec/tools/multispec_witness.py (SHA-256 f442e2f3f553e01d6898c84dfb13671907066a1ed934180f6788323fc63d391d) of the static reading of CLEA_VEO.exe (781bc970…c54c): Multi-Spec fibre spectra (TMSpecDsplyForm1 0x526fb4: 400-bin grid 0x526e6c, K = 50·t·1000/1, one Poisson draw 0x55f0f4 per bin, object then sky, product and rejection branches) for eleven fibres on the 0.4 m and 4 m at t = 60 s and fixed seeds: six in the Hubble Coma engine field (GLXYTMPL.SP galaxy, own-spectrum galaxy, star, star with a template not bundled, sky, bright star over the 10^6 mean bound) and five in two unnamed Object X fields (numeric inputs only: QSO and star V, z and spectral index). It reads the bundled JSPEC2.SPI, star templates, GLXYTMPL.SP, NGC4889.SP and QSOSpect.dat itself and emits means, counts, totals, S/N, branch counts and the .SSP SHA-256. Derived from already-approved resources only; no new original bytes; plus template-requirements.json (each approved jspect2 template with its SHA-256, JSPEC2.SPI index and the field packs whose stars require it).",
       "usedBy": "src/core/multiSpecSpectrum.test.ts (Front M, Multi-Spec)",
       "upstreamStatus": "Derived test evidence; a second implementation of the same reading, not an x87 or original-runtime oracle."
     }

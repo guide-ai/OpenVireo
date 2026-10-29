@@ -95,6 +95,16 @@ export function provenanceTotalIssues(manifest, provenance) {
   if (provenance?.totalBytes !== bytes) issues.push(`totalBytes ${provenance?.totalBytes} != ${bytes}`);
   const recorded = provenance?.extensions ?? {};
   for (const x of new Set([...Object.keys(ext), ...Object.keys(recorded)])) if (recorded[x] !== ext[x]) issues.push(`extensions ${x} ${recorded[x]} != ${ext[x] ?? 0}`);
+  // Each group's file count and byte sum must equal the manifest entries under its path prefix, and groups must cover every entry.
+  const groups = provenance?.groups ?? {}, covered = new Set();
+  for (const [prefix, group] of Object.entries(groups)) {
+    const mine = entries.filter(e => e.path.startsWith(prefix + '/'));
+    for (const e of mine) covered.add(e.path);
+    const sum = mine.reduce((total, e) => total + e.bytes, 0);
+    if (group?.files !== mine.length) issues.push(`groups ${prefix} files ${group?.files} != ${mine.length}`);
+    if (group?.bytes !== sum) issues.push(`groups ${prefix} bytes ${group?.bytes} != ${sum}`);
+  }
+  if (Object.keys(groups).length && covered.size !== entries.length) issues.push(`groups cover ${covered.size} of ${entries.length} entries`);
   return issues;
 }
 export async function resourceCheckCommand(root, args = [], output = console.log) {

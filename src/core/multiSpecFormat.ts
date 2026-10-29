@@ -21,7 +21,7 @@ import type {MultiSpecEntry} from './multiSpec';
 
 /** The options the texts read, at their compiled defaults [W: no options dialog]. */
 export type MultiSpecTextOptions=Readonly<{showObjectId?:boolean;showObjectMagnitude?:boolean;editMode?:boolean}>;
-/** Object X rule (plan §4): before the reveal the caller supplies the masked name ('ObjX-<ID>' within 0.25° of the target, else
+/** Object X rule (plan §4): before the reveal the caller supplies the masked name ('ObjX-<ID>' only for the fibre whose source is the record a click at the target's projected position selects, multiSpecTargetSource; else
  * 'Name hidden during Object X'); V and the Edit Mode lines are then suppressed regardless of the options. */
 export type MultiSpecMask=Readonly<{objectName:string}>;
 
