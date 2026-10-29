@@ -1,0 +1,157 @@
+**Load Spectrum for Measurement**
+To load a spectrum for measurement, select "File"->"Data"->"Load Saved
+Spectrum..." from the measuring tool menu, and select a spectrum file to
+be loaded.
+
+Related Topics:
+    "Save Spectrum for Analysis" on the spectrometer "Help" menu.
+
+**Measure Individual Spectral Features**
+You can measure the position and relative intensity of individual
+spectral features on a displayed spectrum.  Press and hold the left
+mouse button as you position the cross-hair cursor on the feature you
+wish to measure.  The position of the cursor is displayed in readouts at
+the bottom of the screen in converted form as wavelength and relative
+intensity.  When you release the mouse button a vertical line appears on
+the screen at the wavelength position, and a short horizontal line
+appears at the intensity level.  You can adjust the position of these
+lines using the numeric keypad arrow keys to improve your measurements
+before recording them. You can also move the lines to the next feature
+you wish to measure by pressing and holding an arrow key (see below).
+
+    -Keyboard Access-
+    The arrow keys on the numeric keypad (keys "2","4","6","8") may be
+    use to position the measuring lines in place of the mouse. NumLock
+    must be "On" and MouseKeys must be "Off".  (If you are using
+    MouseKeys, configure your system so that MouseKeys are activated
+    when the NumLock is "Off".)  If the measuring lines are not visible,
+    press the right arrow key ("6"), and the lines will appear from the
+    left of the display.
+
+See also;
+    Load Comparison Spectrum
+    Measure With Comparison Spectrum
+    Record Measurements
+
+**Load Comparison Spectrum**
+To load a comparison spectrum, select "Comparison Spectrum"->"Select"
+from the measuring tool menu, and pick a set of lines from the list that
+appears.  The comparison lines will appear on the display and the slider
+control will be enabled.  You may load as many sets of lines as you
+like.  All selected lines will be displayed until the comparison
+spectrum is cleared.
+
+See also;
+    Measure With Comparison Spectrum
+    Identify Comparison Lines
+    Clear Comparison Spectrum
+
+**Measure With Comparison Spectrum**
+You can measure the doppler shift of a spectrum against a comparison
+spectrum of many lines.  Simply load a comparison spectum (note that
+more than one set of lines may be loaded) and use the slider to move the
+comparison until a match is made the spectral lines of the object
+spectrum.  The Z value corresponding to the shift of the comparison
+spectrum is displayed below the slider.  Note the following:
+
+    1)  You may not get an exact fit on every line.  You will have to
+        make a judgement call as to the best overall fit.
+ 
+    2)  Your measurements will be more accurate if you zoom the
+        spectrum.  This may however make it impossible to see all the
+        lines at the same time.  (See Help topics listed below.)
+
+    3)  You may feel that it is more accurate to measure the lines
+        individually.  (See Help topic "Measure Individual Spectral
+        Features".)  You can use the comparison spectrum to identify the
+        lines, but you will have to record your results and compute an
+        average Z offline.  Whatever value appears in the Z read-out
+        will not be valid.
+
+See also;
+    Load Comparison Spectrum
+    Identify Comparison Lines
+    Clear Comparison Spectrum
+    Zoom/Scan Spectrum
+    Set Slider Sensitivity
+    Re-center the Slider
+    Record Measurements
+    Individual Spectral Features
+
+**Identify Comparison Lines**
+To identify a line in the comparison spectrum, place the mouse cursor
+near the line on the display and press the right mouse button.  The box
+that appears will show the line ID, the rest and shifted wavelengths,
+and the line source category.
+
+See also;
+    Load Comparison Spectrum
+    Measure With Comparison Spectrum
+
+**Clear Comparison Spectrum**
+To clear the comparison spectrum from the display, select "Comparison
+Spectrum"->"Clear" from the measuring tool menu.  All comparison lines
+will be removed from the display.
+
+**Record Measurements**
+To record the Z value that you have measured, select "File"->"Data"->
+"Record Measurements..."  If you have measured with the comparison
+spectrum slider, the Z value from the readout will already be entered on
+the form.  If you are measuring the lines idividually, the entered value
+will not be correct and you will have to replace it with your computed
+average value.
+
+When you press "OK" the information you entered is placed on a list, but
+is not saved to a file.  To review, print, and/or save your results to a
+file, select "Tools"->"Results Editors"-> "Observational Results"->
+"Display/Print/Save..." on the observatory control panel menu.
+
+See also;
+    Measure With Comparison Spectrum
+    Measure Individual Spectral Features
+    "Results Editors" on the observatory control panel "Help" menu.
+
+**Zoom/Scan Spectrum**
+To Zoom a spectrum you are measuring, press the "Zoom" button.  A box
+with sliders will appear that allows you to set the wavelength range
+displayed in the measuring window.  The sliders change the wavelengths
+in 100 Angstrom steps.  The "Reset" button returns the display to the
+original (full) wavelength range.
+
+When a display is zoomed, the scan arrow keys below the zoom button are
+enabled.  Use them to change the visible portion of the spectrum.  Like
+the sliders, they operate in 100 Angstrom steps.
+
+Zooming the spectrum allows a more accurate determination of Z, since
+the finer pixelization yields a smaller stepsize in the placement of the
+measuring line and/or comparison spectrum.  The downside when measuring
+with a comparison spectrum is that not all the lines may be visible at
+the same time to deterimine the best overall fit.
+
+Related Topics:
+    Measure With Comparison Spectrum
+    Measurem Individual Spectral Lines
+
+**Set Slider Sensitivity**
+The "Fine"/"Coarse" switch above the comparison spectrum slider controls
+the slider sensitivity.  Use the "Coarse" setting only when you need to
+move the comparison spectrum a long distance.
+
+Related Topics:
+    Re-center the Slider
+    Measure With Comparison Spectrum
+
+**Re-center the Slider**
+If you reach the end of the comparsion spectrum slider and need to move
+the comparison spectrum further, press the small button to the right of
+the Z read-out to re-center the slider.
+
+Related Topics:
+    Set Slider Sensitivity
+    Measure With Comparison Spectrum
+
+**Close Measurement Window**
+To close the measurement tool window and return to the observatory
+control panel, select "File"->"Exit Spectrum Measuring" on the menu, or
+press the "X" box in the upper right corner.
+

@@ -1,0 +1,259 @@
+**Load Spectrum**
+To load a spectrum for classification:
+
+    1)  Select "File"->"Unknown Spectra" from the classification window
+        menu.
+
+    2)  Make a selection from the sub-menu that appears:
+
+        "Saved Spectra (*.CSP...)"
+            Select from a list of spectra taken and saved for
+            classification as part of this exercise.  To select,
+            double-click on the file name or move the cursor to the file
+            name and press "Open".
+  
+        "Program List"
+            Select from a list of program stars for this execise.  You
+            will normally begin with the first star on the list.  To
+            select a star on the list, double-click on the star ID or
+            move the cursor to the desired star and select "File"->
+            "Open Selection" from the menu.
+
+        "Next On List"
+            Loads the next spectrum on the program list without
+            displaying the list.  ("Program List" must have been
+            selected previously.)
+
+The selected spectrum is loaded and displayed in the center of the
+spectrum display area.
+
+**Load Standard Spectra**
+To load standard spectra for comparison:
+
+    1)  Select "File"->"Atlas of Standard Spectra..." from the
+        classification window menu.
+
+    2)  Select an atlas from the list that appears.  You will normally
+        begin with the Main Sequence to establish a temperature class
+        before considering luminosity.  To select, double-click on the
+        atlas description or move the cursor to the desired atlas and
+        select "File"->"Open Selection" from the menu.
+
+    3)  The list of standards in the atlas will appear in the teal
+        "Standards" display on the right of the classification window.
+        Note that the highlighted spectrum is displayed above the
+        unknown in the display area, while the next atlas entry is
+        displayed below the unknown.
+
+    4)  Use the arrow keys or click on entries in the standards list to
+        peruse the atlas. Note the progressive changes to the spectra as
+        the stellar temperature changes.  Look for a spectrum in the
+        atlas that most closely matches the unknown.   You may have to
+        check luminosity (load another atlas) to get the closest match.
+
+**Measure/Mark Spectral Features**
+To measure the wavelength and intensity of a spectral feature:
+
+    With the cursor over the spectrum display, press and hold the left
+    mouse button - the cursor changes from an arrow to a crosshair.  As
+    you move the cursor within the spectrum display area, the wavelength
+    and relative intensity reading at the cursor are displayed at the
+    bottom of the window.  When you have positioned the cursor at the
+    point you wish to measure, release the mouse button. The readings
+    will remain unchanged until the left mouse button is pressed again.
+
+        NOTE:  If the spectrum is displayed as an intensity trace (see
+        Help topic "Configure Display"), it is the vertical postion (Y
+        coordinate) of the cursor that determines the intensity
+        measurement.  If the display is in "Photo" mode, the intensity
+        "under" the cursor (at the horizontal or X coordinate) is
+        displayed.
+
+    When you release the mouse button, the cursor returns to its normal
+    shape, and the measured position is marked on the screen by a
+    vertical red line spanning the unknown and standard spectra at the
+    wavelength position.  A small horizontal line indicates the
+    intensity position.  You can also mark a line by double-clicking its
+    entry in the spectral line table.  You can "fine tune" the position
+    of the lines by using the arrow keys on the numeric keypad (see
+    below).
+
+    -Keyboard Access-
+    The arrow keys on the numeric keypad (keys "2","4","6","8") may be
+    use to position the measuring lines in place of the mouse. NumLock
+    must be "On" and MouseKeys must be "Off".  (If you are using
+    MouseKeys, configure your system so that MouseKeys are activated
+    when the NumLock is "Off".)  If the measuring lines are not visible,
+    press the right arrow key ("6"), and the lines will appear from the
+    left of the display.
+
+Related Topics:
+    Spectral Line Table & Help
+    Configure Display
+
+**Controls**
+The following controls are located on the right-hand side of the
+classification window:
+
+    Zoom In (up arrowhead):
+        Magnifies the displayed spectra by a factor of 2, up to a
+        maximum of 16 times the original display.  If a feature is
+        marked, the zoom attempts to center it in the magnified display.
+        If no line is marked, the wavelength of the center of the
+        display remains the same.
+
+    Zoom Out (down arrowhead):
+        Decreases the magnification of the displayed spectra by a factor
+        of 2, down to the original magnification (1X).  If a line is
+        marked, the zoom attempts to keep it centered in the display.
+
+    Pan Arrows (left & right arrowheads):
+        Use the left and right arrow controls to scan across magnified
+        spectra.
+
+    "Reset" button:
+        Returns the display to the original (1X) images.
+
+**Spectral Line Table & Help**
+The spectral line table assists in the identification of spectral
+features by wavelength, and includes a help facility that provides
+information on the significance and use of each tabulated line in the
+classification of stellar spectra.
+
+To load the spectral line table, select "File"->"Spectral Line Table"
+from the classification menu.  Once the line table appears, you can move
+it to a convenient place on the screen.  (Place the cursor in the title
+bar at the top.  Press and hold the left mouse button, and drag the
+window.)
+
+Features of the spectral line table:
+
+    -Cursor Tracking-
+        When the left mouse button is depressed with the cursor anywhere
+        within the spectrum display, the entry having a wavelength
+        nearest to the cursor position is highlighted on the spectral
+        line table. The table will scroll to track the cursor when the
+        mouse is moved with the left button depressed.
+
+            CAUTION: Judgement must be used in accepting line
+            identifications from the table, since wavelength is the only
+            criteria - temperature, luminosity, etc. are not taken into
+            account.   For example, iron lines (Fe) do not appear in
+            early-type stars, helium lines (He) do not appear in
+            late-type stars, etc.
+
+    -Marking Line Position-
+        Clicking the left mouse button on an entry in the spectral line
+        table highlights the entry, and the position of the line is
+        marked on the spectrum display.
+
+    -Help-
+        When the left mouse button is double-clicked on an entry in the
+        spectral line table, the entry is highlighted and the line
+        marked as above, and a Help window will appear with information
+        about the selected line.  Once opened, the Help window will
+        continue to "track" the table selections (without
+        double-clicking) until the Help window is closed.
+
+Related Topics:
+    Measure/Mark Spectral Features
+
+**Configure Display**
+Options affecting the appearance and operation of the classification
+window are available through the "File"->"Display" menu selection.
+
+    "File"->"Display"
+        Sets the format of the spectrum display.  The following options
+        are available:
+
+        "Show Difference (Std - Unkn)"
+            When this option is selected, the lower standard spectrum is
+            replaced by a display showing the point by point difference
+            between the upper standard spectrum and the unknown.  This
+            is a very useful aid to spectral classification
+
+        "Intensity Trace"
+            Displays spectra as plots of relative intensity vs
+            wavelength (default).
+
+        "Grayscale "Photo""
+            Converts relative intensities to grayscale levels to mimic a
+            (positive) photographic image.
+
+        "Comb. (Photo & Trace)"
+            Displays the unknown in both modes.  One standard is
+            displayed as a "Photo".
+
+        "Reverse Grayscale Displays"
+            Reverses the conversion of intensities to grayscale levels
+            to mimic a negative photographic image.
+
+
+**Measure Equivalent Widths**
+The "equivalent width" of a spectral line is a computed quantity that
+accurately measures the strength of the line.  If you are attempting to
+classify a stellar spectrum very accurately, and are uncertain as to the
+relative strengths of important features, the equivalent width measure
+can help you.  To measure the equivalent width of a spectral feature:
+
+    1)  Zoom the display to a magnification that allows the "shoulders"
+        of the line to be clearly identified and marked.
+
+    2)  Select "Line Equivalent Width..." from the classification menu.
+        A box will appear with instructions for completing the
+        equivalent width calculation process (a summary of steps 3-5
+        below).
+
+    3)  Mark the approxmate center of the line on the spectrum display
+        by using the left mouse button on either the display itself or
+        on the line entry in the table.
+
+    4)  Mark the wavelength and intensity of both shoulders of the line
+        by clicking the right mouse button with the cursor at each
+        shoulder in turn.  The vertical position of the cursor should
+        indicate the continuum level on each side of the line. If you
+        have done this correctly the extents of the line will be
+        delineated by a blue box, with the red line position marker
+        passing somewhere near its center.  If you wish to change a
+        position, simply move the cursor to the new position and click
+        the right button again.  You may also reposition the line center
+        marker by clicking the left button.
+
+    5)  When the feature is correctly delineated, press "OK" on the
+        instruction box.  The computed equivalent width, as well as
+        wavelengths and intensities at the marked line center and
+        shoulders will be displayed.
+
+Related Topics:
+    Measure/Mark Spectral Features
+    Spectral Line Table & Help
+
+**Save, Review, Analyze Results**
+When you have classified a spectrum to your satisfaction, select
+"Classification Results" from the menu and record your classification in
+the box labeled "Sp. Type" on the form that appears.  You may also
+record any uncertainties or unusual features of the spectrum in the
+"Remarks" box.  When you press "OK" the information you entered is
+placed on a list, but is not saved to a file.  To review, print, and/or
+save your results to a file, select "Tools"->"Results Editors"->
+"Observational Results"->"Display/Print/Save" on the observatory
+control panel menu.
+
+Related Topics:
+    "Results Editors" on the observatory control panel "Help" menu.
+
+**Set Wavelength Range**
+You can change the range of wavelengths visible in the classification
+window, within the maximum range of 3500 to 7400 Angstroms.  To change
+the wavelength range, select "File"->"Display"->"Spectral Range" from
+the classification control panel menu.  Use the sliders to change the
+minimum and/or maximum values.  The "Default" button returns the values
+to the optimal range for spectral classification.  Note that if you
+extend the range, you may exceed the limits of the spectrum you are
+classifying.
+
+**Close Classification Window**
+To close the classification window and return to the observatory control
+panel, select "File"->"Exit Classify Spectra" on the menu, or press the
+"X" box in the upper right corner.
+

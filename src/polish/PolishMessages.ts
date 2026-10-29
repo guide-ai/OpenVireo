@@ -4,12 +4,6 @@ import type {BundledHotListFailure} from '../io/bundledHotList';
 
 const FILE_REASONS:Readonly<Record<BundledHotListFailure,string>>=Object.freeze({download:'could not be downloaded',size:'does not have its recorded size',sha256:'does not match its recorded SHA-256'});
 
-/** TAboutBox DFM captions (CLEA_VEO.exe 781bc970…c54c, resource TABOUTBOX) [D]. */
-export const ABOUT_BOX=Object.freeze({
- caption:'About This Exercise',productName:'Contemporary Laboratory Experiences in Astronomy',exercise:'VIREO - The VIRtual Educational Observatory',
- version:'Version 0.5',copyright:'Copyright © 1999-2011 CLEA',comments:'All Rights Reserved',
-});
-
 /** TObsrvtry File item (OB-SR-03, PrintSkyImage1Click 0x53f934) [D]. */
 export const PRINT_SKY_LITERALS=Object.freeze({menu:'&Print Sky Image...',caption:'VIREO Optical Telescope Control Panel'});
 

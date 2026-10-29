@@ -1,7 +1,7 @@
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {describe,expect,it} from 'vitest';
-import {VSTRS_FILE_BYTES,VariableStarError,decodeExtended,decodeVariableStarCatalog,decodeVariableStarRecord,delphiFixed,exactFromNumber,floatToStrFFixed,formatNativeSexagesimal,parseVariableTypeHelp,searchVariableStars,variableStarDataLines,variableStarSaveFileName,variableStarSaveText,variableStarTypes} from './variableStars';
+import {VSTRS_FILE_BYTES,VariableStarError,decodeExtended,decodeVariableStarCatalog,decodeVariableStarRecord,delphiFixed,exactFromNumber,floatToStrFFixed,formatNativeSexagesimal,searchVariableStars,variableStarDataLines,variableStarSaveFileName,variableStarSaveText,variableStarTypes} from './variableStars';
 import {LIGHT_CURVE_BOX,LightCurveError,cepheidMagnitude,cepheidModel,lightCurveBounds,lightCurvePlot} from './lightCurve';
 import witness from './variableStars.controls.json';
 import manifest from '../../docs/LOCAL-RESOURCES.json';
@@ -160,12 +160,6 @@ describe('Save Text and help',()=>{
   expect(text.split('\r\n')).toEqual([...variableStarDataLines(r),'']);
   expect(bytes.includes(0xb0)).toBe(true);
   expect(variableStarSaveFileName(r)).toBe('del_Cep.TXT');
- });
- it('splits VarTypeHlp.TXT at its own headings',()=>{
-  const s=parseVariableTypeHelp(HELP);
-  expect(s.map(x=>x.title)).toEqual(['Pulsating Variable Types','Rotating Variable Types','Eruptive Variable Types','Explosive/Cataclysmic Variable Types','Eclipsing Variable Types']);
-  expect(s[0].lines).toHaveLength(12);expect(s[0].lines[0]).toBe('DCEP/CEP    Classical Cepheids + those of uncertain type');
-  expect(s.slice(1).every(x=>x.lines.length===0)).toBe(true);
  });
  it('filters the catalog by name and type (web browsing)',()=>{
   expect(searchVariableStars(catalog,{name:'del  CEP',type:null}).rows.map(r=>r.name)).toEqual(['del Cep']);

@@ -5,6 +5,8 @@ import {VARIABLE_STARS_MENU as VM,QSO_LIST_MENU,HST_ARCHIVE} from '../core/obser
 import {FIELD_INFO_MESSAGES as M} from './FieldInfoMessages';
 import {QSO_LIST_MESSAGES as Q} from './QsoListMessages';
 import './field-info.css';
+import {ExitObservatoryDialog} from '../help/HelpMenus';
+import {MAIN_HELP_MENU} from '../help/mainHelp';
 import PrintSkyImage from '../polish/PrintSkyImage';
 import {PRINT_SKY_LITERALS} from '../polish/PolishMessages';
 import type {Pointing} from '../core/sky';
@@ -20,13 +22,15 @@ export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
  *   (Front P): a web print of the sky view [W].
  * - Tools › HST Image Archive...: the archive page as an external link, opened in a new tab only on click (user decision of
  *   2026-10-28, AGENTS.md; docs/QSO-LIST-HST.md).
+ * - File › Exit Observatory shows VIREO's reminder (Reminder.obs; Front H, docs/CLEA-HELP.md). The main window's Help menu
+ *   is in the app header, so that every route reaches it.
  * The windows live in their own lazy components; this menu only sends open requests. Disabled only while a project is busy. */
 export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,onClusterData,pointing,view}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
  /** Front K: File › Cluster Data... (TEnvironment1 ClusterData1). */
  onClusterData?:()=>void;
  /** Front P: the current pointing and view for the Print Sky Image header. */
  pointing?:Pointing;view?:'finder'|'instrument'}){
- const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null),[printSky,setPrintSky]=useState(false);
+ const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null),[printSky,setPrintSky]=useState(false),[exiting,setExiting]=useState(false);
  const fileTrigger=useRef<HTMLButtonElement>(null),toolsTrigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>{if(!editMode)setMenu(m=>m==='field'||m==='variables'?'file':m);},[editMode]);
  useEffect(()=>{if(disabled){setMenu(null);setPrintSky(false);}},[disabled]);
@@ -50,6 +54,7 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
     {/* TEnvironment1 File order: Print Sky Image, Cluster Data (ClusterData1 sits directly before QSOList1), QSO List. */}
     {onClusterData&&<button type="button" data-testid="cluster-data-menu" onClick={()=>pick(onClusterData)}>{menuCaptionText(CLUSTER_DATA_MENU)}</button>}
     {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{menuCaptionText(QSO_LIST_MENU)}</button>}
+    <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{menuCaptionText(MAIN_HELP_MENU.exit)}</button>
    </div>}
   </div>
   {printSky&&<PrintSkyImage pointing={pointing} view={view} onClose={()=>{setPrintSky(false);fileTrigger.current?.focus();}}/>}
@@ -60,6 +65,7 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
     <p className="fi-note fi-menu-note" data-testid="hst-note">{Q.hst.note}</p>
    </div>}
   </div>
+  {exiting&&<ExitObservatoryDialog onClose={()=>{setExiting(false);requestAnimationFrame(()=>fileTrigger.current?.focus());}}/>}
  </div>;
 }
 

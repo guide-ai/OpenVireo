@@ -102,13 +102,17 @@ test('Save Text › As Displayed downloads the list lines with CRLF',async({page
  await expect(page.getByTestId('vstar-notice')).toHaveText('Report Text Written to RR_Lyr.TXT.');
 });
 
-test('Help shows the VarTypeHlp.TXT sections and Print opens a preview',async({page})=>{
+test('Help opens VarTypeHlp.LST in VIREO\'s help viewer and Print opens a preview',async({page})=>{
  await openRoute(page);
  await openRecord(page,'del Cep');
- await page.getByTestId('vstar-help').click();
- const help=page.getByTestId('vstar-help-panel');
- await expect(help.getByRole('heading',{level:4})).toHaveText(['Pulsating Variable Types','Rotating Variable Types','Eruptive Variable Types','Explosive/Cataclysmic Variable Types','Eclipsing Variable Types']);
- await expect(help).toContainText('DCEP/CEP    Classical Cepheids');
+ await page.getByTestId('vstar-help-open').click();
+ const topics=page.getByTestId('vstar-help-topic-list').getByRole('option');
+ await expect(topics).toHaveText(['-Variable Star Types-','  Pulsating Variable Types','  Rotating Variable Types','  Eruptive Variable Types','  Explosive/Cataclysmic Variable Types','  Eclipsing Variable Types',' ']);
+ await topics.nth(1).dblclick();
+ const w=page.getByTestId('vstar-help-window');
+ await expect(w.getByRole('heading',{name:'Help - Pulsating Variable Types'})).toBeVisible();
+ await expect(w.getByTestId('vstar-help-topic-text')).toContainText('DCEP/CEP    Classical Cepheids');
+ await w.getByTestId('vstar-help-topic-menu').click();await w.getByTestId('vstar-help-close-topic').click();
  await page.getByTestId('vstar-data-menu').click();await page.getByTestId('vstar-display-curve').click();
  await page.getByTestId('curve-file-menu').click();await page.getByTestId('curve-print').click();
  const preview=page.getByTestId('variable-print-preview');

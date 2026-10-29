@@ -1,0 +1,105 @@
+**Set Exposure**
+To set the camera exposure:
+
+    1)  Enter a value (may be either integer or decimal) in the
+        "Exposure" box.
+
+    2)  Set the slider switch to "Seconds" or "Minutes", as required.
+
+Related Topics:
+    Take Exposure
+
+**Set Filter**
+Use the filter slider switch to set the camera filter.  The position
+labeled "NF" means "no filter".
+
+    NOTE: Due to constraints on the size of the data file, only the "J"
+    filter is available on the infrared (IR) camera.  The slider will
+    not move to the "H" and "K" positions.
+
+Related Topics:
+    Take Exposure
+
+**Set Gain**
+The "gain" is the number of photon "hits" (electrons) on a CCD pixel
+required to register as 1 unit in the recorded image.  You can set the
+gain using the slider switch labeled "Gain".  Normally, you can leave
+the gain at 1 unless told otherwise by your instructor.
+
+Related Topics:
+    Take Exposure
+
+**Take Exposure**
+To take an exposure using the CCD and IR cameras:
+
+    1)  Set the exposure time.  An exposure time of 1-2 minutes should
+        be adequate for most activities.
+
+    2)  Set the filter.  Unless specifically directed otherwise, use the
+        "NF" (no filter) setting for CCD images, and the "J" filter for
+        IR images.
+
+    3)  Leave the gain setting at 1, unless directed otherwise.
+
+    4)  Press the "Start" button.  The camera will go through an
+        initialization and then open the shutter to begin the exposure.
+        The "Camera Status" and "Exposure Timer" displays will monitor
+        the progress of the exposure.  When the indicated exposure time
+        is reached, the shutter will close and the image you have just
+        taken will appear in the display.  (You don't need to use the
+        "Stop" button unless you want to abort the exposure because you
+        made a mistake - such as setting a 90 minute exposure when you
+        meant 90 seconds.)
+
+    5)  If the image is satisfactory (field and exposure are correct),
+        save it for analysis.
+
+Related Topics:
+    Set Exposure
+    Set Filter
+    Set Gain
+    Image Display
+    Save Image
+
+**Save Image**
+To save an image you have just taken, select "File"->"Save Image" from
+the camera control panel menu.  The system will create a file name,
+usually based on the ID of the object nearest to the center of the
+field.  You may want to change this to something related to the exercise
+you are doing or otherwise more meaningful to you.  The images are saved
+in FITS format (default file extension ".FIT").
+
+    NOTE: If you close the camera control window or begin a new exposure
+    without saving the previous image, it will be lost.  You will be
+    warned about this if you attempt it.
+
+Related Topics:
+    Analyze Images
+
+**Analyze Images**
+VIREO modules available for viewing and analysis of CCD images include
+the astrometry module and the image processing (DS9) module.  After
+taking and saving all required images, Select "Tools"->(module) from the
+obervatory control panel menu, and load the images.  The analysis module
+should access the correct directory - remember that the file extension
+is ".FIT".
+
+Related Topics:
+    Topics under "Tools" on the observatory control panel "Help" menu.
+
+**Camera Parameters**
+To access information and parameters for the CCD detector you are using,
+select "File"->"Information..." from the camera control panel menu.
+
+**Image Display**
+
+**Close CCD Camera**
+To close the CCD camera control panel and return to the telescope
+control panel, select "File"->"Exit CCD Camera" from the menu, or use
+the "X" box in the upper right corner.  If you have not saved the last
+image you took you will be warned and given a chance to save it.  If you
+close the camera without saving the image it will be lost.
+
+Related Topics:
+    Save Image
+

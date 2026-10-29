@@ -1,0 +1,96 @@
+**Plotting Data**
+The LSS wedge plot tool displays the redshift data in the form of a
+two-dimensional "wedge diagram".   As you record data from the spectrum
+measuring tool. the points will appear automatically on the wedge
+diagram.  You may also be able to have data measured by others in your
+group displayed automatically on your wedge plot.
+
+Related Topics:
+    Load Data
+    Print the Wedge Plot
+    Topics under "Wedge Plot Options"
+    Topics under "Auto Plot"
+
+**Load Data**
+Previously saved LSS redshift data can be loaded and displayed on the
+wedge diagram.  Select "Tools"->"Results Editors"->"Observational
+Results"->"Load Saved Data" on the main menu (not the wedge plot tool
+menu).  The loaded data will then appear on the wedge plot diagram.
+
+NOTE:
+    1) Data to be loaded for plotting in the LSS exercise must have been
+    saved from the LSS exercise.  Data from other VIREO exercises is not
+    compatible.
+
+    2) Wedge plot data from the previous (old) CLEA LSS exercise is not
+    compatible with the VIREO version.
+
+**Print the Wedge Plot**
+To print the wedge plot, select "File"->"Print Wedge Plot..." from the
+menu.  The plot will normally print in black & white.  You will see the
+display switch to black & white, then back again to color after the
+print image has been captured.
+
+**Set Grid Type**
+You can set the grid display on the wedge plot to show the velocity, the
+redshift "Z" parameter, or no grid.  To set the grid type, select "File"
+->"Options..." from the wedge plot menu and make a selection in the
+"Grid Type" box.
+
+**Set Point Size**
+To change the size of the plotted points on the LSS wedge plot, select
+"File"->"Options..." from the wedge plot menu and select a size in the
+"Plotted Points" box.
+
+Related Topics:
+    Set Point Style
+
+**Set Point Style**
+The points plotted on the LSS wedge plot may be open or filled circles.
+To change the style, select "File"->"Options" from the wedge plot menu
+and select a style in the "Plotted Points" box.
+
+Related Topics:
+    Set Point Size
+
+**Turn Auto Plot On/Off**
+In order to use the LSS auto plot feature, your instructor must create a
+group file on a shared device that is (read/write) accessible to you and
+others in your group.  You will then need to identify the path and file
+in your program, and set the update interval.  (See the related Help
+topics.)  To turn the auto plot feature On/Off, select "File"->
+"Options..." from the wedge plot menu and select the box labeled "Auto
+Plot On".
+
+Related Topics:
+    Set Auto Plot File Name/Path
+    Set Auto Plot Update Interval
+
+**Set Auto Plot File Name/Path**
+To set the auto plot file name and path, select "File"->"Options..."
+from the wedge plot menu.  Be sure the box labeled "Auto Plot On" is
+checked.  You can then enter the group plot file path and group plot
+file name in the appropriate boxes.  (The required path and file name
+must be provded to you by your instructor.)  You can also use the
+"Browse..." button to set the path.
+
+Related Topics:
+    Turn Auto Plot On/Off
+    Set Auto Plot Update Interval
+
+**Set Auto Plot Update Interval**
+To set the auto plot update interval, select "File"->"Options..." from
+the wedge plot menu.  Be sure the box labeled "Auto Plot On" is checked.
+You can then enter an update interval in minutes in the appropriate box.
+
+Each time the update interval is reached, your program will access the
+group plot file.  Any new data that you have measured will be copied to
+the group file, and any new data sent to the group file by others will
+be copied to your program and displayed on your wedge plot.  The colors
+of the plotted points will indicate which points you have measured and
+which have been measured by others in your group.
+
+Related Topics:
+    Turn Auto Plot On/Off
+    Set Auto Plot File Name/Path
+

@@ -22,7 +22,7 @@ test('About shows the TAboutBox captions, current status and credits',async({pag
  await page.goto('/#observatory');await page.getByRole('button',{name:'What works in this version ↗'}).click();
  const about=id(page,'about-dialog');await expect(about).toBeVisible();
  const native=id(page,'about-native');
- for(const text of['About This Exercise','Contemporary Laboratory Experiences in Astronomy','VIREO - The VIRtual Educational Observatory','Version 0.5','Copyright © 1999-2011 CLEA','All Rights Reserved'])await expect(native).toContainText(text);
+ for(const text of['About This Exercise','Contemporary Laboratory Experiences in Astronomy','VIREO - The VIRtual Educational Observatory','Version 1.504','Copyright © 1999-2011 CLEA','All Rights Reserved'])await expect(native).toContainText(text);
  await expect(about).not.toContainText('three-galaxy');await expect(about).not.toContainText('Redistribution permissions are pending');
  await expect(id(page,'about-works')).toContainText('13 galaxies');await expect(id(page,'about-credits')).toContainText('Gettysburg College');await expect(id(page,'about-credits')).toContainText('ATNF Pulsar Catalogue');
  await page.keyboard.press('Escape');await expect(about).toBeHidden();
