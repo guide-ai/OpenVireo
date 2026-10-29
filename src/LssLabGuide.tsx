@@ -1,4 +1,5 @@
-import type {RefObject} from 'react';
+import {memo,type RefObject} from 'react';
+import {sameData} from './renderStability';
 import {t} from './i18n';
 import {LSS_LAB_REPEAT_RECORDS,LSS_LAB_STEPS,type LssLabProgress,type LssLabStep} from './core/lssLab';
 import './hubble-lab.css';
@@ -6,7 +7,7 @@ export type LssLabDestination='lss-survey'|'lss-wedge';
 const STEP_DESTINATION:Readonly<Record<LssLabStep,LssLabDestination|null>>={load:'lss-survey',observe:'lss-survey',record:'lss-survey',repeat:'lss-survey',wedge:'lss-wedge',describe:'lss-survey',save:null};
 /** E02 guide (HubbleLabGuide layout). Check marks are recomputed from the current survey by lssLabProgress; nothing is stored,
  * and no redshift is judged. */
-export default function LssLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:LssLabProgress;onNavigate:(destination:LssLabDestination)=>void}){
+function LssLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:LssLabProgress;onNavigate:(destination:LssLabDestination)=>void}){
  function go(destination:LssLabDestination){dialogRef.current?.close();onNavigate(destination);}
  const s=progress.summary,done=LSS_LAB_STEPS.filter(step=>progress.done[step]).length;
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="lss-lab-heading" aria-describedby="lss-lab-intro" data-testid="lss-lab">
@@ -18,3 +19,5 @@ export default function LssLabGuide({dialogRef,progress,onNavigate}:{dialogRef:R
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('lssLab.return')}</button>
  </dialog>;
 }
+// Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
+export default memo(LssLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));

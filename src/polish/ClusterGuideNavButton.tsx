@@ -1,3 +1,4 @@
+import {memo} from 'react';
 import {POLISH_MESSAGES as PM} from './PolishMessages';
 
 /** The guide's own button inside the cluster database, once it is shown. */
@@ -6,7 +7,7 @@ let pending:(()=>void)|null=null;
 /** Header › Exercise guides › Cluster HR guide (Front P): the E05 guide lives inside the lazily loaded cluster database
  * (ClusterLabGuide in #cluster-database). This goes there and opens the guide as soon as the database has loaded, however
  * long that takes; leaving the route (or a newer click) cancels the wait. */
-export default function ClusterGuideNavButton({navigate}:{navigate:(route:'cluster-database')=>void}){
+function ClusterGuideNavButton({navigate}:{navigate:(route:'cluster-database')=>void}){
  function open(){
   pending?.();navigate('cluster-database');
   const now=guideButton();if(now){now.click();return;}
@@ -18,3 +19,5 @@ export default function ClusterGuideNavButton({navigate}:{navigate:(route:'clust
  }
  return <button data-testid="cluster-lab-nav" onClick={open}>{PM.clusterGuide.nav}</button>;
 }
+// Front Perf: no state of its own depends on the shell; re-render only when its props change.
+export default memo(ClusterGuideNavButton);

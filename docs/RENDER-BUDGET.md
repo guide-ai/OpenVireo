@@ -15,18 +15,18 @@ load, so they are never asserted.
 ## Scenarios and budgets
 | Scenario | What happens | Count | Budget |
 |---|---|---|---|
-| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 366 | 380 |
-| classificationKey | one keystroke in "Proposed spectral type" | 85 | 90 |
-| classificationFill | `fill` of that field | 85 | 90 |
-| classificationToSpectrum | header click from classification to the spectrum analyzer | 85 | 90 |
+| classificationLoad | open `#classification` cold, until the type field shows and commits stop | 334 | 350 |
+| classificationKey | one keystroke in "Proposed spectral type" | 75 | 80 |
+| classificationFill | `fill` of that field | 75 | 80 |
+| classificationToSpectrum | header click from classification to the spectrum analyzer | 75 | 80 |
 | analyzerKey | one keystroke in the analyzer's "Object or reference" | 7 | 12 |
-| observatoryLoad | open `#observatory` cold, until its heading shows | 116 | 125 |
-| openDome | click "Open dome ↗" | 63 | 70 |
+| observatoryLoad | open `#observatory` cold, until its heading shows | 112 | 118 |
+| openDome | click "Open dome ↗" | 53 | 58 |
 
 Counts are as of the commit that set them; the Front Perf commits lower them step by step and update this table.
 
 ## Changing a budget
-- `OPENVIREO_RENDER_REPORT=1 npx playwright test tests/render-budget.spec.ts` prints each scenario's count, commit count and
+- `OPENVIREO_RENDER_REPORT=1 npx playwright test tests/render-budget.spec.ts` (or `=all` for every component) prints each scenario's count, commit count and
   the components that rendered most.
 - **A count went down** (an optimisation): lower the budget to the new count plus a small headroom (about 5 %, at least 5).
 - **A count went up**: first check the printed components. If a hidden route, closed dialog or unrelated window now

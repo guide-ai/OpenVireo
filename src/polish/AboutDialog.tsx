@@ -1,4 +1,4 @@
-import type {RefObject} from 'react';
+import {memo,type RefObject} from 'react';
 import {t} from '../i18n';
 import {POLISH_MESSAGES as PM} from './PolishMessages';
 import {ABOUT_BOX} from '../help/mainHelp';
@@ -9,7 +9,7 @@ import './polish.css';
  * (src/help/HelpMenus.tsx AboutBoxPanel; texts in src/help/mainHelp.ts) with the Version label 0x58982c sets at run time,
  * "Version 1.504" (the DFM's design-time "Version 0.5" is never shown), then the web section [W]: what this site is, what works, credits and licence basis. ProgramIcon (CLEA logo) is not an
  * approved resource and is omitted. Opened by the observatory's "What works in this version" button. */
-export default function AboutDialog({dialogRef}:{dialogRef:RefObject<HTMLDialogElement|null>}){
+function AboutDialog({dialogRef}:{dialogRef:RefObject<HTMLDialogElement|null>}){
  const A=ABOUT_BOX,W=PM.about;
  return <dialog ref={dialogRef} className="about-dialog" aria-labelledby="scope-heading" data-testid="about-dialog">
   <button className="dialog-close" aria-label={t('app.close')} onClick={()=>dialogRef.current?.close()}>×</button>
@@ -31,3 +31,5 @@ export default function AboutDialog({dialogRef}:{dialogRef:RefObject<HTMLDialogE
   </section>
  </dialog>;
 }
+// Front Perf: no state of its own depends on the shell; re-render only when its props change.
+export default memo(AboutDialog);

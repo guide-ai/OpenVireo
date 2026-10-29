@@ -1,3 +1,4 @@
+import {memo} from 'react';
 import {RESULTS_EDITORS_LITERALS as R,POLISH_MESSAGES as PM} from './PolishMessages';
 import {menuCaptionText} from '../core/radioControl';
 
@@ -12,7 +13,7 @@ function reveal(selector:string){
 /** Tools › Results Editors (TEnvironment1 DFM ResultsEditors1 [D]) as header aliases [W]: Observational Results opens the
  * analyzer's own observational results (Save Data, Display/Print/Save Text, Load Saved Data live there); Pulsar Results
  * opens the pulsar analysis' saved measurements (Review, Save, Clear). The editors themselves are unchanged. */
-export default function ResultsEditorsNav({navigate}:{navigate:(route:ResultsRoute)=>void}){
+function ResultsEditorsNav({navigate}:{navigate:(route:ResultsRoute)=>void}){
  const go=(route:ResultsRoute,selector:string)=>{navigate(route);reveal(selector);};
  return <div className="nav-group" role="group" aria-labelledby="nav-group-results" title={PM.results.help}>
   <span className="nav-group-label" id="nav-group-results">{menuCaptionText(R.resultsEditors)}</span>
@@ -23,3 +24,5 @@ export default function ResultsEditorsNav({navigate}:{navigate:(route:ResultsRou
   </div>
  </div>;
 }
+// Front Perf: no state of its own depends on the shell; re-render only when its props change.
+export default memo(ResultsEditorsNav);

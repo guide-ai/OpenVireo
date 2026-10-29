@@ -6,19 +6,19 @@ import {installRenderProbe,rendersOf,type RenderTally} from './fixtures/render-p
 
 // Measured count → budget (count plus headroom). Keep in step with docs/RENDER-BUDGET.md.
 const BUDGET={
- classificationLoad:380,
- classificationKey:90,
- classificationFill:90,
- classificationToSpectrum:90,
+ classificationLoad:350,
+ classificationKey:80,
+ classificationFill:80,
+ classificationToSpectrum:80,
  analyzerKey:12,
- observatoryLoad:125,
- openDome:70,
+ observatoryLoad:118,
+ openDome:58,
 } as const;
 type Scenario=keyof typeof BUDGET;
 
 function check(name:Scenario,t:RenderTally){
  if(process.env.OPENVIREO_RENDER_REPORT)console.log(`${name}: ${t.components} components in ${t.commits} commits (budget ${BUDGET[name]}); top ${
-  Object.entries(t.byName).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([k,v])=>`${k}×${v}`).join(', ')}`);
+  Object.entries(t.byName).sort((a,b)=>b[1]-a[1]).slice(0,process.env.OPENVIREO_RENDER_REPORT==='all'?undefined:12).map(([k,v])=>`${k}×${v}`).join(', ')}`);
  expect(t.components,`${name} renders ${t.components} components; budget ${BUDGET[name]} (docs/RENDER-BUDGET.md)`).toBeLessThanOrEqual(BUDGET[name]);
 }
 const typeField=(page:Page)=>page.getByLabel('Proposed spectral type',{exact:true});
