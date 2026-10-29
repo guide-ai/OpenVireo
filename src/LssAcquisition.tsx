@@ -6,6 +6,7 @@ import {JournalError,MAX_JOURNAL_EVENTS,type JournalEvent,type JournalState} fro
 import type {FieldResult} from './core/fieldEngine';
 import type {LssRow} from './core/lssFields';
 import type {RgbImage} from './core/photons';
+import {LssSpectrumSave} from './observatory/RouteSpectrumSave';
 const FORMAT='OpenVireo LSS field exposure';
 /** Exposure session file: policy, seed and event journal only; counts are always replayed, never imported. */
 function engineFor(result:FieldResult,row:LssRow,policy:string):ExposureEngine{
@@ -46,5 +47,6 @@ export default function LssAcquisition({active,result,row,policy,onCounts}:{acti
    </div></div>
   <svg className="source-spectrum" viewBox="0 0 1000 290" role="img" aria-label={t('lss.exposure.chart')}><line x1="55" x2="945" y1="235" y2="235"/><line x1="55" x2="55" y1="45" y2="235"/>{e&&<polyline points={points} fill="none"/>}</svg>
   {notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}
+  <LssSpectrumSave state={state} result={result} row={row} active={active} busy={busy}/>
  </section>;
 }

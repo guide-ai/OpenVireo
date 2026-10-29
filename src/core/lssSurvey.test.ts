@@ -1,14 +1,25 @@
 import {describe,it,expect} from 'vitest';
+import {repositoryLssSpectrumInputs} from '../io/lssSpectrumInputs.node';
 import {readFileSync} from 'node:fs';
 import field36773 from '../../data/hubble/pinned-galaxy-field.json';
-import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,LssSurveyError,LSS_LIMITS} from './lssSurvey';
+import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssDialog,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,LssSurveyError,LSS_LIMITS} from './lssSurvey';
 import {hubbleVelocity} from './hubbleVelocity';
 import {evaluateLssRow,lssExposureEngine,lssPolicy,parseLssPolicy,lssCountsCsv} from './lssExposure';
 import {fieldPackFromSnapshot} from './fieldPack';
-import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy} from './galaxyExposure';
+import {createGalaxyExposure,activateGalaxy,startGalaxy,tickGalaxy,pauseGalaxy} from './galaxyExposure';
+import {galaxySpectrumBytes,lssSpectrumBytes} from './exposureSpectrum';
 import {EMPTY_WEDGE_WORKSPACE,appendOwnLssRecords,completeWedgeRead,beginWedgeRead,addWedgePending,removeOwnLssRecords,WEDGE_OWN_RECORDS_NAME} from './wedgeWorkspace';
 import {wedgePlot,WEDGE_DEFAULT_OPTIONS} from './wedgePlot';
 import {LSS_ROWS,type LssRow} from './lssFields';
+import {lssDialogZ} from './lssRedshiftDialog';
+import type {LssSurveyState} from './lssSurvey';
+/** Front L2: OK with the velocity typed as c·z of the stored (re-quantised) z, as a student following the guide would. */
+function confirmLssRecord(s:LssSurveyState):LssSurveyState{
+ if(!s.draft)return (confirmLssDialog(s) as never);
+ const r=confirmLssDialog(editLssDraft(s,{velocity:String(299792.458*lssDialogZ(s.draft.z))}));
+ if(!r.ok)throw new Error(r.message);return r.state;
+}
+
 const glx=new Uint8Array(readFileSync(new URL('../../public/original/catalogs/CLEA_GLX.DAT',import.meta.url)));
 const code=(f:()=>unknown)=>{try{f();return 'ok';}catch(e){return e instanceof LssSurveyError?e.code:'other';}};
 const draft={field:2 as const,row:4,telescope:0 as const,object:'NGC 4555',jd:2451545,ra:12.594,dec:26.523,z:.0224,acquisitionPolicy:'openvireo-lss-v1:F2:R5:T0',journal:{seedAtReset:1,events:[]},control:{base:.0224,position:0,factor:1 as const,step:.001}};
@@ -92,15 +103,17 @@ describe('E02 survey records (Record Z LSS branch, web adaptation)',()=>{
 describe('LSS row evaluation and exposure',()=>{
  // A verified existing field stands in for an LSS pack here; LSS packs are exercised by their own suite.
  const pack=fieldPackFromSnapshot('s',field36773 as Parameters<typeof fieldPackFromSnapshot>[1]);
+ // No GLXYSP name and no own spectrum: the 36773 field has no QSO in its area, so the merge leaves it unchanged.
+ const noOwn={...repositoryLssSpectrumInputs(),names:new Set<string>(),ownSpectra:new Map()};
  const row:LssRow={field:1,index:0,id:'36773',remarks:'',ra:field36773.domain.pointing.ra,dec:field36773.domain.pointing.dec,recordSha256:'0'.repeat(64),catalogIndex:12119,exact:true,near:[]};
  it('reports available when the slit selects the row galaxy, neighbour otherwise, and unavailable outside the pack',()=>{
-  expect(evaluateLssRow(pack,glx,row,0,new Set()).kind).toBe('available');
-  const other=evaluateLssRow(pack,glx,{...row,catalogIndex:1},0,new Set());expect(other.kind).toBe('neighbour');
-  expect(evaluateLssRow(pack,glx,{...row,ra:row.ra+.01},0,new Set())).toMatchObject({kind:'unavailable',reasons:['outside-pack']});
-  expect(evaluateLssRow(pack,glx,row,0,new Set(['36773.SP']))).toMatchObject({kind:'unavailable',reasons:['spectrum-mapping']});
+  expect(evaluateLssRow(pack,glx,row,0,noOwn).kind).toBe('available');
+  const other=evaluateLssRow(pack,glx,{...row,catalogIndex:1},0,noOwn);expect(other.kind).toBe('neighbour');
+  expect(evaluateLssRow(pack,glx,{...row,ra:row.ra+.01},0,noOwn)).toMatchObject({kind:'unavailable',reasons:['outside-pack']});
+  expect(evaluateLssRow(pack,glx,row,0,{...noOwn,names:new Set(['36773.SP'])})).toMatchObject({kind:'unavailable',reasons:['spectrum-mapping']});
  });
  it('runs the same journal draws as the verified galaxy exposure and checks its policy',()=>{
-  const st=evaluateLssRow(pack,glx,row,0,new Set());if(st.kind==='unavailable')throw Error();
+  const st=evaluateLssRow(pack,glx,row,0,noOwn);if(st.kind==='unavailable')throw Error();
   const policy=lssPolicy(1,0,0),e=lssExposureEngine(st.result,policy);
   const run=(s:ReturnType<typeof e.create>)=>e.tick(e.start(e.activate(s)),700).exposure.counts;
   expect(run(e.create(7))).toEqual(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(7,'36773',0))),700).exposure.counts);
@@ -108,6 +121,9 @@ describe('LSS row evaluation and exposure',()=>{
   const paused=e.pause(e.tick(e.start(e.activate(e.create(7))),500));
   expect(e.replay(7,paused.events).exposure.counts).toEqual(paused.exposure.counts);
   expect(lssCountsCsv(paused,st.result,row).split('\r\n')).toHaveLength(602);
+  // Front L2: the LSS .SSP is the recovered writer on the same counts; on this stand-in field it equals the galaxy route's file.
+  const g=pauseGalaxy(tickGalaxy(startGalaxy(activateGalaxy(createGalaxyExposure(7,'36773',0))),500));
+  expect(new TextDecoder().decode(lssSpectrumBytes(paused,st.result,row))).toBe(new TextDecoder().decode(galaxySpectrumBytes(g)));
   expect(parseLssPolicy(policy)).toEqual({field:1,row:0,telescope:0});expect(()=>parseLssPolicy('openvireo-lss-v1:F1:R99:T0')).toThrow();
  });
 });

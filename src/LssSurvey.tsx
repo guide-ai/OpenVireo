@@ -1,19 +1,26 @@
 import {useEffect,useRef,useState} from 'react';
-import {hubbleVelocity} from './core/hubbleVelocity';
 import {currentZ,type ShiftControl} from './core/spectrum';
 import {t} from './i18n';
 import './sky-exposure.css';
 import './lss.css';
 import {LSS_FIELD_FILES,lssFieldRows,isLssFieldList,type LssFieldNumber} from './core/lssFields';
-import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssRecord,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,restoredLssSurvey,LSS_LIMITS,type LssRecord,type LssSurveyState} from './core/lssSurvey';
-import {evaluateLssRow,lssPolicy,type LssRowStatus} from './core/lssExposure';
+import {EMPTY_LSS_SURVEY,selectLssField,markLssListLoaded,openLssRecord,editLssDraft,confirmLssDialog,cancelLssRecord,lssResultsCsv,pendingWedgeRecords,markLssHandedToWedge,lssAtLimit,lssEventTotal,restoredLssSurvey,LSS_LIMITS,type LssRecord,type LssSurveyState} from './core/lssSurvey';
+import {evaluateLssRow,lssPolicy,type LssRowStatus,type LssSpectrumInputs} from './core/lssExposure';
+import {fetchLssSpectrumInputs} from './io/lssSpectrumInputs';
+import {LSS_RESULTS_TXT,lssResultsTxtBytes} from './core/lssResultsTxt';
+import {lssDialogFields} from './core/lssRedshiftDialog';
+import type {LssConfirm} from './core/lssSurvey';
+import LssRegion from './LssRegion';
+import {lssRegionListRows,type LssRegionListRow} from './core/lssRegion';
+/** [W] The region list's .TXT name (the native writer's default LSS_Redshifts.TXT is the student's own results). */
+const LSS_REGION_TXT_NAME='LSS_Galaxy_Data.TXT';
 import {frozenObservatoryTime} from './core/fieldEngine';
 import {opticalProfile} from './core/opticalTelescope';
 import {parseHtl} from './core/hotList';
 import {fetchBundledHotList} from './io/bundledHotList';
 import {fetchBundledGlxCatalog} from './io/bundledGlxCatalog';
 import {loadLssPack} from './io/lssPack';
-import {LSS_FIELDS_LST,GLIMAGES_LST,GLXYSP_LST,parseLssFieldsList,parseGlimagesPositions,parseGlxyspNames,packWithPhotographs,type LssFieldEntry} from './core/lssLists';
+import {LSS_FIELDS_LST,GLIMAGES_LST,parseLssFieldsList,parseGlimagesPositions,packWithPhotographs,type LssFieldEntry} from './core/lssLists';
 import {resourceSha256} from './io/boundedResource';
 import type {JournalState} from './core/exposureJournal';
 import type {WedgeOwnRecord} from './core/wedgeWorkspace';
@@ -27,22 +34,23 @@ type Telescope=0|1|2;
 type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[];fieldJd:number|undefined}>;
 export type LssSnapshot=Omit<LssInvestigation,'wedgeOptions'>;
 export type LssWedgeHandoff=Readonly<{records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>;
-function download(text:string,name:string){const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function download(text:string|Uint8Array,name:string,type='text/csv;charset=utf-8'){const url=URL.createObjectURL(new Blob([typeof text==='string'?text:text.slice().buffer],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function statusText(s:LssRowStatus):string{
  if(s.kind==='unavailable')return t('lss.status.unavailable',{reasons:s.reasons.map(r=>t(`lss.reason.${r}`)).join('; ')});
  return s.kind==='available'?t('lss.status.available'):t('lss.status.neighbour',{id:s.selectedId});
 }
 /** E02 student route (#lss-survey). Web adaptations are listed in the scope note and docs/LSS-SURVEY.md. */
-export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
+export default function LssSurvey({active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
  const [survey,setSurveyState]=useState<LssSurveyState>(EMPTY_LSS_SURVEY),current=useRef(survey),[dialogError,setDialogError]=useState('');
  /** Every survey transition runs here, outside React's updater: a rejected transition keeps the current state and returns false. */
  function update(fn:(s:LssSurveyState)=>LssSurveyState):boolean{try{const next=fn(current.current);current.current=next;setSurveyState(next);return true;}catch{return false;}}
  const handoff=useRef<{token:number;upTo:number}|null>(null);
  useEffect(()=>{const h=handoff.current;if(!wedgeAck||!h||wedgeAck.token!==h.token)return;handoff.current=null;if(wedgeAck.accepted)update(s=>markLssHandedToWedge(s,h.upTo));else setNotice(t('lss.wedge.refused'));},[wedgeAck]);
  const [telescope,setTelescope]=useState<Telescope>(initialTelescope);
+ const [region,setRegion]=useState<readonly (LssRegionListRow&{jd:number})[]>(Object.freeze([]));// Front L2: catalogue rows of LSS Galaxy Data (not saved)
  const [loaded,setLoaded]=useState<Loaded|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const [pointed,setPointed]=useState<number|null>(null),[exposure,setExposure]=useState<JournalState|null>(null),[description,setDescription]=useState(''),[descriptionError,setDescriptionError]=useState('');
- const [fields,setFields]=useState<readonly LssFieldEntry[]|null>(null),lists=useRef<{photographs:ReturnType<typeof parseGlimagesPositions>;spectra:ReadonlySet<string>}|null>(null);
+ const [fields,setFields]=useState<readonly LssFieldEntry[]|null>(null),lists=useRef<{photographs:ReturnType<typeof parseGlimagesPositions>;spectra:LssSpectrumInputs}|null>(null);
  const glx=useRef<Uint8Array|null>(null),abort=useRef<AbortController|null>(null),dialog=useRef<HTMLDialogElement>(null);
  const heading=useRef<HTMLHeadingElement>(null);
  useEffect(()=>{
@@ -77,7 +85,7 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
    const bytes=await fetchBundledHotList(fetch,controller.signal,identity);
    const list=parseHtl(bytes.bytes);if(!isLssFieldList(field,list))throw new Error('list');
    glx.current??=await fetchBundledGlxCatalog(fetch,controller.signal);
-   if(!lists.current){const [photographs,spectra]=await Promise.all([fetchBundledHotList(fetch,controller.signal,GLIMAGES_LST),fetchBundledHotList(fetch,controller.signal,GLXYSP_LST)]);lists.current={photographs:parseGlimagesPositions(photographs.bytes),spectra:parseGlxyspNames(spectra.bytes)};}
+   if(!lists.current){const [photographs,spectra]=await Promise.all([fetchBundledHotList(fetch,controller.signal,GLIMAGES_LST),fetchLssSpectrumInputs(fetch,controller.signal)]);lists.current={photographs:parseGlimagesPositions(photographs.bytes),spectra};}
    const pack=packWithPhotographs(await loadLssPack(field),lists.current.photographs),rows=lssFieldRows(field),statuses:LssRowStatus[]=[];
    const variableTime=frozenObservatoryTime(currentJd),fieldJd=variableTime?.jd;
    for(const row of rows){if(controller.signal.aborted)return;statuses.push(evaluateLssRow(pack,glx.current,row,scope,lists.current.spectra,variableTime));await new Promise(r=>setTimeout(r,0));}
@@ -91,7 +99,13 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
  const field=survey.field,rows=loaded?lssFieldRows(loaded.field):[],row=pointed!==null&&loaded?rows[pointed]:null,status=pointed!==null&&loaded?loaded.statuses[pointed]:null;
  const live=status&&status.kind!=='unavailable'?status:null;
  function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));}
- function confirm(){if(update(confirmLssRecord)){setDialogError('');setNotice(t('lss.recorded'));}else setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));}
+ function confirm(){
+  let r:LssConfirm;try{r=confirmLssDialog(current.current);}catch{setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}
+  // A native refusal keeps the dialog open (ModalResult 0); the message is the original box text (with its caption when it has one).
+  if(!r.ok){setDialogError(r.caption?`${r.caption} ${r.message.replace(/\r\n/g,' ')}`:r.message);return;}
+  current.current=r.state;setSurveyState(r.state);setDialogError('');setNotice(t('lss.recorded'));
+ }
+ function velocity(text:string){if(!update(s=>editLssDraft(s,{velocity:text})))setDialogError(t('lss.dialog.controlChars'));else setDialogError('');}
  function remarks(text:string){if(!update(s=>editLssDraft(s,{remarks:text})))setDialogError(t('lss.dialog.controlChars'));else setDialogError('');}
  async function plot(){
   const pending=pendingWedgeRecords(survey);if(!pending.length){setNotice(t('lss.wedge.nothing'));return;}
@@ -115,15 +129,33 @@ export default function LssSurvey({active,currentJd,initialTelescope,onPlotWedge
   <dialog ref={dialog} className="lss-dialog" aria-labelledby="lss-dialog-title" onCancel={e=>{e.preventDefault();update(cancelLssRecord);setDialogError('');}}>{draft&&<form method="dialog" onSubmit={e=>{e.preventDefault();confirm();}}>
    <h2 id="lss-dialog-title">{t('lss.dialog.title')}</h2>
    <label htmlFor="lss-object">{t('lss.dialog.object')}</label><input id="lss-object" value={draft.object} readOnly aria-describedby="lss-dialog-note"/>
-   <dl><dt>{t('lss.dialog.jd')}</dt><dd>{draft.jd.toFixed(5)}</dd><dt>{t('lss.dialog.ra')}</dt><dd>{draft.ra}</dd><dt>{t('lss.dialog.dec')}</dt><dd>{draft.dec}</dd><dt>{t('lss.dialog.z')}</dt><dd data-testid="lss-dialog-z">{Math.fround(draft.z)}</dd><dt>{t('lss.col.velocity')}</dt><dd>{hubbleVelocity(draft.z).storedKmS}</dd></dl><p id="lss-dialog-note" className="observatory-note">{t('lss.dialog.note')}</p>
-   <label htmlFor="lss-remarks">{t('lss.dialog.remarks')}</label><input id="lss-remarks" value={draft.remarks} maxLength={LSS_LIMITS.remarks} autoFocus aria-invalid={dialogError?true:undefined} aria-describedby={dialogError?'lss-dialog-error':undefined} onChange={e=>remarks(e.target.value)}/>{dialogError&&<p id="lss-dialog-error" role="alert">{dialogError}</p>}
+   {(()=>{const f=lssDialogFields(draft);return <>
+    <label htmlFor="lss-jd">{t('lss.dialog.jdTime')}</label><input id="lss-jd" value={f.jd} readOnly/>
+    <fieldset className="lss-dialog-angles"><legend>{t('lss.dialog.raGroup')}</legend>
+     <input aria-label={t('lss.dialog.raH')} value={f.raH} readOnly data-testid="lss-dialog-ra-h"/><input aria-label={t('lss.dialog.raM')} value={f.raM} readOnly/><input aria-label={t('lss.dialog.raS')} value={f.raS} readOnly/></fieldset>
+    <fieldset className="lss-dialog-angles"><legend>{t('lss.dialog.decGroup')}</legend>
+     <input aria-label={t('lss.dialog.decD')} value={f.decD} readOnly data-testid="lss-dialog-dec-d"/><input aria-label={t('lss.dialog.decM')} value={f.decM} readOnly/><input aria-label={t('lss.dialog.decS')} value={f.decS} readOnly/></fieldset>
+    <label htmlFor="lss-z">{t('lss.dialog.zLabel')}</label><input id="lss-z" value={f.z} readOnly data-testid="lss-dialog-z"/>
+   </>;})()}
+   <p id="lss-dialog-note" className="observatory-note">{t('lss.dialog.note')}</p>
+   <label htmlFor="lss-velocity">{t('lss.dialog.velocity')}</label><input id="lss-velocity" value={draft.velocity} maxLength={LSS_LIMITS.velocity} inputMode="decimal" autoFocus aria-invalid={dialogError?true:undefined} aria-describedby={dialogError?'lss-dialog-error':'lss-velocity-help'} onChange={e=>velocity(e.target.value)} data-testid="lss-dialog-velocity"/>
+   <p id="lss-velocity-help" className="observatory-note">{t('lss.dialog.velocityHelp')}</p>
+   <label htmlFor="lss-remarks">{t('lss.dialog.remarks')}</label><input id="lss-remarks" value={draft.remarks} maxLength={LSS_LIMITS.remarks} aria-describedby={dialogError?'lss-dialog-error':undefined} onChange={e=>remarks(e.target.value)}/>{dialogError&&<p id="lss-dialog-error" role="alert" className="lss-dialog-error">{dialogError}</p>}
    <div className="sky-actions"><button type="submit" className="primary-button" disabled={lssAtLimit(survey)}>{t('lss.dialog.ok')}</button><button type="button" className="secondary-button" onClick={()=>{update(cancelLssRecord);setDialogError('');}}>{t('lss.dialog.cancel')}</button></div>
   </form>}</dialog>
   <section className="card" aria-labelledby="lss-results-heading"><h2 id="lss-results-heading">{t('lss.results.title')}</h2><p data-testid="lss-record-count" role="status">{t('lss.results.count',{count:survey.records.length})}</p>
    {survey.records.length>0&&<table className="lss-rows" data-testid="lss-results"><thead><tr><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.dialog.jd')}</th><th scope="col">{t('lss.dialog.ra')}</th><th scope="col">{t('lss.dialog.dec')}</th><th scope="col">{t('lss.dialog.z')}</th><th scope="col">{t('lss.col.velocity')}</th><th scope="col">{t('lss.dialog.remarks')}</th></tr></thead><tbody>{survey.records.map(r=><tr key={r.id}><td>{r.object}</td><td>{r.jd.toFixed(5)}</td><td>{r.ra}</td><td>{r.dec}</td><td>{r.zSingle}</td><td>{r.velocitySingle}</td><td>{r.remarks}</td></tr>)}</tbody></table>}
-   <div className="sky-actions"><button className="secondary-button" disabled={!survey.records.length} onClick={()=>download(lssResultsCsv(survey.records),'openvireo-lss-results.csv')}>{t('lss.results.csv')}</button><button className="primary-button" disabled={!pendingWedgeRecords(survey).length} onClick={()=>void plot()}>{t('lss.results.plot')}</button></div>
+   <div className="sky-actions"><button className="secondary-button" disabled={!survey.records.length} onClick={()=>download(lssResultsCsv(survey.records),'openvireo-lss-results.csv')}>{t('lss.results.csv')}</button><button className="secondary-button" disabled={!survey.records.length} data-testid="lss-results-txt" title={LSS_RESULTS_TXT.title} onClick={()=>{download(lssResultsTxtBytes(survey.records),LSS_RESULTS_TXT.defaultName,'text/plain;charset=windows-1252');setNotice(t('lss.results.txtSaved',{name:LSS_RESULTS_TXT.defaultName}));}}>{t('lss.results.txt')}</button><button className="primary-button" disabled={!pendingWedgeRecords(survey).length} onClick={()=>void plot()}>{t('lss.results.plot')}</button></div>
    <label htmlFor="lss-description">{t('lss.results.description')}</label><textarea id="lss-description" maxLength={LSS_LIMITS.description} rows={4} value={description} aria-invalid={descriptionError?true:undefined} aria-describedby={descriptionError?'lss-description-error':undefined} onChange={e=>{const v=e.target.value;if(/[\u0000-\u0008\u000b-\u001f\u007f]/.test(v)){setDescriptionError(t('lss.descriptionInvalid'));return;}setDescriptionError('');setDescription(v);}}/>{descriptionError&&<p id="lss-description-error" role="alert">{descriptionError}</p>}<p className="observatory-note">{t('lss.results.descriptionHelp')}</p>
   </section>
+  {editMode&&<section className="card" aria-labelledby="lss-region-heading" data-testid="lss-region-card"><h2 id="lss-region-heading">{t('lss.region.title')}</h2>
+   <LssRegion active={active} disabled={loading} hasData={region.length>0} onResult={(r,append)=>{const jd=currentJd();setRegion(rows=>Object.freeze([...(append?rows:[]),...lssRegionListRows(r).map(g=>Object.freeze({...g,jd}))]));}}/>
+   <p role="status" data-testid="lss-region-count">{t('lss.region.count',{count:region.length})}</p>
+   {region.length>0&&<><table className="lss-rows" data-testid="lss-region-rows"><thead><tr><th scope="col">{t('lss.col.object')}</th><th scope="col">{t('lss.dialog.ra')}</th><th scope="col">{t('lss.dialog.dec')}</th><th scope="col">{t('lss.dialog.z')}</th><th scope="col">{t('lss.col.velocity')}</th></tr></thead>
+    <tbody>{region.map((g,i)=><tr key={i}><td>{g.object}</td><td>{g.ra}</td><td>{g.dec}</td><td>{t('lss.region.zMasked')}</td><td>{t('lss.region.velocity')}</td></tr>)}</tbody></table>
+    <div className="sky-actions"><button type="button" className="secondary-button" data-testid="lss-region-txt" onClick={()=>{download(lssResultsTxtBytes(region.map(g=>({object:g.object,jd:g.jd,ra:g.ra,dec:g.dec,velocitySingle:0,remarks:''}))),LSS_REGION_TXT_NAME,'text/plain;charset=windows-1252');setNotice(t('lss.results.txtSaved',{name:LSS_REGION_TXT_NAME}));}}>{t('lss.results.txt')}</button><button type="button" className="secondary-button" onClick={()=>setRegion(Object.freeze([]))}>{t('lss.region.clear')}</button></div>
+    <p className="observatory-note">{t('lss.region.noWedge')}</p></>}
+  </section>}
   <div className="observatory-feedback">{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}</div>
   <section className="scope-note"><h2>{t('lss.limitsTitle')}</h2><ul>{(['observatory','telescope','fresh','raster','range','measure','dialog','jd','wedge','csv','packs'] as const).map(k=><li key={k}>{t(`lss.adaptation.${k}`)}</li>)}</ul></section>
  </main>;

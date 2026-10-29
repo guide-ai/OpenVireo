@@ -21,10 +21,11 @@ The header button **LSS guide** (`src/LssLabGuide.tsx`, progress in `src/core/ls
 Vitest: lssFields, lssLists, fieldEngine, lssPacks, lssSurvey, lssLab, io/lssInvestigation. Playwright: tests/lss-survey.spec.ts, lss-survey-negative.spec.ts, lss-session.spec.ts, lss-guide.spec.ts.
 
 ## Acquirable rows (0.4 m / 0.9 m / 4 m, of 219)
-157 / 86 / 158 without a clock time (Front T, TRUE variable dispatch, 2026-10-28); 140 / 76 / 141 before it, 129 / 69 / 130 before
-the recovered FALSE dispatch. Five more rows are acquirable with the frozen observatory-clock time (below).
+187 / 93 / 189 without a clock time (Front L2, recovered QSO merge, 2026-10-29); 157 / 86 / 158 under the earlier QSO gate
+(Front T, TRUE variable dispatch, 2026-10-28), 140 / 76 / 141 before it, 129 / 69 / 130 before the recovered FALSE dispatch.
+More rows are acquirable with the frozen observatory-clock time (below).
 
-Per field on the 0.4 m: F1 14, F2 14, F3 12, F4 8, F5 12, F6 13, F7 20, F8 20, F9 27.
+Per field on the 0.4 m under the QSO gate (before Front L2): F1 14, F2 14, F3 12, F4 8, F5 12, F6 13, F7 20, F8 20, F9 27.
 
 Variables (2026-10-28, coordinator decision): every CLEA_VStrs.dat variable whose time update the dispatch 0x51ec48 returns
 false without side effects (period 0, word 0 unless class 1, or class 3) takes the false-merge branch, one after another in
@@ -42,7 +43,7 @@ lie in 30 LSS rows:
   r10; F8 r19 (0-based row indices).
 - 5 rows need the time (a variable star is in view): F1 r19, F3 r18, F6 r7, F6 r8, F8 r21. Without it they are
   `variable-time-required`.
-- 8 rows stay QSO-gated: F1 r2, F3 r2, F3 r22, F4 r18, F5 r20, F6 r11, F7 r17, F7 r20.
+- 8 of these rows were also QSO-gated (F1 r2, F3 r2, F3 r22, F4 r18, F5 r20, F6 r11, F7 r17, F7 r20); Front L2 removes that gate (below).
 An independent Python witness (data/variables/lss-true-dispatch-witness.json) gives the same row classes, hit/miss and stars. It is
 narrower than the engine (post-cleanup galaxies, no QSO positions in the guard, no FALSE/indeterminate/fault outcomes) and does not
 vouch for the OK/mean-bound statuses or the counts, which come from the TypeScript engine only.
@@ -58,14 +59,56 @@ Three rows select a coincident neighbour by the nearest rule (12550+2749 → NGC
 - The telescope is the student's choice among the three verified profiles; the exercise-mode-5 telescope entry is not recovered.
 - Each pointing builds a fresh field centred on the HTL coordinates; there is no cache pan.
 - The raster is the nearest-centre browser raster, not Windows pixel identity.
-- The range is fixed at 4000–5000 Å with the GLXYTMPL.SP template. Galaxies with their own GLXYSP.LST spectrum (NGC 4670, NGC 4889) stay unavailable. Both are QSO-gated first, so NGC4670.SP stays unwired: no reachable path could use it. The spectrum-mapping gate (in lssExposure.ts, not the engine: any other engine consumer must apply it too) and the `mapped==[]` assertion in lssPacks.test.ts are kept as a tripwire for when the QSO merge is ported.
+- The range is fixed at 4000–5000 Å with the GLXYTMPL.SP template, except the galaxies with their own GLXYSP.LST spectrum: NGC 4670 (NGC4670.SP) and NGC 4889 (NGC4889.SP) are observed with it (Front L2). A listed spectrum that is not bundled keeps the typed `spectrum-mapping` reason (lssExposure.ts).
 - Pointing a row goes straight to its fresh field: no dome, slew, horizon/time check or tracking.
-- Measured Redshift Data: Object is read-only as in the original; RA/Dec are decimal and fixed; velocity is computed as c·z (original edits RA/Dec h m s and velocity); JD is read when Record Z is clicked.
+- Measured Redshift Data (Front L2): see below. RA/Dec are read-only h m s / d m s boxes (the original discards edits to them); Cancel adds nothing (the original inserts the record before the dialog opens, 0x57c918, and Cancel never removes it); every OK is a new record (the reuse-by-ID option +0x2e8c is not recovered); JD is read when Record Z is clicked.
 - Measurement uses a dedicated panel on the analyser's recovered shift-control contract.
 - Record Z follows the recovered LSS branch, but the creation function 0x57c918 and the dialog bodies are not recovered.
-- Records go to the wedge directly with their exact values, not through the native .TXT writer 0x57af74.
+- Records go to the wedge directly with their exact values. The native .TXT writer 0x57af74 is ported for Save Data (.TXT) (Front L2, below).
 - Results are saved in an OpenVireo CSV format.
 - Stars come from bounded GSC read witnesses (`data/lss`); arithmetic uses Number, not x87.
 
 ## Not recovered
 QSO merge 0x597f90/0x5987e4, photographic association, variable classes 0–2 whose dispatch reaches a light curve, the exercise-mode-5 entry, 0x57c918 / TLSSRsltsDlg1 FormActivate and OK, TLSSFieldsForm1 FormShow and LoadSelection1Click (LSSFields.LST is parsed by its evident text format), and the wedge .TXT writer.
+
+## Front L2 (2026-10-29; plan analysis/front-plans/front-l2-lss.md)
+Static reading of CLEA_VEO.exe only; addresses, evidence ids and SHA-256 in [LSS-L2-PROVENANCE.json](LSS-L2-PROVENANCE.json); research `analysis/front-l2-lss/` (rsltsdlg-txt-findings.md, rgndlg-findings.md, dossiers
+with SHA-256). This section supersedes the "Not recovered" list above for the items it names.
+- **QSO merge.** LSS rows run the recovered QSO merge (0x5987e4/0x597f90, `qsoMerge.ts`) on the bundled CLEA_QSO.DAT, as the
+  Hubble engine fields do. 35 rows (105 row/telescope entries) were QSO-gated; exactly those entries change in
+  `data/hubble/existing-target-fingerprints.json` (`updates`, 2026-10-29), nothing else. 26 of them become acquirable on the
+  0.4 and 4 m and stay mean-bound on the 0.9 m; F1R15, F3R23, F4R11, F5R13, F7R21, F8R10 become acquirable on all three and
+  F8R11 selects a neighbour; F3R5, F6R17, F7R18 are stamp-bound and F6R12 needs the clock time.
+- **Own spectra.** NGC4670.SP is bundled byte-exact (27616 bytes, SHA-256 228149e9…170a, CLEA_Vireo.zip
+  `program files/CLEA/VIREO/Spectra/Galaxies/`, user approval of 2026-10-27, group 1). NGC 4670 (F3 row 1) is acquirable on
+  the 4 m (mean-bound on the 0.4/0.9 m); NGC 4889 (F4 row 2) on the 0.4 and 4 m. Saved investigations v27–v30 restore
+  unchanged: every row that was not QSO-gated evaluates byte-identically.
+- **Save / Print spectrum.** The LSS and galaxy routes offer Save spectrum (.SSP) and Print spectrum with the recovered writer
+  (Save 0x50fb1c, header 0x510090; docs/SPECTRUM-SAVE-CONTRACT.md). LSS header: the selected catalogue galaxy, the row's HTL
+  coordinates and that galaxy's catalogue magnitude.
+- **Measured Redshift Data** (TLSSRsltsDlg1; FormActivate 0x57cab8, OK 0x57cd80; coordinator decision of 2026-10-29). The
+  dialog shows JD (6 decimals), RA h m s.ss and Dec ±d m s.s, and z as its 4-significant-digit text (`2.345E-02`). The student
+  types the velocity (blank on open: the original's "compute velocity" option is off by default). OK stores z re-read from that
+  text and the typed velocity (both Single); a velocity that does not convert shows "Velocity is incorrect or missing! You must
+  supply a valid velocity for plotting." (Velocity Error!), one more than 1 % from c·z shows "Velocity calculation is
+  invalid!", and the dialog stays open [D]. [W] within 1e-12 of the 1 % limit the velocity is refused, as on the Hubble route.
+  Session: records made this way are listed in a v31 wrapper (`lssNativeDialogIds`, policy `openvireo-lss-dialog-v31`) around
+  the unchanged v27–v30 layers; restore checks their stored z against the replayed z's 4-digit text and their velocity against
+  the 1 % rule. Records from v27–v30 files keep the c·z rule and restore exactly as before.
+- **Save Data (.TXT).** The native LSS results writer 0x57af74 with row 0x57b8e4 (`core/lssResultsTxt.ts`): header
+  `Object ID    MJD(Days)      RA           Dec     V(km/sec)  Comments`, then per record Copy(ID,1,11) padded to 12, the JD
+  text without its first 3 characters, RA h m s (1 decimal), Dec ° ' " (0 decimals), V as ` d.dddE+dd` in 12 columns (blank
+  when 0) and the remarks glued on, CR LF, Windows-1252; default name `LSS_Redshifts.TXT`. The wedge's Load Saved Data reads
+  it back (tested); as natively, remarks glued to V make that row's V unreadable. [W] browser download, remarks cut to 36.
+- **LSS Galaxy Data (instructor).** File › "LSS Galaxy Data..." is visible natively only when the LSS exercise starts with Edit
+  Mode on (LargeScaleStructure1Click 0x58aad3 is the only Visible writer). The web shows it in `#lss-survey` while Edit Mode is
+  on. TLSSRgnDlg (FormShow 0x5853f4, OK 0x585510): six bounds with the native texts, "Parameters contain non-numeric data!" /
+  "Parameters are inconsistant!" (original spelling) in "Input Error!"; 0x584d0c lists every CLEA_GLX.DAT galaxy with
+  Zmin ≤ z ≤ Zmax, RAmin ≤ RA ≤ RAmax, DecMin ≤ Dec ≤ DecMax (inclusive, z first), the Retain / Confirm prompts and the
+  "Search Results" summary. Natively the rows go into the observation results list with velocity unwritten; the web lists
+  them in their own table [W] with Save Data (.TXT) (velocity column blank, `LSS_Galaxy_Data.TXT`); they are not saved with
+  the investigation. Catalogue redshifts are the E02 answers, so the table's z and the summary's "Range in Z" show
+  "hidden (instructor value)" (as Catalog Object masks z) and the rows are not handed to the wedge, which would plot them by
+  z [W, coordinator decision of 2026-10-29]. The .TXT carries no z column and no velocity. Counts per box remain visible.
+- Not ported: Wedge Print (Front P), Auto Plot and the group results file 0x57c710.
+

@@ -2,7 +2,7 @@
  * HTL coordinates, for the selected telescope record; then the same bounded journal as the galaxy exposure. Web adaptations
  * (one line each in docs/LSS-SURVEY.md): a fresh field per pointing; the telescope is the student's choice among the three
  * verified profiles because the exercise-mode-5 telescope entry is not recovered; native timing (no speed-up). */
-import {evaluateField,createFieldExposure,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from './fieldEngine';
+import {evaluateField,createFieldExposure,type FieldLibrarySpectrum,type FieldOptions,type FieldQsoCatalog,type FieldResult,type FieldTelescope,type FieldUnavailableReason,type FieldVariableTime} from './fieldEngine';
 import type {FieldPack} from './fieldPack';
 import {hasLibrarySpectrum} from './lssLists';
 import {lssFieldRows,type LssFieldNumber,type LssRow} from './lssFields';
@@ -17,19 +17,38 @@ export function parseLssPolicy(policy:unknown):Readonly<{field:LssFieldNumber;ro
  if(row<0||row>=lssFieldRows(field).length)throw new JournalError('session');
  return Object.freeze({field,row,telescope});
 }
-/** A selected galaxy with its own library spectrum in GLXYSP.LST (byte-exact, approved 2026-10-27; native key: id without
- * spaces + ".SP") is not given the GLXYTMPL.SP template: it stays unavailable (spectrum-mapping) until its own spectrum is
- * wired. Among LSS identifiers only NGC 4670 and NGC 4889 match; both are also QSO-gated. */
+/** The bundled own library spectra LSS rows can select (GLXYSP.LST names that are LSS catalogue galaxies). NGC4670.SP: user
+ * approval of 2026-10-27 (group 1), bundled by Front L2; NGC4889.SP: bundled for the Hubble Coma target. */
+export const LSS_OWN_SPECTRA=Object.freeze([
+ Object.freeze({file:'NGC4670.SP',bytes:27616,sha256:'228149e937449b4731421c0b81fc14545dabc514cd3af4a1c9b4e78f8f12170a'}),
+ Object.freeze({file:'NGC4889.SP',bytes:27616,sha256:'d48f79640fa5d70d947388968bccb41beabf9ea8ea95c51ca877c381da101e39'}),
+]);
+/** Front L2: what an LSS row evaluation needs besides its pack and CLEA_GLX.DAT. `names`: the GLXYSP.LST names; `qsoCatalog`:
+ * the bundled CLEA_QSO.DAT for the recovered QSO merge (0x5987e4/0x597f90, qsoMerge.ts); `ownSpectra`: own library spectrum
+ * file → samples. */
+export type LssSpectrumInputs=Readonly<{names:ReadonlySet<string>;qsoCatalog:FieldQsoCatalog;ownSpectra:ReadonlyMap<string,FieldLibrarySpectrum['samples']>}>;
+/** A selected galaxy with its own library spectrum in GLXYSP.LST (native key: id without spaces + ".SP") is observed with that
+ * spectrum, as the Hubble route does (librarySpectrum); one whose file is not bundled stays unavailable (spectrum-mapping),
+ * never given the GLXYTMPL.SP template. Among LSS identifiers only NGC 4670 and NGC 4889 match; both are bundled. */
 /** available: verified on this telescope and the slit selects the row's own catalogue galaxy; neighbour: available, but the
  * nearest rule selects another catalogue galaxy at (or within 1″ of) the row position; unavailable: typed reasons. */
 export type LssRowStatus=Readonly<{kind:'available'|'neighbour';result:FieldResult;selectedId:string;selectedIndex:number}>|Readonly<{kind:'unavailable';reasons:readonly FieldUnavailableReason[];result:FieldResult|null}>;
 /** variableTime (Front T): the observatory-clock JD frozen when the list was built; without it, a row whose field holds a
  * time-dependent variable star in view stays unavailable (variable-time-required). */
-export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescope:FieldTelescope,librarySpectra:ReadonlySet<string>,variableTime?:FieldVariableTime):LssRowStatus{
+export function evaluateLssRow(pack:FieldPack,glx:Uint8Array,row:LssRow,telescope:FieldTelescope,inputs:LssSpectrumInputs,variableTime?:FieldVariableTime):LssRowStatus{
  // Evidence inconsistencies (tampered or incomplete pack) throw to the caller; only typed gates become statuses.
- const result=evaluateField(pack,glx,{ra:row.ra,dec:row.dec},telescope,variableTime?{variableTime}:{});
+ // Front L2: the recovered QSO merge replaces the earlier typed QSO gate (as the Hubble engine fields use it).
+ const at={ra:row.ra,dec:row.dec},options:FieldOptions={qso:'merge',qsoCatalog:inputs.qsoCatalog,...(variableTime?{variableTime}:{})};
+ let result=evaluateField(pack,glx,at,telescope,options);
  if(result.reasons.length||!result.target)return Object.freeze({kind:'unavailable' as const,reasons:result.reasons,result});
- if(hasLibrarySpectrum(librarySpectra,result.target.id))return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['spectrum-mapping' as const]),result});
+ if(hasLibrarySpectrum(inputs.names,result.target.id)){
+  const file=result.target.id.replace(/ /g,'')+'.SP',samples=inputs.ownSpectra.get(file);
+  if(!samples)return Object.freeze({kind:'unavailable' as const,reasons:Object.freeze(['spectrum-mapping' as const]),result});
+  const targetId=result.target.id;
+  result=evaluateField(pack,glx,at,telescope,{...options,librarySpectrum:Object.freeze({targetId,file,samples})});
+  if(result.reasons.length||!result.target)return Object.freeze({kind:'unavailable' as const,reasons:result.reasons,result});
+  if(result.target.id!==targetId||result.calibration?.sourceFile!==file)throw new Error('LSS own spectrum');
+ }
  return Object.freeze({kind:result.target.recordIndex===row.catalogIndex?'available' as const:'neighbour' as const,result,selectedId:result.target.id,selectedIndex:result.target.recordIndex});
 }
 /** Exposure engine for one available row; every operation checks the state's policy. */

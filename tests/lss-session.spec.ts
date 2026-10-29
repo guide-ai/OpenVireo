@@ -1,8 +1,10 @@
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
 import {readFile} from 'node:fs/promises';
+import {okWithVelocity} from './fixtures/lss-velocity';
 // Front T: records made in the app carry the field's frozen observatory-clock JD, so a save is a v30 wrapper around the v27 layer.
-const lssLayer=(d:{version:number;base?:unknown;lss?:unknown})=>(d.version===30?d.base:d) as any;// eslint-disable-line @typescript-eslint/no-explicit-any
+// Front L2: v31 (native dialog record ids) wraps v30 (frozen field JDs), which wraps the v27 LSS layer.
+const lssLayer=(d:{version:number;base?:unknown;lss?:unknown}):any=>(d.version===31||d.version===30?lssLayer(d.base as {version:number}):d);// eslint-disable-line @typescript-eslint/no-explicit-any
 // M8: E02 records survive Save (session v27) and a fresh-context Restore that replays every journal; the student then keeps
 // observing. Tampered and over-budget files are refused without changing the current survey.
 async function save(page:Page){const d=page.waitForEvent('download');await page.getByRole('button',{name:'Save investigation',exact:true}).click();return readFile((await(await d).path())!);}
@@ -15,7 +17,7 @@ async function acquireAndRecord(page:Page,row:number,position:string,remarks:str
  await page.getByRole('button',{name:'Start exposure',exact:true}).click();await page.clock.runFor(1500);
  await page.getByRole('button',{name:'Pause exposure',exact:true}).click();await expect(page.getByTestId('lss-elapsed')).toHaveText('1500 ms');
  await page.getByLabel('z step',{exact:true}).fill('.001');await page.getByRole('button',{name:'Set step',exact:true}).click();await page.getByLabel('Shift',{exact:true}).fill(position);
- await page.getByRole('button',{name:'Record Z',exact:true}).click();await page.getByLabel('Remarks',{exact:true}).fill(remarks);await page.getByRole('button',{name:'OK',exact:true}).click();
+ await page.getByRole('button',{name:'Record Z',exact:true}).click();await page.getByLabel('Remarks',{exact:true}).fill(remarks);await okWithVelocity(page);
  await page.clock.resume();
 }
 async function survey(page:Page){await clickHeaderTool(page,'LSS survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();}
@@ -25,7 +27,7 @@ test('E02 Save (v30 over v27) → fresh context Restore → records replayed, de
  await acquireAndRecord(page,1,'20','first galaxy');
  await page.getByLabel('Describe the structure you see (not graded)',{exact:true}).fill('A wall near 12 h?');
  const saved=await save(page),data=JSON.parse(saved.toString());
- expect(data.version).toBe(30);expect(data.lssFieldJds).toHaveLength(1);expect(lssLayer(data).version).toBe(27);expect(lssLayer(data).lss.records).toHaveLength(1);expect(lssLayer(data).lss.journals).toHaveLength(1);expect(lssLayer(data).lss.journals[0].events).toMatch(/^s 100\*15 p$/);expect(lssLayer(data).lssDigestSHA256).toMatch(/^[a-f0-9]{64}$/);
+ expect(data.version).toBe(31);expect(data.lssNativeDialogIds).toEqual([1]);expect(data.base.version).toBe(30);expect(data.base.lssFieldJds).toHaveLength(1);expect(lssLayer(data).version).toBe(27);expect(lssLayer(data).lss.records).toHaveLength(1);expect(lssLayer(data).lss.journals).toHaveLength(1);expect(lssLayer(data).lss.journals[0].events).toMatch(/^s 100\*15 p$/);expect(lssLayer(data).lssDigestSHA256).toMatch(/^[a-f0-9]{64}$/);
  // Fresh browser context: nothing in memory, restore from the file.
  const context=await browser.newContext(),fresh=await context.newPage();const errors:string[]=[];fresh.on('pageerror',e=>errors.push(e.message));
  await fresh.clock.install();await fresh.goto('/');await restore(fresh,saved);

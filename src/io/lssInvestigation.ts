@@ -8,12 +8,13 @@ import {evaluateLssRow,lssExposureEngine,lssPolicy} from '../core/lssExposure';
 import {lssFieldRows,type LssFieldNumber} from '../core/lssFields';
 import {LSS_LIMITS,decodeLssEvents,encodeLssEvents,lssJournalKey,type LssRecord} from '../core/lssSurvey';
 import {hubbleVelocity} from '../core/hubbleVelocity';
+import {lssDialogRecordValid} from '../core/lssRedshiftDialog';
 import {currentZ,type ShiftControl} from '../core/spectrum';
 import {MAX_JOURNAL_EVENTS,type JournalEvent} from '../core/exposureJournal';
-import type {LssRowStatus} from '../core/lssExposure';
+import type {LssRowStatus,LssSpectrumInputs} from '../core/lssExposure';
 import {validWedgeOptions,type WedgeOptions} from '../core/wedgePlot';
 import type {FieldPack} from '../core/fieldPack';
-import {GLIMAGES_LST,GLXYSP_LST,packWithPhotographs,parseGlimagesPositions,parseGlxyspNames} from '../core/lssLists';
+import {GLIMAGES_LST,packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
 import {resourceSha256} from './boundedResource';
 
 export const LSS_INVESTIGATION_POLICY='openvireo-lss-investigation-v27';
@@ -27,14 +28,14 @@ export class LssSessionError extends Error{
 }
 export type LssInvestigation=Readonly<{field:LssFieldNumber|null;telescope:0|1|2;records:readonly LssRecord[];description:string;wedgeOptions:WedgeOptions|null}>;
 /** Where restore gets the bundled field evidence (browser: same-origin, size/SHA-checked; tests: the repository files). */
-export type LssResources=Readonly<{pack:(field:LssFieldNumber)=>Promise<FieldPack>;glx:()=>Promise<Uint8Array>;spectra:()=>Promise<ReadonlySet<string>>}>;
+export type LssResources=Readonly<{pack:(field:LssFieldNumber)=>Promise<FieldPack>;glx:()=>Promise<Uint8Array>;spectra:()=>Promise<LssSpectrumInputs>}>;
 function browserResources():LssResources{
  const signal=new AbortController().signal;
  const lists=async()=>{const {fetchBundledHotList}=await import('./bundledHotList');return fetchBundledHotList;};
  return {
   pack:async field=>{const [{loadLssPack},fetchList]=await Promise.all([import('./lssPack'),lists()]);return packWithPhotographs(await loadLssPack(field),parseGlimagesPositions((await fetchList(fetch,signal,GLIMAGES_LST)).bytes));},
   glx:async()=>(await import('./bundledGlxCatalog')).fetchBundledGlxCatalog(fetch,signal),
-  spectra:async()=>parseGlxyspNames((await (await lists())(fetch,signal,GLXYSP_LST)).bytes),
+  spectra:async()=>(await import('./lssSpectrumInputs')).fetchLssSpectrumInputs(fetch,signal),
  };
 }
 let resources:LssResources|null=null;
@@ -70,8 +71,13 @@ let lastVerified:Readonly<{text:string;result:Derived}>|null=null;
  * needs the time fails closed (variable-time-required → replay). */
 export type LssFieldJds=ReadonlyMap<number,number>;
 const NO_FIELD_JDS:LssFieldJds=new Map();
-async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS):Promise<Derived>{
- const text=JSON.stringify(value)+'\u0000'+JSON.stringify([...fieldJds].sort((a,b)=>a[0]-b[0]));
+/** Front L2 (v31): the ids of the records made with the recovered Measured Redshift Data rules (typed velocity within 1 % of
+ * c·z, z re-quantised to its 4-digit text). Carried by the v31 session wrapper outside this v27 payload; any other record keeps
+ * the v27 rule (z and velocity = c·z re-derived from the control). */
+export type LssNativeDialogIds=ReadonlySet<number>;
+const NO_NATIVE_IDS:LssNativeDialogIds=new Set();
+async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS,nativeIds:LssNativeDialogIds=NO_NATIVE_IDS):Promise<Derived>{
+ const text=JSON.stringify(value)+'\u0000'+JSON.stringify([...fieldJds].sort((a,b)=>a[0]-b[0]))+'\u0000'+JSON.stringify([...nativeIds].sort((a,b)=>a-b));
  if(text.length>LSS_SESSION_LIMITS.bytes+64*LSS_SESSION_LIMITS.records)fail('bounds');
  if(JSON.stringify(value).length>LSS_SESSION_LIMITS.bytes)fail('bounds');
  if(lastVerified&&lastVerified.text===text)return lastVerified.result;
@@ -109,8 +115,9 @@ async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS):Promise<D
   if(journal.policy!==r.acquisitionPolicy)fail('record');used.add(ji);
   const jd=finite(r.jd);if(jd<2415020.5||jd>2488069.5)fail('record');
   const c=control(r.control),z=currentZ(c);if(!Number.isFinite(z)||Math.fround(z)<=-1)fail('record');
-  const zSingle=Math.fround(z),velocity=hubbleVelocity(z);
-  if(r.zHex!==hex32(zSingle)||r.velocityHex!==velocity.storedHex)fail('record');
+  const native=nativeIds.has(i+1);let zSingle:number,velocity:Readonly<{storedKmS:number;storedHex:string}>;
+  if(native){const d=lssDialogRecordValid(z,r.zHex as string,r.velocityHex as string);if(!d)return fail('record');zSingle=d.zSingle;velocity={storedKmS:d.velocitySingle,storedHex:r.velocityHex as string};}
+  else{zSingle=Math.fround(z);velocity=hubbleVelocity(z);if(r.zHex!==hex32(zSingle)||r.velocityHex!==velocity.storedHex)fail('record');}
   const fieldJd=fieldJds.get(i+1);
   if(fieldJd!==undefined&&(!Number.isFinite(fieldJd)||fieldJd<FIELD_VARIABLE_JD_DOMAIN.minimum||fieldJd>FIELD_VARIABLE_JD_DOMAIN.maximum))fail('record');
   const key=`${f}:${rowIndex}:${t}:${fieldJd??'none'}`;
@@ -128,23 +135,26 @@ async function derive(value:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS):Promise<D
    replays.set(ji,{counts:await resourceSha256(new TextEncoder().encode(replayed.exposure.counts.join(',')))});
   }
   const remarks=text_(r.remarks,LSS_LIMITS.remarks);
-  records.push(Object.freeze({id:i+1,...(fieldJd!==undefined?{fieldJd}:{}),field:f,row:rowIndex,telescope:t,object:status.selectedId,jd,ra:row.ra,dec:row.dec,zSingle,zHex:r.zHex as string,velocitySingle:velocity.storedKmS,velocityHex:velocity.storedHex,remarks,acquisitionPolicy:r.acquisitionPolicy as string,journal:Object.freeze({seedAtReset:journal.seedAtReset,events:journal.events}),control:c}));
+  records.push(Object.freeze({id:i+1,...(fieldJd!==undefined?{fieldJd}:{}),field:f,row:rowIndex,telescope:t,object:status.selectedId,jd,ra:row.ra,dec:row.dec,zSingle,zHex:r.zHex as string,velocitySingle:velocity.storedKmS,velocityHex:velocity.storedHex,remarks,acquisitionPolicy:r.acquisitionPolicy as string,journal:Object.freeze({seedAtReset:journal.seedAtReset,events:journal.events}),control:c,...(native?{nativeDialog:true as const}:{})}));
   derivatives.push({id:i+1,...(fieldJd!==undefined?{fieldJd}:{}),selected:status.selectedIndex,pixelLevel:status.result.calibration!.pixelLevel,counts:replays.get(ji)!.counts,zHex:r.zHex,velocityHex:velocity.storedHex});
  }
  if(used.size!==journals.length)fail('record');// every stored journal belongs to a record
  for(const id of fieldJds.keys())if(!Number.isInteger(id)||id<1||id>raw.length)fail('record');// every frozen JD names a record
+ for(const id of nativeIds)if(!Number.isInteger(id)||id<1||id>raw.length)fail('record');// every v31 id names a record
  const digest=await resourceSha256(new TextEncoder().encode(JSON.stringify({policy:LSS_INVESTIGATION_POLICY,derivatives})));
  const result=Object.freeze({investigation:Object.freeze({field,telescope,records:Object.freeze(records),description,wedgeOptions}),digest});
  lastVerified={text,result};return result;
 }
 /** Save: the portable payload plus its derivative digest (the payload is replayed once to compute it). */
 export async function portableLssInvestigation(i:LssInvestigation):Promise<Readonly<{lss:unknown;digest:string}>>{
- const lss=portablePayload(i),{digest}=await derive(JSON.parse(JSON.stringify(lss)),lssFieldJdsOf(i));return Object.freeze({lss,digest});
+ const lss=portablePayload(i),{digest}=await derive(JSON.parse(JSON.stringify(lss)),lssFieldJdsOf(i),lssNativeDialogIdsOf(i));return Object.freeze({lss,digest});
 }
 /** The record id → frozen field JD map of an investigation (empty when no record carries one). */
 export function lssFieldJdsOf(i:LssInvestigation):LssFieldJds{return new Map(i.records.flatMap(r=>r.fieldJd===undefined?[]:[[r.id,r.fieldJd] as const]));}
 /** Restore: replays everything and rejects on any mismatch, including the stored digest. */
-export async function admitLssInvestigation(value:unknown,digest:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS):Promise<LssInvestigation>{
+/** The ids of the records made with the recovered dialog rules (empty when none: the file needs no v31 wrapper). */
+export function lssNativeDialogIdsOf(i:LssInvestigation):LssNativeDialogIds{return new Set(i.records.filter(r=>r.nativeDialog).map(r=>r.id));}
+export async function admitLssInvestigation(value:unknown,digest:unknown,fieldJds:LssFieldJds=NO_FIELD_JDS,nativeIds:LssNativeDialogIds=NO_NATIVE_IDS):Promise<LssInvestigation>{
  if(typeof digest!=='string'||!/^[a-f0-9]{64}$/.test(digest))fail('digest');
- const d=await derive(value,fieldJds);if(d.digest!==digest)fail('digest');return d.investigation;
+ const d=await derive(value,fieldJds,nativeIds);if(d.digest!==digest)fail('digest');return d.investigation;
 }
