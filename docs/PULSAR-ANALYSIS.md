@@ -196,7 +196,7 @@ This feature branch supplies the self-contained panel; its separate App route in
 ## Tests and harness
 
 - Unit tests: `node node_modules/vitest/vitest.mjs run --config <evidence>/harness/vitest.config.mjs` runs `src/core/pulsar*.test.ts`.
-- Browser tests: `node node_modules/@playwright/test/cli.js test -c <evidence>/harness/playwright.pulsar.config.mjs` serves the harness on loopback `127.0.0.1:5185` (strict port) at `/__pulsar-harness/` and runs `tests/pulsar-analysis.spec.ts`. The spec skips without `OPENVIREO_PULSAR_HARNESS_URL`.
+- Browser tests: `node node_modules/@playwright/test/cli.js test -c <evidence>/harness/playwright.pulsar.config.mjs` serves the harness on loopback `127.0.0.1:5185` (strict port) at `/__pulsar-harness/` and runs `tests/pulsar-analysis.spec.ts`. The spec skips without `OPENVIREO_PULSAR_HARNESS_URL`. Since 2026-10-29 these harnesses are in the repository (`tests/harness/`, served by the dev server only) and `playwright.config.ts` sets the URL, so a plain `playwright test` runs them; see docs/TEST-HARNESSES.md. The external configs named here are historical.
 - `<evidence>/harness/playwright.pulsar.mobile.config.mjs` runs the same spec at a 390 × 844 touch viewport.
 - `<evidence>` = `/home/dobleuber/Documents/Codex/2026-10-18/task-3/claude-pulsar-analysis`.
 

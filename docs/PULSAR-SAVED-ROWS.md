@@ -16,7 +16,7 @@ Contracts, addresses and evidence hashes are in [PULSAR-SAVED-ROWS-PROVENANCE.js
 | `src/core/pulsarSavedRows.test.ts` | Unit contracts with hand-written control files |
 | `src/components/PulsarSavedRows.tsx` / `.css` | Self-contained viewer and `mountPulsarSavedRows` |
 | `src/components/PulsarSavedRowsMessages.ts` | Scoped English catalog (`savedRows.*`) |
-| `tests/pulsar-saved-rows.spec.ts` | Browser flows. They run against an owned harness and skip without `OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL`. |
+| `tests/pulsar-saved-rows.spec.ts` | Browser flows. They run against an owned harness and skip without `OPENVIREO_PULSAR_SAVED_ROWS_HARNESS_URL`, which `playwright.config.ts` sets to the in-repo harness (docs/TEST-HARNESSES.md). |
 
 ## Recovered file layout (fresh-file branch of the writer `0x56feac`)
 
