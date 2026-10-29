@@ -6,16 +6,18 @@ import {observeObjectXSpectrum,objectXSpectrometerFailure,type ObjectXSpectrumVi
 import {OBJECT_X_SPECTRA_LIMITS,type ObjectXSpectrumRecord} from './io/objectXSpectra';
 import type {FieldTelescope} from './core/fieldEngine';
 import type {JournalState} from './core/exposureJournal';
+import {ObjectXSpectrumSave} from './observatory/RouteSpectrumSave';
 
 /** E08 spectrometer branch (docs/OBJECT-X-SPECTRA.md). Hidden identity (D5): the display API carries no row, kind, record or
  * reason; every unavailable case shows the same message; labels are the student's ObjX ID. The field is evaluated in a Worker.
  * Kept spectra are part of the investigation (saved in the v29 wrapper) and are rebuilt from their journals. */
 type Available=Extract<ObjectXSpectrumView,{status:'available'}>;
-type View=Readonly<{kind:'idle'}|{kind:'loading'}|{kind:'error'}|{kind:'invalid'}|{kind:'unavailable'}|{kind:'ready';result:Available;state:JournalState;keptAs:string|null}|{kind:'kept';result:Available;state:JournalState;label:string}>;
+type View=Readonly<{kind:'idle'}|{kind:'loading'}|{kind:'error'}|{kind:'invalid'}|{kind:'unavailable'}|{kind:'ready';result:Available;state:JournalState;keptAs:string|null}|{kind:'kept';result:Available;state:JournalState;label:string;pointing:Readonly<{ra:number;dec:number}>}>;
 const TICK_MS=250;
 const seconds=(ms:number)=>(ms/1000).toFixed(1);
 const total=(s:JournalState)=>String(Math.round(s.exposure.counts.reduce((a,b)=>a+b,0)));
-export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,pointingOf}:Readonly<{target:Readonly<{ra:number;dec:number;code:string}>|null;label:string;disabled:boolean;spectra:readonly ObjectXSpectrumRecord[];onKeep:(record:ObjectXSpectrumRecord)=>void;pointingOf:(code:string)=>Readonly<{ra:number;dec:number}>|null}>){
+export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,pointingOf,active=true}:Readonly<{
+ /** Front S (S6): the Object X route is shown (the save card's print scope expects one card in the page). */active?:boolean;target:Readonly<{ra:number;dec:number;code:string}>|null;label:string;disabled:boolean;spectra:readonly ObjectXSpectrumRecord[];onKeep:(record:ObjectXSpectrumRecord)=>void;pointingOf:(code:string)=>Readonly<{ra:number;dec:number}>|null}>){
  const [telescope,setTelescope]=useState<FieldTelescope>(2),[view,setView]=useState<View>({kind:'idle'});
  const ticket=useRef(0),timer=useRef<number|null>(null),last=useRef(0);
  const stopTimer=()=>{if(timer.current!==null){window.clearInterval(timer.current);timer.current=null;}};
@@ -37,7 +39,7 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
   try{
    const r=await observeObjectXSpectrum(pointing,rec.telescope);if(ticket.current!==mine)return;
    if(r.status!=='available'){setView({kind:'error'});return;}
-   setView({kind:'kept',result:r,state:r.engine.replay(rec.seedAtReset,rec.events),label:rec.label});
+   setView({kind:'kept',result:r,state:r.engine.replay(rec.seedAtReset,rec.events),label:rec.label,pointing});
   }catch(e){if(ticket.current===mine)setView({kind:objectXSpectrometerFailure(e)==='evidence'?'invalid':'error'});}
  }
  // A transition the journal refuses leaves the state unchanged (the buttons already exclude them).
@@ -85,6 +87,8 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
    <p data-testid="objectx-spectrum-progress">{M.spectrumStatus(seconds(shown.state.exposure.elapsedMs),total(shown.state))}</p>
    <SpectrumPlot wavelengths={shown.result.wavelengths} counts={shown.state.exposure.counts} label={M.spectrumChart(shownName)}/>
    <div className="button-row"><button className="secondary-button" disabled={disabled||running||shown.state.exposure.elapsedMs===0} onClick={()=>saveCsv(shownName,shown.result,shown.state)}>{M.spectrumSaveCsv(shownName)}</button></div>
+   {!running&&<><ObjectXSpectrumSave active={active} busy={disabled} state={shown.state} label={shownName} pointing={view.kind==='kept'?view.pointing:target?{ra:target.ra,dec:target.dec}:null} minimum={shown.result.wavelengths[0]} telescopeName={M.spectrumTelescopes[shown.result.telescope]} saved={M.spectrumSaved}/>
+    {active&&<p className="observatory-note" data-testid="objectx-spectrum-save-note">{M.spectrumSaveNote}</p>}</>}
   </>}
   {spectra.length>0&&<div data-testid="objectx-spectra"><h4>{M.spectrumKeptTitle}</h4><ul>{spectra.map(r=><li key={r.label}>
    {M.spectrumKeptRow(r.label,M.spectrumTelescopes[r.telescope],seconds(r.events.reduce((a,e)=>a+(e.kind==='tick'?e.deltaMs:0),0)))}{' '}

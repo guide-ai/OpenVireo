@@ -98,6 +98,9 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  spectrumKeptFull:(n:number)=>`At most ${n} spectra can be kept in one investigation.`,
  spectrumShow:(label:string)=>`Show ${label}`,
  spectrumSaveCsv:(label:string)=>`Save ${label} spectrum (CSV)`,
+ // Front S (S6)
+ spectrumSaveNote:'The .SSP file is named after your ObjX label, and its header holds that label, the coordinates you were given and magnitude 0.000. VIREO writes the catalog name and magnitude there; OpenVireo leaves them out so that the file never names the object [W]. Load the file in Classify (Import SP or SSP) to classify it.',
+ spectrumSaved:(name:string)=>`Spectrum saved as ${name}. Your saved investigation keeps the exposure itself.`,
  imagesTitle:'3. Your images',noImages:'No images yet. Images taken with the CCD camera appear here.',
  imageRow:(label:string,ut:string,filter:string,seconds:number)=>`${label}: ${ut} UT, ${filter}, ${seconds} s`,
  datePlaceholder:'2009-06-01T04:00:00',imageRowPlain:(label:string,ut:string)=>`${label}: ${ut} UT`,

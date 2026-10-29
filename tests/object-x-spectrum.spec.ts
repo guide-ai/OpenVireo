@@ -62,6 +62,11 @@ test('star, galaxy and QSO from the student path: observed, kept, downloaded, sa
   expect(dl.suggestedFilename()).toBe(`${label}.csv`);const text=await readFile((await dl.path())!,'utf8');csv.push(text);
   expect(text.startsWith('wavelength_A,counts\r\n3700,')).toBe(true);expect(text.trim().split('\r\n')).toHaveLength(601);
   expect(leaksIn(text),kind).toEqual([]);expect(await pageLeaks(page),kind).toEqual([]);
+  // Front S (S6): Save .SSP through the shared writer; the file and its header carry the label, the given coordinates and 0.000.
+  const s=page.waitForEvent('download');await button(page,'Save spectrum (.SSP)').click();const sd=await s;
+  expect(sd.suggestedFilename()).toBe(`${label}.ssp`);const ssp=await readFile((await sd.path())!,'latin1'),lines=ssp.split('\r\n');
+  expect(lines[0]).toMatch(new RegExp(`^\\*SpHdr\\* ${label},-?\\d+\\.\\d{6},-?\\d+\\.\\d{5},0\\.000$`));expect(lines.filter(Boolean)).toHaveLength(601);expect(lines[1]).toMatch(/^3700\.00 /);
+  expect(leaksIn(ssp),kind).toEqual([]);
  }
  // Before the exposure the branch read identically for the three kinds.
  expect(new Set(ready).size).toBe(1);

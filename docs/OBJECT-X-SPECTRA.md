@@ -147,3 +147,21 @@ parts of the saved file; identical unavailable markup for star, galaxy, QSO and 
 N0730-00120 areas cross +15°), `data/objectx/PROVENANCE.json`, `data/objectx/witnesses.json` (independent Python model reproduced
 by `src/io/objectXSpectrometer.test.ts`: populations including the AQ CVn false merge, photograph associations and the selected
 stars' templates).
+
+## Save .SSP and Print (Front S, S6, 2026-10-29)
+
+VIREO's spectrometer saves a spectrum with File › Data › Save Spectrum (0x50fb1c, header 0x510090). OpenVireo now offers
+**Save spectrum (.SSP)** and **Print spectrum** for the shown Object X spectrum (a fresh exposure once stopped, or a kept one),
+through the same writer and card as the star, galaxy and LSS routes (`objectXSpectrumBytes` in `src/core/exposureSpectrum.ts`,
+`ObjectXSpectrumSave` in `src/observatory/RouteSpectrumSave.tsx`).
+
+Identity masking (research `analysis/front-s-spectroscopy/RE-observational-data-metadata.md` §5):
+- **File name:** the student's label, `ObjX-<ID>-Snn.ssp`. VIREO names the file `ObjX-<student>` when Show Object ID is off
+  and after the catalog object when it is on; OpenVireo always uses the label. Classify then takes that label as the object ID.
+- **Header:** `*SpHdr* <label>,<RA>,<Dec>,0.000`. VIREO always writes the selected catalog object's name and catalog
+  magnitude there; OpenVireo writes the label and magnitude 0.000 [W], before and after the reveal, so a saved file never
+  names or narrows down the object. The RA/Dec are the target coordinates the student was given.
+- The body is VIREO's: 600 rows from 3700 Å, step 1000/600 Å, normalized source-plus-sky counts.
+
+A test writes the file for every ObjectX.HTL target and checks that no catalogue ID, remark word or star-template name appears
+(`src/core/objectXSpectrumSave.test.ts`); the browser flow checks the downloaded file (`tests/object-x-spectrum.spec.ts`).
