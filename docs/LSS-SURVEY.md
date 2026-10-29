@@ -116,3 +116,10 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   z [W, coordinator decision of 2026-10-29]. The .TXT carries no z column and no velocity. Counts per box remain visible.
 - Not ported: Auto Plot and the group results file 0x57c710. (Wedge Print is ported by Front P; docs/WEDGE-PLOT.md.)
 
+
+## LSS stars are not acquired [W] (Front S, decision D5, 2026-10-29)
+
+When the nearest catalogue object in an LSS row's slit is a star, the row stays unavailable (`star-selected`): the survey
+acquires galaxy spectra only. VIREO would give that star's spectrum there (z ≈ 0), through the same star path the Object X
+and catalogue-star routes use. Turning it on would change E02's available-row counts (187/93/189) and the LSS fixtures, so it
+is a separate follow-up. LSS galaxy spectra can be classified through Save .SSP and Classify's import (docs/CLASSIFICATION-IMPORT.md).
