@@ -6,7 +6,7 @@ import path from 'node:path';
 import{spawnSync}from'node:child_process';
 import{fileURLToPath}from'node:url';
 import {tmpdir} from 'node:os';
-import {checkResources, resourceCheckCommand, checkOpenedResource, provenanceTotalIssues, assembledEntries} from './check-resources.mjs';
+import {checkResources, resourceCheckCommand, checkOpenedResource, provenanceTotalIssues, assembledEntries, censusRoots, unlistedResources} from './check-resources.mjs';
 
 const digest = text => createHash('sha256').update(text).digest('hex');
 const entry = (name, text) => ({path: name, bytes: Buffer.byteLength(text), sha256: digest(text)});
@@ -181,4 +181,34 @@ test('provenance records the assembled files and keeps each band inside one grou
   assert.deepEqual(provenanceTotalIssues(manifest, {...provenance, assembledFiles: 2, assembledBytes: 3}), ['assembledFiles 2 != 1', 'assembledBytes 3 != 4']);
   assert.deepEqual(provenanceTotalIssues({files: [a, b]}, provenance), ['assembledFiles 1 != 0', 'assembledBytes 4 != 0']);
   assert.deepEqual(provenanceTotalIssues(manifest, {...provenance, groups: {}}), ['assembled B.DAT tiles are not in one group']);
+});
+
+// Front G review 1: a census root must hold only listed files, so an extra tile cannot ship silently.
+test('census roots report unlisted files and entries, nested ones included; other directories are not censused', () => fixture(async root => {
+  await mkdir(path.join(root, 'data/g/N0000'), {recursive: true}); await mkdir(path.join(root, 'data/other'));
+  const a = entry('data/g/N0000/000.bin', 'aa'), b = entry('data/g/REGIONS.BIN', 'bb'), c = entry('data/other/x.json', '{}');
+  for (const [e, text] of [[a, 'aa'], [b, 'bb'], [c, '{}']]) await writeFile(path.join(root, e.path), text);
+  await writeFile(path.join(root, 'data/other/unlisted.json'), 'not censused');
+  const manifest = {files: [a, b, c], censusRoots: ['data/g']};
+  assert.deepEqual((await checkResources(root, manifest)).unlisted, []);
+  await writeFile(path.join(root, 'data/g/N0000/001.bin'), 'extra'); await mkdir(path.join(root, 'data/g/S0000'));
+  await writeFile(path.join(root, 'data/g/S0000/000.bin'), 'extra'); await symlink('000.bin', path.join(root, 'data/g/N0000/link.bin'));
+  assert.deepEqual(await unlistedResources(root, manifest), [
+    {path: 'data/g/N0000/001.bin', reason: 'not listed in the manifest'},
+    {path: 'data/g/N0000/link.bin', reason: 'unlisted non-regular entry'},
+    {path: 'data/g/S0000/000.bin', reason: 'not listed in the manifest'}]);
+  const lines = [];
+  await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify(manifest));
+  assert.equal(await resourceCheckCommand(root, [], line => lines.push(line)), 1);
+  assert.ok(lines.includes('Unlisted files under data/g: 3.') && lines.includes('  data/g/S0000/000.bin: not listed in the manifest'));
+  assert.equal((await checkResources(root, {files: [a, b, c]})).unlisted, undefined);
+}));
+
+test('censusRoots are validated before IO', () => {
+  const a = entry('data/g/000.bin', 'aa'), files = [a];
+  assert.deepEqual(censusRoots({files, censusRoots: ['data/g']}), ['data/g']);
+  assert.deepEqual(censusRoots({files}), []);
+  for (const roots of [[], 'data', ['../x'], ['data/../g'], ['public/private'], ['data/g', 'data/g'], ['data/none'], ['/data/g'], [3]]) {
+    assert.throws(() => censusRoots({files, censusRoots: roots}), /censusRoots/);
+  }
 });

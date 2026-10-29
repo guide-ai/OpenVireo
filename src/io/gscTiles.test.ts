@@ -32,6 +32,10 @@ describe('GSC tile store',()=>{
   mode='ok';expect(await store.tile(small,0)).toEqual(tileBytes(0));expect(m.calls).toHaveLength(5);
   await expect(store.tile(small,7)).rejects.toMatchObject({code:'index'});
  });
+ it('reports a missing tile behind an SPA fallback (200 with index.html) as fetch, not integrity (review L2)',async()=>{
+  const m=mock(()=>new Response('<!doctype html><title>OpenVireo</title>',{headers:{'content-type':'text/html; charset=utf-8'}}));
+  await expect(createGscTileStore({fetcher:m.fetcher}).tile(small,0)).rejects.toMatchObject({code:'fetch',band:'N0000',tile:0});
+ });
  it('lets a caller stop waiting with an abort, while the shared request completes for others',async()=>{
   let release!:()=>void;const gate=new Promise<void>(r=>release=r);
   const m=mock(async path=>{await gate;return byPath(path);}),store=createGscTileStore({fetcher:m.fetcher});

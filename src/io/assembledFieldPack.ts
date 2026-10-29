@@ -14,10 +14,15 @@ import {planGscBandRead} from '../core/gscTilePlan';
 import {packWithPhotographs,parseGlimagesPositions} from '../core/lssLists';
 import {VARIABLE_RECORD_OFFSETS} from '../core/variableMerge';
 import {VSTRS_RECORD_BYTES} from '../core/variableStars';
-import {gscBandIndex,tiledBandSource,type GscIndex,type GscTileStore} from './gscTiles';
+import {GscTileError,gscBandIndex,tiledBandSource,type GscIndex,type GscTileStore} from './gscTiles';
 
+/** ra-wrap / polar: not yet ported (G-RE1 / G-RE2); regions: more than 100 regions; budget: more than the visit budget in a
+ * band; band-end: the native search runs past a band's last record (the minimum RA key is above every record), where VIREO
+ * reads past EOF and raises an I/O error (Front O RECOVERY-E §4) — nothing to approximate; plan: a read outside the planned
+ * tiles (a planning bug, never a skipped record); source: a malformed bundled file. Tile fetch and integrity failures stay
+ * GscTileError ('fetch' / 'integrity'), and an abort is the DOMException AbortError. */
 export class AssembledFieldError extends Error{
- constructor(readonly code:'ra-wrap'|'polar'|'input'|'regions'|'budget'|'source'){super(`Assembled field: ${code}`);this.name='AssembledFieldError';}
+ constructor(readonly code:'ra-wrap'|'polar'|'input'|'regions'|'budget'|'band-end'|'plan'|'source'){super(`Assembled field: ${code}`);this.name='AssembledFieldError';}
 }
 export type AssemblySources=Readonly<{index:GscIndex;tiles:GscTileStore;variables:Uint8Array;variablesSha256:string;qso:Uint8Array;qsoSha256:string;glimages:Uint8Array}>;
 /** The adapter's per-band visit budget, as packStars (fieldEngine.ts). */
@@ -44,12 +49,18 @@ export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}
   const source=tiledBandSource(b,await s.tiles.tiles(b,plan.tiles,signal));
   let trace;
   try{trace=traceCompactGscBandRead(source,key,area.maximumRa,ASSEMBLED_SCAN_BUDGET);}
-  catch(e){if(e instanceof CompactBandReadOrderError)throw new AssembledFieldError(e.code==='budget'?'budget':'source');throw e;}
+  catch(e){
+   if(e instanceof CompactBandReadOrderError)throw new AssembledFieldError(e.code==='budget'?'budget':e.code==='read-boundary'?'band-end':'source');
+   if(e instanceof GscTileError&&e.code==='missing-tile')throw new AssembledFieldError('plan');
+   throw e;
+  }
   const reads=new Map<number,string>();
   for(const r of [...trace.probes,...trace.visits]){
    if(reads.has(r.recordIndex))continue;
-   const p=new DataView(source.readPosition(r.recordIndex).buffer),ra=p.getInt32(0,true)/10_000_000,dec=p.getInt32(4,true)/100_000;
-   reads.set(r.recordIndex,inside(ra,dec)?hex(source.readRecord(r.recordIndex)):hex(source.readPosition(r.recordIndex)));
+   try{
+    const p=new DataView(source.readPosition(r.recordIndex).buffer),ra=p.getInt32(0,true)/10_000_000,dec=p.getInt32(4,true)/100_000;
+    reads.set(r.recordIndex,inside(ra,dec)?hex(source.readRecord(r.recordIndex)):hex(source.readPosition(r.recordIndex)));
+   }catch(e){if(e instanceof GscTileError&&e.code==='missing-tile')throw new AssembledFieldError('plan');throw e;}
   }
   if(reads.size>FIELD_PACK_LIMITS.readsPerBand)throw new AssembledFieldError('budget');
   bands.push({name,recordCount:b.records,sha256:b.sha256,reads:[...reads].sort((x,y)=>x[0]-y[0])});

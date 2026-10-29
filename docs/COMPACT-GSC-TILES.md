@@ -44,7 +44,10 @@ re-reads the tiles to check that every band reassembles to its approved hash. No
   "Assembled original files: 24/24 equal the concatenation of their tiles."
 - `docs/RESOURCE-PROVENANCE.json` records `assembledFiles` and `assembledBytes` and the `public/original/gsc` and `data/gsc`
   groups. Tests: `scripts/check-resources.test.mjs`.
-- Measured: the whole check takes about 1.4 s warm.
+- `censusRoots` in `docs/LOCAL-RESOURCES.json` is `public/original`. check-resources reports any file, symlink or special entry
+  under it that the manifest does not list, so an extra tile cannot ship silently (review 1). `data/` is not a census root
+  yet: six of its files are unlisted and belong to other fronts.
+- Measured: the whole check takes about 1.6 s warm.
 
 ## Reading
 
@@ -72,6 +75,11 @@ Tests (`src/core/gscTilePlan.test.ts`) check that the plan equals the tiles the 
 - **Memory:** at most 24 tiles (about 42 MB) are kept in memory, least recently used evicted. Concurrent callers share one
   request per tile, and each caller can stop waiting with an AbortSignal.
 - **Errors:** `GscTileError` with code `fetch`, `integrity`, `index`, `missing-tile` or `budget`.
+  - `fetch` covers a failed request, a non-OK status and an HTML answer. A host with an SPA fallback answers a missing tile
+    with 200 and `index.html`; that is a missing file, not changed bytes (review 1 L2).
+  - `integrity` means the bytes the server returned differ in size or SHA-256 from the index.
+  - The names are immutable and the bytes are fixed by the approved hashes. A re-cut with different bytes under the same names
+    would keep failing with `integrity` until the HTTP cache is cleared.
 - **Band source:** `tiledBandSource` gives the existing trace synchronous reads over the fetched tiles. The outer search probes
   come from the skeleton when their tile was not fetched.
 - No IndexedDB or Worker is used; none has been shown to be needed.
@@ -86,13 +94,32 @@ unchanged:
 - every CLEA_VStrs.dat variable record and every CLEA_QSO.DAT position inside the area, from the whole bundled files;
 - the GLIMAGES.LST indices inside the area (`packWithPhotographs`).
 
-`AssembledFieldError` types what is not yet supported:
-- `ra-wrap`: the area crosses RA 0 h/24 h; VIREO splits it into two reads at 0x597ac8, to be recovered in G-RE1.
-- `polar`: \|Dec\| ≥ 89°, to be recovered in G-RE2.
-- `regions`: more than 100 regions.
-- `budget`: more than 10,000 visits per band.
+`AssembledFieldError` types what is not yet supported or cannot be read:
+- `ra-wrap`: the area crosses RA 0 h/24 h. VIREO splits it into two reads at 0x597ac8 (recovered in G-RE1; ported in G1b).
+- `polar`: \|Dec\| ≥ 89° (recovered in G-RE2; G1b narrows this to an RA half-width ≥ 12 h, about \|Dec\| ≥ 89.88°).
+- `regions`: more than 100 regions. A ±0.375° field never exceeds 12, even at ±90°.
+- `budget`: more than 10,000 visits in one band, the same limit the field engine applies (`packStars`).
+- `band-end`: the native search runs past a band's last record because the minimum RA key is above every record. VIREO reads
+  past EOF there and raises an I/O error.
+- `plan`: a read outside the planned tiles. This is a planning bug, never a skipped record.
+- `source`: a malformed bundled file.
+
+A tile fetch or integrity failure stays a `GscTileError`, and an abort is the DOMException `AbortError`.
 
 Nothing is approximated.
+
+**Measured visit budget (review 1 L5).** The largest band scan of one field, over 47 RA values at each Dec:
+
+| Dec | −88.99 | −88.9 | −88.5 | −88 | −87 | +88 | +88.5 | +88.9 | +88.99 |
+|---|---|---|---|---|---|---|---|---|---|
+| Visits | 14,594 | 13,439 | 10,046 | 7,662 | 5,188 | 6,160 | 8,066 | 10,339 | 11,157 |
+
+- The peaks are at RA 15.5–16 h in S8230 and 1–1.5 h in N8230. Dense band-edge fields elsewhere stay under about 6,000
+  (review measurement).
+- VIREO has no such budget. It is an adapter guard, and at |Dec| ≈ 88.5–89° it currently yields the typed `budget`.
+- **Decision:** G1 keeps the 10,000 limit, equal to the engine's, so the engine and the assembler agree. G1b raises both
+  together to 100,000, as part of the polar port. That covers a whole polar band (S8230: 95,441 records; N8230: 74,656), which
+  is what the native scan reads when the RA half-width approaches 24 h.
 
 **Behaviour:** G1 does not change any route yet. The published bounded packs stay the certified fast path. Opening other
 pointings is phased in from G2 on (analysis/front-plans/front-g-gsc.md §6, §8).
@@ -104,8 +131,9 @@ These proofs read the published tiles from disk.
   Coma and Boötes engine packs, the 7 Object X packs, the 6 pinned snapshots and the 5 Pleiades photometer files. Whole records
   are byte-equal, and position witnesses equal the first 8 bytes. The stored band record counts equal the tiled ones.
 - **Populations:** at every certified pointing (more than 200), a pack assembled from the tiles gives the identical
-  `buildFieldPopulation` result as the published pack, with the QSO gate and with the recovered merge. The test also requires
-  that the comparisons are of real populations.
+  `buildFieldPopulation` result as the published pack, with the QSO gate and with the recovered merge. This covers all six
+  pinned snapshots, including the fresh-Hubble fallback and the star route's field. The test is self-contained and also
+  requires that the comparisons are of real populations.
   - The Pleiades files are covered by the byte proof. Their photometer read path is checked when the photometer opens to other
     pointings (G3).
   - UM-I-3 is VIREO's cached pan of the 36773 field and has no fresh read of its own.

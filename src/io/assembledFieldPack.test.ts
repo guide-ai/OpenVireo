@@ -65,33 +65,35 @@ function certified():{id:string;pack:FieldPack}[]{
  const glimagesPositions=parseGlimagesPositions(glimages),out:{id:string;pack:FieldPack}[]=[];
  for(const p of lssPacks)out.push({id:p,pack:packWithPhotographs(decodeFieldPack(json(p)),glimagesPositions)});
  for(const p of [...enginePacks,...objectXPacks])out.push({id:p,pack:decodeFieldPack(json(p))});
- for(const p of snapshots.slice(0,4))out.push({id:p,pack:fieldPackFromSnapshot(p.replace(/^.*\/|\.json$/g,''),json(p))});
+ // All six pinned snapshots, including the fresh-Hubble fallback and the star route's field (review 1 L4).
+ for(const p of snapshots)out.push({id:p,pack:fieldPackFromSnapshot(p.replace(/^.*\/|\.json$/g,''),json(p))});
  return out;
 }
 const qsoCatalog={bytes:qso,sha256:sha(qso)};
 const optionSets:readonly (readonly [string,FieldOptions])[]=[['gate',{}],['merge',{qso:'merge',qsoCatalog}]];
 
+// One self-contained test (review 1 L3): its own counters, so it passes alone, filtered or shuffled.
 describe('a pack assembled from the tiles gives the identical population at every certified pointing (§5b)',()=>{
- const packs=certified();let populated=0,stars=0;
- it.each(packs.map(p=>[p.id,p] as const))('%s',async(_id,{pack})=>{
-  const s=sources();
-  for(const pointing of pack.pointings){
-   const assembled=await assembleFieldPack(pointing,s);
-   // Every assembled read is the stored read or (for a record outside this pointing's area but inside another's) its prefix.
-   for(const b of assembled.bands){const stored=pack.bands.find(x=>x.name===b.name)!;for(const [i,h] of b.reads)expect(stored.reads.get(i)?.startsWith(h),`${b.name}@${i}`).toBe(true);}
-   for(const [label,options] of optionSets){
-    let expected,actual;try{expected=buildFieldPopulation(pack,glx,pointing,options);}catch(e){expected=String(e);}
-    try{actual=buildFieldPopulation(assembled,glx,pointing,options);}catch(e){actual=String(e);}
-    expect(actual,`${pointing.ra},${pointing.dec} ${label}`).toEqual(expected);
-    if(typeof expected!=='string'&&expected.population){populated++;stars+=expected.population.stars.length;}
+ it('every certified pack and pointing, under the QSO gate and the recovered merge; the comparisons are of real populations',async()=>{
+  const packs=certified(),s=sources();let pointings=0,populated=0,stars=0;
+  for(const {id,pack} of packs){
+   for(const pointing of pack.pointings){
+    pointings++;
+    const assembled=await assembleFieldPack(pointing,s);
+    // Every assembled read is the stored read or (for a record outside this pointing's area but inside another's) its prefix.
+    for(const b of assembled.bands){const stored=pack.bands.find(x=>x.name===b.name)!;for(const [i,h] of b.reads)expect(stored.reads.get(i)?.startsWith(h),`${id} ${b.name}@${i}`).toBe(true);}
+    for(const [label,options] of optionSets){
+     let expected,actual;try{expected=buildFieldPopulation(pack,glx,pointing,options);}catch(e){expected=String(e);}
+     try{actual=buildFieldPopulation(assembled,glx,pointing,options);}catch(e){actual=String(e);}
+     expect(actual,`${id} ${pointing.ra},${pointing.dec} ${label}`).toEqual(expected);
+     if(typeof expected!=='string'&&expected.population){populated++;stars+=expected.population.stars.length;}
+    }
    }
   }
- },240_000);
- it('covers every certified pointing, and the comparisons are of real populations',()=>{
-  expect(packs.reduce((n,p)=>n+p.pack.pointings.length,0)).toBeGreaterThan(200);
+  expect(packs).toHaveLength(9+2+objectXPacks.length+6);expect(pointings).toBeGreaterThan(200);
   // Not vacuous: most pointings (under both QSO modes) build a population, with tens of thousands of stars in all.
   expect(populated).toBeGreaterThan(300);expect(stars).toBeGreaterThan(20_000);
- });
+ },1_200_000);
 });
 
 describe('assembled reads equal the whole band for other pointings (§7)',()=>{

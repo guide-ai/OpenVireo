@@ -1,6 +1,6 @@
 import {createHash} from 'node:crypto';
 import {constants} from 'node:fs';
-import {readFile, open, stat, lstat, realpath} from 'node:fs/promises';
+import {readFile, open, stat, lstat, realpath, readdir} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -39,6 +39,34 @@ export function assembledEntries(manifest, entries = resourceEntries(manifest)) 
     if (tiles.reduce((sum, t) => sum + t.bytes, 0) !== band.bytes) throw field('bytes');
     return {name: band.name, bytes: band.bytes, sha256: band.sha256, tiles};
   });
+}
+/** Optional censusRoots (Front G review 1): directories whose every file must be listed in files[]. Validated before any IO. */
+export function censusRoots(manifest, entries = resourceEntries(manifest)) {
+  if (manifest?.censusRoots === undefined) return [];
+  if (!Array.isArray(manifest.censusRoots) || !manifest.censusRoots.length) throw new ResourceManifestError('censusRoots must be a nonempty array');
+  const seen = new Set();
+  return manifest.censusRoots.map((root, index) => {
+    if (typeof root !== 'string' || !/^(data|public\/original)(\/[A-Za-z0-9_.-]+)*$/.test(root) || root.split('/').some(part => part === '.' || part === '..') || seen.has(root)) throw new ResourceManifestError('censusRoots', index);
+    seen.add(root);
+    if (!entries.some(e => e.path.startsWith(root + '/'))) throw new ResourceManifestError('censusRoots', index);
+    return root;
+  });
+}
+/** Every file or other entry under the census roots that the manifest does not list (symlinks and special files included). */
+export async function unlistedResources(root, manifest) {
+  const entries = resourceEntries(manifest), roots = censusRoots(manifest, entries), listed = new Set(entries.map(e => e.path)), out = [];
+  async function walk(rel) {
+    let items;
+    try {items = await readdir(path.join(root, rel), {withFileTypes: true});}
+    catch (error) {if (!isFilesystemError(error)) throw error; out.push({path: rel, reason: `census unreadable (${error.code})`}); return;}
+    for (const item of items.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)) {
+      const child = `${rel}/${item.name}`;
+      if (item.isDirectory()) await walk(child);
+      else if (!listed.has(child)) out.push({path: child, reason: item.isFile() ? 'not listed in the manifest' : 'unlisted non-regular entry'});
+    }
+  }
+  for (const r of roots) await walk(r);
+  return out;
 }
 const ioReason = code => ({ENOENT: 'missing', ENOTDIR: 'parent is not a directory', ELOOP: 'symlink loop', EACCES: 'permission denied', EPERM: 'permission denied', EISDIR: 'not a regular file'}[code] ?? 'unreadable');
 const isFilesystemError = error => typeof error?.code === 'string' && (/^E[A-Z0-9]+$/.test(error.code) || error.code === 'UNKNOWN');
@@ -94,7 +122,7 @@ async function rootDiagnostics(root, entries) {
   return issues;
 }
 export async function checkResources(root, manifest) {
-  const entries = resourceEntries(manifest), bands = assembledEntries(manifest, entries); // Validate everything before resource IO.
+  const entries = resourceEntries(manifest), bands = assembledEntries(manifest, entries); censusRoots(manifest, entries); // Validate everything before resource IO.
   const roots = await rootDiagnostics(root, entries), results = new Array(entries.length), directories = new Map();
   // One task per ordinary file; one task per assembled band, which reads its tiles in order and feeds each chunk to both the
   // tile's own hash and the band's hash (the same single read pass, no extra IO).
@@ -110,7 +138,8 @@ export async function checkResources(root, manifest) {
   const workers = Array.from({length: Math.min(8, tasks.length)}, async () => {while (next < tasks.length) await tasks[next++]();});
   await Promise.all(workers);
   const issues = results.filter(Boolean), bandIssues = bands.map(b => b.issue).filter(Boolean);
-  return {total: entries.length, matched: entries.length - issues.length, issues,
+  const unlisted = manifest?.censusRoots === undefined ? null : await unlistedResources(root, manifest);
+  return {total: entries.length, matched: entries.length - issues.length, issues, ...(unlisted ? {unlisted} : {}),
     ...(bands.length ? {assembled: {total: bands.length, matched: bands.length - bandIssues.length, issues: bandIssues}} : {}), ...(roots.length ? {roots} : {})};
 }
 /** docs/RESOURCE-PROVENANCE.json totals must equal the manifest: file count, byte sum and per-extension counts. */
@@ -153,15 +182,19 @@ export async function resourceCheckCommand(root, args = [], output = console.log
   catch (error) {if (!(error instanceof ResourceManifestError)) throw error; output(`Resource manifest invalid: ${error.message}.`); return 2;}
   output(`Local scientific resources: ${report.matched}/${report.total} match size and SHA-256.`);
   if (report.assembled) output(`Assembled original files: ${report.assembled.matched}/${report.assembled.total} equal the concatenation of their tiles.`);
+  if (report.unlisted) output(`Unlisted files under ${manifest.censusRoots.join(', ')}: ${report.unlisted.length}.`);
   let totals = [];
   try {totals = provenanceTotalIssues(manifest, JSON.parse(await readFile(path.join(root, 'docs/RESOURCE-PROVENANCE.json'), 'utf8')));}
   catch (error) {if (!isFilesystemError(error) && !(error instanceof SyntaxError)) throw error; totals = error.code === 'ENOENT' ? [] : ['docs/RESOURCE-PROVENANCE.json unreadable'];}
   for (const issue of totals) output(`  RESOURCE-PROVENANCE.json: ${issue}`);
   for (const issue of report.assembled?.issues ?? []) output(`  ${issue.path}: ${issue.reason}`);
-  if (!report.issues.length && !report.assembled?.issues.length) return totals.length ? 1 : 0;
+  for (const issue of (report.unlisted ?? []).slice(0, 20)) output(`  ${issue.path}: ${issue.reason}`);
+  if ((report.unlisted?.length ?? 0) > 20) output(`  ... ${report.unlisted.length - 20} additional unlisted files.`);
+  if (!report.issues.length && !report.assembled?.issues.length && !report.unlisted?.length) return totals.length ? 1 : 0;
   for (const issue of report.roots ?? []) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   for (const issue of report.issues.slice(0, 20)) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   if (report.issues.length > 20) output(`  ... ${report.issues.length - 20} additional resource issues.`);
+  if (report.unlisted?.length) output('Remove each unlisted file, or list it (with its approval) in docs/LOCAL-RESOURCES.json.');
   output('Restore missing or changed versioned resources from the matching source revision.');
   output('See README.md and docs/LOCAL-RESOURCES.json. Nothing was downloaded, generated or changed.');
   return 1;

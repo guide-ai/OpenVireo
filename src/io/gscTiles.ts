@@ -38,8 +38,13 @@ export function createGscTileStore(options:GscTileStoreOptions={}){
   const t=b.tiles[tile];if(!t)throw new GscTileError('index',b.name,tile);
   let buffer:ArrayBuffer;
   // The shared request is not tied to one caller's signal; each caller can still stop waiting (see `tile`).
-  try{const response=await fetcher(gscTilePath(b.name,tile),{credentials:'same-origin',cache:'force-cache'});buffer=await boundedResourceBody(response,t.bytes);}
-  catch(e){throw new GscTileError(e instanceof BoundedResourceError&&e.code==='size'?'integrity':'fetch',b.name,tile);}
+  try{
+   const response=await fetcher(gscTilePath(b.name,tile),{credentials:'same-origin',cache:'force-cache'});
+   // A host with an SPA fallback answers a missing tile with 200 and index.html: that is a missing file, not changed bytes.
+   if(/^\s*text\/html\b/i.test(response.headers.get('content-type')??'')){try{await response.body?.cancel();}catch{/* ignore */}throw new GscTileError('fetch',b.name,tile);}
+   buffer=await boundedResourceBody(response,t.bytes);
+  }
+  catch(e){if(e instanceof GscTileError)throw e;throw new GscTileError(e instanceof BoundedResourceError&&e.code==='size'?'integrity':'fetch',b.name,tile);}
   if(buffer.byteLength!==t.bytes||await resourceSha256(buffer)!==t.sha256)throw new GscTileError('integrity',b.name,tile);
   return new Uint8Array(buffer);
  }
