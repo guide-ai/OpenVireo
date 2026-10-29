@@ -13,7 +13,7 @@ describe('pulsar provenance', () => {
     expect(cited.size).toBeGreaterThan(10);
     for (const id of cited) { expect(documented.has(id), id).toBe(true); expect(documented.get(id)!.range).toMatch(/^0x[0-9a-f]+/); }
   });
-  it('binds the Review transaction and Delete to their source captures, keeping Find gated', () => {
+  it('binds the Review transaction and Delete to their source captures; Find is a labelled web adaptation (Front R1)', () => {
     const byId = new Map(provenance.contracts.map(c => [c.id, c]));
     const listing = new Map(provenance.listings.map(l => [l.id, l]));
     expect(byId.get('PLR-REVIEW-TRANSACTION-STATIC-01')!.range).toBe('0x563464..0x5634c6');
@@ -23,8 +23,8 @@ describe('pulsar provenance', () => {
     expect(listing.get('GNU-REVIEW-DELETE')!.sha256).toBe('f4d97cbd6b601baa9bfa203a231884acaedf62f692c1671d9f16ab02fc33e44b');
     expect(listing.get('REVIEW-DFM')!.sha256).toBe('3fb3dceffd06a20dffb1b00e0fbc476b3e6c82063f291fd260bf753cb103f531');
     const gated = String((byId.get('PLR-REVIEW-01') as { status?: string }).status);
-    // Superseded by the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01): Find alone stays gated.
-    expect(gated.slice(0, gated.indexOf(':'))).toBe('GATED for Find (FndBtnClick 0x5634c8)');
+    // Front R1: Find is enabled over the web row text; the comment-only Edit (PLR-REVIEW-EDIT-STATIC-01) stays as before.
+    expect(gated.slice(0, gated.indexOf(':'))).toBe('WEB ADAPTATION for Find (FndBtnClick 0x5634c8), Front R1 (2026-10-29)');
     expect(gated).toMatch(/EditBtnClick 0x56373c is implemented for the comment only/);
     expect(gated).not.toMatch(/read-only list/);
     expect(JSON.stringify(byId.get('PLR-REVIEW-TRANSACTION-STATIC-01'))).toMatch(/OnActivate.*not recovered|VCL runtime question/);
@@ -59,7 +59,7 @@ describe('pulsar provenance', () => {
     expect(text).not.toMatch(/two (chosen |independent )?models|Second, independent model|not parsed, validated or exported/);
     expect(readFileSync(new URL('../../docs/PULSAR-ANALYSIS.md', import.meta.url), 'utf8')).toMatch(/while the inner question, notice or comment editor is open/);
   });
-  it('records the recovered Find contract and the row-text blocker that keeps Find disabled', () => {
+  it('records the recovered Find contract and the row-text caveat that makes its web Find an adaptation', () => {
     const find = provenance.contracts.find(c => c.id === 'PLR-REVIEW-FIND-STATIC-01') as Record<string, string> | undefined;
     expect(find).toBeDefined();
     expect(find!.range.split(', ')).toEqual(['0x5634c8..0x5636de', '0x492a8c..0x492c6d', '0x5ad3c2..0x5ad3d0', '0x570e77..0x570ec0', '0x56a49d..0x56a4be', '0x56a848..0x56a85d',
@@ -73,7 +73,7 @@ describe('pulsar provenance', () => {
     expect(find!.observed).toMatch(/two call targets are not bound/);
     expect(find!.observed).toContain('flags 0x40');expect(find!.observed).toContain('may OR 0x100000');
     expect(find!.observed).toContain('does not replace the stored Items strings');
-    expect(find!.blocker).toMatch(/^Not enabled\. /);
+    expect(find!.blocker).toMatch(/^Enabled since Front R1 as a web adaptation; /);expect(find!.web).toMatch(/savedFindRun/);
     expect(find!.blocker).toMatch(/no-scan path: when Items\.Count <= start/);
     expect(find!.blocker).toMatch(/13 prepared handwritten vectors .* were not executed/);
     expect(find!.uncertainty).toMatch(/inference from that caption/);
@@ -126,12 +126,13 @@ describe('pulsar provenance', () => {
     const texts = [JSON.stringify(provenance), ...['../../docs/PULSAR-ANALYSIS.md', './pulsarRecording.ts', './pulsarReview.ts', './pulsarReviewEdit.ts', '../components/PulsarMessages.ts']
       .map(f => readFileSync(new URL(f, import.meta.url), 'utf8'))];
     for (const text of texts) expect(text).not.toMatch(/exact (native )?`?(open-dialog |OpenDialog\.)`?\s*\*?\s*FileName|native full path|full path given to the reader|shows the full path|reader FileName text|the reader received|is not a native non-match|of the loaded file \(possibly/);
-    expect(readFileSync(new URL('../components/PulsarMessages.ts', import.meta.url), 'utf8')).toMatch(/'pulsar\.review\.gated': 'Find is not available: [^']*whole stored lines\. Their native number text and, when present, file name text/);
+    // Front R1: the gated text is retired; the Find note names the same file-name and number-text caveat.
+    expect(readFileSync(new URL('../components/RadioR1Messages.ts', import.meta.url), 'utf8')).toMatch(/findNote:'[^']*file-name tail[^']*last digit of a number/);
   });
   it('records the artifact hash, the REA evidence and the gated contracts', () => {
     expect(provenance.artifact.sha256).toBe('781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c');
     expect(provenance.rea.evidenceId).toMatch(/^ev_[0-9a-f]{64}$/);
-    expect(provenance.contracts.filter(c => 'status' in c && String(c.status).startsWith('GATED')).map(c => c.id)).toEqual(['PLR-REVIEW-01', 'PLR-CSV-01']);
+    expect(provenance.contracts.filter(c => 'status' in c && String(c.status).startsWith('GATED')).map(c => c.id)).toEqual(['PLR-CSV-01']); // Front R1: PLR-REVIEW-01 is no longer gated (Find is a web adaptation)
     expect(provenance.acceptanceClaim).toMatch(/^none/);
   });
   it('pins the recovered DFM geometry and PanTimer interval and drops superseded claims', () => {

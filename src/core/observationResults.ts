@@ -39,9 +39,37 @@ export function formatObservationType(code:number):string{
  const prefix=prefixes.find(([n])=>n===lum),ordinary=!prefix&&index>=14,subText=sub===99||sub===0&&!ordinary?'':sub%10===0?String(sub/10):`${Math.trunc(sub/10)}.${sub%10}`;
  return((prefix?.[1]??'')+spectral[index][1]+subText+(luminosity.find(([n])=>n===lum)?.[1]??'')+(peculiarities.find(([n])=>n===pec)?.[1]??'')).slice(0,12);
 }
-export type ObservationSource=Readonly<{id:string;sha256:string;objectId:string}>;
+/** Front S (S4): a spectrum loaded from a file ('imported') or acquired here ('acquired') carries the Observational Data values
+ * VIREO reads for a loaded .SSP (RE-observational-data-metadata.md §2): JD from the file time, RA/Dec from the *SpHdr* pointing.
+ * null = not known (shown blank, as VIREO shows a zero). Photometry and Z stay blank for Classify records. */
+export type ObservationMetadata=Readonly<{kind:'imported'|'acquired';jd:number|null;ra:number|null;dec:number|null}>;
+export type ObservationSource=Readonly<{id:string;sha256:string;objectId:string;metadata?:ObservationMetadata}>;
 const sources:readonly ObservationSource[]=Object.freeze(CLASSIFICATION_CATALOG.practice.map(p=>Object.freeze({id:p.id,sha256:p.sha256,objectId:observationText(p.label,15)})));
-export function observationSource(id:string):ObservationSource{const source=sources.find(s=>s.id===id);if(!source)throw new ObservationResultError('source');return source;}
+const externals=new Map<string,ObservationSource>();
+const optional=(v:unknown,lo:number,hi:number)=>v===null||typeof v==='number'&&Number.isFinite(v)&&v>=lo&&v<hi&&!Object.is(v,-0);
+/** One frozen object per distinct external source, so that records keep comparing sources by identity. */
+export function externalObservationSource(input:ObservationSource):ObservationSource{
+ const m=input?.metadata;
+ if(!m||typeof input.id!=='string'||typeof input.sha256!=='string'||!/^[a-f0-9]{64}$/.test(input.sha256)||typeof input.objectId!=='string')throw new ObservationResultError('source');
+ const expected=m.kind==='imported'?/^imported:[a-f0-9]{64}$/:m.kind==='acquired'?/^acquired:[a-f0-9]{64}$/:null;
+ if(!expected||!expected.test(input.id)||m.kind==='imported'&&input.id!=='imported:'+input.sha256)throw new ObservationResultError('source');
+ if(!optional(m.jd,0,1e7)||!optional(m.ra,0,24)||!optional(m.dec,-90,90.0000001))throw new ObservationResultError('source');
+ const objectId=observationText(input.objectId,15),key=JSON.stringify([input.id,input.sha256,objectId,m.kind,m.jd,m.ra,m.dec]);
+ let source=externals.get(key);
+ if(!source){source=Object.freeze({id:input.id,sha256:input.sha256,objectId,metadata:Object.freeze({kind:m.kind,jd:m.jd,ra:m.ra,dec:m.dec})});externals.set(key,source);}
+ return source;
+}
+/** The practice source with this id, or the given external source when its id matches. */
+export function observationSource(id:string,external?:ObservationSource|null):ObservationSource{
+ const source=sources.find(s=>s.id===id);if(source)return source;
+ if(external&&external.id===id)return externalObservationSource(external);
+ throw new ObservationResultError('source');
+}
+/** The canonical object for a stored source (practice: by id, with matching hash and object; external: by value). */
+export function canonicalObservationSource(s:ObservationSource):ObservationSource{
+ if(s?.metadata)return externalObservationSource(s);
+ const source=observationSource(s?.id);if(s.sha256!==source.sha256||s.objectId!==source.objectId)throw new ObservationResultError('source');return source;
+}
 export type ObservationRecord=Readonly<{id:number;source:ObservationSource;spectralCode:number;remarks:string}>;
 export type ObservationNotebook=Readonly<{records:readonly ObservationRecord[]}>;
 export const EMPTY_OBSERVATIONS:ObservationNotebook=Object.freeze({records:Object.freeze([])}),MAX_OBSERVATIONS=100;
@@ -53,18 +81,18 @@ export type ObservationEdit=Readonly<{base:ObservationNotebook;contextSource:Obs
  * Selected Edit549690/selected Delete54981bresolve the chosen row;activation
  *54a93dloads its record pointer. Comparison context and row owner stay distinct.
  * Evidence:docs/OBSERVATION-ROW-OWNERSHIP-PROVENANCE.json. */
-export function openObservation(book:ObservationNotebook,id:string,mode:ObservationMode,recordId?:number):ObservationEdit{
- const contextSource=observationSource(id);if(mode!=='reuse'&&mode!=='append')throw new ObservationResultError('record');
+export function openObservation(book:ObservationNotebook,id:string,mode:ObservationMode,recordId?:number,external?:ObservationSource|null):ObservationEdit{
+ const contextSource=observationSource(id,external);if(mode!=='reuse'&&mode!=='append')throw new ObservationResultError('record');
  const target=recordId===undefined?mode==='reuse'?book.records.find(r=>r.source===contextSource)??null:null:book.records.find(r=>r.id===recordId)??null;
- if(recordId!==undefined&&!target)throw new ObservationResultError('record');const source=target?.source??contextSource;if(source!==observationSource(source.id))throw new ObservationResultError('source');if(!target&&book.records.length>=MAX_OBSERVATIONS)throw new ObservationResultError('limit');
+ if(recordId!==undefined&&!target)throw new ObservationResultError('record');const source=target?.source??contextSource;if(source!==canonicalObservationSource(source))throw new ObservationResultError('source');if(!target&&book.records.length>=MAX_OBSERVATIONS)throw new ObservationResultError('limit');
  return Object.freeze({base:book,contextSource,source,mode,target,typeText:target?formatObservationType(target.spectralCode):'',remarks:target?.remarks??''});
 }
 /** NativeOK writes ID[15],remarks[36],packed type+0x5f before optional
  * velocity validation. This bounded classification port leaves unavailable
  * numerical fields/unsafe velocity path unimplemented. Atomic commit and
  * stale source/ledger checks are explicit web transaction policies. */
-export function confirmObservation(book:ObservationNotebook,edit:ObservationEdit,id:string,mode:ObservationMode,input:Readonly<{typeText:string;remarks:string}>):ObservationNotebook{
- if(book!==edit.base||edit.contextSource!==observationSource(id)||mode!==edit.mode||edit.source!==observationSource(edit.source.id)||(edit.target?!book.records.includes(edit.target)||edit.target.source!==edit.source:edit.source!==edit.contextSource))throw new ObservationResultError('stale');
+export function confirmObservation(book:ObservationNotebook,edit:ObservationEdit,id:string,mode:ObservationMode,input:Readonly<{typeText:string;remarks:string}>,external?:ObservationSource|null):ObservationNotebook{
+ if(book!==edit.base||edit.contextSource!==observationSource(id,external)||mode!==edit.mode||edit.source!==canonicalObservationSource(edit.source)||(edit.target?!book.records.includes(edit.target)||edit.target.source!==edit.source:edit.source!==edit.contextSource))throw new ObservationResultError('stale');
  const spectralCode=parseObservationType(input.typeText),remarks=observationText(input.remarks,36);if(!edit.target&&(book.records.length>=MAX_OBSERVATIONS||(book.records.at(-1)?.id??0)>=Number.MAX_SAFE_INTEGER-1))throw new ObservationResultError('limit');
  const record:ObservationRecord=Object.freeze({id:edit.target?.id??(book.records.at(-1)?.id??0)+1,source:edit.source,spectralCode,remarks});
  return Object.freeze({records:Object.freeze(edit.target?book.records.map(r=>r===edit.target?record:r):[...book.records,record])});

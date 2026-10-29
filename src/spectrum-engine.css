@@ -1,0 +1,22 @@
+/* Front S (S5): measuring engine zoom, pan and readout. Plot colours follow the spectrum plot in style.css; the rest uses
+   tokens from src/theme/tokens.css. */
+.engine-plot{cursor:crosshair;touch-action:none}
+.engine-plot:focus-visible{outline:3px solid var(--ov-focus);outline-offset:-3px}
+.spectrum .engine-cursor line{stroke:#f2f2f2;stroke-width:1}
+.spectrum .engine-cursor-final line{stroke:#ffd27a;stroke-width:1.5}
+.spectrum .marker-selected{stroke:#ff8f6b;stroke-width:2;stroke-dasharray:none}
+.engine-controls{display:flex;flex-direction:column;gap:var(--ov-space-2);padding:var(--ov-space-2) 17px 14px;background:#102d3c;color:#cfdde2}
+.engine-controls .observatory-note{color:#a9bec7;margin:0}
+.engine-buttons{display:flex;flex-wrap:wrap;align-items:center;gap:var(--ov-space-2)}
+.engine-window{font-variant-numeric:tabular-nums;color:#a9bec7}
+.engine-readout{display:flex;flex-wrap:wrap;align-items:center;gap:var(--ov-space-3);min-height:40px;font-variant-numeric:tabular-nums}
+.engine-readout-empty{color:#a9bec7}
+.engine-nearest{margin:0}
+.engine-zoom-row{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--ov-space-1);margin-bottom:var(--ov-space-2)}
+.engine-zoom-row input{width:100%}
+.engine-zoom-row output{font-variant-numeric:tabular-nums}
+tr.engine-selected td{background:var(--ov-surface-hover);font-weight:600}
+.spectrum .engine-tick{stroke:#476676;stroke-width:1}
+/* Front S (S1): spectrometer range row on the star route. */
+.spectral-range-row{display:flex;flex-direction:column;gap:var(--ov-space-1);margin-bottom:var(--ov-space-3)}
+.spectral-range-row p{margin:0}

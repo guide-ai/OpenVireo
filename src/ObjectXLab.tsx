@@ -1,3 +1,4 @@
+import type {ClassificationImport} from './core/classificationImport';
 import {memo,useEffect,useMemo,useRef,useState,type MutableRefObject} from 'react';
 import './objectx.css';
 import {OBJECT_X_LAB_EN as M,OBJECT_X_MEASURE_EN} from './objectx/ObjectXMessages';
@@ -29,6 +30,7 @@ type Props=Readonly<{
  active:boolean;busy:boolean;
  clockUtc:()=>string;onSetClock:(utc:string)=>void;
  onPrefill:(ra:number,dec:number)=>void;onOpenRadio:()=>void;
+ /** Front S (S2): send a saved Object X spectrum (its masked .SSP bytes) to Classify, as "save, then load". */onClassifySpectrum?:(source:ClassificationImport)=>void;
  controllerRef:MutableRefObject<ObjectXController|null>;
  restored:ObjectXInvestigation|null;
  onSnapshot:(investigation:ObjectXInvestigation)=>void;
@@ -51,7 +53,7 @@ type Loaded=Readonly<{frame:MeasureFrame;bytes:Uint8Array}>;
 type ListState=Readonly<{list:ObservableList;orbitFile:BundledOrbitFileId;limit:number}>;
 
 /** E08 #object-x route: hidden-identity object, the three instrument branches, images, blink/measure, answer and reveal. */
-function ObjectXLab({active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
+function ObjectXLab({onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
  const [inv,setInv]=useState<ObjectXInvestigation>(restored??EMPTY);
  const [htl,setHtl]=useState<HtlList|null>(null),[htlError,setHtlError]=useState(false);
  const [dateText,setDateText]=useState(inv.startUtc),[notice,setNotice]=useState('');
@@ -212,7 +214,7 @@ function ObjectXLab({active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOp
     </section>
     <section data-testid="objectx-branch-radio"><h3>{M.radioTitle}</h3><p>{M.radioHelp}</p>
      <div className="button-row"><button className="secondary-button" disabled={disabled} onClick={onOpenRadio}>{M.openRadio}</button></div></section>
-    <ObjectXSpectrum target={target} label={objectXDataLabel(inv.id)} disabled={disabled} spectra={inv.spectra??[]} pointingOf={code=>targets.find(t=>t.code===code)??null} onKeep={r=>update(i=>({...i,spectra:[...(i.spectra??[]),r]}))}/>
+    <ObjectXSpectrum active={active} revealed={inv.revealed} onClassify={onClassifySpectrum} target={target} label={objectXDataLabel(inv.id)} disabled={disabled} spectra={inv.spectra??[]} pointingOf={code=>targets.find(t=>t.code===code)??null} onKeep={r=>update(i=>({...i,spectra:[...(i.spectra??[]),r]}))}/>
     <MultiSpecObjectXLazy htl={htl} target={target} revealed={inv.revealed} label={objectXDataLabel(inv.id)} disabled={disabled} currentJd={()=>jdOfUtc(clockUtc())}/>
    </div>
   </section>

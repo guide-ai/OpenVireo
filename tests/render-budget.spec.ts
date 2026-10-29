@@ -7,12 +7,12 @@ import {installRenderProbe,rendersOf,type RenderTally} from './fixtures/render-p
 // Measured count → budget (count plus headroom: about 10 % for load counts, which count mounts; small and tight for the
 // keystroke and route-change counts, the regression guard). Keep in step with docs/RENDER-BUDGET.md.
 const BUDGET={
- classificationLoad:150,
+ classificationLoad:158,
  classificationKey:36,
  classificationFill:36,
  classificationToSpectrum:47,
  analyzerKey:12,
- observatoryLoad:81,
+ observatoryLoad:90,
  openDome:30,
  visitedKey:36,
  visitedRouteChange:47,

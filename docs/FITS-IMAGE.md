@@ -1,5 +1,7 @@
 # Inspect a supplied saved image
 
+**Front R1 (2026-10-29):** the camera can also save an image with VIREO's own keyword writer 0x523218 (docs/RADIO-CAMERA-R1.md §FITS). That file has no padding after the data, as VIREO writes it; this inspector accepts it (it admits an unpadded data end), other readers may not. The standard save stays the default.
+
 **Saved images** opens a bounded primary float32 FITS image and connects the file to a visible image and exact pixel selection. The reader preserves original bytes,SHA,header cards,NaN payload bits,signed zero and source order. No camera exposure,noise,centroid,calibration,sky position,date,object identity or physical unit is inferred.
 
 ## Try it

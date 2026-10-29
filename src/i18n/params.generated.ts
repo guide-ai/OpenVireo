@@ -617,7 +617,8 @@ export interface MessageParameters {
   "classLink.provenance": never;
   "classLink.acquired": never;
   "classLink.context": "draws" | "seed" | "time";
-  "classLink.domain": never;
+  "classLink.domainPartial": "maximum" | "minimum";
+  "classLink.domain": "maximum" | "minimum";
   "classLink.template": never;
   "classLink.identity": never;
   "classLink.measure": never;
@@ -1565,12 +1566,16 @@ export interface MessageParameters {
   "sampledDiff.option": never;
   "sampledDiff.help": never;
   "sampledDiff.domain": never;
+  "sampledDiff.outsideWindow": never;
+  "sampledDiff.grid": never;
   "sampledDiff.caption": "standard" | "unknown";
   "sampledDiff.scale": never;
   "sampledDiff.recordPolicy": never;
   "sampledDiff.scrollLabel": never;
   "sampledDiff.invalidSource": never;
   "sampledDiff.unavailable": never;
+  "sampledDiff.unavailableOnly": never;
+  "sampledDiff.outside": never;
   "sampledDiff.fallback": never;
   "sampledDiff.method": never;
   "sampledDiff.limits": never;

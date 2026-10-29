@@ -26,6 +26,8 @@ export const CAMERA_MESSAGES=Object.freeze({
  stop:'Stop',
  save:'Save image (FITS)',
  saveNote:'The FITS file keeps every pixel value. Open it later under Saved images.',
+ saveNative:'Save image (VIREO header)',
+ saveNativeNote:'This file uses VIREO\'s own header cards and order, for comparison with the original program. The object is written as UNKNOWN, and the detector and observer cards are left empty, because this site does not know them. DATE is the exposure time. Like VIREO, the file has no padding after the data, so some FITS readers may refuse it. The first button gives the standard file.',
  statusIdle:'Ready.',
  statusNotReady:(why:string)=>`The camera needs the telescope ready: ${why}`,
  accessReason:{tracking:'turn tracking on.',moving:'wait for the telescope to stop moving.',finder:'switch to the telescope view.',dome:'open the dome.',configuration:'this telescope configuration is not available.',pointing:'point the telescope first.',ready:''} as Readonly<Record<string,string>>,

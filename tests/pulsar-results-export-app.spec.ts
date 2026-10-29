@@ -85,7 +85,7 @@ test('RX10-13/14/15/23/25/26/27: imported 12-column rows export exactly with typ
  const plot=await id(page,'pulsar-plot-1').evaluate(el=>el.outerHTML),panels=await page.locator('.plr-panels').innerText();
  const storage=()=>page.evaluate(()=>[Object.keys(localStorage).sort(),Object.keys(sessionStorage).sort()]);const stored=await storage();
  await expect(id(page,'pulsar-save')).toBeDisabled();
- await expect(id(page,'pulsar-save')).toHaveAccessibleDescription(/date and time and stored names.*not recovered.*not implemented here/);
+ await expect(id(page,'pulsar-save')).toHaveAccessibleDescription(/regional format.*not known for this site.*not implemented here/);
  // Opens on the first (empty) field; nothing is filled in; Tab wraps inside the dialog.
  await openExport(page);
  for(const name of ['date','time','table','name1','name2','name3','name4'])await expect(field(page,name)).toHaveValue('');

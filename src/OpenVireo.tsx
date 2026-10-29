@@ -649,7 +649,9 @@ export default function OpenVireo(){
    onComparisonChange:changeClusterComparison,
    onOpenOwn:openOwnHr,
   });
-  const objectXHandlers=useStableHandlers<StableProps<ComponentProps<typeof ObjectXLab>,'onSetClock'|'onPrefill'|'onOpenRadio'|'onSnapshot'|'onSummary'>>({
+  const objectXHandlers=useStableHandlers<StableProps<ComponentProps<typeof ObjectXLab>,'onClassifySpectrum'|'onSetClock'|'onPrefill'|'onOpenRadio'|'onSnapshot'|'onSummary'>>({
+   // Front S's spectrum classification hand-over (called from ObjectXSpectrum after its awaits; latest closure).
+   onClassifySpectrum:classifyImported,
    onSetClock:utc=>applyClockUTC({utc,draftUTC:utc}),
    onPrefill:(nextRa,nextDec)=>{setRa(nextRa.toString());setDec(nextDec.toString());navigate('observatory');},
    onOpenRadio:()=>navigate('radio-control'),

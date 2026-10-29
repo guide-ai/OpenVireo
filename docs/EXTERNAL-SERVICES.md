@@ -1,6 +1,6 @@
 # Servicios externos, alojamiento y backend
 
-Actualizado el 27 oct 2026. Las decisiones aprobadas también constan en `AGENTS.md`, que es la fuente que rige.
+Actualizado el 29 oct 2026. Las decisiones aprobadas también constan en `AGENTS.md`, que es la fuente que rige.
 
 ## 1. Decisiones tomadas (usuario, 27 oct 2026)
 
@@ -9,6 +9,10 @@ Actualizado el 27 oct 2026. Las decisiones aprobadas también constan en `AGENTS
 | Catálogo de las cámaras CCD/IR | El servicio original (`http://www.nofs.navy.mil/cgi-bin/vo_cone.cgi`) no respondió el 27 oct 2026, así que ni el CLEA original puede tomar imágenes hoy. Se sustituye por CDS/VizieR, NOMAD (I/297) y USNO-B1 (I/284), con dos modos: **(A)** extractos estáticos acotados para los campos de los ejercicios, publicados con su consulta, fecha, hash y las citas de CDS/VizieR y del catálogo; **(B)** consulta en vivo desde el navegador para cualquier campo, como hacía el original. VizieR respondió con `Access-Control-Allow-Origin: *`, así que no hace falta backend propio. El espejo oficial de CfA (`vizier.cfa.harvard.edu`) queda cubierto por la misma aprobación (27 oct 2026), registrando en la procedencia qué host sirvió cada extracto o respuesta. |
 | Datos de Object X | Se aprueban `Orbit/ObjX_AST.CMO` (4 750 326 B) y `Orbit/ObjX_MPC.CMO` (30 989 466 B), byte a byte. Los hashes están en `AGENTS.md`. |
 | GSC para LSS | Subconjuntos acotados de N2230/N3000, solo para la franja LSS. |
+| Espejos de VizieR (29 oct 2026) | La aprobación de CDS/VizieR cubre todos los espejos oficiales de VizieR. El 29 oct CDS no respondía y CfA solo servía la portada, mientras `vizier.idia.ac.za` (IDIA, Sudáfrica) respondía con NOMAD y USNO-B1. Cada extracto o respuesta registra el host que lo sirvió; el modo en vivo puede pasar de un espejo a otro si uno falla. |
+| GSC completo (29 oct 2026) | Se publica byte a byte el GSC compacto completo (24 bandas `Cgsc/GSC/[NS]*.DAT` y `Cgsc/TABLES/REGIONS.BIN`, 509 056 848 B), partido en trozos de unos 1–2 MB que el navegador descarga solo cerca del apuntado. Cada trozo y cada banda llevan su SHA-256 en el manifiesto. Permite apuntar a cualquier lugar del cielo con el comportamiento original. |
+| Sonidos WAV (29 oct 2026) | Se incluyen byte a byte los 20 `*.WAV` (5 552 270 B), cargados solo al activar Efectos de sonido (apagado por defecto). Varios son de 1992–93 y podrían ser efectos de terceros incluidos por CLEA; esa duda consta en la procedencia. |
+| Backend en local (29 oct 2026) | Cuentas, guardado (nivel B) y métricas con Cloudflare Workers y D1 se construyen y prueban solo en local, en loopback, sin cuenta de Cloudflare, recursos remotos, envío real de correos ni secretos en el código. Desplegar sigue esperando el dominio y la aprobación del usuario. |
 
 Condiciones del modo en vivo (B):
 - solo envía a CDS las coordenadas y el radio de la consulta;
@@ -98,7 +102,7 @@ Para el inventario se compararon los 698 archivos de `CLEA_Vireo.zip` (todos con
 
 ### Lo que no hace falta en las fases 1–3
 
-Programas nativos e instaladores; sonidos WAV; imágenes de interfaz, cursores e iconos; las 114 estrellas de carbono; las otras 26 galaxias SP y las 104 plantillas jspect2 restantes; `JACOBY2.INX`; isócronas `isocsumm*` e `isocz019nov`; claves de respuestas (`CLASSIFY.KEY`, `Unknowns.xls`), porque nada se califica; registros de demostración; `ObjX_MPC.CMO.sav`; y la documentación y los textos de ayuda (sirven de fuente para escribir las guías, no se publican).
+Programas nativos e instaladores; imágenes de interfaz, cursores e iconos; las 114 estrellas de carbono; las otras 26 galaxias SP y las 104 plantillas jspect2 restantes; `JACOBY2.INX`; isócronas `isocsumm*` e `isocz019nov`; claves de respuestas (`CLASSIFY.KEY`, `Unknowns.xls`), porque nada se califica; registros de demostración; `ObjX_MPC.CMO.sav`; y la documentación y los textos de ayuda (sirven de fuente para escribir las guías, no se publican).
 
 ### Necesidades que no están en el zip
 

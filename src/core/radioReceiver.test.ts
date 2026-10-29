@@ -272,8 +272,9 @@ describe('timer batch 0x574ad4 and the sweep lifecycle',()=>{
   expect(kindOf(receiverTimerTick(o,{now:nextNow(),jd:null}))).toBe('clock-required');expect(JSON.stringify(o)).toBe(snapshot);
  });
  it('[W] a coupling rebuild refused by the Poisson mean domain stays atomic; Stop cannot finish; closing the main recovers',()=>{
-  // P = 0.04 with dt = 0.01 gives 0.2P ≤ dt < 0.3P: the first resolved sample has a negative mean.
-  const s=started(0),o=ok(overwriteSourceBufferFromPulsarList(s,{catalog:[rec({primaryName:'J0003+00',x2a:0.04})],pointing:POINT})).bank;
+  // Front R1: a negative mean now follows the native product branch, so a 400 MHz flux of 1e8 (mean > the 1e6 browser
+  // limit) is the reachable coupling refusal.
+  const s=started(0),o=ok(overwriteSourceBufferFromPulsarList(s,{catalog:[rec({primaryName:'J0003+00',s54:Math.fround(1e8)})],pointing:POINT})).bank;
   const snapshot=JSON.stringify(o);
   for(let i=0;i<2;i++){expect(kindOf(receiverTimerTick(o,{now:nextNow(),jd:JD}))).toBe('poisson-mean-domain');expect(JSON.stringify(o)).toBe(snapshot);}
   const stop=ok(toggleReceive(o,{jd:JD,now:nextNow()})).bank;

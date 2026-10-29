@@ -11,6 +11,7 @@ import {INITIAL_CAMERA_PALETTE} from './core/cameraPalette';
 import {CAMERA_EXTRACTS,findCameraExtract,loadCameraCatalog,type CameraCatalogMode,type CameraCatalogSource} from './io/cameraCatalog';
 import type {AccessReason} from './core/instrumentAccess';
 import {writeCameraFits,cameraFitsFileName,type CameraFitsContext} from './core/fitsWriter';
+import {writeNativeCameraFits,nativeCameraFitsFileName} from './core/cameraFitsNative';// Front R1
 import {cameraCatalogReference} from './core/cameraCatalogReference';
 import type {OpticalIndex} from './core/opticalTelescope';
 import type {Pointing} from './core/sky';
@@ -144,10 +145,10 @@ function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,ext
  }
  function stop(){if(gate.ticket)dispatch({type:'cancel',ticket:gate.ticket});}
  function fitsContext(i:CameraImage):CameraFitsContext{return {jd:i.jd,filterName:cameraCatalogReference(i.exposure.recipe.camera,i.exposure.recipe.filterPosition).filter,catalogName:i.catalogName,source:{mode:i.source.mode,sha256:i.source.sha256,extractId:i.source.extractId,url:i.source.url}};}
- function save(){
-  if(!image)return;const context=fitsContext(image),bytes=writeCameraFits(image.exposure,context);
+ function save(native=false){
+  if(!image)return;const context=fitsContext(image),bytes=native?writeNativeCameraFits(image.exposure,image.jd):writeCameraFits(image.exposure,context);
   const url=URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>],{type:'application/fits'})),a=document.createElement('a');
-  a.href=url;a.download=cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
+  a.href=url;a.download=native?nativeCameraFitsFileName():cameraFitsFileName(image.exposure,context);document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),0);
  }
  const filterNames:readonly string[]=camera==='ir'?M.filterNamesIr:M.filterNames,gains=CAMERA_GAINS[camera];
  const shown=image?.exposure,showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
@@ -182,7 +183,7 @@ function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,ext
   {shown&&image&&<figure className="camera-image">
    <canvas ref={canvas} role="img" aria-label={M.imageAlt(filterName(shown.recipe.camera,shown.recipe.filterPosition),shown.recipe.seconds,shown.recipe.camera)} data-testid="camera-canvas"/>
    <figcaption>{M.displayNote}</figcaption>
-   <div className="button-row"><button className="secondary-button" disabled={running} onClick={save}>{M.save}</button></div><p className="observatory-note">{M.saveNote}</p>
+   <div className="button-row"><button className="secondary-button" disabled={running} onClick={()=>save()}>{M.save}</button><button className="secondary-button" disabled={running} onClick={()=>save(true)} data-testid="camera-save-native" aria-describedby="camera-save-native-note">{M.saveNative}</button></div><p className="observatory-note">{M.saveNote}</p><p className="observatory-note" id="camera-save-native-note">{M.saveNativeNote}</p>
    <label className="camera-palette"><input type="checkbox" checked={usePalette} onChange={e=>setUsePalette(e.target.checked)}/>{M.palette}</label>
    <details><summary>{M.details}</summary><dl className="camera-details">
     <dt>{M.detailCatalog}</dt><dd data-testid="camera-detail-catalog">{image.catalogName}</dd>
