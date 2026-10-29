@@ -122,8 +122,9 @@ test('the spectrometer at 320 px and in dark mode: no overflow, themed surface, 
 
 // Front S (S2): "save, then load" as one button. Classify receives the masked .SSP: its source is the label, and no object name,
 // template or kind reaches the Classify page; Observational Data takes the label as the object ID.
-test('an Object X spectrum opens in Classify under its label, without naming the object',async({page})=>{
- await openLab(page);await slit(page,CODES.star,'4.0 m');await expose(page);
+// Review L6: one target of each spectroscopic kind (the masking does not depend on the kind).
+for(const [kind,code] of Object.entries(CODES))test(`an Object X spectrum (${kind} target) opens in Classify under its label, without naming the object`,async({page})=>{
+ await openLab(page);await slit(page,code,'4.0 m');await expose(page);
  await button(page,'Classify this spectrum').click();
  await expect(page).toHaveURL(/#classification$/);
  await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();
@@ -139,9 +140,9 @@ test('an Object X spectrum opens in Classify under its label, without naming the
  await button(page,'Open observation results').click();await expect(page.getByTestId('observation-object')).toHaveText('ObjX-7');
 });
 
-// Front S (D4): until the reveal the header is masked (label, 0.000); after it, Save writes the native catalog name and
-// magnitude. A file saved earlier is not rewritten, and the 600 data rows are the same.
-test('after the reveal Save writes the native header; the earlier file and the data rows are unchanged',async({page})=>{
+// Front S (D4): until the reveal the header is masked (label, 0.000); after it, Save writes the catalog magnitude and the
+// web record locator as the object [W] (VIREO's name per type is not recovered, U6). A file saved earlier is not rewritten, and the 600 data rows are the same.
+test('after the reveal Save writes the revealed header; the earlier file and the data rows are unchanged',async({page})=>{
  await openLab(page);await slit(page,CODES.star,'4.0 m');await expose(page);
  const save=async()=>{const d=page.waitForEvent('download');await button(page,'Save spectrum (.SSP)').click();const dl=await d;return {name:dl.suggestedFilename(),path:(await dl.path())!};};
  const before=await save(),beforeText=await readFile(before.path,'latin1');

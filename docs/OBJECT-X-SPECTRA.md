@@ -157,12 +157,17 @@ through the same writer and card as the star, galaxy and LSS routes (`objectXSpe
 
 Identity masking (research `analysis/front-s-spectroscopy/RE-observational-data-metadata.md` §5):
 - **File name:** the student's label, `ObjX-<ID>-Snn.ssp`. VIREO names the file `ObjX-<student>` when Show Object ID is off
-  and after the catalog object when it is on; OpenVireo always uses the label. Classify then takes that label as the object ID.
+  and after the catalog object when it is on; OpenVireo always uses the label, with every character other than a letter, digit or `-` replaced by `-` (never `_`, which
+  VIREO's ID rule would cut at: `ObjX-Ana Lopez` is saved as `ObjX-Ana-Lopez.ssp`). Classify then takes that label as the object ID.
 - **Header before the reveal:** `*SpHdr* <label>,<RA>,<Dec>,0.000`. VIREO always writes the selected catalog object's name
   and catalog magnitude there; while the identity is hidden OpenVireo writes the label and magnitude 0.000 [W], so a saved
   file never names or narrows down the object. The RA/Dec are the target coordinates the student was given.
-- **Header after the reveal** (coordinator decision D4, 2026-10-29): the native values, the selected catalogue record as the
-  field engine names it (for a star the same `N….DAT@index` form the star route's header uses) and its catalog magnitude.
+- **Header after the reveal** (coordinator decision D4, 2026-10-29): the selected record's catalog magnitude, as VIREO
+  writes it, and as the object the web field engine's record locator [W]: `N….DAT@index` for a star (the form the star
+  route's header also uses), `CLEA_QSO.DAT@n` for a QSO, the galaxy's catalog name for a galaxy. VIREO writes the selected
+  record's own name there; which name that is for each Object X type (for a star probably the GSC-style ID the reveal panel
+  shows, e.g. `N3730-01103`) is not recovered (research RE-observational-data-metadata.md U6), so the header object after the
+  reveal is not claimed to be VIREO's.
   The 600 data rows are the same; a file saved before the reveal is never rewritten.
 - The body is VIREO's: 600 rows from 3700 Å, step 1000/600 Å, normalized source-plus-sky counts.
 

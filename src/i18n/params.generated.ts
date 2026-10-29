@@ -1565,6 +1565,8 @@ export interface MessageParameters {
   "sampledDiff.option": never;
   "sampledDiff.help": never;
   "sampledDiff.domain": never;
+  "sampledDiff.outsideWindow": never;
+  "sampledDiff.grid": never;
   "sampledDiff.caption": "standard" | "unknown";
   "sampledDiff.scale": never;
   "sampledDiff.recordPolicy": never;

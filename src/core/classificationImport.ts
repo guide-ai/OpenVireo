@@ -22,9 +22,11 @@ export function classificationCoverage(samples:readonly Sample[]):boolean{
  * Generated from the pinned original grid; all eight atlas grids are tested. */
 export function classificationImportDifferenceAllowed(source:Pick<ClassificationImport,'samples'>):boolean{return source.samples.length===grid.wavelengths.length&&source.samples.every((s,i)=>s.wavelength===grid.wavelengths[i]);}
 /** Pure bounds only. Cryptographic byte parsing/verification belongs to IO. */
+/** The import count or byte budget is exceeded (distinct from a file outside the domain). */
+export class ClassificationImportLimitError extends Error{constructor(message:string){super(message);this.name='ClassificationImportLimitError';}}
 export function checkClassificationImports(sources:readonly ClassificationImport[]):void{
- if(sources.length>MAX_CLASSIFICATION_IMPORTS)throw Error('Classification import archive is full');
+ if(sources.length>MAX_CLASSIFICATION_IMPORTS)throw new ClassificationImportLimitError('Classification import archive is full');
  let bytes=0;const seen=new Set<string>();
  for(const s of sources){if(s.kind!=='imported-spectrum'||typeof s.name!=='string'||!s.name.length||s.name.length>1024||!/^[a-f0-9]{64}$/.test(s.sha256)||seen.has(s.sha256)||typeof s.sourceText!=='string'||new TextEncoder().encode(s.sourceText).byteLength>2*1024*1024||!classificationCoverage(s.samples))throw Error('Unsupported classification import');seen.add(s.sha256);bytes+=new TextEncoder().encode(s.sourceText).byteLength;}
- if(bytes>MAX_CLASSIFICATION_IMPORT_BYTES)throw Error('Classification imports exceed their byte budget');
+ if(bytes>MAX_CLASSIFICATION_IMPORT_BYTES)throw new ClassificationImportLimitError('Classification imports exceed their byte budget');
 }

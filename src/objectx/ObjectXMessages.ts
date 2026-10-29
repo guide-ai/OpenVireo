@@ -99,10 +99,11 @@ export const OBJECT_X_LAB_EN=Object.freeze({
  spectrumShow:(label:string)=>`Show ${label}`,
  spectrumSaveCsv:(label:string)=>`Save ${label} spectrum (CSV)`,
  // Front S (S6)
- spectrumSaveNote:'The .SSP file is named after your ObjX label. Until the reveal its header holds that label, the coordinates you were given and magnitude 0.000, so that the file never names the object [W]; after the reveal it holds the catalog name and magnitude, as VIREO writes. Load the file in Classify (Import SP or SSP) to classify it.',
+ spectrumSaveNote:'The .SSP file is named after your ObjX label. Until the reveal its header holds that label, the coordinates you were given and magnitude 0.000, so that the file never names the object [W]; after the reveal it holds the catalog magnitude, as VIREO writes, and this web version\'s catalogue record reference as the object [W] (VIREO\'s own name for it is not recovered). Load the file in Classify (Import SP or SSP) to classify it.',
  spectrumSaved:(name:string)=>`Spectrum saved as ${name}. Your saved investigation keeps the exposure itself.`,
  spectrumClassify:'Classify this spectrum',
- spectrumClassifyError:'This spectrum could not be opened in Classify (it needs a positive bin, a stopped exposure and wavelengths covering 3900–4500 Å).',
+ spectrumClassifyError:'This spectrum could not be opened in Classify (it needs a positive bin, a stopped exposure and wavelengths that overlap 3500–7400 Å by at least 100 Å).',
+ spectrumClassifyLimit:'Classify already holds as many imported spectra as it can keep (four files, 4 MiB in total). Nothing was added, and the existing imports were kept.',
  imagesTitle:'3. Your images',noImages:'No images yet. Images taken with the CCD camera appear here.',
  imageRow:(label:string,ut:string,filter:string,seconds:number)=>`${label}: ${ut} UT, ${filter}, ${seconds} s`,
  datePlaceholder:'2009-06-01T04:00:00',imageRowPlain:(label:string,ut:string)=>`${label}: ${ut} UT`,

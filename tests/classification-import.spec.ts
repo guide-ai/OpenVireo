@@ -41,5 +41,9 @@ test('a 4000–5000 Å spectrum is admitted and the window part without data is 
  await expect(page.getByTestId('difference-outside').first()).toBeVisible();await expect(page.getByTestId('difference-outside-note')).toBeVisible();
  // 99 Å of overlap is refused and keeps the current source.
  await importFile(page,Buffer.from('7301 .5\n7350 .7\n7400 1\n'),'edge.sp');await expect(page.getByRole('alert')).toContainText('Existing acquisitions, files, drafts and records were kept');
+ await expect(page.getByRole('alert')).toContainText('overlap 3500–7400 Å by at least 100 Å');
+ // Review L3: an admitted spectrum wholly outside the 3900–4500 Å window gets the window reason, not the generic one.
+ await importFile(page,Buffer.from('7300 .5\n7400 1\n'),'far.sp');await ready(page);
+ await expect(page.locator('.sampled-difference-option p')).toHaveText(/no wavelengths in the current window/);
  expect(errors).toEqual([]);
 });

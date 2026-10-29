@@ -2,7 +2,8 @@ import {readFileSync} from 'node:fs';
 import {describe,expect,it} from 'vitest';
 import {parseHtl} from './hotList';
 import {objectXDataLabel,objectXTargets} from './objectXLab';
-import {OBJECT_X_HEADER_MAGNITUDE,objectXHeaderObject,objectXSpectrumBytes} from './exposureSpectrum';
+import {OBJECT_X_HEADER_MAGNITUDE,objectXHeaderObject,objectXSpectrumBytes,objectXSpectrumFileName,starSpectrumFileName} from './exposureSpectrum';
+import {observationStem} from './observationMetadata';
 import {parseLegacySpectrumFile} from './legacySpectrumFile';
 import {OBJECT_X_STAR_TEMPLATES} from '../io/objectXSpectrometerInputs';
 import type {JournalState} from './exposureJournal';
@@ -29,11 +30,16 @@ describe('Object X .SSP save',()=>{
    for(const word of forbidden)expect(text.includes(word),word).toBe(false);
   }
  });
- it('after the reveal writes the native object and magnitude; the data rows do not change',()=>{
+ it('after the reveal writes the record locator [W] and catalog magnitude; the data rows do not change',()=>{
   const t=objectXTargets(list)[0],masked=new TextDecoder().decode(objectXSpectrumBytes(state(counts),'ObjX-7-S01',t,3700));
-  const native=new TextDecoder().decode(objectXSpectrumBytes(state(counts),'ObjX-7-S01',t,3700,{object:'N3730-01103',magnitude:12.25}));
-  expect(native.split('\r\n')[0]).toMatch(/^\*SpHdr\* N3730-01103,.*,12\.250$/);
+  const native=new TextDecoder().decode(objectXSpectrumBytes(state(counts),'ObjX-7-S01',t,3700,{object:'N3730.DAT@513845',magnitude:12.25}));
+  expect(native.split('\r\n')[0]).toMatch(/^\*SpHdr\* N3730\.DAT@513845,.*,12\.250$/);
   expect(native.split('\r\n').slice(1)).toEqual(masked.split('\r\n').slice(1));
+ });
+ it('names the file so that the Observational Data ID keeps the label (review L5)',()=>{
+  expect(objectXSpectrumFileName('ObjX-Ana Lopez')).toBe('ObjX-Ana-Lopez.ssp');expect(observationStem(objectXSpectrumFileName('ObjX-Ana Lopez'))).toBe('ObjX-Ana-Lopez');
+  expect(objectXSpectrumFileName('ObjX-7-S01')).toBe('ObjX-7-S01.ssp');expect(objectXSpectrumFileName('ObjX-a_b, c')).toBe('ObjX-a-b-c.ssp');
+  expect(observationStem(starSpectrumFileName('N0000.DAT@14428'))).toBe('DAT_14428');
  });
  it('keeps the header object ASCII, without commas, and at most 24 characters',()=>{
   expect(objectXHeaderObject('ObjX-Ana, María-S01')).toBe('ObjX-Ana_ Mar_a-S01');

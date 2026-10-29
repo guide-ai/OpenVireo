@@ -54,4 +54,8 @@ every earlier star vector. The witness is a second implementation of the same re
   coordinator decision D2). The galaxy and LSS routes keep 4000–5000 Å (decision D1: their verified galaxy results depend on
   that interval). Object X, Multi-Spec and the sky route keep 3700–4700 Å, because their spectra, journals and saved records
   were verified on that interval; extending them needs per-route witnesses and session changes.
+- **One range per telescope [W].** The star route has one instance per telescope (Kitt Peak 0.4 m, 0.9 m, Mayall 4 m); each
+  keeps its own active range. The active range persists until the dialog changes it: restoring a star session or a project
+  whose exposure was on a non-default range makes that range the one **New seeded exposure** (and Activate without an
+  exposure) starts on (`tests/spectral-range.spec.ts`).
 - The Options box "Allow User Change" that enables the menu item is not modelled; the item is always available.

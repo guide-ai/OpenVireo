@@ -47,7 +47,7 @@ Spectra › Saved Spectra) or from the practice list. For a loaded .SSP the Obse
 A zero value shows as an empty box in VIREO, not "Unavailable"; OpenVireo shows "(empty)" for screen readers.
 
 **Classified directly from an exposure [W].** The web's "Classify acquired star" shortcut stands for "save, then load". The
-record uses the stem of the acquisition's name, the pointing from the header the .SSP save writes for the same exposure, and
+record uses the stem of the file the .SSP save would write (`openvireo-star-N0000_DAT_14428.ssp` gives `DAT_14428`), the pointing from the header the .SSP save writes for the same exposure, and
 no JD (there is no file).
 
 **Records.** A record keeps its source's values. The notebook is written as version 2 (policy

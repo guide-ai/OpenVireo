@@ -36,3 +36,17 @@ test('the range dialog warns about an unsaved spectrum, applies on OK and the ne
  await button(page,'Classify acquired star').click();
  await expect(button(page,'Review classification')).toBeEnabled();
 });
+test('a restored session keeps its range for the next new exposure (review M1)',async({page})=>{
+ await page.clock.install();await page.goto('/#star-exposure');
+ await button(page,'Spectral Range...').click();
+ await id(page,'spectral-range-min').fill('5');await id(page,'spectral-range-max').fill('15');await id(page,'spectral-range-ok').click();
+ await expose(page);
+ const d=page.waitForEvent('download');await button(page,'Save star session JSON').click();const session=(await (await d).path())!;
+ await page.reload();await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 3700.0–4700.0 Å (600 bins).');
+ await page.getByLabel('Restore star session JSON (up to 2 MiB)').setInputFiles(session);
+ await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await button(page,'New seeded exposure').click();
+ await expect(id(page,'star-total')).toHaveText('0');
+ await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+ await expose(page);await expect(id(page,'star-spectral-range')).toHaveText('Spectrometer range: 4000.0–5000.0 Å (600 bins).');
+});

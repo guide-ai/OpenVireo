@@ -7,9 +7,9 @@ import {OBJECT_X_SPECTRA_LIMITS,type ObjectXSpectrumRecord} from './io/objectXSp
 import type {FieldTelescope} from './core/fieldEngine';
 import type {JournalState} from './core/exposureJournal';
 import {ObjectXSpectrumSave} from './observatory/RouteSpectrumSave';
-import {objectXSpectrumBytes} from './core/exposureSpectrum';
+import {objectXSpectrumBytes,objectXSpectrumFileName} from './core/exposureSpectrum';
 import {readClassificationImport} from './io/classificationImports';
-import type {ClassificationImport} from './core/classificationImport';
+import {ClassificationImportLimitError,type ClassificationImport} from './core/classificationImport';
 
 /** E08 spectrometer branch (docs/OBJECT-X-SPECTRA.md). Hidden identity (D5): the display API carries no row, kind, record or
  * reason; every unavailable case shows the same message; labels are the student's ObjX ID. The field is evaluated in a Worker.
@@ -20,10 +20,10 @@ const TICK_MS=250;
 const seconds=(ms:number)=>(ms/1000).toFixed(1);
 const total=(s:JournalState)=>String(Math.round(s.exposure.counts.reduce((a,b)=>a+b,0)));
 export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,pointingOf,active=true,onClassify,revealed=false}:Readonly<{
- /** Front S (D4): after the reveal, saved headers carry the native object name and magnitude. */revealed?:boolean;
+ /** Front S (D4): after the reveal, saved headers carry the record locator [W] and catalog magnitude. */revealed?:boolean;
  /** Front S (S2): load this spectrum's masked .SSP in Classify. */onClassify?:(source:ClassificationImport)=>void;
  /** Front S (S6): the Object X route is shown (the save card's print scope expects one card in the page). */active?:boolean;target:Readonly<{ra:number;dec:number;code:string}>|null;label:string;disabled:boolean;spectra:readonly ObjectXSpectrumRecord[];onKeep:(record:ObjectXSpectrumRecord)=>void;pointingOf:(code:string)=>Readonly<{ra:number;dec:number}>|null}>){
- const [telescope,setTelescope]=useState<FieldTelescope>(2),[view,setView]=useState<View>({kind:'idle'}),[classifyError,setClassifyError]=useState(false);
+ const [telescope,setTelescope]=useState<FieldTelescope>(2),[view,setView]=useState<View>({kind:'idle'}),[classifyError,setClassifyError]=useState<false|'limit'|'refused'>(false);
  const [identity,setIdentity]=useState<Readonly<{key:string;value:Readonly<{object:string;magnitude:number}>|null}>|null>(null);
  const ticket=useRef(0),timer=useRef<number|null>(null),last=useRef(0);
  const stopTimer=()=>{if(timer.current!==null){window.clearInterval(timer.current);timer.current=null;}};
@@ -73,8 +73,8 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
  async function classify(name:string,r:Available,s:JournalState,pointing:Readonly<{ra:number;dec:number}>|null){
   setClassifyError(false);
   try{if(!pointing||!onClassify)throw Error();const bytes=objectXSpectrumBytes(s,name,pointing,r.wavelengths[0],nativeHeader);
-   onClassify(await readClassificationImport(new File([bytes.slice().buffer],`${name.replace(/[^A-Za-z0-9_-]+/g,'_')}.ssp`,{type:'text/plain'})));}
-  catch{setClassifyError(true);}
+   onClassify(await readClassificationImport(new File([bytes.slice().buffer],objectXSpectrumFileName(name),{type:'text/plain'})));}
+  catch(e){setClassifyError(e instanceof ClassificationImportLimitError?'limit':'refused');}
  }
  // Front S (D4): only after the reveal, the shown spectrum's selected record (name and catalog magnitude) for the .SSP header.
  const shownPointing=view.kind==='kept'?view.pointing:view.kind==='ready'&&target?{ra:target.ra,dec:target.dec}:null,shownTelescope=view.kind==='kept'||view.kind==='ready'?view.result.telescope:null;
@@ -111,7 +111,7 @@ export default function ObjectXSpectrum({target,label,disabled,spectra,onKeep,po
    {!running&&<><ObjectXSpectrumSave revealed={nativeHeader} active={active} busy={disabled||identityPending} state={shown.state} label={shownName} pointing={view.kind==='kept'?view.pointing:target?{ra:target.ra,dec:target.dec}:null} minimum={shown.result.wavelengths[0]} telescopeName={M.spectrumTelescopes[shown.result.telescope]} saved={M.spectrumSaved}/>
     {active&&<p className="observatory-note" data-testid="objectx-spectrum-save-note">{M.spectrumSaveNote}</p>}
     {active&&onClassify&&<div className="button-row"><button className="secondary-button" data-testid="objectx-spectrum-classify" disabled={disabled||identityPending||shown.state.exposure.elapsedMs===0} onClick={()=>void classify(shownName,shown.result,shown.state,view.kind==='kept'?view.pointing:target)}>{M.spectrumClassify}</button></div>}
-    {classifyError&&<p role="alert">{M.spectrumClassifyError}</p>}</>}
+    {classifyError&&<p role="alert">{classifyError==='limit'?M.spectrumClassifyLimit:M.spectrumClassifyError}</p>}</>}
   </>}
   {spectra.length>0&&<div data-testid="objectx-spectra"><h4>{M.spectrumKeptTitle}</h4><ul>{spectra.map(r=><li key={r.label}>
    {M.spectrumKeptRow(r.label,M.spectrumTelescopes[r.telescope],seconds(r.events.reduce((a,e)=>a+(e.kind==='tick'?e.deltaMs:0),0)))}{' '}

@@ -14,8 +14,10 @@ chart in `src/SpectrumInstrument.tsx`. Browser flow: `tests/spectrum-engine-view
 - **On load** (0x582f00): the window starts at the spectrum's first wavelength (min) and ends at the first 100 Å step from
   floor100(min) that reaches the spectrometer's current maximum (max). It does not use the file's last wavelength. These
   are also the limits lo..hi for Zoom and the arrows.
-- **Spectrometer range [W]:** until the spectral range dialog is ported (Front S, S1), the spectrometer maximum is the
-  route's fixed interval: 4700 Å, or 5000 Å for a Hubble galaxy acquisition.
+- **Spectrometer range [W]:** in VIREO the maximum is the global spectrometer setting. The web has no global setting (the
+  range dialog applies to the star route only, docs/SPECTRAL-RANGE.md), so for a spectrum acquired here it uses the range it
+  was acquired with: its last wavelength rounded up to a 100 Å multiple, ceil(last/100)·100 (4700 Å by default, 5000 Å for a
+  galaxy, the chosen maximum for a star on another range). A loaded file uses the default setting, 3700–4700 Å.
 - The plot has 600 native pixels across the window (Å/px = (max − min)/600); ticks every 100 Å, labels every s-th tick
   with the smallest s such that n div s ≤ 15, labels with no decimals (SetWindow 0x5831b4, FormPaint 0x5832c4).
 

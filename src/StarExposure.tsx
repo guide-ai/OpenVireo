@@ -41,6 +41,9 @@ export default function StarExposure({active,fieldMatches,onActivate,onStart,can
  useEffect(()=>{if(restored)restoreSnapshot(restored.observation.state);},[restored?.token]);
  async function analyze(classify=false){const stopped=stop();if(!stopped)return;const id=++ticket.current;setSending(true);setError('');try{const packet=await createStarObservation(stopped);if(id!==ticket.current||!visible.current)return;(classify&&onClassify?onClassify:onAnalyze)(packet);}catch(e){if(id===ticket.current)setError(displayError(e,'continuity.transferError'));}finally{if(id===ticket.current)setSending(false);}}
  const inspection=useMemo(()=>active&&inspectionAvailable&&inspectionPointing?inspectStarDrift(inspectionPointing,telescopeIndex):null,[active,inspectionAvailable,inspectionPointing?.ra,inspectionPointing?.dec,telescopeIndex]);
+ // The active range persists until the dialog changes it: a restored or replaced exposure sets it for the next one (review M1).
+ // [W] Each telescope's star route keeps its own range; VIREO has one global spectrometer setting.
+ useEffect(()=>{if(state)chosenRange.current=starSpectralRange(state);},[state]);
  const range=state?starSpectralRange(state):chosenRange.current;
  function applyRange(r:SpectralRange){
   setRangeOpen(false);

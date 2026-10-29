@@ -1,5 +1,5 @@
 import {useMemo} from 'react';
-import {galaxySpectrumBytes,lssSpectrumBytes,objectXSpectrumBytes} from '../core/exposureSpectrum';
+import {galaxySpectrumBytes,lssSpectrumBytes,objectXSpectrumBytes,objectXSpectrumFileName} from '../core/exposureSpectrum';
 import {galaxyStateDefinition,type GalaxyState} from '../core/galaxyExposure';
 import {galaxyTelescopeIndex} from '../core/galaxyTelescope';
 import {opticalProfile} from '../core/opticalTelescope';
@@ -30,9 +30,9 @@ export function LssSpectrumSave({state,result,row,active,busy}:{state:JournalSta
  * the student's label, as VIREO names it "ObjX-<ID>" when Show Object ID is off (0x50fb1c), so that Classify's file-name ID is
  * that label too. */
 export function ObjectXSpectrumSave({state,label,pointing,minimum,telescopeName,active,busy,saved,revealed=null}:{state:JournalState|null;label:string;pointing:Readonly<{ra:number;dec:number}>|null;
- /** After the reveal: the native header object and magnitude (D4). */revealed?:Readonly<{object:string;magnitude:number}>|null;
+ /** After the reveal (D4): the record locator [W] and catalog magnitude for the header. */revealed?:Readonly<{object:string;magnitude:number}>|null;
  minimum:number;telescopeName:string;active:boolean;busy:boolean;saved:(name:string)=>string}){
  const ok=paused(state)&&!!pointing,bytes=useMemo(()=>ok&&state&&pointing?bytesOf(()=>objectXSpectrumBytes(state,label,pointing,minimum,revealed)):null,[state,ok,label,pointing,minimum,revealed]);
  if(!active||!state)return null;
- return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label,telescopeName,elapsedMs:state.exposure.elapsedMs,fileName:`${stem(label)}.ssp`,saved}}/>;
+ return <SpectrumSaveCard active={active} source={{bytes,usable:ok&&!busy,label,telescopeName,elapsedMs:state.exposure.elapsedMs,fileName:objectXSpectrumFileName(label),saved}}/>;
 }

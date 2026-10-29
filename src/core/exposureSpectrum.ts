@@ -30,9 +30,17 @@ export function lssSpectrumBytes(state:JournalState,result:FieldResult,row:Pick<
 /** Front S (S6, docs/OBJECT-X-SPECTRA.md): an Object X spectrum through the same writer. VIREO's header (0x510090) always holds
  * the selected catalog object's name and catalog magnitude. While the identity is hidden OpenVireo writes the student's ObjX
  * label as the object (ASCII, commas and other characters replaced by '_', ≤24) and magnitude 0.000 [W]; after the reveal
- * (`revealed`) it writes the native name and magnitude (coordinator decision D4, 2026-10-29). The pointing is the target's
+ * (`revealed`, coordinator decision D4, 2026-10-29) it writes the selected record's catalog magnitude and, as the object, the
+ * web field engine's record locator (e.g. `N3730.DAT@513845`, `CLEA_QSO.DAT@522`, `NGC 2403`) [W]: which name VIREO writes
+ * for each Object X type is not recovered (research RE-observational-data-metadata.md U6). The pointing is the target's
  * coordinates, which the student was given. */
 export const OBJECT_X_HEADER_MAGNITUDE=0;
+/** The .SSP file name for an Object X label (review L5): characters other than letters, digits and '-' become '-', never '_',
+ * so that VIREO's file-name ID rule (drop through the first '_', 0x5208c0) keeps the whole label (`ObjX-Ana Lopez` stays
+ * `ObjX-Ana-Lopez`, not `Lopez`). */
+export function objectXSpectrumFileName(label:string):string{return `${label.replace(/[^A-Za-z0-9-]+/g,'-')}.ssp`;}
+/** The star route's .SSP file name; Observational Data takes an acquired star's ID from it, as from a saved file (S4). */
+export function starSpectrumFileName(targetId:string):string{return `openvireo-star-${targetId.replace(/[^A-Za-z0-9_-]+/g,'_')}.ssp`;}
 export function objectXHeaderObject(label:string):string{return label.replace(/[^\x20-\x7e]|,/g,'_').trim().slice(0,24)||'UNKNOWN';}
 export function objectXSpectrumBytes(state:JournalState,label:string,pointing:Readonly<{ra:number;dec:number}>,minimum:number,revealed?:Readonly<{object:string;magnitude:number}>|null):Uint8Array {
  return serializeDotDecimalVireoSpectrum({object:revealed?revealed.object.slice(0,24):objectXHeaderObject(label),pointingRa:pointing.ra,pointingDec:pointing.dec,apparentMagnitude:revealed?revealed.magnitude:OBJECT_X_HEADER_MAGNITUDE,minimum,step:1000/600,counts:state.exposure.counts});

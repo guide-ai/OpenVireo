@@ -116,8 +116,8 @@ export default function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,on
   useEffect(()=>{if(!active){recordDialog.current?.close();evidence.current?.close();setConfirm(false);setDraft(null);}},[active]);
   const z = currentZ(control), selected = references[reference];
   // Front S (S5, docs/SPECTRUM-ENGINE-VIEW.md): the engine window starts from the loaded spectrum and the spectrometer range
-  // (0x582f00). For a spectrum acquired here the web takes the spectrometer maximum from the range it was acquired with (its
-  // last wavelength rounded up to 100 Å: 4700 Å by default, 5000 Å for galaxies); otherwise the default setting, 3700–4700 Å [W].
+  // (0x582f00). [W] VIREO reads its global setting; the web has none, so for a spectrum acquired here it takes the maximum from
+  // the range it was acquired with, ceil(last/100)·100 (4700 Å by default, 5000 Å for galaxies); otherwise 3700–4700 Å.
   const lastWavelength=observation?.kind?observation.samples.at(-1)?.wavelength:undefined;
   const spectrometerRange={minimum:3700,maximum:lastWavelength===undefined?4700:Math.ceil(lastWavelength/100)*100};
   const firstWavelength=observation?.samples[0]?.wavelength??null;

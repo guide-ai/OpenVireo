@@ -28,7 +28,7 @@ test('a spectrum classified directly from the star exposure has the header point
  await page.getByRole('button',{name:'Start star exposure',exact:true}).click();await page.clock.runFor(1000);
  await page.getByRole('button',{name:'Classify acquired star',exact:true}).click();await ready(page);
  await page.getByRole('button',{name:'Open observation results',exact:true}).click();
- await expect(page.getByTestId('observation-object')).toHaveText(/^catalog-star-[0-9a-f]{2}$/);
+ await expect(page.getByTestId('observation-object')).toHaveText('DAT_14428');// the save-file stem, openvireo-star-N0000_DAT_14428.ssp (review L5)
  await expect(page.getByTestId('observation-jd')).toHaveText('(empty)');
  await expect(page.getByTestId('observation-ra')).toHaveText(/^\d{2}h \d{2}m \d{2}\.\d{2}s$/);
  await expect(page.getByTestId('observation-dec')).toHaveText(/^[+-]\d{2}° \d{2}' \d{2}\.\d"$/);
