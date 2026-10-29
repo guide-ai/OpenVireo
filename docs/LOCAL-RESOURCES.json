@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1464 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata, plus the derived Boötes engine pack (with the approved whole N3000 records 512620/512802) and its independent witness, plus Front F Object X spectroscopy: seven bounded GSC packs for the ObjectX.HTL spectroscopy targets (user approval of 2026-10-27, group 2), their provenance and independent witnesses, and byte-exact QSOSpect.dat (approval of 2026-10-27, group 1), plus byte-exact JSPEC2.SPI (approval of 2026-10-27, group 1) for the Object X star branch, plus the four byte-exact Object X galaxy photographs NGC2403/4262/4631/4656.BMP (user approval of 2026-10-28), plus the byte-exact jspect2 template A0000046.SP required by the Object X row-12 star N3000.DAT@483032 (user approval of 2026-10-27, group 1), plus data/objectx/frozen-observations.json (a derived regression record of the Object X spectrometer: digests and integers only), plus the Front V variable-star resources (see RESOURCE-PROVENANCE.json), plus the Pleiades variable-field photometer targets (rows 3, 5, 10; derived fields and independent vectors, coordinator decision of 2026-10-28), plus the Pleiades pointing-association photometer targets (rows 2, 7, 12, 14, 22; recovered native selection, coordinator decision of 2026-10-28). Plus byte-exact NkdEye.dat (user approval of 2026-10-28, Front O Naked Eye Star) and the derived Front O witness data/fieldinfo/info-witness.json (from already-approved resources), plus the Front T independent LSS true-dispatch row witness (data/variables/lss-true-dispatch-witness.json, derived), plus the Front M independent Multi-Spec fibre witness (data/multispec/witness.json, derived), plus the 67 byte-exact jspect2 templates approved on 2026-10-28 for the multi-object spectrometer (public/original/spectra/jspect2/, Appendix T) and their derived requirement record data/multispec/template-requirements.json. Plus the Front V2 byte-exact HRAnalHlp.LST and HRAnalHlp.TXT (public/original/cluster-help, user approval of 2026-10-28) and the derived data/clusters cluster comments and point sidecar (user approval of 2026-10-28, cluster HR tools (a) and (b)). Plus byte-exact Pulsars.HTL (second user approval of 2026-10-26; SHA-256 9dfba548…a439) for the radio Slew › Hot List (Front P). Plus the 35 byte-exact VIREO help files of the user approval of 2026-10-29 (public/original/help and public/original/variables/VarTypeHlp.LST, Front H). Plus byte-exact NGC4670.SP (user approval of 2026-10-27, group 1; SHA-256 228149e9…170a) for the LSS row NGC 4670 (Front L2, QSO merge). Plus the Front K derived data/clusters/cluster-dialog-certificate.json (dialog-key census result: keys, counts and booleans only).",
+  "purpose": "Exact identity manifest for the 1766 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata, plus the derived Boötes engine pack (with the approved whole N3000 records 512620/512802) and its independent witness, plus Front F Object X spectroscopy: seven bounded GSC packs for the ObjectX.HTL spectroscopy targets (user approval of 2026-10-27, group 2), their provenance and independent witnesses, and byte-exact QSOSpect.dat (approval of 2026-10-27, group 1), plus byte-exact JSPEC2.SPI (approval of 2026-10-27, group 1) for the Object X star branch, plus the four byte-exact Object X galaxy photographs NGC2403/4262/4631/4656.BMP (user approval of 2026-10-28), plus the byte-exact jspect2 template A0000046.SP required by the Object X row-12 star N3000.DAT@483032 (user approval of 2026-10-27, group 1), plus data/objectx/frozen-observations.json (a derived regression record of the Object X spectrometer: digests and integers only), plus the Front V variable-star resources (see RESOURCE-PROVENANCE.json), plus the Pleiades variable-field photometer targets (rows 3, 5, 10; derived fields and independent vectors, coordinator decision of 2026-10-28), plus the Pleiades pointing-association photometer targets (rows 2, 7, 12, 14, 22; recovered native selection, coordinator decision of 2026-10-28). Plus byte-exact NkdEye.dat (user approval of 2026-10-28, Front O Naked Eye Star) and the derived Front O witness data/fieldinfo/info-witness.json (from already-approved resources), plus the Front T independent LSS true-dispatch row witness (data/variables/lss-true-dispatch-witness.json, derived), plus the Front M independent Multi-Spec fibre witness (data/multispec/witness.json, derived), plus the 67 byte-exact jspect2 templates approved on 2026-10-28 for the multi-object spectrometer (public/original/spectra/jspect2/, Appendix T) and their derived requirement record data/multispec/template-requirements.json. Plus the Front V2 byte-exact HRAnalHlp.LST and HRAnalHlp.TXT (public/original/cluster-help, user approval of 2026-10-28) and the derived data/clusters cluster comments and point sidecar (user approval of 2026-10-28, cluster HR tools (a) and (b)). Plus byte-exact Pulsars.HTL (second user approval of 2026-10-26; SHA-256 9dfba548…a439) for the radio Slew › Hot List (Front P). Plus the 35 byte-exact VIREO help files of the user approval of 2026-10-29 (public/original/help and public/original/variables/VarTypeHlp.LST, Front H). Plus byte-exact NGC4670.SP (user approval of 2026-10-27, group 1; SHA-256 228149e9…170a) for the LSS row NGC 4670 (Front L2, QSO merge). Plus the Front K derived data/clusters/cluster-dialog-certificate.json (dialog-key census result: keys, counts and booleans only). Plus the full compact GSC (user approval of 2026-10-29, decision 2; band hashes in the research file analysis/approved-gsc-wav-2026-10-29.txt): the 24 bands N0000..N8230.DAT and S0000..S8230.DAT of CLEA_Vireo.zip (program files/CLEA/VIREO/Cgsc/GSC/) as 300 byte-exact record-aligned tiles of 65536 27-byte records (public/original/gsc/<band>/<kkk>.bin; whole bands are not stored and assembled[] lists each band with its approved SHA-256 and its tiles in order), byte-exact TABLES/REGIONS.BIN (public/original/gsc/REGIONS.BIN), and the derived tile index and search skeleton data/gsc/gsc-index.json (cut tool analysis/front-g-gsc/tools/cut_gsc_tiles.py, SHA-256 dd9ee8d0bb1ced7f4cd7b195a9513dadf438550520328662fa5998c948d17566).",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -7321,6 +7321,2010 @@
       "path": "data/clusters/cluster-dialog-certificate.json",
       "bytes": 8418,
       "sha256": "0ac7a8cf303429c259e9ee1f88aeab5b1df046da3d2b06a2a0bbd71258afb1a3"
+    },
+    {
+      "path": "public/original/gsc/REGIONS.BIN",
+      "bytes": 343368,
+      "sha256": "ef518ad68f9d27e1826e1a0319b125ad3b6c350fa458159668781e904d165e05"
+    },
+    {
+      "path": "public/original/gsc/N0000/000.bin",
+      "bytes": 1769472,
+      "sha256": "ea0f88c58bcd9d392bd8cbfb0da680b4677bbb8cd7726526d2a50edb8734522a"
+    },
+    {
+      "path": "public/original/gsc/N0000/001.bin",
+      "bytes": 1769472,
+      "sha256": "00bfc96a1a768cc0f5224823d5c7ad0a8a6d4d91ad3d956d4a7ff89b5ff527bb"
+    },
+    {
+      "path": "public/original/gsc/N0000/002.bin",
+      "bytes": 1769472,
+      "sha256": "fceb874e49d1c139a12ed16fff5d970f00ddb3fe969267928469e92ae8157226"
+    },
+    {
+      "path": "public/original/gsc/N0000/003.bin",
+      "bytes": 1769472,
+      "sha256": "cd52d93eb2712dbf9103ce40da98bf2da6d657d918aaad4459a70b9290e6b8c2"
+    },
+    {
+      "path": "public/original/gsc/N0000/004.bin",
+      "bytes": 1769472,
+      "sha256": "5a0e27e4024e2140b6260394222a13a30cbce6fe6d5e7e0f3f614b6ca9c1d0ab"
+    },
+    {
+      "path": "public/original/gsc/N0000/005.bin",
+      "bytes": 1769472,
+      "sha256": "34b0fe4f6c31d581a31b8e1bff51693098d5a699507309bbc3d92d2b7378e573"
+    },
+    {
+      "path": "public/original/gsc/N0000/006.bin",
+      "bytes": 1769472,
+      "sha256": "65453341e52a41f32b23109ea971cad8cee3071972ca24a470abf2528f4c5c04"
+    },
+    {
+      "path": "public/original/gsc/N0000/007.bin",
+      "bytes": 1769472,
+      "sha256": "f0be3a3aeeb732a1d4d06890c16a4d880293d4179a45a95ed480a7316b350a1a"
+    },
+    {
+      "path": "public/original/gsc/N0000/008.bin",
+      "bytes": 1769472,
+      "sha256": "c50ba7f5efb6984e6328a3e8c5326a1a73529aae89bfe6ddd369dfd00a6cd51a"
+    },
+    {
+      "path": "public/original/gsc/N0000/009.bin",
+      "bytes": 1769472,
+      "sha256": "e1c19be99ecf6e720b9f214f62cbbb18b91371390743ed3f4ac79e98cc9fb3b0"
+    },
+    {
+      "path": "public/original/gsc/N0000/010.bin",
+      "bytes": 1769472,
+      "sha256": "f92e80fb0f740ee1f4b9c91b3338404320c72868b59dd6c066edd2bf8a4187dc"
+    },
+    {
+      "path": "public/original/gsc/N0000/011.bin",
+      "bytes": 1769472,
+      "sha256": "633357e5f8455d8f7d3a9be288170b7e09800a1e596750f6e11c8791635ac1f1"
+    },
+    {
+      "path": "public/original/gsc/N0000/012.bin",
+      "bytes": 1769472,
+      "sha256": "3792c512806dfe938ea69fc5fb9da82a292c8debbe496b2d208e05a003e28736"
+    },
+    {
+      "path": "public/original/gsc/N0000/013.bin",
+      "bytes": 1769472,
+      "sha256": "6082c0f6e7180bfec921ecd9555358d54c3ca108a9c63f3abf6a7d2df73a4dbd"
+    },
+    {
+      "path": "public/original/gsc/N0000/014.bin",
+      "bytes": 1769472,
+      "sha256": "02db830f387025f4b9822be78b331fc0e47be7ed134f8d3a3718c8035f2067ca"
+    },
+    {
+      "path": "public/original/gsc/N0000/015.bin",
+      "bytes": 1769472,
+      "sha256": "d07b8bd6433b6b268930fa6ddf771dd55d95b45aa6022bde2714562cf0f89b47"
+    },
+    {
+      "path": "public/original/gsc/N0000/016.bin",
+      "bytes": 1769472,
+      "sha256": "adbc607246f17ede4a84432fe60875cd908d54f5690fc7d0f8faaad1e9784f0e"
+    },
+    {
+      "path": "public/original/gsc/N0000/017.bin",
+      "bytes": 1400625,
+      "sha256": "d139625ec26a0254544b73e46085618cb8e7926533a4a576e547ab9cd6029314"
+    },
+    {
+      "path": "public/original/gsc/N0730/000.bin",
+      "bytes": 1769472,
+      "sha256": "9ae257d47084ede8cb4cd1558c3070a382a8a735b59907f8fe384065a8fee927"
+    },
+    {
+      "path": "public/original/gsc/N0730/001.bin",
+      "bytes": 1769472,
+      "sha256": "c40dc768394efee36bb7537a5f341fb60e723ed35f3db04c0659865e8b6079b2"
+    },
+    {
+      "path": "public/original/gsc/N0730/002.bin",
+      "bytes": 1769472,
+      "sha256": "fd9b54f4af30a60ab9ec90d97949fa59635dd34cb2826b835174aaf2d9e25bd3"
+    },
+    {
+      "path": "public/original/gsc/N0730/003.bin",
+      "bytes": 1769472,
+      "sha256": "01bd184c01f97437465a8d9fda9e8d7ef96176a362754e3896589eeaec04d23e"
+    },
+    {
+      "path": "public/original/gsc/N0730/004.bin",
+      "bytes": 1769472,
+      "sha256": "ff97b5c0ea67158934d074156ec9f2e804ee8df6f3010e72708548f3b7da0ed8"
+    },
+    {
+      "path": "public/original/gsc/N0730/005.bin",
+      "bytes": 1769472,
+      "sha256": "c07df25520a28ef1bb5ff6c7e72e45af79945ff9939a9ba965b19d844e3bf4bf"
+    },
+    {
+      "path": "public/original/gsc/N0730/006.bin",
+      "bytes": 1769472,
+      "sha256": "0b5810d2949f8c8bd09515cef465aba15e8a7c476d08ecd4d187b365faf06f52"
+    },
+    {
+      "path": "public/original/gsc/N0730/007.bin",
+      "bytes": 1769472,
+      "sha256": "e0dbaca2999b9cc907a719b333874de1e1b7f0e12a2fe638ba84422fc664c4b6"
+    },
+    {
+      "path": "public/original/gsc/N0730/008.bin",
+      "bytes": 1769472,
+      "sha256": "136881d6b12f28828de394a83bfe269830e77e7b84efec871d7f5ff17f05cc4c"
+    },
+    {
+      "path": "public/original/gsc/N0730/009.bin",
+      "bytes": 1769472,
+      "sha256": "9db9911a37954c0b7072ec342f075bc055d75ddd8d6d6608827735db56a58895"
+    },
+    {
+      "path": "public/original/gsc/N0730/010.bin",
+      "bytes": 1769472,
+      "sha256": "4f732b989a2004da1425f47a78e29c44fd309d08715472d92ea7657549054c55"
+    },
+    {
+      "path": "public/original/gsc/N0730/011.bin",
+      "bytes": 1769472,
+      "sha256": "a15646f1fbf2768cccc1ebb6223a16f74d3de916108967d2fe05b67a65fa56ae"
+    },
+    {
+      "path": "public/original/gsc/N0730/012.bin",
+      "bytes": 1769472,
+      "sha256": "67bcc9ad5eaa0b739a96992e520db45dc94f63302f5eaaaa155b46aaaa190f0e"
+    },
+    {
+      "path": "public/original/gsc/N0730/013.bin",
+      "bytes": 1769472,
+      "sha256": "68e053c4f9794d2168d10cebc4c875867d59af493c78d161965ee199f8ddc2fc"
+    },
+    {
+      "path": "public/original/gsc/N0730/014.bin",
+      "bytes": 1769472,
+      "sha256": "10b12c3c4e7624167251b16f147e748491abd528f0d903de7c208828530da1dc"
+    },
+    {
+      "path": "public/original/gsc/N0730/015.bin",
+      "bytes": 1769472,
+      "sha256": "d66098041b28891c18f28643c006cdb2f8135e1eb6a43f61b346c8655ec98d8c"
+    },
+    {
+      "path": "public/original/gsc/N0730/016.bin",
+      "bytes": 265059,
+      "sha256": "51db5d7861feb1e03fb17afc5c705f841146fa6b83999b1ca8bf6eab836464c4"
+    },
+    {
+      "path": "public/original/gsc/N1500/000.bin",
+      "bytes": 1769472,
+      "sha256": "0abcdec61f0f6dc60962733899f4c5e2e1ac38cc03d8b585e1f73d40f52d9f9b"
+    },
+    {
+      "path": "public/original/gsc/N1500/001.bin",
+      "bytes": 1769472,
+      "sha256": "5aeab3db3206c74da7dd88c5b559e796c3feee476da9f7ca69273b87c7f1ce83"
+    },
+    {
+      "path": "public/original/gsc/N1500/002.bin",
+      "bytes": 1769472,
+      "sha256": "a234f87cd8be73e89c9dab1b5d4e2a2b72cdd86b87d6040a71d191ed56c12b99"
+    },
+    {
+      "path": "public/original/gsc/N1500/003.bin",
+      "bytes": 1769472,
+      "sha256": "751f684ed17c5e32f3d0265247e41b08650ffdb8a072f431d69387f772d30a86"
+    },
+    {
+      "path": "public/original/gsc/N1500/004.bin",
+      "bytes": 1769472,
+      "sha256": "deeb3e93e493e4ad8f2fa62d0a225fb081b5c0f1ec5a0d26442a369def488885"
+    },
+    {
+      "path": "public/original/gsc/N1500/005.bin",
+      "bytes": 1769472,
+      "sha256": "f64afc6554239f4bd6284f73aad3888f45af424668d6f52c357fdaf280e0d2bc"
+    },
+    {
+      "path": "public/original/gsc/N1500/006.bin",
+      "bytes": 1769472,
+      "sha256": "68fbf56e2a88abd0cfbdeafb16bedac9b151a7fff19c6b7bcd0aedd83835700a"
+    },
+    {
+      "path": "public/original/gsc/N1500/007.bin",
+      "bytes": 1769472,
+      "sha256": "898e0f6a86d37013ce5b4e35be78004e9c1f1946eb5e7338f54bcf180b17867a"
+    },
+    {
+      "path": "public/original/gsc/N1500/008.bin",
+      "bytes": 1769472,
+      "sha256": "4cf517307a96d85834644b877140c1e64926ffdab5af3130f2886f037bedc36f"
+    },
+    {
+      "path": "public/original/gsc/N1500/009.bin",
+      "bytes": 1769472,
+      "sha256": "478e5cfcabcce978da07a9c2a65cee2d525053f4c979e064836d80d4ed2d97bb"
+    },
+    {
+      "path": "public/original/gsc/N1500/010.bin",
+      "bytes": 1769472,
+      "sha256": "fc829e5ca4b3077b82c17c8512c51c8f60fc70b0713758a65834189db3e9f734"
+    },
+    {
+      "path": "public/original/gsc/N1500/011.bin",
+      "bytes": 1769472,
+      "sha256": "7150beea54d858774b69581463a1a32df202e08a85be60b3f47160c6199fa85b"
+    },
+    {
+      "path": "public/original/gsc/N1500/012.bin",
+      "bytes": 1769472,
+      "sha256": "36ecaebb90ce17fa10e79e920bd2d4e439c2bbdbc8f9bd5ff3a375077b431699"
+    },
+    {
+      "path": "public/original/gsc/N1500/013.bin",
+      "bytes": 1769472,
+      "sha256": "9dac0d70ce32fa191f0d60bc12a78d5589db526337f0f7c33857156ec73ee171"
+    },
+    {
+      "path": "public/original/gsc/N1500/014.bin",
+      "bytes": 1769472,
+      "sha256": "d72334bab3989ab8da6cb497ddb33523b0b8a34c25fa4bc3b5d3bc0e321dbc91"
+    },
+    {
+      "path": "public/original/gsc/N1500/015.bin",
+      "bytes": 1203822,
+      "sha256": "1977e7d7f51b8da3eb406717980fe759de36ab7d9bed75d4b4f5f0d95b8d72a6"
+    },
+    {
+      "path": "public/original/gsc/N2230/000.bin",
+      "bytes": 1769472,
+      "sha256": "a78e66609f2976257b8c6d332b99522f2f26931f600de0e58a82c21e625b5e01"
+    },
+    {
+      "path": "public/original/gsc/N2230/001.bin",
+      "bytes": 1769472,
+      "sha256": "b35fa9cb227010976da4ec2d401adf5e1d71f715d03a14d16c5321e771c333cf"
+    },
+    {
+      "path": "public/original/gsc/N2230/002.bin",
+      "bytes": 1769472,
+      "sha256": "dfffca3576289c09c20fc3ab210916306e44c93de4a98d4d24b9b3108d37a603"
+    },
+    {
+      "path": "public/original/gsc/N2230/003.bin",
+      "bytes": 1769472,
+      "sha256": "6462977d46e7e89417b9690939b862b104208a8807b76dc8d430597768cca512"
+    },
+    {
+      "path": "public/original/gsc/N2230/004.bin",
+      "bytes": 1769472,
+      "sha256": "edc1a42f2f72c619048f1bd815acb281da4cf2d63f426fede1fd06dae3919d78"
+    },
+    {
+      "path": "public/original/gsc/N2230/005.bin",
+      "bytes": 1769472,
+      "sha256": "c922d683dc3e8f45fd127dcb6512c1320752480375ee6f6f3da3da0101e67f3b"
+    },
+    {
+      "path": "public/original/gsc/N2230/006.bin",
+      "bytes": 1769472,
+      "sha256": "782b67e4e310566f4c19a47252a9e1a7bf6c909a57346b5527837e8d65ccbd19"
+    },
+    {
+      "path": "public/original/gsc/N2230/007.bin",
+      "bytes": 1769472,
+      "sha256": "37833ef558ff416cf6c984a01effffa699f9c1254f0fbf4b28de0e5473f19442"
+    },
+    {
+      "path": "public/original/gsc/N2230/008.bin",
+      "bytes": 1769472,
+      "sha256": "06cf7adffcc63897048b149b2bbae72a820079c3a96e2b8aebd0dc82011c19b7"
+    },
+    {
+      "path": "public/original/gsc/N2230/009.bin",
+      "bytes": 1769472,
+      "sha256": "cab0f57de2551c4e5aa334e772d6dd5772f370e23b7794ffe2f3c3db63c432dc"
+    },
+    {
+      "path": "public/original/gsc/N2230/010.bin",
+      "bytes": 1769472,
+      "sha256": "51b018d3a6efdc891d97deccff1fa9efbf66fb8a89a7e7eef044fb9ccda09ca0"
+    },
+    {
+      "path": "public/original/gsc/N2230/011.bin",
+      "bytes": 1769472,
+      "sha256": "4ffb6864d17375918f8875a76e4b9d7a22c524e6583f4e7c7616a39935f3406c"
+    },
+    {
+      "path": "public/original/gsc/N2230/012.bin",
+      "bytes": 1769472,
+      "sha256": "afe19440a9aceea8c482fca4f52ab6bbf8438cef1d104c579265744b919da2a9"
+    },
+    {
+      "path": "public/original/gsc/N2230/013.bin",
+      "bytes": 1769472,
+      "sha256": "4f817ac00f2ddddfa3b889553f806978c6662e9e32800036f6041c249487ec69"
+    },
+    {
+      "path": "public/original/gsc/N2230/014.bin",
+      "bytes": 1769472,
+      "sha256": "34c724c27dd75d6213d25c16d68aa5ff50e72ea87f8d00b3e727941d9589e781"
+    },
+    {
+      "path": "public/original/gsc/N2230/015.bin",
+      "bytes": 1769472,
+      "sha256": "ff61d0eb1ff78625a11e02cbbb67bf292f556fa9e9bfecedbae1ac7e1a8660ce"
+    },
+    {
+      "path": "public/original/gsc/N2230/016.bin",
+      "bytes": 456435,
+      "sha256": "84244827e8f9088162de953570baa1069fdf465d2445466caa3a92cde1c80800"
+    },
+    {
+      "path": "public/original/gsc/N3000/000.bin",
+      "bytes": 1769472,
+      "sha256": "a9d4c9c440ed7e95189af19ff9199f725af0102740c31c362385271967bca8a6"
+    },
+    {
+      "path": "public/original/gsc/N3000/001.bin",
+      "bytes": 1769472,
+      "sha256": "44bd78fc4ffe4797f90fc58c16d013f15c3af5ae3dad45c1b8c7b5ca0a9d0f4f"
+    },
+    {
+      "path": "public/original/gsc/N3000/002.bin",
+      "bytes": 1769472,
+      "sha256": "92d4adc182f1669ce4f1deb60edff45ca3636b87221e7bcb1e0180b9665cff74"
+    },
+    {
+      "path": "public/original/gsc/N3000/003.bin",
+      "bytes": 1769472,
+      "sha256": "33bb68203ec0d739e6ea0feb6ab23f658eaf1906e62e4d784f87ab61fe19bc4b"
+    },
+    {
+      "path": "public/original/gsc/N3000/004.bin",
+      "bytes": 1769472,
+      "sha256": "42a34d5c4ae376a2deeb345907e2f53b5b3f9ccded898b677b2631470b47b6d3"
+    },
+    {
+      "path": "public/original/gsc/N3000/005.bin",
+      "bytes": 1769472,
+      "sha256": "b26c97c38e0c8bbcbec43d68138d32033630b84fee36ad4f377415fb7a40442d"
+    },
+    {
+      "path": "public/original/gsc/N3000/006.bin",
+      "bytes": 1769472,
+      "sha256": "adba7038285bfbf67923b1b49b6c380af5a89fbbc82a91e508568695cb68cfee"
+    },
+    {
+      "path": "public/original/gsc/N3000/007.bin",
+      "bytes": 1769472,
+      "sha256": "3764b945cdf5ea00dab2b55a9ff90a9fd97473be6ac9a2af6463ccc1244287a5"
+    },
+    {
+      "path": "public/original/gsc/N3000/008.bin",
+      "bytes": 1769472,
+      "sha256": "8a572f1bb772ced8bd8df895b6bc6af1c59ce9032fd833d20c68bc48e0a1c91a"
+    },
+    {
+      "path": "public/original/gsc/N3000/009.bin",
+      "bytes": 1769472,
+      "sha256": "a5a08e04d4fb95654ba9213f9919f728653c63ababcda07c4841d941916719b8"
+    },
+    {
+      "path": "public/original/gsc/N3000/010.bin",
+      "bytes": 1769472,
+      "sha256": "3350ce31f2263afb6ac00eb900e55e2eb2dd4c2fdf9c5da1a59197081d652d62"
+    },
+    {
+      "path": "public/original/gsc/N3000/011.bin",
+      "bytes": 1769472,
+      "sha256": "7828713cff660e30bf794bd7452b21558107e091cb2ab4ee280186c27c93937c"
+    },
+    {
+      "path": "public/original/gsc/N3000/012.bin",
+      "bytes": 1769472,
+      "sha256": "0cd9a5dbddd607f4ca372df9268a227b77749dd62315200738eda39be0a4e44f"
+    },
+    {
+      "path": "public/original/gsc/N3000/013.bin",
+      "bytes": 1769472,
+      "sha256": "0ada7ede539ccea381b07b99badf3fb744b7501e2bfb202d0b712cde754bb956"
+    },
+    {
+      "path": "public/original/gsc/N3000/014.bin",
+      "bytes": 1769472,
+      "sha256": "825358815226a8cb6dd1cbe6685650f9cfc83854051b1150d523a2ef03c5afd0"
+    },
+    {
+      "path": "public/original/gsc/N3000/015.bin",
+      "bytes": 1367199,
+      "sha256": "fbafffe8a7b950d95e0a997c33c062a5e7eda2600ec6103ab848524e9a9e0813"
+    },
+    {
+      "path": "public/original/gsc/N3730/000.bin",
+      "bytes": 1769472,
+      "sha256": "5ec7228a7d6576e481362abcc75ba37d53f8fdf2ffd95820e01b299c72ac8592"
+    },
+    {
+      "path": "public/original/gsc/N3730/001.bin",
+      "bytes": 1769472,
+      "sha256": "3586540a64f8ee6989b49897167cc82d170622220b24390c4251085a2f9474bf"
+    },
+    {
+      "path": "public/original/gsc/N3730/002.bin",
+      "bytes": 1769472,
+      "sha256": "2c8e3b23fdacc234a463c2c39bb11b064dba58fb13949901ef95f7ceed19e11a"
+    },
+    {
+      "path": "public/original/gsc/N3730/003.bin",
+      "bytes": 1769472,
+      "sha256": "9d9362939d735d22b1f633f58482c7799819592580e8ccd98899b6f6c6800691"
+    },
+    {
+      "path": "public/original/gsc/N3730/004.bin",
+      "bytes": 1769472,
+      "sha256": "890187cfab2ad06a239b948b7a2be67d053005e61e27ccbd4492c27518e5e07e"
+    },
+    {
+      "path": "public/original/gsc/N3730/005.bin",
+      "bytes": 1769472,
+      "sha256": "7833f3b3836a42b4c44ca178d5912ee960efef1d5a429893ab6a187245cdf313"
+    },
+    {
+      "path": "public/original/gsc/N3730/006.bin",
+      "bytes": 1769472,
+      "sha256": "4f3d3abc1282b0a0a10a4d9ea0fa759a7726fb769d1f4cb24711103617a5034f"
+    },
+    {
+      "path": "public/original/gsc/N3730/007.bin",
+      "bytes": 1769472,
+      "sha256": "15424f22fd0ee16624f12041dcb0c60e3e45456b88e7d23d73fa7909e21e16d4"
+    },
+    {
+      "path": "public/original/gsc/N3730/008.bin",
+      "bytes": 1769472,
+      "sha256": "4c9b02c5e7f7a5232336adbb578e760d87be5529d4c26926bfa264704c9e5975"
+    },
+    {
+      "path": "public/original/gsc/N3730/009.bin",
+      "bytes": 1769472,
+      "sha256": "631b80236747d133bc12289e2493b3ec6677bb88f526567da11883923dfaff50"
+    },
+    {
+      "path": "public/original/gsc/N3730/010.bin",
+      "bytes": 1769472,
+      "sha256": "2417dde9fba3662945a308c6a945876215bb4b983acac845115fbe5cd88fadf0"
+    },
+    {
+      "path": "public/original/gsc/N3730/011.bin",
+      "bytes": 1769472,
+      "sha256": "39a7761720419c6d1d4eceeb0268331564dd90b31856f6f86eed905f705d1190"
+    },
+    {
+      "path": "public/original/gsc/N3730/012.bin",
+      "bytes": 1769472,
+      "sha256": "ff55e50bea0f71ce881cdf19c11051bedc9d719e071bec19b6468d98a7652218"
+    },
+    {
+      "path": "public/original/gsc/N3730/013.bin",
+      "bytes": 1769472,
+      "sha256": "b86979525718b931cacab4fdea9737e3574ca966fb0361c7d734a8ab00acefaf"
+    },
+    {
+      "path": "public/original/gsc/N3730/014.bin",
+      "bytes": 1769472,
+      "sha256": "2685c32b9d25a670526e6f3193f79841732a38b6c55990540cd368157d404a98"
+    },
+    {
+      "path": "public/original/gsc/N3730/015.bin",
+      "bytes": 489402,
+      "sha256": "5440f076c411563bf996b4d15ae4acaee9436e8553edd752f22274f1180d02a9"
+    },
+    {
+      "path": "public/original/gsc/N4500/000.bin",
+      "bytes": 1769472,
+      "sha256": "896537ba98eff1ee147834aae84ef7a1064ad0101cae3a3212e4cf7949e5c84c"
+    },
+    {
+      "path": "public/original/gsc/N4500/001.bin",
+      "bytes": 1769472,
+      "sha256": "cf686866e113d31e81913069c06e6b1f535ed2fe9e6d908776ae0ac0ebcf6912"
+    },
+    {
+      "path": "public/original/gsc/N4500/002.bin",
+      "bytes": 1769472,
+      "sha256": "b7f28737864e10f18f15c70f2c4617dde58ed330e7464fd13b785a36c53635df"
+    },
+    {
+      "path": "public/original/gsc/N4500/003.bin",
+      "bytes": 1769472,
+      "sha256": "2b30ae578b649f566fd0756b567a765e76d6defc1b94fb640a05831b0d03ae94"
+    },
+    {
+      "path": "public/original/gsc/N4500/004.bin",
+      "bytes": 1769472,
+      "sha256": "8259ef4316e9876d62f0b201daaf59275af97cfad00f8f5a187d00220ef47cd4"
+    },
+    {
+      "path": "public/original/gsc/N4500/005.bin",
+      "bytes": 1769472,
+      "sha256": "43cfcc4c09005b7491cbd9bc1692ed180e36de2b91d00fa9a4de99ee67ccd3a0"
+    },
+    {
+      "path": "public/original/gsc/N4500/006.bin",
+      "bytes": 1769472,
+      "sha256": "e6ab92263cfe557642dcee08fbddd04aa69fbcfd60caff8037317f760b224627"
+    },
+    {
+      "path": "public/original/gsc/N4500/007.bin",
+      "bytes": 1769472,
+      "sha256": "43de1d2c5bee570a98b7b7aae04f7c4d4243ddd2d38c9d0b788da9c8049a5242"
+    },
+    {
+      "path": "public/original/gsc/N4500/008.bin",
+      "bytes": 1769472,
+      "sha256": "c0cc5bb2b8a94768f902e96fb633b6c2308d27ef803afc970a0bf5d283332e85"
+    },
+    {
+      "path": "public/original/gsc/N4500/009.bin",
+      "bytes": 1769472,
+      "sha256": "5ac7a87f0ab24f843b9412a9fb9262d853a95c37072479ddf793ae7b3420f0b8"
+    },
+    {
+      "path": "public/original/gsc/N4500/010.bin",
+      "bytes": 1769472,
+      "sha256": "67dd200c853d5b446e4ea94ec59e587da6afdb2afebbd880b3a216509678bd1c"
+    },
+    {
+      "path": "public/original/gsc/N4500/011.bin",
+      "bytes": 1769472,
+      "sha256": "844e5d1021cb85955b5a02783ca76ebe89f6c5ca1c8476b2b774497a561016ea"
+    },
+    {
+      "path": "public/original/gsc/N4500/012.bin",
+      "bytes": 1769472,
+      "sha256": "a45c95806dad9307f3829d64a9001f6834b0ba5baa6b1ead8ef8c079775f4062"
+    },
+    {
+      "path": "public/original/gsc/N4500/013.bin",
+      "bytes": 1069605,
+      "sha256": "18a0395eb79929a63fd9d252ae56084a13ec6550fece9b6b3c4d02240a199443"
+    },
+    {
+      "path": "public/original/gsc/N5230/000.bin",
+      "bytes": 1769472,
+      "sha256": "66d5ffe45e7a83089a9691377f94104c75a0abf79d4e67d667794f93d9c4580a"
+    },
+    {
+      "path": "public/original/gsc/N5230/001.bin",
+      "bytes": 1769472,
+      "sha256": "c749ec4884c1ed40acd97f47328ffd2fb3c0bdda625a3826df086229721c34a6"
+    },
+    {
+      "path": "public/original/gsc/N5230/002.bin",
+      "bytes": 1769472,
+      "sha256": "adb858abf6df2bd88559126890c0d48f372da5863e00db33f259719002ef5002"
+    },
+    {
+      "path": "public/original/gsc/N5230/003.bin",
+      "bytes": 1769472,
+      "sha256": "2c0430420c13080e535dc4371fab90c5ef3557523ffc5d3542a13a14ae71f1a6"
+    },
+    {
+      "path": "public/original/gsc/N5230/004.bin",
+      "bytes": 1769472,
+      "sha256": "40661c98b911ff7623c80820f2412c7b2e5095b0ad04335c30563e58c95791ae"
+    },
+    {
+      "path": "public/original/gsc/N5230/005.bin",
+      "bytes": 1769472,
+      "sha256": "27641be87f30a73a682a7f98a2aa2fe91eab4f9407c56892b28265d9496c8f44"
+    },
+    {
+      "path": "public/original/gsc/N5230/006.bin",
+      "bytes": 1769472,
+      "sha256": "3b1946f5d4dc33432590e0f462b9fab96ff6160528dfc6e0a918c30b54439231"
+    },
+    {
+      "path": "public/original/gsc/N5230/007.bin",
+      "bytes": 1769472,
+      "sha256": "034ca53514d2d29c66b94c509ac2df86b4b357425ed8e719f3d5363700c1b7d8"
+    },
+    {
+      "path": "public/original/gsc/N5230/008.bin",
+      "bytes": 1769472,
+      "sha256": "391ddb73253f23604e05a9d4f861e14337620a2177fe2c42204ba4decebf2aa1"
+    },
+    {
+      "path": "public/original/gsc/N5230/009.bin",
+      "bytes": 1769472,
+      "sha256": "b66270d4d1908ae317e1d1a963cc17ab32f9b60f14c1471d29b7735a666303fa"
+    },
+    {
+      "path": "public/original/gsc/N5230/010.bin",
+      "bytes": 472230,
+      "sha256": "2714c62ac6d500ab1c035aea2a8e280ee35bdfad18b782b913e70600c1744ff8"
+    },
+    {
+      "path": "public/original/gsc/N6000/000.bin",
+      "bytes": 1769472,
+      "sha256": "7118c6f284c8be508f4c3fec66e2881eb557023ecd8bacdce87fd303ad69f552"
+    },
+    {
+      "path": "public/original/gsc/N6000/001.bin",
+      "bytes": 1769472,
+      "sha256": "c0df0ff27b4aea27a03981e9a81ac7fd5666757938bfc7e06e99d9259f72e048"
+    },
+    {
+      "path": "public/original/gsc/N6000/002.bin",
+      "bytes": 1769472,
+      "sha256": "bd3201e5b25588541e16a003cff44b43c0505f35484ccb96ecf98792158d8fd1"
+    },
+    {
+      "path": "public/original/gsc/N6000/003.bin",
+      "bytes": 1769472,
+      "sha256": "a20357af098ddce31d3e94f0fd3cbd24a8c2e786dfed45bfb336ece894ae5c31"
+    },
+    {
+      "path": "public/original/gsc/N6000/004.bin",
+      "bytes": 1769472,
+      "sha256": "22cd3a6c7f08dc3ebd634c4dfe07cb33068c1cfb576aea9d95452e19aa147390"
+    },
+    {
+      "path": "public/original/gsc/N6000/005.bin",
+      "bytes": 1769472,
+      "sha256": "01362f474d9cd551632566a2082c7ae792d9613efa98d0f5b316071abb2b3ab2"
+    },
+    {
+      "path": "public/original/gsc/N6000/006.bin",
+      "bytes": 1769472,
+      "sha256": "426218a5c9629dd461d991c44e17c5e650c856204702ef37b486a2c75a42623d"
+    },
+    {
+      "path": "public/original/gsc/N6000/007.bin",
+      "bytes": 1731429,
+      "sha256": "cd72d8f4ef583ec241bb2c3149cde66890bfb385ee0097934fe19b5aa7342f46"
+    },
+    {
+      "path": "public/original/gsc/N6730/000.bin",
+      "bytes": 1769472,
+      "sha256": "3f1b245c9e953a5be98fbe5b745a7220567d17c5b67c3d44098d20b6c950fe29"
+    },
+    {
+      "path": "public/original/gsc/N6730/001.bin",
+      "bytes": 1769472,
+      "sha256": "0bb7417802f9e183521352ba5b72f8535689f8fbdc639a464ff18e59460898a9"
+    },
+    {
+      "path": "public/original/gsc/N6730/002.bin",
+      "bytes": 1769472,
+      "sha256": "1d03cb534c558f8ab43173e081d3799e5b6ce9cd44c5bdee9f40470f1635250f"
+    },
+    {
+      "path": "public/original/gsc/N6730/003.bin",
+      "bytes": 1769472,
+      "sha256": "103603596a2b0a1452d5ddeb7ce334b3b1179551e217fb8a5b7c61db6a52323f"
+    },
+    {
+      "path": "public/original/gsc/N6730/004.bin",
+      "bytes": 1769472,
+      "sha256": "1d7a46af5fa887de9d9231f7afafd01424f92f3a2103f2df2869232195e25181"
+    },
+    {
+      "path": "public/original/gsc/N6730/005.bin",
+      "bytes": 1318734,
+      "sha256": "e393075d10fbfc00531d6cd81de19abe7462af5edbf9f37a29111dfa9714ffda"
+    },
+    {
+      "path": "public/original/gsc/N7500/000.bin",
+      "bytes": 1769472,
+      "sha256": "f0c9e64f789de525a271d95b866576046cae59739707d29ed4fdddeed876842f"
+    },
+    {
+      "path": "public/original/gsc/N7500/001.bin",
+      "bytes": 1769472,
+      "sha256": "8726574d88bfdd87021455d266bd3cba4327422608e58d1a3bc256d7385d2afb"
+    },
+    {
+      "path": "public/original/gsc/N7500/002.bin",
+      "bytes": 1769472,
+      "sha256": "4cec45f58b37e98ba83124f0397c6b93b9a5528a37fca519fd328110ca92e784"
+    },
+    {
+      "path": "public/original/gsc/N7500/003.bin",
+      "bytes": 1769472,
+      "sha256": "47e7e3f256ad2010df765ffd6269f99d8bde215afe499eff135347d3b24cf9c5"
+    },
+    {
+      "path": "public/original/gsc/N7500/004.bin",
+      "bytes": 53163,
+      "sha256": "49eaf6c11120f5b3b87ff3e276e03433dd0f552d2fcf0d477f3f83ec8170aff8"
+    },
+    {
+      "path": "public/original/gsc/N8230/000.bin",
+      "bytes": 1769472,
+      "sha256": "349870a30ec06b314c1df27d036ea0d690e49f80b60707ecec3b123f2d0637ba"
+    },
+    {
+      "path": "public/original/gsc/N8230/001.bin",
+      "bytes": 246240,
+      "sha256": "f7dd22451c8617e538aa30bfe024dabc14086f21bab58ca25997d023c2db6468"
+    },
+    {
+      "path": "public/original/gsc/S0000/000.bin",
+      "bytes": 1769472,
+      "sha256": "a972e9cc3fab44b21ee1fa5b41d2a6f665bcfe540cd85a12d6e95cc2906ba4c7"
+    },
+    {
+      "path": "public/original/gsc/S0000/001.bin",
+      "bytes": 1769472,
+      "sha256": "c49265b4684aeba2855ba7ae13c98a9995fc89db73404d7d62de1bd7227c83b0"
+    },
+    {
+      "path": "public/original/gsc/S0000/002.bin",
+      "bytes": 1769472,
+      "sha256": "67e8120fecf477a1a027fdede600ec2cd3503266d4f8e2d8f152a75486db1d65"
+    },
+    {
+      "path": "public/original/gsc/S0000/003.bin",
+      "bytes": 1769472,
+      "sha256": "ad24b195297450bdb0a5056de2df673633bb638b822b7fef4544e794c83a34c0"
+    },
+    {
+      "path": "public/original/gsc/S0000/004.bin",
+      "bytes": 1769472,
+      "sha256": "063e526751697f3da191d50119bdbe7faa18b8a9cb058ca97f14bc0fa0dc20aa"
+    },
+    {
+      "path": "public/original/gsc/S0000/005.bin",
+      "bytes": 1769472,
+      "sha256": "a7263eee6793921a870845b585928c629adcb0a5c9043de7ba3e434b6100ca1a"
+    },
+    {
+      "path": "public/original/gsc/S0000/006.bin",
+      "bytes": 1769472,
+      "sha256": "f057da26dec2ff4ad81cb2025cc628f7bc760dfbb42acc3516c155b532faaaee"
+    },
+    {
+      "path": "public/original/gsc/S0000/007.bin",
+      "bytes": 1769472,
+      "sha256": "3e6630aa017859e610ab8abebc93838129ebc2a704d3fc1aaa2dea5684868c75"
+    },
+    {
+      "path": "public/original/gsc/S0000/008.bin",
+      "bytes": 1769472,
+      "sha256": "3ae6e90a60a9a073b2394dadc5661f1d503e8216f3cd07a664685256fd289290"
+    },
+    {
+      "path": "public/original/gsc/S0000/009.bin",
+      "bytes": 1769472,
+      "sha256": "64406a04276e1d962bb6387861e12f282e35b952938cc93535d2ebd1fdd11b0d"
+    },
+    {
+      "path": "public/original/gsc/S0000/010.bin",
+      "bytes": 1769472,
+      "sha256": "6b8b0d3e81008e7292d98cf4242d29beaa4e5f197a62b040fec1e2278aa9f44b"
+    },
+    {
+      "path": "public/original/gsc/S0000/011.bin",
+      "bytes": 1769472,
+      "sha256": "07d55acf7921f64bd3d8d194a50c7310cc16c049d0771d24c78ae8253b292396"
+    },
+    {
+      "path": "public/original/gsc/S0000/012.bin",
+      "bytes": 1769472,
+      "sha256": "88ec25b30d85cdeaf17f4adb72d47c9649619178609877f89a04c16e3ec42b79"
+    },
+    {
+      "path": "public/original/gsc/S0000/013.bin",
+      "bytes": 1769472,
+      "sha256": "9682c0933cb57c9a8ea0e91107a5e19d2f9516adfb14b133d838f250cc5e1a1f"
+    },
+    {
+      "path": "public/original/gsc/S0000/014.bin",
+      "bytes": 1769472,
+      "sha256": "d69658983744fa937e0a5587069be024bbdffb0b2f03bc0f6fec4a5aaead12df"
+    },
+    {
+      "path": "public/original/gsc/S0000/015.bin",
+      "bytes": 914139,
+      "sha256": "125cc08125ef294db219d37e047a96c4d3c10fc930df29151ac528d7c0ae0245"
+    },
+    {
+      "path": "public/original/gsc/S0730/000.bin",
+      "bytes": 1769472,
+      "sha256": "f6ae76623997645d24a6213564442613bc27ca2c2a4fbe60515bac4a22ce1b99"
+    },
+    {
+      "path": "public/original/gsc/S0730/001.bin",
+      "bytes": 1769472,
+      "sha256": "bd72d3035543cf5f38da20495c6ae8ddfce0e88ef4a7303dbe05eb72fefb3b4c"
+    },
+    {
+      "path": "public/original/gsc/S0730/002.bin",
+      "bytes": 1769472,
+      "sha256": "00337828c99ee431d99be4f4cddf549502fc8a6e3e7926f4944de7bc0a251f3c"
+    },
+    {
+      "path": "public/original/gsc/S0730/003.bin",
+      "bytes": 1769472,
+      "sha256": "85eebb173a02cdf537555e1ce64e56348afcb5a6117e4c90e78b3733c225b42e"
+    },
+    {
+      "path": "public/original/gsc/S0730/004.bin",
+      "bytes": 1769472,
+      "sha256": "bd0a26ca52f7fac47ec88e0029565ac23f61cb8674951f5cb243f73276e7beec"
+    },
+    {
+      "path": "public/original/gsc/S0730/005.bin",
+      "bytes": 1769472,
+      "sha256": "58814601875cd7350186d76f23a05bdc1bdb078344c7fd728a3af47521801543"
+    },
+    {
+      "path": "public/original/gsc/S0730/006.bin",
+      "bytes": 1769472,
+      "sha256": "db5a1ddc6f5aa105905ceaa6f49cf269e53154eaa94897878a1fd783de184df9"
+    },
+    {
+      "path": "public/original/gsc/S0730/007.bin",
+      "bytes": 1769472,
+      "sha256": "07b0b71b5e8c7b1f073492d19da63868fdff796093378aa5f08a82602ddf6b5e"
+    },
+    {
+      "path": "public/original/gsc/S0730/008.bin",
+      "bytes": 1769472,
+      "sha256": "b58bb8b90c0e2e8cbd001248c9ca8fec5f1ba85288f97a3ec495720362721d30"
+    },
+    {
+      "path": "public/original/gsc/S0730/009.bin",
+      "bytes": 1769472,
+      "sha256": "c19636f2cd4771142dfe360132b89124eff2974e15dc87f94fb5ad3bd0405306"
+    },
+    {
+      "path": "public/original/gsc/S0730/010.bin",
+      "bytes": 1769472,
+      "sha256": "04ffad0ac951365ef9c623e56167817a8aa12ba5f8ba5a051d13ba9fee20c106"
+    },
+    {
+      "path": "public/original/gsc/S0730/011.bin",
+      "bytes": 1769472,
+      "sha256": "de72f34e255b30303ee335923e55a8524e68812fc91b89bd49c9933c3293b18d"
+    },
+    {
+      "path": "public/original/gsc/S0730/012.bin",
+      "bytes": 1769472,
+      "sha256": "f06d7c877da4f574779240a397fa73b3b6036338bd79cbff1722ad142c600a06"
+    },
+    {
+      "path": "public/original/gsc/S0730/013.bin",
+      "bytes": 1769472,
+      "sha256": "69de30c140e61ab11f6e348692cd6a7710c1d714c862f9511c1b3e50c56c5d3e"
+    },
+    {
+      "path": "public/original/gsc/S0730/014.bin",
+      "bytes": 1769472,
+      "sha256": "4a48b7cdacaf924bc7517c7ccbe25b95d251a5adf072819a46ec9c2072a3d73a"
+    },
+    {
+      "path": "public/original/gsc/S0730/015.bin",
+      "bytes": 823689,
+      "sha256": "b5cfee36ced1fd548552b5a5059a5966e795ab602c8c0468b6a63dba85cfc621"
+    },
+    {
+      "path": "public/original/gsc/S1500/000.bin",
+      "bytes": 1769472,
+      "sha256": "7dd7afff8dd5b8ed8f1119a0d1a6b63c302ab1733605bbb737e7ff59ebe096dd"
+    },
+    {
+      "path": "public/original/gsc/S1500/001.bin",
+      "bytes": 1769472,
+      "sha256": "39313f6748f25aeb7389b733e62849f517c2f6812409c08797ad5c250c8bad46"
+    },
+    {
+      "path": "public/original/gsc/S1500/002.bin",
+      "bytes": 1769472,
+      "sha256": "98481329a1a20874770f9d3f7d396cf6990e99f0e075160c9633307d966fbe33"
+    },
+    {
+      "path": "public/original/gsc/S1500/003.bin",
+      "bytes": 1769472,
+      "sha256": "42c60204fd77b01b34b3ed68dcbd4e1442f300f50b4efe073b5edf056e6ee751"
+    },
+    {
+      "path": "public/original/gsc/S1500/004.bin",
+      "bytes": 1769472,
+      "sha256": "c4c4aea812307854de7006b25d1016753f7e19f791e9b9e9748e0443fee01079"
+    },
+    {
+      "path": "public/original/gsc/S1500/005.bin",
+      "bytes": 1769472,
+      "sha256": "b22f42b81afaeb8dacccd9807873dcd02351ccba245b093e78d9f00cf4139020"
+    },
+    {
+      "path": "public/original/gsc/S1500/006.bin",
+      "bytes": 1769472,
+      "sha256": "acbd43585ef13253b230be30d1d2c55447f91b828fc1078e64debf5c9ab80138"
+    },
+    {
+      "path": "public/original/gsc/S1500/007.bin",
+      "bytes": 1769472,
+      "sha256": "dcb34d84df61348e4a3bcbe3f470d4127d5198e83f4517625f2cacf8788fdfd8"
+    },
+    {
+      "path": "public/original/gsc/S1500/008.bin",
+      "bytes": 1769472,
+      "sha256": "9d3405bf0172d0c12f0666680d8233e3b39b4efccd03ee90907fae5660e3a61e"
+    },
+    {
+      "path": "public/original/gsc/S1500/009.bin",
+      "bytes": 1769472,
+      "sha256": "9d3aef412c8a9944d52f110e71c7cdedfcc5e4abc9b4740ea813566c7a78949d"
+    },
+    {
+      "path": "public/original/gsc/S1500/010.bin",
+      "bytes": 1769472,
+      "sha256": "3e1cac470f332d4e0bc3bac02745e7040b40eaa95d648b6bf94a77852402d4a7"
+    },
+    {
+      "path": "public/original/gsc/S1500/011.bin",
+      "bytes": 1769472,
+      "sha256": "7aaa03b86254e0ca900de0eec089027c9a195f22c70b7cdddbc71c0068e35195"
+    },
+    {
+      "path": "public/original/gsc/S1500/012.bin",
+      "bytes": 1769472,
+      "sha256": "bbba3f302d155a9f7032b16b1bea9ae7e74c5ba8e5be924185171140468e3f5b"
+    },
+    {
+      "path": "public/original/gsc/S1500/013.bin",
+      "bytes": 1769472,
+      "sha256": "86f2b0f4ec4c4dd34812471ca908b8a76c65345b0b45d573151d7e8a95518935"
+    },
+    {
+      "path": "public/original/gsc/S1500/014.bin",
+      "bytes": 1769472,
+      "sha256": "9ed986941165ad702d3b3843f0f05df6ef3d333ea668b1b5266ddc1278a3c4e3"
+    },
+    {
+      "path": "public/original/gsc/S1500/015.bin",
+      "bytes": 1769472,
+      "sha256": "9e5d2e6f79a625de3b62119a0bdf8ccc1a00a9cc19e2d90bc84b7e5e7e0c2e53"
+    },
+    {
+      "path": "public/original/gsc/S1500/016.bin",
+      "bytes": 270756,
+      "sha256": "7f9edc6a8e8def8e8f407febe570468d92c1e8702a4da7bc66fc3811d8447e84"
+    },
+    {
+      "path": "public/original/gsc/S2230/000.bin",
+      "bytes": 1769472,
+      "sha256": "94e739ae35a8d2bae8575c6d10f334cb3478bea0f596b45b064a9c6b085fa756"
+    },
+    {
+      "path": "public/original/gsc/S2230/001.bin",
+      "bytes": 1769472,
+      "sha256": "81416c62e8b03e7179c0261f187d492fa0e4868dd4be2bc226b23537e1581875"
+    },
+    {
+      "path": "public/original/gsc/S2230/002.bin",
+      "bytes": 1769472,
+      "sha256": "564d4f5c5beb5fe2c585382b1a2140633a0e0143d2ca525ad43eb9887ce4db43"
+    },
+    {
+      "path": "public/original/gsc/S2230/003.bin",
+      "bytes": 1769472,
+      "sha256": "1c4b57d47c289551954b44812e6b27a692a6215d6b369308d12ca42034133812"
+    },
+    {
+      "path": "public/original/gsc/S2230/004.bin",
+      "bytes": 1769472,
+      "sha256": "772590daba320b5d70b992b635798d0673a0a428b2de53a753546e2c7a5e790e"
+    },
+    {
+      "path": "public/original/gsc/S2230/005.bin",
+      "bytes": 1769472,
+      "sha256": "f9a05eefa45570cd33612c9a8a177b27dd94c8ae577e5c05505405b69ffd0078"
+    },
+    {
+      "path": "public/original/gsc/S2230/006.bin",
+      "bytes": 1769472,
+      "sha256": "82b6bab9b663135304c778e4cfac6501f5fdb6f3be36a31fdef0b8dcc5d48c72"
+    },
+    {
+      "path": "public/original/gsc/S2230/007.bin",
+      "bytes": 1769472,
+      "sha256": "1da6f758158b150dfb95328f97f6382d54dd2ac564674bd8cf2caa00763c4482"
+    },
+    {
+      "path": "public/original/gsc/S2230/008.bin",
+      "bytes": 1769472,
+      "sha256": "33df13c21ac1e72709543378c6d7d884e04be8e49fa0e25fe8d9b714c8b3d724"
+    },
+    {
+      "path": "public/original/gsc/S2230/009.bin",
+      "bytes": 1769472,
+      "sha256": "7556a8a381b5e56571966c182b262ea0f0c5ebfc8c549c988389fad0e8dd1248"
+    },
+    {
+      "path": "public/original/gsc/S2230/010.bin",
+      "bytes": 1769472,
+      "sha256": "1d272869ba0d53bff78964d825284703ad434e94fa8bd622918bf2d15debd7d5"
+    },
+    {
+      "path": "public/original/gsc/S2230/011.bin",
+      "bytes": 1769472,
+      "sha256": "15410c20415cdeca292691618a5a521a5fa25424b64c9ac3159fd662df113589"
+    },
+    {
+      "path": "public/original/gsc/S2230/012.bin",
+      "bytes": 1769472,
+      "sha256": "0df2d9f32e987f3cea07aa9d1db174dab6e96ac4c68f37ea077755b646f96cd3"
+    },
+    {
+      "path": "public/original/gsc/S2230/013.bin",
+      "bytes": 1769472,
+      "sha256": "f39e04e64c96fe5120ffa6113fe87733b65fb67cb35d0692afd130457178aaf1"
+    },
+    {
+      "path": "public/original/gsc/S2230/014.bin",
+      "bytes": 1769472,
+      "sha256": "ace0965dd3683a2e0c09ae754beb3ed9206815a389b4e954aab6eb20e7641fd4"
+    },
+    {
+      "path": "public/original/gsc/S2230/015.bin",
+      "bytes": 1769472,
+      "sha256": "a49ff50a62ab342b177e74acdb19b2c3ee87abd0834beeace194ed320475e35e"
+    },
+    {
+      "path": "public/original/gsc/S2230/016.bin",
+      "bytes": 952020,
+      "sha256": "8d7c4c34cd96ce2d129df19852c098a22da7b9711c2077b07178cb12ef83d38b"
+    },
+    {
+      "path": "public/original/gsc/S3000/000.bin",
+      "bytes": 1769472,
+      "sha256": "a84a7754c0e8b55e700b9fb9cf7c4cbd39d5ba817abcca5e4ca0e6bbe3ef1861"
+    },
+    {
+      "path": "public/original/gsc/S3000/001.bin",
+      "bytes": 1769472,
+      "sha256": "65ab01c12570de7305ae9097694c06af36be8f22ce951470becb0bfffa59d5dd"
+    },
+    {
+      "path": "public/original/gsc/S3000/002.bin",
+      "bytes": 1769472,
+      "sha256": "6a9146fcef566fc61cc53a462b292dc219dc54e4289f442d35a54cc88c4dcdf4"
+    },
+    {
+      "path": "public/original/gsc/S3000/003.bin",
+      "bytes": 1769472,
+      "sha256": "9acb738c991ebf549a73df66fd420a6a25d788839cf146a0f0817a4819ce5859"
+    },
+    {
+      "path": "public/original/gsc/S3000/004.bin",
+      "bytes": 1769472,
+      "sha256": "c1490fae76b3bbe6d78c910bfbee5c3504470801e5985a9b8ad769f3fcbed60a"
+    },
+    {
+      "path": "public/original/gsc/S3000/005.bin",
+      "bytes": 1769472,
+      "sha256": "a2e9b9d1a84ca088ce8042cb0ffb3a3f473c658cceb22785b5b0c9e1c09b0a00"
+    },
+    {
+      "path": "public/original/gsc/S3000/006.bin",
+      "bytes": 1769472,
+      "sha256": "b037a917d70c5769a23cc3e208c8c48bd7bba533fbf9c1e6123fb82cedc830e4"
+    },
+    {
+      "path": "public/original/gsc/S3000/007.bin",
+      "bytes": 1769472,
+      "sha256": "035cf5a883601bcfa0a6db98683cde7c3850947655729d8815a06efb87815c8d"
+    },
+    {
+      "path": "public/original/gsc/S3000/008.bin",
+      "bytes": 1769472,
+      "sha256": "d11682ced866bf4f546c832e35b77e5365b9670383c5e01abc0d949d60f2b957"
+    },
+    {
+      "path": "public/original/gsc/S3000/009.bin",
+      "bytes": 1769472,
+      "sha256": "4b83929d3ca1378cef44db84b8bc7d60fa99b9984afab85fbba47714b5480bf8"
+    },
+    {
+      "path": "public/original/gsc/S3000/010.bin",
+      "bytes": 1769472,
+      "sha256": "a61691a76c4045ec540f3a6d42db5a9d22b70f3eb113f08fd200e8c19b37245a"
+    },
+    {
+      "path": "public/original/gsc/S3000/011.bin",
+      "bytes": 1769472,
+      "sha256": "020cc7a5fb9f0b6ca313e7c0ffb439f781ed80d40a685720432acf18b5a21f2c"
+    },
+    {
+      "path": "public/original/gsc/S3000/012.bin",
+      "bytes": 1769472,
+      "sha256": "ead81fce8451d7c318cf8ed9bfd00b9697947dcab2caa240867ba73cba1d8d55"
+    },
+    {
+      "path": "public/original/gsc/S3000/013.bin",
+      "bytes": 1769472,
+      "sha256": "05a88f063c568ae62de1194cfd9f41859c8af9f79b4dda26762fa008a541ab18"
+    },
+    {
+      "path": "public/original/gsc/S3000/014.bin",
+      "bytes": 1769472,
+      "sha256": "3770c1ec1204702cd0b2434197a84a340d53fd7a9e8898b6686d7ae5a90872db"
+    },
+    {
+      "path": "public/original/gsc/S3000/015.bin",
+      "bytes": 1583928,
+      "sha256": "d55ef98bb630c82b031b522fde96d6c25110c8b3a119996f727cb30bcce6eca4"
+    },
+    {
+      "path": "public/original/gsc/S3730/000.bin",
+      "bytes": 1769472,
+      "sha256": "c24f50ca202b12b2e927495b85002b963787a70bb3500fb4df5080d1831339e7"
+    },
+    {
+      "path": "public/original/gsc/S3730/001.bin",
+      "bytes": 1769472,
+      "sha256": "64c98b32eadd6be311a82ab3e6a5ecd1bc20c1e1c8f94ee9393d856b71df7ab8"
+    },
+    {
+      "path": "public/original/gsc/S3730/002.bin",
+      "bytes": 1769472,
+      "sha256": "b49671a0802ec70837fe0b4c3fd0bb65193d320144b465e1effb81dcc0ca0461"
+    },
+    {
+      "path": "public/original/gsc/S3730/003.bin",
+      "bytes": 1769472,
+      "sha256": "33bd034d948bbd29d4dff8c50933de958df8faaa342c3013da1eb3130d50b025"
+    },
+    {
+      "path": "public/original/gsc/S3730/004.bin",
+      "bytes": 1769472,
+      "sha256": "35a9f40eda6f69c14bb70d05605cbcceef001bce38b7087ab0c761cff4eb7d36"
+    },
+    {
+      "path": "public/original/gsc/S3730/005.bin",
+      "bytes": 1769472,
+      "sha256": "feec55dc3d54e123ef0942beecd372afdd9b79d175caa9c01c9302921a90c147"
+    },
+    {
+      "path": "public/original/gsc/S3730/006.bin",
+      "bytes": 1769472,
+      "sha256": "4bf1034fcd5345c235b50d80d9347e684dbf158f80284f209ffcdcfdc9bb9b7e"
+    },
+    {
+      "path": "public/original/gsc/S3730/007.bin",
+      "bytes": 1769472,
+      "sha256": "db518efd92124373bbc6fa0b637f768c3eef95277da973f23b252479b110d2c2"
+    },
+    {
+      "path": "public/original/gsc/S3730/008.bin",
+      "bytes": 1769472,
+      "sha256": "57d0b3670ba3b22b27f5f686310bca3213a8c0106e9fec2eef00f347d02eec86"
+    },
+    {
+      "path": "public/original/gsc/S3730/009.bin",
+      "bytes": 1769472,
+      "sha256": "9b7fc2e9f31df9044b5ee30ed7a0bf028b46e40fdcb0952996afb0ff57b7c136"
+    },
+    {
+      "path": "public/original/gsc/S3730/010.bin",
+      "bytes": 1769472,
+      "sha256": "c3fe52d66bee8edc47e135d0739979a59079dc4daae6c2801d90e1f02a76d7ca"
+    },
+    {
+      "path": "public/original/gsc/S3730/011.bin",
+      "bytes": 1769472,
+      "sha256": "bad4769ad7ea72768bc027ffea7fb0c97d5172ebbc69a62d60a95205dd426692"
+    },
+    {
+      "path": "public/original/gsc/S3730/012.bin",
+      "bytes": 1769472,
+      "sha256": "b8e11436402052c8c17ae5f38266f88707aef77ab3e6366608138d4b65bf3587"
+    },
+    {
+      "path": "public/original/gsc/S3730/013.bin",
+      "bytes": 1769472,
+      "sha256": "dfe9a68d18855247a4c94f70d38e11bb9027a14117fb20aa99b181f93ba682cd"
+    },
+    {
+      "path": "public/original/gsc/S3730/014.bin",
+      "bytes": 1769472,
+      "sha256": "11d39afdf02a1fddb0ee78d76f3454f3eec0bf0b0365a6dae38bea5061067c58"
+    },
+    {
+      "path": "public/original/gsc/S3730/015.bin",
+      "bytes": 1769472,
+      "sha256": "c2dba2e0892f3979a409f61f29ee129a2e44f4a22caaa3dae4b381fff5c0133d"
+    },
+    {
+      "path": "public/original/gsc/S3730/016.bin",
+      "bytes": 47736,
+      "sha256": "5ff0ded11d56929e09a48e4ee17d0a36f2e564f50d13a8db9338c6e6472b1827"
+    },
+    {
+      "path": "public/original/gsc/S4500/000.bin",
+      "bytes": 1769472,
+      "sha256": "d548c31e13e9c88fea86295ce95983b68ac378215e489882c8645bf99eb65217"
+    },
+    {
+      "path": "public/original/gsc/S4500/001.bin",
+      "bytes": 1769472,
+      "sha256": "95de096360d005deb4575441493ff392c97be87967b68003230a8ff86d7bfdc3"
+    },
+    {
+      "path": "public/original/gsc/S4500/002.bin",
+      "bytes": 1769472,
+      "sha256": "9e1b45c53326d87ef92681ecf20eac4a7d9c02d030ee3612dbffea65edfc2984"
+    },
+    {
+      "path": "public/original/gsc/S4500/003.bin",
+      "bytes": 1769472,
+      "sha256": "f17bb1ad4004e0f717d634cfe691c12fbf7a3e7eea3e698d8a5a5061d448dedf"
+    },
+    {
+      "path": "public/original/gsc/S4500/004.bin",
+      "bytes": 1769472,
+      "sha256": "3aa07b4e2c5960b916d00877640606bb89d8d328b9dc3a00efbc85bd8228bba9"
+    },
+    {
+      "path": "public/original/gsc/S4500/005.bin",
+      "bytes": 1769472,
+      "sha256": "cf1abc0e315c22bc0e660dd66219035ba4ca2f14711265a57b3226c6b69ac459"
+    },
+    {
+      "path": "public/original/gsc/S4500/006.bin",
+      "bytes": 1769472,
+      "sha256": "6223297a41f8e66633aace0c910b1ffb9552aa1dd7605e96445c3d6b95c33c32"
+    },
+    {
+      "path": "public/original/gsc/S4500/007.bin",
+      "bytes": 1769472,
+      "sha256": "97034ec51464b8400d6502fd356fa612587ee71432ad5de0950368f51571265d"
+    },
+    {
+      "path": "public/original/gsc/S4500/008.bin",
+      "bytes": 1769472,
+      "sha256": "5fbc850187efd5c30b20197bc5c37fc569adcb3d0ccc68f741ede7a0ab4c3330"
+    },
+    {
+      "path": "public/original/gsc/S4500/009.bin",
+      "bytes": 1769472,
+      "sha256": "0fc9d17e19f377d4065626b1b3ddf1d20d3a4da67898928421ff0fcbf5fe78ea"
+    },
+    {
+      "path": "public/original/gsc/S4500/010.bin",
+      "bytes": 1769472,
+      "sha256": "51204ab711f020996805258d7197bb04fcb8edf56d941858d9ad0e6c97800b6a"
+    },
+    {
+      "path": "public/original/gsc/S4500/011.bin",
+      "bytes": 1769472,
+      "sha256": "71f4b9754084f67ad265cb46811c4fdcc62baa8cc9ef90b23c45c5e30549deaa"
+    },
+    {
+      "path": "public/original/gsc/S4500/012.bin",
+      "bytes": 1769472,
+      "sha256": "0a03817bceffb1f2d08488efc0cdaad16d2f1e532ca97001b13f51d4394f34da"
+    },
+    {
+      "path": "public/original/gsc/S4500/013.bin",
+      "bytes": 1769472,
+      "sha256": "35ad69bee1bc86c2c43bd4d8fd9de677e449b06821e5648e011973dea79a7f26"
+    },
+    {
+      "path": "public/original/gsc/S4500/014.bin",
+      "bytes": 1769472,
+      "sha256": "dd09912237867df4cda06459872be67c91a4c8c15c8d2ffb4bab576e9f459a70"
+    },
+    {
+      "path": "public/original/gsc/S4500/015.bin",
+      "bytes": 994248,
+      "sha256": "36f22192054ac55a2b799b8520c3a3720b6f89cd8e41e0d82109120ce7c71f13"
+    },
+    {
+      "path": "public/original/gsc/S5230/000.bin",
+      "bytes": 1769472,
+      "sha256": "4c0d968947cd40c3f8d7edeba36a424db1e2fc214c999aad05e44c5bdd7f3668"
+    },
+    {
+      "path": "public/original/gsc/S5230/001.bin",
+      "bytes": 1769472,
+      "sha256": "923b38f40226b2660ed92296c7eb0397c0702cd7fd7263155f0da78d52212fa7"
+    },
+    {
+      "path": "public/original/gsc/S5230/002.bin",
+      "bytes": 1769472,
+      "sha256": "5ba8ecb81dc0a60f3c81df2e628d85d1bac3bc0a75295006574ace07856f21dd"
+    },
+    {
+      "path": "public/original/gsc/S5230/003.bin",
+      "bytes": 1769472,
+      "sha256": "b92e5c61f5803ae5c8244fd72f5e13356265fc3cc0de9e1f79e13c5c8b5c9597"
+    },
+    {
+      "path": "public/original/gsc/S5230/004.bin",
+      "bytes": 1769472,
+      "sha256": "9ed03a46967942bf01486b8252143af0012058ec1cd786320c6c96d1d96ca0b3"
+    },
+    {
+      "path": "public/original/gsc/S5230/005.bin",
+      "bytes": 1769472,
+      "sha256": "e5012b5b549faafa51907b379df329774a5c4b7fa80e8ea58bee13f4e6c23eb2"
+    },
+    {
+      "path": "public/original/gsc/S5230/006.bin",
+      "bytes": 1769472,
+      "sha256": "c90ff89eb1c64e7fbabbab27328da4946f86e578b9bd2c4a00457f9fcd9d6223"
+    },
+    {
+      "path": "public/original/gsc/S5230/007.bin",
+      "bytes": 1769472,
+      "sha256": "724ecf36496e57300252cb621b03e244166fe536142ee76aa8ac464917ff4e84"
+    },
+    {
+      "path": "public/original/gsc/S5230/008.bin",
+      "bytes": 1769472,
+      "sha256": "8c02f6d622443e6bf390851db1efca49b84317d8d775e178e9505085352823cb"
+    },
+    {
+      "path": "public/original/gsc/S5230/009.bin",
+      "bytes": 1769472,
+      "sha256": "40cd51b60193e25059504876d307e1deb39fe03e7efd4bcf3045d13f07f6b20f"
+    },
+    {
+      "path": "public/original/gsc/S5230/010.bin",
+      "bytes": 1769472,
+      "sha256": "12a7c7bfc650fbb27d9c92738b5ad32ea32d8b0b687ed15b97dbc905290e3dba"
+    },
+    {
+      "path": "public/original/gsc/S5230/011.bin",
+      "bytes": 1769472,
+      "sha256": "743746210bd7cdd54c522d47983dcf0b81565121b8a317ef881f9ebb456b1f2a"
+    },
+    {
+      "path": "public/original/gsc/S5230/012.bin",
+      "bytes": 1583955,
+      "sha256": "9652c3948e407f9c0763de350820dffc5fe87d567fcc7b24b59668ad549f12e9"
+    },
+    {
+      "path": "public/original/gsc/S6000/000.bin",
+      "bytes": 1769472,
+      "sha256": "f27e5418485b84da92c24ee976aad33ddd177497502ea27781318b17c681d09f"
+    },
+    {
+      "path": "public/original/gsc/S6000/001.bin",
+      "bytes": 1769472,
+      "sha256": "d7f540aed14e2eee9741467a3603f3299e167e1bf7cdfce77516ee25103e7355"
+    },
+    {
+      "path": "public/original/gsc/S6000/002.bin",
+      "bytes": 1769472,
+      "sha256": "fc747a3a6a9ee2562f5373e857969e259da686ac3fc7f79d1d9ca120324a5aaa"
+    },
+    {
+      "path": "public/original/gsc/S6000/003.bin",
+      "bytes": 1769472,
+      "sha256": "6b114996f1f270f46fabc9829631c7d1b9a0c898125f82346484056f512e7b82"
+    },
+    {
+      "path": "public/original/gsc/S6000/004.bin",
+      "bytes": 1769472,
+      "sha256": "f2440d4726634820b04ae76cdcf28c3ca2c8905e00e613cbb884e71777f52ae7"
+    },
+    {
+      "path": "public/original/gsc/S6000/005.bin",
+      "bytes": 1769472,
+      "sha256": "d2f07f11be93dc09200fe9650fbdee69bfe108dc84207eb0a7d4eaf76b71f5b5"
+    },
+    {
+      "path": "public/original/gsc/S6000/006.bin",
+      "bytes": 1769472,
+      "sha256": "15a7fa2750b9ff36849f183b8c4c3f754bc498a7299e75b9c8eb61158d8d4800"
+    },
+    {
+      "path": "public/original/gsc/S6000/007.bin",
+      "bytes": 1769472,
+      "sha256": "a3a5f774c8d3c3db48034166705cb343f8f582aad67bbf4f4f31f191bb041189"
+    },
+    {
+      "path": "public/original/gsc/S6000/008.bin",
+      "bytes": 1769472,
+      "sha256": "ae70d0652a0c89659d6450dbe4fc5672c946700d38c0fe1b50e6944607bce78e"
+    },
+    {
+      "path": "public/original/gsc/S6000/009.bin",
+      "bytes": 1769472,
+      "sha256": "c612733d7b81698ac1817683fd07fb4b958bd79664270addc532d5a9ea67dcd6"
+    },
+    {
+      "path": "public/original/gsc/S6000/010.bin",
+      "bytes": 907389,
+      "sha256": "a96a60c566e6739bd7582f461fa606e1576fe91c87ad48d70e60ceef7540ec8a"
+    },
+    {
+      "path": "public/original/gsc/S6730/000.bin",
+      "bytes": 1769472,
+      "sha256": "4acc5814b3a0ba324ddc3eaaaef6dbf3de2bbcc8ee519463aa61d8de7aaefaf7"
+    },
+    {
+      "path": "public/original/gsc/S6730/001.bin",
+      "bytes": 1769472,
+      "sha256": "990f853f57350355a5d33d98778f59633e32f25efa9b5929f8a6e6158924fdf7"
+    },
+    {
+      "path": "public/original/gsc/S6730/002.bin",
+      "bytes": 1769472,
+      "sha256": "0b98eab2addd6d0f4c8ffacd17744ad02862e0e8dff4717d91a9c483569c2c38"
+    },
+    {
+      "path": "public/original/gsc/S6730/003.bin",
+      "bytes": 1769472,
+      "sha256": "e82e4f22932132a7fd5c703f0dff2166b19e71b6821323a79f26eacd2b08b9b3"
+    },
+    {
+      "path": "public/original/gsc/S6730/004.bin",
+      "bytes": 1769472,
+      "sha256": "921e8fa8b6f5d612ca01084bd0e57bcfbf0cea0897c538cb40a61e9e81d85800"
+    },
+    {
+      "path": "public/original/gsc/S6730/005.bin",
+      "bytes": 1769472,
+      "sha256": "d5dfd43142655f60df45d8b43f5d1d3d3168f2215550fed75c3d28d3ea6fbe5d"
+    },
+    {
+      "path": "public/original/gsc/S6730/006.bin",
+      "bytes": 1769472,
+      "sha256": "48a92cd490c16ceda65422e4662e454f5d313f8a4c4f93b8fa03b2099912bf9b"
+    },
+    {
+      "path": "public/original/gsc/S6730/007.bin",
+      "bytes": 845748,
+      "sha256": "12bc405ed841c0448225cf76ff411748c8720171859f70a9114b52358d9e2389"
+    },
+    {
+      "path": "public/original/gsc/S7500/000.bin",
+      "bytes": 1769472,
+      "sha256": "272872f2e9ad254907cfd2f860536749a9091717b06d658a9f70cd0bd714971e"
+    },
+    {
+      "path": "public/original/gsc/S7500/001.bin",
+      "bytes": 1769472,
+      "sha256": "e9a721a3bdf813d53200e9fe2e0bf37f5a40021d40e53da7ee74c28822aec7eb"
+    },
+    {
+      "path": "public/original/gsc/S7500/002.bin",
+      "bytes": 1769472,
+      "sha256": "9ce1d173e6a46bbfcd71afce339ac6bd819d57ae397be24840cfb29526e2bd67"
+    },
+    {
+      "path": "public/original/gsc/S7500/003.bin",
+      "bytes": 1769472,
+      "sha256": "e05f89b10ffbf5c27cdc6142f05ac206131032242d3c3403ffe25e80eebf78d5"
+    },
+    {
+      "path": "public/original/gsc/S7500/004.bin",
+      "bytes": 534222,
+      "sha256": "4a8df4c8f877093f1f245b731a28022bd5a311ca5e499733b2847b60468a3438"
+    },
+    {
+      "path": "public/original/gsc/S8230/000.bin",
+      "bytes": 1769472,
+      "sha256": "3909adf330babc2ee59ac5d6a60db202fca1b8f1395557cd87debafe152a80e4"
+    },
+    {
+      "path": "public/original/gsc/S8230/001.bin",
+      "bytes": 807435,
+      "sha256": "7e2f93675e266b8039287540c554d9c0cade474a411c7a118ad170f453c0caf2"
+    },
+    {
+      "path": "data/gsc/gsc-index.json",
+      "bytes": 170529,
+      "sha256": "33134180300fc9afac624911c4c5a9ef4606a367892641a4ca4e326969eea1cb"
+    }
+  ],
+  "assembled": [
+    {
+      "name": "N0000.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N0000.DAT",
+      "bytes": 31481649,
+      "sha256": "a1394a80eea5aca3ef765e841883ef75de94e96aea972d7ed3e68787d23bb36a",
+      "tiles": [
+        "public/original/gsc/N0000/000.bin",
+        "public/original/gsc/N0000/001.bin",
+        "public/original/gsc/N0000/002.bin",
+        "public/original/gsc/N0000/003.bin",
+        "public/original/gsc/N0000/004.bin",
+        "public/original/gsc/N0000/005.bin",
+        "public/original/gsc/N0000/006.bin",
+        "public/original/gsc/N0000/007.bin",
+        "public/original/gsc/N0000/008.bin",
+        "public/original/gsc/N0000/009.bin",
+        "public/original/gsc/N0000/010.bin",
+        "public/original/gsc/N0000/011.bin",
+        "public/original/gsc/N0000/012.bin",
+        "public/original/gsc/N0000/013.bin",
+        "public/original/gsc/N0000/014.bin",
+        "public/original/gsc/N0000/015.bin",
+        "public/original/gsc/N0000/016.bin",
+        "public/original/gsc/N0000/017.bin"
+      ]
+    },
+    {
+      "name": "N0730.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N0730.DAT",
+      "bytes": 28576611,
+      "sha256": "56949f9d1ac2046294ade9549ba743c5ac08021fa6343ba7e82459257bd58be1",
+      "tiles": [
+        "public/original/gsc/N0730/000.bin",
+        "public/original/gsc/N0730/001.bin",
+        "public/original/gsc/N0730/002.bin",
+        "public/original/gsc/N0730/003.bin",
+        "public/original/gsc/N0730/004.bin",
+        "public/original/gsc/N0730/005.bin",
+        "public/original/gsc/N0730/006.bin",
+        "public/original/gsc/N0730/007.bin",
+        "public/original/gsc/N0730/008.bin",
+        "public/original/gsc/N0730/009.bin",
+        "public/original/gsc/N0730/010.bin",
+        "public/original/gsc/N0730/011.bin",
+        "public/original/gsc/N0730/012.bin",
+        "public/original/gsc/N0730/013.bin",
+        "public/original/gsc/N0730/014.bin",
+        "public/original/gsc/N0730/015.bin",
+        "public/original/gsc/N0730/016.bin"
+      ]
+    },
+    {
+      "name": "N1500.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N1500.DAT",
+      "bytes": 27745902,
+      "sha256": "2dc4ff3488bf5fce1698a7ed964b7dbefbf0a5da9f8a62f9d8e19b42ec076c55",
+      "tiles": [
+        "public/original/gsc/N1500/000.bin",
+        "public/original/gsc/N1500/001.bin",
+        "public/original/gsc/N1500/002.bin",
+        "public/original/gsc/N1500/003.bin",
+        "public/original/gsc/N1500/004.bin",
+        "public/original/gsc/N1500/005.bin",
+        "public/original/gsc/N1500/006.bin",
+        "public/original/gsc/N1500/007.bin",
+        "public/original/gsc/N1500/008.bin",
+        "public/original/gsc/N1500/009.bin",
+        "public/original/gsc/N1500/010.bin",
+        "public/original/gsc/N1500/011.bin",
+        "public/original/gsc/N1500/012.bin",
+        "public/original/gsc/N1500/013.bin",
+        "public/original/gsc/N1500/014.bin",
+        "public/original/gsc/N1500/015.bin"
+      ]
+    },
+    {
+      "name": "N2230.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N2230.DAT",
+      "bytes": 28767987,
+      "sha256": "b7f664ebd333361b824830336ccc2f729194136a8c14c8ed7c133610519cbe54",
+      "tiles": [
+        "public/original/gsc/N2230/000.bin",
+        "public/original/gsc/N2230/001.bin",
+        "public/original/gsc/N2230/002.bin",
+        "public/original/gsc/N2230/003.bin",
+        "public/original/gsc/N2230/004.bin",
+        "public/original/gsc/N2230/005.bin",
+        "public/original/gsc/N2230/006.bin",
+        "public/original/gsc/N2230/007.bin",
+        "public/original/gsc/N2230/008.bin",
+        "public/original/gsc/N2230/009.bin",
+        "public/original/gsc/N2230/010.bin",
+        "public/original/gsc/N2230/011.bin",
+        "public/original/gsc/N2230/012.bin",
+        "public/original/gsc/N2230/013.bin",
+        "public/original/gsc/N2230/014.bin",
+        "public/original/gsc/N2230/015.bin",
+        "public/original/gsc/N2230/016.bin"
+      ]
+    },
+    {
+      "name": "N3000.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N3000.DAT",
+      "bytes": 27909279,
+      "sha256": "2cb76117cc1c7fda678f2b78bb7430f3222cb14c891b9a7ed926697d52efc8c6",
+      "tiles": [
+        "public/original/gsc/N3000/000.bin",
+        "public/original/gsc/N3000/001.bin",
+        "public/original/gsc/N3000/002.bin",
+        "public/original/gsc/N3000/003.bin",
+        "public/original/gsc/N3000/004.bin",
+        "public/original/gsc/N3000/005.bin",
+        "public/original/gsc/N3000/006.bin",
+        "public/original/gsc/N3000/007.bin",
+        "public/original/gsc/N3000/008.bin",
+        "public/original/gsc/N3000/009.bin",
+        "public/original/gsc/N3000/010.bin",
+        "public/original/gsc/N3000/011.bin",
+        "public/original/gsc/N3000/012.bin",
+        "public/original/gsc/N3000/013.bin",
+        "public/original/gsc/N3000/014.bin",
+        "public/original/gsc/N3000/015.bin"
+      ]
+    },
+    {
+      "name": "N3730.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N3730.DAT",
+      "bytes": 27031482,
+      "sha256": "b03564d74334d82c430fac81b7d9144f213a1eae7a3116a63a3bf1b5d1719c95",
+      "tiles": [
+        "public/original/gsc/N3730/000.bin",
+        "public/original/gsc/N3730/001.bin",
+        "public/original/gsc/N3730/002.bin",
+        "public/original/gsc/N3730/003.bin",
+        "public/original/gsc/N3730/004.bin",
+        "public/original/gsc/N3730/005.bin",
+        "public/original/gsc/N3730/006.bin",
+        "public/original/gsc/N3730/007.bin",
+        "public/original/gsc/N3730/008.bin",
+        "public/original/gsc/N3730/009.bin",
+        "public/original/gsc/N3730/010.bin",
+        "public/original/gsc/N3730/011.bin",
+        "public/original/gsc/N3730/012.bin",
+        "public/original/gsc/N3730/013.bin",
+        "public/original/gsc/N3730/014.bin",
+        "public/original/gsc/N3730/015.bin"
+      ]
+    },
+    {
+      "name": "N4500.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N4500.DAT",
+      "bytes": 24072741,
+      "sha256": "513a9deab803f1c7b5ef9cda029044b2c13c79edde6f51ee998f5ef2a75156cb",
+      "tiles": [
+        "public/original/gsc/N4500/000.bin",
+        "public/original/gsc/N4500/001.bin",
+        "public/original/gsc/N4500/002.bin",
+        "public/original/gsc/N4500/003.bin",
+        "public/original/gsc/N4500/004.bin",
+        "public/original/gsc/N4500/005.bin",
+        "public/original/gsc/N4500/006.bin",
+        "public/original/gsc/N4500/007.bin",
+        "public/original/gsc/N4500/008.bin",
+        "public/original/gsc/N4500/009.bin",
+        "public/original/gsc/N4500/010.bin",
+        "public/original/gsc/N4500/011.bin",
+        "public/original/gsc/N4500/012.bin",
+        "public/original/gsc/N4500/013.bin"
+      ]
+    },
+    {
+      "name": "N5230.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N5230.DAT",
+      "bytes": 18166950,
+      "sha256": "17e899286fba7af6b286fb88580449e5513e98a86a24544030d870f0d8af851d",
+      "tiles": [
+        "public/original/gsc/N5230/000.bin",
+        "public/original/gsc/N5230/001.bin",
+        "public/original/gsc/N5230/002.bin",
+        "public/original/gsc/N5230/003.bin",
+        "public/original/gsc/N5230/004.bin",
+        "public/original/gsc/N5230/005.bin",
+        "public/original/gsc/N5230/006.bin",
+        "public/original/gsc/N5230/007.bin",
+        "public/original/gsc/N5230/008.bin",
+        "public/original/gsc/N5230/009.bin",
+        "public/original/gsc/N5230/010.bin"
+      ]
+    },
+    {
+      "name": "N6000.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N6000.DAT",
+      "bytes": 14117733,
+      "sha256": "59ee42b0af17b06eaf15ff3d490d848e4cebca0e82096c6c5ebc10cb5dbd4a5d",
+      "tiles": [
+        "public/original/gsc/N6000/000.bin",
+        "public/original/gsc/N6000/001.bin",
+        "public/original/gsc/N6000/002.bin",
+        "public/original/gsc/N6000/003.bin",
+        "public/original/gsc/N6000/004.bin",
+        "public/original/gsc/N6000/005.bin",
+        "public/original/gsc/N6000/006.bin",
+        "public/original/gsc/N6000/007.bin"
+      ]
+    },
+    {
+      "name": "N6730.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N6730.DAT",
+      "bytes": 10166094,
+      "sha256": "c8fa6891dcb27b905b3206b57d9f74882495744be537a94950f22319d07a7b59",
+      "tiles": [
+        "public/original/gsc/N6730/000.bin",
+        "public/original/gsc/N6730/001.bin",
+        "public/original/gsc/N6730/002.bin",
+        "public/original/gsc/N6730/003.bin",
+        "public/original/gsc/N6730/004.bin",
+        "public/original/gsc/N6730/005.bin"
+      ]
+    },
+    {
+      "name": "N7500.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N7500.DAT",
+      "bytes": 7131051,
+      "sha256": "fe7c3bf00a05ec39e9e263d0d8b38c84e946112a979ba0a44343f5df2e715f4e",
+      "tiles": [
+        "public/original/gsc/N7500/000.bin",
+        "public/original/gsc/N7500/001.bin",
+        "public/original/gsc/N7500/002.bin",
+        "public/original/gsc/N7500/003.bin",
+        "public/original/gsc/N7500/004.bin"
+      ]
+    },
+    {
+      "name": "N8230.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/N8230.DAT",
+      "bytes": 2015712,
+      "sha256": "2cd05f79e4434c20ca5af84faa82a28f479806a313b5217d5fdbaa1469346a09",
+      "tiles": [
+        "public/original/gsc/N8230/000.bin",
+        "public/original/gsc/N8230/001.bin"
+      ]
+    },
+    {
+      "name": "S0000.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S0000.DAT",
+      "bytes": 27456219,
+      "sha256": "0cc5484587b734d4c468ad0d38e3eab78936a253d1409bd69d83f0bf26fe44f9",
+      "tiles": [
+        "public/original/gsc/S0000/000.bin",
+        "public/original/gsc/S0000/001.bin",
+        "public/original/gsc/S0000/002.bin",
+        "public/original/gsc/S0000/003.bin",
+        "public/original/gsc/S0000/004.bin",
+        "public/original/gsc/S0000/005.bin",
+        "public/original/gsc/S0000/006.bin",
+        "public/original/gsc/S0000/007.bin",
+        "public/original/gsc/S0000/008.bin",
+        "public/original/gsc/S0000/009.bin",
+        "public/original/gsc/S0000/010.bin",
+        "public/original/gsc/S0000/011.bin",
+        "public/original/gsc/S0000/012.bin",
+        "public/original/gsc/S0000/013.bin",
+        "public/original/gsc/S0000/014.bin",
+        "public/original/gsc/S0000/015.bin"
+      ]
+    },
+    {
+      "name": "S0730.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S0730.DAT",
+      "bytes": 27365769,
+      "sha256": "c029ac362f2a0b31d167719d4d9e4fa4fa412f15a459a59701a0c2b9ef496e19",
+      "tiles": [
+        "public/original/gsc/S0730/000.bin",
+        "public/original/gsc/S0730/001.bin",
+        "public/original/gsc/S0730/002.bin",
+        "public/original/gsc/S0730/003.bin",
+        "public/original/gsc/S0730/004.bin",
+        "public/original/gsc/S0730/005.bin",
+        "public/original/gsc/S0730/006.bin",
+        "public/original/gsc/S0730/007.bin",
+        "public/original/gsc/S0730/008.bin",
+        "public/original/gsc/S0730/009.bin",
+        "public/original/gsc/S0730/010.bin",
+        "public/original/gsc/S0730/011.bin",
+        "public/original/gsc/S0730/012.bin",
+        "public/original/gsc/S0730/013.bin",
+        "public/original/gsc/S0730/014.bin",
+        "public/original/gsc/S0730/015.bin"
+      ]
+    },
+    {
+      "name": "S1500.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S1500.DAT",
+      "bytes": 28582308,
+      "sha256": "c2bc97a911be613ec7f540148816329c5953ee6fed75b5604f6cdf2dcea37a31",
+      "tiles": [
+        "public/original/gsc/S1500/000.bin",
+        "public/original/gsc/S1500/001.bin",
+        "public/original/gsc/S1500/002.bin",
+        "public/original/gsc/S1500/003.bin",
+        "public/original/gsc/S1500/004.bin",
+        "public/original/gsc/S1500/005.bin",
+        "public/original/gsc/S1500/006.bin",
+        "public/original/gsc/S1500/007.bin",
+        "public/original/gsc/S1500/008.bin",
+        "public/original/gsc/S1500/009.bin",
+        "public/original/gsc/S1500/010.bin",
+        "public/original/gsc/S1500/011.bin",
+        "public/original/gsc/S1500/012.bin",
+        "public/original/gsc/S1500/013.bin",
+        "public/original/gsc/S1500/014.bin",
+        "public/original/gsc/S1500/015.bin",
+        "public/original/gsc/S1500/016.bin"
+      ]
+    },
+    {
+      "name": "S2230.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S2230.DAT",
+      "bytes": 29263572,
+      "sha256": "7cd07a25f2f759e97404a8ccae6f243e3038e304804b9875ed7c1505c5aa8a94",
+      "tiles": [
+        "public/original/gsc/S2230/000.bin",
+        "public/original/gsc/S2230/001.bin",
+        "public/original/gsc/S2230/002.bin",
+        "public/original/gsc/S2230/003.bin",
+        "public/original/gsc/S2230/004.bin",
+        "public/original/gsc/S2230/005.bin",
+        "public/original/gsc/S2230/006.bin",
+        "public/original/gsc/S2230/007.bin",
+        "public/original/gsc/S2230/008.bin",
+        "public/original/gsc/S2230/009.bin",
+        "public/original/gsc/S2230/010.bin",
+        "public/original/gsc/S2230/011.bin",
+        "public/original/gsc/S2230/012.bin",
+        "public/original/gsc/S2230/013.bin",
+        "public/original/gsc/S2230/014.bin",
+        "public/original/gsc/S2230/015.bin",
+        "public/original/gsc/S2230/016.bin"
+      ]
+    },
+    {
+      "name": "S3000.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S3000.DAT",
+      "bytes": 28126008,
+      "sha256": "fa9ee76f4a2c5ea7ee5a17dc2f84c583478ff6d339f981ab25836a201fcd0228",
+      "tiles": [
+        "public/original/gsc/S3000/000.bin",
+        "public/original/gsc/S3000/001.bin",
+        "public/original/gsc/S3000/002.bin",
+        "public/original/gsc/S3000/003.bin",
+        "public/original/gsc/S3000/004.bin",
+        "public/original/gsc/S3000/005.bin",
+        "public/original/gsc/S3000/006.bin",
+        "public/original/gsc/S3000/007.bin",
+        "public/original/gsc/S3000/008.bin",
+        "public/original/gsc/S3000/009.bin",
+        "public/original/gsc/S3000/010.bin",
+        "public/original/gsc/S3000/011.bin",
+        "public/original/gsc/S3000/012.bin",
+        "public/original/gsc/S3000/013.bin",
+        "public/original/gsc/S3000/014.bin",
+        "public/original/gsc/S3000/015.bin"
+      ]
+    },
+    {
+      "name": "S3730.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S3730.DAT",
+      "bytes": 28359288,
+      "sha256": "d48a3bc984b150f91085bc6c0098b7d22c40f38ec402a854151a638518318482",
+      "tiles": [
+        "public/original/gsc/S3730/000.bin",
+        "public/original/gsc/S3730/001.bin",
+        "public/original/gsc/S3730/002.bin",
+        "public/original/gsc/S3730/003.bin",
+        "public/original/gsc/S3730/004.bin",
+        "public/original/gsc/S3730/005.bin",
+        "public/original/gsc/S3730/006.bin",
+        "public/original/gsc/S3730/007.bin",
+        "public/original/gsc/S3730/008.bin",
+        "public/original/gsc/S3730/009.bin",
+        "public/original/gsc/S3730/010.bin",
+        "public/original/gsc/S3730/011.bin",
+        "public/original/gsc/S3730/012.bin",
+        "public/original/gsc/S3730/013.bin",
+        "public/original/gsc/S3730/014.bin",
+        "public/original/gsc/S3730/015.bin",
+        "public/original/gsc/S3730/016.bin"
+      ]
+    },
+    {
+      "name": "S4500.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S4500.DAT",
+      "bytes": 27536328,
+      "sha256": "3012858aa9d6248bf7e64605f15ce1d69b6332a533614a8c4ac492762734cb43",
+      "tiles": [
+        "public/original/gsc/S4500/000.bin",
+        "public/original/gsc/S4500/001.bin",
+        "public/original/gsc/S4500/002.bin",
+        "public/original/gsc/S4500/003.bin",
+        "public/original/gsc/S4500/004.bin",
+        "public/original/gsc/S4500/005.bin",
+        "public/original/gsc/S4500/006.bin",
+        "public/original/gsc/S4500/007.bin",
+        "public/original/gsc/S4500/008.bin",
+        "public/original/gsc/S4500/009.bin",
+        "public/original/gsc/S4500/010.bin",
+        "public/original/gsc/S4500/011.bin",
+        "public/original/gsc/S4500/012.bin",
+        "public/original/gsc/S4500/013.bin",
+        "public/original/gsc/S4500/014.bin",
+        "public/original/gsc/S4500/015.bin"
+      ]
+    },
+    {
+      "name": "S5230.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S5230.DAT",
+      "bytes": 22817619,
+      "sha256": "4b1678aa1b69f2404efba0b192df32dcfdd5e2fcdb0a55b17159915a4837c95a",
+      "tiles": [
+        "public/original/gsc/S5230/000.bin",
+        "public/original/gsc/S5230/001.bin",
+        "public/original/gsc/S5230/002.bin",
+        "public/original/gsc/S5230/003.bin",
+        "public/original/gsc/S5230/004.bin",
+        "public/original/gsc/S5230/005.bin",
+        "public/original/gsc/S5230/006.bin",
+        "public/original/gsc/S5230/007.bin",
+        "public/original/gsc/S5230/008.bin",
+        "public/original/gsc/S5230/009.bin",
+        "public/original/gsc/S5230/010.bin",
+        "public/original/gsc/S5230/011.bin",
+        "public/original/gsc/S5230/012.bin"
+      ]
+    },
+    {
+      "name": "S6000.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S6000.DAT",
+      "bytes": 18602109,
+      "sha256": "f3d47f7e2c0ee7476f1c45a85bbceae80abd5fd076ec8261ef34b5ac755648c8",
+      "tiles": [
+        "public/original/gsc/S6000/000.bin",
+        "public/original/gsc/S6000/001.bin",
+        "public/original/gsc/S6000/002.bin",
+        "public/original/gsc/S6000/003.bin",
+        "public/original/gsc/S6000/004.bin",
+        "public/original/gsc/S6000/005.bin",
+        "public/original/gsc/S6000/006.bin",
+        "public/original/gsc/S6000/007.bin",
+        "public/original/gsc/S6000/008.bin",
+        "public/original/gsc/S6000/009.bin",
+        "public/original/gsc/S6000/010.bin"
+      ]
+    },
+    {
+      "name": "S6730.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S6730.DAT",
+      "bytes": 13232052,
+      "sha256": "f05c38d22f9b557eed6d75131e340b8b1d8529d04a07a940cb4cca71a92b9ad4",
+      "tiles": [
+        "public/original/gsc/S6730/000.bin",
+        "public/original/gsc/S6730/001.bin",
+        "public/original/gsc/S6730/002.bin",
+        "public/original/gsc/S6730/003.bin",
+        "public/original/gsc/S6730/004.bin",
+        "public/original/gsc/S6730/005.bin",
+        "public/original/gsc/S6730/006.bin",
+        "public/original/gsc/S6730/007.bin"
+      ]
+    },
+    {
+      "name": "S7500.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S7500.DAT",
+      "bytes": 7612110,
+      "sha256": "55904d49d1e2e651263f1866e074ecd1acf3da7579bd86178e27d8ae633f6baa",
+      "tiles": [
+        "public/original/gsc/S7500/000.bin",
+        "public/original/gsc/S7500/001.bin",
+        "public/original/gsc/S7500/002.bin",
+        "public/original/gsc/S7500/003.bin",
+        "public/original/gsc/S7500/004.bin"
+      ]
+    },
+    {
+      "name": "S8230.DAT",
+      "source": "program files/CLEA/VIREO/Cgsc/GSC/S8230.DAT",
+      "bytes": 2576907,
+      "sha256": "82bfac72217e232c7a7aeb3ef7fa490bb88503bb3d385eea033bd6a4e6a61468",
+      "tiles": [
+        "public/original/gsc/S8230/000.bin",
+        "public/original/gsc/S8230/001.bin"
+      ]
     }
   ]
 }

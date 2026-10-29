@@ -22,11 +22,29 @@ export function resourceEntries(manifest) {
     return {path: entry.path, bytes: entry.bytes, sha256: entry.sha256};
   });
 }
+/** Optional assembled[] (Front G): each whole original file is the in-order concatenation of listed manifest files (its tiles).
+ * Every tile belongs to at most one band, and the listed bytes must add up. Validated before any IO. */
+export function assembledEntries(manifest, entries = resourceEntries(manifest)) {
+  if (manifest?.assembled === undefined) return [];
+  if (!Array.isArray(manifest.assembled) || !manifest.assembled.length) throw new ResourceManifestError('assembled must be a nonempty array');
+  const byPath = new Map(entries.map(e => [e.path, e])), used = new Set(), names = new Set();
+  return manifest.assembled.map((band, index) => {
+    const field = name => new ResourceManifestError(`assembled ${name}`, index);
+    if (!band || typeof band.name !== 'string' || !/^[A-Za-z0-9_.-]{1,64}$/.test(band.name) || names.has(band.name)) throw field('name');
+    names.add(band.name);
+    if (!Number.isSafeInteger(band.bytes) || band.bytes < 0) throw field('bytes');
+    if (typeof band.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(band.sha256)) throw field('sha256');
+    if (!Array.isArray(band.tiles) || !band.tiles.length) throw field('tiles');
+    const tiles = band.tiles.map(t => {if (!byPath.has(t) || used.has(t)) throw field('tiles'); used.add(t); return byPath.get(t);});
+    if (tiles.reduce((sum, t) => sum + t.bytes, 0) !== band.bytes) throw field('bytes');
+    return {name: band.name, bytes: band.bytes, sha256: band.sha256, tiles};
+  });
+}
 const ioReason = code => ({ENOENT: 'missing', ENOTDIR: 'parent is not a directory', ELOOP: 'symlink loop', EACCES: 'permission denied', EPERM: 'permission denied', EISDIR: 'not a regular file'}[code] ?? 'unreadable');
 const isFilesystemError = error => typeof error?.code === 'string' && (/^E[A-Z0-9]+$/.test(error.code) || error.code === 'UNKNOWN');
 const ioIssue = (entry, error, phase) => ({path: entry.path, reason: phase === 'close' ? 'close failed' : ioReason(error.code), code: error.code});
 /** Takes ownership of one opened descriptor; unexpected Node/program errors propagate. */
-export async function checkOpenedResource(handle, entry) {
+export async function checkOpenedResource(handle, entry, assembled = null) {
   let result = null;
   try {
     const info = await handle.stat();
@@ -34,7 +52,7 @@ export async function checkOpenedResource(handle, entry) {
     else if (info.size !== entry.bytes) result = {path: entry.path, reason: 'size mismatch'};
     else {
       const hash = createHash('sha256');
-      for await (const chunk of handle.createReadStream({autoClose: false})) hash.update(chunk);
+      for await (const chunk of handle.createReadStream({autoClose: false})) {hash.update(chunk); assembled?.update(chunk);}
       if (hash.digest('hex') !== entry.sha256) result = {path: entry.path, reason: 'SHA-256 mismatch'};
     }
   } catch (error) {if (!isFilesystemError(error)) throw error; result = ioIssue(entry, error);}
@@ -44,7 +62,7 @@ export async function checkOpenedResource(handle, entry) {
   }
   return result;
 }
-async function checkEntry(root, entry, directories) {
+async function checkEntry(root, entry, directories, assembled = null) {
   try {
     const parts = entry.path.split('/');
     for (let i = 1; i < parts.length; i++) {
@@ -57,7 +75,7 @@ async function checkEntry(root, entry, directories) {
     if ((await lstat(file)).isSymbolicLink()) return {path: entry.path, reason: 'resource path is a symlink', code: 'SYMLINK'};
     // NONBLOCK rejects FIFO races; NOFOLLOW rejects a final-component link swap.
     const handle = await open(file, constants.O_RDONLY | constants.O_NONBLOCK | (constants.O_NOFOLLOW ?? 0));
-    return await checkOpenedResource(handle, entry);
+    return await checkOpenedResource(handle, entry, assembled);
   } catch (error) {if (!isFilesystemError(error)) throw error; return ioIssue(entry, error);}
 }
 async function rootDiagnostics(root, entries) {
@@ -76,15 +94,24 @@ async function rootDiagnostics(root, entries) {
   return issues;
 }
 export async function checkResources(root, manifest) {
-  const entries = resourceEntries(manifest); // Validate every entry before resource IO.
+  const entries = resourceEntries(manifest), bands = assembledEntries(manifest, entries); // Validate everything before resource IO.
   const roots = await rootDiagnostics(root, entries), results = new Array(entries.length), directories = new Map();
+  // One task per ordinary file; one task per assembled band, which reads its tiles in order and feeds each chunk to both the
+  // tile's own hash and the band's hash (the same single read pass, no extra IO).
+  const index = new Map(entries.map((e, i) => [e.path, i])), inBand = new Set(bands.flatMap(b => b.tiles.map(t => t.path)));
+  const tasks = [...entries.map((e, i) => inBand.has(e.path) ? null : async () => {results[i] = await checkEntry(root, e, directories);}).filter(Boolean),
+    ...bands.map(band => async () => {
+      const hash = createHash('sha256');let complete = true;
+      for (const tile of band.tiles) {const i = index.get(tile.path); results[i] = await checkEntry(root, tile, directories, hash); if (results[i]) complete = false;}
+      const digest = hash.digest('hex');
+      band.issue = !complete ? {path: band.name, reason: 'assembled band has a missing or changed tile'} : digest !== band.sha256 ? {path: band.name, reason: 'assembled SHA-256 mismatch'} : null;
+    })];
   let next = 0;
-  const workers = Array.from({length: Math.min(8, entries.length)}, async () => {
-    while (next < entries.length) {const i = next++; results[i] = await checkEntry(root, entries[i], directories);}
-  });
+  const workers = Array.from({length: Math.min(8, tasks.length)}, async () => {while (next < tasks.length) await tasks[next++]();});
   await Promise.all(workers);
-  const issues = results.filter(Boolean);
-  return {total: entries.length, matched: entries.length - issues.length, issues, ...(roots.length ? {roots} : {})};
+  const issues = results.filter(Boolean), bandIssues = bands.map(b => b.issue).filter(Boolean);
+  return {total: entries.length, matched: entries.length - issues.length, issues,
+    ...(bands.length ? {assembled: {total: bands.length, matched: bands.length - bandIssues.length, issues: bandIssues}} : {}), ...(roots.length ? {roots} : {})};
 }
 /** docs/RESOURCE-PROVENANCE.json totals must equal the manifest: file count, byte sum and per-extension counts. */
 export function provenanceTotalIssues(manifest, provenance) {
@@ -105,6 +132,14 @@ export function provenanceTotalIssues(manifest, provenance) {
     if (group?.bytes !== sum) issues.push(`groups ${prefix} bytes ${group?.bytes} != ${sum}`);
   }
   if (Object.keys(groups).length && covered.size !== entries.length) issues.push(`groups cover ${covered.size} of ${entries.length} entries`);
+  // Front G: the assembled bands' count and byte sum are recorded too, and every band's tiles lie in one recorded group.
+  const bands = assembledEntries(manifest, entries);
+  if (bands.length || provenance?.assembledFiles !== undefined) {
+    const sum = bands.reduce((total, b) => total + b.bytes, 0);
+    if (provenance?.assembledFiles !== bands.length) issues.push(`assembledFiles ${provenance?.assembledFiles} != ${bands.length}`);
+    if (provenance?.assembledBytes !== sum) issues.push(`assembledBytes ${provenance?.assembledBytes} != ${sum}`);
+    for (const b of bands) if (!Object.keys(groups).some(prefix => b.tiles.every(t => t.path.startsWith(prefix + '/')))) issues.push(`assembled ${b.name} tiles are not in one group`);
+  }
   return issues;
 }
 export async function resourceCheckCommand(root, args = [], output = console.log) {
@@ -117,11 +152,13 @@ export async function resourceCheckCommand(root, args = [], output = console.log
   try {report = await checkResources(root, manifest);}
   catch (error) {if (!(error instanceof ResourceManifestError)) throw error; output(`Resource manifest invalid: ${error.message}.`); return 2;}
   output(`Local scientific resources: ${report.matched}/${report.total} match size and SHA-256.`);
+  if (report.assembled) output(`Assembled original files: ${report.assembled.matched}/${report.assembled.total} equal the concatenation of their tiles.`);
   let totals = [];
   try {totals = provenanceTotalIssues(manifest, JSON.parse(await readFile(path.join(root, 'docs/RESOURCE-PROVENANCE.json'), 'utf8')));}
   catch (error) {if (!isFilesystemError(error) && !(error instanceof SyntaxError)) throw error; totals = error.code === 'ENOENT' ? [] : ['docs/RESOURCE-PROVENANCE.json unreadable'];}
   for (const issue of totals) output(`  RESOURCE-PROVENANCE.json: ${issue}`);
-  if (!report.issues.length) return totals.length ? 1 : 0;
+  for (const issue of report.assembled?.issues ?? []) output(`  ${issue.path}: ${issue.reason}`);
+  if (!report.issues.length && !report.assembled?.issues.length) return totals.length ? 1 : 0;
   for (const issue of report.roots ?? []) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   for (const issue of report.issues.slice(0, 20)) output(`  ${issue.path}: ${issue.reason}${issue.code ? ` (${issue.code})` : ''}`);
   if (report.issues.length > 20) output(`  ... ${report.issues.length - 20} additional resource issues.`);

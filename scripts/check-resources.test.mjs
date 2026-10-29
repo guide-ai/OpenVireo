@@ -6,7 +6,7 @@ import path from 'node:path';
 import{spawnSync}from'node:child_process';
 import{fileURLToPath}from'node:url';
 import {tmpdir} from 'node:os';
-import {checkResources, resourceCheckCommand, checkOpenedResource, provenanceTotalIssues} from './check-resources.mjs';
+import {checkResources, resourceCheckCommand, checkOpenedResource, provenanceTotalIssues, assembledEntries} from './check-resources.mjs';
 
 const digest = text => createHash('sha256').update(text).digest('hex');
 const entry = (name, text) => ({path: name, bytes: Buffer.byteLength(text), sha256: digest(text)});
@@ -138,4 +138,47 @@ test('RESOURCE-PROVENANCE group totals must equal the entries under each prefix 
   const base = {totalFiles: 3, totalBytes: 6, extensions: {'.json': 3}};
   assert.deepEqual(provenanceTotalIssues(manifest, {...base, groups: {'data/a': {files: 2, bytes: 5}, 'data/b': {files: 1, bytes: 1}}}), []);
   assert.deepEqual(provenanceTotalIssues(manifest, {...base, groups: {'data/a': {files: 2, bytes: 4}}}), ['groups data/a bytes 4 != 5', 'groups cover 2 of 3 entries']);
+});
+
+// Front G: assembled[] whole files are the in-order concatenation of their listed tiles (synthetic bytes only).
+test('an assembled file equals the in-order concatenation of its tiles; reordered or changed tiles are reported', () => fixture(async root => {
+  await mkdir(path.join(root, 'data/t'));
+  const a = entry('data/t/000.bin', 'first-'), b = entry('data/t/001.bin', 'second'), c = entry('data/t/x.json', '{}');
+  for (const [e, text] of [[a, 'first-'], [b, 'second'], [c, '{}']]) await writeFile(path.join(root, e.path), text);
+  const band = {name: 'BAND.DAT', bytes: a.bytes + b.bytes, sha256: digest('first-second'), tiles: [a.path, b.path]};
+  const ok = await checkResources(root, {files: [a, b, c], assembled: [band]});
+  assert.deepEqual(ok, {total: 3, matched: 3, issues: [], assembled: {total: 1, matched: 1, issues: []}});
+  // Every tile still matches, but the listed order does not reassemble the recorded whole file.
+  const reordered = await checkResources(root, {files: [a, b, c], assembled: [{...band, tiles: [b.path, a.path]}]});
+  assert.equal(reordered.matched, 3); assert.deepEqual(reordered.assembled.issues, [{path: 'BAND.DAT', reason: 'assembled SHA-256 mismatch'}]);
+  await writeFile(path.join(root, b.path), 'secend');
+  const changed = await checkResources(root, {files: [a, b, c], assembled: [band]});
+  assert.deepEqual(changed.issues, [{path: b.path, reason: 'SHA-256 mismatch'}]);
+  assert.deepEqual(changed.assembled.issues, [{path: 'BAND.DAT', reason: 'assembled band has a missing or changed tile'}]);
+  const lines = []; await mkdir(path.join(root, 'docs'), {recursive: true});
+  await writeFile(path.join(root, b.path), 'second');
+  await writeFile(path.join(root, 'docs/LOCAL-RESOURCES.json'), JSON.stringify({files: [a, b, c], assembled: [band]}));
+  assert.equal(await resourceCheckCommand(root, [], line => lines.push(line)), 0);
+  assert.deepEqual(lines, ['Local scientific resources: 3/3 match size and SHA-256.', 'Assembled original files: 1/1 equal the concatenation of their tiles.']);
+}));
+
+test('assembled[] is validated before IO: unknown or shared tiles, byte sums, names and hashes', () => {
+  const a = entry('data/t/000.bin', 'aa'), b = entry('data/t/001.bin', 'bb'), files = [a, b];
+  const band = {name: 'B.DAT', bytes: 4, sha256: digest('aabb'), tiles: [a.path, b.path]};
+  assert.equal(assembledEntries({files, assembled: [band]}).length, 1);
+  assert.deepEqual(assembledEntries({files}), []);
+  for (const assembled of [[], 'x', [{...band, tiles: ['data/t/zz.bin']}], [{...band, tiles: [a.path, a.path]}], [band, {...band, name: 'C.DAT'}],
+    [{...band, bytes: 5}], [{...band, sha256: 'bad'}], [band, band], [{...band, name: '../x'}], [{...band, tiles: []}]]) {
+    assert.throws(() => assembledEntries({files, assembled}), /assembled/);
+  }
+});
+
+test('provenance records the assembled files and keeps each band inside one group', () => {
+  const a = entry('data/t/000.bin', 'aa'), b = entry('data/t/001.bin', 'bb');
+  const manifest = {files: [a, b], assembled: [{name: 'B.DAT', bytes: 4, sha256: digest('aabb'), tiles: [a.path, b.path]}]};
+  const provenance = {totalFiles: 2, totalBytes: 4, extensions: {'.bin': 2}, assembledFiles: 1, assembledBytes: 4, groups: {'data/t': {files: 2, bytes: 4}}};
+  assert.deepEqual(provenanceTotalIssues(manifest, provenance), []);
+  assert.deepEqual(provenanceTotalIssues(manifest, {...provenance, assembledFiles: 2, assembledBytes: 3}), ['assembledFiles 2 != 1', 'assembledBytes 3 != 4']);
+  assert.deepEqual(provenanceTotalIssues({files: [a, b]}, provenance), ['assembledFiles 1 != 0', 'assembledBytes 4 != 0']);
+  assert.deepEqual(provenanceTotalIssues(manifest, {...provenance, groups: {}}), ['assembled B.DAT tiles are not in one group']);
 });
