@@ -46,14 +46,17 @@ test('Object X: before the reveal nothing names the target or its neighbours; af
  // Show Object ID on: names must still stay out of list items, captions, file names and the zip.
  await page.getByTestId('ms-show-id').check();await page.getByTestId('ms-show-mag').check();
  await expect(page.getByTestId('ms-masked-note')).toBeVisible();
- // The target at the centre, three neighbours, one sky fibre.
- for(const [x,y] of [[156,156],[100,100],[220,90],[60,250],[300,4]])await at(field,x,y);
+ // The target at the centre, three neighbour stars (review M1: control pixels of stars of this field), one sky fibre.
+ for(const [x,y] of [[156,156],[100,158],[264,174],[7,221],[300,4]])await at(field,x,y);
  const n=await page.locator('[data-testid^=ms-marker-]').count();expect(n).toBeGreaterThanOrEqual(4);
  await page.getByTestId('ms-minutes').fill('0.05');await page.getByTestId('ms-init').click();await page.getByTestId('ms-go').click();
  await expect(page.getByTestId('ms-list')).toBeVisible({timeout:20_000});
  for(let i=0;i<n;i++)await expect(page.getByTestId(`ms-item-${i}`)).toHaveText(`  (${i+1})  `);
  const before=await informations(page,n);
  expect(before[0][0]).toBe('Object: ObjX-7');
+ // Review M1: only the target fibre carries ObjX-7; the neighbour stars read the neutral text.
+ expect(before.filter(l=>l[0]==='Object: ObjX-7')).toHaveLength(1);
+ expect(before.filter(l=>l[0]==='Object: Name hidden during Object X').length).toBeGreaterThanOrEqual(2);
  for(const lines of before){
   expect(lines.some(l=>/^V Magnitude|^Spectral Type|^Galaxy Type|^Spectrum: |^Z: /.test(l)),lines.join('|')).toBe(false);
   expect(lines[0]).toMatch(/^(Object: ObjX-7|Object: Name hidden during Object X|Object: Sky|No measurable spectrum for this fibre\.)$/);
@@ -80,4 +83,36 @@ test('Object X: before the reveal nothing names the target or its neighbours; af
  // None of these catalogue names was shown before the reveal.
  for(const name of names)expect(beforeText.includes(name),name).toBe(false);
  const named=await download(page,()=>page.getByTestId('ms-spectrum').first().getByTestId('ms-save').click());expect(named.name).toBe(`${names[0]}.SSP`.replace(/[^\x20-\x7e]|[\\/:*?"<>|]/g,'_'));
+});
+
+// Review M1/L4: a galaxy target with a photograph (ObjectX.HTL row 3) whose Object X neighbour (row 4, a star 0.11° away, at
+// control pixel (128, 289) of the target's crop) is in view. Before the reveal only the centre fibre is ObjX-7 and the neighbour
+// reads the neutral text; after revealing row 3 the field stays masked (row 4 is still hidden), every non-sky fibre is neutral and
+// nothing names row 4.
+test('Object X: a galaxy target labels only itself; its Object X neighbour stays hidden, also after the reveal',async({page})=>{
+ const GALAXY='X-IAVA2',NEIGHBOUR=[short(4*86),short(4*86+45)];
+ await page.goto('/#object-x');await expect(page.getByRole('heading',{name:'The quest for Object X'})).toBeVisible();
+ await page.locator('[data-testid=objectx-lab] input').first().fill('7');
+ await page.getByTestId('objectx-target').selectOption(GALAXY);
+ await branch(page).getByTestId('ms-access').click();await ok(page);
+ const field=branch(page).getByTestId('ms-field');await expect(field).toBeVisible({timeout:90_000});
+ await page.getByTestId('ms-show-id').check();
+ for(const [x,y] of [[156,156],[128,289],[300,4]])await at(field,x,y);
+ const n=await page.locator('[data-testid^=ms-marker-]').count();expect(n).toBe(3);
+ await page.getByTestId('ms-minutes').fill('0.05');await page.getByTestId('ms-init').click();await page.getByTestId('ms-go').click();
+ await expect(page.getByTestId('ms-list')).toBeVisible({timeout:20_000});
+ const before=await informations(page,n);
+ expect(before.map(l=>l[0])).toEqual(['Object: ObjX-7','Object: Name hidden during Object X','Object: Sky']);
+ const beforeText=[await html(page),...before.flat()].join('\n');
+ expect(SECRETS.filter(s=>word(s).test(beforeText))).toEqual([]);expect(ENGINE.filter(r=>r.test(beforeText)).map(String)).toEqual([]);
+ await page.getByTestId('ms-close-all').click();
+ await page.getByRole('radio',{name:'galaxy'}).check();
+ await page.getByRole('button',{name:'Reveal the identity',exact:true}).click();await page.getByRole('button',{name:'Reveal the identity',exact:true}).click();
+ await expect(page.getByTestId('objectx-reveal')).toBeVisible();
+ await expect(page.getByTestId('ms-masked-note')).toBeVisible();
+ const after=await informations(page,n);
+ expect(after.map(l=>l[0])).toEqual(['Object: Name hidden during Object X','Object: Name hidden during Object X','Object: Sky']);
+ const afterText=[await html(page),...after.flat()].join('\n');
+ expect(NEIGHBOUR.filter(Boolean).filter(s=>word(s).test(afterText))).toEqual([]);
+ expect(after.some(lines=>lines.some(l=>/^V Magnitude/.test(l)))).toBe(false);
 });

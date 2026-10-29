@@ -5,7 +5,7 @@ import coma from '../../data/hubble/engine-coma.json';
 import engineTargets from '../../data/hubble/engine-targets.json';
 import {decodeFieldPack} from './fieldPack';
 import {evaluateFieldView,type FieldPopulation} from './fieldEngine';
-import {multiSpecPick,multiSpecClickPoint,nearestSelection,type MultiSpecField} from './multiSpecSelect';
+import {multiSpecPick,multiSpecClickPoint,multiSpecTargetSource,nearestSelection,type MultiSpecField} from './multiSpecSelect';
 import type {NativeSelectionScene} from './objectSelection';
 
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
@@ -52,5 +52,15 @@ describe('Front M: Multi-Spec selection (CRT1MouseUp 0x53cff8)',()=>{
   const list=[{x:400,y:400},{x:410,y:400},{x:400,y:400}];
   expect(nearestSelection(list,405,400,0)).toBe(0);expect(nearestSelection(list,400,400,1)).toBe(0);
   expect(nearestSelection(list,401,400,1)).toBe(-1);expect(nearestSelection(list,800,800,0)).toBe(-1);expect(nearestSelection(list,749,400,0)).toBe(1);
+ });
+ it('target source (Object X mask, review M1): the record a click at the target selects; neighbours and empty sky differ',()=>{
+  const g=view.population!.galaxies.findIndex(x=>x.id==='NGC 4874');expect(g).toBeGreaterThanOrEqual(0);
+  const q={ra:view.population!.galaxies[g].ra,dec:view.population!.galaxies[g].dec};
+  expect(multiSpecTargetSource(field,q)).toEqual({kind:'galaxy',index:g});
+  // A neighbour star of the same crop is another record.
+  const s=view.scene!.stars.findIndex(p=>p.x>=312&&p.x<624&&p.y>=312&&p.y<624);expect(s).toBeGreaterThanOrEqual(0);
+  expect(multiSpecPick(field,Math.round(view.scene!.stars[s].x),Math.round(view.scene!.stars[s].y)).source).not.toEqual({kind:'galaxy',index:g});
+  // Sky at the target position (no record within 10 px) → no target fibre.
+  expect(multiSpecTargetSource(placed({x:100,y:100},null),{ra:target.pointing.ra,dec:target.pointing.dec})).toBeNull();
  });
 });

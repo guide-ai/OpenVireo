@@ -3279,7 +3279,7 @@
   "multispec.armedEditMode": "Object selection is on: Edit Mode is on.",
   "multispec.armedVirtual": "Object selection is on: the instructor's Virtual Observatory mode is on.",
   "multispec.armedObjectX": "Object selection is on (Object X).",
-  "multispec.notArmed": "Object selection is off here, as in the original outside Edit Mode, Object X and “Access All Instruments”. Turn Edit Mode on in Optical Options to select objects.",
+  "multispec.notArmed": "Object selection is off here, as in the original outside Edit Mode, Object X and “Access All Instruments”. To select objects, turn Edit Mode on in Optical Options, or ask your instructor to turn on the Virtual Observatory option there.",
   "multispec.notTelescopeView": "Object selection needs the telescope view.",
   "multispec.fieldLoading": "Preparing the Telescope display of this field…",
   "multispec.fieldError": "This field could not be prepared (a catalogue or field-evidence file did not load or did not match its recorded identity).",

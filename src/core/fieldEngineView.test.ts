@@ -32,6 +32,12 @@ describe('Front M: evaluateFieldView equals evaluateField’s population, scene 
    for(const row of lssFieldRows(n))for(const t of n===1?[0,2] as const:[0] as const){const p={ra:row.ra,dec:row.dec};tally[same(evaluateFieldView(pack,glx,p,t),evaluateField(pack,glx,p,t))]++;}}
   expect(tally.view+tally.gated).toBe(219+lssFieldRows(1).length);expect(tally.view).toBeGreaterThan(0);expect(tally.gated).toBeGreaterThan(0);
  });
+ it('every LSS pointing in the QSO merge mode Multi-Spec uses (io/multiSpecInputs.multiSpecFieldOptions), 0.4 and 0.9 m',()=>{
+  const tally={view:0,gated:0},options:FieldOptions={qso:'merge',qsoCatalog};
+  for(const n of [1,2,3,4,5,6,7,8,9] as const){const pack=lssPack(n);
+   for(const row of lssFieldRows(n))for(const t of [0,1] as const){const p={ra:row.ra,dec:row.dec};tally[same(evaluateFieldView(pack,glx,p,t,options),evaluateField(pack,glx,p,t,options))]++;}}
+  expect(tally.view+tally.gated).toBe(219*2);expect(tally.view).toBeGreaterThan(0);expect(tally.gated).toBeGreaterThan(0);
+ });
  it('the four Hubble engine targets with their recorded options, every telescope',()=>{
   const packs=new Map<string,FieldPack>([['hubble-engine-coma',decodeFieldPack(coma)],['hubble-engine-bootes',decodeFieldPack(bootes)]]);
   for(const rec of engineTargets.targets){

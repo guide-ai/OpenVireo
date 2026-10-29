@@ -9,7 +9,7 @@
  "plan": "analysis/front-plans/front-m-multispec.md",
  "generator": {
   "path": "analysis/front-m-multispec/tools/multispec_provenance.py",
-  "sha256": "c0e5d2568dafbe501b77080c9dc4a7996f3db5459687c62ce25a35256a944fdb"
+  "sha256": "9bb242e2c5fe78f95704fe3524b76db8137c4d9fd244dc9a4c504a8f6d1f7152"
  },
  "derivedEvidence": [
   {
@@ -317,7 +317,7 @@
    "id": "VM-W4",
    "tag": "W",
    "title": "Object X masking",
-   "rule": "Before the reveal and within 2.375° of an Object X position: no names in Information, file names or zip entries, one neutral failure text, V and Edit Mode lines hidden."
+   "rule": "Before the reveal and within 2.375° of an Object X position: no names in Information, file names or zip entries, one neutral failure text, V and Edit Mode lines hidden. Only the fibre that is the target (the record a click at its projected position selects, within the native 10 px) reads ObjX-<ID>; every other non-sky fibre, Object X neighbours included, reads the neutral name (review 1 M1)."
   },
   {
    "id": "VM-W5",
@@ -335,5 +335,16 @@
  "witnesses": [
   "data/multispec/witness.json (multispec_witness.py: LCG, Poisson incl. rejection branch, grid, templates, QSO; 11 fibres × 2 telescopes)",
   "data/multispec/template-requirements.json (bundle_templates.py)"
- ]
+ ],
+ "d3Counts": {
+  "harness": {
+   "path": "analysis/front-m-multispec/tools/multispec_d3_counts.test.ts.txt",
+   "sha256": "097a82838f6bf132571eee16bdb3df187c6b36e0dad626c4ba35abc2901a0626"
+  },
+  "output": {
+   "path": "analysis/front-m-multispec/tools/multispec-d3-counts.json",
+   "sha256": "1c355fa40fa49b32b7a9eb164e18a7f45b7a1d8c46d034f5624679c18544d8ef"
+  },
+  "note": "Counts behind the D3 sentence of docs/MULTI-SPEC.md (review 1 L1); the harness header states the field bases, fibre rules and outcome classes."
+ }
 }

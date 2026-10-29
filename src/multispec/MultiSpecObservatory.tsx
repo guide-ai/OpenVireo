@@ -13,8 +13,8 @@ import {t} from '../i18n';
  *    observatory-clock JD frozen when the field is built (as Edit Mode and Field Information).
  *  - Click gate (decision D1): CRT1MouseDown arms selection when Edit Mode ∨ exercise mode ∈ {0, 1}; here `editMode` (Front O's
  *    Edit Mode) or `virtualObservatory` — exercise mode 0 "Access All Instruments", which only the instructor "Virtual Observatory
- *    (instructor, VIREO)" option of Optical Options reaches (Front O2, not merged). This prop is the ONE wiring point for it:
- *    default false; connect it there. Mode 1 (Object X) is the lab's own Multi-Spec (MultiSpecObjectX.tsx). Elsewhere (for
+ *    (instructor, VIREO)" option of Optical Options reaches (Front O2). The page holds that option once (OpenVireo.tsx; default
+ *    off, not persisted) and passes it here and to the QSO List. Mode 1 (Object X) is the lab's own Multi-Spec (MultiSpecObjectX.tsx). Elsewhere (for
  *    example LSS, mode 5) the form opens but clicks select nothing, as recovered. Selection needs the Telescope view (+0x64a = 0).
  *  - Object X rule (plan §4): masked within 2° + 0.375° of any ObjectX.HTL position or of the lab's unrevealed target
  *    (io/objectXMask.ts; fail closed while the check runs or when it fails). */

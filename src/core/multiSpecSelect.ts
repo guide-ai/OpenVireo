@@ -12,7 +12,7 @@
  *    check belongs to the control state (multiSpec.ts).
  * Names are the field's catalogue names (catalogObject.catalogRecords: GSC band-name ids, GCVS ids, QSO names, photograph
  * renames), truncated to the 24 characters of the record. */
-import {nearestCatalogObject,type NativeSelectionScene} from './objectSelection';
+import {createNativeSelectionScene,nearestCatalogObject,type NativeSelectionScene} from './objectSelection';
 import {catalogRecords,TELESCOPE_FRAME} from './catalogObject';
 import {compactSpectralIndex} from './starTemplates';
 import {fieldStarVariable} from './variableDispatch';
@@ -53,6 +53,14 @@ export function multiSpecPick(field:MultiSpecField,px:number,py:number):MultiSpe
  }
  if(!('rawHex' in s))throw new RangeError('Multi-Spec star record');
  return Object.freeze({type:0,name:name24(r.id),ra:s.ra,dec:s.dec,v:Math.fround(s.magnitude),z:null,spectralIndex:compactSpectralIndex((s as NativeFieldStar).rawHex),...at});
+}
+/** Web [W] (Object X mask, review M1): the record a left click exactly at the target's own projected position would select, as its
+ * source, or null when that click is a Sky fibre (nothing within the native 10 px). Only a fibre with this source is the target;
+ * its neighbours, Object X neighbours included, are not. */
+export function multiSpecTargetSource(field:MultiSpecField,target:Readonly<{ra:number;dec:number}>):Exclude<MultiSpecSelection['source'],{kind:'sky'}>|null{
+ const at=createNativeSelectionScene([{id:'target',ra:target.ra,dec:target.dec}],[],field.scene.frame).stars[0];
+ const s=multiSpecPick(field,Math.round(at.x),Math.round(at.y));
+ return s.source.kind==='sky'?null:s.source;
 }
 /** 0x52a6d0: index of the nearest selection strictly closer than `limit` px to (x, y) (limit 0 → 350.0), or −1. */
 export function nearestSelection(selections:readonly Pick<MultiSpecSelection,'x'|'y'>[],x:number,y:number,limit:number):number{

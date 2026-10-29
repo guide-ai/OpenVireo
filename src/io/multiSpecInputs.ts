@@ -2,8 +2,9 @@
 // Runs inside the Worker io/multiSpecWorker.ts in the browser and in process under tests. It reuses the Object X spectrometer
 // inputs (io/objectXSpectrometerInputs.ts: Object X packs with their recorded digests, CLEA_GLX.DAT, CLEA_QSO.DAT, QSOSpect.dat,
 // GLIMAGES.LST photographs, JSPEC2.SPI, GLXYSP.LST), the LSS packs (io/lssPack.ts) and the Hubble engine packs (digests recorded
-// in data/hubble/engine-targets.json), and adds the 48 already bundled jspect2 templates (decision D2: no new resources; a template
-// outside this table is typed 'spectrum-template-unapproved') and, on demand, the bundled own galaxy spectra GLXYSP.LST names.
+// in data/hubble/engine-targets.json), and adds the 115 bundled jspect2 templates (the 48 bundled before Front M plus the 67 the
+// user approved on 2026-10-28, decision D2; a template outside this table is typed 'spectrum-template-unapproved') and, on demand,
+// the bundled own galaxy spectra GLXYSP.LST names.
 // Every file is checked for its recorded size and SHA-256. Nothing is persisted or sent anywhere.
 import coma from '../../data/hubble/engine-coma.json';
 import bootes from '../../data/hubble/engine-bootes.json';

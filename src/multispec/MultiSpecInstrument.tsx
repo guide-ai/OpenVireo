@@ -1,6 +1,6 @@
 import {useEffect,useId,useMemo,useReducer,useRef,useState} from 'react';
 import {createMultiSpecState,multiSpecReducer,type MultiSpecEntry} from '../core/multiSpec';
-import {multiSpecClickPoint,multiSpecPick} from '../core/multiSpecSelect';
+import {multiSpecClickPoint,multiSpecPick,multiSpecTargetSource,type MultiSpecField} from '../core/multiSpecSelect';
 import {MULTISPEC_MESSAGES as N,MultiSpecFormatError,multiSpecCaption,multiSpecFileName,multiSpecInformationLines,multiSpecListItem,multiSpecPrintLines,multiSpecSspBytes,multiSpecZip,type MultiSpecTextOptions} from '../core/multiSpecFormat';
 import {catalogRecords,galaxyTypeText} from '../core/catalogObject';
 import type {FieldView,FieldTelescope} from '../core/fieldEngine';
@@ -54,6 +54,11 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
  const fieldKey=multiSpecFieldKey(field),fieldRef=useRef(field);fieldRef.current=field;
  const viewRef=useRef<FieldView|null>(null);viewRef.current=view.status==='ready'?view.view:null;
  const firstKey=useRef(true);
+ // Object X (review M1): the record a click at the target itself selects; only that fibre carries the ObjX label.
+ const targetSource=useMemo(()=>{
+  if(view.status!=='ready'||!mask.target||!view.view.population||!view.view.scene)return null;
+  try{return multiSpecTargetSource({population:view.view.population,scene:view.view.scene} as MultiSpecField,mask.target);}catch{return null;}
+ },[view,mask.target]);
 
  // The field: built in the Worker for each new field; a new field regenerates it (Clear Objects when the selection is not empty).
  useEffect(()=>{
@@ -177,7 +182,7 @@ export default function MultiSpecInstrument({field,telescope,access,armed,armedT
    <p role="status" data-testid="ms-notice">{notice}</p>
    <div className="ms-spectra">
     {state.entries.filter(e=>shown.includes(entryKey(e))).map(e=>{
-     const m=multiSpecFibreMask(mask,e.selection),caption=multiSpecCaption(e.idx,e.selection.name,nameOptions);
+     const m=multiSpecFibreMask(mask,e.selection,targetSource),caption=multiSpecCaption(e.idx,e.selection.name,nameOptions);
      return <MultiSpecDisplay key={entryKey(e)} caption={caption} result={resultOf(e)}
       information={()=>{const s=readyOf(e)!,r=results.get(entryKey(e));return multiSpecInformationLines(e,s,{...textOptions,mask:m,galaxyType:r?.status==='done'?r.galaxyType:null,galaxyRedshiftMask:t('multispec.zMasked')});}}
       printLines={()=>multiSpecPrintLines(e,readyOf(e)!,{...nameOptions,mask:m})}
