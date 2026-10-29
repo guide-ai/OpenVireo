@@ -1,6 +1,6 @@
 /** Front G (analysis/front-plans/front-g-gsc.md §2, §4): which record-aligned tiles of a compact GSC band one native band read
  * needs. Pure: no fetch. The band read is the binary search and forward scan of traceCompactGscBandRead (0x59af80..0x59b1f7,
- * compactGscReadOrder.ts); this module replays its search on the index's skeleton (the packed RA of every midpoint whose
+ * compactGscReadOrder.ts); this module replays its search on the index's skeleton (the packed RA and Dec of every midpoint whose
  * [low, min(high, N-1)] interval spans more than one tile) until the remaining probes lie in one tile, then adds the tiles the
  * forward scan can reach. The trace itself still runs on the fetched bytes; a read outside the planned tiles is a typed error
  * there, never a skipped record. Static reading only; no equivalence with the original program is claimed. */
@@ -8,7 +8,7 @@
 export const GSC_RECORD_BYTES=27,GSC_TILE_RECORDS=65536;
 export type GscTile=Readonly<{firstRecord:number;records:number;bytes:number;sha256:string;firstPackedRa:number;lastPackedRa:number}>;
 export type GscBandIndex=Readonly<{name:string;records:number;bytes:number;sha256:string;tiles:readonly GscTile[];
- /** [record index, packed RA] in increasing index order. */skeleton:readonly (readonly [number,number])[]}>;
+ /** [record index, packed RA, packed Dec] in increasing index order. */skeleton:readonly (readonly [number,number,number])[]}>;
 export class GscTilePlanError extends Error{
  constructor(readonly code:'index'|'key'|'maximum'|'skeleton'){super(`GSC tile plan: ${code}`);this.name='GscTilePlanError';}
 }
@@ -24,7 +24,7 @@ export function checkGscBandIndex(b:GscBandIndex):void{
   if(!Number.isInteger(t.firstPackedRa)||!Number.isInteger(t.lastPackedRa)||t.firstPackedRa<previous||t.lastPackedRa<t.firstPackedRa)fail('index');
   previous=t.lastPackedRa;
  });
- let last=-1;for(const e of b.skeleton){if(!Array.isArray(e)||e.length!==2||!Number.isInteger(e[0])||e[0]<=last||e[0]>=b.records||!Number.isInteger(e[1]))fail('index');last=e[0];}
+ let last=-1;for(const e of b.skeleton){if(!Array.isArray(e)||e.length!==3||!Number.isInteger(e[0])||e[0]<=last||e[0]>=b.records||!Number.isInteger(e[1])||!Number.isInteger(e[2]))fail('index');last=e[0];}
 }
 export const gscTileOf=(recordIndex:number)=>Math.floor(recordIndex/GSC_TILE_RECORDS);
 export type GscBandReadPlan=Readonly<{band:string;tiles:readonly number[];searchTile:number|null}>;

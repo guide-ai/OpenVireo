@@ -13,11 +13,11 @@ function band(n:number,seed:number,dupAt?:number):number[]{
 }
 /** The skeleton rule of the cut tool (analysis/front-g-gsc/tools/cut_gsc_tiles.py). */
 function index(name:string,ra:readonly number[]):GscBandIndex{
- const n=ra.length,nodes=new Map<number,number>(),stack:[number,number][]=[[0,n]];
- while(stack.length){const [lo,hi]=stack.pop()!;if(lo>hi||gscTileOf(lo)===gscTileOf(Math.min(hi,n-1)))continue;const mid=Math.floor((lo+hi)/2);nodes.set(mid,ra[mid]);stack.push([lo,mid-1],[mid+1,hi]);}
+ const n=ra.length,nodes=new Map<number,[number,number]>(),stack:[number,number][]=[[0,n]];
+ while(stack.length){const [lo,hi]=stack.pop()!;if(lo>hi||gscTileOf(lo)===gscTileOf(Math.min(hi,n-1)))continue;const mid=Math.floor((lo+hi)/2);nodes.set(mid,[ra[mid],0]);stack.push([lo,mid-1],[mid+1,hi]);}
  const tiles=Array.from({length:Math.ceil(n/GSC_TILE_RECORDS)},(_,k)=>{const first=k*GSC_TILE_RECORDS,records=Math.min(GSC_TILE_RECORDS,n-first);
   return {firstRecord:first,records,bytes:records*GSC_RECORD_BYTES,sha256:'0'.repeat(64),firstPackedRa:ra[first],lastPackedRa:ra[first+records-1]};});
- return {name,records:n,bytes:n*GSC_RECORD_BYTES,sha256:'0'.repeat(64),tiles,skeleton:[...nodes].sort((a,b)=>a[0]-b[0])};
+ return {name,records:n,bytes:n*GSC_RECORD_BYTES,sha256:'0'.repeat(64),tiles,skeleton:[...nodes].map(([i,[r,d]])=>[i,r,d] as const).sort((a,b)=>a[0]-b[0])};
 }
 /** Tiles the real trace reads; null when the native search runs past the last record (read-boundary). */
 function touched(ra:readonly number[],key:number,max:number):number[]|null{
