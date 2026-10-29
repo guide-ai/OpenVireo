@@ -19,7 +19,7 @@ describe('acquisition-to-classification continuity',()=>{
   expect(source.kind).toBe('acquired-star');expect(source.sha256).toBe(p.sha256);expect(source.minimum).toBe(3700);expect(source.maximum).toBe(4698.33);expect(classificationCoverage(p.samples)).toBe(true);expect(p.samples.filter(p=>p.wavelength>=3900&&p.wavelength<=4500)).toHaveLength(361);
   const raw=readFileSync(new URL('../../public'+catalog.standards[0].url,import.meta.url),'utf8').trim().split(/\r?\n/).map(row=>{const [wavelength,intensity]=row.trim().split(/\s+/).map(Number);return {wavelength,intensity};});
   expect(classificationCoverage(raw)).toBe(true);expect(raw.filter(p=>p.wavelength>=3900&&p.wavelength<=4500)).toHaveLength(429);expect(()=>classificationDifference(raw,p.samples)).toThrow();
-  expect(classificationCoverage(p.samples.filter(p=>p.wavelength<4400))).toBe(false);expect(classificationCoverage([{wavelength:3900,intensity:NaN},{wavelength:4500,intensity:1}])).toBe(false);
+  expect(classificationCoverage(p.samples.filter(p=>p.wavelength<3800))).toBe(false);expect(classificationCoverage(p.samples.filter(p=>p.wavelength<4400))).toBe(true);expect(classificationCoverage([{wavelength:3900,intensity:NaN},{wavelength:4500,intensity:1}])).toBe(false);
  });
  it('keeps practice and each acquisition draft independent and rejects missing, galaxy or difference links',async()=>{
   const p=await star(),practice={...INITIAL_CLASSIFICATION,unknownId:'u25',proposed:'Unfinished practice',reason:'My own reasoning'},w=openAcquiredClassification({...EMPTY_CLASSIFICATION_WORKSPACE,practice},p);

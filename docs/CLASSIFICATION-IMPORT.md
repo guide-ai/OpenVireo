@@ -28,9 +28,14 @@ state are new web behavior. See [SPECTRUM-SAVE-CONTRACT.md](SPECTRUM-SAVE-CONTRA
 `data/classification/import-provenance.json` and the immutable original hash records.
 No original execution, native writer oracle or binary/runtime equivalence follows.
 
-To enter this comparator, a source must span 3900–4500 Å, contain at least two
-supplied samples inside that window, and retain finite increasing wavelengths and
-all intensities in 0–1. Coverage verifies bounds/points, not signal quality, a
+To enter this comparator (Front S, coordinator decision D3, 2026-10-29) [W], a source must overlap Classify's
+3500–7400 Å domain by at least 100 Å, contain at least two supplied samples inside that overlap, and retain finite
+increasing wavelengths and all intensities in 0–1. VIREO's loader (0x55ee14) has no admission rule (it reads any file and
+builds a uniform grid from the first and last wavelengths), so this rule is the web's own. Its numbers are Classify's
+recovered display domain (3500..7400 Å, the TSpecRangeDlg/TSpecDsplyRngDlg limits) and its smallest window (one 100 Å
+step): an admitted spectrum always fills at least one display window. 99 Å of overlap is refused and 100 Å admitted
+(tests). The rule used to be "span 3900–4500 Å", which an LSS spectrum at 4000–5000 Å cannot meet. Parts of a display
+window outside the spectrum have no data: the traces stop there and the normalized difference shades them. Coverage verifies bounds/points, not signal quality, a
 continuum, an isolated spectral line or a stellar identity. An SSP with signed
 flux can remain valid in the analyser while being outside this comparator profile.
 Flux above one or below zero is not normalized or clipped to make it acceptable.
