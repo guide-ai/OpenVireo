@@ -12,7 +12,7 @@ export default function Spectrometer({ onReturn }: { target: SkyObject; enabled:
   const S = PM.spectrometerIndex;
   return <main className="observatory-main spectrometer-main">
     <button className="back-observatory" onClick={onReturn}>{t('sky.back')}</button>
-    <section className="observatory-heading"><div className="eyebrow">{t('spectrometer.eyebrow')}</div><h1 tabIndex={-1}>{S.title}</h1>{/* TSpectrometer Help1Click 0x510f4c, FormShow 0x50da3d, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="spectrometer-help"/><p>{S.intro}</p></section>
+    <section className="observatory-heading"><div className="eyebrow">{t('spectrometer.eyebrow')}</div><h1 tabIndex={-1}>{S.title}</h1>{/* TSpectrometer Help1Click 0x510f4c, FormShow 0x50da3d, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="spectrometer-index-help"/><p>{S.intro}</p></section>
     <section className="card spectrometer-index" aria-labelledby="spectrometer-routes"><h2 id="spectrometer-routes">{S.routesTitle}</h2>
       <ul data-testid="spectrometer-routes">{S.routes.map(r => <li key={r.href}><a href={r.href}>{r.label}</a> — {r.help}</li>)}</ul>
       <div className="button-row"><a className="secondary-button" href="#sky-exposure">{t('skyExposure.open')}</a><a className="secondary-button" href="#star-exposure">{t('starExposure.open')}</a></div>
