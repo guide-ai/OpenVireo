@@ -4,14 +4,15 @@
 import {test,expect,type Page} from '@playwright/test';
 import {installRenderProbe,rendersOf,type RenderTally} from './fixtures/render-probe';
 
-// Measured count → budget (count plus headroom). Keep in step with docs/RENDER-BUDGET.md.
+// Measured count → budget (count plus headroom: about 10 % for load counts, which count mounts; small and tight for the
+// keystroke and route-change counts, the regression guard). Keep in step with docs/RENDER-BUDGET.md.
 const BUDGET={
- classificationLoad:145,
+ classificationLoad:150,
  classificationKey:36,
  classificationFill:36,
  classificationToSpectrum:47,
  analyzerKey:12,
- observatoryLoad:78,
+ observatoryLoad:81,
  openDome:30,
  visitedKey:36,
  visitedRouteChange:47,
