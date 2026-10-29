@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import{openHeaderTools}from'./fixtures/header-tools';
+import {okWithVelocity} from './fixtures/lss-velocity';
 // M7: the E02 guide checklist follows the student's own work and links to the survey and the wedge.
 const step=(page:Page,s:string)=>page.getByTestId(`lss-lab-step-${s}`);
 async function openGuide(page:Page){await openHeaderTools(page);await page.getByTestId('lss-lab-open').click();await expect(page.getByRole('dialog',{name:'Mapping large-scale structure'})).toBeVisible();}
@@ -15,7 +16,7 @@ test('E02 guide: steps check off from loading, recording, plotting, describing a
  await page.getByRole('button',{name:'Activate spectrometer',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
  await page.getByRole('button',{name:'Start exposure',exact:true}).click();await page.clock.runFor(1000);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();
  await page.getByLabel('z step',{exact:true}).fill('.001');await page.getByRole('button',{name:'Set step',exact:true}).click();await page.getByLabel('Shift',{exact:true}).fill('20');
- await page.getByRole('button',{name:'Record Z',exact:true}).click();await page.getByRole('button',{name:'OK',exact:true}).click();await page.clock.resume();
+ await page.getByRole('button',{name:'Record Z',exact:true}).click();await okWithVelocity(page);await page.clock.resume();
  await openGuide(page);
  for(const s of ['load','observe','record'])await expect(step(page,s)).toHaveAttribute('data-done','true');
  for(const s of ['repeat','wedge','describe','save'])await expect(step(page,s)).toHaveAttribute('data-done','false');
@@ -39,8 +40,8 @@ test('E02 guide: five different galaxies complete the repeat step; repeated Reco
   await page.getByRole('button',{name:'Activate spectrometer',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
   await page.getByRole('button',{name:'Start exposure',exact:true}).click();await page.clock.runFor(500);await page.getByRole('button',{name:'Pause exposure',exact:true}).click();
   await page.getByLabel('z step',{exact:true}).fill('.001');await page.getByRole('button',{name:'Set step',exact:true}).click();await page.getByLabel('Shift',{exact:true}).fill(String(20+i));
-  await page.getByRole('button',{name:'Record Z',exact:true}).click();await page.getByRole('button',{name:'OK',exact:true}).click();
-  if(i===0){for(let k=0;k<4;k++){await page.getByRole('button',{name:'Record Z',exact:true}).click();await page.getByRole('button',{name:'OK',exact:true}).click();}
+  await page.getByRole('button',{name:'Record Z',exact:true}).click();await okWithVelocity(page);
+  if(i===0){for(let k=0;k<4;k++){await page.getByRole('button',{name:'Record Z',exact:true}).click();await okWithVelocity(page);}
    await openGuide(page);await expect(step(page,'repeat')).toHaveAttribute('data-done','false');await expect(page.getByTestId('lss-lab-counts')).toContainText('5 records of 1 galaxies');await closeGuide(page);}
   await page.clock.resume();
  }

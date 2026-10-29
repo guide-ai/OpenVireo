@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import{clickHeaderTool}from'./fixtures/header-tools';
+import {okWithVelocity} from './fixtures/lss-velocity';
 // E02 negatives and dialog edge cases (review 1: F1, F2, F9).
 const delay=(page:Page,file:string,ms:number)=>page.route(`**/original/hotlists/${file}`,async r=>{await new Promise(done=>setTimeout(done,ms));await r.continue().catch(()=>{});});
 async function open(page:Page){await page.goto('/#lss-survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();await expect(page.getByLabel('Survey field',{exact:true})).toBeEnabled();}
@@ -45,7 +46,7 @@ test('Record Z: a pasted Tab is refused inline, the app survives, Object is read
  await page.getByLabel('Remarks',{exact:true}).fill('a\tb');
  await expect(page.getByRole('dialog').getByRole('alert')).toHaveText('Remarks cannot contain tabs, line breaks or other control characters.');
  await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
- await page.getByLabel('Remarks',{exact:true}).fill('clean');await page.getByRole('button',{name:'OK',exact:true}).click();
+ await page.getByLabel('Remarks',{exact:true}).fill('clean');await okWithVelocity(page);
  await expect(page.getByTestId('lss-record-count')).toHaveText('1 records');await expect(page.getByTestId('lss-results')).toContainText('clean');
  // Open the dialog again, then leave by history: the dialog closes, adds nothing and the app stays usable.
  await page.getByRole('button',{name:'Record Z',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();

@@ -7,12 +7,13 @@
  * telescope pointing (the HTL row coordinates) and JD comes from the shared site clock. Records are in-memory student
  * observations (persistence is M6); nothing here invents a measurement. */
 import {hubbleVelocity} from './hubbleVelocity';
+import {lssDialogOk} from './lssRedshiftDialog';
 import {currentZ,type ShiftControl} from './spectrum';
 import type {JournalEvent} from './exposureJournal';
 import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
 
 /** events: total journal events over the DISTINCT exposures behind the records (records from one exposure share it). */
-export const LSS_LIMITS=Object.freeze({records:250,object:24,remarks:40,events:150_000,description:4000});
+export const LSS_LIMITS=Object.freeze({records:250,object:24,remarks:40,velocity:24,events:150_000,description:4000});
 export class LssSurveyError extends Error{
  constructor(readonly code:'field'|'record'|'limit'|'events'|'pending'){super(`LSS survey: ${code}`);this.name='LssSurveyError';}
 }
@@ -24,13 +25,16 @@ export type LssRecord=Readonly<{
  /** Front T: the observatory-clock JD frozen when the field list was built (the variable stage's time, 0x487bcc); absent when
   * the record was restored from a file older than v30 or the clock was unavailable. */
  fieldJd?:number;
+ /** Front L2: recorded through the recovered dialog rules (typed velocity within 1 % of c·z, z re-quantised to its 4-digit
+  * text; core/lssRedshiftDialog.ts), carried by the v31 session wrapper. Absent for records from v27–v30 files (c·z). */
+ nativeDialog?:true;
 }>;
 export type LssJournal=Readonly<{seedAtReset:number;events:readonly JournalEvent[]}>;
 /** The open "Measured Redshift Data" dialog: values fixed from the measurement, only Remarks (and the object label) editable. */
-export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl;fieldJd?:number}>;
+export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl;fieldJd?:number;
+ /** Front L2: the Velocity (km/sec) edit text (blank on open, option +0x2e88 off). */velocity:string}>;
 export type LssSurveyState=Readonly<{field:LssFieldNumber|null;loaded:LssFieldNumber|null;records:readonly LssRecord[];draft:LssDraft|null;handedToWedge:number}>;
 export const EMPTY_LSS_SURVEY:LssSurveyState=Object.freeze({field:null,loaded:null,records:Object.freeze([]),draft:null,handedToWedge:0});
-const hex32=(v:number)=>{const b=new DataView(new ArrayBuffer(4));b.setFloat32(0,v,false);return b.getUint32(0,false).toString(16).padStart(8,'0');};
 const text=(s:unknown,max:number)=>{if(typeof s!=='string'||s.length>max||/[\u0000-\u001f\u007f]/.test(s))throw new LssSurveyError('record');return s;};
 export function selectLssField(s:LssSurveyState,field:number):LssSurveyState{
  if(!LSS_FIELD_FILES.some(f=>f.field===field))throw new LssSurveyError('field');
@@ -41,16 +45,16 @@ export function markLssListLoaded(s:LssSurveyState,field:LssFieldNumber):LssSurv
  if(s.field!==field)throw new LssSurveyError('field');return Object.freeze({...s,loaded:field});
 }
 /** Record Z: opens the dialog with the measured z. One dialog at a time. */
-export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'>):LssSurveyState{
+export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'|'velocity'>):LssSurveyState{
  if(s.draft)throw new LssSurveyError('pending');
  if(d.journal&&Array.isArray(d.journal.events)&&lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||(d.fieldJd!==undefined&&!Number.isFinite(d.fieldJd))||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
- return Object.freeze({...s,draft:Object.freeze({...d,object:text(d.object,LSS_LIMITS.object),remarks:'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
+ return Object.freeze({...s,draft:Object.freeze({...d,object:text(d.object,LSS_LIMITS.object),remarks:'',velocity:'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
 }
-export function editLssDraft(s:LssSurveyState,change:Readonly<{object?:string;remarks?:string}>):LssSurveyState{
+export function editLssDraft(s:LssSurveyState,change:Readonly<{object?:string;remarks?:string;velocity?:string}>):LssSurveyState{
  if(!s.draft)throw new LssSurveyError('pending');
- return Object.freeze({...s,draft:Object.freeze({...s.draft,object:change.object===undefined?s.draft.object:text(change.object,LSS_LIMITS.object),remarks:change.remarks===undefined?s.draft.remarks:text(change.remarks,LSS_LIMITS.remarks)})});
+ return Object.freeze({...s,draft:Object.freeze({...s.draft,object:change.object===undefined?s.draft.object:text(change.object,LSS_LIMITS.object),remarks:change.remarks===undefined?s.draft.remarks:text(change.remarks,LSS_LIMITS.remarks),velocity:change.velocity===undefined?s.draft.velocity:text(change.velocity,LSS_LIMITS.velocity)})});
 }
 /** OK: appends exactly one record. */
 /** Compact journal text (session v27): 's' start, 'p' pause, a tick as its deltaMs, and n equal ticks as delta*n. */
@@ -79,13 +83,16 @@ export function lssEventTotal(records:readonly Pick<LssRecord,'acquisitionPolicy
  for(const r of extra?[...records,extra]:records){const k=lssJournalKey(r.acquisitionPolicy,r.journal);if(!seen.has(k)){seen.add(k);total+=r.journal.events.length;}}
  return total;
 }
-export function confirmLssRecord(s:LssSurveyState):LssSurveyState{
+/** OK (0x57cd80, Front L2): the typed velocity and the re-quantised z (core/lssRedshiftDialog.ts). On a native refusal the
+ * dialog stays open: the state is unchanged and the native caption/message is returned. */
+export type LssConfirm=Readonly<{ok:true;state:LssSurveyState}>|Readonly<{ok:false;caption:string|null;message:string}>;
+export function confirmLssDialog(s:LssSurveyState):LssConfirm{
  const d=s.draft;if(!d)throw new LssSurveyError('pending');
  if(s.records.length>=LSS_LIMITS.records)throw new LssSurveyError('limit');
  if(lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
- const v=hubbleVelocity(d.z),zSingle=Math.fround(d.z);
- const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle,zHex:hex32(zSingle),velocitySingle:v.storedKmS,velocityHex:v.storedHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{})});
- return Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])});
+ const r=lssDialogOk(d.z,d.velocity);if(!r.ok)return r;
+ const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle:r.zSingle,zHex:r.zHex,velocitySingle:r.velocitySingle,velocityHex:r.velocityHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{}),nativeDialog:true as const});
+ return {ok:true,state:Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])})};
 }
 /** Cancel / Escape: adds nothing. */
 export function cancelLssRecord(s:LssSurveyState):LssSurveyState{return s.draft?Object.freeze({...s,draft:null}):s;}

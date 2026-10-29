@@ -1,0 +1,465 @@
+{
+ "policy": "OpenVireo-lss-l2-v1",
+ "scope": "Front L2: LSS QSO merge wiring, .SSP save/print on LSS and galaxy routes, the LSS results .TXT writer, TLSSRsltsDlg1 reading and TLSSRgnDlg.",
+ "artifact": {
+  "name": "CLEA_VEO.exe (VIREO 1.504)",
+  "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "note": "Never executed or emulated; objdump listings and static data reads only."
+ },
+ "plan": "analysis/front-plans/front-l2-lss.md",
+ "findings": [
+  "analysis/front-l2-lss/rsltsdlg-txt-findings.md",
+  "analysis/front-l2-lss/rgndlg-findings.md"
+ ],
+ "generator": {
+  "path": "analysis/front-l2-lss/tools/lss_l2_provenance.py",
+  "sha256": "6a04cf97e3ea69fb263bcd7109404d076400c993974023faeaa5ffebce7190a4"
+ },
+ "derivedEvidence": [
+  {
+   "id": "L2-dfm-tinfolistform1",
+   "path": "analysis/front-l2-lss/dossiers/dfm-tinfolistform1.txt",
+   "sha256": "a4604c9cf1887c4847feeeae7a9f204b56af25a0ba7f8cdf10be144a4e54b081",
+   "addresses": null,
+   "kind": "static data/DFM/RTTI read"
+  },
+  {
+   "id": "L2-dfm-tlssrsltsdlg1-tlssrsltsform1",
+   "path": "analysis/front-l2-lss/dossiers/dfm-tlssrsltsdlg1-tlssrsltsform1.txt",
+   "sha256": "04cce7ecbacb10c23d91a8d372bd823748acafb1b1648b41eff6e1f8fa3ce656",
+   "addresses": null,
+   "kind": "static data/DFM/RTTI read"
+  },
+  {
+   "id": "L2-environment1-savedata1click-58f00c-58f0c0",
+   "path": "analysis/front-l2-lss/dossiers/environment1-savedata1click-58f00c-58f0c0.asm",
+   "sha256": "1d79b88c1fea3fc1da21581e2b5467bbeade9606d3d9a64243a7cf7487a0112f",
+   "addresses": "0x58f00c..0x58f0c0",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-floattostrf-wrappers-486268-486294",
+   "path": "analysis/front-l2-lss/dossiers/floattostrf-wrappers-486268-486294.asm",
+   "sha256": "27bc9f7cb9d08119f4817c0591c105bf425d926423e72c513a48b6c69509f188",
+   "addresses": "0x486268..0x486294",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-floattostrf-wrappers-48634c-486378",
+   "path": "analysis/front-l2-lss/dossiers/floattostrf-wrappers-48634c-486378.asm",
+   "sha256": "b5bd9497382200eeb10d7ddb497dcdfebb6aeba04bf26e569274c62ba35fb198",
+   "addresses": "0x48634c..0x486378",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-fmtsexagesimal-486ca0-486e40",
+   "path": "analysis/front-l2-lss/dossiers/fmtsexagesimal-486ca0-486e40.asm",
+   "sha256": "2b7664aa28849a40e1c7066572144f18e0adc1a1560f52965da55ec2907c161f",
+   "addresses": "0x486ca0..0x486e40",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-infolistform1-saveastext1click-59e92c-59ed1c",
+   "path": "analysis/front-l2-lss/dossiers/infolistform1-saveastext1click-59e92c-59ed1c.asm",
+   "sha256": "28607cdcd7be7f63e44c3b20e2c327591aaa6286dd35e8a43366c4305dd2f444",
+   "addresses": "0x59e92c..0x59ed1c",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-ioerror-text-486594-486670",
+   "path": "analysis/front-l2-lss/dossiers/ioerror-text-486594-486670.asm",
+   "sha256": "395fce2ab781db148415e34e689bb7b32a2e4d268397e959f744640a3a1421ac",
+   "addresses": "0x486594..0x486670",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-jd-offset-init-5ac748-5ac79c",
+   "path": "analysis/front-l2-lss/dossiers/jd-offset-init-5ac748-5ac79c.asm",
+   "sha256": "7aea28dd9624542de7850a0f904881b15029b562f05877c8fc928a5d0192f74b",
+   "addresses": "0x5ac748..0x5ac79c",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-jdclock-helpers-487b2c-487c0c",
+   "path": "analysis/front-l2-lss/dossiers/jdclock-helpers-487b2c-487c0c.asm",
+   "sha256": "30afc7a5c1f4662fdb3b84736f6218765c517c4aa96cb25d5f2eb6e9e7d4d2b9",
+   "addresses": "0x487b2c..0x487c0c",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-jdstring-488188-4881ac",
+   "path": "analysis/front-l2-lss/dossiers/jdstring-488188-4881ac.asm",
+   "sha256": "166b7efe096d8f61a31cfb4b310e56cc7ce4748333c504c108e5f0b8c90a499a",
+   "addresses": "0x488188..0x4881ac",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lss-row-parser-57b488-57b8e4",
+   "path": "analysis/front-l2-lss/dossiers/lss-row-parser-57b488-57b8e4.asm",
+   "sha256": "d1894c172be302ec78d1220e3556d105f4cbd10b70e139df152d4725698001ef",
+   "addresses": "0x57b488..0x57b8e4",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrecord-compare-57ace0-57ad2c",
+   "path": "analysis/front-l2-lss/dossiers/lssrecord-compare-57ace0-57ad2c.asm",
+   "sha256": "dbde2ad4c501b09a1e31fe174d822409c55b4049dc00fa011b6818defde0c81b",
+   "addresses": "0x57ace0..0x57ad2c",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsdlg1-creator-57c918-57cab8",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsdlg1-creator-57c918-57cab8.asm",
+   "sha256": "bb7bbbdbf226677a2a054fb9e7f4fae225cebc2009546e79556ef13b3805e5d2",
+   "addresses": "0x57c918..0x57cab8",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsdlg1-formactivate-57cab8-57cd80",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsdlg1-formactivate-57cab8-57cd80.asm",
+   "sha256": "52ccc2e6a96a8505271e1b9c94b7e8ea56a7c2981a2933dd41440b594774dd31",
+   "addresses": "0x57cab8..0x57cd80",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsdlg1-okbtnclick-57cd80-57d060",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsdlg1-okbtnclick-57cd80-57d060.asm",
+   "sha256": "498fcf8ecfd89affe4d8f3708271136b49895e17ff9d9f94997e4e7187e203df",
+   "addresses": "0x57cd80..0x57d060",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsdlg1-okbtnclick-handler1-57ce88-57cea3",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsdlg1-okbtnclick-handler1-57ce88-57cea3.asm",
+   "sha256": "15c344aff030e97e602b9df272b71572dcc5080a30654f654993fa68f3977d9c",
+   "addresses": "0x57ce88..0x57cea3",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsdlg1-okbtnclick-handler2-57cf33-57cf6d",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsdlg1-okbtnclick-handler2-57cf33-57cf6d.asm",
+   "sha256": "527ce78ec4bfb3a9e4217f278ed955c5a3e5a3c9870656b98edb7c6d41eaab3b",
+   "addresses": "0x57cf33..0x57cf6d",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsform1-addrow-57af18-57af74",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsform1-addrow-57af18-57af74.asm",
+   "sha256": "e39aa62fda272dc64d91b7ae34257b19398db15d208d5ea53cd837efba5fdfee",
+   "addresses": "0x57af18..0x57af74",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsform1-create-show-close-header-57ad2c-57af18",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsform1-create-show-close-header-57ad2c-57af18.asm",
+   "sha256": "dd7ebcde5136ed36ba1cbf40d9496cfa2effae7fd195ab1323a20ce05bbe2883",
+   "addresses": "0x57ad2c..0x57af18",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsform1-group-append-writer-57c710-57c8d4",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsform1-group-append-writer-57c710-57c8d4.asm",
+   "sha256": "10e0cebae9118da59fb2b9e602778a136f1ba0d76581e5f71ea934fb88d6489d",
+   "addresses": "0x57c710..0x57c8d4",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsform1-row-format-57b8e4-57bb24",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsform1-row-format-57b8e4-57bb24.asm",
+   "sha256": "bce36b3ce934600610308e7c4243a9f0dc3859b84e5a228a2379f62fbf4a00e7",
+   "addresses": "0x57b8e4..0x57bb24",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-lssrsltsform1-txt-writer-57af74-57b430",
+   "path": "analysis/front-l2-lss/dossiers/lssrsltsform1-txt-writer-57af74-57b430.asm",
+   "sha256": "9b33cbe51a0b6bb0f0b497259391fd967f7cd580ca576def61bb9c9e0ab00d09",
+   "addresses": "0x57af74..0x57b430",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-Extract-584d0c-585228",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-Extract-584d0c-585228.asm",
+   "sha256": "04385e976b587f45aabc00c0e4dd4ad752d8523687b44ff1fd243608ac1d60ab",
+   "addresses": "0x584d0c..0x585228",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-FormShow-5853f4-585510",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-FormShow-5853f4-585510.asm",
+   "sha256": "93f47e01c53b4ab5b4afe5566461ff799d783312b0db5ac9b52fecbb0fac05e3",
+   "addresses": "0x5853f4..0x585510",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-LSSGalaxyData1Click-58f348-58f374",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-LSSGalaxyData1Click-58f348-58f374.asm",
+   "sha256": "ca3a36608349638fd267e8f5ddafdf7fbc26d72c566cdeffc74809cf8c29fb60",
+   "addresses": "0x58f348..0x58f374",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-OKBtnClick-585510-585759",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-OKBtnClick-585510-585759.asm",
+   "sha256": "ea657e732fd9933c855d7df95a9baf98d774f1449b4e3df83f0e288d164286e9",
+   "addresses": "0x585510..0x585759",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-createform-5ad5e9-5ad5fc",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-createform-5ad5e9-5ad5fc.asm",
+   "sha256": "62405b694b0b8fdc93cfdb4bb7714c3203e212c1ea19c3d523fb8f95aae0590b",
+   "addresses": "0x5ad5e9..0x5ad5fc",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-dfm-tenvironment1-file-menu-excerpt",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-dfm-tenvironment1-file-menu-excerpt.txt",
+   "sha256": "42df99059dcac3c26bb4a3d1d354125d5ffb25271dd53114218ac15c987de92b",
+   "addresses": null,
+   "kind": "static data/DFM/RTTI read"
+  },
+  {
+   "id": "L2-rgndlg-dfm-tlssrgndlg",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-dfm-tlssrgndlg.txt",
+   "sha256": "b4806907ccf44b3b59ae264744b8e1aa119b4ef1d4222ec5479fbdb9ca9da289",
+   "addresses": null,
+   "kind": "static data/DFM/RTTI read"
+  },
+  {
+   "id": "L2-rgndlg-editmode-default-5a2aa6-5a2af6",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-editmode-default-5a2aa6-5a2af6.asm",
+   "sha256": "3d6cbba36b75b6ddd859fae84fce2fdb2f2909e04ed71c71ab2424162e5f5e13",
+   "addresses": "0x5a2aa6..0x5a2af6",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-editmode-optsok-5a60d2-5a60e9",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-editmode-optsok-5a60d2-5a60e9.asm",
+   "sha256": "d53d5e22be21ceacc23ebdd1eeb8dc6152a92d65f69bc2ac50a62f4e79328809",
+   "addresses": "0x5a60d2..0x5a60e9",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-gate-LargeScaleStructure1Click-58a99c-58ab1b",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-gate-LargeScaleStructure1Click-58a99c-58ab1b.asm",
+   "sha256": "23e6bb1d2b52b44a495edb4d452d968848924630025713e5663e2e94476c76e6",
+   "addresses": "0x58a99c..0x58ab1b",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-ioerror-text-4865ad-486663",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-ioerror-text-4865ad-486663.asm",
+   "sha256": "9a910f5f73caaedd71db4a9460d54b514974a2e99c575450f5200e09c8ffe36a",
+   "addresses": "0x4865ad..0x486663",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-rgndlg-rtti-fields-tlssrgndlg-tenvironment1",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-rtti-fields-tlssrgndlg-tenvironment1.txt",
+   "sha256": "8c6c42a4c8da11a651200340773ff929f48118ebf0e3394bb8a5d4407f95ef99",
+   "addresses": null,
+   "kind": "static data/DFM/RTTI read"
+  },
+  {
+   "id": "L2-rgndlg-scan-writers",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-scan-writers.txt",
+   "sha256": "d7fdcfb9ac5a75f4da875e8cd99f76dc2a60860c152d329c8ccbf372b32f3215",
+   "addresses": null,
+   "kind": "static data/DFM/RTTI read"
+  },
+  {
+   "id": "L2-rgndlg-timestamp-487b2c-487bc9",
+   "path": "analysis/front-l2-lss/dossiers/rgndlg-timestamp-487b2c-487bc9.asm",
+   "sha256": "044d84a4175ee727d6f24a2837c0203573ba5ad9dd10a550418754a34a510471",
+   "addresses": "0x487b2c..0x487bc9",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-sortedlist-helpers-4924d4-4927fc",
+   "path": "analysis/front-l2-lss/dossiers/sortedlist-helpers-4924d4-4927fc.asm",
+   "sha256": "9306f647afb6bde8571834a5258a16dccd8f2dbe540ea255db7cb8cc9a5298af",
+   "addresses": "0x4924d4..0x4927fc",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-spectrumengine-recordz1click-58383c-583b20",
+   "path": "analysis/front-l2-lss/dossiers/spectrumengine-recordz1click-58383c-583b20.asm",
+   "sha256": "a71c3c20d4558df09d84848869c86c6a7497c19071cdafc701af9c62256e6c13",
+   "addresses": "0x58383c..0x583b20",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-static-data-witness",
+   "path": "analysis/front-l2-lss/dossiers/static-data-witness.txt",
+   "sha256": "01d231fd01f0a7e6a901ab08543f32b075cf82ed38f8de2dd6e2de2d896c0ea8",
+   "addresses": null,
+   "kind": "static data/DFM/RTTI read"
+  },
+  {
+   "id": "L2-token-float-48690c-486a00",
+   "path": "analysis/front-l2-lss/dossiers/token-float-48690c-486a00.asm",
+   "sha256": "05148373cccf9d0ebd27350ccd0bd382cc9af03e698b7397d9d732b3c10cb85a",
+   "addresses": "0x48690c..0x486a00",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "L2-token-str-48672c-486800",
+   "path": "analysis/front-l2-lss/dossiers/token-str-48672c-486800.asm",
+   "sha256": "830b8e6c8d2bb37aeca1a1133856282b76650e4f910319d2ecef802641f2f0d6",
+   "addresses": "0x48672c..0x486800",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  }
+ ],
+ "contracts": [
+  {
+   "id": "L2-01",
+   "tag": "D",
+   "title": "LSS results .TXT writer: Save Data (exercise byte 5) → SaveTextDlg, header 0x57ae64, rows 0x57b8e4, CR LF; default LSS_Redshifts.TXT",
+   "ranges": [
+    "0x58f00c..0x58f0c0",
+    "0x57af74..0x57b430",
+    "0x57b8e4..0x57bb24",
+    "0x57ad2c..0x57af18"
+   ],
+   "evidence": [
+    "L2-environment1-savedata1click-58f00c-58f0c0",
+    "L2-lssrsltsform1-txt-writer-57af74-57b430",
+    "L2-lssrsltsform1-row-format-57b8e4-57bb24",
+    "L2-lssrsltsform1-create-show-close-header-57ad2c-57af18",
+    "L2-fmtsexagesimal-486ca0-486e40",
+    "L2-floattostrf-wrappers-48634c-486378",
+    "L2-jdstring-488188-4881ac"
+   ]
+  },
+  {
+   "id": "L2-02",
+   "tag": "D",
+   "title": "Wedge reader round trip: the reader 0x57b488 re-prefixes the 3 JD characters the writer cut; the V field is FloatToStrF(v)+\" \" left-padded to 12 (_LStrCat3 0x406148 at 0x57ba0d..0x57ba43), so V and the first word of the remarks read back (review 1 F1)",
+   "ranges": [
+    "0x57b488..0x57b8e4"
+   ],
+   "evidence": [
+    "L2-lss-row-parser-57b488-57b8e4"
+   ]
+  },
+  {
+   "id": "L2-03",
+   "tag": "D",
+   "title": "TLSSRsltsDlg1: DFM, find-or-add 0x57c918 (before ShowModal), FormActivate 0x57cab8, OK 0x57cd80 (z re-read from ffExponent 4 text, typed velocity within 1 % of c·z, RA/Dec/JD not read back)",
+   "ranges": [
+    "0x57c918..0x57cab8",
+    "0x57cab8..0x57cd80",
+    "0x57cd80..0x57d060",
+    "0x58383c..0x583b20"
+   ],
+   "evidence": [
+    "L2-dfm-tlssrsltsdlg1-tlssrsltsform1",
+    "L2-lssrsltsdlg1-creator-57c918-57cab8",
+    "L2-lssrsltsdlg1-formactivate-57cab8-57cd80",
+    "L2-lssrsltsdlg1-okbtnclick-57cd80-57d060",
+    "L2-spectrumengine-recordz1click-58383c-583b20"
+   ]
+  },
+  {
+   "id": "L2-04",
+   "tag": "D",
+   "title": "LSS Galaxy Data menu: Visible := Edit Mode in LargeScaleStructure1Click (only writer, 0x58aad3); Edit Mode default 0, set by Optical Options OK",
+   "ranges": [
+    "0x58a99c..0x58ab1b",
+    "0x5a2aa6..0x5a2af6",
+    "0x5a60d2..0x5a60e9"
+   ],
+   "evidence": [
+    "L2-rgndlg-gate-LargeScaleStructure1Click-58a99c-58ab1b",
+    "L2-rgndlg-editmode-default-5a2aa6-5a2af6",
+    "L2-rgndlg-editmode-optsok-5a60d2-5a60e9",
+    "L2-rgndlg-scan-writers",
+    "L2-rgndlg-rtti-fields-tlssrgndlg-tenvironment1",
+    "L2-rgndlg-dfm-tenvironment1-file-menu-excerpt"
+   ]
+  },
+  {
+   "id": "L2-05",
+   "tag": "D",
+   "title": "TLSSRgnDlg: FormShow texts, OK validation and messages, inclusive z/RA/Dec selection over CLEA_GLX.DAT, Retain/Confirm prompts, Search Results summary; velocity not written",
+   "ranges": [
+    "0x58f348..0x58f374",
+    "0x5853f4..0x585510",
+    "0x585510..0x585759",
+    "0x584d0c..0x585228"
+   ],
+   "evidence": [
+    "L2-rgndlg-dfm-tlssrgndlg",
+    "L2-rgndlg-LSSGalaxyData1Click-58f348-58f374",
+    "L2-rgndlg-FormShow-5853f4-585510",
+    "L2-rgndlg-OKBtnClick-585510-585759",
+    "L2-rgndlg-Extract-584d0c-585228",
+    "L2-rgndlg-timestamp-487b2c-487bc9"
+   ]
+  }
+ ],
+ "webPolicies": [
+  {
+   "id": "L2-W1",
+   "tag": "W",
+   "title": "Downloads",
+   "rule": "Save Data (.TXT), Save spectrum (.SSP) are browser downloads: no folder, overwrite or IO-error boxes."
+  },
+  {
+   "id": "L2-W2",
+   "tag": "W",
+   "title": "TXT encoding",
+   "rule": "Windows-1252 bytes; a character outside it is written as ?; remarks cut to the native 36 characters."
+  },
+  {
+   "id": "L2-W3",
+   "tag": "W",
+   "title": "Region destination",
+   "rule": "Region rows go to their own table in #lss-survey; natively they go to the 144-byte Observation Results list (0x5b5bd4), which the LSS writer 0x57af74 never serialises, so their LSS .TXT is a web addition (V blank: natively unset); not saved."
+  },
+  {
+   "id": "L2-W4",
+   "tag": "W",
+   "title": "Region numbers",
+   "rule": "Bounds are binary64 (natively Extended); rows ordered by RA with catalogue order on ties (natively the time-then-RA sorted insert, one shared time)."
+  },
+  {
+   "id": "L2-W6",
+   "tag": "W",
+   "title": "Measured Redshift Data",
+   "rule": "RA/Dec read-only (native edits are discarded); Cancel adds nothing (natively the record is inserted before ShowModal); every OK is a new record; refused within 1e-12 of the 1 % limit; records listed in the v31 session wrapper."
+  },
+  {
+   "id": "L2-W7",
+   "tag": "W",
+   "title": "Region masking",
+   "rule": "Catalogue z is masked in the region table and the Search Results Z range; region rows are not handed to the wedge (coordinator decision of 2026-10-29)."
+  },
+  {
+   "id": "L2-W8",
+   "tag": "W",
+   "title": "TXT row order",
+   "rule": "Rows are written in the order they were recorded; natively in the list order sorted by (TDateTime, RA) (0x492728); they differ only if the site clock was moved backwards."
+  },
+  {
+   "id": "L2-W9",
+   "tag": "W",
+   "title": "z = 0",
+   "rule": "With z = 0 the web shows \"Velocity calculation is invalid!\"; natively the 0/0 or v/0 division raises an x87 EInvalidOp/EZeroDivide that reaches the VCL default box."
+  },
+  {
+   "id": "L2-W5",
+   "tag": "W",
+   "title": "LSS spectrum header",
+   "rule": "Object = the selected catalogue galaxy, pointing = the row HTL coordinates, magnitude = that galaxy catalogue magnitude; 4000–5000 Å interval as the LSS route."
+  }
+ ],
+ "uncertainty": [
+  "Measured Redshift Data: the VCL default exception box text is not decoded (OK tests the stored Single fields: 0x57cec8..0x57cef5, review 1).",
+  "Options env+0x2e8c (record reuse by ID) and +0x2e88 (computed velocity) defaults not re-derived; +0x2e88 default taken from an earlier repo document.",
+  "Meaning of the LSS record flag byte +0x34 and of the result kind byte 1 is not recovered.",
+  "RTL FloatToStrF and file-name helpers are identified by inference; numbers use the ported half-even helpers, not x87.",
+  "A linear-sweep scan could miss an indirect write of the LSSGalaxyData1 field."
+ ]
+}

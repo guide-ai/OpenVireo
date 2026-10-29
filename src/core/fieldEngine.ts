@@ -4,7 +4,7 @@
  * and galaxyExposure.ts, without changing them:
  *  1. area: pointing ± 0.375° Dec, ± 0.375/(15·cos Dec) h RA, limiting magnitude 20 (fresh 15′ field ×3);
  *  2. regions 0x5977e0/0x5978c0, band order 0x59ae16, per-band seek/read 0x59af80 and admission 0x599e08 from the pack reads;
- *  3. QSO: option qso 'gate' (default; E02 LSS is byte-identical) makes any QSO position inside the area a typed unavailable
+ *  3. QSO: option qso 'gate' (default; E02 LSS passes 'merge' since Front L2) makes any QSO position inside the area a typed unavailable
  *     gate; 'merge' runs the recovered loader 0x5987e4 and merge 0x597f90 (qsoMerge.ts) on the bundled CLEA_QSO.DAT, after the
  *     variable stage and before the galaxies, and the galaxy cleanup then also takes its type-3 branches (keep both, or delete
  *     the galaxy). Photographic-list association: a typed unavailable gate, or with the photographs option the ported draw;

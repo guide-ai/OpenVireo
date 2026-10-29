@@ -79,6 +79,7 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   help:'Save writes the acquired spectrum as a VIREO .SSP text file with the recovered save routine (object, pointing, catalog magnitude and 600 normalized source-plus-sky bins). Print prints only this spectrum. Pause the exposure first.',
   save:'Save spectrum (.SSP)',print:'Print spectrum',
   saved:(name:string)=>`Spectrum saved as ${name}. Keep the star JSON to preserve raw counts, timing and RNG.`,
+  savedExposure:(name:string)=>`Spectrum saved as ${name}. Keep the exposure JSON to preserve raw counts, timing and RNG.`,
   saveError:'This spectrum cannot be saved: it has no positive bin yet. Integrate longer, then pause and save.',
   printed:'Print dialog opened for this spectrum only.',printBusy:'Another print is being prepared. Close it first.',printError:'The browser could not open printing.',
   printMeta:(ms:string,bins:string)=>`exposure ${ms} ms · ${bins} bins · normalized intensity (saved .SSP values)`,
