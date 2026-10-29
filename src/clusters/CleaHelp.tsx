@@ -2,20 +2,24 @@ import {useEffect,useId,useRef,useState,type KeyboardEvent,type ReactNode} from 
 import {findHelpTopic,helpBackEnabled,helpHistoryBack,helpHistoryOpen,helpLinkTarget,helpNotFoundText,helpPrintPage,helpTopicBody,helpTopicCaption,
  parseHelpList,readHelpRow,type HelpHistory,type HelpRow,type HelpTopicBody} from '../core/cleaHelp';
 import {foldAsciiCase,searchRadioHotListRows,RADIO_HOT_LIST_SEARCH_QUERY_MAX} from '../core/radioHotListSearch';
-import {BUNDLED_CLUSTER_HELP_LIST,BUNDLED_CLUSTER_HELP_TEXT,fetchBundledClusterHelp} from '../io/bundledClusterHelp';
+import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
+import {HELP_FILES,helpFile,type HelpFileIdentity} from '../help/helpFiles';
+import {HELP_BUTTON_NAMES} from '../help/HelpMessages';
 import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
 
-type Loaded=Readonly<{rows:readonly HelpRow[];txt:Uint8Array}>;
-let shared:Promise<Loaded>|null=null;
-/** One verified load per page, shared by every HR view (VIREO reloads the list on each HR FormShow; the bytes are the same). */
-function loadHelp():Promise<Loaded>{
- shared??=Promise.all([fetchBundledClusterHelp(fetch,new AbortController().signal,BUNDLED_CLUSTER_HELP_LIST),fetchBundledClusterHelp(fetch,new AbortController().signal,BUNDLED_CLUSTER_HELP_TEXT)])
-  .then(([lst,txt])=>Object.freeze({rows:parseHelpList(lst),txt}))
-  .catch(error=>{shared=null;throw error;});
- return shared;
+type Loaded=Readonly<{rows:readonly HelpRow[]}>;
+const lists=new Map<string,Promise<Loaded>>(),texts=new Map<string,Promise<Uint8Array>>();
+/** One verified fetch per file and page, shared by every view (VIREO reloads the list on each FormShow; the bytes are the
+ * same). A failed fetch is forgotten so that "Try again" fetches again. */
+function cached<T>(map:Map<string,Promise<T>>,id:HelpFileIdentity,then:(b:Uint8Array)=>T):Promise<T>{
+ let p=map.get(id.name);
+ if(!p){p=fetchBundledClusterHelp(fetch,new AbortController().signal,id).then(then).catch(error=>{map.delete(id.name);throw error;});map.set(id.name,p);}
+ return p;
 }
+const loadList=(id:HelpFileIdentity)=>cached(lists,id,b=>Object.freeze({rows:parseHelpList(b)}));
+const loadText=(id:HelpFileIdentity)=>cached(texts,id,b=>b);
 
 type Message=Readonly<{caption:string;text:string}>;
 type Search=Readonly<{query:string;matchCase:boolean}>;
@@ -42,7 +46,7 @@ export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap
 /** A VIREO menu as a disclosure button and a group of buttons (no ARIA menu roles; Escape closes and refocuses). */
 function HelpMenu({label,open,onToggle,children,testId}:{label:string;open:boolean;onToggle:(open:boolean)=>void;children:ReactNode;testId:string}){
  const trigger=useRef<HTMLButtonElement>(null),id=useId();
- return <div className="cluster-hr-menu" onKeyDown={e=>{if(e.key==='Escape'&&open){e.stopPropagation();onToggle(false);trigger.current?.focus();}}}>
+ return <div className="cluster-hr-menu" onKeyDown={e=>{if(e.key==='Escape'&&open){e.preventDefault();e.stopPropagation();onToggle(false);trigger.current?.focus();}}}>
   <button type="button" ref={trigger} aria-expanded={open} aria-controls={id} data-testid={testId} onClick={()=>onToggle(!open)}>{label}</button>
   {open&&<div id={id} role="group" aria-label={label} className="cluster-hr-menu-list">{children}</div>}
  </div>;
@@ -74,9 +78,15 @@ function MessageBox({message,onClose}:{message:Message;onClose:()=>void}){
  </dialog>;
 }
 
-/** HR Help (Help1Click 0x544668): "Select Help Topic" (THelpLstDlg) and the modeless "Help - <title>" window (THelpWin),
- * index-faithful over the bundled HRAnalHlp.LST/.TXT. Pure rules live in src/core/cleaHelp.ts. */
-export default function CleaHelp({testId='cluster-help'}:{testId?:string}){
+/** A VIREO Help item (Help1Click; HR 0x544668, the same sequence in every window, docs/CLEA-HELP.md): "Select Help Topic"
+ * (THelpLstDlg) and the modeless "Help - <title>" window (THelpWin), index-faithful over a bundled LST and the text file
+ * each row names. Pure rules live in src/core/cleaHelp.ts. */
+export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALHLP.LST'],label=M.help,pushHistory=true,disabledReason,openRequest,onReturnFocus}:{testId?:string;
+ /** The window's help index (its options field default, docs/CLEA-HELP.md). */ list?:HelpFileIdentity;label?:string;
+ /** False for TPlsrAnalysisForm1 (Help1Click 0x56e634 does not set THelpWin+0x56c, so the first topic is not pushed). */ pushHistory?:boolean;
+ /** A typed reason when VIREO disables this Help item (its options name is empty). */ disabledReason?:string;
+ /** Menu mode (Help › Topics...): no own button; each new positive value opens the topic list, and focus returns through
+  * onReturnFocus. */ openRequest?:number;onReturnFocus?:()=>void}){
  const [load,setLoad]=useState<'idle'|'loading'|'error'|Loaded>('idle');
  const [listOpen,setListOpen]=useState(false),[listIndex,setListIndex]=useState(0),[topicsMenu,setTopicsMenu]=useState(false);
  const [topic,setTopic]=useState<Topic|null>(null),[history,setHistory]=useState<HelpHistory>([]),[topicMenu,setTopicMenu]=useState(false);
@@ -86,16 +96,26 @@ export default function CleaHelp({testId='cluster-help'}:{testId?:string}){
  const id=useId(),loaded=typeof load==='object'?load:null;
  useEffect(()=>{const d=listDialog.current;if(listOpen&&d&&!d.open)d.showModal();if(!listOpen&&d?.open)d.close();},[listOpen,loaded]);
 
+ /** After the list dialog has closed: dialog.close() runs in the effect above and restores focus to whatever was focused
+  * before showModal() (in menu mode an item that no longer exists), so focus is set on the next frame (review 1 M2). */
+ const returnFocus=()=>requestAnimationFrame(()=>{if(onReturnFocus)onReturnFocus();else opener.current?.focus();});
+ useEffect(()=>{if(openRequest)void openHelp();
+ },[openRequest]);
  async function openHelp(){
   if(loaded){showTopics();return;}
   setLoad('loading');
-  try{setLoad(await loadHelp());setListOpen(true);setSearch({query:'',matchCase:false});}catch{setLoad('error');}
+  try{setLoad(await loadList(list));setListOpen(true);setSearch({query:'',matchCase:false});}catch{setLoad('error');}
  }
  /** THelpLstDlg FormActivate: the shared search query and case flag are reset each time the list is shown. */
  function showTopics(){setTopicsMenu(false);setTopicMenu(false);setStatus('');setSearch({query:'',matchCase:false});setListOpen(true);}
  function openTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory=history){
   if(!loaded)return;
-  const body=helpTopicBody(loaded.txt,rows[index].title);
+  const file=helpFile(rows[index].file);
+  if(!file){setMessage({caption:M.topicFileCaption,text:M.topicFileMissing(rows[index].file)});return;}
+  void loadText(file).then(txt=>showTopic(rows,index,push,base,txt),()=>setMessage({caption:M.topicFileErrorCaption,text:M.topicFileError(file.name)}));
+ }
+ function showTopic(rows:readonly HelpRow[],index:number,push:boolean,base:HelpHistory,txt:Uint8Array){
+  const body=helpTopicBody(txt,rows[index].title);
   if(!body){setMessage({caption:M.topicNotFoundCaption,text:M.topicNotFound(rows[index].title.replace(/^ +/,''))});return;}
   setTopic({index,body,selected:-1});setListIndex(index);setHistory(push?helpHistoryOpen(base,index):base);setTopicMenu(false);
   requestAnimationFrame(()=>topicHeading.current?.focus());
@@ -106,7 +126,7 @@ export default function CleaHelp({testId='cluster-help'}:{testId?:string}){
   if(!r)return;
   if(r.kind==='separator'){setStatus(M.separatorNote);return;}
   if(r.kind==='heading'){setMessage({caption:M.headingCaption,text:r.message});return;}
-  setListOpen(false);openTopic(loaded.rows,r.index,true);
+  setListOpen(false);openTopic(loaded.rows,r.index,pushHistory);
  }
  function submitSearch(s:Search,mode:'top'|'next'){
   setSearch(s);const kind=searching;setSearching(null);
@@ -128,24 +148,25 @@ export default function CleaHelp({testId='cluster-help'}:{testId?:string}){
   if(!loaded)return;const b=helpHistoryBack(history);if(!b)return;
   setHistory(b.history);openTopic(loaded.rows,b.index,false,b.history);
  }
- function closeTopic(){setTopic(null);setHistory([]);setTopicMenu(false);opener.current?.focus();}
+ function closeTopic(){setTopic(null);setHistory([]);setTopicMenu(false);returnFocus();}
 
  return <div className="cluster-hr-help" data-testid={testId}>
-  <div className="cluster-hr-help-bar">
-   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'} onClick={()=>void openHelp()}>{M.help}</button>
+  {openRequest===undefined?<div className="cluster-hr-help-bar">
+   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'||disabledReason!==undefined} aria-describedby={disabledReason?`${id}-off`:undefined} aria-label={label===M.help?HELP_BUTTON_NAMES[list.name]:undefined} onClick={()=>void openHelp()}>{label}</button>
+   {disabledReason&&<span id={`${id}-off`} className="cluster-hr-note">{disabledReason}</span>}
    {load==='loading'&&<span role="status">{M.helpLoading}</span>}
    {load==='error'&&<span role="alert">{M.helpLoadError} <button type="button" className="secondary-button" onClick={()=>void openHelp()}>{M.helpRetry}</button></span>}
-  </div>
-  {loaded&&<dialog ref={listDialog} className="ob-dialog" aria-labelledby={`${id}-list`} data-testid={`${testId}-topics`} onCancel={e=>{e.preventDefault();setListOpen(false);opener.current?.focus();}}>
+  </div>:(load==='loading'||load==='error')&&<p className="cluster-hr-note" role={load==='error'?'alert':'status'}>{load==='error'?M.helpLoadError:M.helpLoading}</p>}
+  {loaded&&<dialog ref={listDialog} className="ob-dialog" aria-labelledby={`${id}-list`} data-testid={`${testId}-topics`} onCancel={e=>{e.preventDefault();setListOpen(false);returnFocus();}}>
    <h2 id={`${id}-list`}>{M.topicListCaption}</h2>
    <div className="cluster-hr-menubar"><HelpMenu label={M.topicsMenu} open={topicsMenu} onToggle={setTopicsMenu} testId={`${testId}-topics-menu`}>
     <button type="button" data-testid={`${testId}-find-topic`} onClick={()=>{setTopicsMenu(false);setSearching('topic');}}>{M.findTopic}</button>
     <button type="button" data-testid={`${testId}-read-topic`} onClick={()=>{setTopicsMenu(false);readRow(listIndex);}}>{M.readTopic}</button>
-    <button type="button" onClick={()=>{setTopicsMenu(false);setListOpen(false);opener.current?.focus();}}>{M.closeTopics}</button>
+    <button type="button" onClick={()=>{setTopicsMenu(false);setListOpen(false);returnFocus();}}>{M.closeTopics}</button>
    </HelpMenu></div>
    <HelpListBox rows={loaded.rows.map(r=>r.title)} selected={listIndex} onSelect={i=>{setListIndex(i);setStatus('');}} onActivate={readRow} label={M.topicRows} testId={`${testId}-topic-list`}/>
    <p role="status" className="cluster-hr-note">{status}</p>
-   <p className="cluster-hr-note">{M.helpAdaptation}</p>
+   <p className="cluster-hr-note">{M.helpAdaptation(list.name)}</p>
   </dialog>}
   {loaded&&topic&&<section className="cluster-hr-window" aria-labelledby={`${id}-topic`} data-testid={`${testId}-window`}>
    <h3 id={`${id}-topic`} ref={topicHeading} tabIndex={-1}>{helpTopicCaption(loaded.rows[topic.index].title)}</h3>

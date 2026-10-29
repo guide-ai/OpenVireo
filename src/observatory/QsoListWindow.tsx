@@ -1,6 +1,7 @@
 import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from '../core/radioControl';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
+import {addHtlRowRaOrdered} from '../core/hotListEntry';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
 import {QSO_LIST_INITIAL_OPTIONS,QSO_LIST_LITERALS as QL,QSO_LIST_SAVE_NAME,buildQsoList,decodeQsoCatalog,parseQsoMagnitudeLimit,qsoHotListFields,qsoOptionsActivate,type QsoList,type QsoListOptions,type QsoSort} from '../core/qsoList';
 import type {NativeQso} from '../core/qsoMerge';
@@ -53,7 +54,7 @@ export default function QsoListWindow({request,editMode,hotList,hidden}:{request
   const r=row(selection);if(!r)return;
   if(hotList.current().read){setBox({caption:VL.confirmation,text:M.busy});return;}
   const f=qsoHotListFields(r);
-  try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRow(d.editor??newHtlEditor(),f),d.editor?d.name:''));}
+  try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRowRaOrdered(d.editor??newHtlEditor(),f),d.editor?d.name:''));}
   catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.busy});return;}
   setBox({caption:VL.confirmation,text:variableAddedText(f.id)});
  }

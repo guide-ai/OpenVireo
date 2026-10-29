@@ -10,6 +10,10 @@ import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha2
 export type BundledHotListIdentity=Readonly<{path:string;name:string;bytes:number;sha256:string}>;
 export const BUNDLED_PLEIADES_HOT_LIST:BundledHotListIdentity=Object.freeze({path:PLEIADES_HTL.path,name:PLEIADES_HTL.name,bytes:PLEIADES_HTL.bytes,sha256:PLEIADES_HTL.sha256});
 export const BUNDLED_HUBBLE_HOT_LIST:BundledHotListIdentity=Object.freeze({path:HUBBLE_HTL.path,name:HUBBLE_HTL.name,bytes:HUBBLE_HTL.bytes,sha256:HUBBLE_HTL.sha256});
+/** Front P: byte-exact original Pulsars.HTL (CLEA_Vireo.zip program files/CLEA/VIREO/Pulsars.HTL, 8 records; second user
+ * approval of 2026-10-26 in AGENTS.md). Offered by the radio Slew › Hot List only; the optical editor's exercise buttons
+ * are unchanged. */
+export const BUNDLED_PULSARS_HOT_LIST:BundledHotListIdentity=Object.freeze({path:'/original/hotlists/Pulsars.HTL',name:'Pulsars.HTL',bytes:688,sha256:'9dfba54887a0bf493ca665f53e69f48c13f3a54f7aa4f878912914468e28a439'});
 /** Caption of an exercise-list button or its load error: an existing catalog key, or plain text (for lists added by other
  * fronts without editing the shared catalog). Keys are resolved by the editor; io stays independent of the catalog. */
 export type BundledHotListText=Readonly<{key:string}|{text:string}>;

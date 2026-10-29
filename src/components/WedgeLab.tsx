@@ -10,6 +10,10 @@ import{WedgeFileError,downloadWedgeText,readWedgeLssFile}from'../io/wedgeLssFile
 import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
 import WedgeOptionsDialog from'./WedgeOptionsDialog';
 import WedgePlotSvg from'./WedgePlotSvg';
+import CleaHelp from '../clusters/CleaHelp';
+import {HELP_FILES} from '../help/helpFiles';
+import WebPrintPreview from'../polish/WebPrintPreview';
+import{POLISH_MESSAGES as PM,WEDGE_PRINT_LITERALS as WP}from'../polish/PolishMessages';
 
 export type WedgeLabProps=Readonly<{
  /** Translated replacements (any subset, nested groups partial); missing keys fall back to English. */
@@ -53,6 +57,8 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
  const m=useMemo(()=>wedgeMessages(messages),[messages]),C=m.native;
  const[w,setW]=useState<WedgeWorkspace>(EMPTY_WEDGE_WORKSPACE);
  const[scheme,setScheme]=useState<WedgeColourScheme>(0);
+ const[printing,setPrinting]=useState(false),printButton=useRef<HTMLButtonElement>(null);// Front P: Print Wedge Plot... preview [W]
+ useEffect(()=>{if(disabled)setPrinting(false);},[disabled]);
  const token=useRef(0),abort=useRef<AbortController|null>(null),optionsButton=useRef<HTMLButtonElement>(null),promptButton=useRef<HTMLButtonElement>(null),fileInput=useRef<HTMLInputElement>(null),root=useRef<HTMLElement>(null);
  /** Direct reads restore only lost focus; explicit prompt/read-cancel answers return to the input. */
  const refocusFile=useRef<'read'|'answer'|null>(null);
@@ -139,7 +145,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
 
  return <section ref={root} className="wedge-lab" aria-labelledby={id('title')} aria-disabled={disabled||undefined} data-testid="wedge-lab" onKeyDown={promptKey}>
   <div inert={modal||undefined} data-testid="wedge-content">
-   <h2 id={id('title')}>{C.windowCaption}</h2>
+   <h2 id={id('title')}>{C.windowCaption}</h2>{/* TWedgePlot Help1, FormShow 0x580e9f, options +0xb9c (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['WDGPLTHLP.LST']} testId="wedge-help"/>
    <p>{m.intro}</p>
    <p className="wedge-persistence" role="note" data-testid="wedge-persistence">{m.persistenceNote}</p>
    <div className="wedge-toolbar">
@@ -164,6 +170,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
     <div className="wedge-actions">
      <button type="button" className="primary-button" disabled={busy} onClick={()=>act(plotWedgeData)} data-testid="wedge-plot-data">{C.menuPlotData}</button>
      <button ref={optionsButton} type="button" disabled={busy} onClick={()=>act(openWedgeOptions)} title={m.optionsButtonHelp} data-testid="wedge-options-open">{C.menuOptions}</button>
+     <button ref={printButton} type="button" disabled={busy} onClick={()=>setPrinting(true)} data-testid="wedge-print">{WP.menu}</button>
      <button type="button" disabled={busy||w.records.length===0} onClick={()=>downloadWedgeText('openvireo-lss-wedge-points.csv',wedgeCsv(w.records,w.receipts,w.options))} aria-describedby={id('export-note')} data-testid="wedge-export">{m.exportCsv}</button>
     </div>
    </div>
@@ -189,6 +196,10 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
    <div className="wedge-body">
     <figure className="wedge-figure">
      <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[scheme]} selected={w.selected} label={m.figureLabel} onSelect={i=>select(i)} idPrefix={idPrefix}/>
+     {printing&&!disabled&&<WebPrintPreview testId="wedge-print-preview" caption={C.windowCaption} note={PM.wedgePrint.note} onClose={()=>{setPrinting(false);printButton.current?.focus();}}>
+      {/* Print1Click 0x580f88 sets TWedgePlot+0x394 := Env+0x2e8d XOR 1 (0x580fba–0x580fc3); the web always prints scheme 1 [W]. */}
+      <WedgePlotSvg plot={plot} records={w.records} options={w.options} colours={WEDGE_COLOUR_SCHEMES[1]} selected={null} label={m.figureLabel} onSelect={()=>{}} idPrefix={idPrefix+'print-'}/>
+     </WebPrintPreview>}
      <figcaption className="wedge-note">
       {plot.excluded?<span data-testid="wedge-excluded">{m.notDrawn(plot.excluded)} </span>:null}
       {plot.admitted-plot.drawn?<span data-testid="wedge-outside">{m.outside(plot.admitted-plot.drawn)} </span>:null}

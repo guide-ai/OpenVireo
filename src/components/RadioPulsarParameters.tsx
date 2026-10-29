@@ -21,6 +21,8 @@ import {resourceSha256} from '../io/boundedResource';
 import {BUNDLED_PULSAR_CATALOG,BundledPulsarCatalogError,fetchBundledPulsarCatalog,type BundledPulsarCatalogFailure} from '../io/bundledPulsarCatalog';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import {t} from '../i18n';
+import CleaHelp from '../clusters/CleaHelp';
+import {HELP_FILES} from '../help/helpFiles';
 
 const C=PULSAR_PARAMETERS_CAPTIONS,F=PULSAR_FIND_CAPTIONS;
 type LoadStatus=Readonly<
@@ -122,7 +124,6 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
  const [activatedBy,setActivatedBy]=useState<'open'|ListWrite>('open');
  const [fieldRefusal,setFieldRefusal]=useState<FieldRefusal>(null);
  const [findRefused,setFindRefused]=useState(false);
- const [helpShown,setHelpShown]=useState(false);
  const [openRefusal,setOpenRefusal]=useState<OpenRefusal|null>(null);
  const [focusRequest,setFocusRequest]=useState<Readonly<{target:FocusTarget;serial:number}>|null>(null);
  const serial=useRef(0);
@@ -237,7 +238,7 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
  };
  const update=()=>{setFieldRefusal(null);run(updatePulsarDerived);};
  const dismiss=(notice:PulsarParametersNotice)=>run(dismissPulsarNotice,notice.kind==='not-found'?'find':notice.field);
- const exit=()=>{const result=run(exitPulsarParameters,'open');if(result?.changed){setHelpShown(false);setFieldRefusal(null);}};
+ const exit=()=>{const result=run(exitPulsarParameters,'open');if(result?.changed)setFieldRefusal(null);};
  useEffect(()=>{
   if(focusRequest===null||nativeModalOpen())return;
   const el={heading:headingRef,open:openRef,find:findRef,date:dateRef,density:densityRef}[focusRequest.target].current;
@@ -290,9 +291,9 @@ export function usePulsarParametersHost({active,busy,antennaModal,dateOpen,anten
   <p id={`${id}-open-reason`} className="radio-control-note" data-testid="pulsar-params-open-reason">{openReason}</p>
   <p className="radio-control-status" role="status" aria-live="polite" data-testid="pulsar-params-open-status" data-reason={openRefusal??undefined}>
    {openRefusal===null?'':t(`pulsarParameters.open.refused.${openRefusal}`)}</p>
-  {win!==null&&<PulsarParametersWindowView win={win} activatedBy={activatedBy} fieldRefusal={fieldRefusal} helpShown={helpShown} headingRef={headingRef} findRef={findRef} dateRef={dateRef} densityRef={densityRef}
+  {win!==null&&<PulsarParametersWindowView win={win} activatedBy={activatedBy} fieldRefusal={fieldRefusal} headingRef={headingRef} findRef={findRef} dateRef={dateRef} densityRef={densityRef}
    onPrev={()=>run(previousPulsar)} onNext={()=>run(nextPulsar)} onEdit={edit} onUpdate={update} onReset={()=>{setFieldRefusal(null);run(w=>resetPulsarDerived(w,latest.current.readClockJD()));}}
-   onFind={()=>{setFindRefused(false);run(w=>openPulsarFind(w,pulsarSeedFromBuffer(latest.current.sharedSource())));}} onExit={exit} onHelp={()=>setHelpShown(v=>!v)}/>}
+   onFind={()=>{setFindRefused(false);run(w=>openPulsarFind(w,pulsarSeedFromBuffer(latest.current.sharedSource())));}} onExit={exit}/>}
  </section>;
  const layer=<div className="radio-control" style={{display:'contents'}} data-testid="pulsar-params-layer" data-modal-pending={pending} data-modal-presented={presented}>
   {presented&&win?.find&&<PulsarFindDialog draft={win.find} refused={findRefused}
@@ -316,12 +317,12 @@ function loadText(load:LoadStatus|null):string{
  return t(`pulsarParameters.reference.status.${load.kind}`,{name:load.name,max:PULSAR_REFERENCE_WEB_POLICY.maxBytes});
 }
 
-type WindowViewProps=Readonly<{win:PulsarParametersWindow;activatedBy:'open'|ListWrite;fieldRefusal:FieldRefusal;helpShown:boolean;
+type WindowViewProps=Readonly<{win:PulsarParametersWindow;activatedBy:'open'|ListWrite;fieldRefusal:FieldRefusal;
  headingRef:RefObject<HTMLHeadingElement|null>;findRef:RefObject<HTMLButtonElement|null>;dateRef:RefObject<HTMLInputElement|null>;densityRef:RefObject<HTMLInputElement|null>;
- onPrev:()=>void;onNext:()=>void;onEdit:(field:'date'|'density',text:string)=>void;onUpdate:()=>void;onReset:()=>void;onFind:()=>void;onExit:()=>void;onHelp:()=>void}>;
+ onPrev:()=>void;onNext:()=>void;onEdit:(field:'date'|'density',text:string)=>void;onUpdate:()=>void;onReset:()=>void;onFind:()=>void;onExit:()=>void}>;
 /** TPlsrDataForm1 as a card region: every catalog field is a read-only input (DFM ReadOnly=True); only Date (MJD) and
  * Electron Density are editable (WEB-PP-PRES-01). Captions are the raw DFM strings; menu accelerators are stripped. */
-function PulsarParametersWindowView({win,activatedBy,fieldRefusal,helpShown,headingRef,findRef,dateRef,densityRef,onPrev,onNext,onEdit,onUpdate,onReset,onFind,onExit,onHelp}:WindowViewProps){
+function PulsarParametersWindowView({win,activatedBy,fieldRefusal,headingRef,findRef,dateRef,densityRef,onPrev,onNext,onEdit,onUpdate,onReset,onFind,onExit}:WindowViewProps){
  const id=useId(),s=win.source;
  // WEB-PP-PRES-02: the shown record, the shared list cursor and the restored pointer are named separately when they differ.
  // The notes are plain text (no live region): a clock tick that moves the cursor redraws nothing and announces nothing.
@@ -360,13 +361,9 @@ function PulsarParametersWindowView({win,activatedBy,fieldRefusal,helpShown,head
    <span id={`${id}-file`} className="radio-control-native">{menuCaptionText(C.file)}</span>
    <button ref={findRef} type="button" className="secondary-button" data-testid="pulsar-params-find" onKeyDown={ignoreHeldKey} onClick={onFind}>{menuCaptionText(C.find)}</button>
    <button type="button" className="secondary-button" data-testid="pulsar-params-exit" onKeyDown={ignoreHeldKey} onClick={onExit}>{menuCaptionText(C.exit)}</button>
-   <button type="button" className="secondary-button" data-testid="pulsar-params-help" aria-expanded={helpShown} aria-controls={`${id}-help`} onClick={onHelp}>{menuCaptionText(C.help)}</button>
+   {/* TPlsrDataForm1 Help1Click 0x569690: the shared help viewer over PLSLSHLP.LST (pulsar options +0x68c; docs/CLEA-HELP.md). */}
+   <CleaHelp list={HELP_FILES['PLSLSHLP.LST']} label={menuCaptionText(C.help)} testId="pulsar-params-help"/>
   </div>
-  {helpShown&&<div id={`${id}-help`} className="pulsar-params-help" data-testid="pulsar-params-help-text">
-   <p className="radio-control-native">{t('pulsarParameters.help.title')}</p>
-   <p>{t('pulsarParameters.help.body')}</p>
-   <p className="radio-control-note">{t('pulsarParameters.help.note')}</p>
-  </div>}
   <p className="radio-control-note">{t('pulsarParameters.window.readOnly')}</p>
   <div className="pulsar-params-grid">
    {plain('b1950',C.b1950,s.b1950)}{plain('j2000',C.j2000,s.j2000)}

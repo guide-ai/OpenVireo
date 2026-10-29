@@ -1,4 +1,7 @@
 import {useEffect,useId,useRef,useState,type ReactNode} from 'react';
+import WebPrintPreview from '../polish/WebPrintPreview';
+import {POLISH_MESSAGES as PM} from '../polish/PolishMessages';
+import {VARIABLE_FIELD_LITERALS as VL} from '../core/variableFieldList';
 import {OBSERVATORY_DATE_CAPTIONS as DC,observatoryDateEntry,observatoryDatePrefill} from '../core/observatoryDateTime';
 import {SITE_INFORMATION_LITERALS,STATION_DIALOG_CAPTIONS as SC,parseStationDraft,siteInformationLines,stationDraft,type ObservatorySite,type StationDraft,type StationField} from '../core/observatorySite';
 import type {OpticalIndex} from '../core/opticalTelescope';
@@ -22,7 +25,7 @@ function ErrorBox({caption,text,onClose,testId}:{caption:string;text:string;onCl
 /** Observatory site & time menu (Front B, B6): Set Date/Time (OB-DT-01, applies the site clock UT), Site Parameters
  * (OB-ST-02/03, WEB-ST-01: clocks and horizon only) and Site Information (OB-ST-01, read-only). */
 export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onApplyUTC,onSite}:{utc:string;site:ObservatorySite;overridden:boolean;index:OpticalIndex;limitSlewing:boolean;onApplyUTC:(utc:string)=>void;onSite:(site:ObservatorySite|null)=>void}){
- const id=useId(),[date,setDate]=useState<{date:string;time:string}|null>(null),[dateError,setDateError]=useState(''),[station,setStation]=useState<StationDraft|null>(null),[stationError,setStationError]=useState(''),[info,setInfo]=useState(false);
+ const id=useId(),[date,setDate]=useState<{date:string;time:string}|null>(null),[dateError,setDateError]=useState(''),[station,setStation]=useState<StationDraft|null>(null),[stationError,setStationError]=useState(''),[info,setInfo]=useState(false),[infoPrint,setInfoPrint]=useState(false);
  const dateOk=()=>{if(!date)return;const r=observatoryDateEntry(date.date,date.time);if(r.status!=='ok'){setDateError(r.failure.field==='date'?M.dateError:r.failure.field==='time'?M.timeError:M.rangeError);return;}setDate(null);onApplyUTC(r.utc);};
  const stationOk=()=>{if(!station)return;const r=parseStationDraft(station);if(r.status==='error'){setStationError(r.message);return;}if(r.status==='unsupported'){setStationError(r.field==='name'?M.nameUnsupported:M.horizonUnsupported);return;}setStation(null);onSite(r.site);};
  const sf=(name:StationField,label:string,maxLength?:number)=><label className="ob-field"><span>{label}</span><input type="text" autoComplete="off" spellCheck={false} maxLength={maxLength??32} title={SC.hints[name]} data-testid={`ob-station-${name}`} value={station?.[name]??''} onChange={e=>setStation(s=>s&&{...s,[name]:e.target.value})} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();stationOk();}}}/></label>;
@@ -57,7 +60,11 @@ export default function SiteDialogs({utc,site,overridden,index,limitSlewing,onAp
   <Modal open={info} label={SITE_INFORMATION_LITERALS.caption} testId="ob-site-info" onCancel={()=>setInfo(false)}>
    <h2 className="ob-native">{SITE_INFORMATION_LITERALS.caption}</h2>
    <pre className="ob-native ob-site-lines" data-testid="ob-site-info-lines">{siteInformationLines(site,index,limitSlewing).join('\n')}</pre>
-   <div className="ob-actions"><button type="button" className="primary-button" onClick={()=>setInfo(false)}>{OBSERVATORY_MESSAGES.common.ok}</button></div>
+   {/* TInfoListForm1 from Site1Click 0x53ea42 (ShowModal): Edit1, Search1 and SaveasText1 are hidden [D], so List keeps Print... and Close. */}
+   <div className="ob-actions"><button type="button" className="secondary-button" data-testid="ob-site-info-print" onClick={()=>setInfoPrint(true)}>{menuCaptionText(VL.listMenu.print)}</button>
+    <button type="button" className="primary-button" data-testid="ob-site-info-close" onClick={()=>setInfo(false)}>{menuCaptionText(VL.listMenu.close)}</button></div>
+   <p className="observatory-note">{PM.siteInfo.note}</p>
+   {infoPrint&&<WebPrintPreview testId="ob-site-info-print-preview" caption={SITE_INFORMATION_LITERALS.caption} note={PM.siteInfo.printNote} onClose={()=>setInfoPrint(false)}><pre className="ob-site-lines">{siteInformationLines(site,index,limitSlewing).join('\n')}</pre></WebPrintPreview>}
   </Modal>
  </div>;
 }

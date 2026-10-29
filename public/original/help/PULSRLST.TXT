@@ -1,0 +1,61 @@
+**Find Pulsar In List**
+Both B1950 and J2000 pulsar names are maintained in the list (the more
+recently discoverd pulsars may not have a B1950 name).  To find a
+pulsar by name:
+
+    o  Select "File"->"Find Pulsar..." from the Pulsar Parameters Menu.
+    o  Enter the pulsar name in the box.
+    o  Select the name type.
+    o  Press "OK".
+
+You can use a partial name, as long as it starts from the beginning.
+(Example: search on "045", then use "Next" & "Prev" buttons to find the
+one you want.)  Since pulsar names are created from their positions, you
+can use this technique to find a pulsar whose Right Ascension you know.
+All searches start at the beginning of the list, not the current
+record.
+
+**Change Date - Compute Period**
+The current period is obtained from the current observation date, the
+PDot parameter, and the PEpoch parameter.  To compute the period at a
+different date:
+
+    o  Edit the Julian Date value in the field labeled "Date (MJD)".
+    o  Press the "Update" button to recompute the period.
+    o  To return to the current observation date, press "Reset".
+
+Alternatively, you can change the current observation date, in normal
+date format. To do this:
+
+    o  Select "File"->"Date/Time..." from the Telescope Control Panel
+       Menu.  (You do not have to close the Pulsar Parameters display to
+       do this.  Just move it out of the way or minimize it.)
+    o  Enter the desired date/time in the appropriate boxes.
+    o  Press "Ok".
+    o  Return to the Pulsar Parameters display.  You may want to press
+       "Reset" to assure that the new date is used.  (This should happen
+       automatically when the display is re-accessed.
+
+**Change Electron Density - Compute Distance**
+The derived distance is computed from the Dispersion parameter and the
+Electron Density.  To see the effect of changes in the Electron Density
+on the computed distance:
+
+    o  Edit the Electron Density value in the labeled field.
+    o  Press the "Update" button to recompute the distance.
+
+**Return to Current Values**
+The "Reset" button will return the display to the current observation
+date/time and the default electron density of 0.03.  Since the clock is
+always running, there will always be a small change in the JD when you
+do this, but the magnitudes of the PDot values are so small that this
+will usually have no noticeable effect on the period.
+
+**Select Pulsars for Study**
+In selecting pulsars for students to observe, instructors should pick
+objects from the list that have recorded flux densities at all three
+frequencies (400, 600 & 1400 MHz).  Also be aware that it is difficult
+to detect pulses with the default instrument and gain factors if the
+flux density is less than 10.0.  To work with the fainter pulsars,
+increase the Telescope Aperature and/or the Base Gain Factor in the
+Options.

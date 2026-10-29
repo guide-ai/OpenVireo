@@ -1,0 +1,120 @@
+**"Tracking"**
+The tracking button turns on the sidereal tracking that keeps the
+telescope pointed at a particular spot on the sky as the earth turns.
+When tracking is off, the stars will drift through the telescope field.
+Tracking is off when a telescope is first accessed.  The other telescope
+controls are enabled only when tracking is on.  The green indicator
+light shows that tracking has been turned on.
+
+**Slew Buttons ("N","S","E","W")**
+The slew buttons are used to move the telescope to point to a particular
+spot (direction) in the sky.  To move the telescope, press and hold the
+appropriate button.  The telescope will slew at a speed determined by
+the slew rate setting.  Release the button to stop the slew.  For long
+slews, the button will stay down if you slide the cursor off of it
+before releasing the mouse button.  In this case, stop the slew by
+pressing and releasing the mouse button with the cursor over the active
+button.
+
+The slew buttons are primarily for making relatively small changes to
+the position of the telescope to place objects in the active area of the
+instrument being used.  To move the telescope to a different field or
+object, use the "Slew" menu selection.
+
+    -Keyboard Access-
+    The arrow keys on the numeric keypad (keys "2","4","6","8") may be
+    used to slew the telescope in place of the slew buttons. NumLock
+    must be "On" and MouseKeys must be "Off".  (If you are using
+    MouseKeys, configure your system so that MouseKeys are activated
+    when the NumLock is "Off".)
+
+
+Related Topics:
+    "Slew Rate"
+    "View"
+    "Slew"
+
+**"Slew Rate"**
+This slider switch sets the rate at which the telescope moves when a
+slew button ("N","S","E","W") is pressed.  The rate doubles each time
+the slider is moved one position to the right, up to a maximum
+(relative) rate of 16.  Similarly, the slew rate is cut in half each
+time the slider is moved one position to the left.
+
+Related Topics:
+    Slider Switches
+
+**"View"**
+Each telescope has two views (or field sizes) available.  The finder
+field is 2 1/2 degrees on a side, and is used for positioning particular
+stars and other objects in the higher magnification telescope field
+(indicated by the red square in the center of the finder view).  The
+telescope field is 15 arc minutes on a side and shows stars and other
+objects to a much fainter magnitude limit than the finder.  This view is
+used to position the object for observations with the selected
+instrument.
+
+To change the view, move the slider to "Finder" or "Telescope".
+Instruments can be accessed only when the telescope view is active.
+
+The active area of the selected instrument is outlined in red on the
+telescope view.  The photometer aperture is shown as a red circle, while
+the spectrometer slit is indicated by a short pair of close parallel
+lines.  For the CCD and IR cameras, a square shows the size of the
+camera field.  (For some combinations of telescope and camera, the field
+is larger than the 15 arc minute view.  This is indicated by red arrows
+pointing outward at the edges of the view.)
+
+Related Topics:
+    "Instrument"
+    Slider Switches
+
+**"Instrument"**
+To access an instrument, set the "Instrument" slider to the appropriate
+position and press the "Access" button.  The instrument(s) available for
+your use will depend on the exercise you are doing.  The "Access" button
+is enabled only when the view is set to "Telescope".
+
+Related Topics:
+    "View"
+    Slider Switches
+
+**Slider Switches**
+Several controls on the telescope and instrument control panels use
+slider switches to enable the user to select one out of a number of
+choices.  To make a selection with a slider switch, either:
+
+    A)  Place the cursor over the slider and press, hold and drag the
+        slider to the desired position, using the left mouse button,
+        or...
+
+    B)  Place the cursor over the desired position on the slider panel
+        and click the left mouse button, or...
+
+    C)  Keyboard Access: Use the arrow keys to move the slider when the
+        desired slider control has been selected.  (The selected control
+        is outlined with a dotted line.  Use Tab & Shift-Tab to change
+        the selection.)
+
+**"Slew"**
+The "Slew" menu selection on the telescope control panel activates a
+dialog that allows the pointing coordinates for the telescope to be
+entered directly.  This is generally faster than using the slew buttons
+to move the telescope from object to object, unless the objects are very
+near each other in the sky.  Some "fine tuning" with the slew buttons
+may be necessary to center the object in the spectrometer slit,
+photometer aperture or camera field after setting the coordinates.
+
+Related Topics:
+    Slew Buttons ("N","S","E","W")
+
+**Site and Telescope Parameters**
+Select "File"->"Site Information..." from the telescope control panel
+menu to obtain information on the current observing site and telescope.
+Parameters listed include the site latitude, longitude, height above sea
+level and time zone.  The telescope aperture and focal length are also
+shown.
+
+Related Topics:
+    "Change Optical Telescope" under observatory control panel "Help"
+

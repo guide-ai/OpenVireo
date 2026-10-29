@@ -79,7 +79,7 @@ export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  presentationNote:'Grid geometry, scales, labels, point sizes and both colour schemes follow the recovered program; fonts are approximate and the dashed selection ring is this page’s own.',
  schemeLabel:'Plot colours',
  schemes:Object.freeze(['Original display colours','Original black-and-white (print) colours']as const),
- schemeHelp:'The original switches to black and white only while printing; which scheme its display starts in depends on a program setting that was not recovered.',
+ schemeHelp:'In the original, printing uses the scheme opposite to a program setting (black and white when that setting is 0), and the display starts from that setting; its default was not recovered.',
  tableCaption:'Loaded records (original order)',
  columns:Object.freeze({index:'#',object:'Object ID',mjd:'MJD(Days) as saved',ra:'RA',dec:'Dec',velocity:'V (km/s)',z:'Z',comment:'Comments',status:'Plot'}),
  selectRow:(id:string,i:number)=>`Select record ${i}${id?` (${id})`:''}`,
@@ -100,7 +100,7 @@ export const WEDGE_MESSAGES:WedgeMessageCatalog=Object.freeze({
  about:Object.freeze([
   'Recovered statically from CLEA_VEO.exe (SHA-256 781bc970…c52c54c); the original program was never run.',
   'Covered: the LSS “Load Saved Data” text reader, the wedge grid (Velocity, Red Shift (Z), No Grid), point size 1–5, open/filled points, “Plot Data” and the add/clear prompts.',
-  'Not available: group Auto Plot (needs a shared instructor file), printing, live plotting while measuring spectra, and the original save format.',
+  'Not available: group Auto Plot (needs a shared instructor file), live plotting while measuring spectra, and the original save format. Print Wedge Plot is a web print that always uses the black-and-white scheme; VIREO’s print scheme is the opposite of a program setting whose default is not recovered.',
   'The MJD column is kept exactly as saved. The original completes it with a prefix from the date of the session that loaded it, which cannot be known here, so no MJD value is computed.',
   'V and Z are stored as single-precision numbers and derived with the program’s c = 299792.458 km/s; angle and pixel rounding use this browser’s arithmetic, and rare ties are flagged rather than claimed.',
  ]),

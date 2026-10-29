@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {HtlError,addHtlRow,newHtlEditor,serializeHtl} from '../core/hotList';
+import {addHtlRowRaOrdered} from '../core/hotListEntry';
 import {keepHotList,setHotListEditor} from '../core/sharedHotList';
 import {decodeVariableStarCatalog,type VariableStarRecord} from '../core/variableStars';
 import {VARIABLE_FIELD_LITERALS as VL,VARIABLE_FIELD_SAVE_NAME,variableAddedText,variableFieldList,variableHotListFields,variableNewListText,type VariableFieldList,type VariableFieldMode,type VariableFieldView} from '../core/variableFieldList';
@@ -80,7 +81,7 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
  function add(selection:number){
   const r=record(selection);if(!r)return;
   if(hotList.current().read){setBox({caption:VL.confirmation,text:M.busy});return;}
-  try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRow(d.editor??newHtlEditor(),variableHotListFields(r)),d.editor?d.name:''));}
+  try{hotList.update(d=>d.read?keepHotList(d):setHotListEditor(d,addHtlRowRaOrdered(d.editor??newHtlEditor(),variableHotListFields(r)),d.editor?d.name:''));}
   catch(e){setBox({caption:VL.confirmation,text:e instanceof HtlError?e.message:M.busy});return;}
   setBox({caption:VL.confirmation,text:variableAddedText(r.name)});
  }

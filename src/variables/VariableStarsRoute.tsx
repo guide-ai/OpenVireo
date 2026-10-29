@@ -1,16 +1,18 @@
 import {useEffect,useId,useMemo,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
-import {decodeVariableStarCatalog,parseVariableTypeHelp,searchVariableStars,variableStarSaveFileName,variableStarSaveText,variableStarTypes,type VariableStarRecord,type VariableTypeHelpSection} from '../core/variableStars';
+import {decodeVariableStarCatalog,searchVariableStars,variableStarSaveFileName,variableStarSaveText,variableStarTypes,type VariableStarRecord} from '../core/variableStars';
 import {LightCurveError,lightCurvePlot,type LightCurvePlot,type LightCurveUnavailable} from '../core/lightCurve';
-import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve as sessionDisplayCurve,exitLightCurve,openVariableStarList,openVariableStarListFromField,toggleListTypeCodes,toggleVariableHelp,type VariableStarSession} from '../core/variableStarSession';
+import {INITIAL_VARIABLE_STAR_SESSION,closeVariableStarList,displayLightCurve as sessionDisplayCurve,exitLightCurve,openVariableStarList,openVariableStarListFromField,toggleListTypeCodes,type VariableStarSession} from '../core/variableStarSession';
 import {delphiFixed,formatNativeSexagesimal} from '../core/variableStars';
-import {BUNDLED_VARIABLE_STARS,BUNDLED_VARIABLE_TYPE_HELP,fetchBundledVariableFile} from '../io/bundledVariableStars';
+import {BUNDLED_VARIABLE_STARS,fetchBundledVariableFile} from '../io/bundledVariableStars';
+import CleaHelp from '../clusters/CleaHelp';
+import {HELP_FILES} from '../help/helpFiles';
 import {VARIABLE_STARS_EN as M} from './VariableStarMessages';
 import LightCurveSvg from './LightCurveSvg';
 import '../observatory/observatory-dialogs.css';
 import './variables.css';
 
-type Loaded=Readonly<{records:readonly VariableStarRecord[];help:readonly VariableTypeHelpSection[]}>;
+type Loaded=Readonly<{records:readonly VariableStarRecord[]}>;
 type LoadState=Readonly<{status:'loading'}|{status:'error'}|({status:'ready'}&Loaded)>;
 export const VARIABLE_PRINT_SCOPE='variable-stars';
 
@@ -37,8 +39,8 @@ export default function VariableStarsRoute({active,openRequest=null}:{active:boo
  const escapeMenu=(e:React.KeyboardEvent,trigger:React.RefObject<HTMLButtonElement|null>)=>{if(e.key!=='Escape'||menu===null)return;e.stopPropagation();setMenu(null);trigger.current?.focus();};
  useEffect(()=>{
   const abort=new AbortController();
-  Promise.all([fetchBundledVariableFile(fetch,abort.signal,BUNDLED_VARIABLE_STARS),fetchBundledVariableFile(fetch,abort.signal,BUNDLED_VARIABLE_TYPE_HELP)])
-   .then(([stars,helpBytes])=>setLoad({status:'ready',records:decodeVariableStarCatalog(stars),help:parseVariableTypeHelp(helpBytes)}))
+  fetchBundledVariableFile(fetch,abort.signal,BUNDLED_VARIABLE_STARS)
+   .then(stars=>setLoad({status:'ready',records:decodeVariableStarCatalog(stars)}))
    .catch(error=>{if(!(error instanceof DOMException&&error.name==='AbortError'))setLoad({status:'error'});});
   return ()=>abort.abort();
  },[]);
@@ -50,7 +52,7 @@ export default function VariableStarsRoute({active,openRequest=null}:{active:boo
  const records=load.status==='ready'?load.records:null;
  const listRecord=records&&session.list?records[session.list.index]:null,curve=records&&session.curve!==null?records[session.curve]:null;
  const list=listRecord&&session.list?{record:listRecord,lines:session.list.lines,riseShown:session.list.riseDefaulted}:null;
- const help=session.help,typeCodes=session.listTypeCodes;
+ const typeCodes=session.listTypeCodes;
  function openRecord(record:VariableStarRecord,fieldRiseDefaulted=false){
   setMenu(null);setNotice('');setSession(s=>fieldRiseDefaulted?openVariableStarListFromField(s,record,true):openVariableStarList(s,record));
   requestAnimationFrame(()=>listHeading.current?.focus());
@@ -112,17 +114,13 @@ export default function VariableStarsRoute({active,openRequest=null}:{active:boo
       <button type="button" data-testid="vstar-close" onClick={closeList}>{M.close}</button>
      </div>}
     </div>
-    <button type="button" aria-expanded={help} data-testid="vstar-help" onClick={()=>{setMenu(null);setSession(toggleVariableHelp);}}>{M.help}</button>
+    {/* Help1Click 0x52de20: VIREO's shared help viewer over VarTypeHlp.LST (options +0xbe4), loaded at FormCreate 0x52ccbf. */}
+    <CleaHelp list={HELP_FILES['VARTYPEHLP.LST']} label={M.help} testId="vstar-help"/>
    </div>
    <pre className="variable-lines" data-testid="vstar-lines" tabIndex={0} aria-label={M.listCaption}>{list.lines.join('\n')}</pre>
    {list.riseShown&&<p className="variable-note" data-testid="vstar-rise-defaulted">{M.riseDefaultedNote}</p>}
    <p role="status" data-testid="vstar-notice">{notice}</p>
    {notice&&<p className="variable-note">{M.saveAdaptation}</p>}
-   {help&&load.status==='ready'&&<section className="variable-help" aria-labelledby={`${id}-help`} data-testid="vstar-help-panel">
-    <h3 id={`${id}-help`}>{M.helpTitle}</h3><p className="variable-note">{M.helpNote}</p>
-    {load.help.map(s=><section key={s.title}><h4>{s.title}</h4>{s.lines.length?<pre className="variable-help-text">{s.lines.join('\n')}</pre>:<p>{M.helpEmpty}</p>}</section>)}
-    <button type="button" className="secondary-button" onClick={()=>setSession(toggleVariableHelp)}>{M.helpClose}</button>
-   </section>}
   </section>}
 
   {curve&&drawn&&<section className="card variable-window" aria-labelledby={`${id}-curve`} data-testid="light-curve-window">

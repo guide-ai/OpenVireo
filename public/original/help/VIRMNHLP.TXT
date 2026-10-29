@@ -1,0 +1,415 @@
+**Log In**
+To Log In to the Virtual Educational Observatory (VIREO):
+
+    1)  Select "File"->"Log In..." from the observatory control panel
+        menu.  The login dialog will appear.
+
+    2)  Enter the appropriate name(s) in the fields provided.
+
+    3)  The laboratory table number may already be set.  If it is not,
+        or is incorrect, enter the correct table number.
+
+    4)  Select "OK".  The selections under "File" that control the
+        exercise will be activated, while the "Log In..." selection will
+        be deactivated.  (You cannot return to the login dialog after
+        you have completed it.)
+
+The information entered on the login dialog is used to generate names
+for data files, and will appear on data and printouts that are produced
+by the exercise. If you have entered no information, a box will warn you
+of this when you press "OK".  If you select "Cancel" on the warning box
+you will return to the login dialog.  If you select "OK" on the warning
+box, the program will continue.  In this case, generated data and files
+will be identified as "NoLog".
+
+Immediately after logging in you should select the exercise that you
+will be doing.
+
+Related Topics:
+    Select Exercise
+
+**Select Exercise**
+After you have successfully logged in, select "File"->"Run Exercise"
+from the observatory control panel menu and pick the exercise from the
+list.  The title screen for the selected exercise will be displayed for
+five seconds, followed by the observatory control panel.  The exercise
+you select will determine which of the numerous features and
+capabilities of VIREO will be available to you.  (All features of VIREO
+are available for the exercise "The Quest for Object X", and in the
+non-specific Virtual Observatory mode.)
+
+WARNING: You cannot change the exercise selection once you have made it.
+If you make an error in the selection you must exit the program and
+start over!
+
+**Set Date & Time**
+Some exercises performed with VIREO contain time-dependent elements.
+When you start the exercise "The Quest for Object X", a small box will
+appear for you to enter the date, time, and identification of the
+unknown you have been assigned.  Be sure to set these to values provided
+in your exercise material, or assigned directly by your instructor.
+After you have entered the information and pressed the "OK" button,
+there may be a slight pause as the software adjusts the data for the
+exercise.
+
+You may also be required to change the date/time at later points in some
+exercises.  To do this, close the telescope control panel (optical
+and/or radio) and select "File"->"Set Observation Date/Time, ID..." from
+the observatory control panel menu.  (This menu selection is not
+available for exercises that do not involve time-dependent elements. For
+the "Radio Astronomy of Pulsars" exercise, and in the non-specific
+Virtual Observatory mode, the menu selection is available, but you are
+not required to set the date/time initially.)
+
+**Select Telescope**
+To access a telescope, select "Telescopes" from the observatory control
+panel menu. Depending on the exercise, you will have access to one or
+more optical telescopes and/or a radio telescope.  Make your selection
+from the menu. Some of the optical telescope choices may be grayed,
+which indicates their use is restricted and you must apply for time.
+
+When you select a telescope, its name or identification will appear at
+the bottom of the observatory control panel.  For optical telescopes,
+the inside of the closed dome will appear in the display area.  For the
+radio telescope, a picture or other graphic will appear.
+
+Related Topics:
+    Request Telescope Time
+
+**Open Dome**
+After selecting an optical telescope, you must open the dome.  Press the
+top half of the Open/Close switch.  The dome will begin to open and
+various indicators will light to indicate the dome state.  To close the
+dome, after it is open or has begun to open, press the bottom half of
+the switch.
+
+You must open the dome before you can access the telescope control
+panel, and in general you must close it before you can change
+telescopes.  Dome operation is not required for the radio telescope.
+
+The initial image that appears in the dome opening shows naked-eye stars
+directly to the south of the observatory location (north, for southern
+hemisphere observatories) at the current date and time.  (These stars
+may not actually be visible, because the software does not make a
+day/night determination.)  When you close the telescope control panel
+and return to the dome view, the image will show naked-eye stars in the
+general direction that the telescope was pointing.  To identify the
+stars, right-click directly on a star image.  A box will appear giving
+the right ascension, declination and magnitude.  You can then use a star
+chart to identify the stars and constellations.
+
+Related Topics:
+    Change Optical Telescope
+
+**Access Telescope Control**
+Once the dome is open (or when the radio telescope has been selected),
+press the appropriate button on the panel labeled "Telescope Control
+Panel" to access the telescope control.  The control panel will appear
+after a few seconds.  (There may be a slight delay as the star field
+image is being generated.)  In most cases the first thing you will want
+to do is to turn on the tracking by pressing the appropriate button.
+
+When the telescope control panel is open, the image on the observatory
+control panel will go black.  Features accessed via the observatory
+control panel menu are still available.
+
+**Request Telescope Time**
+Access to the larger telescopes may be restricted.  You may request time
+on telescopes that are not currently available to you (the selections
+are grayed).  To request time, select "Telescope"->"Optical"-> "Request
+Time"->(telescope selection) from the observatory control panel menu.
+
+If your request is granted:
+    You will be informed of the number of uses you have been given (the
+    number of spectra, photometric obsevations, CCD images, etc. you can
+    take with the restricted telescope).  You can then access the
+    telescope in the normal manner, but a tally will be kept of your
+    uses, and you will be informed when you have "used up" your
+    allotment.  You may then request more time if you wish.
+
+If your request is not granted:
+    You will be informed that you may reapply after a certain number of
+    minutes.  Until that time has passed you will not be able to request
+    time on that particular telescope.  When the time has elapsed a
+    message will appear informing you that you may reapply.  You may do
+    anything else you wish, including requesting and/or using other
+    telescopes, analyzing data, etc. while waiting to reapply.
+
+Related Topics:
+    Select Telescope
+
+**Change Optical Telescope**
+To change optical telescopes, select "Telescopes"->"Optical" from the
+observatory control panel menu, and then make your selection from the
+list that appears.  If a particular selection is grayed, you must
+request and be awarded time on that particular telescope.
+
+When you have selected a telescope to access, the dome on the current
+telescope will close, and there will be a pause while the system
+attempts to access the telescope you have selected.  If the selected
+telescope is available, you will be given control.  Note that you must
+again open the dome and turn on the tracking before you can proceed to
+take spectra with the new telescope.  If the telescope you select is
+restricted and you have been granted a limited number of uses, you will
+be informed of your remaining uses before the telescope is accessed.
+
+Related Topics:
+    Request Telescope Time
+
+**Spectral Classification Tool**
+The spectral classification tool enables you to classify stellar spectra
+that you have taken using an optical telescope and spectrometer, and
+other spectra that are included as part of the classification exercise.
+To access the spectral classification tool, select "Tools"->"Spectral
+Classification Tool" from the observatory control panel menu.
+
+NOTE: This tool is not available for exercises that do not require it.
+
+Related Topics:
+    Topics under "Help" on the classification tool menu.
+    Topics under "Help" on the spectrometer control panel menu.
+    Results Editors
+
+**Radio Pulsar Analysis Tool**
+The radio pulsar analysis tool enables you to analyze pulsar data that
+you have taken using the radio telescope.  To access the radio pulsar
+analysis tool, select "Tools"->"Radio Pulsar Analysis Tool" from the
+observatory control panel menu.
+
+NOTE: This tool is not available for exercises that do not require it.
+
+Related Topics:
+    Topics under "Help" on the radio telescope control panel menu.
+    Topics under "Help" on the pulsar analysis tool menu.
+    Results Editors
+
+**HR Diagram Analysis Tool**
+The HR diagram analysis tool enables you to determine the distances and
+ages of galactic clusters by fitting a zero-age main sequence (ZAMS) and
+theoretical isochrones to color-magnitude diagrams of the cluster stars.
+To access the HR diagram analysis tool, select "Tools"->"HR Diagram
+Analysis" from the observatory control panel menu.
+
+NOTE: This tool is not available for exercises that do not require it.
+
+Related Topics:
+    Topics under "Help" on the HR diagram analysis menu.
+    Results editors
+
+**Spectrum Measuring Tool**
+The spectrum measuring tool enables you to measure spectra that you have
+taken using an optical telescope and spectrometer to determine an
+object's radial velocity (Z).  To access the spectrum measuring tool,
+select "Tools"->"Spectrum Measuring Tool" from the observatory control
+panel menu.
+
+NOTE: This tool is not available for exercises that do not require it.
+
+Related Topics:
+    Topics under "Help" on the measuring tool menu.
+    Topics under "Help" on the spectrometer control panel menu.
+    Results Editors
+
+**LSS Wedge Plot Tool**
+The LSS wedge plot tool is used to generate the wedge plot as part of
+the Large-Scale Structure exercise.  To access the LSS wedge plot tool,
+select "Tools"->"LSS Wedge Plot" from the observatory control panel
+menu.
+
+NOTE: This tool is available only for the "Large-Scale Struture of The
+Universe" exercise.
+
+Related Topics:
+    Topics under "Help" on the wedge plot tool menu.
+    Results Editors
+
+**Astrometry Module**
+The astrometry module uses images taken with an optical telescope and
+the CCD and/or infrared (IR) camera.  You can use this module to display
+CCD & IR images, display/print the (FITS) image headers, search the
+images for asteroids, and measure the positions of asteroids on the
+images.  To access the astrometry module, select "Tools"->"Astrometry
+Module" from the observatory control panel menu.
+
+NOTE: This tool is not available for exercises that do not require it.
+
+Related Topics:
+    Image Processing (DS9)
+    Topics under "Help" on the CCD and IR camera control panel menus.
+    Topics under "Help" on the astrometry module menus.
+
+**Image Processing (DS9)**
+A full-featured image processing program, "SAOImage DS9" is available
+for use with VIREO.  To access, select "Tools"->"Image Processing (DS9)"
+from the observatory control panel menu.  You can use DS9 to view images
+you have taken with the CDD and IR cameras, and for many other image
+processing tasks.  DS9 is a large program with many fuctions and
+options.  You will be given instructions on its use by your instructor
+or in your exercise materials if you are expected to employ it.
+
+If you have taken images with one of the VIREO cameras and access DS9 to
+view them, the program will point to the correct directory to load your
+images.  However, you should be aware that its default file extension
+for loading files is ".FITS", while VIREO-generated image files carry
+the extension ".FIT".  Enter "*.FIT" in the file name field on the file
+open display to see your image files.
+
+NOTE: This tool is not available for exercises that do not require it.
+
+Related Topics:
+    Astrometry Module
+    Topics under "Help" on the CCD and IR camera control panel menus.
+
+**Results Editors**
+Results editors enable you to work with results and other data that you
+have generated using the telescopes, instruments, and other tools.  With
+the results editors you can:
+
+    1)  View and perform some editing operations on data that you have
+        generated.
+  
+    2)  Print the results for inclusion with your exercise report or for
+        your own use.
+
+    3)  Save the data in a form that can be reloaded at a later date.
+        This allows you to interrupt an exercise and continue later from
+        where you left off, or generate an assigned subset of data for a
+        larger group project.
+
+    4)  Load previously saved data.
+
+    5)  Save the data in an alternate format (.CSV) that can be read
+        into a spreadsheet program for further analysis or graphing.
+
+To access a results editor, select "Tools"->"Results Editors"->(type of
+results)->"Display/Print/Save..." from the observatory control panel
+menu.  The choices of available editor(s) will depend on the exercise
+you are doing.
+
+Related Topics:
+    Load Saved Data
+    Spreadsheet
+    Help topics on saving data for various instruments and tools.
+
+**Load Saved Data**
+You can load a file of data that was previously created and saved using
+this program and one of the results editors.  This feature allows you to
+interrupt your exercise and continue at a later time from where you left
+off, and to accumulate data over several sessions as part of a project.
+You can delay computing and/or plotting the final results until all
+stars have been measured.
+
+To load saved data, select "Tools"->"Results Editors"->(type of results)
+->"Load Saved Data..." from the observatory control panel menu. The
+choices available will depend on the exercise you are doing.
+
+When loading data you should be aware of the following:
+
+    1)  When a file is loaded, it replaces any data currently present.
+        You will be warned to save first if you attempt to load over
+        existing data.
+
+    2)  Any data generated after a file load is added to the loaded data
+        in memory.  You will have to save it to keep the complete set.
+ 
+    4)  The format of the file to be loaded must be same as written.  In
+        other words, you must select the same results editor to load the
+        data as was used to save it.
+
+Related Topics:
+    Results Editors
+
+**Spreadsheet**
+Results analysis activities, such as computations, formatting of results
+for printing and preparation of charts and graphs may be facilitated by
+making use of a spreadsheet program.  If a spreadsheet program is
+available for your use, the "Spreadsheet" selection under "Tools" on the
+observatory control panel menu will be dark black.  (If this entry is
+grey, no spreadsheet program is available.)  The following outlines the
+steps to follow in using a spreadsheet:
+
+    1)  Take and record necessary measurements for all required stars or
+        other objects.
+
+    2)  Using a results editor, save your data in spreadsheet format
+        (.CSV).  You should make a note of the file name.
+
+    3)  Select "Tools"->"Spreadsheet" from the observatory control panel
+        menu to access the spreadsheet program.
+
+    4)  Load your data file into the spreadsheet (choose file type
+        "Text" - qualifier .CSV).  In most cases, the spreadsheet should
+        start with your data already loaded, or at least with the
+        correct folder accessed. Your instructor will assist you with
+        this and other spreadsheet activities.
+
+    5)  Use the spreadsheet to perform calculations, format and print
+        data, prepare and print charts and graphs, etc. as directed by
+        your instructor.
+
+    6)  If so instructed, write the completed spreadsheet back out as a
+        comma delimited file (in Excel, choose "File"->"Save As..." type
+        CSV).
+
+    7)  Exit the spreadsheet (in Excel, choose "File"->"Exit").
+
+Related Topics:
+    Results Editors
+
+**End Exercise**
+Select "File"->"Exit Observatory" from the observatory control panel
+menu to end the exercise.  If you have saved any spectra, CCD images,
+pulsar data or results lists they may remain in the machine so that you
+can restart the program and access them at a later date.  However, your
+installation may not support this - ask your instructor to be sure.  To
+be safe, it is best to print all results before closing the program.
+
+**Data Operations**
+INSTRUCTOR: Numerous data functions are available to assist you in
+preparing exercises and determining "correct" answers.  See the User's
+Guide for details.
+ 
+**Keyboard Access**
+Keyboard (mouse-free) access is provided to the facilities of VIREO (see
+NOTE below).  The general features of keyboard access are as follows:
+
+    -Menus-
+    All menu selections have assigned hot keys.  To access menu
+    selections from the keyboard, press the "Alt" key and the hot key
+    selections will appear as underlined characters in the menu.  To
+    make a slection, press the appropriate hot key.  Alternatively,
+    after the "Alt" key has been pressed, use the arrow keys to move
+    between menu slections and the "Enter" key to select.
+ 
+    -Controls-
+    You can move between the controls (buttons, switches, sliders, text
+    boxes, etc.) on any form by using the "Tab" and "Shift-Tab" keys.
+    (The arrow keys may sometimes be used for this, but will not work
+    with all controls.)  The currently selected control is indicated by
+    a dotted outline, or by a color change in a text box.  Once
+    selected, buttons may be pressed using either the Space Bar or the
+    "Enter" key.  Switches and sliders are usually operated with the
+    arrow keys.
+
+    -Cursors-
+    On forms which use a moving cursor for identification and/or
+    measurement purposes, you can move the cursor using the arrow keys
+    on the numeric keypad (keys "2","4","6","8").  These keys may also
+    be used to slew the telescope.  You must have NumLock "On" and
+    MouseKeys "Off" to use this feature.  (See "MouseKeys" below.)
+
+    -MouseKeys-
+    If you are using MouseKeys, configure your system so that MouseKeys
+    are active when the NumLock is "Off", to avoid a conflict with the
+    use of the numeric keypad arrow keys (above).  You should not need
+    to use MouseKeys for keyboard accsss of the basic features of VIREO
+    (but see NOTE below).
+
+NOTE: Complete (we hope) keyboard access is provided in the main control
+and optical observatory facilities of VIREO.  However, in this version
+(1.0), facilities that were lifted from earlier software packages
+(primarily the radio observatory and asteroid astrometry features) are
+not totally keyboard accessible, although some improvements have been
+made.  If you wish to use all of the features of these facilities from
+the keyboard, you will have to use MouseKeys.
+

@@ -1,0 +1,7 @@
+'Find Pulsar In List' 'pulsrlst.txt'
+'Compute Derived Quantities' 'begin'
+'Change Date - Compute Period' 'pulsrlst.txt'
+'Change Electron Density - Compute Distance' 'pulsrlst.txt'
+'Return to Current Values' 'pulsrlst.txt'
+'Compute Derived Quantities' 'end'
+'Select Pulsars for Study' 'pulsrlst.txt'

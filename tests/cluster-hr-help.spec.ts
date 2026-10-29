@@ -85,12 +85,21 @@ test('a heading row answers with VIREO\'s box, a separator does nothing, and Esc
  await expect(page.getByTestId('cluster-help-topics')).not.toBeVisible();
 });
 
-test('Help refuses files that do not match their recorded SHA-256',async({page})=>{
- await page.route('**/original/cluster-help/HRAnalHlp.TXT',route=>route.fulfill({status:200,body:Buffer.alloc(7557,0x41)}));
+test('Help refuses an index that does not match its recorded SHA-256',async({page})=>{
+ await page.route('**/original/cluster-help/HRAnalHlp.LST',route=>route.fulfill({status:200,body:Buffer.alloc(715,0x41)}));
  await loadM67(page);
  await page.getByTestId('cluster-help-open').click();
  await expect(help(page).getByRole('alert')).toContainText('did not match their recorded size and SHA-256');
  await expect(page.getByTestId('cluster-help-topics')).toHaveCount(0);
+});
+
+test('a topic text file that does not match its recorded SHA-256 is refused when the topic opens (Front H)',async({page})=>{
+ await page.route('**/original/cluster-help/HRAnalHlp.TXT',route=>route.fulfill({status:200,body:Buffer.alloc(7557,0x41)}));
+ await loadM67(page);
+ const list=await openTopics(page);
+ await list.getByRole('option').nth(16).dblclick();
+ await expect(page.getByTestId('cluster-help-message')).toContainText('HRAnalHlp.TXT could not be loaded or did not match its recorded size and SHA-256');
+ await expect(page.getByTestId('cluster-help-window')).toHaveCount(0);
 });
 
 test('Help works at 320 px and in the dark theme',async({page})=>{

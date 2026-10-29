@@ -114,5 +114,5 @@ with SHA-256). This section supersedes the "Not recovered" list above for the it
   the investigation. Catalogue redshifts are the E02 answers, so the table's z and the summary's "Range in Z" show
   "hidden (instructor value)" (as Catalog Object masks z) and the rows are not handed to the wedge, which would plot them by
   z [W, coordinator decision of 2026-10-29]. The .TXT carries no z column and no velocity. Counts per box remain visible.
-- Not ported: Wedge Print (Front P), Auto Plot and the group results file 0x57c710.
+- Not ported: Auto Plot and the group results file 0x57c710. (Wedge Print is ported by Front P; docs/WEDGE-PLOT.md.)
 

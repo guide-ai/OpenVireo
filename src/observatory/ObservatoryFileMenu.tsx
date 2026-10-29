@@ -5,26 +5,36 @@ import {VARIABLE_STARS_MENU as VM,QSO_LIST_MENU,HST_ARCHIVE} from '../core/obser
 import {FIELD_INFO_MESSAGES as M} from './FieldInfoMessages';
 import {QSO_LIST_MESSAGES as Q} from './QsoListMessages';
 import './field-info.css';
+import {ExitObservatoryDialog} from '../help/HelpMenus';
+import {MAIN_HELP_MENU} from '../help/mainHelp';
+import PrintSkyImage from '../polish/PrintSkyImage';
+import {PRINT_SKY_LITERALS} from '../polish/PolishMessages';
+import type {Pointing} from '../core/sky';
 
 export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
 /** TEnvironment1 File and Tools items of the optical observatory (Front O, O2):
  * - File › Field Information › … (Edit Mode only);
  * - File › QSO List... only with Virtual Observatory on (VObsBox; VIREO shows the item after Run Exercise › Virtual Observatory
- *   (All Instruments), which that box enables; review 1 M1). File is hidden when it has no item.
+ *   (All Instruments), which that box enables; review 1 M1).
+ * - File › Print Sky Image... (TObsrvtry PrintSkyImage1Click 0x53f934), always present as in VIREO, so File always shows
+ *   (Front P): a web print of the sky view [W].
  * - Tools › HST Image Archive...: the archive page as an external link, opened in a new tab only on click (user decision of
  *   2026-10-28, AGENTS.md; docs/QSO-LIST-HST.md).
+ * - File › Exit Observatory shows VIREO's reminder (Reminder.obs; Front H, docs/CLEA-HELP.md). The main window's Help menu
+ *   is in the app header, so that every route reaches it.
  * The windows live in their own lazy components; this menu only sends open requests. Disabled only while a project is busy. */
-export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void}){
- const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null);
+export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,pointing,view}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
+ /** Front P: the current pointing and view for the Print Sky Image header. */
+ pointing?:Pointing;view?:'finder'|'instrument'}){
+ const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null),[printSky,setPrintSky]=useState(false),[exiting,setExiting]=useState(false);
  const fileTrigger=useRef<HTMLButtonElement>(null),toolsTrigger=useRef<HTMLButtonElement>(null);
- useEffect(()=>{if(!editMode)setMenu(m=>m==='field'||m==='variables'||(m==='file'&&!qsoList)?null:m);},[editMode,qsoList]);
- useEffect(()=>{if(!qsoList&&!editMode)setMenu(m=>m==='file'?null:m);},[qsoList,editMode]);
- useEffect(()=>{if(disabled)setMenu(null);},[disabled]);
+ useEffect(()=>{if(!editMode)setMenu(m=>m==='field'||m==='variables'?'file':m);},[editMode]);
+ useEffect(()=>{if(disabled){setMenu(null);setPrintSky(false);}},[disabled]);
  const escape=(e:React.KeyboardEvent,trigger:React.RefObject<HTMLButtonElement|null>)=>{if(e.key==='Escape'&&menu){e.stopPropagation();setMenu(null);trigger.current?.focus();}};
  const pick=(f:()=>void)=>{setMenu(null);f();};
  const fileOpen=menu==='file'||menu==='field'||menu==='variables';
  return <div className="fi-menubar ob-file-menu" data-testid="ob-file-menubar">
-  {(editMode||qsoList)&&<div className="fi-menu" onKeyDown={e=>escape(e,fileTrigger)}>
+  <div className="fi-menu" onKeyDown={e=>escape(e,fileTrigger)}>
    <button type="button" ref={fileTrigger} disabled={disabled} aria-expanded={fileOpen} aria-controls={`${id}-file`} data-testid="fi-file-menu" onClick={()=>setMenu(m=>m==='file'||m==='field'||m==='variables'?null:'file')}>{M.fileMenu}</button>
    {fileOpen&&<div id={`${id}-file`} role="group" aria-label={M.fileMenu} className="fi-menu-list">
     {editMode&&<><button type="button" aria-expanded={menu==='field'||menu==='variables'} data-testid="fi-field-information" onClick={()=>setMenu(m=>m==='file'?'field':'file')}>{menuCaptionText(EDIT_MODE_CAPTIONS.fieldInformation)} ›</button>
@@ -36,9 +46,12 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
        <button type="button" data-testid="fi-variables-modeled" onClick={()=>pick(()=>onFieldInfo('modeled'))}>{menuCaptionText(VM.modeled)}</button>
       </div>}
      </div>}</>}
+    <button type="button" data-testid="print-sky-menu" onClick={()=>pick(()=>setPrintSky(true))}>{menuCaptionText(PRINT_SKY_LITERALS.menu)}</button>
     {qsoList&&<button type="button" data-testid="qso-menu" onClick={()=>pick(onQsoList)}>{menuCaptionText(QSO_LIST_MENU)}</button>}
+    <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{menuCaptionText(MAIN_HELP_MENU.exit)}</button>
    </div>}
-  </div>}
+  </div>
+  {printSky&&<PrintSkyImage pointing={pointing} view={view} onClose={()=>{setPrintSky(false);fileTrigger.current?.focus();}}/>}
   <div className="fi-menu" onKeyDown={e=>escape(e,toolsTrigger)}>
    <button type="button" ref={toolsTrigger} disabled={disabled} aria-expanded={menu==='tools'} aria-controls={`${id}-tools`} data-testid="ob-tools-menu" onClick={()=>setMenu(m=>m==='tools'?null:'tools')}>{menuCaptionText(HST_ARCHIVE.tools)}</button>
    {menu==='tools'&&<div id={`${id}-tools`} role="group" aria-label={menuCaptionText(HST_ARCHIVE.tools)} className="fi-menu-list">
@@ -46,6 +59,7 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
     <p className="fi-note fi-menu-note" data-testid="hst-note">{Q.hst.note}</p>
    </div>}
   </div>
+  {exiting&&<ExitObservatoryDialog onClose={()=>{setExiting(false);requestAnimationFrame(()=>fileTrigger.current?.focus());}}/>}
  </div>;
 }
 

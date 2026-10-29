@@ -1,0 +1,113 @@
+**Set Wavelength Range**
+You can change the range of wavelengths recorded by the spectrometer,
+within the maximum range of 3500 to 7400 Angstroms.  (Your instructor
+should tell you if there is a reason why you might want to do this.)  To
+change the wavelength range, select "File"->"Preferences"->"Spectral
+Range" from the spectrometer control panel menu.  Use the sliders to
+change the minimum and/or maximum values.  The "Default" button returns
+the values to the optimal range for spectral classification.  Note that
+you will lose any spectrum that you have taken but have not saved when
+you change the wavelength range.
+
+**Start/Resume Count**
+Press the integration "Go" button on the spectrometer to begin/continue
+integrating the spectrum.  You will see the spectrum begin to take a
+recognizable shape as the counts build up in each of the 500 channels of
+the spectrometer.  (The display is always normalized to the highest
+reading in any channel, so that as time passes you see the noise
+decreasing rather than the counts moving upward.)  The current total
+photon count, integration time, average count per channel and signal to
+noise ratio are displayed below the graph.  The object identification
+and apparent magnitude are also displayed for some exercises.
+
+**Stop Count**
+Pressing the integration "Stop" button causes the integration to pause.
+The display is redrawn with lines connecting the adjacent channel
+readings for clarity. You can stop and resume as many times as you like,
+the integration always continues from where it left off.  (You cannot
+"lose" a spectrum unless you close the spectrometer control panel
+without saving it.)
+
+**Print Spectrum**
+To print the current spectrum, select "File"->"Data"->"Print
+Spectrum..." from the spectrometer control panel menu.  The standard
+Windows print option form will appear.  (Your instructor may give you
+additional information as to how to set up and direct your printing.)
+The spectrum is printed as it apppears on the screen, along with
+identifying header information.
+
+**Save Spectrum for Analysis**
+You cannot measure or classify a spectrum you have taken unless you save
+it.  When you feel the signal-to-noise ratio is sufficiently high for
+accurate analysis (see below), stop the count and select "File"->"Data"
+->"Save Spectrum..." from the spectrometer control panel menu.  A file
+name is generated from the name/ID of the object (qualifier .CSP).  You
+will be asked to verify the file name and path. (In general, you should
+not change the path unless instructed to do so.) If a file of that name
+already exists, you will be warned before the existing file is
+overwritten.
+
+A signal-to-noise ratio of around 100 is recommended for accurate
+classification of stars, but lower values may suffice for some spectral
+types.  A signal-to-noise ratio as low as 10 may be sufficient to
+determine the radial velocity (Z) of some galaxies.  If you are not sure
+that the spectrum you are taking is sufficient, and you may want to
+return to the spectrometer control panel and continue integrating it,
+use the following technique:
+
+    1)  Save the spectrum.
+
+    2)  Do NOT close the spectrometer control panel.  If you wish, you
+        can minimize the spectrometer control panel via the "_" box in
+        the upper right corner, but this is not necessary.
+
+    3)  Select the classification or measurement tool under "Tools" on
+        the observatory control panel menu. Load the file you just saved
+        and attempt to classify or measure it.
+
+    4)  If the spectrum is too noisy for accurate analysis, you can
+        continue to integrate it.  Return to the spectrometer control
+        panel and press "Go".  When you are finished you will have to
+        save it again (you can overwrite the old version), and reload it
+        into the analysis tool.
+
+Related Topics:
+    Close Spectrometer Control Panel
+    Access Classification Tool
+    Access Spectrum Measuring Tool
+
+**Close Spectrometer Control Panel**
+To close the spectrometer control panel and return to the telescope
+control panel, select "File"->"Exit Spectrometer" from the menu or use
+the "X" box in the upper right corner.  If you close the spectrometer,
+you cannot return and continue integrating a spectrum from where you
+left off, although you can start over again with the same star.  If you
+have not saved your current spectrum you will be warned and given a
+chance to do so before the spectrometer control panel is closed.
+
+Related Topics:
+    Save Spectrum for Analysis
+
+**Access Classification Tool**
+In order to classify spectra, you must access the classification tool.
+Select "Tools"->"Spectral Classification Tool" from the observatory
+control panel menu and the classification tool will appear.  It is not
+necessary to access or close the telescope control panel before
+accessing the classification tool.
+
+Related Topics:
+    Save Spectrum for Analysis
+    Topics under "Help" on the classification tool menu.
+
+**Access Spectrum Measuring Tool**
+In order to measure the position of spectral lines to determine radial
+velocity (Z), you must access the spectrum measuring tool. Select
+"Tools"->"Spectrum Measuring Tool" from the observatory control panel
+menu and the measuring tool will appear. It is not necessary to access
+or close the telescope control panel before accessing the spectrum
+measuring tool.
+
+Related Topics:
+    Save Spectrum for Analysis
+    Topics under "Help" on the spectrum measuring tool menu.
+

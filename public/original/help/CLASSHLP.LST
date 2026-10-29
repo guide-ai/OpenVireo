@@ -1,0 +1,13 @@
+'Classify Spectra' 'begin
+'Load Spectrum' 'classhlp.txt'
+'Load Standard Spectra' 'classhlp.txt'
+'Spectral Line Table & Help' 'classhlp.txt'
+'Measure/Mark Spectral Features' 'classhlp.txt'
+'Measure Equivalent Widths' 'classhlp.txt'
+'Save, Review, Analyze Results' 'classhlp.txt'
+'Classify Spectra' 'end'
+'User Interface' 'begin'
+'Controls' 'classhlp.txt'
+'Configure Display' 'classhlp.txt'
+'Close Classification Window' 'classhlp.txt'
+'User Interface' 'end'

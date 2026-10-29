@@ -7,7 +7,11 @@ export const CLUSTER_HR_EN=Object.freeze({
  helpLoading:'Loading the VIREO help files…',
  helpLoadError:'The bundled VIREO help files could not be loaded or did not match their recorded size and SHA-256. Try again.',
  helpRetry:'Try again',
- helpAdaptation:'VIREO\'s own help (HRAnalHlp.TXT through its index HRAnalHlp.LST), shown in a web version of VIREO\'s help viewer. Window sizes, fonts and the system beep are not reproduced.',
+ helpAdaptation:(list:string)=>`VIREO's own help (its index ${list} and the text files it names), shown in a web version of VIREO's help viewer. Window sizes, fonts and the system beep are not reproduced.`,
+ topicFileCaption:'Help Not Available',// VIREO (THelpWin 0x59f297)
+ topicFileMissing:(file:string)=>`Cannot Access Help File ${file}\r\n\r\nFile Not Found!`,// VIREO (directory part not shown here)
+ topicFileErrorCaption:'Help File Error',
+ topicFileError:(file:string)=>`The bundled help file ${file} could not be loaded or did not match its recorded size and SHA-256. Try again.`,
  topicListCaption:'Select Help Topic',// VIREO
  topicsMenu:'Topics',// VIREO
  findTopic:'Find Topic...',// VIREO
