@@ -10,8 +10,21 @@ import provenanceSource from '../../data/hubble/star-exposure-provenance.json';
 const provenance=projectResource(provenanceSource);
 
 import {JournalError,type JournalState} from './exposureJournal';
+import {DEFAULT_SPECTRAL_RANGE,isDialogRange,sameRange,type SpectralRange} from './spectralRange';
 const STAR_POLICY_ID=provenance.policyId;
 export const KPNO09_STAR_POLICY=kpno09.policyId,KPNO09_STAR_PROOF_SHA256='41d12e419961090c8685996203ab48576a121b3c720b7ccdb3da6e23a889bbc6';
 export type StarTelescopeIndex=0|1|2;
-export function starTelescopeIndex(s:JournalState):StarTelescopeIndex{if(s?.policy===mayall.star.policyId)return 2;if(s?.policy===STAR_POLICY_ID)return 0;if(s?.policy===KPNO09_STAR_POLICY)return 1;throw new JournalError('phase');}
+/** Front S (S1, docs/SPECTRAL-RANGE.md): a star exposure on a non-default spectrometer range carries "#R<min>-<max>" after its
+ * telescope policy; the default range (3700–4700 Å) keeps the policy unchanged, so earlier states and sessions are identical. */
+export const STAR_RANGE_MARK='#R';
+export function starPolicyRange(policy:unknown):Readonly<{base:string;range:SpectralRange}>{
+ if(typeof policy!=='string')throw new JournalError('phase');
+ const at=policy.indexOf(STAR_RANGE_MARK);if(at<0)return Object.freeze({base:policy,range:DEFAULT_SPECTRAL_RANGE});
+ const m=/^(\d{4})-(\d{4})$/.exec(policy.slice(at+STAR_RANGE_MARK.length)),range=m?Object.freeze({minimum:Number(m[1]),maximum:Number(m[2])}):null;
+ if(!range||!isDialogRange(range)||sameRange(range,DEFAULT_SPECTRAL_RANGE))throw new JournalError('phase');
+ return Object.freeze({base:policy.slice(0,at),range});
+}
+export const starPolicyWithRange=(policy:string,range:SpectralRange)=>sameRange(range,DEFAULT_SPECTRAL_RANGE)?policy:`${policy}${STAR_RANGE_MARK}${range.minimum}-${range.maximum}`;
+export function starSpectralRange(s:JournalState):SpectralRange{return starPolicyRange(s?.policy).range;}
+export function starTelescopeIndex(s:JournalState):StarTelescopeIndex{const p=starPolicyRange(s?.policy).base;if(p===mayall.star.policyId)return 2;if(p===STAR_POLICY_ID)return 0;if(p===KPNO09_STAR_POLICY)return 1;throw new JournalError('phase');}
 export function starTickLimit(index:StarTelescopeIndex){return index===1?300:1000;}

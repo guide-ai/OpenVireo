@@ -46,7 +46,7 @@ describe('Front F: Object X spectrometer API (display and reveal parts)',()=>{
  it('unavailable displays are identical for star, galaxy, QSO, pulsar and asteroid rows; only the reveal tells them apart',async()=>{
   const shown=[];for(const row of [9,8,10,0,7])shown.push(JSON.stringify(await observeObjectXSpectrum(at(row),0)));
   expect(new Set(shown)).toEqual(new Set([JSON.stringify({status:'unavailable',telescope:0})]));
-  for(const row of [0,2,7,14,15,16])expect(await revealObjectXSpectrum(at(row),2)).toEqual({row:null,kind:null,recordId:null,reasons:['not-a-target'],pixelLevel:null});
+  for(const row of [0,2,7,14,15,16])expect(await revealObjectXSpectrum(at(row),2)).toEqual({row:null,kind:null,recordId:null,headerMagnitude:null,reasons:['not-a-target'],pixelLevel:null});
   expect(await observeObjectXSpectrum({ra:at(1).ra,dec:at(1).dec+1e-9},0)).toEqual({status:'unavailable',telescope:0});
  });
  it('GLXYSP guard: a galaxy whose own spectrum is not supplied is the typed spectrum-mapping reason, never the fallback template',async()=>{

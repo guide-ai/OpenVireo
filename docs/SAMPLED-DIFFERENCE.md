@@ -23,7 +23,23 @@ The first point uses MoveTo. Later points use LineTo when the current or precedi
 
 ## Admission and state boundaries
 
-Both sources must retain the same complete original printed grid (2799 wavelengths,3510..7427.2Å), under the existing exact-grid rule. The display window is normally3900..4500Å. A visual import on another grid and the supported acquired star are still excluded from difference admission. An uploaded original standard can be compared as an unknown, but retains its imported identity, exact bytes/hash and blank manual answer.
+**Front S (S3, 2026-10-29): any grid.** VIREO's Show Difference (0x509068) checks only that a standard and an unknown
+exist; it samples each spectrum **on its own grid** at the 500 window positions with the shared sampler 0x55dfe0, divides
+each by its own positive window maximum, and ignores the sampler's validity flag, so a wavelength outside a spectrum's
+coverage counts as 0 and the curve is not clipped to the overlap (research
+`analysis/front-s-spectroscopy/RE-difference-and-engine-zoom.md` Part 1). OpenVireo now follows that:
+- the normalized difference is available for every unknown both of whose spectra can be sampled: the practices, exact and
+  other-grid imports, and acquired spectra (`sampleDifferenceSource` in `src/core/sampledDifference.ts`);
+- columns outside a spectrum's coverage keep the value 0 and are shaded, with a note;
+- a window where either spectrum has no positive value is refused with a typed message [W] (VIREO divides by zero there; the
+  outcome depends on the FPU state and is not recovered);
+- within a spectrum's coverage, results are unchanged from the exact-grid profile (the same sampler), so practice and exact
+  imports give the same curve as before. A 3500–3510 Å window part, below the atlas files, is now drawn with the atlas value 0
+  instead of falling back.
+
+The **recorded Difference comparison mode** (the printed-point difference saved with a classification) keeps its exact-grid
+rule: it needs the complete original printed grid (2799 wavelengths, 3510..7427.2 Å), so acquired spectra and other-grid
+imports record only Bracket, and the page says that the normalized difference is available below.
 
 `prepareSampledDifference` requires an upper original-standard role, the actual unknown role, and matching source IDs/SHA associations between the retained spectrum and prepared probe. The IO boundary owns actual byte hashing, reparsing and acquired replay. The renderer samples these bound probes directly rather than accepting unrelated cached samples. Source association failure closes with an alert. Zero/nonpositive peaks, unsupported sampling or unsafe integer output retain a labelled **full printed-point difference** fallback; no normalized curve is invented. The fallback remains3900..4500Å even after zoom. Malformed import rejection preserves existing work.
 
@@ -37,7 +53,7 @@ The pure core uses JavaScript binary64 Number, explicit nearest-even rounding an
 2. Enter a **Proposed spectral type** and your own **Features and reasoning**. Check **Show normalized sampled difference preview** below the comparison panes. The new caption identifies the upper standard and unknown; the horizontal zero line is at75px.
 3. Choose **Sampled intensity traces** under **Spectrum rendering**, then **Zoom in ×2**. All four panes share4050–4350Å and horizontal scrolling on a narrow screen. The new preview remains separate from **Comparison display** and its record mode.
 4. Change **Spectral atlas** or the selected standard. Inspect the resulting source-specific curve; no answer is filled. Read4200Å with the existing numerical readout: raw sampled source flux retains its existing meaning.
-5. Optionally import an exact original reference SP as the unknown. Comparing it to the same upper reference gives a flat zero curve while retaining imported authority. A different-grid SP leaves the preview disabled; a full-grid zero spectrum uses the labelled full printed fallback.
+5. Optionally import an exact original reference SP as the unknown. Comparing it to the same upper reference gives a flat zero curve while retaining imported authority. A different-grid SP is sampled on its own grid; a full-grid zero spectrum uses the labelled full printed fallback.
 6. Save the complete investigation before and after changing display options: the JSON is unchanged. **Review classification**, cancel, then review and explicitly confirm your own response. CSV retains the chosen comparison mode and manual text. Restore the saved investigation after reload; enable the preview again explicitly.
 
-Use the supported star acquisition route to verify that acquired spectra remain available for their existing manual comparison, but are excluded from this exact-grid difference. No acquisition, fit, noise model, class answer or grade was added.
+Use the supported star acquisition route to verify that an acquired spectrum shows the normalized difference (sampled on its own grid) while its recorded comparison mode stays Bracket. No acquisition, fit, noise model, class answer or grade was added.
