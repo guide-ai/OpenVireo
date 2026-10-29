@@ -43,11 +43,20 @@ Sound Device!", and turns the option off for the session.
 - **Loading:** nothing is fetched while the option is off. Turning it on prepares `Emotor.wav`, which must be decoded. Any
   other sound is fetched only when an event needs it. Every file comes from this site and is checked for size and SHA-256
   before it plays.
-- **Autoplay:** every sound follows the student's own click (the checkbox, the dome, a slew button), as browser autoplay
-  rules require.
-- **Events:** the web dome opens or closes at once, so the end sound comes about 7.5 s later [W] (0.94 of travel at 0.01 per
-  80 ms). A second dome click before then restarts the door sound. The end sound is chosen by the browser's random source;
-  there is no Delphi Random parity [W].
+- **Autoplay:** every sound follows the student's own click (the checkbox, the dome, a slew button). The checkbox also
+  unlocks both players in the same gesture, with a muted, silent play. Chromium allows the later plays (after a fetch, the end
+  timer or the loop), which the Playwright spec checks. WebKit unlocks media per element; the unlock is meant for it, but this
+  site has not been tested on WebKit or Safari [I]. If a play is refused there, the status line gives VIREO's message and
+  Sound Effects turns off.
+- **Events:**
+  - Only the two dome switch buttons play the door sound (DomeSw1UpClick / DomeSw1DownClick). A restored investigation, a
+    telescope change or a prepared photometer field also changes the dome state, but plays nothing, as in VIREO.
+  - The web dome opens or closes at once, so the end sound comes 7.76 s later [W]. That is the native 97 ticks of 80 ms:
+    opening plays it at frac ≥ 0.97 from 0 (constant 0x58d3f0), closing at ≤ 0.03 from 1.
+  - A second dome click before then restarts the door sound.
+  - The end sound is chosen by the browser's random source; there is no Delphi Random parity [W].
+- **Status line:** "Loading the sound…" shows only while a sound that has not loaded yet is pending. It clears when that play
+  is stopped or superseded.
 - **Emotor.wav** is Microsoft ADPCM (format tag 2), which browsers do not play. `src/core/msAdpcm.ts` decodes it in the page
   with the public Microsoft ADPCM algorithm. Its output equals FFmpeg n9.0.2 `adpcm_ms` for all 1,638,328 samples (the
   SHA-256 is pinned in Vitest). The bundled bytes are unchanged.
@@ -75,3 +84,5 @@ Sound Device!", and turns the option off for the session.
 |---|---|---|
 | Plan and recovery | Claude Opus 5.5 | high |
 | Implementation and tests | Claude Opus 5.5 | medium |
+| Review 1 (`analysis/reviews/front-c5w-review-1.md`, MERGE) | coordinator | high |
+| Follow-up (L1–L4, N2, N3, data census) | Claude Opus 5.5 | medium |

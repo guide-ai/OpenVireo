@@ -2,6 +2,7 @@
   "purpose": "Exact identity manifest for the 1766 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata, plus the derived Boötes engine pack (with the approved whole N3000 records 512620/512802) and its independent witness, plus Front F Object X spectroscopy: seven bounded GSC packs for the ObjectX.HTL spectroscopy targets (user approval of 2026-10-27, group 2), their provenance and independent witnesses, and byte-exact QSOSpect.dat (approval of 2026-10-27, group 1), plus byte-exact JSPEC2.SPI (approval of 2026-10-27, group 1) for the Object X star branch, plus the four byte-exact Object X galaxy photographs NGC2403/4262/4631/4656.BMP (user approval of 2026-10-28), plus the byte-exact jspect2 template A0000046.SP required by the Object X row-12 star N3000.DAT@483032 (user approval of 2026-10-27, group 1), plus data/objectx/frozen-observations.json (a derived regression record of the Object X spectrometer: digests and integers only), plus the Front V variable-star resources (see RESOURCE-PROVENANCE.json), plus the Pleiades variable-field photometer targets (rows 3, 5, 10; derived fields and independent vectors, coordinator decision of 2026-10-28), plus the Pleiades pointing-association photometer targets (rows 2, 7, 12, 14, 22; recovered native selection, coordinator decision of 2026-10-28). Plus byte-exact NkdEye.dat (user approval of 2026-10-28, Front O Naked Eye Star) and the derived Front O witness data/fieldinfo/info-witness.json (from already-approved resources), plus the Front T independent LSS true-dispatch row witness (data/variables/lss-true-dispatch-witness.json, derived), plus the Front M independent Multi-Spec fibre witness (data/multispec/witness.json, derived), plus the 67 byte-exact jspect2 templates approved on 2026-10-28 for the multi-object spectrometer (public/original/spectra/jspect2/, Appendix T) and their derived requirement record data/multispec/template-requirements.json. Plus the Front V2 byte-exact HRAnalHlp.LST and HRAnalHlp.TXT (public/original/cluster-help, user approval of 2026-10-28) and the derived data/clusters cluster comments and point sidecar (user approval of 2026-10-28, cluster HR tools (a) and (b)). Plus byte-exact Pulsars.HTL (second user approval of 2026-10-26; SHA-256 9dfba548…a439) for the radio Slew › Hot List (Front P). Plus the 35 byte-exact VIREO help files of the user approval of 2026-10-29 (public/original/help and public/original/variables/VarTypeHlp.LST, Front H). Plus byte-exact NGC4670.SP (user approval of 2026-10-27, group 1; SHA-256 228149e9…170a) for the LSS row NGC 4670 (Front L2, QSO merge). Plus the Front K derived data/clusters/cluster-dialog-certificate.json (dialog-key census result: keys, counts and booleans only). Plus the full compact GSC (user approval of 2026-10-29, decision 2; band hashes in the research file analysis/approved-gsc-wav-2026-10-29.txt): the 24 bands N0000..N8230.DAT and S0000..S8230.DAT of CLEA_Vireo.zip (program files/CLEA/VIREO/Cgsc/GSC/) as 300 byte-exact record-aligned tiles of 65536 27-byte records (public/original/gsc/<band>/<kkk>.bin; whole bands are not stored and assembled[] lists each band with its approved SHA-256 and its tiles in order), byte-exact TABLES/REGIONS.BIN (public/original/gsc/REGIONS.BIN), and the derived tile index and search skeleton data/gsc/gsc-index.json (cut tool analysis/front-g-gsc/tools/cut_gsc_tiles.py, SHA-256 dd9ee8d0bb1ced7f4cd7b195a9513dadf438550520328662fa5998c948d17566).",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "censusRoots": [
+    "data",
     "public/original"
   ],
   "files": [
@@ -8934,6 +8935,36 @@
       "path": "data/gsc/gsc-index.json",
       "bytes": 170529,
       "sha256": "33134180300fc9afac624911c4c5a9ef4606a367892641a4ca4e326969eea1cb"
+    },
+    {
+      "path": "data/camera/EXTRACTS-PROVENANCE.json",
+      "bytes": 18277,
+      "sha256": "7544c1e768f987f8483a7316b192e2183f911de288e8f0abcaad268953213837"
+    },
+    {
+      "path": "data/camera/extracts.json",
+      "bytes": 16696,
+      "sha256": "c5b35fcf7ddb5c59352d3a66783e4cb9aad544c6224ada34aeb6d5a31c20d8ae"
+    },
+    {
+      "path": "data/hubble/corbor-cached-provenance.json",
+      "bytes": 4294,
+      "sha256": "44c0417876961ec0a7252be95e5629fcde90b77fb9d4fb6905bc2327c0682c8e"
+    },
+    {
+      "path": "data/hubble/corbor-distance-references.json",
+      "bytes": 361,
+      "sha256": "9300b3e389f68e53be6f69b94bfd69d353d8315594da66c67239bc3bb99669a3"
+    },
+    {
+      "path": "data/hubble/corbor-independent-vectors.json",
+      "bytes": 4982,
+      "sha256": "d36601e6f4d614406a5057229cd845612c1e08f69e23f950054281358317b809"
+    },
+    {
+      "path": "data/hubble/corbor-targets.json",
+      "bytes": 956,
+      "sha256": "1ae7cbef86b8a94a7d8be9f1f0042004618c127210a38fc180ad29dc6b973363"
     }
   ],
   "assembled": [
