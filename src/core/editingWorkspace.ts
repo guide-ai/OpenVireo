@@ -1,4 +1,4 @@
-import {readNativeClusterDraft,type NativeClusterDraft} from './nativeCluster';
+import {readNativeClusterDraft,type NativeClusterDraft} from './nativeClusterParameters';
 import type {Measurement} from './spectrum';
 import type {PhotometerState} from './photometer';
 import {checkHubbleVelocity,HubbleVelocityError} from './hubbleVelocity';
