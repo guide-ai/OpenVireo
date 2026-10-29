@@ -1,5 +1,5 @@
 {
-  "purpose": "Exact identity manifest for the 1353 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata, plus the derived Boötes engine pack (with the approved whole N3000 records 512620/512802) and its independent witness, plus Front F Object X spectroscopy: seven bounded GSC packs for the ObjectX.HTL spectroscopy targets (user approval of 2026-10-27, group 2), their provenance and independent witnesses, and byte-exact QSOSpect.dat (approval of 2026-10-27, group 1), plus byte-exact JSPEC2.SPI (approval of 2026-10-27, group 1) for the Object X star branch, plus the four byte-exact Object X galaxy photographs NGC2403/4262/4631/4656.BMP (user approval of 2026-10-28), plus the byte-exact jspect2 template A0000046.SP required by the Object X row-12 star N3000.DAT@483032 (user approval of 2026-10-27, group 1), plus data/objectx/frozen-observations.json (a derived regression record of the Object X spectrometer: digests and integers only), plus the Front V variable-star resources (see RESOURCE-PROVENANCE.json), plus the Pleiades variable-field photometer targets (rows 3, 5, 10; derived fields and independent vectors, coordinator decision of 2026-10-28), plus the Pleiades pointing-association photometer targets (rows 2, 7, 12, 14, 22; recovered native selection, coordinator decision of 2026-10-28). Plus byte-exact NkdEye.dat (user approval of 2026-10-28, Front O Naked Eye Star) and the derived Front O witness data/fieldinfo/info-witness.json (from already-approved resources), plus the Front T independent LSS true-dispatch row witness (data/variables/lss-true-dispatch-witness.json, derived).",
+  "purpose": "Exact identity manifest for the 1422 versioned runtime, test and provenance resources: the original 1279 plus byte-exact Pulsars.dat, PLEIADES.HTL, CLEA_GLX.DAT and Hubble.HTL included under the explicit second resource approval of 2026-10-26, plus six prepared Pegasus resources (bounded NGC 7501 GSC field subset, provenance, targets, V references and independent vectors) under the user approval of 2026-10-27, plus the nine byte-exact LSS_Field01..09.HTL survey lists included under the second resource approval of 2026-10-26. Original, derived and authored resources are distinguished in RESOURCE-PROVENANCE.json; all earlier resource bytes and entries remain unchanged, plus the 11 bounded LSS field packs, witnesses and provenance in data/lss under the user approval of 2026-10-27 (N2230/N3000 read witnesses for the LSS strip only), plus byte-exact LSSFields.LST, GLIMAGES.LST and GLXYSP.LST under the user approval of 2026-10-27 (groups 1 and 2), plus byte-exact ObjectX.HTL (second approval of 2026-10-26) and the Object X orbit files ObjX_MPC.CMO and ObjX_AST.CMO (user approval of 2026-10-27), plus byte-exact ObjX_MPC.CMO.sav (user approval recorded in AGENTS.md, e296ae4), plus Front F derived Hubble resources (frozen existing-target fingerprints; UM-I – 3 cached-pan provenance, target, workbook V reference and independent Python pan vectors), derived from already-approved resources only, plus byte-exact CLEA_QSO.DAT (second user approval of 2026-10-26; SHA-256 69ecc5bf…90b5) for the recovered QSO merge, and its independent Python merge witnesses, plus Front F derived Coma engine pack (reads byte-equal to the published LSS field 3/4 reads) and the recorded engine-target metadata, plus the derived Boötes engine pack (with the approved whole N3000 records 512620/512802) and its independent witness, plus Front F Object X spectroscopy: seven bounded GSC packs for the ObjectX.HTL spectroscopy targets (user approval of 2026-10-27, group 2), their provenance and independent witnesses, and byte-exact QSOSpect.dat (approval of 2026-10-27, group 1), plus byte-exact JSPEC2.SPI (approval of 2026-10-27, group 1) for the Object X star branch, plus the four byte-exact Object X galaxy photographs NGC2403/4262/4631/4656.BMP (user approval of 2026-10-28), plus the byte-exact jspect2 template A0000046.SP required by the Object X row-12 star N3000.DAT@483032 (user approval of 2026-10-27, group 1), plus data/objectx/frozen-observations.json (a derived regression record of the Object X spectrometer: digests and integers only), plus the Front V variable-star resources (see RESOURCE-PROVENANCE.json), plus the Pleiades variable-field photometer targets (rows 3, 5, 10; derived fields and independent vectors, coordinator decision of 2026-10-28), plus the Pleiades pointing-association photometer targets (rows 2, 7, 12, 14, 22; recovered native selection, coordinator decision of 2026-10-28). Plus byte-exact NkdEye.dat (user approval of 2026-10-28, Front O Naked Eye Star) and the derived Front O witness data/fieldinfo/info-witness.json (from already-approved resources), plus the Front T independent LSS true-dispatch row witness (data/variables/lss-true-dispatch-witness.json, derived), plus the Front M independent Multi-Spec fibre witness (data/multispec/witness.json, derived), plus the 67 byte-exact jspect2 templates approved on 2026-10-28 for the multi-object spectrometer (public/original/spectra/jspect2/, Appendix T) and their derived requirement record data/multispec/template-requirements.json.",
   "rights": "Source-specific credits and terms retained. Inclusion is explicitly requested by the project owner;this is not a universal public-domain/open-license designation or an assertion of third-party permission.",
   "files": [
     {
@@ -6766,6 +6766,351 @@
       "path": "data/variables/lss-true-dispatch-witness.json",
       "bytes": 12963,
       "sha256": "a657b72c952efe23320f6a5afa1a12382ca31e8abcb4bee3e8b88a2baada9db6"
+    },
+    {
+      "path": "data/multispec/witness.json",
+      "bytes": 59642,
+      "sha256": "f118d95dbbef54359d2277cfc04dc73f292970765344e3b2f8ad4547c918d3cb"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000002.SP",
+      "bytes": 55980,
+      "sha256": "0a4c14affe07fe1a431f9bb0225b6fd9f18b1f0ef110bb136598e189d6633c57"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000029.SP",
+      "bytes": 55980,
+      "sha256": "50364b1a2adbf10bf5da6dcc455b61f4c279f4d1075f0d52c27e488e6b8c183b"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000035.SP",
+      "bytes": 55980,
+      "sha256": "7cc4df7d47c5e61b2fb6f02c0803a976279dd078b075c5fa7d12d08d01cecf22"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000037.SP",
+      "bytes": 55980,
+      "sha256": "cabfa61dbcc62e6d7b5c12a4473437d0b6b502b3d5ea458590b5b0b5b8d2f135"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000047.SP",
+      "bytes": 55980,
+      "sha256": "72e2eb5305eef5fbaa1ac9474b4c94231df74fab797cbd01a089242ad42ef600"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000050.SP",
+      "bytes": 55980,
+      "sha256": "104aac9e0e680a8b3e052d91f8ee57f149186f1301198ebd7ac54aab5061091e"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000058.SP",
+      "bytes": 55980,
+      "sha256": "59f90731a0fd28c3b4b840ca1d7c15895499c9227cadee4197af39cbb3ba313d"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000059.SP",
+      "bytes": 55980,
+      "sha256": "4e125cba48da63c8e8e2f8d46617845230f95a43ddc07eccf9d4ca4e21b07016"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000061.SP",
+      "bytes": 55980,
+      "sha256": "f810b4d030b57adfe48f3443cd19adb3ef5296bd5455d79cd33a3abbb846f45b"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000063.SP",
+      "bytes": 55980,
+      "sha256": "fb7a5650f41c7543f8eded1dbe15e2555d2409247549b0abf4e094af3f0e7557"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000065.SP",
+      "bytes": 55980,
+      "sha256": "84fe731dddb94171d57ec93b86e588459f5f6973f3eda2484e9c7542e37448f1"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000066.SP",
+      "bytes": 55980,
+      "sha256": "6578ce4c29cb78706a1401b1e3abecfdcb967a37f1163531ceefc1146f0c46ba"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000068.SP",
+      "bytes": 55980,
+      "sha256": "a28bd076c30fa174aa972380c6b8cdadfafcd8297bde67b89b8b09c6bc181685"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000070.SP",
+      "bytes": 55980,
+      "sha256": "2c2afae5975fb8dbb2f5c7af66e4624e39d16b75cfe2f654dbf5b1c908133f96"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000071.SP",
+      "bytes": 55980,
+      "sha256": "f5761da40410198be92b543df9a51afce08ba60e68876e95802cea3574017c71"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000073.SP",
+      "bytes": 55980,
+      "sha256": "6cc257f0bb36570a39d2fabae2cb36cfc406d426b4788d07bca59ead781e76e0"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000074.SP",
+      "bytes": 55980,
+      "sha256": "9134445fad5e4533e17cf608cb28aabfc4bf477d3adca4302cdeedc84356d947"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000075.SP",
+      "bytes": 55980,
+      "sha256": "aa5ca7d4f993fb9ec1d61ca6ae09d5b383dc28bd9c1692f68084cc6e6518c349"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000076.SP",
+      "bytes": 55980,
+      "sha256": "e47fe06a69e4d4ea8a817f119718adad20fd3b584b4dac8197e11ec15f6528dd"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000078.SP",
+      "bytes": 55980,
+      "sha256": "ebb8236b9ecd011012495e40dfc9be92288003c6698c297afb251c6c2a91dc98"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000079.SP",
+      "bytes": 55980,
+      "sha256": "75542bd72030090a7b7b12eb8a0d6c3ed81667db73134dcc2cbd6d886d15aa42"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000080.SP",
+      "bytes": 55980,
+      "sha256": "68cde6b9035bd4d292fa25005e0a7ab5a50ee723d68338dc36fa7a55552e4d74"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000081.SP",
+      "bytes": 55980,
+      "sha256": "c0dd6c83c42314c6ca0a0398a18c7b1108d359b37e50dd364b1c60dd6f8300b2"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000083.SP",
+      "bytes": 55980,
+      "sha256": "7dae1067cffceee9754e182bd72fb337226e57ae52e709fddaa63a55be975881"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000084.SP",
+      "bytes": 55980,
+      "sha256": "9b7834b6241710aad0e8e8fdc9c5d9e9926d37bf7fe6d320bfa4b1c4778a91c5"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000085.SP",
+      "bytes": 55980,
+      "sha256": "50484037cfca39ddec24ddfe0205ecf9a314bb9d9f875a6ed18e9c35956440ab"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000086.SP",
+      "bytes": 55980,
+      "sha256": "a42127ef72150c367fc3616c140906fcd6f37be2c09b7cbe427847dacc8fb871"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000089.SP",
+      "bytes": 55980,
+      "sha256": "58cac06b1b1ecb88b840db2b599086f72687113659924dde672c78b768790c65"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000090.SP",
+      "bytes": 55980,
+      "sha256": "52e7e0c13240f91950215425e6d1e6105c6a3cc71f5241f4be95a9cfb6bb4e35"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000091.SP",
+      "bytes": 55980,
+      "sha256": "a2c6b7180f04138d9ae8402a9745023e4fd2214d7e40aab4c055ad70aab5ae05"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000094.SP",
+      "bytes": 55980,
+      "sha256": "c40ac4ed57543fcfba3c0c8dbdf25e8202c9e68af5ee2ba3764fde3488dbd1d1"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000095.SP",
+      "bytes": 55980,
+      "sha256": "64e9acbceda8c3388aa30b0feccd38608437c0d30135295dd333ef5b41e800c7"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000096.SP",
+      "bytes": 55980,
+      "sha256": "a8fbeb2c05002073444cf2eee147558c5010ad5ffa54b42e5c8c40caaa9157ec"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000098.SP",
+      "bytes": 55980,
+      "sha256": "2a379a2785b0816f6bbe74a2c7bd577baf8f17a668c2f71cdd0ecab494f50d73"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000100.SP",
+      "bytes": 55980,
+      "sha256": "a4b87e9600cf69f0c3187898198035f15d253c2a2d54b93b292ee3648a83d36c"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000101.SP",
+      "bytes": 55980,
+      "sha256": "e96a3592cc823bad483eba33bf1281ce80d2f05ee875ed1f7d660e8238fd7bde"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000102.SP",
+      "bytes": 55980,
+      "sha256": "2e9ae8c33e572cb1bdc0dc1a168704f78b1782828010f73892d8cb22744bb96e"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000104.SP",
+      "bytes": 55980,
+      "sha256": "410b7811b7776068f8af838896320cd67b0783b76a0eff1b9c68539cc3800da2"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000109.SP",
+      "bytes": 55980,
+      "sha256": "2737e2453c8b770375bfc22e63a33fac5e7e6022e5621fda946ef26fb1415872"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000110.SP",
+      "bytes": 55980,
+      "sha256": "75634c0db759f7b78869478b47fe62bc687232cf634a1b731383b6d7317079fa"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000114.SP",
+      "bytes": 55980,
+      "sha256": "bda479718ccd73098458bc6e2d35d2b3752ca5dcc5b22a3a12cf615fa70e5c5e"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000120.SP",
+      "bytes": 55980,
+      "sha256": "f1c853d3e37582ea5b8416162a9d4f237d9988fca67492784d0d5539f8d1246e"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000121.SP",
+      "bytes": 55980,
+      "sha256": "4bd3ef9e7516a1ecdc7557d58ce1546e6af3f52cfb662e77a0469ec1461abbd0"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000123.SP",
+      "bytes": 55980,
+      "sha256": "cd59bdf19741bdacc195bd571a4136716c56202f913fc2ab586bbbfa1b60b2c6"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000125.SP",
+      "bytes": 55980,
+      "sha256": "a1ad16623af6c8dae8b5f9b55d5757f38c5b65e5138d050557bafe3770c2435f"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000128.SP",
+      "bytes": 55980,
+      "sha256": "be5ab21ff8bc882543eb3a396279fea417050ab5774f93f5a7a8bf5d9c863013"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000130.SP",
+      "bytes": 55980,
+      "sha256": "9576ecd7969522ac7dedc19e68696bdb8671f3042d80e76d872eb2e256eaa6c0"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000131.SP",
+      "bytes": 55980,
+      "sha256": "f5ba63b278bce5919d8d4e7ee74d5d679cbca2b730d4d2693c7cbdebd885e673"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000133.SP",
+      "bytes": 55980,
+      "sha256": "4eb87c014b198891f97b53fd0f1db95a90216dbf79e2d1ecc862ec68b3f9455f"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000134.SP",
+      "bytes": 55980,
+      "sha256": "2f9bc5a192e709ab057f4cbfff79fa257f981250f8fea1341f0dc97e90086c03"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000135.SP",
+      "bytes": 55980,
+      "sha256": "70afca61053a4d2cc9fc898f89535e9828bcd697250ba2c81c53331a7d7d5591"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000136.SP",
+      "bytes": 55980,
+      "sha256": "a7750f02e3a8e2198f280ae8d619af08a4996d8c9d3c3792af13aa962565da12"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000138.SP",
+      "bytes": 55980,
+      "sha256": "0a5c18555a54e94131c1016181ca97374cb81afa98469ae4817450d36c83cc86"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000139.SP",
+      "bytes": 55980,
+      "sha256": "f9d2588397484525024a27c63ba1b1e4acf6bf43cc4991d5773dcddd8dc94aad"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000140.SP",
+      "bytes": 55980,
+      "sha256": "a96e79702e755ecddddf98a2102c2cd6e276e20f56283da47c83862c48e9b055"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000141.SP",
+      "bytes": 55980,
+      "sha256": "06db89e6663aad02dafdb6451f940d2ce3637303cd419120285166867c9d817a"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000142.SP",
+      "bytes": 55980,
+      "sha256": "171b3ad6f9e77dae5ad7a615b607f75b932d3e842728ba0bde0bef5f31e86d76"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000144.SP",
+      "bytes": 55980,
+      "sha256": "eb0506ca270860fb1efe3f8ff61705d20abe3de96a6ae2868e4c02fb09255984"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000145.SP",
+      "bytes": 55980,
+      "sha256": "c8795374d747483e36e6d38ca0f956d636dc510074a3de6def3f9e2a51c635d5"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000147.SP",
+      "bytes": 55980,
+      "sha256": "7a57506f7356cb92d9bbda3d1cfc9bbb4b0ff57fe03510280a987fa9cb33378a"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000148.SP",
+      "bytes": 55980,
+      "sha256": "3e855fd201de1b11d08b0e8c5212ead29c9076188bb36910d10ef5fd301b76af"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000149.SP",
+      "bytes": 55980,
+      "sha256": "a3e8d50cc8b2466a508cc8b0a9677e97c656fe6855306cc4594b85cb286a1a6c"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000150.SP",
+      "bytes": 55980,
+      "sha256": "9520c2548d43fd1bb09471cb0c2d8599b8ad0861ff2fc89b7466c79dae396c1f"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000156.SP",
+      "bytes": 55980,
+      "sha256": "b82dac1d8c23a2a5179ef2aecc4ca88be582e9f0dbe5121b6485bb837e90ecdd"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000157.SP",
+      "bytes": 55980,
+      "sha256": "2f1fc49e91d00c24e816939803b4a5a31a33bbdf6714e3c9c1eee2249a9506a0"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000158.SP",
+      "bytes": 55980,
+      "sha256": "30db73376168545653085bb1eb5db3e1e30034b016391cbe9a807fa194714bba"
+    },
+    {
+      "path": "public/original/spectra/jspect2/A0000159.SP",
+      "bytes": 55980,
+      "sha256": "e65ba3bb153e134ea6fb536372adf59a2b1f35ba9e5822c154da494fbc07d40e"
+    },
+    {
+      "path": "data/multispec/template-requirements.json",
+      "bytes": 35279,
+      "sha256": "143aaaf92046ea09e135e7424fb680f99f9bf78213a1e6b6a7b22cd71e55cb2f"
     }
   ]
 }

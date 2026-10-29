@@ -618,6 +618,49 @@ export function evaluateField(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{r
  if(Math.max(...sourceMeans)*FIELD_MULTIPLIER*1000>=c.meanBound)return Object.freeze({...base,target,calibration,reasons:Object.freeze(['mean-bound' as const])});
  return Object.freeze({...base,target,calibration,reasons:Object.freeze([])});
 }
+// ---- Front M (Multi-Spec): the field view without the slit. One block; announce edits to the Front T/A owners. ----
+/** The Telescope view of a field: population, native scene, 936² raster cropped to the 312² viewport, and the field-level
+ * reasons (the same gates and paint as evaluateField up to the crop), without the slit selection and calibration. The
+ * Multi-Spec selects any object in it (multiSpecSelect.ts). Equivalence with evaluateField's population, scene and viewport:
+ * fieldEngineView.test.ts. */
+export type FieldView=Readonly<{
+ pointing:Readonly<{ra:number;dec:number}>;telescope:FieldTelescope;reasons:readonly FieldUnavailableReason[];
+ population:FieldPopulation|null;scene:NativeSelectionScene|null;viewport:RgbImage|null;
+ /** 'outside-view' only (as evaluateField). */
+ outsideViewGalaxies?:readonly Readonly<{galaxy:string;margin:number}>[];
+ /** Front T stars whose values are unavailable and whose stamps miss the crop: not painted (as evaluateField). */
+ unpaintedStarIds:readonly string[];
+}>;
+export function evaluateFieldView(pack:FieldPack,glx:Uint8Array,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope,options:FieldOptions={}):FieldView{
+ if(typeof performance!=='undefined'&&typeof performance.mark==='function')performance.mark(FIELD_EVALUATION_MARK);
+ if(telescope!==0&&telescope!==1&&telescope!==2)throw new FieldEngineError('input');
+ const c=FIELD_CALIBRATIONS[telescope],at=Object.freeze({ra:pointing.ra,dec:pointing.dec});
+ const empty={pointing:at,telescope,scene:null,viewport:null,unpaintedStarIds:Object.freeze([]) as readonly string[]};
+ const {population,reasons}=buildFieldPopulation(pack,glx,at,options);
+ if(!population||reasons.length)return Object.freeze({...empty,population,reasons:Object.freeze(reasons)});
+ const scene=createNativeSelectionScene(population.stars,population.galaxies,{width:FRAME.width,height:FRAME.height,fieldDegrees:FRAME.fieldDegrees,center:at,population:{coverage:'complete',provenance:`Field pack ${pack.id}; native CRT1 and field table verified`}});
+ const unpainted=new Set<number>(),outsideViewGalaxies:{galaxy:string;margin:number}[]=[];
+ const photographed=new Set((population.photographAssociations??[]).map(a=>a.recordIndex));
+ for(const [i,g] of population.galaxies.entries()){if(photographed.has(g.recordIndex))continue;
+  try{galaxyStampGeometry(g,c.magnitudeShift);}catch(e){
+  if(!(e instanceof Error&&e.message==='Outside bounded galaxy stamp.'))throw e;
+  const radius=roundNearestEven(Math.max(3,galaxyCatalogAxes(g).major*(FRAME.width/FRAME.fieldDegrees/60)/2)),margin=outsideViewMargin(scene.galaxies[i])+OUTSIDE_VIEW.stampHalf-(radius+1);
+  if(options.variables!=='outside-view'||radius>100||margin<=0)return Object.freeze({...empty,population,scene,reasons:Object.freeze(['stamp-bound' as const])});
+  unpainted.add(i);outsideViewGalaxies.push({galaxy:g.id,margin});
+ }}
+ if(population.outsideViewVariable&&!outsideViewHolds(population,scene))return Object.freeze({...empty,population,scene,reasons:Object.freeze(['variable-merge' as const])});
+ const pendingVariables=(population.variableStars??[]).filter(e=>e.values.status==='unavailable');
+ for(const e of pendingVariables){
+  const p=createNativeSelectionScene([{id:'variable',ra:e.ra,dec:e.dec}],[],scene.frame).stars[0];
+  if(e.nearGalaxyOrQso||outsideViewMargin(p)<=0)return Object.freeze({...empty,population,scene,reasons:Object.freeze([(e.values as Extract<FieldVariableValues,{status:'unavailable'}>).reason])});
+ }
+ const pendingIds=new Set(pendingVariables.map(e=>e.starId));
+ const raster=paintField(population,scene,c,unpainted,options.photographs?{telescope,options:options.photographs}:undefined,pendingIds);
+ const viewport=cropNativeFrame(raster,freshNativeViewport(FRAME.viewport,FRAME.viewport,{x:FRAME.anchor,y:FRAME.anchor}));
+ return Object.freeze({...empty,population,scene,viewport,reasons:Object.freeze([]),unpaintedStarIds:Object.freeze([...pendingIds]),
+  ...(outsideViewGalaxies.length?{outsideViewGalaxies:Object.freeze(outsideViewGalaxies.map(x=>Object.freeze(x)))}:{})});
+}
+// ---- end Front M block ----
 /** Journal factory for an available field result (same journal as the galaxy exposure; policy chosen by the caller). */
 export function createFieldExposure(result:FieldResult,policy:string,seed:number):JournalState{
  if(!result||result.reasons.length||!result.calibration)throw new FieldEngineError('input');

@@ -1,0 +1,53 @@
+/* Front M: Multi-Spec (control form, Telescope display copy, spectra list, spectrum displays). Phone-width safe; theme tokens. */
+.ms-card{min-width:0}
+.ms-body{display:flex;flex-direction:column;gap:12px;min-width:0}
+.ms-top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;min-width:0}
+.ms-control,.ms-list,.ms-spectrum{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px 10px;background:var(--ov-surface);color:var(--ov-text);min-width:0;box-sizing:border-box}
+.ms-control{flex:1 1 18rem;max-width:100%}
+.ms-control h3,.ms-list h3{margin:0 0 6px;font-size:15px}
+.ms-spectrum h4{margin:0 0 6px;font-size:14px;white-space:pre-wrap}
+.ms-menu{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.ms-menu button{min-height:40px}
+.ms-displays{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.ms-display{display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:6.5rem}
+.ms-display output{font-family:var(--ov-font-mono,monospace);font-size:20px;background:#000;color:#ff3b30;padding:2px 8px;border-radius:4px;min-width:4.5rem;text-align:right}
+.ms-display output[data-colour=red]{color:#ff3b30}
+.ms-display output[data-colour=green]{color:#3ddc62}
+.ms-display output[data-colour=default]{color:#ffd60a}
+.ms-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0}
+.ms-led-label{display:inline-flex;align-items:center;gap:6px}
+.ms-led{display:inline-block;width:14px;height:14px;border-radius:50%;background:#5a1010;border:1px solid var(--ov-border-strong)}
+.ms-led[data-on=true]{background:#ff2d2d;box-shadow:0 0 6px #ff2d2d}
+.ms-exp{display:flex;flex-direction:column;gap:2px;font-size:13px}
+.ms-exp input{min-height:36px;width:8rem;max-width:100%;font:inherit;padding:4px 6px;box-sizing:border-box}
+.ms-field-wrap{flex:1 1 18rem;max-width:100%;min-width:0}
+.ms-field{position:relative;width:100%;max-width:468px;aspect-ratio:1/1}
+.ms-field canvas,.ms-field svg{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.ms-field svg:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
+.ms-field+.observatory-note{margin-top:6px}
+.ms-field-wrap>.ms-field{margin-bottom:6px}
+.ms-field-wrap .ms-field~p{position:static}
+.ms-options{border:1px solid var(--ov-border-strong);border-radius:6px;padding:6px 10px;min-width:0}
+.ms-list-body{display:flex;flex-wrap:wrap;gap:10px;min-width:0}
+.ms-items{list-style:none;margin:0;padding:4px;flex:1 1 12rem;min-height:6rem;max-height:14rem;overflow:auto;border:1px solid var(--ov-border-strong);border-radius:4px;font-family:"Courier New",monospace;font-size:13px;white-space:pre}
+.ms-items li{padding:2px 4px;cursor:pointer;border-radius:3px}
+.ms-items li[aria-selected=true]{background:var(--ov-accent-soft);outline:1px solid var(--ov-accent)}
+.ms-items:focus-visible{outline:3px solid var(--ov-focus);outline-offset:2px}
+.ms-list-side{flex:1 1 10rem;min-width:0}
+.ms-rate{display:flex;flex-direction:column;gap:2px;font-size:13px}
+.ms-rate input{min-height:36px;width:5rem;font:inherit}
+.ms-spectra{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ms-plot{display:block;width:100%;max-width:640px;height:auto}
+.ms-lines{list-style:none;margin:0;padding:0;font-family:"Courier New",monospace;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.ms-box-text{white-space:pre-line}
+.ms-print-report{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px;max-height:min(60vh,30rem);overflow:auto}
+@media(max-width:600px){.ms-control,.ms-list,.ms-spectrum{padding:8px}.ms-display output{font-size:17px}}
+/* Print CSS exists only while a Multi-Spec preview owns html[data-print-scope=multispec]; an ordinary print is unchanged. */
+@media print{
+html[data-print-scope=multispec] body>:not(.ms-print-root){display:none!important}
+html[data-print-scope=multispec] .ms-print-root{position:static!important;display:block!important;border:0!important;box-shadow:none!important;max-height:none!important;overflow:visible!important;width:auto!important;padding:0!important;background:#fff!important;color:#000!important}
+html[data-print-scope=multispec] .ms-print-root::backdrop{display:none}
+html[data-print-scope=multispec] .ms-print-chrome{display:none!important}
+html[data-print-scope=multispec] .ms-print-report{border:0!important;max-height:none!important;overflow:visible!important}
+}
+.ms-buttons button,.ms-card .button-row button{width:auto;min-width:5rem}
