@@ -1259,7 +1259,7 @@
   "db.prefilled": "New {cluster} notebook: the catalog E(B−V) = {ebv} was copied into your unapplied trial. It is editable; changing it makes the reddening your manual input. Nothing is confirmed.",
   "db.outsideAxes": "outside the fixed native axes",
   "db.hrDrawn": "Drawn inside the fixed native axes: {inside}. Outside these axes (not drawn; listed in the values table): {outside}.",
-  "db.frameNote": "Recovered native HR frame (0x542480): 28 px per magnitude and 120 px per B−V magnitude. Browser SVG and Number arithmetic stand in for the original GDI/x87 pixels; native autoscaling and the paint-box extent are not recovered. Marker size is a web choice.",
+  "db.frameNote": "Recovered native HR frame (0x542480): 28 px per magnitude and 120 px per B−V magnitude. VIREO has no autoscaling; its picture is the 496 × 506 Display1 image (from the form layout). Browser SVG and Number arithmetic stand in for the original GDI/x87 pixels. Marker size is a web choice.",
   "db.sliderModulus": "Slider: apparent modulus V−Mv",
   "db.sliderEbv": "Slider: color excess E(B−V)",
   "db.sliderLogAge": "Slider: log10(age/yr)",

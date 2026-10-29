@@ -6766,6 +6766,26 @@
       "path": "data/variables/lss-true-dispatch-witness.json",
       "bytes": 12963,
       "sha256": "a657b72c952efe23320f6a5afa1a12382ca31e8abcb4bee3e8b88a2baada9db6"
+    },
+    {
+      "path": "public/original/cluster-help/HRAnalHlp.LST",
+      "bytes": 715,
+      "sha256": "b50c590f0f0f3e60456b8adeae06d123a2121ed5db3f741a74610d28d0a61537"
+    },
+    {
+      "path": "public/original/cluster-help/HRAnalHlp.TXT",
+      "bytes": 7557,
+      "sha256": "3a2f0ef20fd5d89384e429783ceda62325e59a752fd076e02a2c4256143c956b"
+    },
+    {
+      "path": "data/clusters/cluster-comments.json",
+      "bytes": 2188,
+      "sha256": "ed6c491539d02eccc65a0f7ad6760fc5d9d8542ae9635952def0eb2ff3179bce"
+    },
+    {
+      "path": "data/clusters/cluster-reference-detail.json",
+      "bytes": 147038,
+      "sha256": "759336e4902a3fa14aaeb64d1f8f708f689e889b5ee151a073aaf179e9022487"
     }
   ]
 }

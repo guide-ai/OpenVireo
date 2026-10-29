@@ -33,8 +33,9 @@ export function nativeClusterDraftWithTicks(d:NativeClusterDraft,field:ClusterDa
 
 // ---------------------------------------------------------------- report
 /** The visible trial:ZAMS when modulus/E are valid(as drawn),isochrone only when the whole trial is valid
- * and the selected model is loaded. The database extinction checkbox is the same option+0x2e7c as the
- * report's distance option(native-cluster-contract optionalDistance). Unshown sections carry neutral values. */
+ * and the selected model is loaded. WEB: the report's distance line follows the database extinction checkbox. In VIREO
+ * that line is gated by option+0x2e7c, which is TestBox1 "Test Mode" (compiled default 0; 0x543f43, 0x5a5962), not an
+ * extinction setting (corrected by Front V2, analysis/front-v2-cluster-hr/RECOVERY.md §3). Unshown sections carry neutral values. */
 export function clusterDatabaseHrTrial(d:NativeClusterDraft,modelReady:boolean):ClusterNativeHrTrial{
  const ticks=nativeClusterDraftTicks(d),p=nativeClusterDraftParameters(d),iso=modelReady?p:null;
  return Object.freeze({zamsShown:ticks.modulus!==null&&ticks.ebv!==null,modulusTicks:ticks.modulus!==null&&ticks.ebv!==null?ticks.modulus:0,ebvTicks:ticks.modulus!==null&&ticks.ebv!==null?ticks.ebv:0,isochroneShown:iso!==null,modelIndex:iso?iso.modelIndex:4,ageIndex:iso?iso.ageIndex:0,offsetTicks:iso?iso.offsetTicks:0,distanceOption:d.extinctionCorrected});

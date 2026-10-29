@@ -8,6 +8,8 @@ import{loadNativeClusterModel}from'../io/nativeClusterModels';
 import{readNativeObservationFile}from'../io/nativeObservationResults';
 import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrBlockedRows,clusterNativeHrFrame,clusterNativeHrHundredths as hundredths,clusterNativeHrLogAgeTicks,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,clusterNativeHrX,clusterNativeHrY,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,plotClusterNativeHrObservations,setClusterNativeHrTrial,CLUSTER_NATIVE_HR_GEOMETRY as G,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'../core/clusterNativeObservationHr';
 import{CLUSTER_NATIVE_HR_MESSAGES,type ClusterNativeHrMessages}from'./ClusterNativeObservationHrMessages';
+import CleaHelp from '../clusters/CleaHelp';
+import HrPrint,{ObservationDataUnavailable} from '../clusters/HrPrint';
 
 export type ClusterNativeObservationHrProps=Readonly<{
  /** Optional handoff of an already ordered native results list(e.g. from the DAT inspector). */
@@ -29,7 +31,7 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
  const m=useMemo(()=>({...CLUSTER_NATIVE_HR_MESSAGES,...messages}),[messages]);
  const [w,setW]=useState<ClusterNativeHrWorkspace>(()=>initialList?Object.freeze({...EMPTY_CLUSTER_NATIVE_HR,list:initialList}):EMPTY_CLUSTER_NATIVE_HR);
  const token=useRef(0),input=useRef<HTMLInputElement>(null);
- const addButton=useRef<HTMLButtonElement>(null),confirmButton=useRef<HTMLButtonElement>(null),cancelReadButton=useRef<HTMLButtonElement>(null);
+ const plotSvg=useRef<SVGSVGElement>(null),addButton=useRef<HTMLButtonElement>(null),confirmButton=useRef<HTMLButtonElement>(null),cancelReadButton=useRef<HTMLButtonElement>(null);
  const focusIntent=useRef<'input'|'add'|'confirm'|'cancelRead'|null>(null),activeRead=useRef<number|null>(null);
  const [downloadErrorFor,setDownloadErrorFor]=useState<NativeResultList|null>(null);
  const interactionVersion=useRef(0),asyncFocus=useRef<{owner:Element;version:number}|null>(null);
@@ -74,7 +76,7 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
  const offAxes=shownPlot?shownPlot.rows.filter(r=>r.status==='plotted'&&!r.inFrame).length:0;
  const id=(s:string)=>idPrefix+s;
  return <section className="card cluster-native-hr" aria-labelledby={id('title')}>
-  <h2 id={id('title')}>{m.title}</h2><p>{m.intro}</p>
+  <h2 id={id('title')}>{m.title}</h2><CleaHelp testId={`${idPrefix}help`}/><p>{m.intro}</p>
 
   <section aria-labelledby={id('results')}><h3 id={id('results')}>{m.resultsHeading}</h3>
    <label htmlFor={id('file')}>{m.chooseFile}</label><input ref={input} id={id('file')} type="file" accept=".dat,.DAT,application/octet-stream" disabled={busy||w.pending!==null} onChange={choose}/><p className="cluster-native-hr-note">{m.fileHelp}</p>
@@ -90,13 +92,13 @@ export default function ClusterNativeObservationHr({initialList=null,messages,id
    {w.list&&<><button type="button" className="secondary-button" disabled={busy} onClick={download}>{m.download}</button><p className="cluster-native-hr-note">{m.downloadNote}</p></>}
   </section>
 
-  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button><p className="cluster-native-hr-note">{m.plotHelp}</p>
+  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button> <HrPrint trial={w.trial} plot={plotSvg} testId={`${idPrefix}print`} disabled={!w.observationsPlotted}/> <ObservationDataUnavailable testId={`${idPrefix}display-data`}/><p className="cluster-native-hr-note">{m.plotHelp}</p>
    {!w.observationsPlotted&&<p>{m.notPlotted}</p>}
    {w.observationsPlotted&&plot.status==='blocked'&&<p role="alert" data-testid="cnhr-blocked">{m.blocked(plot.recordIndex,m.blockedField[plot.field])}</p>}
    {shownPlot&&shownPlot.plottedCountKind+shownPlot.plottedOtherKind>0&&<p role="note" className="cluster-native-hr-warning">{m.kindWarning(shownPlot.plottedCountKind,shownPlot.plottedOtherKind)}</p>}
    {offAxes>0&&<p>{m.offAxes(offAxes)}</p>}
    <div className="cluster-native-hr-chart" role="region" tabIndex={0} aria-label={m.chartRegion}>
-    <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width={VIEW_W} height={VIEW_H} role="img" aria-labelledby={`${id('chart-title')} ${id('chart-desc')}`}>
+    <svg ref={plotSvg} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width={VIEW_W} height={VIEW_H} role="img" aria-labelledby={`${id('chart-title')} ${id('chart-desc')}`}>
      <title id={id('chart-title')}>{m.chartTitle}</title><desc id={id('chart-desc')}>{m.chartDescription(shownPlot?.count??0)}</desc>
      <defs><clipPath id={id('clip')}><rect x={G.left} y={G.top} width={G.widthPx} height={G.heightPx}/></clipPath></defs>
      <polyline points={frame.axis.map(p=>p.join(',')).join(' ')} className="cnhr-axis"/>
