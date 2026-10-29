@@ -62,6 +62,11 @@ test('star, galaxy and QSO from the student path: observed, kept, downloaded, sa
   expect(dl.suggestedFilename()).toBe(`${label}.csv`);const text=await readFile((await dl.path())!,'utf8');csv.push(text);
   expect(text.startsWith('wavelength_A,counts\r\n3700,')).toBe(true);expect(text.trim().split('\r\n')).toHaveLength(601);
   expect(leaksIn(text),kind).toEqual([]);expect(await pageLeaks(page),kind).toEqual([]);
+  // Front S (S6): Save .SSP through the shared writer; the file and its header carry the label, the given coordinates and 0.000.
+  const s=page.waitForEvent('download');await button(page,'Save spectrum (.SSP)').click();const sd=await s;
+  expect(sd.suggestedFilename()).toBe(`${label}.ssp`);const ssp=await readFile((await sd.path())!,'latin1'),lines=ssp.split('\r\n');
+  expect(lines[0]).toMatch(new RegExp(`^\\*SpHdr\\* ${label},-?\\d+\\.\\d{6},-?\\d+\\.\\d{5},0\\.000$`));expect(lines.filter(Boolean)).toHaveLength(601);expect(lines[1]).toMatch(/^3700\.00 /);
+  expect(leaksIn(ssp),kind).toEqual([]);
  }
  // Before the exposure the branch read identically for the three kinds.
  expect(new Set(ready).size).toBe(1);
@@ -113,4 +118,45 @@ test('the spectrometer at 320 px and in dark mode: no overflow, themed surface, 
   expect(await pageLeaks(page)).toEqual([]);
   await page.getByTestId('objectx-branch-spectrum').screenshot({path:test.info().outputPath(`object-x-spectrum-${scheme}-${width}.png`)});
  }
+});
+
+// Front S (S2): "save, then load" as one button. Classify receives the masked .SSP: its source is the label, and no object name,
+// template or kind reaches the Classify page; Observational Data takes the label as the object ID.
+// Review L6: one target of each spectroscopic kind (the masking does not depend on the kind).
+for(const [kind,code] of Object.entries(CODES))test(`an Object X spectrum (${kind} target) opens in Classify under its label, without naming the object`,async({page})=>{
+ await openLab(page);await slit(page,code,'4.0 m');await expose(page);
+ await button(page,'Classify this spectrum').click();
+ await expect(page).toHaveURL(/#classification$/);
+ await expect(page.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();
+ const main=page.locator('main.classification-main');
+ const text=await main.evaluate(n=>n.innerHTML+' '+n.textContent);
+ expect(text).toContain('ObjX-7.ssp');
+ expect(SECRETS.filter(s=>word(s).test(text))).toEqual([]);expect(text).not.toMatch(/\.DAT@/);
+ // Template file names: only those Classify always lists (its atlas), never one tied to this object.
+ const names=(t:string)=>new Set([...t.matchAll(/A00000\d\d/gi)].map(m=>m[0].toUpperCase()));
+ const fresh=await page.context().newPage();await fresh.goto('/#classification');await expect(fresh.getByRole('button',{name:'Review classification',exact:true})).toBeEnabled();
+ const baseline=names(await fresh.locator('main.classification-main').evaluate(n=>n.innerHTML+' '+n.textContent));await fresh.close();
+ expect([...names(text)].filter(n=>!baseline.has(n))).toEqual([]);
+ await button(page,'Open observation results').click();await expect(page.getByTestId('observation-object')).toHaveText('ObjX-7');
+});
+
+// Front S (D4): until the reveal the header is masked (label, 0.000); after it, Save writes the catalog magnitude and the
+// web record locator as the object [W] (VIREO's name per type is not recovered, U6). A file saved earlier is not rewritten, and the 600 data rows are the same.
+test('after the reveal Save writes the revealed header; the earlier file and the data rows are unchanged',async({page})=>{
+ await openLab(page);await slit(page,CODES.star,'4.0 m');await expose(page);
+ const save=async()=>{const d=page.waitForEvent('download');await button(page,'Save spectrum (.SSP)').click();const dl=await d;return {name:dl.suggestedFilename(),path:(await dl.path())!};};
+ const before=await save(),beforeText=await readFile(before.path,'latin1');
+ expect(beforeText.split('\r\n')[0]).toMatch(/^\*SpHdr\* ObjX-7,.*,0\.000$/);
+ await page.getByTestId('objectx-answer').getByLabel('star').check();
+ await page.getByLabel('Describe your evidence').fill('Absorption lines of a cool star.');
+ await button(page,'Reveal the identity').click();await button(page,'Reveal the identity').click();
+ await expect(page.getByTestId('objectx-reveal')).toContainText('N3730-01103');
+ await expect(button(page,'Save spectrum (.SSP)')).toBeEnabled();
+ const after=await save(),afterText=await readFile(after.path,'latin1');
+ expect(after.name).toBe(before.name);
+ const [head,...rows]=afterText.split('\r\n');
+ // The header object is the selected catalogue record as the engine names it (the star route writes the same form).
+ expect(head).toMatch(/^\*SpHdr\* N3730\.DAT@\d+,-?\d+\.\d{6},-?\d+\.\d{5},\d+\.\d{3}$/);expect(head.endsWith(',0.000')).toBe(false);
+ expect(rows).toEqual(beforeText.split('\r\n').slice(1));
+ expect(await readFile(before.path,'latin1')).toBe(beforeText);
 });

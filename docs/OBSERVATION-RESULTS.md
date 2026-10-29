@@ -30,3 +30,32 @@ Only the25verified original practice names/SHAassociations participate;all names
 No native0x90record file writer,legacy result-file interchange,delete/undo,grade,uncertainty or physical precision is asserted. All1279manifested source resources retain bytes/hashes/credits and source-specific uncertainty. N02/E03and all64primary acceptance statuses remain unchanged;the project remains partial. External review remains pending the human answer under the parent hold,with0attempts;no push or deployment.
 
 Current follow-up:[selected-row edit Undo](OBSERVATION-EDIT-UNDO.md) now protects an explicitly selected Edit N confirmation with saved prior/current states. It shares the safe recovery slot with deletion and preserves notebook-v1/historical files. This does not grant generic first-object reuse Undo,numerical metadata or native DAT authority.
+
+## Loaded and acquired spectra (Front S, S4, 2026-10-29)
+
+VIREO has no direct "acquired spectrum → Classify" route: a spectrum reaches Classify as a saved .SSP (File › Unknown
+Spectra › Saved Spectra) or from the practice list. For a loaded .SSP the Observational Data record (TObsRsltsDlg1) takes
+(static reading of CLEA_VEO.exe, research `analysis/front-s-spectroscopy/RE-observational-data-metadata.md`):
+
+| Field | VIREO source | OpenVireo |
+|---|---|---|
+| Object | file-name stem: cut at the first `.`, drop through the first `_`, trailing spaces trimmed, ≤15 characters; the header's object name is **not** used | same (`observationStem`); characters outside Windows-1252 become `?` [W] |
+| Observation Time (JD) | the file's last-write time, fixed with 6 decimals | the browser's `File.lastModified`, converted to JD in UTC [W: VIREO uses local time]; known only for a file imported on this page (a restored investigation has no file time, so the box is empty) |
+| Right Ascension / Declination | the `*SpHdr*` pointing, `HHh MMm SS.SSs` and `±DD° MM' SS.S"` | same; a file without a header leaves both empty |
+| Observed Magnitudes, Redshift (Z), Velocity (V) | zero, shown empty (the header magnitude is not copied) | empty |
+
+A zero value shows as an empty box in VIREO, not "Unavailable"; OpenVireo shows "(empty)" for screen readers.
+
+**Classified directly from an exposure [W].** The web's "Classify acquired star" shortcut stands for "save, then load". The
+record uses the stem of the file the .SSP save would write (`openvireo-star-N0000_DAT_14428.ssp` gives `DAT_14428`), the pointing from the header the .SSP save writes for the same exposure, and
+no JD (there is no file).
+
+**Records.** A record keeps its source's values. The notebook is written as version 2 (policy
+`source-id-sha256-metadata-web-v2`) when it holds such a record; a notebook with practice records only is still written as
+version 1, byte for byte. Records compare sources by value: re-importing the same file with another file time makes a
+separate record [W] (VIREO reuses a record by object name and keeps its first time). Row Edit and Delete work from a loaded
+spectrum as from a practice spectrum, as VIREO's handlers have no current-spectrum check.
+
+Code: `src/core/observationMetadata.ts`, `src/core/observationResults.ts` (`externalObservationSource`),
+`src/core/observationNotebook.ts`, `src/ObservationResults.tsx`. Tests: `observationMetadata.test.ts`,
+`tests/observation-metadata.spec.ts`.
