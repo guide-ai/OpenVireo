@@ -23,7 +23,9 @@ The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8)
 
 Field objects are not ported. 0x522a18 resets the field list and walks it to the tail without keeping a "best" record, then returns `ebx`: the tail record when the list is non-empty, otherwise the caller's own global record. The result is never null, so 0x5228dc always takes the overwrite branch at 0x522998 (the colour-corrected magnitude from 0x51ef38 replaces that record's magnitude) and its append branch 0x5229a4..0x5229f9 is unreachable. Natively a field object never becomes a new source. The web therefore offers only moving pairs to front X; it neither appends field objects nor reproduces the magnitude overwrite.
 
-Not recovered, and kept explicit: the writer of the region record `[0x5b5b30]` (the web uses whole-sky bounds, so selection keeps only the magnitude limit); the colour term 0x51ef38; the global random-stream prefix at Go; the overlay bitmap; the native image-to-screen mapping (the web display stretches the 1st–99.9th percentile; pixel values are unchanged).
+Not recovered, and kept explicit: the writer of the region record `[0x5b5b30]` (the web uses whole-sky bounds, so selection keeps only the magnitude limit); the global random-stream prefix at Go; the overlay bitmap; the native image-to-screen mapping (the web display stretches the 1st–99.9th percentile; pixel values are unchanged).
+
+Front R1 (2026-10-29): the colour term 0x51ef38 is recovered and ported as a pure function, `src/core/cameraColourTerm.ts` (docs/RADIO-CAMERA-R1.md). It is not wired, because the camera has no field-engine population of field variable stars; the field-object pass stays typed.
 
 ## Catalog: NOFS → CDS/VizieR
 

@@ -238,8 +238,8 @@ describe('capture: header, raw rows, Stop boundary, bound, RNG',()=>{
   tick(w);
   const r=w.s.bank.recording.rows;
   for(let i=before;i<rows(w);i++)expect(Object.is(r[i*3+1],scratch1)).toBe(true);
-  // Coupling refusal (P = 0.04 source by reassociation): the bank and its rows are unchanged.
-  const B=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04});
+  // Coupling refusal (a 1e8 400 MHz flux source by reassociation; mean above the 1e6 browser limit): the bank and its rows are unchanged.
+  const B=rec({primaryName:'J0001+00',legacyName:'B0001+00',s54:Math.fround(1e8)});
   w.s=take(reassociateReceivers(w.s,{catalog:[B],pointing:POINT}));
   const held=w.s.bank;const t=tick(w);
   expect(t.outcome.kind).toBe('refused');expect(w.s.bank).toBe(held);

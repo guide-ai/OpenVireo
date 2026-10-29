@@ -35,7 +35,9 @@ describe('radio-private random stream',()=>{
  });
  it('refuses out-of-domain means atomically (bounded web admission, not native parity)',()=>{
   const s=randomizeRadioStream(null,'receiver-create-0x572376',3),snapshot=JSON.stringify(s);
-  for(const mean of [-0.1,Number.NaN,1e6+1,Infinity])expect(refusal(()=>radioPoisson(s,mean,0))).toBe('poisson-mean-domain');
+  for(const mean of [Number.NaN,1e6+1,Infinity,-Infinity])expect(refusal(()=>radioPoisson(s,mean,0))).toBe('poisson-mean-domain');
+  // Front R1: 0x55f0f4 has no mean guard; a finite negative mean ends the product loop after one uniform with 0.
+  for(const mean of [-0.1,-1,-1e9]){const d=radioPoisson(s,mean,0);expect([d.value,d.uniforms]).toEqual([0,1]);}
   expect(JSON.stringify(s)).toBe(snapshot);
  });
  it('bounds and freezes the ledger',()=>{

@@ -61,11 +61,11 @@ export class RadioRandomCursor{
   if(stream===null)throw new RadioSignalError('randomize-seed-required','no Randomize site has seeded the radio stream');
   this.state=stream.state;this.uniforms=stream.uniforms;this.events=stream.events;this.base=stream.ledger;
  }
- /** One 0x55f0f4 draw through acquisition.poissonDraw. Its admission (mean ≥ 0, finite, ≤ 1e6) is kept: a negative,
-  * NaN or larger mean is refused atomically. This is not native exception or loop parity. */
+ /** One 0x55f0f4 draw through acquisition.poissonDraw. A finite negative mean follows the native product branch (value 0
+  * after one uniform; Front R1); NaN, infinite or > 1e6 means are still refused atomically (browser limits). */
  poisson(mean:number):Readonly<{value:number;uniforms:number}>{
   let draw;
-  try{draw=poissonDraw(mean,this.state,RADIO_RANDOM_POLICY.poissonDrawBudget);}
+  try{draw=poissonDraw(mean,this.state,RADIO_RANDOM_POLICY.poissonDrawBudget,'native');}
   catch(error){
    if(error instanceof AcquisitionError){
     if(error.code==='mean')throw new RadioSignalError('poisson-mean-domain',String(mean));

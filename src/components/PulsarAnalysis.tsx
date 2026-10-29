@@ -3,6 +3,9 @@ import { pulsarAnalysisSnapshot, type PulsarAnalysisSnapshot, type RadioSnapshot
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import './PulsarAnalysis.css';
+import { FindDialog, MessageBox } from '../observatory/FieldInfoListWindow';
+import { PULSAR_REVIEW_FIND_LITERALS, pulsarReviewFind, pulsarReviewMissText } from '../core/pulsarReviewFind';
+import { RADIO_R1_MESSAGES as R1 } from './RadioR1Messages';
 import WebPrintPreview from '../polish/WebPrintPreview';
 import { menuCaptionText } from '../core/radioControl';
 import { POLISH_MESSAGES as PM, PULSAR_PRINT_LITERALS as PP } from '../polish/PolishMessages';
@@ -1622,6 +1625,13 @@ function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }
   const blank = (v: string | null) => v ?? t('pulsar.review.blank');
   const { draft, selected, prompt } = session;
   const select = (i: number) => act(st => pulsarReviewSelect(st, i));
+  // Front R1: Find 0x5634c8 over the entries' stored line text (pulsarReviewFind.ts).
+  const [find, setFind] = useState<Readonly<{ query: string; matchCase: boolean }> | null>(null), [miss, setMiss] = useState<string | null>(null), findButton = useRef<HTMLButtonElement>(null);
+  const search = (mode: 'top' | 'next') => {
+    if (!find) return; const q = find.query; setFind(null); if (!q) return;
+    const hit = pulsarReviewFind(draft.map(e => e.nativeLineCandidate), q, mode === 'top' ? 0 : (selected ?? -1) + 1);
+    if (hit === null) setMiss(pulsarReviewMissText(q)); else select(hit);
+  };
   return (
     <>
       <div className="plr-review-body" inert={prompt !== null || editor !== null} data-testid="pulsar-review-list">
@@ -1645,7 +1655,7 @@ function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }
         )}
         <div className="plr-row plr-review-buttons">
           <span className="plr-row">
-            <button type="button" disabled aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-find">{t('pulsar.review.find')}</button>
+            <button type="button" ref={findButton} disabled={draft.length === 0} aria-describedby={`${idPrefix}review-gated`} data-testid="pulsar-review-find" onClick={() => setFind({ query: '', matchCase: false })}>{t('pulsar.review.find')}</button>
             <button type="button" ref={refs.edit} onClick={requestEdit} data-testid="pulsar-review-edit">{t('pulsar.review.edit')}</button>
             <button type="button" ref={refs.remove} onClick={() => act(pulsarReviewRequestDelete)} data-testid="pulsar-review-delete">{t('pulsar.review.delete')}</button>
           </span>
@@ -1654,7 +1664,9 @@ function Review({ session, editor, t, idPrefix, act, finish, requestEdit, refs }
             <button type="button" ref={refs.cancel} onClick={() => finish(act(pulsarReviewCancel))} data-testid="pulsar-review-cancel">{t('pulsar.review.cancel')}</button>
           </span>
         </div>
-        <p className="plr-help" id={`${idPrefix}review-gated`}>{t('pulsar.review.gated')}</p>
+        <p className="plr-help" id={`${idPrefix}review-gated`}>{R1.findNote}</p>
+        {find && <FindDialog draft={find} onDraft={setFind} onSearch={search} onCancel={() => { setFind(null); requestAnimationFrame(() => findButton.current?.focus()); }} />}
+        {miss !== null && <MessageBox box={{ caption: PULSAR_REVIEW_FIND_LITERALS.missCaption, text: miss }} onClose={() => { setMiss(null); requestAnimationFrame(() => findButton.current?.focus()); }} />}
       </div>
       {prompt === 'confirm-delete' && (
         <section className="plr-review-prompt" role="alertdialog" aria-labelledby={`${idPrefix}review-prompt`} aria-describedby={`${idPrefix}review-prompt-text`} data-testid="pulsar-review-confirm">

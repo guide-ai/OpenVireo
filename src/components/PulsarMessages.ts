@@ -254,7 +254,7 @@ export const PULSAR_MESSAGES_EN = Object.freeze({
   'pulsar.results.review': 'Review recorded measurements…',
   'pulsar.results.clear': 'Clear the measurement list…',
   'pulsar.results.save': 'Save recorded measurements (.CSV)',
-  'pulsar.results.saveGated': 'Not available: the original Save stamps the computer’s date and time and stored names into its header, can add to an existing file and clears the measurements afterwards. How those date, time and name values were set is not recovered, and that save is not implemented here. Export below writes a new file with a header you type instead.',
+  'pulsar.results.saveGated': 'Not available: VIREO’s Save asks to confirm (Verify Data Save), stamps the header with the computer’s date and time in its regional format, can add to an existing file, and afterwards marks the list saved and clears the pending readings (it does not clear the measurements). That regional date and time format is not known for this site, and that save is not implemented here. Export below writes a new file with a header you type instead.',
   'pulsar.results.persistence': 'Recorded measurements are kept in this browser tab; refreshing or closing the page discards them. Save investigation in the toolbar keeps them with the current data, and Restore investigation brings them back. Its download is not confirmation that the file was written.',
   'pulsar.restored.note': 'Restored from an investigation file. A restored receiver recording is not marked as written to a .PLR file.',
   'pulsar.results.count': '{count} recorded measurements',

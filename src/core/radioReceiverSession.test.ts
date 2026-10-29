@@ -58,17 +58,17 @@ describe('refusals, tick errors and the project-operation gap',()=>{
   expect(t.outcome).toMatchObject({kind:'refused',action:'mode',error:{kind:'clock-required'}});
   expect(t.session).toBe(s);expect(t.changed).toBe(false);
  });
- it('[pin] P = 0.04 at H = 4 (dt = 0.01 within 0.2P..0.3P) refuses Receive with poisson-mean-domain; H = 8 succeeds',()=>{
+ it('[pin] P = 0.04 at H = 4 (dt = 0.01 within 0.2P..0.3P) now receives: the negative first mean draws 0 as natively (Front R1); H = 8 too',()=>{
   // Values of the synthetic E2E row B (BASE columns of tests/radio-receiver-app.spec.ts) and its 2026-10-24T12:00:00Z JD.
   const B=rec({primaryName:'J1200+3824',legacyName:'B1157+38',ra:12,dec:38.4,x2a:0.04,x34:1e-15,x3e:50000,s48:Math.fround(28.2),s4c:Math.fround(30),s50:Math.fround(12.5),
    s54:Math.fround(14),s58:Math.fround(9),s5c:Math.fround(3)});
   const s=take(openReceiverWindow(createRadioReceiverSession(),{catalog:[B],pointing:{ra:12,dec:38.4}}));
-  const r=mode(s,2461338);expect(r.outcome).toMatchObject({kind:'refused',error:{kind:'poisson-mean-domain'}});expect(r.session).toBe(s);
+  const r=mode(s,2461338);expect(r.outcome.kind).toBe('ok');
   const h8=take(stepReceiver(s,0,'horizontal','up'));
   expect(h8.bank.slots[0]!.horizontal).toBe(8);expect(mode(h8,2461338).outcome.kind).toBe('ok');
  });
  it('a coupling refusal persists across ticks; Stop stays pending; Mode, Add and Horz are refused; Close recovers',()=>{
-  const B=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04});
+  const B=rec({primaryName:'J0001+00',legacyName:'B0001+00',s54:Math.fround(1e8)});
   let s=take(mode(open()));s=tick(s).session;
   // Clock reassociation picks B at the same pointing: the next tick rebuilds inside the signal and is refused.
   s=take(reassociateReceivers(s,{catalog:[B],pointing:POINT}));
@@ -83,7 +83,7 @@ describe('refusals, tick errors and the project-operation gap',()=>{
   expect(closed.tickError).toBeNull();expect(receiverSessionOpen(closed)).toBe(false);expect(closed.canvases).toEqual([null,null,null]);
  });
  it('gated and disabled ticks keep a stored tick error, the session and changed = false (constructed caller states, not reached by the monotonic UI)',()=>{
-  const B=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04});
+  const B=rec({primaryName:'J0001+00',legacyName:'B0001+00',s54:Math.fround(1e8)});
   let s=take(mode(open()));s=tick(s).session;s=take(reassociateReceivers(s,{catalog:[B],pointing:POINT}));
   const stored=tick(s).session;expect(stored.tickError).toMatchObject({kind:'poisson-mean-domain'});
   const gated=tickReceivers(stored,{jd:JD,now:stored.bank.slots[0]!.lastTick!});// non-increasing caller time
@@ -425,7 +425,7 @@ describe('R-RX6 PulsarList1Click on the shared buffer, modelled (WEB-PP-LIST-03)
   const p=list(prompt);expect(p.outcome).toMatchObject({kind:'web-refused',reason:'record-dialog-open'});expect(p.session).toBe(prompt);
   const leased=take(markPointerDown(open(),{pointerId:1,pointerType:'mouse',button:0,slot:0,code:0,x:80}));
   const l=take(list(leased));expect(l.markLease).toBe(leased.markLease);expect(l.bank.slots[0]!.markDrag).toEqual([true,false]);expect(l.bank.slots[0]!.marks).toEqual(leased.bank.slots[0]!.marks);
-  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04});
+  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',s54:Math.fround(1e8)});
   let e=take(mode(open()));e=tick(e).session;e=take(reassociateReceivers(e,{catalog:[P],pointing:POINT}));e=tick(e).session;
   expect(e.tickError).toMatchObject({kind:'poisson-mean-domain'});
   expect(take(list(e,[P])).tickError).toBe(e.tickError);
@@ -479,7 +479,7 @@ describe('R-RX6 PulsarList1Click on the shared buffer, modelled (WEB-PP-LIST-03)
   for(const s of [fresh,opened])expect(list(s).outcome.kind).toBe('ok');
  });
  it('a persistent coupling refusal recovers after a hit whose name equals the identified name',()=>{
-  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',x2a:0.04});
+  const P=rec({primaryName:'J0001+00',legacyName:'B0001+00',s54:Math.fround(1e8)});
   let s=take(mode(open()));s=tick(s).session;s=take(reassociateReceivers(s,{catalog:[P],pointing:POINT}));s=tick(s).session;
   expect(s.tickError).not.toBeNull();expect(s.bank.slots[0]!.identifiedName).toBe('J0000+00');
   const back=take(list(s,[A]));expect(back.tickError).toBe(s.tickError);

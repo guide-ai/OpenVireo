@@ -241,7 +241,7 @@ test('activation texts, focus and selection on Horizon Limit, the Tab cycle; rea
  await expect(id(page,'radio-options-readonly-pulsarId939')).toHaveAttribute('data-value','1');await expect(id(page,'radio-options-readonly-telescopeType938')).toHaveAttribute('data-value','0');
  await expect(id(page,'radio-options-files')).toBeDisabled();await expect(id(page,'radio-options-site')).toBeDisabled();
  // Tab: the nine fields in DFM order, Limit Slewing, Fast Slewing, Access Pulsar List, OK, Cancel, then back to Horizon.
- const order=[...DFM_ORDER.slice(1).map(f=>`radio-options-field-${f}`),'radio-options-flag-limitSlewing','radio-options-flag-fastSlewing','radio-access-checkbox','radio-access-child-ok','radio-access-child-cancel','radio-options-field-horizon90c'];
+ const order=[...DFM_ORDER.slice(1).map(f=>`radio-options-field-${f}`),'radio-options-flag-limitSlewing','radio-options-flag-fastSlewing','radio-options-effects-summary','radio-access-checkbox','radio-access-child-ok','radio-access-child-cancel','radio-options-field-horizon90c'];
  for(const t of order){await page.keyboard.press('Tab');await expect(id(page,t),t).toBeFocused();}
  await page.keyboard.press('Shift+Tab');await expect(id(page,'radio-access-child-cancel')).toBeFocused();
  for(const card of ['radio-access-card','radio-route-clock','pulsar-params-card','radio-route-panel-wrapper'])await expect(id(page,card)).toHaveAttribute('inert');
@@ -461,4 +461,11 @@ test('Phase 1 item 1.5: numeric preferences keep the applied slew rate; Save and
   await id(p,'antenna-rate-down').click();await expect(id(p,'antenna-rate')).toContainText('Index 3');await expect(id(p,'antenna-rate')).toContainText('60');
   expect(errors).toEqual([]);
  }finally{await context.close();}
+});
+
+test('Front R1: the read-only TRadiOptsDlg boxes keep their compiled states and list their effect',async({page})=>{
+ await startApp(page);await radioRoute(page);await id(page,'radio-env-compiled').click();await optIn(page);await demonstration(page);await openFull(page);
+ const effects=id(page,'radio-options-effects');await effects.locator('summary').click();
+ await expect(effects.locator('li')).toHaveCount(7);await expect(effects).toContainText('Arecibo has no code of its own');await expect(effects).toContainText('Sound Features (on)');
+ await fullOk(page);
 });

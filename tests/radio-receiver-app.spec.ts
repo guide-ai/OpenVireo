@@ -44,11 +44,13 @@ function line(row:Row):string{
  }
  return chars.join('');
 }
-// A: near the first pointing (RA 0 h, Dec = compiled latitude ≈ 38.43°), P 0.5 s. B: 4° east, P 0.04 s, which the
-// session suite pins to a poisson-mean-domain refusal at H = 4 (dt = 0.01 s) and to success at H = 8. C: far away.
+// A: near the first pointing (RA 0 h, Dec = compiled latitude ≈ 38.43°), P 0.5 s. B: 4° east, a 400 MHz flux of 1e8
+// whose noise mean exceeds the 1e6 browser limit (the reachable poisson-mean-domain refusal). D: 8° east, P 0.04 s: at
+// H = 4 (dt = 0.01 s) its first sample has a negative mean, which draws 0 as natively (Front R1). C: far away.
 const ROWS:readonly Row[]=[
  {primaryName:'J0001+3826',legacyName:'B2358+38',ra:'0.25',dec:'38.4'},
- {primaryName:'J0016+3824',legacyName:'B0013+38',ra:'4',dec:'38.4',x2a:'0.04'},
+ {primaryName:'J0016+3824',legacyName:'B0013+38',ra:'4',dec:'38.4',s54:'99999999'},
+ {primaryName:'J0032+3824',legacyName:'B0029+38',ra:'8',dec:'38.4',x2a:'0.04'},
  {primaryName:'J1200-3000',legacyName:'B1157-29',ra:'180',dec:'-30'},
 ];
 const CATALOG=ROWS.map(line).join('\r\n')+'\r\n';
@@ -230,15 +232,11 @@ test('channels: Add twice, close refusal box (Enter/Escape, focus, timer continu
  await expect(id(page,'antenna-receiver-button')).toBeFocused();
 });
 
-test('refusals: Receive at B is refused (poisson-mean-domain) and succeeds at H = 8; a coupling refusal persists, Stop stays pending, Close recovers',async({page})=>{
+test('refusals: Receive at D (negative first mean) works at H = 4; at B the mean limit refuses; a coupling refusal persists, Stop stays pending, Close recovers',async({page})=>{
  await setup(page);await applyClock(page);
  // Programmed slew to B (RA 0h16m, Dec 38°24'), then Open picks B within the open limit.
- await slewTo(page,['0','16','0','38','24','0']);
- await openReceiver(page);await expect(id(page,'receiver-heading-0')).toContainText('Pulsar B0013+38');
- await id(page,'receiver-mode').click();
- await expect(id(page,'receiver-status-0')).toContainText('Refused: a negative or invalid mean reached the noise draw');
- await expect(id(page,'receiver-mode-disp-0')).toHaveText('Stop');await expect(id(page,'receiver-sweep-0')).toHaveText('No sweep yet.');
- await id(page,'receiver-horizontal-up-0').click();await expect(id(page,'receiver-horizontal-value-0')).toHaveText('8.0');
+ await slewTo(page,['0','32','0','38','24','0']);
+ await openReceiver(page);await expect(id(page,'receiver-heading-0')).toContainText('Pulsar B0029+38');
  await id(page,'receiver-mode').click();await expect(id(page,'receiver-mode-disp-0')).toHaveText('Receive');
  await advance(page,400);expect(await position(page)).toBeGreaterThan(0);
  await id(page,'receiver-close-0').click();await expect(id(page,'receiver-card-0')).toHaveCount(0);
@@ -371,4 +369,16 @@ test('original Pulsars.dat (bundled or OPENVIREO_PULSARS_DAT): open and receive 
  await expect(id(page,'receiver-heading-0')).toHaveText(/^(Pulsar \S+|No Pulsar in Beam!)\s+Aperture: 100 Meters\s+Beam \(HPBW\): 0 Deg 41\.9'$/);
  await id(page,'receiver-mode').click();await advance(page,600);
  await expect(id(page,'receiver-tick-error')).toHaveCount(0);expect(await position(page)).toBeGreaterThan(0);
+});
+
+test('Front R1: Slew › Hot List › Add Current Item is enabled by opening the receiver and adds the B1950 name at the pointing',async({page})=>{
+ await setup(page);
+ await expect(id(page,'antenna-hotlist-add')).toBeDisabled();
+ await openReceiver(page);
+ await expect(id(page,'antenna-hotlist-add')).toBeEnabled();await id(page,'antenna-hotlist-add').click();
+ await expect(id(page,'antenna-entry')).toBeVisible();await expect(id(page,'antenna-entry-id')).toHaveValue('B2358+38');await expect(id(page,'antenna-entry-remarks')).toHaveValue('');
+ await id(page,'antenna-entry-ok').click();
+ const box=id(page,'antenna-added-box');await expect(box).toBeVisible();await expect(box).toContainText('Observation List');await expect(box).toContainText('Object B2358+38 added to Observation List.');
+ await box.getByRole('button',{name:'OK'}).click();await expect(box).toHaveCount(0);
+ await expect(id(page,'antenna-hotlist-source')).toContainText('1');
 });

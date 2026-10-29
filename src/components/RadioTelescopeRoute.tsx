@@ -1,11 +1,12 @@
 import type {RadioPointing} from '../core/radioAntenna';
+import {RADIO_R1_MESSAGES as R1} from './RadioR1Messages';
 import {useEffect,useId,useLayoutEffect,useRef,useState,useSyncExternalStore,type KeyboardEvent,type MutableRefObject,type RefObject} from 'react';
 import ResearchNotes from './ResearchNotes';
 import {radioWorkspaceSnapshot,type RadioSnapshotResult,type RadioWorkspaceSnapshot,type RestoredRadioWorkspace} from '../core/radioInvestigation';
 import RadioControlPanel,{type RadioClockSource,type RadioReceiverButton,type RadioReceiverButtonReason} from './RadioControlPanel';
 import {INITIAL_RADIO_RECEIVER_SUMMARY,RadioReceiverWorkspace,type RadioReceiverApi,type RadioReceiverSummary} from './RadioReceiverWindows';
 import {INITIAL_RADIO_CONTROL,RANDOM_ACCESS_RANGE_MS,menuCaptionText,type RadioControlState,type RadioEnvironment} from '../core/radioControl';
-import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,RADIO_LAB_CONSTANTS,isRadioLabModal,seedObjectXTarget,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from '../core/radioAntenna';
+import {INITIAL_RADIO_LAB,RADIO_COMPILED_OPTIONS,RADIO_LAB_CONSTANTS,isRadioLabModal,receiverOneOpened,seedObjectXTarget,type RadioLabOptions,type RadioLabState,type RadioLabTransition} from '../core/radioAntenna';
 import {PULSAR_EXERCISE_SCENARIO,UNSUPPLIED_RADIO_ENVIRONMENT,pulsarSetupComplete,startPulsarExercise,type PulsarSetupStep} from '../core/pulsarExerciseStart';
 import {sameRadioExerciseSummary,type RadioExerciseSummary} from '../core/pulsarLab';
 import {
@@ -513,13 +514,18 @@ export default function RadioTelescopeRoute({active,busy,onModalPresentedChange,
    <RadioControlPanel hotListMask={hiddenName?(ra,dec)=>hiddenName({ra,dec}):undefined} state={state} environment={environment}
     onTransition={tr=>commitControl(tr.state)} onEnvironmentChange={changeEnvironment}
     antenna={antenna} onAntennaTransition={commitAntenna} antennaOptions={options} onAntennaOptionsChange={optionsManaged?undefined:applyOptions} managedDiameter={optionsManaged}
-    active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}/>
+    active={active} hostBusy={busy} onModalPresentedChange={setPanelPresented} radioClock={radioClock} hotList={hotList} receiver={receiverButton}
+    addCurrentSource={()=>receiverApiRef.current?.sourceBuffer().record??null}/>
   </div>
   <RadioReceiverWorkspace hiddenName={hiddenName} active={active} busy={busy} antennaModal={modal} dateOpen={dateOpen} parametersPresented={parameters.presented} configurationOpen={access.open}
-   onReceiverOpened={access.receiverOpened} onMainCloseMessage={access.mainCloseMessage}
+   onReceiverOpened={()=>{access.receiverOpened();commitAntenna(receiverOneOpened(antennaRef.current));}} onMainCloseMessage={access.mainCloseMessage}
    catalogNow={parameters.currentCatalog} pointingNow={()=>antennaRef.current.pointing} readClockJD={readClockJD} perfNow={perfNow}
    apiRef={receiverApiRef} receiverButtonRef={receiverButtonRef} onSummaryChange={setReceiverSummary} pulsarData={pulsarData} onOpenPulsarAnalysis={onOpenPulsarAnalysis}
    onSourcePicker={parameters.pickerMoved} restored={initial===null?null:{session:initial.receiverSession,windows:initial.receiverWindows}}/>
+  {/* Front R1: TRadioLab +0x468 SvRcData1 (DFM disabled; enabled from the analysis Save1 state and the finish box) → 0x56b36c. */}
+  {pulsarData&&onOpenPulsarAnalysis&&<p className="radio-control-note" data-testid="radio-save-recorded-data-row"><button type="button" className="secondary-button" data-testid="radio-save-recorded-data"
+   disabled={pulsarData.doc.data===null} onClick={onOpenPulsarAnalysis}>{R1.saveData}</button>{' '}
+   {pulsarData.doc.data===null?R1.saveDataOff:R1.saveDataNote}</p>}
   {/* .radio-control (box-less) only scopes the shared dialog styles; the layer itself is never inert. */}
   <div className="radio-control" style={{display:'contents'}} data-testid="radio-date-layer" data-modal-pending={datePending} data-modal-presented={datePresented}>
    {datePresented&&dateState.dialog&&<RadioDateDialogView dialog={dateState.dialog} refusal={fieldRefusal} onEdit={editDate} onOk={confirmDate} onCancel={cancelDate}

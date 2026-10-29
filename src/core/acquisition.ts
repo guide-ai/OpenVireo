@@ -69,9 +69,12 @@ export type PoissonDraw = Readonly<{ value: number; seed: number; draws: number 
 /** 0x55f0f4: product branch below 12, rejection branch at/above 12.
  * Explicit state, domain limits and draw budget are browser adaptations.
  * Original cache is recomputed without changing random draw consumption.
+ * `negativeMean: 'native'` (Front R1, radio): 0x55f0f4 has no mean guard; its product branch caches g := Exp(−mean)
+ * (0x55f110..0x55f141) and multiplies uniforms while t > g (0x55f169..0x55f190). For a finite negative mean g > 1, so the
+ * first uniform ends the loop with value 0 and one draw. The default keeps the earlier refusal for other callers.
  */
-export function poissonDraw(mean: number, initialSeed: number, drawBudget = 10_000): PoissonDraw {
-  if (!Number.isFinite(mean) || mean < 0 || mean > 1_000_000) throw new AcquisitionError('mean');
+export function poissonDraw(mean: number, initialSeed: number, drawBudget = 10_000, negativeMean: 'refuse' | 'native' = 'refuse'): PoissonDraw {
+  if (!Number.isFinite(mean) || (mean < 0 && negativeMean !== 'native') || mean > 1_000_000) throw new AcquisitionError('mean');
   if (!Number.isInteger(drawBudget) || drawBudget < 1 || drawBudget > 100_000) throw new AcquisitionError('budget');
   // Validate seed even if the budget is exhausted before the first accepted draw.
   randomDraw(initialSeed);
