@@ -67,6 +67,10 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 - **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
 - **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
 
+**Prerrequisitos de despliegue** (se resuelven antes de publicar, no ahora):
+
+- `public/original/.../ObjX_MPC.CMO` mide 30 989 466 B y supera el límite de 25 MiB por archivo de Cloudflare Pages. Hay que servirlo en trozos byte a byte, como el GSC (Front G), o desde R2. Lo detectó la revisión de G1 (29 oct 2026).
+
 Preguntas que siguen abiertas:
 
 
