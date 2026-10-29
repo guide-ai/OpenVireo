@@ -47,12 +47,14 @@ import {galaxyLibrarySpectrum,galaxyChannelGrid} from './galaxySpectrum';
 import {sampleUniformSpectrum,type UniformSpectrum} from './acquisition';
 import {packCovers,type FieldPack} from './fieldPack';
 import {prepareQsoProfile,QsoSpectrumError,type QsoSpectrumFile} from './qsoSpectrum';
-import {loadNativeQsoList,nativeQsoMerge,QsoMergeError,QSO_CATALOG,type NativeQso,type QsoMergeWitness} from './qsoMerge';
+import {loadNativeQsoList,nativeQsoMerge,qsoPositionPredicate,QsoMergeError,QSO_CATALOG,type NativeQso,type QsoMergeWitness} from './qsoMerge';
 import {associatePhotograph,drawNativePhotograph,nativeGalaxyName,scaleNativePhotograph,type Bitmap8} from './photographDraw';
 import type {PhotographRow} from './photographicList';
 
 export class FieldEngineError extends Error{
- constructor(readonly code:'input'|'evidence'){super(`Field engine: ${code}`);this.name='FieldEngineError';}
+ /** polar: an RA half-width of 12 h or more (|Dec| ≳ 89.88°), where VIREO's result depends on the x87 cosine and the Int64
+  * low-dword band key (analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE2); nothing is approximated there. */
+ constructor(readonly code:'input'|'evidence'|'polar'){super(`Field engine: ${code}`);this.name='FieldEngineError';}
 }
 export type FieldTelescope=0|1|2;
 /** Calibration per telescope record, as galaxyExposure.ts: base and sky from the verified 0.4 m definition; the 0.9 m uses
@@ -193,27 +195,43 @@ export type FieldResult=Readonly<{
  scene:NativeSelectionScene|null;viewport:RgbImage|null;selection:ObjectSelection|null;target:NativeGalaxy|null;calibration:FieldCalibration|null;
 }>;
 const FRAME=Object.freeze({width:936,height:936,fieldDegrees:.75,anchor:468,viewport:312});
-/** Fresh native area for a pointing (identical arithmetic to the pinned builders). */
+/** Fresh native area for a pointing, as the telescope load 0x53be70 builds it (identical arithmetic to the pinned builders):
+ * Dec ± 0.375° (not clamped to ±90), RA ± 0.375/(cos Dec·15) h, with min += 24 when below 0 and max −= 24 when above 24, each
+ * once. A field across 0 h is then min > max (Front G, analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1). An RA
+ * half-width of 12 h or more is the typed 'polar' (§G-RE2). */
 export function freshFieldArea(pointing:Readonly<{ra:number;dec:number}>):NativeCatalogRegion{
- if(!pointing||!Number.isFinite(pointing.ra)||!Number.isFinite(pointing.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>=89)throw new FieldEngineError('input');
+ if(!pointing||!Number.isFinite(pointing.ra)||!Number.isFinite(pointing.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>90)throw new FieldEngineError('input');
  const h=.375,hr=h/(Math.cos(pointing.dec*Math.PI/180)*15);
- const area={minimumRa:pointing.ra-hr,maximumRa:pointing.ra+hr,minimumDec:pointing.dec-h,maximumDec:pointing.dec+h,limitingMagnitude:20};
- if(area.minimumRa<0||area.maximumRa>24)throw new FieldEngineError('input');// RA wrap branch not supported here
- return Object.freeze(area);
+ if(!(hr<12))throw new FieldEngineError('polar');
+ let minimumRa=pointing.ra-hr,maximumRa=pointing.ra+hr;
+ if(minimumRa<0)minimumRa+=24;
+ if(maximumRa>24)maximumRa-=24;
+ return Object.freeze({minimumRa,maximumRa,minimumDec:pointing.dec-h,maximumDec:pointing.dec+h,limitingMagnitude:20});
 }
+/** A field across 0 h (min > max). With the polar guard, min === max cannot occur. */
+export const fieldAreaWraps=(a:NativeCatalogRegion)=>a.minimumRa>a.maximumRa;
+/** 0x597ac8: a wrapped area is read as [min, 24.0] and then [0.0, max] (stars and variables), each nonwrapped. */
+export function fieldSubAreas(a:NativeCatalogRegion):readonly NativeCatalogRegion[]{
+ return fieldAreaWraps(a)?Object.freeze([Object.freeze({...a,maximumRa:24}),Object.freeze({...a,minimumRa:0})]):Object.freeze([a]);
+}
+/** The adapter's per-band visit budget (VIREO has none). 100,000 covers a whole polar band (S8230: 95,441 records). */
+export const FIELD_SCAN_BUDGET=100_000;
 const inside=(p:Readonly<{ra:number;dec:number}>,a:NativeCatalogRegion)=>p.ra>=a.minimumRa&&p.ra<=a.maximumRa&&p.dec>=a.minimumDec&&p.dec<=a.maximumDec;
 const hexBytes=(hex:string)=>Uint8Array.from(hex.match(/../g)!,x=>parseInt(x,16));
 /** Stars of one area from the pack: band order, recorded seek/read trace and admission. A read the trace needs but the pack lacks
  * is an evidence error (the pack is incomplete for this pointing), never a skipped record. */
-function packStars(pack:FieldPack,area:NativeCatalogRegion,order:readonly string[]):NativeFieldStar[]{
- const stars:NativeFieldStar[]=[],key=roundNearestEven(area.minimumRa*1e7);
+function packStars(pack:FieldPack,whole:NativeCatalogRegion,order:readonly string[]):NativeFieldStar[]{
+ const stars:NativeFieldStar[]=[];
+ // 0x597ac8: one star read per (sub-)area, each over every band in band order, all appended to the same list (+5).
+ for(const area of fieldSubAreas(whole)){
+ const key=roundNearestEven(area.minimumRa*1e7);
  for(const name of order){
   const band=pack.bands.find(b=>b.name===name);if(!band)throw new FieldEngineError('evidence');
   const rows=new Map<number,NativeFieldStar>();
   const hex=(index:number)=>{const h=band.reads.get(index);if(!h)throw new FieldEngineError('evidence');return h;};
   const full=(index:number)=>{let r=rows.get(index);if(!r){r=decodeNativeCompactRecord(hex(index),name,index);rows.set(index,r);}return r;};
   let trace;
-  try{trace=traceCompactGscBandRead({recordCount:band.recordCount,readPackedRa(index){return new DataView(hexBytes(hex(index).slice(0,8)).buffer).getInt32(0,true);}},key,area.maximumRa,10000);}
+  try{trace=traceCompactGscBandRead({recordCount:band.recordCount,readPackedRa(index){return new DataView(hexBytes(hex(index).slice(0,8)).buffer).getInt32(0,true);}},key,area.maximumRa,FIELD_SCAN_BUDGET);}
   catch(e){if(e instanceof FieldEngineError)throw e;throw new FieldEngineError('evidence');}
   for(const visit of trace.visits){
    const h=hex(visit.recordIndex);
@@ -225,6 +243,7 @@ function packStars(pack:FieldPack,area:NativeCatalogRegion,order:readonly string
    }
    const r=full(visit.recordIndex);if(nativeCatalogAdmission(r,area))stars.push(r);
   }
+ }
  }
  return stars;
 }
@@ -258,8 +277,33 @@ const galaxyGreater=(a:NativeGalaxy,b:NativeGalaxy)=>a.ra>b.ra||a.ra===b.ra&&a.d
 const variableGreater=(a:NativeVariable,b:NativeVariable)=>a.ra!==b.ra?a.ra>b.ra:a.dec>b.dec;
 /** Variable loader predicate (…0x598572): inside the area and Single magnitude <= the limiting magnitude. */
 export function fieldVariableAdmitted(v:Readonly<{ra:number;dec:number;magnitude:number}>,area:NativeCatalogRegion):boolean{return inside(v,area)&&Math.fround(v.magnitude)<=Math.fround(area.limitingMagnitude);}
-/** Whole-file galaxy admission (source order), then the native cursor insert 0x492728 (comparator 0x5969e0). */
+/** Variables in the native read order: one read per sub-area (0x5981a0, [min, 24] then [0, max] for a wrapped field), each in
+ * file order (CLEA_VStrs.dat is RA-ordered), then the cursor insert. */
+export function orderedFieldVariables<T extends Readonly<{ra:number;dec:number;magnitude:number}>>(variables:readonly T[],area:NativeCatalogRegion):T[]{
+ return fieldSubAreas(area).flatMap(sub=>variables.filter(v=>fieldVariableAdmitted(v,sub)));
+}
+/** The last CLEA_QSO.DAT RA below 12 h (record order is RA order; pinned by a test against the bundled file). */
+export const QSO_LAST_RA_BELOW_12=11.995416666666667;
+/** QSO positions the loader 0x5987e4 admits for an area, from a pack's whole-coverage list. A nonwrapped area: inside. A wrapped
+ * one: the single scan from record 0 with predicate 0x59677c stops at the first record with RA < 12 h past max, so only the
+ * 0 h side is admitted while such a record exists (QSO_LAST_RA_BELOW_12 > max); otherwise the scan reaches the min..24 side. */
+export function fieldQsoMatches(entries:readonly Readonly<{index:number;ra:number;dec:number}>[],area:NativeCatalogRegion):number[]{
+ if(!fieldAreaWraps(area))return entries.filter(p=>inside(p,area)).map(p=>p.index);
+ const dec=(p:Readonly<{dec:number}>)=>p.dec>=area.minimumDec&&p.dec<=area.maximumDec,stops=QSO_LAST_RA_BELOW_12>area.maximumRa;
+ return entries.filter(p=>dec(p)&&(p.ra<12?p.ra<=area.maximumRa:!stops&&p.ra>=area.minimumRa)).map(p=>p.index);
+}
+/** Galaxy start for the index walk of 0x598acc: CLEA_GLX.NDX entry h is the first record with RA ≥ h (derived from the RA-ordered
+ * CLEA_GLX.DAT; the file itself is not published), and the walk from the tail stops at the first key ≤ min. */
+function galaxyIndexStart(view:DataView,minimumRa:number):number{
+ let h=23;while(h>0&&h>minimumRa)h--;
+ let i=0;while(i<GLX_CATALOG.records&&view.getFloat64(i*59,true)<h)i++;
+ return i;
+}
+/** Whole-file galaxy admission (source order), then the native cursor insert 0x492728 (comparator 0x5969e0). A wrapped area
+ * follows the loader 0x598acc: a pass from record 0 and a pass from the index position for min, each with predicate 0x59677c
+ * (qsoPositionPredicate) and its stop flag, and the magnitude test (Single magnitude > limit rejects). */
 export function admitFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Readonly<{admission:readonly number[];galaxies:readonly NativeGalaxy[]}>{
+ if(fieldAreaWraps(area))return admitWrappedFieldGalaxies(glx,area);
  if(!(glx instanceof Uint8Array)||glx.byteLength!==GLX_CATALOG.bytes)throw new FieldEngineError('input');
  const view=new DataView(glx.buffer,glx.byteOffset,glx.byteLength),admission:number[]=[],read:NativeGalaxy[]=[];
  for(let i=0;i<GLX_CATALOG.records;i++){
@@ -270,6 +314,24 @@ export function admitFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Read
   const g:NativeGalaxy=Object.freeze({id:r.id,recordIndex:i,ra:r.ra,dec:r.dec,majorArcminutes:r.majorArcminutes,minorArcminutes:r.minorArcminutes,magnitude:r.magnitude,redshift:r.redshift,positionAngleDegrees:r.positionAngleDegrees,morphology:r.morphology,rawHex:Array.from(raw,b=>b.toString(16).padStart(2,'0')).join('')});
   admission.push(i);read.push(g);
  }
+ return Object.freeze({admission:Object.freeze(admission),galaxies:Object.freeze(nativeCursorInsert(read,galaxyGreater))});
+}
+function admitWrappedFieldGalaxies(glx:Uint8Array,area:NativeCatalogRegion):Readonly<{admission:readonly number[];galaxies:readonly NativeGalaxy[]}>{
+ if(!(glx instanceof Uint8Array)||glx.byteLength!==GLX_CATALOG.bytes)throw new FieldEngineError('input');
+ const view=new DataView(glx.buffer,glx.byteOffset,glx.byteLength),admission:number[]=[],read:NativeGalaxy[]=[];
+ const pass=(from:number)=>{
+  for(let i=from;i<GLX_CATALOG.records;i++){
+   const at=i*59,ra=view.getFloat64(at,true),dec=view.getFloat64(at+8,true),magnitude=view.getFloat32(at+24,true);
+   const [ok,stop]=qsoPositionPredicate(area,ra,dec);
+   if(ok&&!(Math.fround(magnitude)>Math.fround(area.limitingMagnitude))){
+    const raw=glx.subarray(at,at+59),r=decodeGlxRecord(raw,i);
+    read.push(Object.freeze({id:r.id,recordIndex:i,ra:r.ra,dec:r.dec,majorArcminutes:r.majorArcminutes,minorArcminutes:r.minorArcminutes,magnitude:r.magnitude,redshift:r.redshift,positionAngleDegrees:r.positionAngleDegrees,morphology:r.morphology,rawHex:Array.from(raw,b=>b.toString(16).padStart(2,'0')).join('')}));
+    admission.push(i);
+   }
+   if(stop)return;
+  }
+ };
+ pass(0);pass(galaxyIndexStart(view,area.minimumRa));
  return Object.freeze({admission:Object.freeze(admission),galaxies:Object.freeze(nativeCursorInsert(read,galaxyGreater))});
 }
 /** The recovered class tables and dispatch contract, from the verified Pegasus provenance (HI Peg). */
@@ -310,14 +372,14 @@ export function buildFieldPopulation(pack:FieldPack,glx:Uint8Array,pointing:Read
  const qsoCatalog=mode==='merge'?checkedQsoCatalog(pack,options):null;
  const regionIds=nativeRegionIds(area),bandOrder=nativeCompactBandOrder(regionIds);
  let stars:FieldStar[]=packStars(pack,area,bandOrder);const initialStarIds=Object.freeze(stars.map(s=>s.id));
- const qsoMatches=pack.qso.entries.filter(p=>inside(p,area)).map(p=>p.index),photographMatches=pack.photographs.entries.find(e=>pack.pointings[e.pointing].ra===pointing.ra&&pack.pointings[e.pointing].dec===pointing.dec)?.indices??[];
+ const qsoMatches=fieldQsoMatches(pack.qso.entries,area),photographMatches=pack.photographs.entries.find(e=>pack.pointings[e.pointing].ra===pointing.ra&&pack.pointings[e.pointing].dec===pointing.dec)?.indices??[];
  if(qsoMatches.length&&mode==='gate')reasons.push('qso-merge');
  if(photographMatches.length&&!options.photographs)reasons.push('photographic-image');
  let variables:NativeVariable[];
  // Variable loader: a record is kept when it lies inside the area and its magnitude is within the limiting magnitude (0x598572
  // setbe: Single magnitude <= limit); kept records are inserted with the cursor insert 0x492728 under the strict RA-then-Dec
  // greater comparator 0x4bc950, and the variable stage 0x59859c iterates that sorted list (review 4 items 4 and 5).
- try{variables=[...nativeCursorInsert(pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)).filter(v=>fieldVariableAdmitted(v,area)),variableGreater)];}catch(e){if(e instanceof FieldEngineError)throw e;throw new FieldEngineError('evidence');}
+ try{variables=[...nativeCursorInsert(orderedFieldVariables(pack.variables.entries.map(v=>decodeNativeVariableRecord(v.rawHex,v.recordIndex)),area),variableGreater)];}catch(e){if(e instanceof FieldEngineError)throw e;throw new FieldEngineError('evidence');}
  let variableRemoved:string[]=[];
  let outsideViewVariable:FieldOutsideViewVariable|undefined;
  const variableTime=checkedVariableTime(options.variableTime);

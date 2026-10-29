@@ -4,7 +4,7 @@ import {describe,expect,it} from 'vitest';
 import {AssembledFieldError,assembleFieldPack,assembledFieldArea,type AssemblySources} from './assembledFieldPack';
 import {checkGscIndex,createGscTileStore,GscTileError,gscTilePath,tiledBandSource} from './gscTiles';
 import {decodeFieldPack,fieldPackFromSnapshot,type FieldPack} from '../core/fieldPack';
-import {buildFieldPopulation,freshFieldArea,type FieldOptions} from '../core/fieldEngine';
+import {buildFieldPopulation,fieldAreaWraps,fieldSubAreas,freshFieldArea,type FieldOptions} from '../core/fieldEngine';
 import {traceCompactGscBandRead} from '../core/compactGscReadOrder';
 import {roundNearestEven} from '../core/numericPolicy';
 import {nativeCompactBandOrder,nativeRegionIds} from '../core/pinnedNativeField';
@@ -98,31 +98,58 @@ describe('a pack assembled from the tiles gives the identical population at ever
 
 describe('assembled reads equal the whole band for other pointings (§7)',()=>{
  it('200 fixed pseudo-random pointings, every native read byte-equal',async()=>{
-  const s=sources();let state=20261029,done=0,typed=0;
+  const s=sources();let state=20261029,done=0,typed=0,wrapped=0;
   const next=()=>{state=(state*1664525+1013904223)>>>0;return state/2**32;};
   while(done<200){
    const pointing={ra:next()*24,dec:Math.asin(2*next()-1)*180/Math.PI};
-   let pack;try{pack=await assembleFieldPack(pointing,s);}catch(e){if(e instanceof AssembledFieldError&&['ra-wrap','polar','regions','budget'].includes(e.code)){typed++;continue;}throw e;}
-   const area=freshFieldArea(pointing),key=roundNearestEven(area.minimumRa*1e7);
+   let pack;try{pack=await assembleFieldPack(pointing,s);}catch(e){if(e instanceof AssembledFieldError&&['polar','regions','budget'].includes(e.code)){typed++;continue;}throw e;}
+   const area=freshFieldArea(pointing);if(fieldAreaWraps(area))wrapped++;
    expect(pack.bands.map(b=>b.name)).toEqual(nativeCompactBandOrder(nativeRegionIds(area)));
    for(const b of pack.bands){
-    const whole=band(b.name),view=new DataView(whole.buffer);
-    const t=traceCompactGscBandRead({recordCount:whole.byteLength/GSC_RECORD_BYTES,readPackedRa:i=>view.getInt32(i*GSC_RECORD_BYTES,true)},key,area.maximumRa,10_000);
-    expect([...b.reads.keys()].sort((x,y)=>x-y)).toEqual([...new Set([...t.probes,...t.visits].map(r=>r.recordIndex))].sort((x,y)=>x-y));
+    const whole=band(b.name),view=new DataView(whole.buffer),indices=new Set<number>();
+    // One native read per sub-area ([min, 24] and [0, max] for a field across 0 h).
+    for(const sub of fieldSubAreas(area)){
+     const t=traceCompactGscBandRead({recordCount:whole.byteLength/GSC_RECORD_BYTES,readPackedRa:i=>view.getInt32(i*GSC_RECORD_BYTES,true)},roundNearestEven(sub.minimumRa*1e7),sub.maximumRa,100_000);
+     for(const r of [...t.probes,...t.visits])indices.add(r.recordIndex);
+    }
+    expect([...b.reads.keys()].sort((x,y)=>x-y)).toEqual([...indices].sort((x,y)=>x-y));
     for(const [i,h] of b.reads)expect(recordHex(b.name,i,h.length/2)).toBe(h);
    }
    done++;
   }
-  expect(typed).toBeLessThan(40);
+  expect(typed).toBeLessThan(10);
  },600_000);
+});
+
+describe('fields across 0 h and near the poles from the tiles (G1b, RE-wrap-polar-consumers.md)',()=>{
+ const pointings=[{ra:0.001,dec:10},{ra:0.01,dec:-35},{ra:23.995,dec:45},{ra:23.98,dec:-60},{ra:0.02,dec:75},{ra:6,dec:89.7},{ra:3,dec:89.7},
+  {ra:15.5,dec:-88.99},{ra:1.5,dec:88.99},{ra:15.5,dec:-89.85},{ra:9,dec:89.88}];
+ it.each(pointings.map(p=>[`${p.ra} ${p.dec}`,p] as const))('%s',async(_label,pointing)=>{
+  const s=sources(),pack=await assembleFieldPack(pointing,s),area=freshFieldArea(pointing),subs=fieldSubAreas(area);
+  for(const b of pack.bands){
+   const whole=band(b.name),view=new DataView(whole.buffer),indices=new Set<number>();
+   for(const sub of subs){const t=traceCompactGscBandRead({recordCount:whole.byteLength/GSC_RECORD_BYTES,readPackedRa:i=>view.getInt32(i*GSC_RECORD_BYTES,true)},roundNearestEven(sub.minimumRa*1e7),sub.maximumRa,100_000);for(const r of [...t.probes,...t.visits])indices.add(r.recordIndex);}
+   expect([...b.reads.keys()].sort((x,y)=>x-y)).toEqual([...indices].sort((x,y)=>x-y));
+   for(const [i,h] of b.reads)expect(recordHex(b.name,i,h.length/2)).toBe(h);
+  }
+  for(const [,options] of optionSets){
+   const built=buildFieldPopulation(pack,glx,pointing,options);
+   if(!built.population)continue;
+   // Stars: the [min, 24] read over all bands, then the [0, max] read (one list, appended).
+   const st=built.population.stars.filter(x=>x.type===0) as readonly Readonly<{ra:number;dec:number}>[];
+   if(subs.length===2){const firstLow=st.findIndex(x=>x.ra<=area.maximumRa);if(firstLow>=0)expect(st.slice(firstLow).every(x=>x.ra<=area.maximumRa)).toBe(true);}
+   for(const x of st)expect(subs.some(a=>x.ra>=a.minimumRa&&x.ra<=a.maximumRa&&x.dec>=a.minimumDec&&x.dec<=a.maximumDec)).toBe(true);
+  }
+ },300_000);
 });
 
 describe('typed limits',()=>{
  it('refuses wrap and polar areas with a typed reason, and a read outside the fetched tiles',async()=>{
-  expect(()=>assembledFieldArea({ra:0.001,dec:10})).toThrow(new AssembledFieldError('ra-wrap'));
-  expect(()=>assembledFieldArea({ra:23.999,dec:-10})).toThrow(new AssembledFieldError('ra-wrap'));
-  expect(()=>assembledFieldArea({ra:3,dec:89.5})).toThrow(new AssembledFieldError('polar'));
-  expect(()=>assembledFieldArea({ra:3,dec:-89})).toThrow(new AssembledFieldError('polar'));
+  // Fields across 0 h fold as 0x53be70 (G1b); only an RA half-width of 12 h or more is polar.
+  expect(fieldAreaWraps(assembledFieldArea({ra:0.001,dec:10}))).toBe(true);expect(fieldAreaWraps(assembledFieldArea({ra:23.999,dec:-10}))).toBe(true);
+  expect(fieldAreaWraps(assembledFieldArea({ra:3,dec:89.5}))).toBe(false);expect(assembledFieldArea({ra:3,dec:89.88}).maximumDec).toBeGreaterThan(90);
+  expect(()=>assembledFieldArea({ra:3,dec:89.881})).toThrow(new AssembledFieldError('polar'));
+  expect(()=>assembledFieldArea({ra:3,dec:-90})).toThrow(new AssembledFieldError('polar'));
   expect(()=>assembledFieldArea({ra:24,dec:0})).toThrow(new AssembledFieldError('input'));
   const b=index.bands[0],src=tiledBandSource(b,new Map([[0,file('public'+gscTilePath(b.name,0))]]));
   expect(src.readRecord(GSC_TILE_RECORDS-1)).toHaveLength(27);

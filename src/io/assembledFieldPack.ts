@@ -3,10 +3,11 @@
 // (core/fieldPack.ts): every band read of the native search and scan (0x59af80..0x59b1f7) is recorded, as the whole 27-byte
 // record when it lies inside the area and as its 8-byte position otherwise; every variable record and QSO position inside the
 // area; and the GLIMAGES.LST indices inside it (packWithPhotographs). The field engine itself is unchanged and runs on the
-// result. Pointings whose area wraps RA 0 h / 24 h or reaches |Dec| ≥ 89° are typed (G-RE1 / G-RE2 recover the native
-// branches); nothing is approximated. Static reading only; no equivalence with the original program is claimed.
+// result. A field across 0 h is read as VIREO does (G1b, §G-RE1: two star reads [min, 24] and [0, max] per band, recorded in
+// that order; coverage RA 0..24 so the whole-source lists cover both sides). An RA half-width of 12 h or more is the typed
+// 'polar' (§G-RE2); nothing is approximated. Static reading only; no equivalence with the original program is claimed.
 import {decodeFieldPack,FIELD_PACK_LIMITS,FIELD_PACK_SCHEMA,type FieldPack} from '../core/fieldPack';
-import {freshFieldArea} from '../core/fieldEngine';
+import {FIELD_SCAN_BUDGET,FieldEngineError,fieldAreaWraps,fieldSubAreas,freshFieldArea} from '../core/fieldEngine';
 import {nativeCompactBandOrder,nativeRegionIds,NativeFieldError} from '../core/pinnedNativeField';
 import {CompactBandReadOrderError,traceCompactGscBandRead} from '../core/compactGscReadOrder';
 import {roundNearestEven} from '../core/numericPolicy';
@@ -16,55 +17,55 @@ import {VARIABLE_RECORD_OFFSETS} from '../core/variableMerge';
 import {VSTRS_RECORD_BYTES} from '../core/variableStars';
 import {GscTileError,gscBandIndex,tiledBandSource,type GscIndex,type GscTileStore} from './gscTiles';
 
-/** ra-wrap / polar: not yet ported (G-RE1 / G-RE2); regions: more than 100 regions; budget: more than the visit budget in a
+/** polar: an RA half-width of 12 h or more (§G-RE2); regions: more than 100 regions; budget: more than the visit budget in a
  * band; band-end: the native search runs past a band's last record (the minimum RA key is above every record), where VIREO
  * reads past EOF and raises an I/O error (Front O RECOVERY-E §4) — nothing to approximate; plan: a read outside the planned
  * tiles (a planning bug, never a skipped record); source: a malformed bundled file. Tile fetch and integrity failures stay
  * GscTileError ('fetch' / 'integrity'), and an abort is the DOMException AbortError. */
 export class AssembledFieldError extends Error{
- constructor(readonly code:'ra-wrap'|'polar'|'input'|'regions'|'budget'|'band-end'|'plan'|'source'){super(`Assembled field: ${code}`);this.name='AssembledFieldError';}
+ constructor(readonly code:'polar'|'input'|'regions'|'budget'|'band-end'|'plan'|'source'){super(`Assembled field: ${code}`);this.name='AssembledFieldError';}
 }
 export type AssemblySources=Readonly<{index:GscIndex;tiles:GscTileStore;variables:Uint8Array;variablesSha256:string;qso:Uint8Array;qsoSha256:string;glimages:Uint8Array}>;
-/** The adapter's per-band visit budget, as packStars (fieldEngine.ts). */
-export const ASSEMBLED_SCAN_BUDGET=10_000;
+/** The adapter's per-band visit budget, the same as packStars (fieldEngine.ts FIELD_SCAN_BUDGET). */
+export const ASSEMBLED_SCAN_BUDGET=FIELD_SCAN_BUDGET;
 const QSO_RECORD_BYTES=52,QSO_POSITION=18;
 const hex=(bytes:Uint8Array)=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 
 /** The fresh area for a pointing, or the typed reason freshFieldArea's guard stands for. */
 export function assembledFieldArea(pointing:Readonly<{ra:number;dec:number}>){
- if(!pointing||!Number.isFinite(pointing.ra)||!Number.isFinite(pointing.dec)||pointing.ra<0||pointing.ra>=24||Math.abs(pointing.dec)>90)throw new AssembledFieldError('input');
- if(Math.abs(pointing.dec)>=89)throw new AssembledFieldError('polar');
- const hr=.375/(Math.cos(pointing.dec*Math.PI/180)*15);
- if(pointing.ra-hr<0||pointing.ra+hr>24)throw new AssembledFieldError('ra-wrap');
- return freshFieldArea(pointing);// identical arithmetic to every pack consumer
+ try{return freshFieldArea(pointing);}// identical arithmetic to every pack consumer
+ catch(e){if(e instanceof FieldEngineError)throw new AssembledFieldError(e.code==='polar'?'polar':'input');throw e;}
 }
 export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}>,s:AssemblySources,signal?:AbortSignal):Promise<FieldPack>{
  const area=assembledFieldArea(pointing);
  let order:readonly string[];
  try{order=nativeCompactBandOrder(nativeRegionIds(area));}catch(e){if(e instanceof NativeFieldError)throw new AssembledFieldError('regions');throw e;}
- const key=roundNearestEven(area.minimumRa*1e7),inside=(ra:number,dec:number)=>ra>=area.minimumRa&&ra<=area.maximumRa&&dec>=area.minimumDec&&dec<=area.maximumDec;
- const bands=[];
- for(const name of order){
-  const b=gscBandIndex(s.index,name),plan=planGscBandRead(b,key,area.maximumRa);
+ // Coverage: the area itself, or the whole RA ring of its Dec band for a field across 0 h (FieldPackRect needs min < max).
+ const coverage=fieldAreaWraps(area)?{minimumRa:0,maximumRa:24,minimumDec:area.minimumDec,maximumDec:area.maximumDec}:{minimumRa:area.minimumRa,maximumRa:area.maximumRa,minimumDec:area.minimumDec,maximumDec:area.maximumDec};
+ const inside=(ra:number,dec:number)=>ra>=coverage.minimumRa&&ra<=coverage.maximumRa&&dec>=coverage.minimumDec&&dec<=coverage.maximumDec;
+ const reads=new Map<string,Map<number,string>>(order.map(n=>[n,new Map()]));
+ for(const sub of fieldSubAreas(area))for(const name of order){
+  const key=roundNearestEven(sub.minimumRa*1e7),b=gscBandIndex(s.index,name),plan=planGscBandRead(b,key,sub.maximumRa),band=reads.get(name)!;
+  // A record is whole when it lies inside this read's (sub-)area, as the published packs' rule for each listed read.
+  const within=(ra:number,dec:number)=>ra>=sub.minimumRa&&ra<=sub.maximumRa&&dec>=sub.minimumDec&&dec<=sub.maximumDec;
   const source=tiledBandSource(b,await s.tiles.tiles(b,plan.tiles,signal));
   let trace;
-  try{trace=traceCompactGscBandRead(source,key,area.maximumRa,ASSEMBLED_SCAN_BUDGET);}
+  try{trace=traceCompactGscBandRead(source,key,sub.maximumRa,ASSEMBLED_SCAN_BUDGET);}
   catch(e){
    if(e instanceof CompactBandReadOrderError)throw new AssembledFieldError(e.code==='budget'?'budget':e.code==='read-boundary'?'band-end':'source');
    if(e instanceof GscTileError&&e.code==='missing-tile')throw new AssembledFieldError('plan');
    throw e;
   }
-  const reads=new Map<number,string>();
   for(const r of [...trace.probes,...trace.visits]){
-   if(reads.has(r.recordIndex))continue;
+   if(band.get(r.recordIndex)?.length===54)continue;
    try{
     const p=new DataView(source.readPosition(r.recordIndex).buffer),ra=p.getInt32(0,true)/10_000_000,dec=p.getInt32(4,true)/100_000;
-    reads.set(r.recordIndex,inside(ra,dec)?hex(source.readRecord(r.recordIndex)):hex(source.readPosition(r.recordIndex)));
+    band.set(r.recordIndex,within(ra,dec)?hex(source.readRecord(r.recordIndex)):hex(source.readPosition(r.recordIndex)));
    }catch(e){if(e instanceof GscTileError&&e.code==='missing-tile')throw new AssembledFieldError('plan');throw e;}
   }
-  if(reads.size>FIELD_PACK_LIMITS.readsPerBand)throw new AssembledFieldError('budget');
-  bands.push({name,recordCount:b.records,sha256:b.sha256,reads:[...reads].sort((x,y)=>x[0]-y[0])});
+  if(band.size>FIELD_PACK_LIMITS.readsPerBand)throw new AssembledFieldError('budget');
  }
+ const bands=order.map(name=>{const b=gscBandIndex(s.index,name);return {name,recordCount:b.records,sha256:b.sha256,reads:[...reads.get(name)!].sort((x,y)=>x[0]-y[0])};});
  // Whole-file scans with Double positions and inclusive bounds, as the published packs' offline witnesses.
  if(s.variables.byteLength%VSTRS_RECORD_BYTES||s.qso.byteLength%QSO_RECORD_BYTES)throw new AssembledFieldError('source');
  const vv=new DataView(s.variables.buffer,s.variables.byteOffset,s.variables.byteLength),variables=[];
@@ -77,7 +78,7 @@ export async function assembleFieldPack(pointing:Readonly<{ra:number;dec:number}
   const ra=qv.getFloat64(i*QSO_RECORD_BYTES+QSO_POSITION,true),dec=qv.getFloat64(i*QSO_RECORD_BYTES+QSO_POSITION+8,true);
   if(inside(ra,dec))qso.push({index:i,ra,dec});
  }
- const pack=decodeFieldPack({schema:FIELD_PACK_SCHEMA,id:'gsc-tiles',coverage:{minimumRa:area.minimumRa,maximumRa:area.maximumRa,minimumDec:area.minimumDec,maximumDec:area.maximumDec},
+ const pack=decodeFieldPack({schema:FIELD_PACK_SCHEMA,id:'gsc-tiles',coverage,
   pointings:[{ra:pointing.ra,dec:pointing.dec}],bands,
   variables:{sha256:s.variablesSha256,recordsChecked:s.variables.byteLength/VSTRS_RECORD_BYTES,entries:variables},
   qso:{sha256:s.qsoSha256,recordsChecked:s.qso.byteLength/QSO_RECORD_BYTES,entries:qso},

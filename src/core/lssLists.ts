@@ -49,9 +49,15 @@ export function parseGlxyspNames(bytes:Uint8Array):ReadonlySet<string>{
 }
 /** Native library key (Pegasus provenance spectrumMapping): identifier without spaces + ".SP", exact match. */
 export function hasLibrarySpectrum(names:ReadonlySet<string>,id:string):boolean{return names.has(id.replace(/ /g,'')+'.SP');}
+/** 0x596b1c, the photograph matcher the galaxy loader calls with the area: inclusive bounds; min < max is the ordinary
+ * rectangle, otherwise (a field across 0 h, min ≥ max) RA ≥ min or RA ≤ max (Front G, RE-wrap-polar-consumers.md §G-RE1). */
+export function nativePhotographInArea(x:Readonly<{ra:number;dec:number}>,a:Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>):boolean{
+ const ra=a.minimumRa<a.maximumRa?x.ra>=a.minimumRa&&x.ra<=a.maximumRa:x.ra>=a.minimumRa||x.ra<=a.maximumRa;
+ return ra&&x.dec>=a.minimumDec&&x.dec<=a.maximumDec;
+}
 /** The pack with its photographic-list gate taken from the whole original list (per listed pointing, positions inside the
  * fresh area, inclusive bounds as the other source scans). */
 export function packWithPhotographs(pack:FieldPack,positions:readonly Readonly<{index:number;ra:number;dec:number}>[]):FieldPack{
- const entries=pack.pointings.map((p,pointing)=>{const a=freshFieldArea(p);return {pointing,indices:Object.freeze(positions.filter(x=>x.ra>=a.minimumRa&&x.ra<=a.maximumRa&&x.dec>=a.minimumDec&&x.dec<=a.maximumDec).map(x=>x.index))};}).filter(e=>e.indices.length).map(e=>Object.freeze(e));
+ const entries=pack.pointings.map((p,pointing)=>{const a=freshFieldArea(p);return {pointing,indices:Object.freeze(positions.filter(x=>nativePhotographInArea(x,a)).map(x=>x.index))};}).filter(e=>e.indices.length).map(e=>Object.freeze(e));
  return Object.freeze({...pack,photographs:Object.freeze({sha256:GLIMAGES_LST.sha256,recordsChecked:positions.length,entries:Object.freeze(entries)})});
 }
