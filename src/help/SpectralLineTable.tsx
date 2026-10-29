@@ -1,4 +1,4 @@
-import {useId,useRef,useState} from 'react';
+import {useEffect,useId,useRef,useState} from 'react';
 import {menuCaptionText} from '../core/radioControl';
 import {HelpListBox} from '../clusters/CleaHelp';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
@@ -17,13 +17,15 @@ const M=Object.freeze({
  note:'VIREO\'s spectral line list (SPECLNS.LNL). Double-click a line, or press Enter, to read its help from SPECLNS.TXT. Like VIREO, the help is found by the line\'s name, so some lines (for example the later He I lines) show the section of the first line with that name. In VIREO a single click also moves the classification cursor to the line; that link is not available here.',
  missing:(file:string)=>`Unable to open Spectral Line Help File.\r\n\r\nFile Name: ${file}\r\n\r\nFile Not Found!`,// VIREO (0x5049f0)
  missingCaption:'Sp Line Help not Available!',// VIREO
+ textErrorCaption:'Help File Error',
+ textError:(file:string)=>`VIREO's spectral line help file (${file}) could not be loaded or did not match its recorded size and SHA-256. The line list stays open; try the line again.`,
 });
 
 type Loaded=Readonly<{lines:readonly SpectralLine[]}>;
 /** TSpClassify › Spectral Line Table (SpectralLineTable1Click 0x50afac): the modeless TSpLinesList and, on double click,
  * the modeless "Spectral Line Help" window (TSpLinesHelp). Pure rules: src/help/spectralLines.ts. */
 export default function SpectralLineTable({testId='spl'}:{testId?:string}){
- const id=useId(),opener=useRef<HTMLButtonElement>(null);
+ const id=useId(),opener=useRef<HTMLButtonElement>(null),rowsRef=useRef<HTMLDivElement>(null),helpHeading=useRef<HTMLHeadingElement>(null);
  const [load,setLoad]=useState<'idle'|'loading'|'error'|Loaded>('idle'),[open,setOpen]=useState(false),[index,setIndex]=useState(-1);
  const [help,setHelp]=useState<Readonly<{name:string;rows:readonly string[]}>|null>(null),[message,setMessage]=useState<Readonly<{caption:string;text:string}>|null>(null);
  const loaded=typeof load==='object'?load:null;
@@ -40,8 +42,11 @@ export default function SpectralLineTable({testId='spl'}:{testId?:string}){
   try{
    const h=spectralLineHelp(await fetchBundledClusterHelp(fetch,new AbortController().signal,file),line.name);
    if(h.kind==='topic')setHelp({name:line.name,rows:h.rows});else setMessage({caption:h.caption,text:h.text});
-  }catch{setLoad('error');}
+  }catch{setMessage({caption:M.textErrorCaption,text:M.textError(file.name)});}
  }
+ /** Focus the help window when it opens or changes line; back to the list when it closes (review 1 L4). */
+ useEffect(()=>{if(help)helpHeading.current?.focus();},[help]);
+ const closeHelp=()=>{setHelp(null);requestAnimationFrame(()=>rowsRef.current?.querySelector<HTMLElement>('[role=listbox]')?.focus());};
  return <div className="spl" data-testid={testId}>
   <div className="cluster-hr-help-bar">
    <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'} onClick={()=>void show()}>{menuCaptionText(M.menu)}</button>
@@ -50,16 +55,16 @@ export default function SpectralLineTable({testId='spl'}:{testId?:string}){
   </div>
   {open&&loaded&&<section className="cluster-hr-window spl-window" aria-labelledby={`${id}-list`} data-testid={`${testId}-list`}>
    <h3 id={`${id}-list`}>{M.listCaption}</h3>
-   <HelpListBox rows={loaded.lines.map(l=>l.row)} selected={index} onSelect={setIndex} onActivate={i=>void readLine(i)} label={M.rows} testId={`${testId}-rows`} columns/>
+   <div ref={rowsRef}><HelpListBox rows={loaded.lines.map(l=>l.row)} selected={index} onSelect={setIndex} onActivate={i=>void readLine(i)} label={M.rows} testId={`${testId}-rows`} columns/></div>
    <p className="cluster-hr-note">{M.note}</p>
    {message&&<div role="alert" className="cluster-member-question" data-testid={`${testId}-message`}><h4>{message.caption}</h4><p className="cluster-hr-message">{message.text}</p>
     <button type="button" className="secondary-button" onClick={()=>setMessage(null)}>{M.ok}</button></div>}
    <button type="button" className="secondary-button" data-testid={`${testId}-close`} onClick={()=>{setOpen(false);setHelp(null);opener.current?.focus();}}>{M.close}</button>
   </section>}
   {open&&help&&<section className="cluster-hr-window spl-window" aria-labelledby={`${id}-help`} data-testid={`${testId}-help`}>
-   <h3 id={`${id}-help`}>{SPECTRAL_LINE_HELP_CAPTION}</h3>
+   <h3 id={`${id}-help`} ref={helpHeading} tabIndex={-1}>{SPECTRAL_LINE_HELP_CAPTION}</h3>
    <HelpListBox rows={help.rows} selected={-1} onSelect={()=>{}} onActivate={()=>{}} label={M.helpRows} testId={`${testId}-help-text`} wrap/>
-   <button type="button" className="secondary-button" onClick={()=>setHelp(null)}>{M.close}</button>
+   <button type="button" className="secondary-button" data-testid={`${testId}-help-close`} onClick={closeHelp}>{M.close}</button>
   </section>}
  </div>;
 }

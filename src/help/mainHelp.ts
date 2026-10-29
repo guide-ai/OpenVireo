@@ -12,15 +12,16 @@ export const ABOUT_BOX=Object.freeze({caption:'About This Exercise',lines:Object
 
 /** Help › Websites (0x58ec84, 0x58ed24, 0x58ecd4 → 0x58ebe0 TWebBrowser.Navigate in a new window). The URLs are options
  * fields (URLs tab); these are their defaults (0x5a2e44..0x5a2ee8). Each original address was checked once from a shell
- * with a GET on 2026-10-29 (14:50 UTC): `web` is the address OpenVireo opens (null: shown as text only). */
+ * with a GET on 2026-10-29 (14:50 UTC; the NVO successor and https CLEA pages at 16:51–16:52 UTC after review 1 L5/I5): `web`
+ * is the address OpenVireo opens (null: shown as text only; no current entry is null). */
 export type HelpWebsite=Readonly<{key:'twoMass'|'clea'|'nvo';original:string;web:string|null;check:string}>;
 export const HELP_WEBSITES:readonly HelpWebsite[]=Object.freeze([
  Object.freeze({key:'twoMass',original:'http://xena.harvard.edu/software/catalogs/tmpsc.html',web:'https://irsa.ipac.caltech.edu/Missions/2mass.html',
   check:'host does not resolve; current equivalent: the 2MASS page of IRSA (NASA/IPAC Infrared Science Archive), 200 on 2026-10-29'}),
- Object.freeze({key:'clea',original:'http://public.gettysburg.edu/~marschal/clea/CLEAhome.html',web:'http://public.gettysburg.edu/~marschal/clea/CLEAhome.html',
-  check:'200, "PROJECT CLEA HOME PAGE", on 2026-10-29'}),
- Object.freeze({key:'nvo',original:'http://www.us-vo.org',web:null,
-  check:'host does not resolve; the US National Virtual Observatory project has ended and no equivalent page exists'}),
+ Object.freeze({key:'clea',original:'http://public.gettysburg.edu/~marschal/clea/CLEAhome.html',web:'https://public.gettysburg.edu/~marschal/clea/CLEAhome.html',
+  check:'200, "PROJECT CLEA HOME PAGE" (a 313-byte page), on 2026-10-29; the same page over https was 200 at 16:51 UTC and is the one opened'}),
+ Object.freeze({key:'nvo',original:'http://www.us-vo.org',web:'https://heasarc.gsfc.nasa.gov/navo/summary/about_navo.html',
+  check:'host does not resolve; the US NVO was succeeded by the VAO (ended 2014) and then by NASA\'s NAVO (NASA Astronomical Virtual Observatories, from October 2014): current equivalent "About NAVO" at HEASARC, 200 at 16:52 UTC on 2026-10-29'}),
 ]);
 
 /** Reminder box text (0x5a0418, called only from TEnvironment1.FormCloseQuery 0x588b9c): each line read with Readln into
@@ -29,6 +30,9 @@ export const HELP_WEBSITES:readonly HelpWebsite[]=Object.freeze([
 export const REMINDER_CAPTION='** Exercise Finished? **';
 export const REMINDER_SELECT='Select "OK" to Quit Exercise, "Cancel" to Continue.';
 export const REMINDER_LIMIT=1023;
+/** FormCloseQuery 0x588b9c step 3: shown when env+0x54c ≠ 3, or after 0x5a0418's "File Error!" box when the reminder file
+ * cannot be read (it then returns 3). Yes/No, same caption. */
+export const QUIT_QUESTION='Are You Sure You Want to Quit This Exercise?';
 export function reminderBoxText(bytes:Uint8Array):string{
  if(!(bytes instanceof Uint8Array)||bytes.length>65536)throw new RangeError('Reminder file size');
  let text='';for(const b of bytes)text+=String.fromCharCode(b);

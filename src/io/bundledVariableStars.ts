@@ -4,14 +4,15 @@
 // origin, bounded to and checked for the exact recorded size and SHA-256 BEFORE any record is decoded. Nothing is cached,
 // persisted or sent anywhere.
 import {VSTRS_FILE_BYTES} from '../core/variableStars';
+import {HELP_FILES} from '../help/helpFiles';
 import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha256} from './boundedResource';
 
 export type BundledVariableFileIdentity=Readonly<{path:string;name:string;bytes:number;sha256:string;archiveMember:string}>;
 export const BUNDLED_VARIABLE_ARCHIVE_SHA256='58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b';
 export const BUNDLED_VARIABLE_STARS:BundledVariableFileIdentity=Object.freeze({path:'/original/variables/CLEA_VStrs.dat',name:'CLEA_VStrs.dat',bytes:VSTRS_FILE_BYTES,
  sha256:'55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de',archiveMember:'program files/CLEA/VIREO/CLEA_VStrs.dat'});
-export const BUNDLED_VARIABLE_TYPE_HELP:BundledVariableFileIdentity=Object.freeze({path:'/original/variables/VarTypeHlp.TXT',name:'VarTypeHlp.TXT',bytes:743,
- sha256:'d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445',archiveMember:'program files/CLEA/VIREO/VarTypeHlp.TXT'});
+/** From src/help/helpFiles.ts, the single source of every bundled help file (review 1 I1). */
+export const BUNDLED_VARIABLE_TYPE_HELP:BundledVariableFileIdentity=HELP_FILES['VARTYPEHLP.TXT'];
 /** download: the request failed or answered without a body; size: not exactly the recorded byte count; sha256: other bytes. */
 export type BundledVariableFileFailure='download'|'size'|'sha256';
 export class BundledVariableFileError extends Error{

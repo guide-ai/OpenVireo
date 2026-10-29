@@ -5,7 +5,7 @@ import {VARIABLE_STARS_MENU as VM,QSO_LIST_MENU,HST_ARCHIVE} from '../core/obser
 import {FIELD_INFO_MESSAGES as M} from './FieldInfoMessages';
 import {QSO_LIST_MESSAGES as Q} from './QsoListMessages';
 import './field-info.css';
-import {ExitObservatoryDialog,HelpMenu} from '../help/HelpMenus';
+import {ExitObservatoryDialog} from '../help/HelpMenus';
 import {MAIN_HELP_MENU} from '../help/mainHelp';
 
 export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
@@ -15,8 +15,8 @@ export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
  *   (All Instruments), which that box enables; review 1 M1). File is hidden when it has no item.
  * - Tools › HST Image Archive...: the archive page as an external link, opened in a new tab only on click (user decision of
  *   2026-10-28, AGENTS.md; docs/QSO-LIST-HST.md).
- * - File › Exit Observatory shows VIREO's reminder (Reminder.obs); Help › Topics..., Websites, About... (Front H,
- *   docs/CLEA-HELP.md). File is therefore always shown.
+ * - File › Exit Observatory shows VIREO's reminder (Reminder.obs; Front H, docs/CLEA-HELP.md). File is therefore always
+ *   shown. The main window's Help menu is in the app header, so that every route reaches it.
  * The windows live in their own lazy components; this menu only sends open requests. Disabled only while a project is busy. */
 export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void}){
  const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null),[exiting,setExiting]=useState(false);
@@ -50,7 +50,6 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
     <p className="fi-note fi-menu-note" data-testid="hst-note">{Q.hst.note}</p>
    </div>}
   </div>
-  <HelpMenu kind="main" disabled={disabled}/>
   {exiting&&<ExitObservatoryDialog onClose={()=>{setExiting(false);requestAnimationFrame(()=>fileTrigger.current?.focus());}}/>}
  </div>;
 }

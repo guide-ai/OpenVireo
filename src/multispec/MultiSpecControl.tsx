@@ -1,4 +1,6 @@
 import {useEffect,useId,useRef} from 'react';
+import CleaHelp from '../clusters/CleaHelp';
+import {HELP_FILES} from '../help/helpFiles';
 import type {MultiSpecState,MultiSpecAction} from '../core/multiSpec';
 import {MULTISPEC_MESSAGES as N} from '../core/multiSpecFormat';
 import {t} from '../i18n';
@@ -18,7 +20,7 @@ export function MultiSpecBox({caption,text,question,onAnswer,testId='ms-box'}:Re
 const clockText=(c:Readonly<{minutes:number;seconds:number}>)=>`${c.minutes}:${String(c.seconds).padStart(2,'0')}`;
 /** TMultSpCntrl ("CLEA Multi-Channel Spectrometer Control", plan §2.1): the Objects menu, the three seven-segment displays,
  * the Select LED, Exposure Minutes, Init/Go/Stop. Every enable state is the reducer's (core/multiSpec.ts). Print Selection Field
- * (Print Sky Image is not ported) and Help (MLTSPHLP.LST is empty) stay disabled with their reason. */
+ * (Print Sky Image is not ported) and Help (its options index name +0xb54 is empty by default, docs/CLEA-HELP.md) stay disabled with their reason. */
 export default function MultiSpecControl({state,dispatch,busy,masked}:Readonly<{state:MultiSpecState;dispatch:(a:MultiSpecAction)=>void;busy:boolean;
  /** Object X rule (plan §4): the typed S/N reason is replaced by one neutral text. */masked:boolean}>){
  const c=state.controls,menu=c.objects&&!busy,id=useId();
@@ -31,9 +33,9 @@ export default function MultiSpecControl({state,dispatch,busy,masked}:Readonly<{
    <button type="button" className="secondary-button" disabled={!menu||!c.viewSave} onClick={()=>dispatch({type:'view-save'})} data-testid="ms-view-save">{C.viewSave}</button>
    <button type="button" className="secondary-button" disabled aria-describedby={`${id}-print`}>{C.printField}</button>
    <button type="button" className="secondary-button" disabled={busy} onClick={()=>dispatch({type:'close'})} data-testid="ms-close">{C.close}</button>
-   <button type="button" className="secondary-button" disabled aria-describedby={`${id}-help`}>{C.help}</button>
+   {/* TMultSpCntrl Help1: Help1.Enabled := Length(+0xb54) > 0, empty by default (0x529bb5). */}<CleaHelp list={HELP_FILES['MLTSPHLP.LST']} label={C.help} disabledReason={t('multispec.helpEmpty')} testId="ms-control-help"/>
   </div>
-  <p className="observatory-note" id={`${id}-print`}>{t('multispec.printFieldTyped')}</p><p className="observatory-note" id={`${id}-help`}>{t('multispec.helpEmpty')}</p>
+  <p className="observatory-note" id={`${id}-print`}>{t('multispec.printFieldTyped')}</p>
   <div className="ms-displays">
    <div className="ms-display"><span>{C.objectsDisplay}</span><output data-testid="ms-objects">{state.displays.objects}</output></div>
    <div className="ms-display"><span>{C.snr}</span><output data-testid="ms-snr">{snr}</output><small>{N.snrLabel}</small></div>

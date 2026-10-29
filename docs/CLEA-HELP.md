@@ -29,7 +29,7 @@ name is an options field; OpenVireo uses its default.
 | Telescope control TObsrvtry (0x53f080) | Telescope motion card | ObsrvHlp.LST (+0x8cc) |
 | Photometer (0x502118) | Photometer | PhotoHlp.LST (+0x95c) |
 | CCD camera (0x5130fc) and IR camera (0x51512c) | Camera window | CamHlp.LST (+0x9a4, +0x9ec) |
-| Spectrometer (0x510f4c) | Spectrometer | SpecHlp.LST (+0x914) |
+| Spectrometer (0x510f4c) | Star, galaxy and sky exposure windows, Object X spectroscopy, and the Spectrometer page | SpecHlp.LST (+0x914) |
 | Spectral classification (0x50b80c) | Classification | ClassHlp.LST (+0xa34) |
 | Spectrum measuring (0x584170) | Spectrum analyzer | MeasHlp.LST (+0xac4) |
 | HR diagram (0x544668) | Cluster HR views (Front V2) | HRAnalHlp.LST (+0xa7c) |
@@ -37,12 +37,17 @@ name is an options field; OpenVireo uses its default.
 | LSS wedge plot (0x5821cc) | Wedge plot | WdgPltHlp.LST (+0xb9c) |
 | Pulsar analysis (0x56e634) | Pulsar analysis | PLSANHLP.LST (pulsar +0x644) |
 | Pulsar parameters, TPlsrDataForm1 (0x569690) | Pulsar parameters window | PLSLSHLP.LST (pulsar +0x68c) |
-| Main window, Help › Topics... (0x589724) | Observatory menu bar › Help | VIRMnHlp.LST (+0x884) |
-| Radio lab, Help › Topics... (0x565278) | Radio telescope panel › Help | PULSRHLP.LST (pulsar +0x5fc) |
+| Main window, Help › Topics... (0x589724) | App header › Help, on every route | VIRMnHlp.LST (+0x884) |
+| Radio lab, Help › Topics... (0x565278) | Radio telescope control panel › Help | PULSRHLP.LST (pulsar +0x5fc) |
+| Multi-Spec list TMSpecListForm1 (0x5267a8) | Multi-Spec list window | SpLstHlp (+0xb0c), empty: Help disabled |
+| Multi-Spec control TMultSpCntrl (0x52a88c) | Multi-Spec control window | MltSpHlp (+0xb54), empty: Help disabled |
 
 Notes:
-- Pulsar analysis does not add its first topic to the Back history (0x56e634 leaves THelpWin+0x56c unset), and OpenVireo matches that.
-- The multi-object spectrometer's two windows (TMSpecListForm1, TMultSpCntrl) default to empty index names, so VIREO disables their Help. MLTSPHLP.LST and SPLSTHLP.LST are 0 bytes. Wiring that disabled item into the multi-spectrometer windows is left for after Front M merges (`CleaHelp` has a `disabledReason` prop).
+- **Viewers [W].** VIREO has one shared THelpWin and one Select Help Topic dialog for all windows, with one Back history. OpenVireo gives each window its own viewer and its own history.
+- **Pulsar analysis history.** 0x56e634 does not write THelpWin+0x56c, the "add to history" flag. In VIREO that flag is sticky on the shared window: every other Help1Click and every link sets it to 1, and Back sets it to 0, so the pulsar analysis's first topic is pushed or not depending on the previous action. OpenVireo models the fresh-window case: in pulsar analysis a topic opened from the topic list is not pushed (opening A, then B from the list, leaves Back disabled, where other windows have [A, B] and Back enabled). A followed link is pushed, but no PULSRANL.TXT topic has a related-topic link.
+- **Multi-object spectrometer.** TMSpecListForm1 and TMultSpCntrl enable Help only when their options index name is non-empty (`Length(name) > 0`, 0x525a56 / 0x529bb5). Both names are empty by default, so VIREO disables both Help items, and OpenVireo shows them disabled with that reason. MLTSPHLP.LST and SPLSTHLP.LST are also 0 bytes, but by default they are never opened.
+- **Spectrometer.** TSpectrometer is the window students expose with, so its Help is in each exposure window (star, galaxy, sky, Object X spectroscopy). The Spectrometer page keeps it too.
+- **Accessible names [W].** Every Help button keeps VIREO's visible caption "Help" and has an accessible name for its window that starts with it (for example "Help for the telescope controls", "Help for the camera"), so the several Help buttons on one view can be told apart.
 - The variable-star Help used to be a web split of VarTypeHlp.TXT. It now opens VarTypeHlp.LST in the shared viewer.
 - The pulsar parameters window used to have a help text written for this site. It now opens PLSLSHLP.LST.
 
@@ -55,7 +60,11 @@ The main window's Help has:
 
 The radio lab's Help has Topics... and About This Exercise... ("Version 1.001-32").
 
-Both windows also have On Help and User items. VIREO hides them by default, because their option names are empty, so they are not shown here. The About box keeps the TAboutBox texts.
+Both windows also have On Help and User items. VIREO hides them by default, because their option names are empty, so they are not shown here. The About box keeps the TAboutBox texts. The DFM's design-time "Version 0.5" is always overwritten by the caller (0x58982c, 0x56543c), so it is never shown; `src/help/mainHelp.ts` is the single source of these texts, and `AboutBoxPanel` in `src/help/HelpMenus.tsx` renders them.
+
+Where the menus are:
+- **Main window [W].** VIREO's TEnvironment1 is the always-present main window, so its Help menu is in the app header, next to the theme switch, on every route (including Object X, LSS, Hubble and the variable stars). On phones it is inside the header's Tools panel. The observatory view keeps only File and Tools.
+- **Radio lab.** TRadioLab is the "VIREO Radio Telescope Control Panel" form, which VIREO shows only after the telescope is switched on, so its Help menu exists only then. Before that, OpenVireo shows the radio Help menu disabled, with a note saying where it appears.
 
 ## Websites (user decision of 2026-10-29)
 
@@ -66,8 +75,10 @@ Each original address was checked once from a shell, with a GET on 2026-10-29 at
 | Item | Original | Result | OpenVireo |
 |---|---|---|---|
 | 2MASS Catalog | `http://xena.harvard.edu/software/catalogs/tmpsc.html` | host does not resolve | current equivalent `https://irsa.ipac.caltech.edu/Missions/2mass.html` (IRSA 2MASS page, 200 at 14:51 UTC) |
-| Project CLEA | `http://public.gettysburg.edu/~marschal/clea/CLEAhome.html` | 200, "PROJECT CLEA HOME PAGE" | original address |
-| NVO | `http://www.us-vo.org` | host does not resolve; the US NVO project has ended | no link; the address is shown as text with the reason |
+| Project CLEA | `http://public.gettysburg.edu/~marschal/clea/CLEAhome.html` | 200, "PROJECT CLEA HOME PAGE" (a 313-byte page) | the same page over https, `https://public.gettysburg.edu/~marschal/clea/CLEAhome.html` (200 at 16:51 UTC) |
+| NVO | `http://www.us-vo.org` | host does not resolve | current equivalent `https://heasarc.gsfc.nasa.gov/navo/summary/about_navo.html` ("NASA Astronomical Virtual Observatories", 200 at 16:52 UTC) |
+
+The US NVO was succeeded by the Virtual Astronomical Observatory (VAO, ended 2014) and then by NASA's NAVO (from October 2014), so NAVO's "About NAVO" page at HEASARC is used (review 1 L5). Three other candidates were checked once and not used: `https://heasarc.gsfc.nasa.gov/navo/` (a directory listing), `https://heasarc.gsfc.nasa.gov/docs/navo/` (404) and `https://nasa-navo.github.io/` (an empty GitHub Pages stub). If an address has no equivalent, the menu shows it as text with the reason; no current entry does.
 
 ## Reminders
 
@@ -75,7 +86,12 @@ Each original address was checked once from a shell, with a GET on 2026-10-29 at
 - The box has caption `** Exercise Finished? **`, and OK and Cancel buttons.
 - Its text is the file plus `Select "OK" to Quit Exercise, "Cancel" to Continue.`, capped at 1023 characters.
 
-OpenVireo shows the box from File › Exit Observatory, VIREO's Exit1 item. File is now always shown, because it holds that item. A web page cannot close its own tab, so OK only says that the exercise can now be closed.
+VIREO shows the reminder only when env+0x54c = 3, which Run1Click, AccessAllInstruments1Click and TitleTimerTimer set (a session is running). Otherwise, or after a "File Error!" box when the file cannot be read, it asks `Are You Sure You Want to Quit This Exercise?` (Yes/No, same caption).
+
+OpenVireo shows the box from File › Exit Observatory, VIREO's Exit1 item. File is now always shown, because it holds that item.
+- **[W] Gate.** The web has no Log In or Run Exercise step: the observatory is always an exercise in progress, so it always takes the env+0x54c = 3 branch and shows the reminder.
+- If the bundled Reminder.obs cannot be loaded or fails its size or SHA-256 check, the box says so and asks VIREO's Yes/No question instead.
+- A web page cannot close its own tab, so OK or Yes only says that the exercise can now be closed.
 
 `REMINDER.PLS` is never shown by VIREO: its only references are the default, the options file and the options dialog. It is bundled but not used.
 
@@ -85,7 +101,7 @@ Spectral Line Table (VIREO's TSpClassify › Spectral Line Table) lists the 30 S
 
 Double-click or Enter opens "Spectral Line Help" from SPECLNS.TXT. VIREO looks up the section by the line's name, not its wavelength (0x504fd0). As a result, 13 of the 30 rows show another line's section: every later He I line shows `*3819.61 He I*`, O II shows O III, Ca I shows Ca II K, and so on. That rule is kept, and the window says so.
 
-In VIREO a single click also moves the classification cursor to the line; that link is not ported.
+In VIREO a single click also moves the classification cursor to the line; that link is not ported. If SPECLNS.TXT cannot be loaded, only the help side reports it (a message box); the line list stays open. The help window takes focus when it opens, and Close returns focus to the line list.
 
 ## Indexes no VIREO window opens
 

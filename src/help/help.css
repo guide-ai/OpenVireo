@@ -4,3 +4,9 @@
 .help-reminder-text{white-space:pre-line;max-width:min(36rem,100%)}
 .help-menu-off{font-weight:600}
 .spl-window{max-width:min(40rem,100%)}
+/* The main Help menu in the app header (dark chrome): its list is in the flow, so the sidebar never clips it. */
+.portal-help{margin-bottom:var(--ov-space-2)}
+.portal-help .fi-menu>button{min-height:36px;width:100%;text-align:left;border-color:var(--ov-chrome-border);background:var(--ov-chrome-hover);color:var(--ov-chrome-text)}
+.portal-help .fi-menu>button:focus-visible{outline:2px solid var(--ov-chrome-focus);outline-offset:2px}
+.portal-help .fi-menu-list{position:static;margin-top:4px;min-width:0;max-width:100%}
+@media(min-width:600px) and (max-width:1099.98px){.portal-footer{display:flex;align-items:flex-start;gap:var(--ov-space-2)}.portal-help{margin:0}.portal-help .fi-menu-list{position:absolute;left:auto;right:0;min-width:min(18rem,calc(100vw - 48px))}.portal-help .fi-menu{position:relative}}

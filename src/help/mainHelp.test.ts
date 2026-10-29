@@ -12,7 +12,7 @@ describe('main window Help data (RECOVERY.md §3–5)',()=>{
  });
  it('keeps every original website address and opens only checked ones',()=>{
   expect(HELP_WEBSITES.map(w=>w.original)).toEqual(['http://xena.harvard.edu/software/catalogs/tmpsc.html','http://public.gettysburg.edu/~marschal/clea/CLEAhome.html','http://www.us-vo.org']);
-  expect(HELP_WEBSITES.map(w=>w.web)).toEqual(['https://irsa.ipac.caltech.edu/Missions/2mass.html','http://public.gettysburg.edu/~marschal/clea/CLEAhome.html',null]);
+  expect(HELP_WEBSITES.map(w=>w.web)).toEqual(['https://irsa.ipac.caltech.edu/Missions/2mass.html','https://public.gettysburg.edu/~marschal/clea/CLEAhome.html','https://heasarc.gsfc.nasa.gov/navo/summary/about_navo.html']);
   expect(ABOUT_BOX.mainVersion).toBe('Version 1.504');expect(ABOUT_BOX.radioVersion).toBe('Version 1.001-32');
  });
 });

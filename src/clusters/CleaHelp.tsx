@@ -4,6 +4,7 @@ import {findHelpTopic,helpBackEnabled,helpHistoryBack,helpHistoryOpen,helpLinkTa
 import {foldAsciiCase,searchRadioHotListRows,RADIO_HOT_LIST_SEARCH_QUERY_MAX} from '../core/radioHotListSearch';
 import {fetchBundledClusterHelp} from '../io/bundledClusterHelp';
 import {HELP_FILES,helpFile,type HelpFileIdentity} from '../help/helpFiles';
+import {HELP_BUTTON_NAMES} from '../help/HelpMessages';
 import {CLUSTER_HR_EN as M} from './ClusterHrMessages';
 import ClusterPrintPreview from './ClusterPrintPreview';
 import './cluster-hr.css';
@@ -45,7 +46,7 @@ export function HelpListBox({rows,selected,onSelect,onActivate,label,testId,wrap
 /** A VIREO menu as a disclosure button and a group of buttons (no ARIA menu roles; Escape closes and refocuses). */
 function HelpMenu({label,open,onToggle,children,testId}:{label:string;open:boolean;onToggle:(open:boolean)=>void;children:ReactNode;testId:string}){
  const trigger=useRef<HTMLButtonElement>(null),id=useId();
- return <div className="cluster-hr-menu" onKeyDown={e=>{if(e.key==='Escape'&&open){e.stopPropagation();onToggle(false);trigger.current?.focus();}}}>
+ return <div className="cluster-hr-menu" onKeyDown={e=>{if(e.key==='Escape'&&open){e.preventDefault();e.stopPropagation();onToggle(false);trigger.current?.focus();}}}>
   <button type="button" ref={trigger} aria-expanded={open} aria-controls={id} data-testid={testId} onClick={()=>onToggle(!open)}>{label}</button>
   {open&&<div id={id} role="group" aria-label={label} className="cluster-hr-menu-list">{children}</div>}
  </div>;
@@ -95,7 +96,9 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
  const id=useId(),loaded=typeof load==='object'?load:null;
  useEffect(()=>{const d=listDialog.current;if(listOpen&&d&&!d.open)d.showModal();if(!listOpen&&d?.open)d.close();},[listOpen,loaded]);
 
- const returnFocus=()=>{if(onReturnFocus)onReturnFocus();else opener.current?.focus();};
+ /** After the list dialog has closed: dialog.close() runs in the effect above and restores focus to whatever was focused
+  * before showModal() (in menu mode an item that no longer exists), so focus is set on the next frame (review 1 M2). */
+ const returnFocus=()=>requestAnimationFrame(()=>{if(onReturnFocus)onReturnFocus();else opener.current?.focus();});
  useEffect(()=>{if(openRequest)void openHelp();
  },[openRequest]);
  async function openHelp(){
@@ -149,7 +152,7 @@ export default function CleaHelp({testId='cluster-help',list=HELP_FILES['HRANALH
 
  return <div className="cluster-hr-help" data-testid={testId}>
   {openRequest===undefined?<div className="cluster-hr-help-bar">
-   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'||disabledReason!==undefined} aria-describedby={disabledReason?`${id}-off`:undefined} onClick={()=>void openHelp()}>{label}</button>
+   <button type="button" ref={opener} className="secondary-button" data-testid={`${testId}-open`} disabled={load==='loading'||disabledReason!==undefined} aria-describedby={disabledReason?`${id}-off`:undefined} aria-label={label===M.help?HELP_BUTTON_NAMES[list.name]:undefined} onClick={()=>void openHelp()}>{label}</button>
    {disabledReason&&<span id={`${id}-off`} className="cluster-hr-note">{disabledReason}</span>}
    {load==='loading'&&<span role="status">{M.helpLoading}</span>}
    {load==='error'&&<span role="alert">{M.helpLoadError} <button type="button" className="secondary-button" onClick={()=>void openHelp()}>{M.helpRetry}</button></span>}

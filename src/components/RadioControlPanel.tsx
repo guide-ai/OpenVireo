@@ -34,6 +34,7 @@ import RadioHotListSearchDialog from './RadioHotListSearchDialog';
 import {ignoreHeldKey,nativeModalOpen,noNativeModal,observeNativeModals,observeNothing,trapTab} from './radioModal';
 import './RadioControlPanel.css';
 import {HelpMenu} from '../help/HelpMenus';
+import {HELP_MENU_EN} from '../help/HelpMessages';
 
 export type RadioControlPanelProps=Readonly<{
  /** E08 Object X: label that replaces a hot-list row's identifier and remark near an unrevealed target, or null. */
@@ -630,6 +631,8 @@ export default function RadioControlPanel({state,environment,onTransition,onEnvi
    {environment.domeByte===3&&<p>{t('radio.timer.domeWait')}</p>}
    {(state.scopeTimerIntervalMs===null||!autoScopeTimer)&&<button type="button" className="secondary-button" data-testid="radio-timer-deliver" onClick={()=>run(()=>scopeTimerTick(state,environment))}>{t('radio.timer.deliver')}</button>}
   </section>}
+  {/* TRadioLab's Help is on the control panel form, which exists only while it is shown; off, the menu is disabled with a note. */}
+  {!state.radioPanelShown&&<div className="fi-menubar" data-testid="radio-help-closed"><HelpMenu kind="radio" disabledReason={HELP_MENU_EN.radioOff}/></div>}
   {state.radioPanelShown&&<section role="region" aria-labelledby={`${id}-panel`} className="radio-panel-window" data-testid="radio-panel-window" inert={antennaModal||undefined}>
    <h3 id={`${id}-panel`}>{t('radio.panel.heading')}</h3>
    <p className="radio-control-native" data-testid="antenna-form-caption">{RADIO_LAB_CAPTIONS.form}</p>
