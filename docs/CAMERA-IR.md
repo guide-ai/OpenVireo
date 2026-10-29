@@ -5,7 +5,7 @@
 ## Catalog
 The original IR window asks **NOMAD**, the CCD's service, with J, H or K selected (0x51dfda; filter positions 0/1/2 → NOMAD selectors 3/4/5). The web reads NOMAD (VizieR I/297) `Jmag`/`Hmag`/`Kmag`. There is no 2MASS query; the `xena.harvard.edu/…/tmpsc.html` string is only the Help ▸ 2MASS link. NOMAD's J/H/K come from 2MASS, so IR images credit it: *This work uses data from the Two Micron All Sky Survey (2MASS; Skrutskie et al. 2006, AJ 131, 1163), a joint project of the University of Massachusetts and IPAC/Caltech, funded by NASA and the NSF.*
 
-The IR search radius (1.5 × half of the larger field side) is 0.19° on the 0.4 m, 0.10° on the 0.9 m and 0.09° on the 4 m telescope, inside the 0.23° bundled CCD extracts. Hosts, live mode and refusals are as for the CCD.
+The IR search radius (1.5 × half of the larger field side) is 0.19° on the 0.4 m, 0.10° on the 0.9 m and 0.09° on the 4 m telescope, inside the 0.25° bundled extracts. Hosts, live mode and refusals are as for the CCD.
 
 ## Recovered model (what differs from the CCD)
 - Detector: 512 × 512 pixels of 40 µm, 32-bit A/D, well 250 000 e⁻, liquid nitrogen; gains 1, 2, 4, 8 e⁻/ADU. Seeing jitter on (IR record byte +0x5a = 1, store 0x5a2c48).

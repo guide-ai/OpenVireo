@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 
 // C6 IR camera. Every VizieR request is intercepted with the AUTHORED J/H/K table
 // tests/fixtures/vizier/authored-nomad-jhk-control.xml (not VizieR output, not an observation).
-const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|cdsarc|unistra\.fr/;
+const CDS=/vizier\.cds\.unistra\.fr|vizier\.cfa\.harvard\.edu|vizier\.idia\.ac\.za|cdsarc|unistra\.fr/;// every VizieR mirror the camera may ask
 const jhk=readFile(new URL('./fixtures/vizier/authored-nomad-jhk-control.xml',import.meta.url));
 const button=(p:Page,name:string)=>p.getByRole('button',{name,exact:true});
 const camera=(p:Page)=>p.getByTestId('camera-control');
@@ -45,14 +45,14 @@ test('a live K exposure asks NOMAD with the IR radius, makes a 512² image and s
  const seen=watch(page);await trackedField(page);const body=await jhk;
  await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
  await camera(page).getByLabel('IR camera (J, H, K)').check();
- await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();
+ await camera(page).getByLabel(/Ask VizieR live/).check();
  await camera(page).getByLabel('Filter').selectOption({label:'K'});await camera(page).getByLabel('Gain (e⁻/ADU)').selectOption('8');
  await camera(page).getByLabel('Minutes').fill('0');await camera(page).getByLabel('Seconds').fill('1');
  await button(page,'Start exposure').click();
  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:15_000});
  expect(seen).toHaveLength(1);
  const url=new URL(seen[0].url());
- expect(url.origin+url.pathname).toBe('https://vizier.cds.unistra.fr/viz-bin/conesearch/I/297/out');
+ expect(url.origin+url.pathname).toBe('https://vizier.idia.ac.za/viz-bin/conesearch/I/297/out');
  expect([...url.searchParams.keys()]).toEqual(['RA','DEC','SR']);expect(url.searchParams.get('SR')).toBe('0.19');
  await expect(page.getByTestId('camera-canvas')).toHaveAttribute('aria-label','IR image, filter K, 1 s.');
  expect(await page.getByTestId('camera-canvas').evaluate(c=>[(c as HTMLCanvasElement).width,(c as HTMLCanvasElement).height])).toEqual([512,512]);
@@ -74,7 +74,7 @@ test('a live K exposure asks NOMAD with the IR radius, makes a 512² image and s
 test('the 2MASS credit and IR note stay while an IR image is shown, even after choosing the CCD camera',async({page})=>{
  await trackedField(page);const body=await jhk;
  await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
- await camera(page).getByLabel('IR camera (J, H, K)').check();await camera(page).getByLabel(/Ask CDS\/VizieR live/).check();
+ await camera(page).getByLabel('IR camera (J, H, K)').check();await camera(page).getByLabel(/Ask VizieR live/).check();
  await camera(page).getByLabel('Minutes').fill('0');await camera(page).getByLabel('Seconds').fill('1');
  await button(page,'Start exposure').click();
  await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:15_000});

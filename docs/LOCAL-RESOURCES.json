@@ -7321,6 +7321,106 @@
       "path": "data/clusters/cluster-dialog-certificate.json",
       "bytes": 8418,
       "sha256": "0ac7a8cf303429c259e9ee1f88aeab5b1df046da3d2b06a2a0bbd71258afb1a3"
+    },
+    {
+      "path": "public/original/sounds/CHACLUNK.WAV",
+      "bytes": 3588,
+      "sha256": "5dfc3dc78c3e19138c30b2497a3c54cf57509c034a52b01431a61adf8ffe19d5"
+    },
+    {
+      "path": "public/original/sounds/CLUNK.WAV",
+      "bytes": 4636,
+      "sha256": "19f91a0cbf4c35747376d32bda484206c4054fade382aa123c6de01f73badd24"
+    },
+    {
+      "path": "public/original/sounds/CLUNKIT.WAV",
+      "bytes": 6692,
+      "sha256": "abb5ad92221c4a15a5de8305c612f55ae704669d04c6315e016479d20ad41561"
+    },
+    {
+      "path": "public/original/sounds/CRASHBRN.WAV",
+      "bytes": 46046,
+      "sha256": "6a8ed02ecccc59d56d4230d3a0ac283eca09de769c37daf28ca7a9d614d1c2df"
+    },
+    {
+      "path": "public/original/sounds/CRINKLE.WAV",
+      "bytes": 17796,
+      "sha256": "81a60be4543b17fbc4ddc72e2adbc23f44bd27d0afb378480a65b6fbc24a7c3a"
+    },
+    {
+      "path": "public/original/sounds/DRAG.WAV",
+      "bytes": 9252,
+      "sha256": "68ab5ac6e2afa76918a561bf9e979650ceda7e4bd599662abd127b1f166414a3"
+    },
+    {
+      "path": "public/original/sounds/Emotor.wav",
+      "bytes": 828968,
+      "sha256": "27682f609423c2daf2c2c1c74dd3f76ccdd217540bb4547eda0483fccb6528ba"
+    },
+    {
+      "path": "public/original/sounds/GARDOOR.WAV",
+      "bytes": 565304,
+      "sha256": "aec0b9999c2298c2469d001a800e1de3df9e9c44a2b4ba8abfb7acc37b8a2c7e"
+    },
+    {
+      "path": "public/original/sounds/GARSAVE.WAV",
+      "bytes": 406754,
+      "sha256": "a51be55727f58c7bb5b6fa6ba27224eaacc68f18c9689681157711f61406fd33"
+    },
+    {
+      "path": "public/original/sounds/HYDROLIC.WAV",
+      "bytes": 92716,
+      "sha256": "d17b389ebb601a69c9aba320b78c99953d4004036657251c194cf6f957897640"
+    },
+    {
+      "path": "public/original/sounds/KERCHUNK.WAV",
+      "bytes": 8870,
+      "sha256": "39156a29e029318b7527718a263c3d0352ba38bf204eef18017dfe2d2c400410"
+    },
+    {
+      "path": "public/original/sounds/MACHINE.WAV",
+      "bytes": 13612,
+      "sha256": "f2dcc4e94e7ebf40d4f17029e3f7fa1488c11c27689836239d37ad87e1cae7ae"
+    },
+    {
+      "path": "public/original/sounds/MACHINEZ.WAV",
+      "bytes": 21036,
+      "sha256": "a39f32b0e27f2b513f7d1cb0b84bfe202bea28e276adbf412986bd907c13b4b8"
+    },
+    {
+      "path": "public/original/sounds/MAILBOX.WAV",
+      "bytes": 26782,
+      "sha256": "06961720b2c45060887f23ac6af45b2c6694be207330dfb1b886cf23334b0f58"
+    },
+    {
+      "path": "public/original/sounds/ROLLING.WAV",
+      "bytes": 35820,
+      "sha256": "1856759696182e1467181462428aa2610f81dd7c73c12a4d6101485986f84308"
+    },
+    {
+      "path": "public/original/sounds/servocontin.wav",
+      "bytes": 1409580,
+      "sha256": "a6ac45d93af84dbeb7b222d8610a222b212c06095a9c601ce0040d030a1f2e33"
+    },
+    {
+      "path": "public/original/sounds/servostart.wav",
+      "bytes": 1678528,
+      "sha256": "dbe52d6b9b7fe9ea0c36df57fba686052a46fd0aadf42dc8b38619b9ce5c9d64"
+    },
+    {
+      "path": "public/original/sounds/TINCAN.WAV",
+      "bytes": 11084,
+      "sha256": "f8b65bf6ef7744f6c16b60421d6aa9319b07616308a5b60e3221a0f93317e80b"
+    },
+    {
+      "path": "public/original/sounds/TROLLEY.WAV",
+      "bytes": 353836,
+      "sha256": "e18de9123231e2b8eb5612464789af22605a21e6ef808dfef179d72f50e59952"
+    },
+    {
+      "path": "public/original/sounds/WHAADING.WAV",
+      "bytes": 11370,
+      "sha256": "83a9de76f6603c875b3b6fc19f3db2e1a31f18b327adbd73e5021da1ac57c457"
     }
   ]
 }

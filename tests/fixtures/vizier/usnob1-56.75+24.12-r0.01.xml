@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE version="1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.ivoa.net/xml/VOTable/v1.3"
+  xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3">
+ <DESCRIPTION>
+   VizieR Astronomical Server vizier.idia.ac.za
+    Date: 2026-10-29T22:19:14 [V7.6.1]
+   Explanations and Statistics of UCDs:			See LINK below
+   In case of problem, please report to:	cds-question@unistra.fr
+ </DESCRIPTION>
+<!-- VOTable description at http://www.ivoa.net/Documents/latest/VOT.html -->
+<INFO ID="standardID" name="standardID" value="ivo://ivoa.net/std/ConeSearch/1.03"/>
+<INFO name="service_protocol" value="ivo://ivoa.net/std/ConeSearch/1.03">  IVOID of the protocol through which the data was retrieved</INFO>
+<INFO name="request_date" value="2026-10-29T22:19:14">  Query execution date</INFO>
+<INFO name="request" value="https://vizier.idia.ac.za/viz-bin/conesearch/I/284/out?RA=56.75&amp;DEC=24.12&amp;SR=0.01">  Full request URL</INFO>
+<INFO name="contact" value="cds-question@unistra.fr">  Email or URL to contact publisher</INFO>
+<INFO name="server_software" value="VizieR/7.6.1">  Software version</INFO>
+<INFO name="publisher" value="CDS">  Data centre that produced the VOTable</INFO>
+
+<!--
+Execution Reports
+ -->
+<INFO name="MaxTuples" value="50000" />
+<INFO ID="Target" name="-c" value="056.750000+24.120000,rd=0.01">
+Constraint SR=0.01</INFO>
+
+<RESOURCE ID="yCat_1284" name="I/284" type="results">
+  <DESCRIPTION>The USNO-B1.0 Catalog (Monet+ 2003)</DESCRIPTION>  <INFO name="ivoid" value="ivo://cds.vizier/i/284">    IVOID of underlying data collection  </INFO>
+  <INFO name="data_ivoid" value="ivo://cds.vizier/i/284">    IVOID of underlying data collection  </INFO>
+  <INFO name="creator" value="Monet D.G.">    First author or institution  </INFO>
+  <INFO name="cites" value="bibcode:2003AJ....125..984M">    Article or Data origin sources  </INFO>
+  <INFO name="journal" value="AJ">    Journal name  </INFO>
+  <INFO name="original_date" value="2003">    Year of the article publication  </INFO>
+  <INFO name="reference_url" value="https://cdsarc.cds.unistra.fr/viz-bin/cat/I/284">    Dataset landing page  </INFO>
+  <INFO name="publication_date" value="2024-08-26">    Date of first publication in the data centre  </INFO>
+  <INFO name="rights_uri" value="https://cds.unistra.fr/vizier-org/licences_vizier.html">    Licence URI  </INFO>
+
+  <COOSYS ID="J2000_2000.000" system="eq_FK5" equinox="J2000" epoch="2000.000"/>
+  <COOSYS ID="J2000" system="eq_FK5" equinox="J2000"/>
+  <TIMESYS ID="time_1" refposition="UNKNOWN" timeorigin="0.000000" timescale="UNKNOWN"/>
+  <TABLE ID="I_284_out" name="I/284/out">
+    <DESCRIPTION>data (around 0+0)</DESCRIPTION>
+<!-- The Whole-Sky USNO-B1.0 Catalog of 1,045,913,669 sources -->
+
+    <!-- RowName: ${USNO-B1.0}&-c=${$poseq}&-c.rs=0.004 -->
+    <!-- Definitions of GROUPs and FIELDs -->
+    <FIELD name="_r" ucd="pos.angDistance" datatype="double" width="8" precision="6"><!-- ucd="POS_ANG_DIST_GENERAL" -->
+      <DESCRIPTION>Distance from center (056.750000+24.120000)[FK5/J2000], at Epoch=J2000.0 [datatype=double]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="_RAJ2000" ucd="POS_EQ_RA_MAIN" ref="J2000" datatype="double" width="12" precision="8" unit="deg"><!-- ucd="pos.eq.ra;meta.main" -->
+      <DESCRIPTION>Right ascension (FK5, Equinox=J2000.0) at Epoch=J2000, proper motions taken into account  [datatype=double]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="_DEJ2000" ucd="POS_EQ_DEC_MAIN" ref="J2000" datatype="double" width="12" precision="8" unit="deg"><!-- ucd="pos.eq.dec;meta.main" -->
+      <DESCRIPTION>Declination (FK5, Equinox=J2000.0) at Epoch=J2000, proper motions taken into account  [datatype=double]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="USNO-B1.0" ucd="ID_MAIN" datatype="char" arraysize="12*"><!-- ucd="meta.id;meta.main" -->
+      <DESCRIPTION>Designation of the object (1) [datatype=char]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="RAJ2000" ucd="pos.eq.ra" ref="J2000_2000.000" datatype="double" width="10" precision="6" unit="deg"><!-- ucd="POS_EQ_RA" -->
+      <DESCRIPTION>Right Ascension at Eq=J2000, Ep=J2000 (2) [datatype=double]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="DEJ2000" ucd="pos.eq.dec" ref="J2000_2000.000" datatype="double" width="10" precision="6" unit="deg"><!-- ucd="POS_EQ_DEC" -->
+      <DESCRIPTION>Declination at Eq=J2000, Ep=J2000 (2) [datatype=double]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="e_RAJ2000" ucd="stat.error;pos.eq.ra" datatype="short" width="3" unit="mas"><!-- ucd="ERROR" -->
+      <DESCRIPTION>Mean error on RAdeg*cos(DEdeg) at Epoch [datatype=short]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="e_DEJ2000" ucd="stat.error;pos.eq.dec" datatype="short" width="3" unit="mas"><!-- ucd="ERROR" -->
+      <DESCRIPTION>Mean error on DEdeg at Epoch [datatype=short]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="Epoch" ucd="time.epoch" ref="time_1" datatype="float" width="6" precision="1" unit="yr"><!-- ucd="TIME_EPOCH" -->
+      <DESCRIPTION>Mean epoch of observation (2) [datatype=float]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="pmRA" ucd="pos.pm;pos.eq.ra" ref="J2000_2000.000" datatype="int" width="5" unit="mas/yr"><!-- ucd="POS_EQ_PMRA" -->
+      <DESCRIPTION>Proper motion in RA (relative to YS4.0) [datatype=int]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="pmDE" ucd="pos.pm;pos.eq.dec" ref="J2000_2000.000" datatype="int" width="5" unit="mas/yr"><!-- ucd="POS_EQ_PMDEC" -->
+      <DESCRIPTION>Proper motion in DE (relative to YS4.0) [datatype=int]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="Ndet" ucd="meta.number" datatype="unsignedByte" width="1"><!-- ucd="NUMBER" -->
+      <DESCRIPTION>[0,5] Number of detections (7) [datatype=unsignedByte]</DESCRIPTION>
+    </FIELD>
+    <FIELD name="B1mag" ucd="phot.mag;em.opt.B" datatype="float" width="5" precision="2" unit="mag"><!-- ucd="PHOT_PHG_B" -->
+      <DESCRIPTION>? First blue magnitude [datatype=float]</DESCRIPTION>
+      <VALUES null="NaN" />
+    </FIELD>
+    <FIELD name="R1mag" ucd="phot.mag;em.opt.R" datatype="float" width="5" precision="2" unit="mag"><!-- ucd="PHOT_PHG_R" -->
+      <DESCRIPTION>? First red magnitude [datatype=float]</DESCRIPTION>
+      <VALUES null="NaN" />
+    </FIELD>
+    <FIELD name="B2mag" ucd="phot.mag;em.opt.B" datatype="float" width="5" precision="2" unit="mag"><!-- ucd="PHOT_PHG_B" -->
+      <DESCRIPTION>? Second blue magnitude [datatype=float]</DESCRIPTION>
+      <VALUES null="NaN" />
+    </FIELD>
+    <FIELD name="R2mag" ucd="phot.mag;em.opt.R" datatype="float" width="5" precision="2" unit="mag"><!-- ucd="PHOT_PHG_R" -->
+      <DESCRIPTION>? Second red magnitude [datatype=float]</DESCRIPTION>
+      <VALUES null="NaN" />
+    </FIELD>
+    <FIELD name="Imag" ucd="phot.mag;em.opt.I" datatype="float" width="5" precision="2" unit="mag"><!-- ucd="PHOT_PHG_I" -->
+      <DESCRIPTION>? Infrared (N) magnitude [datatype=float]</DESCRIPTION>
+      <VALUES null="NaN" />
+    </FIELD>
+<DATA><TABLEDATA>
+<TR><TD>0.009928</TD><TD>056.74210310</TD><TD>+24.11317301</TD><TD>1141-0043146</TD><TD>056.742103</TD><TD>+24.113173</TD><TD>999</TD><TD>160</TD><TD>1974.3</TD><TD>0</TD><TD>0</TD><TD>2</TD><TD>21.03</TD><TD></TD><TD></TD><TD></TD><TD>15.64</TD></TR>
+<TR><TD>0.007710</TD><TD>056.74356198</TD><TD>+24.11500895</TD><TD>1141-0043150</TD><TD>056.743562</TD><TD>+24.115009</TD><TD>63</TD><TD>999</TD><TD>1974.3</TD><TD>0</TD><TD>0</TD><TD>2</TD><TD>20.23</TD><TD></TD><TD></TD><TD></TD><TD>17.95</TD></TR>
+<TR><TD>0.002662</TD><TD>056.74708390</TD><TD>+24.11998701</TD><TD>1141-0043154</TD><TD>056.747084</TD><TD>+24.119987</TD><TD>368</TD><TD>17</TD><TD>1979.5</TD><TD>-2</TD><TD>4</TD><TD>3</TD><TD></TD><TD>19.25</TD><TD></TD><TD>18.86</TD><TD>18.49</TD></TR>
+<TR><TD>0.009534</TD><TD>056.74142790</TD><TD>+24.12544799</TD><TD>1141-0043142</TD><TD>056.741428</TD><TD>+24.125448</TD><TD>999</TD><TD>510</TD><TD>1974.3</TD><TD>0</TD><TD>0</TD><TD>2</TD><TD>20.49</TD><TD></TD><TD></TD><TD></TD><TD>18.40</TD></TR>
+</TABLEDATA></DATA>
+</TABLE>
+<INFO name="matches" value="4">matching records</INFO>
+
+<INFO name="Warning" value="Can't build column '_L'"/>
+<INFO name="Warning" value="Column '_L' can'be created (Can't build column)"/>
+<INFO name="Warning" value="increase the precision for computed column 9"/>
+<INFO name="Warning" value="increase the precision for computed column 9"/>
+</RESOURCE>
+</VOTABLE>
