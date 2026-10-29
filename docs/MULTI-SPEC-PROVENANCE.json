@@ -1,0 +1,350 @@
+{
+ "policy": "OpenVireo-multispec-v1",
+ "scope": "Front M: the VIREO multi-object spectrometer (TMultSpCntrl, TMSpecListForm1, TMSpecDsplyForm1).",
+ "artifact": {
+  "name": "CLEA_VEO.exe (VIREO 1.504)",
+  "sha256": "781bc9704b4674038267834a9ed21d502c455378d8fc9eb15a1653e20c52c54c",
+  "note": "Never executed or emulated; objdump listings and pe.py data reads only."
+ },
+ "plan": "analysis/front-plans/front-m-multispec.md",
+ "generator": {
+  "path": "analysis/front-m-multispec/tools/multispec_provenance.py",
+  "sha256": "9bb242e2c5fe78f95704fe3524b76db8137c4d9fd244dc9a4c504a8f6d1f7152"
+ },
+ "derivedEvidence": [
+  {
+   "id": "VM-L-data-reads",
+   "path": "analysis/front-m-multispec/dossiers/data-reads.txt",
+   "sha256": "536521b470812a769ed4680e094d7790659a97892ce8e8a8ebb1dc90036ba34a",
+   "addresses": null,
+   "kind": "static data/DFM read (pe.py)"
+  },
+  {
+   "id": "VM-L-dfm-multispec-forms",
+   "path": "analysis/front-m-multispec/dossiers/dfm-multispec-forms.txt",
+   "sha256": "53571e315513678d0f2608293416c5e47da00360f988106342aead12b54a0a6e",
+   "addresses": null,
+   "kind": "static data/DFM read (pe.py)"
+  },
+  {
+   "id": "VM-L-environment-exercise-mode-writes",
+   "path": "analysis/front-m-multispec/dossiers/environment-exercise-mode-writes.asm",
+   "sha256": "21dc2493e5be9f24753a2945aef079a0afd6353664d506041ed98ec1f1ef6cf9",
+   "addresses": "0x58a3a9..0x58afeb",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-galaxy-spectrum-ctor-55e55c",
+   "path": "analysis/front-m-multispec/dossiers/galaxy-spectrum-ctor-55e55c.asm",
+   "sha256": "eb028c94c270ac6eebafc789d099eaec2faaa06d02cbdd25f4286c1a15c15bcc",
+   "addresses": "0x55e55c..0x55e979",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-list-primitives-4924d4",
+   "path": "analysis/front-m-multispec/dossiers/list-primitives-4924d4.asm",
+   "sha256": "46bb7fa55a2d4a6ebf192adb832150567bacc7731d4eaed62ad0114e220ba9ed",
+   "addresses": "0x4924d4..0x4927ff",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-mspecdsply-526cf0-5299a0",
+   "path": "analysis/front-m-multispec/dossiers/mspecdsply-526cf0-5299a0.asm",
+   "sha256": "f7cfd27ffbeb6d951f889a28ccce6c356a84c5e36856b5e758c78e90dcfd1ccd",
+   "addresses": "0x526cf0..0x52999f",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-mspecdsply-print-528454",
+   "path": "analysis/front-m-multispec/dossiers/mspecdsply-print-528454.asm",
+   "sha256": "caad1f2cbe8af6fb0f534b5208c41260db6c09c37c254d8c61b42100d3f5eafe",
+   "addresses": "0x528454..0x529109",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-mspeclist-525800-526cf0",
+   "path": "analysis/front-m-multispec/dossiers/mspeclist-525800-526cf0.asm",
+   "sha256": "9b346e49d493a13681a5df3be6b65674c51d6fd159097b12518abc0c835061dc",
+   "addresses": "0x525800..0x526ced",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-mspeclist-scan-clear-show-526270",
+   "path": "analysis/front-m-multispec/dossiers/mspeclist-scan-clear-show-526270.asm",
+   "sha256": "5c3abd3ead20c0c676ab829eaa9417874f233bf09515b4a257340a7c402ce6a0",
+   "addresses": "0x526270..0x526ced",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-multspcntrl-5299a0-52ab00",
+   "path": "analysis/front-m-multispec/dossiers/multspcntrl-5299a0-52ab00.asm",
+   "sha256": "fac2700f4a38fecbfc7fc82dca3ee8d2f31f56cbced3cca49b6145f5dd899028",
+   "addresses": "0x5299a0..0x52aafb",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-crt1mouse-53cfa8-53d8b8",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-crt1mouse-53cfa8-53d8b8.asm",
+   "sha256": "08c0a11c827f2fb26394ef550f4395a96f6c725758ca190fbd1e02fe3214e5c3",
+   "addresses": "0x53cfa8..0x53d8b5",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-default-instrument-by-mode-538062",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-default-instrument-by-mode-538062.asm",
+   "sha256": "18c21729b97ebac7a81b14f812e8218088c24724175f1f60387b6cd6514fe603",
+   "addresses": "0x538062..0x5380dc",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-field-regenerate-53a741",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-field-regenerate-53a741.asm",
+   "sha256": "d972ed06e7c2676d15008eb6e079f074ef98b70d336773f04079f84508099b66",
+   "addresses": "0x53a741..0x53beac",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-formactivate-instslider-537a0b",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-formactivate-instslider-537a0b.asm",
+   "sha256": "bd7eae007c0e3a83d6a51413092d886777bb3fb52e5cffe8a7be369688cd75d5",
+   "addresses": "0x537a0b..0x537a39",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-formhide-53e2ac",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-formhide-53e2ac.asm",
+   "sha256": "56f6b2a1cdfc137892c8165b7a7b69e292c589788ab8ae2f2487cee199007b12",
+   "addresses": "0x53e2ac..0x53e447",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-rdngbtnclick-53cce4",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-rdngbtnclick-53cce4.asm",
+   "sha256": "948ee4bcee20564bcc793847e1448d2485c235c159ca5dd962326daa27ffec22",
+   "addresses": "0x53cce4..0x53cff5",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-sliders-53e194",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-sliders-53e194.asm",
+   "sha256": "cefea9514d3b09e127fdef01d8cde321975a78033f5c928fe070fd170b467643",
+   "addresses": "0x53e194..0x53e2aa",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-telescope-zeropoint-53df24",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-telescope-zeropoint-53df24.asm",
+   "sha256": "716451697f2d986b2d44537dc61451687ab9bdce2f141a36aa6844d60ce3799b",
+   "addresses": "0x53df24..0x53df67",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-obsrvtry-window-menu-53f7d0",
+   "path": "analysis/front-m-multispec/dossiers/obsrvtry-window-menu-53f7d0.asm",
+   "sha256": "b201903733d5a69e2162b3cbfbe7294d581feb9c3685b02c531981ba48291f15",
+   "addresses": "0x53f7d0..0x53f86b",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-optionsdlg-formactivate-excerpt-5a57e0",
+   "path": "analysis/front-m-multispec/dossiers/optionsdlg-formactivate-excerpt-5a57e0.asm",
+   "sha256": "c6d51ca320629920272027640d38737064fab417ccb8a93af1a60c25920eba50",
+   "addresses": "0x5a57e0..0x5a5a1c",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-optionsdlg-ok-excerpt-5a6090",
+   "path": "analysis/front-m-multispec/dossiers/optionsdlg-ok-excerpt-5a6090.asm",
+   "sha256": "5e9e6b2862d219290402d911bea0c42db568dabc217540c5c1a1440becb92731",
+   "addresses": "0x5a6090..0x5a652f",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  },
+  {
+   "id": "VM-L-poisson-init-55f0d0",
+   "path": "analysis/front-m-multispec/dossiers/poisson-init-55f0d0.asm",
+   "sha256": "120ca5ba74e2cff534ec0fcc8328b286c9c9f4b99bf1ae9c4779a0ae0cd1f162",
+   "addresses": "0x55f0d0..0x55f12c",
+   "kind": "objdump -d -M intel listing of CLEA_VEO.exe (static)"
+  }
+ ],
+ "contracts": [
+  {
+   "id": "VM-01",
+   "tag": "D",
+   "title": "Access: instrument slider position 3 (Multi-Spec) and Access (RdngBtnClick 0x53cce4 case 3 at 0x53ce0c); Window menu; FormHide closes it",
+   "ranges": [
+    "0x537a0b",
+    "0x53e194",
+    "0x53cce4..0x53ce0c",
+    "0x53f7d0",
+    "0x53e2ac"
+   ],
+   "evidence": [
+    "VM-L-obsrvtry-formactivate-instslider-537a0b",
+    "VM-L-obsrvtry-sliders-53e194",
+    "VM-L-obsrvtry-rdngbtnclick-53cce4",
+    "VM-L-obsrvtry-window-menu-53f7d0",
+    "VM-L-obsrvtry-formhide-53e2ac"
+   ]
+  },
+  {
+   "id": "VM-02",
+   "tag": "D",
+   "title": "Selection arming: Edit Mode or exercise mode 0 (Access All Instruments) / 1 (Object X), Telescope view only",
+   "ranges": [
+    "0x53cfab..0x53cfe4",
+    "0x53d2c1",
+    "0x58a278..0x58afeb"
+   ],
+   "evidence": [
+    "VM-L-obsrvtry-crt1mouse-53cfa8-53d8b8",
+    "VM-L-environment-exercise-mode-writes"
+   ]
+  },
+  {
+   "id": "VM-03",
+   "tag": "D",
+   "title": "Default instrument by exercise mode (Multi-Spec never the default)",
+   "ranges": [
+    "0x538062",
+    "0x53807e"
+   ],
+   "evidence": [
+    "VM-L-obsrvtry-default-instrument-by-mode-538062"
+   ]
+  },
+  {
+   "id": "VM-04",
+   "tag": "D",
+   "title": "TMultSpCntrl: selection (nearest star vs galaxy, 10 px sky threshold, 1 px duplicate), removal, Init/Go/Stop, 1 s ticks, exposure minutes, S/N",
+   "ranges": [
+    "0x5299a0..0x52ab00"
+   ],
+   "evidence": [
+    "VM-L-multspcntrl-5299a0-52ab00",
+    "VM-L-dfm-multispec-forms"
+   ]
+  },
+  {
+   "id": "VM-05",
+   "tag": "D",
+   "title": "Field regeneration clears the selection (0x53a741 → 0x53be70 → Clear1Click)",
+   "ranges": [
+    "0x53a741"
+   ],
+   "evidence": [
+    "VM-L-obsrvtry-field-regenerate-53a741"
+   ]
+  },
+  {
+   "id": "VM-06",
+   "tag": "D",
+   "title": "Per-fibre spectrum: 400 channels 3700–4700 Å, Poisson per bin (object then sky), RNG reseeded per fibre, full flux, no sky subtraction, telescope zero point",
+   "ranges": [
+    "0x526cf0..0x5299a0",
+    "0x55f0d0..0x55f324",
+    "0x53df24",
+    "0x55e55c"
+   ],
+   "evidence": [
+    "VM-L-mspecdsply-526cf0-5299a0",
+    "VM-L-poisson-init-55f0d0",
+    "VM-L-obsrvtry-telescope-zeropoint-53df24",
+    "VM-L-galaxy-spectrum-ctor-55e55c"
+   ]
+  },
+  {
+   "id": "VM-07",
+   "tag": "D",
+   "title": "TMSpecListForm1: items, Scan, Save All, Clear All, Open/Close All, Show/Close Spectrum",
+   "ranges": [
+    "0x525800..0x526cf0"
+   ],
+   "evidence": [
+    "VM-L-mspeclist-525800-526cf0",
+    "VM-L-mspeclist-scan-clear-show-526270",
+    "VM-L-list-primitives-4924d4"
+   ]
+  },
+  {
+   "id": "VM-08",
+   "tag": "D",
+   "title": "TMSpecDsplyForm1: Information, Save (.SSP: 400 lines, 2/6 decimals, no header), Print",
+   "ranges": [
+    "0x526cf0..0x5299a0",
+    "0x528454"
+   ],
+   "evidence": [
+    "VM-L-mspecdsply-526cf0-5299a0",
+    "VM-L-mspecdsply-print-528454"
+   ]
+  },
+  {
+   "id": "VM-09",
+   "tag": "D",
+   "title": "Options dialog values (base count, timer, sky magnitude, Show Object ID/Mag, Test Mode): compiled defaults used",
+   "ranges": [
+    "0x5a57e0",
+    "0x5a6090"
+   ],
+   "evidence": [
+    "VM-L-optionsdlg-formactivate-excerpt-5a57e0",
+    "VM-L-optionsdlg-ok-excerpt-5a6090",
+    "VM-L-data-reads"
+   ]
+  }
+ ],
+ "webPolicies": [
+  {
+   "id": "VM-W1",
+   "tag": "W",
+   "title": "Access card",
+   "rule": "The web observatory has no instrument slider: a Multi-Spec card with Access stands for slider position 3; the Object X lab mounts the same instrument on its field."
+  },
+  {
+   "id": "VM-W2",
+   "tag": "W",
+   "title": "Mode 0",
+   "rule": "Mode 0 is reachable only through the instructor Virtual Observatory option (Front O2, VObsBox options+0x27d5, default off, not persisted); Edit Mode and Object X (mode 1) arm selection as recovered; LSS (mode 5) never arms it."
+  },
+  {
+   "id": "VM-W3",
+   "tag": "W",
+   "title": "Save All",
+   "rule": "One uncompressed (STORE) .zip of the byte-exact .SSP files (D4)."
+  },
+  {
+   "id": "VM-W4",
+   "tag": "W",
+   "title": "Object X masking",
+   "rule": "Before the reveal and within 2.375° of an Object X position: no names in Information, file names or zip entries, one neutral failure text, V and Edit Mode lines hidden. Only the fibre that is the target (the record a click at its projected position selects, within the native 10 px) reads ObjX-<ID>; every other non-sky fibre, Object X neighbours included, reads the neutral name (review 1 M1)."
+  },
+  {
+   "id": "VM-W5",
+   "tag": "W",
+   "title": "Numeric policy",
+   "rule": "binary64 Number/Math for x87 Extended; Singles via Math.fround; the Poisson rejection branch [D] reproduced and checked by the independent witness."
+  }
+ ],
+ "uncertainty": [
+  "Print Selection Field and Help (0-byte help files) are not ported (typed).",
+  "Sky fibres: RA/Dec/V are uninitialised natively (\"not recorded\", D8); the S/N estimate is indeterminate with a sky fibre.",
+  "Star index 0 (native random template pick) is typed star-template-random; templates outside the approvals stay spectrum-template-unapproved.",
+  "Native save dialogs (folder, base name, overwrite confirm) are not ported: a browser download."
+ ],
+ "witnesses": [
+  "data/multispec/witness.json (multispec_witness.py: LCG, Poisson incl. rejection branch, grid, templates, QSO; 11 fibres × 2 telescopes)",
+  "data/multispec/template-requirements.json (bundle_templates.py)"
+ ],
+ "d3Counts": {
+  "harness": {
+   "path": "analysis/front-m-multispec/tools/multispec_d3_counts.test.ts.txt",
+   "sha256": "097a82838f6bf132571eee16bdb3df187c6b36e0dad626c4ba35abc2901a0626"
+  },
+  "output": {
+   "path": "analysis/front-m-multispec/tools/multispec-d3-counts.json",
+   "sha256": "1c355fa40fa49b32b7a9eb164e18a7f45b7a1d8c46d034f5624679c18544d8ef"
+  },
+  "note": "Counts behind the D3 sentence of docs/MULTI-SPEC.md (review 1 L1); the harness header states the field bases, fibre rules and outcome classes."
+ }
+}
