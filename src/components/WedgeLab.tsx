@@ -10,6 +10,8 @@ import{WedgeFileError,downloadWedgeText,readWedgeLssFile}from'../io/wedgeLssFile
 import{wedgeMessages,wedgeStatusText,type WedgeMessageCatalog,type WedgeMessageOverrides}from'./WedgeMessages';
 import WedgeOptionsDialog from'./WedgeOptionsDialog';
 import WedgePlotSvg from'./WedgePlotSvg';
+import CleaHelp from '../clusters/CleaHelp';
+import {HELP_FILES} from '../help/helpFiles';
 
 export type WedgeLabProps=Readonly<{
  /** Translated replacements (any subset, nested groups partial); missing keys fall back to English. */
@@ -139,7 +141,7 @@ export default function WedgeLab({messages,idPrefix='wedge-',disabled=false,onWo
 
  return <section ref={root} className="wedge-lab" aria-labelledby={id('title')} aria-disabled={disabled||undefined} data-testid="wedge-lab" onKeyDown={promptKey}>
   <div inert={modal||undefined} data-testid="wedge-content">
-   <h2 id={id('title')}>{C.windowCaption}</h2>
+   <h2 id={id('title')}>{C.windowCaption}</h2>{/* TWedgePlot Help1, FormShow 0x580e9f, options +0xb9c (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['WDGPLTHLP.LST']} testId="wedge-help"/>
    <p>{m.intro}</p>
    <p className="wedge-persistence" role="note" data-testid="wedge-persistence">{m.persistenceNote}</p>
    <div className="wedge-toolbar">

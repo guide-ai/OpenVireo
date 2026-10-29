@@ -6786,6 +6786,181 @@
       "path": "data/clusters/cluster-reference-detail.json",
       "bytes": 147038,
       "sha256": "759336e4902a3fa14aaeb64d1f8f708f689e889b5ee151a073aaf179e9022487"
+    },
+    {
+      "path": "public/original/help/ASTRMHLP.LST",
+      "bytes": 1366,
+      "sha256": "a5088a41ca31f7a6ecca82c0368b8d979e7758682718e09c96107fd39cb40993"
+    },
+    {
+      "path": "public/original/help/CAMHLP.LST",
+      "bytes": 456,
+      "sha256": "7ca10650d72074ce46d24c5b1460f4cb764ed789520d7e8492355f80974dbf57"
+    },
+    {
+      "path": "public/original/help/CAMHLP.TXT",
+      "bytes": 3887,
+      "sha256": "bf4976da1b1f976613646e10c954b95039e646f3362004cafb242da4572155b8"
+    },
+    {
+      "path": "public/original/help/CLASSHLP.LST",
+      "bytes": 470,
+      "sha256": "42816959943e8d817884bd08b1f91856d4fab4450d5431ceee0f5b595c550fb0"
+    },
+    {
+      "path": "public/original/help/CLASSHLP.TXT",
+      "bytes": 11919,
+      "sha256": "9a3a70c11f5cfc024552e6b70db59953b16f40cafeea09a8d06974859a26a3b7"
+    },
+    {
+      "path": "public/original/help/HUBHLP.LST",
+      "bytes": 880,
+      "sha256": "ec4b9c183d430d371e13b6c3e5ea65167a58aeb8a866563b0425def1f7c25cf7"
+    },
+    {
+      "path": "public/original/help/LSSHLP.LST",
+      "bytes": 1141,
+      "sha256": "f4ee3de45cead6cac0ae53458c94f9927bd48248a573632787d9e6a275e05c10"
+    },
+    {
+      "path": "public/original/help/MEASHLP.LST",
+      "bytes": 576,
+      "sha256": "3912d67bafaaee84b877f326dc171171dd19a87a659c287911f77994d938a04c"
+    },
+    {
+      "path": "public/original/help/MEASHLP.TXT",
+      "bytes": 6851,
+      "sha256": "e9f20545e1ff580439f45af3fd2e9aff0b64b1cd4edab467d07e8de1813577ac"
+    },
+    {
+      "path": "public/original/help/MLTSPHLP.LST",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "public/original/help/OBJXHLP.LST",
+      "bytes": 1119,
+      "sha256": "79ab3f8ffdbbaa0d06c74bcf438ff6ae47ad1fcb1c4ec10b185f6694aedae37c"
+    },
+    {
+      "path": "public/original/help/OBSRVHLP.LST",
+      "bytes": 429,
+      "sha256": "916b1453d6d99ab0a81091140790814e4c99a4c3800a6194a70f076ee5982a3a"
+    },
+    {
+      "path": "public/original/help/OBSRVHLP.TXT",
+      "bytes": 5275,
+      "sha256": "2dcae5e678d69ed80784bb2958ed856289ff04779edd19656681288846102bd7"
+    },
+    {
+      "path": "public/original/help/OBXMNHLP.LST",
+      "bytes": 804,
+      "sha256": "62d1c620cb3d2155e4790de4e194fd34ba524a6d90aa1168a3c2d87842bd6e9f"
+    },
+    {
+      "path": "public/original/help/PHOTOHLP.LST",
+      "bytes": 609,
+      "sha256": "315364175f104f6da587aec795e9aeec9b0b931fcfbf6a3f129a24784f20cc7b"
+    },
+    {
+      "path": "public/original/help/PHOTOHLP.TXT",
+      "bytes": 12647,
+      "sha256": "aaf7f6827f418cf1aa1e2da70185b96ecf96ffd919899d84547a8695afa42d8a"
+    },
+    {
+      "path": "public/original/help/PLSANHLP.LST",
+      "bytes": 672,
+      "sha256": "fc62c7f0f49ffdc8cc188e6119b9ebe79da613e27bc1561c44e5d5565ac16ec8"
+    },
+    {
+      "path": "public/original/help/PLSLSHLP.LST",
+      "bytes": 306,
+      "sha256": "d5203ea9d4468c0d2ed5933c23d71174d6cadd0e0ea099be86e9a92d492d4f27"
+    },
+    {
+      "path": "public/original/help/PULSRANL.TXT",
+      "bytes": 8571,
+      "sha256": "9d1cb3ff7daf80cc79f9a97f0b8f13a740b41f7162ba46f3d0cb31e8ac851bf4"
+    },
+    {
+      "path": "public/original/help/PULSRHLP.LST",
+      "bytes": 956,
+      "sha256": "4b229953564fd1df57cf88e724848f38ae1f66d85a12a270f879618145fcb270"
+    },
+    {
+      "path": "public/original/help/PULSRHLP.TXT",
+      "bytes": 17785,
+      "sha256": "3a6b8e727be8340095a284ad8dbe4e075613b2d081d83e93537a901a6c8377fc"
+    },
+    {
+      "path": "public/original/help/PULSRLST.TXT",
+      "bytes": 2882,
+      "sha256": "51df0d67752ffa73d661e33751905db3af359e723062c70eb25883b947c79bb8"
+    },
+    {
+      "path": "public/original/help/REMINDER.PLS",
+      "bytes": 179,
+      "sha256": "88b039ea22794aec5ffb332c0b25a0e3eb78a045f8d212e80abbe69e0f7da11f"
+    },
+    {
+      "path": "public/original/help/Reminder.obs",
+      "bytes": 186,
+      "sha256": "adb3d5a92895363d961ca0cdf66ec9b4b4656d1e641e228041cabc5a104f3ee6"
+    },
+    {
+      "path": "public/original/help/SPECHLP.LST",
+      "bytes": 476,
+      "sha256": "1b90822216661b0592e1873d6a44994cd30ec5843f5f907774ad580e0f7b4c49"
+    },
+    {
+      "path": "public/original/help/SPECHLP.TXT",
+      "bytes": 5585,
+      "sha256": "e085a513389cd65a7726260daf6607b8c277be6e6a2a46222a8fd5bb90fcee79"
+    },
+    {
+      "path": "public/original/help/SPECLNS.LNL",
+      "bytes": 1005,
+      "sha256": "c3c4eb3171ba2b8f35c5248fc28a084ec49f7abfe18918df89d6285c8369b6c5"
+    },
+    {
+      "path": "public/original/help/SPECLNS.TXT",
+      "bytes": 3557,
+      "sha256": "495d0627f11e1f8a5e780f04aa4f402a6b6650e6a26181c5842b7ecaea9faa5a"
+    },
+    {
+      "path": "public/original/help/SPLSTHLP.LST",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "public/original/help/TOOLSHLP.LST",
+      "bytes": 1119,
+      "sha256": "79ab3f8ffdbbaa0d06c74bcf438ff6ae47ad1fcb1c4ec10b185f6694aedae37c"
+    },
+    {
+      "path": "public/original/help/VIRMNHLP.LST",
+      "bytes": 960,
+      "sha256": "db9bab876ef1d03ad8b0e96596eb47c3ca9573156a65b4bff7b49bbfac295b2a"
+    },
+    {
+      "path": "public/original/help/VIRMNHLP.TXT",
+      "bytes": 19231,
+      "sha256": "6267cd7f2ae72562f8218b4404e566817682b75143cd67bc34fa133fe8dddebc"
+    },
+    {
+      "path": "public/original/help/WdgPltHlp.LST",
+      "bytes": 440,
+      "sha256": "737b422b9470b2513de43e8adb45b998127cffbede93c569c5f97e5fa11eea8a"
+    },
+    {
+      "path": "public/original/help/WdgPltHlp.TXT",
+      "bytes": 3891,
+      "sha256": "01d062eb13b41a197aa6123256a991c5b4b4194b47968d816d60d1302f5fd10e"
+    },
+    {
+      "path": "public/original/variables/VarTypeHlp.LST",
+      "bytes": 294,
+      "sha256": "81cc58382cc90a1d0e3eaa41d414a7df73f07b80453f1bd65d169df72fffe913"
     }
   ]
 }

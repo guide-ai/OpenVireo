@@ -48,6 +48,8 @@ import {
 } from '../core/pulsarLoadSave';
 import { createLoadSaveTranslator, type LoadSaveMessageKey, type LoadSaveTranslate } from './PulsarLoadSaveMessages';
 import { pulsarMeasurementSummary, samePulsarMeasurementSummary, type PulsarMeasurementSummary } from '../core/pulsarLab';
+import CleaHelp from '../clusters/CleaHelp';
+import {HELP_FILES} from '../help/helpFiles';
 
 /**
  * `active` (default true) lets a host keep the panel mounted while hidden or busy. While inactive the
@@ -1133,7 +1135,7 @@ export default function PulsarAnalysis({ translate, translateLoadSave, idPrefix 
   return (
     <section ref={root} className="plr" aria-labelledby={`${idPrefix}title`} inert={!active} data-active={active} data-testid="pulsar-analysis" onKeyDownCapture={captureRepeatedEnter}>
       <div className="plr-main" inert={modal}>
-        <h2 id={`${idPrefix}title`}>{t('pulsar.title')}</h2>
+        <h2 id={`${idPrefix}title`}>{t('pulsar.title')}</h2>{/* TPlsrAnalysisForm1 Help1, FormActivate 0x56ad92, pulsar options +0x644 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['PLSANHLP.LST']} pushHistory={false} testId="pulsar-analysis-help"/>
         <p className="plr-scope">{t('pulsar.scope')}</p>
         {restoredNote && <p className="plr-help" data-testid="pulsar-restored-note">{t('pulsar.restored.note')}</p>}
 

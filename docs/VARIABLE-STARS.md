@@ -25,7 +25,7 @@ witness scripts are outside the repository: `/home/dobleuber/Documents/Codex/202
 | 4 | **Simulated Light Curve**: 1.5 cycles from the epoch, VIREO layout and colours | TLtCrvDsplyForm1 | original (fonts differ) |
 | 5 | Data › Save Text › **As Displayed...** downloads `<GCVS ID>.TXT` | Save dialog, empty default name, `.TXT` | adaptation (file name, browser download) |
 | 6 | Data/File › **Print...** opens a print preview of the page body (see Print) | printer pages | adaptation (date format, placeholder for the student/lab text, landscape layout, no fonts) |
-| 7 | **Help** shows VarTypeHlp.TXT sections | CLEA help viewer via VarTypeHlp.LST | adaptation |
+| 7 | **Help** opens VarTypeHlp.LST in the shared help viewer (Front H, docs/CLEA-HELP.md) | CLEA help viewer via VarTypeHlp.LST | port |
 
 One-line labels shown in the app: the entry adaptation (`variable-adaptation`), "The plot keeps VIREO's layout, colours and
 pixel positions; fonts differ.", the Save Text and Print adaptations, and the Help note. A short guide ("How to use this
@@ -42,7 +42,7 @@ Byte-exact from CLEA_Vireo.zip (58dc02a6…6778b), `program files/CLEA/VIREO/`, 
 (CLEA_VStrs.dat) and 2026-10-27 group 1 (VarTypeHlp.TXT) in AGENTS.md. Manifest 1316 → 1318 (`docs/LOCAL-RESOURCES.json`,
 `docs/RESOURCE-PROVENANCE.json` new group `public/original/variables`, `THIRD_PARTY_NOTICES.txt`). `totalBytes` in
 RESOURCE-PROVENANCE.json was recomputed from the file list (it was 176 bytes low before this change; the per-group byte
-totals still carry that older 176-byte difference). VarTypeHlp.LST (the original help index) is not approved and not included.
+totals still carry that older 176-byte difference). VarTypeHlp.LST (the original help index) was approved on 2026-10-29 and is bundled since Front H (docs/CLEA-HELP.md).
 The catalog appears to derive from the GCVS (Samus et al.); that attribution is an inference and uncertain.
 `src/io/bundledVariableStars.ts` fetches both files from this origin, bounded to and checked for size and SHA-256 before
 decoding.

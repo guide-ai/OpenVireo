@@ -1,19 +1,22 @@
 {
   "schema": 1,
-  "scope": "All files in LOCAL-RESOURCES.json(count in totalFiles):the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help,plus the derived data/clusters comments and point sidecar(approval of2026-10-28,cluster HR tools (a) and (b));no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json.",
-  "totalFiles": 1357,
-  "totalBytes": 128371379,
+  "scope": "All files in LOCAL-RESOURCES.json(count in totalFiles):the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help,plus the derived data/clusters comments and point sidecar(approval of2026-10-28,cluster HR tools (a) and (b));no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json. Plus the 35 byte-exact VIREO help files (user approval of 2026-10-29): 34 in public/original/help and VarTypeHlp.LST in public/original/variables.",
+  "totalFiles": 1392,
+  "totalBytes": 128487903,
   "extensions": {
     ".BMP": 4,
     ".CMO": 2,
     ".DAT": 2,
     ".HTL": 12,
-    ".LST": 7,
+    ".LNL": 1,
+    ".LST": 27,
+    ".PLS": 1,
     ".SP": 82,
     ".SPI": 1,
-    ".TXT": 2,
+    ".TXT": 14,
     ".dat": 4,
     ".json": 1070,
+    ".obs": 1,
     ".png": 170,
     ".sav": 1
   },
@@ -163,10 +166,10 @@
       "upstreamStatus": "Included under the user approval of 2026-10-27 (AGENTS.md, group 2), based on CLEA License.rtf free noncommercial student copies/no distribution for profit. Originator Project CLEA, Gettysburg College; supporters NSF and Gettysburg College. GSC source-specific terms remain uncertain; not the full GSC or any complete band."
     },
     "public/original/variables": {
-      "files": 2,
-      "bytes": 2866267,
+      "files": 3,
+      "bytes": 2866561,
       "materialClass": "unchanged-original-binary-and-text-resource",
-      "description": "Byte-exact original VIREO variable-star files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/CLEA_VStrs.dat(2865524bytes,31147records of92bytes,sorted by RA),SHA-256 55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de;and program files/CLEA/VIREO/VarTypeHlp.TXT(743bytes,CRLF text,the variable-type help sections),SHA-256 d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445.VarTypeHlp.LST(the original help index)and every other file are excluded.",
+      "description": "Byte-exact original VIREO variable-star files from CLEA_Vireo.zip(SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b):program files/CLEA/VIREO/CLEA_VStrs.dat(2865524bytes,31147records of92bytes,sorted by RA),SHA-256 55b7e3c392caf7d9df729b8222c4f2164fc0e23bde5da7c4e6c05ff679dc87de;and program files/CLEA/VIREO/VarTypeHlp.TXT(743bytes,CRLF text,the variable-type help sections),SHA-256 d92f4a14aa7a2923d2921d4ab7fe90a38870e8667b7274629884b69bb6c5f445.VarTypeHlp.LST(the original help index)and every other file are excluded. Plus VarTypeHlp.LST(294bytes,zip date2008-02-18,the variable-type help index naming VarTypeHlp.TXT),SHA-256 81cc58382cc90a1d0e3eaa41d414a7df73f07b80453f1bd65d169df72fffe913,under the user approval of2026-10-29.",
       "usedBy": "Variable Star Data and Simulated Light Curve(docs/VARIABLE-STARS.md):lazy same-origin fetch,size and SHA-256 checked before parsing;records decoded by src/core/variableStars.ts,light curve by src/core/lightCurve.ts",
       "upstreamStatus": "Included under the user approvals of2026-10-26(CLEA_VStrs.dat)and2026-10-27(VarTypeHlp.TXT,group1)recorded in AGENTS.md,on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The records follow the General Catalogue of Variable Stars(GCVS,Samus et al.)field layout(ID,type,max/min magnitudes and flags,magnitude system,epoch,period,M-m/D,spectrum);that upstream identification is an inference from the form captions and values and remains uncertain.No public-domain or open-license status,independent upstream permission or original-runtime equivalence is asserted."
     },
@@ -209,6 +212,14 @@
       "description": "Derived Front V2 cluster data from CLEA_Vireo.zip (SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b), read as data by analysis/front-v2-cluster-hr/tools/cluster_sidecar.py (SHA-256 90f69e7be1d1fabce4cb7941f2c29ff389da3273be57f1da8b838b06198834c0): cluster-comments.json holds only the 16 comment strings (ShortString[40] at offset 0x3d) of CLUSTERS.DAT (1632 bytes, SHA-256 bec9dfb53969ba3828dff98962d9c80c3c7b5e51646f2a88ef70bcf634545ff2), keyed by the existing contract ids; cluster-reference-detail.json holds, for each of the 2873 already-published cluster points, the native ID, U-B Int16, the four flag bits and the spectral code of its compact GSC record, with the source band hashes. Every record reproduces its published RA, Dec, V and B-V exactly. Neither CLUSTERS.DAT itself, its distance/age columns, nor any new catalog record is included.",
       "usedBy": "Cluster HR tools (docs/CLUSTER-HR-TOOLS.md): Select Cluster Data list rows, Display/Print Data (CLEA Cluster Data listing) and Possible Cluster Member",
       "upstreamStatus": "Included under the user approval of2026-10-28 recorded in AGENTS.md (cluster HR tools (a) and (b)), on the CLEA License.rtf basis(free noncommercial student copies,no distribution for profit).Originator Project CLEA,Gettysburg College;supporters NSF and Gettysburg College.The GSC source-specific terms remain uncertain.No original-runtime equivalence is asserted."
+    },
+    "public/original/help": {
+      "files": 34,
+      "bytes": 116230,
+      "materialClass": "unchanged-original-text-resource",
+      "description": "Byte-exact original VIREO help files from CLEA_Vireo.zip (SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b), program files/CLEA/VIREO/: the *HLP.LST help indexes (quoted title and file tokens), their *HLP.TXT texts with **Title** section headers, PULSRANL.TXT, PULSRLST.TXT, SPECLNS.TXT, SPECLNS.LNL, Reminder.obs and REMINDER.PLS; names, sizes and SHA-256 in the research file analysis/help-files-2026-10-29.txt and in src/help/helpFiles.ts. MLTSPHLP.LST and SPLSTHLP.LST are 0 bytes in the archive. ASTRMHLP, HUBHLP, LSSHLP, OBJXHLP, OBXMNHLP and TOOLSHLP name text files (astrmhlp.txt, hublab.txt, lsslab.txt, astrmlab.txt, ObXMnHlp.txt) that CLEA_Vireo.zip does not contain. VarTypeHlp.LST of the same approval is recorded in group public/original/variables.",
+      "usedBy": "CLEA Help across VIREO (docs/CLEA-HELP.md): lazy same-origin fetch, size and SHA-256 checked before parsing; indexes and topics read by src/core/cleaHelp.ts (the shared CLEA help viewer recovered from CLEA_VEO.exe 0x492f90, 0x493264, 0x493708, 0x59f174).",
+      "upstreamStatus": "Included under the user approval of 2026-10-29 recorded in AGENTS.md, on the CLEA License.rtf basis (free noncommercial student copies, no distribution for profit). Originator Project CLEA, Gettysburg College; supporters NSF and Gettysburg College. The text is Project CLEA documentation. No public-domain or open-license status, independent upstream permission or original-runtime equivalence is asserted."
     }
   },
   "authoredExamples": [

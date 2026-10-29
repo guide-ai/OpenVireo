@@ -1,0 +1,261 @@
+**Set Filter**
+Use the "Filter" slider on the photometer control panel to set the
+active filter.  You must take a sky reading with each filter before you
+can use it to measure stellar magnitudes.
+
+Related Topics:
+    Take Sky Readings
+    Slider Switches
+
+**Set Integration Seconds**
+Use the slider labeled "Seconds" on the photometer control panel to
+set the duration of each integration (the length of time that the photon
+counts accumulate when a reading is taken).  The selections range from
+0.1 second to 100 seconds by factors of 10.
+
+Related Topics:
+    Set Number of Integrations
+    Take Photometric Readings
+    Slider Switches
+
+**Set Number of Integrations**
+Use the slider labeled "Integrations" on the photometer control panel
+to set the number of integrations that make up a complete reading.  The
+selections range from 1 to 5.
+
+Related Topics:
+    Set Integration Seconds
+    Take Photometric Readings
+    Slider Switches
+
+**Set Aperture Size**
+To set the photometer aperture size, select "Aperture" from the
+photometer control panel menu.  A small control box will appear with a
+slider that can be used to change the size of the aperture.  The button
+labeled "Default" returns the aperture to its default size.  You should
+use the default aperture size whenever possible.  Some situations where
+you might need to change the aperture include:
+
+    1)  An extended object such as a galaxy is too large to fit in the
+        default aperture.
+
+    2)  Stars in a cluster are so close together that a smaller aperture
+        size is needed to isolate individual stars and prevent
+        contamination of the readings.
+
+    3)  You can get more accurate sky readings with shorter integration
+        times by using a larger aperture.  If you do so, be sure that
+        there are no stars in the aperture to contaminate the sky
+        readings.
+
+    NOTE: If you change the aperture size after taking sky readings the
+    mean sky counts per second will be automatically scaled to the new
+    aperture size for magnitude determinations.
+
+Related Topics:
+    Galaxies & Other Extended Sources
+    Take Sky Readings
+
+**Set Type of Reading**
+The "Reading" switch on the photometer control panel is used to specify
+how the reading is interpreted and recorded.  Be sure to check that this
+switch is in the correct position before pressing the "Start" button to
+begin a reading.  If you take a reading of a star or other object with
+the reading switch set to "Sky" you will replace your current
+(presumably correct) sky reading with an invalid one that includes the
+object.  If this happens you will need to move off the object and take a
+valid sky reading before continuing.
+
+    NOTE: The "Reading" switch may not appear on the photometer control
+    panel for the "Photoelectric Photometry of Clusters" exercise.
+    In this case the software automatically detects the presence or
+    absence of a object in the aperture and processes the reading
+    accordingly.
+
+**Take Sky Readings**
+You must take a sky reading through each filter before you can measure
+the brightness of objects through that filter.  One set of sky readings
+is sufficient as long as you continue to use the same telescope.  If you
+change telescopes you must take a new set of sky readings, even if you
+are returning to a telescope you have used previously.  Take sky
+readings as follows:
+
+    1)  From the telescope control panel, be sure the view is set to
+        "Telescope" and use the "NSEW" buttons to position the telescope
+        so that there is no star in or immediately adjacent to the red
+        aperture circle.  If there is sufficient open sky in the frame,
+        you can increase the accuracy of your sky measurements by
+        increasing the aperture size.
+
+    2)  Access/return to the photometer controls.  If the "Reading"
+        switch is visible, be sure it is set to "Sky".  If no "Reading"
+        switch appears, the box labeled "Object" should say "Sky" if the
+        telescope is properly positioned, .
+
+    3)  Set the filter to the desired color.  (If a sky reading has been
+        taken with a particular filter, the box labeled "Mean Sky" will
+        contain the mean sky counts per second for that filter.
+        Otherwise, the entry will indicate "NO SKY!".)
+ 
+    4)  Set the integration time to 10 seconds and the number of
+        integrations to 5.  
+
+    5)  Press "Start" and wait for the readings to appear.  You will see
+        the raw counts as each integration is completed.  When the
+        reading is complete the mean sky count in that color will appear
+        in the box labeled "Mean Sky Counts/Sec".
+
+    6)  Repeat for each filter you will be using.
+
+    7)  Select "File"->"Data"->"Record/Review" from the photometer menu
+        to save the sky readings. (You may not need to do this if the
+        program is set to automatically compute the stellar magnitudes
+        for you.  If you are computing the magnitudes yourself from the
+        photon counts you MUST record the sky readings.)
+
+Related Topics:
+    Set Aperture Size
+    Set Type of Reading
+    Other Help topics under "Use Photometer".
+
+**Stars & Other Point Sources**
+You must take sky readings before you can take photometric measurements
+of stars and other objects.  When you have completed the sky
+measurements, take photometric readings of point sources as follows:
+
+    1)  From the telescope control panel, roughly center the star in
+        the red square on the "Finder" view. Change to the "Telescope"
+        view and accurately center the star in the red aperture circle.
+        (The aperture should be set to the default size.)  If the star
+        has a nearby companion, be sure to keep the companion outside of
+        the aperture circle.  In this case the star you are measuring
+        may not be well centered.  Alternatively, you can use a smaller
+        aperture to avoid contamination from the nearby star.
+
+    2)  Return to the photometer control panel.  BE SURE the "Reading"
+        switch is set to "Object".  If the "Reading" switch does not
+        appear, the box labeled "Object" may contain some identification
+        of the star or other object you are measuring.  It should not
+        say "Sky".
+
+    3)  Set the filter to the desired color.  (If the "Mean Sky Counts"
+        box indicates "NO SKY!" you cannot take a measurement in that
+        color. Return to the telescope controls, move the star out of
+        the red aperture circle, then return to the photometer controls
+        and read the sky.)
+ 
+    4)  Set the desired integration time and number of integrations.
+        (Some trial & error may be required here - see Step 5 below.)
+
+    5)  Press the integration "Start" button and wait for the readings
+        to appear.  You will see the raw counts as each integration is
+        completed.  When the reading is complete, the mean counts per
+        second, signal to noise ratio (S/N), and computed magnitude will
+        appear in the labeled boxes. For greatest accuracy, your
+        readings should be reflect signal to noise ratios of 100 or
+        more.  If you get a S/N of less than this, you should increase
+        the integration time, number of integrations, or both, and take
+        a new reading (don't record the old one).  (If your S/N is
+        REALLY low, you may need to use a larger telescope to get
+        accurate photometry.)  If your S/N is very high (> ~500), you
+        may want to decrease your integration time and/or number of
+        integrations on future stars of about the same magnitude to save
+        time.
+
+    6)  Repeat readings for each filter you are using.  Note that most
+        stars appear fainter in the blue (B), and fainter yet in the
+        ultraviolet (U), than in the visual (V).  This is due to the
+        combined effects of stellar temperature and interstellar
+        reddening. You may have to increase the integration time and
+        number of integrations - always check the signal to noise ratio.
+
+    7)  Select "File"->"Data"->"Record/Review" from the menu to save the
+        photometric readings.  IF YOU RETURN TO THE MAIN DISPLAY WITHOUT
+        RECORDING THE READINGS YOU WILL LOOSE THEM AND HAVE TO REPEAT
+        THE MEASUREMENTS!
+
+Related Topics:
+    Set Aperture Size
+    Set Type of Reading
+    Other Help topics under "Use Photometer".
+    Topics under "Help" on telescope control panel menu.
+
+**Galaxies & Other Extended Sources**
+In general, the technique for taking photometric measurements of
+galaxies and other extended sources is the same as that for stars,
+except that for galaxies you must set the aperture large enough to
+enclose the entire object.  This leads to several complications:
+
+    1)  The true extent of a galaxy may be significantly greater than it
+        appears, so that magnitude readings may depend on the aperture
+        size, even though the smaller aperture may appear to contain the
+        whole image.
+
+    2)  For large galaxies, it may be impossible to include the whole
+        object in the aperture without including a number of nearby
+        stars, which will obviously affect the reading.  The readings
+        can be corrected, but the process is somewhat tedious (see #4
+        below).
+
+    3)  For accuracy when measuring galaxy magnitudes, you should (if
+        possible) take your sky readings with a large aperture.  It need
+        not be as large as the aperture needed to include the whole
+        galaxy, but sky readings taken with an aperture as small as the
+        default may be quite inaccurate when scaled up to a large
+        aperture.
+
+    4)  To remove the effects of included stars you must individually
+        measure their magnitudes, and then remove them from the measured
+        galaxy magnitude.  To do this accurately you will need to take
+        sky readings (including the galaxy background) in the immediate
+        vicinity of each star.  You should use a small aperture for
+        this, and will probably have to take separate sets of sky
+        readings for each star you measure.  Remember also that you
+        cannot add/subtract magnitudes algebraically, but must use the
+        magnitude formula: m1 - m2 = -2.5*Log(f1/f2).
+
+Related Topics:
+    Set Aperture Size
+    Stars & Other Point Sources
+    Take Sky Readings
+
+**Record Readings**
+To record photometric measurements you have taken, select "File"->"Data"
+->"Record/Review" from the Photometer control panel menu.  A data panel
+will appear with information about the object, the observation time, and
+the readings you have taken.  You may enter any notes or comments you
+want to record in the box labeled "Remarks". Press "OK" to record all
+the data.  (You do not need to make an entry in the "Sp. Type" box.)
+
+Normally, you need not record the data for each color (filter) as you
+take it.  Wait until you have measured the star (or sky) in all desired
+colors. (Each time you record data you create a separate record, even if
+the record contains data for only one color.  You might need to do this
+only if you require very accurate timing for variability studies.)  Note
+that the records are time-tagged with the Julian date to 6 decimal
+places (about 0.1 second). This is the time the last measurement you
+took (regardless of the filter) was completed.
+
+    NOTE:  Recording your readings in this manner saves them internally
+    for additional processing, but does NOT write them to a file.  To
+    do that, you must return to the observatory control panel and select
+    "Tools"->"Results Editors"->"Observational Results"->
+    "Display/Print/Save..." from the menu.
+
+Related Topics:
+    Help topic "Results Editors" on observatory control panel menu.
+
+**Return to Telescope Window**
+You should complete your photometric measurements of the star in all
+required colors (filters) and record your measurements before returning
+to the telescope window.  Select "File"->"Exit Photometer" from the
+photometer control panel menu (or press the "X" button on the upper
+right corner).  You will be warned and given a chance to cancel the
+return if you have not recorded all the data you have taken.  When you
+return to the telescope window your recorded data for the star you have
+been working with is placed in a list in memory, but is not saved to a
+file.
+
+Related Topics:
+    Record Readings
+

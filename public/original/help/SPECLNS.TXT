@@ -1,0 +1,171 @@
+*3759.87   O III*
+Visible in O stars
+
+*3819.61   He I*
+Strongest in B stars with maximum
+around B2
+
+*3933.68   Ca II (K line)*
+First visible around A0.
+Progressively stronger A1 -> A9
+K line = H line(blend) at ~F0
+Strongest from G8-K2.
+
+*3964.73   He I*
+Visible in O6-B9, but strongest
+around B0-B2
+
+*3968.49   Ca II (H line)*
+Appears blended with adjacent 
+H epsilon until mid F.
+H line(blend) = K line at ~F0
+Strongest from G8-K2.
+
+*3970.07   H I (H Epsilon)*
+Hydrogen Balmer Series 
+Reaches Maximum Strength at A0
+Can be confused with adjacent 
+Ca II H line, which is strong 
+in cooler stars.
+
+*4026.19   He I*
+Strongest in B stars with maximum
+around B2
+
+*4030.76   Mn I*
+Compare to 4130 Si II line
+for discrimination in F stars
+
+*4045.82   Fe I*
+Visible in F0 and cooler stars.
+Strongest in K2-K5
+
+Comparison with H I 4101 line
+gives an indication of spectral
+type in G stars. They are about
+equal at G8
+
+*4068.00   C III*
+Strongest in O stars between
+O6 and O9
+
+*4073.00   O II*
+Visible in O9-B2
+
+*4088.85   Si IV*
+Strongest in O stars between
+O6 and O9
+
+*4097.33   N III*
+Visible in B0-B2
+
+*4100.04   He II*
+Strongest in O stars
+
+*4101.75   H I (H Delta)*
+Hydrogen Balmer Series
+Reaches Maximum Strength at A0
+
+*4120.82   He I*
+Strongest in B stars with maximum
+around B2
+
+Ratio of this line to nearby Si II 4130
+provides fine discrimination in this 
+range. Si just visible at B3
+
+*4130.89   Si II*
+Visible from B2 to A5
+
+Ratio of this line to nearby He I 4121
+provides fine discrimination in this 
+range. Just visible at B3.
+
+Ratio of this line to nearby He 4144 
+provides fine discrimination in this
+range, with maximum of the Si line
+at B5-B8
+
+Ratio of this line to Mn 4030 line provides
+discrimination in the F stars.
+
+*4143.76   He I*
+Strongest in B stars with maximum
+around B2
+
+Ratio of this line to nearby Si 4130. 
+provides fine discrimination in this
+range, with maximum of the Si line
+at B5-B8
+
+*4143.88   Fe I*
+Appear in F0 and cooler stars
+Strongest in K2-K5
+
+Ratio of this line to H I delta 
+at 4101 is a discriminant.  They are
+about equal at G8
+
+*4226.74   Ca I*
+First a visible around F0.  Strenghtens
+to cooler K and M stars, where it is
+prominent.
+
+In F stars, where the H I (Balmer) lines do not 
+change in strength much, Ca I helps 
+discriminate.  Commpare to nearby 
+H I 4340 line; Ca I strengthens as one goes
+from F0 to F9
+
+In G stars, relative strength of this line to
+the H 4101 line can be used to determine
+precise spectral type
+
+*4267.      C II*
+Visible from B0-B8, but strongest
+at B4
+
+*4300.00   CH & Metals (G Band)*
+First visible around F5 in main sequence 
+stars, and G0 in supergiants.  It becomes 
+prominent in cooler stars (G, K, M).
+
+*4317.14   O II*
+Visible in O9-B2
+
+*4340.48   H I (H Gamma)*
+Hydrogen Balmer Series
+Reaches Maximum Strength at A0
+
+*4383.56   Fe I*
+Strongest in K2-K5
+
+*4387.93   He I*
+Strongest in B stars with maximum
+around B2
+
+*4471.48   He I*
+Strongest in B stars with maximum
+around B2
+HeII  4541/HeI 4471 strength is a useful
+indicator of type between O3-O9
+
+
+*4471.68   He I*
+Strongest in B stars with maximum
+around B2
+
+Ratio of this line to nearby Mg II 4481
+provides discrimination around B8-B9
+
+*4481.20   Mg II*
+Evident in B2-A5; Strongest at A1.
+
+Ratio of this line to nearby He I 4471
+provides discrimination around B8-B9
+
+*4541.00   He II*
+Strongest in O stars
+
+*4552.62   Si III*
+Strongest in types B0-B2

@@ -5,6 +5,8 @@ import { loadVerifiedLibrarySpectrum } from './io/spectrumFiles';
 import type { SkyObject } from './core/sky';
 import { formatNumber, t } from './i18n';
 import catalog from '../data/hubble/galaxy-catalog-samples.json';
+import CleaHelp from './clusters/CleaHelp';
+import {HELP_FILES} from './help/helpFiles';
 
 const fallback = { url: '/original/spectra/GLXYTMPL.SP', name: 'GLXYTMPL.SP', sha256: '05602de89d005ddd5ea1bdd97f50b6519e1a17e222dc855930208792ac679cc5' };
 type LoadedSource = Readonly<{ targetId: string; samples: readonly Sample[]; file: string; matched: boolean }>;
@@ -45,7 +47,7 @@ export default function Spectrometer({ target, enabled, onReturn, verifiedLibrar
   const points = profile?.values.map((value, index) => `${50 + (profile.wavelengths[index] - 3700) * .9},${250 - value / (maximum || 1) * 210}`).join(' ');
   return <main className="observatory-main spectrometer-main">
     <button className="back-observatory" onClick={onReturn}>{t('sky.back')}</button>
-    <section className="observatory-heading"><div className="eyebrow">{t('spectrometer.eyebrow')}</div><h1 tabIndex={-1}>{t('spectrometer.title')}</h1><p>{t('spectrometer.intro')}</p></section>
+    <section className="observatory-heading"><div className="eyebrow">{t('spectrometer.eyebrow')}</div><h1 tabIndex={-1}>{t('spectrometer.title')}</h1>{/* TSpectrometer Help1Click 0x510f4c, FormShow 0x50da3d, options +0x914 (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['SPECHLP.LST']} testId="spectrometer-help"/><p>{t('spectrometer.intro')}</p></section>
     <div className="spectrometer-layout"><section className="card spectrometer-chart-card"><div className="card-heading"><div><div className="eyebrow">{t('spectrometer.pointedTarget')}</div><h2>{target.label}</h2></div><span className="source-badge">{t('spectrometer.preview')}</span></div>
     {!enabled ? <div className="spectrometer-empty"><h3>{t('spectrometer.pointFirst')}</h3><p>{t('spectrometer.pointHelp')}</p><button className="primary-button" onClick={onReturn}>{t('spectrometer.toObservatory')}</button></div> : !record ? <div className="spectrometer-empty"><h3>{t('spectrometer.unsupported')}</h3><p>{t('spectrometer.supportedTargets')}</p></div> : <>
       {loading && <p role="status" className="spectrometer-message">{t('spectrometer.loading')}</p>}

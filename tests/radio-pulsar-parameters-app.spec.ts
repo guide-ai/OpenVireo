@@ -141,8 +141,12 @@ test('admission, read-only window, Prev/Next ends, Update partial store and Rese
  await field(page,'date').fill('1e');await id(page,'pulsar-params-update').click();await expect(notice(page)).toHaveAttribute('data-field','date');
  await id(page,'pulsar-params-notice-ok').click();await expect(field(page,'date')).toBeFocused();
  await id(page,'pulsar-params-reset').click();await expect(field(page,'date')).toHaveValue('51545.00000000');
- // Help is authored and labelled as such.
- await id(page,'pulsar-params-help').click();await expect(id(page,'pulsar-params-help-text')).toContainText('not the original Help file');
+ // Help opens VIREO's PLSLSHLP.LST (Front H); the first topic reads PULSRLST.TXT.
+ await id(page,'pulsar-params-help-open').click();
+ await expect(id(page,'pulsar-params-help-topic-list').getByRole('option').first()).toHaveText('Find Pulsar In List');
+ await id(page,'pulsar-params-help-topic-list').getByRole('option').first().dblclick();
+ await expect(id(page,'pulsar-params-help-window').getByRole('heading',{name:'Help - Find Pulsar In List'})).toBeVisible();
+ await id(page,'pulsar-params-help-topic-menu').click();await id(page,'pulsar-params-help-close-topic').click();
  // Exit returns focus to Open; the catalog is kept and can be replaced now; reopen starts at the head again.
  await id(page,'pulsar-params-exit').click();await expect(id(page,'pulsar-params-window')).toHaveCount(0);await expect(id(page,'pulsar-params-open')).toBeFocused();
  await loadCatalog(page,'other.dat',OTHER);await expect(id(page,'pulsar-ref-rows')).toHaveText('2');

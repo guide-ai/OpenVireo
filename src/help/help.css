@@ -1,0 +1,6 @@
+/* Front H Help menus. Colours, spacing and type come from src/theme/tokens.css (light and dark). */
+.help-about-lines p{margin:0 0 var(--ov-space-1);text-align:center}
+.help-about-strong{font-weight:700}
+.help-reminder-text{white-space:pre-line;max-width:min(36rem,100%)}
+.help-menu-off{font-weight:600}
+.spl-window{max-width:min(40rem,100%)}

@@ -199,18 +199,3 @@ export function variableStarTypes(records:readonly VariableStarRecord[]):readonl
  return Object.freeze([...counts].map(([type,count])=>Object.freeze({type,count})).sort((a,b)=>b.count-a.count||(a.type<b.type?-1:a.type>b.type?1:0)));
 }
 
-// ------------------------------------------------------------------ VarTypeHlp.TXT
-export type VariableTypeHelpSection=Readonly<{title:string;lines:readonly string[]}>;
-/** WEB: VarTypeHlp.TXT split at its own "**Title**" lines (the original help index VarTypeHlp.LST is not bundled).
- * Trailing blank lines of each section are dropped; text is shown as plain text, never as HTML. */
-export function parseVariableTypeHelp(bytes:Uint8Array):readonly VariableTypeHelpSection[]{
- if(!(bytes instanceof Uint8Array)||bytes.length>65536)throw new VariableStarError('file-size');
- let text='';for(const b of bytes)text+=String.fromCharCode(b);
- const sections:{title:string;lines:string[]}[]=[];
- for(const line of text.split(/\r?\n/)){
-  const heading=/^\*\*(.+)\*\*$/.exec(line);
-  if(heading){sections.push({title:heading[1],lines:[]});continue;}
-  if(sections.length)sections[sections.length-1].lines.push(line);
- }
- return Object.freeze(sections.map(s=>{const lines=[...s.lines];while(lines.length&&!lines[lines.length-1].trim())lines.pop();return Object.freeze({title:s.title,lines:Object.freeze(lines)});}));
-}

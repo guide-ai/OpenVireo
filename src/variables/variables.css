@@ -30,10 +30,6 @@
 /* The list keeps the original Courier New bold ListBox text. */
 .variable-lines{font-family:"Courier New",Courier,var(--ov-font-mono);font-weight:700;font-size:var(--ov-text-md);white-space:pre;overflow-x:auto;max-width:100%;margin:0;padding:var(--ov-space-2);background:var(--ov-surface-sunken);border:1px solid var(--ov-border);border-radius:var(--ov-radius-sm);color:var(--ov-text)}
 .variable-lines:focus-visible{outline:2px solid var(--ov-focus);outline-offset:2px}
-.variable-help{margin-top:var(--ov-space-3)}
-.variable-help h3{margin:0;font-size:var(--ov-text-md)}
-.variable-help h4{margin:var(--ov-space-2) 0 var(--ov-space-1);font-size:var(--ov-text-sm)}
-.variable-help-text{font-family:var(--ov-font-mono);font-size:var(--ov-text-sm);white-space:pre-wrap;margin:0}
 .lc-panel{max-width:654px;border-radius:var(--ov-radius-sm);overflow:hidden;background:#000080}
 .lc-svg{display:block;width:100%;height:auto}
 .variable-print-report{border:1px solid var(--ov-border-strong);border-radius:6px;padding:8px;max-height:min(60vh,34rem);overflow:auto}

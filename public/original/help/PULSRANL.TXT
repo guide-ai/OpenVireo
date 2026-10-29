@@ -1,0 +1,171 @@
+**Load Recorded Pulsar Data**
+To load recorded and saved pulsar data into the Data Analysis Window,
+select "File"->"Load..." from the data analysis menu, and select the
+file using the dialog that appears.  Files containing recorded pulsar
+data should carry the qualifier ".PLR".
+
+NOTE: If you access the data analysis window immediately after recording
+pulsar data, the last data recorded will automatically appear in the
+data analysis window, regardless of whether or not it has been saved.
+
+**Save Recorded Pulsar Data**
+To save the current pulsar data, select "File"->"Save..." from the data
+analysis menu.  A dialog will appear enabling you to enter or select a
+name for the saved file.  You can use any name you like, the dialog will
+suggest a name generated from your login information.  You should always
+use the qualifier ".PLR" on these files to avoid difficulties and
+confusion later.
+
+You can also save the current pulsar data by selecting "File"->"Save
+Recorded Data..." from the main menu.
+
+**View Data Properties**
+To access a dialog showing the properties of the current pulsar data,
+select "File"->"Properties..." from the data analysis menu.  Properties
+shown on the resulting dialog include:
+
+    Object Identification
+    Data Start Time (Julian Day Number minus 2,400,000)
+    Telescope Aperture (meters)
+    Frequency (MHz) and Relative Gain for each receiver recorded
+    Number of Data Points (for each recorded receiver)
+    Time Interval (msec) between data points
+    File Name
+
+The properties dialog also appears automatically when data is loaded.
+You cannot change any of the properties shown, since they reflect
+information about data that has already been saved.
+
+**Controls**
+The following controls appear on the right-hand side of the Data
+Analysis Window:
+
+    Vertical Scale - Use the vertical scale buttons to adjust the scale
+    of each display panel.  The scale can be varied in factors of 2 from
+    a minimum of 0.125 to a maximum of 8.  (A scale factor of 1
+    displays the data exactly as recorded.)  This factor affects the
+    display only and does not alter the underlying data.
+
+    Horizontal Pan - Use the left and right horizontal pan arrows to
+    vary the range of recorded data displayed in the panels.  The
+    displayed range (in seconds from the beginning of the data) is
+    indicated by the readouts on the left and right below the display
+    panels.
+
+    Pan Rate - The pan rate control alters the speed of horizontal
+    panning.
+
+    Horizontal Zoom - Use the "In" and "Out" zoom controls to magnify or
+    compress the range of recorded data displayed in the panels.  The
+    zoom factor has a range of 0.125 to 8 by factors of 2.  (A zoom
+    factor of 1 displays the data exactly as recorded.)  The displayed
+    range (in seconds from the beginning of the data) is indicated by
+    the readouts on the left and right below the display panels.
+ 
+    Reset - Pressing the Reset button sets the vertical scale on all
+    panels to 1, the zoom factor to 1, and the pan rate to 2.  The
+    displays return to the start of the data, and all cursors and cursor
+    readouts are cleared.
+
+**Make Measurements**
+Positions can be measured on the display panels by pressing and dragging
+with the mouse.  The right mouse button controls a "reference" cursor
+that appears in the same position on all three panels.  The green
+readout below the panels gives the reference cursor position in seconds
+from the start of the data.
+
+The left mouse button controls both a vertical and a horizontal cursor
+for each panel.  To the right of each panel are the readouts for that
+panel's cursors.  The vertical cursor position (cyan colored readout) is
+given in seconds from the start of the file.  The horizontal cursor
+position (magenta colored readout) is a relative strength indicator that
+includes both the vertical scale factor for the display panel, and the
+relative gain applied when the data was recorded (see Help Topic "View
+Data Properties").  To switch the left mouse button between vertical and
+horizontal cursors for each panel, click the mouse over the appropriate
+readout.
+
+Magnifying the display horizontally (zoom "In") may assist in
+determining and accurately measuring pulse positions.
+
+**Record Measurements**
+Use the following procedure to record your measurements:
+
+    1) Make measurements by positioning the cursor(s) as described under
+    Help topic "Make Measurements". You can make measurements in
+    all active display panels at this time if you like.
+
+    2) Select "Results"->"Record Current Measurements..." from the data
+    analysis menu.
+
+    3) A series of dialogs will appear, showing the measurements and
+    properties to be recorded for each panel that has unrecorded
+    measurements.  You can add a comment to each measurement record if
+    you like.  Select "OK" to record the measurement, or "Cancel" to
+    skip it at this time.
+
+Each measurement you record will be appended to the current measurement
+list.  See Help topics "Review Recorded Measurements", "Save Recorded
+Measurements", and "Clear the Measurement List" for information on
+handling the records in this list.
+
+**Review Recorded Measurements**
+You can review the current recorded measurements list at any time, once
+you have started recording measurements.  Select "Results"->"Review
+Recorded Measurements..." from the data analysis menu.  A dialog box
+showing all current records will appear.  To select a particular record,
+click the mouse on it.  You can search for records that contain a
+particular text string (select "Find...").  Once you have selected a
+record, you can then view it and edit the comment field (select
+"Edit..."), or delete the record from the list (select "Delete").
+
+When you have finished reviewing the records, select "OK" or "Cancel".
+Any changes you have made to the records in the list (edits or
+deletions) will be discarded if you select "Cancel".
+
+**Save Recorded Measurements**
+To save your current list of recorded measurements to a file, select
+"Results"->"Save Recorded Measurements..." from the data analysis menu.
+Provide a file name via the dialog that appears.  The data is saved in a
+format (Comma Separated Values) that is accepted by standard spreadsheet
+programs.  You should use the qualifier ".CSV" on any files you create
+here.  (See Help Topic "Access Spreadsheet Program").
+
+If you select a file name that already exists, you will overwrite the
+existing data.  You will be warned of this and given a chance to change
+your selection if this is not your intent.  (See Help Topic "Clear the
+Measurement List".)
+
+**Clear the Measurement List**
+Normally the current measurement list remains intact, even when it is
+saved to a file, and new measurements are appended to it.  (This means
+that you can save a file, add more measurements, and save again to the
+same file without losing any data.)  If you wish to create a new
+measurement list, without any previous records, select "Results"->"Clear
+Measurement List" from the data analysis menu.
+
+**Access Spreadsheet Program**
+You may be able to access a spreadsheet program to analyze your data
+directly from this exercise.  If the selection is enabled, select
+"Results"->"Spreadsheet" from the data analysis menu.  If you have
+recently saved a file for use in the spreadsheet (see Help topic "Save
+Recorded Measurements") that file will be automatically loaded for you
+when the spreadsheet program opens.  If you wish to load a file into the
+spreadsheet yourself, remember that the file type is ".CSV".  You may
+find this under the heading "Text Files" in the spreadsheet file load
+dialog.
+
+**Print Screen Image**
+The selection "File"->"Print Screen..." on the data analysis menu
+enables you to print an image of the data analysis window at any time.
+This image will show all cursors in their current positions and readouts
+with their current values.  This feature uses the Windows print
+facility, and will print in color if a color printer is selected.  The
+printout will include the Login names for identification, and the
+current data properties.
+
+**Close Data Analysis Window**
+To close the data analysis window and return to the main window, select
+"File"->"Exit" from the data analysis menu, select "Close" from the
+System Menu (click on the box in the upper left-hand corner), or click
+the "X" box in the upper right-hand corner (Windows 95 only).

@@ -32,8 +32,8 @@ test('Edit Mode off (compiled default): no Field Information menu, no Catalog Ob
  await expect(page.getByTestId('ob-options-edit-mode')).not.toBeChecked();await expect(page.getByTestId('ob-options-edit-mode-note')).toContainText('not saved');
  await expect(page.getByTestId('ob-options-others')).not.toContainText('Edit Mode');
  await page.getByRole('button',{name:'Cancel',exact:true}).click();
- // Front O2: File holds only Edit Mode and Virtual Observatory items, so it is absent with both off (review 1 M1, M2).
- await expect(page.getByTestId('fi-file-menu')).toHaveCount(0);await expect(page.getByTestId('em-layer')).toHaveCount(0);await expect(page.getByTestId('em-status')).toHaveCount(0);
+ // With Edit Mode off File keeps only Exit Observatory (Front H); the Field Information items are gone (review 1 M1, M2).
+ await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('fi-field-information')).toHaveCount(0);await expect(page.getByTestId('ob-exit')).toBeVisible();await page.getByTestId('fi-file-menu').click();await expect(page.getByTestId('em-layer')).toHaveCount(0);await expect(page.getByTestId('em-status')).toHaveCount(0);
  await page.getByTestId('sky-map').click({position:{x:120,y:120}});await expect(page.getByTestId('co-dialog')).toHaveCount(0);
 });
 
