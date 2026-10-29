@@ -46,3 +46,9 @@ The bundled independent vectors are nowhash-checked against the contract. Their5
 These corrections were tested independently after the report. No second external sign-off ororiginal runtime equivalence is claimed.
 
 **Correction (2026-10-26, phase1 item1.8, user-requested default):** an explicit verified **Load** of a dataset without a notebook now copies its catalog E(B−V) into an editable, catalog-labelled unapplied trial (other fields blank); retry, restore, existing/discarded notebooks and old19/20/21 files are unchanged, and the hashed contract's older "start blank" wording stays as historical bytes. The database diagram now uses the recovered native frame (0x542480; out-of-frame rows stay listed and are distinct from exclusions), text-driven sliders and a View/Print Parameters report (0x543d90) of the visible trial; see `src/core/clusterDatabaseHr.ts`.
+
+**Front V2 correction (2026-10-28, [CLUSTER-HR-TOOLS.md](CLUSTER-HR-TOOLS.md)).** VIREO has no HR autoscaling: the database plot
+draws every included point on fixed axes without a frame clip (0x542bf4). Remove from HR Diagram is visible only in VIREO's Edit
+Mode (option +0x2e7e, default off; 0x543d14) and a star is selected with the right mouse button (0x543bfc); observation mode has no
+remove or restore (0x542f03). The web keeps the pupil exclusions described here, labelled as an adaptation; their saved format
+is unchanged.

@@ -62,15 +62,19 @@ export function hotListEntryAddedText(id:string):string{
 }
 
 /** OB-AC-04 append (0x590588) for Add Current (review F7). A non-blank ID goes through the reviewed web editor rule (addHtlRow).
- * A blank ID — the native "Position added to Observation List." path — is allowed for Add Current only: the record is
- * written by the codec with the remarks and coordinates, its ID ShortString is emptied (length 0, zero bytes), and it is
- * re-read through parseHtl, which admits blank IDs as in original lists. Undo and selection follow addHtlRow. The web editor's
+ * A blank or whitespace-only ID is allowed for Add Current only (the native "Position added…" path for an empty ID; spaces
+ * are kept as typed, see below): the record is written by the codec, its ID ShortString replaced, and it is re-read through
+ * parseHtl, which admits such IDs as in original lists. Undo and selection follow addHtlRow. The web editor's
  * Add/Edit keeps its non-blank rule (docs/HTL-CONTRACT.md §4). */
 export function appendAddCurrentEntry(editor:HtlEditor,fields:HtlFields):HtlEditor{
  if(fields.id.trim())return addHtlRow(editor,fields);
  if(editor.list.length>=HTL_MAX_RECORDS)throw new HtlError('limit',0);
+ // Review note 3: OKBtnClick copies IDEd through @LStrToString 0x4060cc (length cap only, no Trim), so a whitespace-only
+ // ID is kept exactly as typed, like leading/trailing spaces on a named ID. The editor rule (non-blank) is bypassed only
+ // here, through the codec: the record is written with a placeholder ID, its ShortString is replaced by the typed bytes.
+ if(!/^[\x20-\x7e]{0,24}$/.test(fields.id))throw new HtlError('text',editor.list.length+1);
  const bytes=serializeHtl([updateHtlRecord(null,{...fields,id:'?'},editor.list.length+1)]);
- bytes.fill(0,0,25);
+ bytes.fill(0,0,25);bytes[0]=fields.id.length;for(let i=0;i<fields.id.length;i++)bytes[1+i]=fields.id.charCodeAt(i);
  const record=parseHtl(bytes)[0];
  return Object.freeze({list:Object.freeze([...editor.list,record]),selected:editor.list.length,previous:Object.freeze({list:editor.list,selected:editor.selected})});
 }

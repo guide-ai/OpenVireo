@@ -149,14 +149,14 @@
     "compiledEnforcementEnabled": false,
     "option": "Options+0x27c9=0 -> Environment+0x2e7d (Limit Slewing; corrected from +0x27cd = Show Object ID, Front B review 1 adjudication 2: OK 0x5a6111 writes SlewBox +0x3bc to +0x27c9, +0x6b4 -> env+0x2e7d, read at 0x5392a0)",
     "siteFields": "Environment+0x2b90 latitudeRadians,+0x2b9e horizonRadians; compiled profiles already pinned.",
-    "candidateCaveat": "Native motor guard receives candidate dec/hourAngle but separately tests stored current dec. This readout uses current pointing for both; candidate motor enforcement is not ported."
+    "candidateCaveat": "Native guard 0x539290 receives candidate dec/hourAngle but separately tests the stored current dec (|+0x669| <= 90). This readout uses current pointing for both. Since Front B (docs/OPTICAL-OBSERVATORY-PROVENANCE.json OB-LS-02..05, src/core/slewLimit.ts) the guard is ported as the opt-in Limit Slewing option (compiled default off, env+0x2e7d): SlewTimerTimer 0x539000 tests each manual candidate step before applying it (useObservatoryClock), ClockTimerTimer 0x538622 tests the tracked current position and turns the drive off, ProgrammedSlew 0x539ae5 tests the target before the confirmation; the immediate web pointing shortcuts are also refused (web adaptation). The separate |current dec| <= 90 test is always true in the browser motion domain (|dec| <= 85) and is not modelled."
   },
   "browserPolicy": {
     "boundaryGuardDegrees": 1e-10,
     "sineClampToleranceEPS": 16,
     "zenithWarningEPS": 32,
     "comparison": "above,at-or-below,or precision-boundary;guard is a browser admission policy,not a measured native error bound",
-    "scope": "Derived current-pointing geometry only; no new enforcement switch or horizon option,blocked acquisition,precession,refraction,extinction or obstruction synthesis. No saved derived permissions."
+    "scope": "This readout is derived current-pointing geometry only and adds no refraction, extinction or obstruction synthesis, no precession of the readout and no saved derived permissions. Enforcement is the separate opt-in Limit Slewing option (OB-LS-01, default off) using this geometry; it never blocks an acquisition or an instrument Activate jump. B1950 precession exists only in Set Coordinates (RA-EP-01..03), not here."
   },
   "acquisitionAudit": {
     "trackingOffStop": "Browser scope protection,not native acquisition equivalence. Native spectrometer FormShow disables DriveBtn;no corresponding photon-stop call was found in the native drive-toggle body.",

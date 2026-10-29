@@ -1,0 +1,676 @@
+{
+ "source": {
+  "witness": "analysis/front-v2-cluster-hr/tools/hr_witness.py",
+  "witnessSha256": "bf571685bab2099e3d52d8cf45b408b5ab475d2c024c00ae390accadaaa3b85c",
+  "output": "analysis/front-v2-cluster-hr/hr-witness.json",
+  "outputSha256": "c161aa9efb7274a492481cf527040419afba5cc5a877ece0c4527c0aab2decff",
+  "note": "Compact derived fixture: explicit out-of-frame/out-of-bitmap lists; bank orders and hit probes as SHA-256 of newline-joined ids (\"X,Y=id\" for probes, X in 0..495 step 31, Y in 0..505 step 46). A second implementation of the same static reading, not an independent oracle."
+ },
+ "datasets": {
+  "cluster-reference-30dor.json": {
+   "name": "30 Doradus (LMC)",
+   "count": 609,
+   "header": [
+    "Cluster Name/ID: 30 Doradus (LMC)",
+    "609 Stars",
+    "V = +3.76 to +17.32",
+    "(B-V) = -0.27 to +2.84"
+   ],
+   "outsideFrame": [
+    {
+     "id": "S6730.DAT@56750",
+     "x": 481,
+     "y": 432
+    },
+    {
+     "id": "S6730.DAT@57359",
+     "x": 462,
+     "y": 427
+    },
+    {
+     "id": "S6730.DAT@58515",
+     "x": 477,
+     "y": 434
+    }
+   ],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 184,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "a2a2736206175fea67468cf0bcd59b857df994ebb30ea5a1b4fc662bcc85f87d",
+   "raBankSha256": "b7d45eb0a7f5234d40e586530be5bd027b57530c0f92de02f8b80ec2f2583bbc",
+   "vBankFirst": [
+    "S6000.DAT@76893",
+    "S6000.DAT@81741",
+    "S6000.DAT@85076",
+    "S6000.DAT@69060",
+    "S6000.DAT@91854"
+   ],
+   "hitProbesSha256": "4dec3ed2771024105248ebc0056fe1837f7f48d79b44bd26af5424dfce0f77d3",
+   "hitProbesSample": {
+    "0,0": "S6000.DAT@83534",
+    "0,46": "S6000.DAT@83534",
+    "0,92": "S6000.DAT@83534",
+    "0,138": "S6000.DAT@97861",
+    "0,184": "S6730.DAT@72991",
+    "0,230": "S6730.DAT@72991",
+    "0,276": "S6730.DAT@72980",
+    "0,322": "S6730.DAT@65244",
+    "0,368": "S6000.DAT@78803",
+    "0,414": "S6000.DAT@65626",
+    "0,460": "S6000.DAT@65806",
+    "31,0": "S6000.DAT@83534"
+   }
+  },
+  "cluster-reference-cygob2.json": {
+   "name": "Cyg OB2",
+   "count": 69,
+   "header": [
+    "Cluster Name/ID: Cyg OB2",
+    "69 Stars",
+    "V = +6.49 to +14.66",
+    "(B-V) = -0.12 to +3.01"
+   ],
+   "outsideFrame": [
+    {
+     "id": "N3730.DAT@797153",
+     "x": 501,
+     "y": 278
+    }
+   ],
+   "outsideBitmap": [
+    "N3730.DAT@797153"
+   ],
+   "equalVAdjacentPairs": 8,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "7f93087a9729a08c41784d24c95fca69875c5456d3c2e58513ad36174e8c9031",
+   "raBankSha256": "900078d4dd245de7b28876d3b7f40c1d8cd04d33b1c438cd65f6f2dd816ec8db",
+   "vBankFirst": [
+    "N3730.DAT@797840",
+    "N3730.DAT@797264",
+    "N3730.DAT@795800",
+    "N3730.DAT@796773",
+    "N3730.DAT@797548"
+   ],
+   "hitProbesSha256": "04d4da8521c072bf39eeb76f2ec28fb4e8ff97b8abbc67341e653f4b75efcb2b",
+   "hitProbesSample": {
+    "0,0": "N3730.DAT@795800",
+    "0,46": "N3730.DAT@795800",
+    "0,92": "N3730.DAT@795800",
+    "0,138": "N3730.DAT@795800",
+    "0,184": "N3730.DAT@795800",
+    "0,230": "N3730.DAT@795800",
+    "0,276": "N3730.DAT@795800",
+    "0,322": "N3730.DAT@795800",
+    "0,368": "N3730.DAT@795800",
+    "0,414": "N3730.DAT@795800",
+    "0,460": "N3730.DAT@796919",
+    "31,0": "N3730.DAT@795800"
+   }
+  },
+  "cluster-reference-hyades.json": {
+   "name": "Hyades",
+   "count": 372,
+   "header": [
+    "Cluster Name/ID: Hyades",
+    "372 Stars",
+    "V = +0.87 to +17.70",
+    "(B-V) = -0.15 to +3.75"
+   ],
+   "outsideFrame": [
+    {
+     "id": "N1500.DAT@143598",
+     "x": 590,
+     "y": 267
+    },
+    {
+     "id": "N1500.DAT@146918",
+     "x": 324,
+     "y": -17
+    }
+   ],
+   "outsideBitmap": [
+    "N1500.DAT@143598",
+    "N1500.DAT@146918"
+   ],
+   "equalVAdjacentPairs": 44,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "34450cd6499d90379efa0febb5e0730384a0566c785625537c390e4c236f6448",
+   "raBankSha256": "516ff9dacb8d192260b0234f109203b9a13dfaa26edc9d4ffdb4041dbc56760c",
+   "vBankFirst": [
+    "N1500.DAT@146918",
+    "N1500.DAT@141801",
+    "N1500.DAT@141763",
+    "N1500.DAT@135929",
+    "N1500.DAT@138146"
+   ],
+   "hitProbesSha256": "890379d95eec7a808236c6f9b9b3ff1d3458e2563f80ba1223016117aa301494",
+   "hitProbesSample": {
+    "0,0": "N0730.DAT@114737",
+    "0,46": "N0730.DAT@114737",
+    "0,92": "N0730.DAT@114737",
+    "0,138": "N0730.DAT@114737",
+    "0,184": "N0730.DAT@114737",
+    "0,230": "N1500.DAT@129733",
+    "0,276": "N1500.DAT@141847",
+    "0,322": "N1500.DAT@140189",
+    "0,368": "N1500.DAT@140189",
+    "0,414": "N1500.DAT@140189",
+    "0,460": "N1500.DAT@150384",
+    "31,0": "N1500.DAT@141801"
+   }
+  },
+  "cluster-reference-ic2391.json": {
+   "name": "IC 2391",
+   "count": 38,
+   "header": [
+    "Cluster Name/ID: IC 2391",
+    "38 Stars",
+    "V = +3.60 to +13.48",
+    "(B-V) = -0.18 to +1.39"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 0,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "69196ffd6cca57443712847b3622c390164ff7980c1d8a93639b0ec5b315245d",
+   "raBankSha256": "53cebca32f9f0f49baf55b073b7ceff4871cc81128af8f6e8267a44217fd7609",
+   "vBankFirst": [
+    "S5230.DAT@208118",
+    "S5230.DAT@210085",
+    "S5230.DAT@207246",
+    "S5230.DAT@209947",
+    "S5230.DAT@207798"
+   ],
+   "hitProbesSha256": "d0ab7909138edd032227b0f0804c16bb67441123dd17cd676ce1072f0389567a",
+   "hitProbesSample": {
+    "0,0": "S5230.DAT@208118",
+    "0,46": "S5230.DAT@208118",
+    "0,92": "S5230.DAT@210085",
+    "0,138": "S5230.DAT@209947",
+    "0,184": "S5230.DAT@207821",
+    "0,230": "S5230.DAT@207821",
+    "0,276": "S5230.DAT@204319",
+    "0,322": "S5230.DAT@204319",
+    "0,368": "S5230.DAT@204319",
+    "0,414": "S5230.DAT@210792",
+    "0,460": "S5230.DAT@210792",
+    "31,0": "S5230.DAT@208118"
+   }
+  },
+  "cluster-reference-ic4665.json": {
+   "name": "IC 4665",
+   "count": 45,
+   "header": [
+    "Cluster Name/ID: IC 4665",
+    "45 Stars",
+    "V = +6.86 to +16.80",
+    "(B-V) = -0.01 to +1.62"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 2,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "4560277c95f9c5bf31f3e3255db117443133528dc4fe0d2d204f84ddb3f8335b",
+   "raBankSha256": "d2e3fcfa5f86997f254f25da873dcd235d054e7a0c4852265e14cda207110895",
+   "vBankFirst": [
+    "N0000.DAT@760436",
+    "N0000.DAT@760963",
+    "N0000.DAT@760499",
+    "N0000.DAT@760253",
+    "N0000.DAT@762982"
+   ],
+   "hitProbesSha256": "0b8856971c06107b0850a8be3e99ec99fe19de335bf7a49bef6e3e3d208f9af6",
+   "hitProbesSample": {
+    "0,0": "N0000.DAT@760436",
+    "0,46": "N0000.DAT@760436",
+    "0,92": "N0000.DAT@760436",
+    "0,138": "N0000.DAT@760436",
+    "0,184": "N0000.DAT@760898",
+    "0,230": "N0000.DAT@760898",
+    "0,276": "N0000.DAT@758208",
+    "0,322": "N0000.DAT@758294",
+    "0,368": "N0000.DAT@758294",
+    "0,414": "N0000.DAT@758294",
+    "0,460": "N0000.DAT@760750",
+    "31,0": "N0000.DAT@760436"
+   }
+  },
+  "cluster-reference-m16.json": {
+   "name": "M 16 (NGC 6611)",
+   "count": 59,
+   "header": [
+    "Cluster Name/ID: M 16 (NGC 6611)",
+    "59 Stars",
+    "V = +6.92 to +14.60",
+    "(B-V) = +0.19 to +1.69"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 4,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "dc9ec8fa140a00b2032535af3e64b0d915bdefb179b55504dc224ded0ec7521b",
+   "raBankSha256": "a00cdf94a2e7df89f7395799d28ff012d7580fc85195012ba67d3fb100355e37",
+   "vBankFirst": [
+    "S0730.DAT@729954",
+    "S0730.DAT@729893",
+    "S0730.DAT@729964",
+    "S0730.DAT@729942",
+    "S0730.DAT@729905"
+   ],
+   "hitProbesSha256": "fca47c686a4c663d2745ad1b5605f81396a1e0f8da70563dfd6d0e3577955836",
+   "hitProbesSample": {
+    "0,0": "S0730.DAT@729954",
+    "0,46": "S0730.DAT@729954",
+    "0,92": "S0730.DAT@729954",
+    "0,138": "S0730.DAT@730199",
+    "0,184": "S0730.DAT@730199",
+    "0,230": "S0730.DAT@730199",
+    "0,276": "S0730.DAT@730199",
+    "0,322": "S0730.DAT@730118",
+    "0,368": "S0730.DAT@730118",
+    "0,414": "S0730.DAT@730118",
+    "0,460": "S0730.DAT@730118",
+    "31,0": "S0730.DAT@729954"
+   }
+  },
+  "cluster-reference-m34.json": {
+   "name": "M 34 (NGC 1039)",
+   "count": 43,
+   "header": [
+    "Cluster Name/ID: M 34 (NGC 1039)",
+    "43 Stars",
+    "V = +7.33 to +11.77",
+    "(B-V) = -0.04 to +1.82"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 3,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "70700752a61ab63c9d43a34ae564c4886e10a73029486d4461c039ba101097f3",
+   "raBankSha256": "6bc4b1790916d191dea8e3b88b57f3bec015ef20ec0dd8598ce2dab803dfa6e5",
+   "vBankFirst": [
+    "N3730.DAT@145991",
+    "N3730.DAT@146043",
+    "N3730.DAT@146152",
+    "N3730.DAT@145761",
+    "N3730.DAT@145509"
+   ],
+   "hitProbesSha256": "b9969ac02860ca53fd5031736d565a7f68a01c3a29f6af42899995e40a71cc35",
+   "hitProbesSample": {
+    "0,0": "N3730.DAT@146043",
+    "0,46": "N3730.DAT@146043",
+    "0,92": "N3730.DAT@146043",
+    "0,138": "N3730.DAT@146043",
+    "0,184": "N3730.DAT@145509",
+    "0,230": "N3730.DAT@146006",
+    "0,276": "N3730.DAT@146006",
+    "0,322": "N3730.DAT@146006",
+    "0,368": "N3730.DAT@146006",
+    "0,414": "N3730.DAT@146006",
+    "0,460": "N3730.DAT@145411",
+    "31,0": "N3730.DAT@146043"
+   }
+  },
+  "cluster-reference-m39.json": {
+   "name": "M 39 (NGC 7092)",
+   "count": 29,
+   "header": [
+    "Cluster Name/ID: M 39 (NGC 7092)",
+    "29 Stars",
+    "V = +6.55 to +11.09",
+    "(B-V) = -0.04 to +1.38"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 1,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "a1c89a1efeccc11384d40ecb08a624c210d89ee027c0259ec6e5497ab4848178",
+   "raBankSha256": "ba77f23270d7a28fd8675db6e29cf098ffce831713687c8c47faca0b16c4493f",
+   "vBankFirst": [
+    "N4500.DAT@754406",
+    "N4500.DAT@755228",
+    "N4500.DAT@753901",
+    "N4500.DAT@752527",
+    "N4500.DAT@753933"
+   ],
+   "hitProbesSha256": "04775f521e353a1eeb55ca5403ec1ef9bf71c56179f0cd88e4e0f4922af0b916",
+   "hitProbesSample": {
+    "0,0": "N4500.DAT@754406",
+    "0,46": "N4500.DAT@754406",
+    "0,92": "N4500.DAT@753901",
+    "0,138": "N4500.DAT@753901",
+    "0,184": "N4500.DAT@753901",
+    "0,230": "N4500.DAT@754262",
+    "0,276": "N4500.DAT@754262",
+    "0,322": "N4500.DAT@755088",
+    "0,368": "N4500.DAT@755088",
+    "0,414": "N4500.DAT@753141",
+    "0,460": "N4500.DAT@753141",
+    "31,0": "N4500.DAT@754406"
+   }
+  },
+  "cluster-reference-m41.json": {
+   "name": "M 41 (NGC 2287)",
+   "count": 44,
+   "header": [
+    "Cluster Name/ID: M 41 (NGC 2287)",
+    "44 Stars",
+    "V = +6.04 to +11.12",
+    "(B-V) = -0.15 to +1.53"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 2,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "97db53fe310fc18d99477207740cb6a68d0bbda8465a67f5a615220fee02f899",
+   "raBankSha256": "c28cf8acc0bba748a5d496f3ee17ca566ec48310fbc2146a59ea8aa8c821e926",
+   "vBankFirst": [
+    "S1500.DAT@216888",
+    "S1500.DAT@214523",
+    "S1500.DAT@214811",
+    "S1500.DAT@215128",
+    "S1500.DAT@215634"
+   ],
+   "hitProbesSha256": "7f63eabf7febaac70d6db2ea993e5f196e50b7daa257f73895a34f0c92e50da2",
+   "hitProbesSample": {
+    "0,0": "S1500.DAT@216888",
+    "0,46": "S1500.DAT@216888",
+    "0,92": "S1500.DAT@216888",
+    "0,138": "S1500.DAT@216888",
+    "0,184": "S1500.DAT@214635",
+    "0,230": "S1500.DAT@214209",
+    "0,276": "S1500.DAT@216336",
+    "0,322": "S1500.DAT@213964",
+    "0,368": "S1500.DAT@213964",
+    "0,414": "S1500.DAT@214611",
+    "0,460": "S1500.DAT@214611",
+    "31,0": "S1500.DAT@216888"
+   }
+  },
+  "cluster-reference-m44.json": {
+   "name": "M 44 (NGC 2632)",
+   "count": 198,
+   "header": [
+    "Cluster Name/ID: M 44 (NGC 2632)",
+    "198 Stars",
+    "V = +6.30 to +17.85",
+    "(B-V) = +0.01 to +2.60"
+   ],
+   "outsideFrame": [
+    {
+     "id": "N1500.DAT@389919",
+     "x": 452,
+     "y": 455
+    }
+   ],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 23,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "261c6b499936c7107031d119e8079cef4f55e189bb22b450e27ed312a20625be",
+   "raBankSha256": "d3e087d5fcc778959ff0933dc854908d6f4c63ee9dac27de061375f5cbf76955",
+   "vBankFirst": [
+    "N1500.DAT@390642",
+    "N1500.DAT@390415",
+    "N1500.DAT@390572",
+    "N1500.DAT@390466",
+    "N1500.DAT@390110"
+   ],
+   "hitProbesSha256": "011204eddace4a2c54e6355c2303b89a4ac2def0211c5333f0d2017d87405157",
+   "hitProbesSample": {
+    "0,0": "N1500.DAT@390466",
+    "0,46": "N1500.DAT@390466",
+    "0,92": "N1500.DAT@390466",
+    "0,138": "N1500.DAT@390466",
+    "0,184": "N1500.DAT@390399",
+    "0,230": "N1500.DAT@393572",
+    "0,276": "N1500.DAT@387001",
+    "0,322": "N1500.DAT@387001",
+    "0,368": "N1500.DAT@390693",
+    "0,414": "N1500.DAT@390693",
+    "0,460": "N1500.DAT@390693",
+    "31,0": "N1500.DAT@390466"
+   }
+  },
+  "cluster-reference-m7.json": {
+   "name": "M 7 (NGC 6475)",
+   "count": 69,
+   "header": [
+    "Cluster Name/ID: M 7 (NGC 6475)",
+    "69 Stars",
+    "V = +5.60 to +13.01",
+    "(B-V) = -0.12 to +1.74"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 6,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "c336c98a96c19b39b6f2b868c8cb9b29ee616642dd781414ef8799e4c034726f",
+   "raBankSha256": "945a9ad9156db4f5a7a62054a660f3c8f550db0eaa3dd57818e6d4d2a1edb2d5",
+   "vBankFirst": [
+    "S3000.DAT@802106",
+    "S3000.DAT@800850",
+    "S3000.DAT@800727",
+    "S3000.DAT@802749",
+    "S3000.DAT@801611"
+   ],
+   "hitProbesSha256": "9c6869bfe3830fc2a7dfe4cbc4918e6500916842ce799d050b3cd27326040181",
+   "hitProbesSample": {
+    "0,0": "S3000.DAT@800727",
+    "0,46": "S3000.DAT@800727",
+    "0,92": "S3000.DAT@800727",
+    "0,138": "S3000.DAT@800727",
+    "0,184": "S3000.DAT@800376",
+    "0,230": "S3000.DAT@800376",
+    "0,276": "S3000.DAT@805713",
+    "0,322": "S3000.DAT@805713",
+    "0,368": "S3000.DAT@805713",
+    "0,414": "S3000.DAT@805713",
+    "0,460": "S3000.DAT@805713",
+    "31,0": "S3000.DAT@800727"
+   }
+  },
+  "cluster-reference-mel111.json": {
+   "name": "Mel 111 (Coma)",
+   "count": 70,
+   "header": [
+    "Cluster Name/ID: Mel 111 (Coma)",
+    "70 Stars",
+    "V = +4.79 to +13.23",
+    "(B-V) = -0.11 to +1.43"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 5,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "2655ee8e6be49b79545fbcdc4a3b601ab88af77be40d8157e38306fa693bef07",
+   "raBankSha256": "1797cba49255ed5828afd6f619671b2e97c5737885255ba101b4103154be5342",
+   "vBankFirst": [
+    "N2230.DAT@490382",
+    "N2230.DAT@491357",
+    "N2230.DAT@491505",
+    "N2230.DAT@492267",
+    "N2230.DAT@490827"
+   ],
+   "hitProbesSha256": "e948a4a291c1777e7af958c05ba50b3010c22c6af7cf04548c08ab5bc8a05e4f",
+   "hitProbesSample": {
+    "0,0": "N2230.DAT@492267",
+    "0,46": "N2230.DAT@492267",
+    "0,92": "N2230.DAT@492267",
+    "0,138": "N2230.DAT@492267",
+    "0,184": "N2230.DAT@490313",
+    "0,230": "N2230.DAT@493825",
+    "0,276": "N2230.DAT@493825",
+    "0,322": "N2230.DAT@493825",
+    "0,368": "N2230.DAT@492709",
+    "0,414": "N2230.DAT@492709",
+    "0,460": "N2230.DAT@492709",
+    "31,0": "N2230.DAT@492267"
+   }
+  },
+  "cluster-reference-mel20.json": {
+   "name": "Mel 20 (Alpha-Per)",
+   "count": 305,
+   "header": [
+    "Cluster Name/ID: Mel 20 (Alpha-Per)",
+    "305 Stars",
+    "V = +1.79 to +17.09",
+    "(B-V) = -0.17 to +4.30"
+   ],
+   "outsideFrame": [
+    {
+     "id": "N4500.DAT@144693",
+     "x": 656,
+     "y": 228
+    },
+    {
+     "id": "N4500.DAT@156463",
+     "x": 198,
+     "y": 9
+    }
+   ],
+   "outsideBitmap": [
+    "N4500.DAT@144693"
+   ],
+   "equalVAdjacentPairs": 37,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "cf587c7628ae4665564d46b6d384e57d44c73b500eaa8fa9896797d60be663f5",
+   "raBankSha256": "d3e411deccbd206e9323007e7b9fd1439dd216cf3ac0f2b19b20bedc2e598c86",
+   "vBankFirst": [
+    "N4500.DAT@156463",
+    "N5230.DAT@121562",
+    "N4500.DAT@172068",
+    "N4500.DAT@144236",
+    "N4500.DAT@166671"
+   ],
+   "hitProbesSha256": "0f7dd15c45d2fd0096242511475df1a3ee24883461412bcc8d87331a2ba96d9c",
+   "hitProbesSample": {
+    "0,0": "N4500.DAT@172068",
+    "0,46": "N4500.DAT@172068",
+    "0,92": "N4500.DAT@160894",
+    "0,138": "N4500.DAT@157943",
+    "0,184": "N4500.DAT@168044",
+    "0,230": "N4500.DAT@168044",
+    "0,276": "N4500.DAT@148659",
+    "0,322": "N4500.DAT@148659",
+    "0,368": "N4500.DAT@148659",
+    "0,414": "N4500.DAT@148659",
+    "0,460": "N4500.DAT@135156",
+    "31,0": "N4500.DAT@172068"
+   }
+  },
+  "cluster-reference-ngc752.json": {
+   "name": "NGC 752",
+   "count": 120,
+   "header": [
+    "Cluster Name/ID: NGC 752",
+    "120 Stars",
+    "V = +5.68 to +14.27",
+    "(B-V) = -0.28 to +1.63"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 13,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "2ba326c1a4042c03696c8ce388006ec593b7645943bb3a4a8c2f0cf22a63a81f",
+   "raBankSha256": "ac5d3204218783675fbe455dc3011684a81cdff6776f7d6bc2b1bc01fff862e6",
+   "vBankFirst": [
+    "N3000.DAT@83513",
+    "N3000.DAT@83287",
+    "N3000.DAT@82487",
+    "N3000.DAT@80343",
+    "N3730.DAT@103021"
+   ],
+   "hitProbesSha256": "846bd77be7205fd8c41a013b60427342206f6739032a1744b289a8f74cf6f5e8",
+   "hitProbesSample": {
+    "0,0": "N3000.DAT@80343",
+    "0,46": "N3000.DAT@80343",
+    "0,92": "N3730.DAT@104372",
+    "0,138": "N3730.DAT@104372",
+    "0,184": "N3730.DAT@104372",
+    "0,230": "N3730.DAT@104372",
+    "0,276": "N3730.DAT@104372",
+    "0,322": "N3730.DAT@104372",
+    "0,368": "N3730.DAT@104372",
+    "0,414": "N3730.DAT@104372",
+    "0,460": "N3730.DAT@104372",
+    "31,0": "N3000.DAT@80343"
+   }
+  },
+  "cluster-reference-pleiades.json": {
+   "name": "M 45 (Pleiades)",
+   "count": 297,
+   "header": [
+    "Cluster Name/ID: M 45 (Pleiades)",
+    "297 Stars",
+    "V = +2.87 to +17.22",
+    "(B-V) = -0.20 to +2.20"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 49,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "baa0079d194870cc08c80450bbb62d1f91af9d1dbd75eb8bc6844751a756b464",
+   "raBankSha256": "5bcface83405571dcf0276a6971fcc51f526bacf1d3a9e44999fd42a9e43facd",
+   "vBankFirst": [
+    "N2230.DAT@150112",
+    "N2230.DAT@151949",
+    "N2230.DAT@147686",
+    "N2230.DAT@148567",
+    "N2230.DAT@149038"
+   ],
+   "hitProbesSha256": "28b9a335f0759b1a1cde0df329d200fa5436e4ab6b5874296bebfbdf87a5f7c5",
+   "hitProbesSample": {
+    "0,0": "N2230.DAT@150112",
+    "0,46": "N2230.DAT@147686",
+    "0,92": "N2230.DAT@147993",
+    "0,138": "N2230.DAT@147946",
+    "0,184": "N2230.DAT@152109",
+    "0,230": "N2230.DAT@152989",
+    "0,276": "N2230.DAT@152989",
+    "0,322": "N2230.DAT@156077",
+    "0,368": "N2230.DAT@156077",
+    "0,414": "N2230.DAT@156077",
+    "0,460": "N2230.DAT@156077",
+    "31,0": "N2230.DAT@150112"
+   }
+  },
+  "cluster-m67.json": {
+   "name": "M 67 (NGC 2682)",
+   "count": 506,
+   "header": [
+    "Cluster Name/ID: M 67 (NGC 2682)",
+    "506 Stars",
+    "V = +8.86 to +16.49",
+    "(B-V) = +0.11 to +1.59"
+   ],
+   "outsideFrame": [],
+   "outsideBitmap": [],
+   "equalVAdjacentPairs": 30,
+   "sourceOrderEqualsVBank": false,
+   "vBankSha256": "61cdfa036dc7e24a45ef7675ad65ae0cd67ca4de721a2ed984e18f5fa7d0420c",
+   "raBankSha256": "470a60d7cbf92fc6808da8e380737788f3f08b15164dffe70848a6c33145262f",
+   "vBankFirst": [
+    "N0730.DAT@379848",
+    "N0730.DAT@381179",
+    "N0730.DAT@380811",
+    "N0730.DAT@379668",
+    "N0730.DAT@379923"
+   ],
+   "hitProbesSha256": "a096cd175ccbc798a264e714ccb22adec2be981120a7c2266525233d3938ee20",
+   "hitProbesSample": {
+    "0,0": "N0730.DAT@381876",
+    "0,46": "N0730.DAT@381876",
+    "0,92": "N0730.DAT@381876",
+    "0,138": "N0730.DAT@381876",
+    "0,184": "N0730.DAT@381876",
+    "0,230": "N0730.DAT@381876",
+    "0,276": "N0730.DAT@381126",
+    "0,322": "N0730.DAT@381126",
+    "0,368": "N0730.DAT@381114",
+    "0,414": "N0730.DAT@380125",
+    "0,460": "N0730.DAT@381923",
+    "31,0": "N0730.DAT@381876"
+   }
+  }
+ }
+}

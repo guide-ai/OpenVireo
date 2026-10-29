@@ -1,9 +1,9 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createHash } from 'node:crypto';
-// Recorded-pulsar analysis flows. The panel is not mounted in App yet, so these run against the
-// owned harness (docs/PULSAR-ANALYSIS.md) through OPENVIREO_PULSAR_HARNESS_URL and skip otherwise.
+// Recorded-pulsar analysis flows, standalone panel contract. They run against the test-only harness page
+// /__harness/pulsar/ (docs/TEST-HARNESSES.md) through OPENVIREO_PULSAR_HARNESS_URL, which playwright.config.ts sets.
 const harness = process.env.OPENVIREO_PULSAR_HARNESS_URL;
-test.skip(!harness, 'OPENVIREO_PULSAR_HARNESS_URL is not set; the pulsar panel is not mounted in App yet.');
+test.skip(!harness, 'OPENVIREO_PULSAR_HARNESS_URL is empty; playwright.config.ts normally points it at /__harness/pulsar/ (docs/TEST-HARNESSES.md).');
 
 // SYNTHETIC recording written for the recovered reader contract. It is not a CLEA recording or acquired observation.
 const rows = Array.from({ length: 1000 }, (_, i) => `${(i % 50) / 10},10,0`);
@@ -59,7 +59,9 @@ test('complete analysis path: properties, display controls, manual cursors, reco
   // Manual cursors start empty; nothing is filled in from a catalog or model.
   for (const n of [1, 2, 3]) await expect(page.getByTestId(`pulsar-vertical-value-${n}`)).toHaveText('');
   await expect(page.getByTestId('pulsar-record')).toBeDisabled();
-  await expect(page.getByTestId('pulsar-persistence')).toContainText('only in this browser tab');
+  // 29e9bfa: recorded measurements are now part of Save investigation (the old "only in this browser tab" copy is gone).
+  await expect(page.getByTestId('pulsar-persistence')).toContainText('kept in this browser tab; refreshing or closing the page discards them');
+  await expect(page.getByTestId('pulsar-persistence')).toContainText('Save investigation in the toolbar keeps them with the current data, and Restore investigation brings them back.');
   await expect(page.getByTestId('pulsar-panel-3-not-recorded')).toBeVisible();
   // Recovered per-panel geometry: 400 × 120/125/140 with baselines 119/124/124.
   for (const [n, h, base] of [[1, 120, 119], [2, 125, 124], [3, 140, 124]]) {

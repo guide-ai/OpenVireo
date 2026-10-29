@@ -41,3 +41,9 @@ A crafted file with a confirmed interpretation over zero included points was rep
 The prior20fixture is checked against its stored andindependently captured fixedSHA before read/write comparison. The native verifier nowre-decodes original hash-bound ranges andchecks the operation,field offset andNo7 branch target directly,withoutbyte columns. This strengthens static evidence without turning it into anoriginalruntime oracle. Shared IDsyntax andstable immutable selection maps avoid per-keystroke table/filter rebuilding. The final bounded source check duringSave remains intentional anduses the validated cache. These corrections follow the single report andare independently tested,not externally signed off asecondtime.
 
 Final integrated checks passed951unitcontracts,162completebrowserflows,37persistentflows and6productionflows,withdesktop/mobilevisualQA. The finalreceipt andindependentreviewdispositions are in `claude-cluster-exclusions-review/`;no furtherincrement wasstarted.
+
+**Front V2 correction (2026-10-28, [CLUSTER-HR-TOOLS.md](CLUSTER-HR-TOOLS.md)).** VIREO has no HR autoscaling: the database plot
+draws every included point on fixed axes without a frame clip (0x542bf4). Remove from HR Diagram is visible only in VIREO's Edit
+Mode (option +0x2e7e, default off; 0x543d14) and a star is selected with the right mouse button (0x543bfc); observation mode has no
+remove or restore (0x542f03). The web keeps the pupil exclusions described here, labelled as an adaptation; their saved format
+is unchanged.
