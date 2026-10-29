@@ -81,3 +81,4 @@ The raw report stays at `task-2/analysis/reviews/front-b-review-1.md`; this is t
 - F9 exact longitude/latitude/horizon bounds; crafted just-over-π files rejected.
 - F10 "Terminate Current Slew?" adaptation listed. INFO items: guide line, window comment, v26-over-v23 test.
 - Adjudication 2: data/observatory/horizon-provenance.json corrected to +0x27c9 in its own commit.
+- Minor notes (after merge): a refused Point (Limit Slewing) is checked before any target or hot-list selection, so the card and pointing stay exactly as they were; the horizon-provenance caveat and scope now describe the ported opt-in guard; Add Current keeps ID whitespace exactly as typed (THOVerifyDlg.OKBtnClick 0x4f8898 copies IDEd through @LStrToString 0x4060cc with a length cap only, no Trim), so a whitespace-only ID is stored as typed and reported as "Object … added" — the list editor's Add/Edit keeps its non-blank rule.

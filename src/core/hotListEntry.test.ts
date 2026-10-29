@@ -48,3 +48,17 @@ describe('F7 blank ID for Add Current only',()=>{
   expect(()=>addHtlRow(newHtlEditor(),{id:'',remarks:'',ra:1,dec:2})).toThrow();// editor rule unchanged
  });
 });
+describe('review note 3: ID whitespace is kept exactly as typed (no Trim in OKBtnClick 0x4f8898 → @LStrToString 0x4060cc)',()=>{
+ it('parse and append keep leading/trailing and whitespace-only IDs; the message follows the non-empty ID',async()=>{
+  const {newHtlEditor,serializeHtl,parseHtl}=await import('./hotList');
+  const r=parseHotListEntry({id:' M82 ',remarks:' x ',raHours:'1',raMinutes:'0',raSeconds:'0',decDegrees:'2',decMinutes:'0',decSeconds:'0'});
+  expect(r.status==='ok'&&[r.fields.id,r.fields.remarks]).toEqual([' M82 ',' x ']);
+  let e=appendAddCurrentEntry(newHtlEditor(),{id:' M82 ',remarks:'',ra:1,dec:2});
+  e=appendAddCurrentEntry(e,{id:'   ',remarks:'',ra:3,dec:4});
+  e=appendAddCurrentEntry(e,{id:'',remarks:'',ra:5,dec:6});
+  expect(e.list.map(x=>x.id)).toEqual([' M82 ','   ','']);
+  expect(parseHtl(serializeHtl(e.list)).map(x=>x.id)).toEqual([' M82 ','   ','']);
+  expect(hotListEntryAddedText('   ')).toBe('Object     added to Observation List.');expect(hotListEntryAddedText('')).toBe('Position added to Observation List.');
+  expect(()=>appendAddCurrentEntry(newHtlEditor(),{id:'\t',remarks:'',ra:1,dec:2})).toThrow();
+ });
+});

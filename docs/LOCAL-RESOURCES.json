@@ -349,8 +349,8 @@
     },
     {
       "path": "data/observatory/horizon-provenance.json",
-      "bytes": 9658,
-      "sha256": "4210d792c393f8b6754ac9a470ed3b124733dd95d21828b6c5154fe1b3041140"
+      "bytes": 10486,
+      "sha256": "973600cd2c21a0f9458573f9e86ed29878b4a64a69a487caa648101a77b69022"
     },
     {
       "path": "data/observatory/horizon-vectors.json",
