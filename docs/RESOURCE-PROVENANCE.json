@@ -1,9 +1,10 @@
 {
   "schema": 1,
-  "scope": "All files in LOCAL-RESOURCES.json(count in totalFiles):the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help,plus the derived data/clusters comments and point sidecar(approval of2026-10-28,cluster HR tools (a) and (b));no executable,installer,archive or additional fullGSCfile is included;plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json. Plus the Front M independent Multi-Spec fibre witness data/multispec/witness.json(derived),the 67 byte-exact jspect2 templates approved on2026-10-28 for the multi-object spectrometer(public/original/spectra/jspect2/,Appendix T)and their derived requirement record data/multispec/template-requirements.json. Plus the 35 byte-exact VIREO help files (user approval of 2026-10-29): 34 in public/original/help and VarTypeHlp.LST in public/original/variables. Plus byte-exact NGC4670.SP(user approval of2026-10-27,group 1)in public/original/spectra for the LSS row NGC 4670(Front L2). Plus the Front K derived data/clusters/cluster-dialog-certificate.json(dialog-key census result:keys,counts,booleans and hashes only;no GSC record,distance,age or modulus).",
-  "totalFiles": 1464,
-  "totalBytes": 132410846,
+  "scope": "All files in LOCAL-RESOURCES.json(count in totalFiles):the original1279plus Pulsars.dat,PLEIADES.HTL,CLEA_GLX.DAT and Hubble.HTL under the second user approval of2026-10-26,plus six prepared data/hubble Pegasus JSON resources under the user approval of2026-10-27(only bounded NGC7501 GSC field/search-scan witnesses,not full N0000/N0730 or GSC),plus LSS_Field01..09.HTL under the second user approval of2026-10-26,plus 11 data/lss bounded LSS field packs,witnesses and provenance under the user approval of2026-10-27(bounded N2230/N3000 read witnesses for the LSS strip only),plus byte-exact LSSFields.LST,GLIMAGES.LST and GLXYSP.LST under the user approval of2026-10-27(groups1 and2),plus byte-exact ObjectX.HTL under the second user approval of2026-10-26 and ObjX_MPC.CMO and ObjX_AST.CMO(program files/CLEA/VIREO/Orbit/)under the user approval of2026-10-27,plus byte-exact ObjX_MPC.CMO.sav under the later user approval recorded in AGENTS.md,plus byte-exact HRAnalHlp.LST and HRAnalHlp.TXT(approval of2026-10-28)in public/original/cluster-help,plus the derived data/clusters comments and point sidecar(approval of2026-10-28,cluster HR tools (a) and (b));no executable,installer,archive or additional fullGSCfile is included(historical: true until the user approval of 2026-10-29,decision 2,which publishes the full compact GSC as tiles; see the Front G sentence below);plus Front F derived data/hubble resources(fingerprints,UM-I – 3 cached-pan provenance and vectors,QSO merge witnesses)and byte-exact CLEA_QSO.DAT(second user approval of2026-10-26). Plus byte-exact NkdEye.dat(user approval of2026-10-28) and the derived Front O witness data/fieldinfo/info-witness.json. Plus the Front M independent Multi-Spec fibre witness data/multispec/witness.json(derived),the 67 byte-exact jspect2 templates approved on2026-10-28 for the multi-object spectrometer(public/original/spectra/jspect2/,Appendix T)and their derived requirement record data/multispec/template-requirements.json. Plus the 35 byte-exact VIREO help files (user approval of 2026-10-29): 34 in public/original/help and VarTypeHlp.LST in public/original/variables. Plus byte-exact NGC4670.SP(user approval of2026-10-27,group 1)in public/original/spectra for the LSS row NGC 4670(Front L2). Plus the Front K derived data/clusters/cluster-dialog-certificate.json(dialog-key census result:keys,counts,booleans and hashes only;no GSC record,distance,age or modulus). Plus the full compact GSC (Front G; user approval of 2026-10-29, decision 2; band sizes and SHA-256 in the research file analysis/approved-gsc-wav-2026-10-29.txt): the 24 bands N0000..N8230.DAT and S0000..S8230.DAT of CLEA_Vireo.zip (program files/CLEA/VIREO/Cgsc/GSC/) as 300 byte-exact record-aligned tiles in public/original/gsc/<band>/ (whole bands are not stored; assembled[] in LOCAL-RESOURCES.json lists each band with its approved SHA-256 and its tiles in order), byte-exact TABLES/REGIONS.BIN as public/original/gsc/REGIONS.BIN, and the derived tile index and search skeleton data/gsc/gsc-index.json (cut tool analysis/front-g-gsc/tools/cut_gsc_tiles.py, SHA-256 dd9ee8d0bb1ced7f4cd7b195a9513dadf438550520328662fa5998c948d17566).",
+  "totalFiles": 1792,
+  "totalBytes": 647236059,
   "extensions": {
+    ".BIN": 1,
     ".BMP": 4,
     ".CMO": 2,
     ".DAT": 2,
@@ -14,12 +15,17 @@
     ".SP": 150,
     ".SPI": 1,
     ".TXT": 14,
+    ".bin": 300,
     ".dat": 4,
-    ".json": 1073,
+    ".json": 1080,
     ".obs": 1,
     ".png": 170,
-    ".sav": 1
+    ".sav": 1,
+    ".wav": 3,
+    ".WAV": 17
   },
+  "assembledFiles": 24,
+  "assembledBytes": 508713480,
   "groups": {
     "data/classification": {
       "files": 7,
@@ -38,10 +44,10 @@
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
     "data/hubble": {
-      "files": 75,
-      "bytes": 3899631,
+      "files": 79,
+      "bytes": 3910224,
       "materialClass": "mixed-derived-and-authored",
-      "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses",
+      "description": "Mixed original-derived source fields/calibrations/catalogs, analytic vectors, proofs and embedded byte witnesses; includes the CorBor cached-pan metadata (corbor-targets, corbor-cached-provenance, corbor-independent-vectors, corbor-distance-references: apparent V of the two CorBor targets from the distributed Hubble Data.xls, as for umi-distance-references), listed in the census by Front C5W follow-up",
       "usedBy": "Verified star/sky and bounded galaxy acquisition, manual spectral/Hubble analysis and scientific tests",
       "upstreamStatus": "Original CLEA bundle identifies immediate provenance;family credits below require individual-source matching where noted."
     },
@@ -228,6 +234,38 @@
       "description": "Output of the independent Python witness analysis/front-m-multispec/tools/multispec_witness.py (SHA-256 f442e2f3f553e01d6898c84dfb13671907066a1ed934180f6788323fc63d391d) of the static reading of CLEA_VEO.exe (781bc970…c54c): Multi-Spec fibre spectra (TMSpecDsplyForm1 0x526fb4: 400-bin grid 0x526e6c, K = 50·t·1000/1, one Poisson draw 0x55f0f4 per bin, object then sky, product and rejection branches) for eleven fibres on the 0.4 m and 4 m at t = 60 s and fixed seeds: six in the Hubble Coma engine field (GLXYTMPL.SP galaxy, own-spectrum galaxy, star, star with a template not bundled, sky, bright star over the 10^6 mean bound) and five in two unnamed Object X fields (numeric inputs only: QSO and star V, z and spectral index). It reads the bundled JSPEC2.SPI, star templates, GLXYTMPL.SP, NGC4889.SP and QSOSpect.dat itself and emits means, counts, totals, S/N, branch counts and the .SSP SHA-256. Derived from already-approved resources only; no new original bytes; plus template-requirements.json (each approved jspect2 template with its SHA-256, JSPEC2.SPI index and the field packs whose stars require it).",
       "usedBy": "src/core/multiSpecSpectrum.test.ts (Front M, Multi-Spec)",
       "upstreamStatus": "Derived test evidence; a second implementation of the same reading, not an x87 or original-runtime oracle."
+    },
+    "public/original/gsc": {
+      "files": 301,
+      "bytes": 509056848,
+      "materialClass": "unchanged-original-binary-resource",
+      "description": "The full compact GSC of CLEA_Vireo.zip (Cgsc/): the 24 bands as 300 byte-exact tiles of 65536 27-byte records each (the last tile of a band shorter), reassembling byte-exactly to each band (assembled[] in LOCAL-RESOURCES.json), and byte-exact TABLES/REGIONS.BIN",
+      "usedBy": "Field engine for arbitrary pointings (Front G): tiles fetched lazily near the current pointing",
+      "upstreamStatus": "Included under the user approval of 2026-10-29 (decision 2 in AGENTS.md; band sizes and SHA-256 in the research file analysis/approved-gsc-wav-2026-10-29.txt) on the license basis of the 2026-10-26 approval (CLEA License.rtf: free noncommercial student copies, no distribution for profit). Credits and the upstream GSC 1.x version uncertainty: credits.compactGsc."
+    },
+    "data/gsc": {
+      "files": 1,
+      "bytes": 170529,
+      "materialClass": "derived-original-data",
+      "description": "Derived tile index of the compact GSC: per band its records, SHA-256 and tiles (first record, records, bytes, SHA-256, first/last packed RA), and the search skeleton (packed RA and Dec of every native binary-search midpoint whose interval spans more than one tile)",
+      "usedBy": "Tile planning (src/core/gscTilePlan.ts); rebuilt from the tiles by a test",
+      "upstreamStatus": "Derived from the tiles published under the user approval of 2026-10-29 (decision 2 in AGENTS.md); no other source. Credits and the upstream GSC 1.x version uncertainty: credits.compactGsc."
+    },
+    "public/original/sounds": {
+      "files": 20,
+      "bytes": 5552270,
+      "materialClass": "unchanged-original-binary-resource",
+      "description": "Byte-exact original VIREO sound effects from CLEA_Vireo.zip (SHA-256 58dc02a66c2ca89c80912aa0acc31f032e68ec88e8c85099708758ab50e6778b), program files/CLEA/VIREO/*.WAV: the 20 files listed with their SHA-256 in the research file analysis/approved-gsc-wav-2026-10-29.txt, original names and case kept. Zip dates: 14 from 1992-10-21..1993-09-13, GARSAVE 2001, Emotor/servostart/servocontin 2003. Several date from 1992-93 and may be third-party sound effects that CLEA bundled; their upstream author is unknown. CLUNK, GARSAVE, HYDROLIC, KERCHUNK, MACHINE, MACHINEZ, TINCAN and TROLLEY are not referenced by CLEA_VEO.exe (analysis/front-c5w/WAV-events.md) and are bundled as approved but never played.",
+      "usedBy": "Observatory Sound Effects (docs/SOUND-EFFECTS.md): off by default; only when the student turns it on, a lazy same-origin fetch (size and SHA-256 checked) of the sound an event needs: GARDOOR and the dome end table for the dome, servostart/servocontin for manual slews, Emotor (MS-ADPCM, decoded in the page by src/core/msAdpcm.ts) for programmed slews.",
+      "upstreamStatus": "Included under the user approval of 2026-10-29 recorded in AGENTS.md, on the CLEA License.rtf basis (free noncommercial student copies, no distribution for profit). Credit Project CLEA (Gettysburg College) as originator and NSF and Gettysburg College as supporters; the possible third-party origin of the 1992-93 effects is recorded as uncertain."
+    },
+    "data/camera": {
+      "files": 2,
+      "bytes": 34973,
+      "materialClass": "external-catalog-provenance",
+      "description": "Index and provenance of the bundled VizieR camera extracts (extracts.json: catalog, cone, file, SHA-256, bytes, recording date, request and serving host; EXTRACTS-PROVENANCE.json: CORS header, client and server dates, rows, matches, MaxTuples, citations, licence uncertainty, naming rule). Written by analysis/front-c5w/tools/build_extracts.py. The extract VOTables themselves are in public/camera/vizier, outside this manifest by design (VizieRCameraCatalogs: not CLEA resources).",
+      "usedBy": "Camera static mode (src/io/cameraCatalog.ts) admits an extract only when its host is an approved VizieR host and its SHA-256 matches; src/io/cameraExtracts.test.ts checks every file.",
+      "upstreamStatus": "Metadata authored by this project about CDS/VizieR NOMAD (I/297) and USNO-B1 (I/284) responses served by the official mirror vizier.idia.ac.za (user decisions 2026-10-27 and 2026-10-29); no CLEA bytes."
     }
   },
   "authoredExamples": [
@@ -251,7 +289,8 @@
     "lssFieldPacks": "data/lss(2026-10-27 approval):bounded compact-GSC N2230/N3000 read witnesses for the LSS strip pointings only,with CLEA_VStrs.dat records,CLEA_QSO.DAT positions and GLIMAGES.LST match indices.Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters);GSC source-specific terms remain uncertain.Not the full GSC,not new observations and no native-runtime equivalence is asserted.",
     "lssListsAndGalaxyLists": "LSSFields.LST,GLIMAGES.LST and GLXYSP.LST:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO lists approved2026-10-27(groups1 and2);upstream source identification remains uncertain.No universal open license or native-runtime equivalence is asserted.",
     "objectXFiles": "ObjectX.HTL,ObjX_MPC.CMO,ObjX_MPC.CMO.sav and ObjX_AST.CMO:Project CLEA,Gettysburg College(originator);NSF and Gettysburg College(supporters).Byte-exact original VIREO files approved2026-10-26(ObjectX.HTL)and2026-10-27 and later(orbit files,AGENTS.md);state vectors likely computed from the Minor Planet Center MPCORB and Lowell Observatory ASTORB catalogues(uncertain inference).No universal open license or native-runtime equivalence is asserted.",
-    "VizieRCameraCatalogs": "Camera catalog data (web adaptation, not CLEA resources): CDS/VizieR, doi:10.26093/cds/vizier; NOMAD (I/297), Zacharias N. et al. 2004, AAS 205, 48.15 (2004AAS...205.4815Z); USNO-B1.0 (I/284), Monet D.G. et al. 2003, AJ 125, 984. VizieR declares no explicit licence for these catalogs (rights_uri https://cds.unistra.fr/vizier-org/licences_vizier.html); probably US-government USNO works, uncertain. Published as recorded test responses (tests/fixtures/vizier) and bounded extracts (public/camera/vizier, data/camera/EXTRACTS-PROVENANCE.json) under the user decision of 27 October 2026."
+    "VizieRCameraCatalogs": "Camera catalog data (web adaptation, not CLEA resources): CDS/VizieR, doi:10.26093/cds/vizier; NOMAD (I/297), Zacharias N. et al. 2004, AAS 205, 48.15 (2004AAS...205.4815Z); USNO-B1.0 (I/284), Monet D.G. et al. 2003, AJ 125, 984. VizieR declares no explicit licence for these catalogs (rights_uri https://cds.unistra.fr/vizier-org/licences_vizier.html); probably US-government USNO works, uncertain. Published as recorded test responses (tests/fixtures/vizier) and bounded extracts (public/camera/vizier, data/camera/EXTRACTS-PROVENANCE.json) under the user decision of 27 October 2026.",
+    "compactGsc": "Compact GSC bands and REGIONS.BIN: Project CLEA,Gettysburg College(originator of this compact packaging);NSF and Gettysburg College(supporters). Upstream: the Hubble Guide Star Catalog(GSC 1.x), Space Telescope Science Institute(Lasker et al. 1990;Jenkner et al. 1990);the exact GSC version CLEA used is not recorded in the bundle and is uncertain. Published under the user approval of 2026-10-29(decision 2) on the 2026-10-26 license basis."
   },
   "sourceNotices": [
     {
@@ -652,6 +691,16 @@
         "sourceGrant": "Front L2 (2026-10-29): byte-exact NGC4670.SP from CLEA_Vireo.zip program files/CLEA/VIREO/Spectra/Galaxies/ under the user approval of 2026-10-27 (group 1); the frozen LSS fingerprints gain the 2026-10-29 update listing the 105 entries the recovered QSO merge changes (derived digests and integers only).",
         "treatment": "Original bytes unchanged and hash-checked; derived metadata written without local research paths; source bytes, hashes and uncertainty recorded.",
         "boundedScan": "Named JSON resources checked for local /home paths and high-confidence credential/private-key patterns before commit. Not a universal absence guarantee."
+      },
+      {
+        "date": "2026-10-29",
+        "scope": [
+          "public/original/gsc/**",
+          "data/gsc/gsc-index.json"
+        ],
+        "sourceGrant": "Front G (2026-10-29): byte-exact tiles of the 24 compact GSC bands and byte-exact REGIONS.BIN from CLEA_Vireo.zip program files/CLEA/VIREO/Cgsc/ under the user approval of 2026-10-29 (decision 2); the derived index holds only record counts, byte sizes, SHA-256 values, record ranges and packed RA/Dec integers read from those tiles.",
+        "treatment": "Original bytes unchanged and hash-checked (each tile and each reassembled band); the derived index written without local research paths (its source block names only the zip, its SHA-256 and the archive prefix).",
+        "boundedScan": "data/gsc/gsc-index.json checked for local /home paths and high-confidence credential/private-key patterns before commit (none found); the binary tiles are original catalogue bytes. Not a universal absence guarantee."
       }
     ]
   }

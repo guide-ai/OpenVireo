@@ -12,10 +12,10 @@ Actualizado el 29 oct 2026. Las decisiones aprobadas también constan en `AGENTS
 | Espejos de VizieR (29 oct 2026) | La aprobación de CDS/VizieR cubre todos los espejos oficiales de VizieR. El 29 oct CDS no respondía y CfA solo servía la portada, mientras `vizier.idia.ac.za` (IDIA, Sudáfrica) respondía con NOMAD y USNO-B1. Cada extracto o respuesta registra el host que lo sirvió; el modo en vivo puede pasar de un espejo a otro si uno falla. |
 | GSC completo (29 oct 2026) | Se publica byte a byte el GSC compacto completo (24 bandas `Cgsc/GSC/[NS]*.DAT` y `Cgsc/TABLES/REGIONS.BIN`, 509 056 848 B), partido en trozos de unos 1–2 MB que el navegador descarga solo cerca del apuntado. Cada trozo y cada banda llevan su SHA-256 en el manifiesto. Permite apuntar a cualquier lugar del cielo con el comportamiento original. |
 | Sonidos WAV (29 oct 2026) | Se incluyen byte a byte los 20 `*.WAV` (5 552 270 B), cargados solo al activar Efectos de sonido (apagado por defecto). Varios son de 1992–93 y podrían ser efectos de terceros incluidos por CLEA; esa duda consta en la procedencia. |
-| Backend en local (29 oct 2026) | Cuentas, guardado (nivel B) y métricas con Cloudflare Workers y D1 se construyen y prueban solo en local, en loopback, sin cuenta de Cloudflare, recursos remotos, envío real de correos ni secretos en el código. Desplegar sigue esperando el dominio y la aprobación del usuario. |
+| Backend en local (29 oct 2026) | Cuentas, guardado (nivel B) y métricas con Cloudflare Workers y D1 se construyen y prueban solo en local, en loopback, sin cuenta de Cloudflare, recursos remotos, envío real de correos ni secretos en el código. Desplegar sigue esperando el dominio y la aprobación del usuario. Implementación local (Front A): `docs/BACKEND-LOCAL.md`. |
 
 Condiciones del modo en vivo (B):
-- solo envía a CDS las coordenadas y el radio de la consulta;
+- solo envía a VizieR (CDS o un espejo oficial; el primero es IDIA y el host que respondió queda registrado) las coordenadas y el radio de la consulta;
 - se etiqueta como adaptación web (VOTable de VizieR en lugar del ASCII de NOFS);
 - las pruebas usan respuestas grabadas, para que sean deterministas;
 - si VizieR no responde, la cámara lo dice con claridad y no inventa campos.
@@ -66,6 +66,12 @@ Medidas de hoy: build de unos 75 MB y 1194 archivos. Con los archivos de Object 
 - **Proveedor:** Cloudflare (sitio estático, y Workers, D1 y R2 cuando haga falta backend).
 - **Dominio y despliegue:** todavía no hay dominio ni cuenta; el usuario comprará un dominio pronto. Mientras tanto no se despliega nada y la prohibición de `AGENTS.md` sigue vigente.
 - **Analítica:** sí, métricas de visitas. Propuesta por defecto: Cloudflare Web Analytics, agregada y sin cookies.
+
+**Prerrequisitos de despliegue** (se resuelven antes de publicar, no ahora):
+
+- `public/original/.../ObjX_MPC.CMO` mide 30 989 466 B y supera el límite de 25 MiB por archivo de Cloudflare Pages. Hay que servirlo en trozos byte a byte, como el GSC (Front G), o desde R2. Lo detectó la revisión de G1 (29 oct 2026).
+
+- Límite global de enlaces de entrada (Front A, cierre N1): hoy cuenta también las peticiones que ya rechazó el límite por correo o por IP, así que un solo cliente puede agotar el cupo global (200 por hora) y bloquear la entrada de todos durante esa hora. Antes de desplegar, contar el cupo global solo después de pasar los límites por correo e IP, y revisar con el proveedor de correo real el bloqueo de una víctima (cerrar su cupo pidiendo enlaces a su nombre), que ya está documentado.
 
 Preguntas que siguen abiertas:
 

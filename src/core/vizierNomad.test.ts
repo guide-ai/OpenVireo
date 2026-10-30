@@ -19,6 +19,12 @@ describe('VizieR VOTable reader',()=>{
   expect(row.identifier).toBe('1141-0043644');expect(row.raHours).toBe(56.7470833/15);expect(row.decDegrees).toBe(24.1199861);
   expect(row.selectedMagnitude).toBe(Math.fround(18.86));expect(row.motionRaAfterDivision).toBe(Math.fround(-0.002));
  });
+ test('Front C5W: recorded IDIA USNO-B1 (I/284) response reads with its I2 column',()=>{
+  const bytes=new Uint8Array(readFileSync(new URL('../../tests/fixtures/vizier/usnob1-56.75+24.12-r0.01.xml',import.meta.url)));
+  const c=readVizierCatalog(bytes,{catalog:'I/284',band:'I2',epochOffsetYears:0,queryBrightMagnitude:1,queryFaintMagnitude:21.5});
+  expect(c.fieldNames).toContain('USNO-B1.0');expect(c.fieldNames).toContain('Imag');expect(c.maxTuples).toBe(50000);expect(c.matches).toBe(4);
+  expect(c.entries).toHaveLength(4);
+ });
  test('recorded response: B band keeps three, RA-then-DEC order',()=>{
   const c=readVizierCatalog(recorded,ctx('B'));
   expect(c.catalogEntries.map(e=>e.result.row.identifier)).toEqual(['1141-0043630','1141-0043634','1141-0043639']);
