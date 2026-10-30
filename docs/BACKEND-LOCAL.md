@@ -81,7 +81,10 @@ OPENVIREO_TEST_PORT=5297 npx playwright test -c playwright.cloud.config.ts
 
 The Playwright config starts `wrangler dev --local` on `127.0.0.1:<port+1>` with fresh state and the app on
 `127.0.0.1:<port>` (never 5173), then: request a link → read it from the dev sink → open it in a new tab → Save
-investigation → upload → reload → restore → download (same bytes) → export → delete the copy → delete the account. In the
+investigation → upload → reload → restore → download (same bytes) → export → one-click "Save current investigation to the
+cloud" (no download; its cloud copy has the same bytes as a local Save of that state) → delete the copies → delete the account.
+The one-click button runs the ordinary Save investigation with a deliver callback in place of the download (Front F2), so
+the radio guards, the replay check and the saved markers are the same as for a file. In the
 default suite the same spec only checks that ordinary builds show no account UI and call no API.
 
 ## Security notes
@@ -111,9 +114,6 @@ default suite the same spec only checks that ordinary builds show no account UI 
 
 ## Not done (decisions or follow-ups)
 
-- **One-click "Save to cloud".** The JSON is produced inside `SpectrumInstrument.tsx`, which other fronts are editing,
-  so today the cloud panel uploads the file Save investigation produced. A ~3-line hook there (route the serialized text
-  to a callback instead of the download) enables a one-click button; the client already has `upload(blob,name)`.
 - Key-result derivation for progress (needs either the browser to attach results computed by the existing pure
   readers, or the worker to import them).
 - Preference sync in the app; teacher features (level C); deployment, domain, real email provider, analytics token,
