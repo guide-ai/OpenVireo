@@ -382,7 +382,7 @@ export default function OpenVireo(){
     for(const id of PEGASUS_GALAXY_IDS)liveControllers.current.pegasusGalaxies[id]?.replace(liveCurrent.current.pegasusGalaxies[id]);
     for(const key of HUBBLE_EXTENDED_BANKS)liveControllers.current.extendedGalaxies[key]?.replace(liveCurrent.current.extendedGalaxies[key]);
     if(w.siteClock)setSiteClock(w.siteClock);
-    const c=w.context;setOpen(c.domeOpen);setMode(c.mode);setSelected(catalog.find(o=>o.id===c.selectedId)!);setPointing(c.pointing);setRa(c.raText);setDec(c.decText);setHasPointed(c.hasPointed);setGalaxyTargetId(c.galaxyTargetId);setError('');setNotice('');
+    const c=w.context;setOpen(c.domeOpen);setMode(c.mode);setSelected(catalog.find(o=>o.id===c.selectedId)!);setPointing(c.pointing);setBenchPointing(c.pointing);setRa(c.raText);setDec(c.decText);setHasPointed(c.hasPointed);setGalaxyTargetId(c.galaxyTargetId);setError('');setNotice('');
   }
   /** Save: the shared dataset guards, then Pulsar Analysis and the Radio route (or the restored snapshot of a route not mounted
    * yet). The assembled part is read back and rebuilt here, so a Save never writes what Restore would refuse. */
