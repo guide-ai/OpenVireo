@@ -40,9 +40,10 @@ test.describe.serial('own confirmed results in Observational Results',()=>{
     await page.getByRole('button',{name:/Record measurement/}).click();await page.getByTestId('hubble-obsdata-cancel').click();await expect(page.locator('#measurement-log tbody tr')).toHaveCount(0);
     await page.getByRole('button',{name:/Record measurement/}).click();await expect(page.getByRole('dialog',{name:'Observational Data'})).toBeVisible();await page.keyboard.press('Escape');await expect(page.getByRole('dialog',{name:'Observational Data'})).toBeHidden();await expect(page.locator('#measurement-log tbody tr')).toHaveCount(0);
     await openResults(page);await expect(card(page)).toContainText('No confirmed measurements yet');await expect(card(page).locator('tbody tr')).toHaveCount(0);for(const name of actions)await expect(card(page).getByRole('button',{name,exact:true})).toBeDisabled();
-    const confirmed=(await page.getByTestId('z-value').textContent())!;await recordMeasurement(page);
-    // The row stores the Single z of the measurement (re-pinned 2026-10-30, Front H2: read from the analyzer, not the confirmation).
-    expect(Number((await card(page).getByTestId('own-z-1').textContent())!)).toBeCloseTo(Number(confirmed),6);
+    const confirmed=(await page.getByTestId('z-value').textContent())!;await recordMeasurement(page,{remarks:'arm'});
+    // The row stores the Single z of the measurement exactly (H2 review 1 L3): checked against the CSV hex below.
+    // H2 review 1 M3: the record column shows the typed velocity, Sp type, JD and remarks.
+    await expect(card(page).getByTestId('own-typed-v-1')).not.toHaveText('—');await expect(card(page).getByTestId('own-record-1')).toContainText('JD 24');await expect(card(page).getByTestId('own-record-1')).toContainText('arm');
     await view(page,'Galaxy exposure','Acquire a Hubble galaxy.');await acquireGalaxy(page,'54876');await align(page,'25','My 54876 alignment');await saveRecord(page);
     await view(page,'Star exposure','Catalog star exposure');await page.getByRole('button',{name:'Activate supported star field',exact:true}).click();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByRole('button',{name:'Start star exposure',exact:true}).click();await page.clock.runFor(1000);await page.getByRole('button',{name:'Analyze acquired star',exact:true}).click();await align(page,'5','Star alignment');await saveRecord(page);
     await importSynthetic(page,'+cmd,"q".csv','=HYPERLINK("x")');await saveRecord(page);
@@ -76,7 +77,8 @@ test.describe.serial('own confirmed results in Observational Results',()=>{
     for(const[id,o]of own){const m=log.get(id)!;for(const key of ['object','file','sha256','z_number','z_float32_hex','source_kind','acquisition_id','acquired_target_id','analyst_step','base','position','factor','reference'])expect(o[key],`${id}.${key}`).toBe(m[key]);
       if(o.velocity_status==='derived'){const v=velocities.get(id)!,expected=Math.fround(299792.458*float32(o.z_float32_hex));expect(v.status).toBe('derived');expect(o.velocity_float32_hex).toBe(v.velocity_float32_hex);expect(o.velocity_float32_hex).toBe(hexOf(expected));expect(Object.is(Number(o.velocity_float32_km_s),expected)).toBe(true);expect(Number(o.reference_cz_km_s)===Number(v.reference_cz_km_s)).toBe(true);}}
     for(const id of ['1','2','3']){expect(own.get(id)!.archive_binding).toBe('bound');expect(archived.has(own.get(id)!.acquisition_id)).toBe(true);}
-    expect(own.get('1')!.acquired_target_id).toBe('36747');expect(own.get('2')!.acquired_target_id).toBe('54876');
+    expect(own.get('1')!.acquired_target_id).toBe('36747');expect(own.get('1')!.z_float32_hex).toBe(hexOf(Math.fround(Number(confirmed))));
+    expect(Math.abs(Number(own.get('1')!.typed_velocity_float32_km_s)-Number(own.get('1')!.velocity_float32_km_s))).toBeLessThan(0.01);expect(own.get('1')!.remarks).toBe('arm');expect(own.get('3')!.typed_velocity_float32_km_s).toBe('');expect(own.get('2')!.acquired_target_id).toBe('54876');
     expect(own.get('3')).toMatchObject({source_kind:'catalog-star-acquisition',velocity_status:'stellar-excluded',velocity_float32_km_s:'',velocity_float32_hex:'',reference_cz_km_s:''});expect(velocities.has('3')).toBe(false);
     expect(own.get('4')).toMatchObject({source_kind:'imported-spectrum',archive_binding:'not-applicable',acquisition_id:'',object:'\'=HYPERLINK("x")',file:'\'+cmd,"q".csv'});
     expect(own.get('5')).toMatchObject({z_float32:'-0',z_float32_hex:'80000000',velocity_float32_km_s:'-0',velocity_float32_hex:'80000000',velocity_status:'derived'});expect(log.get('5')!.z_float32).toBe('0');
@@ -111,9 +113,12 @@ test.describe.serial('own confirmed results in Observational Results',()=>{
     await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'own-results.json',mimeType:'application/json',buffer:saved});await expect(page.getByText(restored,{exact:true})).toBeVisible();
     await openResults(page);await expect(card(page).locator('tbody tr')).toHaveCount(5);
     expect((await download(page,'Download results text',card(page))).bytes).toEqual(text);expect((await download(page,'Download results CSV',card(page))).bytes).toEqual(csv);
-    await page.getByRole('button',{name:'Inspect acquisition for measurement 1',exact:true}).click();await saveRecord(page);
-    await expect(card(page).locator('tbody tr')).toHaveCount(6);await expect(card(page).getByTestId('own-z-6')).toHaveText((await card(page).getByTestId('own-z-1').textContent())!);await expect(card(page).getByTestId('own-binding-6')).toHaveText((await card(page).getByTestId('own-binding-1').textContent())!);
-    const appended=byId((await download(page,'Download results CSV',card(page))).bytes);expect(appended.get('6')).toMatchObject({acquisition_id:appended.get('1')!.acquisition_id,archive_binding:'bound',velocity_status:'derived'});
+    // Re-pinned 2026-10-30 (H2 review 1 M2): re-recording galaxy 36747 is keyed on its target ID, so it updates row 1 (Time-Dependent
+    // Data off, 0x54a73c); before, its 18-character label never matched. The appended id is checked with the star row instead.
+    await page.getByRole('button',{name:'Inspect acquisition for measurement 1',exact:true}).click();await saveRecord(page);await expect(card(page).locator('tbody tr')).toHaveCount(5);
+    await page.getByRole('button',{name:'Inspect acquisition for measurement 3',exact:true}).click();await saveRecord(page);
+    await expect(card(page).locator('tbody tr')).toHaveCount(6);await expect(card(page).getByTestId('own-z-6')).toHaveText((await card(page).getByTestId('own-z-3').textContent())!);await expect(card(page).getByTestId('own-binding-6')).toHaveText((await card(page).getByTestId('own-binding-3').textContent())!);
+    const appended=byId((await download(page,'Download results CSV',card(page))).bytes);expect(appended.get('6')).toMatchObject({acquisition_id:appended.get('3')!.acquisition_id,archive_binding:'bound',velocity_status:'stellar-excluded'});
     const again=(await download(page,'Save session')).bytes;await page.reload();await page.getByLabel('Restore analysis session',{exact:true}).setInputFiles({name:'appended.json',mimeType:'application/json',buffer:again});await expect(page.getByText(restored,{exact:true})).toBeVisible();
     await openResults(page);await expect(card(page).locator('tbody tr')).toHaveCount(6);await expect(card(page).getByTestId('own-row-6')).toBeVisible();expect(errors).toEqual([]);
   });

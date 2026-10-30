@@ -24,6 +24,11 @@ The requested native/code-review for this increment was denied beforeprocesscrea
 - **Record fields:** z := Single(z), RA/Dec := the target's, and V := the catalogue magnitude when it is below 99.
 - **Dialog:** "Observational Data" (TObsRsltsDlg1) opens. The student types the velocity, and OK 0x54b02c stores it after
   the 1 % check above. The record's velocity (+0x67) is that typed value.
+- **Empty Velocity box:** OK skips the conversion and the check (`cmp [ebp-0x128],0; je 0x54b1f7` at 0x54b11b), so the dialog
+  closes and the z-only record stays. "Velocity is incorrect or missing!" appears only for non-numeric text (EConvertError).
+- **Record ID and time:** both come from the loaded spectrum (LoadSavedSpectrum1Click: ID 0x582bc3, time 0x582bdb–0x582be5),
+  so the student cannot edit either.
+- **Results list:** in mode 4 the row prints +0x67, the typed velocity, blank when 0 (0x548a5a–0x548a95).
 
 **In the web, a catalogue-galaxy acquisition's Record measurement opens the same dialog** (`core/hubbleObservation.ts`, K2's
 `ObservationalDataDialog` with Velocity editable).
@@ -31,11 +36,25 @@ The requested native/code-review for this increment was denied beforeprocesscrea
 - **Session v32** (`openvireo-hubble-observational-data-v32`, outermost) lists the records by measurement id around an
   unchanged base. On restore, each record must pass the 1 % check against its row's Single z and match the acquisition's
   target position and V. Older files restore and re-save byte-identically.
-- **The Hubble analysis** takes a row's typed velocity when it has one, because VIREO's results list and its files carry the
-  record's velocity. Otherwise it keeps v = c z.
-- **E01 numbers:** they change only within the 1 % rule. The guide and tests type c·z rounded to 0.01 km/s, so their
-  velocities differ from the derived ones by at most 0.005 km/s plus Single rounding.
+- **Re-recording is keyed** on the acquisition's catalogue target ID, never the analyzer's free Object label. Two galaxies with
+  the same label keep separate rows.
+- **The Hubble analysis** takes a row's typed velocity when it has one, because VIREO's results list shows the record's
+  velocity. Otherwise, with no record or an empty box, it keeps v = c z [W].
+- **Observational Results** (the analyzer's view, its CSV, text and print) shows the c z column as the derived study aid. Beside
+  it, the record's typed velocity, Sp type, remarks and JD appear in the record column, or the `typed_velocity_float32_*`,
+  `sp_type`, `remarks` and `record_jd` CSV columns.
+- **Older builds:** builds before H2 refuse a v32 file with the generic format error.
+- **E01 numbers:** they change only within the 1 % rule.
+  - The tests type c times the dialog's 4-significant-digit z, rounded to 0.01 km/s. With the guide's 0.001 z steps, that z
+    is exact, so their velocities differ from the derived ones by at most 0.005 km/s plus Single rounding (measured 0.0046;
+    H0 moves by 1.2e-6).
+  - With finer steps, the 4-digit z drifts by up to about 0.15 km/s.
 - **Re-recording a galaxy:** with Time-Dependent Data off (the R3 option), it updates its row, which keeps its id and first time; on, it adds a row. The rule is core/recordReuse.ts, shared with LSS.
 - **Compute Rdshft Vel.:** it pre-fills c·z when z ≠ 0.
-- **[W]:** stellar rows, imported and library spectra keep the web confirmation (no catalogue target record). Cancel records
-  nothing, and on a reused row changes nothing. The analyzer's own-results table stays the derived c·z study aid.
+- **[W] Stellar rows and spectra:** stellar rows, imported and library spectra keep the web confirmation. VIREO sends every
+  mode-4 Record through the dialog, but the web has no exercise mode, and stellar rows are alignment practice excluded from
+  Hubble.
+- **[W] Cancel** records nothing, and on a reused row changes nothing.
+- **[W] Empty box on a reused row:** it stores 0; VIREO would keep the earlier velocity, which may be off the new z by more
+  than 1 %.
+- **[W] Record time:** it is the observatory clock at Record, because the web's acquisitions carry no spectrum time.

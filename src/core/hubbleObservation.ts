@@ -7,12 +7,22 @@
  * [D] FormActivate 0x54a91c: JD = time + 2415018.5 (ffFixed 6), RA `HHh MMm SS.SSs`, Dec `±DD° MM' SS.S"`, z and velocity
  *     ffExponent 4 (blank when 0); a zero velocity is pre-filled with Single(c·z) only when Compute Rdshft Vel. is on and z ≠ 0
  *     (0x54aedb..0x54aefc). Sp.Type and Remarks are editable.
- * [D] OK 0x54b02c: stores the remarks (36) and the re-parsed Sp type; the typed velocity becomes a Single and must be within the
- *     Extended 0.01 of the unrounded c × Single z (checkHubbleVelocity, docs/HUBBLE-VELOCITY.md); otherwise "Velocity is incorrect
- *     or missing!…" (Velocity Error!, 0x54b278) or "Velocity calculation is invalid!" (0x54b24c), and the dialog stays open.
- * [W] Only catalogue-galaxy acquisitions take this path (VIREO's mode 4); stellar rows, imported and library spectra keep the
- *     web's confirmation (they have no catalogue target record here). Cancel records nothing (natively the record is inserted
- *     before ShowModal), and on a reused row it changes nothing, as in the LSS survey (Front L3). */
+ * [D] OK 0x54b02c: stores the remarks (36) and the re-parsed Sp type. An empty Velocity box skips the conversion and the check
+ *     (cmp [ebp-0x128],0; je 0x54b1f7 at 0x54b11b): the dialog closes and the z-only record is kept. Otherwise the typed velocity
+ *     becomes a Single and must be within the Extended 0.01 of the unrounded c × Single z (checkHubbleVelocity,
+ *     docs/HUBBLE-VELOCITY.md); non-numeric text gives "Velocity is incorrect or missing!…" (Velocity Error!, EConvertError only,
+ *     0x54b278) and a value outside 1 % "Velocity calculation is invalid!" (0x54b24c); the dialog stays open.
+ * [W] An empty box stores velocity 0 (blank in the results list, as a new native record). On a reused record VIREO would keep the
+ *     earlier velocity, which may be more than 1 % off the new z; the web clears it, because such a value could not be the row's
+ *     checked Hubble velocity.
+ * [D] The record ID is the measured object's catalogue ID (VIREO reads it from the loaded spectrum, LoadSavedSpectrum1Click
+ *     0x582bc3, and the student cannot edit it); the web keys reuse on the acquisition's target ID, not the analyzer's free label.
+ * [W] Only catalogue-galaxy acquisitions take this path. VIREO routes every Record in mode 4 through the dialog; the web has no
+ *     exercise mode, and stellar rows are alignment practice excluded from the Hubble analysis, so they, imported and library
+ *     spectra keep the web's confirmation. Cancel records nothing (natively the record is inserted before ShowModal), and on a
+ *     reused row it changes nothing, as in the LSS survey (Front L3).
+ * [W] The record time is the observatory clock at Record; VIREO's is the loaded spectrum's own time (0x582bdb..0x582be5), which
+ *     the web's galaxy acquisitions do not carry. */
 import {checkHubbleVelocity,HubbleVelocityError} from './hubbleVelocity';
 import {floatToStrFExponent4} from './catalogObject';
 import {delphiFixed,floatToStrFFixed,exactFromNumber} from './variableStars';
@@ -21,6 +31,7 @@ import {formatObservationType,parseObservationType} from './observationResults';
 import {padLeft} from './nativeListFormat';
 import {LSS_DIALOG_TEXT} from './lssRedshiftDialog';
 import {recordReuseTarget} from './recordReuse';
+import {measurementGalaxyTarget} from './galaxyIdentity';
 
 export const HUBBLE_OBSERVATION_POLICY='openvireo-hubble-observational-data-v32';
 export const HUBBLE_OBSERVATION_LIMITS=Object.freeze({remarks:36,spType:12,id:15});
@@ -34,7 +45,7 @@ export const fromHex32=(h:string)=>{if(!/^[0-9a-f]{8}$/.test(h))return NaN;const
 /** 0x54a73c / 0x57c918 [D]: with Time-Dependent Data off, the first record (here: a measurement row that has an observation
  * record) whose stored ID equals `id` exactly and case-sensitively; a longer ID than 15 never matches its own truncated copy.
  * The rule is core/recordReuse.ts, shared with the LSS survey's lssReuseTarget (Front L3). */
-export function observationReuseTarget(rows:readonly Readonly<{object:string;observation?:HubbleObservation}>[],id:string,timeDependent:boolean):number|null{return recordReuseTarget(rows.map(r=>r.observation!==undefined?r.object:null),id,timeDependent);}
+export function observationReuseTarget(rows:readonly Readonly<{origin?:Readonly<{kind:string;targetId?:string}>;observation?:HubbleObservation}>[],id:string,timeDependent:boolean):number|null{return recordReuseTarget(rows.map(r=>r.observation!==undefined?measurementGalaxyTarget(r.origin)??null:null),id,timeDependent);}
 /** The record the dialog opens on: a new one, or a reused one (its first time, velocity, remarks and Sp type). */
 export type HubbleObservationDraft=Readonly<{id:string;jd:number;ra:number;dec:number;zSingle:number;vMagnitude:number|null;
  velocityText:string;remarks:string;spText:string;reused:boolean}>;
@@ -60,6 +71,7 @@ const VELOCITY_TEXT=/^\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?\s*$/;
 export function confirmHubbleObservation(d:HubbleObservationDraft,input:Readonly<{velocityText:string;remarks:string;spText:string}>):HubbleObservationResult{
  if(input.remarks.length>HUBBLE_OBSERVATION_LIMITS.remarks||input.spText.length>HUBBLE_OBSERVATION_LIMITS.spType||/[\u0000-\u001f\u007f]/.test(input.remarks+input.spText))throw new HubbleObservationError('record');
  let spectralCode:number;try{spectralCode=parseObservationType(input.spText);}catch{return {ok:false,caption:null,message:OBSERVATIONAL_SP_ERROR};}
+ if(input.velocityText==='')return Object.freeze({ok:true,observation:Object.freeze({jd:d.jd,ra:d.ra,dec:d.dec,spectralCode,velocitySingle:0,velocityHex:hex32(0),remarks:input.remarks,vMagnitude:d.vMagnitude})});
  if(!VELOCITY_TEXT.test(input.velocityText))return {ok:false,caption:LSS_DIALOG_TEXT.velocityCaption,message:LSS_DIALOG_TEXT.velocityMissing};
  let accepted:{accepted:boolean;answerSingle:number};
  try{accepted=checkHubbleVelocity(d.zSingle,Number(input.velocityText.trim()));}
@@ -70,7 +82,8 @@ export function confirmHubbleObservation(d:HubbleObservationDraft,input:Readonly
 /** [W] A Sp type that the native parser would not accept (natively an unchecked path) is refused with this text. */
 export const OBSERVATIONAL_SP_ERROR='Sp.Type is not a spectral type the results list can store.';
 
-/** Session v32 restore: a stored observation must be one OK could have stored for that row's Single z. */
+/** Session v32 restore: a stored observation must be one OK could have stored for that row's Single z (velocity +0 is the
+ * empty-box record). */
 export function readHubbleObservation(value:unknown,zSingle:number):HubbleObservation{
  const keys=['jd','ra','dec','spectralCode','velocityHex','remarks','vMagnitude'];
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).length!==keys.length||keys.some(k=>!Object.hasOwn(value,k)))throw new HubbleObservationError('record');
@@ -80,7 +93,7 @@ export function readHubbleObservation(value:unknown,zSingle:number):HubbleObserv
  try{formatObservationType(v.spectralCode as number);}catch{throw new HubbleObservationError('record');}
  if(typeof v.remarks!=='string'||v.remarks.length>HUBBLE_OBSERVATION_LIMITS.remarks||/[\u0000-\u001f\u007f]/.test(v.remarks))throw new HubbleObservationError('record');
  const velocitySingle=fromHex32(String(v.velocityHex));if(!Number.isFinite(velocitySingle)||hex32(velocitySingle)!==v.velocityHex)throw new HubbleObservationError('velocity');
- let accepted=false;try{accepted=checkHubbleVelocity(zSingle,velocitySingle).accepted;}catch{accepted=false;}
+ let accepted=Object.is(velocitySingle,0);if(!accepted)try{accepted=checkHubbleVelocity(zSingle,velocitySingle).accepted;}catch{accepted=false;}
  if(!accepted)throw new HubbleObservationError('velocity');
  const vMagnitude=v.vMagnitude===null?null:num(v.vMagnitude);if(vMagnitude!==null&&(Math.fround(vMagnitude)!==vMagnitude||vMagnitude>=99))throw new HubbleObservationError('record');
  return Object.freeze({jd,ra,dec,spectralCode:v.spectralCode as number,velocitySingle,velocityHex:v.velocityHex as string,remarks:v.remarks,vMagnitude});

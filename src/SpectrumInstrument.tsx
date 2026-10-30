@@ -203,10 +203,11 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
       const measurement=createMeasurement(nextId.current, object, observation.name, observation.sha256, control, selected.source,observation.kind?{kind:observation.kind,acquisitionId:observation.acquisitionId,...(observation.kind==='catalog-galaxy-acquisition'?{targetId:observation.targetId}:{})}:undefined);
       if(observation.kind==='catalog-galaxy-acquisition'){
         // Front H2: RecordZ1Click mode 4 → find-or-add 0x54a73c → TObsRsltsDlg1 "Observational Data" (core/hubbleObservation.ts).
-        const target=observationReuseTarget(rows,measurement.object,timeDependentData),t=hubbleObservationTarget(observation),jd=currentJd?.()??NaN;
+        // The record ID is the acquisition's catalogue target ID (VIREO's comes from the loaded spectrum, 0x582bc3), never the free label.
+        const t=hubbleObservationTarget(observation),target=observationReuseTarget(rows,t.id,timeDependentData),jd=currentJd?.()??NaN;
         if(target===null&&(rows.length>=MAX_SESSION_ROWS||nextId.current>=Number.MAX_SAFE_INTEGER))throw errorFor('session.logLimit');
-        if(!Number.isFinite(jd))throw errorFor('session.logLimit');
-        setObservationDraft(Object.freeze({measurement,target,draft:openHubbleObservation({id:measurement.object,jd,ra:t.ra,dec:t.dec,zSingle:measurement.zFloat32,targetMagnitude:t.magnitude,computeRedshiftVelocity,reused:target===null?null:rows[target].observation??null})}));
+        if(!Number.isFinite(jd))throw errorFor('spectrum.observationTime');
+        setObservationDraft(Object.freeze({measurement,target,draft:openHubbleObservation({id:t.id,jd,ra:t.ra,dec:t.dec,zSingle:measurement.zFloat32,targetMagnitude:t.magnitude,computeRedshiftVelocity,reused:target===null?null:rows[target].observation??null})}));
         return;
       }
       if(rows.length>=MAX_SESSION_ROWS||nextId.current>=Number.MAX_SAFE_INTEGER)throw errorFor('session.logLimit'); setDraft(measurement);
