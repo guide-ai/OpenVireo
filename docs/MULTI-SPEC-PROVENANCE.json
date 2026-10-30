@@ -329,7 +329,7 @@
  "uncertainty": [
   "Print Selection Field and Help (0-byte help files) are not ported (typed).",
   "Sky fibres: RA/Dec/V are uninitialised natively (\"not recorded\", D8); the S/N estimate is indeterminate with a sky fibre.",
-  "Star index 0 (native random template pick) is typed star-template-random; templates outside the approvals stay spectrum-template-unapproved.",
+  "Star index 0 (native random template pick) is typed star-template-random; templates outside the approvals stayed spectrum-template-unapproved until the 2026-10-30 approval bundled all 132 templates JSPEC2.SPI names, which removed that reason.",
   "Native save dialogs (folder, base name, overwrite confirm) are not ported: a browser download."
  ],
  "witnesses": [

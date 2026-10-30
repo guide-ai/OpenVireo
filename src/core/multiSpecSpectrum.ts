@@ -77,7 +77,7 @@ export type MultiSpecSelection=Readonly<{
 }>;
 
 export type MultiSpecReason=
- |'star-template-none'|'spectrum-template-unapproved'|'star-template-random'|'star-index-invalid'
+ |'star-template-none'|'star-template-random'|'star-index-invalid'
  |'galaxy-lookup'|'spectrum-mapping'|'galaxy-spectrum'|'qso-spectrum'|'spectrum-range'|'object-type'
  |'multispec-mean-bound'|'negative-mean'|'precision'|VariableDispatchReason;
 
@@ -87,7 +87,7 @@ export type MultiSpecContext=Readonly<{
  interval?:Readonly<{minimum:number;maximum:number}>;
  /** JSPEC2.SPI decoded (natively ordered). */
  starIndex:readonly StarIndexEntry[];
- /** Bundled templates (upper-case file name → spectrum). A lookup outside this map is 'spectrum-template-unapproved' (D2). */
+ /** Bundled templates (upper-case file name → spectrum): every template JSPEC2.SPI names; a lookup outside it is an input error. */
  starTemplates:ReadonlyMap<string,UniformSpectrum>;
  /** The field's galaxy list in its native order with the names the records carry (photograph renames included). */
  galaxies:readonly Readonly<{name:string;galaxy:NativeGalaxy}>[];
@@ -154,7 +154,7 @@ export function prepareMultiSpecFibre(selection:MultiSpecSelection,context:Multi
   let file:string|null;
   try{file=lookupStarTemplate(context.starIndex,code);}catch{return unavailable('star-index-invalid');}
   if(!file)return unavailable('star-template-none');
-  const spectrum=context.starTemplates.get(file);if(!spectrum)return unavailable('spectrum-template-unapproved');
+  const spectrum=context.starTemplates.get(file);if(!spectrum)throw new MultiSpecError('input');
   if(selection.v===null)throw new MultiSpecError('input');
   const F=multiSpecFluxFactor(Math.fround(selection.v),zeroPoint);
   // 0x55dfe0 returns 0 outside the template's endpoint grid.

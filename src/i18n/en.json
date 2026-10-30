@@ -3317,8 +3317,7 @@
   "multispec.spectrumError": "This spectrum could not be computed (a resource did not load or did not match its recorded identity).",
   "multispec.neutral": "No measurable spectrum for this fibre.",
   "multispec.reason.star-template-none": "no spectrum template is listed for this star's spectral type",
-  "multispec.reason.spectrum-template-unapproved": "this star's spectrum template is not bundled in this version",
-  "multispec.reason.star-template-random": "this star's spectral code asks for a random template, which needs every template",
+  "multispec.reason.star-template-random": "this star's spectral code asks for a random template, a pick this version does not reproduce yet",
   "multispec.reason.star-index-invalid": "this star's spectral index is not valid",
   "multispec.reason.galaxy-lookup": "the galaxy record is not in the field's galaxy list",
   "multispec.reason.spectrum-mapping": "this galaxy's own spectrum file is not bundled in this version",
@@ -3431,6 +3430,5 @@
   "fieldSpec.reason.spectrum-range": "the spectrum does not cover the spectrometer's 3700–4700 Å range here",
   "fieldSpec.reason.mean-bound": "too bright for this telescope's verified exposure range",
   "fieldSpec.reason.spectrum-mapping": "a galaxy whose own library spectrum is not bundled on this site",
-  "fieldSpec.reason.qso-selected": "the slit selects a quasar record whose spectrum this route cannot reproduce here",
-  "fieldSpec.reason.star-template-not-bundled": "a star whose spectrum template is not among the templates this site bundles (only those the exercises need are approved)"
+  "fieldSpec.reason.qso-selected": "the slit selects a quasar record whose spectrum this route cannot reproduce here"
 }

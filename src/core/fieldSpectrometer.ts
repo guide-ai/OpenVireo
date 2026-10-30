@@ -17,27 +17,17 @@ export type SpectrometerInputs=Readonly<{glx:Uint8Array;qsoCatalog:FieldQsoCatal
  starTemplates:ReadonlyMap<string,UniformSpectrum>;glxyspLines:readonly string[];galaxySpectra:ReadonlyMap<string,readonly Readonly<{wavelength:number;intensity:number}>[]>;photographs:FieldPhotographs}>;
 /** The spectrometer's field result at a pointing: QSO 'merge', the recovered variable dispatch, the GLXYSP guard, photographs,
  * 'start-time' continuation, star and QSO observation; a selected galaxy with its own bundled GLXYSP.LST spectrum takes the
- * matched branch (0x55e55c, factor 1). A selected star whose JSPEC2 template is named but not bundled is typed
- * 'star-template-not-bundled' (only the templates that approved fields need are bundled), never another template. */
+ * matched branch (0x55e55c, factor 1). Every template JSPEC2.SPI names is bundled (approval of 2026-10-30), so a named template
+ * missing from the inputs is an input error, never another template. */
 export function spectrometerFieldResult(inputs:SpectrometerInputs,pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):FieldResult{
  const at={ra:pointing.ra,dec:pointing.dec};
- const starObservation={templateFor:(index:number)=>{const file=lookupStarTemplate(inputs.starIndex,index);const spectrum=file?inputs.starTemplates.get(file):undefined;return file&&spectrum?{file,spectrum}:null;}};
+ const starObservation={templateFor:(index:number)=>{const file=lookupStarTemplate(inputs.starIndex,index);if(!file)return null;const spectrum=inputs.starTemplates.get(file);if(!spectrum)throw new Error(`spectrometer inputs: star template ${file} missing`);return {file,spectrum};}};
  const options:FieldOptions={glxyspLines:inputs.glxyspLines,variableDispatch:'recovered',photographs:inputs.photographs,qso:'merge',qsoCatalog:inputs.qsoCatalog,continuation:'start-time',spectralInterval:SPECTROMETER_INTERVAL,starObservation,qsoObservation:{file:inputs.qsoSpectrum,...SPECTROMETER_INTERVAL}};
  let r=evaluateField(pack,inputs.glx,at,telescope,options);
  const own=r.target?glxyspLookup(inputs.glxyspLines,r.target.id):null;
  if(r.target&&own&&r.reasons.includes('spectrum-mapping')&&inputs.galaxySpectra.has(own))r=evaluateField(pack,inputs.glx,at,telescope,{...options,librarySpectrum:{targetId:r.target.id,file:own,samples:inputs.galaxySpectra.get(own)!}});
- return refineStarTemplateReason(inputs,r);
+ return r;
 }
-export type SpectrometerReason=FieldResult['reasons'][number]|'star-template-not-bundled';
-/** The engine reports a star without a usable template as 'star-selected'; when JSPEC2.SPI names a template that is simply not
- * bundled, say so. */
-function refineStarTemplateReason(inputs:SpectrometerInputs,r:FieldResult):FieldResult{
- if(!r.starTarget||!r.reasons.includes('star-selected'))return r;
- const raw=Uint8Array.from(r.starTarget.rawHex.match(/../g)!,x=>parseInt(x,16)),index=new DataView(raw.buffer).getInt32(8,true),file=lookupStarTemplate(inputs.starIndex,index);
- if(!file||inputs.starTemplates.has(file))return r;
- return Object.freeze({...r,reasons:Object.freeze(r.reasons.map(x=>x==='star-selected'?'star-template-not-bundled':x) as FieldResult['reasons'])});
-}
-
 /** Journal policy of the generic route: the exact binary64 pointing and the telescope (G4a). */
 export const FIELD_SPECTRUM_POLICY_PREFIX='openvireo-field-spectrum-v1';
 export function fieldSpectrumPolicy(pointing:Readonly<{ra:number;dec:number}>,telescope:FieldTelescope):string{

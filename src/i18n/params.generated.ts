@@ -3318,7 +3318,6 @@ export interface MessageParameters {
   "multispec.spectrumError": never;
   "multispec.neutral": never;
   "multispec.reason.star-template-none": never;
-  "multispec.reason.spectrum-template-unapproved": never;
   "multispec.reason.star-template-random": never;
   "multispec.reason.star-index-invalid": never;
   "multispec.reason.galaxy-lookup": never;
@@ -3433,5 +3432,4 @@ export interface MessageParameters {
   "fieldSpec.reason.mean-bound": never;
   "fieldSpec.reason.spectrum-mapping": never;
   "fieldSpec.reason.qso-selected": never;
-  "fieldSpec.reason.star-template-not-bundled": never;
 }

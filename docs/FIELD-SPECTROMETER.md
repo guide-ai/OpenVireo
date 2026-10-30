@@ -35,8 +35,8 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   events. Restoring prepares the field again at that pointing and replays the journal; counts are never imported.
 - **Typed results**, shown as readable text (`fieldSpec.reason.*`):
   - the engine's reasons (slit-empty, mean-bound, variable-*, merge-boundary, photographic-image, spectrum-mapping, …);
-  - `star-template-not-bundled`: the star's JSPEC2 template is not among the 69 bundled ones. Covering every star needs a user
-    approval for the remaining templates.
+  - every template JSPEC2.SPI names is bundled (the 17 remaining ones were approved on 2026-10-30), so any star in a field has
+    its template; the former `star-template-not-bundled` reason is gone.
   - the tile reasons (field-polar, field-tiles, field-unreadable);
   - `object-x-hidden`: within 2° of an Object X position.
 - **Photographs.** Assembled packs now take their photograph matches from VIREO's kept GLIMAGES.LST rows
