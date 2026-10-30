@@ -1,5 +1,7 @@
 // Front G: how a failed field-spectrometer preparation is shown (kept apart so the page need not load the spectrometer inputs).
 import type {PreparedFieldSpectrum} from './fieldSpectrometer';
+import {objectXNear} from './objectXMask';
+
 
 /** What the page shows when preparing failed outside the typed results (G4a closure N1, G final closure N3). A same-origin file
  * that did not arrive (a loader's 'download', a tile's 'fetch', or the browser's network TypeError) is a missing catalogue piece
@@ -15,4 +17,10 @@ export function fieldSpectrumFailure(e:unknown):FieldSpectrumShown{
   if(code==='size'||code==='sha256'||code==='integrity'||code==='resource'||(e.name==='GscTileError'&&(code==='index'||code==='missing-tile')))return Object.freeze({status:'unavailable',reason:'load-error'});
  }
  return Object.freeze({status:'unavailable',reason:'internal'});
+}
+/** G4c: a field prepared before the lab's hidden Object X target was chosen is masked once that target lies within the hide
+ * radius of the field's pointing, the rule preparation applies (io/fieldSpectrometer.ts objectXMasked; preparation already
+ * masked every ObjectX.HTL position); every output is then withheld. */
+export function fieldSpectrumHiddenMasked(pointing:Readonly<{ra:number;dec:number}>,hidden:Readonly<{ra:number;dec:number}>|null):boolean{
+ return !!hidden&&objectXNear([],hidden,pointing);
 }

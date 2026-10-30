@@ -58,6 +58,8 @@ async function loadInputs():Promise<SpectrometerInputs>{
 export function spectrometerInputs(){inputs??=loadInputs();inputs.catch(()=>{inputs=null;});return inputs;}
 
 export type PreparedFieldSpectrum=Readonly<{status:'ready';pointing:Pointing;telescope:FieldTelescope;policy:string;result:FieldResult}|{status:'unavailable';reason:'object-x-hidden'|'field-polar'|'field-tiles'|'field-unreadable';detail?:string}>;
+/** G4c: a prepared field with its exposure journal (the investigation's field-spectrum part). */
+export type FieldSpectrumRecord=Readonly<{prepared:Extract<PreparedFieldSpectrum,{status:'ready'}>;state:JournalState}>;
 /** The spectrometer's field result at a pointing and telescope. An available result has no reasons; the result is returned either
  * way so the page can show what the slit selects and the engine's typed reasons. An abort rejects with AbortError.
  * variableTime: the observatory JD frozen when the student pressed Use (recorded in the policy). */
@@ -84,6 +86,8 @@ export async function readFieldSpectrumSession(text:string,options:Readonly<{sig
  if(!r||typeof r!=='object'||Array.isArray(r)||Object.keys(r).length!==5||r.format!==FIELD_SPECTRUM_FORMAT||r.version!==1||typeof r.seedAtReset!=='number'||!Array.isArray(r.events)||r.events.length>MAX_JOURNAL_EVENTS)throw new JournalError('session');
  const p=parseFieldSpectrumPolicy(r.policy);if(!p)throw new JournalError('session');
  const prepared=await prepareFieldSpectrum(p.pointing,p.telescope,{...options,...(p.variableTime?{variableTime:p.variableTime}:{})});
+ // G4c: a field whose tiles did not arrive is a missing resource (retryable), not a bad file.
+ if(prepared.status==='unavailable'&&prepared.reason==='field-tiles')throw new GscTileError((prepared.detail??'fetch') as GscTileError['code']);
  if(prepared.status!=='ready'||prepared.policy!==r.policy||prepared.result.reasons.length||!prepared.result.calibration)throw new JournalError('session');
  return Object.freeze({prepared,state:lssExposureEngine(prepared.result,prepared.policy).replay(r.seedAtReset,r.events as JournalEvent[])});
 }

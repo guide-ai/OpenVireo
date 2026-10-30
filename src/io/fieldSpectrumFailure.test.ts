@@ -23,3 +23,12 @@ describe('field spectrometer failure mapping (G final closure N3)',()=>{
    expect(fieldSpectrumFailure(e)).toEqual({status:'unavailable',reason:'internal'});
  });
 });
+import {fieldSpectrumHiddenMasked} from './fieldSpectrumFailure';
+describe('a hidden Object X target chosen after the field was prepared (G4c)',()=>{
+ it('masks the field within the hide radius of its pointing, as preparation does, and only then',()=>{
+  const p={ra:12,dec:20};
+  expect(fieldSpectrumHiddenMasked(p,null)).toBe(false);
+  expect(fieldSpectrumHiddenMasked(p,{ra:12,dec:21.99})).toBe(true);
+  expect(fieldSpectrumHiddenMasked(p,{ra:12,dec:22.01})).toBe(false);
+ });
+});

@@ -3440,5 +3440,8 @@
   "fieldSpec.reason.spectrum-range": "the spectrum does not cover the spectrometer's 3700–4700 Å range here",
   "fieldSpec.reason.mean-bound": "too bright for this telescope's verified exposure range",
   "fieldSpec.reason.spectrum-mapping": "a galaxy whose own library spectrum is not bundled on this site",
-  "fieldSpec.reason.qso-selected": "the slit selects a quasar record whose spectrum this route cannot reproduce here"
+  "fieldSpec.reason.qso-selected": "the slit selects a quasar record whose spectrum this route cannot reproduce here",
+  "fieldSpec.analyze": "Analyze this spectrum",
+  "fieldSpec.classify": "Classify this spectrum",
+  "fieldSpec.handOffError": "This spectrum could not be opened (it needs a stopped exposure with a positive bin; Classify also needs wavelengths that overlap 3500–7400 Å by at least 100 Å, and room for another imported file)."
 }

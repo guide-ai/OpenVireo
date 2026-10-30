@@ -33,6 +33,7 @@ import {EMPTY_HUBBLE,readHubbleWorkspace,type HubbleWorkspace} from '../core/hub
 import { createMeasurement, currentZ, type Measurement, type ShiftControl } from '../core/spectrum';
 import { verifyImportedSpectrumText, type ImportedSpectrum } from './spectrumFiles';
 import type {ObjectXSpectrumRecord} from './objectXSpectra';
+import type {FieldSpectrumRecord} from './fieldSpectrometer';
 import {OBJECT_X_INVESTIGATION_POLICY,ObjectXSessionError,admitObjectXInvestigation,portableObjectXInvestigation,type ObjectXInvestigation} from './objectXInvestigation';
 import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
 import {LSS_INVESTIGATION_POLICY,LssSessionError,admitLssInvestigation,lssFieldJdsOf,lssNativeDialogIdsOf,portableLssInvestigation,type LssFieldJds,type LssInvestigation,type LssNativeDialogIds} from './lssInvestigation';
@@ -58,6 +59,8 @@ export type AnalysisSession=Readonly<{
   lss?:LssInvestigation;
   /** Front X X5 (v28): the E08 Object X investigation (objectXInvestigation.ts). Absent in v1..27 files. */
   objectX?:ObjectXInvestigation;
+  /** Front G G4c (v33): the field spectrometer's field and exposure at any pointing. Absent in v1..32 files. */
+  fieldSpectrum?:FieldSpectrumRecord;
 }>;
 /** Front F (v29): the extended Hubble.HTL targets (hubbleEngineTargets.ts). A v29 file wraps an unchanged v1..28 base,
  * outermost, and carries the extended-target policy, the binary hash and the banks of every (telescope, target) key in table
@@ -178,10 +181,46 @@ export const VARIABLE_TIME_SESSION_POLICY='openvireo-variable-time-v30';
  * 1 % of c·z, z re-quantised to its 4-digit text; core/lssRedshiftDialog.ts). A v31 file wraps an unchanged v27..30 base that
  * must contain the v27 LSS layer; it is outermost and never nested. v27–v30 files carry none and restore as before. */
 export const LSS_DIALOG_SESSION_POLICY='openvireo-lss-dialog-v31';
+/** Front G G4c (v33): the field spectrometer's part. A v33 file wraps an unchanged v1..32 base, outermost and never nested, and
+ * holds the standalone field-spectrum session object (format, version, policy, seedAtReset, events; io/fieldSpectrometer.ts).
+ * Restore assembles the field again from the compact GSC tiles at the policy's pointing, telescope and JD, applies the Object X
+ * mask and replays the journal; a file that did not arrive or did not match its identity is 'resources', anything else 'state'.
+ * The part never counts toward an exercise. */
+export const FIELD_SPECTRUM_SESSION_POLICY='openvireo-field-spectrum-investigation-v33';
+const FIELD_SPECTRUM_PART_BYTES=2*1024*1024;
+/** The digest an edited part must fail: SHA-256 over what the replay derives (policy, seed, committed time and counts), as the
+ * LSS and Object X parts carry theirs. */
+async function fieldSpectrumDigest(s:FieldSpectrumRecord['state']):Promise<string>{
+  const {resourceSha256}=await import('./boundedResource');
+  return resourceSha256(new TextEncoder().encode(JSON.stringify([s.policy,s.seedAtReset,s.exposure.elapsedMs,s.exposure.counts])));
+}
 async function restore(value:unknown,verifySources=true,migrated=false,cached=false,pegasus=false,underLss=false,underObjectX=false,extended=false,hooks:RestoreHooks={}):Promise<AnalysisSession> {
  if(!migrated&&!hooks.variableTime&&!hooks.nativeDialog){try{value=projectMetadata(value);}catch{fail('format');}}
   if(!value||typeof value!=='object')fail('format');
   const version=(value as {version:unknown}).version;
+  if(version===33){
+    if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
+    const r=record(value,['format','version','numericalPolicy','base','fieldSpectrumPolicy','fieldSpectrumDigestSHA256','fieldSpectrum']);
+    const baseVersion=r.base&&typeof r.base==='object'?(r.base as {version?:unknown}).version:null;
+    if(r.format!==FORMAT||r.numericalPolicy!==POLICY||r.fieldSpectrumPolicy!==FIELD_SPECTRUM_SESSION_POLICY||!Number.isInteger(baseVersion)||Number(baseVersion)<1||Number(baseVersion)>32)fail('format');
+    if(typeof r.fieldSpectrumDigestSHA256!=='string'||!/^[0-9a-f]{64}$/.test(r.fieldSpectrumDigestSHA256))fail('format');
+    if(!r.fieldSpectrum||typeof r.fieldSpectrum!=='object'||Array.isArray(r.fieldSpectrum))fail('format');
+    const text=JSON.stringify(r.fieldSpectrum);if(text.length>FIELD_SPECTRUM_PART_BYTES)fail('size');
+    let fieldSpectrum:FieldSpectrumRecord|undefined;
+    if(verifySources){
+      const [{readFieldSpectrumSession},{fieldSpectrumFailure}]=await Promise.all([import('./fieldSpectrometer'),import('./fieldSpectrumFailure')]);
+      try{fieldSpectrum=await readFieldSpectrumSession(text);}catch(e){const shown=fieldSpectrumFailure(e);fail(shown.status==='unavailable'&&(shown.reason==='field-tiles'||shown.reason==='load-error')?'resources':'state');}
+      // Byte identity: the restored part writes back exactly what the file holds.
+      const {serializeFieldSpectrumSession}=await import('../core/fieldSpectrometer');
+      if(JSON.stringify(JSON.parse(serializeFieldSpectrumSession(fieldSpectrum!.state)))!==text||await fieldSpectrumDigest(fieldSpectrum!.state)!==r.fieldSpectrumDigestSHA256)fail('state');
+    }else{
+      // Save's own re-read (verifySources=false): the part's shape only; its field was prepared by this page.
+      const {parseFieldSpectrumPolicy,FIELD_SPECTRUM_FORMAT}=await import('../core/fieldSpectrometer');const f=r.fieldSpectrum as Record<string,unknown>;
+      if(Object.keys(f).length!==5||f.format!==FIELD_SPECTRUM_FORMAT||f.version!==1||!parseFieldSpectrumPolicy(f.policy)||!Number.isInteger(f.seedAtReset)||!Array.isArray(f.events))fail('state');
+    }
+    const base=await restore(r.base,verifySources,false,false,false,false,false,false,hooks);
+    return Object.freeze({...base,...(fieldSpectrum?{fieldSpectrum}:{})});
+  }
   if(version===31){
     if(migrated||hooks.variableTime||hooks.nativeDialog)fail('format');
     const r=record(value,['format','version','numericalPolicy','base','lssDialogPolicy','lssNativeDialogIds']);
@@ -381,8 +420,15 @@ async function restore(value:unknown,verifySources=true,migrated=false,cached=fa
   return Object.freeze({...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),...(classification?{classification}:{}),observation,control:s,stepInput,reference:a.reference as keyof typeof REFERENCES,wide:a.wide,object,rows:Object.freeze(rows),hubble,...(version>=3?{acquisitions:Object.freeze(acquisitions)}:{})});
 }
 /** wrapped: the wrapper levels already emitted above this call (v25 Pegasus outermost, then v24 cached). */
-type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true}>;
+type Wrapped=Readonly<{cached?:true;pegasus?:true;extended?:true;variableTime?:true;nativeDialog?:true;field?:true}>;
 async function portable(session:AnalysisSession,wrapped:Wrapped={}):Promise<unknown> {
+  // Front G G4c (v33, outermost): the field spectrometer's part around an unchanged base. A session without it keeps its older
+  // version and bytes exactly.
+  if(!wrapped.field&&session.fieldSpectrum!==undefined){
+    const {serializeFieldSpectrumSession}=await import('../core/fieldSpectrometer');const f=session.fieldSpectrum;
+    let part:unknown;try{if(f.prepared.policy!==f.state.policy)throw Error();part=JSON.parse(serializeFieldSpectrumSession(f.state));}catch{fail('state');}
+    return {format:FORMAT,version:33,numericalPolicy:POLICY,base:await portable({...session,fieldSpectrum:undefined},{...wrapped,field:true}),fieldSpectrumPolicy:FIELD_SPECTRUM_SESSION_POLICY,fieldSpectrumDigestSHA256:await fieldSpectrumDigest(f.state),fieldSpectrum:part};
+  }
   if(!wrapped.nativeDialog&&!wrapped.variableTime&&session.lss!==undefined){
     const ids=lssNativeDialogIdsOf(session.lss);
     if(ids.size)return {format:FORMAT,version:31,numericalPolicy:POLICY,base:await portable(session,{...wrapped,nativeDialog:true}),lssDialogPolicy:LSS_DIALOG_SESSION_POLICY,lssNativeDialogIds:[...ids].sort((a,b)=>a-b)};

@@ -58,6 +58,9 @@ import type {ObjectXInvestigation} from './io/objectXInvestigation';
 import {OBJECT_X_LAB_EN} from './objectx/ObjectXMessages';
 import {VARIABLE_STARS_EN} from './variables/VariableStarMessages';
 import {objectXMasks} from './core/objectXLab';
+import {fieldSpectrumHiddenMasked} from './io/fieldSpectrumFailure';
+import type {FieldSpectrumRecord} from './io/fieldSpectrometer';
+import type {FieldSpectrometerController} from './FieldSpectrometer';
 import type {ObjectXHiddenTarget} from './ObjectXLab';
 import {skyCoordsFieldsFor} from './core/radioAntenna';
 import {INITIAL_LSS_LAB_SUMMARY,lssLabProgress,sameLssLabSummary,type LssLabSummary} from './core/lssLab';
@@ -161,6 +164,7 @@ export default function OpenVireo(){
   const [ra,setRa]=useState(initial.ra.toString()),[dec,setDec]=useState(initial.dec.toString()),[notice,setNotice]=useState(''),[error,setError]=useState('');
   const [library,setLibrary]=useState<Library|null>(null),[loadingLibrary,setLoadingLibrary]=useState(false),[libraryError,setLibraryError]=useState('');
   const analyzerController=useRef<AnalysisController>(null),restoreToken=useRef(0);
+  const fieldSpectrumController=useRef<FieldSpectrometerController>(null),fieldSpectrumCurrent=useRef<FieldSpectrumRecord|null>(null),[fieldSpectrumRestore,setFieldSpectrumRestore]=useState<Readonly<{token:number;record:FieldSpectrumRecord|null}>|null>(null);
   const [analysisIsStar,setAnalysisIsStar]=useState(false),[restoredStar,setRestoredStar]=useState<{token:number;observation:StarObservation}|null>(null);
   const [galaxyTargetId,setGalaxyTargetId]=useState('36773');
   const [galaxyVisited,setGalaxyVisited]=useState(location.hash==='#galaxy-exposure');
@@ -550,7 +554,19 @@ export default function OpenVireo(){
   const nakedEyeUtc=()=>observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc);
   // App shell: header/sidebar with grouped tools, theme switch and the compact investigation toolbar (presentation only).
   // Front Perf: stable handlers for memoised children (renderStability.ts); each calls this render's closure at call time.
-  const spectrumHandlers=useStableHandlers<StableProps<ComponentProps<typeof SpectrumInstrument>,'onPrepareRadio'|'onCheckRadioRestore'|'onRestoreRadio'|'onPrepareMotion'|'onRestoreMotion'|'onPrepareLss'|'onRestoreLss'|'onPrepareObjectX'|'onRestoreObjectX'|'onPrepareObservatory'|'onRestoreObservatory'|'onPrepareClusterSelection'|'onRestoreClusterSelection'|'onPrepareClusterDatabase'|'onRestoreClusterDatabase'|'onPrepareClusterComparison'|'onRestoreClusterComparison'|'onPrepareOptical'|'onPrepareEditing'|'onRestoreEditing'|'onPrepareObserving'|'onRestoreObserving'|'onPreparePhotometry'|'onRestorePhotometry'|'onPrepareClassification'|'onClassifyAcquisition'|'onClassifyImported'|'onRestoreClassification'|'onRestoreAcquisition'>>({
+  // Front G (G4c): the field spectrometer's part of the investigation. The Save snapshot pauses a running exposure (as the
+  // other live instruments); a field the hidden Object X target masks is never saved.
+  function prepareFieldSpectrum():FieldSpectrumRecord|null{
+    const r=fieldSpectrumController.current?.snapshot()??fieldSpectrumCurrent.current;
+    return r&&!fieldSpectrumHiddenMasked(r.prepared.pointing,objectXHidden)?r:null;
+  }
+  function restoreFieldSpectrum(r:FieldSpectrumRecord|null){fieldSpectrumCurrent.current=r;setFieldSpectrumRestore({token:++restoreToken.current,record:r});if(r)setSpectrometerOpened(true);}
+  const fieldSpectrumHandlers=useStableHandlers({
+   onClassify:classifyImported,
+   onAnalyze:(source:ClassificationImport)=>{if(!analyzerController.current)throw errorFor('continuity.busy');analyzerController.current.acceptImported(source);navigate('spectrum');},
+   onRecord:(r:FieldSpectrumRecord|null)=>{fieldSpectrumCurrent.current=r;},
+  });
+  const spectrumHandlers=useStableHandlers<StableProps<ComponentProps<typeof SpectrumInstrument>,'onPrepareRadio'|'onCheckRadioRestore'|'onRestoreRadio'|'onPrepareMotion'|'onRestoreMotion'|'onPrepareLss'|'onRestoreLss'|'onPrepareFieldSpectrum'|'onRestoreFieldSpectrum'|'onPrepareObjectX'|'onRestoreObjectX'|'onPrepareObservatory'|'onRestoreObservatory'|'onPrepareClusterSelection'|'onRestoreClusterSelection'|'onPrepareClusterDatabase'|'onRestoreClusterDatabase'|'onPrepareClusterComparison'|'onRestoreClusterComparison'|'onPrepareOptical'|'onPrepareEditing'|'onRestoreEditing'|'onPrepareObserving'|'onRestoreObserving'|'onPreparePhotometry'|'onRestorePhotometry'|'onPrepareClassification'|'onClassifyAcquisition'|'onClassifyImported'|'onRestoreClassification'|'onRestoreAcquisition'>>({
    onPrepareRadio:prepareRadio,
    onCheckRadioRestore:checkRadioRestore,
    onRestoreRadio:restoreRadio,
@@ -558,6 +574,8 @@ export default function OpenVireo(){
    onRestoreMotion:changeMotionPreferences,
    onPrepareLss:prepareLss,
    onRestoreLss:restoreLss,
+   onPrepareFieldSpectrum:prepareFieldSpectrum,
+   onRestoreFieldSpectrum:restoreFieldSpectrum,
    onPrepareObjectX:prepareObjectX,
    onRestoreObjectX:restoreObjectX,
    onPrepareObservatory:()=>observatoryCurrent.current.options.limitSlewing||Object.keys(observatoryCurrent.current.siteOverrides).length?observatoryCurrent.current:null,
@@ -697,8 +715,8 @@ export default function OpenVireo(){
   // ignores dome and pointing changes), keyed on the boolean route so other route changes keep it.
   const spectrometerShown=view==='spectrometer',[spectrometerOpened,setSpectrometerOpened]=useState(false);
   if(spectrometerShown&&!spectrometerOpened)setSpectrometerOpened(true);
-  const spectrometerField=useMemo(()=>spectrometerOpened?({active:spectrometerShown,pointing,gate:{tracking:gateTracking,moving:gateMoving,finder:gateFinder,domeOpen:gateDome},telescope:optical.selectedIndex,hidden:objectXHidden,currentJd:observatoryJd}):undefined,
-   [spectrometerOpened,spectrometerShown,pointing,gateTracking,gateMoving,gateFinder,gateDome,optical.selectedIndex,objectXHidden,observatoryJd]);
+  const spectrometerField=useMemo(()=>spectrometerOpened?({active:spectrometerShown,pointing,gate:{tracking:gateTracking,moving:gateMoving,finder:gateFinder,domeOpen:gateDome},telescope:optical.selectedIndex,hidden:objectXHidden,currentJd:observatoryJd,...fieldSpectrumHandlers,controllerRef:fieldSpectrumController,restore:fieldSpectrumRestore,projectBusy}):undefined,
+   [spectrometerOpened,spectrometerShown,pointing,gateTracking,gateMoving,gateFinder,gateDome,optical.selectedIndex,objectXHidden,observatoryJd,fieldSpectrumHandlers,fieldSpectrumRestore,projectBusy]);
   const radioPrefill=useMemo(()=>objectXHidden?{ra:objectXHidden.ra,dec:objectXHidden.dec}:null,[objectXHidden]);
   const radioHiddenName=useMemo(()=>objectXHidden?(p:Pointing)=>objectXMasks(objectXHidden,p)?objectXHidden.label:null:undefined,[objectXHidden]);
   // Front Perf: the header and nav depend only on view, hostInert and stable handlers/refs; built again only when those change.

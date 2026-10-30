@@ -3442,4 +3442,7 @@ export interface MessageParameters {
   "fieldSpec.reason.mean-bound": never;
   "fieldSpec.reason.spectrum-mapping": never;
   "fieldSpec.reason.qso-selected": never;
+  "fieldSpec.analyze": never;
+  "fieldSpec.classify": never;
+  "fieldSpec.handOffError": never;
 }
