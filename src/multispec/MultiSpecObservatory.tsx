@@ -2,7 +2,7 @@ import {useEffect,useMemo,useState} from 'react';
 import {frozenObservatoryTime,type FieldTelescope} from '../core/fieldEngine';
 import type {AccessReason} from '../core/instrumentAccess';
 import type {FieldMode,Pointing} from '../core/sky';
-import {objectXMasked} from '../io/objectXMask';
+import {loadedObjectXPositions,loadObjectXPositions,objectXNear} from '../io/objectXMask';
 import {MULTISPEC_MASK_REACH,observatoryMultiSpecField} from './multiSpecFields';
 import {MULTISPEC_MASK_PENDING,MULTISPEC_UNMASKED,type MultiSpecMaskPolicy} from './multiSpecText';
 import MultiSpecInstrument from './MultiSpecInstrument';
@@ -25,12 +25,19 @@ export default function MultiSpecObservatory({active,busy,access,mode,pointing,t
  // The JD is frozen when the field (pointing, telescope) is built, not on every render.
  const field=useMemo(()=>{const f=observatoryMultiSpecField(pointing,telescope);if(!f)return null;const variableTime=frozenObservatoryTime(currentJd);return variableTime?Object.freeze({...f,variableTime}):f;},
   [pointing.ra,pointing.dec,telescope]);// eslint-disable-line react-hooks/exhaustive-deps
- const [mask,setMask]=useState<MultiSpecMaskPolicy>(MULTISPEC_MASK_PENDING);
+ // The mask is derived in render: an effect keyed on the pointing set state on every clock tick while drifting ("Maximum update
+ // depth exceeded"). Pending (masked) until ObjectX.HTL loads; a failed load masks and is retried on a pointing/target change.
+ const [positions,setPositions]=useState<readonly Pointing[]|'failed'|null>(loadedObjectXPositions);
+ const retry=positions==='failed'?`${pointing.ra} ${pointing.dec} ${hidden?.ra} ${hidden?.dec} ${hidden?.label}`:'';
  useEffect(()=>{
-  let current=true;setMask(MULTISPEC_MASK_PENDING);
-  objectXMasked(hidden,pointing,MULTISPEC_MASK_REACH).then(m=>{if(current)setMask(m?Object.freeze({masked:true,target:hidden}):MULTISPEC_UNMASKED);});
+  if(positions&&positions!=='failed')return;
+  let current=true;
+  loadObjectXPositions().then(l=>{if(current)setPositions(l);},()=>{if(current)setPositions('failed');});
   return()=>{current=false;};
- },[pointing.ra,pointing.dec,hidden?.ra,hidden?.dec,hidden?.label]);// eslint-disable-line react-hooks/exhaustive-deps
+ },[positions,retry]);
+ const near=positions===null?null:positions==='failed'||objectXNear(positions,hidden,pointing,MULTISPEC_MASK_REACH);
+ const mask=useMemo<MultiSpecMaskPolicy>(()=>near===null?MULTISPEC_MASK_PENDING:near?Object.freeze({masked:true,target:hidden}):MULTISPEC_UNMASKED,
+  [near,hidden?.ra,hidden?.dec,hidden?.label]);// eslint-disable-line react-hooks/exhaustive-deps
  const telescopeView=mode==='telescope',gate=editMode||virtualObservatory;
  const armedText=!gate?t('multispec.notArmed'):!telescopeView?t('multispec.notTelescopeView'):editMode?t('multispec.armedEditMode'):t('multispec.armedVirtual');
  return <MultiSpecInstrument key={telescope} field={field} telescope={telescope} access={access} armed={gate&&telescopeView} armedText={armedText} mask={mask}

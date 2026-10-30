@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';import {readFile} from 'node:fs/promises';import vectors from '../data/observatory/horizon-vectors.json' with {type:'json'};
 import{clickHeaderTool}from'./fixtures/header-tools';
+import{guardRenderLoops}from'./fixtures/render-loop';guardRenderLoops(test);
 const restored='Investigation restored. Included tools were validated together. Exposure segments are stopped and deactivated; activate explicitly before continuing.';
 async function open(page:Page){await page.clock.install();await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();}
 async function point(page:Page,ra:string,dec:string){const dome=page.getByRole('button',{name:'Open dome ↗',exact:true});if(await dome.isVisible())await dome.click();if(!await page.locator('#point-ra').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();await page.locator('#point-ra').fill(ra);await page.locator('#point-dec').fill(dec);await page.getByRole('button',{name:'Point to coordinates',exact:true}).click();}
