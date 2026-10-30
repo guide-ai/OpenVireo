@@ -60,5 +60,5 @@ The Spectrometer page (`#spectrometer`) now holds VIREO's single-slit spectromet
   (`nativePhotographRows`). A row that fails to parse, such as NGC 4449's, is dropped whole, as the Object X runtime already did.
 - **Exercises.** Exercise routes, packs, policies and counts are unchanged. These exposures never count toward an exercise.
 
-Not yet: Multi-Spec in the free view on tiles (G4b), investigation persistence (G4c), the spectrum analyser hand-off and
+Multi-Spec at any pointing (G4b) is described in MULTI-SPEC.md. Not yet: investigation persistence (G4c), the spectrum analyser hand-off and
 Save .SSP for this route.
