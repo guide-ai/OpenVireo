@@ -25,11 +25,13 @@ export type FieldInfoRequestKind='stars'|'gcvs'|'modeled';
  * - File › Exit Observatory shows VIREO's reminder (Reminder.obs; Front H, docs/CLEA-HELP.md). The main window's Help menu
  *   is in the app header, so that every route reaches it.
  * The windows live in their own lazy components; this menu only sends open requests. Disabled only while a project is busy. */
-export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,onClusterData,pointing,view}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
+export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldInfo,onQsoList,onClusterData,pointing,view,telescope=''}:{editMode:boolean;qsoList:boolean;disabled:boolean;onFieldInfo:(kind:FieldInfoRequestKind)=>void;onQsoList:()=>void;
  /** Front K: File › Cluster Data... (TEnvironment1 ClusterData1). */
  onClusterData?:()=>void;
  /** Front P: the current pointing and view for the Print Sky Image header. */
- pointing?:Pointing;view?:'finder'|'instrument'}){
+ pointing?:Pointing;view?:'finder'|'instrument';
+ /** Front K2.3: the telescope name for the Print Sky Image footer. */
+ telescope?:string}){
  const id=useId(),[menu,setMenu]=useState<'file'|'field'|'variables'|'tools'|null>(null),[printSky,setPrintSky]=useState(false),[exiting,setExiting]=useState(false);
  const fileTrigger=useRef<HTMLButtonElement>(null),toolsTrigger=useRef<HTMLButtonElement>(null);
  useEffect(()=>{if(!editMode)setMenu(m=>m==='field'||m==='variables'?'file':m);},[editMode]);
@@ -57,7 +59,7 @@ export default function ObservatoryFileMenu({editMode,qsoList,disabled,onFieldIn
     <button type="button" data-testid="ob-exit" onClick={()=>pick(()=>setExiting(true))}>{menuCaptionText(MAIN_HELP_MENU.exit)}</button>
    </div>}
   </div>
-  {printSky&&<PrintSkyImage pointing={pointing} view={view} onClose={()=>{setPrintSky(false);fileTrigger.current?.focus();}}/>}
+  {printSky&&<PrintSkyImage pointing={pointing} view={view} telescope={telescope} instrument={null} onClose={()=>{setPrintSky(false);fileTrigger.current?.focus();}}/>}
   <div className="fi-menu" onKeyDown={e=>escape(e,toolsTrigger)}>
    <button type="button" ref={toolsTrigger} disabled={disabled} aria-expanded={menu==='tools'} aria-controls={`${id}-tools`} data-testid="ob-tools-menu" onClick={()=>setMenu(m=>m==='tools'?null:'tools')}>{menuCaptionText(HST_ARCHIVE.tools)}</button>
    {menu==='tools'&&<div id={`${id}-tools`} role="group" aria-label={menuCaptionText(HST_ARCHIVE.tools)} className="fi-menu-list">

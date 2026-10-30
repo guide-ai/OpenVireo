@@ -27,7 +27,7 @@ test('saved DAT → review/cancel → add/merge → Data from Observations on fi
  await expect(page.getByText('1 plotted record is marked as mean counts. The original plots their stored numbers unchanged; they are not magnitudes.',{exact:true})).toBeVisible();
  await choose(page,'night2.dat',dat(B));await button(page,'Add to current results').click();await expect(page.getByTestId('cnhr-count')).toHaveText('# of Stars: 3');
  await page.getByText('All stored records and web plot diagnostics',{exact:true}).click();
- await expect(page.getByTestId('cnhr-row')).toHaveText([/^1HD 1magnitudes10\.510.*200, 239plotted$/,/^2HD 4magnitudes98.*260, 183plotted$/,/^3HD 2magnitudes110—.*not plotted: V is zero$/,/^4HD 3mean counts12\.2512.*170, 295plotted$/]);
+ await expect(page.getByTestId('cnhr-row')).toHaveText([/^1HD 1magnitudes10\.510.*200, 239plottedObservational Data…$/,/^2HD 4magnitudes98.*260, 183plottedObservational Data…$/,/^3HD 2magnitudes110—.*not plotted: V is zero$/,/^4HD 3mean counts12\.2512.*170, 295plottedObservational Data…$/]);// Front K2 review 1 M2: row button
  const download=page.waitForEvent('download');await button(page,'Download current results (DAT)').click();const saved=await(await download).path();
  const bytes=Buffer.from(await (await import('node:fs/promises')).readFile(saved!));expect(bytes.equals(Buffer.concat([A[1]!,B[0]!,A[2]!,A[0]!].map(record)))).toBe(true);
  await page.locator('.cluster-native-hr').screenshot({path:info.outputPath('cnhr-desktop.png')});

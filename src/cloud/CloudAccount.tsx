@@ -2,9 +2,10 @@ import {useEffect,useMemo,useRef,useState,type FormEvent} from 'react';
 import {CloudError,cloudClient,type CloudInvestigation,type CloudUser} from './api';
 import {CLOUD_MAX_BYTES} from './config';
 import {CLOUD_EN as M} from './messages';
+import type {CloudSave} from './CloudEntry';
 import './cloud.css';
 
-type Props=Readonly<{busy:boolean;onRestore:(file:File)=>void;signinToken:string|null}>;
+type Props=Readonly<{busy:boolean;onRestore:(file:File)=>void;onSaveToCloud:CloudSave;signinToken:string|null}>;
 type Phase='loading'|'signed-out'|'signed-in'|'unavailable';
 
 function errorText(error:unknown):string{
@@ -24,7 +25,7 @@ function errorText(error:unknown):string{
 
 const formatBytes=(n:number)=>n<1024?`${n} B`:n<1048576?`${(n/1024).toFixed(1)} KB`:`${(n/1048576).toFixed(1)} MB`;
 
-export default function CloudAccount({busy,onRestore,signinToken}:Props){
+export default function CloudAccount({busy,onRestore,onSaveToCloud,signinToken}:Props){
  const client=useMemo(()=>cloudClient(),[]);
  const [phase,setPhase]=useState<Phase>('loading');
  // Review 1 L1 (login CSRF): an opened link is never used automatically. It is peeked (non-consuming) to show which
@@ -73,6 +74,23 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
   const name=(uploadName.trim()||file.name.replace(/\.json$/i,'')).slice(0,120)||'Investigation';
   void run(async()=>{await client.upload(file,name);if(fileInput.current)fileInput.current.value='';setUploadName('');setItems(await client.list());return M.uploaded(name);});
  }
+ /** Front F2 (Front A point 8): one click runs Save investigation and uploads the text it would have downloaded. */
+ function saveCurrent(){
+  const name=(uploadName.trim()||M.defaultName(new Date().toLocaleString())).slice(0,120);
+  void run(async()=>{
+   let uploaded=false as boolean,failure:unknown=null;
+   await onSaveToCloud(async(text,signal)=>{
+    try{const body=new Blob([text],{type:'application/json'});if(body.size>CLOUD_MAX_BYTES)throw new CloudError('too-large',413);await client.upload(body,name,signal);uploaded=true;}
+    catch(e){failure=e;throw e;}
+   });
+   if(uploaded){setUploadName('');setItems(await client.list());return M.savedToCloud(name);}
+   // F2 review L3: Cancel stopped the upload. Like a cancelled local Save it is not a saved investigation; the list is read again
+   // because the worker may have stored the copy just before the abort.
+   if(failure instanceof CloudError&&failure.code==='cancelled'){setItems(await client.list());return M.saveCancelled;}
+   if(failure)throw failure;
+   // Otherwise the investigation itself could not be saved: the toolbar says why, and nothing was sent.
+  });
+ }
  function restore(item:CloudInvestigation){
   void run(async()=>{
    const blob=await client.download(item.id);
@@ -112,11 +130,15 @@ export default function CloudAccount({busy,onRestore,signinToken}:Props){
    <button className="secondary-button" type="submit" disabled={disabled||!email.trim()}>{M.sendLink}</button>
   </form>}
   {phase==='signed-in'&&user&&<>
+   <div className="cloud-row">
+    <label htmlFor="cloud-upload-name">{M.uploadName}</label>
+    <input id="cloud-upload-name" type="text" maxLength={120} value={uploadName} disabled={disabled} onChange={e=>setUploadName(e.target.value)}/>
+    <button className="secondary-button" type="button" disabled={disabled} onClick={saveCurrent} aria-describedby="cloud-save-help">{M.saveCurrent}</button>
+   </div>
+   <p id="cloud-save-help" className="cloud-help">{M.saveCurrentHelp}</p>
    <form className="cloud-row" onSubmit={upload} aria-describedby="cloud-upload-help">
     <label htmlFor="cloud-upload-file">{M.uploadFile}</label>
     <input id="cloud-upload-file" ref={fileInput} type="file" accept=".json,application/json" disabled={disabled}/>
-    <label htmlFor="cloud-upload-name">{M.uploadName}</label>
-    <input id="cloud-upload-name" type="text" maxLength={120} value={uploadName} disabled={disabled} onChange={e=>setUploadName(e.target.value)}/>
     <button className="secondary-button" type="submit" disabled={disabled}>{M.uploadButton}</button>
    </form>
    <p id="cloud-upload-help" className="cloud-help">{M.uploadHelp}</p>

@@ -97,13 +97,8 @@ below 25 filters the certified bank by V ≤ limit.
 
 ## Not in this front (follow-ups)
 
-- **Observation-mode Display/Print Data** (RsltsListForm1 "Recorded Results - …", rows 0x547264 → 0x548c64 / 0x5486a8):
-  - Decoded so far [D]: ID padded to 12, then the stored time (record+0x10) through the date object (0x487b64, DecodeDate
-    0x40d400) and 0x488188 with 6 decimals, cut from character 4 to 11 characters.
-  - Still needed: whether 0x488188 adds the global 0x5bad48 (the offset the TXT reader subtracts), and the coordinate and
-    photometry fields.
-- **Observation-mode right-click** (hit test 0x544428 → TObsRsltsDlg1 "Observational Data", modal): the web has no fill of
-  that dialog for a DAT record yet. V2 found no remove/restore in that mode.
+- **Observation-mode Display/Print Data** and **right-click → Observational Data**: ported by Front K2
+  (docs/FRONT-K2-FORMS-PRINTS.md §1–2).
 - **Instructor editing tools:** TClstrPrmForm1 and the list's Edit/Delete/Undo (Edit Mode). Not recovered; nothing shipped.
 
 ## Model and effort

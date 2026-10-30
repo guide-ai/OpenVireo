@@ -52,7 +52,7 @@ test('Object X: before the reveal nothing names the target or its neighbours; af
  // Front P N1: Print Selection Field prints this Multi-Spec display with exactly its markers, nothing the masks hide.
  await page.getByTestId('ms-print-field').click();const preview=page.getByTestId('print-sky');await expect(preview).toBeVisible();
  await expect(page.getByTestId('print-sky-picture').locator('[data-testid^=print-ms-marker-]')).toHaveCount(n);
- await expect(page.getByTestId('print-sky-header-1')).toContainText('Pointing (J2000)');
+ await expect(page.getByTestId('print-sky-footer')).toContainText('Instrument: Multi-Object Spectrometer');
  // The field pixels are a PNG data URL (random base64), so its href is left out of the text check.
  const printed=await preview.evaluate(e=>e.innerHTML.replace(/href="data:image\/png;base64,[^"]*"/g,'href=""')+' '+(e.textContent??''));
  for(const secret of SECRETS)expect(printed).not.toMatch(word(secret));for(const r of ENGINE)expect(printed).not.toMatch(r);

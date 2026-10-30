@@ -67,9 +67,9 @@ test('the cluster name and star count are right-aligned at the frame edge with V
  }
 });
 
-test('observation Display/Print Data is a visible disabled control with its reason',async({page})=>{
+test('observation Display/Print Data is visible and waits for plotted records (Front K2: the row writer is ported)',async({page})=>{
  await page.goto('/#cluster-database');
  const summary=page.getByText('HR diagram from saved observations',{exact:true});if(await summary.count())await summary.click();
  const b=page.getByTestId('cnhr-display-data');await expect(b).toBeVisible();await expect(b).toBeDisabled();
- await expect(page.getByTestId('cnhr-display-data-reason')).toContainText('0x5486a8');
+ // The Recorded Results list itself is covered by tests/cluster-k2-observation.spec.ts.
 });

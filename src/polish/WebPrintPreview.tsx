@@ -9,9 +9,12 @@ export const WEB_PRINT_SCOPE='web-print';
  * dialog with a date line, the native caption, optional header lines and the picture, then window.print while
  * html[data-print-scope=web-print] hides everything else (same pattern as the list and hot-list prints). The picture is
  * either rendered by the caller (children) or a DOM clone of a live element (clone), so the printed view equals the shown
- * one. VIREO's own printer layout is not reproduced. */
-export default function WebPrintPreview({testId,caption,header=[],note,clone,children,onClose}:{testId:string;caption:string;header?:readonly string[];note:string;
- clone?:()=>Element|null;children?:ReactNode;onClose:()=>void}){
+ * one. VIREO's own printer layout is not reproduced.
+ * Front K2.3: with `nativeHeader` the page starts with VIREO's recovered header lines (given the date text) instead of the date
+ * and caption (the caption then stays in the screen-only chrome); `footer` adds lines under the picture; `invert` prints the
+ * picture colour-inverted (Print Sky copies CRT1 with cmNotSrcCopy). */
+export default function WebPrintPreview({testId,caption,header=[],note,clone,children,onClose,nativeHeader,footer,invert=false}:{testId:string;caption:string;header?:readonly string[];note:string;
+ clone?:()=>Element|null;children?:ReactNode;onClose:()=>void;nativeHeader?:(dateText:string)=>readonly string[];footer?:readonly string[];invert?:boolean}){
  const id=useId(),suffix=`-print${id.replace(/[^A-Za-z0-9_-]/g,'')}`,dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),picture=useRef<HTMLDivElement>(null);
  const [printedAt]=useState(()=>new Date().toLocaleString()),[failed,setFailed]=useState(false),[missing,setMissing]=useState(false);
  useLayoutEffect(()=>{
@@ -48,12 +51,14 @@ export default function WebPrintPreview({testId,caption,header=[],note,clone,chi
   try{if(typeof window.print!=='function')throw new TypeError('print unavailable');window.print();setFailed(false);}catch{end();setFailed(true);}
  }
  return createPortal(<dialog ref={dialog} className="ob-dialog ob-wide web-print-root" aria-labelledby={`${id}-t`} data-testid={testId} onCancel={e=>{e.preventDefault();close();}}>
-  <div className="web-print-chrome"><h2 id={`${id}-t`}>{PM.print.title}</h2><p className="observatory-note">{note}</p></div>
+  <div className="web-print-chrome"><h2 id={`${id}-t`}>{PM.print.title}</h2>{nativeHeader&&<p className="ob-native">{caption}</p>}<p className="observatory-note">{note}</p></div>
   <section className="web-print-report" tabIndex={0} aria-label={caption}>
+   {nativeHeader?<pre className="web-print-native" data-testid={`${testId}-native-header`}>{nativeHeader(printedAt).join('\n')}</pre>:<>
    <p className="web-print-header" data-testid={`${testId}-date`}>{printedAt}</p>
-   <p className="web-print-header ob-native">{caption}</p>
+   <p className="web-print-header ob-native">{caption}</p></>}
    {header.map((line,i)=><p key={i} className="web-print-header" data-testid={`${testId}-header-${i}`}>{line}</p>)}
-   <div ref={picture} className="web-print-picture" data-testid={`${testId}-picture`}>{children}</div>
+   <div ref={picture} className={`web-print-picture${invert?' web-print-inverted':''}`} data-testid={`${testId}-picture`}>{children}</div>
+   {footer&&<pre className="web-print-native" data-testid={`${testId}-footer`}>{footer.join('\n')}</pre>}
    {missing&&<p role="alert">{PM.print.missing}</p>}
   </section>
   <div className="web-print-chrome"><p role="alert">{failed?PM.print.error:''}</p>

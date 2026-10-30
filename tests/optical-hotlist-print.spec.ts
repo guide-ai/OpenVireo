@@ -8,6 +8,9 @@ test('Print… previews the shown list and prints only the report',async({page})
  await win.getByTestId('ob-hotlist-print').click();
  const preview=page.getByTestId('ob-hotlist-print-preview');await expect(preview).toBeVisible();
  await expect(page.getByTestId('ob-hotlist-print-heading')).toHaveText('Hot List File: Hubble.HTL');
+ // Front K2.3: header 0x591098 outside Edit Mode: the date with the table-number line, then the blank student-name line.
+ const header=(await page.getByTestId('ob-hotlist-print-header').textContent())!.split('\n');
+ expect(header).toHaveLength(4);expect(header[0]).toMatch(/\S     Laboratory Table Number \(Not Recorded\)$/);expect(header.slice(1)).toEqual(['','','']);
  await expect(preview.locator('[data-testid^="ob-hotlist-print-line-"]')).toHaveText(native);
  await expect(page.getByTestId('ob-hotlist-print-count')).toHaveText('13 rows');
  await expect(page.getByTestId('ob-hotlist-print-print')).toBeFocused();

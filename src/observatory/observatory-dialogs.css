@@ -54,3 +54,10 @@ html[data-print-scope=hot-list] .ob-print-report{border:0!important;max-height:n
 .ob-dialog .primary-button{background:var(--ov-accent);color:var(--ov-accent-contrast);border:1px solid var(--ov-accent);border-radius:6px}
 .ob-dialog .ob-field small{font-size:11px;color:var(--ov-text-muted)}
 .ob-option-list{margin:4px 0 0;padding-left:1.2rem;font-size:13px;line-height:1.5;flex-basis:100%}
+/* Front R3: read-only option tab values. */
+.ob-values{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.25rem 1rem;margin:0}
+.ob-values>div{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;min-width:0;font-size:13px}
+.ob-values dt{margin:0;font-weight:400;overflow-wrap:anywhere}
+.ob-values dd{margin:0;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+/* Front K2.3: the hot-list print header lines (Courier, 0x591098). */
+.ob-print-native{font-family:'Courier New',Courier,monospace;margin:0 0 4px;white-space:pre;overflow-x:auto}

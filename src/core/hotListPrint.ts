@@ -1,19 +1,33 @@
 /** Hot List ▸ Print report (RA-HL-10, WEB-HL-12; port of the parked radio candidate R-RX23, generic over the list owner).
- * CLEA_VEO.exe 781bc970…c54c, static listings only (task-3/radio-hotlist-print-20261026, no execution): THotListForm1
- * Print1Click 0x59103c..0x591094 calls the owner's [[0x5b59a4]]+0x3a8 predicate (unidentified) and, when it returns True,
- * the body 0x591098..0x5913de, then stores self+0x585 := 1 (a Checked mark, not a success result). The body sets a spooler
- * title and a header from owner state (date, optional table number, names), prints the form caption, then ListBox1.Items
- * 0..Count-1 in list order with a page-height break. The list window [0x5b5998] is shared by the optical and radio owners.
- * Web policy (WEB-HL-12): the report is the form caption plus the already formatted row texts in the order given (the shown
- * list), nothing else: no title, date, names, table number, ordinal, trimming, sorting or deduplication. The heading and row
- * limits are web input admission, not native capacity claims. Pure: no React, DOM, Date or locale. */
+ * CLEA_VEO.exe 781bc970…c54c, static listings only (task-3/radio-hotlist-print-20261026; Front K2.3 dossier
+ * analysis/front-k2/C-print-headers.md §2, no execution): THotListForm1 Print1Click 0x59103c..0x591094 runs
+ * Env.PrintDialog1.Execute (Env+0x3a8) and, when it returns True, the body 0x591098..0x5913de, then stores self+0x585 := 1
+ * (a Checked mark, not a success result). The body (Courier 10, its own header, not 0x58e860):
+ * - Printer.Title := 'CLEA "Object X" Exercise - ' + name1, or + 'Database Modification' in Edit Mode (never drawn);
+ * - line 1: DateTimeToStr(Now), and with Edit Mode off '     Laboratory Table Number ' + the options table, or
+ *   '(Not Recorded)' (0x591474) when it is empty;
+ * - Edit Mode off: two lines down name1 (always, blank when nobody logged in), names 2–4 one line apart when set;
+ * - two lines down the form caption, two lines down ListBox1.Items in list order with a page-height break (no header repeat).
+ * The list window [0x5b5998] is shared by the optical and radio owners.
+ * Web policy (WEB-HL-12, Front K2.3): the snapshot is the form caption plus the already formatted row texts in the order given
+ * (the shown list); `hotListPrintHeader` gives the lines above the caption. The web has no login or table number, so it
+ * prints VIREO's "(Not Recorded)" and the blank name1 line. The heading and row limits are web input admission, not native
+ * capacity claims. Pure: no React, DOM, Date or locale. */
 import {HTL_MAX_RECORDS,type HtlFields} from './hotList';
 import {formatRadioHotListRow} from './radioHotListFormat';
 
 export type HotListPrintLine=Readonly<{sourceIndex:number;text:string}>;
 export type HotListPrintSnapshot=Readonly<{heading:string;lines:readonly HotListPrintLine[]}>;
-/** Recovered literals of the body (PRINT-LITERALS.json); recorded, not printed: the owner fields they frame are not recovered. */
-export const HOT_LIST_PRINT_LITERALS=Object.freeze({objectXPrefix:'CLEA "Object X" Exercise - ',databaseModification:'Database Modification',font:'Courier',spoolTitle:'Text',tableNumber:'     Laboratory Table Number ',notRecorded:'(Not Recorded)'});
+/** Recovered literals of the body (PRINT-LITERALS.json; Front K2.3 corrected `spoolTitle`: 'Text' is the TextHeight sample). */
+export const HOT_LIST_PRINT_LITERALS=Object.freeze({spoolTitle:'CLEA "Object X" Exercise - ',databaseModification:'Database Modification',font:'Courier',textHeightSample:'Text',tableNumber:'     Laboratory Table Number ',notRecorded:'(Not Recorded)'});
+/** The lines above the caption (0x591098): '' is a blank line (a 2H advance). Names and table as VIREO stores them. */
+export function hotListPrintHeader(dateText:string,editMode:boolean,names:readonly string[]=[],table=''):readonly string[]{
+ const L=HOT_LIST_PRINT_LITERALS;
+ if(editMode)return Object.freeze([dateText,'']);
+ const out=[dateText+L.tableNumber+(table||L.notRecorded),'',names[0]??''];
+ for(const n of names.slice(1,4))if(n)out.push(n);
+ out.push('');return Object.freeze(out);
+}
 /** WEB admission limit for the heading (the caller passes the recovered form caption). */
 export const HOT_LIST_PRINT_HEADING_MAX=255;
 const HEADING=/^[\x20-\x7e\xa0-\xff]+$/;

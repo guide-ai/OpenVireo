@@ -25,6 +25,9 @@ export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExp
 export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status']}>;
 export type CameraControlProps=Readonly<{
+ /** Front R3: the Infrared Camera option (IRBox, env+0x2e87, compiled on). Off: the IR camera is not offered (TObsrvtry FormActivate
+  * 0x537a13 drops it from the instrument slider), and a selected IR camera returns to the CCD once no exposure is running. */
+ infraredCamera?:boolean;
  active:boolean;busy:boolean;telescopeIndex:OpticalIndex;pointing:Pointing;access:AccessReason;
  /** Julian date of the observatory clock at the moment Start is pressed. */
  currentJd:()=>number;
@@ -54,7 +57,7 @@ function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:num
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
-function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
+function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
@@ -163,11 +166,12 @@ function CameraControl({active,busy,telescopeIndex,pointing,access,currentJd,ext
  const showIrNotes=camera==='ir'||shown?.recipe.camera==='ir',filterName=(k:CameraExposureKind,i:number)=>(k==='ir'?M.filterNamesIr:M.filterNames)[i];
  /** Switching camera resets the filter and keeps the gain when the other camera offers it (gain 2 exists on both). */
  function chooseCamera(next:CameraExposureKind){if(next===camera)return;setCamera(next);setFilter(0);if(!CAMERA_GAINS[next].includes(gain))setGain(2);}
+ useEffect(()=>{if(!infraredCamera&&camera==='ir'&&!running)chooseCamera('ccd');},[infraredCamera,camera,running]);
  return <section className="card camera-control" aria-labelledby="camera-control-title" data-testid="camera-control" data-phase={gate.phase} data-terminal={gate.terminal}>
   <div className="eyebrow">{M.eyebrow}</div><h2 id="camera-control-title">{camera==='ir'?M.titleIr:M.title}</h2>{/* TCCDCam 0x5130fc / TIRCam 0x51512c Help1Click; options +0x9a4 and +0x9ec both default CamHlp.LST (docs/CLEA-HELP.md) */}<CleaHelp list={HELP_FILES['CAMHLP.LST']} testId="camera-help"/><p>{camera==='ir'?M.introIr:M.intro}</p>
   <fieldset className="camera-settings" disabled={running||busy}>
    <fieldset className="camera-kind"><legend>{M.camera}</legend>
-    {(['ccd','ir'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
+    {(infraredCamera?['ccd','ir'] as const:['ccd'] as const).map(k=><label key={k}><input type="radio" name="camera-kind" checked={camera===k} onChange={()=>chooseCamera(k)}/>{M.cameraNames[k]}</label>)}
    </fieldset>
    <CameraFieldSize camera={camera} telescopeIndex={telescopeIndex}/>
    <label>{M.filter}<select value={filter} onChange={e=>setFilter(Number(e.target.value))}>{filterNames.map((n,i)=><option key={n} value={i}>{n}</option>)}</select></label>
