@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type SyntheticEvent } from 'react';
+import {memo,useEffect,useLayoutEffect,useMemo,useRef,useState,type ChangeEvent,type KeyboardEvent,type PointerEvent as ReactPointerEvent,type SyntheticEvent} from 'react';
 import { createRoot } from 'react-dom/client';
 import './PulsarSavedRows.css';
 import { resourceSha256 } from '../io/boundedResource';
@@ -29,7 +29,7 @@ const fieldName = (field: string) => SAVED_ROWS_HEADER_NAMES[(SAVED_ROW_FIELDS a
 /** Buttons and inputs of a dialog that Tab can reach, in document order. */
 const tabbables = (dialog: HTMLElement) => [...dialog.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled)')].filter(el => el.tabIndex >= 0);
 
-export default function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalChange }: PulsarSavedRowsProps) {
+function PulsarSavedRows({ translate, idPrefix = 'psr-', active = true, onModalChange }: PulsarSavedRowsProps) {
   const t = useMemo(() => translate ?? createSavedRowsTranslator(), [translate]);
   const [ws, setWs] = useState<SavedRowsWorkspace>(INITIAL_SAVED_ROWS);
   // The ref is the authority for asynchronous read continuations; the state renders it.
@@ -429,3 +429,5 @@ export function ReviewFindNotice({ body, onClose, idPrefix }: Readonly<{ body: s
     </dialog>
   );
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(PulsarSavedRows);

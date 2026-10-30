@@ -12,6 +12,9 @@
 // (ID, object code, answer, reveal flag, description and marks) must equal the stored digest, so an edited file is rejected.
 // Any failure rejects the whole file (the caller applies nothing). Lists are scanned in slices that yield to the page.
 import {finishObservableList,movingPairs,newObservableScan,orbitFileType,scanObservable,type ObservableList} from '../core/asteroidField';
+// Front D3: the error class lives in objectXSessionError.ts (no session code), re-exported unchanged.
+import {ObjectXSessionError} from './objectXSessionError';
+export {ObjectXSessionError};
 import {orbitRecordCount} from '../core/orbitFile';
 import type {CameraCatalogOptions} from './cameraCatalog';
 import type {CameraExtraSource} from '../core/cameraExposure';
@@ -27,9 +30,6 @@ export const OBJECT_X_INVESTIGATION_POLICY='openvireo-objectx-investigation-v28'
 /** Own bounds: 64 exposures, 16 image references, 8 distinct lists (orbit file, date, limit), 4000-character description,
  * 1 MiB serialized. */
 export const OBJECT_X_SESSION_LIMITS=Object.freeze({exposures:64,images:16,lists:8,description:4000,bytes:1024*1024});
-export class ObjectXSessionError extends Error{
- constructor(readonly code:'format'|'bounds'|'record'|'replay'|'digest'){super(`Object X investigation: ${code}`);this.name='ObjectXSessionError';}
-}
 export type ObjectXExposure=Readonly<{
  jd:number;seconds:number;filter:number;gain:number;telescope:0|1|2;ra:number;dec:number;seed:number;
  catalogMode:'static'|'live';catalogSha256:string;extractId:string|null;

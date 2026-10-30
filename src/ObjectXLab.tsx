@@ -1,5 +1,5 @@
 import type {ClassificationImport} from './core/classificationImport';
-import {useEffect,useMemo,useRef,useState,type MutableRefObject} from 'react';
+import {memo,useEffect,useMemo,useRef,useState,type MutableRefObject} from 'react';
 import './objectx.css';
 import {OBJECT_X_LAB_EN as M,OBJECT_X_MEASURE_EN} from './objectx/ObjectXMessages';
 import {ObjectXMeasure,type MeasureFrame} from './ObjectXMeasure';
@@ -53,7 +53,7 @@ type Loaded=Readonly<{frame:MeasureFrame;bytes:Uint8Array}>;
 type ListState=Readonly<{list:ObservableList;orbitFile:BundledOrbitFileId;limit:number}>;
 
 /** E08 #object-x route: hidden-identity object, the three instrument branches, images, blink/measure, answer and reveal. */
-export default function ObjectXLab({onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
+function ObjectXLab({onClassifySpectrum,active,busy,clockUtc,clockApplied,onSetClock,onPrefill,onOpenRadio,controllerRef,restored,onSnapshot,onSummary,onHiddenTarget}:Props){
  const [inv,setInv]=useState<ObjectXInvestigation>(restored??EMPTY);
  const [htl,setHtl]=useState<HtlList|null>(null),[htlError,setHtlError]=useState(false);
  const [dateText,setDateText]=useState(inv.startUtc),[notice,setNotice]=useState('');
@@ -262,3 +262,5 @@ export default function ObjectXLab({onClassifySpectrum,active,busy,clockUtc,cloc
   </fieldset>
  </main>;
 }
+// Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
+export default memo(ObjectXLab);

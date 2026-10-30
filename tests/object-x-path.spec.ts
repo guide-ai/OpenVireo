@@ -215,3 +215,34 @@ test('Front C5W: the default bundled-extract mode images an Object X field witho
  await expect(page.getByTestId('camera-detail-source')).toContainText('from vizier.idia.ac.za');
  expect(asked).toEqual([]);expect(await leaks(page)).toEqual([]);
 });
+
+// Front Perf review 1 M1: a repoint during a CCD exposure keeps the exposure (tracking stays on); the asteroids added to the
+// image are those around the pointing at Start, as the image itself is, not around the field the telescope was moved to.
+test('a mid-exposure repoint keeps the asteroids of the Start pointing in that image',async({page})=>{
+ test.setTimeout(240_000);
+ const body=await recorded;await page.route(CDS,route=>route.fulfill({status:200,contentType:'text/xml',body}));
+ await openLab(page);
+ await page.getByLabel('ID # of your unknown object (from the lab sheet or instructor)').fill('42');
+ await page.getByTestId('objectx-target').selectOption(EROS_CODE);
+ await button(page,'Set the observatory clock').click();
+ await expect(page.getByTestId('objectx-list-status')).toContainText('Observable asteroids on 2009-06-01 04:00:00 UT',{timeout:20_000});
+ await button(page,'Copy the coordinates to the observatory').click();
+ await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible();
+ await button(page,'Open dome ↗').click();
+ if(!await button(page,'Point to coordinates').isVisible())await page.getByText('Enter coordinates',{exact:true}).click();
+ await button(page,'Point to coordinates').click();
+ await page.getByRole('group',{name:'Field of view'}).getByRole('button',{name:'Telescope · 15′',exact:true}).click();
+ if(!await button(page,'Start observatory clock').isVisible())await page.getByText('Observatory clock & spectral tracking',{exact:true}).click();
+ await button(page,'Start observatory clock').click();await button(page,'Turn tracking on').click();
+ const camera=page.getByTestId('camera-control');
+ await camera.getByLabel(/Ask VizieR live/).check();await camera.getByLabel('Minutes').fill('1');await camera.getByLabel('Seconds').fill('0');
+ await camera.getByRole('button',{name:'Start exposure',exact:true}).click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Exposing…');
+ // Repoint three degrees north while exposing: far outside the 15′ field, so no asteroid of the Start field is near it.
+ await page.getByLabel('Declination · degrees',{exact:true}).fill('-5.04');
+ await button(page,'Point to coordinates').click();
+ await expect(page.getByTestId('camera-status')).toHaveText('Image ready.',{timeout:120_000});
+ await clickHeaderTool(page,'Object X');
+ await expect(page.getByTestId('objectx-images').locator('li')).toHaveCount(1);
+ await expect(page.getByTestId('objectx-image-movers-0')).toContainText(/[1-9]\d* asteroids? in the field box/);
+});

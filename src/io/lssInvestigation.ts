@@ -4,6 +4,9 @@
 // through the field engine on its bundled pack, z and velocity are re-derived from the control, and a SHA-256 over those
 // derivatives must equal the stored digest. Any failure rejects the whole file (the caller applies nothing).
 import {FIELD_VARIABLE_JD_DOMAIN} from '../core/fieldEngine';
+// Front D3: the error class lives in lssSessionError.ts (no session code), re-exported unchanged.
+import {LssSessionError} from './lssSessionError';
+export {LssSessionError};
 import {evaluateLssRow,lssExposureEngine,lssPolicy} from '../core/lssExposure';
 import {lssFieldRows,type LssFieldNumber} from '../core/lssFields';
 import {LSS_LIMITS,decodeLssEvents,encodeLssEvents,lssJournalKey,type LssRecord} from '../core/lssSurvey';
@@ -23,9 +26,6 @@ export const LSS_INVESTIGATION_POLICY='openvireo-lss-investigation-v27';
  * event even when every tick differs), and the serialized E02 part is capped at 4 MiB, so it always leaves at least 12 MiB of
  * the 16 MiB session cap to the rest of the investigation. */
 export const LSS_SESSION_LIMITS=Object.freeze({records:LSS_LIMITS.records,events:LSS_LIMITS.events,description:LSS_LIMITS.description,bytes:4*1024*1024});
-export class LssSessionError extends Error{
- constructor(readonly code:'format'|'bounds'|'record'|'replay'|'digest'){super(`LSS investigation: ${code}`);this.name='LssSessionError';}
-}
 export type LssInvestigation=Readonly<{field:LssFieldNumber|null;telescope:0|1|2;records:readonly LssRecord[];description:string;wedgeOptions:WedgeOptions|null}>;
 /** Where restore gets the bundled field evidence (browser: same-origin, size/SHA-checked; tests: the repository files). */
 export type LssResources=Readonly<{pack:(field:LssFieldNumber)=>Promise<FieldPack>;glx:()=>Promise<Uint8Array>;spectra:()=>Promise<LssSpectrumInputs>}>;

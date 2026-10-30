@@ -15,7 +15,6 @@
 import {delphiFixed,formatNativeSexagesimal,type VariableStarRecord} from './variableStars';
 import type {HtlFields} from './hotList';
 import {nativeCursorInsert} from './fieldEngine';
-import {VARIABLE_STARS_MENU} from './observatoryMenuLiterals';
 
 export type VariableFieldView='finder'|'instrument';
 export type VariableFieldMode='gcvs'|'modeled';
@@ -26,21 +25,9 @@ export class VariableFieldError extends Error{constructor(readonly code:'input')
 /** Compiled option defaults (0x5a29e2 FinderField 2.5°, 0x5a29f6 InstrField 15′, 0x5a2a74 FieldCreationFactor 3). */
 export const VARIABLE_FIELD_DEFAULTS=Object.freeze({finderDegrees:2.5,instrumentArcminutes:15,creationFactor:3,finderLimit:Math.fround(14),instrumentLimit:Math.fround(20)});
 /** Original literals (DFM TVARFLDLSTFORM1, fill 0x52f7fc, row 0x52feb4, selection handlers). Never translated. */
-export const VARIABLE_FIELD_LITERALS=Object.freeze({
- menu:VARIABLE_STARS_MENU,
- captionFinder:'Variable Stars in Finder Field',captionInstrument:'Variable Stars in Instrument Field',
- center:'Field Center:',ra:'RA: ',dec:'Dec:',limits:'Field Limits:',to:'to',
- note:'(Visible field is 1/3 of loaded field and may not be centered.)',
- empty:'No variable stars found in field!',headGcvs:'All variables from GCVS in region:',headModeled:'Variables modeled in VIREO in region:',
- columns:'Name          Rt. Ascension    Declination   Max   Min  Type',
- listMenu:Object.freeze({list:'&List',search:'&Search...',print:'&Print...',saveText:'Save &Text',asDisplayed:'As &Displayed...',commaDelimit:'&Comma Delimit (for Spreadsheet)...',close:'&Close'}),
- selectionMenu:Object.freeze({selection:'&Selection',data:'&Get Selection Data...',slew:'&Slew to Selection...',add:'&Add Selection to Current Hot List',start:'Start &New Hot List with Selection'}),
- addedHead:'Object ',addedTail:' Added to Current Hot List.',confirmation:'Confirmation',
- newList:'New Hot List Created - Object ',newListTail:' Added to New Hot List.',
- unsavedText:'The current observation Hot List has been updated.  You will lose the updates if you do not save it.\r\n\r\nDo you want to save it now?',unsavedCaption:'Current Hot List not Saved!',
- csvText:'Comma-Delimited Output not Available for Displayed Material.',csvCaption:'Not Available',
- savedHead:'Report Text Written to ',savedTail:'.',savedCaption:'Text File Written',
-});
+// Front D3: the literals live in variableFieldLiterals.ts (no field engine), re-exported unchanged.
+import {VARIABLE_FIELD_LITERALS} from './variableFieldLiterals';
+export {VARIABLE_FIELD_LITERALS};
 
 const wrapHours=(h:number)=>((h%24)+24)%24;
 /** Area record of the field load (finder or instrument) for a telescope pointing. */

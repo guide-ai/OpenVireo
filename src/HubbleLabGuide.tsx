@@ -1,11 +1,12 @@
-import type {RefObject} from 'react';
+import {memo,type RefObject} from 'react';
+import {sameData} from './renderStability';
 import {t,formatNumber} from './i18n';
 import {galaxyIdentity,galaxyDistanceReference} from './core/galaxyIdentity';
 import {HUBBLE_SOURCES} from './core/hubbleAnalysis';
 import type {HubbleLabProgress} from './core/hubbleLab';
 import './hubble-lab.css';
 export type LabDestination='galaxy-exposure'|'spectrum'|'hubble';
-export default function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void}){
+function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRef:RefObject<HTMLDialogElement|null>;progress:HubbleLabProgress;onNavigate:(destination:LabDestination)=>void}){
  function go(destination:LabDestination){dialogRef.current?.close();onNavigate(destination);}
  return <dialog ref={dialogRef} className="hubble-lab-dialog" aria-labelledby="hubble-lab-heading" aria-describedby="hubble-lab-intro">
   <div className="lab-heading"><div><div className="eyebrow">{t('lab.eyebrow')}</div><h2 id="hubble-lab-heading">{t('lab.title')}</h2></div><button className="secondary-button" autoFocus onClick={()=>dialogRef.current?.close()}>{t('lab.close')}</button></div>
@@ -24,3 +25,5 @@ export default function HubbleLabGuide({dialogRef,progress,onNavigate}:{dialogRe
   <button className="secondary-button" onClick={()=>dialogRef.current?.close()}>{t('lab.return')}</button>
  </dialog>;
 }
+// Front Perf: the closed guide re-renders only when its progress (plain data), ref or handler changes.
+export default memo(HubbleLabGuide,(a,b)=>a.dialogRef===b.dialogRef&&a.onNavigate===b.onNavigate&&sameData(a.progress,b.progress));
