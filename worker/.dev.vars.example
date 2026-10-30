@@ -1,0 +1,8 @@
+# Copy to .dev.vars (git-ignored) for `npm run dev`. No secrets exist yet: there is no email provider.
+# The browser origin that serves the app (Vite dev server, or the worker itself once it serves assets).
+APP_ORIGIN=http://127.0.0.1:5175
+# The only email implementation: log the message and keep it in the dev_outbox table. Honoured only when APP_ORIGIN is
+# a loopback origin; any other value or origin makes sign-in requests fail closed (503 email-not-configured).
+EMAIL_MODE=dev-sink
+# Dev-only fallback if a local browser refuses Secure cookies over http://127.0.0.1. Loopback APP_ORIGIN only.
+# COOKIE_INSECURE_LOOPBACK=1
