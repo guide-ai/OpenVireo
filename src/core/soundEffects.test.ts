@@ -5,8 +5,8 @@ import manifest from '../../docs/LOCAL-RESOURCES.json';
 import {DOME_END_SOUNDS,DOME_TRAVEL_MS,SOUND_EFFECTS_DEFAULT,SOUND_FILES,domeEndActions,soundEffectsStep,soundFileUrl,type ObservatorySoundState} from './soundEffects';
 import {decodeMsAdpcm,pcm16Wav,readWavInfo} from './msAdpcm';
 
-const closed:ObservatorySoundState={domeOpen:false,motion:null},open:ObservatorySoundState={domeOpen:true,motion:null};
-const moving=(kind:'manual'|'programmed'):ObservatorySoundState=>({domeOpen:true,motion:{kind,moving:true}});
+const closed:ObservatorySoundState={domeCue:0,motion:null},open:ObservatorySoundState={domeCue:1,motion:null};
+const moving=(kind:'manual'|'programmed'):ObservatorySoundState=>({domeCue:1,motion:{kind,moving:true}});
 const file=(name:string)=>new Uint8Array(readFileSync(new URL(`../../public/original/sounds/${name}`,import.meta.url)));
 
 describe('VIREO sound effects (WAV-events.md)',()=>{
@@ -24,17 +24,18 @@ describe('VIREO sound effects (WAV-events.md)',()=>{
   expect(SOUND_EFFECTS_DEFAULT).toBe(false);
   expect(soundEffectsStep(closed,open,false)).toEqual([]);expect(soundEffectsStep(closed,closed,true)).toEqual([]);
  });
- test('dome open or close: gardoor once, then the end sound after the travel; a reversal restarts it',()=>{
+ test('a dome switch click (open or close): gardoor once, then the end sound after the travel; a reversal restarts it',()=>{
   const a=soundEffectsStep(closed,open,true);
   expect(a).toEqual([{kind:'cancel-dome-end'},{kind:'play',channel:'dome',sound:'gardoor.wav',loop:false},{kind:'dome-end-after',ms:DOME_TRAVEL_MS}]);
-  expect(soundEffectsStep(open,closed,true)).toEqual(a);
+  expect(soundEffectsStep(open,{domeCue:2,motion:null},true)).toEqual(a);
+  expect(DOME_TRAVEL_MS).toBe(7840);// 98 ticks × 80 ms to frac 0.97 (0x58d3f0) at VIREO's 64-bit x87 precision
   expect(domeEndActions(()=>0)).toEqual([{kind:'stop',channel:'dome'},{kind:'play',channel:'dome',sound:'chaclunk.wav',loop:false}]);
   expect(domeEndActions(()=>0.999)[1]).toMatchObject({sound:'whaading.wav'});expect(domeEndActions(()=>0.5)[1]).toMatchObject({sound:'crinkle.wav'});
  });
  test('manual slew: servostart then servocontin looped; programmed slew: Emotor looped; leaving motion stops the telescope player',()=>{
   expect(soundEffectsStep(open,moving('manual'),true)).toEqual([{kind:'play',channel:'telescope',sound:'servostart.wav',loop:false,then:'servocontin.wav'}]);
   expect(soundEffectsStep(open,moving('programmed'),true)).toEqual([{kind:'play',channel:'telescope',sound:'emotor.wav',loop:true}]);
-  expect(soundEffectsStep(moving('programmed'),{domeOpen:true,motion:{kind:'programmed',moving:false}},true)).toEqual([{kind:'stop',channel:'telescope'}]);
+  expect(soundEffectsStep(moving('programmed'),{domeCue:1,motion:{kind:'programmed',moving:false}},true)).toEqual([{kind:'stop',channel:'telescope'}]);
   expect(soundEffectsStep(moving('manual'),open,true)).toEqual([{kind:'stop',channel:'telescope'}]);
   expect(soundEffectsStep(moving('manual'),moving('programmed'),true)).toEqual([{kind:'stop',channel:'telescope'},{kind:'play',channel:'telescope',sound:'emotor.wav',loop:true}]);
   expect(soundEffectsStep(moving('manual'),moving('manual'),true)).toEqual([]);
