@@ -24,3 +24,6 @@ html[data-print-scope=web-print] .web-print-picture>svg,html[data-print-scope=we
 .popup-menu button:hover:not(:disabled),.popup-menu button:focus-visible{background:var(--ov-surface-hover)}
 .popup-menu button:disabled{opacity:.55}
 .popup-menu-note{margin:4px 8px;font-size:.8rem;color:var(--ov-text-muted)}
+/* Front K2.3: VIREO's printed header/footer lines (Courier, as 0x58e860/0x53fe14) and the colour-inverted sky (cmNotSrcCopy). */
+.web-print-native{font-family:'Courier New',Courier,monospace;font-size:10pt;margin:6px 0;white-space:pre;overflow-x:auto}
+.web-print-inverted>svg,.web-print-inverted>img{filter:invert(1)}

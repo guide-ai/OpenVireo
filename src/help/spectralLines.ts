@@ -63,3 +63,11 @@ export function spectralLineHeader(txt:Uint8Array,name:string):string|null{
  const key=foldAsciiCase(name.replace(/^ +/,''));
  return textLines(txt).find(l=>l.includes('*')&&foldAsciiCase(l).includes(key))??null;
 }
+/** Reverse link 0x5058b8 (Front K2.5, research analysis/front-k2/D-multispec-help-line-click.md §5.4) [D]: the row with the
+ * smallest |λc − row wavelength|, starting from a bound of 1000 Å with a strict `<`, so ties keep the first row; −1 when no
+ * row is within 1000 Å. λc is the cursor's pixel-quantized wavelength. */
+export function nearestSpectralLine(lines:readonly SpectralLine[],wavelength:number):number{
+ let best=1000,index=-1;
+ lines.forEach((l,i)=>{const d=Math.abs(wavelength-l.wavelength);if(d<best){best=d;index=i;}});
+ return index;
+}

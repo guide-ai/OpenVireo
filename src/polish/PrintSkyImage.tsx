@@ -1,24 +1,22 @@
-import {splitSexagesimal} from '../core/radioAntenna';
+import {printSkyFooter,printSkyHeader,type PrintSkyInstrument} from '../core/printSkyText';
 import type {Pointing} from '../core/sky';
 import WebPrintPreview from './WebPrintPreview';
 import {POLISH_MESSAGES as PM,PRINT_SKY_LITERALS as L} from './PolishMessages';
 
-const two=(n:number)=>String(n).padStart(2,'0');
-/** RA hh mm ss.s and Dec ±dd mm ss for the print header (web formatting). */
-export function printSkyCoordinates(p:Pointing):{ra:string;dec:string}{
- const ra=splitSexagesimal(p.ra,1),dec=splitSexagesimal(p.dec,1);
- return {ra:`${two(ra.whole)} ${two(ra.minutes)} ${ra.seconds.toFixed(1).padStart(4,'0')}`,dec:`${dec.sign<0?'-':'+'}${two(dec.whole)} ${two(dec.minutes)} ${dec.seconds.toFixed(1).padStart(4,'0')}`};
-}
 const skyMap=()=>document.querySelector('[data-testid="sky-map"]');
 
-/** File › Print Sky Image... (PrintSkyImage1Click 0x53f934, OB-SR-03): VIREO prints a header (0x58e860), the sky image
- * (0x53f9e4, scale 1.5) and a footer (0x53fe14), whose contents are not decoded. The web prints the sky view as shown [W]. */
-export default function PrintSkyImage({pointing,view,onClose,clone=skyMap}:{pointing?:Pointing;view?:'finder'|'instrument';onClose:()=>void;
+/** File › Print Sky Image... (PrintSkyImage1Click 0x53f934, OB-SR-03; Front K2.3): VIREO's header 0x58e860, the sky image
+ * (0x53f9e4, colour-inverted by cmNotSrcCopy) and the footer 0x53fe14, from core/printSkyText.ts. The web prints the sky view
+ * as shown [W], inverted like VIREO's copy. `instrument` is null where the web has no instrument choice (a web note is
+ * printed instead). */
+export default function PrintSkyImage({pointing,view,telescope,instrument,onClose,clone=skyMap}:{pointing?:Pointing;view?:'finder'|'instrument';
+ /** The telescope name VIREO prints (its telescope record name). */telescope:string;
+ /** The selected instrument in the telescope view; the finder view always prints Finder. */instrument:PrintSkyInstrument;onClose:()=>void;
  /** The picture to print (default: the observatory sky map). Multi-Spec passes its own field with its markers. */
  clone?:()=>Element|null}){
- const c=pointing?printSkyCoordinates(pointing):null;
- return <WebPrintPreview testId="print-sky" caption={L.caption} note={PM.printSky.note} clone={clone} onClose={onClose}
-  header={[PM.printSky.view(view),...c?[PM.printSky.pointing(c.ra,c.dec)]:[]]}/>;
+ const footer=pointing?printSkyFooter({raHours:pointing.ra,decDegrees:pointing.dec,telescope,instrument:view==='finder'?'finder':instrument,instrumentText:PM.printSky.noInstrument}):undefined;
+ return <WebPrintPreview testId="print-sky" caption={L.caption} note={PM.printSky.note} clone={clone} onClose={onClose} invert
+  nativeHeader={date=>printSkyHeader(date)} footer={footer}/>;
 }
 
 const SVG='http://www.w3.org/2000/svg';

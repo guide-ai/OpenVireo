@@ -62,7 +62,22 @@ export const CLUSTER_HR_EN=Object.freeze({
  memberAlreadyRemoved:'This star is already removed from the plot.',
  rightClickNote:'Like VIREO, right-click a star on the plot (or press and hold on a touch screen) to open "Possible Cluster Member". With the keyboard, choose a record below and press "Possible Cluster Member…".',
  memberOpen:'Possible Cluster Member…',
- observationDataUnavailable:'Display/Print Data is not available for observations: VIREO shows its "Recorded Results" list here, whose row format (0x5486a8) is not recovered yet.',
+ observationDataUnavailable:'Display/Print Data is not available for your own photometer pairs: VIREO lists recorded observation records here ("Recorded Results"), and these pairs are not such records because the photometer Record writer is not ported. Save and load the observations as a DAT file to see the list.',
+ // Front K2.1: observation-mode Display/Print Data (RsltsListForm1)
+ recordedResultsNote:'VIREO\'s "Recorded Results" list for the loaded records: a header, then one line per record, each written by VIREO\'s row writer (0x5486a8) with VIREO\'s default options (magnitudes, R and I). VIREO writes this list when it reads the data; here it follows every change of the list (web).',
+ recordedResultsBlocked:(row:number,why:string)=>`Display/Print Data cannot list record ${row}: ${why} VIREO would stop with an error here.`,
+ recordedResultsBlock:{value:'a stored number is not a finite value.','spectral-code':'its spectral type code cannot be formatted.',text:'its name or remarks contain control characters.'} as Readonly<Record<'value'|'spectral-code'|'text',string>>,
+ recordedResultsCsvCaption:'Comma Delimit',
+ recordedResultsCsvRefused:(line:number)=>`Line ${line} is shorter than VIREO's comma-delimited layout (an empty "Sky" line or a record without photometry). VIREO would write past the end of that line, so no file is made here. Save Text keeps the lines as shown.`,
+ close:'Close',
+ // Front K2.2: observation-mode right click → Observational Data (TObsRsltsDlg1)
+ obsRightClickNote:'Like VIREO, right-click a plotted star (or press and hold on a touch screen) to open "Observational Data" for that record; it is marked on the plot until you choose Cancel. With the keyboard, open the records table below and choose "Observational Data…" on a row.',
+ obsDataColumn:'Observational Data',
+ obsDataOpen:'Observational Data…',
+ obsVelocityNote:'Velocity is shown but not editable here (web). In VIREO, typing a velocity stores it and then checks it against c·Z; with Z = 0, as for every photometer record, it always answers "Velocity Error!".',
+ obsEditError:'The remarks or the spectral type cannot be stored as typed (VIREO stores 36 characters of plain text and a spectral type it can read). Nothing was changed.',
+ obsBlocked:(why:string)=>`Observational Data cannot show this record: ${why}`,
+ obsFpu:'VIREO stops with a floating-point error here: a plotted point lies too far from the click for its 32-bit distance.',
  yes:'Yes',no:'No',
  exclusionEditModeNote:'In VIREO, removing points from the HR diagram is an Edit Mode tool (an instructor setting, off by default); OpenVireo lets you exclude and restore points yourself.',
  // HR Print (0x542f44)

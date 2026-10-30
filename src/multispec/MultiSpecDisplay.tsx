@@ -36,7 +36,7 @@ function InformationDialog({lines,onClose}:Readonly<{lines:readonly string[];onC
  </dialog>;
 }
 /** Print 0x528454 as a print preview (the HotListPrintPreview pattern): a portalled modal whose scoped print stylesheet prints
- * only the report (plot and the core print lines). The shared printer header 0x58e860 is not ported [W]. */
+ * only the report (plot and the core print lines). The shared printer header 0x58e860 (decoded by Front K2, docs/FRONT-K2-FORMS-PRINTS.md §3) is not added to this print [W]. */
 function PrintPreview({caption,spectrum,lines,onClose}:Readonly<{caption:string;spectrum:MultiSpecSpectrum;lines:readonly string[];onClose:()=>void}>){
  const id=useId(),dialog=useRef<HTMLDialogElement>(null),button=useRef<HTMLButtonElement>(null),[failed,setFailed]=useState(false);
  useEffect(()=>{const d=dialog.current;if(d&&!d.open){d.showModal();button.current?.focus();}
