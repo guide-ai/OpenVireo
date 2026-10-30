@@ -8,6 +8,7 @@ import {OBJECT_X_GALAXY_SPECTRA,OBJECT_X_PHOTOGRAPHS} from './objectXSpectromete
 import {multiSpecPick} from '../core/multiSpecSelect';
 import {workerFailureKind} from './workerFailure';
 import {lssFieldRows} from '../core/lssFields';
+import {decodeStarIndexList} from '../core/starTemplates';
 vi.setConfig({testTimeout:120000});
 const file=(p:string)=>new Uint8Array(readFileSync(new URL('../../public/original/'+p,import.meta.url)));
 const sha=(b:Uint8Array)=>createHash('sha256').update(b).digest('hex');
@@ -19,8 +20,9 @@ const coma=engineTargets.targets.find(t=>t.id==='NGC 4889')!;
 describe('Front M: Multi-Spec inputs, view and spectra (in-process seam of the Worker path)',()=>{
  beforeAll(()=>{vi.stubGlobal('crypto',webcrypto);setMultiSpecResources(resources());});
  afterAll(()=>{setMultiSpecResources(null);vi.unstubAllGlobals();});
- it('the 115 bundled templates (48 earlier + 67 approved 2026-10-28) and the own spectra tables match the bundled bytes',()=>{
-  expect(MULTISPEC_STAR_TEMPLATES).toHaveLength(115);
+ it('every template JSPEC2.SPI names is bundled (48 earlier + 67 approved 2026-10-28 + 17 approved 2026-10-30) and the own spectra tables match the bundled bytes',()=>{
+  expect(MULTISPEC_STAR_TEMPLATES).toHaveLength(132);
+  expect(MULTISPEC_STAR_TEMPLATES.map(t=>t.file)).toEqual(decodeStarIndexList(byPath['/original/spectra/jspect2/JSPEC2.SPI']).map(e=>e.file.toUpperCase()).sort());
   for(const t of [...MULTISPEC_STAR_TEMPLATES,...MULTISPEC_GALAXY_SPECTRA]){const b=byPath[t.path];expect([t.file,b.byteLength,sha(b)]).toEqual([t.file,t.bytes,t.sha256]);}
  });
  it('a Hubble field: view, picks and spectra (own NGC4889.SP, star, sky, a star on a template approved 2026-10-28) on the 0.9 m',async()=>{

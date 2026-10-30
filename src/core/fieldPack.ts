@@ -18,7 +18,9 @@ export class FieldPackError extends Error{
  constructor(readonly code:'schema'|'bounds'|'record'|'order'|'identity'){super(`Field pack: ${code}`);this.name='FieldPackError';}
 }
 export const FIELD_PACK_SCHEMA='openvireo-field-pack-v1';
-export const FIELD_PACK_LIMITS=Object.freeze({pointings:500,bands:24,readsPerBand:400_000,variables:200,qso:2000,photographs:200});
+/** variables: a field across 0 h covers the whole RA ring of its Dec band (Front G G1b); the most CLEA_VStrs.dat records in any
+ * 0.75° ring is 549. */
+export const FIELD_PACK_LIMITS=Object.freeze({pointings:500,bands:24,readsPerBand:400_000,variables:1000,qso:2000,photographs:200});
 const GSC_BANDS=/^([NS])(0000|0730|1500|2230|3000|3730|4500|5230|6000|6730|7500|8230)$/;
 export type FieldPackRect=Readonly<{minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number}>;
 export type FieldPackBand=Readonly<{name:string;recordCount:number;sha256:string|null;reads:ReadonlyMap<number,string>}>;
@@ -38,7 +40,8 @@ function rect(v:unknown):FieldPackRect{
  const r={minimumRa:v.minimumRa,maximumRa:v.maximumRa,minimumDec:v.minimumDec,maximumDec:v.maximumDec};
  if(!Object.values(r).every(x=>typeof x==='number'&&Number.isFinite(x)))return fail('bounds');
  const q=r as {minimumRa:number;maximumRa:number;minimumDec:number;maximumDec:number};
- if(q.minimumRa<0||q.maximumRa>24||q.minimumRa>=q.maximumRa||q.minimumDec<-90||q.maximumDec>90||q.minimumDec>=q.maximumDec)return fail('bounds');
+ // Dec may pass ±90 by up to the field half-height: the native area is not clamped at the poles (Front G, §G-RE2).
+ if(q.minimumRa<0||q.maximumRa>24||q.minimumRa>=q.maximumRa||q.minimumDec<-91||q.maximumDec>91||q.minimumDec>=q.maximumDec)return fail('bounds');
  return Object.freeze(q);
 }
 function position(v:unknown,last:number):FieldPackPosition{
@@ -108,7 +111,8 @@ export function fieldPackFromSnapshot(id:string,snapshot:Snapshot):FieldPack{
   bands:snapshot.bands.map(b=>({name:b.name,recordCount:b.recordCount,sha256:b.sha256??file(`${b.name}.DAT`),reads:b.reads.map(r=>[r.index,r.rawHex])})),variables,qso,photographs});
 }
 /** A listed pointing whose area lies inside the pack coverage (the pack's certificates speak only for its coverage). */
+/** A wrapped area (min > max: [min, 24] and [0, max], Front G G1b) is covered only by a coverage spanning RA 0..24 (review 1 L4). */
 export function packCovers(pack:FieldPack,pointing:Readonly<{ra:number;dec:number}>,area:FieldPackRect):boolean{
- const c=pack.coverage;
- return pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec)&&area.minimumRa>=c.minimumRa&&area.maximumRa<=c.maximumRa&&area.minimumDec>=c.minimumDec&&area.maximumDec<=c.maximumDec;
+ const c=pack.coverage,ra=area.minimumRa>area.maximumRa?c.minimumRa<=0&&c.maximumRa>=24:area.minimumRa>=c.minimumRa&&area.maximumRa<=c.maximumRa;
+ return pack.pointings.some(p=>p.ra===pointing.ra&&p.dec===pointing.dec)&&ra&&area.minimumDec>=c.minimumDec&&area.maximumDec<=c.maximumDec;
 }

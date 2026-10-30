@@ -25,6 +25,8 @@ export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExp
 export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
 export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:CameraFieldInputs['status']}>;
 export type CameraControlProps=Readonly<{
+ /** Front G merge: the Object X lab's hidden target (or null); the field-object pass is masked near it and near every ObjectX.HTL position. */
+ objectXHidden?:Readonly<{ra:number;dec:number}>|null;
  /** Front R3: the Infrared Camera option (IRBox, env+0x2e87, compiled on). Off: the IR camera is not offered (TObsrvtry FormActivate
   * 0x537a13 drops it from the instrument slider), and a selected IR camera returns to the CCD once no exposure is running. */
  infraredCamera?:boolean;
@@ -57,7 +59,7 @@ function cameraQuery(camera:CameraExposureKind,telescope:OpticalIndex,filter:num
 }
 const randomSeed=()=>crypto.getRandomValues(new Uint32Array(1))[0];
 
-function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
+function CameraControl({objectXHidden=null,infraredCamera=true,active,busy,telescopeIndex,pointing,access,currentJd,extraSources,onImage,seedSource=randomSeed}:CameraControlProps){
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
@@ -108,7 +110,8 @@ function CameraControl({infraredCamera=true,active,busy,telescopeIndex,pointing,
   try{
    const extras=cameraExtras(extraSources,a.jd,a.seconds,a.camera);
    // Front R2: the field-object pass 0x5228dc reads the CCD form's filter byte, also for IR (set at CCD Start, review 1 L5).
-   const field=await cameraFieldInputs(a.pointing,a.jd,ccdFilterByte());
+   // Front G merge: any pointing now builds a field (tiles if no pack is listed); Stop or release aborts that work.
+   const field=await cameraFieldInputs(a.pointing,a.jd,ccdFilterByte(),{signal:a.controller.signal,hidden:objectXHidden});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras,fieldObjects:field.objects});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;

@@ -47,14 +47,30 @@ export function nativeNonwrappedRegionOverlap(area:NativeRegion,region:NativeReg
   if(!validRegion(region))throw new NativeFieldError('region');
   return area.minimumRa<region.maximumRa&&area.maximumRa>region.minimumRa&&area.minimumDec<region.maximumDec&&area.maximumDec>region.minimumDec;
 }
+/** 0x5978c0 with both branches (Front G, analysis/front-g-gsc/RE-wrap-polar-consumers.md §G-RE1). The area is the telescope
+ * load's folded one (0x53be70): RA bounds in 0..24, min > max for a field across 0 h, and Dec bounds NOT clamped to ±90.
+ * - max > min: the nonwrapped branch above (strict).
+ * - max ≤ min (`jbe` 0x5978ea): a region starting below 12 h (Single 12.0 at 0x597960) overlaps when area.max > region.min;
+ *   any other when area.min < region.max.
+ * - Dec in both: area.minDec < region.maxDec and area.maxDec > region.minDec (strict). */
+export function nativeRegionOverlap(area:NativeRegion,region:NativeRegion):boolean {
+  if(!area||![area.minimumRa,area.maximumRa,area.minimumDec,area.maximumDec].every(Number.isFinite)||area.minimumRa<0||area.minimumRa>24||area.maximumRa<0||area.maximumRa>24||area.minimumDec>=area.maximumDec)throw new NativeFieldError('area');
+  if(!validRegion(region))throw new NativeFieldError('region');
+  const dec=area.minimumDec<region.maximumDec&&area.maximumDec>region.minimumDec;
+  if(area.maximumRa>area.minimumRa)return area.minimumRa<region.maximumRa&&area.maximumRa>region.minimumRa&&dec;
+  return (region.minimumRa<12?area.maximumRa>region.minimumRa:area.minimumRa<region.maximumRa)&&dec;
+}
 /** 0x5977e0 loops region IDs1..9537, preserving increasing order. File row0
- * is retained as the original dummy record; it is NOT region1. */
+ * is retained as the original dummy record; it is NOT region1. A nonwrapped area inside ±90 gives exactly the earlier
+ * nonwrapped result (the same strict tests); wrapped and pole-crossing areas take the native wrap branch. */
 export function nativeRegionIds(area:NativeRegion):readonly number[] {
   const selected:number[]=[];
   for(let id=1;id<=9537;id++){
     const r=regions.rows[id];if(!r||r.length!==5)throw new NativeFieldError('evidence');
-    if(nativeNonwrappedRegionOverlap(area,{minimumRa:r[0],maximumRa:r[1],minimumDec:r[2],maximumDec:r[3]}))selected.push(id);
+    if(nativeRegionOverlap(area,{minimumRa:r[0],maximumRa:r[1],minimumDec:r[2],maximumDec:r[3]}))selected.push(id);
   }
+  // 0x5977e0 keeps the first 100 and shows "Field Contains Too Many Regions!" for each further match; a ±0.375° field never
+  // exceeds 12 (G-RE2 measurement), so the web keeps this typed instead of modelling the message.
   if(selected.length>100)throw new NativeFieldError('region');
   return Object.freeze(selected);
 }

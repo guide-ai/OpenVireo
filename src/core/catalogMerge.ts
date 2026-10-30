@@ -32,12 +32,16 @@ function awayFromBoundary(value:number,boundary:number):void {
   // particular do not classify projected equality to a rounded Extended value.
   if(Math.abs(value-boundary)<=8*Number.EPSILON*Math.max(1,Math.abs(value),Math.abs(boundary)))throw new CatalogMergeError('precision-required');
 }
+/** The largest RA any merged catalogue record carries: CLEA_GLX.DAT has 53 galaxies at 24.0004–24.0424 h (stored as read; the
+ * last record's Double RA, pinned by a test). VIREO's wrapped galaxy predicate admits them near 0 h (Front G G1b review 1 M1),
+ * and 0x59a49c's |ΔRA| > 12 → 24 − |ΔRA| step handles them (the result may be negative; it is squared). */
+export const CATALOG_MAXIMUM_RA=24.042431261844836;
 /** 0x59a49c: wrapped |RA difference| hours ×15×cos(QUERY declination),
  * then sqrt(x*x + deltaDec*deltaDec), degrees. No great-circle substitution.
  * Inputs are explicit stored Double coordinates. Number/Math is a declared
  * adapter policy, not an original x87 transcendental or session oracle. */
 export function catalogMergeDistance(query:Readonly<{ra:number;dec:number}>,source:Readonly<{ra:number;dec:number}>):number {
-  for(const p of [query,source])if(!p||!Number.isFinite(p.ra)||p.ra<0||p.ra>24||!Number.isFinite(p.dec)||Math.abs(p.dec)>90)throw new CatalogMergeError('record');
+  for(const p of [query,source])if(!p||!Number.isFinite(p.ra)||p.ra<0||p.ra>CATALOG_MAXIMUM_RA||!Number.isFinite(p.dec)||Math.abs(p.dec)>90)throw new CatalogMergeError('record');
   let ra=Math.abs(query.ra-source.ra);if(ra>12)ra=24-ra;
   const x=(ra*15)*Math.cos(query.dec*DEGREES_TO_RADIANS),y=query.dec-source.dec;
   const squared=x*x+y*y,result=Math.sqrt(squared);

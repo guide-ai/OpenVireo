@@ -40,8 +40,8 @@ Naked Eye Star is the one student form: a right-click on the sky seen through th
 | # | Web | Original | Tag |
 |---|---|---|---|
 | 1 | Slew menu › Optical Simulation Options › **Edit Mode (instructor, VIREO)** › OK. Off by default, not saved, no login. | EditModeBox, OKBtnClick `0x5a60e3`, persisted in VEO_OPTS.INI | W |
-| 2 | Telescope view, Edit Mode, certified field: click (or arrow keys + Enter) → lime marker + **Catalog Object** | CRT1MouseUp `0x53cff8`, gate `0x53d4f7`, ShowModal | D (keyboard W) |
-| 3 | **File › Field Information › Star Data List** (certified fields) | StarList1Click `0x5404e0` → `0x534e18` | D |
+| 2 | Telescope view, Edit Mode, any field (Front G): click (or arrow keys + Enter) → lime marker + **Catalog Object** | CRT1MouseUp `0x53cff8`, gate `0x53d4f7`, ShowModal | D (keyboard W) |
+| 3 | **File › Field Information › Star Data List** (any field, Front G) | StarList1Click `0x5404e0` → `0x534e18` | D |
 | 4 | **File › Field Information › Variable Stars › All GCVS / VIREO-modeled** (any field) | `0x53dafc` / `0x53db54` → TVarFldLstForm1 | D |
 | 5 | List › Search / Print… / Save Text › As Displayed / Comma Delimit / Close | same menus | D; print and save W |
 | 6 | Variable list Selection › Get Selection Data → the **Variable stars** page on that record | `0x530130` → TVStarListForm1 | D (page W) |
@@ -95,11 +95,38 @@ Options used:
 - photograph renames (GLIMAGES.LST) without bitmaps;
 - the recovered variable dispatch, as in the exercises.
 
-Elsewhere, Catalog Object and the Star Data List are `field-not-certified`; there is no partial dialog. In the Finder view,
+**Any other pointing (Front G, G2, 2026-10-29).** VIREO builds this field at every pointing: the telescope load 0x53be70 has no
+pointing gate, Catalog Object is gated only by Edit Mode (0x53d4f7), and the Star Data List not at all (0x5404e0)
+(`analysis/front-g-gsc/RE-wrap-polar-consumers.md` §G-RE3). Wherever no bundled pack lists the pointing, the field is built from
+the published compact GSC tiles (`io/assembledFieldPack.ts`, docs/COMPACT-GSC-TILES.md), including fields across RA 0 h, with the
+same options and the same Object X masks. The bundled packs remain the fast path at their own pointings, with identical
+results (proved in `src/io/assembledFieldPack.test.ts`). The Edit Mode caption names the source ("field read from the compact
+Guide Star Catalog").
+
+Typed reasons where no field can be built:
+- `field-polar`: a folded RA bound outside 0–24 h (|Dec| ≳ 89.94°). This is a web limit [W]. VIREO is still deterministic up
+  to about 89.994°; only beyond that, and at exactly ±90°, does it depend on the x87 cosine and its Int64 band key.
+- `field-tiles`: a tile could not be fetched or did not match its recorded size and SHA-256. The detail is the code; nothing is
+  changed.
+- `field-unreadable`: the native read cannot be reproduced (for example `band-end`, where VIREO reads past the end of a band).
+- `population`: as before, when the field engine's own stages gate the field.
+
+There is no partial dialog. In the Finder view,
 Catalog Object is `finder-catalog-unavailable`, because the FSC finder catalogue is not bundled. The Variable Stars list works anywhere, because CLEA_VStrs.dat is whole-sky.
 
-At a certified pointing in Edit Mode, the Telescope view shows the engine's own field in an overlay
-(`EditModeFieldLayer`), so the click and the lists use the field the view shows. Its drawing style is [W].
+In Edit Mode the Telescope view shows the engine's own field in an overlay (`EditModeFieldLayer`), so the click and the Star
+Data List use the field the view shows. Its drawing style is [W].
+- **The Star Data List lists the loaded field (G2 review 1 R1).** StarList1Click 0x5404e0 → 0x534e18 writes its lines from the
+  loaded field object (0x5b5b30). The overlay publishes the field it loaded (`observatory/loadedField.ts`), and the list uses
+  it, with its own area and centre, while the pointing stays inside its cached area. Without a loaded field (Edit Mode layer
+  not shown, or past the cached area) the list builds the field at the current pointing.
+- **Keeping the loaded field (G2 review 1 M2).** As VIREO does, the loaded field is kept while the view stays inside its cached
+  field: 0x53af28 keeps the 312-pixel crop origin strictly inside (0, 624) of the 936-pixel cache.
+  - The field is rebuilt only once the pointing has drifted about 0.25° from the loaded centre.
+  - Until then the overlay re-projects the loaded field at the current pointing, so drifting with tracking off neither flickers
+    nor closes an open Catalog Object (`core/fieldCache.ts`; the offset uses the web projection [W]).
+- **Star Data List requests.** Each request has its own AbortController. A newer request, Close, Edit Mode off or unmount
+  aborts it, and a late result is never shown.
 
 ## Catalog Object (FO-CO)
 
@@ -168,7 +195,7 @@ The original form is TFieldRptForm1 < TClstrRptForm1 < TObjctListForm1 (RECOVERY
 ## Typed reasons
 
 All appear in the UI with a one-line explanation (`src/observatory/FieldInfoMessages.ts`):
-- field-not-certified
+- field-polar, field-tiles:<code>, field-unreadable:<code> (Front G; they replace field-not-certified)
 - finder-catalog-unavailable
 - object-x-hidden
 - asteroids-not-modelled

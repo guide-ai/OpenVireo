@@ -15,6 +15,7 @@ import {catalogRecords} from '../core/catalogObject';
 import {FIELD_STAR_LITERALS as FL,FIELD_STAR_SAVE_NAMES,fieldStarCsvLines,fieldStarReport,type FieldStarReport} from '../core/fieldStarReport';
 import {variableStarSaveText} from '../core/variableStars';
 import {findCertifiedPopulation} from '../io/fieldInfoPacks';
+import {loadedFieldAt} from './loadedField';
 import type {FieldInfoRequestKind} from './ObservatoryFileMenu';
 import './field-info.css';
 
@@ -54,23 +55,34 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
  const [variable,setVariable]=useState<VariableWindow|null>(null),[star,setStar]=useState<StarWindow|null>(null),[box,setBox]=useState<FieldInfoBox|null>(null),[starBox,setStarBox]=useState<FieldInfoBox|null>(null);
  const [confirm,setConfirm]=useState<VariableStarRecord|null>(null);
  const handled=useRef(0);
- useEffect(()=>{if(!info.editMode){setVariable(null);setStar(null);setBox(null);setConfirm(null);}},[info.editMode]);
+ // G2 review 1 M1: one Star Data List request at a time. A newer request, Close, Edit Mode off or unmount aborts the pending one
+ // (the tiled build stops at its next checkpoint) and no stale result is ever shown.
+ const starRequest=useRef<AbortController|null>(null);
+ function cancelStars(){starRequest.current?.abort();starRequest.current=null;}
+ function closeStars(){cancelStars();setStar(null);}
+ // Unmount (also React's development double mount) aborts the pending request and forgets its token, so a remount re-issues it.
+ useEffect(()=>()=>{cancelStars();handled.current=0;},[]);
+ useEffect(()=>{if(!info.editMode){cancelStars();setVariable(null);setStar(null);setBox(null);setConfirm(null);}},[info.editMode]);
  useEffect(()=>{
   if(!request||request.token===handled.current||!info.editMode)return;handled.current=request.token;
   if(request.kind==='stars')openStars();else openVariables(request.kind);
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[request,info.editMode]);
  if(!info.editMode)return null;
- /** StarList1Click 0x5404e0 → 0x534e18: the instrument (NewGSC) field at the current pointing, in either view. */
+ /** StarList1Click 0x5404e0 → 0x534e18: the loaded instrument (NewGSC) field, in either view: the field the Edit Mode view shows
+  * while the pointing stays inside its cached area, otherwise the field built at the current pointing. */
  function openStars(){
-  setStarBox(null);const at=pointing,variableTime=frozenObservatoryTime(info.currentJd);
+  const loaded=loadedFieldAt(pointing);
+  setStarBox(null);const at=loaded?.anchor??pointing,variableTime=frozenObservatoryTime(info.currentJd);
+  cancelStars();const controller=new AbortController(),{signal}=controller;starRequest.current=controller;
+  const show=(w:StarWindow)=>{if(!signal.aborted&&starRequest.current===controller)setStar(w);};
   setStar({loading:true});
   objectXMasked(info.hidden??null,at).then(async masked=>{
-   if(masked){setStar({reason:'object-x-hidden'});return;}
-   const r=await findCertifiedPopulation(at,variableTime);
-   if(r.status!=='ready'){setStar(r.reason==='population'?{reason:'population',detail:r.detail}:{reason:r.reason});return;}
-   setStar({report:fieldStarReport(freshFieldArea(at),at,catalogRecords(r.population).stars)});
-  }).catch(()=>setStar({reason:'load-error'}));
+   if(masked){show({reason:'object-x-hidden'});return;}
+   const r=loaded?{status:'ready' as const,population:loaded.population}:await findCertifiedPopulation(at,variableTime,signal);
+   if(r.status!=='ready'){show('detail' in r?{reason:r.reason,detail:r.detail}:{reason:r.reason});return;}
+   show({report:fieldStarReport(freshFieldArea(at),at,catalogRecords(r.population).stars)});
+  }).catch(()=>{if(!signal.aborted)show({reason:'load-error'});});
  }
  function openVariables(mode:VariableFieldMode){
   setBox(null);const at=pointing,view=info.view;
@@ -121,9 +133,9 @@ export default function FieldInformationMenu({info,pointing,enabled,hotList,onSl
     ]}
     saveName={FIELD_STAR_SAVE_NAMES.text}
     csv={{disabled:false,bytes:()=>{const l=fieldStarCsvLines(star.report.lines);return l?{bytes:variableStarSaveText(l),name:FIELD_STAR_SAVE_NAMES.csv}:{caption:FL.csvTitle,text:fieldInfoReasonText('csv-row-short')};}}}
-    onClose={()=>setStar(null)} box={starBox} onBox={setStarBox}/>
+    onClose={closeStars} box={starBox} onBox={setStarBox}/>
    :<section className="card fi-window" data-testid="fi-slist-status"><h2 className="ob-native">{FL.caption}</h2><p role="status" className={'loading' in star?'fi-note':'fi-unavailable'} data-reason={'reason' in star?star.reason:'loading'}>{'reason' in star?fieldInfoReasonText(star.reason,star.detail):fieldInfoReasonText('loading')}</p>
-    <button type="button" className="secondary-button" onClick={()=>setStar(null)}>{M.close}</button></section>)}
+    <button type="button" className="secondary-button" onClick={closeStars}>{M.close}</button></section>)}
   {variable&&('list' in variable?<FieldInfoListWindow testId="fi-vlist" caption={variable.list.caption} lines={variable.list.lines} first={variable.list.first} last={variable.list.last}
     notice={<>{reason&&<p className="fi-unavailable" role="status" data-testid="fi-vlist-reason" data-reason={reason}>{fieldInfoReasonText(reason as FieldInfoReason)}</p>}<p className="fi-note">{M.modelessNote} {M.printAdaptation} {M.saveAdaptation}</p></>}
     selectionItems={[
