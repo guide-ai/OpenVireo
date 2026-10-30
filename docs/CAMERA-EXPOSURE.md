@@ -14,14 +14,28 @@ Evidence: [NATIVE-CAMERA-FRONT-C-C0-01](CAMERA-EXPOSURE-PROVENANCE.json), static
 | Select copies the region record, raises the magnitude limit to 21.5, picks NOMAD or USNO-B1 (I → mode 1) | 0x5222d4 | `vizierRouteForCamera`, `compiledCameraQueryReference` |
 | Moving (kind-2) records: projected with two draws and **no bounds test**, filter offset NF/R −0.54, B +0.65, V 0, I −0.88, appended first | 0x522718 | `CameraExtraSource` kind `pair` |
 | Catalog rows: two draws each (RA then Dec), inclusive bounds, kind 0, Single magnitude | 0x522454, 0x522698 | `composeCameraExposure` |
-| Field objects (kind 0) after the catalog | 0x5228dc, 0x51ef38, 0x522a18 | **not ported** (see below) |
+| Field objects (kind 0) after the catalog | 0x5228dc, 0x51ef38, 0x522a18 | ported at certified fields (Front R2, below) |
 | Background, one draw per pixel, row-major | 0x521635 | existing `cameraBackgroundStage` |
 | Source loop: NF −0.25; kind 2 takes the next record as its endpoint (extended), others are points | 0x521a6f..0x521b35 | existing point/extended stages |
 | Well, gain, A/D | 0x521b3b.. | existing `finalizeCameraPlane` |
 
 The seeing jitter is on for the CCD (compiled record byte +0x5a = 1 at 0x5a2bd8). The USNO-B1 mode labels are B2/R2/I2 (string table 0x59c5e8). `xena.harvard.edu/…/tmpsc.html` is only the **Help ▸ 2MASS Catalog** link (options +0x20cd, opened by `N2MASSCatalog1Click` 0x58ec84); it is not a data source.
 
-Field objects are not ported. 0x522a18 resets the field list and walks it to the tail without keeping a "best" record, then returns `ebx`: the tail record when the list is non-empty, otherwise the caller's own global record. The result is never null, so 0x5228dc always takes the overwrite branch at 0x522998 (the colour-corrected magnitude from 0x51ef38 replaces that record's magnitude) and its append branch 0x5229a4..0x5229f9 is unreachable. Natively a field object never becomes a new source. The web therefore offers only moving pairs to front X; it neither appends field objects nor reproduces the magnitude overwrite.
+**Field objects (Front R2, 2026-10-29).** Recovery: research `analysis/front-r2/A-camera-field-overlay.md` §1.
+- **VIREO** [D]:
+  - The pass 0x5228dc runs only when the observatory field's variable list is not empty.
+  - It walks the field star list in order. Every star the TRUE variable dispatch kept (type 0 with a GCVS pointer) costs two
+    draws, after the catalog rows and before the background.
+  - For a star on the detector, 0x522a18 returns the tail of the camera list. That record's magnitude becomes
+    Single(V − colour term 0x51ef38), using the CCD form's filter byte even for IR, so the last such star wins. The record is
+    then drawn at its own position, with NF −0.25 for the CCD.
+  - With an empty camera list VIREO writes the observatory field star itself.
+- **This site:**
+  - It runs the pass on the certified field population at the camera pointing, built at the exposure JD
+    (`src/camera/cameraFieldInputs.ts`, `src/core/cameraFieldObjects.ts`, composer step 2b).
+  - At other pointings it does not run, and the exposure details say so [W].
+  - A variable whose brightness is not known blocks the pass, and an empty list writes nothing [W].
+  - The CCD filter byte is the last CCD exposure's filter, 0 (NF) before any [I].
 
 Not recovered, and kept explicit: the writer of the region record `[0x5b5b30]` (the web uses whole-sky bounds, so selection keeps only the magnitude limit); the global random-stream prefix at Go; the overlay bitmap; the native image-to-screen mapping (the web display stretches the 1st–99.9th percentile; pixel values are unchanged).
 

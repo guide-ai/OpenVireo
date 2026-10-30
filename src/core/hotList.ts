@@ -79,6 +79,9 @@ function selectedRow(state:HtlEditor,index:number){if(!Number.isInteger(index)||
 export function selectHtlRow(state:HtlEditor,index:number):HtlEditor{selectedRow(state,index);return Object.freeze({...state,selected:index});}
 function commit(state:HtlEditor,list:HtlList,selected:number|null):HtlEditor{return Object.freeze({list:Object.freeze(list),selected,previous:Object.freeze({list:state.list,selected:state.selected})});}
 export function editHtlRow(state:HtlEditor,index:number,fields:HtlFields):HtlEditor{const source=selectedRow(state,index),next=updateHtlRecord(source,fields,index+1);return commit(state,state.list.map((r,i)=>i===index?next:r),index);}
+/** Front R2: the current index of a record kept by identity (−1 when it is gone), for an Edit opened before another window
+ * inserted or removed rows; editHtlRow then refuses −1 with the index error. */
+export function htlRowIndexOf(state:HtlEditor,record:HtlRecord):number{return state.list.indexOf(record);}
 export function addHtlRow(state:HtlEditor,fields:HtlFields):HtlEditor{if(state.list.length>=HTL_MAX_RECORDS)return fail('limit');return commit(state,[...state.list,updateHtlRecord(null,fields,state.list.length+1)],state.list.length);}
 export function removeHtlRow(state:HtlEditor,index:number):HtlEditor{selectedRow(state,index);const list=state.list.filter((_,i)=>i!==index);return commit(state,list,list.length?Math.min(index,list.length-1):null);}
 export function undoHtl(state:HtlEditor):HtlEditor{return state.previous?Object.freeze({...state.previous,previous:null}):state;}

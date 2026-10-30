@@ -51,3 +51,24 @@ test('Add Current proposes the original catalog ID, never a web key (review F6)'
  await card(page).getByTestId('ob-add-current').click();await expect(page.getByTestId('ob-entry-id')).toHaveValue('36773');
  await page.getByTestId('ob-entry-cancel').click();
 });
+
+test('Front R2 (R1 review L5): an Edit left open while Add Current inserts a row above it still applies to its own row',async({page})=>{
+ await open(page);await page.getByText('Original hot lists',{exact:true}).click();
+ await page.getByRole('button',{name:'New HTL list',exact:true}).click();
+ for(const [id,ra] of [['A','1'],['C','9']] as const){
+  await page.getByRole('button',{name:'Add HTL target',exact:true}).click();
+  await page.locator('#htl-id').fill(id);await page.locator('#htl-ra').fill(ra);await page.locator('#htl-dec').fill('0');
+  await page.getByRole('button',{name:'Apply HTL edit',exact:true}).click();
+ }
+ await expect(page.getByText('HTL targets · 2')).toBeVisible();
+ await page.locator('#htl-rows').selectOption({index:1});// C
+ await page.getByRole('button',{name:'Edit HTL selection',exact:true}).click();await page.locator('#htl-id').fill('C-edited');
+ // Another window adds X at RA 5: it goes between A and C (RA order), so C moves from row 2 to row 3.
+ await coords(page,'5','0');await card(page).getByTestId('ob-add-current').click();
+ await page.getByTestId('ob-entry-id').fill('X');await page.getByTestId('ob-entry-ok').click();
+ await page.getByTestId('ob-info-box').getByRole('button',{name:'OK'}).click();
+ await page.getByRole('button',{name:'Apply HTL edit',exact:true}).click();
+ await expect(page.getByText('HTL targets · 3')).toBeVisible();
+ const labels=await page.locator('#htl-rows option').allTextContents();
+ expect(labels.map(l=>['A','X','C-edited','C'].find(n=>new RegExp(`(^|\\s)${n}(\\s|$)`).test(l)))).toEqual(['A','X','C-edited']);
+});

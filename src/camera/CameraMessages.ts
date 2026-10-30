@@ -66,6 +66,13 @@ export const CAMERA_MESSAGES=Object.freeze({
  detailJd:'Julian date',
  detailDraws:'Random draws',
  detailSkipped:'Moving objects not drawn',
+ detailFieldObjects:'Field variable stars',
+ fieldObjects:{
+  run:(eligible:number,inBounds:number,tail:string|null)=>`${eligible} in the field, ${inBounds} on the detector. As in VIREO, the last one on the detector gives its brightness to the last star drawn from the catalog list${tail==='catalog'?'':tail==='moving-end'?' (here a moving object’s end point, so nothing changes)':tail==='none'?' (here the list is empty, so nothing changes on this site)':''}.`,
+  none:'No variable star in this field.',
+  'not-certified':'Not checked: this site has no certified field population at this pointing, so VIREO’s variable-star pass cannot run here.',
+  values:'Not run: the brightness of a variable star at this time is not known here.',
+ },
  skippedReason:{'moving-pair-off-detector':'One moving object lies far outside the field.','moving-pair-geometry':'One moving object has no measurable motion to draw.','moving-pair-budget':'One moving object trail is too large to draw.'} as Readonly<Record<string,string>>,
  sourceStaticLabel:(id:string,date:string,host:string)=>`Bundled extract ${id} (recorded ${date} from ${host})`,
  sourceLiveLabel:(host:string)=>`Live VizieR query answered by ${host}`,

@@ -32,7 +32,7 @@ import type {VizierSelection} from './vizierNomad';
 
 /** Agreed with front X (asteroids): one moving object as a start/end pair of kind-2 records (0x522718).
  * storedMag is the record magnitude before the recovered filter offset, which the composer applies.
- * [W] Fixed-position field objects (native kind 0 via 0x5228dc) are not offered: see CAMERA_EXPOSURE_UNRECOVERED. */
+ * Fixed-position field objects (0x5228dc) only overwrite a magnitude: see composeCameraExposure step 2b (Front R2). */
 export type CameraExtraSource=Readonly<{raHours:number;decDeg:number;storedMag:number;kind:'pair';end:Readonly<{raHours:number;decDeg:number}>}>;
 export type CameraExposureKind='ccd'|'ir';
 export type CameraExposureRecipe=Readonly<{
@@ -51,9 +51,14 @@ export type CameraFieldRecord=Readonly<{
  extraIndex:number|null;
  identifier:string|null;raHours:number;decDegrees:number;magnitude:number;pixelX:number;pixelY:number;
 }>;
+/** Front R2: what the field-object pass 0x5228dc did (A-camera-field-overlay.md §1). `tail` is the record it wrote: the last
+ * catalog row on the detector, a moving-pair end (no visible effect), or none (VIREO then writes the observatory field star). */
+export type CameraFieldObjectPass=Readonly<{eligible:number;inBounds:number;tail:'catalog'|'moving-end'|'none'|null;magnitude:number|null}>;
 export type CameraSkippedSource=Readonly<{extraIndex:number;reason:'moving-pair-off-detector'|'moving-pair-geometry'|'moving-pair-budget'}>;
 export type CameraExposure=Readonly<{
  recipe:CameraExposureRecipe;plane:CameraFinalStage;records:readonly CameraFieldRecord[];skipped:readonly CameraSkippedSource[];
+ /** null when no field objects were supplied (the pass is not run: no certified field at this pointing). */
+ fieldObjects:CameraFieldObjectPass|null;
  drawsConsumed:number;finalRandomState:number;
  catalog:Readonly<{rows:number;selected:number;onDetector:number}>;
  adaptations:readonly string[];unrecovered:readonly string[];
@@ -75,14 +80,14 @@ export const CAMERA_EXPOSURE_ADAPTATIONS=Object.freeze([
  'private-seeded-stream: each exposure draws from its own uint32-seeded copy of the recovered Random step',
  'fresh-field-list: the list is rebuilt per exposure (initialize -> select -> update), and moving records are projected in the same stream just before catalog rows',
  'whole-sky-selection: the region bounds at [0x5b5b30] are not recovered; selection keeps the magnitude limit',
- 'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered',
+ 'no-ccd-overlay: the optional bitmap overlay branch (form+0x412) is not offered; its source, gate, sizes and stretch mode are recovered (Front R2), but its input, the galaxy-only field raster, is internal to the field engine',
+ 'field-objects-certified-field: the field-object pass 0x5228dc runs on the certified field population at the camera pointing, built at the exposure JD (VIREO uses the field of the last field load); elsewhere it is not run, and an empty camera list does not write the observatory field star',
  'ir-like-ccd: the IR window\'s exposure-time limit is not recovered; IR uses the CCD web bound (CAMERA_MAX_SECONDS). (No overlay is recovered: IR preparation 0x51e43c has no overlay branch.)',
  'moving-pair-off-detector: a pair whose projected pixel position exceeds 1e6 is skipped (its four draws are still consumed); the native FISTP overflow path is not recovered',
  'moving-pair-streak-limit: streak visits are bounded by the clipped 1024^2 rectangle plus a cross pass (CAMERA_STREAK_VISIT_LIMIT); a pair that still cannot be planned (budget or coincident endpoints) is skipped alone, with no draws for its streak',
  'number-arithmetic: Number/Math with Single stores replaces x87 Extended',
 ]);
 export const CAMERA_EXPOSURE_UNRECOVERED=Object.freeze([
- 'field-objects-0x5228dc: not ported. 0x522a18 always returns a record (the last one iterated, or the caller record when the field list is empty), so 0x5228dc only overwrites a magnitude with the colour-corrected value (0x51ef38) and its append branch 0x5229a4 is unreachable',
  'shared-random-prefix: the native global stream state at Go',
 ]);
 /** Visit budget of one exposure is bounded by CAMERA_RANDOM_DRAW_LIMIT (cameraRandom.ts). */
@@ -120,7 +125,8 @@ function applyPlan(plane:Float32Array,plan:CameraPointPlan|CameraExtendedPlan,st
  for(let i=0;i<indices.length;i++){const at=indices[i];plane[at]=plane[at]+cameraScalarJitter(means[i],stream.next());}
 }
 
-export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection:VizierSelection,extrasInput:readonly CameraExtraSource[]=[]):CameraExposure {
+export type CameraFieldObjectInput=Readonly<{raHours:number;decDegrees:number;magnitude:number}>;
+export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection:VizierSelection,extrasInput:readonly CameraExtraSource[]=[],fieldObjectsInput:readonly CameraFieldObjectInput[]|null=null):CameraExposure {
  const recipe=checkRecipe(recipeInput),extras=checkExtras(extrasInput);
  if(!selection||!Array.isArray(selection.selectedEntries))throw new CameraExposureError('catalog');
  const stream=new CameraRandomCursor(recipe.seed);
@@ -144,6 +150,26 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   if(!p.inside)continue;onDetector++;
   records.push(Object.freeze({origin:'catalog' as const,kind:0 as const,extraIndex:null,identifier:row.identifier,raHours:row.raHours,decDegrees:row.decDegrees,magnitude:row.selectedMagnitude,pixelX:p.pixelX!,pixelY:p.pixelY!}));
  }
+ // 2b. Field-object pass 0x5228dc (Front R2), after every catalog row and before the background: each eligible variable costs
+ // two draws (0x522560), on or off the detector; for one on the detector, 0x522a18 returns the TAIL of the camera list and
+ // its magnitude becomes the variable's (the last eligible on-detector variable wins). The tail is then drawn at its own
+ // position. With no record VIREO writes the observatory field star itself, which this page does not keep [W].
+ let fieldObjects:CameraFieldObjectPass|null=null;
+ if(fieldObjectsInput){
+  if(!Array.isArray(fieldObjectsInput)||fieldObjectsInput.length>10_000)throw new CameraExposureError('extra','field-objects');
+  let inBounds=0,magnitude:number|null=null;
+  for(const f of fieldObjectsInput){
+   if(!f||!finite(f.raHours,24)||!finite(f.decDegrees,90)||!finite(f.magnitude,1000))throw new CameraExposureError('extra','field-object');
+   const p=projectCameraSource(context,{raHours:f.raHours,decDegrees:f.decDegrees},[stream.next(),stream.next()]);
+   if(!p.inside)continue;inBounds++;magnitude=Math.fround(f.magnitude);
+  }
+  const last=records.at(-1);let tail:CameraFieldObjectPass['tail']=null;
+  if(magnitude!==null){
+   tail=!last?'none':last.origin==='catalog'?'catalog':'moving-end';
+   if(last)records[records.length-1]=Object.freeze({...last,magnitude});
+  }
+  fieldObjects=Object.freeze({eligible:fieldObjectsInput.length,inBounds,tail,magnitude});
+ }
  // 3. Background.
  const background=compiledCameraBackgroundParameters(kind,recipe.seconds,recipe.gain);
  const initial=cameraBackgroundStage(background,stream.take(background.width*background.height));
@@ -165,7 +191,7 @@ export function composeCameraExposure(recipeInput:CameraExposureRecipe,selection
   }else applyPlan(plane,cameraPointPlan(cameraPointParametersFromCalibration(calibration,r.pixelX,r.pixelY)),stream);
  }
  const final=finalizeCameraPlane({phase:'point-sources-before-clipping',width:initial.width,height:initial.height,localDrawsConsumed:0,pixels:Array.from(plane),histogram:initial.histogram},compiledCameraFinalParameters(kind,recipe.gain));
- return Object.freeze({recipe,plane:final,records:Object.freeze(records),skipped:Object.freeze(skipped),drawsConsumed:stream.drawsConsumed,finalRandomState:stream.finalState,
+ return Object.freeze({recipe,plane:final,records:Object.freeze(records),skipped:Object.freeze(skipped),fieldObjects,drawsConsumed:stream.drawsConsumed,finalRandomState:stream.finalState,
   catalog:Object.freeze({rows:selection.catalog?.entries.length??0,selected:selection.selectedEntries.length,onDetector}),
   adaptations:CAMERA_EXPOSURE_ADAPTATIONS,unrecovered:CAMERA_EXPOSURE_UNRECOVERED});
 }

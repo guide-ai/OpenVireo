@@ -18,11 +18,12 @@ import type {Pointing} from './core/sky';
 import CleaHelp from './clusters/CleaHelp';
 import {HELP_FILES} from './help/helpFiles';
 import CameraFieldSize from './polish/CameraFieldSize';// Front P
+import {cameraFieldInputs} from './camera/cameraFieldInputs';// Front R2
 
 export type CameraExtraSourceProvider=(jd:number,seconds:number,camera:CameraExposureKind)=>readonly CameraExtraSource[];
 /** The one place the camera asks its caller for moving pairs. */
 export function cameraExtras(provider:CameraExtraSourceProvider|undefined,jd:number,seconds:number,camera:CameraExposureKind):readonly CameraExtraSource[]{return provider?.(jd,seconds,camera)??[];}
-export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string}>;
+export type CameraImage=Readonly<{exposure:CameraExposure;source:CameraCatalogSource;jd:number;catalogName:string;fieldObjectsStatus?:'run'|'none'|'not-certified'|'values'}>;
 export type CameraControlProps=Readonly<{
  active:boolean;busy:boolean;telescopeIndex:OpticalIndex;pointing:Pointing;access:AccessReason;
  /** Julian date of the observatory clock at the moment Start is pressed. */
@@ -57,7 +58,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
  const [camera,setCamera]=useState<CameraExposureKind>('ccd'),[filter,setFilter]=useState(0),[minutes,setMinutes]=useState('0'),[seconds,setSeconds]=useState('10'),[gain,setGain]=useState(2);
  const [mode,setMode]=useState<CameraCatalogMode>('static'),[usePalette,setUsePalette]=useState(false);
  const [gate,setGate]=useState<CameraRequestGate>(createCameraRequestGate),[message,setMessage]=useState<string>(M.statusIdle),[,setWaitShown]=useState(false);
- const [image,setImage]=useState<CameraImage|null>(null);
+ const [image,setImage]=useState<CameraImage|null>(null),ccdFilter=useRef(0);// [I] the CCD form's filter byte, 0 (NF) until a CCD exposure
  const gateRef=useRef(gate),attempt=useRef<Attempt|null>(null),timers=useRef<{observe?:number;poll?:number}>({}),canvas=useRef<HTMLCanvasElement>(null);
  const mounted=useRef(true);useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;stopTimers();attempt.current?.controller.abort();stopWorker(attempt.current);};},[]);
  function stopTimers(){if(timers.current.observe)clearInterval(timers.current.observe);if(timers.current.poll)clearInterval(timers.current.poll);timers.current={};}
@@ -103,10 +104,14 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
   try{
    const extras=cameraExtras(extraSources,a.jd,a.seconds,a.camera);
-   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras});
+   // Front R2: the field-object pass 0x5228dc reads the CCD form's filter byte, also for IR.
+   if(a.camera==='ccd')ccdFilter.current=a.filter;
+   const field=await cameraFieldInputs(a.pointing,a.jd,ccdFilter.current);
+   if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
+   const reply=await call(a,{type:'compose',recipe:{camera:a.camera,opticalIndex:a.telescope,filterPosition:a.filter,seconds:a.seconds,gain:a.gain,centerRaHours:a.pointing.ra,centerDecDegrees:a.pointing.dec,seed:a.seed},extras,fieldObjects:field.objects});
    if(attempt.current!==a||gateRef.current.phase!=='preparing')return;
    if(reply?.type!=='composed'||!reply.ok){a.failure='preparation';dispatch({type:'prepared',ticket:a.ticket,ok:false});return;}
-   a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName});
+   a.prepared=Object.freeze({exposure:exposureFromWorker(reply.exposure),source:a.source!,jd:a.jd,catalogName:a.catalogName,fieldObjectsStatus:field.status});
    dispatch({type:'prepared',ticket:a.ticket,ok:true});
   }catch{a.failure='preparation';if(attempt.current===a&&gateRef.current.phase==='preparing')dispatch({type:'prepared',ticket:a.ticket,ok:false});}
  }
@@ -192,6 +197,7 @@ export default function CameraControl({active,busy,telescopeIndex,pointing,acces
     <dt>{M.detailJd}</dt><dd>{image.jd.toFixed(5)}</dd>
     <dt>{M.detailSeed}</dt><dd data-testid="camera-detail-seed">{shown.recipe.seed}</dd>
     <dt>{M.detailDraws}</dt><dd>{shown.drawsConsumed}</dd>
+    {image.fieldObjectsStatus&&<><dt>{M.detailFieldObjects}</dt><dd data-testid="camera-detail-field-objects" data-status={image.fieldObjectsStatus}>{image.fieldObjectsStatus==='run'&&shown.fieldObjects?M.fieldObjects.run(shown.fieldObjects.eligible,shown.fieldObjects.inBounds,shown.fieldObjects.tail):image.fieldObjectsStatus==='run'?'':M.fieldObjects[image.fieldObjectsStatus]}</dd></>}
     {shown.skipped.length>0&&<><dt>{M.detailSkipped}</dt><dd data-testid="camera-detail-skipped">{shown.skipped.map(k=>M.skippedReason[k.reason]).join(' ')}</dd></>}
    </dl></details>
   </figure>}
