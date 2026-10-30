@@ -61,3 +61,6 @@ export function lssDialogRecordValid(z:number,zHex:string,velocityHex:string):Re
  if(zHex!==hex32(zSingle)||!Number.isFinite(v)||hex32(v)!==velocityHex||!lssVelocityAccepted(v,zSingle))return null;
  return Object.freeze({zSingle,velocitySingle:v});
 }
+/** Front L3: FormActivate's VelEd text for a record that already has a velocity (a reused row): FloatToStrF(v, ffExponent, 4, 2);
+ * blank when v = 0 (0x57cab8). */
+export function lssVelocityText(velocitySingle:number):string{return velocitySingle===0?'':floatToStrFExponent4(Math.fround(velocitySingle));}

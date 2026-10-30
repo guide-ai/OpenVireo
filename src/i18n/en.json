@@ -3207,6 +3207,7 @@
   "lss.limitReached": "The survey holds at most {limit} records; save your results before recording more.",
   "lss.dialog.controlChars": "Remarks cannot contain tabs, line breaks or other control characters.",
   "lss.dialog.note": "Object, RA, Dec and z come from your pointing and measurement. The original shows RA and Dec in editable boxes but never reads your edits back, so here they are read-only. z is stored as the 4-digit value shown. JD is the site clock when you clicked Record Z.",
+  "lss.dialog.reused": "You already recorded this object, so this updates that row instead of adding one, as VIREO does unless the Time-Dependent Data option is on. The row keeps its first time (JD); z, RA and Dec come from this measurement. The velocity and remarks shown are the row's earlier ones: type a new velocity if z changed. Cancel leaves the row as it was.",
   "lss.dialog.jdTime": "Observation Time (JD)",
   "lss.dialog.raGroup": "Right Ascension",
   "lss.dialog.raH": "Right Ascension hours",

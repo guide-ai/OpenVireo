@@ -2,12 +2,12 @@
  * Record Z, LSS branch (analysis/recovered-functions-seeded/record-z-seeded-dossier.c): when the exercise is not 3/4/7 the
  * measured z (stored Single, +0x2c) and the field centre RA/Dec (Extended, +0x18/+0x22) open the modal TLSSRsltsDlg1
  * "Measured Redshift Data" (Object, JD, RA, Dec, z, velocity, Remarks); OK adds one row to LSSRsltsForm, Cancel adds nothing.
- * Record creation 0x57c918 and the dialog's own FormActivate/OK bodies are NOT recovered: this module is a labelled web
- * adaptation of that flow. Velocity is the existing c·zSingle Single projection (hubbleVelocity.ts); RA/Dec are the
+ * The dialog bodies are recovered (Front L2, lssRedshiftDialog.ts) and so is the find-or-add 0x57c918 (Front L3, openLssRecord):
+ * with Time-Dependent Data off (compiled) a re-measured object updates its first matching row. Velocity is the existing c·zSingle Single projection (hubbleVelocity.ts); RA/Dec are the
  * telescope pointing (the HTL row coordinates) and JD comes from the shared site clock. Records are in-memory student
  * observations (persistence is M6); nothing here invents a measurement. */
 import {hubbleVelocity} from './hubbleVelocity';
-import {lssDialogOk} from './lssRedshiftDialog';
+import {lssDialogOk,lssVelocityText} from './lssRedshiftDialog';
 import {currentZ,type ShiftControl} from './spectrum';
 import type {JournalEvent} from './exposureJournal';
 import {LSS_FIELD_FILES,type LssFieldNumber} from './lssFields';
@@ -32,9 +32,21 @@ export type LssRecord=Readonly<{
 export type LssJournal=Readonly<{seedAtReset:number;events:readonly JournalEvent[]}>;
 /** The open "Measured Redshift Data" dialog: values fixed from the measurement, only Remarks (and the object label) editable. */
 export type LssDraft=Readonly<{field:LssFieldNumber;row:number;telescope:0|1|2;object:string;jd:number;ra:number;dec:number;z:number;remarks:string;acquisitionPolicy:string;journal:LssJournal;control:ShiftControl;fieldJd?:number;
- /** Front L2: the Velocity (km/sec) edit text (blank on open, option +0x2e88 off). */velocity:string}>;
-export type LssSurveyState=Readonly<{field:LssFieldNumber|null;loaded:LssFieldNumber|null;records:readonly LssRecord[];draft:LssDraft|null;handedToWedge:number}>;
-export const EMPTY_LSS_SURVEY:LssSurveyState=Object.freeze({field:null,loaded:null,records:Object.freeze([]),draft:null,handedToWedge:0});
+ /** Front L2: the Velocity (km/sec) edit text (blank on open, option +0x2e88 off). */velocity:string;
+ /** Front L3: the index of the record this measurement reuses (0x57c918, Time-Dependent Data off), or null for a new row. */
+ target:number|null}>;
+/** `wedgeStale` (Front L3): a row already handed to the wedge was reused, so the next hand-over replaces the wedge's own LSS
+ * points with the whole list (as OK's PlotData 0x58100c re-plots the whole list). */
+export type LssSurveyState=Readonly<{field:LssFieldNumber|null;loaded:LssFieldNumber|null;records:readonly LssRecord[];draft:LssDraft|null;handedToWedge:number;wedgeStale:boolean}>;
+export const EMPTY_LSS_SURVEY:LssSurveyState=Object.freeze({field:null,loaded:null,records:Object.freeze([]),draft:null,handedToWedge:0,wedgeStale:false});
+/** Front L3, 0x57c918 [D]: with Time-Dependent Data off (env+0x2e8c = 0, compiled) the list is scanned first to last and the first
+ * record whose stored ShortString[15] ID equals the engine's ID (LStrCmp 0x406258, exact and case-sensitive) is reused, its time
+ * unchanged. The stored ID is the full ID truncated to 15, so a longer ID never matches its own row. On, or on a miss: a new
+ * row. */
+export function lssReuseTarget(records:readonly Pick<LssRecord,'object'>[],id:string,timeDependent:boolean):number|null{
+ if(timeDependent||id.length>15)return null;
+ const i=records.findIndex(r=>r.object===id);return i<0?null:i;
+}
 const text=(s:unknown,max:number)=>{if(typeof s!=='string'||s.length>max||/[\u0000-\u001f\u007f]/.test(s))throw new LssSurveyError('record');return s;};
 export function selectLssField(s:LssSurveyState,field:number):LssSurveyState{
  if(!LSS_FIELD_FILES.some(f=>f.field===field))throw new LssSurveyError('field');
@@ -44,13 +56,17 @@ export function selectLssField(s:LssSurveyState,field:number):LssSurveyState{
 export function markLssListLoaded(s:LssSurveyState,field:LssFieldNumber):LssSurveyState{
  if(s.field!==field)throw new LssSurveyError('field');return Object.freeze({...s,loaded:field});
 }
-/** Record Z: opens the dialog with the measured z. One dialog at a time. */
-export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'|'velocity'>):LssSurveyState{
+/** Record Z (RecordZ1Click 0x58383c, LSS branch): opens the dialog with the measured z. One dialog at a time. A reused row (Front
+ * L3) opens with its own velocity (ffExponent 4) and remarks, as FormActivate 0x57cab8 shows the record's fields. */
+export function openLssRecord(s:LssSurveyState,d:Omit<LssDraft,'remarks'|'velocity'|'target'>,options:Readonly<{timeDependent?:boolean}>={}):LssSurveyState{
  if(s.draft)throw new LssSurveyError('pending');
- if(d.journal&&Array.isArray(d.journal.events)&&lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
+ const target=typeof d.object==='string'?lssReuseTarget(s.records,d.object,options.timeDependent??false):null;
+ const others=target===null?s.records:s.records.filter((_r,i)=>i!==target);
+ if(d.journal&&Array.isArray(d.journal.events)&&lssEventTotal(others,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  if(!d.control||!d.journal||d.z!==currentZ(d.control)||!Number.isSafeInteger(d.journal.seedAtReset)||!Array.isArray(d.journal.events)||!Number.isFinite(d.z)||Math.fround(d.z)<=-1||!Number.isFinite(d.jd)||(d.fieldJd!==undefined&&!Number.isFinite(d.fieldJd))||!Number.isFinite(d.ra)||!Number.isFinite(d.dec)||d.ra<0||d.ra>=24||Math.abs(d.dec)>90)throw new LssSurveyError('record');
  hubbleVelocity(d.z);
- return Object.freeze({...s,draft:Object.freeze({...d,object:text(d.object,LSS_LIMITS.object),remarks:'',velocity:'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
+ const reused=target===null?null:s.records[target];
+ return Object.freeze({...s,draft:Object.freeze({...d,target,object:text(d.object,LSS_LIMITS.object),remarks:reused?.remarks??'',velocity:reused?lssVelocityText(reused.velocitySingle):'',journal:Object.freeze({seedAtReset:d.journal.seedAtReset,events:Object.freeze([...d.journal.events])}),control:Object.freeze({...d.control})})});
 }
 export function editLssDraft(s:LssSurveyState,change:Readonly<{object?:string;remarks?:string;velocity?:string}>):LssSurveyState{
  if(!s.draft)throw new LssSurveyError('pending');
@@ -88,20 +104,26 @@ export function lssEventTotal(records:readonly Pick<LssRecord,'acquisitionPolicy
 export type LssConfirm=Readonly<{ok:true;state:LssSurveyState}>|Readonly<{ok:false;caption:string|null;message:string}>;
 export function confirmLssDialog(s:LssSurveyState):LssConfirm{
  const d=s.draft;if(!d)throw new LssSurveyError('pending');
- if(s.records.length>=LSS_LIMITS.records)throw new LssSurveyError('limit');
- if(lssEventTotal(s.records,d)>LSS_LIMITS.events)throw new LssSurveyError('events');
+ const target=d.target,reused=target===null?null:s.records[target];
+ if(target!==null&&(!reused||reused.object!==d.object))throw new LssSurveyError('record');
+ if(!reused&&s.records.length>=LSS_LIMITS.records)throw new LssSurveyError('limit');
+ if(lssEventTotal(target===null?s.records:s.records.filter((_r,i)=>i!==target),d)>LSS_LIMITS.events)throw new LssSurveyError('events');
  const r=lssDialogOk(d.z,d.velocity);if(!r.ok)return r;
- const record:LssRecord=Object.freeze({id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:d.jd,ra:d.ra,dec:d.dec,zSingle:r.zSingle,zHex:r.zHex,velocitySingle:r.velocitySingle,velocityHex:r.velocityHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{}),nativeDialog:true as const});
+ // A reused row keeps its id, list position and first time (0x57c918 never rewrites +0x10); everything else is the new measurement.
+ const record:LssRecord=Object.freeze({id:reused?reused.id:s.records.length+1,field:d.field,row:d.row,telescope:d.telescope,object:d.object.trim()||'—',jd:reused?reused.jd:d.jd,ra:d.ra,dec:d.dec,zSingle:r.zSingle,zHex:r.zHex,velocitySingle:r.velocitySingle,velocityHex:r.velocityHex,remarks:d.remarks,acquisitionPolicy:d.acquisitionPolicy,journal:d.journal,control:d.control,...(d.fieldJd!==undefined?{fieldJd:d.fieldJd}:{}),nativeDialog:true as const});
+ if(target!==null){const records=Object.freeze(s.records.map((x,i)=>i===target?record:x));return {ok:true,state:Object.freeze({...s,draft:null,records,wedgeStale:s.wedgeStale||target<s.handedToWedge})};}
  return {ok:true,state:Object.freeze({...s,draft:null,records:Object.freeze([...s.records,record])})};
 }
-/** Cancel / Escape: adds nothing. */
+/** Cancel / Escape: adds nothing, and a reused row stays exactly as it was. [W] Natively the row keeps the new z, RA and Dec
+ * with its old velocity (they are written before ShowModal and Cancel removes nothing); the web keeps every row consistent with
+ * the 1 % velocity rule that restore checks (Front L3). */
 export function cancelLssRecord(s:LssSurveyState):LssSurveyState{return s.draft?Object.freeze({...s,draft:null}):s;}
 /** Records not yet handed to the wedge, and the state after handing them. */
-export function pendingWedgeRecords(s:LssSurveyState):readonly LssRecord[]{return s.records.slice(s.handedToWedge);}
+export function pendingWedgeRecords(s:LssSurveyState):readonly LssRecord[]{return s.wedgeStale?s.records:s.records.slice(s.handedToWedge);}
 /** After the wedge accepted the records up to `upTo` (the count handed in that batch). */
 export function markLssHandedToWedge(s:LssSurveyState,upTo=s.records.length):LssSurveyState{
- if(!Number.isInteger(upTo)||upTo<s.handedToWedge||upTo>s.records.length)throw new LssSurveyError('record');
- return Object.freeze({...s,handedToWedge:upTo});
+ if(!Number.isInteger(upTo)||upTo<(s.wedgeStale?0:s.handedToWedge)||upTo>s.records.length)throw new LssSurveyError('record');
+ return Object.freeze({...s,handedToWedge:upTo,wedgeStale:false});
 }
 export const lssAtLimit=(s:LssSurveyState)=>s.records.length>=LSS_LIMITS.records;
 const cell=(value:string)=>'"'+(/^[\s]*[=+\-@]/.test(value)||/^[\t\r\n]/.test(value)?"'"+value:value).replaceAll('"','""')+'"';
@@ -113,5 +135,5 @@ export function lssResultsCsv(records:readonly LssRecord[]):string{
 /** A restored survey: records already validated and replayed by the session reader; nothing is handed to the wedge yet. */
 export function restoredLssSurvey(field:LssFieldNumber|null,records:readonly LssRecord[]):LssSurveyState{
  if(records.length>LSS_LIMITS.records||records.some((r,i)=>r.id!==i+1))throw new LssSurveyError('record');
- return Object.freeze({field,loaded:null,records:Object.freeze([...records]),draft:null,handedToWedge:0});
+ return Object.freeze({field,loaded:null,records:Object.freeze([...records]),draft:null,handedToWedge:0,wedgeStale:false});
 }

@@ -33,14 +33,16 @@ type Telescope=0|1|2;
  * clock gave no finite JD, so rows whose field needs the time stay unavailable (variable-time-required). */
 type Loaded=Readonly<{field:LssFieldNumber;telescope:Telescope;statuses:readonly LssRowStatus[];fieldJd:number|undefined}>;
 export type LssSnapshot=Omit<LssInvestigation,'wedgeOptions'>;
-export type LssWedgeHandoff=Readonly<{records:readonly WedgeOwnRecord[];sha256:string;bytes:number}>;
+/** `replace` (Front L3): a row already plotted was reused, so the wedge replaces its own LSS points with these (the whole list). */
+export type LssWedgeHandoff=Readonly<{records:readonly WedgeOwnRecord[];sha256:string;bytes:number;replace?:true}>;
 function download(text:string|Uint8Array,name:string,type='text/csv;charset=utf-8'){const url=URL.createObjectURL(new Blob([typeof text==='string'?text:text.slice().buffer],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function statusText(s:LssRowStatus):string{
  if(s.kind==='unavailable')return t('lss.status.unavailable',{reasons:s.reasons.map(r=>t(`lss.reason.${r}`)).join('; ')});
  return s.kind==='available'?t('lss.status.available'):t('lss.status.neighbour',{id:s.selectedId});
 }
 /** E02 student route (#lss-survey). Web adaptations are listed in the scope note and docs/LSS-SURVEY.md. */
-function LssSurvey({active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
+function LssSurvey({timeDependentData=false,active,editMode=false,currentJd,initialTelescope,onPlotWedge,wedgeAck=null,onRecordsChange,onSnapshot,onSummary,restored=null}:{/** Front L3: Time-Dependent Data (env+0x2e8c, compiled off). Off: Record Z on an already recorded object reuses its row
+ * (0x57c918); on: every Record Z adds a row. */timeDependentData?:boolean;editMode?:boolean;onSummary?:(s:Omit<LssLabSummary,'saved'>)=>void;restored?:Readonly<{token:number;investigation:LssInvestigation|null}>|null;onSnapshot?:(s:LssSnapshot)=>void;active:boolean;currentJd:()=>number;initialTelescope:Telescope;onPlotWedge:(h:LssWedgeHandoff)=>number;wedgeAck?:Readonly<{token:number;accepted:boolean}>|null;onRecordsChange?:(records:readonly LssRecord[])=>void}){
  const [survey,setSurveyState]=useState<LssSurveyState>(EMPTY_LSS_SURVEY),current=useRef(survey),[dialogError,setDialogError]=useState('');
  /** Every survey transition runs here, outside React's updater: a rejected transition keeps the current state and returns false. */
  function update(fn:(s:LssSurveyState)=>LssSurveyState):boolean{try{const next=fn(current.current);current.current=next;setSurveyState(next);return true;}catch{return false;}}
@@ -98,7 +100,7 @@ function LssSurvey({active,editMode=false,currentJd,initialTelescope,onPlotWedge
  function cancelLoad(){abort.current?.abort();abort.current=null;setLoading(false);setNotice(t('lss.loadCancelled'));}
  const field=survey.field,rows=loaded?lssFieldRows(loaded.field):[],row=pointed!==null&&loaded?rows[pointed]:null,status=pointed!==null&&loaded?loaded.statuses[pointed]:null;
  const live=status&&status.kind!=='unavailable'?status:null;
- function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)})))setError(t('lss.recordError'));}
+ function record(control:ShiftControl){if(!row||!live||!loaded||!exposure)return;const z=currentZ(control),journal={seedAtReset:exposure.seedAtReset,events:exposure.events};setError('');setDialogError('');if(lssAtLimit(current.current)){setError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}if(lssEventTotal(current.current.records,{acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope),journal})>LSS_LIMITS.events){setError(t('lss.eventLimit',{limit:LSS_LIMITS.events}));return;}if(!update(s=>openLssRecord(s,{field:loaded.field,row:row.index,telescope:loaded.telescope,object:live.selectedId,jd:currentJd(),...(loaded.fieldJd!==undefined?{fieldJd:loaded.fieldJd}:{}),ra:row.ra,dec:row.dec,z,control,journal,acquisitionPolicy:lssPolicy(loaded.field,row.index,loaded.telescope)},{timeDependent:timeDependentData})))setError(t('lss.recordError'));}
  function confirm(){
   let r:LssConfirm;try{r=confirmLssDialog(current.current);}catch{setDialogError(t('lss.limitReached',{limit:LSS_LIMITS.records}));return;}
   // A native refusal keeps the dialog open (ModalResult 0); the message is the original box text (with its caption when it has one).
@@ -110,9 +112,9 @@ function LssSurvey({active,editMode=false,currentJd,initialTelescope,onPlotWedge
  async function plot(){
   const pending=pendingWedgeRecords(survey);if(!pending.length){setNotice(t('lss.wedge.nothing'));return;}
   const records=pending.map(r=>Object.freeze({object:r.object,jd:r.jd,ra:r.ra,dec:r.dec,zSingle:r.zSingle,remarks:r.remarks,...(r.nativeDialog?{velocitySingle:r.velocitySingle}:{})})),text=JSON.stringify(records),bytes=new TextEncoder().encode(text);
-  const upTo=current.current.handedToWedge+pending.length,sha256=await resourceSha256(bytes.slice().buffer);
+  const replace=current.current.wedgeStale,upTo=replace?current.current.records.length:current.current.handedToWedge+pending.length,sha256=await resourceSha256(bytes.slice().buffer);
   // Marked as handed only when the wedge reports that it added them (wedgeAck); otherwise they can be plotted again.
-  handoff.current={token:onPlotWedge(Object.freeze({records:Object.freeze(records),sha256,bytes:bytes.byteLength})),upTo};
+  handoff.current={token:onPlotWedge(Object.freeze({records:Object.freeze(records),sha256,bytes:bytes.byteLength,...(replace?{replace:true as const}:{})})),upTo};
  }
  const draft=survey.draft;
  return <main className="observatory-main lss-main"><section className="observatory-heading"><div className="eyebrow">{t('lss.eyebrow')}</div><h1 ref={heading} tabIndex={-1}>{t('lss.title')}</h1><p>{t('lss.intro')}</p></section>
@@ -137,7 +139,7 @@ function LssSurvey({active,editMode=false,currentJd,initialTelescope,onPlotWedge
      <input aria-label={t('lss.dialog.decD')} value={f.decD} readOnly data-testid="lss-dialog-dec-d"/><input aria-label={t('lss.dialog.decM')} value={f.decM} readOnly/><input aria-label={t('lss.dialog.decS')} value={f.decS} readOnly/></fieldset>
     <label htmlFor="lss-z">{t('lss.dialog.zLabel')}</label><input id="lss-z" value={f.z} readOnly data-testid="lss-dialog-z"/>
    </>;})()}
-   <p id="lss-dialog-note" className="observatory-note">{t('lss.dialog.note')}</p>
+   <p id="lss-dialog-note" className="observatory-note">{t('lss.dialog.note')}</p>{draft.target!==null&&<p className="observatory-note" role="status" data-testid="lss-dialog-reused">{t('lss.dialog.reused')}</p>}
    <label htmlFor="lss-velocity">{t('lss.dialog.velocity')}</label><input id="lss-velocity" value={draft.velocity} maxLength={LSS_LIMITS.velocity} inputMode="decimal" autoFocus aria-invalid={dialogError?true:undefined} aria-describedby={dialogError?'lss-dialog-error':'lss-velocity-help'} onChange={e=>velocity(e.target.value)} data-testid="lss-dialog-velocity"/>
    <p id="lss-velocity-help" className="observatory-note">{t('lss.dialog.velocityHelp')}</p>
    <label htmlFor="lss-remarks">{t('lss.dialog.remarks')}</label><input id="lss-remarks" value={draft.remarks} maxLength={LSS_LIMITS.remarks} aria-describedby={dialogError?'lss-dialog-error':undefined} onChange={e=>remarks(e.target.value)}/>{dialogError&&<p id="lss-dialog-error" role="alert" className="lss-dialog-error">{dialogError}</p>}
