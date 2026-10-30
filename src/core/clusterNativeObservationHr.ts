@@ -1,5 +1,5 @@
-import{appendNativeResultList,buildNativeResultList,NativeResultListError,type NativeResultList}from'./nativeResultList';
-import{NativeObservationError,type NativeObservationData,type NativeObservationRecord,type StoredNumber}from'./nativeObservationResults';
+import{appendNativeResultList,buildNativeResultList,NativeResultListError,refreshNativeResultList,type NativeResultList}from'./nativeResultList';
+import{commitNativeRecordEdit,NativeObservationError,openNativeRecordEdit,type NativeObservationData,type NativeObservationRecord,type StoredNumber}from'./nativeObservationResults';
 import{NATIVE_CLUSTER_MODELS}from'./nativeCluster';
 /** Original HR "File>Load/Plot>Data from Observations" route and its
  * "Tools>View/Print Parameters" report. Evidence
@@ -186,3 +186,10 @@ export function setClusterNativeHrTrial(w:ClusterNativeHrWorkspace,change:Partia
 /** Help topic "Remove ZAMS, Isochrone from Display":Tools>Clear removes both overlays. */
 export function clearClusterNativeHrOverlays(w:ClusterNativeHrWorkspace){return setClusterNativeHrTrial(w,{zamsShown:false,isochroneShown:false});}
 export function dismissClusterNativeHrError(w:ClusterNativeHrWorkspace){return w.error?next(w,{error:null}):w;}
+/** Front K2.2: TObsRsltsDlg1 OKBtnClick 0x54b02c writes the remarks (≤ 36) and the re-parsed Sp type into the hit list record
+ * in place (ID is ReadOnly). `index` is the 0-based list position. Throws the record-edit errors for text it cannot store. */
+export function editClusterNativeHrRecord(w:ClusterNativeHrWorkspace,index:number,changes:Readonly<{remarks:string;typeText:string}>){
+ if(!w.list||w.pending||w.reading)throw new ClusterNativeHrStateError('busy');
+ const data=w.list.data,updated=commitNativeRecordEdit(data,openNativeRecordEdit(data,index),{remarks:changes.remarks,typeText:changes.typeText});
+ return updated===data?w:next(w,{list:refreshNativeResultList(w.list,updated)});
+}

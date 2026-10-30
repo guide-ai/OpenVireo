@@ -538,7 +538,7 @@ export default function OpenVireo(){
   const observatoryJd=useCallback(()=>observatoryJdRef.current(),[]);
   // Front O2/M: VIREO's VObsBox (options+0x27d5, default off, not persisted): QSO List and Multi-Spec mode 0 read one state.
   const [virtualObservatory,setVirtualObservatory]=useState(false);
-  const fieldInfo=useMemo(()=>({editMode,onEditMode:setEditMode,virtualObservatory,onVirtualObservatory:setVirtualObservatory,view:mode==='finder'?'finder' as const:'instrument' as const,onOpenVariable:openVariableRecord,currentJd:observatoryJd,hidden:objectXHidden,busy:projectBusy,driveOn:open&&!!observatoryClock.state?.tracking}),[editMode,virtualObservatory,mode,openVariableRecord,observatoryJd,objectXHidden,projectBusy,open,observatoryClock.state?.tracking]);
+  const fieldInfo=useMemo(()=>({editMode,onEditMode:setEditMode,virtualObservatory,onVirtualObservatory:setVirtualObservatory,view:mode==='finder'?'finder' as const:'instrument' as const,telescopeName:opticalProfile(optical.selectedIndex).name,onOpenVariable:openVariableRecord,currentJd:observatoryJd,hidden:objectXHidden,busy:projectBusy,driveOn:open&&!!observatoryClock.state?.tracking}),[optical.selectedIndex,editMode,virtualObservatory,mode,openVariableRecord,observatoryJd,objectXHidden,projectBusy,open,observatoryClock.state?.tracking]);
   const nakedEyeUtc=()=>observatoryClock.state?clockDriveUTMS(observatoryClock.state):parseClockUTC(siteClock.utc);
   // App shell: header/sidebar with grouped tools, theme switch and the compact investigation toolbar (presentation only).
   // Front Perf: stable handlers for memoised children (renderStability.ts); each calls this render's closure at call time.

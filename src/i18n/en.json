@@ -3297,7 +3297,7 @@
   "multispec.snrReason.precision": "the random draw reached a value this version does not reproduce",
   "multispec.snrTyped": "S/N estimate not available: {reason}.",
   "multispec.snrNeutral": "S/N estimate not available.",
-  "multispec.printFieldTyped": "Print Selection Field runs the observatory's Print Sky Image (0x52a78c calls 0x53f934). Here it is a web print of this Telescope display with its selection markers and the pointing; VIREO's printed header and footer are not recovered.",
+  "multispec.printFieldTyped": "Print Selection Field runs the observatory's Print Sky Image (0x52a78c calls 0x53f934): VIREO's header, the picture colour-inverted, and the footer with the field centre, field size, telescope and instrument (Multi-Object Spectrometer). Web adaptation: VIREO prints the observatory's own sky image; here it prints this Telescope display with its selection markers.",
   "multispec.helpEmpty": "VIREO disables this Help item: its help index name is empty by default (MLTSPHLP.LST and SPLSTHLP.LST are also empty files).",
   "multispec.cannotClose": "Stop the exposure before closing Multi-Spec. (Web message: the original form silently refuses to close while exposing.)",
   "multispec.timerNote": "The exposure timer counts whole seconds of the page clock, as the original's one-second timer.",

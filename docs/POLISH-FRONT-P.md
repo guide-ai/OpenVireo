@@ -19,7 +19,7 @@ docs/RESOURCE-PROVENANCE.json and THIRD_PARTY_NOTICES.txt).
 |---|---|---|
 | **Bundled Pulsars.HTL** | Radio telescope › Slew › Hot List › *Load bundled Pulsars.HTL* | Byte-exact `program files/CLEA/VIREO/Pulsars.HTL` (688 bytes, 8 records, SHA-256 `9dfba548…a439`), fetched from this origin and checked for size and SHA-256 before parsing. [W]: VIREO opens it from its file dialog. Same read gates, cancel causes and commit as *Load Hot List...*. |
 | **About** | Observatory › *What works in this version* | TAboutBox DFM captions [D]: "Contemporary Laboratory Experiences in Astronomy", "VIREO - The VIRtual Educational Observatory", "Version 1.504" (set at run time by 0x58982c; the DFM's design-time "Version 0.5" is never shown; shared with Help › About..., docs/CLEA-HELP.md), "Copyright © 1999-2011 CLEA", "All Rights Reserved". The logo is not approved, so it is omitted. Then [W] what the site is, what works, credits and the licence basis. The stale "three-galaxy" and "Redistribution permissions are pending" texts are gone. |
-| **Print Sky Image...** | Observatory › File | PrintSkyImage1Click 0x53f934 (OB-SR-03): VIREO prints a header (0x58e860), the image (0x53f9e4, scale 1.5) and a footer (0x53fe14), whose contents are not decoded. [W]: a print preview of the sky view as shown, with the date, the view and the J2000 pointing. File is now always shown, as in VIREO. |
+| **Print Sky Image...** | Observatory › File | PrintSkyImage1Click 0x53f934 (OB-SR-03): VIREO prints a header (0x58e860), the image (0x53f9e4, scale 1.5) and a footer (0x53fe14); Front K2 decoded and ported both (docs/FRONT-K2-FORMS-PRINTS.md §3). [W]: a print preview of the sky view as shown, colour-inverted. File is now always shown, as in VIREO. |
 | **Print Wedge Plot...** | LSS data (`#lss-wedge`) | DFM `Print1` [D]. Print1Click 0x580f88 sets TWedgePlot+0x394 := Env+0x2e8d XOR 1 (0x580fba–0x580fc3), so VIREO prints in the scheme opposite to that setting, whose default is not recovered. [W]: the preview always renders the black-and-white `WEDGE_COLOUR_SCHEMES[1]`, without selection highlighting. |
 | **Print Window...** | Pulsar analysis toolbar | TPlsrAnalysisForm1 `PrintScreen1` ("Print &Window...", PrintScreen1Click 0x56d9d8) [D]; its printer drawing is not decoded. [W]: a snapshot of both panels with their readouts, made inert. |
 | **Results Editors** | Header group *Results Editors* | TEnvironment1 Tools › Results Editors [D]. [W] aliases: *Observational Results* opens the analyzer's own observational results; *Pulsar Results* opens the pulsar saved measurements. |
@@ -61,7 +61,8 @@ docs/RESOURCE-PROVENANCE.json and THIRD_PARTY_NOTICES.txt).
 ## Not in this front
 
 - NGC4670.SP: Front L2; the Compute Rdshft Vel. option: Front R.
-- Not decoded (b): the Print Sky header and footer, the Pulsar PrintScreen1Click drawing.
+- Not decoded (b): the Pulsar PrintScreen1Click drawing. The Print Sky header and footer are ported by Front K2
+  (docs/FRONT-K2-FORMS-PRINTS.md §3).
 - TInfoListForm1 line editing: abstract in the base class and hidden for Site Information, so nothing to port.
 
 ## Model and effort

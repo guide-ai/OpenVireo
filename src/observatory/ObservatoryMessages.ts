@@ -69,10 +69,10 @@ export const OBSERVATORY_MESSAGES=Object.freeze({
   help:'Limit Slewing (off by default, as compiled) stops the telescope at the site horizon: programmed slews below it are refused, a manual move stops there and tracking turns off when the target sets. Natively this is an instructor option; the other controls keep their compiled behaviour.',
  }),
  hotListPrint:Object.freeze({
-  title:'Print hot list',help:'Preview of the printed list: the window caption and the rows as shown. Print opens the browser print dialog for this report only.',
+  title:'Print hot list',help:'Preview of the printed list: VIREO\'s header lines, the window caption and the rows as shown. Print opens the browser print dialog for this report only.',
   count:(n:number)=>`${n} row${n===1?'':'s'}`,report:'Hot list report',empty:'The list has no rows.',print:'Print…',close:'Close',
   error:'The browser could not open printing. The preview stays open; try again or close it.',
-  adaptation:'Adaptation: no date, names or laboratory table number are printed (those original header fields are not recovered).',
+  adaptation:'As in VIREO, the first line is the date and time (here in your browser\'s format) and, outside Edit Mode, "Laboratory Table Number (Not Recorded)" followed by a blank student-name line: OpenVireo has no log-in or table number.',
  }),
  spectrumSave:Object.freeze({
   title:'Save or print your spectrum',

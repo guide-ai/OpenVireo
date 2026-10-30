@@ -140,6 +140,20 @@ test('Classification › Spectral Line Table opens a line\'s help by its name, a
  await expect(id(page,'spl-message')).toContainText('SPECLNS.TXT');await expect(id(page,'spl-rows')).toBeVisible();
 });
 
+test('Front K2.5: a single click on a line moves the classification cursor to its pixel column and reselects the nearest line',async({page})=>{
+ await page.goto('/#classification');
+ await id(page,'spl-open').click();
+ const rows=id(page,'spl-rows').getByRole('option');await expect(rows).toHaveCount(30);
+ // Fe I 4143.878 lands on column 203 of the 3900–4500 Å view (4143.60 Å), whose nearest line is He I 4143.76.
+ await rows.filter({hasText:'4143.88'}).click();
+ await expect(id(page,'spl-cursor')).toContainText('Cursor @: 4143.60 Å');
+ await expect(rows.filter({hasText:'He I'}).filter({hasText:'4143.76'})).toHaveAttribute('aria-selected','true');
+ await expect(page.locator('.class-marker').first()).toBeAttached();
+ // A line left of the view draws no cursor.
+ await rows.first().click();
+ await expect(id(page,'spl-cursor')).toContainText('outside the displayed range');
+});
+
 test('Help fits a 320 px screen in the dark theme',async({page})=>{
  await page.emulateMedia({colorScheme:'dark'});await page.setViewportSize({width:320,height:800});
  await page.goto('/#observatory');await expect(page.getByRole('heading',{name:'Start with the sky.'})).toBeVisible({timeout:15000});

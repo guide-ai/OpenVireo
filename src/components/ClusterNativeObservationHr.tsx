@@ -7,10 +7,14 @@ import{NATIVE_CLUSTER_MODELS}from'../core/nativeCluster';
 import{nativeIsochroneCurve,nativeZamsCurve,type NativeModelCurves}from'../core/nativeClusterCurves';
 import{loadNativeClusterModel}from'../io/nativeClusterModels';
 import{readNativeObservationFile}from'../io/nativeObservationResults';
-import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrBlockedRows,clusterNativeHrFrame,clusterNativeHrHundredths as hundredths,clusterNativeHrLogAgeTicks,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,clusterNativeHrX,clusterNativeHrY,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,plotClusterNativeHrObservations,setClusterNativeHrTrial,CLUSTER_NATIVE_HR_GEOMETRY as G,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'../core/clusterNativeObservationHr';
+import{addClusterNativeHrPending,armClusterNativeHrReplace,beginClusterNativeHrRead,cancelClusterNativeHrPending,cancelClusterNativeHrRead,clearClusterNativeHrOverlays,clusterNativeHrBlockedRows,clusterNativeHrFrame,clusterNativeHrHundredths as hundredths,clusterNativeHrLogAgeTicks,clusterNativeHrPlot,clusterNativeHrRecords,clusterNativeHrReport,clusterNativeHrX,clusterNativeHrY,completeClusterNativeHrRead,confirmClusterNativeHrReplace,disarmClusterNativeHrReplace,dismissClusterNativeHrError,EMPTY_CLUSTER_NATIVE_HR,failClusterNativeHrRead,plotClusterNativeHrObservations,setClusterNativeHrTrial,editClusterNativeHrRecord,CLUSTER_NATIVE_HR_GEOMETRY as G,type ClusterNativeHrTrial,type ClusterNativeHrWorkspace}from'../core/clusterNativeObservationHr';
 import{CLUSTER_NATIVE_HR_MESSAGES,type ClusterNativeHrMessages}from'./ClusterNativeObservationHrMessages';
 import CleaHelp from '../clusters/CleaHelp';
-import HrPrint,{ObservationDataUnavailable} from '../clusters/HrPrint';
+import HrPrint from '../clusters/HrPrint';
+import {clusterNativeHrHitTest,observationalDataFields} from '../core/clusterNativeHrSelect';
+import ObservationalDataDialog from '../clusters/ObservationalDataDialog';
+import RecordedResultsWindow from '../clusters/RecordedResultsWindow';
+import {CLUSTER_HR_EN as HR} from '../clusters/ClusterHrMessages';
 
 export type ClusterNativeObservationHrProps=Readonly<{
  /** Optional handoff of an already ordered native results list(e.g. from the DAT inspector). */
@@ -74,6 +78,30 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
  }
  const shownPlot=w.observationsPlotted&&plot.status==='plotted'?plot:null;
  const tableRows=useMemo(()=>shownPlot?.rows??(w.observationsPlotted&&plot.status==='blocked'&&w.list?clusterNativeHrBlockedRows(w.list.data,plot):[]),[shownPlot,w.observationsPlotted,w.list,plot]);
+ // Front K2.2: right-button release on the plot in observation mode (0x543bfc) → hit test 0x544428 → "Observational Data".
+ // A touch held still for 500 ms does the same [W]; a contextmenu Android fires after it is ignored for 800 ms.
+ const [selected,setSelected]=useState<Readonly<{index:number;pixel:Readonly<{x:number;y:number}>}>|null>(null),[dialogFor,setDialogFor]=useState<number|null>(null);
+ const [obsAlert,setObsAlert]=useState<string|null>(null),[resultsOpen,setResultsOpen]=useState(false),resultsButton=useRef<HTMLButtonElement>(null);
+ const longPress=useRef<{id:number;x:number;y:number;timer:number}|null>(null),pressedAt=useRef(0);
+ function pickClient(svg:SVGSVGElement,clientX:number,clientY:number){
+  if(!shownPlot||!w.list||dialogFor!==null)return;const ctm=svg.getScreenCTM();if(!ctm)return;
+  const pt=new DOMPoint(clientX,clientY).matrixTransform(ctm.inverse()),hit=clusterNativeHrHitTest(shownPlot,Math.floor(pt.x),Math.floor(pt.y));
+  if(hit.kind==='fpu'){setObsAlert(HR.obsFpu);return;}
+  if(hit.kind!=='hit')return;
+  const view=observationalDataFields(w.list.data,hit.index-1);
+  if(view.kind==='blocked'){setObsAlert(HR.obsBlocked(HR.recordedResultsBlock[view.reason]));return;}
+  setObsAlert(null);setSelected({index:hit.index,pixel:hit.pixel});setDialogFor(hit.index);
+ }
+ const cancelPress=()=>{if(longPress.current){window.clearTimeout(longPress.current.timer);longPress.current=null;}};
+ useEffect(()=>cancelPress,[]);
+ const plotHandlers=shownPlot?{
+  onContextMenu:(e:React.MouseEvent<SVGSVGElement>)=>{e.preventDefault();cancelPress();if(Date.now()-pressedAt.current<800)return;pickClient(e.currentTarget,e.clientX,e.clientY);},
+  onPointerDown:(e:React.PointerEvent<SVGSVGElement>)=>{if(e.pointerType!=='touch')return;cancelPress();const svg=e.currentTarget,x=e.clientX,y=e.clientY;
+   longPress.current={id:e.pointerId,x,y,timer:window.setTimeout(()=>{longPress.current=null;pressedAt.current=Date.now();pickClient(svg,x,y);},500)};},
+  onPointerMove:(e:React.PointerEvent<SVGSVGElement>)=>{const q=longPress.current;if(q&&q.id===e.pointerId&&Math.hypot(e.clientX-q.x,e.clientY-q.y)>10)cancelPress();},
+  onPointerUp:cancelPress,onPointerCancel:cancelPress,
+ }:{};
+ const dialogView=dialogFor!==null&&w.list?observationalDataFields(w.list.data,dialogFor-1):null;
  const offAxes=shownPlot?shownPlot.rows.filter(r=>r.status==='plotted'&&!r.inFrame).length:0;
  const id=(s:string)=>idPrefix+s;
  return <section className="card cluster-native-hr" aria-labelledby={id('title')}>
@@ -93,13 +121,15 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
    {w.list&&<><button type="button" className="secondary-button" disabled={busy} onClick={download}>{m.download}</button><p className="cluster-native-hr-note">{m.downloadNote}</p></>}
   </section>
 
-  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button> <HrPrint trial={w.trial} plot={plotSvg} testId={`${idPrefix}print`} disabled={!w.observationsPlotted}/> <ObservationDataUnavailable testId={`${idPrefix}display-data`}/><p className="cluster-native-hr-note">{m.plotHelp}</p>
+  <section aria-labelledby={id('plot')}><h3 id={id('plot')}>{m.plotHeading}</h3><button type="button" className="primary-button" disabled={busy} onClick={()=>setW(plotClusterNativeHrObservations)}>{m.plotButton}</button> <HrPrint trial={w.trial} plot={plotSvg} testId={`${idPrefix}print`} disabled={!w.observationsPlotted}/> <button type="button" ref={resultsButton} className="secondary-button" data-testid={`${idPrefix}display-data`} disabled={!w.observationsPlotted||!w.list} onClick={()=>setResultsOpen(true)}>{HR.displayData}</button><p className="cluster-native-hr-note">{m.plotHelp}</p><p className="cluster-native-hr-note">{HR.obsRightClickNote}</p>
+   {obsAlert&&<p role="alert" data-testid="cnhr-obs-alert">{obsAlert}</p>}
+   {resultsOpen&&w.list&&<RecordedResultsWindow data={w.list.data} testId={`${idPrefix}results`} onClose={()=>{setResultsOpen(false);resultsButton.current?.focus();}}/>}
    {!w.observationsPlotted&&<p>{m.notPlotted}</p>}
    {w.observationsPlotted&&plot.status==='blocked'&&<p role="alert" data-testid="cnhr-blocked">{m.blocked(plot.recordIndex,m.blockedField[plot.field])}</p>}
    {shownPlot&&shownPlot.plottedCountKind+shownPlot.plottedOtherKind>0&&<p role="note" className="cluster-native-hr-warning">{m.kindWarning(shownPlot.plottedCountKind,shownPlot.plottedOtherKind)}</p>}
    {offAxes>0&&<p>{m.offAxes(offAxes)}</p>}
    <div className="cluster-native-hr-chart" role="region" tabIndex={0} aria-label={m.chartRegion}>
-    <svg ref={plotSvg} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width={VIEW_W} height={VIEW_H} role="img" aria-labelledby={`${id('chart-title')} ${id('chart-desc')}`}>
+    <svg ref={plotSvg} {...plotHandlers} data-testid={`${idPrefix}plot`} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} width={VIEW_W} height={VIEW_H} role="img" aria-labelledby={`${id('chart-title')} ${id('chart-desc')}`}>
      <title id={id('chart-title')}>{m.chartTitle}</title><desc id={id('chart-desc')}>{m.chartDescription(shownPlot?.count??0)}</desc>
      <defs><clipPath id={id('clip')}><rect x={G.left} y={G.top} width={G.widthPx} height={G.heightPx}/></clipPath></defs>
      <polyline points={frame.axis.map(p=>p.join(',')).join(' ')} className="cnhr-axis"/>
@@ -107,6 +137,7 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
      {frame.texts.map((t,i)=><text key={i} x={t.x} y={t.y} className="cnhr-label">{t.text}</text>)}
      <g clipPath={`url(#${id('clip')})`}>{zamsPath&&<polyline data-testid="cnhr-zams" points={zamsPath} className="cnhr-zams"/>}{isoPath&&<polyline data-testid="cnhr-isochrone" points={isoPath} className="cnhr-isochrone"/>}</g>
      {shownPlot&&shownPlot.rows.map(r=>r.pixel&&<circle key={r.index} data-testid="cnhr-point" data-record={r.index} cx={r.pixel.x} cy={r.pixel.y} r={G.marker} className="cnhr-point"/>)}
+     {shownPlot&&selected&&<ellipse data-testid="cnhr-selected" data-record={selected.index} cx={selected.pixel.x} cy={selected.pixel.y} rx={G.marker} ry={G.marker} className="cnhr-selected"/>}
      {shownPlot&&<text data-testid="cnhr-count" x={G.right} y={G.top} textAnchor="end" className="cnhr-label">{shownPlot.countLabel}</text>}
     </svg>
    </div>
@@ -134,7 +165,10 @@ function ClusterNativeObservationHr({initialList=null,messages,idPrefix='cnhr-',
 
   {((shownPlot&&shownPlot.rows.length>0)||(w.observationsPlotted&&plot.status==='blocked'&&records>0))&&<details className="cnhr-records"><summary>{m.recordsSummary}</summary><div className="photometer-table"><table><thead><tr><th scope="col">{m.colIndex}</th><th scope="col">{m.colObject}</th><th scope="col">{m.colKind}</th><th scope="col">{m.colB}</th><th scope="col">{m.colV}</th><th scope="col">{m.colBV}</th><th scope="col">{m.colPixel}</th><th scope="col">{m.colStatus}</th></tr></thead>
    <tbody>{tableRows.map(r=><tr key={r.index} data-testid="cnhr-row" data-blocking={r.status==='blocking'?'true':undefined}><td>{r.index}</td><td>{r.object}</td><td>{m.kind(r.kind)}</td><td title={m.encoding(r.storedB.hex)}>{r.b??m.storedNumber(r.storedB)}</td><td title={m.encoding(r.storedV.hex)}>{r.v??m.storedNumber(r.storedV)}</td><td title={r.bMinusV?.exact}>{r.bMinusV?show4(r.bMinusV.value):'—'}</td><td>{r.pixel?`${r.pixel.x}, ${r.pixel.y}`:'—'}</td><td>{r.status==='before-block'?m.beforeBlock:r.status==='blocking'?m.blockingRecord(m.blockedField[r.field]):r.status==='after-block'?m.afterBlock:m.status[r.status]}{r.status==='plotted'&&!r.inFrame?m.outside:''}</td></tr>)}</tbody></table></div></details>}
-  <p className="cluster-native-hr-note">{m.limits}</p>
+ <p className="cluster-native-hr-note">{m.limits}</p>
+  {dialogView?.kind==='ready'&&dialogFor!==null&&<ObservationalDataDialog key={dialogFor} fields={dialogView.fields} testId={`${idPrefix}obs-data`}
+   onOk={changes=>{let edited:ClusterNativeHrWorkspace;try{edited=editClusterNativeHrRecord(w,dialogFor-1,changes);}catch{return false;}setW(edited);setDialogFor(null);return true;}}
+   onCancel={()=>{setDialogFor(null);setSelected(null);}}/>}
  </section>;
 }
 // Front Perf: re-render only when a prop changes (handlers come stable from the shell; docs/RENDER-BUDGET.md).
