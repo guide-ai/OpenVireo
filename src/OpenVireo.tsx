@@ -447,7 +447,7 @@ export default function OpenVireo(){
     const id=++projectEpoch.current;projectRunning.current=true;setProjectLocalBusy(true);setProjectError('');setProjectNotice('');
     radioBlock.current=null;
     let undelivered=false;
-    const ok=file?await analyzerController.current?.restoreSessionFile(file):await analyzerController.current?.saveSession(deliver&&(async text=>{try{await deliver(text);}catch(e){undelivered=true;throw e;}}));
+    const ok=file?await analyzerController.current?.restoreSessionFile(file):await analyzerController.current?.saveSession(deliver&&(async(text,signal)=>{try{await deliver(text,signal);}catch(e){undelivered=true;throw e;}}));
     if(id!==projectEpoch.current)return false;projectRunning.current=false;setProjectLocalBusy(false);
     const blocked=lastRadioBlock();
     if(ok){setProjectNotice(t(file?'project.restored':'project.saved'));setObjectXSaved(file?objectXPendingRestore.current:objectXCurrent.current);setLssSavedRecords(file?(lssPendingRestoreCount.current??-1):(lssCurrent.current?.records.length??-1));}

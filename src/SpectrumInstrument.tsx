@@ -74,8 +74,9 @@ function preloadSessionWhenIdle():()=>void{
   return ()=>{stopped=true;cancel();done();};
 }
 /** Front F2 (Front A point 8): where a Save sends the file instead of downloading it (the optional cloud account). It receives
- * the exact text Save would download; it reports its own failures, so a failed delivery shows no analyzer error. */
-export type SessionDelivery=(text:string)=>Promise<void>;
+ * the exact text Save would download; it reports its own failures, so a failed delivery shows no analyzer error. F2 review L3: Cancel
+ * (or hiding the tab) aborts `signal`, as it stops a local Save before its download: a cancelled Save is never a saved one. */
+export type SessionDelivery=(text:string,signal:AbortSignal)=>Promise<void>;
 
 const references = { galaxy: { title: t('spectrum.galaxy'), source: 'GLXYLNS.LST', lines: parseLines(galaxyText) }, balmer: { title: t('spectrum.balmer'), source: 'BALMER.LST', lines: parseLines(balmerText) }, qso: { title: t('spectrum.qso'), source: 'AGN_QSO.LST', lines: parseLines(qsoText) } };
 const template = parseSpectrum(templateText);
@@ -218,6 +219,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
     }catch{if(ticket===generation.current)setError(t('ssp.exportError'));}
     finally{if(ticket===generation.current)setBusy(false);}
   }
+  const deliveryAbort=useRef<AbortController|null>(null);
   async function exportSession(deliver?:SessionDelivery):Promise<boolean> {
     if(busy)return false;
     // Phase 1 item 1.5: an unsafe Radio/Pulsar state refuses the whole Save before any other part is prepared, and before the
@@ -233,7 +235,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
       const {serializeAnalysisSession}=await saveModules();
       const saved=await serializeAnalysisSession({...(objectX?{objectX}:{}),...(lss?{lss}:{}),...(radio.kind==='ready'?{radio:{snapshot:radio.snapshot,prepared:null}}:{}),...(motion?{motion}:{}),...(observatory?{observatory}:{}),...(clusterSelection?{clusterSelection}:{}),...(clusterComparison?{clusterComparison}:{}),...(clusterDatabase?{clusterDatabase}:{}),...(optical?{optical}:{}),...(editing?{editing}:{}),...(observing?{observing}:{}),...(photometry?{photometry}:{}),observation,control,stepInput,reference,wide,object,rows,hubble,...((classification=>classificationWorkspaceUsed(classification)?{classification}:{})(onPrepareClassification?.()??EMPTY_CLASSIFICATION_WORKSPACE)),...(acquisitions.length?{acquisitions}:{})});
       if(ticket!==generation.current)return false;
-      if(deliver){try{await deliver(saved);}catch{return false;}if(ticket!==generation.current)return false;}
+      if(deliver){const delivery=new AbortController();deliveryAbort.current=delivery;try{await deliver(saved,delivery.signal);}catch{return false;}finally{if(deliveryAbort.current===delivery)deliveryAbort.current=null;}if(ticket!==generation.current)return false;}
       else download(saved,'openvireo-session.json','application/json;charset=utf-8');
       if(radio.kind==='ready')radio.onSaved();setNotice(deliver?'':t('session.saved'));return true;
     } catch(e) {if(ticket===generation.current)setError(e instanceof SessionCodeLoadError?t('session.saveCodeError'):e instanceof LssSessionError?t('lss.saveError'):e instanceof ObjectXSessionError?OBJECT_X_SAVE_ERROR:t('session.exportError'));return false;}
@@ -286,7 +288,7 @@ function SpectrumInstrument({onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRe
     } catch(e) {if(ticket===generation.current){setNotice('');setError(t(e instanceof SessionCodeLoadError?'session.restoreCodeError':e instanceof AnalysisSessionError&&e.code==='resources'?'session.restoreResourcesError':'session.restoreError'));}return false;}
     finally {if(ticket===generation.current)setBusy(false);}
   }
-  function cancelSessionOperation(){generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}
+  function cancelSessionOperation(){deliveryAbort.current?.abort();generation.current++;setBusy(false);setError('');setNotice(t('classLink.cancelled'));}
   useImperativeHandle(controllerRef,()=>({acceptAcquisition,acceptImported,cancelSessionOperation,saveSession:exportSession,restoreSessionFile,openHubble:()=>{const element=hubbleDetails.current;if(element){element.open=true;element.querySelector('summary')?.focus();element.scrollIntoView({block:'start'});}}}),[onPrepareObjectX,onRestoreObjectX,onPrepareLss,onRestoreLss,onPrepareRadio,onCheckRadioRestore,onRestoreRadio,onPrepareMotion,onRestoreMotion,busy,acquisitions,observation,onPrepareClassification,control,stepInput,reference,wide,object,rows,hubble,onPreparePhotometry,onRestorePhotometry,onPrepareObserving,onRestoreObserving,onPrepareEditing,onRestoreEditing,velocityDraft,onPrepareOptical,onRestoreOptical,onPrepareClusterDatabase,onRestoreClusterDatabase,onPrepareClusterComparison,onRestoreClusterComparison,onPrepareClusterSelection,onRestoreClusterSelection]);
   return <div className="app-shell">
     <aside className="sidebar analyzer-sidebar"><a className="brand" href="#spectrum" aria-label={t('spectrum.home')}><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="currentColor"/><path d="M6 25 27 9M10 9l17 17M18 3v30M3 18h30" fill="none" stroke="currentColor"/></svg><span>{t('app.name')}<span className="brand-web"></span></span></a><div className="sidebar-label">{t('spectrum.sidebarTitle')}</div><nav aria-label={t('spectrum.tools')}><a href="#spectrum" className="nav-active"><span>◌</span> {t('spectrum.spectra')}</a><a href="#measurement-log"><span>▤</span> {t('spectrum.log')} <b>{rows.length}</b></a><button onClick={() => evidence.current?.showModal()}><span>⌘</span> {t('spectrum.evidence')}</button></nav><div className="sidebar-bottom"><span className="local-dot"/> {t('spectrum.localSession')}<span className="subtle">{t('spectrum.noServices')}</span></div></aside>
