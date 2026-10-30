@@ -3,7 +3,7 @@
 // 0x598acc). The bytes are fetched only from this origin, bounded to and checked for the exact recorded size and SHA-256 BEFORE
 // the field engine (core/fieldEngine.ts) reads any record. Catalogue values only, never observations.
 import {GLX_CATALOG} from '../core/glxCatalog';
-import {BoundedResourceError,boundedResourceBody,checkResourceAbort,resourceSha256} from './boundedResource';
+import {checkResourceAbort,resourceSha256,verifiedSameOriginResource} from './boundedResource';
 
 export type BundledGlxCatalogIdentity=Readonly<{path:string;name:string;bytes:number;sha256:string}>;
 export const BUNDLED_GLX_CATALOG:BundledGlxCatalogIdentity=Object.freeze({path:'/original/catalogs/CLEA_GLX.DAT',name:GLX_CATALOG.name,bytes:GLX_CATALOG.bytes,sha256:GLX_CATALOG.sha256});
@@ -21,18 +21,8 @@ export async function verifyBundledGlxCatalog(buffer:ArrayBuffer,expected:Bundle
  return new Uint8Array(buffer);
 }
 /** Fetches and verifies the bundled catalogue. An abort rejects with the DOMException AbortError, which callers ignore; every
- * other failure is a BundledGlxCatalogError. Nothing is cached, persisted or sent anywhere. */
-export async function fetchBundledGlxCatalog(fetcher:typeof fetch,signal:AbortSignal,expected:BundledGlxCatalogIdentity=BUNDLED_GLX_CATALOG):Promise<Uint8Array>{
- checkResourceAbort(signal);
- let buffer:ArrayBuffer;
- try{
-  const response=await fetcher(expected.path,{signal,credentials:'same-origin'});
-  buffer=await boundedResourceBody(response,expected.bytes,signal);
- }catch(error){
-  checkResourceAbort(signal);
-  if(error instanceof BoundedResourceError)throw new BundledGlxCatalogError(error.code==='size'?'size':'download');
-  throw new BundledGlxCatalogError('download');
- }
- checkResourceAbort(signal);
- return verifyBundledGlxCatalog(buffer,expected,signal);
+ * other failure is a BundledGlxCatalogError. Nothing is persisted or sent anywhere; verified bytes are kept in memory for the tab
+ * and re-checked on reuse (verifiedSameOriginResource, Front F2). */
+export function fetchBundledGlxCatalog(fetcher:typeof fetch,signal:AbortSignal,expected:BundledGlxCatalogIdentity=BUNDLED_GLX_CATALOG):Promise<Uint8Array>{
+ return verifiedSameOriginResource(fetcher,signal,expected.path,expected.bytes,buffer=>verifyBundledGlxCatalog(buffer,expected,signal),code=>new BundledGlxCatalogError(code));
 }
