@@ -21,8 +21,8 @@ const route=(page:Page,hash:string)=>page.evaluate(h=>{location.hash=h;},hash);
 test('the dialog offers the ported options with their compiled states and shows the tab values read-only',async({page})=>{
  await observatory(page);await card(page).getByTestId('ob-options').click();
  for(const k of ['fast-slewing','infrared-camera'])await expect(id(page,`ob-options-${k}`)).toBeChecked();
- for(const k of ['fast-scope-change','compute-redshift-velocity','monochrome-displays','print-in-color'])await expect(id(page,`ob-options-${k}`)).not.toBeChecked();
- const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(7);await expect(others).not.toContainText('Fast Slewing');
+ for(const k of ['fast-scope-change','compute-redshift-velocity','monochrome-displays','print-in-color','time-dependent-data'])await expect(id(page,`ob-options-${k}`)).not.toBeChecked();
+ const others=id(page,'ob-options-others');await expect(others.getByRole('listitem')).toHaveCount(6);// 7 before Front L3 added Time-Dependent Data (2026-10-30)await expect(others).not.toContainText('Fast Slewing');
  await expect(id(page,'ob-options-tab-general')).toContainText('Finder Field (Degs)2.50');await expect(id(page,'ob-options-tab-ccd')).toContainText('Site CH350 003B Back-Illuminated');
  await expect(id(page,'ob-options-tab-ir')).toContainText('CLEA_IR1');await expect(id(page,'ob-options-tabs')).not.toContainText(/<input/);
  await expect(id(page,'ob-options-tabs').locator('input')).toHaveCount(0);await expect(id(page,'ob-options-tabs-note')).toContainText('not editable');
@@ -98,4 +98,24 @@ test('Compute Rdshft Vel.: the LSS Measured Redshift Data dialog opens with c·z
  expect(v).toMatch(/^\d\.\d{3}E\+\d{2}$/);expect(Math.abs(Number(v)-299792.458*z)/(299792.458*z)).toBeLessThan(0.01);
  await page.getByRole('button',{name:'OK',exact:true}).click();await expect(dialog).toBeHidden();
  await expect(id(page,'lss-record-count')).toHaveText('1 records');
+});
+
+test('Time-Dependent Data (Front L3): checked, Record Z on the same LSS galaxy adds a second row instead of updating the first',async({page})=>{
+ test.setTimeout(150_000);
+ await page.clock.install();await observatory(page);await setOptions(page,{'time-dependent-data':true});
+ await clickHeaderTool(page,'LSS survey');await expect(page.getByRole('heading',{name:'Large-scale structure survey',exact:true})).toBeVisible();
+ await page.getByLabel('Survey field',{exact:true}).selectOption('1');await page.getByRole('button',{name:'Load selected list',exact:true}).click();await expect(id(page,'lss-rows')).toBeVisible({timeout:30000});
+ for(const shift of ['20','25']){
+  if(shift==='25')await id(page,'lss-row-2').getByRole('button',{name:'Point and view',exact:true}).click();// a fresh field for row 1 again
+  await id(page,'lss-row-1').getByRole('button',{name:'Point and view',exact:true}).click();
+  await page.getByRole('button',{name:'Activate spectrometer',exact:true}).click();
+  await page.clock.pauseAt(await page.evaluate(()=>Date.now()+1000));
+  await page.getByRole('button',{name:'Start exposure',exact:true}).click();await page.clock.runFor(1500);
+  await page.getByRole('button',{name:'Pause exposure',exact:true}).click();
+  await page.getByLabel('z step',{exact:true}).fill('.001');await page.getByRole('button',{name:'Set step',exact:true}).click();await page.getByLabel('Shift',{exact:true}).fill(shift);
+  await page.getByRole('button',{name:'Record Z',exact:true}).click();await expect(id(page,'lss-dialog-reused')).toHaveCount(0);
+  const z=Number(await id(page,'lss-dialog-z').inputValue());await id(page,'lss-dialog-velocity').fill(String(Math.round(299792.458*z*100)/100));
+  await page.getByRole('button',{name:'OK',exact:true}).click();await page.clock.resume();
+ }
+ await expect(id(page,'lss-record-count')).toHaveText('2 records');
 });

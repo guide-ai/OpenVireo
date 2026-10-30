@@ -731,7 +731,7 @@ export default function OpenVireo(){
    
    onHiddenTarget={setObjectXHidden} /></Suspense>}</div>
   <div inert={projectBusy} ref={variableStarsView} hidden={view!=='variable-stars'}>{variableStarsVisited&&<Suspense fallback={<p>{VARIABLE_STARS_EN.loading}</p>}><VariableStarsRoute active={view==='variable-stars'&&!projectBusy} openRequest={variableOpen}/></Suspense>}</div>
-  <div inert={projectBusy} ref={lssView} hidden={view!=='lss-survey'}>{(lssVisited||view==='lss-survey')&&<Suspense fallback={<p>{t('lss.loading')}</p>}><LssSurvey computeRedshiftVelocity={sessionOptions.computeRedshiftVelocity} active={view==='lss-survey'&&!projectBusy} editMode={editMode} restored={lssRestore} {...lssHandlers} initialTelescope={optical.selectedIndex as 0|1|2} wedgeAck={wedgeAck} /></Suspense>}</div>
+  <div inert={projectBusy} ref={lssView} hidden={view!=='lss-survey'}>{(lssVisited||view==='lss-survey')&&<Suspense fallback={<p>{t('lss.loading')}</p>}><LssSurvey computeRedshiftVelocity={sessionOptions.computeRedshiftVelocity} timeDependentData={sessionOptions.timeDependentData} active={view==='lss-survey'&&!projectBusy} editMode={editMode} restored={lssRestore} {...lssHandlers} initialTelescope={optical.selectedIndex as 0|1|2} wedgeAck={wedgeAck} /></Suspense>}</div>
   <div inert={projectBusy} ref={imageView} hidden={view!=='images'}>{imageVisited&&<Suspense fallback={<p>{t('fits.loading')}</p>}><FitsImageLab active={view==='images'} busy={projectBusy}/></Suspense>}</div>
   <AboutDialog dialogRef={about}/></>;
 }

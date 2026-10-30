@@ -5,7 +5,7 @@ import {createProgrammedMotion,manualMotionStep} from './telescopeMotion';
 // Front R3: the ported Optical Simulation Options (analysis/front-plans/front-r3-options.md).
 describe('Front R3 session options',()=>{
  it('start from the compiled record: Fast Slewing and Infrared Camera checked, the others unchecked (0x5a21d0)',()=>{
-  expect(COMPILED_SESSION_OPTICAL_OPTIONS).toEqual({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false});
+  expect(COMPILED_SESSION_OPTICAL_OPTIONS).toEqual({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false});
   for(const caption of Object.values(SESSION_OPTION_CAPTIONS))expect(OPTICAL_OPTIONS_CAPTIONS.otherOptions).toContain(caption);
   expect(readSessionOpticalOptions({...COMPILED_SESSION_OPTICAL_OPTIONS})).toEqual(COMPILED_SESSION_OPTICAL_OPTIONS);
   expect(()=>readSessionOpticalOptions({...COMPILED_SESSION_OPTICAL_OPTIONS,fastSlewing:1})).toThrow();

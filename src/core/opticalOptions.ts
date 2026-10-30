@@ -33,10 +33,12 @@ export function readOpticalOptions(value:unknown):OpticalOptions{
  * - monochromeDisplays (MonoBox) +0x27da = env+0x2e8e and printInColor (ColorBox) +0x27d9 = env+0x2e8d, compiled 0
  *   (0x5a2a47/0x5a2a40): the wedge plot's FormShow copies Monochrome into its scheme flag (0x580e1a); Print1Click prints with
  *   flag = Print in Color XOR 1 (0x580fba) and restores it.
+ * - timeDependentData (TimeDepBox): +0x27d8 = env+0x2e8c, compiled 0 (0x5a2a39). Off: LSS Record Z reuses the first row with the
+ *   same object ID (0x57c918, Front L3); on: every Record Z adds a row.
  * [W] WEB-OPT-R3: like Edit Mode and Virtual Observatory these are page-session checkboxes, open to anyone and not saved. */
-export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean}>;
-export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false});
-export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color'});
+export type SessionOpticalOptions=Readonly<{fastSlewing:boolean;fastScopeChange:boolean;computeRedshiftVelocity:boolean;infraredCamera:boolean;monochromeDisplays:boolean;printInColor:boolean;timeDependentData:boolean}>;
+export const COMPILED_SESSION_OPTICAL_OPTIONS:SessionOpticalOptions=Object.freeze({fastSlewing:true,fastScopeChange:false,computeRedshiftVelocity:false,infraredCamera:true,monochromeDisplays:false,printInColor:false,timeDependentData:false});
+export const SESSION_OPTION_CAPTIONS:Readonly<Record<keyof SessionOpticalOptions,string>>=Object.freeze({fastSlewing:'Fast Slewing',fastScopeChange:'Fast Scope Change',computeRedshiftVelocity:'Compute Rdshft Vel.',infraredCamera:'Infrared Camera',monochromeDisplays:'Monochrome Displays',printInColor:'Print in Color',timeDependentData:'Time-Dependent Data'});
 /** The rate index of a programmed slew (record+0x27af through RateSlider.Position). */
 export const programmedSlewRateIndex=(fastSlewing:boolean):3|4=>fastSlewing?4:3;
 /** Telescope Apply closes an open dome unless Fast Scope Change is on (0x58b554: fast path only with the dome fully open). */
