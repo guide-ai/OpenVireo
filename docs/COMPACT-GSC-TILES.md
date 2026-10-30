@@ -99,6 +99,7 @@ unchanged:
   near π/2 and on the low dword of its Int64 band key.
 - A field across RA 0 h/24 h is read as VIREO reads it (G1b): two reads per band, [min, 24] then [0, max]. The pack records
   both traces, and its coverage is the whole RA ring of its Dec band.
+- `input`: an invalid pointing (not finite, RA outside 0–24 h, or |Dec| > 90°).
 - `regions`: more than 100 regions. A ±0.375° field never exceeds 12, even at ±90°.
 - `budget`: more than 100,000 visits in one band, the same limit the field engine applies (`FIELD_SCAN_BUDGET`). A whole polar
   band fits (S8230: 95,441 records), so this no longer occurs for any valid pointing.
